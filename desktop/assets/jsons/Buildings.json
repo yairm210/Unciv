@@ -1,0 +1,167 @@
+[
+
+	{
+		"Name":"Worker",
+		"Description": "Can build improvements on tiles", 
+		"Cost":60
+	},
+	{
+		"Name":"Settler",
+		"Description": "Founds a new city", 
+		"Cost":106
+	},
+	
+	
+	{
+		"Name":"Palace",
+		"Description": "Indicates that this city is the capital", 
+		"IsWonder":true,
+		"Production":3,
+		"Science":3,
+		"Gold":3,
+		"Culture":1,
+		"Cost":1
+	},
+	{
+		"Name":"Monument",
+		"Description": "Produces culture, enabling border growth", 
+		"Culture":2,
+		"Cost":40,
+		"Maintainance":1
+	},
+	{
+		"Name":"Granary",
+		"Description": "Wheat, bananas and deer produce +1 food.", 
+		"Food":2,
+		"ResourceBonusStats":{"Food":1},
+		"Maintainance":1,
+		"RequiredTech":"Pottery"
+	},
+	{
+		"Name":"Library",
+		"Description": "Adds 1 science for each 2 population in the city.", 
+		"Maintainance":1,
+		"RequiredTech":"Writing"
+	},
+	{
+		"Name":"Great Library",
+		"Description": "Provides a free technology, and a library in the city it is built in",
+		"Science":3,
+		"Culture":1,
+		"IsWonder":true,
+		"ProvidesFreeBuilding": "Library",
+		"FreeTechs":1,
+		"RequiredTech":"Writing"
+	},
+	
+	{
+		"Name":"Temple",
+		"Description": "",
+		"Culture":3,
+		"RequiredBuilding":"Monument",
+		"Maintainance":2,
+		"RequiredTech":"Philosophy"
+	},
+	{
+		"Name":"Oracle",
+		"Description": "Provides a free social policy - HOW????",
+		"Culture":3,
+		"IsWonder":true,
+		"RequiredTech":"Philosophy"
+	},
+	{
+		"Name":"National College",
+		"Description": "+50% science from this city",
+		"Science":3,
+		"Culture":1,
+		"IsWonder":true,
+		"RequiredBuildingInAllCities":"Library",
+		"RequiredTech":"Philosophy"
+	},
+	{
+		"Name":"Stable",
+		"Description": "Cattle, sheep and horses produce +1 production.", 
+		"Maintainance":1,
+		"ResourceRequired":true,
+		"ResourceBonusStats":{"Production":1},
+		"RequiredTech":"Horseback Riding"
+	},
+	{
+		"Name":"Circus Maximus",
+		"Description": "",
+		"Happiness":5,
+		"Culture":1,
+		"IsWonder":true,
+		"RequiredBuildingInAllCities":"Colloseum",
+		"RequiredTech":"Philosophy"
+	},
+	{
+		"Name":"Hanging Gardens",
+		"Description": "",
+		"Food":10,
+		"Culture":1,
+		"IsWonder":true,
+		"RequiredTech":"Mathematics"
+	},
+	{
+		"Name":"Colloseum",
+		"Description": "", 
+		"Maintainance":1,
+		"Happiness":2,
+		"RequiredTech":"Construction"
+	},
+	{
+		"Name":"Market",
+		"Description": "",
+		"Gold":2,
+		"PercentStatBonus":{"Gold":25},
+		"RequiredTech":"Currency"
+	},	
+	{
+		"Name":"Chichen Itza",
+		"Description": "Length of golder ages increased +50%",
+		"Gold":5,
+		"Culture":1,
+		"IsWonder":true,
+		"RequiredTech":"Currency"
+	},
+	{
+		"Name":"Mint",
+		"Description": "",
+		"Maintainance":0,
+		"ResourceRequired":true,
+		"ResourceBonusStats":{"Gold":2},
+		"RequiredTech":"Currency"
+	},
+	{
+		"Name":"Machu Pichu",
+		"Description": "Gold from all trade routes +25%.  Can only be built on cities with mountain in range of 2 tiles - this is a problem!",
+		"Gold":5,
+		"Culture":1,
+		"IsWonder":true,
+		"RequiredTech":"Currency"
+	},
+	{
+		"Name":"Aqueduct",
+		"Description": "40% of food is carried over after a new citizen is born - HOW?!?!?!", 
+		"Maintainance":1,
+		"Food":2,
+		"RequiredTech":"Engineering"
+	},
+	{
+		"Name":"Workshop",
+		"Description": "", 
+		"Maintainance":2,
+		"Production":2,
+		"PercentStatBonus":{"Production":15},
+		"RequiredTech":"Metal Casting"
+	},
+	{
+		"Name":"Forge",
+		"Description": "Iron provides +1 prodduction", 
+		"Maintainance":1,
+		"ResourceRequired":true,
+		"ResourceBonusStats":{"Production":1},
+		"RequiredTech":"Metal Casting"
+	}
+]
