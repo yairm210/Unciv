@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -135,13 +134,13 @@ public class CityScreen extends CameraStageBaseScreen {
                 }
             });
 
-            if(!cityInfo.GetCityTiles().contains(tileInfo)) group.setColor(0,0,0,0.3f);
+            if(!cityInfo.getCityTiles().contains(tileInfo)) group.setColor(0,0,0,0.3f);
             else if(!tileInfo.IsCityCenter()) {
                 group.addPopulationIcon();
                 group.populationImage.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        if (cityInfo.GetFreePopulation() > 0 || tileInfo.IsWorked)
+                        if (cityInfo.getFreePopulation() > 0 || tileInfo.IsWorked)
                             tileInfo.IsWorked = !tileInfo.IsWorked;
                         updateCityTable();
                     }
@@ -204,8 +203,8 @@ public class CityScreen extends CameraStageBaseScreen {
         CityStatsValues.put("Food",stats.Food+" ("+cityInfo.cityPopulation.FoodStored+"/"+cityInfo.cityPopulation.FoodToNextPopulation()+")");
         CityStatsValues.put("Gold",stats.Gold+"");
         CityStatsValues.put("Science",stats.Science+"");
-        CityStatsValues.put("Culture",stats.Culture+"");
-        CityStatsValues.put("Population",cityInfo.GetFreePopulation()+"/"+cityInfo.cityPopulation.Population);
+        CityStatsValues.put("Culture",stats.Culture+" ("+cityInfo.cultureStored+"/"+cityInfo.getCultureToNextTile()+")");
+        CityStatsValues.put("Population",cityInfo.getFreePopulation()+"/"+cityInfo.cityPopulation.Population);
 
         for(String key : CityStatsValues.keySet()){
             CityStatsTable.add(ImageGetter.getStatIcon(key)).align(Align.right);

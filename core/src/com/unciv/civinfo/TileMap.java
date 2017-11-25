@@ -7,6 +7,7 @@ import com.unciv.game.HexMath;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.GameBasics;
+import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.Terrain;
 import com.unciv.models.gamebasics.TileResource;
 
@@ -58,11 +59,11 @@ public class TileMap{
 
         TileResource resource = null;
         if (Math.random() < 1 / 5f) {
-            resource = GetRandomResource(TileResources, "Bonus");
+            resource = GetRandomResource(TileResources, ResourceType.Bonus);
         } else if (Math.random() < 1 / 7f) {
-            resource = GetRandomResource(TileResources, "Strategic");
+            resource = GetRandomResource(TileResources, ResourceType.Strategic);
         } else if (Math.random() < 1 / 10f) {
-            resource = GetRandomResource(TileResources, "Luxury");
+            resource = GetRandomResource(TileResources, ResourceType.Luxury);
         }
         if (resource != null) tileInfo.Resource = resource.Name;
 
@@ -77,7 +78,7 @@ public class TileMap{
 
     public LinqCollection<TileInfo> values(){return tiles.linqValues();}
 
-    public TileResource GetRandomResource(LinqCollection<TileResource> resources, final String resourceType) {
+    public TileResource GetRandomResource(LinqCollection<TileResource> resources, final ResourceType resourceType) {
         return resources.where(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {

@@ -18,10 +18,10 @@ android {
         exclude 'META-INF/robovm/ios/robovm.xml'
     }
     defaultConfig {
-        applicationId "com.mygdx.game"
+        applicationId "com.unciv.game"
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 1
+        versionCode 3
         versionName "1.0"
     }
     buildTypes {
@@ -79,7 +79,7 @@ task run(type: Exec) {
     }
 
     def adb = path + "/platform-tools/adb"
-    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.mygdx.game/AndroidLauncher'
+    commandLine "$adb", 'shell', 'am', 'start', '-n', 'com.unciv.game/AndroidLauncher'
 }
 
 // sets up the Android Eclipse project, using the old Ant based build.

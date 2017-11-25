@@ -76,7 +76,7 @@ public class CityBuildings
         if(IsBuilt(building.Name)) return false;
 //        if (building.Name.equals("Worker") || building.Name.equals("Settler")) return false;
         if(building.ResourceRequired) {
-            boolean containsResourceWithImprovement = GetCity().GetCityTiles()
+            boolean containsResourceWithImprovement = GetCity().getCityTiles()
                     .any(new Predicate<TileInfo>() {
                 @Override
                 public boolean evaluate(TileInfo tile) {

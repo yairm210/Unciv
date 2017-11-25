@@ -55,7 +55,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         stage.addActor(TileTable);
 
         Drawable tileTableBackground = new TextureRegionDrawable(new TextureRegion(new Texture("skin/tileTableBackground.png")))
-                .tint(new Color(0x0040804f));
+                .tint(new Color(0x004085bf));
         tileTableBackground.setMinHeight(0);
         tileTableBackground.setMinWidth(0);
         TileTable.setBackground(tileTableBackground);
@@ -63,7 +63,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         TextureRegionDrawable civBackground = new TextureRegionDrawable(new TextureRegion(new Texture("skin/civTableBackground.png")));
 //        civBackground.tint(new Color(0x0040804f));
-        CivTable.setBackground(civBackground.tint(new Color(0x0040804f)));
+        CivTable.setBackground(civBackground.tint(new Color(0x004085bf)));
 
         stage.addActor(CivTable);
 
@@ -267,6 +267,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                     lastScale = scrollPane.getScaleX();
                 }
                 float scale = (float) Math.sqrt(distance / initialDistance) * lastScale;
+                if(scale<1) return;
                 scrollPane.setScale(scale);
                 game.settings.tilesZoom = scale;
             }
@@ -375,7 +376,8 @@ public class WorldScreen extends CameraStageBaseScreen {
                         dispose();
                     }
                 });
-                if(!GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
+                if(selectedTile.Unit.CurrentMovement==0 ||
+                        !GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
                             @Override
                             public boolean evaluate(TileImprovement arg0) {
                                 return selectedTile.CanBuildImprovement(arg0);

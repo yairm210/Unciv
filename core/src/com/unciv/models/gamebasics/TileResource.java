@@ -6,7 +6,7 @@ import com.unciv.models.stats.FullStats;
 import java.util.Collection;
 
 public class TileResource extends NamedStats implements ICivilopedia {
-    public String ResourceType;
+    public ResourceType ResourceType;
     public Collection<String> TerrainsCanBeFoundOn;
     public String Improvement;
     public FullStats ImprovementStats;

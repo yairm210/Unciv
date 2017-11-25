@@ -1,7 +1,6 @@
 package com.unciv.civinfo;
 
 import com.badlogic.gdx.math.Vector2;
-import com.unciv.game.pickerscreens.GameSaver;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.stats.CivStats;
@@ -47,7 +46,7 @@ public class CivilizationInfo {
         civStats.add(nextTurnStats);
         if(Cities.size() > 0) Tech.NextTurn(nextTurnStats.Science);
 
-        for (CityInfo city : Cities.as(CityInfo.class)) city.NextTurn();
+        for (CityInfo city : Cities.as(CityInfo.class)) city.nextTurn();
 
         for(TileInfo tile : tileMap.values()) if(tile.Unit!=null) tile.Unit.CurrentMovement = tile.Unit.MaxMovement;
 
@@ -61,7 +60,7 @@ public class CivilizationInfo {
         HashSet<String> LuxuryResources = new HashSet<String>();
         for (CityInfo city : Cities) {
             statsForTurn.add(city.getCityStats());
-            LuxuryResources.addAll(city.GetLuxuryResources());
+            LuxuryResources.addAll(city.getLuxuryResources());
         }
         statsForTurn.Happiness += LuxuryResources.size() * 5; // 5 happiness for each unique luxury in civ
 

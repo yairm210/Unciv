@@ -28,10 +28,10 @@ public class TileGroup extends Group {
         addActor(terrainImage);
     }
 
+
     void addPopulationIcon(){
         populationImage = ImageGetter.getStatIcon("Population");
-        populationImage.setAlign(Align.bottomRight);
-        populationImage.setX(terrainImage.getWidth()-populationImage.getWidth());
+        populationImage.moveBy(0, terrainImage.getHeight()-populationImage.getHeight()); // top left
         addActor(populationImage);
     }
 
@@ -46,8 +46,8 @@ public class TileGroup extends Group {
         if (tileInfo.HasViewableResource() && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.Resource + "_(Civ5).png";
             Image image = ImageGetter.getImageByFilename(fileName);
-            image.setScale(0.5f);
-            image.setOrigin(Align.topRight);
+            image.setSize(20,20);
+            image.moveBy(terrainImage.getWidth()-image.getWidth(), 0); // bottom right
             resourceImage = image;
             addActor(image);
         }
@@ -55,7 +55,7 @@ public class TileGroup extends Group {
         if (tileInfo.Unit != null && unitImage == null) {
             unitImage = ImageGetter.getImageByFilename("StatIcons/" + tileInfo.Unit.Name + "_(Civ5).png");
             addActor(unitImage);
-            unitImage.setSize(20, 20);
+            unitImage.setSize(20, 20); // not moved - is at bottom left
         }
 
         if (tileInfo.Unit == null && unitImage != null) {
@@ -63,12 +63,18 @@ public class TileGroup extends Group {
             unitImage = null;
         }
 
+        if(unitImage!=null){
+            if(tileInfo.Unit.CurrentMovement==0) unitImage.setColor(Color.GRAY);
+            else unitImage.setColor(Color.WHITE);
+        }
+
 
         if (tileInfo.Improvement != null && improvementImage == null) {
             improvementImage = ImageGetter.getImageByFilename("ImprovementIcons/" + tileInfo.Improvement.replace(' ','_') + "_(Civ5).png");
             addActor(improvementImage);
             improvementImage.setSize(20, 20);
-            improvementImage.moveBy(0, terrainImage.getHeight() - improvementImage.getHeight());
+            improvementImage.moveBy(terrainImage.getWidth()-improvementImage.getWidth(),
+                    terrainImage.getHeight() - improvementImage.getHeight()); // top right
         }
 
         if(populationImage!=null){
