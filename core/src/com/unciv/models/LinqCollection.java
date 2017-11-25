@@ -43,7 +43,7 @@ public class LinqCollection <T> extends ArrayList<T> {
 
     public T getRandom(){
         if(size()==0) return null;
-        return get((int) (Math.random() * (size() - 1)));
+        return get((int) (Math.random() * (size())));
     }
 
     public interface Func<T1, T2> {
