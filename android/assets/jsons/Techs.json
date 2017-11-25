@@ -101,7 +101,7 @@
 				"Name":"Mathematics",
 				"Row":7,
 				"Prerequisites":["The Wheel"],
-				"Description": "Serves as a stepping stone to other technologies. Also enables construction of the Hanging Gardens wonder."
+				"Description": "Enables construction of the Hanging Gardens wonder."
 			},
 			{
 				"Name":"Construction",
@@ -172,7 +172,7 @@
 				"Name":"Education",
 				"Row":3,
 				"Prerequisites":["Theology","Civil Service"],
-				"Description":"???"
+				"Description":"Allows cities to convert production to science, construction of Universities which provide science, and construction of the Angkor Wat wonder"
 			},
 			{
 				"Name":"Chivalry",

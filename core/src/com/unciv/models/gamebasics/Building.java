@@ -1,6 +1,10 @@
 package com.unciv.models.gamebasics;
 
+import com.unciv.models.LinqHashMap;
+import com.unciv.models.stats.FullStats;
 import com.unciv.models.stats.NamedStats;
+
+import java.util.Dictionary;
 
 public class Building extends NamedStats implements ICivilopedia {
         public String Description;
@@ -8,7 +12,7 @@ public class Building extends NamedStats implements ICivilopedia {
         public Technology GetRequiredTech(){return GameBasics.Technologies.get(RequiredTech);}
         public int Cost;
         public int Maintainance = 0;
-        public com.unciv.models.stats.FullStats PercentStatBonus = new com.unciv.models.stats.FullStats();
+        public FullStats PercentStatBonus = new FullStats();
         //public Func<CityInfo,FullStats> GetFlatBonusStats;
         public boolean IsWonder = false;
         public boolean ResourceRequired = false;
@@ -18,13 +22,13 @@ public class Building extends NamedStats implements ICivilopedia {
         // Uniques
         public String ProvidesFreeBuilding;
         public int FreeTechs;
-
+        public int NewTileCostReduction;
 
         /** The bonus stats that a resource gets when this building is built */
-        public com.unciv.models.stats.FullStats ResourceBonusStats;
+        public FullStats ResourceBonusStats;
 
         public String GetDescription() {
-                com.unciv.models.stats.FullStats stats = new com.unciv.models.stats.FullStats(this);
+                FullStats stats = new FullStats(this);
                 StringBuilder stringBuilder = new StringBuilder();
                 if(IsWonder) stringBuilder.append("Wonder\r\n");
                 stringBuilder.append(Description + "\r\n" + stats);

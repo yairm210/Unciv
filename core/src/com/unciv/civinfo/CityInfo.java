@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.HexMath;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
+import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;

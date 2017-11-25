@@ -64,7 +64,7 @@
 	},
 	{
 		"Name":"Oracle",
-		"Description": "Provides a free social policy - HOW????",
+		"Description": "Provides a free social policy - todo",
 		"Culture":3,
 		"IsWonder":true,
 		"RequiredTech":"Philosophy"
@@ -135,7 +135,7 @@
 	},
 	{
 		"Name":"Machu Pichu",
-		"Description": "Gold from all trade routes +25%.  Can only be built on cities with mountain in range of 2 tiles - this is a problem!",
+		"Description": "Gold from all trade routes +25%.  Can only be built on cities with mountain in range of 2 tiles - todo",
 		"Gold":5,
 		"Culture":1,
 		"IsWonder":true,
@@ -143,7 +143,7 @@
 	},
 	{
 		"Name":"Aqueduct",
-		"Description": "40% of food is carried over after a new citizen is born - HOW?!?!?!", 
+		"Description": "40% of food is carried over after a new citizen is born - TODO", 
 		"Maintainance":1,
 		"Food":2,
 		"RequiredTech":"Engineering"
@@ -163,5 +163,32 @@
 		"ResourceRequired":true,
 		"ResourceBonusStats":{"Production":1},
 		"RequiredTech":"Metal Casting"
+	},
+	{
+		"Name":"University",
+		"Description": "Jungles provide +2 science", 
+		"Maintainance":2,
+		"PercentStatBonus":{"Science":33},
+		"RequiredBuilding":"Library",
+		"RequiredTech":"Metal Casting"
+	},
+	{
+		"Name":"Oxford University",
+		"Description": "+50% science from this city",
+		"Science":3,
+		"Culture":1,
+		"FreeTechs":1,
+		"IsWonder":true,
+		"RequiredBuildingInAllCities":"University",
+		"RequiredTech":"Education"
+	},
+	{
+		"Name":"Angkor Wat",
+		"Description": "Cost of aquiring new tiles reduced by 25% - TODO",
+		"Culture":1,
+		"IsWonder":true,
+		"NewTileCostReduction":25,
+		"RequiredTech":"Education"
 	}
+	
 ]

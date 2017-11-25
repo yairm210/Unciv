@@ -3,6 +3,7 @@ package com.unciv.civinfo;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
+import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.stats.FullStats;
@@ -25,7 +26,7 @@ public class CityBuildings
         cityLocation = cityInfo.cityLocation;
     }
 
-    public ArrayList<String> BuiltBuildings = new ArrayList<String>();
+    public LinqCollection<String> BuiltBuildings = new LinqCollection<String>();
     public HashMap<String, Integer> InProgressBuildings = new HashMap<String, Integer>();
     public String CurrentBuilding = Worker; // default starting building!
 
@@ -34,6 +35,12 @@ public class CityBuildings
     public boolean IsBuilding(String buildingName) { return CurrentBuilding.equals(buildingName); }
 
     Building GetGameBuilding(String buildingName) { return GameBasics.Buildings.get(buildingName); }
+    public LinqCollection<Building> GetBuiltBuildings(){ return  BuiltBuildings.select(new LinqCollection.Func<String, Building>() {
+        @Override
+        public Building GetBy(String arg0) {
+            return GetGameBuilding(arg0);
+        }
+    }); }
 
     public void NextTurn(int ProductionProduced)
     {
@@ -94,7 +101,7 @@ public class CityBuildings
                     @Override
                     public boolean evaluate(CityInfo arg0) {
                         CityBuildings CB = arg0.cityBuildings;
-                        return CB.IsBuilt(building.Name) || CB.IsBuilt(building.Name);
+                        return CB.IsBuilding(building.Name) || CB.IsBuilt(building.Name);
                     }
                 }) ) return false;
         if (building.RequiredBuilding != null && !IsBuilt(building.RequiredBuilding)) return false;
