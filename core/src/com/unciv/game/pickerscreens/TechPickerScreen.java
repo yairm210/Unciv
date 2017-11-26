@@ -47,7 +47,8 @@ public class TechPickerScreen extends PickerScreen {
             if (TechsToResearch.contains(techName)) {
                 TB.setText(TB.getText() + " (" + TechsToResearch.indexOf(techName) + ")");
             }
-            TB.setText(TB.getText() + "\r\n" + game.civInfo.TurnsToTech(techName) + " turns");
+
+            if(!civTech.IsResearched(techName)) TB.setText(TB.getText() + "\r\n" + game.civInfo.TurnsToTech(techName) + " turns");
         }
     }
 
