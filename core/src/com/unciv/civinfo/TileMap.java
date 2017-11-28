@@ -67,14 +67,22 @@ public class TileMap{
         }
         if (resource != null) tileInfo.Resource = resource.Name;
 
-//        tileInfo.City = this;
-//        GetCityTiles.put(vector2, tileInfo);
         tiles.put(position.toString(),tileInfo);
     }
 
     public boolean contains(Vector2 vector){ return tiles.containsKey(vector.toString());}
 
     public TileInfo get(Vector2 vector){return tiles.get(vector.toString());}
+
+    public LinqCollection<TileInfo> getTilesInDistance(Vector2 origin, int distance){
+        LinqCollection<TileInfo> tiles = new LinqCollection<TileInfo>();
+
+        for(Vector2 vector : HexMath.GetVectorsInDistance(origin, distance))
+            if(contains(vector))
+                tiles.add(get(vector));
+
+        return tiles;
+    }
 
     public LinqCollection<TileInfo> values(){return tiles.linqValues();}
 

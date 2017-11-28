@@ -1,6 +1,7 @@
 package com.unciv.civinfo;
 
 import com.badlogic.gdx.math.Vector2;
+import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.stats.CivStats;
@@ -11,9 +12,11 @@ import java.util.HashSet;
  * Created by LENOVO on 10/18/2017.
  */
 public class CivilizationInfo {
+    public static CivilizationInfo current(){return UnCivGame.Current.civInfo; }
 
     public CivStats civStats = new CivStats();
     public int baseHappiness = 15;
+    public String civName = "Babylon";
 
     public CivilizationTech Tech = new CivilizationTech();
     public int turns = 1;

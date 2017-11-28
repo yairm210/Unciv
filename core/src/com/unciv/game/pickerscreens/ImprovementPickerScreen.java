@@ -35,7 +35,7 @@ public class ImprovementPickerScreen extends PickerScreen {
         rightSideButton.setColor(Color.GRAY);
 
         for(final TileImprovement improvement : GameBasics.TileImprovements.values()) {
-            if(!tileInfo.CanBuildImprovement(improvement)) continue;
+            if(!tileInfo.CanBuildImprovement(improvement) || improvement.Name.equals(tileInfo.Improvement)) continue;
             TextButton TB = new TextButton(improvement.Name+"\r\n"+improvement.TurnsToBuild+" turns", skin);
             TB.addListener(new ClickListener(){
                 @Override

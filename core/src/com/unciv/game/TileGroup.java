@@ -78,7 +78,7 @@ public class TileGroup extends Group {
         }
 
         if(populationImage!=null){
-            if(tileInfo.IsWorked) populationImage.setColor(Color.WHITE);
+            if(tileInfo.WorkingCity!=null) populationImage.setColor(Color.WHITE);
             else populationImage.setColor(Color.GRAY);
         }
     }

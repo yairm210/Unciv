@@ -348,11 +348,10 @@ public class WorldScreen extends CameraStageBaseScreen {
                     }
                 });
 
-                if(HexMath.GetVectorsInDistance(selectedTile.Position,2).any(new Predicate<Vector2>() {
+                if(game.civInfo.tileMap.getTilesInDistance(selectedTile.Position,2).any(new Predicate<TileInfo>() {
                     @Override
-                    public boolean evaluate(Vector2 arg0) {
-                        return tileGroups.containsKey(arg0.toString()) &&
-                                tileGroups.get(arg0.toString()).tileInfo.IsCityCenter();
+                    public boolean evaluate(TileInfo arg0) {
+                        return arg0.IsCityCenter();
                     }
                 })){
                     foundCityButton.setDisabled(true);
@@ -414,9 +413,9 @@ public class WorldScreen extends CameraStageBaseScreen {
         HashSet<String> ViewableVectorStrings = new HashSet<String>();
 
         // tiles adjacent to city tiles
-        for(CityInfo city : game.civInfo.Cities)
-            for(Vector2 tileLocation : city.CityTileLocations)
-                for(Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileLocation))
+        for(TileInfo tileInfo : game.civInfo.tileMap.values())
+            if(game.civInfo.civName.equals(tileInfo.Owner))
+                for(Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileInfo.Position))
                     ViewableVectorStrings.add(adjacentLocation.toString());
 
         // Tiles within 2 tiles of units

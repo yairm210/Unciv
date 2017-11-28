@@ -8,7 +8,6 @@ import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.stats.FullStats;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 
@@ -83,7 +82,7 @@ public class CityBuildings
         if(IsBuilt(building.Name)) return false;
 //        if (building.Name.equals("Worker") || building.Name.equals("Settler")) return false;
         if(building.ResourceRequired) {
-            boolean containsResourceWithImprovement = GetCity().getCityTiles()
+            boolean containsResourceWithImprovement = GetCity().getTilesInRange()
                     .any(new Predicate<TileInfo>() {
                 @Override
                 public boolean evaluate(TileInfo tile) {

@@ -123,8 +123,7 @@ public class CityScreen extends CameraStageBaseScreen {
 
         Group allTiles = new Group();
 
-        for(Vector2 vector : HexMath.GetVectorsInDistance(cityInfo.cityLocation,5)){
-            final TileInfo tileInfo = game.civInfo.tileMap.get(vector);
+        for(final TileInfo tileInfo : game.civInfo.tileMap.getTilesInDistance(cityInfo.cityLocation,5)){
             TileGroup group = new TileGroup(tileInfo);
             group.addListener(new ClickListener(){
                 @Override
@@ -134,20 +133,20 @@ public class CityScreen extends CameraStageBaseScreen {
                 }
             });
 
-            if(!cityInfo.getCityTiles().contains(tileInfo)) group.setColor(0,0,0,0.3f);
+            if(!cityInfo.getTilesInRange().contains(tileInfo)) group.setColor(0,0,0,0.3f);
             else if(!tileInfo.IsCityCenter()) {
                 group.addPopulationIcon();
                 group.populationImage.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        if (cityInfo.getFreePopulation() > 0 || tileInfo.IsWorked)
-                            tileInfo.IsWorked = !tileInfo.IsWorked;
+                        if(tileInfo.WorkingCity==null && cityInfo.getFreePopulation() > 0) tileInfo.WorkingCity = cityInfo.Name;
+                        else if(cityInfo.Name.equals(tileInfo.WorkingCity)) tileInfo.WorkingCity = null;
                         updateCityTable();
                     }
                 });
             }
 
-            Vector2 positionalVector = HexMath.Hex2WorldCoords(vector.cpy().sub(cityInfo.cityLocation));
+            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.Position.cpy().sub(cityInfo.cityLocation));
             int groupSize = 50;
             group.setPosition(stage.getWidth()/2 + positionalVector.x*0.8f  * groupSize,
                     stage.getHeight()/2 + positionalVector.y*0.8f * groupSize);

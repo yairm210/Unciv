@@ -25,7 +25,13 @@ public class UnCivGame extends Game {
     public void create() {
         SetupGameBasics();
         Current = this;
-        if(GameSaver.GetSave("Autosave").exists()) GameSaver.LoadGame(this,"Autosave");
+        if(GameSaver.GetSave("Autosave").exists()) {
+            try {
+                GameSaver.LoadGame(this, "Autosave");
+            } catch(Exception ex){ // silent fail if we can't read the autosave
+                startNewGame();
+            }
+        }
         else startNewGame();
 
         worldScreen = new WorldScreen(this);

@@ -16,16 +16,20 @@ public class TileInfo
     public String BaseTerrain;
     public String TerrainFeature;
     public String Resource;
-    public boolean IsWorked = false;
+//    public boolean IsWorked = false;
     public String Improvement;
     public String ImprovementInProgress;
+    public String Owner; // owning civ name
+    public String WorkingCity; // Working City Name
     public int TurnsToImprovement;
 
     public Terrain GetBaseTerrain(){return GameBasics.Terrains.get(BaseTerrain);}
-    public CityInfo GetCity(){return UnCivGame.Current.civInfo.Cities.first(new Predicate<CityInfo>() {
+    public CityInfo GetCity(){
+        if(WorkingCity == null) return null;
+        return CivilizationInfo.current().Cities.first(new Predicate<CityInfo>() {
         @Override
         public boolean evaluate(CityInfo arg0) {
-            return arg0.CityTileLocations.contains(Position);
+            return arg0.Name.equals(WorkingCity);
         }
     });}
 

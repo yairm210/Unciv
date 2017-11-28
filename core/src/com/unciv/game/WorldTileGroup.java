@@ -27,11 +27,11 @@ public class WorldTileGroup extends TileGroup {
     void update(WorldScreen worldScreen) {
         super.update();
 
-        if(tileInfo.IsWorked && populationImage==null) addPopulationIcon();
-        if(!tileInfo.IsWorked && populationImage!=null) removePopulationIcon();
+        if(tileInfo.WorkingCity != null && populationImage==null) addPopulationIcon();
+        if(tileInfo.WorkingCity == null && populationImage!=null) removePopulationIcon();
 
 
-        if (tileInfo.GetCity() != null && hexagon == null) {
+        if (tileInfo.Owner != null && hexagon == null) {
             hexagon = ImageGetter.getImageByFilename("TerrainIcons/Hexagon.png");
             float imageScale = terrainImage.getWidth() * 1.3f / hexagon.getWidth();
             hexagon.setScale(imageScale);
