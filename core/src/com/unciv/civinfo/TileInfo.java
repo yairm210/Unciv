@@ -123,6 +123,8 @@ public class TileInfo
         if(turnsToImprovement == 0)
         {
             if (improvementInProgress.startsWith("Remove")) terrainFeature = null;
+            else if(improvement.equals("Road")) roadStatus = RoadStatus.Road;
+            else if(improvement.equals("Railroad")) roadStatus = RoadStatus.Railroad;
             else improvement = improvementInProgress;
 
             improvementInProgress = null;
