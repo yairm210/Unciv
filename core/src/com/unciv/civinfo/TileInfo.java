@@ -9,59 +9,65 @@ import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
 
+enum RoadStatus{
+    None,
+    Road,
+    Railroad
+}
+
 public class TileInfo
 {
-    public Unit Unit;
-    public Vector2 Position;
-    public String BaseTerrain;
-    public String TerrainFeature;
-    public String Resource;
-//    public boolean IsWorked = false;
-    public String Improvement;
-    public String ImprovementInProgress;
-    public String Owner; // owning civ name
-    public String WorkingCity; // Working City Name
-    public int TurnsToImprovement;
+    public Unit unit;
+    public Vector2 position;
+    public String baseTerrain;
+    public String terrainFeature;
+    public String resource;
+    public String improvement;
+    public String improvementInProgress;
+    public String owner; // owning civ name
+    public String workingCity; // Working City name
+    public RoadStatus roadStatus = RoadStatus.None;
+    public int turnsToImprovement;
 
-    public Terrain GetBaseTerrain(){return GameBasics.Terrains.get(BaseTerrain);}
-    public CityInfo GetCity(){
-        if(WorkingCity == null) return null;
-        return CivilizationInfo.current().Cities.first(new Predicate<CityInfo>() {
+    public Terrain getBaseTerrain(){return GameBasics.Terrains.get(baseTerrain);}
+    public CityInfo getCity(){
+        if(workingCity == null) return null;
+        return CivilizationInfo.current().cities.first(new Predicate<CityInfo>() {
         @Override
         public boolean evaluate(CityInfo arg0) {
-            return arg0.Name.equals(WorkingCity);
+            return arg0.name.equals(workingCity);
         }
     });}
 
-    public Terrain GetTerrainFeature(){return TerrainFeature==null ? null : GameBasics.Terrains.get(TerrainFeature);}
+    public Terrain getTerrainFeature(){return terrainFeature ==null ? null : GameBasics.Terrains.get(terrainFeature);}
 
-    public Terrain GetLastTerrain() {
-        return TerrainFeature == null ? GetBaseTerrain() : GetTerrainFeature();
+    public Terrain getLastTerrain() {
+        return terrainFeature == null ? getBaseTerrain() : getTerrainFeature();
     }
 
-    public TileResource GetTileResource(){return Resource==null ? null : GameBasics.TileResources.get(Resource);}
+    public TileResource getTileResource(){return resource ==null ? null : GameBasics.TileResources.get(resource);}
 
-    public boolean IsCityCenter(){return GetCity()!=null && Position.equals(GetCity().cityLocation);}
+    public boolean isCityCenter(){return getCity()!=null && position.equals(getCity().cityLocation);}
 
-    public TileImprovement GetTileImprovement(){return Improvement==null ? null : GameBasics.TileImprovements.get(Improvement);}
+    public TileImprovement getTileImprovement(){return improvement ==null ? null : GameBasics.TileImprovements.get(improvement);}
 
 
-    private boolean IsResearched(String techName) { return UnCivGame.Current.civInfo.Tech.IsResearched(techName); }
+    private boolean isResearched(String techName) { return UnCivGame.Current.civInfo.tech.IsResearched(techName); }
 
-    public FullStats GetTileStats()
+    public FullStats getTileStats()
     {
-        FullStats stats = new FullStats(GetBaseTerrain());
+        FullStats stats = new FullStats(getBaseTerrain());
 
-        if(TerrainFeature!=null){
-            Terrain terrainFeature = GetTerrainFeature();
+        if(terrainFeature !=null){
+            Terrain terrainFeature = getTerrainFeature();
             if(terrainFeature.OverrideStats) stats = new FullStats(terrainFeature);
             else stats.add(terrainFeature);
         }
 
-        TileResource resource = GetTileResource();
+        TileResource resource = getTileResource();
 
-        CityInfo City = GetCity();
-        if (HasViewableResource())
+        CityInfo City = getCity();
+        if (hasViewableResource())
         {
             stats.add(resource);
             if(resource.Building!=null && City!=null && City.cityBuildings.IsBuilt(resource.Building))
@@ -70,17 +76,17 @@ public class TileInfo
             }
         }
 
-        TileImprovement improvement = GetTileImprovement();
+        TileImprovement improvement = getTileImprovement();
         if (improvement != null)
         {
             if (resource != null && resource.Improvement.equals(improvement.Name))
                 stats.add(resource.ImprovementStats);
             else stats.add(improvement);
 
-            if (IsResearched(improvement.ImprovingTech)) stats.add(improvement.ImprovingTechStats);
+            if (isResearched(improvement.ImprovingTech)) stats.add(improvement.ImprovingTechStats);
         }
 
-        if (City != null && City.cityLocation.equals(Position)) {
+        if (City != null && City.cityLocation.equals(position)) {
             if (stats.Food < 2) stats.Food = 2;
             if (stats.Production < 1) stats.Production = 1;
         }
@@ -88,51 +94,53 @@ public class TileInfo
         return stats;
     }
 
-    public boolean CanBuildImprovement(TileImprovement improvement)
+    public boolean canBuildImprovement(TileImprovement improvement)
     {
-        Terrain topTerrain = TerrainFeature==null ? GetBaseTerrain() : GetTerrainFeature();
-        if (improvement.TechRequired != null && !IsResearched(improvement.TechRequired)) return false;
+        Terrain topTerrain = terrainFeature ==null ? getBaseTerrain() : getTerrainFeature();
+        if (improvement.TechRequired != null && !isResearched(improvement.TechRequired)) return false;
         if (improvement.TerrainsCanBeBuiltOn.contains(topTerrain.Name)) return true;
         if (topTerrain.Unbuildable) return false;
-        return Resource != null && GetTileResource().Improvement.equals(improvement.Name);
+        return resource != null && getTileResource().Improvement.equals(improvement.Name);
     }
 
-    public void StartWorkingOnImprovement(TileImprovement improvement)
+    public void startWorkingOnImprovement(TileImprovement improvement)
     {
-        ImprovementInProgress = improvement.Name;
-        TurnsToImprovement = improvement.TurnsToBuild;
+        improvementInProgress = improvement.Name;
+        turnsToImprovement = improvement.TurnsToBuild;
     }
 
-    public void StopWorkingOnImprovement()
+    public void stopWorkingOnImprovement()
     {
-        ImprovementInProgress = null;
+        improvementInProgress = null;
     }
 
-    public void NextTurn()
+    public void nextTurn()
     {
-        if (ImprovementInProgress == null || Unit==null || !Unit.Name.equals("Worker")) return;
-        TurnsToImprovement -= 1;
-        if(TurnsToImprovement == 0)
+        if(unit !=null) unit.CurrentMovement = unit.MaxMovement;
+
+        if (improvementInProgress == null || unit ==null || !unit.Name.equals("Worker")) return;
+        turnsToImprovement -= 1;
+        if(turnsToImprovement == 0)
         {
-            if (ImprovementInProgress.startsWith("Remove")) TerrainFeature = null;
-            else Improvement = ImprovementInProgress;
+            if (improvementInProgress.startsWith("Remove")) terrainFeature = null;
+            else improvement = improvementInProgress;
 
-            ImprovementInProgress = null;
+            improvementInProgress = null;
         }
     }
 
     public String toString() {
-        StringBuilder SB = new StringBuilder(this.BaseTerrain);
-        if (TerrainFeature != null) SB.append(",\r\n" + TerrainFeature);
-        if (HasViewableResource()) SB.append(",\r\n" + Resource);
-        if (Improvement != null) SB.append(",\r\n" + Improvement);
-        if (ImprovementInProgress != null) SB.append(",\r\n" + ImprovementInProgress+" in "+this.TurnsToImprovement+" turns");
-        if(Unit!=null) SB.append(",\r\n" + Unit.Name+ "("+Unit.CurrentMovement+"/"+Unit.MaxMovement+")");
+        StringBuilder SB = new StringBuilder(this.baseTerrain);
+        if (terrainFeature != null) SB.append(",\r\n" + terrainFeature);
+        if (hasViewableResource()) SB.append(",\r\n" + resource);
+        if (improvement != null) SB.append(",\r\n" + improvement);
+        if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
+        if(unit !=null) SB.append(",\r\n" + unit.Name+ "("+ unit.CurrentMovement+"/"+ unit.MaxMovement+")");
         return SB.toString();
     }
 
-    public boolean HasViewableResource() {
-        return Resource != null && (GetTileResource().RevealedBy==null || IsResearched(GetTileResource().RevealedBy));
+    public boolean hasViewableResource() {
+        return resource != null && (getTileResource().RevealedBy==null || isResearched(getTileResource().RevealedBy));
     }
 
 }

@@ -1,6 +1,5 @@
 package com.unciv.civinfo;
 
-import com.badlogic.gdx.math.Vector;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.HexMath;
@@ -24,36 +23,36 @@ public class TileMap{
 
     private void addRandomTile(Vector2 position) {
         final TileInfo tileInfo = new TileInfo();
-        tileInfo.Position = position;
+        tileInfo.position = position;
         LinqCollection<Terrain> Terrains = GameBasics.Terrains.linqValues();
 
         final Terrain baseTerrain = Terrains.where(new Predicate<Terrain>() {
             @Override
             public boolean evaluate(Terrain arg0) {
-                return arg0.Type.equals("BaseTerrain") && !arg0.Name.equals("Lakes");
+                return arg0.Type.equals("baseTerrain") && !arg0.Name.equals("Lakes");
             }
         }).getRandom();
-        tileInfo.BaseTerrain = baseTerrain.Name;
+        tileInfo.baseTerrain = baseTerrain.Name;
 
         if (baseTerrain.CanHaveOverlay) {
             if (Math.random() > 0.7f) {
                 Terrain SecondaryTerrain = Terrains.where(new Predicate<Terrain>() {
                     @Override
                     public boolean evaluate(Terrain arg0) {
-                        return arg0.Type.equals("TerrainFeature") && arg0.OccursOn.contains(baseTerrain.Name);
+                        return arg0.Type.equals("terrainFeature") && arg0.OccursOn.contains(baseTerrain.Name);
                     }
                 }).getRandom();
-                if (SecondaryTerrain != null) tileInfo.TerrainFeature = SecondaryTerrain.Name;
+                if (SecondaryTerrain != null) tileInfo.terrainFeature = SecondaryTerrain.Name;
             }
         }
 
         LinqCollection<TileResource> TileResources = GameBasics.TileResources.linqValues();
 
-        // Resources are placed according to TerrainFeature, if exists, otherwise according to BaseLayer.
+        // Resources are placed according to terrainFeature, if exists, otherwise according to BaseLayer.
         TileResources = TileResources.where(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {
-                return arg0.TerrainsCanBeFoundOn.contains(tileInfo.GetLastTerrain().Name);
+                return arg0.TerrainsCanBeFoundOn.contains(tileInfo.getLastTerrain().Name);
             }
         });
 
@@ -65,7 +64,7 @@ public class TileMap{
         } else if (Math.random() < 1 / 10f) {
             resource = GetRandomResource(TileResources, ResourceType.Luxury);
         }
-        if (resource != null) tileInfo.Resource = resource.Name;
+        if (resource != null) tileInfo.resource = resource.Name;
 
         tiles.put(position.toString(),tileInfo);
     }

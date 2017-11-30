@@ -18,7 +18,7 @@ public class TechPickerScreen extends PickerScreen {
 
     HashMap<String, TextButton> techNameToButton = new HashMap<String, TextButton>();
     Technology SelectedTech;
-    com.unciv.civinfo.CivilizationTech civTech = game.civInfo.Tech;
+    com.unciv.civinfo.CivilizationTech civTech = game.civInfo.tech;
     ArrayList<String> TechsToResearch = new ArrayList<String>(civTech.TechsToResearch);
 
     public void SetButtonsInfo() {
@@ -48,7 +48,7 @@ public class TechPickerScreen extends PickerScreen {
                 TB.setText(TB.getText() + " (" + TechsToResearch.indexOf(techName) + ")");
             }
 
-            if(!civTech.IsResearched(techName)) TB.setText(TB.getText() + "\r\n" + game.civInfo.TurnsToTech(techName) + " turns");
+            if(!civTech.IsResearched(techName)) TB.setText(TB.getText() + "\r\n" + game.civInfo.turnsToTech(techName) + " turns");
         }
     }
 

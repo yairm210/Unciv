@@ -65,14 +65,14 @@ public class CityScreen extends CameraStageBaseScreen {
     private void updateCityPickerTable() {
         CityPickerTable.clear();
         CityPickerTable.row().pad(20);
-        if(game.civInfo.Cities.size()>1) {
+        if(game.civInfo.cities.size()>1) {
             TextButton prevCityButton = new TextButton("<", skin);
             prevCityButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     com.unciv.civinfo.CivilizationInfo ci = game.civInfo;
-                    if (ci.CurrentCity == 0) ci.CurrentCity = ci.Cities.size()-1;
-                    else ci.CurrentCity--;
+                    if (ci.currentCity == 0) ci.currentCity = ci.cities.size()-1;
+                    else ci.currentCity--;
                     game.setScreen(new CityScreen(game));
                     dispose();
                 }
@@ -80,18 +80,18 @@ public class CityScreen extends CameraStageBaseScreen {
             CityPickerTable.add(prevCityButton);
         }
 
-        Label currentCityLabel = new Label(game.civInfo.GetCurrentCity().Name, skin);
+        Label currentCityLabel = new Label(game.civInfo.getCurrentCity().name, skin);
         currentCityLabel.setFontScale(2);
         CityPickerTable.add(currentCityLabel);
 
-        if(game.civInfo.Cities.size()>1) {
+        if(game.civInfo.cities.size()>1) {
             TextButton nextCityButton = new TextButton(">", skin);
             nextCityButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     com.unciv.civinfo.CivilizationInfo ci = game.civInfo;
-                    if (ci.CurrentCity == ci.Cities.size()-1) ci.CurrentCity = 0;
-                    else ci.CurrentCity++;
+                    if (ci.currentCity == ci.cities.size()-1) ci.currentCity = 0;
+                    else ci.currentCity++;
                     game.setScreen(new CityScreen(game));
                     dispose();
                 }
@@ -109,7 +109,7 @@ public class CityScreen extends CameraStageBaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setWorldScreen();
-                game.worldScreen.setCenterPosition(game.civInfo.GetCurrentCity().cityLocation);
+                game.worldScreen.setCenterPosition(game.civInfo.getCurrentCity().cityLocation);
                 dispose();
             }
         });
@@ -119,7 +119,7 @@ public class CityScreen extends CameraStageBaseScreen {
     }
 
     private void addTiles() {
-        final CityInfo cityInfo = game.civInfo.GetCurrentCity();
+        final CityInfo cityInfo = game.civInfo.getCurrentCity();
 
         Group allTiles = new Group();
 
@@ -134,19 +134,19 @@ public class CityScreen extends CameraStageBaseScreen {
             });
 
             if(!cityInfo.getTilesInRange().contains(tileInfo)) group.setColor(0,0,0,0.3f);
-            else if(!tileInfo.IsCityCenter()) {
+            else if(!tileInfo.isCityCenter()) {
                 group.addPopulationIcon();
                 group.populationImage.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        if(tileInfo.WorkingCity==null && cityInfo.getFreePopulation() > 0) tileInfo.WorkingCity = cityInfo.Name;
-                        else if(cityInfo.Name.equals(tileInfo.WorkingCity)) tileInfo.WorkingCity = null;
+                        if(tileInfo.workingCity ==null && cityInfo.getFreePopulation() > 0) tileInfo.workingCity = cityInfo.name;
+                        else if(cityInfo.name.equals(tileInfo.workingCity)) tileInfo.workingCity = null;
                         updateCityTable();
                     }
                 });
             }
 
-            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.Position.cpy().sub(cityInfo.cityLocation));
+            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.cityLocation));
             int groupSize = 50;
             group.setPosition(stage.getWidth()/2 + positionalVector.x*0.8f  * groupSize,
                     stage.getHeight()/2 + positionalVector.y*0.8f * groupSize);
@@ -185,7 +185,7 @@ public class CityScreen extends CameraStageBaseScreen {
     }
 
     private void updateCityTable() {
-        CityInfo cityInfo = game.civInfo.GetCurrentCity();
+        CityInfo cityInfo = game.civInfo.getCurrentCity();
         FullStats stats = cityInfo.getCityStats();
         CityStatsTable.pad(20);
         CityStatsTable.columnDefaults(0).padRight(10);
@@ -211,7 +211,7 @@ public class CityScreen extends CameraStageBaseScreen {
             CityStatsTable.row();
         }
 
-        String CurrentBuilding = game.civInfo.GetCurrentCity().cityBuildings.CurrentBuilding;
+        String CurrentBuilding = game.civInfo.getCurrentCity().cityBuildings.CurrentBuilding;
 
         String BuildingText = "Pick building";
         if(CurrentBuilding != null) BuildingText = CurrentBuilding+"\r\n"
@@ -236,8 +236,8 @@ public class CityScreen extends CameraStageBaseScreen {
         if(selectedTile == null) return;
         TileTable.clearChildren();
 
-        CityInfo City =game.civInfo.GetCurrentCity();
-        FullStats stats = selectedTile.GetTileStats();
+        CityInfo City =game.civInfo.getCurrentCity();
+        FullStats stats = selectedTile.getTileStats();
         TileTable.pad(20);
         TileTable.columnDefaults(0).padRight(10);
 

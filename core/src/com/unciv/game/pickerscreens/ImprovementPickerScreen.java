@@ -1,15 +1,12 @@
 package com.unciv.game.pickerscreens;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.SplitPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.unciv.game.CameraStageBaseScreen;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileImprovement;
@@ -25,7 +22,7 @@ public class ImprovementPickerScreen extends PickerScreen {
         rightSideButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                tileInfo.StartWorkingOnImprovement(SelectedImprovement);
+                tileInfo.startWorkingOnImprovement(SelectedImprovement);
                 game.setWorldScreen();
                 dispose();
             }
@@ -34,8 +31,10 @@ public class ImprovementPickerScreen extends PickerScreen {
         rightSideButton.setTouchable(Touchable.disabled);
         rightSideButton.setColor(Color.GRAY);
 
+        VerticalGroup regularImprovements = new VerticalGroup();
+        regularImprovements.space(10);
         for(final TileImprovement improvement : GameBasics.TileImprovements.values()) {
-            if(!tileInfo.CanBuildImprovement(improvement) || improvement.Name.equals(tileInfo.Improvement)) continue;
+            if(!tileInfo.canBuildImprovement(improvement) || improvement.Name.equals(tileInfo.improvement)) continue;
             TextButton TB = new TextButton(improvement.Name+"\r\n"+improvement.TurnsToBuild+" turns", skin);
             TB.addListener(new ClickListener(){
                 @Override
@@ -47,8 +46,8 @@ public class ImprovementPickerScreen extends PickerScreen {
                     descriptionLabel.setText(improvement.GetDescription());
                 }
             });
-            topTable.add(TB).pad(10);
-            topTable.row();
+            regularImprovements.addActor(TB);
         }
+        topTable.add(regularImprovements);
     }
 }

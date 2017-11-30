@@ -30,7 +30,7 @@ public class BuildingPickerScreen extends PickerScreen {
         rightSideButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.civInfo.GetCurrentCity().cityBuildings.CurrentBuilding = selectedBuilding.Name;
+                game.civInfo.getCurrentCity().cityBuildings.CurrentBuilding = selectedBuilding.Name;
                 game.setScreen(new CityScreen(game));
                 dispose();
             }
@@ -38,7 +38,7 @@ public class BuildingPickerScreen extends PickerScreen {
         rightSideButton.setTouchable(Touchable.disabled);
         rightSideButton.setColor(Color.GRAY);
 
-        CityBuildings cityBuildings = game.civInfo.GetCurrentCity().cityBuildings;
+        CityBuildings cityBuildings = game.civInfo.getCurrentCity().cityBuildings;
         for(final Building building : GameBasics.Buildings.values()) {
             if(!cityBuildings.CanBuild(building)) continue;
             TextButton TB = new TextButton(building.Name+"\r\n"+cityBuildings.TurnsToBuilding(building.Name)+" turns", skin);

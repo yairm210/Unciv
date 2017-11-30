@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class CityInfo {
     public final Vector2 cityLocation;
-    public String Name;
+    public String name;
 
     public CityBuildings cityBuildings;
     public CityPopulation cityPopulation;
@@ -25,7 +25,7 @@ public class CityInfo {
         return getTileMap().getTilesInDistance(cityLocation,3).where(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
-                return UnCivGame.Current.civInfo.civName.equals(arg0.Owner);
+                return UnCivGame.Current.civInfo.civName.equals(arg0.owner);
             }
         });
     }
@@ -47,27 +47,27 @@ public class CityInfo {
     }
 
     CityInfo(CivilizationInfo civInfo, Vector2 cityLocation) {
-        Name = CityNames[civInfo.Cities.size()];
+        name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
         cityBuildings = new CityBuildings(this);
         cityPopulation = new CityPopulation();
 
         for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
-            tileInfo.Owner = civInfo.civName;
+            tileInfo.owner = civInfo.civName;
         }
-        civInfo.tileMap.get(cityLocation).WorkingCity = this.Name;
+        civInfo.tileMap.get(cityLocation).workingCity = this.name;
 
 
         autoAssignWorker();
-        civInfo.Cities.add(this);
+        civInfo.cities.add(this);
     }
 
     ArrayList<String> getLuxuryResources() {
         ArrayList<String> LuxuryResources = new ArrayList<String>();
         for (TileInfo tileInfo : getTilesInRange()) {
-            TileResource resource = tileInfo.GetTileResource();
-            if (resource != null && resource.ResourceType == ResourceType.Luxury && resource.Improvement.equals(tileInfo.Improvement))
-                LuxuryResources.add(tileInfo.Resource);
+            TileResource resource = tileInfo.getTileResource();
+            if (resource != null && resource.ResourceType == ResourceType.Luxury && resource.Improvement.equals(tileInfo.improvement))
+                LuxuryResources.add(tileInfo.resource);
         }
         return LuxuryResources;
     }
@@ -77,7 +77,7 @@ public class CityInfo {
         return getTilesInRange().count(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
-                return Name.equals(arg0.WorkingCity);
+                return name.equals(arg0.workingCity);
             }
         })-1; // 1 is the city center
     }
@@ -99,8 +99,8 @@ public class CityInfo {
 
         // Working ppl
         for (TileInfo cell : getTilesInRange())
-            if (Name.equals(cell.WorkingCity) || cell.IsCityCenter())
-                stats.add(cell.GetTileStats());
+            if (name.equals(cell.workingCity) || cell.isCityCenter())
+                stats.add(cell.getTileStats());
 
         //idle ppl
         stats.Production += getFreePopulation();
@@ -123,10 +123,6 @@ public class CityInfo {
 
         cityBuildings.NextTurn(stats.Production);
 
-        for (TileInfo tileInfo : getTilesInRange()) {
-            tileInfo.NextTurn();
-        }
-
         cultureStored+=stats.Culture;
         if(cultureStored>=getCultureToNextTile()){
             addNewTile();
@@ -143,7 +139,7 @@ public class CityInfo {
             tiles = tiles.where(new Predicate<TileInfo>() {
                 @Override
                 public boolean evaluate(TileInfo arg0) {
-                    return arg0.Owner == null;
+                    return arg0.owner == null;
                 }
             });
             if(tiles.size()==0) continue;
@@ -157,7 +153,7 @@ public class CityInfo {
                     TileChosen = tile;
                 }
             }
-            TileChosen.Owner = UnCivGame.Current.civInfo.civName;
+            TileChosen.owner = UnCivGame.Current.civInfo.civName;
             return;
         }
     }
@@ -166,8 +162,8 @@ public class CityInfo {
         double maxValue = 0;
         TileInfo toWork = null;
         for (TileInfo tileInfo : getTilesInRange()) {
-            if (tileInfo.WorkingCity!=null) continue;
-            FullStats stats = tileInfo.GetTileStats();
+            if (tileInfo.workingCity !=null) continue;
+            FullStats stats = tileInfo.getTileStats();
 
             double value = stats.Food + stats.Production * 0.5;
             if (value > maxValue) {
@@ -175,11 +171,11 @@ public class CityInfo {
                 toWork = tileInfo;
             }
         }
-        toWork.WorkingCity = Name;
+        toWork.workingCity = name;
     }
 
     private double rankTile(TileInfo tile){
-        FullStats stats = tile.GetTileStats();
+        FullStats stats = tile.getTileStats();
         double rank=0;
         if(stats.Food<2) rank+=stats.Food;
         else rank += 2 + (stats.Food-2)/2; // 1 point for each food up to 2, from there on half a point
@@ -187,7 +183,7 @@ public class CityInfo {
         rank+=stats.Production;
         rank+=stats.Science;
         rank+=stats.Culture;
-        if(tile.Improvement==null) rank+=0.5; // Improvement potential!
+        if(tile.improvement ==null) rank+=0.5; // improvement potential!
         return rank;
     }
 }

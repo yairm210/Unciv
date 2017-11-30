@@ -29,7 +29,7 @@ public class CityBuildings
     public HashMap<String, Integer> InProgressBuildings = new HashMap<String, Integer>();
     public String CurrentBuilding = Worker; // default starting building!
 
-    public CityInfo GetCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).GetCity(); }
+    public CityInfo GetCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).getCity(); }
     public boolean IsBuilt(String buildingName) { return BuiltBuildings.contains(buildingName); }
     public boolean IsBuilding(String buildingName) { return CurrentBuilding.equals(buildingName); }
 
@@ -50,7 +50,7 @@ public class CityBuildings
         if (InProgressBuildings.get(CurrentBuilding) >= GetGameBuilding(CurrentBuilding).Cost)
         {
             if (CurrentBuilding.equals(Worker) || CurrentBuilding.equals(Settler))
-                UnCivGame.Current.civInfo.tileMap.get(cityLocation).Unit = new Unit(CurrentBuilding,2);
+                UnCivGame.Current.civInfo.tileMap.get(cityLocation).unit = new Unit(CurrentBuilding,2);
 
             else
             {
@@ -58,7 +58,7 @@ public class CityBuildings
                 Building gameBuilding = GetGameBuilding(CurrentBuilding);
                 if (gameBuilding.ProvidesFreeBuilding != null && !BuiltBuildings.contains(gameBuilding.ProvidesFreeBuilding))
                     BuiltBuildings.add(gameBuilding.ProvidesFreeBuilding);
-                if (gameBuilding.FreeTechs != 0) UnCivGame.Current.civInfo.Tech.FreeTechs += gameBuilding.FreeTechs;
+                if (gameBuilding.FreeTechs != 0) UnCivGame.Current.civInfo.tech.FreeTechs += gameBuilding.FreeTechs;
             }
 
             InProgressBuildings.remove(CurrentBuilding);
@@ -80,22 +80,22 @@ public class CityBuildings
     {
         CivilizationInfo civInfo = UnCivGame.Current.civInfo;
         if(IsBuilt(building.Name)) return false;
-//        if (building.Name.equals("Worker") || building.Name.equals("Settler")) return false;
+//        if (building.name.equals("Worker") || building.name.equals("Settler")) return false;
         if(building.ResourceRequired) {
             boolean containsResourceWithImprovement = GetCity().getTilesInRange()
                     .any(new Predicate<TileInfo>() {
                 @Override
                 public boolean evaluate(TileInfo tile) {
-                    return tile.Resource != null
-                        && building.Name.equals(tile.GetTileResource().Building)
-                        && tile.GetTileResource().Improvement.equals(tile.Improvement);
+                    return tile.resource != null
+                        && building.Name.equals(tile.getTileResource().Building)
+                        && tile.getTileResource().Improvement.equals(tile.improvement);
                 }
             });
             if(!containsResourceWithImprovement) return false;
         }
 
-        if (building.RequiredTech != null && !civInfo.Tech.IsResearched(building.RequiredTech)) return false;
-        if (building.IsWonder && civInfo.Cities
+        if (building.RequiredTech != null && !civInfo.tech.IsResearched(building.RequiredTech)) return false;
+        if (building.IsWonder && civInfo.cities
                 .any(new Predicate<CityInfo>() {
                     @Override
                     public boolean evaluate(CityInfo arg0) {
@@ -105,7 +105,7 @@ public class CityBuildings
                 }) ) return false;
         if (building.RequiredBuilding != null && !IsBuilt(building.RequiredBuilding)) return false;
         if (building.RequiredBuildingInAllCities != null ||
-                civInfo.Cities.any(new Predicate<CityInfo>() {
+                civInfo.cities.any(new Predicate<CityInfo>() {
                     @Override
                     public boolean evaluate(CityInfo arg0) {
                         return arg0.cityBuildings.IsBuilt(building.RequiredBuildingInAllCities);

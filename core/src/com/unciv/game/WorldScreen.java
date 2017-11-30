@@ -17,7 +17,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.GameSaver;
 import com.unciv.game.pickerscreens.ImprovementPickerScreen;
@@ -123,7 +122,7 @@ public class WorldScreen extends CameraStageBaseScreen {
     }
 
     private void updateTechButton() {
-        TechButton.setVisible(game.civInfo.Cities.size()!=0);
+        TechButton.setVisible(game.civInfo.cities.size()!=0);
         TechButton.clearListeners();
         TechButton.addListener(new ClickListener(){
             @Override
@@ -133,9 +132,9 @@ public class WorldScreen extends CameraStageBaseScreen {
             }
         });
 
-        if (game.civInfo.Tech.CurrentTechnology() == null) TechButton.setText("Choose a tech!");
-        else TechButton.setText(game.civInfo.Tech.CurrentTechnology() + "\r\n"
-                + game.civInfo.TurnsToTech(game.civInfo.Tech.CurrentTechnology()) + " turns");
+        if (game.civInfo.tech.CurrentTechnology() == null) TechButton.setText("Choose a tech!");
+        else TechButton.setText(game.civInfo.tech.CurrentTechnology() + "\r\n"
+                + game.civInfo.turnsToTech(game.civInfo.tech.CurrentTechnology()) + " turns");
 
         TechButton.setSize(TechButton.getPrefWidth(), TechButton.getPrefHeight());
         TechButton.setPosition(10, CivTable.getY() - TechButton.getHeight()-5);
@@ -161,7 +160,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         CivTable.add(new Label("Turns: " + game.civInfo.turns+"/400", skin));
 
-        CivStats nextTurnStats = game.civInfo.GetStatsForNextTurn();
+        CivStats nextTurnStats = game.civInfo.getStatsForNextTurn();
 
         CivTable.add(new Label("Gold: " + currentStats.Gold + "(" +(nextTurnStats.Gold>0?"+":"") + nextTurnStats.Gold+")", skin));
 
@@ -181,13 +180,13 @@ public class WorldScreen extends CameraStageBaseScreen {
         nextTurnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (game.civInfo.Tech.CurrentTechnology() == null
-                        && game.civInfo.Cities.size()!=0) {
+                if (game.civInfo.tech.CurrentTechnology() == null
+                        && game.civInfo.cities.size()!=0) {
                     game.setScreen(new TechPickerScreen(game));
                     dispose();
                     return;
                 }
-                game.civInfo.NextTurn();
+                game.civInfo.nextTurn();
                 GameSaver.SaveGame(game,"Autosave");
                 update();
             }
@@ -213,12 +212,12 @@ public class WorldScreen extends CameraStageBaseScreen {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     selectedTile = tileInfo;
-                    if(unitTile != null && group.tileInfo.Unit == null ) {
-                        int distance = HexMath.GetDistance(unitTile.Position, group.tileInfo.Position);
-                        if (distance <= unitTile.Unit.CurrentMovement) {
-                            unitTile.Unit.CurrentMovement -= distance;
-                            group.tileInfo.Unit = unitTile.Unit;
-                            unitTile.Unit = null;
+                    if(unitTile != null && group.tileInfo.unit == null ) {
+                        int distance = HexMath.GetDistance(unitTile.position, group.tileInfo.position);
+                        if (distance <= unitTile.unit.CurrentMovement) {
+                            unitTile.unit.CurrentMovement -= distance;
+                            group.tileInfo.unit = unitTile.unit;
+                            unitTile.unit = null;
                             unitTile = null;
                             selectedTile = group.tileInfo;
                         }
@@ -229,12 +228,12 @@ public class WorldScreen extends CameraStageBaseScreen {
             });
 
 
-            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.Position);
+            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.position);
             int groupSize = 50;
             group.setPosition(stage.getWidth() / 2 + positionalVector.x * 0.8f * groupSize,
                     stage.getHeight() / 2 + positionalVector.y * 0.8f * groupSize);
             group.setSize(groupSize, groupSize);
-            tileGroups.put(tileInfo.Position.toString(), group);
+            tileGroups.put(tileInfo.position.toString(), group);
             allTiles.addActor(group);
             topX = Math.max(topX, group.getX() + groupSize);
             topY = Math.max(topY, group.getY() + groupSize);
@@ -279,7 +278,7 @@ public class WorldScreen extends CameraStageBaseScreen {
     private void updateTileTable() {
         if(selectedTile == null) return;
         TileTable.clearChildren();
-        FullStats stats = selectedTile.GetTileStats();
+        FullStats stats = selectedTile.getTileStats();
         TileTable.pad(20);
         TileTable.columnDefaults(0).padRight(10);
 
@@ -305,11 +304,11 @@ public class WorldScreen extends CameraStageBaseScreen {
             TileTable.row();
         }
 
-        if(selectedTile.Unit!=null){
+        if(selectedTile.unit !=null){
             TextButton moveUnitButton = new TextButton("Move to", skin);
             if(unitTile == selectedTile) moveUnitButton = new TextButton("Stop movement",skin);
             moveUnitButton.getLabel().setFontScale(buttonScale);
-            if(selectedTile.Unit.CurrentMovement == 0){
+            if(selectedTile.unit.CurrentMovement == 0){
                 moveUnitButton.setColor(Color.GRAY);
                 moveUnitButton.setTouchable(Touchable.disabled);
             }
@@ -325,7 +324,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
                     // Set all tiles transparent except those in unit range
                     for(TileGroup TG : tileGroups.linqValues()) TG.setColor(0,0,0,0.3f);
-                    for(Vector2 vector : HexMath.GetVectorsInDistance(unitTile.Position, unitTile.Unit.CurrentMovement)){
+                    for(Vector2 vector : HexMath.GetVectorsInDistance(unitTile.position, unitTile.unit.CurrentMovement)){
                         if(tileGroups.containsKey(vector.toString()))
                             tileGroups.get(vector.toString()).setColor(Color.WHITE);
                         }
@@ -336,25 +335,25 @@ public class WorldScreen extends CameraStageBaseScreen {
             TileTable.add(moveUnitButton).colspan(2)
                     .size(moveUnitButton.getWidth() * buttonScale, moveUnitButton.getHeight() * buttonScale);
 
-            if(selectedTile.Unit.Name.equals("Settler")){
+            if(selectedTile.unit.Name.equals("Settler")){
                 TextButton foundCityButton = new TextButton("Found City", skin);
                 foundCityButton.getLabel().setFontScale(buttonScale);
                 foundCityButton.addListener(new ClickListener(){
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        game.civInfo.addCity(selectedTile.Position);
-                        selectedTile.Unit = null; // Remove settler!
+                        game.civInfo.addCity(selectedTile.position);
+                        selectedTile.unit = null; // Remove settler!
                         update();
                     }
                 });
 
-                if(game.civInfo.tileMap.getTilesInDistance(selectedTile.Position,2).any(new Predicate<TileInfo>() {
+                if(game.civInfo.tileMap.getTilesInDistance(selectedTile.position,2).any(new Predicate<TileInfo>() {
                     @Override
                     public boolean evaluate(TileInfo arg0) {
-                        return arg0.IsCityCenter();
+                        return arg0.isCityCenter();
                     }
                 })){
-                    foundCityButton.setDisabled(true);
+                    foundCityButton.setTouchable(Touchable.disabled);
                     foundCityButton.setColor(Color.GRAY);
                 }
 
@@ -363,9 +362,9 @@ public class WorldScreen extends CameraStageBaseScreen {
                         .size(foundCityButton.getWidth() * buttonScale, foundCityButton.getHeight() * buttonScale);
             }
 
-            if(selectedTile.Unit.Name.equals("Worker")) {
-                String improvementButtonText = selectedTile.ImprovementInProgress == null ?
-                        "Construct\r\nimprovement" : selectedTile.ImprovementInProgress+"\r\nin progress";
+            if(selectedTile.unit.Name.equals("Worker")) {
+                String improvementButtonText = selectedTile.improvementInProgress == null ?
+                        "Construct\r\nimprovement" : selectedTile.improvementInProgress +"\r\nin progress";
                 TextButton improvementButton = new TextButton(improvementButtonText, skin);
                 improvementButton.getLabel().setFontScale(buttonScale);
                 improvementButton.addListener(new ClickListener() {
@@ -375,11 +374,11 @@ public class WorldScreen extends CameraStageBaseScreen {
                         dispose();
                     }
                 });
-                if(selectedTile.Unit.CurrentMovement==0 ||
+                if(selectedTile.unit.CurrentMovement==0 ||
                         !GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
                             @Override
                             public boolean evaluate(TileImprovement arg0) {
-                                return selectedTile.CanBuildImprovement(arg0);
+                                return selectedTile.canBuildImprovement(arg0);
                             }
                         })){
                     improvementButton.setColor(Color.GRAY);
@@ -414,8 +413,8 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         // tiles adjacent to city tiles
         for(TileInfo tileInfo : game.civInfo.tileMap.values())
-            if(game.civInfo.civName.equals(tileInfo.Owner))
-                for(Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileInfo.Position))
+            if(game.civInfo.civName.equals(tileInfo.owner))
+                for(Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileInfo.position))
                     ViewableVectorStrings.add(adjacentLocation.toString());
 
         // Tiles within 2 tiles of units
@@ -423,10 +422,10 @@ public class WorldScreen extends CameraStageBaseScreen {
                 .where(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
-                return arg0.Unit!=null;
+                return arg0.unit !=null;
             }
         }))
-            for(Vector2 vector : HexMath.GetVectorsInDistance(tile.Position,2))
+            for(Vector2 vector : HexMath.GetVectorsInDistance(tile.position,2))
                 ViewableVectorStrings.add(vector.toString());
 
         for(String string : ViewableVectorStrings)
@@ -442,7 +441,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         TileGroup TG = tileGroups.linqValues().first(new Predicate<WorldTileGroup>() {
             @Override
             public boolean evaluate(WorldTileGroup arg0) {
-                return arg0.tileInfo.Position.equals(vector) ;
+                return arg0.tileInfo.position.equals(vector) ;
             }
         });
         float x = TG.getX()-stage.getWidth()/2;

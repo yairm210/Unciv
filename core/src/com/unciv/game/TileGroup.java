@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.Align;
 import com.unciv.civinfo.TileInfo;
 
 public class TileGroup extends Group {
@@ -22,7 +21,7 @@ public class TileGroup extends Group {
     TileGroup(TileInfo tileInfo){
         this.tileInfo = tileInfo;
 
-        String terrainFileName = "TerrainIcons/" + tileInfo.GetLastTerrain().Name.replace(' ','_') + "_(Civ5).png";
+        String terrainFileName = "TerrainIcons/" + tileInfo.getLastTerrain().Name.replace(' ','_') + "_(Civ5).png";
         terrainImage = ImageGetter.getImageByFilename(terrainFileName);
         terrainImage.setSize(50,50);
         addActor(terrainImage);
@@ -43,8 +42,8 @@ public class TileGroup extends Group {
 
     void update() {
 
-        if (tileInfo.HasViewableResource() && resourceImage == null) { // Need to add the resource image!
-            String fileName = "ResourceIcons/" + tileInfo.Resource + "_(Civ5).png";
+        if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
+            String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";
             Image image = ImageGetter.getImageByFilename(fileName);
             image.setSize(20,20);
             image.moveBy(terrainImage.getWidth()-image.getWidth(), 0); // bottom right
@@ -52,25 +51,25 @@ public class TileGroup extends Group {
             addActor(image);
         }
 
-        if (tileInfo.Unit != null && unitImage == null) {
-            unitImage = ImageGetter.getImageByFilename("StatIcons/" + tileInfo.Unit.Name + "_(Civ5).png");
+        if (tileInfo.unit != null && unitImage == null) {
+            unitImage = ImageGetter.getImageByFilename("StatIcons/" + tileInfo.unit.Name + "_(Civ5).png");
             addActor(unitImage);
             unitImage.setSize(20, 20); // not moved - is at bottom left
         }
 
-        if (tileInfo.Unit == null && unitImage != null) {
+        if (tileInfo.unit == null && unitImage != null) {
             unitImage.remove();
             unitImage = null;
         }
 
         if(unitImage!=null){
-            if(tileInfo.Unit.CurrentMovement==0) unitImage.setColor(Color.GRAY);
+            if(tileInfo.unit.CurrentMovement==0) unitImage.setColor(Color.GRAY);
             else unitImage.setColor(Color.WHITE);
         }
 
 
-        if (tileInfo.Improvement != null && improvementImage == null) {
-            improvementImage = ImageGetter.getImageByFilename("ImprovementIcons/" + tileInfo.Improvement.replace(' ','_') + "_(Civ5).png");
+        if (tileInfo.improvement != null && improvementImage == null) {
+            improvementImage = ImageGetter.getImageByFilename("ImprovementIcons/" + tileInfo.improvement.replace(' ','_') + "_(Civ5).png");
             addActor(improvementImage);
             improvementImage.setSize(20, 20);
             improvementImage.moveBy(terrainImage.getWidth()-improvementImage.getWidth(),
@@ -78,7 +77,7 @@ public class TileGroup extends Group {
         }
 
         if(populationImage!=null){
-            if(tileInfo.WorkingCity!=null) populationImage.setColor(Color.WHITE);
+            if(tileInfo.workingCity !=null) populationImage.setColor(Color.WHITE);
             else populationImage.setColor(Color.GRAY);
         }
     }

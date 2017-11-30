@@ -125,3 +125,4 @@ Thumbs.db
 /ios-moe/xcode/native/
 gradle.properties
 SaveFiles/
+android/android-release.apk

@@ -1,13 +1,10 @@
 package com.unciv.game;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Predicate;
 import com.unciv.civinfo.CityInfo;
-import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.TileInfo;
 
 
@@ -27,11 +24,11 @@ public class WorldTileGroup extends TileGroup {
     void update(WorldScreen worldScreen) {
         super.update();
 
-        if(tileInfo.WorkingCity != null && populationImage==null) addPopulationIcon();
-        if(tileInfo.WorkingCity == null && populationImage!=null) removePopulationIcon();
+        if(tileInfo.workingCity != null && populationImage==null) addPopulationIcon();
+        if(tileInfo.workingCity == null && populationImage!=null) removePopulationIcon();
 
 
-        if (tileInfo.Owner != null && hexagon == null) {
+        if (tileInfo.owner != null && hexagon == null) {
             hexagon = ImageGetter.getImageByFilename("TerrainIcons/Hexagon.png");
             float imageScale = terrainImage.getWidth() * 1.3f / hexagon.getWidth();
             hexagon.setScale(imageScale);
@@ -42,8 +39,8 @@ public class WorldTileGroup extends TileGroup {
         }
 
 
-        final CityInfo city = tileInfo.GetCity();
-        if (tileInfo.IsCityCenter()) {
+        final CityInfo city = tileInfo.getCity();
+        if (tileInfo.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = new Container<TextButton>();
                 cityButton.setActor(new TextButton("", worldScreen.skin));
@@ -54,7 +51,7 @@ public class WorldTileGroup extends TileGroup {
                 cityButton.getActor().addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        game.civInfo.CurrentCity = game.civInfo.Cities.indexOf(city);
+                        game.civInfo.currentCity = game.civInfo.cities.indexOf(city);
                         game.setScreen(new CityScreen(game));
                     }
                 });
@@ -63,7 +60,7 @@ public class WorldTileGroup extends TileGroup {
                 setZIndex(getParent().getChildren().size);
             }
 
-            String cityButtonText = city.Name+" ("+city.cityPopulation.Population+")"
+            String cityButtonText = city.name +" ("+city.cityPopulation.Population+")"
                     + "\r\n" + city.cityBuildings.CurrentBuilding + " in "
                     + city.cityBuildings.TurnsToBuilding(city.cityBuildings.CurrentBuilding);
             TextButton button = cityButton.getActor();

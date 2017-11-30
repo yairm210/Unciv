@@ -6,7 +6,7 @@ import com.unciv.models.stats.NamedStats;
 import java.util.Collection;
 
 public class Terrain extends NamedStats implements ICivilopedia {
-    public String Type; // BaseTerrain or TerrainFeature
+    public String Type; // baseTerrain or terrainFeature
 
     /// <summary>
 /// For base terrain - comma-delimited 256 RGB values, e.g. "116,88,62"
