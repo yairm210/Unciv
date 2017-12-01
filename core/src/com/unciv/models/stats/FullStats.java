@@ -2,8 +2,8 @@ package com.unciv.models.stats;
 
 public class FullStats extends CivStats // also used for hex stats, since it's basically the same
 {
-    public int Production = 0;
-    public int Food = 0;
+    public int production = 0;
+    public int food = 0;
 
     public FullStats() {
     }
@@ -13,12 +13,12 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
     }
 
     public void add(FullStats other){
-        Gold+=other.Gold;
-        Science+=other.Science;
-        Happiness+=other.Happiness;
-        Culture+=other.Culture;
-        Food+=other.Food;
-        Production+=other.Production;
+        gold +=other.gold;
+        science +=other.science;
+        happiness +=other.happiness;
+        culture +=other.culture;
+        food +=other.food;
+        production +=other.production;
     }
 
     public String display(int value, String name){
@@ -27,12 +27,12 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
 
     public String toString() {
         StringBuilder valuableParts = new StringBuilder();
-        if (Production != 0) valuableParts.append(display(Production,"Production"));
-        if (Food != 0) valuableParts.append(display(Food,"Food"));
-        if (Gold != 0) valuableParts.append(display(Gold,"Gold"));
-        if (Science != 0) valuableParts.append(display(Science,"Science"));
-        if (Happiness != 0) valuableParts.append(display(Happiness,"Happpiness"));
-        if (Culture != 0) valuableParts.append(display(Culture,"Culture"));
+        if (production != 0) valuableParts.append(display(production,"production"));
+        if (food != 0) valuableParts.append(display(food,"food"));
+        if (gold != 0) valuableParts.append(display(gold,"gold"));
+        if (science != 0) valuableParts.append(display(science,"science"));
+        if (happiness != 0) valuableParts.append(display(happiness,"Happpiness"));
+        if (culture != 0) valuableParts.append(display(culture,"culture"));
         if (valuableParts.length() == 0) return "";
         valuableParts.delete(0,1);
         return valuableParts.toString();

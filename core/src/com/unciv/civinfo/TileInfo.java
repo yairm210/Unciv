@@ -60,7 +60,7 @@ public class TileInfo
 
         if(terrainFeature !=null){
             Terrain terrainFeature = getTerrainFeature();
-            if(terrainFeature.OverrideStats) stats = new FullStats(terrainFeature);
+            if(terrainFeature.overrideStats) stats = new FullStats(terrainFeature);
             else stats.add(terrainFeature);
         }
 
@@ -70,43 +70,43 @@ public class TileInfo
         if (hasViewableResource())
         {
             stats.add(resource);
-            if(resource.Building!=null && City!=null && City.cityBuildings.IsBuilt(resource.Building))
+            if(resource.building !=null && City!=null && City.cityBuildings.IsBuilt(resource.building))
             {
-                stats.add(resource.GetBuilding().ResourceBonusStats);
+                stats.add(resource.GetBuilding().resourceBonusStats);
             }
         }
 
         TileImprovement improvement = getTileImprovement();
         if (improvement != null)
         {
-            if (resource != null && resource.Improvement.equals(improvement.Name))
-                stats.add(resource.ImprovementStats);
+            if (resource != null && resource.improvement.equals(improvement.name))
+                stats.add(resource.improvementStats);
             else stats.add(improvement);
 
-            if (isResearched(improvement.ImprovingTech)) stats.add(improvement.ImprovingTechStats);
+            if (isResearched(improvement.improvingTech)) stats.add(improvement.improvingTechStats);
         }
 
         if (City != null && City.cityLocation.equals(position)) {
-            if (stats.Food < 2) stats.Food = 2;
-            if (stats.Production < 1) stats.Production = 1;
+            if (stats.food < 2) stats.food = 2;
+            if (stats.production < 1) stats.production = 1;
         }
-        if (stats.Production < 0) stats.Production = 0;
+        if (stats.production < 0) stats.production = 0;
         return stats;
     }
 
     public boolean canBuildImprovement(TileImprovement improvement)
     {
         Terrain topTerrain = terrainFeature ==null ? getBaseTerrain() : getTerrainFeature();
-        if (improvement.TechRequired != null && !isResearched(improvement.TechRequired)) return false;
-        if (improvement.TerrainsCanBeBuiltOn.contains(topTerrain.Name)) return true;
-        if (topTerrain.Unbuildable) return false;
-        return resource != null && getTileResource().Improvement.equals(improvement.Name);
+        if (improvement.techRequired != null && !isResearched(improvement.techRequired)) return false;
+        if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true;
+        if (topTerrain.unbuildable) return false;
+        return resource != null && getTileResource().improvement.equals(improvement.name);
     }
 
     public void startWorkingOnImprovement(TileImprovement improvement)
     {
-        improvementInProgress = improvement.Name;
-        turnsToImprovement = improvement.TurnsToBuild;
+        improvementInProgress = improvement.name;
+        turnsToImprovement = improvement.turnsToBuild;
     }
 
     public void stopWorkingOnImprovement()
@@ -142,7 +142,7 @@ public class TileInfo
     }
 
     public boolean hasViewableResource() {
-        return resource != null && (getTileResource().RevealedBy==null || isResearched(getTileResource().RevealedBy));
+        return resource != null && (getTileResource().revealedBy ==null || isResearched(getTileResource().revealedBy));
     }
 
 }

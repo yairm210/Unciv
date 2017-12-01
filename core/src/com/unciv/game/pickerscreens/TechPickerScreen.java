@@ -36,13 +36,13 @@ public class TechPickerScreen extends PickerScreen {
 
             if (SelectedTech != null) {
                 Technology thisTech = GameBasics.Technologies.get(techName);
-                if (techName.equals(SelectedTech.Name)) {
+                if (techName.equals(SelectedTech.name)) {
                     TB.setChecked(true);
                     TB.setColor(TB.getColor().lerp(Color.LIGHT_GRAY, 0.5f));
                 }
 
-                if (thisTech.Prerequisites.contains(SelectedTech.Name)) TB.setText("*" + techName);
-                else if (SelectedTech.Prerequisites.contains(techName)) TB.setText(techName + "*");
+                if (thisTech.prerequisites.contains(SelectedTech.name)) TB.setText("*" + techName);
+                else if (SelectedTech.prerequisites.contains(techName)) TB.setText(techName + "*");
             }
             if (TechsToResearch.contains(techName)) {
                 TB.setText(TB.getText() + " (" + TechsToResearch.indexOf(techName) + ")");
@@ -54,9 +54,9 @@ public class TechPickerScreen extends PickerScreen {
 
     public void selectTechnology(Technology tech) {
         SelectedTech = tech;
-        descriptionLabel.setText(tech.Description);
+        descriptionLabel.setText(tech.description);
 
-        if (civTech.IsResearched(tech.Name)) {
+        if (civTech.IsResearched(tech.name)) {
             rightSideButton.setText("Research");
             rightSideButton.setTouchable(Touchable.disabled);
             rightSideButton.setColor(Color.GRAY);
@@ -67,19 +67,19 @@ public class TechPickerScreen extends PickerScreen {
         rightSideButton.setTouchable(Touchable.enabled);
         rightSideButton.setColor(Color.WHITE);
 
-        if (civTech.CanBeResearched(tech.Name)) {
+        if (civTech.CanBeResearched(tech.name)) {
             TechsToResearch.clear();
-            TechsToResearch.add(tech.Name);
+            TechsToResearch.add(tech.name);
         } else {
             Stack<String> Prerequisites = new Stack<String>();
             ArrayDeque<String> CheckPrerequisites = new ArrayDeque<String>();
-            CheckPrerequisites.add(tech.Name);
+            CheckPrerequisites.add(tech.name);
             while (!CheckPrerequisites.isEmpty()) {
                 String techNameToCheck = CheckPrerequisites.pop();
                 if (civTech.IsResearched(techNameToCheck))
                     continue; //no need to add or check prerequisites
                 Technology techToCheck = GameBasics.Technologies.get(techNameToCheck);
-                for (String str : techToCheck.Prerequisites)
+                for (String str : techToCheck.prerequisites)
                     if (!CheckPrerequisites.contains(str)) CheckPrerequisites.add(str);
                 Prerequisites.add(techNameToCheck);
             }
@@ -100,7 +100,7 @@ public class TechPickerScreen extends PickerScreen {
         }
 
         for (Technology technology : GameBasics.Technologies.linqValues()) {
-            techMatrix[technology.Column.ColumnNumber][technology.Row - 1] = technology;
+            techMatrix[technology.column.columnNumber][technology.row - 1] = technology;
         }
 
 //        Table topTable = new Table();
@@ -112,7 +112,7 @@ public class TechPickerScreen extends PickerScreen {
                 if (tech == null) topTable.add(); // empty cell
                 else {
                     final TextButton TB = new TextButton("", skin);
-                    techNameToButton.put(tech.Name, TB);
+                    techNameToButton.put(tech.name, TB);
                     TB.addListener(new ClickListener() {
                         @Override
                         public void clicked(InputEvent event, float x, float y) {

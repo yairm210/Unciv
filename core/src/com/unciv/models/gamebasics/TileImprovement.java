@@ -8,33 +8,33 @@ import java.util.Collection;
 import java.util.HashMap;
 
 public class TileImprovement extends NamedStats implements ICivilopedia {
-    public Collection<String> TerrainsCanBeBuiltOn = new ArrayList<String>();
-    public String TechRequired;
+    public Collection<String> terrainsCanBeBuiltOn = new ArrayList<String>();
+    public String techRequired;
 
-    public String ImprovingTech;
-    public FullStats ImprovingTechStats;
+    public String improvingTech;
+    public FullStats improvingTechStats;
 
-    public int TurnsToBuild;
+    public int turnsToBuild;
 
     @Override
-    public String GetDescription() {
+    public String getDescription() {
         StringBuilder stringBuilder = new StringBuilder();
         if(!new FullStats(this).toString().isEmpty()) stringBuilder.append(new FullStats(this)+"\r\n");
-        if(!TerrainsCanBeBuiltOn.isEmpty()) stringBuilder.append("Can be built on " + StringUtils.join(", ", TerrainsCanBeBuiltOn));
+        if(!terrainsCanBeBuiltOn.isEmpty()) stringBuilder.append("Can be built on " + StringUtils.join(", ", terrainsCanBeBuiltOn));
 
         HashMap<String,ArrayList<String>> statsToResourceNames = new HashMap<String, ArrayList<String>>();
         for(TileResource tr : GameBasics.TileResources.values()){
-            if(!tr.Improvement.equals(Name)) continue;
-            String statsString = tr.ImprovementStats.toString();
+            if(!tr.improvement.equals(name)) continue;
+            String statsString = tr.improvementStats.toString();
             if(!statsToResourceNames.containsKey(statsString))
                 statsToResourceNames.put(statsString,new ArrayList<String>());
-            statsToResourceNames.get(statsString).add(tr.Name);
+            statsToResourceNames.get(statsString).add(tr.name);
         }
         for(String statsString : statsToResourceNames.keySet()){
             stringBuilder.append("\r\n"+statsString+" for "+ StringUtils.join(", ",statsToResourceNames.get(statsString)));
         }
 
-        if(TechRequired!=null) stringBuilder.append("\r\ntech required: "+TechRequired);
+        if(techRequired !=null) stringBuilder.append("\r\ntech required: "+ techRequired);
 
         return stringBuilder.toString();
     }

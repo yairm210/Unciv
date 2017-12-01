@@ -21,7 +21,7 @@ public class TileGroup extends Group {
     TileGroup(TileInfo tileInfo){
         this.tileInfo = tileInfo;
 
-        String terrainFileName = "TerrainIcons/" + tileInfo.getLastTerrain().Name.replace(' ','_') + "_(Civ5).png";
+        String terrainFileName = "TerrainIcons/" + tileInfo.getLastTerrain().name.replace(' ','_') + "_(Civ5).png";
         terrainImage = ImageGetter.getImageByFilename(terrainFileName);
         terrainImage.setSize(50,50);
         addActor(terrainImage);

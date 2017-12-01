@@ -34,8 +34,8 @@ public class CivilizationInfo {
     public CityInfo getCurrentCity() { return cities.get(currentCity); }
 
     public int turnsToTech(String TechName) {
-        return (int) Math.ceil((float)(GameBasics.Technologies.get(TechName).Cost - tech.ResearchOfTech(TechName))
-                / getStatsForNextTurn().Science);
+        return (int) Math.ceil((float)(GameBasics.Technologies.get(TechName).cost - tech.ResearchOfTech(TechName))
+                / getStatsForNextTurn().science);
     }
 
     public void addCity(Vector2 location){
@@ -47,7 +47,7 @@ public class CivilizationInfo {
     {
         CivStats nextTurnStats = getStatsForNextTurn();
         civStats.add(nextTurnStats);
-        if(cities.size() > 0) tech.NextTurn(nextTurnStats.Science);
+        if(cities.size() > 0) tech.NextTurn(nextTurnStats.science);
 
         for (CityInfo city : cities) city.nextTurn();
 
@@ -58,14 +58,14 @@ public class CivilizationInfo {
 
     public CivStats getStatsForNextTurn() {
         CivStats statsForTurn = new CivStats() {{
-            Happiness = baseHappiness;
+            happiness = baseHappiness;
         }};
         HashSet<String> LuxuryResources = new HashSet<String>();
         for (CityInfo city : cities) {
             statsForTurn.add(city.getCityStats());
             LuxuryResources.addAll(city.getLuxuryResources());
         }
-        statsForTurn.Happiness += LuxuryResources.size() * 5; // 5 happiness for each unique luxury in civ
+        statsForTurn.happiness += LuxuryResources.size() * 5; // 5 happiness for each unique luxury in civ
 
         return statsForTurn;
     }

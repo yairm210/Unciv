@@ -1,38 +1,38 @@
 [
 	{
-		"Name":"City",
-		"Description": "Your cities are the basis of your empire. Each city has a certain amount of population and many tiles, and can work as many tiles as it has population.\nThe center tile of a city is always worked and does not require population.\nNew Cities can be constructed by building a Settler.\nEach city your empire has removes 3 Happiness from the emmpire, and each population - another 1 Happiness, so plan carefully!"
+		name:"City",
+		description: "Your cities are the basis of your empire. Each city has a certain amount of population and many tiles, and can work as many tiles as it has population.\nThe center tile of a city is always worked and does not require population.\nNew Cities can be constructed by building a Settler.\nEach city your empire has removes 3 Happiness from the emmpire, and each population - another 1 Happiness, so plan carefully!"
 	},
 	{
-		"Name":"Tile",
-		"Description": "Tiles are areas where your population can work the land.\nEvery tile has a base terrain, such as Grassland, Tundra etc, and some have terrain overlays, like Hill, Forest etc.\nDepending on the terrain, tiles can hold tile resources.\nEach tile can have one improvement at anny given time."
+		name:"Tile",
+		description: "Tiles are areas where your population can work the land.\nEvery tile has a base terrain, such as Grassland, Tundra etc, and some have terrain overlays, like Hill, Forest etc.\nDepending on the terrain, tiles can hold tile resources.\nEach tile can have one improvement at anny given time."
 	},
 	{
-		"Name":"Population",
-		"Description": "Represents the number of people in your city, who can work the city's tiles.\nPopulation grows by having enough surplus food, and will shrink if there isn't enough food to go around.\nEach Population consumes 2 Food per turn.\nWhen a new population is added, it will automatically work the tile producing the most food.\nYou can manually assign population to tiles by clicking the population icon on a tile - you'll have to remove a population from a tile to assign it somewhere else!"
+		name:"Population",
+		description: "Represents the number of people in your city, who can work the city's tiles.\nPopulation grows by having enough surplus food, and will shrink if there isn't enough food to go around.\nEach Population consumes 2 Food per turn.\nWhen a new population is added, it will automatically work the tile producing the most food.\nYou can manually assign population to tiles by clicking the population icon on a tile - you'll have to remove a population from a tile to assign it somewhere else!"
 	},
 	{
-		"Name":"Basic Resources",
-		"Description": "There are 6 basic resources in Civ: Food, Production, Gold, Science, Happiness and Culture.\rProduction and Food are per individual city, while the other resources are empire-wide.\rBasic resources are produced by working city tiles and by buildings."
+		name:"Basic Resources",
+		description: "There are 6 basic resources in Civ: Food, Production, Gold, Science, Happiness and Culture.\rProduction and Food are per individual city, while the other resources are empire-wide.\rBasic resources are produced by working city tiles and by buildings."
 	},
 	{
-		"Name":"Food",
-		"Description": "A basic resource. Each city can store surplus food.\nWhen the surplus food reaches a certain amount dependant on the population, it is consumed and the city gains another population.\nIf all the suplus food is depleted, and there is a food shortage, the city will lose a population."
+		name:"Food",
+		description: "A basic resource. Each city can store surplus food.\nWhen the surplus food reaches a certain amount dependant on the population, it is consumed and the city gains another population.\nIf all the suplus food is depleted, and there is a food shortage, the city will lose a population."
 	},
 	{
-		"Name":"Production",
-		"Description": "A basic resource. Production is used to build buildings and units in the city.\r\nEach idle population (not working a tile) produces 1 production."
+		name:"Production",
+		description: "A basic resource. Production is used to build buildings and units in the city.\r\nEach idle population (not working a tile) produces 1 production."
 	},
 	{
-		"Name":"Science",
-		"Description": "A basic resource. Represents the scientific advancement of your empire.\nEach Technology requires a certain amount of Science, which increases as the technologies become more advanced.\nEach Population produces 1 Science."
+		name:"Science",
+		description: "A basic resource. Represents the scientific advancement of your empire.\nEach Technology requires a certain amount of Science, which increases as the technologies become more advanced.\nEach Population produces 1 Science."
 	},
 	{
-		"Name":"Gold",
-		"Description": "A basic resource. Represents the wealth of your empire.\nMost buildings have mainainance costs, which require Gold per turn.\nEvery turn you are in a gold deficit, you will lose science points equal to your debt, which can halt your scientific advancement entirely!."
+		name:"Gold",
+		description: "A basic resource. Represents the wealth of your empire.\nMost buildings have mainainance costs, which require Gold per turn.\nEvery turn you are in a gold deficit, you will lose science points equal to your debt, which can halt your scientific advancement entirely!."
 	},
 	{
-		"Name":"Happiness",
-		"Description": "A basic resource.\nEach city decreases your empire's happiness by 3, and each population by 1.\nYou can increase your happiness by buildings, or by working Luxury resources.\nWhen in an unhappy state, your surplus food added is reduced to 1/4, dramatically slowing your city growth.\nWhen enough Happiness is accrued, your empire will enter a Golden Age!"
+		name:"Happiness",
+		description: "A basic resource.\nEach city decreases your empire's happiness by 3, and each population by 1.\nYou can increase your happiness by buildings, or by working Luxury resources.\nWhen in an unhappy state, your surplus food added is reduced to 1/4, dramatically slowing your city growth.\nWhen enough Happiness is accrued, your empire will enter a Golden Age!"
 	}
 ]

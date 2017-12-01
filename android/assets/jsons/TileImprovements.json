@@ -1,81 +1,81 @@
 [	
 	{
-		"Name":"Farm",
-		"TerrainsCanBeBuiltOn":["Plains","Grassland","Desert","Food plains"],
-		"Food":1,
-		"TurnsToBuild":6,
-		"ImprovingTech":"Fertilizer",
-		"ImprovingTechStats":{"Food":1}
+		name:"Farm",
+		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Food plains"],
+		food:1,
+		turnsToBuild:6,
+		improvingTech:"Fertilizer",
+		improvingTechStats:{food:1}
 	},
 	{
-		"Name":"Lumber mill",
-		"TerrainsCanBeBuiltOn":["Forest"],
-		"Production":1,
-		"TurnsToBuild":6,
-		"TechRequired":"Construction",
-		"ImprovingTech":"Scientific Theory",
-		"ImprovingTechStats":{"Production":1}
+		name:"Lumber mill",
+		terrainsCanBeBuiltOn:["Forest"],
+		production:1,
+		turnsToBuild:6,
+		techRequired:"Construction",
+		improvingTech:"Scientific Theory",
+		improvingTechStats:{production:1}
 	},
 	{
-		"Name":"Mine",
-		"TerrainsCanBeBuiltOn":["Hill"],
-		"Production":1,
-		"TurnsToBuild":6,
-		"TechRequired":"Mining",
-		"ImprovingTech":"Chemistry",
-		"ImprovingTechStats":{"Production":1}
+		name:"Mine",
+		terrainsCanBeBuiltOn:["Hill"],
+		production:1,
+		turnsToBuild:6,
+		techRequired:"Mining",
+		improvingTech:"Chemistry",
+		improvingTechStats:{production:1}
 	},
 	{
-		"Name":"Trading post",
-		"TerrainsCanBeBuiltOn":["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Food plains"],
-		"Gold":1,
-		"TurnsToBuild":6,
-		"TechRequired":"Trapping",
-		"ImprovingTech":"Economics",
-		"ImprovingTechStats": {"Gold":1}
+		name:"Trading post",
+		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Food plains"],
+		gold:1,
+		turnsToBuild:6,
+		techRequired:"Trapping",
+		improvingTech:"Economics",
+		improvingTechStats: {gold:1}
 	},
 	{
-		"Name":"Camp",
-		"TurnsToBuild":6,
-		"TechRequired":"Trapping",
-		"ImprovingTech":"Economics",
-		"ImprovingTechStats":{"Gold":1}
+		name:"Camp",
+		turnsToBuild:6,
+		techRequired:"Trapping",
+		improvingTech:"Economics",
+		improvingTechStats:{gold:1}
 	},
 	{
-		"Name":"Oil well",
-		"Production":3,
-		"TurnsToBuild":6
+		name:"Oil well",
+		production:3,
+		turnsToBuild:6
 	},
 	{
-		"Name":"Pasture",
-		"TurnsToBuild":6,
-		"TechRequired":"Animal Husbandry",
-		"ImprovingTech":"Fertilizer",
-		"ImprovingTechStats":{"Food":1}
+		name:"Pasture",
+		turnsToBuild:6,
+		techRequired:"Animal Husbandry",
+		improvingTech:"Fertilizer",
+		improvingTechStats:{food:1}
 	},
 	{
-		"Name":"Plantation",
-		"TurnsToBuild":6,
-		"Gold":1,
-		"TechRequired":"Calendar",
-		"ImprovingTech":"Fertilizer",
-		"ImprovingTechStats":{"Food":1}
+		name:"Plantation",
+		turnsToBuild:6,
+		gold:1,
+		techRequired:"Calendar",
+		improvingTech:"Fertilizer",
+		improvingTechStats:{food:1}
 	},
 	{
-		"Name":"Quarry",
-		"TurnsToBuild":6,
-		"TechRequired":"Masonry",
-		"ImprovingTech":"Chemistry",
-		"ImprovingTechStats":{"Production":1}
+		name:"Quarry",
+		turnsToBuild:6,
+		techRequired:"Masonry",
+		improvingTech:"Chemistry",
+		improvingTechStats:{production:1}
 	},
 	{
-		"Name":"Road",
-		"TurnsToBuild":6,
-		"TechRequired":"The Wheel"
+		name:"Road",
+		turnsToBuild:6,
+		techRequired:"The Wheel"
 	},
 	{
-		"Name":"Railroad",
-		"TurnsToBuild":12,
-		"TechRequired":"Railroad"
+		name:"Railroad",
+		turnsToBuild:12,
+		techRequired:"Railroad"
 	}
 ]

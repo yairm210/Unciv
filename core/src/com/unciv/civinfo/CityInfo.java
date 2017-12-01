@@ -66,7 +66,7 @@ public class CityInfo {
         ArrayList<String> LuxuryResources = new ArrayList<String>();
         for (TileInfo tileInfo : getTilesInRange()) {
             TileResource resource = tileInfo.getTileResource();
-            if (resource != null && resource.ResourceType == ResourceType.Luxury && resource.Improvement.equals(tileInfo.improvement))
+            if (resource != null && resource.resourceType == ResourceType.Luxury && resource.improvement.equals(tileInfo.improvement))
                 LuxuryResources.add(tileInfo.resource);
         }
         return LuxuryResources;
@@ -92,10 +92,10 @@ public class CityInfo {
 
     public FullStats getCityStats() {
         FullStats stats = new FullStats() {{
-            Happiness = -3 - cityPopulation.Population; // -3 happiness per city and -3 per population
+            happiness = -3 - cityPopulation.Population; // -3 happiness per city and -3 per population
         }};
 
-        stats.Science += cityPopulation.Population;
+        stats.science += cityPopulation.Population;
 
         // Working ppl
         for (TileInfo cell : getTilesInRange())
@@ -103,8 +103,8 @@ public class CityInfo {
                 stats.add(cell.getTileStats());
 
         //idle ppl
-        stats.Production += getFreePopulation();
-        stats.Food -= cityPopulation.Population * 2;
+        stats.production += getFreePopulation();
+        stats.food -= cityPopulation.Population * 2;
 
         stats.add(cityBuildings.GetStats());
 
@@ -114,16 +114,16 @@ public class CityInfo {
     void nextTurn() {
         FullStats stats = getCityStats();
 
-        if (cityBuildings.CurrentBuilding.equals(CityBuildings.Settler) && stats.Food > 0) {
-            stats.Production += stats.Food;
-            stats.Food = 0;
+        if (cityBuildings.CurrentBuilding.equals(CityBuildings.Settler) && stats.food > 0) {
+            stats.production += stats.food;
+            stats.food = 0;
         }
 
-        if (cityPopulation.NextTurn(stats.Food)) autoAssignWorker();
+        if (cityPopulation.NextTurn(stats.food)) autoAssignWorker();
 
-        cityBuildings.NextTurn(stats.Production);
+        cityBuildings.NextTurn(stats.production);
 
-        cultureStored+=stats.Culture;
+        cultureStored+=stats.culture;
         if(cultureStored>=getCultureToNextTile()){
             addNewTile();
         }
@@ -165,7 +165,7 @@ public class CityInfo {
             if (tileInfo.workingCity !=null) continue;
             FullStats stats = tileInfo.getTileStats();
 
-            double value = stats.Food + stats.Production * 0.5;
+            double value = stats.food + stats.production * 0.5;
             if (value > maxValue) {
                 maxValue = value;
                 toWork = tileInfo;
@@ -177,12 +177,12 @@ public class CityInfo {
     private double rankTile(TileInfo tile){
         FullStats stats = tile.getTileStats();
         double rank=0;
-        if(stats.Food<2) rank+=stats.Food;
-        else rank += 2 + (stats.Food-2)/2; // 1 point for each food up to 2, from there on half a point
-        rank+=stats.Gold/2;
-        rank+=stats.Production;
-        rank+=stats.Science;
-        rank+=stats.Culture;
+        if(stats.food <2) rank+=stats.food;
+        else rank += 2 + (stats.food -2)/2; // 1 point for each food up to 2, from there on half a point
+        rank+=stats.gold /2;
+        rank+=stats.production;
+        rank+=stats.science;
+        rank+=stats.culture;
         if(tile.improvement ==null) rank+=0.5; // improvement potential!
         return rank;
     }

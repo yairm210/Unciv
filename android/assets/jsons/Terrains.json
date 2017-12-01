@@ -1,82 +1,82 @@
 [	
 	{
-		"Name":"Grassland",
-		"Type":"BaseTerrain",
-		"Food":2,
-		"RGB":"0,255,0"
+		name:"Grassland",
+		type:"BaseTerrain",
+		food:2,
+		rgb:"0,255,0"
 	},
 	{
-		"Name":"Plains",
-		"Type":"BaseTerrain",
-		"Food":1,
-		"Production":1,
-		"RGB":"240,180,135"
+		name:"Plains",
+		type:"BaseTerrain",
+		food:1,
+		production:1,
+		rgb:"240,180,135"
 	},
 	{
-		"Name":"Tundra",
-		"Type":"BaseTerrain",
-		"Food":1,
-		"RGB":"130,137,121"
+		name:"Tundra",
+		type:"BaseTerrain",
+		food:1,
+		rgb:"130,137,121"
 	},
 	{
-		"Name":"Desert",
-		"Type":"BaseTerrain",
-		"RGB":"237,201,175"
+		name:"Desert",
+		type:"BaseTerrain",
+		rgb:"237,201,175"
 	},
 	{
-		"Name":"Lakes",
-		"Type":"BaseTerrain",
-		"Food":1,
-		"Gold":1,
-		"RGB":"104,120,201",
-		"CanHaveOverlay":false
+		name:"Lakes",
+		type:"BaseTerrain",
+		food:1,
+		gold:1,
+		rgb:"104,120,201",
+		canHaveOverlay:false
 	},
 	{
-		"Name":"Hill",
-		"Type":"BaseTerrain",
-		"Production":2,
-		"RGB":"116,88,62"
+		name:"Hill",
+		type:"BaseTerrain",
+		production:2,
+		rgb:"116,88,62"
 	},
 	
 	
 	{
-		"Name":"Forest",
-		"Type":"TerrainFeature",
-		"Production":1,
-		"Food":1,
-		"OverrideStats":true,
-		"Unbuildable":true,
-		"OccursOn":["Tundra","Plains","Grassland"],
-		"RemovalTech": "Mining"
+		name:"Forest",
+		type:"TerrainFeature",
+		production:1,
+		food:1,
+		overrideStats:true,
+		unbuildable:true,
+		occursOn:["Tundra","Plains","Grassland"],
+		removalTech: "Mining"
 	},
 	{
-		"Name":"Jungle",
-		"Type":"TerrainFeature",
-		"Food":2,
-		"OverrideStats":true,
-		"Unbuildable":true,
-		"OccursOn":["Plains","Grassland"],
-		"RemovalTech": "Bronze Working"
+		name:"Jungle",
+		type:"TerrainFeature",
+		food:2,
+		overrideStats:true,
+		unbuildable:true,
+		occursOn:["Plains","Grassland"],
+		removalTech: "Bronze Working"
 	},
 	{
-		"Name":"Marsh",
-		"Type":"TerrainFeature",
-		"Food":-1,
-		"Unbuildable":true,
-		"OccursOn":["Grassland"],
-		"RemovalTech": "Masonry"
+		name:"Marsh",
+		type:"TerrainFeature",
+		food:-1,
+		unbuildable:true,
+		occursOn:["Grassland"],
+		removalTech: "Masonry"
 	},
 	{
-		"Name":"Oasis",
-		"Type":"TerrainFeature",
-		"Food":3,
-		"Unbuildable":true,
-		"OccursOn":["Desert"]
+		name:"Oasis",
+		type:"TerrainFeature",
+		food:3,
+		unbuildable:true,
+		occursOn:["Desert"]
 	},
 	{
-		"Name":"Flood plains",
-		"Type":"TerrainFeature",
-		"Food":2,
-		"OccursOn":["Desert"]
+		name:"Flood plains",
+		type:"TerrainFeature",
+		food:2,
+		occursOn:["Desert"]
 	}
 ]

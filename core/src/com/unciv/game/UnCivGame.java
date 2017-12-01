@@ -73,16 +73,16 @@ public class UnCivGame extends Game {
         TechColumn[] TechColumns = GetFromJson(TechColumn[].class, "Techs");
         GameBasics.Technologies = new LinqHashMap<String, Technology>();
         for(TechColumn techColumn : TechColumns){
-            for(com.unciv.models.gamebasics.Technology tech : techColumn.Techs){
-                tech.Cost = techColumn.TechCost;
-                tech.Column = techColumn;
-                GameBasics.Technologies.put(tech.Name,tech);
+            for(com.unciv.models.gamebasics.Technology tech : techColumn.techs){
+                tech.cost = techColumn.techCost;
+                tech.column = techColumn;
+                GameBasics.Technologies.put(tech.name,tech);
             }
         }
         for(com.unciv.models.gamebasics.Building building : GameBasics.Buildings.values()){
-            if(building.RequiredTech == null) continue;
-            TechColumn column = building.GetRequiredTech().Column;
-            building.Cost = building.IsWonder ? column.WonderCost : column.BuildingCost;
+            if(building.requiredTech == null) continue;
+            TechColumn column = building.GetRequiredTech().column;
+            building.cost = building.isWonder ? column.wonderCost : column.buildingCost;
         }
     }
 

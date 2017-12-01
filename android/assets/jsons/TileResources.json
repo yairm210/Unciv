@@ -1,157 +1,157 @@
 [	
 	{
-		"Name":"Cattle",
-		"ResourceType":"Bonus",
-		"TerrainsCanBeFoundOn":["Grassland"],
-		"Food":1,
-		"Improvement":"Pasture",
-		"ImprovementStats":{"Production":1},
-		"Building":"Stable"
+		name:"Cattle",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Grassland"],
+		food:1,
+		improvement:"Pasture",
+		improvementStats:{production:1},
+		building:"Stable"
 	},
 	{
-		"Name":"Sheep",
-		"ResourceType":"Bonus",
-		"TerrainsCanBeFoundOn":["Plains","Hill"],
-		"Food":1,
-		"Improvement":"Pasture",
-		"ImprovementStats":{"Food":1},
-		"Building":"Stable"
+		name:"Sheep",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Plains","Hill"],
+		food:1,
+		improvement:"Pasture",
+		improvementStats:{food:1},
+		building:"Stable"
 	},
 	{
-		"Name":"Deer",
-		"ResourceType":"Bonus",
-		"TerrainsCanBeFoundOn":["Forest","Tundra"],
-		"Food":1,
-		"Improvement":"Camp",
-		"ImprovementStats":{"Production":1},
-		"Building":"Granary"
+		name:"Deer",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Forest","Tundra"],
+		food:1,
+		improvement:"Camp",
+		improvementStats:{production:1},
+		building:"Granary"
 	},
 	{
-		"Name":"Bananas",
-		"ResourceType":"Bonus",
-		"TerrainsCanBeFoundOn":["Jungle"],
-		"Food":1,
-		"Improvement":"Plantation",
-		"ImprovementStats":{"Food":2,"Production":-1},
-		"Building":"Granary"
+		name:"Bananas",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Jungle"],
+		food:1,
+		improvement:"Plantation",
+		improvementStats:{food:2,production:-1},
+		building:"Granary"
 	},
 	{
-		"Name":"Wheat",
-		"ResourceType":"Bonus",
-		"TerrainsCanBeFoundOn":["Plains","Flood plains","Desert"],
-		"Food":1,
-		"Improvement":"Farm",
-		"ImprovementStats":{"Food":1},
-		"Building":"Granary"
+		name:"Wheat",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Plains","Flood plains","Desert"],
+		food:1,
+		improvement:"Farm",
+		improvementStats:{food:1},
+		building:"Granary"
 	},
 	{
-		"Name":"Stone",
-		"ResourceType":"Bonus",
-		"TerrainsCanBeFoundOn":["Plains","Desert"],
-		"Production":1,
-		"Improvement":"Quarry",
-		"ImprovementStats":{"Production":1},
-		"Building":"Stone Works"
+		name:"Stone",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Plains","Desert"],
+		production:1,
+		improvement:"Quarry",
+		improvementStats:{production:1},
+		building:"Stone Works"
 	},	
 	
 	
 	{
-		"Name":"Horses",
-		"ResourceType":"Strategic",
-		"RevealedBy":"Animal Husbandry",
-		"TerrainsCanBeFoundOn":["Plains","Desert"],
-		"Production":1,
-		"Improvement":"Pasture",
-		"ImprovementStats":{"Production":1},
-		"Building":"Stable"
+		name:"Horses",
+		resourceType:"Strategic",
+		revealedBy:"Animal Husbandry",
+		terrainsCanBeFoundOn:["Plains","Desert"],
+		production:1,
+		improvement:"Pasture",
+		improvementStats:{production:1},
+		building:"Stable"
 	},
 	{
-		"Name":"Iron",
-		"ResourceType":"Strategic",
-		"RevealedBy":"Iron Working",
-		"TerrainsCanBeFoundOn":["Grassland","Plains","Desert","Tundra","Snow","Hill"],
-		"Production":1,
-		"Improvement":"Mine",
-		"ImprovementStats":{"Production":1},
-		"Building":"Forge"
+		name:"Iron",
+		resourceType:"Strategic",
+		revealedBy:"Iron Working",
+		terrainsCanBeFoundOn:["Grassland","Plains","Desert","Tundra","Snow","Hill"],
+		production:1,
+		improvement:"Mine",
+		improvementStats:{production:1},
+		building:"Forge"
 	},
 	{
-		"Name":"Coal",
-		"ResourceType":"Strategic",
-		"RevealedBy":"Industrialization",
-		"TerrainsCanBeFoundOn":["Grassland","Plains","Hill"],
-		"Production":1,
-		"Improvement":"Mine",
-		"ImprovementStats":{"Production":2}
+		name:"Coal",
+		resourceType:"Strategic",
+		revealedBy:"Industrialization",
+		terrainsCanBeFoundOn:["Grassland","Plains","Hill"],
+		production:1,
+		improvement:"Mine",
+		improvementStats:{production:2}
 	},
 	{
-		"Name":"Oil",
-		"ResourceType":"Strategic",
-		"RevealedBy":"Biology",
-		"TerrainsCanBeFoundOn":["Desert","Coast","Tundra","Snow","Marsh"],
-		"Production":1,
-		"Improvement":"Oil well",
-		"ImprovementStats":{"Production":3}
+		name:"Oil",
+		resourceType:"Strategic",
+		revealedBy:"Biology",
+		terrainsCanBeFoundOn:["Desert","Coast","Tundra","Snow","Marsh"],
+		production:1,
+		improvement:"Oil well",
+		improvementStats:{production:3}
 	},
 	{
-		"Name":"Aluminum",
-		"ResourceType":"Strategic",
-		"RevealedBy":"Electricity",
-		"TerrainsCanBeFoundOn":["Plains","Desert","Tundra","Hill"],
-		"Production":1,
-		"Improvement":"Mine",
-		"ImprovementStats":{"Production":2}
+		name:"Aluminum",
+		resourceType:"Strategic",
+		revealedBy:"Electricity",
+		terrainsCanBeFoundOn:["Plains","Desert","Tundra","Hill"],
+		production:1,
+		improvement:"Mine",
+		improvementStats:{production:2}
 	},
 	{
-		"Name":"Uranium",
-		"ResourceType":"Strategic",
-		"RevealedBy":"Atomic Theory",
-		"TerrainsCanBeFoundOn":["Plains","Desert","Tundra","Hill","Snow"],
-		"Production":1,
-		"Improvement":"Mine",
-		"ImprovementStats":{"Production":2}
+		name:"Uranium",
+		resourceType:"Strategic",
+		revealedBy:"Atomic Theory",
+		terrainsCanBeFoundOn:["Plains","Desert","Tundra","Hill","Snow"],
+		production:1,
+		improvement:"Mine",
+		improvementStats:{production:2}
 	},
 	
 	
 	{
-		"Name":"Furs",
-		"ResourceType":"Luxury",
-		"TerrainsCanBeFoundOn":["Forest","Tundra"],
-		"Gold":2,
-		"Improvement":"Camp",
-		"ImprovementStats":{"Gold":1}
+		name:"Furs",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Forest","Tundra"],
+		gold:2,
+		improvement:"Camp",
+		improvementStats:{gold:1}
 	},
 	{
-		"Name":"Cotton",
-		"ResourceType":"Luxury",
-		"TerrainsCanBeFoundOn":["Grassland","Plains","Desert"],
-		"Gold":2,
-		"Improvement":"Plantation",
-		"ImprovementStats":{"Gold":1}
+		name:"Cotton",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Grassland","Plains","Desert"],
+		gold:2,
+		improvement:"Plantation",
+		improvementStats:{gold:1}
 	},
 	{
-		"Name":"Spices",
-		"ResourceType":"Luxury",
-		"TerrainsCanBeFoundOn":["Jungle","Forest"],
-		"Gold":2,
-		"Improvement":"Plantation",
-		"ImprovementStats":{"Gold":1}
+		name:"Spices",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Jungle","Forest"],
+		gold:2,
+		improvement:"Plantation",
+		improvementStats:{gold:1}
 	},
 	{
-		"Name":"Sugar",
-		"ResourceType":"Luxury",
-		"TerrainsCanBeFoundOn":["Plains","Flood plains","Grassland","Marsh"],
-		"Gold":2,
-		"Improvement":"Plantation",
-		"ImprovementStats":{"Gold":1}
+		name:"Sugar",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Plains","Flood plains","Grassland","Marsh"],
+		gold:2,
+		improvement:"Plantation",
+		improvementStats:{gold:1}
 	},
 	{
-		"Name":"Marble",
-		"ResourceType":"Luxury",
-		"TerrainsCanBeFoundOn":["Desert","Plains","Tundra","Hill","Grassland"],
-		"Gold":2,
-		"Improvement":"Quarry",
-		"ImprovementStats":{"Gold":1,"Production":1},
-		"Building":"Stone Works"
+		name:"Marble",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Desert","Plains","Tundra","Hill","Grassland"],
+		gold:2,
+		improvement:"Quarry",
+		improvementStats:{gold:1,production:1},
+		building:"Stone Works"
 	}
 ]

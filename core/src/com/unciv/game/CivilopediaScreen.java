@@ -62,7 +62,7 @@ public class CivilopediaScreen extends CameraStageBaseScreen {
             public void clicked(InputEvent event, float x, float y) {
                 ICivilopedia building = nameList.getSelected();
                 if (building == null) return;
-                label.setText(building.GetDescription());
+                label.setText(building.getDescription());
                 super.clicked(event, x, y);
             }
         };

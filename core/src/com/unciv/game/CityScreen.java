@@ -198,11 +198,11 @@ public class CityScreen extends CameraStageBaseScreen {
         CityStatsTable.row();
 
         HashMap<String,String> CityStatsValues = new LinkedHashMap<String, String>();
-        CityStatsValues.put("Production",stats.Production+"");
-        CityStatsValues.put("Food",stats.Food+" ("+cityInfo.cityPopulation.FoodStored+"/"+cityInfo.cityPopulation.FoodToNextPopulation()+")");
-        CityStatsValues.put("Gold",stats.Gold+"");
-        CityStatsValues.put("Science",stats.Science+"");
-        CityStatsValues.put("Culture",stats.Culture+" ("+cityInfo.cultureStored+"/"+cityInfo.getCultureToNextTile()+")");
+        CityStatsValues.put("production",stats.production +"");
+        CityStatsValues.put("food",stats.food +" ("+cityInfo.cityPopulation.FoodStored+"/"+cityInfo.cityPopulation.FoodToNextPopulation()+")");
+        CityStatsValues.put("gold",stats.gold +"");
+        CityStatsValues.put("science",stats.science +"");
+        CityStatsValues.put("culture",stats.culture +" ("+cityInfo.cultureStored+"/"+cityInfo.getCultureToNextTile()+")");
         CityStatsValues.put("Population",cityInfo.getFreePopulation()+"/"+cityInfo.cityPopulation.Population);
 
         for(String key : CityStatsValues.keySet()){
@@ -250,11 +250,11 @@ public class CityScreen extends CameraStageBaseScreen {
         TileTable.row();
 
         HashMap<String,String> TileStatsValues = new HashMap<String, String>();
-        TileStatsValues.put("Production",stats.Production+"");
-        TileStatsValues.put("Food",stats.Food+"");
-        TileStatsValues.put("Gold",stats.Gold+"");
-        TileStatsValues.put("Science",stats.Science+"");
-        TileStatsValues.put("Culture",stats.Culture+"");
+        TileStatsValues.put("production",stats.production +"");
+        TileStatsValues.put("food",stats.food +"");
+        TileStatsValues.put("gold",stats.gold +"");
+        TileStatsValues.put("science",stats.science +"");
+        TileStatsValues.put("culture",stats.culture +"");
 
         for(String key : TileStatsValues.keySet()){
             if(TileStatsValues.get(key).equals("0")) continue; // this tile gives nothing of this stat, so why even display it?

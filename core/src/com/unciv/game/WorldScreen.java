@@ -162,11 +162,11 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         CivStats nextTurnStats = game.civInfo.getStatsForNextTurn();
 
-        CivTable.add(new Label("Gold: " + currentStats.Gold + "(" +(nextTurnStats.Gold>0?"+":"") + nextTurnStats.Gold+")", skin));
+        CivTable.add(new Label("gold: " + currentStats.gold + "(" +(nextTurnStats.gold >0?"+":"") + nextTurnStats.gold +")", skin));
 
-        CivTable.add(new Label("Science: +" + nextTurnStats.Science, skin));
-        CivTable.add(new Label("Happiness: " + nextTurnStats.Happiness, skin));
-        CivTable.add(new Label("Culture: " + currentStats.Culture + "(+" + nextTurnStats.Culture+")", skin));
+        CivTable.add(new Label("science: +" + nextTurnStats.science, skin));
+        CivTable.add(new Label("happiness: " + nextTurnStats.happiness, skin));
+        CivTable.add(new Label("culture: " + currentStats.culture + "(+" + nextTurnStats.culture +")", skin));
 
         CivTable.pack();
 
@@ -291,11 +291,11 @@ public class WorldScreen extends CameraStageBaseScreen {
         TileTable.row();
 
         HashMap<String,String> TileStatsValues = new HashMap<String, String>();
-        TileStatsValues.put("Production",stats.Production+"");
-        TileStatsValues.put("Food",stats.Food+"");
-        TileStatsValues.put("Gold",stats.Gold+"");
-        TileStatsValues.put("Science",stats.Science+"");
-        TileStatsValues.put("Culture",stats.Culture+"");
+        TileStatsValues.put("production",stats.production +"");
+        TileStatsValues.put("food",stats.food +"");
+        TileStatsValues.put("gold",stats.gold +"");
+        TileStatsValues.put("science",stats.science +"");
+        TileStatsValues.put("culture",stats.culture +"");
 
         for(String key : TileStatsValues.keySet()){
             if(TileStatsValues.get(key).equals("0")) continue; // this tile gives nothing of this stat, so why even display it?

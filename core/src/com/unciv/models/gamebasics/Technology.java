@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 public class Technology
 {
-        public String Name;
+        public String name;
 
-        public String Description;
-        public int Cost;
-        public ArrayList<String> Prerequisites = new ArrayList<String>();
+        public String description;
+        public int cost;
+        public ArrayList<String> prerequisites = new ArrayList<String>();
 
-        public TechColumn Column; // The column that this tech is in the tech tree
-        public int Row;
+        public TechColumn column; // The column that this tech is in the tech tree
+        public int row;
 }

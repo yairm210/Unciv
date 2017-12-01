@@ -8,6 +8,7 @@ import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.Terrain;
+import com.unciv.models.gamebasics.TerrainType;
 import com.unciv.models.gamebasics.TileResource;
 
 public class TileMap{
@@ -29,30 +30,30 @@ public class TileMap{
         final Terrain baseTerrain = Terrains.where(new Predicate<Terrain>() {
             @Override
             public boolean evaluate(Terrain arg0) {
-                return arg0.Type.equals("baseTerrain") && !arg0.Name.equals("Lakes");
+                return arg0.type == TerrainType.BaseTerrain && !arg0.name.equals("Lakes");
             }
         }).getRandom();
-        tileInfo.baseTerrain = baseTerrain.Name;
+        tileInfo.baseTerrain = baseTerrain.name;
 
-        if (baseTerrain.CanHaveOverlay) {
+        if (baseTerrain.canHaveOverlay) {
             if (Math.random() > 0.7f) {
                 Terrain SecondaryTerrain = Terrains.where(new Predicate<Terrain>() {
                     @Override
                     public boolean evaluate(Terrain arg0) {
-                        return arg0.Type.equals("terrainFeature") && arg0.OccursOn.contains(baseTerrain.Name);
+                        return arg0.type == TerrainType.TerrainFeature && arg0.occursOn.contains(baseTerrain.name);
                     }
                 }).getRandom();
-                if (SecondaryTerrain != null) tileInfo.terrainFeature = SecondaryTerrain.Name;
+                if (SecondaryTerrain != null) tileInfo.terrainFeature = SecondaryTerrain.name;
             }
         }
 
         LinqCollection<TileResource> TileResources = GameBasics.TileResources.linqValues();
 
-        // Resources are placed according to terrainFeature, if exists, otherwise according to BaseLayer.
+        // Resources are placed according to TerrainFeature, if exists, otherwise according to BaseLayer.
         TileResources = TileResources.where(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {
-                return arg0.TerrainsCanBeFoundOn.contains(tileInfo.getLastTerrain().Name);
+                return arg0.terrainsCanBeFoundOn.contains(tileInfo.getLastTerrain().name);
             }
         });
 
@@ -64,7 +65,7 @@ public class TileMap{
         } else if (Math.random() < 1 / 10f) {
             resource = GetRandomResource(TileResources, ResourceType.Luxury);
         }
-        if (resource != null) tileInfo.resource = resource.Name;
+        if (resource != null) tileInfo.resource = resource.name;
 
         tiles.put(position.toString(),tileInfo);
     }
@@ -89,7 +90,7 @@ public class TileMap{
         return resources.where(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {
-                return arg0.ResourceType.equals(resourceType);
+                return arg0.resourceType.equals(resourceType);
             }
         }).getRandom();
     }

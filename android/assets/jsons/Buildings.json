@@ -1,194 +1,194 @@
 [
 
 	{
-		"Name":"Worker",
-		"Description": "Can build improvements on tiles", 
-		"Cost":60
+		name:"Worker",
+		description: "Can build improvements on tiles", 
+		cost:60
 	},
 	{
-		"Name":"Settler",
-		"Description": "Founds a new city", 
-		"Cost":106
-	},
-	
-	
-	{
-		"Name":"Palace",
-		"Description": "Indicates that this city is the capital", 
-		"IsWonder":true,
-		"Production":3,
-		"Science":3,
-		"Gold":3,
-		"Culture":1,
-		"Cost":1
-	},
-	{
-		"Name":"Monument",
-		"Description": "Produces culture, enabling border growth", 
-		"Culture":2,
-		"Cost":40,
-		"Maintainance":1
-	},
-	{
-		"Name":"Granary",
-		"Description": "Wheat, bananas and deer produce +1 food.", 
-		"Food":2,
-		"ResourceBonusStats":{"Food":1},
-		"Maintainance":1,
-		"RequiredTech":"Pottery"
-	},
-	{
-		"Name":"Library",
-		"Description": "Adds 1 science for each 2 population in the city.", 
-		"Maintainance":1,
-		"RequiredTech":"Writing"
-	},
-	{
-		"Name":"Great Library",
-		"Description": "Provides a free technology, and a library in the city it is built in",
-		"Science":3,
-		"Culture":1,
-		"IsWonder":true,
-		"ProvidesFreeBuilding": "Library",
-		"FreeTechs":1,
-		"RequiredTech":"Writing"
+		name:"Settler",
+		description: "Founds a new city", 
+		cost:106
 	},
 	
+	
 	{
-		"Name":"Temple",
-		"Description": "",
-		"Culture":3,
-		"RequiredBuilding":"Monument",
-		"Maintainance":2,
-		"RequiredTech":"Philosophy"
+		name:"Palace",
+		description: "Indicates that this city is the capital", 
+		isWonder:true,
+		production:3,
+		science:3,
+		gold:3,
+		culture:1,
+		cost:1
 	},
 	{
-		"Name":"Oracle",
-		"Description": "Provides a free social policy - todo",
-		"Culture":3,
-		"IsWonder":true,
-		"RequiredTech":"Philosophy"
+		name:"Monument",
+		description: "Produces culture, enabling border growth", 
+		culture:2,
+		cost:40,
+		maintainance:1
 	},
 	{
-		"Name":"National College",
-		"Description": "+50% science from this city",
-		"Science":3,
-		"Culture":1,
-		"IsWonder":true,
-		"RequiredBuildingInAllCities":"Library",
-		"RequiredTech":"Philosophy"
+		name:"Granary",
+		description: "Wheat, bananas and deer produce +1 food.", 
+		food:2,
+		resourceBonusStats:{food:1},
+		maintainance:1,
+		requiredTech:"Pottery"
 	},
 	{
-		"Name":"Stable",
-		"Description": "Cattle, sheep and horses produce +1 production.", 
-		"Maintainance":1,
-		"ResourceRequired":true,
-		"ResourceBonusStats":{"Production":1},
-		"RequiredTech":"Horseback Riding"
+		name:"Library",
+		description: "Adds 1 science for each 2 population in the city.", 
+		maintainance:1,
+		requiredTech:"Writing"
 	},
 	{
-		"Name":"Circus Maximus",
-		"Description": "",
-		"Happiness":5,
-		"Culture":1,
-		"IsWonder":true,
-		"RequiredBuildingInAllCities":"Colloseum",
-		"RequiredTech":"Philosophy"
+		name:"Great Library",
+		description: "Provides a free technology, and a library in the city it is built in",
+		science:3,
+		culture:1,
+		isWonder:true,
+		providesFreeBuilding: "Library",
+		freeTechs:1,
+		requiredTech:"Writing"
+	},
+	
+	{
+		name:"Temple",
+		description: "",
+		culture:3,
+		requiredBuilding:"Monument",
+		maintainance:2,
+		requiredTech:"Philosophy"
 	},
 	{
-		"Name":"Hanging Gardens",
-		"Description": "",
-		"Food":10,
-		"Culture":1,
-		"IsWonder":true,
-		"RequiredTech":"Mathematics"
+		name:"Oracle",
+		description: "Provides a free social policy - todo",
+		culture:3,
+		isWonder:true,
+		requiredTech:"Philosophy"
 	},
 	{
-		"Name":"Colloseum",
-		"Description": "", 
-		"Maintainance":1,
-		"Happiness":2,
-		"RequiredTech":"Construction"
+		name:"National College",
+		description: "+50% science from this city",
+		science:3,
+		culture:1,
+		isWonder:true,
+		requiredBuildingInAllCities:"Library",
+		requiredTech:"Philosophy"
 	},
 	{
-		"Name":"Market",
-		"Description": "",
-		"Gold":2,
-		"PercentStatBonus":{"Gold":25},
-		"RequiredTech":"Currency"
+		name:"Stable",
+		description: "Cattle, sheep and horses produce +1 production.", 
+		maintainance:1,
+		resourceRequired:true,
+		resourceBonusStats:{production:1},
+		requiredTech:"Horseback Riding"
+	},
+	{
+		name:"Circus Maximus",
+		description: "",
+		happiness:5,
+		culture:1,
+		isWonder:true,
+		requiredBuildingInAllCities:"Colloseum",
+		requiredTech:"Philosophy"
+	},
+	{
+		name:"Hanging Gardens",
+		description: "",
+		food:10,
+		culture:1,
+		isWonder:true,
+		requiredTech:"Mathematics"
+	},
+	{
+		name:"Colloseum",
+		description: "", 
+		maintainance:1,
+		happiness:2,
+		requiredTech:"Construction"
+	},
+	{
+		name:"Market",
+		description: "",
+		gold:2,
+		percentStatBonus:{gold:25},
+		requiredTech:"Currency"
 	},	
 	{
-		"Name":"Chichen Itza",
-		"Description": "Length of golden ages increased +50%",
-		"Gold":5,
-		"Culture":1,
-		"IsWonder":true,
-		"RequiredTech":"Currency"
+		name:"Chichen Itza",
+		description: "Length of golden ages increased +50%",
+		gold:5,
+		culture:1,
+		isWonder:true,
+		requiredTech:"Currency"
 	},
 	{
-		"Name":"Mint",
-		"Description": "",
-		"Maintainance":0,
-		"ResourceRequired":true,
-		"ResourceBonusStats":{"Gold":2},
-		"RequiredTech":"Currency"
+		name:"Mint",
+		description: "",
+		maintainance:0,
+		resourceRequired:true,
+		resourceBonusStats:{gold:2},
+		requiredTech:"Currency"
 	},
 	{
-		"Name":"Machu Pichu",
-		"Description": "Gold from all trade routes +25%.  Can only be built on cities with mountain in range of 2 tiles - todo",
-		"Gold":5,
-		"Culture":1,
-		"IsWonder":true,
-		"RequiredTech":"Currency"
+		name:"Machu Pichu",
+		description: "Gold from all trade routes +25%.  Can only be built on cities with mountain in range of 2 tiles - todo",
+		gold:5,
+		culture:1,
+		isWonder:true,
+		requiredTech:"Currency"
 	},
 	{
-		"Name":"Aqueduct",
-		"Description": "40% of food is carried over after a new citizen is born - TODO", 
-		"Maintainance":1,
-		"Food":2,
-		"RequiredTech":"Engineering"
+		name:"Aqueduct",
+		description: "40% of food is carried over after a new citizen is born - TODO", 
+		maintainance:1,
+		food:2,
+		requiredTech:"Engineering"
 	},
 	{
-		"Name":"Workshop",
-		"Description": "", 
-		"Maintainance":2,
-		"Production":2,
-		"PercentStatBonus":{"Production":15},
-		"RequiredTech":"Metal Casting"
+		name:"Workshop",
+		description: "", 
+		maintainance:2,
+		production:2,
+		percentStatBonus:{production:15},
+		requiredTech:"Metal Casting"
 	},
 	{
-		"Name":"Forge",
-		"Description": "Iron provides +1 production", 
-		"Maintainance":1,
-		"ResourceRequired":true,
-		"ResourceBonusStats":{"Production":1},
-		"RequiredTech":"Metal Casting"
+		name:"Forge",
+		description: "Iron provides +1 production", 
+		maintainance:1,
+		resourceRequired:true,
+		resourceBonusStats:{production:1},
+		requiredTech:"Metal Casting"
 	},
 	{
-		"Name":"University",
-		"Description": "Jungles provide +2 science", 
-		"Maintainance":2,
-		"PercentStatBonus":{"Science":33},
-		"RequiredBuilding":"Library",
-		"RequiredTech":"Metal Casting"
+		name:"University",
+		description: "Jungles provide +2 science", 
+		maintainance:2,
+		percentStatBonus:{science:33},
+		requiredBuilding:"Library",
+		requiredTech:"Metal Casting"
 	},
 	{
-		"Name":"Oxford University",
-		"Description": "+50% science from this city",
-		"Science":3,
-		"Culture":1,
-		"FreeTechs":1,
-		"IsWonder":true,
-		"RequiredBuildingInAllCities":"University",
-		"RequiredTech":"Education"
+		name:"Oxford University",
+		description: "+50% science from this city",
+		science:3,
+		culture:1,
+		freeTechs:1,
+		isWonder:true,
+		requiredBuildingInAllCities:"University",
+		requiredTech:"Education"
 	},
 	{
-		"Name":"Angkor Wat",
-		"Description": "Cost of aquiring new tiles reduced by 25% - TODO",
-		"Culture":1,
-		"IsWonder":true,
-		"NewTileCostReduction":25,
-		"RequiredTech":"Education"
+		name:"Angkor Wat",
+		description: "Cost of aquiring new tiles reduced by 25% - TODO",
+		culture:1,
+		isWonder:true,
+		newTileCostReduction:25,
+		requiredTech:"Education"
 	}
 	
 ]

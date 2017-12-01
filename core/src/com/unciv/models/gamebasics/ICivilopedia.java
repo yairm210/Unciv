@@ -5,5 +5,5 @@ package com.unciv.models.gamebasics;
  */
 
 public interface ICivilopedia {
-    public String GetDescription();
+    public String getDescription();
 }

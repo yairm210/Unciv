@@ -6,47 +6,35 @@ import com.unciv.models.stats.NamedStats;
 import java.util.Collection;
 
 public class Terrain extends NamedStats implements ICivilopedia {
-    public String Type; // baseTerrain or terrainFeature
+    public TerrainType type; // BaseTerrain or TerrainFeature
 
-    /// <summary>
-/// For base terrain - comma-delimited 256 RGB values, e.g. "116,88,62"
-/// </summary>
-    public String RGB;
-//
-//public Color Color
-//        {
-//        get
-//        {
-//        var rgbStringValues = RGB.Split(',');
-//        var rgbs = rgbStringValues.Select(x => int.Parse(x)).ToArray();
-//        return Extensions.ColorFrom256RGB(rgbs[0], rgbs[1], rgbs[2]);
-//        }
-//        }
+    public boolean overrideStats = false;
 
-    public boolean OverrideStats = false;
+    /***
+     * If true, other terrain layers can come over this one. For mountains, lakes etc. this is false
+     */
 
-    /// <summary>
-/// If true, other terrain layers can come over this one. For mountains, lakes etc. this is false
-/// </summary>
-    public boolean CanHaveOverlay = true;
+    public boolean canHaveOverlay = true;
 
-    /// <summary>
-/// If true, nothing can be built here - not even resource improvements
-/// </summary>
-    public boolean Unbuildable = false;
+    /***
+     *If true, nothing can be built here - not even resource improvements
+     */
+    public boolean unbuildable = false;
 
-    /// <summary>
-/// For terrain features
-/// </summary>
-    public Collection<String> OccursOn;
+    /***
+     * For terrain features
+     */
+    public Collection<String> occursOn;
 
-    /// <summary>
-/// For terrain features - which technology alllows removal of this feature
-/// </summary>
-    public String RemovalTech;
+    /***
+     *For terrain features - which technology alllows removal of this feature
+     */
+    public String removalTech;
+
+    public String rgb;
 
     @Override
-    public String GetDescription() {
+    public String getDescription() {
         return ""+new FullStats(this);
     }
 }

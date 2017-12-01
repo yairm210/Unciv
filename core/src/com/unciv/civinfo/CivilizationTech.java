@@ -32,7 +32,7 @@ public class CivilizationTech{
     }
 
     public boolean CanBeResearched(String TechName) {
-        for (String prerequisiteTech : GameBasics.Technologies.get(TechName).Prerequisites)
+        for (String prerequisiteTech : GameBasics.Technologies.get(TechName).prerequisites)
             if (!IsResearched(prerequisiteTech)) return false;
         return true;
     }
@@ -44,7 +44,7 @@ public class CivilizationTech{
         if (!TechsInProgress.containsKey(CurrentTechnology))
             TechsInProgress.put(CurrentTechnology, 0);
         TechsInProgress.put(CurrentTechnology, TechsInProgress.get(CurrentTechnology) + scienceForNewTurn);
-        if (TechsInProgress.get(CurrentTechnology) >= GetCurrentTechnology().Cost) // We finished it!
+        if (TechsInProgress.get(CurrentTechnology) >= GetCurrentTechnology().cost) // We finished it!
         {
             TechsInProgress.remove(CurrentTechnology);
             TechsResearched.add(CurrentTechnology);

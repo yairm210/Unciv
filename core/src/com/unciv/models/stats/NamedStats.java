@@ -1,13 +1,13 @@
 package com.unciv.models.stats;
 
 public class NamedStats extends FullStats {
-        public String Name;
+        public String name;
 
         public String GetName() {
-                return Name;
+                return name;
         }
 
         public String toString() {
-                return Name;
+                return name;
         }
 }
