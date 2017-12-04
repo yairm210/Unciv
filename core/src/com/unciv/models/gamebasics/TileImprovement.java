@@ -34,7 +34,7 @@ public class TileImprovement extends NamedStats implements ICivilopedia {
             stringBuilder.append("\r\n"+statsString+" for "+ StringUtils.join(", ",statsToResourceNames.get(statsString)));
         }
 
-        if(techRequired !=null) stringBuilder.append("\r\ntech required: "+ techRequired);
+        if(techRequired !=null) stringBuilder.append("\r\nTech required: "+ techRequired);
 
         return stringBuilder.toString();
     }

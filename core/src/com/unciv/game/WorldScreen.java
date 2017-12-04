@@ -217,7 +217,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                     LinqHashMap<TileInfo, Float> distanceToTiles = game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.CurrentMovement);
                     if(distanceToTiles.containsKey(selectedTile)) {
                         unitTile.unit.CurrentMovement -= distanceToTiles.get(selectedTile);
-                        unitTile.unit.CurrentMovement = round(unitTile.unit.CurrentMovement,3);
+                        //unitTile.unit.CurrentMovement = round(unitTile.unit.CurrentMovement,3);
                         if(unitTile.unit.CurrentMovement < 0.1) unitTile.unit.CurrentMovement=0; // silly floats which are "almost zero"
                         group.tileInfo.unit = unitTile.unit;
                         unitTile.unit = null;

@@ -29,12 +29,12 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
 
     public String toString() {
         StringBuilder valuableParts = new StringBuilder();
-        if (production != 0) valuableParts.append(display(production,"production"));
-        if (food != 0) valuableParts.append(display(food,"food"));
-        if (gold != 0) valuableParts.append(display(gold,"gold"));
-        if (science != 0) valuableParts.append(display(science,"science"));
-        if (happiness != 0) valuableParts.append(display(happiness,"Happpiness"));
-        if (culture != 0) valuableParts.append(display(culture,"culture"));
+        if (production != 0) valuableParts.append(display(production,"Production"));
+        if (food != 0) valuableParts.append(display(food,"Food"));
+        if (gold != 0) valuableParts.append(display(gold,"Gold"));
+        if (science != 0) valuableParts.append(display(science,"Science"));
+        if (happiness != 0) valuableParts.append(display(happiness,"Happiness"));
+        if (culture != 0) valuableParts.append(display(culture,"Culture"));
         if (valuableParts.length() == 0) return "";
         valuableParts.delete(0,1);
         return valuableParts.toString();

@@ -45,6 +45,7 @@ public class CityInfo {
         //   (per game XML files) at 6*(t+0.4813)^1.3
         // The second seems to be more based, so I'll go with that
         double a = 6*Math.pow(tilesClaimed+1.4813,1.3);
+        if(CivilizationInfo.current().getCivTags().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
         return (int)Math.round(a);
     }
 
@@ -107,9 +108,12 @@ public class CityInfo {
         stats.production += getFreePopulation();
         stats.food -= cityPopulation.Population * 2;
 
-        if(!isCapital() && isConnectedToCapital()) // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            stats.gold+= CivilizationInfo.current().getCapital().cityPopulation.Population * 0.15
+        if(!isCapital() && isConnectedToCapital()) { // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+            double goldFromTradeRoute = CivilizationInfo.current().getCapital().cityPopulation.Population * 0.15
                     + cityPopulation.Population * 1.1 - 1;
+            if(CivilizationInfo.current().getCivTags().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
+            stats.gold += goldFromTradeRoute;
+        }
 
         stats.add(cityBuildings.getStats());
 

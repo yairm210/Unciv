@@ -107,7 +107,7 @@ public class TechPickerScreen extends PickerScreen {
         for (int i = 0; i < 10; i++) {
             topTable.row().pad(5);
 
-            for (int j = 0; j < 6; j++) {
+            for (int j = 0; j < 8; j++) {
                 final Technology tech = techMatrix[j][i];
                 if (tech == null) topTable.add(); // empty cell
                 else {

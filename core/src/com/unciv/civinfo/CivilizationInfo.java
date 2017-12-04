@@ -4,16 +4,18 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
+import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.stats.CivStats;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 /**
  * Created by LENOVO on 10/18/2017.
  */
 public class CivilizationInfo {
-    public static CivilizationInfo current(){return UnCivGame.Current.civInfo; }
+    public static CivilizationInfo current(){ return UnCivGame.Current.civInfo; }
 
     public CivStats civStats = new CivStats();
     public int baseHappiness = 15;
@@ -78,6 +80,20 @@ public class CivilizationInfo {
         statsForTurn.happiness += LuxuryResources.size() * 5; // 5 happiness for each unique luxury in civ
 
         return statsForTurn;
+    }
+
+    public LinqCollection<String> getCivTags(){
+        return cities.selectMany(new LinqCollection.Func<CityInfo, Collection<? extends String>>() {
+            @Override
+            public Collection<? extends String> GetBy(CityInfo arg0) {
+                return arg0.cityBuildings.getBuiltBuildings().select(new LinqCollection.Func<Building, String>() {
+                    @Override
+                    public String GetBy(Building arg0) {
+                        return arg0.unique;
+                    }
+                });
+            }
+        });
     }
 }
 

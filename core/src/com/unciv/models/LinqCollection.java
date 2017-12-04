@@ -41,6 +41,12 @@ public class LinqCollection <T> extends ArrayList<T> {
         return newCollection;
     }
 
+    public <T2> LinqCollection<T2> selectMany(Func<T,Collection<? extends T2>> multiSelector){
+        LinqCollection<T2> newCollection = new LinqCollection<T2>();
+        for(T t:this) newCollection.addAll(multiSelector.GetBy(t));
+        return newCollection;
+    }
+
     public T getRandom(){
         if(size()==0) return null;
         return get((int) (Math.random() * (size())));
