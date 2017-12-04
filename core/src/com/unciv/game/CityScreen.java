@@ -200,12 +200,12 @@ public class CityScreen extends CameraStageBaseScreen {
         HashMap<String,String> CityStatsValues = new LinkedHashMap<String, String>();
         CityStatsValues.put("production",Math.round(stats.production) +"");
         CityStatsValues.put("food",Math.round(stats.food)
-                +" ("+cityInfo.cityPopulation.FoodStored+"/"+cityInfo.cityPopulation.FoodToNextPopulation()+")");
+                +" ("+cityInfo.foodStored+"/"+cityInfo.foodToNextPopulation()+")");
         CityStatsValues.put("gold",Math.round(stats.gold) +"");
         CityStatsValues.put("science",Math.round(stats.science) +"");
         CityStatsValues.put("culture",Math.round(stats.culture)
                 +" ("+cityInfo.cultureStored+"/"+cityInfo.getCultureToNextTile()+")");
-        CityStatsValues.put("Population",cityInfo.getFreePopulation()+"/"+cityInfo.cityPopulation.Population);
+        CityStatsValues.put("Population",cityInfo.getFreePopulation()+"/"+cityInfo.population);
 
         for(String key : CityStatsValues.keySet()){
             CityStatsTable.add(ImageGetter.getStatIcon(key)).align(Align.right);

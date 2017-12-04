@@ -117,6 +117,15 @@ public class CityInfo {
 
         stats.add(cityBuildings.getStats());
 
+        FullStats statPercentBonuses = cityBuildings.getStatPercentBonuses();
+        stats.food*=1+statPercentBonuses.food/100;
+        stats.gold*=1+statPercentBonuses.gold/100;
+        stats.production*=1+statPercentBonuses.production/100;
+        stats.science*=1+statPercentBonuses.science/100;
+        stats.culture*=1+statPercentBonuses.culture/100;
+
+        stats.gold-=cityBuildings.getMaintainanceCosts(); // this is AFTER the bonus calculation!
+
         return stats;
     }
 
@@ -192,7 +201,9 @@ public class CityInfo {
                 toWork = tileInfo;
             }
         }
-        toWork.workingCity = name;
+
+        if(toWork!=null) // This is when we've run out of tiles!
+            toWork.workingCity = name;
     }
 
     private double rankTile(TileInfo tile){

@@ -133,13 +133,23 @@ public class CityBuildings
     public FullStats getStats()
     {
         FullStats stats = new FullStats();
-        for (String building : builtBuildings)
-        {
-            Building gameBuilding = getGameBuilding(building);
-            stats.add(gameBuilding);
-            //if (gameBuilding.GetFlatBonusStats != null) stats.add(gameBuilding.GetFlatBonusStats(cityInfo));
-            stats.gold -= gameBuilding.maintainance;
-        }
+        for( Building building : getBuiltBuildings()) stats.add(building);
+        return stats;
+    }
+
+    public int getMaintainanceCosts(){
+        int maintainanceTotal = 0;
+        for( Building building : getBuiltBuildings()) maintainanceTotal+=building.maintainance;
+        return maintainanceTotal;
+    }
+
+    public FullStats getStatPercentBonuses(){
+
+        FullStats stats = new FullStats();
+        for(Building building : getBuiltBuildings())
+            if(building.percentStatBonus != null)
+                stats.add(building.percentStatBonus);
+
         return stats;
     }
 

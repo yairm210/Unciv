@@ -40,4 +40,5 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
         return valuableParts.toString();
     }
 
+
 }

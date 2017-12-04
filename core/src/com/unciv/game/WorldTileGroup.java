@@ -60,7 +60,7 @@ public class WorldTileGroup extends TileGroup {
                 setZIndex(getParent().getChildren().size); // so this tile is rendered over neighboing tiles
             }
 
-            String cityButtonText = city.name +" ("+city.cityPopulation.Population+")"
+            String cityButtonText = city.name +" ("+city.population+")"
                     + "\r\n" + city.cityBuildings.currentBuilding + " in "
                     + city.cityBuildings.turnsToBuilding(city.cityBuildings.currentBuilding);
             TextButton button = cityButton.getActor();
