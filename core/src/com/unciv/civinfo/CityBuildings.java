@@ -25,64 +25,64 @@ public class CityBuildings
         cityLocation = cityInfo.cityLocation;
     }
 
-    public LinqCollection<String> BuiltBuildings = new LinqCollection<String>();
-    public HashMap<String, Integer> InProgressBuildings = new HashMap<String, Integer>();
-    public String CurrentBuilding = Worker; // default starting building!
+    public LinqCollection<String> builtBuildings = new LinqCollection<String>();
+    public HashMap<String, Integer> inProgressBuildings = new HashMap<String, Integer>();
+    public String currentBuilding = Worker; // default starting building!
 
-    public CityInfo GetCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).getCity(); }
-    public boolean IsBuilt(String buildingName) { return BuiltBuildings.contains(buildingName); }
-    public boolean IsBuilding(String buildingName) { return CurrentBuilding.equals(buildingName); }
+    public CityInfo getCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).getCity(); }
+    public boolean isBuilt(String buildingName) { return builtBuildings.contains(buildingName); }
+    public boolean isBuilding(String buildingName) { return currentBuilding.equals(buildingName); }
 
-    Building GetGameBuilding(String buildingName) { return GameBasics.Buildings.get(buildingName); }
-    public LinqCollection<Building> GetBuiltBuildings(){ return  BuiltBuildings.select(new LinqCollection.Func<String, Building>() {
+    Building getGameBuilding(String buildingName) { return GameBasics.Buildings.get(buildingName); }
+    public LinqCollection<Building> getBuiltBuildings(){ return  builtBuildings.select(new LinqCollection.Func<String, Building>() {
         @Override
         public Building GetBy(String arg0) {
-            return GetGameBuilding(arg0);
+            return getGameBuilding(arg0);
         }
     }); }
 
-    public void NextTurn(int ProductionProduced)
+    public void nextTurn(int ProductionProduced)
     {
-        if (CurrentBuilding == null) return;
-        if (!InProgressBuildings.containsKey(CurrentBuilding)) InProgressBuildings.put(CurrentBuilding, 0);
-        InProgressBuildings.put(CurrentBuilding, InProgressBuildings.get(CurrentBuilding) + ProductionProduced);
+        if (currentBuilding == null) return;
+        if (!inProgressBuildings.containsKey(currentBuilding)) inProgressBuildings.put(currentBuilding, 0);
+        inProgressBuildings.put(currentBuilding, inProgressBuildings.get(currentBuilding) + ProductionProduced);
 
-        if (InProgressBuildings.get(CurrentBuilding) >= GetGameBuilding(CurrentBuilding).cost)
+        if (inProgressBuildings.get(currentBuilding) >= getGameBuilding(currentBuilding).cost)
         {
-            if (CurrentBuilding.equals(Worker) || CurrentBuilding.equals(Settler))
-                UnCivGame.Current.civInfo.tileMap.get(cityLocation).unit = new Unit(CurrentBuilding,2);
+            if (currentBuilding.equals(Worker) || currentBuilding.equals(Settler))
+                UnCivGame.Current.civInfo.tileMap.get(cityLocation).unit = new Unit(currentBuilding,2);
 
             else
             {
-                BuiltBuildings.add(CurrentBuilding);
-                Building gameBuilding = GetGameBuilding(CurrentBuilding);
-                if (gameBuilding.providesFreeBuilding != null && !BuiltBuildings.contains(gameBuilding.providesFreeBuilding))
-                    BuiltBuildings.add(gameBuilding.providesFreeBuilding);
+                builtBuildings.add(currentBuilding);
+                Building gameBuilding = getGameBuilding(currentBuilding);
+                if (gameBuilding.providesFreeBuilding != null && !builtBuildings.contains(gameBuilding.providesFreeBuilding))
+                    builtBuildings.add(gameBuilding.providesFreeBuilding);
                 if (gameBuilding.freeTechs != 0) UnCivGame.Current.civInfo.tech.FreeTechs += gameBuilding.freeTechs;
             }
 
-            InProgressBuildings.remove(CurrentBuilding);
+            inProgressBuildings.remove(currentBuilding);
 
             // Choose next building to build
-            CurrentBuilding = GetBuildableBuildings().first(new Predicate<String>() {
+            currentBuilding = getBuildableBuildings().first(new Predicate<String>() {
                 @Override
                 public boolean evaluate(String arg0) {
                     if(arg0.equals(Settler) || arg0.equals(Worker)) return false;
-                    return !BuiltBuildings.contains(arg0);
+                    return !builtBuildings.contains(arg0);
                 }
             });
-            if (CurrentBuilding == null) CurrentBuilding = Worker;
+            if (currentBuilding == null) currentBuilding = Worker;
         }
 
     }
 
-    public boolean CanBuild(final Building building)
+    public boolean canBuild(final Building building)
     {
         CivilizationInfo civInfo = UnCivGame.Current.civInfo;
-        if(IsBuilt(building.name)) return false;
+        if(isBuilt(building.name)) return false;
 //        if (building.name.equals("Worker") || building.name.equals("Settler")) return false;
         if(building.resourceRequired) {
-            boolean containsResourceWithImprovement = GetCity().getTilesInRange()
+            boolean containsResourceWithImprovement = getCity().getTilesInRange()
                     .any(new Predicate<TileInfo>() {
                 @Override
                 public boolean evaluate(TileInfo tile) {
@@ -100,27 +100,27 @@ public class CityBuildings
                     @Override
                     public boolean evaluate(CityInfo arg0) {
                         CityBuildings CB = arg0.cityBuildings;
-                        return CB.IsBuilding(building.name) || CB.IsBuilt(building.name);
+                        return CB.isBuilding(building.name) || CB.isBuilt(building.name);
                     }
                 }) ) return false;
-        if (building.requiredBuilding != null && !IsBuilt(building.requiredBuilding)) return false;
+        if (building.requiredBuilding != null && !isBuilt(building.requiredBuilding)) return false;
         if (building.requiredBuildingInAllCities != null ||
                 civInfo.cities.any(new Predicate<CityInfo>() {
                     @Override
                     public boolean evaluate(CityInfo arg0) {
-                        return arg0.cityBuildings.IsBuilt(building.requiredBuildingInAllCities);
+                        return arg0.cityBuildings.isBuilt(building.requiredBuildingInAllCities);
                     }
                 }) ) return false;
 
         return true;
     }
 
-    public com.unciv.models.LinqCollection<String> GetBuildableBuildings()
+    public LinqCollection<String> getBuildableBuildings()
     {
-        return new com.unciv.models.LinqCollection<Building>(GameBasics.Buildings.values())
+        return new LinqCollection<Building>(GameBasics.Buildings.values())
                 .where(new Predicate<Building>() {
             @Override
-            public boolean evaluate(Building arg0) { return CanBuild(arg0); }
+            public boolean evaluate(Building arg0) { return canBuild(arg0); }
         })
                 .select(new com.unciv.models.LinqCollection.Func<Building, String>() {
                     @Override
@@ -130,12 +130,12 @@ public class CityBuildings
                 });
     }
 
-    public FullStats GetStats()
+    public FullStats getStats()
     {
         FullStats stats = new FullStats();
-        for (String building : BuiltBuildings)
+        for (String building : builtBuildings)
         {
-            Building gameBuilding = GetGameBuilding(building);
+            Building gameBuilding = getGameBuilding(building);
             stats.add(gameBuilding);
             //if (gameBuilding.GetFlatBonusStats != null) stats.add(gameBuilding.GetFlatBonusStats(cityInfo));
             stats.gold -= gameBuilding.maintainance;
@@ -143,14 +143,14 @@ public class CityBuildings
         return stats;
     }
 
-    public int TurnsToBuilding(String buildingName)
+    public int turnsToBuilding(String buildingName)
     {
         int workDone = 0;
-        if (InProgressBuildings.containsKey(buildingName)) workDone = InProgressBuildings.get(buildingName);
-        float workLeft = GetGameBuilding(buildingName).cost - workDone; // needs to be float so that we get the cieling properly ;)
+        if (inProgressBuildings.containsKey(buildingName)) workDone = inProgressBuildings.get(buildingName);
+        float workLeft = getGameBuilding(buildingName).cost - workDone; // needs to be float so that we get the cieling properly ;)
 
-        FullStats cityStats = GetCity().getCityStats();
-        int production = cityStats.production;
+        FullStats cityStats = getCity().getCityStats();
+        int production = Math.round(cityStats.production);
         if (buildingName.equals(Settler)) production += cityStats.food;
 
         return (int) Math.ceil(workLeft / production);

@@ -11,6 +11,8 @@ import com.unciv.models.gamebasics.Terrain;
 import com.unciv.models.gamebasics.TerrainType;
 import com.unciv.models.gamebasics.TileResource;
 
+import java.util.function.Function;
+
 public class TileMap{
 
     private  LinqHashMap<String, TileInfo> tiles = new LinqHashMap<String, TileInfo>();
@@ -86,7 +88,7 @@ public class TileMap{
 
     public LinqCollection<TileInfo> values(){return tiles.linqValues();}
 
-    public TileResource GetRandomResource(LinqCollection<TileResource> resources, final ResourceType resourceType) {
+    TileResource GetRandomResource(LinqCollection<TileResource> resources, final ResourceType resourceType) {
         return resources.where(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {
@@ -94,5 +96,6 @@ public class TileMap{
             }
         }).getRandom();
     }
+
 
 }

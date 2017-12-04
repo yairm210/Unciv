@@ -57,18 +57,19 @@ public class WorldTileGroup extends TileGroup {
                 });
 
                 addActor(cityButton);
-                setZIndex(getParent().getChildren().size);
+                setZIndex(getParent().getChildren().size); // so this tile is rendered over neighboing tiles
             }
 
             String cityButtonText = city.name +" ("+city.cityPopulation.Population+")"
-                    + "\r\n" + city.cityBuildings.CurrentBuilding + " in "
-                    + city.cityBuildings.TurnsToBuilding(city.cityBuildings.CurrentBuilding);
+                    + "\r\n" + city.cityBuildings.currentBuilding + " in "
+                    + city.cityBuildings.turnsToBuilding(city.cityBuildings.currentBuilding);
             TextButton button = cityButton.getActor();
             button.setText(cityButtonText);
             button.setSize(button.getPrefWidth(), button.getPrefHeight());
 
             cityButton.setPosition((getWidth() - cityButton.getWidth()) / 2,
                     getHeight() * 0.9f);
+            cityButton.setZIndex(cityButton.getParent().getChildren().size); // so city button is rendere over oeverything else in this tile
         }
 
     }

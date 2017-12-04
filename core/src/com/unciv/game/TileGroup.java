@@ -1,11 +1,16 @@
 package com.unciv.game;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.unciv.civinfo.CivilizationInfo;
+import com.unciv.civinfo.RoadStatus;
 import com.unciv.civinfo.TileInfo;
+import com.unciv.models.LinqCollection;
+import com.unciv.models.LinqHashMap;
 
 public class TileGroup extends Group {
     Image terrainImage;
@@ -13,6 +18,7 @@ public class TileGroup extends Group {
     Image unitImage;
     Image improvementImage;
     Image populationImage;
+    LinqHashMap<String,Image> roadImages = new LinqHashMap<String, Image>();
     Image hexagon;
 
     Container<TextButton> cityButton;
@@ -79,6 +85,29 @@ public class TileGroup extends Group {
         if(populationImage!=null){
             if(tileInfo.workingCity !=null) populationImage.setColor(Color.WHITE);
             else populationImage.setColor(Color.GRAY);
+        }
+
+        if(tileInfo.roadStatus != RoadStatus.None){
+            for (TileInfo neighbor : CivilizationInfo.current().tileMap.getTilesInDistance(tileInfo.position,1)) {
+                if (neighbor == tileInfo || neighbor.roadStatus == RoadStatus.None) continue;
+                if (roadImages.containsKey(neighbor.position.toString())) continue;
+
+                Image image = ImageGetter.getImageByFilename("TerrainIcons/road.png");
+                roadImages.put(neighbor.position.toString(), image);
+
+                Vector2 relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position);
+                Vector2 relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition);
+
+                // This is some crazy voodoo magic so I'll explain.
+                image.moveBy(25, 25); // Move road to center of tile
+                // in addTiles, we set the position of groups by relative world position *0.8*groupSize, where groupSize = 50
+                // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
+                image.moveBy(-relativeWorldPosition.x * 0.8f * 25, -relativeWorldPosition.y * 0.8f * 25);
+                image.setSize(10, 2);
+                addActor(image);
+                image.setOrigin(0, 1); // This is so that the rotation is calculated from the middle of the road and not the edge
+                image.setRotation((float) (180 / Math.PI * Math.atan2(relativeWorldPosition.y, relativeWorldPosition.x)));
+            }
         }
     }
 }

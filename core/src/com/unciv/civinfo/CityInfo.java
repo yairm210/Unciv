@@ -2,6 +2,7 @@ package com.unciv.civinfo;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
+import com.unciv.game.CivilopediaScreen;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.ResourceType;
@@ -21,6 +22,7 @@ public class CityInfo {
 
     private TileMap getTileMap(){return UnCivGame.Current.civInfo.tileMap; }
 
+    public TileInfo getTile(){return getTileMap().get(cityLocation);}
     public LinqCollection<TileInfo> getTilesInRange(){
         return getTileMap().getTilesInDistance(cityLocation,3).where(new Predicate<TileInfo>() {
             @Override
@@ -55,8 +57,9 @@ public class CityInfo {
         for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
             tileInfo.owner = civInfo.civName;
         }
-        civInfo.tileMap.get(cityLocation).workingCity = this.name;
 
+        getTile().workingCity = this.name;
+        getTile().roadStatus = RoadStatus.Railroad;
 
         autoAssignWorker();
         civInfo.cities.add(this);
@@ -91,10 +94,8 @@ public class CityInfo {
     }
 
     public FullStats getCityStats() {
-        FullStats stats = new FullStats() {{
-            happiness = -3 - cityPopulation.Population; // -3 happiness per city and -3 per population
-        }};
-
+        FullStats stats = new FullStats();
+        stats.happiness = -3 - cityPopulation.Population; // -3 happiness per city and -3 per population
         stats.science += cityPopulation.Population;
 
         // Working ppl
@@ -106,7 +107,11 @@ public class CityInfo {
         stats.production += getFreePopulation();
         stats.food -= cityPopulation.Population * 2;
 
-        stats.add(cityBuildings.GetStats());
+        if(!isCapital() && isConnectedToCapital()) // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+            stats.gold+= CivilizationInfo.current().getCapital().cityPopulation.Population * 0.15
+                    + cityPopulation.Population * 1.1 - 1;
+
+        stats.add(cityBuildings.getStats());
 
         return stats;
     }
@@ -114,14 +119,14 @@ public class CityInfo {
     void nextTurn() {
         FullStats stats = getCityStats();
 
-        if (cityBuildings.CurrentBuilding.equals(CityBuildings.Settler) && stats.food > 0) {
+        if (cityBuildings.currentBuilding.equals(CityBuildings.Settler) && stats.food > 0) {
             stats.production += stats.food;
             stats.food = 0;
         }
 
-        if (cityPopulation.NextTurn(stats.food)) autoAssignWorker();
+        if (cityPopulation.NextTurn(Math.round(stats.food))) autoAssignWorker();
 
-        cityBuildings.NextTurn(stats.production);
+        cityBuildings.nextTurn(Math.round(stats.production));
 
         cultureStored+=stats.culture;
         if(cultureStored>=getCultureToNextTile()){
@@ -185,5 +190,26 @@ public class CityInfo {
         rank+=stats.culture;
         if(tile.improvement ==null) rank+=0.5; // improvement potential!
         return rank;
+    }
+
+    private boolean isCapital(){ return CivilizationInfo.current().getCapital() == this; }
+
+    private boolean isConnectedToCapital(){
+        TileInfo capitalTile = CivilizationInfo.current().getCapital().getTile();
+        LinqCollection<TileInfo> tilesReached = new LinqCollection<TileInfo>();
+        LinqCollection<TileInfo> tilesToCheck = new LinqCollection<TileInfo>();
+        tilesToCheck.add(getTile());
+        while(!tilesToCheck.isEmpty()){
+            LinqCollection<TileInfo> newTiles = new LinqCollection<TileInfo>();
+            for(TileInfo tile : tilesToCheck)
+                for (TileInfo maybeNewTile : getTileMap().getTilesInDistance(tile.position,1))
+                    if(!tilesReached.contains(maybeNewTile) && !tilesToCheck.contains(maybeNewTile) && !newTiles.contains(maybeNewTile))
+                        newTiles.add(maybeNewTile);
+
+            if(newTiles.contains(capitalTile)) return true;
+            tilesReached.addAll(tilesToCheck);
+            tilesToCheck = newTiles;
+        }
+        return false;
     }
 }

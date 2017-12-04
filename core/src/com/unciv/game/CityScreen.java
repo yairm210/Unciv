@@ -198,11 +198,13 @@ public class CityScreen extends CameraStageBaseScreen {
         CityStatsTable.row();
 
         HashMap<String,String> CityStatsValues = new LinkedHashMap<String, String>();
-        CityStatsValues.put("production",stats.production +"");
-        CityStatsValues.put("food",stats.food +" ("+cityInfo.cityPopulation.FoodStored+"/"+cityInfo.cityPopulation.FoodToNextPopulation()+")");
-        CityStatsValues.put("gold",stats.gold +"");
-        CityStatsValues.put("science",stats.science +"");
-        CityStatsValues.put("culture",stats.culture +" ("+cityInfo.cultureStored+"/"+cityInfo.getCultureToNextTile()+")");
+        CityStatsValues.put("production",Math.round(stats.production) +"");
+        CityStatsValues.put("food",Math.round(stats.food)
+                +" ("+cityInfo.cityPopulation.FoodStored+"/"+cityInfo.cityPopulation.FoodToNextPopulation()+")");
+        CityStatsValues.put("gold",Math.round(stats.gold) +"");
+        CityStatsValues.put("science",Math.round(stats.science) +"");
+        CityStatsValues.put("culture",Math.round(stats.culture)
+                +" ("+cityInfo.cultureStored+"/"+cityInfo.getCultureToNextTile()+")");
         CityStatsValues.put("Population",cityInfo.getFreePopulation()+"/"+cityInfo.cityPopulation.Population);
 
         for(String key : CityStatsValues.keySet()){
@@ -211,11 +213,11 @@ public class CityScreen extends CameraStageBaseScreen {
             CityStatsTable.row();
         }
 
-        String CurrentBuilding = game.civInfo.getCurrentCity().cityBuildings.CurrentBuilding;
+        String CurrentBuilding = game.civInfo.getCurrentCity().cityBuildings.currentBuilding;
 
         String BuildingText = "Pick building";
         if(CurrentBuilding != null) BuildingText = CurrentBuilding+"\r\n"
-                +cityInfo.cityBuildings.TurnsToBuilding(CurrentBuilding)+" turns";
+                +cityInfo.cityBuildings.turnsToBuilding(CurrentBuilding)+" turns";
         TextButton buildingPickButton = new TextButton(BuildingText,skin);
         buildingPickButton.addListener(new ClickListener(){
             @Override
@@ -249,17 +251,17 @@ public class CityScreen extends CameraStageBaseScreen {
         TileTable.add(new Label(selectedTile.toString(),skin)).colspan(2);
         TileTable.row();
 
-        HashMap<String,String> TileStatsValues = new HashMap<String, String>();
-        TileStatsValues.put("production",stats.production +"");
-        TileStatsValues.put("food",stats.food +"");
-        TileStatsValues.put("gold",stats.gold +"");
-        TileStatsValues.put("science",stats.science +"");
-        TileStatsValues.put("culture",stats.culture +"");
+        HashMap<String,Float> TileStatsValues = new HashMap<String, Float>();
+        TileStatsValues.put("production",stats.production);
+        TileStatsValues.put("food",stats.food);
+        TileStatsValues.put("gold",stats.gold);
+        TileStatsValues.put("science",stats.science);
+        TileStatsValues.put("culture",stats.culture);
 
         for(String key : TileStatsValues.keySet()){
-            if(TileStatsValues.get(key).equals("0")) continue; // this tile gives nothing of this stat, so why even display it?
+            if(TileStatsValues.get(key) == 0) continue; // this tile gives nothing of this stat, so why even display it?
             TileTable.add(ImageGetter.getStatIcon(key)).align(Align.right);
-            TileTable.add(new Label(TileStatsValues.get(key),skin)).align(Align.left);
+            TileTable.add(new Label(Math.round(TileStatsValues.get(key))+"",skin)).align(Align.left);
             TileTable.row();
         }
 

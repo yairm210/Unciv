@@ -8,6 +8,7 @@ import java.util.HashSet;
 
 public class HexMath
 {
+
     public static Vector2 GetVectorForAngle(float angle)
     {
         return new Vector2((float)Math.sin(angle), (float) Math.cos(angle));

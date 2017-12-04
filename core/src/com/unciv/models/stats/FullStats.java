@@ -1,9 +1,11 @@
 package com.unciv.models.stats;
 
+import java.text.DecimalFormat;
+
 public class FullStats extends CivStats // also used for hex stats, since it's basically the same
 {
-    public int production = 0;
-    public int food = 0;
+    public float production = 0;
+    public float food = 0;
 
     public FullStats() {
     }
@@ -21,8 +23,8 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
         production +=other.production;
     }
 
-    public String display(int value, String name){
-        return ", " + (value>0 ? "+" : "") + value + " "+name;
+    public String display(float value, String name){
+        return ", " + (value>0 ? "+" : "") + Math.round(value) + " "+name;
     }
 
     public String toString() {

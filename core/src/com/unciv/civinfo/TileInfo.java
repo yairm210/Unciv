@@ -9,12 +9,6 @@ import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
 
-enum RoadStatus{
-    None,
-    Road,
-    Railroad
-}
-
 public class TileInfo
 {
     public Unit unit;
@@ -70,7 +64,7 @@ public class TileInfo
         if (hasViewableResource())
         {
             stats.add(resource);
-            if(resource.building !=null && City!=null && City.cityBuildings.IsBuilt(resource.building))
+            if(resource.building !=null && City!=null && City.cityBuildings.isBuilt(resource.building))
             {
                 stats.add(resource.GetBuilding().resourceBonusStats);
             }
@@ -100,6 +94,12 @@ public class TileInfo
         if (improvement.techRequired != null && !isResearched(improvement.techRequired)) return false;
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true;
         if (topTerrain.unbuildable) return false;
+
+        if(improvement.name.equals(this.improvement)) return false;
+
+        if(improvement.name.equals("Road") && this.roadStatus== RoadStatus.None) return true;
+        if(improvement.name.equals("Railroad") && this.roadStatus != RoadStatus.Railroad) return true;
+
         return resource != null && getTileResource().improvement.equals(improvement.name);
     }
 
@@ -123,8 +123,8 @@ public class TileInfo
         if(turnsToImprovement == 0)
         {
             if (improvementInProgress.startsWith("Remove")) terrainFeature = null;
-            else if(improvement.equals("Road")) roadStatus = RoadStatus.Road;
-            else if(improvement.equals("Railroad")) roadStatus = RoadStatus.Railroad;
+            else if(improvementInProgress.equals("Road")) roadStatus = RoadStatus.Road;
+            else if(improvementInProgress.equals("Railroad")) roadStatus = RoadStatus.Railroad;
             else improvement = improvementInProgress;
 
             improvementInProgress = null;
@@ -135,6 +135,7 @@ public class TileInfo
         StringBuilder SB = new StringBuilder(this.baseTerrain);
         if (terrainFeature != null) SB.append(",\r\n" + terrainFeature);
         if (hasViewableResource()) SB.append(",\r\n" + resource);
+        if(roadStatus!= RoadStatus.None) SB.append(",\r\n" + roadStatus);
         if (improvement != null) SB.append(",\r\n" + improvement);
         if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
         if(unit !=null) SB.append(",\r\n" + unit.Name+ "("+ unit.CurrentMovement+"/"+ unit.MaxMovement+")");

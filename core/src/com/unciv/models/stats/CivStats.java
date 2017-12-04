@@ -1,10 +1,10 @@
 package com.unciv.models.stats;
 
 public class CivStats {
-    public int gold = 0;
-    public int science = 0;
-    public int culture = 0;
-    public int happiness = 0;
+    public float gold = 0;
+    public float science = 0;
+    public float culture = 0;
+    public float happiness = 0;
 
     public void add(CivStats other) {
         gold += other.gold;

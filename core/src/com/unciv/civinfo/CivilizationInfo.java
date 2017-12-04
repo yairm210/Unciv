@@ -1,6 +1,7 @@
 package com.unciv.civinfo;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.GameBasics;
@@ -40,14 +41,23 @@ public class CivilizationInfo {
 
     public void addCity(Vector2 location){
         CityInfo city = new CityInfo(this,location);
-        if(cities.size()==1) city.cityBuildings.BuiltBuildings.add("Palace");
+        if(cities.size()==1) city.cityBuildings.builtBuildings.add("Palace");
+    }
+
+    public CityInfo getCapital(){
+        return cities.first(new Predicate<CityInfo>() {
+            @Override
+            public boolean evaluate(CityInfo arg0) {
+                return arg0.cityBuildings.isBuilt("Palace");
+            }
+        });
     }
 
     public void nextTurn()//out boolean displayTech)
     {
         CivStats nextTurnStats = getStatsForNextTurn();
         civStats.add(nextTurnStats);
-        if(cities.size() > 0) tech.NextTurn(nextTurnStats.science);
+        if(cities.size() > 0) tech.NextTurn((int)nextTurnStats.science);
 
         for (CityInfo city : cities) city.nextTurn();
 

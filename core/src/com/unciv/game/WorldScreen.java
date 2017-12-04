@@ -162,11 +162,12 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         CivStats nextTurnStats = game.civInfo.getStatsForNextTurn();
 
-        CivTable.add(new Label("gold: " + currentStats.gold + "(" +(nextTurnStats.gold >0?"+":"") + nextTurnStats.gold +")", skin));
+        CivTable.add(new Label("gold: " + Math.round(currentStats.gold)
+                + "(" +(nextTurnStats.gold >0?"+":"") + Math.round(nextTurnStats.gold) +")", skin));
 
-        CivTable.add(new Label("science: +" + nextTurnStats.science, skin));
-        CivTable.add(new Label("happiness: " + nextTurnStats.happiness, skin));
-        CivTable.add(new Label("culture: " + currentStats.culture + "(+" + nextTurnStats.culture +")", skin));
+        CivTable.add(new Label("science: +" + Math.round(nextTurnStats.science), skin));
+        CivTable.add(new Label("happiness: " + Math.round(nextTurnStats.happiness), skin));
+        CivTable.add(new Label("culture: " + Math.round(currentStats.culture) + "(+" + Math.round(nextTurnStats.culture) +")", skin));
 
         CivTable.pack();
 
@@ -290,19 +291,21 @@ public class WorldScreen extends CameraStageBaseScreen {
         TileTable.add(new Label(selectedTile.toString(),skin)).colspan(2);
         TileTable.row();
 
-        HashMap<String,String> TileStatsValues = new HashMap<String, String>();
-        TileStatsValues.put("production",stats.production +"");
-        TileStatsValues.put("food",stats.food +"");
-        TileStatsValues.put("gold",stats.gold +"");
-        TileStatsValues.put("science",stats.science +"");
-        TileStatsValues.put("culture",stats.culture +"");
+
+        HashMap<String,Float> TileStatsValues = new HashMap<String, Float>();
+        TileStatsValues.put("production",stats.production);
+        TileStatsValues.put("food",stats.food);
+        TileStatsValues.put("gold",stats.gold);
+        TileStatsValues.put("science",stats.science);
+        TileStatsValues.put("culture",stats.culture);
 
         for(String key : TileStatsValues.keySet()){
-            if(TileStatsValues.get(key).equals("0")) continue; // this tile gives nothing of this stat, so why even display it?
+            if(TileStatsValues.get(key) == 0) continue; // this tile gives nothing of this stat, so why even display it?
             TileTable.add(ImageGetter.getStatIcon(key)).align(Align.right);
-            TileTable.add(new Label(TileStatsValues.get(key),skin)).align(Align.left);
+            TileTable.add(new Label(Math.round(TileStatsValues.get(key))+"",skin)).align(Align.left);
             TileTable.row();
         }
+
 
         if(selectedTile.unit !=null){
             TextButton moveUnitButton = new TextButton("Move to", skin);
@@ -342,6 +345,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         game.civInfo.addCity(selectedTile.position);
+                        if(unitTile==selectedTile) unitTile = null; // The settler was in the middle of moving and we then founded a city with it
                         selectedTile.unit = null; // Remove settler!
                         update();
                     }
@@ -374,7 +378,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                         dispose();
                     }
                 });
-                if(selectedTile.unit.CurrentMovement==0 ||
+                if(selectedTile.unit.CurrentMovement==0 || selectedTile.isCityCenter() ||
                         !GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
                             @Override
                             public boolean evaluate(TileImprovement arg0) {
