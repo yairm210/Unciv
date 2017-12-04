@@ -3,6 +3,7 @@
 		name:"Grassland",
 		type:"BaseTerrain",
 		food:2,
+		movementCost:1,
 		rgb:"0,255,0"
 	},
 	{
@@ -10,17 +11,20 @@
 		type:"BaseTerrain",
 		food:1,
 		production:1,
+		movementCost:1,
 		rgb:"240,180,135"
 	},
 	{
 		name:"Tundra",
 		type:"BaseTerrain",
 		food:1,
+		movementCost:1,
 		rgb:"130,137,121"
 	},
 	{
 		name:"Desert",
 		type:"BaseTerrain",
+		movementCost:1,
 		rgb:"237,201,175"
 	},
 	{
@@ -35,6 +39,7 @@
 		name:"Hill",
 		type:"BaseTerrain",
 		production:2,
+		movementCost:2,
 		rgb:"116,88,62"
 	},
 	
@@ -44,6 +49,7 @@
 		type:"TerrainFeature",
 		production:1,
 		food:1,
+		movementCost:2,
 		overrideStats:true,
 		unbuildable:true,
 		occursOn:["Tundra","Plains","Grassland"],
@@ -53,6 +59,7 @@
 		name:"Jungle",
 		type:"TerrainFeature",
 		food:2,
+		movementCost:2,
 		overrideStats:true,
 		unbuildable:true,
 		occursOn:["Plains","Grassland"],
@@ -62,6 +69,7 @@
 		name:"Marsh",
 		type:"TerrainFeature",
 		food:-1,
+		movementCost:2,
 		unbuildable:true,
 		occursOn:["Grassland"],
 		removalTech: "Masonry"
@@ -70,6 +78,7 @@
 		name:"Oasis",
 		type:"TerrainFeature",
 		food:3,
+		movementCost:1,
 		unbuildable:true,
 		occursOn:["Desert"]
 	},
@@ -77,6 +86,7 @@
 		name:"Flood plains",
 		type:"TerrainFeature",
 		food:2,
+		movementCost:1,
 		occursOn:["Desert"]
 	}
 ]

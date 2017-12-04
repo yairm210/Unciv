@@ -30,6 +30,7 @@ public class Terrain extends NamedStats implements ICivilopedia {
      *For terrain features - which technology alllows removal of this feature
      */
     public String removalTech;
+    public int movementCost=1;
 
     public String rgb;
 

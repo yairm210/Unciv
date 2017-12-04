@@ -11,8 +11,6 @@ import com.unciv.models.gamebasics.Terrain;
 import com.unciv.models.gamebasics.TerrainType;
 import com.unciv.models.gamebasics.TileResource;
 
-import java.util.function.Function;
-
 public class TileMap{
 
     private  LinqHashMap<String, TileInfo> tiles = new LinqHashMap<String, TileInfo>();
@@ -84,6 +82,33 @@ public class TileMap{
                 tiles.add(get(vector));
 
         return tiles;
+    }
+
+    public LinqHashMap<TileInfo,Float> getDistanceToTiles(Vector2 origin, float maximumMovement){
+        LinqHashMap<TileInfo,Float> distanceToTiles = new LinqHashMap<TileInfo, Float>();
+        distanceToTiles.put(get(origin), 0f);
+        LinqCollection<TileInfo> tilesToCheck = new LinqCollection<TileInfo>();
+        tilesToCheck.add(get(origin));
+        while(!tilesToCheck.isEmpty()){
+            LinqCollection<TileInfo> updatedTiles = new LinqCollection<TileInfo>();
+            for(TileInfo tileToCheck : tilesToCheck)
+                for (TileInfo maybeUpdatedTile : getTilesInDistance(tileToCheck.position,1)) {
+                    float distanceBetweenTiles = maybeUpdatedTile.getLastTerrain().movementCost;
+                    if(tileToCheck.roadStatus!=RoadStatus.None && maybeUpdatedTile.roadStatus!=RoadStatus.None) distanceBetweenTiles = 1/3f;
+                    if(tileToCheck.roadStatus==RoadStatus.Railroad && maybeUpdatedTile.roadStatus==RoadStatus.Railroad) distanceBetweenTiles = 1/10f;
+                    float totalDistanceToTile = distanceToTiles.get(tileToCheck)+ distanceBetweenTiles;
+                    if (!distanceToTiles.containsKey(maybeUpdatedTile) || distanceToTiles.get(maybeUpdatedTile) > totalDistanceToTile) {
+
+                        if(totalDistanceToTile<maximumMovement) updatedTiles.add(maybeUpdatedTile);
+                        else totalDistanceToTile = maximumMovement;
+                        distanceToTiles.put(maybeUpdatedTile,totalDistanceToTile);
+                    }
+
+                }
+
+            tilesToCheck = updatedTiles;
+        }
+        return distanceToTiles;
     }
 
     public LinqCollection<TileInfo> values(){return tiles.linqValues();}

@@ -3,7 +3,7 @@ package com.unciv.civinfo;
 public class Unit{
     public String Name;
     public int MaxMovement;
-    public int CurrentMovement;
+    public float CurrentMovement;
 
     public Unit(){}  // for json parsing, we need to have a default constructor
 

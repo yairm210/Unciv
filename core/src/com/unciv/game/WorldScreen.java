@@ -212,19 +212,21 @@ public class WorldScreen extends CameraStageBaseScreen {
             group.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    selectedTile = tileInfo;
-                    if(unitTile != null && group.tileInfo.unit == null ) {
-                        int distance = HexMath.GetDistance(unitTile.position, group.tileInfo.position);
-                        if (distance <= unitTile.unit.CurrentMovement) {
-                            unitTile.unit.CurrentMovement -= distance;
-                            group.tileInfo.unit = unitTile.unit;
-                            unitTile.unit = null;
-                            unitTile = null;
-                            selectedTile = group.tileInfo;
-                        }
+                selectedTile = tileInfo;
+                if(unitTile != null && group.tileInfo.unit == null ) {
+                    LinqHashMap<TileInfo, Float> distanceToTiles = game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.CurrentMovement);
+                    if(distanceToTiles.containsKey(selectedTile)) {
+                        unitTile.unit.CurrentMovement -= distanceToTiles.get(selectedTile);
+                        unitTile.unit.CurrentMovement = round(unitTile.unit.CurrentMovement,3);
+                        if(unitTile.unit.CurrentMovement < 0.1) unitTile.unit.CurrentMovement=0; // silly floats which are "almost zero"
+                        group.tileInfo.unit = unitTile.unit;
+                        unitTile.unit = null;
+                        unitTile = null;
+                        selectedTile = group.tileInfo;
                     }
+                }
 
-                    update();
+                update();
                 }
             });
 
@@ -327,10 +329,9 @@ public class WorldScreen extends CameraStageBaseScreen {
 
                     // Set all tiles transparent except those in unit range
                     for(TileGroup TG : tileGroups.linqValues()) TG.setColor(0,0,0,0.3f);
-                    for(Vector2 vector : HexMath.GetVectorsInDistance(unitTile.position, unitTile.unit.CurrentMovement)){
-                        if(tileGroups.containsKey(vector.toString()))
-                            tileGroups.get(vector.toString()).setColor(Color.WHITE);
-                        }
+                    for(TileInfo tile : game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.CurrentMovement).keySet()){
+                        tileGroups.get(tile.position.toString()).setColor(Color.WHITE);
+                    }
 
                     update();
                 }
@@ -454,6 +455,10 @@ public class WorldScreen extends CameraStageBaseScreen {
         scrollPane.setScrollX(x);
         scrollPane.setScrollY(y);
         scrollPane.updateVisualScroll();
+    }
+
+    float round(float value, int scale){
+        return (float) (Math.round(value * Math.pow(10, scale)) / Math.pow(10, scale));
     }
 
 }

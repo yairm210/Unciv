@@ -9,6 +9,9 @@ import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+
 public class TileInfo
 {
     public Unit unit;
@@ -138,7 +141,7 @@ public class TileInfo
         if(roadStatus!= RoadStatus.None) SB.append(",\r\n" + roadStatus);
         if (improvement != null) SB.append(",\r\n" + improvement);
         if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
-        if(unit !=null) SB.append(",\r\n" + unit.Name+ "("+ unit.CurrentMovement+"/"+ unit.MaxMovement+")");
+        if(unit !=null) SB.append(",\r\n" + unit.Name+ "("+ new DecimalFormat("0.#").format(unit.CurrentMovement)+"/"+ unit.MaxMovement+")");
         return SB.toString();
     }
 
