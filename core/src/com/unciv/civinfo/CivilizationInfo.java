@@ -82,7 +82,7 @@ public class CivilizationInfo {
         return statsForTurn;
     }
 
-    public LinqCollection<String> getCivTags(){
+    public LinqCollection<String> getBuildingUniques(){
         return cities.selectMany(new LinqCollection.Func<CityInfo, Collection<? extends String>>() {
             @Override
             public Collection<? extends String> GetBy(CityInfo arg0) {
@@ -93,7 +93,7 @@ public class CivilizationInfo {
                     }
                 });
             }
-        });
+        }).unique();
     }
 }
 

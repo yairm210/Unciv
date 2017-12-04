@@ -2,9 +2,9 @@ package com.unciv.civinfo;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.game.CivilopediaScreen;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
+import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
@@ -16,9 +16,10 @@ public class CityInfo {
     public String name;
 
     public CityBuildings cityBuildings;
-    public CityPopulation cityPopulation;
     public int cultureStored;
     private int tilesClaimed;
+    public int population = 1;
+    public int foodStored = 0;
 
     private TileMap getTileMap(){return UnCivGame.Current.civInfo.tileMap; }
 
@@ -45,7 +46,7 @@ public class CityInfo {
         //   (per game XML files) at 6*(t+0.4813)^1.3
         // The second seems to be more based, so I'll go with that
         double a = 6*Math.pow(tilesClaimed+1.4813,1.3);
-        if(CivilizationInfo.current().getCivTags().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
+        if(CivilizationInfo.current().getBuildingUniques().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
         return (int)Math.round(a);
     }
 
@@ -53,7 +54,6 @@ public class CityInfo {
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
         cityBuildings = new CityBuildings(this);
-        cityPopulation = new CityPopulation();
 
         for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
             tileInfo.owner = civInfo.civName;
@@ -87,7 +87,7 @@ public class CityInfo {
     }
 
     public int getFreePopulation() {
-        return cityPopulation.Population - getWorkingPopulation();
+        return population - getWorkingPopulation();
     }
 
     public boolean hasNonWorkingPopulation() {
@@ -96,8 +96,8 @@ public class CityInfo {
 
     public FullStats getCityStats() {
         FullStats stats = new FullStats();
-        stats.happiness = -3 - cityPopulation.Population; // -3 happiness per city and -3 per population
-        stats.science += cityPopulation.Population;
+        stats.happiness = -3 - population; // -3 happiness per city and -3 per population
+        stats.science += population;
 
         // Working ppl
         for (TileInfo cell : getTilesInRange())
@@ -106,12 +106,12 @@ public class CityInfo {
 
         //idle ppl
         stats.production += getFreePopulation();
-        stats.food -= cityPopulation.Population * 2;
+        stats.food -= population * 2;
 
         if(!isCapital() && isConnectedToCapital()) { // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            double goldFromTradeRoute = CivilizationInfo.current().getCapital().cityPopulation.Population * 0.15
-                    + cityPopulation.Population * 1.1 - 1;
-            if(CivilizationInfo.current().getCivTags().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
+            double goldFromTradeRoute = CivilizationInfo.current().getCapital().population * 0.15
+                    + population * 1.1 - 1;
+            if(CivilizationInfo.current().getBuildingUniques().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
             stats.gold += goldFromTradeRoute;
         }
 
@@ -128,7 +128,19 @@ public class CityInfo {
             stats.food = 0;
         }
 
-        if (cityPopulation.NextTurn(Math.round(stats.food))) autoAssignWorker();
+        foodStored += stats.food;
+        if (foodStored < 0) // starvation!
+        {
+            population--;
+            foodStored = 0;
+        }
+        if (foodStored >= foodToNextPopulation()) // growth!
+        {
+            foodStored -= foodToNextPopulation();
+            if(getBuildingUniques().contains("FoodCarriesOver")) foodStored+=0.4f*foodToNextPopulation(); // Aqueduct special
+            population++;
+            autoAssignWorker();
+        }
 
         cityBuildings.nextTurn(Math.round(stats.production));
 
@@ -216,4 +228,20 @@ public class CityInfo {
         }
         return false;
     }
+
+    public int foodToNextPopulation()
+    {
+        // civ v math,civilization.wikia
+        return 15 + 6 * (population - 1) + (int)Math.floor(Math.pow(population - 1, 1.8f));
+    }
+
+    public LinqCollection<String> getBuildingUniques(){
+        return cityBuildings.getBuiltBuildings().select(new LinqCollection.Func<Building, String>() {
+            @Override
+            public String GetBy(Building arg0) {
+                return arg0.unique;
+            }
+        }).unique();
+    }
+
 }

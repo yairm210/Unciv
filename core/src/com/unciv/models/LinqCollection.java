@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Predicate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Created by LENOVO on 10/20/2017.
@@ -50,6 +51,10 @@ public class LinqCollection <T> extends ArrayList<T> {
     public T getRandom(){
         if(size()==0) return null;
         return get((int) (Math.random() * (size())));
+    }
+
+    public LinqCollection<T> unique() {
+        return new LinqCollection<T>(new HashSet<T>(this)); // Shove it all into a hashset and build a new one around the results.
     }
 
     public interface Func<T1, T2> {
