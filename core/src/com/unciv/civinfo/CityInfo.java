@@ -59,23 +59,26 @@ public class CityInfo {
             tileInfo.owner = civInfo.civName;
         }
 
-        getTile().workingCity = this.name;
-        getTile().roadStatus = RoadStatus.Railroad;
+        TileInfo tile = getTile();
+        tile.workingCity = this.name;
+        tile.roadStatus = RoadStatus.Railroad;
+        if("Forest".equals(tile.terrainFeature) || "Jungle".equals(tile.terrainFeature) || "Marsh".equals(tile.terrainFeature))
+            tile.terrainFeature=null;
 
         autoAssignWorker();
         civInfo.cities.add(this);
     }
 
     ArrayList<String> getLuxuryResources() {
-        ArrayList<String> LuxuryResources = new ArrayList<String>();
+        LinqCollection<String> LuxuryResources = new LinqCollection<String>();
         for (TileInfo tileInfo : getTilesInRange()) {
             TileResource resource = tileInfo.getTileResource();
-            if (resource != null && resource.resourceType == ResourceType.Luxury && resource.improvement.equals(tileInfo.improvement))
+            if (resource != null && resource.resourceType == ResourceType.Luxury &&
+                    (resource.improvement.equals(tileInfo.improvement) || tileInfo.isCityCenter()))
                 LuxuryResources.add(tileInfo.resource);
         }
-        return LuxuryResources;
+        return LuxuryResources.unique();
     }
-
 
     private int getWorkingPopulation() {
         return getTilesInRange().count(new Predicate<TileInfo>() {
