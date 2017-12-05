@@ -312,11 +312,11 @@ public class WorldScreen extends CameraStageBaseScreen {
 
 
         HashMap<String,Float> TileStatsValues = new HashMap<String, Float>();
-        TileStatsValues.put("production",stats.production);
-        TileStatsValues.put("food",stats.food);
-        TileStatsValues.put("gold",stats.gold);
-        TileStatsValues.put("science",stats.science);
-        TileStatsValues.put("culture",stats.culture);
+        TileStatsValues.put("Production",stats.production);
+        TileStatsValues.put("Food",stats.food);
+        TileStatsValues.put("Gold",stats.gold);
+        TileStatsValues.put("Science",stats.science);
+        TileStatsValues.put("Culture",stats.culture);
 
         for(String key : TileStatsValues.keySet()){
             if(TileStatsValues.get(key) == 0) continue; // this tile gives nothing of this stat, so why even display it?

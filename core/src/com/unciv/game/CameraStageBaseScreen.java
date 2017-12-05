@@ -10,7 +10,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.HashMap;
 
@@ -24,7 +26,8 @@ public class CameraStageBaseScreen implements Screen {
 
     public CameraStageBaseScreen(UnCivGame game) {
         this.game = game;
-        stage = new Stage(new FitViewport(1000,600),batch);
+        stage = new Stage(new ExtendViewport(1000,600
+        ),batch);// FitViewport(1000,600)
         Gdx.input.setInputProcessor(stage);
     }
 

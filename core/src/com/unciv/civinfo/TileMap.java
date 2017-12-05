@@ -94,7 +94,10 @@ public class TileMap{
             for(TileInfo tileToCheck : tilesToCheck)
                 for (TileInfo maybeUpdatedTile : getTilesInDistance(tileToCheck.position,1)) {
                     float distanceBetweenTiles = maybeUpdatedTile.getLastTerrain().movementCost;
-                    if(tileToCheck.roadStatus!=RoadStatus.None && maybeUpdatedTile.roadStatus!=RoadStatus.None) distanceBetweenTiles = 1/3f;
+                    if(tileToCheck.roadStatus!=RoadStatus.None && maybeUpdatedTile.roadStatus!=RoadStatus.None) {
+                        if(CivilizationInfo.current().tech.isResearched("Machinery")) distanceBetweenTiles = 1 / 3f;
+                        else distanceBetweenTiles = 1/2f;
+                    }
                     if(tileToCheck.roadStatus==RoadStatus.Railroad && maybeUpdatedTile.roadStatus==RoadStatus.Railroad) distanceBetweenTiles = 1/10f;
                     float totalDistanceToTile = distanceToTiles.get(tileToCheck)+ distanceBetweenTiles;
                     if (!distanceToTiles.containsKey(maybeUpdatedTile) || distanceToTiles.get(maybeUpdatedTile) > totalDistanceToTile) {

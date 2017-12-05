@@ -8,11 +8,14 @@ import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.Unit;
 import com.unciv.game.pickerscreens.GameSaver;
 import com.unciv.models.gamebasics.BasicHelp;
+import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Technology;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.TechColumn;
+import com.unciv.models.gamebasics.Terrain;
 import com.unciv.models.gamebasics.TileImprovement;
+import com.unciv.models.gamebasics.TileResource;
 
 public class UnCivGame extends Game {
 
@@ -64,9 +67,9 @@ public class UnCivGame extends Game {
     }
 
     private void SetupGameBasics() {
-        GameBasics.Buildings = CreateHashmap(com.unciv.models.gamebasics.Building.class,GetFromJson(com.unciv.models.gamebasics.Building[].class,"Buildings"));
-        GameBasics.Terrains =  CreateHashmap(com.unciv.models.gamebasics.Terrain.class,GetFromJson(com.unciv.models.gamebasics.Terrain[].class,"Terrains"));
-        GameBasics.TileResources =  CreateHashmap(com.unciv.models.gamebasics.TileResource.class,GetFromJson(com.unciv.models.gamebasics.TileResource[].class,"TileResources"));
+        GameBasics.Buildings = CreateHashmap(Building.class,GetFromJson(Building[].class,"Buildings"));
+        GameBasics.Terrains =  CreateHashmap(Terrain.class,GetFromJson(Terrain[].class,"Terrains"));
+        GameBasics.TileResources =  CreateHashmap(TileResource.class,GetFromJson(TileResource[].class,"TileResources"));
         GameBasics.TileImprovements =  CreateHashmap(TileImprovement.class,GetFromJson(TileImprovement[].class,"TileImprovements"));
         GameBasics.Helps  = CreateHashmap(BasicHelp.class,GetFromJson(BasicHelp[].class,"BasicHelp"));
 
@@ -79,7 +82,7 @@ public class UnCivGame extends Game {
                 GameBasics.Technologies.put(tech.name,tech);
             }
         }
-        for(com.unciv.models.gamebasics.Building building : GameBasics.Buildings.values()){
+        for(Building building : GameBasics.Buildings.values()){
             if(building.requiredTech == null) continue;
             TechColumn column = building.GetRequiredTech().column;
             building.cost = building.isWonder ? column.wonderCost : column.buildingCost;
