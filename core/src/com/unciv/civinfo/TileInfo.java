@@ -10,7 +10,6 @@ import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
 
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 
 public class TileInfo
 {
@@ -49,7 +48,7 @@ public class TileInfo
     public TileImprovement getTileImprovement(){return improvement ==null ? null : GameBasics.TileImprovements.get(improvement);}
 
 
-    private boolean isResearched(String techName) { return UnCivGame.Current.civInfo.tech.IsResearched(techName); }
+    private boolean isResearched(String techName) { return UnCivGame.Current.civInfo.tech.isResearched(techName); }
 
     public FullStats getTileStats()
     {

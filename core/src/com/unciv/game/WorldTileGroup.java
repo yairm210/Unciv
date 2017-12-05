@@ -41,11 +41,12 @@ public class WorldTileGroup extends TileGroup {
 
         final CityInfo city = tileInfo.getCity();
         if (tileInfo.isCityCenter()) {
+            float buttonScale = 0.7f;
             if (cityButton == null) {
                 cityButton = new Container<TextButton>();
                 cityButton.setActor(new TextButton("", worldScreen.skin));
 
-                cityButton.getActor().getLabel().setFontScale(0.7f);
+                cityButton.getActor().getLabel().setFontScale(buttonScale);
 
                 final UnCivGame game = worldScreen.game;
                 cityButton.getActor().addListener(new ClickListener() {
@@ -57,12 +58,12 @@ public class WorldTileGroup extends TileGroup {
                 });
 
                 addActor(cityButton);
-                setZIndex(getParent().getChildren().size); // so this tile is rendered over neighboing tiles
+//                cityButton.setColor(1,1,1,0.9f);
+                setZIndex(getParent().getChildren().size); // so this tile is rendered over neighboring tiles
             }
 
-            String cityButtonText = city.name +" ("+city.population+")"
-                    + "\r\n" + city.cityBuildings.currentBuilding + " in "
-                    + city.cityBuildings.turnsToBuilding(city.cityBuildings.currentBuilding);
+            String cityButtonText = city.name +" ("+city.population+")";
+//                    +" ("+city.population+")" + "\r\n" + city.cityBuildings.getCityProductionText();
             TextButton button = cityButton.getActor();
             button.setText(cityButtonText);
             button.setSize(button.getPrefWidth(), button.getPrefHeight());

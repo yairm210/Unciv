@@ -1,7 +1,7 @@
 [	
 	{
 		name:"Farm",
-		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Food plains"],
+		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Flood plains"],
 		food:1,
 		turnsToBuild:6,
 		improvingTech:"Fertilizer",
@@ -27,7 +27,7 @@
 	},
 	{
 		name:"Trading post",
-		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Food plains"],
+		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Flood plains"],
 		gold:1,
 		turnsToBuild:6,
 		techRequired:"Trapping",
@@ -43,7 +43,6 @@
 	},
 	{
 		name:"Oil well",
-		production:3,
 		turnsToBuild:6
 	},
 	{

@@ -142,6 +142,7 @@ public class CityInfo {
         {
             population--;
             foodStored = 0;
+            CivilizationInfo.current().notifications.add(name+" is starving!");
         }
         if (foodStored >= foodToNextPopulation()) // growth!
         {
@@ -149,13 +150,15 @@ public class CityInfo {
             if(getBuildingUniques().contains("FoodCarriesOver")) foodStored+=0.4f*foodToNextPopulation(); // Aqueduct special
             population++;
             autoAssignWorker();
+            CivilizationInfo.current().notifications.add(name+" has grown!");
         }
 
-        cityBuildings.nextTurn(Math.round(stats.production));
+        cityBuildings.nextTurn(stats);
 
         cultureStored+=stats.culture;
         if(cultureStored>=getCultureToNextTile()){
             addNewTile();
+            CivilizationInfo.current().notifications.add(name+" has expanded its borders!");
         }
     }
 

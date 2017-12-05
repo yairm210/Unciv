@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -16,6 +17,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.GameSaver;
@@ -44,6 +46,7 @@ public class WorldScreen extends CameraStageBaseScreen {
     public LinqHashMap<String,WorldTileGroup> tileGroups = new LinqHashMap<String, WorldTileGroup>();
 
     Table OptionsTable = new Table();
+    Table NotificationsTable = new Table();
 
 
     public WorldScreen(final UnCivGame game) {
@@ -61,7 +64,6 @@ public class WorldScreen extends CameraStageBaseScreen {
         OptionsTable.setBackground(tileTableBackground);
 
         TextureRegionDrawable civBackground = new TextureRegionDrawable(new TextureRegion(new Texture("skin/civTableBackground.png")));
-//        civBackground.tint(new Color(0x0040804f));
         CivTable.setBackground(civBackground.tint(new Color(0x004085bf)));
 
         stage.addActor(CivTable);
@@ -73,6 +75,22 @@ public class WorldScreen extends CameraStageBaseScreen {
         update();
         createNextTurnButton(); // needs civ table to be positioned
         addOptionsTable();
+
+        addNotificationsList();
+    }
+
+    private void addNotificationsList() {
+//        NotificationsTable.setBackground(TileTable.getBackground());
+        stage.addActor(NotificationsTable);
+    }
+    private void updateNotificationsList() {
+        NotificationsTable.clearChildren();
+        for(String notification : game.civInfo.notifications)
+        {
+            NotificationsTable.add(new Label(notification,skin)).pad(5);
+            NotificationsTable.row();
+        }
+        NotificationsTable.pack();
     }
 
     public void update(){
@@ -80,7 +98,9 @@ public class WorldScreen extends CameraStageBaseScreen {
         updateTileTable();
         updateTiles();
         updateCivTable();
+        updateNotificationsList();
     }
+
 
     void addOptionsTable(){
         OptionsTable.setVisible(false);
@@ -105,7 +125,6 @@ public class WorldScreen extends CameraStageBaseScreen {
         });
         OptionsTable.add(StartNewGameButton).pad(10);
         OptionsTable.row();
-
         
         
         TextButton closeButton = new TextButton("Close",skin);
@@ -116,6 +135,7 @@ public class WorldScreen extends CameraStageBaseScreen {
             }
         });
         OptionsTable.add(closeButton).pad(10);
+        OptionsTable.pack(); // Needed to show the background.
         OptionsTable.setPosition(stage.getWidth()/2-OptionsTable.getWidth()/2,
                 stage.getHeight()/2-OptionsTable.getHeight()/2);
         stage.addActor(OptionsTable);
@@ -128,13 +148,12 @@ public class WorldScreen extends CameraStageBaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new TechPickerScreen(game));
-                dispose();
             }
         });
 
-        if (game.civInfo.tech.CurrentTechnology() == null) TechButton.setText("Choose a tech!");
-        else TechButton.setText(game.civInfo.tech.CurrentTechnology() + "\r\n"
-                + game.civInfo.turnsToTech(game.civInfo.tech.CurrentTechnology()) + " turns");
+        if (game.civInfo.tech.currentTechnology() == null) TechButton.setText("Choose a tech!");
+        else TechButton.setText(game.civInfo.tech.currentTechnology() + "\r\n"
+                + game.civInfo.turnsToTech(game.civInfo.tech.currentTechnology()) + " turns");
 
         TechButton.setSize(TechButton.getPrefWidth(), TechButton.getPrefHeight());
         TechButton.setPosition(10, CivTable.getY() - TechButton.getHeight()-5);
@@ -149,8 +168,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         CivilopediaButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                OptionsTable.setVisible(true);
-                dispose();
+                OptionsTable.setVisible(!OptionsTable.isVisible());
             }
         });
 
@@ -181,10 +199,9 @@ public class WorldScreen extends CameraStageBaseScreen {
         nextTurnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (game.civInfo.tech.CurrentTechnology() == null
+                if (game.civInfo.tech.currentTechnology() == null
                         && game.civInfo.cities.size()!=0) {
                     game.setScreen(new TechPickerScreen(game));
-                    dispose();
                     return;
                 }
                 game.civInfo.nextTurn();
@@ -376,7 +393,6 @@ public class WorldScreen extends CameraStageBaseScreen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         game.setScreen(new ImprovementPickerScreen(game, selectedTile));
-                        dispose();
                     }
                 });
                 if(selectedTile.unit.CurrentMovement==0 || selectedTile.isCityCenter() ||

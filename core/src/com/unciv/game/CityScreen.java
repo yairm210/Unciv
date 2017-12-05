@@ -216,8 +216,7 @@ public class CityScreen extends CameraStageBaseScreen {
         String CurrentBuilding = game.civInfo.getCurrentCity().cityBuildings.currentBuilding;
 
         String BuildingText = "Pick building";
-        if(CurrentBuilding != null) BuildingText = CurrentBuilding+"\r\n"
-                +cityInfo.cityBuildings.turnsToBuilding(CurrentBuilding)+" turns";
+        if(CurrentBuilding != null) BuildingText = cityInfo.cityBuildings.getCityProductionText();
         TextButton buildingPickButton = new TextButton(BuildingText,skin);
         buildingPickButton.addListener(new ClickListener(){
             @Override

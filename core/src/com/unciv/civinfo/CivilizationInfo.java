@@ -23,6 +23,7 @@ public class CivilizationInfo {
 
     public CivilizationTech tech = new CivilizationTech();
     public int turns = 1;
+    public LinqCollection<String> notifications = new LinqCollection<String>();
 
     public LinqCollection<CityInfo> cities = new LinqCollection<CityInfo>();
 
@@ -37,7 +38,7 @@ public class CivilizationInfo {
     public CityInfo getCurrentCity() { return cities.get(currentCity); }
 
     public int turnsToTech(String TechName) {
-        return (int) Math.ceil((float)(GameBasics.Technologies.get(TechName).cost - tech.ResearchOfTech(TechName))
+        return (int) Math.ceil((float)(GameBasics.Technologies.get(TechName).cost - tech.researchOfTech(TechName))
                 / getStatsForNextTurn().science);
     }
 
@@ -57,9 +58,10 @@ public class CivilizationInfo {
 
     public void nextTurn()//out boolean displayTech)
     {
+        notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();
         civStats.add(nextTurnStats);
-        if(cities.size() > 0) tech.NextTurn((int)nextTurnStats.science);
+        if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
         for (CityInfo city : cities) city.nextTurn();
 

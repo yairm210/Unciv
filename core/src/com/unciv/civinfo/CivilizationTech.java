@@ -7,48 +7,48 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CivilizationTech{
-    public int FreeTechs = 0;
+    public int freeTechs = 0;
 
-    public ArrayList<String> TechsResearched = new ArrayList<String>();
+    public ArrayList<String> techsResearched = new ArrayList<String>();
     /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
-    public ArrayList<String> TechsToResearch = new ArrayList<String>();
-    public HashMap<String, Integer> TechsInProgress = new HashMap<String, Integer>();
+    public ArrayList<String> techsToResearch = new ArrayList<String>();
+    public HashMap<String, Integer> techsInProgress = new HashMap<String, Integer>();
 
-    public String CurrentTechnology(){if(TechsToResearch.isEmpty()) return null; return TechsToResearch.get(0);}
+    public String currentTechnology(){if(techsToResearch.isEmpty()) return null; return techsToResearch.get(0);}
 
-    public Technology GetCurrentTechnology() {
-        return GameBasics.Technologies.get(CurrentTechnology());
+    public Technology getCurrentTechnology() {
+        return GameBasics.Technologies.get(currentTechnology());
     }
 
-    public int ResearchOfTech(String TechName) {
+    public int researchOfTech(String TechName) {
         int amountResearched = 0;
-        if (TechsInProgress.containsKey(TechName)) amountResearched = TechsInProgress.get(TechName);
+        if (techsInProgress.containsKey(TechName)) amountResearched = techsInProgress.get(TechName);
         return amountResearched;
     }
 
 
-    public boolean IsResearched(String TechName) {
-        return TechsResearched.contains(TechName);
+    public boolean isResearched(String TechName) {
+        return techsResearched.contains(TechName);
     }
 
-    public boolean CanBeResearched(String TechName) {
+    public boolean canBeResearched(String TechName) {
         for (String prerequisiteTech : GameBasics.Technologies.get(TechName).prerequisites)
-            if (!IsResearched(prerequisiteTech)) return false;
+            if (!isResearched(prerequisiteTech)) return false;
         return true;
     }
 
-    public void NextTurn(int scienceForNewTurn){
+    public void nextTurn(int scienceForNewTurn){
+        String CurrentTechnology = currentTechnology();
 
-        String CurrentTechnology = CurrentTechnology();
-
-        if (!TechsInProgress.containsKey(CurrentTechnology))
-            TechsInProgress.put(CurrentTechnology, 0);
-        TechsInProgress.put(CurrentTechnology, TechsInProgress.get(CurrentTechnology) + scienceForNewTurn);
-        if (TechsInProgress.get(CurrentTechnology) >= GetCurrentTechnology().cost) // We finished it!
+        if (!techsInProgress.containsKey(CurrentTechnology))
+            techsInProgress.put(CurrentTechnology, 0);
+        techsInProgress.put(CurrentTechnology, techsInProgress.get(CurrentTechnology) + scienceForNewTurn);
+        if (techsInProgress.get(CurrentTechnology) >= getCurrentTechnology().cost) // We finished it!
         {
-            TechsInProgress.remove(CurrentTechnology);
-            TechsResearched.add(CurrentTechnology);
-            TechsToResearch.remove(CurrentTechnology);
+            techsInProgress.remove(CurrentTechnology);
+            techsToResearch.remove(CurrentTechnology);
+            techsResearched.add(CurrentTechnology);
+            CivilizationInfo.current().notifications.add("Research of "+CurrentTechnology+ " has completed!");
         }
     }
 

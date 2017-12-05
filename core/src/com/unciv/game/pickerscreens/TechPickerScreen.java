@@ -19,16 +19,16 @@ public class TechPickerScreen extends PickerScreen {
     HashMap<String, TextButton> techNameToButton = new HashMap<String, TextButton>();
     Technology SelectedTech;
     com.unciv.civinfo.CivilizationTech civTech = game.civInfo.tech;
-    ArrayList<String> TechsToResearch = new ArrayList<String>(civTech.TechsToResearch);
+    ArrayList<String> TechsToResearch = new ArrayList<String>(civTech.techsToResearch);
 
     public void SetButtonsInfo() {
 
         for (String techName : techNameToButton.keySet()) {
             TextButton TB = techNameToButton.get(techName);
             TB.getStyle().checkedFontColor = Color.BLACK;
-            if (civTech.IsResearched(techName)) TB.setColor(Color.GREEN);
+            if (civTech.isResearched(techName)) TB.setColor(Color.GREEN);
             else if (TechsToResearch.contains(techName)) TB.setColor(Color.BLUE);
-            else if (civTech.CanBeResearched(techName)) TB.setColor(Color.WHITE);
+            else if (civTech.canBeResearched(techName)) TB.setColor(Color.WHITE);
             else TB.setColor(Color.GRAY);
 
             TB.setChecked(false);
@@ -48,7 +48,7 @@ public class TechPickerScreen extends PickerScreen {
                 TB.setText(TB.getText() + " (" + TechsToResearch.indexOf(techName) + ")");
             }
 
-            if(!civTech.IsResearched(techName)) TB.setText(TB.getText() + "\r\n" + game.civInfo.turnsToTech(techName) + " turns");
+            if(!civTech.isResearched(techName)) TB.setText(TB.getText() + "\r\n" + game.civInfo.turnsToTech(techName) + " turns");
         }
     }
 
@@ -56,7 +56,7 @@ public class TechPickerScreen extends PickerScreen {
         SelectedTech = tech;
         descriptionLabel.setText(tech.description);
 
-        if (civTech.IsResearched(tech.name)) {
+        if (civTech.isResearched(tech.name)) {
             rightSideButton.setText("Research");
             rightSideButton.setTouchable(Touchable.disabled);
             rightSideButton.setColor(Color.GRAY);
@@ -67,7 +67,7 @@ public class TechPickerScreen extends PickerScreen {
         rightSideButton.setTouchable(Touchable.enabled);
         rightSideButton.setColor(Color.WHITE);
 
-        if (civTech.CanBeResearched(tech.name)) {
+        if (civTech.canBeResearched(tech.name)) {
             TechsToResearch.clear();
             TechsToResearch.add(tech.name);
         } else {
@@ -76,7 +76,7 @@ public class TechPickerScreen extends PickerScreen {
             CheckPrerequisites.add(tech.name);
             while (!CheckPrerequisites.isEmpty()) {
                 String techNameToCheck = CheckPrerequisites.pop();
-                if (civTech.IsResearched(techNameToCheck))
+                if (civTech.isResearched(techNameToCheck))
                     continue; //no need to add or check prerequisites
                 Technology techToCheck = GameBasics.Technologies.get(techNameToCheck);
                 for (String str : techToCheck.prerequisites)
@@ -131,7 +131,7 @@ public class TechPickerScreen extends PickerScreen {
         rightSideButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                civTech.TechsToResearch = TechsToResearch;
+                civTech.techsToResearch = TechsToResearch;
                 game.setWorldScreen();
                 dispose();
             }

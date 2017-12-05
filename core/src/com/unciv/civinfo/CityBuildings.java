@@ -41,11 +41,13 @@ public class CityBuildings
         }
     }); }
 
-    public void nextTurn(int ProductionProduced)
+    public void nextTurn(FullStats cityStats)
     {
         if (currentBuilding == null) return;
+        if(currentBuilding.equals("Gold")) {cityStats.gold+=cityStats.production/3; return;}
+        if(currentBuilding.equals("Science")) {cityStats.science+=cityStats.production/3; return;}
         if (!inProgressBuildings.containsKey(currentBuilding)) inProgressBuildings.put(currentBuilding, 0);
-        inProgressBuildings.put(currentBuilding, inProgressBuildings.get(currentBuilding) + ProductionProduced);
+        inProgressBuildings.put(currentBuilding, inProgressBuildings.get(currentBuilding) + Math.round(cityStats.production));
 
         if (inProgressBuildings.get(currentBuilding) >= getGameBuilding(currentBuilding).cost)
         {
@@ -58,10 +60,12 @@ public class CityBuildings
                 Building gameBuilding = getGameBuilding(currentBuilding);
                 if (gameBuilding.providesFreeBuilding != null && !builtBuildings.contains(gameBuilding.providesFreeBuilding))
                     builtBuildings.add(gameBuilding.providesFreeBuilding);
-                if (gameBuilding.freeTechs != 0) UnCivGame.Current.civInfo.tech.FreeTechs += gameBuilding.freeTechs;
+                if (gameBuilding.freeTechs != 0) UnCivGame.Current.civInfo.tech.freeTechs += gameBuilding.freeTechs;
             }
 
             inProgressBuildings.remove(currentBuilding);
+
+            CivilizationInfo.current().notifications.add(currentBuilding+" has been built in "+getCity().name);
 
             // Choose next building to build
             currentBuilding = getBuildableBuildings().first(new Predicate<String>() {
@@ -72,6 +76,8 @@ public class CityBuildings
                 }
             });
             if (currentBuilding == null) currentBuilding = Worker;
+
+            CivilizationInfo.current().notifications.add("Work has started on "+currentBuilding);
         }
 
     }
@@ -94,7 +100,7 @@ public class CityBuildings
             if(!containsResourceWithImprovement) return false;
         }
 
-        if (building.requiredTech != null && !civInfo.tech.IsResearched(building.requiredTech)) return false;
+        if (building.requiredTech != null && !civInfo.tech.isResearched(building.requiredTech)) return false;
         if (building.isWonder && civInfo.cities
                 .any(new Predicate<CityInfo>() {
                     @Override
@@ -133,7 +139,8 @@ public class CityBuildings
     public FullStats getStats()
     {
         FullStats stats = new FullStats();
-        for( Building building : getBuiltBuildings()) stats.add(building);
+        for(Building building : getBuiltBuildings()) stats.add(building);
+        if(getCity().getBuildingUniques().contains("SciencePer2Pop")) stats.science+=getCity().population/2; // Library unique
         return stats;
     }
 
@@ -164,5 +171,12 @@ public class CityBuildings
         if (buildingName.equals(Settler)) production += cityStats.food;
 
         return (int) Math.ceil(workLeft / production);
+    }
+
+    public String getCityProductionText(){
+        String result = currentBuilding;
+        if(!result.equals("Science") && !result.equals("Gold"))
+            result+="\r\n"+turnsToBuilding(currentBuilding)+" turns";
+        return result;
     }
 }

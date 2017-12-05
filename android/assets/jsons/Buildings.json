@@ -41,6 +41,7 @@
 		name:"Library",
 		description: "Adds 1 science for each 2 population in the city.", 
 		maintainance:1,
+		unique:"SciencePer2Pop",
 		requiredTech:"Writing"
 	},
 	{
@@ -75,12 +76,13 @@
 		science:3,
 		culture:1,
 		isWonder:true,
+		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"Library",
 		requiredTech:"Philosophy"
 	},
 	{
 		name:"Stable",
-		description: "Cattle, sheep and horses produce +1 production.", 
+		description: "Cattle, sheep and horses provide +1 production.", 
 		maintainance:1,
 		resourceRequired:true,
 		resourceBonusStats:{production:1},
@@ -93,7 +95,7 @@
 		culture:1,
 		isWonder:true,
 		requiredBuildingInAllCities:"Colloseum",
-		requiredTech:"Philosophy"
+		requiredTech:"Horseback Riding"
 	},
 	{
 		name:"Hanging Gardens",
@@ -135,17 +137,19 @@
 	},
 	{
 		name:"Machu Pichu",
-		description: "Gold from all trade routes +25%.  Can only be built on cities with mountain in range of 2 tiles - todo",
+		description: "Gold from all trade routes +25%",
 		gold:5,
 		culture:1,
 		isWonder:true,
+		unique:"TradeRouteGoldIncrease",
 		requiredTech:"Currency"
 	},
 	{
 		name:"Aqueduct",
-		description: "40% of food is carried over after a new citizen is born - TODO", 
+		description: "40% of food is carried over after a new citizen is born", 
 		maintainance:1,
 		food:2,
+		unique:"FoodCarriesOver"
 		requiredTech:"Engineering"
 	},
 	{
@@ -179,15 +183,16 @@
 		culture:1,
 		freeTechs:1,
 		isWonder:true,
+		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"University",
 		requiredTech:"Education"
 	},
 	{
 		name:"Angkor Wat",
-		description: "Cost of aquiring new tiles reduced by 25% - TODO",
+		description: "Cost of aquiring new tiles reduced by 25%",
 		culture:1,
 		isWonder:true,
-		newTileCostReduction:25,
+		unique:"NewTileCostReduction",
 		requiredTech:"Education"
 	}
 	

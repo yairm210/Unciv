@@ -95,7 +95,7 @@
 				name:"Horseback Riding",
 				row:5,
 				prerequisites:["The Wheel"],
-				description:"Allows construction of stables, which increase production on cattle, sheep and horses"
+				description:"Allows construction of stables, which increase production on cattle, sheep and horses, and the Circus Maximus wonder"
 			},
 			{
 				name:"Mathematics",
@@ -139,7 +139,7 @@
 				name:"Currency",
 				row:7,
 				prerequisites:["Mathematics"],
-				description:"Enables construction of Markets and Mints, which increase gold. Also enables the Machu Pichu wonder."
+				description:"Enables construction of Markets and Mints, which increase gold, and conversion of city production to gold. Also enables the Machu Pichu wonder."
 			},
 			{
 				name:"Engineering",
@@ -202,14 +202,108 @@
 	},
 	{
 		columnNumber: 6,
+		techCost: 855, 
+		buildingCost:200,
+		wonderCost:500,
+		techs:[
+			{
+				name:"Astronomy",
+				row:2,
+				prerequisites:["Compass","Education"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Acoustics",
+				row:4,
+				prerequisites:["Education","Chivalry"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Banking",
+				row:6,
+				prerequisites:["Chivalry"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Printing Press",
+				row:8,
+				prerequisites:["Machinery","Physics"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Gunpowder",
+				row:10,
+				prerequisites:["Physics","Steel"],
+				description:"This is a lie, change!!!"
+			}
+		]	
+	},
+	{
+		columnNumber: 7,
 		techCost: 1265, 
 		buildingCost:250,
 		wonderCost:625,
 		techs:[
 			{
+				name:"Navigation",
+				row:2,
+				prerequisites:["Astronomy"],
+				description:"This is a lie, change!!!"
+			},
+			{
 				name:"Economics",
-				row:1,
-				prerequisites:["Chivalry"],
+				row:6,
+				prerequisites:["Banking","Printing Press"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Chemistry",
+				row:9,
+				prerequisites:["Gunpowder"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Metallurgy",
+				row:10,
+				prerequisites:["Gunpowder"],
+				description:"This is a lie, change!!!"
+			}
+		]	
+	},
+	{
+		columnNumber: 8,
+		techCost: 1755, 
+		buildingCost:300,
+		wonderCost:750,
+		techs:[
+			{
+				name:"Archaology",
+				row:2,
+				prerequisites:["Navigation"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Scientific Theory",
+				row:4,
+				prerequisites:["Navigation","Acoustics","Economics"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Military Science",
+				row:6,
+				prerequisites:["Economics","Chemistry"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Fertilizer",
+				row:9,
+				prerequisites:["Chemistry"],
+				description:"This is a lie, change!!!"
+			},
+			{
+				name:"Rifling",
+				row:10,
+				prerequisites:["Metallurgy"],
 				description:"This is a lie, change!!!"
 			}
 		]	
