@@ -32,7 +32,7 @@
 				name:"Sailing",
 				row:1,
 				prerequisites:["Pottery"],
-				description:"Allows access to sea resources by building work boats"
+				description:"Does nothing since we have no sea tiles - In theory, Allows access to sea resources by building work boats"
 			},
 			{
 				name:"Calendar",
@@ -83,7 +83,7 @@
 				cost:95,
 				row:1,
 				prerequisites:["Sailing"],
-				description:"Allows construction of lighthouses, providing more food for sea tiles"
+				description:"Does nothing since we have no sea tiles - In theory, Allows construction of lighthouses, providing more food for sea tiles"
 			},
 			{
 				name:"Philosophy",
@@ -127,7 +127,7 @@
 				name:"Theology",
 				row:2,
 				prerequisites:["Calendar","Philosophy"],
-				description:"???"
+				description:"Unclear what this does in Vanilla civ"
 			},
 			{
 				name:"Civil Service",
@@ -166,7 +166,7 @@
 				row:1,
 				cost:415,
 				prerequisites:["Optics"],
-				description:"???"
+				description:"Does nothing since we have no sea tiles - In theory, allows construction of harbors"
 			},
 			{
 				name:"Education",
@@ -184,19 +184,19 @@
 				name:"Machinery",
 				row:8,
 				prerequisites:["Engineering"],
-				description:"???"
+				description:"Speeds movement speed on roads and allows you to construct the Ironworks wonder, which gives a massive boost in production"
 			},
 			{
 				name:"Physics",
 				row:9,
 				prerequisites:["Engineering","Metal Casting"],
-				description:"???"
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			},
 			{
 				name:"Steel",
 				row:10,
 				prerequisites:["Metal Casting"],
-				description:"???"
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			}
 		]
 	},
@@ -210,31 +210,31 @@
 				name:"Astronomy",
 				row:2,
 				prerequisites:["Compass","Education"],
-				description:"This is a lie, change!!!"
+				description:"Enables construction of Observatories in cities near mountains"
 			},
 			{
 				name:"Acoustics",
 				row:4,
 				prerequisites:["Education","Chivalry"],
-				description:"This is a lie, change!!!"
+				description:"Enables construction of Opera Houses and the Sistine Chapel, providing culture"
 			},
 			{
 				name:"Banking",
 				row:6,
 				prerequisites:["Chivalry"],
-				description:"This is a lie, change!!!"
+				description:"Enables construction of banks, giving a serious boost in gold to your empire"
 			},
 			{
 				name:"Printing Press",
 				row:8,
 				prerequisites:["Machinery","Physics"],
-				description:"This is a lie, change!!!"
+				description:"Eables construction of the Theatre and Taj Mahal, increasing happiness"
 			},
 			{
 				name:"Gunpowder",
 				row:10,
 				prerequisites:["Physics","Steel"],
-				description:"This is a lie, change!!!"
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			}
 		]	
 	},
@@ -248,25 +248,25 @@
 				name:"Navigation",
 				row:2,
 				prerequisites:["Astronomy"],
-				description:"This is a lie, change!!!"
+				description:"Does nothing since we have no sea tiles - In theory, allows construction of Frigates and Seaports"
 			},
 			{
 				name:"Economics",
 				row:6,
 				prerequisites:["Banking","Printing Press"],
-				description:"This is a lie, change!!!"
+				description:"Camps and Trading Posts provide +1 gold, allows construction of Windmill"
 			},
 			{
 				name:"Chemistry",
 				row:9,
 				prerequisites:["Gunpowder"],
-				description:"This is a lie, change!!!"
+				description:"Mines and Quarries provide +1 production"
 			},
 			{
 				name:"Metallurgy",
 				row:10,
 				prerequisites:["Gunpowder"],
-				description:"This is a lie, change!!!"
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			}
 		]	
 	},
@@ -277,10 +277,10 @@
 		wonderCost:750,
 		techs:[
 			{
-				name:"Archaology",
+				name:"Archaeology",
 				row:2,
 				prerequisites:["Navigation"],
-				description:"This is a lie, change!!!"
+				description:"Allows construction of Museums and the Hermitage and Louvre wonders, providing culture"
 			},
 			{
 				name:"Scientific Theory",
@@ -292,19 +292,71 @@
 				name:"Military Science",
 				row:6,
 				prerequisites:["Economics","Chemistry"],
-				description:"This is a lie, change!!!"
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			},
 			{
 				name:"Fertilizer",
 				row:9,
 				prerequisites:["Chemistry"],
-				description:"This is a lie, change!!!"
+				description:"+1 food from Farms, Plantations and Pastures"
 			},
 			{
 				name:"Rifling",
 				row:10,
 				prerequisites:["Metallurgy"],
-				description:"This is a lie, change!!!"
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
+			}
+		]	
+	},
+	{
+		columnNumber: 9,
+		techCost: 2585,
+		buildingCost:360,
+		wonderCost:920,
+		techs:[
+			{
+				name:"Biology",
+				row:4,
+				prerequisites:["Archaeology","Scientific Theory"],
+				description:"Reveals oil and allows construction of oil wells - Todo"
+			},
+			{
+				name:"Steam Power",
+				row:6,
+				prerequisites:["Scientific Theory","Military Science"],
+				description:"Enables construction of factories and  - Todo"
+			},
+			{
+				name:"Dynamite",
+				row:9,
+				prerequisites:["Military Science","Fertilizer","Rifling"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
+			}
+		]	
+	},
+	{
+		columnNumber: 10,
+		techCost: 3405,
+		buildingCost:500,
+		wonderCost:1060,
+		techs:[
+			{
+				name:"Electricity",
+				row:4,
+				prerequisites:["Biology","Steam Power"],
+				description:"Reveals Aluminium on map and allows construction of stock exchange, providing gold - todo"
+			},
+			{
+				name:"Replaceable Parts",
+				row:6,
+				prerequisites:["Steam Power"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
+			},
+			{
+				name:"Railroad",
+				row:8,
+				prerequisites:["Steam Power","Dynamite"],
+				description:"Allows construction of railroads, providing fast transport and a 25% production boost to cities - todo"
 			}
 		]	
 	}

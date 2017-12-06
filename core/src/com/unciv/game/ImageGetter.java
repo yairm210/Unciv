@@ -8,7 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import java.util.HashMap;
 
 public class ImageGetter {
-        static HashMap<String, TextureRegion> textureRegionByFileName = new HashMap<String, TextureRegion>();
+        public static HashMap<String, TextureRegion> textureRegionByFileName = new HashMap<String, TextureRegion>();
 
         public static Image getImageByFilename(String fileName) {
                 if (!textureRegionByFileName.containsKey(fileName))

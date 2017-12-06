@@ -52,8 +52,7 @@
 		movementCost:2,
 		overrideStats:true,
 		unbuildable:true,
-		occursOn:["Tundra","Plains","Grassland"],
-		removalTech: "Mining"
+		occursOn:["Tundra","Plains","Grassland"]
 	},
 	{
 		name:"Jungle",
@@ -62,8 +61,7 @@
 		movementCost:2,
 		overrideStats:true,
 		unbuildable:true,
-		occursOn:["Plains","Grassland"],
-		removalTech: "Bronze Working"
+		occursOn:["Plains","Grassland"]
 	},
 	{
 		name:"Marsh",
@@ -71,8 +69,7 @@
 		food:-1,
 		movementCost:2,
 		unbuildable:true,
-		occursOn:["Grassland"],
-		removalTech: "Masonry"
+		occursOn:["Grassland"]
 	},
 	{
 		name:"Oasis",

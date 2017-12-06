@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.RoadStatus;
 import com.unciv.civinfo.TileInfo;
@@ -47,6 +49,9 @@ public class TileGroup extends Group {
 
 
     void update() {
+
+        String terrainFileName ="TerrainIcons/" + tileInfo.getLastTerrain().name.replace(' ','_') + "_(Civ5).png";
+        terrainImage.setDrawable(new TextureRegionDrawable(ImageGetter.textureRegionByFileName.get(terrainFileName))); // In case we e.g. removed a jungle
 
         if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";

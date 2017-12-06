@@ -180,12 +180,12 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         CivStats nextTurnStats = game.civInfo.getStatsForNextTurn();
 
-        CivTable.add(new Label("gold: " + Math.round(currentStats.gold)
+        CivTable.add(new Label("Gold: " + Math.round(currentStats.gold)
                 + "(" +(nextTurnStats.gold >0?"+":"") + Math.round(nextTurnStats.gold) +")", skin));
 
-        CivTable.add(new Label("science: +" + Math.round(nextTurnStats.science), skin));
-        CivTable.add(new Label("happiness: " + Math.round(nextTurnStats.happiness), skin));
-        CivTable.add(new Label("culture: " + Math.round(currentStats.culture) + "(+" + Math.round(nextTurnStats.culture) +")", skin));
+        CivTable.add(new Label("Science: +" + Math.round(nextTurnStats.science), skin));
+        CivTable.add(new Label("Happiness: " + Math.round(nextTurnStats.happiness), skin));
+        CivTable.add(new Label("Culture: " + Math.round(currentStats.culture) + "(+" + Math.round(nextTurnStats.culture) +")", skin));
 
         CivTable.pack();
 

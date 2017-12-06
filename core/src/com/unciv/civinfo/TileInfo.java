@@ -105,10 +105,10 @@ public class TileInfo
         return resource != null && getTileResource().improvement.equals(improvement.name);
     }
 
-    public void startWorkingOnImprovement(TileImprovement improvement)
+    public void startWorkingOnImprovement(String improvementName,int turnsToBuild)
     {
-        improvementInProgress = improvement.name;
-        turnsToImprovement = improvement.turnsToBuild;
+        improvementInProgress = improvementName;
+        turnsToImprovement = turnsToBuild;
     }
 
     public void stopWorkingOnImprovement()

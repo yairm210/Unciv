@@ -82,8 +82,8 @@ public class UnCivGame extends Game {
                 GameBasics.Technologies.put(tech.name,tech);
             }
         }
-        for(Building building : GameBasics.Buildings.values()){
-            if(building.requiredTech == null) continue;
+        for(Building building : GameBasics.Buildings.values()) {
+            if (building.requiredTech == null) continue;
             TechColumn column = building.GetRequiredTech().column;
             building.cost = building.isWonder ? column.wonderCost : column.buildingCost;
         }

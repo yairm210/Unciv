@@ -43,7 +43,8 @@
 	},
 	{
 		name:"Oil well",
-		turnsToBuild:6
+		turnsToBuild:6,
+		techRequired:"Biology",
 	},
 	{
 		name:"Pasture",
@@ -76,5 +77,24 @@
 		name:"Railroad",
 		turnsToBuild:12,
 		techRequired:"Railroad"
-	}
+	},
+	
+	{
+		name:"Remove Forest",
+		turnsToBuild:6,
+		terrainsCanBeBuiltOn:["Forest"],
+		techRequired:"Mining"
+	},
+	{
+		name:"Remove Jungle",
+		turnsToBuild:6,
+		terrainsCanBeBuiltOn:["Jungle"],
+		techRequired:"Bronze Working"
+	},
+	{
+		name:"Remove Marsh",
+		turnsToBuild:6,
+		terrainsCanBeBuiltOn:["Marsh"],
+		techRequired:"Masonry"
+	},
 ]

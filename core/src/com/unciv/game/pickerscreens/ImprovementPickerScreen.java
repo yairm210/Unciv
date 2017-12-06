@@ -6,12 +6,14 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileImprovement;
 
 public class ImprovementPickerScreen extends PickerScreen {
-    TileImprovement SelectedImprovement;
+    String SelectedImprovement;
+    int TurnsToImprovement;
 
     public ImprovementPickerScreen(final UnCivGame game, final com.unciv.civinfo.TileInfo tileInfo) {
         super(game);
@@ -21,7 +23,7 @@ public class ImprovementPickerScreen extends PickerScreen {
         rightSideButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                tileInfo.startWorkingOnImprovement(SelectedImprovement);
+                tileInfo.startWorkingOnImprovement(SelectedImprovement, TurnsToImprovement);
                 game.setWorldScreen();
                 dispose();
             }
@@ -38,9 +40,10 @@ public class ImprovementPickerScreen extends PickerScreen {
             TB.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    SelectedImprovement = improvement;
+                    SelectedImprovement = improvement.name;
+                    TurnsToImprovement = improvement.turnsToBuild;
                     rightSideButton.setTouchable(Touchable.enabled);
-                    rightSideButton.setText("Construct "+improvement.name);
+                    rightSideButton.setText(improvement.name);
                     rightSideButton.setColor(Color.WHITE);
                     descriptionLabel.setText(improvement.getDescription());
                 }

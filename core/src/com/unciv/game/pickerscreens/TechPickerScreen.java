@@ -100,14 +100,14 @@ public class TechPickerScreen extends PickerScreen {
         }
 
         for (Technology technology : GameBasics.Technologies.linqValues()) {
-            techMatrix[technology.column.columnNumber][technology.row - 1] = technology;
+            techMatrix[technology.column.columnNumber-1][technology.row - 1] = technology;
         }
 
 //        Table topTable = new Table();
         for (int i = 0; i < 10; i++) {
             topTable.row().pad(5);
 
-            for (int j = 0; j < 8; j++) {
+            for (int j = 0; j < 9; j++) {
                 final Technology tech = techMatrix[j][i];
                 if (tech == null) topTable.add(); // empty cell
                 else {
