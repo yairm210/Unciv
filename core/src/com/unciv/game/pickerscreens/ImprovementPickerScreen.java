@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.civinfo.CivilizationInfo;
+import com.unciv.civinfo.TileInfo;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileImprovement;
@@ -15,7 +16,7 @@ public class ImprovementPickerScreen extends PickerScreen {
     String SelectedImprovement;
     int TurnsToImprovement;
 
-    public ImprovementPickerScreen(final UnCivGame game, final com.unciv.civinfo.TileInfo tileInfo) {
+    public ImprovementPickerScreen(final UnCivGame game, final TileInfo tileInfo) {
         super(game);
 
         rightSideButton.setText("Pick improvement");

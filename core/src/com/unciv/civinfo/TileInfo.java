@@ -95,12 +95,12 @@ public class TileInfo
         Terrain topTerrain = terrainFeature ==null ? getBaseTerrain() : getTerrainFeature();
         if (improvement.techRequired != null && !isResearched(improvement.techRequired)) return false;
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true;
+        if(improvement.name.equals("Road") && this.roadStatus== RoadStatus.None) return true;
+        if(improvement.name.equals("Railroad") && this.roadStatus != RoadStatus.Railroad) return true;
         if (topTerrain.unbuildable) return false;
 
         if(improvement.name.equals(this.improvement)) return false;
 
-        if(improvement.name.equals("Road") && this.roadStatus== RoadStatus.None) return true;
-        if(improvement.name.equals("Railroad") && this.roadStatus != RoadStatus.Railroad) return true;
 
         return resource != null && getTileResource().improvement.equals(improvement.name);
     }

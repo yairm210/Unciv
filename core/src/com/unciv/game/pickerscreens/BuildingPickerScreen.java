@@ -64,7 +64,7 @@ public class BuildingPickerScreen extends PickerScreen {
             if(!cityBuildings.canBuild(building)) continue;
             TextButton TB = getProductionButton(building.name,
                     building.name +"\r\n"+cityBuildings.turnsToBuilding(building.name)+" turns",
-                    building.description,
+                    building.getDescription(true),
                     "Build "+building.name);
             if(building.isWonder) wonders.addActor(TB);
             else regularBuildings.addActor(TB);
