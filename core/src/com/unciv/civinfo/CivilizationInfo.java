@@ -4,8 +4,11 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
+import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
+import com.unciv.models.gamebasics.ResourceType;
+import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.CivStats;
 
 import java.util.Collection;
@@ -74,14 +77,28 @@ public class CivilizationInfo {
         CivStats statsForTurn = new CivStats() {{
             happiness = baseHappiness;
         }};
-        HashSet<String> LuxuryResources = new HashSet<String>();
         for (CityInfo city : cities) {
             statsForTurn.add(city.getCityStats());
-            LuxuryResources.addAll(city.getLuxuryResources());
         }
-        statsForTurn.happiness += LuxuryResources.size() * 5; // 5 happiness for each unique luxury in civ
+        statsForTurn.happiness += new LinqCollection<TileResource>(getCivResources().keySet()).count(new Predicate<TileResource>() {
+            @Override
+            public boolean evaluate(TileResource arg0) {
+                return arg0.resourceType == ResourceType.Luxury;
+            }
+        }) * 5; // 5 happiness for each unique luxury in civ
 
         return statsForTurn;
+    }
+
+    public LinqHashMap<TileResource,Integer> getCivResources(){
+        LinqHashMap<TileResource,Integer> civResources = new LinqHashMap<TileResource, Integer>();
+        for (CityInfo city : cities) {
+            for(TileResource resource : city.getCityResources().keySet()){
+                if(civResources.containsKey(resource)) civResources.put(resource,civResources.get(resource)+1);
+                else civResources.put(resource,1);
+            }
+        }
+        return civResources;
     }
 
     public LinqCollection<String> getBuildingUniques(){

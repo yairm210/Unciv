@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
+import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.TileResource;
@@ -69,15 +70,17 @@ public class CityInfo {
         civInfo.cities.add(this);
     }
 
-    ArrayList<String> getLuxuryResources() {
-        LinqCollection<String> LuxuryResources = new LinqCollection<String>();
+    public LinqHashMap<TileResource,Integer> getCityResources(){
+        LinqHashMap<TileResource,Integer> cityResources = new LinqHashMap<TileResource, Integer>();
+
         for (TileInfo tileInfo : getTilesInRange()) {
             TileResource resource = tileInfo.getTileResource();
-            if (resource != null && resource.resourceType == ResourceType.Luxury &&
-                    (resource.improvement.equals(tileInfo.improvement) || tileInfo.isCityCenter()))
-                LuxuryResources.add(tileInfo.resource);
+            if (resource != null && (resource.improvement.equals(tileInfo.improvement) || tileInfo.isCityCenter())){
+                if(cityResources.containsKey(resource)) cityResources.put(resource,cityResources.get(resource)+1);
+                else cityResources.put(resource,1);
+            }
         }
-        return LuxuryResources.unique();
+        return cityResources;
     }
 
     private int getWorkingPopulation() {

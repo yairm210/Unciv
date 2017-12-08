@@ -84,7 +84,7 @@
 		name:"Stable",
 		description: "Cattle, sheep and horses provide +1 production.", 
 		maintainance:1,
-		resourceRequired:true,
+		resourceBoostingBuilding:true,
 		resourceBonusStats:{production:1},
 		requiredTech:"Horseback Riding"
 	},
@@ -131,7 +131,7 @@
 		name:"Mint",
 		description: "",
 		maintainance:0,
-		resourceRequired:true,
+		resourceBoostingBuilding:true,
 		resourceBonusStats:{gold:2},
 		requiredTech:"Currency"
 	},
@@ -164,7 +164,7 @@
 		name:"Forge",
 		description: "Iron provides +1 production", 
 		maintainance:1,
-		resourceRequired:true,
+		resourceBoostingBuilding:true,
 		resourceBonusStats:{production:1},
 		requiredTech:"Metal Casting"
 	},
@@ -175,7 +175,7 @@
 		percentStatBonus:{science:33},
 		requiredBuilding:"Library",
 		unique:"JunglesProvideScience",
-		requiredTech:"Metal Casting"
+		requiredTech:"Education"
 	},
 	{
 		name:"Oxford University",
@@ -287,6 +287,23 @@
 		isWonder:true,
 		unique:"FreeGreatArtistAppears",
 		requiredTech:"Archaeology"
+	},
+	{
+		name:"Hospital",
+		description: "",
+		food:5,
+		requiredBuilding:"Aqueduct",
+		maintainance:2,
+		requiredTech:"Biology"
+	},
+	{
+		name:"Factory",
+		description: "",
+		production:4,
+		requiredBuilding:"Workshop",
+		maintainance:3,
+		requiredResource:"Coal",
+		requiredTech:"Steam Power"
 	},
 	
 	

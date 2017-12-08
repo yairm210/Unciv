@@ -86,8 +86,7 @@ public class CityBuildings
     {
         CivilizationInfo civInfo = UnCivGame.Current.civInfo;
         if(isBuilt(building.name)) return false;
-//        if (building.name.equals("Worker") || building.name.equals("Settler")) return false;
-        if(building.resourceRequired) {
+        if(building.resourceBoostingBuilding) {
             boolean containsResourceWithImprovement = getCity().getTilesInRange()
                     .any(new Predicate<TileInfo>() {
                 @Override
@@ -117,6 +116,9 @@ public class CityBuildings
                         return arg0.cityBuildings.isBuilt(building.requiredBuildingInAllCities);
                     }
                 }) ) return false;
+        if(building.requiredResource!=null &&
+                !civInfo.getCivResources().keySet().contains(GameBasics.TileResources.get(building.requiredResource)))
+            return false; // Only checks if exists, doesn't check amount - todo
 
         return true;
     }

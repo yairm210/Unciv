@@ -318,13 +318,13 @@
 				name:"Biology",
 				row:4,
 				prerequisites:["Archaeology","Scientific Theory"],
-				description:"Reveals oil and allows construction of oil wells - Todo"
+				description:"Reveals oil and allows construction of oil wells, and construction of hospitals, which provide a large amount of food"
 			},
 			{
 				name:"Steam Power",
 				row:6,
 				prerequisites:["Scientific Theory","Military Science"],
-				description:"Enables construction of factories and  - Todo"
+				description:"Enables construction of factories, boosting production"
 			},
 			{
 				name:"Dynamite",
