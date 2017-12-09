@@ -64,6 +64,7 @@ public class CivilizationInfo {
         notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();
         civStats.add(nextTurnStats);
+
         if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
         for (CityInfo city : cities) city.nextTurn();
@@ -74,20 +75,26 @@ public class CivilizationInfo {
     }
 
     public CivStats getStatsForNextTurn() {
-        CivStats statsForTurn = new CivStats() {{
-            happiness = baseHappiness;
-        }};
+        CivStats statsForTurn = new CivStats();
         for (CityInfo city : cities) {
             statsForTurn.add(city.getCityStats());
         }
-        statsForTurn.happiness += new LinqCollection<TileResource>(getCivResources().keySet()).count(new Predicate<TileResource>() {
+        statsForTurn.happiness = getHappinessForNextTurn();
+        return statsForTurn;
+    }
+
+    public int getHappinessForNextTurn(){
+        int happiness = baseHappiness;
+        happiness += new LinqCollection<TileResource>(getCivResources().keySet()).count(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {
                 return arg0.resourceType == ResourceType.Luxury;
             }
         }) * 5; // 5 happiness for each unique luxury in civ
-
-        return statsForTurn;
+        for (CityInfo city : cities) {
+            happiness += city.getCityHappiness();
+        }
+        return happiness;
     }
 
     public LinqHashMap<TileResource,Integer> getCivResources(){

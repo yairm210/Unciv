@@ -6,6 +6,7 @@ import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
+import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
@@ -80,6 +81,14 @@ public class CityInfo {
                 else cityResources.put(resource,1);
             }
         }
+        // Remove resources required by buildings
+        for(Building building : cityBuildings.getBuiltBuildings()){
+            if(building.requiredResource!=null){
+                TileResource resource = GameBasics.TileResources.get(building.requiredResource);
+                if(cityResources.containsKey(resource)) cityResources.put(resource,cityResources.get(resource)-1);
+                else cityResources.put(resource,-1);
+            }
+        }
         return cityResources;
     }
 
@@ -102,7 +111,6 @@ public class CityInfo {
 
     public FullStats getCityStats() {
         FullStats stats = new FullStats();
-        stats.happiness = -3 - population; // -3 happiness per city and -3 per population
         stats.science += population;
 
         // Working ppl
@@ -131,8 +139,16 @@ public class CityInfo {
         stats.culture*=1+statPercentBonuses.culture/100;
 
         stats.gold-=cityBuildings.getMaintainanceCosts(); // this is AFTER the bonus calculation!
+        if(CivilizationInfo.current().getHappinessForNextTurn() < 0)
+            stats.food /= 4; // Reduce excess food to 1/4
 
         return stats;
+    }
+
+    public float getCityHappiness(){ // needs to be a separate function because we need to know the global happiness state
+        // in order to determine how much food is produced in a city!
+        float happiness = -3 - population; // -3 happiness per city and -1 per population
+        return happiness + (int)cityBuildings.getStats().happiness;
     }
 
     void nextTurn() {
