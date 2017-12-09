@@ -31,10 +31,7 @@ public class TechPickerScreen extends PickerScreen {
     public TechPickerScreen(final UnCivGame game) {
         super(game);
 
-        Technology[][] techMatrix = new Technology[10][10]; // Divided into columns, then rows
-        for (int i = 0; i < techMatrix.length; i++) {
-            techMatrix[i] = new Technology[10];
-        }
+        Technology[][] techMatrix = new Technology[12][10]; // Divided into columns, then rows
 
         for (Technology technology : GameBasics.Technologies.linqValues()) {
             techMatrix[technology.column.columnNumber-1][technology.row - 1] = technology;
@@ -58,8 +55,9 @@ public class TechPickerScreen extends PickerScreen {
                     topTable.add(TB);
                 }
             }
-            SetButtonsInfo();
         }
+
+        setButtonsInfo();
 
         rightSideButton.setText("Pick a tech");
         rightSideButton.setTouchable(Touchable.disabled);
@@ -76,12 +74,13 @@ public class TechPickerScreen extends PickerScreen {
                 }
                 else civTech.techsToResearch = techsToResearch;
                 game.setWorldScreen();
+                game.worldScreen.update();
                 dispose();
             }
         });
     }
 
-    public void SetButtonsInfo() {
+    public void setButtonsInfo() {
         for (String techName : techNameToButton.keySet()) {
             TextButton TB = techNameToButton.get(techName);
             TB.getStyle().checkedFontColor = Color.BLACK;
@@ -91,7 +90,7 @@ public class TechPickerScreen extends PickerScreen {
             else TB.setColor(Color.GRAY);
 
             TB.setChecked(false);
-            TB.setText(techName);
+            StringBuilder text = new StringBuilder(techName);
 
             if (selectedTech != null) {
                 Technology thisTech = GameBasics.Technologies.get(techName);
@@ -100,14 +99,15 @@ public class TechPickerScreen extends PickerScreen {
                     TB.setColor(TB.getColor().lerp(Color.LIGHT_GRAY, 0.5f));
                 }
 
-                if (thisTech.prerequisites.contains(selectedTech.name)) TB.setText("*" + techName);
-                else if (selectedTech.prerequisites.contains(techName)) TB.setText(techName + "*");
+                if (thisTech.prerequisites.contains(selectedTech.name)) text.insert(0, "*");
+                else if (selectedTech.prerequisites.contains(techName)) text.append("*");
             }
             if (techsToResearch.contains(techName)) {
-                TB.setText(TB.getText() + " (" + techsToResearch.indexOf(techName) + ")");
+                text.append(" (").append(techsToResearch.indexOf(techName)).append(")");
             }
 
-            if(!civTech.isResearched(techName)) TB.setText(TB.getText() + "\r\n" + game.civInfo.turnsToTech(techName) + " turns");
+            if(!civTech.isResearched(techName)) text.append("\r\n"+game.civInfo.turnsToTech(techName) + " turns");
+            TB.setText(text.toString());
         }
     }
 
@@ -120,7 +120,7 @@ public class TechPickerScreen extends PickerScreen {
             rightSideButton.setText("Research");
             rightSideButton.setTouchable(Touchable.disabled);
             rightSideButton.setColor(Color.GRAY);
-            SetButtonsInfo();
+            setButtonsInfo();
             return;
         }
 
@@ -148,7 +148,7 @@ public class TechPickerScreen extends PickerScreen {
         }
 
         rightSideButton.setText("Research \r\n" + techsToResearch.get(0));
-        SetButtonsInfo();
+        setButtonsInfo();
     }
 
     private void selectTechnologyForFreeTech(Technology tech){

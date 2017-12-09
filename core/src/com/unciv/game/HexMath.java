@@ -46,22 +46,31 @@ public class HexMath
         return vectors;
     }
 
-    public static LinqCollection<Vector2> GetVectorsInDistance(Vector2 origin, int distance){
+    public static ArrayList<Vector2> GetVectorsAtDistance(Vector2 origin, int distance){
+        ArrayList<Vector2> vectors = new ArrayList<Vector2>();
+        Vector2 Current = origin.cpy().sub(distance,distance); // start at 6 o clock
+        for (int i = 0; i < distance; i++) { // From 6 to 8
+            vectors.add(Current.cpy());
+            vectors.add(origin.cpy().scl(2).sub(Current)); // Get vector on other side of cloick
+            Current.add(1,0);
+        }
+        for (int i = 0; i < distance; i++) { // 8 to 10
+            vectors.add(Current.cpy());
+            vectors.add(origin.cpy().scl(2).sub(Current)); // Get vector on other side of cloick
+            Current.add(1,1);
+        }
+        for (int i = 0; i < distance; i++) { // 10 to 12
+            vectors.add(Current.cpy());
+            vectors.add(origin.cpy().scl(2).sub(Current)); // Get vector on other side of cloick
+            Current.add(1,1);
+        };
+        return vectors;
+    }
+
+    public static LinqCollection<Vector2> GetVectorsInDistance(Vector2 origin, int distance) {
         HashSet<Vector2> hexesToReturn = new HashSet<Vector2>();
-        HashSet<Vector2> oldHexes;
-        HashSet<Vector2> newHexes = new HashSet<Vector2>();
-        hexesToReturn.add(origin);
-        newHexes.add(origin);
-        for (int i = 0; i < distance; i++) {
-            oldHexes = newHexes;
-            newHexes = new HashSet<Vector2>();
-            for (Vector2 vector : oldHexes) {
-                for (Vector2 adjacentVector : GetAdjacentVectors(vector)){
-                    if(hexesToReturn.contains(adjacentVector)) continue;
-                    hexesToReturn.add(adjacentVector);
-                    newHexes.add(adjacentVector);
-                }
-            }
+        for (int i = 0; i < distance + 1; i++) {
+            hexesToReturn.addAll(GetVectorsAtDistance(origin, i));
         }
         return new LinqCollection<Vector2>(hexesToReturn);
     }
@@ -69,19 +78,9 @@ public class HexMath
     public static int GetDistance(Vector2 origin, Vector2 destination){ // Yes, this is a dumb implementation. But I can't be arsed to think of a better one right now, other stuff to do.
         int distance = 0;
         while(true){
-            if(GetVectorsInDistance(origin,distance).contains(destination)) return distance;
+            if(GetVectorsAtDistance(origin,distance).contains(destination)) return distance;
             distance++;
         }
     }
 
-//    public static boolean IsWithinDistance(Vector2 a, Vector2 b, int distance){
-//        return GetVectorsInDistance(a,distance).contains(b);
-//        Vector2 distanceVector = a.sub(b);
-//        if(distanceVector.x<0) distanceVector = new Vector2(-distanceVector.x,-distanceVector.y);
-//
-//        int distance = (int) Math.abs(distanceVector.x);
-//        distanceVector = distanceVector.sub(distanceVector.x,distanceVector.x); // Zero X f distance, then we'll calculate Y
-//        distance += Math.abs(distanceVector.y);
-//        return distance;
-//    }
 }

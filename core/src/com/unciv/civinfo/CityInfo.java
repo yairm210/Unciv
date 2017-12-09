@@ -281,6 +281,11 @@ public class CityInfo {
             public String GetBy(Building arg0) {
                 return arg0.unique;
             }
+        }).where(new Predicate<String>() {
+            @Override
+            public boolean evaluate(String arg0) {
+                return arg0!=null;
+            }
         });
     }
 

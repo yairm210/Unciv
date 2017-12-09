@@ -1,6 +1,7 @@
 package com.unciv.models.gamebasics;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Technology
 {
@@ -8,7 +9,7 @@ public class Technology
 
         public String description;
         public int cost;
-        public ArrayList<String> prerequisites = new ArrayList<String>();
+        public HashSet<String> prerequisites = new HashSet<String>();
 
         public TechColumn column; // The column that this tech is in the tech tree
         public int row;

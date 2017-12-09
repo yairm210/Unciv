@@ -94,8 +94,10 @@ public class WorldScreen extends CameraStageBaseScreen {
     }
 
     public void update(){
-        if(game.civInfo.tech.freeTechs!=0)
-            game.setScreen(new TechPickerScreen(game,true));
+        if(game.civInfo.tech.freeTechs!=0) {
+            game.setScreen(new TechPickerScreen(game, true));
+            return;
+        }
         updateTechButton();
         updateTileTable();
         updateTiles();
@@ -416,15 +418,11 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         TileTable.pack();
 
-//        TileTable.setBackground(getTableBackground(TileTable.getWidth(),TileTable.getHeight()));
-
         TileTable.setPosition(stage.getWidth()-10- TileTable.getWidth(), 10);
     }
 
     private void updateTiles() {
         for (WorldTileGroup WG : tileGroups.linqValues()) WG.update(this);
-
-
 
         if(unitTile!=null) return; // While we're in "unit move" mode, no tiles but the tiles the unit can move to will be "visible"
 

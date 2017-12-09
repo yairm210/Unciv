@@ -6,16 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.RoadStatus;
 import com.unciv.civinfo.TileInfo;
-import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqHashMap;
 
 public class TileGroup extends Group {
     Image terrainImage;
+    String terrainType;
     Image resourceImage;
     Image unitImage;
     Image improvementImage;
@@ -29,7 +28,8 @@ public class TileGroup extends Group {
     TileGroup(TileInfo tileInfo){
         this.tileInfo = tileInfo;
 
-        String terrainFileName = "TerrainIcons/" + tileInfo.getLastTerrain().name.replace(' ','_') + "_(Civ5).png";
+        terrainType = tileInfo.getLastTerrain().name;
+        String terrainFileName = "TerrainIcons/" + terrainType.replace(' ','_') + "_(Civ5).png";
         terrainImage = ImageGetter.getImageByFilename(terrainFileName);
         terrainImage.setSize(50,50);
         addActor(terrainImage);
@@ -50,8 +50,12 @@ public class TileGroup extends Group {
 
     void update() {
 
-        String terrainFileName ="TerrainIcons/" + tileInfo.getLastTerrain().name.replace(' ','_') + "_(Civ5).png";
-        terrainImage.setDrawable(new TextureRegionDrawable(ImageGetter.textureRegionByFileName.get(terrainFileName))); // In case we e.g. removed a jungle
+
+        if(!terrainType.equals(tileInfo.getLastTerrain().name)) {
+            terrainType = tileInfo.getLastTerrain().name;
+            String terrainFileName = "TerrainIcons/" + terrainType.replace(' ', '_') + "_(Civ5).png";
+            terrainImage.setDrawable(new TextureRegionDrawable(ImageGetter.textureRegionByFileName.get(terrainFileName))); // In case we e.g. removed a jungle
+        }
 
         if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";

@@ -5,11 +5,12 @@ import com.unciv.models.gamebasics.Technology;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class CivilizationTech{
     public int freeTechs = 0;
 
-    public ArrayList<String> techsResearched = new ArrayList<String>();
+    public HashSet<String> techsResearched = new HashSet<String>();
     /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
     public ArrayList<String> techsToResearch = new ArrayList<String>();
     public HashMap<String, Integer> techsInProgress = new HashMap<String, Integer>();
