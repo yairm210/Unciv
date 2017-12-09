@@ -289,6 +289,15 @@
 		requiredTech:"Archaeology"
 	},
 	{
+		name:"Public School",
+		description: "+1 science per 2 population",
+		science:3,
+		requiredBuilding:"University",
+		maintainance:3,
+		unique:"SciencePer2Pop",
+		requiredTech:"Scientific Theory"
+	},
+	{
 		name:"Hospital",
 		description: "",
 		food:5,
@@ -304,6 +313,88 @@
 		maintainance:3,
 		requiredResource:"Coal",
 		requiredTech:"Steam Power"
+	},
+	{
+		name:"Stock Exchange",
+		description: "",
+		gold:3,
+		percentStatBonus:{gold:25},
+		requiredBuilding:"Bank",
+		requiredTech:"Electricity"
+	},
+	{
+		name:"Cristo Redentor",
+		description: "Culture cost of adopting new Policies reduced by 10% - todo",
+		culture:5,
+		isWonder:true,
+		unique:"PolicyCostReduction",
+		requiredTech:"Telegraph"
+	},
+	{
+		name:"Broadcst Tower",
+		description: "",
+		culture:3,
+		percentStatBonus:{culture:33},
+		requiredBuilding:"Museum",
+		maintainance:3,
+		requiredTech:"Radio"
+	},
+	{
+		name:"Eiffel Tower",
+		description: "Provides 1 happiness per social policy - todo",
+		culture:1,
+		happiness:5
+		isWonder:true,
+		unique:"HappinessPerSocialPolicy",
+		requiredTech:"Radio"
+	},
+	{
+		name:"Medical Lab",
+		description: "25% of food carried over after a new citizen is born - todo",
+		requiredBuilding:"Hospital",
+		maintainance:3,
+		requiredTech:"Penicillin"
+	},
+	{
+		name:"Research Lab",
+		description: "",
+		science:4,		
+		percentStatBonus:{science:50},
+		requiredBuilding:"Public School",
+		maintainance:3,
+		requiredTech:"Plastics"
+	},
+	{
+		name:"Hydro Plant",
+		description: "Provides +1 production to tiles near rivers",
+		maintainance:3,
+		requiredResource:"Aluminum",
+		requiredTech:"Plastics"
+	},
+	{
+		name:"Stadium",
+		description: "",
+		happiness:4,
+		requiredBuilding:"Theatre",
+		maintainance:2,
+		requiredTech:"Mass Media"
+	},
+	{
+		name:"Eiffel Tower",
+		description: "Provides 1 free social policy - todo",
+		culture:1,
+		percentStatBonus:{culture:50},
+		isWonder:true,
+		unique:"HappinessPerSocialPolicy",
+		requiredTech:"Radio"
+	},
+	{
+		name:"Stadium",
+		description: "",
+		happiness:4,
+		requiredBuilding:"Theatre",
+		maintainance:2,
+		requiredTech:"Mass Media"
 	},
 	
 	

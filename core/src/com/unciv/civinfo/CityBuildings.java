@@ -142,7 +142,12 @@ public class CityBuildings
     {
         FullStats stats = new FullStats();
         for(Building building : getBuiltBuildings()) stats.add(building);
-        if(getCity().getBuildingUniques().contains("SciencePer2Pop")) stats.science+=getCity().population/2; // Library unique
+        stats.science += getCity().getBuildingUniques().count(new Predicate<String>() {
+            @Override
+            public boolean evaluate(String arg0) {
+                return arg0.equals("SciencePer2Pop");
+            }
+        }) * getCity().population/2; // Library and public school unique (not actualy unique, though...hmm)
         return stats;
     }
 

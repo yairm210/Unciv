@@ -122,7 +122,8 @@ public class CityInfo {
         stats.production += getFreePopulation();
         stats.food -= population * 2;
 
-        if(!isCapital() && isConnectedToCapital()) { // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+        if(!isCapital() && isConnectedToCapital(RoadStatus.Road)) {
+            // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             double goldFromTradeRoute = CivilizationInfo.current().getCapital().population * 0.15
                     + population * 1.1 - 1;
             if(CivilizationInfo.current().getBuildingUniques().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
@@ -132,6 +133,7 @@ public class CityInfo {
         stats.add(cityBuildings.getStats());
 
         FullStats statPercentBonuses = cityBuildings.getStatPercentBonuses();
+        if(isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
         stats.food*=1+statPercentBonuses.food/100;
         stats.gold*=1+statPercentBonuses.gold/100;
         stats.production*=1+statPercentBonuses.production/100;
@@ -246,7 +248,7 @@ public class CityInfo {
 
     private boolean isCapital(){ return CivilizationInfo.current().getCapital() == this; }
 
-    private boolean isConnectedToCapital(){
+    private boolean isConnectedToCapital(RoadStatus roadType){
         TileInfo capitalTile = CivilizationInfo.current().getCapital().getTile();
         LinqCollection<TileInfo> tilesReached = new LinqCollection<TileInfo>();
         LinqCollection<TileInfo> tilesToCheck = new LinqCollection<TileInfo>();
@@ -255,7 +257,9 @@ public class CityInfo {
             LinqCollection<TileInfo> newTiles = new LinqCollection<TileInfo>();
             for(TileInfo tile : tilesToCheck)
                 for (TileInfo maybeNewTile : getTileMap().getTilesInDistance(tile.position,1))
-                    if(!tilesReached.contains(maybeNewTile) && !tilesToCheck.contains(maybeNewTile) && !newTiles.contains(maybeNewTile))
+                    if(!tilesReached.contains(maybeNewTile) && !tilesToCheck.contains(maybeNewTile) && !newTiles.contains(maybeNewTile)
+                            && (roadType != RoadStatus.Road || maybeNewTile.roadStatus != RoadStatus.None)
+                            && (roadType!=RoadStatus.Railroad || maybeNewTile.roadStatus == roadType))
                         newTiles.add(maybeNewTile);
 
             if(newTiles.contains(capitalTile)) return true;
@@ -277,7 +281,7 @@ public class CityInfo {
             public String GetBy(Building arg0) {
                 return arg0.unique;
             }
-        }).unique();
+        });
     }
 
 }

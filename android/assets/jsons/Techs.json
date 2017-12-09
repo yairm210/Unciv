@@ -344,7 +344,7 @@
 				name:"Electricity",
 				row:4,
 				prerequisites:["Biology","Steam Power"],
-				description:"Reveals Aluminium on map and allows construction of stock exchange, providing gold - todo"
+				description:"Reveals Aluminium on map and allows construction of stock exchange, providing gold"
 			},
 			{
 				name:"Replaceable Parts",
@@ -356,7 +356,88 @@
 				name:"Railroad",
 				row:8,
 				prerequisites:["Steam Power","Dynamite"],
-				description:"Allows construction of railroads, providing fast transport and a 25% production boost to cities - todo"
+				description:"Allows construction of railroads, providing fast transport and a 25% production boost to cities"
+			}
+		]	
+	},
+	{
+		columnNumber: 11,
+		techCost: 4505,
+		buildingCost:500,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Refrigeration",
+				row:2,
+				prerequisites:["Electricity"],
+				description:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
+			},
+			{
+				name:"Telegraph",
+				row:4,
+				prerequisites:["Electricity"],
+				description:"Allows construction of the Crito Redentor, reducing cost of new policie"
+			},
+			{
+				name:"Radio",
+				row:5,
+				prerequisites:["Electricity"],
+				description:"Allows construction of broadcast towers and the Eiffel Tower, increasing culture"
+			},
+			{
+				name:"Flight",
+				row:6,
+				prerequisites:["Replaceable Parts"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
+			},
+			{
+				name:"Combustion",
+				row:8,
+				prerequisites:["Replaceable Parts"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
+			}
+		]	
+	},
+	{
+		columnNumber: 12,
+		techCost: 5605,
+		buildingCost:500,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Penicillin",
+				row:1,
+				prerequisites:["Refrigeration"],
+				description:"Enables construction of medical labs, alowing for greater city growth"
+			},
+			{
+				name:"Plastics",
+				row:2,
+				prerequisites:["Refrigeration"],
+				description:"Allows construction of Research Lab, increasing science"
+			},
+			{
+				name:"Electronics",
+				row:5,
+				prerequisites:["Electricity"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"			},
+			{
+				name:"Mass Media",
+				row:6,
+				prerequisites:["Radio"],
+				description:"Allows construction of Stadiums and the Sydney Opera House, boosting happiness"
+			},
+			{
+				name:"Radar",
+				row:8,
+				prerequisites:["Radio","Flight","Combustion"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
+			},
+			{
+				name:"Atomic Theory",
+				row:8,
+				prerequisites:["Combustion"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
 			}
 		]	
 	}
