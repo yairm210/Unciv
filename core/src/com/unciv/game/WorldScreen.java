@@ -94,6 +94,8 @@ public class WorldScreen extends CameraStageBaseScreen {
     }
 
     public void update(){
+        if(game.civInfo.tech.freeTechs!=0)
+            game.setScreen(new TechPickerScreen(game,true));
         updateTechButton();
         updateTileTable();
         updateTiles();
