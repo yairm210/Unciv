@@ -59,7 +59,7 @@ public class CivilizationInfo {
         });
     }
 
-    public void nextTurn()//out boolean displayTech)
+    public void nextTurn()
     {
         notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();

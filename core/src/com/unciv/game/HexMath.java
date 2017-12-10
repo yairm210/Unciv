@@ -48,6 +48,7 @@ public class HexMath
 
     public static ArrayList<Vector2> GetVectorsAtDistance(Vector2 origin, int distance){
         ArrayList<Vector2> vectors = new ArrayList<Vector2>();
+        if(distance==0){vectors.add(origin.cpy()); return  vectors;}
         Vector2 Current = origin.cpy().sub(distance,distance); // start at 6 o clock
         for (int i = 0; i < distance; i++) { // From 6 to 8
             vectors.add(Current.cpy());
@@ -62,7 +63,7 @@ public class HexMath
         for (int i = 0; i < distance; i++) { // 10 to 12
             vectors.add(Current.cpy());
             vectors.add(origin.cpy().scl(2).sub(Current)); // Get vector on other side of cloick
-            Current.add(1,1);
+            Current.add(0,1);
         };
         return vectors;
     }

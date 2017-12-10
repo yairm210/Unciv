@@ -93,14 +93,10 @@ public class TechPickerScreen extends PickerScreen {
             StringBuilder text = new StringBuilder(techName);
 
             if (selectedTech != null) {
-                Technology thisTech = GameBasics.Technologies.get(techName);
                 if (techName.equals(selectedTech.name)) {
                     TB.setChecked(true);
                     TB.setColor(TB.getColor().lerp(Color.LIGHT_GRAY, 0.5f));
                 }
-
-                if (thisTech.prerequisites.contains(selectedTech.name)) text.insert(0, "*");
-                else if (selectedTech.prerequisites.contains(techName)) text.append("*");
             }
             if (techsToResearch.contains(techName)) {
                 text.append(" (").append(techsToResearch.indexOf(techName)).append(")");
