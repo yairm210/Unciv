@@ -49,8 +49,6 @@ public class TileGroup extends Group {
 
 
     void update() {
-
-
         if(!terrainType.equals(tileInfo.getLastTerrain().name)) {
             terrainType = tileInfo.getLastTerrain().name;
             String terrainFileName = "TerrainIcons/" + terrainType.replace(' ', '_') + "_(Civ5).png";
@@ -67,7 +65,7 @@ public class TileGroup extends Group {
         }
 
         if (tileInfo.unit != null && unitImage == null) {
-            unitImage = com.unciv.game.utils.ImageGetter.getImageByFilename("StatIcons/" + tileInfo.unit.Name + "_(Civ5).png");
+            unitImage = com.unciv.game.utils.ImageGetter.getImageByFilename("StatIcons/" + tileInfo.unit.name + "_(Civ5).png");
             addActor(unitImage);
             unitImage.setSize(20, 20); // not moved - is at bottom left
         }
@@ -78,7 +76,9 @@ public class TileGroup extends Group {
         }
 
         if(unitImage!=null){
-            if(tileInfo.unit.CurrentMovement==0) unitImage.setColor(Color.GRAY);
+            if(tileInfo.unit.currentMovement ==0 ||
+                    (tileInfo.unit.name.equals("Worker") && tileInfo.improvementInProgress!=null))
+                unitImage.setColor(Color.GRAY);
             else unitImage.setColor(Color.WHITE);
         }
 

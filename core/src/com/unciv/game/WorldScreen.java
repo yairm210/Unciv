@@ -241,11 +241,11 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                 public void clicked(InputEvent event, float x, float y) {
                 selectedTile = tileInfo;
                 if(unitTile != null && group.tileInfo.unit == null ) {
-                    LinqHashMap<TileInfo, Float> distanceToTiles = game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.CurrentMovement);
+                    LinqHashMap<TileInfo, Float> distanceToTiles = game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.currentMovement);
                     if(distanceToTiles.containsKey(selectedTile)) {
-                        unitTile.unit.CurrentMovement -= distanceToTiles.get(selectedTile);
-                        //unitTile.unit.CurrentMovement = round(unitTile.unit.CurrentMovement,3);
-                        if(unitTile.unit.CurrentMovement < 0.1) unitTile.unit.CurrentMovement=0; // silly floats which are "almost zero"
+                        unitTile.unit.currentMovement -= distanceToTiles.get(selectedTile);
+                        //unitTile.unit.currentMovement = round(unitTile.unit.currentMovement,3);
+                        if(unitTile.unit.currentMovement < 0.1) unitTile.unit.currentMovement =0; // silly floats which are "almost zero"
                         group.tileInfo.unit = unitTile.unit;
                         unitTile.unit = null;
                         unitTile = null;
@@ -340,7 +340,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             TextButton moveUnitButton = new TextButton("Move to", skin);
             if(unitTile == selectedTile) moveUnitButton = new TextButton("Stop movement",skin);
             moveUnitButton.getLabel().setFontScale(buttonScale);
-            if(selectedTile.unit.CurrentMovement == 0){
+            if(selectedTile.unit.currentMovement == 0){
                 moveUnitButton.setColor(Color.GRAY);
                 moveUnitButton.setTouchable(Touchable.disabled);
             }
@@ -356,7 +356,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
                     // Set all tiles transparent except those in unit range
                     for(TileGroup TG : tileGroups.linqValues()) TG.setColor(0,0,0,0.3f);
-                    for(TileInfo tile : game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.CurrentMovement).keySet()){
+                    for(TileInfo tile : game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.currentMovement).keySet()){
                         tileGroups.get(tile.position.toString()).setColor(Color.WHITE);
                     }
 
@@ -366,7 +366,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             TileTable.add(moveUnitButton).colspan(2)
                     .size(moveUnitButton.getWidth() * buttonScale, moveUnitButton.getHeight() * buttonScale);
 
-            if(selectedTile.unit.Name.equals("Settler")){
+            if(selectedTile.unit.name.equals("Settler")){
                 TextButton foundCityButton = new TextButton("Found City", skin);
                 foundCityButton.getLabel().setFontScale(buttonScale);
                 foundCityButton.addListener(new ClickListener(){
@@ -394,7 +394,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                         .size(foundCityButton.getWidth() * buttonScale, foundCityButton.getHeight() * buttonScale);
             }
 
-            if(selectedTile.unit.Name.equals("Worker")) {
+            if(selectedTile.unit.name.equals("Worker")) {
                 String improvementButtonText = selectedTile.improvementInProgress == null ?
                         "Construct\r\nimprovement" : selectedTile.improvementInProgress +"\r\nin progress";
                 TextButton improvementButton = new TextButton(improvementButtonText, skin);
@@ -405,7 +405,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                         game.setScreen(new ImprovementPickerScreen(game, selectedTile));
                     }
                 });
-                if(selectedTile.unit.CurrentMovement==0 || selectedTile.isCityCenter() ||
+                if(selectedTile.unit.currentMovement ==0 || selectedTile.isCityCenter() ||
                         !GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
                             @Override
                             public boolean evaluate(TileImprovement arg0) {

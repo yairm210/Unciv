@@ -152,8 +152,8 @@ public class CityBuildings
         if(building.requiredResource!=null &&
                 !civInfo.getCivResources().keySet().contains(GameBasics.TileResources.get(building.requiredResource)))
             return false; // Only checks if exists, doesn't check amount - todo
-        
-        if(building.unique.equals("SpaceshipPart")){
+
+        if("SpaceshipPart".equals(building.unique)){
             if(!civInfo.getBuildingUniques().contains("ApolloProgram")) return false;
             if(civInfo.scienceVictory.requiredParts.get(building.name)==0) return false; // Don't need to build any more of these!
         }

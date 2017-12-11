@@ -118,9 +118,9 @@ public class TileInfo
 
     public void nextTurn()
     {
-        if(unit !=null) unit.CurrentMovement = unit.MaxMovement;
+        if(unit !=null) unit.currentMovement = unit.maxMovement;
 
-        if (improvementInProgress == null || unit ==null || !unit.Name.equals("Worker")) return;
+        if (improvementInProgress == null || unit ==null || !unit.name.equals("Worker")) return;
         turnsToImprovement -= 1;
         if(turnsToImprovement == 0)
         {
@@ -129,6 +129,7 @@ public class TileInfo
             else if(improvementInProgress.equals("Railroad")) roadStatus = RoadStatus.Railroad;
             else improvement = improvementInProgress;
 
+            CivilizationInfo.current().notifications.add(improvementInProgress+" has been completed!");
             improvementInProgress = null;
         }
     }
@@ -140,7 +141,7 @@ public class TileInfo
         if(roadStatus!= RoadStatus.None) SB.append(",\r\n" + roadStatus);
         if (improvement != null) SB.append(",\r\n" + improvement);
         if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
-        if(unit !=null) SB.append(",\r\n" + unit.Name+ "("+ new DecimalFormat("0.#").format(unit.CurrentMovement)+"/"+ unit.MaxMovement+")");
+        if(unit !=null) SB.append(",\r\n" + unit.name + "("+ new DecimalFormat("0.#").format(unit.currentMovement)+"/"+ unit.maxMovement +")");
         return SB.toString();
     }
 

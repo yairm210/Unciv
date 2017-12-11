@@ -31,7 +31,7 @@ public class TechPickerScreen extends PickerScreen {
     public TechPickerScreen(final UnCivGame game) {
         super(game);
 
-        Technology[][] techMatrix = new Technology[12][10]; // Divided into columns, then rows
+        Technology[][] techMatrix = new Technology[16][10]; // Divided into columns, then rows
 
         for (Technology technology : GameBasics.Technologies.linqValues()) {
             techMatrix[technology.column.columnNumber-1][technology.row - 1] = technology;
@@ -40,7 +40,7 @@ public class TechPickerScreen extends PickerScreen {
         for (int i = 0; i < 10; i++) {
             topTable.row().pad(5);
 
-            for (int j = 0; j < 10; j++) {
+            for (int j = 0; j < techMatrix.length; j++) {
                 final Technology tech = techMatrix[j][i];
                 if (tech == null) topTable.add(); // empty cell
                 else {

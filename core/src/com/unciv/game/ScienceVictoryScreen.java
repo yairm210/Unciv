@@ -2,9 +2,7 @@ package com.unciv.game;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.game.pickerscreens.PickerScreen;
 import com.unciv.models.LinqCounter;
 
@@ -12,15 +10,14 @@ public class ScienceVictoryScreen extends PickerScreen {
 
     public ScienceVictoryScreen(UnCivGame game) {
         super(game);
-        LinqCounter<String> spaceshipParts = new LinqCounter<String>();
-        spaceshipParts.add(game.civInfo.spaceshipParts);
+        LinqCounter<String> builtSpaceshipParts = game.civInfo.scienceVictory.currentParts.clone();
 
         for (int i = 0; i < 3; i++) {
-            addPartButton("SS Booster",spaceshipParts);
+            addPartButton("SS Booster",builtSpaceshipParts);
         }
-        addPartButton("SS Cockpit",spaceshipParts);
-        addPartButton("SS Engine",spaceshipParts);
-        addPartButton("SS Statis Chamber",spaceshipParts);
+        addPartButton("SS Cockpit",builtSpaceshipParts);
+        addPartButton("SS Engine",builtSpaceshipParts);
+        addPartButton("SS Statis Chamber",builtSpaceshipParts);
         rightSideButton.setVisible(false);
 
         if(!game.civInfo.getBuildingUniques().contains("ApolloProject"))
