@@ -31,7 +31,7 @@ public class CivilizationInfo {
     public LinqCollection<CityInfo> cities = new LinqCollection<CityInfo>();
 
     public TileMap tileMap = new TileMap(20);
-    public LinqCounter<String> spaceshipParts = new LinqCounter<String>();
+    public ScienceVictory scienceVictory = new ScienceVictory();
 
     public int currentCity =0; //index!
 
@@ -119,3 +119,13 @@ public class CivilizationInfo {
     }
 }
 
+class ScienceVictory{
+    public LinqCounter<String> requiredParts = new LinqCounter<String>();
+    public LinqCounter<String> currentParts = new LinqCounter<String>();
+
+    public LinqCounter<String> unconstructedParts() {
+        LinqCounter<String> counter = requiredParts.clone();
+        counter.remove(currentParts);
+        return counter;
+    }
+}

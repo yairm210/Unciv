@@ -3,6 +3,7 @@ package com.unciv.civinfo;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
+import com.unciv.game.VictoryScreen;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
@@ -47,20 +48,37 @@ public class CityBuildings
         if (currentBuilding == null) return;
         if(currentBuilding.equals("Gold")) {cityStats.gold+=cityStats.production/3; return;}
         if(currentBuilding.equals("Science")) {cityStats.science+=cityStats.production/3; return;}
+
+
+        Building gameBuilding = getGameBuilding(currentBuilding);
+
+        // Let's try to remove the building from the city, and seee if we can still build it (weneed to remove because of wonders etc.
+        String saveCurrentBuilding = currentBuilding;
+        currentBuilding = null;
+        if(!canBuild(gameBuilding)){
+            // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
+            CivilizationInfo.current().notifications.add("Cannot continue work on "+saveCurrentBuilding);
+            chooseNextBuilding();
+            gameBuilding = getGameBuilding(currentBuilding);
+        }
+        else currentBuilding = saveCurrentBuilding;
+
         if (!inProgressBuildings.containsKey(currentBuilding)) inProgressBuildings.put(currentBuilding, 0);
         inProgressBuildings.put(currentBuilding, inProgressBuildings.get(currentBuilding) + Math.round(cityStats.production));
 
-        if (inProgressBuildings.get(currentBuilding) >= getGameBuilding(currentBuilding).cost)
+        if (inProgressBuildings.get(currentBuilding) >= gameBuilding.cost)
         {
             if (currentBuilding.equals(Worker) || currentBuilding.equals(Settler))
                 UnCivGame.Current.civInfo.tileMap.get(cityLocation).unit = new Unit(currentBuilding,2);
-            else if("SpaceshipPart".equals(getGameBuilding(currentBuilding).unique))
-                CivilizationInfo.current().spaceshipParts.add(currentBuilding,1);
+            else if("SpaceshipPart".equals(gameBuilding.unique)) {
+                CivilizationInfo.current().scienceVictory.currentParts.add(currentBuilding, 1);
+                if(CivilizationInfo.current().scienceVictory.unconstructedParts().isEmpty())
+                    UnCivGame.Current.setScreen(new VictoryScreen(UnCivGame.Current));
+            }
 
             else
             {
                 builtBuildings.add(currentBuilding);
-                Building gameBuilding = getGameBuilding(currentBuilding);
                 if (gameBuilding.providesFreeBuilding != null && !builtBuildings.contains(gameBuilding.providesFreeBuilding))
                     builtBuildings.add(gameBuilding.providesFreeBuilding);
                 if (gameBuilding.freeTechs != 0) UnCivGame.Current.civInfo.tech.freeTechs += gameBuilding.freeTechs;
@@ -70,10 +88,7 @@ public class CityBuildings
 
             CivilizationInfo.current().notifications.add(currentBuilding+" has been built in "+getCity().name);
 
-            // Choose next building to build
             chooseNextBuilding();
-
-            CivilizationInfo.current().notifications.add("Work has started on "+currentBuilding);
         }
 
     }
@@ -87,6 +102,8 @@ public class CityBuildings
             }
         });
         if (currentBuilding == null) currentBuilding = Worker;
+
+        CivilizationInfo.current().notifications.add("Work has started on "+currentBuilding);
     }
 
     public boolean canBuild(final Building building)
@@ -135,7 +152,11 @@ public class CityBuildings
         if(building.requiredResource!=null &&
                 !civInfo.getCivResources().keySet().contains(GameBasics.TileResources.get(building.requiredResource)))
             return false; // Only checks if exists, doesn't check amount - todo
-        if(building.unique.equals("SpaceshipPart") && !civInfo.getBuildingUniques().contains("ApolloProgram")) return false;
+        
+        if(building.unique.equals("SpaceshipPart")){
+            if(!civInfo.getBuildingUniques().contains("ApolloProgram")) return false;
+            if(civInfo.scienceVictory.requiredParts.get(building.name)==0) return false; // Don't need to build any more of these!
+        }
 
         return true;
     }

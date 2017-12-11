@@ -20,4 +20,17 @@ public class LinqCounter<K> extends LinkedHashMap<K,Integer> {
             add(key,other.get(key));
         }
     }
+
+    public void remove(LinqCounter<K> other){
+        for (K key : other.keySet()) {
+            add(key,-other.get(key));
+        }
+    }
+
+    @Override
+    public LinqCounter<K> clone() {
+        LinqCounter<K> newCounter = new LinqCounter<K>();
+        newCounter.add(this);
+        return newCounter;
+    }
 }
