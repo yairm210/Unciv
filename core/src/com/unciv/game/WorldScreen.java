@@ -379,7 +379,8 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                     }
                 });
 
-                if(game.civInfo.tileMap.getTilesInDistance(selectedTile.position,2).any(new Predicate<TileInfo>() {
+                if(selectedTile.unit.currentMovement==0  ||
+                        game.civInfo.tileMap.getTilesInDistance(selectedTile.position,2).any(new Predicate<TileInfo>() {
                     @Override
                     public boolean evaluate(TileInfo arg0) {
                         return arg0.isCityCenter();
