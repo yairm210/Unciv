@@ -129,7 +129,10 @@ public class TileInfo
             else if(improvementInProgress.equals("Railroad")) roadStatus = RoadStatus.Railroad;
             else improvement = improvementInProgress;
 
-            CivilizationInfo.current().notifications.add(improvementInProgress+" has been completed!");
+            String notification = improvementInProgress+" has been completed";
+            if(workingCity!=null) notification+=" for "+getCity().name;
+            notification+="!";
+            CivilizationInfo.current().notifications.add(notification);
             improvementInProgress = null;
         }
     }

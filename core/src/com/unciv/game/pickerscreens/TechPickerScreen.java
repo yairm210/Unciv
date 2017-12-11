@@ -98,8 +98,8 @@ public class TechPickerScreen extends PickerScreen {
                     TB.setColor(TB.getColor().lerp(Color.LIGHT_GRAY, 0.5f));
                 }
             }
-            if (techsToResearch.contains(techName)) {
-                text.append(" (").append(techsToResearch.indexOf(techName)).append(")");
+            if (techsToResearch.contains(techName) && techsToResearch.size()>1) {
+                text.append(" (").append(techsToResearch.indexOf(techName)+1).append(")");
             }
 
             if(!civTech.isResearched(techName)) text.append("\r\n"+game.civInfo.turnsToTech(techName) + " turns");
