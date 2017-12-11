@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.List;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -17,12 +16,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
-import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.civinfo.TileInfo;
-import com.unciv.game.pickerscreens.GameSaver;
 import com.unciv.game.pickerscreens.ImprovementPickerScreen;
 import com.unciv.game.pickerscreens.TechPickerScreen;
+import com.unciv.game.utils.*;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileImprovement;
@@ -32,7 +30,7 @@ import com.unciv.models.stats.FullStats;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class WorldScreen extends CameraStageBaseScreen {
+public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
     TileInfo selectedTile = null;
 
@@ -80,7 +78,6 @@ public class WorldScreen extends CameraStageBaseScreen {
     }
 
     private void addNotificationsList() {
-//        NotificationsTable.setBackground(TileTable.getBackground());
         stage.addActor(NotificationsTable);
     }
     private void updateNotificationsList() {
@@ -128,8 +125,18 @@ public class WorldScreen extends CameraStageBaseScreen {
         });
         OptionsTable.add(StartNewGameButton).pad(10);
         OptionsTable.row();
-        
-        
+
+        TextButton OpenScienceVictoryScreen = new TextButton("Science victory status",skin);
+        OpenScienceVictoryScreen.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new ScienceVictoryScreen(game));
+            }
+        });
+        OptionsTable.add(OpenScienceVictoryScreen).pad(10);
+        OptionsTable.row();
+
+
         TextButton closeButton = new TextButton("Close",skin);
         closeButton.addListener(new ClickListener(){
             @Override
@@ -251,7 +258,7 @@ public class WorldScreen extends CameraStageBaseScreen {
             });
 
 
-            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.position);
+            Vector2 positionalVector = com.unciv.game.utils.HexMath.Hex2WorldCoords(tileInfo.position);
             int groupSize = 50;
             group.setPosition(stage.getWidth() / 2 + positionalVector.x * 0.8f * groupSize,
                     stage.getHeight() / 2 + positionalVector.y * 0.8f * groupSize);
@@ -323,7 +330,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         for(String key : TileStatsValues.keySet()){
             if(TileStatsValues.get(key) == 0) continue; // this tile gives nothing of this stat, so why even display it?
-            TileTable.add(ImageGetter.getStatIcon(key)).align(Align.right);
+            TileTable.add(com.unciv.game.utils.ImageGetter.getStatIcon(key)).align(Align.right);
             TileTable.add(new Label(Math.round(TileStatsValues.get(key))+"",skin)).align(Align.left);
             TileTable.row();
         }
@@ -434,7 +441,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         // tiles adjacent to city tiles
         for(TileInfo tileInfo : game.civInfo.tileMap.values())
             if(game.civInfo.civName.equals(tileInfo.owner))
-                for(Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileInfo.position))
+                for(Vector2 adjacentLocation : com.unciv.game.utils.HexMath.GetAdjacentVectors(tileInfo.position))
                     ViewableVectorStrings.add(adjacentLocation.toString());
 
         // Tiles within 2 tiles of units
@@ -445,7 +452,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                 return arg0.unit !=null;
             }
         }))
-            for(Vector2 vector : HexMath.GetVectorsInDistance(tile.position,2))
+            for(Vector2 vector : com.unciv.game.utils.HexMath.GetVectorsInDistance(tile.position,2))
                 ViewableVectorStrings.add(vector.toString());
 
         for(String string : ViewableVectorStrings)

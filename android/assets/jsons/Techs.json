@@ -419,7 +419,7 @@
 			{
 				name:"Electronics",
 				row:5,
-				prerequisites:["Electricity"],
+				prerequisites:["Telegraph"],
 				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"			},
 			{
 				name:"Mass Media",
@@ -438,6 +438,167 @@
 				row:8,
 				prerequisites:["Combustion"],
 				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
+			}
+		]	
+	},
+	{
+		columnNumber: 13,
+		techCost: 7035,
+		buildingCost:500,
+		techs:[
+			{
+				name:"Ecology",
+				row:2,
+				prerequisites:["Penicillin","Plastics"],
+				description:"Enables construction of Solar Plants on cities near deserts, increasing production"
+			},
+			{
+				name:"Computers",
+				row:4,
+				prerequisites:["Electronics","Mass Media","Radar"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+			},
+			{
+				name:"Rocketry",
+				row:6,
+				prerequisites:["Radar"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"			},
+			{
+				name:"Lasers",
+				row:8,
+				prerequisites:["Radar"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+			},
+			{
+				name:"Nuclear Fission",
+				row:10,
+				prerequisites:["Atomic Theory"],
+				description:"Allows construction of Nuclear Plants, increasing production"
+			}
+		]	
+	},
+	{
+		columnNumber: 14,
+		techCost: 8465,
+		buildingCost:750,
+		techs:[
+			{
+				name:"Globalization",
+				row:2,
+				cost:10445,
+				prerequisites:["Ecology","Computers"],
+				description:"Theoretically enables united nation - tthere's no ai so we'll leave it be for now"
+			},
+			{
+				name:"Robotics",
+				row:4,
+				prerequisites:["Computers"],
+				description:"Allow construction of SS Boosters, a vital part of the spaceship, and the Spaceship Factory, which speeds the production of spaceship parts"
+			},
+			{
+				name:"Satellites",
+				row:6,
+				prerequisites:["Rocketry"],
+				description:"Allow construction of the SS Cockpit, a vital part of the spaceship"
+			},
+			{
+				name:"Stealth",
+				row:8,
+				prerequisites:["Lasers"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+			},
+			{
+				name:"Advanced Ballistics",
+				row:10,
+				prerequisites:["Atomic Theory"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+			}
+		]	
+	},
+	{
+		columnNumber: 15,
+		techCost: 9675,
+		buildingCost:750,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Robotics",
+				row:4,
+				prerequisites:["Computers"],
+				description:"Allow construction of SS Boosters, a vital part of the spaceship, and the Spaceship Factory, which speeds the production of spaceship parts"
+			},
+			{
+				name:"Satellites",
+				row:6,
+				prerequisites:["Rocketry"],
+				description:"Allow construction of the SS Cockpit, a vital part of the spaceship"
+			},
+			{
+				name:"Stealth",
+				row:8,
+				prerequisites:["Lasers"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+			},
+			{
+				name:"Advanced Ballistics",
+				row:10,
+				prerequisites:["Atomic Theory"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+			}
+		]	
+	},
+	{
+		columnNumber: 16,
+		techCost: 9675,
+		buildingCost:750,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Particle Physics",
+				row:5,
+				prerequisites:["Ecology","Computers"],
+				description:"Allow construction of the SS Engine, a vital part of the spaceship"
+			},
+			{
+				name:"Nuclear Fusion",
+				row:8,
+				prerequisites:["Satellites","Stealth","Advanced Ballistics"],
+				description:"Theoretically enables united nation - tthere's no ai so we'll leave it be for now"
+			}
+		]	
+	}
+	{
+		columnNumber: 16,
+		techCost: 9675,
+		buildingCost:750,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Globalization",
+				row:2,
+				cost:10445,
+				prerequisites:["Ecology","Computers"],
+				description:"Theoretically enables united nation - tthere's no ai so we'll leave it be for now"
+			},
+			{
+				name:"Nanotechnology",
+				row:5,
+				prerequisites:["Particle Physics"],
+				description:"Allow construction of the SS Statis Chamber, a vital part of the spaceship"
+			}
+		]	
+	}
+	{
+		columnNumber: 16,
+		techCost: 9675,
+		buildingCost:750,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Future Tech",
+				row:5,
+				prerequisites:["Globalization","Nanotechnology","Nuclear Fusion"],
+				description:"Who knows what the future holds?"
 			}
 		]	
 	}

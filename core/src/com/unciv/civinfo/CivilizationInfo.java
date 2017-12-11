@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
+import com.unciv.models.LinqCounter;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
@@ -12,7 +13,6 @@ import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.CivStats;
 
 import java.util.Collection;
-import java.util.HashSet;
 
 /**
  * Created by LENOVO on 10/18/2017.
@@ -31,12 +31,12 @@ public class CivilizationInfo {
     public LinqCollection<CityInfo> cities = new LinqCollection<CityInfo>();
 
     public TileMap tileMap = new TileMap(20);
+    public LinqCounter<String> spaceshipParts = new LinqCounter<String>();
 
     public int currentCity =0; //index!
 
     public CivilizationInfo(){
     }
-
 
     public CityInfo getCurrentCity() { return cities.get(currentCity); }
 
@@ -47,7 +47,6 @@ public class CivilizationInfo {
 
     public void addCity(Vector2 location){
         CityInfo city = new CityInfo(this,location);
-        if(cities.size()==1) city.cityBuildings.builtBuildings.add("Palace");
     }
 
     public CityInfo getCapital(){
@@ -71,13 +70,14 @@ public class CivilizationInfo {
 
         for(TileInfo tile : tileMap.values()) tile.nextTurn();
 
+        for (CityInfo city : cities) city.updateCityStats();
         turns += 1;
     }
 
     public CivStats getStatsForNextTurn() {
         CivStats statsForTurn = new CivStats();
         for (CityInfo city : cities) {
-            statsForTurn.add(city.getCityStats());
+            statsForTurn.add(city.cityStats);
         }
         statsForTurn.happiness = getHappinessForNextTurn();
         return statsForTurn;
@@ -97,14 +97,10 @@ public class CivilizationInfo {
         return happiness;
     }
 
-    public LinqHashMap<TileResource,Integer> getCivResources(){
-        LinqHashMap<TileResource,Integer> civResources = new LinqHashMap<TileResource, Integer>();
-        for (CityInfo city : cities) {
-            for(TileResource resource : city.getCityResources().keySet()){
-                if(civResources.containsKey(resource)) civResources.put(resource,civResources.get(resource)+1);
-                else civResources.put(resource,1);
-            }
-        }
+    public LinqCounter<TileResource> getCivResources(){
+        LinqCounter<TileResource> civResources = new LinqCounter<TileResource>();
+        for (CityInfo city : cities) civResources.add(city.getCityResources());
+
         return civResources;
     }
 

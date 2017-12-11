@@ -4,9 +4,10 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
+import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.Unit;
-import com.unciv.game.pickerscreens.GameSaver;
+import com.unciv.game.utils.GameSaver;
 import com.unciv.models.gamebasics.BasicHelp;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
@@ -31,6 +32,9 @@ public class UnCivGame extends Game {
         if(GameSaver.GetSave("Autosave").exists()) {
             try {
                 GameSaver.LoadGame(this, "Autosave");
+                for (CityInfo city : this.civInfo.cities) {
+                    if(city.cityStats == null) city.updateCityStats();
+                }
             } catch(Exception ex){ // silent fail if we can't read the autosave
                 startNewGame();
             }

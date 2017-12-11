@@ -2,7 +2,7 @@ package com.unciv.civinfo;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.game.HexMath;
+import com.unciv.game.utils.HexMath;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.GameBasics;

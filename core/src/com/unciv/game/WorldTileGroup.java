@@ -8,7 +8,6 @@ import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.TileInfo;
 
 
-
 public class WorldTileGroup extends TileGroup {
 
     WorldTileGroup(TileInfo tileInfo) {
@@ -29,7 +28,7 @@ public class WorldTileGroup extends TileGroup {
 
 
         if (tileInfo.owner != null && hexagon == null) {
-            hexagon = ImageGetter.getImageByFilename("TerrainIcons/Hexagon.png");
+            hexagon = com.unciv.game.utils.ImageGetter.getImageByFilename("TerrainIcons/Hexagon.png");
             float imageScale = terrainImage.getWidth() * 1.3f / hexagon.getWidth();
             hexagon.setScale(imageScale);
             hexagon.setPosition((getWidth() - hexagon.getWidth() * imageScale) / 2,

@@ -1,4 +1,4 @@
-package com.unciv.game;
+package com.unciv.game.utils;
 
 import com.badlogic.gdx.math.Vector2;
 import com.unciv.models.LinqCollection;

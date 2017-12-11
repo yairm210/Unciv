@@ -1,4 +1,4 @@
-package com.unciv.game;
+package com.unciv.game.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -13,14 +13,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.unciv.game.UnCivGame;
 
 import java.util.HashMap;
 
 public class CameraStageBaseScreen implements Screen {
 
-    protected UnCivGame game;
-    protected Stage stage;
-    protected Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+    public UnCivGame game;
+    public Stage stage;
+    public Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
     static Batch batch = new SpriteBatch();
 
 

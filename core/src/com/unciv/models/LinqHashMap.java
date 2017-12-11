@@ -7,3 +7,4 @@ public class LinqHashMap <K,V> extends LinkedHashMap<K,V> {
         return new LinqCollection<V>(super.values());
     }
 }
+

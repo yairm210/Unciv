@@ -1,4 +1,4 @@
-package com.unciv.game;
+package com.unciv.game.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;

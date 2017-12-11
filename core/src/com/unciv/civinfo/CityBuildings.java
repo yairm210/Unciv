@@ -28,6 +28,7 @@ public class CityBuildings
     public LinqCollection<String> builtBuildings = new LinqCollection<String>();
     public HashMap<String, Integer> inProgressBuildings = new HashMap<String, Integer>();
     public String currentBuilding = Worker; // default starting building!
+    public Building getCurrentBuilding(){return getGameBuilding(currentBuilding);}
 
     public CityInfo getCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).getCity(); }
     public boolean isBuilt(String buildingName) { return builtBuildings.contains(buildingName); }
@@ -53,6 +54,8 @@ public class CityBuildings
         {
             if (currentBuilding.equals(Worker) || currentBuilding.equals(Settler))
                 UnCivGame.Current.civInfo.tileMap.get(cityLocation).unit = new Unit(currentBuilding,2);
+            else if("SpaceshipPart".equals(getGameBuilding(currentBuilding).unique))
+                CivilizationInfo.current().spaceshipParts.add(currentBuilding,1);
 
             else
             {
@@ -68,18 +71,22 @@ public class CityBuildings
             CivilizationInfo.current().notifications.add(currentBuilding+" has been built in "+getCity().name);
 
             // Choose next building to build
-            currentBuilding = getBuildableBuildings().first(new Predicate<String>() {
-                @Override
-                public boolean evaluate(String arg0) {
-                    if(arg0.equals(Settler) || arg0.equals(Worker)) return false;
-                    return !builtBuildings.contains(arg0);
-                }
-            });
-            if (currentBuilding == null) currentBuilding = Worker;
+            chooseNextBuilding();
 
             CivilizationInfo.current().notifications.add("Work has started on "+currentBuilding);
         }
 
+    }
+
+    private void chooseNextBuilding() {
+        currentBuilding = getBuildableBuildings().first(new Predicate<String>() {
+            @Override
+            public boolean evaluate(String arg0) {
+                if(arg0.equals(Settler) || arg0.equals(Worker) || getGameBuilding(arg0).isWonder) return false;
+                return !builtBuildings.contains(arg0);
+            }
+        });
+        if (currentBuilding == null) currentBuilding = Worker;
     }
 
     public boolean canBuild(final Building building)
@@ -116,9 +123,19 @@ public class CityBuildings
                         return arg0.cityBuildings.isBuilt(building.requiredBuildingInAllCities);
                     }
                 }) ) return false;
+        if(building.cannotBeBuiltWith != null && isBuilt(building.cannotBeBuiltWith)) return false;
+        if("MustBeNextToDesert".equals(building.unique) &&
+                !civInfo.tileMap.getTilesInDistance(cityLocation,1).any(new Predicate<TileInfo>() {
+                    @Override
+                    public boolean evaluate(TileInfo arg0) {
+                        return arg0.baseTerrain.equals("Desert");
+                    }
+                }))
+            return false;
         if(building.requiredResource!=null &&
                 !civInfo.getCivResources().keySet().contains(GameBasics.TileResources.get(building.requiredResource)))
             return false; // Only checks if exists, doesn't check amount - todo
+        if(building.unique.equals("SpaceshipPart") && !civInfo.getBuildingUniques().contains("ApolloProgram")) return false;
 
         return true;
     }
@@ -167,17 +184,27 @@ public class CityBuildings
         return stats;
     }
 
+    public int workDone(String buildingName) {
+        if (inProgressBuildings.containsKey(buildingName))
+            return inProgressBuildings.get(buildingName);
+        return 0;
+    }
+
     public int turnsToBuilding(String buildingName)
     {
-        int workDone = 0;
-        if (inProgressBuildings.containsKey(buildingName)) workDone = inProgressBuildings.get(buildingName);
-        float workLeft = getGameBuilding(buildingName).cost - workDone; // needs to be float so that we get the cieling properly ;)
+        float workLeft = getGameBuilding(buildingName).cost - workDone(buildingName); // needs to be float so that we get the cieling properly ;)
 
-        FullStats cityStats = getCity().getCityStats();
+        FullStats cityStats = getCity().cityStats;
         int production = Math.round(cityStats.production);
         if (buildingName.equals(Settler)) production += cityStats.food;
 
         return (int) Math.ceil(workLeft / production);
+    }
+
+    public void purchaseBuilding(String buildingName) {
+        CivilizationInfo.current().civStats.gold -= getGameBuilding(buildingName).getGoldCost();
+        builtBuildings.add(buildingName);
+        if(currentBuilding.equals(buildingName)) chooseNextBuilding();
     }
 
     public String getCityProductionText(){

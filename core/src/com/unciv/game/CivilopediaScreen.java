@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 
-public class CivilopediaScreen extends CameraStageBaseScreen {
+public class CivilopediaScreen extends com.unciv.game.utils.CameraStageBaseScreen {
     public CivilopediaScreen(final UnCivGame game) {
 
         super(game);

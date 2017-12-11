@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,13 +22,15 @@ import com.badlogic.gdx.utils.Align;
 import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.BuildingPickerScreen;
+import com.unciv.game.pickerscreens.PickerScreen;
+import com.unciv.models.gamebasics.Building;
 import com.unciv.models.stats.FullStats;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-public class CityScreen extends CameraStageBaseScreen {
+public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
     TileInfo selectedTile = null;
     float buttonScale = game.settings.buttonScale;
@@ -141,12 +144,13 @@ public class CityScreen extends CameraStageBaseScreen {
                     public void clicked(InputEvent event, float x, float y) {
                         if(tileInfo.workingCity ==null && cityInfo.getFreePopulation() > 0) tileInfo.workingCity = cityInfo.name;
                         else if(cityInfo.name.equals(tileInfo.workingCity)) tileInfo.workingCity = null;
+                        cityInfo.updateCityStats();
                         updateCityTable();
                     }
                 });
             }
 
-            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.cityLocation));
+            Vector2 positionalVector = com.unciv.game.utils.HexMath.Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.cityLocation));
             int groupSize = 50;
             group.setPosition(stage.getWidth()/2 + positionalVector.x*0.8f  * groupSize,
                     stage.getHeight()/2 + positionalVector.y*0.8f * groupSize);
@@ -185,8 +189,8 @@ public class CityScreen extends CameraStageBaseScreen {
     }
 
     private void updateCityTable() {
-        CityInfo cityInfo = game.civInfo.getCurrentCity();
-        FullStats stats = cityInfo.getCityStats();
+        final CityInfo cityInfo = game.civInfo.getCurrentCity();
+        FullStats stats = cityInfo.cityStats;
         CityStatsTable.pad(20);
         CityStatsTable.columnDefaults(0).padRight(10);
         CityStatsTable.clear();
@@ -198,7 +202,9 @@ public class CityScreen extends CameraStageBaseScreen {
         CityStatsTable.row();
 
         HashMap<String,String> CityStatsValues = new LinkedHashMap<String, String>();
-        CityStatsValues.put("Production",Math.round(stats.production) +"");
+        CityStatsValues.put("Production",Math.round(stats.production)
+                +" ("+ cityInfo.cityBuildings.workDone(cityInfo.cityBuildings.currentBuilding)
+                +"/"+cityInfo.cityBuildings.getCurrentBuilding().cost+")");
         CityStatsValues.put("Food",Math.round(stats.food)
                 +" ("+cityInfo.foodStored+"/"+cityInfo.foodToNextPopulation()+")");
         CityStatsValues.put("Gold",Math.round(stats.gold) +"");
@@ -208,7 +214,7 @@ public class CityScreen extends CameraStageBaseScreen {
         CityStatsValues.put("Population",cityInfo.getFreePopulation()+"/"+cityInfo.population);
 
         for(String key : CityStatsValues.keySet()){
-            CityStatsTable.add(ImageGetter.getStatIcon(key)).align(Align.right);
+            CityStatsTable.add(com.unciv.game.utils.ImageGetter.getStatIcon(key)).align(Align.right);
             CityStatsTable.add(new Label(CityStatsValues.get(key),skin)).align(Align.left);
             CityStatsTable.row();
         }
@@ -228,6 +234,30 @@ public class CityScreen extends CameraStageBaseScreen {
         buildingPickButton.getLabel().setFontScale(buttonScale);
         CityStatsTable.add(buildingPickButton).colspan(2).pad(10)
                 .size(buildingPickButton.getWidth()*buttonScale,buildingPickButton.getHeight()*buttonScale);
+
+
+        // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
+
+        Building building = cityInfo.cityBuildings.getCurrentBuilding();
+        if(!building.isWonder) {
+            CityStatsTable.row();
+            int buildingGoldCost = building.getGoldCost();
+            TextButton buildingBuyButton = new TextButton("Buy for \r\n"+buildingGoldCost+" gold", skin);
+            buildingBuyButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    cityInfo.cityBuildings.purchaseBuilding(cityInfo.cityBuildings.currentBuilding);
+                    updateCityTable();
+                }
+            });
+            if(buildingGoldCost > game.civInfo.civStats.gold){
+                buildingBuyButton.setColor(Color.GRAY);
+                buildingBuyButton.setTouchable(Touchable.disabled);
+            }
+            buildingBuyButton.getLabel().setFontScale(buttonScale);
+            CityStatsTable.add(buildingBuyButton).colspan(2).pad(10)
+                    .size(buildingBuyButton.getWidth() * buttonScale, buildingBuyButton.getHeight() * buttonScale);
+        }
 
         CityStatsTable.setPosition(10,10);
         CityStatsTable.pack();
@@ -259,7 +289,7 @@ public class CityScreen extends CameraStageBaseScreen {
 
         for(String key : TileStatsValues.keySet()){
             if(TileStatsValues.get(key) == 0) continue; // this tile gives nothing of this stat, so why even display it?
-            TileTable.add(ImageGetter.getStatIcon(key)).align(Align.right);
+            TileTable.add(com.unciv.game.utils.ImageGetter.getStatIcon(key)).align(Align.right);
             TileTable.add(new Label(Math.round(TileStatsValues.get(key))+"",skin)).align(Align.left);
             TileTable.row();
         }

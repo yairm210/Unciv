@@ -15,17 +15,19 @@ public class Building extends NamedStats implements ICivilopedia {
     public int cost;
     public int maintainance = 0;
     public FullStats percentStatBonus = new FullStats();
-    //public Func<CityInfo,FullStats> GetFlatBonusStats;
+    public int hurryCostModifier; // Extra cost percentage when purchasing
     public boolean isWonder = false;
     public boolean resourceBoostingBuilding = false;
     public String requiredBuilding;
     public String requiredBuildingInAllCities;
     public String requiredResource;
+    public String cannotBeBuiltWith;
 
     // Uniques
     public String providesFreeBuilding;
     public int freeTechs;
     public String unique; // for wonders which have individual functions that are totally unique
+
 
     /**
      * The bonus stats that a resource gets when this building is built
@@ -53,6 +55,10 @@ public class Building extends NamedStats implements ICivilopedia {
             stringBuilder.append("Maintainance cost: " + maintainance + " gold\r\n");
         stringBuilder.append(description + "\r\n" + stats);
         return stringBuilder.toString();
+    }
+
+    public int getGoldCost(){
+        return (int)( Math.pow(30 * cost,0.75) * (1 + hurryCostModifier/100) / 10 ) * 10;
     }
 }
 

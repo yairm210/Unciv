@@ -3,12 +3,14 @@
 	{
 		name:"Worker",
 		description: "Can build improvements on tiles", 
+		hurryCostModifier:20
 		cost:60
 	},
 	{
 		name:"Settler",
 		description: "Founds a new city", 
-		cost:106
+		cost:106,
+		hurryCostModifier:20
 	},
 	
 	
@@ -27,6 +29,7 @@
 		description: "Produces culture, enabling border growth", 
 		culture:2,
 		cost:40,
+		hurryCostModifier:40,
 		maintainance:1
 	},
 	{
@@ -35,11 +38,13 @@
 		food:2,
 		resourceBonusStats:{food:1},
 		maintainance:1,
+		hurryCostModifier:25,
 		requiredTech:"Pottery"
 	},
 	{
 		name:"Library",
 		description: "Adds 1 science for each 2 population in the city.", 
+		hurryCostModifier:25,
 		maintainance:1,
 		unique:"SciencePer2Pop",
 		requiredTech:"Writing"
@@ -61,6 +66,7 @@
 		culture:3,
 		requiredBuilding:"Monument",
 		maintainance:2,
+		hurryCostModifier:25,
 		requiredTech:"Philosophy"
 	},
 	{
@@ -86,6 +92,7 @@
 		maintainance:1,
 		resourceBoostingBuilding:true,
 		resourceBonusStats:{production:1},
+		hurryCostModifier:25,
 		requiredTech:"Horseback Riding"
 	},
 	{
@@ -110,12 +117,14 @@
 		description: "", 
 		maintainance:1,
 		happiness:2,
+		hurryCostModifier:25,
 		requiredTech:"Construction"
 	},
 	{
 		name:"Market",
 		description: "",
 		gold:2,
+		hurryCostModifier:25,
 		percentStatBonus:{gold:25},
 		requiredTech:"Currency"
 	},	
@@ -133,6 +142,7 @@
 		maintainance:0,
 		resourceBoostingBuilding:true,
 		resourceBonusStats:{gold:2},
+		hurryCostModifier:25,
 		requiredTech:"Currency"
 	},
 	{
@@ -149,6 +159,7 @@
 		description: "40% of food is carried over after a new citizen is born", 
 		maintainance:1,
 		food:2,
+		hurryCostModifier:25,
 		unique:"FoodCarriesOver"
 		requiredTech:"Engineering"
 	},
@@ -157,6 +168,7 @@
 		description: "", 
 		maintainance:2,
 		production:2,
+		hurryCostModifier:25,
 		percentStatBonus:{production:15},
 		requiredTech:"Metal Casting"
 	},
@@ -164,6 +176,7 @@
 		name:"Forge",
 		description: "Iron provides +1 production", 
 		maintainance:1,
+		hurryCostModifier:25,
 		resourceBoostingBuilding:true,
 		resourceBonusStats:{production:1},
 		requiredTech:"Metal Casting"
@@ -172,6 +185,7 @@
 		name:"University",
 		description: "Jungles provide +2 science", 
 		maintainance:2,
+		hurryCostModifier:15,
 		percentStatBonus:{science:33},
 		requiredBuilding:"Library",
 		unique:"JunglesProvideScience",
@@ -209,6 +223,7 @@
 		name:"Observatory",
 		description: "City must be bordering a mountain", 
 		maintainance:2,
+		hurryCostModifier:25,
 		percentStatBonus:{science:50},
 		requiredBuilding:"Library",
 		requiredTech:"Metal Casting"
@@ -217,6 +232,7 @@
 		name:"Opera House",
 		description: "",
 		culture:4,
+		hurryCostModifier:10,
 		requiredBuilding:"Temple",
 		maintainance:2,
 		requiredTech:"Acoustics"
@@ -233,6 +249,7 @@
 		name:"Bank",
 		description: "",
 		gold:2,
+		hurryCostModifier:15,
 		percentStatBonus:{gold:25},
 		requiredBuilding:"Market",
 		requiredTech:"Banking"
@@ -241,6 +258,7 @@
 		name:"Theatre",
 		description: "",
 		happiness:3,
+		hurryCostModifier:10,
 		maintainance:2,
 		requiredBuilding:"Colloseum",
 		requiredTech:"Banking"
@@ -258,6 +276,7 @@
 		name:"Windmill",
 		description: "",
 		production:2,
+		hurryCostModifier:25,
 		maintainance:2,
 		percentStatBonus:{production:10},
 		requiredTech:"Economics"
@@ -268,6 +287,7 @@
 		culture:5,
 		requiredBuilding:"Opera House",
 		maintainance:3,
+		hurryCostModifier:0,
 		requiredTech:"Archaeology"
 	},
 	{
@@ -294,6 +314,7 @@
 		science:3,
 		requiredBuilding:"University",
 		maintainance:3,
+		hurryCostModifier:0,
 		unique:"SciencePer2Pop",
 		requiredTech:"Scientific Theory"
 	},
@@ -303,6 +324,7 @@
 		food:5,
 		requiredBuilding:"Aqueduct",
 		maintainance:2,
+		hurryCostModifier:0,
 		requiredTech:"Biology"
 	},
 	{
@@ -311,6 +333,7 @@
 		production:4,
 		requiredBuilding:"Workshop",
 		maintainance:3,
+		hurryCostModifier:0,
 		requiredResource:"Coal",
 		requiredTech:"Steam Power"
 	},
@@ -319,6 +342,7 @@
 		description: "",
 		gold:3,
 		percentStatBonus:{gold:25},
+		hurryCostModifier:15,
 		requiredBuilding:"Bank",
 		requiredTech:"Electricity"
 	},
@@ -396,6 +420,70 @@
 		maintainance:2,
 		requiredTech:"Mass Media"
 	},
-	
-	
+	{
+		name:"Solar Plant",
+		description: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
+		production:5,		
+		percentStatBonus:{production:15},
+		requiredBuilding:"Factory",
+		maintainance:3,
+		cannotBeBuiltWith:"Nuclear Plant",
+		requiredTech:"Ecology",
+		unique:"MustBeNextToDesert"
+	},
+	{
+		name:"Apollo Program",
+		description: "Allows the building of spaceship parts",
+		isWonder:true,
+		unique:"ApolloProgram",
+		requiredTech:"Rocketry"
+	},
+	{
+		name:"Nuclear Plant",
+		description: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
+		production:5,		
+		percentStatBonus:{production:15},
+		requiredBuilding:"Factory",
+		maintainance:3,
+		cannotBeBuiltWith:"Solar Plant",
+		requiredResource:"Uranium",
+		requiredTech:"Nuclear Fission"
+	},
+	{
+		name:"Spaceship Factory",
+		description: "Increases production of spaceship parts by 50%",
+		production:3,
+		requiredResource:"Aluminum",
+		cost:360,
+		unique:"SpaceshipPartProductionBoost"
+		requiredTech:"Robotics"
+	},
+	{
+		name:"SS Booster",
+		description: "Spaceship part",
+		requiredResource:"Aluminum",
+		requiredTech:"Robotics",
+		unique:"SpaceshipPart"
+	},
+	{
+		name:"SS Cockpit",
+		description: "Spaceship part",
+		requiredResource:"Aluminum",
+		requiredTech:"Satellites",
+		unique:"SpaceshipPart"
+	},
+	{
+		name:"SS Engine",
+		description: "Spaceship part",
+		requiredResource:"Aluminum",
+		requiredTech:"Particle Physics",
+		unique:"SpaceshipPart"
+	},
+	{
+		name:"SS Statis Chamber",
+		description: "Spaceship part",
+		requiredResource:"Aluminum",
+		requiredTech:"Nanotechnology",
+		unique:"SpaceshipPart"
+	}
 ]

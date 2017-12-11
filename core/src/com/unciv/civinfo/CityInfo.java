@@ -4,14 +4,12 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
+import com.unciv.models.LinqCounter;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
-import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
-
-import java.util.ArrayList;
 
 public class CityInfo {
     public final Vector2 cityLocation;
@@ -22,6 +20,8 @@ public class CityInfo {
     private int tilesClaimed;
     public int population = 1;
     public int foodStored = 0;
+
+    public FullStats cityStats; // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones!
 
     private TileMap getTileMap(){return UnCivGame.Current.civInfo.tileMap; }
 
@@ -56,6 +56,8 @@ public class CityInfo {
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
         cityBuildings = new CityBuildings(this);
+        if(civInfo.cities.size()==0) cityBuildings.builtBuildings.add("Palace");
+        civInfo.cities.add(this);
 
         for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
             tileInfo.owner = civInfo.civName;
@@ -68,25 +70,22 @@ public class CityInfo {
             tile.terrainFeature=null;
 
         autoAssignWorker();
-        civInfo.cities.add(this);
+        updateCityStats();
     }
 
-    public LinqHashMap<TileResource,Integer> getCityResources(){
-        LinqHashMap<TileResource,Integer> cityResources = new LinqHashMap<TileResource, Integer>();
+    public LinqCounter<TileResource> getCityResources(){
+        LinqCounter<TileResource> cityResources = new LinqCounter<TileResource>();
 
         for (TileInfo tileInfo : getTilesInRange()) {
             TileResource resource = tileInfo.getTileResource();
-            if (resource != null && (resource.improvement.equals(tileInfo.improvement) || tileInfo.isCityCenter())){
-                if(cityResources.containsKey(resource)) cityResources.put(resource,cityResources.get(resource)+1);
-                else cityResources.put(resource,1);
-            }
+            if (resource != null && (resource.improvement.equals(tileInfo.improvement) || tileInfo.isCityCenter()))
+                cityResources.add(resource,1);
         }
         // Remove resources required by buildings
         for(Building building : cityBuildings.getBuiltBuildings()){
             if(building.requiredResource!=null){
                 TileResource resource = GameBasics.TileResources.get(building.requiredResource);
-                if(cityResources.containsKey(resource)) cityResources.put(resource,cityResources.get(resource)-1);
-                else cityResources.put(resource,-1);
+                cityResources.add(resource,-1);
             }
         }
         return cityResources;
@@ -109,7 +108,7 @@ public class CityInfo {
         return getFreePopulation() > 0;
     }
 
-    public FullStats getCityStats() {
+    public void updateCityStats() {
         FullStats stats = new FullStats();
         stats.science += population;
 
@@ -133,7 +132,7 @@ public class CityInfo {
         stats.add(cityBuildings.getStats());
 
         FullStats statPercentBonuses = cityBuildings.getStatPercentBonuses();
-        if(isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
+        if(isCapital() || isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
         stats.food*=1+statPercentBonuses.food/100;
         stats.gold*=1+statPercentBonuses.gold/100;
         stats.production*=1+statPercentBonuses.production/100;
@@ -143,8 +142,7 @@ public class CityInfo {
         stats.gold-=cityBuildings.getMaintainanceCosts(); // this is AFTER the bonus calculation!
         if(CivilizationInfo.current().getHappinessForNextTurn() < 0)
             stats.food /= 4; // Reduce excess food to 1/4
-
-        return stats;
+        this.cityStats = stats;
     }
 
     public float getCityHappiness(){ // needs to be a separate function because we need to know the global happiness state
@@ -154,8 +152,7 @@ public class CityInfo {
     }
 
     void nextTurn() {
-        FullStats stats = getCityStats();
-
+        FullStats stats = cityStats;
         if (cityBuildings.currentBuilding.equals(CityBuildings.Settler) && stats.food > 0) {
             stats.production += stats.food;
             stats.food = 0;
