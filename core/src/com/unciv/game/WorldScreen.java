@@ -462,9 +462,6 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
     }
 
 
-
-
-
     void setCenterPosition(final Vector2 vector){
         TileGroup TG = tileGroups.linqValues().first(new Predicate<WorldTileGroup>() {
             @Override
@@ -478,10 +475,6 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         scrollPane.setScrollX(x);
         scrollPane.setScrollY(y);
         scrollPane.updateVisualScroll();
-    }
-
-    float round(float value, int scale){
-        return (float) (Math.round(value * Math.pow(10, scale)) / Math.pow(10, scale));
     }
 
 }

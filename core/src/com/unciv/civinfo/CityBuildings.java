@@ -33,7 +33,7 @@ public class CityBuildings
 
     public CityInfo getCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).getCity(); }
     public boolean isBuilt(String buildingName) { return builtBuildings.contains(buildingName); }
-    public boolean isBuilding(String buildingName) { return currentBuilding.equals(buildingName); }
+    public boolean isBuilding(String buildingName) { return currentBuilding!=null && currentBuilding.equals(buildingName); }
 
     Building getGameBuilding(String buildingName) { return GameBasics.Buildings.get(buildingName); }
     public LinqCollection<Building> getBuiltBuildings(){ return  builtBuildings.select(new LinqCollection.Func<String, Building>() {
@@ -46,8 +46,8 @@ public class CityBuildings
     public void nextTurn(FullStats cityStats)
     {
         if (currentBuilding == null) return;
-        if(currentBuilding.equals("Gold")) {cityStats.gold+=cityStats.production/3; return;}
-        if(currentBuilding.equals("Science")) {cityStats.science+=cityStats.production/3; return;}
+        if(currentBuilding.equals("Gold")) {cityStats.gold+=cityStats.production/4; return;}
+        if(currentBuilding.equals("Science")) {cityStats.science+=cityStats.production/4; return;}
 
 
         Building gameBuilding = getGameBuilding(currentBuilding);

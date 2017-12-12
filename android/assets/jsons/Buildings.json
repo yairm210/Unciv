@@ -226,7 +226,7 @@
 		hurryCostModifier:25,
 		percentStatBonus:{science:50},
 		requiredBuilding:"Library",
-		requiredTech:"Metal Casting"
+		requiredTech:"Astronomy"
 	}, 
 	{
 		name:"Opera House",

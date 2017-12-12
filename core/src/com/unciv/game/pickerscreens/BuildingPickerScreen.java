@@ -72,11 +72,11 @@ public class BuildingPickerScreen extends PickerScreen {
 
         if(game.civInfo.tech.isResearched("Education"))
             specials.addActor(getProductionButton("Science","Produce Science",
-                    "Convert production to science at a rate of 3 to 1", "Produce Science"));
+                    "Convert production to science at a rate of 4 to 1", "Produce Science"));
 
         if(game.civInfo.tech.isResearched("Currency"))
             specials.addActor(getProductionButton("Gold","Produce Gold",
-                    "Convert production to gold at a rate of 3 to 1", "Produce Gold"));
+                    "Convert production to gold at a rate of 4 to 1", "Produce Gold"));
 
         topTable.add(regularBuildings);
         topTable.add(wonders);
