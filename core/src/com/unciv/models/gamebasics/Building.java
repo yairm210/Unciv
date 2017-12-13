@@ -17,10 +17,10 @@ public class Building extends NamedStats implements ICivilopedia {
     public FullStats percentStatBonus = new FullStats();
     public int hurryCostModifier; // Extra cost percentage when purchasing
     public boolean isWonder = false;
-    public boolean resourceBoostingBuilding = false;
     public String requiredBuilding;
     public String requiredBuildingInAllCities;
-    public String requiredResource;
+    public String requiredResource; // A strategic resource that will be consumed by this building
+    public LinqCollection requiredNearbyImprovedResources; // City can only be built if one of these resources is nearby - it must be improved!
     public String cannotBeBuiltWith;
 
     // Uniques

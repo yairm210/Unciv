@@ -111,13 +111,13 @@ public class CityBuildings
     {
         CivilizationInfo civInfo = UnCivGame.Current.civInfo;
         if(isBuilt(building.name)) return false;
-        if(building.resourceBoostingBuilding) {
+        if(building.requiredNearbyImprovedResources!=null) {
             boolean containsResourceWithImprovement = getCity().getTilesInRange()
                     .any(new Predicate<TileInfo>() {
                 @Override
                 public boolean evaluate(TileInfo tile) {
                     return tile.resource != null
-                        && building.name.equals(tile.getTileResource().building)
+                        && building.requiredNearbyImprovedResources.contains(tile.resource)
                         && tile.getTileResource().improvement.equals(tile.improvement);
                 }
             });

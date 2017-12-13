@@ -42,12 +42,31 @@
 		requiredTech:"Pottery"
 	},
 	{
+		name:"Stone Works",
+		description: "Stone and marble provide +1 production.", 
+		happiness:1,
+		production:1
+		requiredNearbyImprovedResources:["Marble","Stone"]
+		resourceBonusStats:{production:1},
+		maintainance:1,
+		hurryCostModifier:25,
+		requiredTech:"Calendar"
+	},
+	{
 		name:"Library",
 		description: "Adds 1 science for each 2 population in the city.", 
 		hurryCostModifier:25,
 		maintainance:1,
 		unique:"SciencePer2Pop",
 		requiredTech:"Writing"
+	},
+	{
+		name:"Circus",
+		description: "", 
+		requiredNearbyImprovedResources:["Ivory","Horses"]
+		happiness:2,
+		hurryCostModifier:25,
+		requiredTech:"Trapping"
 	},
 	{
 		name:"Great Library",
@@ -90,7 +109,7 @@
 		name:"Stable",
 		description: "Cattle, sheep and horses provide +1 production.", 
 		maintainance:1,
-		resourceBoostingBuilding:true,
+		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]
 		resourceBonusStats:{production:1},
 		hurryCostModifier:25,
 		requiredTech:"Horseback Riding"
@@ -129,18 +148,26 @@
 		requiredTech:"Currency"
 	},	
 	{
+		name:"Notre Dame",
+		description: "",
+		culture:1,
+		happiness:10,
+		isWonder:true,
+		requiredTech:"Theology"
+	},
+	{
 		name:"Chichen Itza",
 		description: "Length of golden ages increased +50%",
-		gold:5,
 		culture:1,
 		isWonder:true,
+		unique:"GoldenAgeLengthIncrease",
 		requiredTech:"Currency"
 	},
 	{
 		name:"Mint",
 		description: "",
 		maintainance:0,
-		resourceBoostingBuilding:true,
+		requiredNearbyImprovedResources:["Gold","Silver"],
 		resourceBonusStats:{gold:2},
 		hurryCostModifier:25,
 		requiredTech:"Currency"
@@ -177,7 +204,7 @@
 		description: "Iron provides +1 production", 
 		maintainance:1,
 		hurryCostModifier:25,
-		resourceBoostingBuilding:true,
+		requiredNearbyImprovedResources:["Iron"],
 		resourceBonusStats:{production:1},
 		requiredTech:"Metal Casting"
 	},
