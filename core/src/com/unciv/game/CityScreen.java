@@ -267,8 +267,8 @@ public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         if(selectedTile == null) return;
         TileTable.clearChildren();
 
-        CityInfo City =game.civInfo.getCurrentCity();
-        FullStats stats = selectedTile.getTileStats();
+        CityInfo city =game.civInfo.getCurrentCity();
+        FullStats stats = selectedTile.getTileStats(city);
         TileTable.pad(20);
         TileTable.columnDefaults(0).padRight(10);
 

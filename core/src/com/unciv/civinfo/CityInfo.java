@@ -114,8 +114,8 @@ public class CityInfo {
 
         // Working ppl
         for (TileInfo cell : getTilesInRange())
-            if (name.equals(cell.workingCity) || cell.isCityCenter())
-                stats.add(cell.getTileStats());
+            if (name.equals(cell.workingCity))
+                stats.add(cell.getTileStats(this));
 
         //idle ppl
         stats.production += getFreePopulation();
@@ -218,9 +218,7 @@ public class CityInfo {
         TileInfo toWork = null;
         for (TileInfo tileInfo : getTilesInRange()) {
             if (tileInfo.workingCity !=null) continue;
-            FullStats stats = tileInfo.getTileStats();
-
-            double value = stats.food + stats.production * 0.5;
+            double value = rankTile(tileInfo);
             if (value > maxValue) {
                 maxValue = value;
                 toWork = tileInfo;
@@ -232,7 +230,7 @@ public class CityInfo {
     }
 
     private double rankTile(TileInfo tile){
-        FullStats stats = tile.getTileStats();
+        FullStats stats = tile.getTileStats(this);
         double rank=0;
         if(stats.food <2) rank+=stats.food;
         else rank += 2 + (stats.food -2)/2; // 1 point for each food up to 2, from there on half a point

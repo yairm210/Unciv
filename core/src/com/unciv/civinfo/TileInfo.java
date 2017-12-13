@@ -51,7 +51,9 @@ public class TileInfo
 
     private boolean isResearched(String techName) { return UnCivGame.Current.civInfo.tech.isResearched(techName); }
 
-    public FullStats getTileStats()
+    public FullStats getTileStats(){return getTileStats(getCity());}
+
+    public FullStats getTileStats(CityInfo city)
     {
         FullStats stats = new FullStats(getBaseTerrain());
 
@@ -61,7 +63,6 @@ public class TileInfo
             else stats.add(terrainFeature);
         }
 
-        CityInfo city = getCity();
         TileResource resource = getTileResource();
         if (hasViewableResource())
         {
@@ -89,7 +90,8 @@ public class TileInfo
 
         if (stats.production < 0) stats.production = 0;
 
-        if("Jungle".equals(terrainFeature) && city.getBuildingUniques().contains("JunglesProvideScience")) stats.science+=2;
+        if("Jungle".equals(terrainFeature) && city!=null
+                && city.getBuildingUniques().contains("JunglesProvideScience")) stats.science+=2;
         if(stats.gold!=0 && CivilizationInfo.current().isGoldenAge())
             stats.gold++;
 
