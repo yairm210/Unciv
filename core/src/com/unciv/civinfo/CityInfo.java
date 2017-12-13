@@ -133,6 +133,7 @@ public class CityInfo {
 
         FullStats statPercentBonuses = cityBuildings.getStatPercentBonuses();
         if(isCapital() || isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
+        if(CivilizationInfo.current().isGoldenAge()) statPercentBonuses.production+=20;
         stats.food*=1+statPercentBonuses.food/100;
         stats.gold*=1+statPercentBonuses.gold/100;
         stats.production*=1+statPercentBonuses.production/100;
@@ -145,9 +146,9 @@ public class CityInfo {
         this.cityStats = stats;
     }
 
-    public float getCityHappiness(){ // needs to be a separate function because we need to know the global happiness state
+    public int getCityHappiness(){ // needs to be a separate function because we need to know the global happiness state
         // in order to determine how much food is produced in a city!
-        float happiness = -3 - population; // -3 happiness per city and -1 per population
+        int happiness = -3 - population; // -3 happiness per city and -1 per population
         return happiness + (int)cityBuildings.getStats().happiness;
     }
 

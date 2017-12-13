@@ -82,6 +82,7 @@ public class CityBuildings
                 if (gameBuilding.providesFreeBuilding != null && !builtBuildings.contains(gameBuilding.providesFreeBuilding))
                     builtBuildings.add(gameBuilding.providesFreeBuilding);
                 if (gameBuilding.freeTechs != 0) UnCivGame.Current.civInfo.tech.freeTechs += gameBuilding.freeTechs;
+                if("EmpireEntersGoldenAge".equals(gameBuilding.unique)) CivilizationInfo.current().enterGoldenAge();
             }
 
             inProgressBuildings.remove(currentBuilding);
@@ -168,7 +169,7 @@ public class CityBuildings
             @Override
             public boolean evaluate(Building arg0) { return canBuild(arg0); }
         })
-                .select(new com.unciv.models.LinqCollection.Func<Building, String>() {
+                .select(new LinqCollection.Func<Building, String>() {
                     @Override
                     public String GetBy(Building arg0) {
                         return arg0.name;

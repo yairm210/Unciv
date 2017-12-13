@@ -22,6 +22,8 @@ public class CivilizationInfo {
 
     public CivStats civStats = new CivStats();
     public int baseHappiness = 15;
+    public int numberOfGoldenAges=0;
+    public int turnsLeftForCurrentGoldenAge=0;
     public String civName = "Babylon";
 
     public CivilizationTech tech = new CivilizationTech();
@@ -58,11 +60,19 @@ public class CivilizationInfo {
         });
     }
 
+    public boolean isGoldenAge(){return turnsLeftForCurrentGoldenAge>0;}
+    public int happinessRequiredForNextGoldenAge(){
+        return (int) ((500+numberOfGoldenAges*250)*(1+cities.size()/100.0)); //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+    }
+
     public void nextTurn()
     {
         notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();
         civStats.add(nextTurnStats);
+
+        if(!isGoldenAge())
+            civStats.happiness += getHappinessForNextTurn();
 
         if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
@@ -71,7 +81,19 @@ public class CivilizationInfo {
         for(TileInfo tile : tileMap.values()) tile.nextTurn();
 
         for (CityInfo city : cities) city.updateCityStats();
-        turns += 1;
+        turns++;
+        if(isGoldenAge()) turnsLeftForCurrentGoldenAge--;
+
+        if(civStats.happiness > happinessRequiredForNextGoldenAge()){
+            enterGoldenAge();
+            numberOfGoldenAges++;
+        }
+    }
+
+    public void enterGoldenAge(){
+        civStats.happiness-=happinessRequiredForNextGoldenAge();
+        turnsLeftForCurrentGoldenAge = 10;
+        if(getBuildingUniques().contains("GoldenAgeLengthIncrease")) turnsLeftForCurrentGoldenAge*=1.5;
     }
 
     public CivStats getStatsForNextTurn() {
@@ -79,7 +101,7 @@ public class CivilizationInfo {
         for (CityInfo city : cities) {
             statsForTurn.add(city.cityStats);
         }
-        statsForTurn.happiness = getHappinessForNextTurn();
+        statsForTurn.happiness=0;
         return statsForTurn;
     }
 

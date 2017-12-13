@@ -86,9 +86,12 @@ public class TileInfo
             if (stats.food < 2) stats.food = 2;
             if (stats.production < 1) stats.production = 1;
         }
+
         if (stats.production < 0) stats.production = 0;
 
         if("Jungle".equals(terrainFeature) && city.getBuildingUniques().contains("JunglesProvideScience")) stats.science+=2;
+        if(stats.gold!=0 && CivilizationInfo.current().isGoldenAge())
+            stats.gold++;
 
         return stats;
     }

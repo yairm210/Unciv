@@ -171,7 +171,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
     private void updateCivTable() {
         CivTable.clear();
-        CivTable.row().pad(20);
+        CivTable.row().pad(15);
         CivStats currentStats = game.civInfo.civStats;
 
         TextButton CivilopediaButton = new TextButton("Menu",skin);
@@ -193,8 +193,16 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         CivTable.add(new Label("Gold: " + Math.round(currentStats.gold)
                 + "(" +(nextTurnStats.gold >0?"+":"") + Math.round(nextTurnStats.gold) +")", skin));
 
-        CivTable.add(new Label("Science: +" + Math.round(nextTurnStats.science), skin));
-        CivTable.add(new Label("Happiness: " + Math.round(nextTurnStats.happiness), skin));
+        Label scienceLabel = new Label("Science: +" + Math.round(nextTurnStats.science)
+                +"\r\n"+game.civInfo.tech.getAmountResearchedText(), skin);
+        scienceLabel.setAlignment(Align.center);
+        CivTable.add(scienceLabel);
+        String happinessText = "Happiness: " + Math.round(game.civInfo.getHappinessForNextTurn());
+        if(game.civInfo.isGoldenAge()) happinessText+="\r\n GOLDEN AGE ("+game.civInfo.turnsLeftForCurrentGoldenAge+")";
+        else happinessText+= "\r\n ("+(int)game.civInfo.civStats.happiness+"/"+game.civInfo.happinessRequiredForNextGoldenAge()+")";
+        Label happinessLabel = new Label(happinessText, skin);
+        happinessLabel.setAlignment(Align.center);
+        CivTable.add(happinessLabel);
         CivTable.add(new Label("Culture: " + Math.round(currentStats.culture) + "(+" + Math.round(nextTurnStats.culture) +")", skin));
 
         CivTable.pack();

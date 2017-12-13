@@ -41,9 +41,7 @@ public class CivilizationTech{
     public void nextTurn(int scienceForNewTurn){
         String CurrentTechnology = currentTechnology();
 
-        if (!techsInProgress.containsKey(CurrentTechnology))
-            techsInProgress.put(CurrentTechnology, 0);
-        techsInProgress.put(CurrentTechnology, techsInProgress.get(CurrentTechnology) + scienceForNewTurn);
+        techsInProgress.put(CurrentTechnology, researchOfTech(CurrentTechnology) + scienceForNewTurn);
         if (techsInProgress.get(CurrentTechnology) >= getCurrentTechnology().cost) // We finished it!
         {
             techsInProgress.remove(CurrentTechnology);
@@ -51,6 +49,11 @@ public class CivilizationTech{
             techsResearched.add(CurrentTechnology);
             CivilizationInfo.current().notifications.add("Research of "+CurrentTechnology+ " has completed!");
         }
+    }
+
+    public String getAmountResearchedText(){
+        if(currentTechnology()==null) return "";
+        return "("+researchOfTech(currentTechnology())+"/"+getCurrentTechnology().cost+")";
     }
 
 }
