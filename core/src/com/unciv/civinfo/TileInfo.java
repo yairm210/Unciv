@@ -61,15 +61,14 @@ public class TileInfo
             else stats.add(terrainFeature);
         }
 
+        CityInfo city = getCity();
         TileResource resource = getTileResource();
-
-        CityInfo City = getCity();
         if (hasViewableResource())
         {
-            stats.add(resource);
-            if(resource.building !=null && City!=null && City.cityBuildings.isBuilt(resource.building))
+            stats.add(resource); // resource base
+            if(resource.building !=null && city!=null && city.cityBuildings.isBuilt(resource.building))
             {
-                stats.add(resource.GetBuilding().resourceBonusStats);
+                stats.add(resource.GetBuilding().resourceBonusStats); // resource-specific building (eg forge, stable) bonus
             }
         }
 
@@ -77,17 +76,20 @@ public class TileInfo
         if (improvement != null)
         {
             if (resource != null && resource.improvement.equals(improvement.name))
-                stats.add(resource.improvementStats);
-            else stats.add(improvement);
+                stats.add(resource.improvementStats); // resource-specifc improvement
+            else stats.add(improvement); // basic improvement
 
-            if (isResearched(improvement.improvingTech)) stats.add(improvement.improvingTechStats);
+            if (isResearched(improvement.improvingTech)) stats.add(improvement.improvingTechStats); // eg Chemistry for mines
         }
 
-        if (City != null && City.cityLocation.equals(position)) {
+        if (isCityCenter()) {
             if (stats.food < 2) stats.food = 2;
             if (stats.production < 1) stats.production = 1;
         }
         if (stats.production < 0) stats.production = 0;
+
+        if("Jungle".equals(terrainFeature) && city.getBuildingUniques().contains("JunglesProvideScience")) stats.science+=2;
+
         return stats;
     }
 
