@@ -157,13 +157,15 @@ public class TileInfo
     }
 
     public String toString() {
-        StringBuilder SB = new StringBuilder(this.baseTerrain);
+        StringBuilder SB = new StringBuilder();
+        if (isCityCenter()) SB.append(workingCity+",\r\n");
+        SB.append(this.baseTerrain);
         if (terrainFeature != null) SB.append(",\r\n" + terrainFeature);
         if (hasViewableResource()) SB.append(",\r\n" + resource);
-        if(roadStatus!= RoadStatus.None) SB.append(",\r\n" + roadStatus);
+        if (roadStatus!= RoadStatus.None && !isCityCenter()) SB.append(",\r\n" + roadStatus);
         if (improvement != null) SB.append(",\r\n" + improvement);
         if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
-        if(unit !=null) SB.append(",\r\n" + unit.name + "("+ new DecimalFormat("0.#").format(unit.currentMovement)+"/"+ unit.maxMovement +")");
+        if (unit !=null) SB.append(",\r\n" + unit.name + "("+ new DecimalFormat("0.#").format(unit.currentMovement)+"/"+ unit.maxMovement +")");
         return SB.toString();
     }
 
