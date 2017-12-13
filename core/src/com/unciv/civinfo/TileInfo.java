@@ -3,6 +3,7 @@ package com.unciv.civinfo;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
+import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Terrain;
 import com.unciv.models.gamebasics.TileImprovement;
@@ -131,6 +132,19 @@ public class TileInfo
 
             String notification = improvementInProgress+" has been completed";
             if(workingCity!=null) notification+=" for "+getCity().name;
+            else {
+                for (int i = 1; i < 3; i++) {
+                    LinqCollection<TileInfo> tilesWithCity = CivilizationInfo.current().tileMap.getTilesInDistance(position, i).where(new Predicate<TileInfo>() {
+                        @Override
+                        public boolean evaluate(TileInfo arg0) {
+                            return arg0.isCityCenter();
+                        }
+                    });
+                    if(tilesWithCity.isEmpty()) continue;
+                    notification+=" near "+tilesWithCity.get(0).workingCity;
+                    break;
+                }
+            }
             notification+="!";
             CivilizationInfo.current().notifications.add(notification);
             improvementInProgress = null;

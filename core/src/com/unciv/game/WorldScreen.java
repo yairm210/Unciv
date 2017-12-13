@@ -258,7 +258,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             });
 
 
-            Vector2 positionalVector = com.unciv.game.utils.HexMath.Hex2WorldCoords(tileInfo.position);
+            Vector2 positionalVector = HexMath.Hex2WorldCoords(tileInfo.position);
             int groupSize = 50;
             group.setPosition(stage.getWidth() / 2 + positionalVector.x * 0.8f * groupSize,
                     stage.getHeight() / 2 + positionalVector.y * 0.8f * groupSize);
@@ -442,7 +442,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         // tiles adjacent to city tiles
         for(TileInfo tileInfo : game.civInfo.tileMap.values())
             if(game.civInfo.civName.equals(tileInfo.owner))
-                for(Vector2 adjacentLocation : com.unciv.game.utils.HexMath.GetAdjacentVectors(tileInfo.position))
+                for(Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileInfo.position))
                     ViewableVectorStrings.add(adjacentLocation.toString());
 
         // Tiles within 2 tiles of units
@@ -453,7 +453,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                 return arg0.unit !=null;
             }
         }))
-            for(Vector2 vector : com.unciv.game.utils.HexMath.GetVectorsInDistance(tile.position,2))
+            for(Vector2 vector : HexMath.GetVectorsInDistance(tile.position,2))
                 ViewableVectorStrings.add(vector.toString());
 
         for(String string : ViewableVectorStrings)
@@ -469,11 +469,12 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                 return arg0.tileInfo.position.equals(vector) ;
             }
         });
-        float x = TG.getX()-stage.getWidth()/2;
-        float y = TG.getY()-stage.getHeight()/2;
-        scrollPane.layout();
-        scrollPane.setScrollX(x);
-        scrollPane.setScrollY(y);
+        scrollPane.layout(); // Fit the scroll pane to the contents - otherwise, setScroll won't work!
+        // We want to center on the middle of TG (TG.getX()+TG.getWidth()/2)
+        // and so the scroll position (== where the screen starts) needs to be half a screen away
+        scrollPane.setScrollX(TG.getX()+TG.getWidth()/2-stage.getWidth()/2);
+        // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
+        scrollPane.setScrollY(scrollPane.getMaxY() - (TG.getY() + TG.getWidth()/2 - stage.getHeight()/2));
         scrollPane.updateVisualScroll();
     }
 
