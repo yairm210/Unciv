@@ -93,6 +93,7 @@ public class TileInfo
 
     public boolean canBuildImprovement(TileImprovement improvement)
     {
+        if(improvement.name.equals(this.improvement)) return false;
         Terrain topTerrain = terrainFeature ==null ? getBaseTerrain() : getTerrainFeature();
         if (improvement.techRequired != null && !isResearched(improvement.techRequired)) return false;
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true;
@@ -100,10 +101,7 @@ public class TileInfo
         if(improvement.name.equals("Railroad") && this.roadStatus != RoadStatus.Railroad) return true;
         if (topTerrain.unbuildable) return false;
 
-        if(improvement.name.equals(this.improvement)) return false;
-
-
-        return resource != null && getTileResource().improvement.equals(improvement.name);
+        return hasViewableResource() && getTileResource().improvement.equals(improvement.name);
     }
 
     public void startWorkingOnImprovement(String improvementName,int turnsToBuild)
