@@ -22,7 +22,6 @@ import com.badlogic.gdx.utils.Align;
 import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.BuildingPickerScreen;
-import com.unciv.game.pickerscreens.PickerScreen;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.stats.FullStats;
 
@@ -203,8 +202,7 @@ public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
         HashMap<String,String> CityStatsValues = new LinkedHashMap<String, String>();
         CityStatsValues.put("Production",Math.round(stats.production)
-                +" ("+ cityInfo.cityBuildings.workDone(cityInfo.cityBuildings.currentBuilding)
-                +"/"+cityInfo.cityBuildings.getCurrentBuilding().cost+")");
+                +cityInfo.cityBuildings.getAmountConstructedText());
         CityStatsValues.put("Food",Math.round(stats.food)
                 +" ("+cityInfo.foodStored+"/"+cityInfo.foodToNextPopulation()+")");
         CityStatsValues.put("Gold",Math.round(stats.gold) +"");
@@ -239,7 +237,7 @@ public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
 
         Building building = cityInfo.cityBuildings.getCurrentBuilding();
-        if(!building.isWonder) {
+        if(building != null && !building.isWonder) {
             CityStatsTable.row();
             int buildingGoldCost = building.getGoldCost();
             TextButton buildingBuyButton = new TextButton("Buy for \r\n"+buildingGoldCost+" gold", skin);

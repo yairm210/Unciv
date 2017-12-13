@@ -134,9 +134,12 @@ public class CityInfo {
         FullStats statPercentBonuses = cityBuildings.getStatPercentBonuses();
         if(isCapital() || isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
         if(CivilizationInfo.current().isGoldenAge()) statPercentBonuses.production+=20;
+
+        stats.production*=1+statPercentBonuses.production/100;  // So they get bonuses for production and gold/science
+        if(cityBuildings.currentBuilding.equals("Gold")) stats.gold+=stats.production/4;
+        if(cityBuildings.currentBuilding.equals("Science")) stats.science+=stats.production/4;
         stats.food*=1+statPercentBonuses.food/100;
         stats.gold*=1+statPercentBonuses.gold/100;
-        stats.production*=1+statPercentBonuses.production/100;
         stats.science*=1+statPercentBonuses.science/100;
         stats.culture*=1+statPercentBonuses.culture/100;
 
@@ -284,5 +287,8 @@ public class CityInfo {
             }
         });
     }
+
+
+
 
 }

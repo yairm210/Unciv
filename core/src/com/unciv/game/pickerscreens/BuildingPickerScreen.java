@@ -48,6 +48,7 @@ public class BuildingPickerScreen extends PickerScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.civInfo.getCurrentCity().cityBuildings.currentBuilding = selectedProduction;
+                game.civInfo.getCurrentCity().updateCityStats(); // Because maybe we set/removed the science or gold production options.
                 game.setScreen(new CityScreen(game));
                 dispose();
             }

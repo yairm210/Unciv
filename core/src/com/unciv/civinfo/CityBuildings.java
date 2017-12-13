@@ -45,10 +45,7 @@ public class CityBuildings
 
     public void nextTurn(FullStats cityStats)
     {
-        if (currentBuilding == null) return;
-        if(currentBuilding.equals("Gold")) {cityStats.gold+=cityStats.production/4; return;}
-        if(currentBuilding.equals("Science")) {cityStats.science+=cityStats.production/4; return;}
-
+        if (getCurrentBuilding()==null) return;
 
         Building gameBuilding = getGameBuilding(currentBuilding);
 
@@ -234,5 +231,11 @@ public class CityBuildings
         if(!result.equals("Science") && !result.equals("Gold"))
             result+="\r\n"+turnsToBuilding(currentBuilding)+" turns";
         return result;
+    }
+
+
+    public String getAmountConstructedText(){
+        if(currentBuilding.equals("Science")  || currentBuilding.equals("Gold")) return "";
+        return " ("+ workDone(currentBuilding) + "/"+getCurrentBuilding().cost+")";
     }
 }
