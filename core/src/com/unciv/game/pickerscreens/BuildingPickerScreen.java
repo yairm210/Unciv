@@ -6,7 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.unciv.civinfo.CityBuildings;
+import com.unciv.civinfo.CityConstructions;
+import com.unciv.civinfo.Unit;
 import com.unciv.game.CityScreen;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.gamebasics.Building;
@@ -47,7 +48,7 @@ public class BuildingPickerScreen extends PickerScreen {
         rightSideButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.civInfo.getCurrentCity().cityBuildings.currentBuilding = selectedProduction;
+                game.civInfo.getCurrentCity().cityConstructions.currentConstruction = selectedProduction;
                 game.civInfo.getCurrentCity().updateCityStats(); // Because maybe we set/removed the science or gold production options.
                 game.setScreen(new CityScreen(game));
                 dispose();
@@ -56,19 +57,27 @@ public class BuildingPickerScreen extends PickerScreen {
         rightSideButton.setTouchable(Touchable.disabled);
         rightSideButton.setColor(Color.GRAY);
 
-        CityBuildings cityBuildings = game.civInfo.getCurrentCity().cityBuildings;
+        CityConstructions cityBuildings = game.civInfo.getCurrentCity().cityConstructions;
         VerticalGroup regularBuildings = new VerticalGroup().space(10),
                 wonders = new VerticalGroup().space(10),
+                units = new VerticalGroup().space(10),
                 specials = new VerticalGroup().space(10);
 
         for(final Building building : GameBasics.Buildings.values()) {
-            if(!cityBuildings.canBuild(building)) continue;
+            if(!building.isBuildable(cityBuildings)) continue;
             TextButton TB = getProductionButton(building.name,
-                    building.name +"\r\n"+cityBuildings.turnsToBuilding(building.name)+" turns",
+                    building.name +"\r\n"+cityBuildings.turnsToConstruction(building.name)+" turns",
                     building.getDescription(true),
                     "Build "+building.name);
             if(building.isWonder) wonders.addActor(TB);
             else regularBuildings.addActor(TB);
+        }
+
+        for(Unit unit : GameBasics.Units.values()){
+            if(!unit.isConstructable()) continue;
+            units.addActor(getProductionButton(unit.name,
+                    unit.name+"\r\n"+cityBuildings.turnsToConstruction(unit.name)+" turns",
+                    unit.description, "Train "+unit.name));
         }
 
         if(game.civInfo.tech.isResearched("Education"))
@@ -79,6 +88,7 @@ public class BuildingPickerScreen extends PickerScreen {
             specials.addActor(getProductionButton("Gold","Produce Gold",
                     "Convert production to gold at a rate of 4 to 1", "Produce Gold"));
 
+        topTable.add(units);
         topTable.add(regularBuildings);
         topTable.add(wonders);
         topTable.add(specials);

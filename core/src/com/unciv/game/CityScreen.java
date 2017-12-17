@@ -20,6 +20,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 
 import com.unciv.civinfo.CityInfo;
+import com.unciv.civinfo.IConstruction;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.BuildingPickerScreen;
 import com.unciv.models.gamebasics.Building;
@@ -202,7 +203,7 @@ public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
         HashMap<String,String> CityStatsValues = new LinkedHashMap<String, String>();
         CityStatsValues.put("Production",Math.round(stats.production)
-                +cityInfo.cityBuildings.getAmountConstructedText());
+                +cityInfo.cityConstructions.getAmountConstructedText());
         CityStatsValues.put("Food",Math.round(stats.food)
                 +" ("+cityInfo.foodStored+"/"+cityInfo.foodToNextPopulation()+")");
         CityStatsValues.put("Gold",Math.round(stats.gold) +"");
@@ -217,10 +218,10 @@ public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             CityStatsTable.row();
         }
 
-        String CurrentBuilding = game.civInfo.getCurrentCity().cityBuildings.currentBuilding;
+        String CurrentBuilding = game.civInfo.getCurrentCity().cityConstructions.currentConstruction;
 
         String BuildingText = "Pick building";
-        if(CurrentBuilding != null) BuildingText = cityInfo.cityBuildings.getCityProductionText();
+        if(CurrentBuilding != null) BuildingText = cityInfo.cityConstructions.getCityProductionTextForCityButton();
         TextButton buildingPickButton = new TextButton(BuildingText,skin);
         buildingPickButton.addListener(new ClickListener(){
             @Override
@@ -236,15 +237,15 @@ public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
 
-        Building building = cityInfo.cityBuildings.getCurrentBuilding();
-        if(building != null && !building.isWonder) {
+        IConstruction construction = cityInfo.cityConstructions.getCurrentConstruction();
+        if(construction != null && !(construction instanceof  Building && ((Building)construction).isWonder)) {
             CityStatsTable.row();
-            int buildingGoldCost = building.getGoldCost();
+            int buildingGoldCost = construction.getGoldCost();
             TextButton buildingBuyButton = new TextButton("Buy for \r\n"+buildingGoldCost+" gold", skin);
             buildingBuyButton.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
-                    cityInfo.cityBuildings.purchaseBuilding(cityInfo.cityBuildings.currentBuilding);
+                    cityInfo.cityConstructions.purchaseBuilding(cityInfo.cityConstructions.currentConstruction);
                     updateCityTable();
                 }
             });

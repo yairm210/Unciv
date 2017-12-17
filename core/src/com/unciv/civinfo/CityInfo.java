@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqCounter;
-import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileResource;
@@ -15,7 +14,7 @@ public class CityInfo {
     public final Vector2 cityLocation;
     public String name;
 
-    public CityBuildings cityBuildings;
+    public CityConstructions cityConstructions;
     public int cultureStored;
     private int tilesClaimed;
     public int population = 1;
@@ -35,7 +34,9 @@ public class CityInfo {
         });
     }
 
-    private String[] CityNames = new String[]{"Assur", "Ninveh", "Nimrud", "Kar-Tukuli-Ninurta", "Dur-Sharrukin"};
+    private String[] CityNames = new String[]{
+        "New Bark","Cherrygrove","Violet","Azalea","Goldenrod","Ecruteak","Olivine","Cianwood","Mahogany","Blackthorn",
+        "Pallet","Viridian","Pewter","Cerulean","Vermillion","Lavender","Celadon","Fuchsia","Saffron","Cinnibar"};
 
     public CityInfo(){
         cityLocation = Vector2.Zero;
@@ -55,8 +56,8 @@ public class CityInfo {
     CityInfo(CivilizationInfo civInfo, Vector2 cityLocation) {
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
-        cityBuildings = new CityBuildings(this);
-        if(civInfo.cities.size()==0) cityBuildings.builtBuildings.add("Palace");
+        cityConstructions = new CityConstructions(this);
+        if(civInfo.cities.size()==0) cityConstructions.builtBuildings.add("Palace");
         civInfo.cities.add(this);
 
         for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
@@ -82,7 +83,7 @@ public class CityInfo {
                 cityResources.add(resource,1);
         }
         // Remove resources required by buildings
-        for(Building building : cityBuildings.getBuiltBuildings()){
+        for(Building building : cityConstructions.getBuiltBuildings()){
             if(building.requiredResource!=null){
                 TileResource resource = GameBasics.TileResources.get(building.requiredResource);
                 cityResources.add(resource,-1);
@@ -119,7 +120,6 @@ public class CityInfo {
 
         //idle ppl
         stats.production += getFreePopulation();
-        stats.food -= population * 2;
 
         if(!isCapital() && isConnectedToCapital(RoadStatus.Road)) {
             // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
@@ -129,35 +129,47 @@ public class CityInfo {
             stats.gold += goldFromTradeRoute;
         }
 
-        stats.add(cityBuildings.getStats());
+        stats.add(cityConstructions.getStats());
 
-        FullStats statPercentBonuses = cityBuildings.getStatPercentBonuses();
+        FullStats statPercentBonuses = cityConstructions.getStatPercentBonuses();
         if(isCapital() || isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
         if(CivilizationInfo.current().isGoldenAge()) statPercentBonuses.production+=20;
+        IConstruction currentConstruction = cityConstructions.getCurrentConstruction();
+        if(currentConstruction instanceof Building && ((Building)currentConstruction).isWonder &&
+                CivilizationInfo.current().getCivResources().containsKey(GameBasics.TileResources.get("Marble")))
+            statPercentBonuses.production+=15;
+
 
         stats.production*=1+statPercentBonuses.production/100;  // So they get bonuses for production and gold/science
-        if(cityBuildings.currentBuilding.equals("Gold")) stats.gold+=stats.production/4;
-        if(cityBuildings.currentBuilding.equals("Science")) stats.science+=stats.production/4;
-        stats.food*=1+statPercentBonuses.food/100;
+        if(cityConstructions.currentConstruction.equals("Gold")) stats.gold+=stats.production/4;
+        if(cityConstructions.currentConstruction.equals("Science")) stats.science+=stats.production/4;
+
         stats.gold*=1+statPercentBonuses.gold/100;
         stats.science*=1+statPercentBonuses.science/100;
         stats.culture*=1+statPercentBonuses.culture/100;
 
-        stats.gold-=cityBuildings.getMaintainanceCosts(); // this is AFTER the bonus calculation!
-        if(CivilizationInfo.current().getHappinessForNextTurn() < 0)
-            stats.food /= 4; // Reduce excess food to 1/4
+        boolean isUnhappy =CivilizationInfo.current().getHappinessForNextTurn() < 0;
+        if (!isUnhappy) stats.food*=1+statPercentBonuses.food/100; // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+        stats.food -= population * 2; // Food reduced after the bonus
+        if(isUnhappy) stats.food /= 4; // Reduce excess food to 1/4 per the same
+
+
+        stats.gold-= cityConstructions.getMaintainanceCosts(); // this is AFTER the bonus calculation!
         this.cityStats = stats;
     }
 
-    public int getCityHappiness(){ // needs to be a separate function because we need to know the global happiness state
+    public float getCityHappiness(){ // needs to be a separate function because we need to know the global happiness state
         // in order to determine how much food is produced in a city!
-        int happiness = -3 - population; // -3 happiness per city and -1 per population
-        return happiness + (int)cityBuildings.getStats().happiness;
+        float happiness = -3; // -3 happiness per city
+        if(CivilizationInfo.current().getBuildingUniques().contains("CitizenUnhappinessDecreased"))
+            happiness-=population*0.9;
+        else happiness-=population; //and -1 per population
+        return happiness + (int) cityConstructions.getStats().happiness;
     }
 
     void nextTurn() {
         FullStats stats = cityStats;
-        if (cityBuildings.currentBuilding.equals(CityBuildings.Settler) && stats.food > 0) {
+        if (cityConstructions.currentConstruction.equals(CityConstructions.Settler) && stats.food > 0) {
             stats.production += stats.food;
             stats.food = 0;
         }
@@ -178,7 +190,7 @@ public class CityInfo {
             CivilizationInfo.current().notifications.add(name+" has grown!");
         }
 
-        cityBuildings.nextTurn(stats);
+        cityConstructions.nextTurn(stats);
 
         cultureStored+=stats.culture;
         if(cultureStored>=getCultureToNextTile()){
@@ -275,7 +287,7 @@ public class CityInfo {
     }
 
     public LinqCollection<String> getBuildingUniques(){
-        return cityBuildings.getBuiltBuildings().select(new LinqCollection.Func<Building, String>() {
+        return cityConstructions.getBuiltBuildings().select(new LinqCollection.Func<Building, String>() {
             @Override
             public String GetBy(Building arg0) {
                 return arg0.unique;

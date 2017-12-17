@@ -1,9 +1,15 @@
 package com.unciv.models.gamebasics;
 
+import com.unciv.models.stats.INamed;
 import com.unciv.models.stats.NamedStats;
 
-public class BasicHelp extends NamedStats implements ICivilopedia {
+public class BasicHelp implements ICivilopedia, INamed {
     public String description;
+    public String name;
+
+    public String getName() {
+        return name;
+    }
 
     @Override
     public String getDescription() {

@@ -125,5 +125,13 @@ public class TileMap{
         }).getRandom();
     }
 
+    void placeUnitNearTile(Vector2 position, Unit unit){
+        getTilesInDistance(position,1).first(new Predicate<TileInfo>() {
+            @Override
+            public boolean evaluate(TileInfo arg0) {
+                return arg0.unit==null;
+            }
+        }).unit = unit; // And if there's none, then kill me.
+    }
 
 }

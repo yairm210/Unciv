@@ -17,6 +17,8 @@ import com.unciv.models.gamebasics.TechColumn;
 import com.unciv.models.gamebasics.Terrain;
 import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.gamebasics.TileResource;
+import com.unciv.models.stats.INamed;
+import com.unciv.models.stats.NamedStats;
 
 public class UnCivGame extends Game {
 
@@ -64,9 +66,9 @@ public class UnCivGame extends Game {
         return new Json().fromJson(tClass,jsonText);
     }
 
-    private <T extends com.unciv.models.stats.NamedStats> LinqHashMap<String,T> CreateHashmap(Class<T> tClass, T[] items){
+    private <T extends INamed> LinqHashMap<String,T> CreateHashmap(Class<T> tClass, T[] items){
         LinqHashMap<String,T> hashMap = new LinqHashMap<String, T>();
-        for(T item:items) hashMap.put(item.GetName(),item);
+        for(T item:items) hashMap.put(item.getName(),item);
         return hashMap;
     }
 
@@ -76,6 +78,7 @@ public class UnCivGame extends Game {
         GameBasics.TileResources =  CreateHashmap(TileResource.class,GetFromJson(TileResource[].class,"TileResources"));
         GameBasics.TileImprovements =  CreateHashmap(TileImprovement.class,GetFromJson(TileImprovement[].class,"TileImprovements"));
         GameBasics.Helps  = CreateHashmap(BasicHelp.class,GetFromJson(BasicHelp[].class,"BasicHelp"));
+        GameBasics.Units  = CreateHashmap(Unit.class,GetFromJson(Unit[].class,"Units"));
 
         TechColumn[] TechColumns = GetFromJson(TechColumn[].class, "Techs");
         GameBasics.Technologies = new LinqHashMap<String, Technology>();

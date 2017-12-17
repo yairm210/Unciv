@@ -62,7 +62,7 @@ public class WorldTileGroup extends TileGroup {
             }
 
             String cityButtonText = city.name +" ("+city.population+")";
-//                    +" ("+city.population+")" + "\r\n" + city.cityBuildings.getCityProductionText();
+//                    +" ("+city.population+")" + "\r\n" + city.cityConstructions.getCityProductionTextForCityButton();
             TextButton button = cityButton.getActor();
             button.setText(cityButtonText);
             button.setSize(button.getPrefWidth(), button.getPrefHeight());

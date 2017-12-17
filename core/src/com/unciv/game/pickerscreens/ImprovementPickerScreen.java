@@ -37,12 +37,15 @@ public class ImprovementPickerScreen extends PickerScreen {
         regularImprovements.space(10);
         for(final TileImprovement improvement : GameBasics.TileImprovements.values()) {
             if(!tileInfo.canBuildImprovement(improvement) || improvement.name.equals(tileInfo.improvement)) continue;
-            TextButton TB = new TextButton(improvement.name +"\r\n"+improvement.turnsToBuild +" turns", skin);
+            int turnsToBuild = improvement.turnsToBuild;
+            if(CivilizationInfo.current().getBuildingUniques().contains("WorkerConstruction")) turnsToBuild= (int) Math.round(0.75*turnsToBuild);
+            TextButton TB = new TextButton(improvement.name +"\r\n"+turnsToBuild +" turns", skin);
+            final int finalTurnsToBuild = turnsToBuild;
             TB.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     SelectedImprovement = improvement.name;
-                    TurnsToImprovement = improvement.turnsToBuild;
+                    TurnsToImprovement = finalTurnsToBuild;
                     rightSideButton.setTouchable(Touchable.enabled);
                     rightSideButton.setText(improvement.name);
                     rightSideButton.setColor(Color.WHITE);

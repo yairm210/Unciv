@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.RoadStatus;
 import com.unciv.civinfo.TileInfo;
+import com.unciv.game.utils.ImageGetter;
 import com.unciv.models.LinqHashMap;
 
 public class TileGroup extends Group {
@@ -18,6 +19,7 @@ public class TileGroup extends Group {
     Image resourceImage;
     Image unitImage;
     Image improvementImage;
+    String improvementType;
     Image populationImage;
     LinqHashMap<String,Image> roadImages = new LinqHashMap<String, Image>();
     Image hexagon;
@@ -30,14 +32,14 @@ public class TileGroup extends Group {
 
         terrainType = tileInfo.getLastTerrain().name;
         String terrainFileName = "TerrainIcons/" + terrainType.replace(' ','_') + "_(Civ5).png";
-        terrainImage = com.unciv.game.utils.ImageGetter.getImageByFilename(terrainFileName);
+        terrainImage = ImageGetter.getImageByFilename(terrainFileName);
         terrainImage.setSize(50,50);
         addActor(terrainImage);
     }
 
 
     void addPopulationIcon(){
-        populationImage = com.unciv.game.utils.ImageGetter.getStatIcon("Population");
+        populationImage = ImageGetter.getStatIcon("Population");
         populationImage.moveBy(0, terrainImage.getHeight()-populationImage.getHeight()); // top left
         addActor(populationImage);
     }
@@ -52,12 +54,12 @@ public class TileGroup extends Group {
         if(!terrainType.equals(tileInfo.getLastTerrain().name)) {
             terrainType = tileInfo.getLastTerrain().name;
             String terrainFileName = "TerrainIcons/" + terrainType.replace(' ', '_') + "_(Civ5).png";
-            terrainImage.setDrawable(new TextureRegionDrawable(com.unciv.game.utils.ImageGetter.textureRegionByFileName.get(terrainFileName))); // In case we e.g. removed a jungle
+            terrainImage.setDrawable(new TextureRegionDrawable(ImageGetter.textureRegionByFileName.get(terrainFileName))); // In case we e.g. removed a jungle
         }
 
         if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";
-            Image image = com.unciv.game.utils.ImageGetter.getImageByFilename(fileName);
+            Image image = ImageGetter.getImageByFilename(fileName);
             image.setSize(20,20);
             image.moveBy(terrainImage.getWidth()-image.getWidth(), 0); // bottom right
             resourceImage = image;
@@ -65,7 +67,7 @@ public class TileGroup extends Group {
         }
 
         if (tileInfo.unit != null && unitImage == null) {
-            unitImage = com.unciv.game.utils.ImageGetter.getImageByFilename("StatIcons/" + tileInfo.unit.name + "_(Civ5).png");
+            unitImage = ImageGetter.getImageByFilename("StatIcons/" + tileInfo.unit.name + "_(Civ5).png");
             addActor(unitImage);
             unitImage.setSize(20, 20); // not moved - is at bottom left
         }
@@ -83,12 +85,13 @@ public class TileGroup extends Group {
         }
 
 
-        if (tileInfo.improvement != null && improvementImage == null) {
-            improvementImage = com.unciv.game.utils.ImageGetter.getImageByFilename("ImprovementIcons/" + tileInfo.improvement.replace(' ','_') + "_(Civ5).png");
+        if (tileInfo.improvement != null &&!tileInfo.improvement.equals(improvementType)) {
+            improvementImage = ImageGetter.getImageByFilename("ImprovementIcons/" + tileInfo.improvement.replace(' ','_') + "_(Civ5).png");
             addActor(improvementImage);
             improvementImage.setSize(20, 20);
             improvementImage.moveBy(terrainImage.getWidth()-improvementImage.getWidth(),
                     terrainImage.getHeight() - improvementImage.getHeight()); // top right
+            improvementType = tileInfo.improvement;
         }
 
         if(populationImage!=null){
@@ -101,7 +104,7 @@ public class TileGroup extends Group {
                 if (neighbor == tileInfo || neighbor.roadStatus == RoadStatus.None) continue;
                 if (roadImages.containsKey(neighbor.position.toString())) continue;
 
-                Image image = com.unciv.game.utils.ImageGetter.getImageByFilename("TerrainIcons/road.png");
+                Image image = ImageGetter.getImageByFilename("TerrainIcons/road.png");
                 roadImages.put(neighbor.position.toString(), image);
 
                 Vector2 relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position);

@@ -5,12 +5,12 @@ import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqCounter;
-import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.CivStats;
+import com.unciv.models.stats.FullStats;
 
 import java.util.Collection;
 
@@ -25,6 +25,8 @@ public class CivilizationInfo {
     public int numberOfGoldenAges=0;
     public int turnsLeftForCurrentGoldenAge=0;
     public String civName = "Babylon";
+
+    public FullStats greatPersonPoints = new FullStats();
 
     public CivilizationTech tech = new CivilizationTech();
     public int turns = 1;
@@ -55,7 +57,7 @@ public class CivilizationInfo {
         return cities.first(new Predicate<CityInfo>() {
             @Override
             public boolean evaluate(CityInfo arg0) {
-                return arg0.cityBuildings.isBuilt("Palace");
+                return arg0.cityConstructions.isBuilt("Palace");
             }
         });
     }
@@ -71,8 +73,9 @@ public class CivilizationInfo {
         CivStats nextTurnStats = getStatsForNextTurn();
         civStats.add(nextTurnStats);
 
-        if(!isGoldenAge())
-            civStats.happiness += getHappinessForNextTurn();
+        int happiness = getHappinessForNextTurn();
+        if(!isGoldenAge() && happiness>0)
+            civStats.happiness += happiness;
 
         if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
@@ -102,6 +105,10 @@ public class CivilizationInfo {
             statsForTurn.add(city.cityStats);
         }
         statsForTurn.happiness=0;
+        for(TileInfo tile : tileMap.values()) {
+            if (tile.roadStatus == RoadStatus.Road) statsForTurn.gold += 1;
+            else if(tile.roadStatus == RoadStatus.Railroad) statsForTurn.gold +=2;
+        }
         return statsForTurn;
     }
 
@@ -130,7 +137,7 @@ public class CivilizationInfo {
         return cities.selectMany(new LinqCollection.Func<CityInfo, Collection<? extends String>>() {
             @Override
             public Collection<? extends String> GetBy(CityInfo arg0) {
-                return arg0.cityBuildings.getBuiltBuildings().select(new LinqCollection.Func<Building, String>() {
+                return arg0.cityConstructions.getBuiltBuildings().select(new LinqCollection.Func<Building, String>() {
                     @Override
                     public String GetBy(Building arg0) {
                         return arg0.unique;

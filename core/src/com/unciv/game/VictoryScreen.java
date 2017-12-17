@@ -6,8 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.game.utils.CameraStageBaseScreen;
 
-import javax.xml.soap.Text;
-
 public class VictoryScreen extends CameraStageBaseScreen{
 
     public VictoryScreen(final UnCivGame game) {

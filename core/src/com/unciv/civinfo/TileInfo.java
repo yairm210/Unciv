@@ -67,7 +67,7 @@ public class TileInfo
         if (hasViewableResource())
         {
             stats.add(resource); // resource base
-            if(resource.building !=null && city!=null && city.cityBuildings.isBuilt(resource.building))
+            if(resource.building !=null && city!=null && city.cityConstructions.isBuilt(resource.building))
             {
                 stats.add(resource.GetBuilding().resourceBonusStats); // resource-specific building (eg forge, stable) bonus
             }
@@ -124,7 +124,7 @@ public class TileInfo
 
     public void nextTurn()
     {
-        if(unit !=null) unit.currentMovement = unit.maxMovement;
+        if(unit !=null) unit.currentMovement = unit.movement;
 
         if (improvementInProgress == null || unit ==null || !unit.name.equals("Worker")) return;
         turnsToImprovement -= 1;
@@ -158,14 +158,14 @@ public class TileInfo
 
     public String toString() {
         StringBuilder SB = new StringBuilder();
-        if (isCityCenter()) SB.append(workingCity+",\r\n");
+        if (isCityCenter()){SB.append(workingCity+",\r\n"+getCity().cityConstructions.getProductionForTileInfo());}
         SB.append(this.baseTerrain);
         if (terrainFeature != null) SB.append(",\r\n" + terrainFeature);
         if (hasViewableResource()) SB.append(",\r\n" + resource);
         if (roadStatus!= RoadStatus.None && !isCityCenter()) SB.append(",\r\n" + roadStatus);
         if (improvement != null) SB.append(",\r\n" + improvement);
         if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
-        if (unit !=null) SB.append(",\r\n" + unit.name + "("+ new DecimalFormat("0.#").format(unit.currentMovement)+"/"+ unit.maxMovement +")");
+        if (unit !=null) SB.append(",\r\n" + unit.name + "("+ new DecimalFormat("0.#").format(unit.currentMovement)+"/"+ unit.movement +")");
         return SB.toString();
     }
 
