@@ -67,7 +67,7 @@
 		name:"Marsh",
 		type:"TerrainFeature",
 		food:-1,
-		movementCost:2,
+		movementCost:3,
 		unbuildable:true,
 		occursOn:["Grassland"]
 	},

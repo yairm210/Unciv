@@ -1,20 +1,6 @@
 [
 
 	{
-		name:"Worker",
-		description: "Can build improvements on tiles", 
-		hurryCostModifier:20
-		cost:60
-	},
-	{
-		name:"Settler",
-		description: "Founds a new city", 
-		cost:106,
-		hurryCostModifier:20
-	},
-	
-	
-	{
 		name:"Palace",
 		description: "Indicates that this city is the capital", 
 		isWonder:true,
@@ -53,6 +39,25 @@
 		requiredTech:"Calendar"
 	},
 	{
+		name:"Stonehenge",
+		description: "",
+		culture:6,
+		isWonder:true,
+		greatPersonPoints:{production:1},
+		requiredTech:"Calendar"
+	},
+	{
+		name:"The Great Library",
+		description: "Provides a free technology, and a library in the city it is built in",
+		science:3,
+		culture:1,
+		greatPersonPoints:{science:1},
+		isWonder:true,
+		providesFreeBuilding: "Library",
+		freeTechs:1,
+		requiredTech:"Writing"
+	},
+	{
 		name:"Library",
 		description: "Adds 1 science for each 2 population in the city.", 
 		hurryCostModifier:25,
@@ -69,27 +74,26 @@
 		requiredTech:"Trapping"
 	},
 	{
-		name:"Great Library",
-		description: "Provides a free technology, and a library in the city it is built in",
-		science:3,
+		name:"The Pyramids",
+		description: "Worker construction increased 25%, provides 2 free workers",
 		culture:1,
+		greatPersonPoints:{production:1},
 		isWonder:true,
-		providesFreeBuilding: "Library",
-		freeTechs:1,
+		unique:"WorkerConstruction",
 		requiredTech:"Writing"
 	},
-	
 	{
 		name:"Temple",
 		description: "",
 		culture:3,
+		specialistSlots:{culture:1},
 		requiredBuilding:"Monument",
 		maintainance:2,
 		hurryCostModifier:25,
 		requiredTech:"Philosophy"
 	},
 	{
-		name:"Oracle",
+		name:"The Oracle",
 		description: "Provides a free social policy - todo",
 		culture:3,
 		isWonder:true,
@@ -143,10 +147,20 @@
 		name:"Market",
 		description: "",
 		gold:2,
+		specialistSlots:{gold:1},
 		hurryCostModifier:25,
 		percentStatBonus:{gold:25},
 		requiredTech:"Currency"
-	},	
+	},
+	{
+		name:"Monastery",
+		description: "",
+		maintainance:0,
+		requiredNearbyImprovedResources:["Wine","Incense"],
+		resourceBonusStats:{culture:2},
+		hurryCostModifier:25,
+		requiredTech:"Theology"
+	},
 	{
 		name:"Notre Dame",
 		description: "",
@@ -185,7 +199,6 @@
 		name:"Aqueduct",
 		description: "40% of food is carried over after a new citizen is born", 
 		maintainance:1,
-		food:2,
 		hurryCostModifier:25,
 		unique:"FoodCarriesOver"
 		requiredTech:"Engineering"
@@ -195,6 +208,7 @@
 		description: "", 
 		maintainance:2,
 		production:2,
+		specialistSlots:{production:1},
 		hurryCostModifier:25,
 		percentStatBonus:{production:15},
 		requiredTech:"Metal Casting"
@@ -214,6 +228,7 @@
 		maintainance:2,
 		hurryCostModifier:15,
 		percentStatBonus:{science:33},
+		specialistSlots:{science:2},
 		requiredBuilding:"Library",
 		unique:"JunglesProvideScience",
 		requiredTech:"Education"
@@ -259,6 +274,7 @@
 		name:"Opera House",
 		description: "",
 		culture:4,
+		specialistSlots:{culture:1},
 		hurryCostModifier:10,
 		requiredBuilding:"Temple",
 		maintainance:2,
@@ -276,9 +292,18 @@
 		name:"Bank",
 		description: "",
 		gold:2,
+		specialistSlots:{gold:1},
 		hurryCostModifier:15,
 		percentStatBonus:{gold:25},
 		requiredBuilding:"Market",
+		requiredTech:"Banking"
+	},
+	{
+		name:"Forbidden Palace",
+		description: "Unhappiness from population decreased by 10%",
+		culture:1,
+		isWonder:true,
+		unique:"CitizenUnhappinessDecreased",
 		requiredTech:"Banking"
 	},
 	{
@@ -288,7 +313,7 @@
 		hurryCostModifier:10,
 		maintainance:2,
 		requiredBuilding:"Colloseum",
-		requiredTech:"Banking"
+		requiredTech:"Printing Press"
 	},
 	{
 		name:"Taj Mahal",
@@ -303,6 +328,7 @@
 		name:"Windmill",
 		description: "",
 		production:2,
+		specialistSlots:{production:1},
 		hurryCostModifier:25,
 		maintainance:2,
 		percentStatBonus:{production:10},
@@ -312,6 +338,7 @@
 		name:"Museum",
 		description: "",
 		culture:5,
+		specialistSlots:{culture:1},
 		requiredBuilding:"Opera House",
 		maintainance:3,
 		hurryCostModifier:0,
@@ -358,6 +385,8 @@
 		name:"Factory",
 		description: "",
 		production:4,
+		percentStatBonus:{production:10},
+		specialistSlots:{production:1},
 		requiredBuilding:"Workshop",
 		maintainance:3,
 		hurryCostModifier:0,
@@ -369,6 +398,7 @@
 		description: "",
 		gold:3,
 		percentStatBonus:{gold:25},
+		specialistSlots:{gold:2},
 		hurryCostModifier:15,
 		requiredBuilding:"Bank",
 		requiredTech:"Electricity"
@@ -382,7 +412,7 @@
 		requiredTech:"Telegraph"
 	},
 	{
-		name:"Broadcst Tower",
+		name:"Broadcast Tower",
 		description: "",
 		culture:3,
 		percentStatBonus:{culture:33},
@@ -411,6 +441,7 @@
 		description: "",
 		science:4,		
 		percentStatBonus:{science:50},
+		specialistSlots:{science:1},
 		requiredBuilding:"Public School",
 		maintainance:3,
 		requiredTech:"Plastics"

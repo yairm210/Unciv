@@ -22,7 +22,7 @@ import com.badlogic.gdx.utils.Align;
 import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.IConstruction;
 import com.unciv.civinfo.TileInfo;
-import com.unciv.game.pickerscreens.BuildingPickerScreen;
+import com.unciv.game.pickerscreens.ConstructionPickerScreen;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.stats.FullStats;
 
@@ -226,7 +226,7 @@ public class CityScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         buildingPickButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new BuildingPickerScreen(game));
+                game.setScreen(new ConstructionPickerScreen(game));
                 dispose();
             }
         });

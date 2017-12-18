@@ -24,6 +24,7 @@ public class CivilizationInfo {
     public int baseHappiness = 15;
     public int numberOfGoldenAges=0;
     public int turnsLeftForCurrentGoldenAge=0;
+    public int pointsForNextGreatPerson=100;
     public String civName = "Babylon";
 
     public FullStats greatPersonPoints = new FullStats();
@@ -88,15 +89,16 @@ public class CivilizationInfo {
         if(isGoldenAge()) turnsLeftForCurrentGoldenAge--;
 
         if(civStats.happiness > happinessRequiredForNextGoldenAge()){
+            civStats.happiness-=happinessRequiredForNextGoldenAge();
             enterGoldenAge();
             numberOfGoldenAges++;
         }
     }
 
     public void enterGoldenAge(){
-        civStats.happiness-=happinessRequiredForNextGoldenAge();
-        turnsLeftForCurrentGoldenAge = 10;
-        if(getBuildingUniques().contains("GoldenAgeLengthIncrease")) turnsLeftForCurrentGoldenAge*=1.5;
+        int turnsToGoldenAge = 10;
+        if(getBuildingUniques().contains("GoldenAgeLengthIncrease")) turnsToGoldenAge*=1.5;
+        turnsLeftForCurrentGoldenAge += turnsToGoldenAge;
     }
 
     public CivStats getStatsForNextTurn() {

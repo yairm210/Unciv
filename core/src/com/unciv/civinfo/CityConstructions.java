@@ -49,6 +49,11 @@ public class CityConstructions
         }
     }); }
 
+    public void addConstruction(int constructionToAdd){
+        if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions.put(currentConstruction, 0);
+        inProgressConstructions.put(currentConstruction, inProgressConstructions.get(currentConstruction) + constructionToAdd);
+    }
+
     public void nextTurn(FullStats cityStats)
     {
         if (getCurrentConstruction()==null) return;
@@ -66,9 +71,7 @@ public class CityConstructions
         }
         else currentConstruction = saveCurrentConstruction;
 
-        if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions.put(currentConstruction, 0);
-        inProgressConstructions.put(currentConstruction, inProgressConstructions.get(currentConstruction) + Math.round(cityStats.production));
-
+        addConstruction(Math.round(cityStats.production));
         if (inProgressConstructions.get(currentConstruction) >= construction.getProductionCost())
         {
             construction.postBuildEvent(this);

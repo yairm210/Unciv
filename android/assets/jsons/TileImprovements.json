@@ -3,7 +3,7 @@
 		name:"Farm",
 		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Flood plains"],
 		food:1,
-		turnsToBuild:6,
+		turnsToBuild:7,
 		improvingTech:"Fertilizer",
 		improvingTechStats:{food:1}
 	},
@@ -11,7 +11,7 @@
 		name:"Lumber mill",
 		terrainsCanBeBuiltOn:["Forest"],
 		production:1,
-		turnsToBuild:6,
+		turnsToBuild:7,
 		techRequired:"Construction",
 		improvingTech:"Scientific Theory",
 		improvingTechStats:{production:1}
@@ -20,7 +20,7 @@
 		name:"Mine",
 		terrainsCanBeBuiltOn:["Hill"],
 		production:1,
-		turnsToBuild:6,
+		turnsToBuild:7,
 		techRequired:"Mining",
 		improvingTech:"Chemistry",
 		improvingTechStats:{production:1}
@@ -29,26 +29,26 @@
 		name:"Trading post",
 		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Flood plains"],
 		gold:1,
-		turnsToBuild:6,
+		turnsToBuild:7,
 		techRequired:"Trapping",
 		improvingTech:"Economics",
 		improvingTechStats: {gold:1}
 	},
 	{
 		name:"Camp",
-		turnsToBuild:6,
+		turnsToBuild:7,
 		techRequired:"Trapping",
 		improvingTech:"Economics",
 		improvingTechStats:{gold:1}
 	},
 	{
 		name:"Oil well",
-		turnsToBuild:6,
+		turnsToBuild:9,
 		techRequired:"Biology",
 	},
 	{
 		name:"Pasture",
-		turnsToBuild:6,
+		turnsToBuild:8,
 		techRequired:"Animal Husbandry",
 		improvingTech:"Fertilizer",
 		improvingTechStats:{food:1}
@@ -63,31 +63,31 @@
 	},
 	{
 		name:"Quarry",
-		turnsToBuild:6,
+		turnsToBuild:8,
 		techRequired:"Masonry",
 		improvingTech:"Chemistry",
 		improvingTechStats:{production:1}
 	},
 	{
 		name:"Road",
-		turnsToBuild:6,
+		turnsToBuild:4,
 		techRequired:"The Wheel"
 	},
 	{
 		name:"Railroad",
-		turnsToBuild:12,
+		turnsToBuild:4,
 		techRequired:"Railroad"
 	},
 	
 	{
 		name:"Remove Forest",
-		turnsToBuild:6,
+		turnsToBuild:4,
 		terrainsCanBeBuiltOn:["Forest"],
 		techRequired:"Mining"
 	},
 	{
 		name:"Remove Jungle",
-		turnsToBuild:6,
+		turnsToBuild:7,
 		terrainsCanBeBuiltOn:["Jungle"],
 		techRequired:"Bronze Working"
 	},
@@ -97,4 +97,28 @@
 		terrainsCanBeBuiltOn:["Marsh"],
 		techRequired:"Masonry"
 	},
+	
+	
+	{
+		name:"Academy",
+		science:8,
+		improvingTech:"Scientific Theory",
+		improvingTechStats:{science:2}
+	},
+	{
+		name:"Landmark",
+		culture:6
+	},
+	{
+		name:"Manufactory",
+		production:4,
+		improvingTech:"Chemistry",
+		improvingTechStats:{production:1}
+	},
+	{
+		name:"Customs House",
+		gold:4,
+		improvingTech:"Economics",
+		improvingTechStats:{gold:1}
+	}
 ]

@@ -376,7 +376,7 @@
 				name:"Telegraph",
 				row:4,
 				prerequisites:["Electricity"],
-				description:"Allows construction of the Crito Redentor, reducing cost of new policie"
+				description:"Allows construction of the Crito Redentor, reducing cost of new policies"
 			},
 			{
 				name:"Radio",

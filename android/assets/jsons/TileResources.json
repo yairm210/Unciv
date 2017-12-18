@@ -59,7 +59,7 @@
 		name:"Horses",
 		resourceType:"Strategic",
 		revealedBy:"Animal Husbandry",
-		terrainsCanBeFoundOn:["Plains","Desert"],
+		terrainsCanBeFoundOn:["Plains","Grassland","Hill","Desert"],
 		production:1,
 		improvement:"Pasture",
 		improvementStats:{production:1},
@@ -78,7 +78,7 @@
 	{
 		name:"Coal",
 		resourceType:"Strategic",
-		revealedBy:"Industrialization",
+		revealedBy:"Scientific Theory",
 		terrainsCanBeFoundOn:["Grassland","Plains","Hill"],
 		production:1,
 		improvement:"Mine",
@@ -88,7 +88,7 @@
 		name:"Oil",
 		resourceType:"Strategic",
 		revealedBy:"Biology",
-		terrainsCanBeFoundOn:["Desert","Coast","Tundra","Snow","Marsh"],
+		terrainsCanBeFoundOn:["Desert","Coast","Tundra","Snow","Marsh","Jungle"],
 		production:1,
 		improvement:"Oil well",
 		improvementStats:{production:3}
@@ -106,7 +106,7 @@
 		name:"Uranium",
 		resourceType:"Strategic",
 		revealedBy:"Atomic Theory",
-		terrainsCanBeFoundOn:["Plains","Desert","Tundra","Hill","Snow"],
+		terrainsCanBeFoundOn:["Plains","Desert","Tundra","Hill","Snow","Forest","Desert","Marsh","Grassland"],
 		production:1,
 		improvement:"Mine",
 		improvementStats:{production:2}
@@ -130,9 +130,73 @@
 		improvementStats:{gold:1}
 	},
 	{
+		name:"Dyes",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Jungle","Forest"],
+		gold:2,
+		improvement:"Plantation",
+		improvementStats:{gold:1}
+	},
+	{
+		name:"Gems",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Jungle","Grassland","Plains","Desert","Tundra","Hill"],
+		gold:3,
+		improvement:"Mine",
+		improvementStats:{gold:1}
+	},
+	{
+		name:"Gold",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Grassland","Plains","Desert","Hill"],
+		gold:2,
+		improvement:"Mine",
+		improvementStats:{gold:1}
+	},
+	{
+		name:"Silver",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Desert","Tundra","Hill"],
+		gold:2,
+		improvement:"Mine",
+		improvementStats:{gold:1}
+	},
+	{
+		name:"Incense",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Plains","Desert"],
+		gold:3,
+		improvement:"Plantation",
+		improvementStats:{gold:1}
+	},
+	{
+		name:"Ivory",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Plains"],
+		gold:2,
+		improvement:"Camp",
+		improvementStats:{gold:1}
+	},
+	{
+		name:"Silk",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Forest"],
+		gold:2,
+		improvement:"Plantation",
+		improvementStats:{gold:1}
+	},
+	{
 		name:"Spices",
 		resourceType:"Luxury",
 		terrainsCanBeFoundOn:["Jungle","Forest"],
+		gold:2,
+		improvement:"Plantation",
+		improvementStats:{gold:1}
+	},
+	{
+		name:"Wine",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Grassland","Plains"],
 		gold:2,
 		improvement:"Plantation",
 		improvementStats:{gold:1}

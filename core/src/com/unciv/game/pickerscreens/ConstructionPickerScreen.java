@@ -13,7 +13,7 @@ import com.unciv.game.UnCivGame;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 
-public class BuildingPickerScreen extends PickerScreen {
+public class ConstructionPickerScreen extends PickerScreen {
     public String selectedProduction;
 
     TextButton getProductionButton(final String production, String buttonText,
@@ -32,7 +32,7 @@ public class BuildingPickerScreen extends PickerScreen {
         return TB;
     }
 
-    public BuildingPickerScreen(final UnCivGame game) {
+    public ConstructionPickerScreen(final UnCivGame game) {
         super(game);
 
         closeButton.clearListeners(); // Don't go back to the world screen, unlike the other picker screens!
@@ -57,16 +57,16 @@ public class BuildingPickerScreen extends PickerScreen {
         rightSideButton.setTouchable(Touchable.disabled);
         rightSideButton.setColor(Color.GRAY);
 
-        CityConstructions cityBuildings = game.civInfo.getCurrentCity().cityConstructions;
+        CityConstructions cityConstructions = game.civInfo.getCurrentCity().cityConstructions;
         VerticalGroup regularBuildings = new VerticalGroup().space(10),
                 wonders = new VerticalGroup().space(10),
                 units = new VerticalGroup().space(10),
                 specials = new VerticalGroup().space(10);
 
         for(final Building building : GameBasics.Buildings.values()) {
-            if(!building.isBuildable(cityBuildings)) continue;
+            if(!building.isBuildable(cityConstructions)) continue;
             TextButton TB = getProductionButton(building.name,
-                    building.name +"\r\n"+cityBuildings.turnsToConstruction(building.name)+" turns",
+                    building.name +"\r\n"+cityConstructions.turnsToConstruction(building.name)+" turns",
                     building.getDescription(true),
                     "Build "+building.name);
             if(building.isWonder) wonders.addActor(TB);
@@ -76,7 +76,7 @@ public class BuildingPickerScreen extends PickerScreen {
         for(Unit unit : GameBasics.Units.values()){
             if(!unit.isConstructable()) continue;
             units.addActor(getProductionButton(unit.name,
-                    unit.name+"\r\n"+cityBuildings.turnsToConstruction(unit.name)+" turns",
+                    unit.name+"\r\n"+cityConstructions.turnsToConstruction(unit.name)+" turns",
                     unit.description, "Train "+unit.name));
         }
 

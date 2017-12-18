@@ -1,0 +1,41 @@
+[
+	{
+		name:"Worker",
+		description: "Can build improvements on tiles", 
+		movement:2,
+		hurryCostModifier:20,
+		cost:60
+	},
+	{
+		name:"Settler",
+		description: "Founds a new city", 
+		movement:2,
+		cost:106,
+		hurryCostModifier:20
+	},
+	{
+		name:"Great Artist",
+		description: "Can start an 8-turn golden age or construcct a landmark (+5 culture)", 
+		unbuildable:true,
+		movement:2
+	},
+	{
+		name:"Great Scientist",
+		description: "Can discover a technology, or construct an academy (+4 science(", 
+		unbuildable:true,
+		movement:2
+	},
+	{
+		name:"Great Merchant",
+		description: "Can undertake a trade mission, giving a large sum of gold, or construct a ?", 
+		unbuildable:true,
+		movement:2
+	},
+	{
+		name:"Great Engineer",
+		description: "Can speed up construction of a wonder, or construct a refinery, giving +? production?", 
+		unbuildable:true,
+		movement:2
+	},
+	
+]

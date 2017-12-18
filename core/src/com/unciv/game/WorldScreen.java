@@ -17,11 +17,14 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
+import com.unciv.civinfo.CityConstructions;
 import com.unciv.civinfo.TileInfo;
+import com.unciv.civinfo.Unit;
 import com.unciv.game.pickerscreens.ImprovementPickerScreen;
 import com.unciv.game.pickerscreens.TechPickerScreen;
 import com.unciv.game.utils.*;
 import com.unciv.models.LinqHashMap;
+import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.stats.CivStats;
@@ -38,7 +41,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
     ScrollPane scrollPane;
 
     float buttonScale = game.settings.buttonScale;
-    Table TileTable = new Table();
+    Table tileTable = new Table();
     Table CivTable = new Table();
     TextButton TechButton = new TextButton("",skin);
     public LinqHashMap<String,WorldTileGroup> tileGroups = new LinqHashMap<String, WorldTileGroup>();
@@ -52,13 +55,13 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         new Label("",skin).getStyle().font.getData().setScale(game.settings.labelScale);
 
         addTiles();
-        stage.addActor(TileTable);
+        stage.addActor(tileTable);
 
         Drawable tileTableBackground = new TextureRegionDrawable(new TextureRegion(new Texture("skin/tileTableBackground.png")))
                 .tint(new Color(0x004085bf));
         tileTableBackground.setMinHeight(0);
         tileTableBackground.setMinWidth(0);
-        TileTable.setBackground(tileTableBackground);
+        tileTable.setBackground(tileTableBackground);
         OptionsTable.setBackground(tileTableBackground);
 
         TextureRegionDrawable civBackground = new TextureRegionDrawable(new TextureRegion(new Texture("skin/civTableBackground.png")));
@@ -315,18 +318,18 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
     private void updateTileTable() {
         if(selectedTile == null) return;
-        TileTable.clearChildren();
+        tileTable.clearChildren();
         FullStats stats = selectedTile.getTileStats();
-        TileTable.pad(20);
-        TileTable.columnDefaults(0).padRight(10);
+        tileTable.pad(20);
+        tileTable.columnDefaults(0).padRight(10);
 
         Label cityStatsHeader = new Label("Tile Stats",skin);
         cityStatsHeader.setFontScale(2);
-        TileTable.add(cityStatsHeader).colspan(2).pad(10);
-        TileTable.row();
+        tileTable.add(cityStatsHeader).colspan(2).pad(10);
+        tileTable.row();
 
-        TileTable.add(new Label(selectedTile.toString(),skin)).colspan(2);
-        TileTable.row();
+        tileTable.add(new Label(selectedTile.toString(),skin)).colspan(2);
+        tileTable.row();
 
 
         HashMap<String,Float> TileStatsValues = new HashMap<String, Float>();
@@ -338,9 +341,9 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
         for(String key : TileStatsValues.keySet()){
             if(TileStatsValues.get(key) == 0) continue; // this tile gives nothing of this stat, so why even display it?
-            TileTable.add(com.unciv.game.utils.ImageGetter.getStatIcon(key)).align(Align.right);
-            TileTable.add(new Label(Math.round(TileStatsValues.get(key))+"",skin)).align(Align.left);
-            TileTable.row();
+            tileTable.add(com.unciv.game.utils.ImageGetter.getStatIcon(key)).align(Align.right);
+            tileTable.add(new Label(Math.round(TileStatsValues.get(key))+"",skin)).align(Align.left);
+            tileTable.row();
         }
 
 
@@ -371,69 +374,152 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                     update();
                 }
             });
-            TileTable.add(moveUnitButton).colspan(2)
+            tileTable.add(moveUnitButton).colspan(2)
                     .size(moveUnitButton.getWidth() * buttonScale, moveUnitButton.getHeight() * buttonScale);
 
-            if(selectedTile.unit.name.equals("Settler")){
-                TextButton foundCityButton = new TextButton("Found City", skin);
-                foundCityButton.getLabel().setFontScale(buttonScale);
-                foundCityButton.addListener(new ClickListener(){
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        game.civInfo.addCity(selectedTile.position);
-                        if(unitTile==selectedTile) unitTile = null; // The settler was in the middle of moving and we then founded a city with it
-                        selectedTile.unit = null; // Remove settler!
-                        update();
-                    }
-                });
-
-                if(selectedTile.unit.currentMovement==0  ||
-                        game.civInfo.tileMap.getTilesInDistance(selectedTile.position,2).any(new Predicate<TileInfo>() {
-                    @Override
-                    public boolean evaluate(TileInfo arg0) {
-                        return arg0.isCityCenter();
-                    }
-                })){
-                    foundCityButton.setTouchable(Touchable.disabled);
-                    foundCityButton.setColor(Color.GRAY);
-                }
-
-                TileTable.row();
-                TileTable.add(foundCityButton).colspan(2)
-                        .size(foundCityButton.getWidth() * buttonScale, foundCityButton.getHeight() * buttonScale);
+            if(selectedTile.unit.name.equals("Settler")) {
+                addUnitAction(tileTable, "Found City", selectedTile.unit,
+                        !game.civInfo.tileMap.getTilesInDistance(selectedTile.position, 2).any(new Predicate<TileInfo>() {
+                            @Override
+                            public boolean evaluate(TileInfo arg0) {
+                                return arg0.isCityCenter();
+                            }
+                        }),
+                        new ClickListener() {
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                game.civInfo.addCity(selectedTile.position);
+                                if (unitTile == selectedTile)
+                                    unitTile = null; // The settler was in the middle of moving and we then founded a city with it
+                                selectedTile.unit = null; // Remove settler!
+                                update();
+                            }
+                        });
             }
 
             if(selectedTile.unit.name.equals("Worker")) {
                 String improvementButtonText = selectedTile.improvementInProgress == null ?
                         "Construct\r\nimprovement" : selectedTile.improvementInProgress +"\r\nin progress";
-                TextButton improvementButton = new TextButton(improvementButtonText, skin);
-                improvementButton.getLabel().setFontScale(buttonScale);
-                improvementButton.addListener(new ClickListener() {
-                    @Override
-                    public void clicked(InputEvent event, float x, float y) {
-                        game.setScreen(new ImprovementPickerScreen(game, selectedTile));
-                    }
-                });
-                if(selectedTile.unit.currentMovement ==0 || selectedTile.isCityCenter() ||
-                        !GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
+                addUnitAction(tileTable,improvementButtonText,selectedTile.unit, !selectedTile.isCityCenter() ||
+                        GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
                             @Override
                             public boolean evaluate(TileImprovement arg0) {
                                 return selectedTile.canBuildImprovement(arg0);
                             }
-                        })){
-                    improvementButton.setColor(Color.GRAY);
-                    improvementButton.setTouchable(Touchable.disabled);
-                }
+                        })
+                        ,new ClickListener() {
 
-                TileTable.row();
-                TileTable.add(improvementButton).colspan(2)
-                        .size(improvementButton.getWidth() * buttonScale, improvementButton.getHeight() * buttonScale);
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {game.setScreen(new ImprovementPickerScreen(game, selectedTile));}
+                } );
+            }
+
+            if(selectedTile.unit.name.equals("Great Scientist")){
+                addUnitAction(tileTable, "Discover Technology",selectedTile.unit,true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                game.civInfo.tech.freeTechs+=1;
+                                selectedTile.unit=null;// destroy!
+                                game.setScreen(new TechPickerScreen(game,true));
+                            }
+                        });
+                addUnitAction(tileTable, "Construct Academy",selectedTile.unit,true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                selectedTile.improvement="Academy";
+                                selectedTile.unit=null;// destroy!
+                                update();
+                            }
+                        });
+            }
+
+            if(selectedTile.unit.name.equals("Great Artist")){
+                addUnitAction(tileTable, "Start Golden Age",selectedTile.unit,true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                game.civInfo.enterGoldenAge();
+                                selectedTile.unit=null;// destroy!
+                                update();
+                            }
+                        });
+                addUnitAction(tileTable, "Construct Landmark",selectedTile.unit,true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                selectedTile.improvement="Landmark";
+                                selectedTile.unit=null;// destroy!
+                                update();
+                            }
+                        });
+            }
+
+            if(selectedTile.unit.name.equals("Great Engineer")){
+                final CityConstructions cityConstructions = selectedTile.getCity().cityConstructions;
+                addUnitAction(tileTable, "Hurry Wonder",selectedTile.unit,selectedTile.isCityCenter() &&
+                                cityConstructions.getCurrentConstruction() instanceof Building &&
+                                ((Building)cityConstructions.getCurrentConstruction()).isWonder,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                cityConstructions.addConstruction(300 + (30 * selectedTile.getCity().population)); //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                                selectedTile.unit=null; // destroy!
+                                update();
+                            }
+                        });
+                addUnitAction(tileTable, "Construct Manufactory",selectedTile.unit,true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                selectedTile.improvement="Manufactory";
+                                selectedTile.unit=null;// destroy!
+                                update();
+                            }
+                        });
+            }
+            if(selectedTile.unit.name.equals("Great Merchant")){
+                final CityConstructions cityConstructions = selectedTile.getCity().cityConstructions;
+                addUnitAction(tileTable, "Conduct Trade Mission",selectedTile.unit,true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                game.civInfo.civStats.gold+=350; // + 50 * era_number - todo!
+                                selectedTile.unit=null; // destroy!
+                                update();
+                            }
+                        });
+                addUnitAction(tileTable, "Construct Customs House",selectedTile.unit,true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                selectedTile.improvement="Customs House";
+                                selectedTile.unit=null;// destroy!
+                                update();
+                            }
+                        });
             }
         }
 
-        TileTable.pack();
+        tileTable.pack();
 
-        TileTable.setPosition(stage.getWidth()-10- TileTable.getWidth(), 10);
+        tileTable.setPosition(stage.getWidth()-10- tileTable.getWidth(), 10);
+    }
+
+    private void addUnitAction(Table tileTable, String actionText, Unit unit, boolean canAct, ClickListener action) {
+        TextButton actionButton = new TextButton(actionText, skin);
+        actionButton.getLabel().setFontScale(buttonScale);
+        actionButton.addListener(action);
+        if (selectedTile.unit.currentMovement == 0 || !canAct) {
+            actionButton.setColor(Color.GRAY);
+            actionButton.setTouchable(Touchable.disabled);
+        }
+
+        tileTable.row();
+        tileTable.add(actionButton).colspan(2)
+                .size(actionButton.getWidth() * buttonScale, actionButton.getHeight() * buttonScale);
+
     }
 
     private void updateTiles() {
@@ -487,5 +573,4 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
     }
 
 }
-
 
