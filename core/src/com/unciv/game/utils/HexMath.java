@@ -69,11 +69,11 @@ public class HexMath
     }
 
     public static LinqCollection<Vector2> GetVectorsInDistance(Vector2 origin, int distance) {
-        HashSet<Vector2> hexesToReturn = new HashSet<Vector2>();
+        LinqCollection<Vector2> hexesToReturn = new LinqCollection<Vector2>();
         for (int i = 0; i < distance + 1; i++) {
             hexesToReturn.addAll(GetVectorsAtDistance(origin, i));
         }
-        return new LinqCollection<Vector2>(hexesToReturn);
+        return hexesToReturn;
     }
 
     public static int GetDistance(Vector2 origin, Vector2 destination){ // Yes, this is a dumb implementation. But I can't be arsed to think of a better one right now, other stuff to do.

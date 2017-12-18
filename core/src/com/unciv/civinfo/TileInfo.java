@@ -14,7 +14,7 @@ import java.text.DecimalFormat;
 
 public class TileInfo
 {
-    public Unit unit;
+    public MapUnit unit;
     public Vector2 position;
     public String baseTerrain;
     public String terrainFeature;
@@ -124,7 +124,7 @@ public class TileInfo
 
     public void nextTurn()
     {
-        if(unit !=null) unit.currentMovement = unit.movement;
+        if(unit !=null) unit.currentMovement = unit.maxMovement;
 
         if (improvementInProgress == null || unit ==null || !unit.name.equals("Worker")) return;
         turnsToImprovement -= 1;
@@ -165,7 +165,7 @@ public class TileInfo
         if (roadStatus!= RoadStatus.None && !isCityCenter()) SB.append(",\r\n" + roadStatus);
         if (improvement != null) SB.append(",\r\n" + improvement);
         if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
-        if (unit !=null) SB.append(",\r\n" + unit.name + "("+ new DecimalFormat("0.#").format(unit.currentMovement)+"/"+ unit.movement +")");
+        if (unit !=null) SB.append(",\r\n" + unit.name + "("+ new DecimalFormat("0.#").format(unit.currentMovement)+"/"+ unit.maxMovement+")");
         return SB.toString();
     }
 

@@ -18,6 +18,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.civinfo.CityConstructions;
+import com.unciv.civinfo.MapUnit;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.civinfo.Unit;
 import com.unciv.game.pickerscreens.ImprovementPickerScreen;
@@ -378,7 +379,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                     .size(moveUnitButton.getWidth() * buttonScale, moveUnitButton.getHeight() * buttonScale);
 
             if(selectedTile.unit.name.equals("Settler")) {
-                addUnitAction(tileTable, "Found City", selectedTile.unit,
+                addUnitAction(tileTable, "Found City",
                         !game.civInfo.tileMap.getTilesInDistance(selectedTile.position, 2).any(new Predicate<TileInfo>() {
                             @Override
                             public boolean evaluate(TileInfo arg0) {
@@ -400,7 +401,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             if(selectedTile.unit.name.equals("Worker")) {
                 String improvementButtonText = selectedTile.improvementInProgress == null ?
                         "Construct\r\nimprovement" : selectedTile.improvementInProgress +"\r\nin progress";
-                addUnitAction(tileTable,improvementButtonText,selectedTile.unit, !selectedTile.isCityCenter() ||
+                addUnitAction(tileTable,improvementButtonText, !selectedTile.isCityCenter() ||
                         GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
                             @Override
                             public boolean evaluate(TileImprovement arg0) {
@@ -415,7 +416,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             }
 
             if(selectedTile.unit.name.equals("Great Scientist")){
-                addUnitAction(tileTable, "Discover Technology",selectedTile.unit,true,
+                addUnitAction(tileTable, "Discover Technology",true,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
@@ -424,7 +425,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                                 game.setScreen(new TechPickerScreen(game,true));
                             }
                         });
-                addUnitAction(tileTable, "Construct Academy",selectedTile.unit,true,
+                addUnitAction(tileTable, "Construct Academy",true,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
@@ -436,7 +437,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             }
 
             if(selectedTile.unit.name.equals("Great Artist")){
-                addUnitAction(tileTable, "Start Golden Age",selectedTile.unit,true,
+                addUnitAction(tileTable, "Start Golden Age",true,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
@@ -445,7 +446,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                                 update();
                             }
                         });
-                addUnitAction(tileTable, "Construct Landmark",selectedTile.unit,true,
+                addUnitAction(tileTable, "Construct Landmark",true,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
@@ -458,7 +459,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
 
             if(selectedTile.unit.name.equals("Great Engineer")){
                 final CityConstructions cityConstructions = selectedTile.getCity().cityConstructions;
-                addUnitAction(tileTable, "Hurry Wonder",selectedTile.unit,selectedTile.isCityCenter() &&
+                addUnitAction(tileTable, "Hurry Wonder",selectedTile.isCityCenter() &&
                                 cityConstructions.getCurrentConstruction() instanceof Building &&
                                 ((Building)cityConstructions.getCurrentConstruction()).isWonder,
                         new ClickListener(){
@@ -469,7 +470,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                                 update();
                             }
                         });
-                addUnitAction(tileTable, "Construct Manufactory",selectedTile.unit,true,
+                addUnitAction(tileTable, "Construct Manufactory",true,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
@@ -481,7 +482,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
             }
             if(selectedTile.unit.name.equals("Great Merchant")){
                 final CityConstructions cityConstructions = selectedTile.getCity().cityConstructions;
-                addUnitAction(tileTable, "Conduct Trade Mission",selectedTile.unit,true,
+                addUnitAction(tileTable, "Conduct Trade Mission",true,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
@@ -490,7 +491,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
                                 update();
                             }
                         });
-                addUnitAction(tileTable, "Construct Customs House",selectedTile.unit,true,
+                addUnitAction(tileTable, "Construct Customs House",true,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
@@ -507,7 +508,7 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         tileTable.setPosition(stage.getWidth()-10- tileTable.getWidth(), 10);
     }
 
-    private void addUnitAction(Table tileTable, String actionText, Unit unit, boolean canAct, ClickListener action) {
+    private void addUnitAction(Table tileTable, String actionText, boolean canAct, ClickListener action) {
         TextButton actionButton = new TextButton(actionText, skin);
         actionButton.getLabel().setFontScale(buttonScale);
         actionButton.addListener(action);

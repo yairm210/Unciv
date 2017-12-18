@@ -149,6 +149,10 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
             constructions.builtBuildings.add(providesFreeBuilding);
         if (freeTechs != 0) UnCivGame.Current.civInfo.tech.freeTechs += freeTechs;
         if("EmpireEntersGoldenAge".equals(unique)) CivilizationInfo.current().enterGoldenAge();
+        if("WorkerConstruction".equals(unique)){
+            CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
+            CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
+        }
     }
 }
 

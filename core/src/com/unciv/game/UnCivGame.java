@@ -49,7 +49,7 @@ public class UnCivGame extends Game {
 
     public void startNewGame(){
         civInfo = new CivilizationInfo();
-        civInfo.tileMap.get(Vector2.Zero).unit = new Unit("Settler",2);
+        civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Settler");
 
         worldScreen = new WorldScreen(this);
         setWorldScreen();

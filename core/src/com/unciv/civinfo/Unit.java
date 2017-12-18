@@ -9,16 +9,9 @@ public class Unit implements INamed, IConstruction{
     public int cost;
     public int hurryCostModifier;
     public int movement;
-    public float currentMovement;
     boolean unbuildable; // for special units likee great people
 
     public Unit(){}  // for json parsing, we need to have a default constructor
-
-    public Unit(String name, int maxMovement) {
-        this.name = name;
-        this.movement = maxMovement;
-        currentMovement = maxMovement;
-    }
 
     @Override
     public String getName() {
@@ -47,6 +40,14 @@ public class Unit implements INamed, IConstruction{
 
     @Override
     public void postBuildEvent(CityConstructions construction) {
-         UnCivGame.Current.civInfo.tileMap.placeUnitNearTile(construction.cityLocation,new Unit(name,movement));
+         UnCivGame.Current.civInfo.tileMap.placeUnitNearTile(construction.cityLocation,name);
+    }
+
+    public MapUnit getMapUnit(){
+        MapUnit unit = new MapUnit();
+        unit.name=name;
+        unit.maxMovement=movement;
+        unit.currentMovement=movement;
+        return unit;
     }
 }

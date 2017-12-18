@@ -74,4 +74,3 @@ public class WorldTileGroup extends TileGroup {
 
     }
 }
-
