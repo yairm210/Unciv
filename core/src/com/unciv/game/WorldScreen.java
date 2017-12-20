@@ -34,7 +34,7 @@ import com.unciv.models.stats.FullStats;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
+public class WorldScreen extends CameraStageBaseScreen {
 
     TileInfo selectedTile = null;
 
@@ -58,14 +58,16 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
         addTiles();
         stage.addActor(tileTable);
 
-        Drawable tileTableBackground = new TextureRegionDrawable(new TextureRegion(new Texture("skin/tileTableBackground.png")))
+        Drawable tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(new Color(0x004085bf));
         tileTableBackground.setMinHeight(0);
         tileTableBackground.setMinWidth(0);
         tileTable.setBackground(tileTableBackground);
         OptionsTable.setBackground(tileTableBackground);
 
-        TextureRegionDrawable civBackground = new TextureRegionDrawable(new TextureRegion(new Texture("skin/civTableBackground.png")));
+        NotificationsTable.background(ImageGetter.getDrawable(ImageGetter.WhiteDot).tint(new Color(0x004085bf)));
+
+        TextureRegionDrawable civBackground = ImageGetter.getDrawable("skin/civTableBackground.png");
         CivTable.setBackground(civBackground.tint(new Color(0x004085bf)));
 
         stage.addActor(CivTable);
@@ -84,11 +86,14 @@ public class WorldScreen extends com.unciv.game.utils.CameraStageBaseScreen {
     private void addNotificationsList() {
         stage.addActor(NotificationsTable);
     }
+
     private void updateNotificationsList() {
         NotificationsTable.clearChildren();
         for(String notification : game.civInfo.notifications)
         {
-            NotificationsTable.add(new Label(notification,skin)).pad(5);
+            Label label = new Label(notification,skin);
+            label.setColor(Color.WHITE);
+            NotificationsTable.add(label).pad(10).fill();
             NotificationsTable.row();
         }
         NotificationsTable.pack();

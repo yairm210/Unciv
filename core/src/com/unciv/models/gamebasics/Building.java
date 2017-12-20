@@ -61,16 +61,32 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
             stringBuilder.append("Requires a " + requiredBuildingInAllCities + " to be built in all cities\r\n");
         if (providesFreeBuilding != null)
             stringBuilder.append("Provides a free " + providesFreeBuilding + " in this city\r\n");
+        if(description!=null) stringBuilder.append(description + "\r\n");
+        if(!stats.toString().equals(""))
+        stringBuilder.append(stats+"\r\n");
+        if(this.percentStatBonus!=null){
+            if(this.percentStatBonus.production!=0) stringBuilder.append("+"+(int)this.percentStatBonus.production+"% production\r\n");
+            if(this.percentStatBonus.gold!=0) stringBuilder.append("+"+(int)this.percentStatBonus.gold+"% gold\r\n");
+            if(this.percentStatBonus.science!=0) stringBuilder.append("+"+(int)this.percentStatBonus.science+"% science\r\n");
+            if(this.percentStatBonus.food!=0) stringBuilder.append("+"+(int)this.percentStatBonus.food+"% food\r\n");
+            if(this.percentStatBonus.culture!=0) stringBuilder.append("+"+(int)this.percentStatBonus.culture+"% culture\r\n");
+        }
+        if(resourceBonusStats!=null){
+            String resources = String.join(",",GameBasics.TileResources.linqValues().where(new Predicate<TileResource>() {
+                @Override
+                public boolean evaluate(TileResource arg0) {
+                    return name.equals(arg0.building);
+                }
+            }).select(new LinqCollection.Func<TileResource, CharSequence>() {
+                @Override
+                public CharSequence GetBy(TileResource arg0) {
+                    return arg0.name;
+                }
+            })) ;
+            stringBuilder.append(resources+" provide "+resourceBonusStats+" \r\n");
+        }
         if (maintainance != 0)
             stringBuilder.append("Maintainance cost: " + maintainance + " gold\r\n");
-        stringBuilder.append(description + "\r\n" + stats);
-        if(this.percentStatBonus!=null){
-            if(this.percentStatBonus.production!=0) stringBuilder.append("\r\n+"+this.percentStatBonus.production+" production");
-            if(this.percentStatBonus.gold!=0) stringBuilder.append("\r\n+"+this.percentStatBonus.gold+" gold");
-            if(this.percentStatBonus.science!=0) stringBuilder.append("\r\n+"+this.percentStatBonus.science+" science");
-            if(this.percentStatBonus.food!=0) stringBuilder.append("\r\n+"+this.percentStatBonus.food+" food");
-            if(this.percentStatBonus.culture!=0) stringBuilder.append("\r\n+"+this.percentStatBonus.culture+" culture");
-        }
         return stringBuilder.toString();
     }
 

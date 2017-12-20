@@ -23,11 +23,12 @@ public class CityConstructions
     public CityConstructions(CityInfo cityInfo)
     {
         cityLocation = cityInfo.cityLocation;
+        chooseNextConstruction();
     }
 
     public LinqCollection<String> builtBuildings = new LinqCollection<String>();
     public HashMap<String, Integer> inProgressConstructions = new HashMap<String, Integer>();
-    public String currentConstruction = Worker; // default starting building!
+    public String currentConstruction; // default starting building!
     public IConstruction getCurrentConstruction(){return getConstruction(currentConstruction);}
 
     public CityInfo getCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).getCity(); }
@@ -75,7 +76,6 @@ public class CityConstructions
         if (inProgressConstructions.get(currentConstruction) >= construction.getProductionCost())
         {
             construction.postBuildEvent(this);
-
             inProgressConstructions.remove(currentConstruction);
             CivilizationInfo.current().notifications.add(currentConstruction +" has been built in "+getCity().name);
 
@@ -163,7 +163,7 @@ public class CityConstructions
 
     public void purchaseBuilding(String buildingName) {
         CivilizationInfo.current().civStats.gold -= getConstruction(buildingName).getGoldCost();
-        builtBuildings.add(buildingName);
+        getConstruction(buildingName).postBuildEvent(this);
         if(currentConstruction.equals(buildingName)) chooseNextConstruction();
     }
 

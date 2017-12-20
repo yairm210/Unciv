@@ -57,7 +57,10 @@ public class CityInfo {
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
         cityConstructions = new CityConstructions(this);
-        if(civInfo.cities.size()==0) cityConstructions.builtBuildings.add("Palace");
+        if(civInfo.cities.size()==0) {
+            cityConstructions.builtBuildings.add("Palace");
+            cityConstructions.currentConstruction = "Worker"; // Default for first city only!
+        }
         civInfo.cities.add(this);
 
         for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
