@@ -100,7 +100,7 @@ public class TileInfo
 
     public boolean canBuildImprovement(TileImprovement improvement)
     {
-        if(improvement.name.equals(this.improvement)) return false;
+        if(isCityCenter() || improvement.name.equals(this.improvement)) return false;
         Terrain topTerrain = terrainFeature ==null ? getBaseTerrain() : getTerrainFeature();
         if (improvement.techRequired != null && !isResearched(improvement.techRequired)) return false;
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true;
@@ -111,10 +111,10 @@ public class TileInfo
         return hasViewableResource() && getTileResource().improvement.equals(improvement.name);
     }
 
-    public void startWorkingOnImprovement(String improvementName,int turnsToBuild)
+    public void startWorkingOnImprovement(String improvementName)
     {
         improvementInProgress = improvementName;
-        turnsToImprovement = turnsToBuild;
+        turnsToImprovement = GameBasics.TileImprovements.get(improvementName).getTurnsToBuild();
     }
 
     public void stopWorkingOnImprovement()
@@ -124,35 +124,13 @@ public class TileInfo
 
     public void nextTurn()
     {
-        if(unit !=null) unit.currentMovement = unit.maxMovement;
+        if(unit !=null) {
+            unit.currentMovement = unit.maxMovement;
 
-        if (improvementInProgress == null || unit ==null || !unit.name.equals("Worker")) return;
-        turnsToImprovement -= 1;
-        if(turnsToImprovement == 0)
-        {
-            if (improvementInProgress.startsWith("Remove")) terrainFeature = null;
-            else if(improvementInProgress.equals("Road")) roadStatus = RoadStatus.Road;
-            else if(improvementInProgress.equals("Railroad")) roadStatus = RoadStatus.Railroad;
-            else improvement = improvementInProgress;
+            if (!unit.name.equals("Worker"))
+                return;
 
-            String notification = improvementInProgress+" has been completed";
-            if(workingCity!=null) notification+=" for "+getCity().name;
-            else {
-                for (int i = 1; i < 3; i++) {
-                    LinqCollection<TileInfo> tilesWithCity = CivilizationInfo.current().tileMap.getTilesInDistance(position, i).where(new Predicate<TileInfo>() {
-                        @Override
-                        public boolean evaluate(TileInfo arg0) {
-                            return arg0.isCityCenter();
-                        }
-                    });
-                    if(tilesWithCity.isEmpty()) continue;
-                    notification+=" near "+tilesWithCity.get(0).workingCity;
-                    break;
-                }
-            }
-            notification+="!";
-            CivilizationInfo.current().notifications.add(notification);
-            improvementInProgress = null;
+            unit.doAction(this);
         }
     }
 
@@ -178,5 +156,13 @@ public class TileInfo
         if (unit.currentMovement == 0) return false;
         if (unit.name.equals("Worker") && improvementInProgress != null) return false;
         return true;
+    }
+
+    public void moveUnitToTile(TileInfo otherTile, float movementDistance){
+        if(otherTile.unit!=null) return; // Fail.
+        unit.currentMovement -= movementDistance;
+        if(unit.currentMovement < 0.1) unit.currentMovement =0; // silly floats which are "almost zero"
+        otherTile.unit = unit;
+        unit = null;
     }
 }

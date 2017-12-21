@@ -84,7 +84,7 @@ public class TileMap{
         return tiles;
     }
 
-    public LinqHashMap<TileInfo,Float> getDistanceToTiles(Vector2 origin, float maximumMovement){
+    public LinqHashMap<TileInfo,Float> getUnitDistanceToTiles(Vector2 origin, float maximumMovement){
         LinqHashMap<TileInfo,Float> distanceToTiles = new LinqHashMap<TileInfo, Float>();
         distanceToTiles.put(get(origin), 0f);
         LinqCollection<TileInfo> tilesToCheck = new LinqCollection<TileInfo>();

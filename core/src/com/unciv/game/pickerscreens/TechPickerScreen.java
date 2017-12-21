@@ -132,7 +132,7 @@ public class TechPickerScreen extends PickerScreen {
             CheckPrerequisites.add(tech.name);
             while (!CheckPrerequisites.isEmpty()) {
                 String techNameToCheck = CheckPrerequisites.pop();
-                if (civTech.isResearched(techNameToCheck))
+                if (civTech.isResearched(techNameToCheck) || Prerequisites.contains(techNameToCheck))
                     continue; //no need to add or check prerequisites
                 Technology techToCheck = GameBasics.Technologies.get(techNameToCheck);
                 for (String str : techToCheck.prerequisites)

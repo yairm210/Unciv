@@ -305,13 +305,9 @@ public class WorldScreen extends CameraStageBaseScreen {
                 public void clicked(InputEvent event, float x, float y) {
                 selectedTile = tileInfo;
                 if(unitTile != null && group.tileInfo.unit == null ) {
-                    LinqHashMap<TileInfo, Float> distanceToTiles = game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.currentMovement);
+                    LinqHashMap<TileInfo, Float> distanceToTiles = game.civInfo.tileMap.getUnitDistanceToTiles(unitTile.position,unitTile.unit.currentMovement);
                     if(distanceToTiles.containsKey(selectedTile)) {
-                        unitTile.unit.currentMovement -= distanceToTiles.get(selectedTile);
-                        //unitTile.unit.currentMovement = round(unitTile.unit.currentMovement,3);
-                        if(unitTile.unit.currentMovement < 0.1) unitTile.unit.currentMovement =0; // silly floats which are "almost zero"
-                        group.tileInfo.unit = unitTile.unit;
-                        unitTile.unit = null;
+                        unitTile.moveUnitToTile(group.tileInfo,distanceToTiles.get(selectedTile));
                         unitTile = null;
                         selectedTile = group.tileInfo;
                     }
@@ -420,7 +416,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
                     // Set all tiles transparent except those in unit range
                     for(TileGroup TG : tileGroups.linqValues()) TG.setColor(0,0,0,0.3f);
-                    for(TileInfo tile : game.civInfo.tileMap.getDistanceToTiles(unitTile.position,unitTile.unit.currentMovement).keySet()){
+                    for(TileInfo tile : game.civInfo.tileMap.getUnitDistanceToTiles(unitTile.position,unitTile.unit.currentMovement).keySet()){
                         tileGroups.get(tile.position.toString()).setColor(Color.WHITE);
                     }
 
@@ -465,6 +461,16 @@ public class WorldScreen extends CameraStageBaseScreen {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {game.setScreen(new ImprovementPickerScreen(game, selectedTile));}
                 } );
+                addUnitAction(tileTable, "automation".equals(selectedTile.unit.action)? "Stop automation" : "Automate", true,
+                        new ClickListener(){
+                            @Override
+                            public void clicked(InputEvent event, float x, float y) {
+                                if ("automation".equals(selectedTile.unit.action))
+                                    selectedTile.unit.action = null;
+                                else selectedTile.unit.action = "automation";
+                                update();
+                            }
+                        });
             }
 
             if(selectedTile.unit.name.equals("Great Scientist")){
@@ -510,14 +516,14 @@ public class WorldScreen extends CameraStageBaseScreen {
             }
 
             if(selectedTile.unit.name.equals("Great Engineer")){
-                final CityConstructions cityConstructions = selectedTile.getCity().cityConstructions;
                 addUnitAction(tileTable, "Hurry Wonder",selectedTile.isCityCenter() &&
-                                cityConstructions.getCurrentConstruction() instanceof Building &&
-                                ((Building)cityConstructions.getCurrentConstruction()).isWonder,
+                                selectedTile.getCity().cityConstructions.getCurrentConstruction() instanceof Building &&
+
+                                ((Building)selectedTile.getCity().cityConstructions.getCurrentConstruction()).isWonder,
                         new ClickListener(){
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                cityConstructions.addConstruction(300 + (30 * selectedTile.getCity().population)); //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                                selectedTile.getCity().cityConstructions.addConstruction(300 + (30 * selectedTile.getCity().population)); //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                                 selectedTile.unit=null; // destroy!
                                 update();
                             }
@@ -533,7 +539,6 @@ public class WorldScreen extends CameraStageBaseScreen {
                         });
             }
             if(selectedTile.unit.name.equals("Great Merchant")){
-                final CityConstructions cityConstructions = selectedTile.getCity().cityConstructions;
                 addUnitAction(tileTable, "Conduct Trade Mission",true,
                         new ClickListener(){
                             @Override

@@ -14,15 +14,19 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Predicate;
 import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.IConstruction;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.ConstructionPickerScreen;
+import com.unciv.game.pickerscreens.ImprovementPickerScreen;
 import com.unciv.game.utils.CameraStageBaseScreen;
 import com.unciv.game.utils.HexMath;
 import com.unciv.game.utils.ImageGetter;
 import com.unciv.models.gamebasics.Building;
+import com.unciv.models.gamebasics.GameBasics;
+import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.stats.FullStats;
 
 import java.util.ArrayList;
@@ -369,6 +373,32 @@ public class CityScreen extends CameraStageBaseScreen {
             TileTable.add(new Label(Math.round(TileStatsValues.get(key))+"",skin)).align(Align.left);
             TileTable.row();
         }
+
+
+//        TextButton actionButton = new TextButton("Request improvement", skin);
+//        actionButton.getLabel().setFontScale(buttonScale);
+//        actionButton.addListener(action);
+//        if (selectedTile.unit.currentMovement == 0 || !canAct) {
+//            actionButton.setColor(Color.GRAY);
+//            actionButton.setTouchable(Touchable.disabled);
+//        }
+//
+//        tileTable.row();
+//        tileTable.add(actionButton).colspan(2)
+//                .size(actionButton.getWidth() * buttonScale, actionButton.getHeight() * buttonScale);
+//
+//        addUnitAction(tileTable,improvementButtonText, !selectedTile.isCityCenter() ||
+//                        GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
+//                            @Override
+//                            public boolean evaluate(TileImprovement arg0) {
+//                                return selectedTile.canBuildImprovement(arg0);
+//                            }
+//                        })
+//                ,new ClickListener() {
+//
+//                    @Override
+//                    public void clicked(InputEvent event, float x, float y) {game.setScreen(new ImprovementPickerScreen(game, selectedTile));}
+//                } );
 
         TileTable.pack();
 

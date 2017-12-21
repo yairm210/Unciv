@@ -6,25 +6,22 @@ import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileImprovement;
 
 public class ImprovementPickerScreen extends PickerScreen {
-    String SelectedImprovement;
-    int TurnsToImprovement;
+    private String SelectedImprovement;
 
     public ImprovementPickerScreen(final UnCivGame game, final TileInfo tileInfo) {
         super(game);
-
         rightSideButton.setText("Pick improvement");
 
         rightSideButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                tileInfo.startWorkingOnImprovement(SelectedImprovement, TurnsToImprovement);
+                tileInfo.startWorkingOnImprovement(SelectedImprovement);
                 game.setWorldScreen();
                 dispose();
             }
@@ -37,15 +34,12 @@ public class ImprovementPickerScreen extends PickerScreen {
         regularImprovements.space(10);
         for(final TileImprovement improvement : GameBasics.TileImprovements.values()) {
             if(!tileInfo.canBuildImprovement(improvement) || improvement.name.equals(tileInfo.improvement)) continue;
-            int turnsToBuild = improvement.turnsToBuild;
-            if(CivilizationInfo.current().getBuildingUniques().contains("WorkerConstruction")) turnsToBuild= (int) Math.round(0.75*turnsToBuild);
-            TextButton TB = new TextButton(improvement.name +"\r\n"+turnsToBuild +" turns", skin);
-            final int finalTurnsToBuild = turnsToBuild;
+            TextButton TB = new TextButton(improvement.name +"\r\n"+improvement.getTurnsToBuild()+" turns", skin);
+
             TB.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
                     SelectedImprovement = improvement.name;
-                    TurnsToImprovement = finalTurnsToBuild;
                     rightSideButton.setTouchable(Touchable.enabled);
                     rightSideButton.setText(improvement.name);
                     rightSideButton.setColor(Color.WHITE);

@@ -1,5 +1,6 @@
 package com.unciv.models.gamebasics;
 
+import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.models.stats.FullStats;
 import com.unciv.models.stats.NamedStats;
 
@@ -14,7 +15,12 @@ public class TileImprovement extends NamedStats implements ICivilopedia {
     public String improvingTech;
     public FullStats improvingTechStats;
 
-    public int turnsToBuild;
+    private int turnsToBuild; // This is the base cost.
+    public int getTurnsToBuild(){
+        int realTurnsToBuild = turnsToBuild;
+        if(CivilizationInfo.current().getBuildingUniques().contains("WorkerConstruction")) realTurnsToBuild = (int) Math.round(0.75*turnsToBuild);
+        return realTurnsToBuild;
+    }
 
     @Override
     public String getDescription() {
