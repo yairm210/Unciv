@@ -102,19 +102,6 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
     public boolean isBuildable(CityConstructions construction){
         CivilizationInfo civInfo = UnCivGame.Current.civInfo;
         if(construction.isBuilt(name)) return false;
-        if(requiredNearbyImprovedResources!=null) {
-            boolean containsResourceWithImprovement = construction.getCity().getTilesInRange()
-                    .any(new Predicate<TileInfo>() {
-                        @Override
-                        public boolean evaluate(TileInfo tile) {
-                            return tile.resource != null
-                                    && requiredNearbyImprovedResources.contains(tile.resource)
-                                    && tile.getTileResource().improvement.equals(tile.improvement);
-                        }
-                    });
-            if(!containsResourceWithImprovement) return false;
-        }
-
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech)) return false;
         if (isWonder && civInfo.cities
                 .any(new Predicate<CityInfo>() {
@@ -144,6 +131,20 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
         if(requiredResource!=null &&
                 !civInfo.getCivResources().keySet().contains(GameBasics.TileResources.get(requiredResource)))
             return false; // Only checks if exists, doesn't check amount - todo
+
+
+        if(requiredNearbyImprovedResources!=null) {
+            boolean containsResourceWithImprovement = construction.getCity().getTilesInRange()
+                    .any(new Predicate<TileInfo>() {
+                        @Override
+                        public boolean evaluate(TileInfo tile) {
+                            return tile.resource != null
+                                    && requiredNearbyImprovedResources.contains(tile.resource)
+                                    && tile.getTileResource().improvement.equals(tile.improvement);
+                        }
+                    });
+            if(!containsResourceWithImprovement) return false;
+        }
 
         if("SpaceshipPart".equals(unique)){
             if(!civInfo.getBuildingUniques().contains("ApolloProgram")) return false;

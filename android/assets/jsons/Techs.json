@@ -1,6 +1,7 @@
 [
 	{
 		columnNumber: 1,
+		era:"Ancient",
 		techCost: 35, 
 		buildingCost:60,
 		techs:[
@@ -24,6 +25,7 @@
 	},
 	{
 		columnNumber: 2,
+		era:"Ancient",
 		techCost: 55, 
 		buildingCost:75,
 		wonderCost:185,
@@ -38,7 +40,7 @@
 				name:"Calendar",
 				row:2,
 				prerequisites:["Pottery"],
-				description:"Allows your workers to build Plantations, which grant access to several luxury resources"
+				description:"Allows your workers to build Plantations, which grant access to several luxury resources, and the Stonehenge wonder, providing culture"
 			},
 			{
 				name:"Writing",
@@ -50,30 +52,31 @@
 				name:"Trapping",
 				row:5,
 				prerequisites:["Animal Husbandry"],
-				description:"Allows your workers to build Camps and Trading Posts, which increase gold produced and grant access to several luxury resources"
+				description:"Allows your workers to build Camps, increasing gold and granting access to several luxury resources. Also enables construction of Circuses, providing happiness."
 			},
 			{
 				name:"The Wheel",
 				row:6,
 				prerequisites:["Animal Husbandry"],
-				description:"Allows construction of roads to your capital city, providing gold from trade"
+				description:"Allows construction of roads, speeding movement and providing gold from trade. ALSO WATERWHEELS-TODO"
 			},
 			{
 				name:"Masonry",
 				row:9,
 				prerequisites:["Mining"],
-				description:"Allows workers to build quarries, granting access to stone and marble resources, and clear marshes. Also enables construction of the Pyramids wonder."
+				description:"Allows workers to build quarries, granting access to stone and marble resources."
 			},
 			{
 				name:"Bronze Working",
 				row:10,
 				prerequisites:["Mining"],
-				description:"Allows workers to remove jungles"
+				description:"Allows workers to remove jungles and clear marshes"
 			}			
 		]	
 	},
 	{
 		columnNumber: 3,
+		era:"Classical",
 		techCost: 115, 
 		buildingCost:100,
 		wonderCost:250,
@@ -86,54 +89,37 @@
 				description:"Does nothing since we have no sea tiles - In theory, Allows construction of lighthouses, providing more food for sea tiles"
 			},
 			{
-				name:"Philosophy",
-				row:3,
-				prerequisites:["Writing"],
-				description:"Allows construction of temples, which generate culture, and the Oracle and National College wonders"
-			},
-			{
 				name:"Horseback Riding",
 				row:5,
-				prerequisites:["The Wheel"],
+				prerequisites:["Trapping","The Wheel"],
 				description:"Allows construction of stables, which increase production on cattle, sheep and horses, and the Circus Maximus wonder"
 			},
 			{
 				name:"Mathematics",
 				row:7,
 				prerequisites:["The Wheel"],
-				description: "Enables construction of the Hanging Gardens wonder."
+				description: "Enables construction of the Hanging Gardens wonder. Also enables construction of the Pyramids wonder."
 			},
 			{
 				name:"Construction",
 				row:9,
 				prerequisites:["Masonry"],
-				description:"Allows construction of colloseums, which generate happiness, and building lumber mills on forests, providing production"
-			},
-			{
-				name:"Iron Working",
-				row:10,
-				prerequisites:["Bronze Working"],
-				description:"Reveals Iron on map"
+				description:"Allows construction of colosseums, which generate happiness, and building lumber mills on forests, providing production"
 			}
 		]	
 	},
 	{
 		columnNumber: 4,
+		era:"Classical",
 		techCost: 305, 
 		buildingCost:120,
 		wonderCost:300,
 		techs:[
 			{
-				name:"Theology",
-				row:2,
-				prerequisites:["Calendar","Philosophy"],
-				description:"Enables construction of Monasteries, the Hagia Sophia and Notre Dame, providing culture, Great Person generation, and happiness, respectively"
-			},
-			{
-				name:"Civil Service",
-				row:4,
-				prerequisites:["Trapping","Philosophy"],
-				description:"Enables the Chichen Itza wonder, which increases the length of golden ages"
+				name:"Philosophy",
+				row:3,
+				prerequisites:["Writing","Calendar"],
+				description:"Allows construction of temples, which generate culture, and the Oracle wonder"
 			},
 			{
 				name:"Currency",
@@ -148,18 +134,46 @@
 				description:"Enables construction of aqueducts, which speed up city growth"
 			},
 			{
-				name:"Metal Casting",
+				name:"Iron Working",
 				row:10,
-				prerequisites:["Construction","Iron Working"],
-				description:"Enables constrution of Forges and Workshops, increasing production"
+				prerequisites:["Bronze Working"],
+				description:"Reveals Iron on map"
 			}
 		]	
 	},
 	{
 		columnNumber: 5,
+		era:"Medieval",
 		techCost: 535,
 		buildingCost:160,
 		wonderCost:400,
+		techs:[
+			{
+				name:"Theology",
+				row:2,
+				prerequisites:["Philosophy"],
+				description:"Enables construction of Monasteries, providing culture, and the Hagia Sophia, increasing Great Person generation"
+			},
+			{
+				name:"Civil Service",
+				row:4,
+				prerequisites:["Horseback Riding","Philosophy"],
+				description:"Enables the Chichen Itza wonder, which increases the length of golden ages, and the National College, increasing science"
+			},
+			{
+				name:"Metal Casting",
+				row:10,
+				prerequisites:["Construction","Iron Working"],
+				description:"Enables construction of Forges and Workshops, increasing production, and the Notre Dame wonder, providing happiness,"
+			}
+		]
+	},
+	{
+		columnNumber: 6,
+		era:"Medieval",
+		techCost: 855, 
+		buildingCost:200,
+		wonderCost:500,
 		techs:[
 			{
 				name:"Compass",
@@ -172,39 +186,34 @@
 				name:"Education",
 				row:3,
 				prerequisites:["Theology","Civil Service"],
-				description:"Allows cities to convert production to science, construction of Universities which provide science, and construction of the Angkor Wat wonder"
+				description:"Allows cities to convert production to science, construction of Universities which provide science"
 			},
 			{
 				name:"Chivalry",
 				row:5,
-				prerequisites:["Horseback Riding","Civil Service","Currency"],
-				description:"???"
+				prerequisites:["Civil Service","Currency"],
+				description:"Enables construction of the Angkor Wat wonder, reducing cost of aquiring new tiles, construction of Trading Posts on tiles, providing gold"
 			},
 			{
 				name:"Machinery",
 				row:8,
-				prerequisites:["Engineering"],
+				prerequisites:["Physics"],
 				description:"Speeds movement speed on roads and allows you to construct the Ironworks wonder, which gives a massive boost in production"
 			},
 			{
 				name:"Physics",
 				row:9,
 				prerequisites:["Engineering","Metal Casting"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
-			},
-			{
-				name:"Steel",
-				row:10,
-				prerequisites:["Metal Casting"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
+				description:"Enables construction of the Porcelain Tower, increasing production to science production"
 			}
-		]
+		]	
 	},
 	{
-		columnNumber: 6,
-		techCost: 855, 
-		buildingCost:200,
-		wonderCost:500,
+		columnNumber: 7,
+		era:"Renaissance",
+		techCost: 1265, 
+		buildingCost:250,
+		wonderCost:625,
 		techs:[
 			{
 				name:"Astronomy",
@@ -222,7 +231,7 @@
 				name:"Banking",
 				row:6,
 				prerequisites:["Chivalry"],
-				description:"Enables construction of banks, giving a serious boost in gold to your empire"
+				description:"Enables construction of banks, increasing gold, and allows construciton of the Forbidden Palace, decreasing unhappiness form population"
 			},
 			{
 				name:"Printing Press",
@@ -230,19 +239,14 @@
 				prerequisites:["Machinery","Physics"],
 				description:"Enables construction of the Theatre and Taj Mahal, increasing happiness"
 			},
-			{
-				name:"Gunpowder",
-				row:10,
-				prerequisites:["Physics","Steel"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
-			}
 		]	
 	},
 	{
-		columnNumber: 7,
-		techCost: 1265, 
-		buildingCost:250,
-		wonderCost:625,
+		columnNumber: 8,
+		era:"Renaissance",
+		techCost: 1755, 
+		buildingCost:300,
+		wonderCost:750,
 		techs:[
 			{
 				name:"Navigation",
@@ -259,22 +263,17 @@
 			{
 				name:"Chemistry",
 				row:9,
-				prerequisites:["Gunpowder"],
+				prerequisites:["Machinery"],
 				description:"Mines and Quarries provide +1 production"
-			},
-			{
-				name:"Metallurgy",
-				row:10,
-				prerequisites:["Gunpowder"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			}
 		]	
 	},
 	{
-		columnNumber: 8,
-		techCost: 1755, 
-		buildingCost:300,
-		wonderCost:750,
+		columnNumber: 9,
+		era:"Industrial",
+		techCost: 2585,
+		buildingCost:360,
+		wonderCost:920,
 		techs:[
 			{
 				name:"Archaeology",
@@ -286,68 +285,70 @@
 				name:"Scientific Theory",
 				row:4,
 				prerequisites:["Navigation","Acoustics","Economics"],
-				description:"This is a lie, change!!!"
-			},
-			{
-				name:"Military Science",
-				row:6,
-				prerequisites:["Economics","Chemistry"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
+				description:"Reveals coal and allows construction of Public Schools, providing science"
 			},
 			{
 				name:"Fertilizer",
 				row:9,
 				prerequisites:["Chemistry"],
 				description:"+1 food from Farms, Plantations and Pastures"
-			},
-			{
-				name:"Rifling",
-				row:10,
-				prerequisites:["Metallurgy"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
-			}
-		]	
-	},
-	{
-		columnNumber: 9,
-		techCost: 2585,
-		buildingCost:360,
-		wonderCost:920,
-		techs:[
-			{
-				name:"Biology",
-				row:4,
-				prerequisites:["Archaeology","Scientific Theory"],
-				description:"Reveals oil and allows construction of oil wells, and construction of hospitals, which provide a large amount of food"
-			},
-			{
-				name:"Steam Power",
-				row:6,
-				prerequisites:["Scientific Theory","Military Science"],
-				description:"Enables construction of factories, boosting production"
-			},
-			{
-				name:"Dynamite",
-				row:9,
-				prerequisites:["Military Science","Fertilizer","Rifling"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			}
 		]	
 	},
 	{
 		columnNumber: 10,
+		era:"Industrial",
 		techCost: 3405,
 		buildingCost:500,
 		wonderCost:1060,
 		techs:[
 			{
-				name:"Electricity",
+				name:"Biology",
 				row:4,
-				prerequisites:["Biology","Steam Power"],
-				description:"Reveals Aluminium on map and allows construction of stock exchange, providing gold"
+				prerequisites:["Archaeology","Scientific Theory"],
+				description:"Reveals oil and allows construction of oil wells, and construction of hospitals, providing a large amount of food"
 			},
 			{
-				name:"Replaceable Parts",
+				name:"Electricity",
+				row:5,
+				prerequisites:["Scientific Theory"],
+				description:"Reveals Aluminium on map and allows construction of stock exchange, increasing gold"
+			},
+			{
+				name:"Steam Power",
+				row:6,
+				prerequisites:["Scientific Theory"],
+				description:"Enables construction of factories, boosting production, and increases produciton of lumber mills, "
+			},
+			{
+				name:"Dynamite",
+				row:9,
+				prerequisites:["Fertilizer"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced"
+			}
+		]	
+	},
+	{
+		columnNumber: 11,
+		era:"Modern",
+		techCost: 4505,
+		buildingCost:500,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Refrigeration",
+				row:2,
+				prerequisites:["Electricity"],
+				description:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
+			},
+			{
+				name:"Radio",
+				row:5,
+				prerequisites:["Electricity"],
+				description:"Allows construction of broadcast towers and the Eiffel Tower, increasing culture"
+			},
+			{
+				name:"Flight",
 				row:6,
 				prerequisites:["Steam Power"],
 				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
@@ -361,65 +362,22 @@
 		]	
 	},
 	{
-		columnNumber: 11,
-		techCost: 4505,
-		buildingCost:500,
-		wonderCost:1250,
-		techs:[
-			{
-				name:"Refrigeration",
-				row:2,
-				prerequisites:["Electricity"],
-				description:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
-			},
-			{
-				name:"Telegraph",
-				row:4,
-				prerequisites:["Electricity"],
-				description:"Allows construction of the Crito Redentor, reducing cost of new policies"
-			},
-			{
-				name:"Radio",
-				row:5,
-				prerequisites:["Electricity"],
-				description:"Allows construction of broadcast towers and the Eiffel Tower, increasing culture"
-			},
-			{
-				name:"Flight",
-				row:6,
-				prerequisites:["Replaceable Parts"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			},
-			{
-				name:"Combustion",
-				row:8,
-				prerequisites:["Replaceable Parts"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			}
-		]	
-	},
-	{
 		columnNumber: 12,
+		era:"Modern",
 		techCost: 5605,
 		buildingCost:500,
 		wonderCost:1250,
 		techs:[
 			{
-				name:"Penicillin",
-				row:1,
-				prerequisites:["Refrigeration"],
-				description:"Enables construction of medical labs, alowing for greater city growth"
-			},
-			{
 				name:"Plastics",
 				row:2,
 				prerequisites:["Refrigeration"],
-				description:"Allows construction of Research Lab, increasing science"
+				description:"Allows construction of Research Lab, increasing science, and the Cristo Redentor, reducing cost of new policies"
 			},
 			{
 				name:"Electronics",
 				row:5,
-				prerequisites:["Telegraph"],
+				prerequisites:["Flight","Radio"],
 				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"			},
 			{
 				name:"Mass Media",
@@ -428,23 +386,44 @@
 				description:"Allows construction of Stadiums and the Sydney Opera House, boosting happiness"
 			},
 			{
-				name:"Radar",
+				name:"Combustion",
 				row:8,
-				prerequisites:["Radio","Flight","Combustion"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			},
-			{
-				name:"Atomic Theory",
-				row:8,
-				prerequisites:["Combustion"],
+				prerequisites:["Railroad"],
 				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
 			}
 		]	
 	},
 	{
 		columnNumber: 13,
+		era:"Atomic",
 		techCost: 7035,
 		buildingCost:500,
+		techs:[
+			{
+				name:"Penicillin",
+				row:1,
+				prerequisites:["Refrigeration"],
+				description:"Enables construction of medical labs, alowing for greater city growth"
+			},
+			{
+				name:"Computers",
+				row:4,
+				prerequisites:["Electronics","Mass Media"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+			},
+			{
+				name:"Nuclear Fission",
+				row:10,
+				prerequisites:["Combustion"],
+				description:"Allows construction of Nuclear Plants, increasing production"
+			}
+		]	
+	},
+	{
+		columnNumber: 14,
+		era:"Atomic",
+		techCost: 8465,
+		buildingCost:750,
 		techs:[
 			{
 				name:"Ecology",
@@ -453,70 +432,16 @@
 				description:"Enables construction of Solar Plants on cities near deserts, increasing production"
 			},
 			{
-				name:"Computers",
-				row:4,
-				prerequisites:["Electronics","Mass Media","Radar"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
-			},
-			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Radar"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"			},
-			{
-				name:"Lasers",
-				row:8,
-				prerequisites:["Radar"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
-			},
-			{
-				name:"Nuclear Fission",
-				row:10,
-				prerequisites:["Atomic Theory"],
-				description:"Allows construction of Nuclear Plants, increasing production"
-			}
-		]	
-	},
-	{
-		columnNumber: 14,
-		techCost: 8465,
-		buildingCost:750,
-		techs:[
-			{
-				name:"Globalization",
-				row:2,
-				cost:10445,
-				prerequisites:["Ecology","Computers"],
-				description:"Theoretically enables united nation - tthere's no ai so we'll leave it be for now"
-			},
-			{
-				name:"Robotics",
-				row:4,
-				prerequisites:["Computers"],
-				description:"Allow construction of SS Boosters, a vital part of the spaceship, and the Spaceship Factory, which speeds the production of spaceship parts"
-			},
-			{
-				name:"Satellites",
-				row:6,
-				prerequisites:["Rocketry"],
-				description:"Allow construction of the SS Cockpit, a vital part of the spaceship"
-			},
-			{
-				name:"Stealth",
-				row:8,
-				prerequisites:["Lasers"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
-			},
-			{
-				name:"Advanced Ballistics",
-				row:10,
-				prerequisites:["Atomic Theory"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+				prerequisites:["Combustion","Electronics"],
+				description:"Allows you to construct the Apollo Project, to find a way off of this planet!"
 			}
 		]	
 	},
 	{
 		columnNumber: 15,
+		era:"Information",
 		techCost: 9675,
 		buildingCost:750,
 		wonderCost:1250,
@@ -524,7 +449,7 @@
 			{
 				name:"Robotics",
 				row:4,
-				prerequisites:["Computers"],
+				prerequisites:["Computers","Rocketry"],
 				description:"Allow construction of SS Boosters, a vital part of the spaceship, and the Spaceship Factory, which speeds the production of spaceship parts"
 			},
 			{
@@ -532,53 +457,21 @@
 				row:6,
 				prerequisites:["Rocketry"],
 				description:"Allow construction of the SS Cockpit, a vital part of the spaceship"
-			},
-			{
-				name:"Stealth",
-				row:8,
-				prerequisites:["Lasers"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
-			},
-			{
-				name:"Advanced Ballistics",
-				row:10,
-				prerequisites:["Atomic Theory"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
 			}
 		]	
 	},
 	{
 		columnNumber: 16,
+		era:"Information",
 		techCost: 9675,
 		buildingCost:750,
 		wonderCost:1250,
 		techs:[
 			{
 				name:"Particle Physics",
-				row:5,
-				prerequisites:["Ecology","Computers"],
+				row:4,
+				prerequisites:["Ecology","Computers","Nuclear Fission"],
 				description:"Allow construction of the SS Engine, a vital part of the spaceship"
-			},
-			{
-				name:"Nuclear Fusion",
-				row:8,
-				prerequisites:["Satellites","Stealth","Advanced Ballistics"],
-				description:"Theoretically enables united nation - tthere's no ai so we'll leave it be for now"
-			}
-		]	
-	}
-	{
-		columnNumber: 16,
-		techCost: 9675,
-		buildingCost:750,
-		wonderCost:1250,
-		techs:[
-			{
-				name:"Globalization",
-				row:2,
-				cost:10445,
-				prerequisites:["Ecology","Computers"],
-				description:"Theoretically enables united nation - tthere's no ai so we'll leave it be for now"
 			},
 			{
 				name:"Nanotechnology",
@@ -589,7 +482,8 @@
 		]	
 	}
 	{
-		columnNumber: 16,
+		columnNumber: 17,
+		era:"Future",
 		techCost: 9675,
 		buildingCost:750,
 		wonderCost:1250,
@@ -597,7 +491,7 @@
 			{
 				name:"Future Tech",
 				row:5,
-				prerequisites:["Globalization","Nanotechnology","Nuclear Fusion"],
+				prerequisites:["Nanotechnology","Particle Physics"],
 				description:"Who knows what the future holds?"
 			}
 		]	

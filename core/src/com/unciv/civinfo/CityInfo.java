@@ -129,11 +129,12 @@ public class CityInfo {
         //idle ppl
         stats.production += getFreePopulation();
 
+        CivilizationInfo civInfo = CivilizationInfo.current();
         if(!isCapital() && isConnectedToCapital(RoadStatus.Road)) {
             // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            double goldFromTradeRoute = CivilizationInfo.current().getCapital().population * 0.15
+            double goldFromTradeRoute = civInfo.getCapital().population * 0.15
                     + population * 1.1 - 1;
-            if(CivilizationInfo.current().getBuildingUniques().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
+            if(civInfo.getBuildingUniques().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
             stats.gold += goldFromTradeRoute;
         }
 
@@ -141,22 +142,26 @@ public class CityInfo {
 
         FullStats statPercentBonuses = cityConstructions.getStatPercentBonuses();
         if(isCapital() || isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
-        if(CivilizationInfo.current().isGoldenAge()) statPercentBonuses.production+=20;
+        if(civInfo.isGoldenAge()) statPercentBonuses.production+=20;
         IConstruction currentConstruction = cityConstructions.getCurrentConstruction();
         if(currentConstruction instanceof Building && ((Building)currentConstruction).isWonder &&
-                CivilizationInfo.current().getCivResources().containsKey(GameBasics.TileResources.get("Marble")))
+                civInfo.getCivResources().containsKey(GameBasics.TileResources.get("Marble")))
             statPercentBonuses.production+=15;
 
 
         stats.production*=1+statPercentBonuses.production/100;  // So they get bonuses for production and gold/science
         if(cityConstructions.currentConstruction.equals("Gold")) stats.gold+=stats.production/4;
-        if(cityConstructions.currentConstruction.equals("Science")) stats.science+=stats.production/4;
+        if(cityConstructions.currentConstruction.equals("Science")) {
+            if (civInfo.getBuildingUniques().contains("ScienceConversionIncrease"))
+                stats.science += stats.production / 3;
+            else stats.science += stats.production / 4;
+        }
 
         stats.gold*=1+statPercentBonuses.gold/100;
         stats.science*=1+statPercentBonuses.science/100;
         stats.culture*=1+statPercentBonuses.culture/100;
 
-        boolean isUnhappy =CivilizationInfo.current().getHappinessForNextTurn() < 0;
+        boolean isUnhappy = civInfo.getHappinessForNextTurn() < 0;
         if (!isUnhappy) stats.food*=1+statPercentBonuses.food/100; // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
         stats.food -= population * 2; // Food reduced after the bonus
         if(isUnhappy) stats.food /= 4; // Reduce excess food to 1/4 per the same

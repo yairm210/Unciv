@@ -13,7 +13,7 @@
 		production:1,
 		turnsToBuild:7,
 		techRequired:"Construction",
-		improvingTech:"Scientific Theory",
+		improvingTech:"Steam Power",
 		improvingTechStats:{production:1}
 	},
 	{
@@ -30,7 +30,7 @@
 		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Hill","Tundra","Forest","Jungle","Flood plains"],
 		gold:1,
 		turnsToBuild:7,
-		techRequired:"Trapping",
+		techRequired:"Chivalry",
 		improvingTech:"Economics",
 		improvingTechStats: {gold:1}
 	},
@@ -95,7 +95,7 @@
 		name:"Remove Marsh",
 		turnsToBuild:6,
 		terrainsCanBeBuiltOn:["Marsh"],
-		techRequired:"Masonry"
+		techRequired:"Bronze Working"
 	},
 	
 	

@@ -80,7 +80,7 @@
 		greatPersonPoints:{production:1},
 		isWonder:true,
 		unique:"WorkerConstruction",
-		requiredTech:"Masonry"
+		requiredTech:"Mathematics"
 	},
 	{
 		name:"Temple",
@@ -96,6 +96,7 @@
 		name:"The Oracle",
 		description: "Provides a free social policy - todo",
 		culture:3,
+		greatPersonPoints:{science:1},
 		isWonder:true,
 		requiredTech:"Philosophy"
 	},
@@ -107,7 +108,7 @@
 		isWonder:true,
 		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"Library",
-		requiredTech:"Philosophy"
+		requiredTech:"Civil Service"
 	},
 	{
 		name:"Stable",
@@ -130,6 +131,7 @@
 	{
 		name:"Hanging Gardens",
 		description: "",
+		greatPersonPoints:{culture:1},
 		food:10,
 		culture:1,
 		isWonder:true,
@@ -166,13 +168,15 @@
 		description: "",
 		culture:1,
 		happiness:10,
+		greatPersonPoints:{gold:1},
 		isWonder:true,
-		requiredTech:"Theology"
+		requiredTech:"Metal Casting"
 	},
 	{
 		name:"Hagia Sophia",
 		description: "+33% great person generation in all cities",
 		culture:1,
+		greatPersonPoints:{culture:1},
 		isWonder:true,
 		unique:"GreatPersonGenerationIncrease",
 		requiredTech:"Theology"
@@ -181,6 +185,7 @@
 		name:"Chichen Itza",
 		description: "Length of golden ages increased +50%",
 		culture:1,
+		greatPersonPoints:{production:1},
 		isWonder:true,
 		unique:"GoldenAgeLengthIncrease",
 		requiredTech:"Currency"
@@ -198,6 +203,7 @@
 		name:"Machu Pichu",
 		description: "Gold from all trade routes +25%",
 		gold:5,
+		greatPersonPoints:{gold:1},
 		culture:1,
 		isWonder:true,
 		unique:"TradeRouteGoldIncrease",
@@ -256,9 +262,19 @@
 		name:"Angkor Wat",
 		description: "Cost of aquiring new tiles reduced by 25%",
 		culture:1,
+		greatPersonPoints:{production:1},
 		isWonder:true,
 		unique:"NewTileCostReduction",
-		requiredTech:"Education"
+		requiredTech:"Chivalry"
+	},
+	{
+		name:"Porcelain Tower",
+		description: "A free great scientist appears, production to science conversion in cities increased by 33%",
+		culture:1,
+		greatPersonPoints:{science:2},
+		isWonder:true,
+		unique:"ScienceConversionIncrease",
+		requiredTech:"Physics"
 	},
 	{
 		name:"Ironworks",
@@ -363,7 +379,7 @@
 	},
 	{
 		name:"The Louvre",
-		description: "Free Great Artist appears near the city",
+		description: "A Free Great Artist appears near the city",
 		culture:1,
 		happiness:4,
 		isWonder:true,
@@ -374,6 +390,7 @@
 		name:"Public School",
 		description: "+1 science per 2 population",
 		science:3,
+		specialistSlots:{science:1},
 		requiredBuilding:"University",
 		maintainance:3,
 		hurryCostModifier:0,
@@ -417,7 +434,7 @@
 		culture:5,
 		isWonder:true,
 		unique:"PolicyCostReduction",
-		requiredTech:"Telegraph"
+		requiredTech:"Plastics"
 	},
 	{
 		name:"Broadcast Tower",
