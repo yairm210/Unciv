@@ -20,7 +20,7 @@
 	},
 	{
 		name:"Granary",
-		description: "Wheat, bananas and deer produce +1 food.", 
+		description: "", 
 		food:2,
 		resourceBonusStats:{food:1},
 		maintainance:1,
@@ -80,7 +80,7 @@
 		greatPersonPoints:{production:1},
 		isWonder:true,
 		unique:"WorkerConstruction",
-		requiredTech:"Writing"
+		requiredTech:"Masonry"
 	},
 	{
 		name:"Temple",
@@ -111,7 +111,7 @@
 	},
 	{
 		name:"Stable",
-		description: "Cattle, sheep and horses provide +1 production.", 
+		description: "", 
 		maintainance:1,
 		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]
 		resourceBonusStats:{production:1},
@@ -167,6 +167,14 @@
 		culture:1,
 		happiness:10,
 		isWonder:true,
+		requiredTech:"Theology"
+	},
+	{
+		name:"Hagia Sophia",
+		description: "+33% great person generation in all cities",
+		culture:1,
+		isWonder:true,
+		unique:"GreatPersonGenerationIncrease",
 		requiredTech:"Theology"
 	},
 	{
@@ -355,7 +363,7 @@
 	},
 	{
 		name:"The Louvre",
-		description: "Free Great Artist appears near the city - TODO",
+		description: "Free Great Artist appears near the city",
 		culture:1,
 		happiness:4,
 		isWonder:true,

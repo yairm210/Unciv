@@ -1,6 +1,7 @@
 package com.unciv.game.utils;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -19,6 +20,10 @@ public class ImageGetter {
 
     public static TextureRegionDrawable getDrawable(String fileName) {
         return new TextureRegionDrawable(getTextureRegion(fileName));
+    }
+
+    public static Drawable getSingleColorDrawable(Color color){
+        return getDrawable("skin/whiteDot.png").tint(color);
     }
 
     private static TextureRegion getTextureRegion(String fileName) {

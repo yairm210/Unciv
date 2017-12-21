@@ -126,7 +126,7 @@ public class TileMap{
     }
 
     public void placeUnitNearTile(Vector2 position, final String unit){
-        getTilesInDistance(position,1).first(new Predicate<TileInfo>() {
+        getTilesInDistance(position,2).first(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
                 return arg0.unit==null;

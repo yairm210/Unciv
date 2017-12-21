@@ -151,7 +151,8 @@
 		terrainsCanBeFoundOn:["Grassland","Plains","Desert","Hill"],
 		gold:2,
 		improvement:"Mine",
-		improvementStats:{gold:1}
+		improvementStats:{gold:1},
+		building:"Mint"
 	},
 	{
 		name:"Silver",
@@ -159,7 +160,8 @@
 		terrainsCanBeFoundOn:["Desert","Tundra","Hill"],
 		gold:2,
 		improvement:"Mine",
-		improvementStats:{gold:1}
+		improvementStats:{gold:1},
+		building:"Mint"
 	},
 	{
 		name:"Incense",
@@ -167,7 +169,8 @@
 		terrainsCanBeFoundOn:["Plains","Desert"],
 		gold:3,
 		improvement:"Plantation",
-		improvementStats:{gold:1}
+		improvementStats:{gold:1},
+		building:"Monastery"
 	},
 	{
 		name:"Ivory",
@@ -199,7 +202,8 @@
 		terrainsCanBeFoundOn:["Grassland","Plains"],
 		gold:2,
 		improvement:"Plantation",
-		improvementStats:{gold:1}
+		improvementStats:{gold:1},
+		building:"Monastery"
 	},
 	{
 		name:"Sugar",

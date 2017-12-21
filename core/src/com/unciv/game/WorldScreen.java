@@ -65,7 +65,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         tileTable.setBackground(tileTableBackground);
         OptionsTable.setBackground(tileTableBackground);
 
-        NotificationsTable.background(ImageGetter.getDrawable(ImageGetter.WhiteDot).tint(new Color(0x004085bf)));
+        NotificationsTable.background(ImageGetter.getSingleColorDrawable(new Color(0x004085bf)));
 
         TextureRegionDrawable civBackground = ImageGetter.getDrawable("skin/civTableBackground.png");
         CivTable.setBackground(civBackground.tint(new Color(0x004085bf)));

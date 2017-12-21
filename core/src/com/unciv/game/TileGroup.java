@@ -40,7 +40,8 @@ public class TileGroup extends Group {
 
 
     void addPopulationIcon(){
-        populationImage = ImageGetter.getStatIcon("Population");
+        populationImage = ImageGetter.getImage("StatIcons/populationGreen.png");
+        populationImage.setSize(20,20);
         populationImage.moveBy(0, terrainImage.getHeight()-populationImage.getHeight()); // top left
         addActor(populationImage);
     }
@@ -68,7 +69,7 @@ public class TileGroup extends Group {
         }
 
         if (tileInfo.unit != null && unitImage == null) {
-            unitImage = ImageGetter.getImage("StatIcons/" + tileInfo.unit.name + "_(Civ5).png");
+            unitImage = ImageGetter.getImage("StatIcons/" + tileInfo.unit.name.replace(" ","_") + "_(Civ5).png");
             addActor(unitImage);
             unitImage.setSize(20, 20); // not moved - is at bottom left
         }

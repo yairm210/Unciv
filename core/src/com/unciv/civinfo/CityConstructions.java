@@ -165,6 +165,7 @@ public class CityConstructions
         CivilizationInfo.current().civStats.gold -= getConstruction(buildingName).getGoldCost();
         getConstruction(buildingName).postBuildEvent(this);
         if(currentConstruction.equals(buildingName)) chooseNextConstruction();
+        getCity().updateCityStats();
     }
 
     public String getCityProductionTextForCityButton(){

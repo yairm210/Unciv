@@ -23,6 +23,17 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
         production +=other.production;
     }
 
+    public FullStats minus(){
+        FullStats sub = new FullStats();
+        sub.gold=-gold;
+        sub.science=-science;
+        sub.happiness=-happiness;
+        sub.culture=-culture;
+        sub.food=-food;
+        sub.production=-production;
+        return sub;
+    }
+
     public String display(float value, String name){
         return ", " + (value>0 ? "+" : "") + Math.round(value) + " "+name;
     }

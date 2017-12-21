@@ -80,11 +80,16 @@ public class CivilizationInfo {
 
         if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
-        for (CityInfo city : cities) city.nextTurn();
+        for (CityInfo city : cities) {
+            city.nextTurn();
+        }
 
         for(TileInfo tile : tileMap.values()) tile.nextTurn();
 
+        checkGreatPersonGeneration();
+
         for (CityInfo city : cities) city.updateCityStats();
+
         turns++;
         if(isGoldenAge()) turnsLeftForCurrentGoldenAge--;
 
@@ -95,10 +100,39 @@ public class CivilizationInfo {
         }
     }
 
+    public void addGreatPerson(String unitName){ // This is also done by some wonders and social policies, remember
+        tileMap.placeUnitNearTile(cities.get(0).cityLocation,unitName);
+        notifications.add("A "+unitName+" has been born!");
+    }
+
+    public void checkGreatPersonGeneration(){
+        if(greatPersonPoints.science>pointsForNextGreatPerson){
+            greatPersonPoints.science-=pointsForNextGreatPerson;
+            pointsForNextGreatPerson*=2;
+            addGreatPerson("Great Scientist");
+        }
+        if(greatPersonPoints.production>pointsForNextGreatPerson){
+            greatPersonPoints.production-=pointsForNextGreatPerson;
+            pointsForNextGreatPerson*=2;
+            addGreatPerson("Great Engineer");
+        }
+        if(greatPersonPoints.culture>pointsForNextGreatPerson){
+            greatPersonPoints.culture-=pointsForNextGreatPerson;
+            pointsForNextGreatPerson*=2;
+            addGreatPerson("Great Artist");
+        }
+        if(greatPersonPoints.gold>pointsForNextGreatPerson){
+            greatPersonPoints.gold-=pointsForNextGreatPerson;
+            pointsForNextGreatPerson*=2;
+            addGreatPerson("Great Merchant");
+        }
+    }
+
     public void enterGoldenAge(){
         int turnsToGoldenAge = 10;
         if(getBuildingUniques().contains("GoldenAgeLengthIncrease")) turnsToGoldenAge*=1.5;
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge;
+        notifications.add("You have entered a golden age!");
     }
 
     public CivStats getStatsForNextTurn() {

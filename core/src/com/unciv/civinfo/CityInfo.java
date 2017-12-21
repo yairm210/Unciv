@@ -19,6 +19,7 @@ public class CityInfo {
     private int tilesClaimed;
     public int population = 1;
     public int foodStored = 0;
+    public FullStats specialists = new FullStats();
 
     public FullStats cityStats; // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones!
 
@@ -95,17 +96,15 @@ public class CityInfo {
         return cityResources;
     }
 
-    private int getWorkingPopulation() {
-        return getTilesInRange().count(new Predicate<TileInfo>() {
+    public int getFreePopulation() {
+        int workingPopulation = getTilesInRange().count(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
                 return name.equals(arg0.workingCity);
             }
         })-1; // 1 is the city center
-    }
-
-    public int getFreePopulation() {
-        return population - getWorkingPopulation();
+        int specialistNum = (int) (specialists.science+specialists.production+specialists.culture+specialists.gold);
+        return population - workingPopulation - specialistNum;
     }
 
     public boolean hasNonWorkingPopulation() {
@@ -120,6 +119,12 @@ public class CityInfo {
         for (TileInfo cell : getTilesInRange())
             if (name.equals(cell.workingCity))
                 stats.add(cell.getTileStats(this));
+
+        // Specialists
+        stats.culture+=specialists.culture*3;
+        stats.production+=specialists.production*2;
+        stats.science+=specialists.science*3;
+        stats.gold+=specialists.gold*2;
 
         //idle ppl
         stats.production += getFreePopulation();
@@ -200,6 +205,14 @@ public class CityInfo {
             addNewTile();
             CivilizationInfo.current().notifications.add(name+" has expanded its borders!");
         }
+
+        CivilizationInfo civInfo = CivilizationInfo.current();
+        float greatPersonGenerationMultiplier = 3;
+        if(civInfo.getBuildingUniques().contains("GreatPersonGenerationIncrease")) greatPersonGenerationMultiplier*=1.33;
+        civInfo.greatPersonPoints.gold+=specialists.gold*greatPersonGenerationMultiplier;
+        civInfo.greatPersonPoints.production+=specialists.production*greatPersonGenerationMultiplier;
+        civInfo.greatPersonPoints.culture+=specialists.culture*greatPersonGenerationMultiplier;
+        civInfo.greatPersonPoints.science+=specialists.science*greatPersonGenerationMultiplier;
     }
 
     private void addNewTile(){

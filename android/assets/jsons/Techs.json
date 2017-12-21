@@ -56,7 +56,7 @@
 				name:"The Wheel",
 				row:6,
 				prerequisites:["Animal Husbandry"],
-				description:"Allows construction or roads to your capilat city, providing gold from trade"
+				description:"Allows construction of roads to your capital city, providing gold from trade"
 			},
 			{
 				name:"Masonry",
@@ -127,7 +127,7 @@
 				name:"Theology",
 				row:2,
 				prerequisites:["Calendar","Philosophy"],
-				description:"Unclear what this does in Vanilla civ"
+				description:"Enables construction of Monasteries, the Hagia Sophia and Notre Dame, providing culture, Great Person generation, and happiness, respectively"
 			},
 			{
 				name:"Civil Service",
@@ -228,7 +228,7 @@
 				name:"Printing Press",
 				row:8,
 				prerequisites:["Machinery","Physics"],
-				description:"Eables construction of the Theatre and Taj Mahal, increasing happiness"
+				description:"Enables construction of the Theatre and Taj Mahal, increasing happiness"
 			},
 			{
 				name:"Gunpowder",
