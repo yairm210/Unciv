@@ -80,9 +80,7 @@ public class TileGroup extends Group {
         }
 
         if(unitImage!=null){
-            if(tileInfo.unit.currentMovement ==0 ||
-                    (tileInfo.unit.name.equals("Worker") && tileInfo.improvementInProgress!=null))
-                unitImage.setColor(Color.GRAY);
+            if(!tileInfo.hasIdleUnit()) unitImage.setColor(Color.GRAY);
             else unitImage.setColor(Color.WHITE);
         }
 

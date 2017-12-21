@@ -173,4 +173,10 @@ public class TileInfo
         return resource != null && (getTileResource().revealedBy ==null || isResearched(getTileResource().revealedBy));
     }
 
+    public boolean hasIdleUnit() {
+        if (unit == null) return false;
+        if (unit.currentMovement == 0) return false;
+        if (unit.name.equals("Worker") && improvementInProgress != null) return false;
+        return true;
+    }
 }
