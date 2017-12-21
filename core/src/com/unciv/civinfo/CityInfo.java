@@ -147,6 +147,10 @@ public class CityInfo {
         if(currentConstruction instanceof Building && ((Building)currentConstruction).isWonder &&
                 civInfo.getCivResources().containsKey(GameBasics.TileResources.get("Marble")))
             statPercentBonuses.production+=15;
+        if(civInfo.tech.isResearched("Computers")){
+            statPercentBonuses.production+=10;
+            statPercentBonuses.science+=10;
+        }
 
 
         stats.production*=1+statPercentBonuses.production/100;  // So they get bonuses for production and gold/science

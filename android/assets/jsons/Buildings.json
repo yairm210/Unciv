@@ -434,7 +434,7 @@
 		culture:5,
 		isWonder:true,
 		unique:"PolicyCostReduction",
-		requiredTech:"Plastics"
+		requiredTech:"Flight"
 	},
 	{
 		name:"Broadcast Tower",

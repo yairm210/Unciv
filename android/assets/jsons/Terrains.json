@@ -1,4 +1,5 @@
 [	
+	// Base terrains
 	{
 		name:"Grassland",
 		type:"BaseTerrain",
@@ -43,7 +44,7 @@
 		rgb:"116,88,62"
 	},
 	
-	
+	// Terrain features
 	{
 		name:"Forest",
 		type:"TerrainFeature",

@@ -30,12 +30,12 @@
 		buildingCost:75,
 		wonderCost:185,
 		techs:[
-			{
+			/*{
 				name:"Sailing",
 				row:1,
 				prerequisites:["Pottery"],
 				description:"Does nothing since we have no sea tiles - In theory, Allows access to sea resources by building work boats"
-			},
+			},*/
 			{
 				name:"Calendar",
 				row:2,
@@ -81,13 +81,13 @@
 		buildingCost:100,
 		wonderCost:250,
 		techs:[
-			{
+			/*{
 				name:"Optics",
 				cost:95,
 				row:1,
 				prerequisites:["Sailing"],
 				description:"Does nothing since we have no sea tiles - In theory, Allows construction of lighthouses, providing more food for sea tiles"
-			},
+			},*/
 			{
 				name:"Horseback Riding",
 				row:5,
@@ -175,13 +175,13 @@
 		buildingCost:200,
 		wonderCost:500,
 		techs:[
-			{
+			/*{
 				name:"Compass",
 				row:1,
 				cost:415,
 				prerequisites:["Optics"],
 				description:"Does nothing since we have no sea tiles - In theory, allows construction of harbors"
-			},
+			},*/
 			{
 				name:"Education",
 				row:3,
@@ -218,7 +218,7 @@
 			{
 				name:"Astronomy",
 				row:2,
-				prerequisites:["Compass","Education"],
+				prerequisites:[/*"Compass",*/"Education"],
 				description:"Enables construction of Observatories in cities near mountains"
 			},
 			{
@@ -248,11 +248,17 @@
 		buildingCost:300,
 		wonderCost:750,
 		techs:[
-			{
+			/*{
 				name:"Navigation",
 				row:2,
 				prerequisites:["Astronomy"],
 				description:"Does nothing since we have no sea tiles - In theory, allows construction of Frigates and Seaports"
+			},*/
+			{
+				name:"Archaeology",
+				row:2,
+				prerequisites:["Astronomy"],
+				description:"Allows construction of Museums and the Hermitage and Louvre wonders, providing culture"
 			},
 			{
 				name:"Economics",
@@ -276,20 +282,14 @@
 		wonderCost:920,
 		techs:[
 			{
-				name:"Archaeology",
-				row:2,
-				prerequisites:["Navigation"],
-				description:"Allows construction of Museums and the Hermitage and Louvre wonders, providing culture"
-			},
-			{
 				name:"Scientific Theory",
 				row:4,
-				prerequisites:["Navigation","Acoustics","Economics"],
+				prerequisites:["Archaeology","Acoustics","Economics"],
 				description:"Reveals coal and allows construction of Public Schools, providing science"
 			},
 			{
 				name:"Fertilizer",
-				row:9,
+				row:7,
 				prerequisites:["Chemistry"],
 				description:"+1 food from Farms, Plantations and Pastures"
 			}
@@ -304,8 +304,8 @@
 		techs:[
 			{
 				name:"Biology",
-				row:4,
-				prerequisites:["Archaeology","Scientific Theory"],
+				row:3,
+				prerequisites:["Archaeology","Scientific Theory","Fertilizer"],
 				description:"Reveals oil and allows construction of oil wells, and construction of hospitals, providing a large amount of food"
 			},
 			{
@@ -316,15 +316,9 @@
 			},
 			{
 				name:"Steam Power",
-				row:6,
-				prerequisites:["Scientific Theory"],
+				row:7,
+				prerequisites:["Scientific Theory","Chemistry"],
 				description:"Enables construction of factories, boosting production, and increases produciton of lumber mills, "
-			},
-			{
-				name:"Dynamite",
-				row:9,
-				prerequisites:["Fertilizer"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced"
 			}
 		]	
 	},
@@ -337,7 +331,7 @@
 		techs:[
 			{
 				name:"Refrigeration",
-				row:2,
+				row:4,
 				prerequisites:["Electricity"],
 				description:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
 			},
@@ -348,15 +342,9 @@
 				description:"Allows construction of broadcast towers and the Eiffel Tower, increasing culture"
 			},
 			{
-				name:"Flight",
-				row:6,
-				prerequisites:["Steam Power"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			},
-			{
-				name:"Railroad",
+				name:"Combustion",
 				row:8,
-				prerequisites:["Steam Power","Dynamite"],
+				prerequisites:["Steam Power"],
 				description:"Allows construction of railroads, providing fast transport and a 25% production boost to cities"
 			}
 		]	
@@ -370,15 +358,16 @@
 		techs:[
 			{
 				name:"Plastics",
-				row:2,
-				prerequisites:["Refrigeration"],
-				description:"Allows construction of Research Lab, increasing science, and the Cristo Redentor, reducing cost of new policies"
+				row:3,
+				prerequisites:["Biology"],
+				description:"Allows construction of Research Lab, increasing science"
 			},
 			{
 				name:"Electronics",
 				row:5,
-				prerequisites:["Flight","Radio"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"			},
+				prerequisites:["Radio"],
+				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
+			},
 			{
 				name:"Mass Media",
 				row:6,
@@ -386,34 +375,34 @@
 				description:"Allows construction of Stadiums and the Sydney Opera House, boosting happiness"
 			},
 			{
-				name:"Combustion",
-				row:8,
-				prerequisites:["Railroad"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			}
+				name:"Flight",
+				row:7,
+				prerequisites:["Combustion"],
+				description:"Allows construction of the Cristo Redentor, reducing cost of new policies"
+			},
 		]	
 	},
 	{
 		columnNumber: 13,
-		era:"Atomic",
+		era:"Information",
 		techCost: 7035,
 		buildingCost:500,
 		techs:[
 			{
 				name:"Penicillin",
-				row:1,
-				prerequisites:["Refrigeration"],
+				row:3,
+				prerequisites:["Refrigeration","Biology"],
 				description:"Enables construction of medical labs, alowing for greater city growth"
 			},
 			{
 				name:"Computers",
-				row:4,
+				row:5,
 				prerequisites:["Electronics","Mass Media"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"		
+				description:"+10% science and production in all cities"		
 			},
 			{
 				name:"Nuclear Fission",
-				row:10,
+				row:7,
 				prerequisites:["Combustion"],
 				description:"Allows construction of Nuclear Plants, increasing production"
 			}
@@ -421,68 +410,59 @@
 	},
 	{
 		columnNumber: 14,
-		era:"Atomic",
+		era:"Information",
 		techCost: 8465,
 		buildingCost:750,
 		techs:[
 			{
 				name:"Ecology",
-				row:2,
-				prerequisites:["Penicillin","Plastics"],
+				row:3,
+				prerequisites:["Penicillin","Plastics","Electronics"],
 				description:"Enables construction of Solar Plants on cities near deserts, increasing production"
+			},
+			{
+				name:"Robotics",
+				row:4,
+				prerequisites:["Computers"],
+				description:"Allow construction of SS Boosters, a vital part of the spaceship, and the Spaceship Factory, which speeds the production of spaceship parts"
 			},
 			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Combustion","Electronics"],
+				prerequisites:["Flight","Electronics"],
 				description:"Allows you to construct the Apollo Project, to find a way off of this planet!"
 			}
 		]	
 	},
 	{
 		columnNumber: 15,
-		era:"Information",
+		era:"Future",
 		techCost: 9675,
 		buildingCost:750,
 		wonderCost:1250,
 		techs:[
 			{
-				name:"Robotics",
-				row:4,
-				prerequisites:["Computers","Rocketry"],
-				description:"Allow construction of SS Boosters, a vital part of the spaceship, and the Spaceship Factory, which speeds the production of spaceship parts"
-			},
+				name:"Nanotechnology",
+				row:3,
+				prerequisites:["Robotics","Ecology"],
+				description:"Allow construction of the SS Statis Chamber, a vital part of the spaceship"
+			}
 			{
 				name:"Satellites",
-				row:6,
-				prerequisites:["Rocketry"],
+				row:5,
+				prerequisites:["Rocketry","Computers","Ecology"],
 				description:"Allow construction of the SS Cockpit, a vital part of the spaceship"
+			}
+			{
+				name:"Particle Physics",
+				row:6,
+				prerequisites:["Ecology","Computers","Nuclear Fission"],
+				description:"Allow construction of the SS Engine, a vital part of the spaceship"
 			}
 		]	
 	},
 	{
 		columnNumber: 16,
-		era:"Information",
-		techCost: 9675,
-		buildingCost:750,
-		wonderCost:1250,
-		techs:[
-			{
-				name:"Particle Physics",
-				row:4,
-				prerequisites:["Ecology","Computers","Nuclear Fission"],
-				description:"Allow construction of the SS Engine, a vital part of the spaceship"
-			},
-			{
-				name:"Nanotechnology",
-				row:5,
-				prerequisites:["Particle Physics"],
-				description:"Allow construction of the SS Statis Chamber, a vital part of the spaceship"
-			}
-		]	
-	}
-	{
-		columnNumber: 17,
 		era:"Future",
 		techCost: 9675,
 		buildingCost:750,
@@ -491,7 +471,7 @@
 			{
 				name:"Future Tech",
 				row:5,
-				prerequisites:["Nanotechnology","Particle Physics"],
+				prerequisites:["Nanotechnology","Particle Physics","Satellites"],
 				description:"Who knows what the future holds?"
 			}
 		]	

@@ -34,6 +34,8 @@
 		improvingTech:"Economics",
 		improvingTechStats: {gold:1}
 	},
+	
+	// Resource-specific
 	{
 		name:"Camp",
 		turnsToBuild:7,
@@ -68,6 +70,8 @@
 		improvingTech:"Chemistry",
 		improvingTechStats:{production:1}
 	},
+	
+	// Transportation
 	{
 		name:"Road",
 		turnsToBuild:4,
@@ -76,9 +80,10 @@
 	{
 		name:"Railroad",
 		turnsToBuild:4,
-		techRequired:"Railroad"
+		techRequired:"Combustion"
 	},
 	
+	// Removals
 	{
 		name:"Remove Forest",
 		turnsToBuild:4,
@@ -98,7 +103,7 @@
 		techRequired:"Bronze Working"
 	},
 	
-	
+	// Great Person improvements
 	{
 		name:"Academy",
 		science:8,
