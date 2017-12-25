@@ -162,13 +162,13 @@
 				column:3
 			},
 			{
-				name:"Finisher",
+				name:"Commerce Complete",
 				description:"+1 gold from each specialist"
 			}
 		]
 	},{
 		name:"Rationalism",
-		description:"+50% science from research agreements (??? maybe replace with `research projects`?)",
+		description:"Production to science conversion in cities increased by 33%",
 		policies:[
 			{
 				name:"Secularism",
@@ -204,7 +204,7 @@
 				column:1
 			},
 			{
-				name:"Finisher",
+				name:"Rationalism Complete",
 				description:"+1 gold from all science buildings"
 			}
 		]
@@ -220,7 +220,7 @@
 			},
 			{
 				name:"Universal Suffrage",
-				description:"+33% city defence???",
+				description:"+1 production per 5 population",
 				row:1,
 				column:5
 			},
@@ -232,7 +232,7 @@
 			},
 			{
 				name:"Free Speech",
-				description:"8 units are maintainance free",
+				description:"+1 culture for every 2 citizens",
 				requires:["Constitution"],
 				row:2,
 				column:1
@@ -245,8 +245,8 @@
 				column:1
 			},
 			{
-				name:"Finisher",
-				description:"Tile yield from gret improvement +100%, golden ages increase by 50%"
+				name:"Freedom Complete",
+				description:"Tile yield from great improvement +100%, golden ages increase by 50%"
 			}
 		]
 	},

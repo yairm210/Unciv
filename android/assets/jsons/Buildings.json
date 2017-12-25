@@ -102,7 +102,7 @@
 	},
 	{
 		name:"National College",
-		description: "+50% science from this city",
+		description: "",
 		science:3,
 		culture:1,
 		isWonder:true,
@@ -430,7 +430,7 @@
 	},
 	{
 		name:"Cristo Redentor",
-		description: "Culture cost of adopting new Policies reduced by 10% - todo",
+		description: "Culture cost of adopting new Policies reduced by 10%",
 		culture:5,
 		isWonder:true,
 		unique:"PolicyCostReduction",
@@ -447,7 +447,7 @@
 	},
 	{
 		name:"Eiffel Tower",
-		description: "Provides 1 happiness per social policy - todo",
+		description: "Provides 1 happiness per social policy",
 		culture:1,
 		happiness:5
 		isWonder:true,
@@ -487,23 +487,6 @@
 		requiredTech:"Mass Media"
 	},
 	{
-		name:"Eiffel Tower",
-		description: "Provides 1 free social policy - todo",
-		culture:1,
-		percentStatBonus:{culture:50},
-		isWonder:true,
-		unique:"HappinessPerSocialPolicy",
-		requiredTech:"Radio"
-	},
-	{
-		name:"Stadium",
-		description: "",
-		happiness:4,
-		requiredBuilding:"Theatre",
-		maintainance:2,
-		requiredTech:"Mass Media"
-	},
-	{
 		name:"Solar Plant",
 		description: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
 		production:5,		
@@ -517,6 +500,7 @@
 	{
 		name:"Apollo Program",
 		description: "Allows the building of spaceship parts",
+		cost:1500,
 		isWonder:true,
 		unique:"ApolloProgram",
 		requiredTech:"Rocketry"
