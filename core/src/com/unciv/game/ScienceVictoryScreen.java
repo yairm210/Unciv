@@ -8,8 +8,7 @@ import com.unciv.models.LinqCounter;
 
 public class ScienceVictoryScreen extends PickerScreen {
 
-    public ScienceVictoryScreen(UnCivGame game) {
-        super(game);
+    public ScienceVictoryScreen() {
         LinqCounter<String> builtSpaceshipParts = game.civInfo.scienceVictory.currentParts.clone();
 
         for (int i = 0; i < 3; i++) {

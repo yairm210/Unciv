@@ -17,9 +17,12 @@ public class TileImprovement extends NamedStats implements ICivilopedia {
 
     private int turnsToBuild; // This is the base cost.
     public int getTurnsToBuild(){
-        int realTurnsToBuild = turnsToBuild;
-        if(CivilizationInfo.current().getBuildingUniques().contains("WorkerConstruction")) realTurnsToBuild = (int) Math.round(0.75*turnsToBuild);
-        return realTurnsToBuild;
+        float realTurnsToBuild = turnsToBuild;
+        if(CivilizationInfo.current().getBuildingUniques().contains("WorkerConstruction"))
+            realTurnsToBuild*=0.75;
+        if(CivilizationInfo.current().policies.contains("Citizenship"))
+            realTurnsToBuild*=0.75;
+        return Math.round(realTurnsToBuild);
     }
 
     @Override

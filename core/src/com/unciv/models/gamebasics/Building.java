@@ -12,6 +12,8 @@ import com.unciv.models.LinqCollection;
 import com.unciv.models.stats.FullStats;
 import com.unciv.models.stats.NamedStats;
 
+import java.util.ArrayList;
+
 public class Building extends NamedStats implements IConstruction, ICivilopedia {
     public String description;
     public String requiredTech;
@@ -44,12 +46,46 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
      */
     public FullStats resourceBonusStats;
 
+    public FullStats getStats(){
+        FullStats stats = new FullStats(this);
+        LinqCollection<String> policies = CivilizationInfo.current().policies;
+        if (policies.contains("Organized Religion") &&
+                new LinqCollection<String>("Monument","Temple","Monastery").contains(name))
+            stats.happiness+=1;
+
+        if (policies.contains("Free Religion") &&
+                new LinqCollection<String>("Monument","Temple","Monastery").contains(name))
+            stats.culture+=1;
+
+        if (policies.contains("Entrepreneurship") &&
+                new LinqCollection<String>("Mint","Market","Bank","Stock Market").contains(name))
+            stats.science+=1;
+
+        if (policies.contains("Humanism") &&
+                new LinqCollection<String>("University","Observatory","Public School").contains(name))
+            stats.science+=1;
+
+        if (policies.contains("Theocracy") && name.equals("Temple"))
+            percentStatBonus = new FullStats(){{gold=10;}};
+
+        if (policies.contains("Free Thought") && name.equals("University"))
+            percentStatBonus.science+=17;
+
+        if (policies.contains("Rationalism Complete") && !isWonder && stats.science>0)
+            stats.gold+=1;
+
+        if (policies.contains("Constitution") && isWonder)
+            stats.culture+=2;
+
+        return stats;
+    }
+
     public String getDescription() {
         return getDescription(false);
     }
 
     public String getDescription(boolean forBuildingPickerScreen) {
-        FullStats stats = new FullStats(this);
+        FullStats stats = getStats();
         StringBuilder stringBuilder = new StringBuilder();
         if (!forBuildingPickerScreen) stringBuilder.append("Cost: " + cost + "\r\n");
         if (isWonder) stringBuilder.append("Wonder\r\n");
@@ -72,14 +108,14 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
             if(this.percentStatBonus.culture!=0) stringBuilder.append("+"+(int)this.percentStatBonus.culture+"% culture\r\n");
         }
         if(resourceBonusStats!=null){
-            String resources = String.join(",",GameBasics.TileResources.linqValues().where(new Predicate<TileResource>() {
+            String resources = StringUtils.join(",",GameBasics.TileResources.linqValues().where(new Predicate<TileResource>() {
                 @Override
                 public boolean evaluate(TileResource arg0) {
                     return name.equals(arg0.building);
                 }
-            }).select(new LinqCollection.Func<TileResource, CharSequence>() {
+            }).select(new LinqCollection.Func<TileResource, String>() {
                 @Override
-                public CharSequence GetBy(TileResource arg0) {
+                public String GetBy(TileResource arg0) {
                     return arg0.name;
                 }
             })) ;
@@ -92,11 +128,16 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
 
     @Override
     public int getProductionCost() {
+        if(!isWonder && culture!=0 && CivilizationInfo.current().policies.contains("Piety"))
+            return (int) (cost*0.85);
         return cost;
     }
 
     public int getGoldCost(){
-        return (int)( Math.pow(30 * cost,0.75) * (1 + hurryCostModifier/100) / 10 ) * 10;
+        double cost = Math.pow(30 * getProductionCost(),0.75) * (1 + hurryCostModifier/100);
+        if(CivilizationInfo.current().policies.contains("Mercantilism")) cost*=0.75;
+        if(CivilizationInfo.current().policies.contains("Patronage")) cost*=0.5;
+        return (int)( cost / 10 ) * 10;
     }
     
     public boolean isBuildable(CityConstructions construction){
@@ -158,7 +199,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
         if("SpaceshipPart".equals(unique)) {
             CivilizationInfo.current().scienceVictory.currentParts.add(name, 1);
             if(CivilizationInfo.current().scienceVictory.unconstructedParts().isEmpty())
-                UnCivGame.Current.setScreen(new VictoryScreen(UnCivGame.Current));
+                UnCivGame.Current.setScreen(new VictoryScreen());
             return;
         }
         constructions.builtBuildings.add(name);

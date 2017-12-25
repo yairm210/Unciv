@@ -168,7 +168,7 @@
 		name:"Incense",
 		resourceType:"Luxury",
 		terrainsCanBeFoundOn:["Plains","Desert"],
-		gold:3,
+		gold:2,
 		improvement:"Plantation",
 		improvementStats:{gold:1},
 		building:"Monastery"

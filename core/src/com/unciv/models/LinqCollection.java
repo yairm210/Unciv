@@ -3,6 +3,7 @@ package com.unciv.models;
 import com.badlogic.gdx.utils.Predicate;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -15,8 +16,14 @@ public class LinqCollection <T> extends ArrayList<T> {
     }
 
     public LinqCollection(Collection<? extends T> objects) {
-        this.addAll(objects);
+        addAll(objects);
     }
+
+    public LinqCollection(T ... objects) {
+        addAll(Arrays.asList(objects));
+    }
+
+
 
 
     public LinqCollection<T> where(Predicate<T> p) {

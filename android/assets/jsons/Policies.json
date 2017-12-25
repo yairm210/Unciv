@@ -1,42 +1,42 @@
 [
 	{
 		name:"Tradition",
-		description:"+3 culture in capital and increased rate of border expansion",
+		description:"+3 culture in capital and increased rate of border expansion (how much?)",
 		policies:[
 			{
 				name:"Aristocracy",
 				description:"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city",
-				row;1,
+				row:1,
 				column:1
 			},
 			{
 				name:"Legalism",
-				description:"Free culture building in your first 4 cities",
-				row;1,
+				description:"Free culture building in your first 4 cities - todo",
+				row:1,
 				column:3
 			},
 			{
 				name:"Oligarchy",
-				description:"Improves garrisons in cities - useless at this time",
-				row;1,
+				description:"Improves garrisons in cities - useless at this time, change to what?",
+				row:1,
 				column:5
 			},
 			{
 				name:"Landed Elite",
 				description:"+10% food growth and +2 food in capital",
 				requires:["Legalism"]
-				row;2,
+				row:2,
 				column:2
 			},
 			{
 				name:"Monarchy",
 				description:"+1 gold and -1 unhappiness for every 2 citizens in capital",
 				requires:["Legalism"]
-				row;2,
+				row:2,
 				column:4
 			},
 			{
-				name:"Finisher",
+				name:"Tradition Complete",
 				description:"+15% growth and +2 food in all cities"
 			}
 		]
@@ -47,38 +47,38 @@
 			{
 				name:"Collective Rule",
 				description:"Training of settlers increaed +50% in capital, recieve a new settler near capital",
-				row;1,
+				row:1,
 				column:1
 			},
 			{
 				name:"Citizenship",
 				description:"+25% construction rate of workers, recieve free worker near the capital",
-				row;1,
+				row:1,
 				column:4
 			},
 			{
 				name:"Republic",
 				description:"+1 construction in every city, +5% construction when constructing buildings",
 				requires:["Collective Rule"],
-				row;1,
+				row:2,
 				column:1
 			},
 			{
 				name:"Representation",
-				description:"Each city founded increases ulture cost of policies 33% less than normal. Starts a golden age.",
+				description:"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
 				requires:["Citizenship"]
-				row;2,
+				row:2,
 				column:3
 			},
 			{
 				name:"Meritocracy",
 				description:"+1 happiness for every city connected to capital, -5% unhappiness from citizens",
 				requires:["Citizenship"]
-				row;2,
+				row:2,
 				column:5
 			},
 			{
-				name:"Finisher",
+				name:"Liberty Complete",
 				description:"Free Great Person of choice near capital - TODO"
 			}
 		]
@@ -89,38 +89,38 @@
 			{
 				name:"Organized Religion",
 				description:"+1 happiness for each monument, temple and monastery",
-				row;1,
+				row:1,
 				column:2
 			},
 			{
 				name:"Mandate Of Heaven",
 				description:"50% of excess happiness added to culture towards policies",
-				row;1,
+				row:1,
 				column:5
 			},
 			{
 				name:"Theocracy",
 				description:"Temples give +10% gold",
 				requires:["Organized Religion"],
-				row;2,
+				row:2,
 				column:1
 			},
 			{
 				name:"Reformation",
 				description:"+33% culture in all cities with a world wonder, immediately enter a golden age",
 				requires:["Organized Religion"]
-				row;2,
+				row:2,
 				column:3
 			},
 			{
 				name:"Free Religion",
-				description:"+1 culture for each monument, temple and monastery. Gain a free policy.",
+				description:"+1 culture for each monument, temple and monastery. Gain a free policy - TODO.",
 				requires:["Mandate of Heaven","Reformation"]
-				row;3,
+				row:3,
 				column:4
 			},
 			{
-				name:"Finisher",
+				name:"Piety Complete",
 				description:"Reduce culture cost of future policies by 10%"
 			}
 		]
@@ -130,22 +130,36 @@
 		policies:[
 			{
 				name:"Trade Unions",
-				description:"Maintainance on roads & railroads reduced by 33%, harbors+seaport +1 gold",
-				row;1,
+				description:"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes",
+				row:1,
 				column:2
 			},
 			{
 				name:"Mercantilism",
 				description:"-25% to purchasing items in cities",
-				row;1,
+				row:1,
+				column:5
+			},
+			{
+				name:"Entrepreneurship",
+				description:"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.",
+				requires:["Trade Unions"],
+				row:2,
+				column:2
+			},
+			{
+				name:"Patronage",
+				description:"Cost of purchasing culture buildings reduced by 50%",
+				requires:["Mercantilism"],
+				row:2,
 				column:5
 			},
 			{
 				name:"Protectionism",
-				description:"+1 from each luxury resource",
-				requires:["Organized Religion"],
-				row;2,
-				column:1
+				description:"+1 happiness from each luxury resource",
+				requires:["Entrepreneurship","Patronage"],
+				row:3,
+				column:3
 			},
 			{
 				name:"Finisher",
@@ -159,34 +173,34 @@
 			{
 				name:"Secularism",
 				description:"+2 science from every specialist",
-				row;1,
+				row:1,
 				column:2
 			},
 			{
 				name:"Humanism",
 				description:"+1 happiness from every university, observtory and public school",
-				row;1,
+				row:1,
 				column:5
 			},
 			{
 				name:"Free Thought",
 				description:"+1 science from every trading post, +17% science from universities",
 				requires:["Secularism"],
-				row;2,
+				row:2,
 				column:1
 			},
 			{
-				name:"Soveregnity",
+				name:"Sovereignty",
 				description:"+15% science while empire is happy",
 				requires:["Humanism"],
-				row;2,
-				column:1
+				row:2,
+				column:5
 			},
 			{
 				name:"Scientific Revolution",
 				description:"Gain 2 free technologies",
 				requires:["Free Thought"],
-				row;2,
+				row:3,
 				column:1
 			},
 			{
@@ -195,44 +209,44 @@
 			}
 		]
 	},{
-		name:"Freedon",
+		name:"Freedom",
 		description:"+25% great people rate",
 		policies:[
 			{
 				name:"Constitution",
 				description:"+2 culture from each wonder",
-				row;1,
+				row:1,
 				column:2
 			},
 			{
-				name:"Universal Sufferage",
+				name:"Universal Suffrage",
 				description:"+33% city defence???",
-				row;1,
+				row:1,
 				column:5
 			},
 			{
 				name:"Civil Society",
 				description:"-50% food consumption by specialists",
-				row;2,
+				row:2,
 				column:1
 			},
 			{
 				name:"Free Speech",
 				description:"8 units are maintainance free",
 				requires:["Constitution"],
-				row;2,
+				row:2,
 				column:1
 			},
 			{
 				name:"Democracy",
 				description:"Specialists produce half normal unhappiness",
 				requires:["Civil Society"],
-				row;2,
+				row:2,
 				column:1
 			},
 			{
 				name:"Finisher",
-				description:"+1 gold from all science buildings"
+				description:"Tile yield from gret improvement +100%, golden ages increase by 50%"
 			}
 		]
 	},

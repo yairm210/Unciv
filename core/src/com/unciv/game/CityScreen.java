@@ -46,8 +46,7 @@ public class CityScreen extends CameraStageBaseScreen {
 
     public CityInfo getCity(){return game.civInfo.getCurrentCity();}
     
-    public CityScreen(final UnCivGame game) {
-        super(game);
+    public CityScreen() {
         new Label("",skin).getStyle().font.getData().setScale(game.settings.labelScale);
 
         addTiles();
@@ -156,7 +155,7 @@ public class CityScreen extends CameraStageBaseScreen {
                     CivilizationInfo ci = game.civInfo;
                     if (ci.currentCity == 0) ci.currentCity = ci.cities.size()-1;
                     else ci.currentCity--;
-                    game.setScreen(new CityScreen(game));
+                    game.setScreen(new CityScreen());
                     dispose();
                 }
             });
@@ -175,7 +174,7 @@ public class CityScreen extends CameraStageBaseScreen {
                     CivilizationInfo ci = game.civInfo;
                     if (ci.currentCity == ci.cities.size()-1) ci.currentCity = 0;
                     else ci.currentCity++;
-                    game.setScreen(new CityScreen(game));
+                    game.setScreen(new CityScreen());
                     dispose();
                 }
             });
@@ -308,7 +307,7 @@ public class CityScreen extends CameraStageBaseScreen {
         buildingPickButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new ConstructionPickerScreen(game));
+                game.setScreen(new ConstructionPickerScreen());
                 dispose();
             }
         });

@@ -8,9 +8,7 @@ import com.unciv.game.utils.CameraStageBaseScreen;
 
 public class VictoryScreen extends CameraStageBaseScreen{
 
-    public VictoryScreen(final UnCivGame game) {
-        super(game);
-
+    public VictoryScreen() {
         Label label = new Label("Congrendulation!\r\nYou have won!!!!!",skin);
         label.setFontScale(5);
         label.setPosition((stage.getWidth()-label.getWidth())/2 , (stage.getHeight()-label.getHeight())/2 );

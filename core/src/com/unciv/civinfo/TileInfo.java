@@ -81,6 +81,11 @@ public class TileInfo
             else stats.add(improvement); // basic improvement
 
             if (isResearched(improvement.improvingTech)) stats.add(improvement.improvingTechStats); // eg Chemistry for mines
+            if(improvement.name.equals("Trading post") && CivilizationInfo.current().policies.contains("Free Thought"))
+                stats.science+=1;
+            if(new LinqCollection<String>("Academy","Landmark","Manufactory","Customs House").contains(improvement.name)
+                    && CivilizationInfo.current().policies.contains("Freedom Complete"))
+                stats.add(improvement); // again, for the double effect
         }
 
         if (isCityCenter()) {
@@ -126,10 +131,6 @@ public class TileInfo
     {
         if(unit !=null) {
             unit.currentMovement = unit.maxMovement;
-
-            if (!unit.name.equals("Worker"))
-                return;
-
             unit.doAction(this);
         }
     }

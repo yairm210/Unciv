@@ -8,9 +8,12 @@ import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.Unit;
 import com.unciv.game.utils.GameSaver;
+import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.BasicHelp;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
+import com.unciv.models.gamebasics.Policy;
+import com.unciv.models.gamebasics.PolicyBranch;
 import com.unciv.models.gamebasics.Technology;
 import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.TechColumn;
@@ -25,7 +28,6 @@ public class UnCivGame extends Game {
     public static UnCivGame Current;
     public CivilizationInfo civInfo;
     public GameSettings settings = new GameSettings();
-
 
     public WorldScreen worldScreen;
     public void create() {
@@ -43,7 +45,7 @@ public class UnCivGame extends Game {
         }
         else startNewGame();
 
-        worldScreen = new WorldScreen(this);
+        worldScreen = new WorldScreen();
         setWorldScreen();
     }
 
@@ -51,7 +53,7 @@ public class UnCivGame extends Game {
         civInfo = new CivilizationInfo();
         civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Settler");
 
-        worldScreen = new WorldScreen(this);
+        worldScreen = new WorldScreen();
         setWorldScreen();
     }
 
@@ -79,6 +81,7 @@ public class UnCivGame extends Game {
         GameBasics.TileImprovements =  CreateHashmap(TileImprovement.class,GetFromJson(TileImprovement[].class,"TileImprovements"));
         GameBasics.Helps  = CreateHashmap(BasicHelp.class,GetFromJson(BasicHelp[].class,"BasicHelp"));
         GameBasics.Units  = CreateHashmap(Unit.class,GetFromJson(Unit[].class,"Units"));
+        GameBasics.PolicyBranches  = CreateHashmap(PolicyBranch.class,GetFromJson(PolicyBranch[].class,"Policies"));
 
         TechColumn[] TechColumns = GetFromJson(TechColumn[].class, "Techs");
         GameBasics.Technologies = new LinqHashMap<String, Technology>();
@@ -93,6 +96,19 @@ public class UnCivGame extends Game {
             if (building.requiredTech == null) continue;
             TechColumn column = building.GetRequiredTech().column;
             building.cost = building.isWonder ? column.wonderCost : column.buildingCost;
+        }
+
+        for(PolicyBranch branch : GameBasics.PolicyBranches.values()){
+            branch.requires=new LinqCollection<String>();
+            branch.branch=branch.name;
+            for(Policy policy:branch.policies) {
+                policy.branch=branch.name;
+                if (policy.requires == null) {
+                    policy.requires = new LinqCollection<String>();
+                    policy.requires.add(branch.name);
+                }
+            }
+            branch.policies.get(branch.policies.size()-1).name=branch.name+" Complete";
         }
     }
 

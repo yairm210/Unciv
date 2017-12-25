@@ -1,7 +1,5 @@
 package com.unciv.models.stats;
 
-import java.text.DecimalFormat;
-
 public class FullStats extends CivStats // also used for hex stats, since it's basically the same
 {
     public float production = 0;
@@ -32,6 +30,17 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
         sub.food=-food;
         sub.production=-production;
         return sub;
+    }
+
+    public FullStats multiply(float number){
+        FullStats mul = new FullStats();
+        mul.gold=gold*number;
+        mul.science=science*number;
+        mul.happiness=happiness*number;
+        mul.culture=culture*number;
+        mul.food=food*number;
+        mul.production=production*number;
+        return mul;
     }
 
     public String display(float value, String name){

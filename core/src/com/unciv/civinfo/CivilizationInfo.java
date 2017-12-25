@@ -3,6 +3,7 @@ package com.unciv.civinfo;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
+import com.unciv.game.pickerscreens.PolicyPickerScreen;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqCounter;
 import com.unciv.models.gamebasics.Building;
@@ -30,6 +31,7 @@ public class CivilizationInfo {
     public FullStats greatPersonPoints = new FullStats();
 
     public CivilizationTech tech = new CivilizationTech();
+    public LinqCollection<String> policies = new LinqCollection<String>();
     public int turns = 1;
     public LinqCollection<String> notifications = new LinqCollection<String>();
 
@@ -40,8 +42,7 @@ public class CivilizationInfo {
 
     public int currentCity =0; //index!
 
-    public CivilizationInfo(){
-    }
+    public CivilizationInfo(){}
 
     public CityInfo getCurrentCity() { return cities.get(currentCity); }
 
@@ -51,7 +52,7 @@ public class CivilizationInfo {
     }
 
     public void addCity(Vector2 location){
-        CityInfo city = new CityInfo(this,location);
+        new CityInfo(this,location);
     }
 
     public CityInfo getCapital(){
@@ -72,7 +73,10 @@ public class CivilizationInfo {
     {
         notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();
+        boolean couldAdoptPolicyBefore = canAdoptPolicy();
         civStats.add(nextTurnStats);
+        if(!couldAdoptPolicyBefore && canAdoptPolicy())
+            UnCivGame.Current.setScreen(new PolicyPickerScreen());
 
         int happiness = getHappinessForNextTurn();
         if(!isGoldenAge() && happiness>0)
@@ -80,17 +84,13 @@ public class CivilizationInfo {
 
         if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
-        for (CityInfo city : cities) {
-            city.nextTurn();
-        }
+        for (CityInfo city : cities) city.nextTurn();
+        greatPersonPointsForTurn();
 
+        // We need to update the stats after ALL the cities are done updating because
+        // maybe one of them has a wonder that affects the stats of all the rest of the cities
         for(TileInfo tile : tileMap.values()) tile.nextTurn();
 
-        checkGreatPersonGeneration();
-
-        for (CityInfo city : cities) city.updateCityStats();
-
-        turns++;
         if(isGoldenAge()) turnsLeftForCurrentGoldenAge--;
 
         if(civStats.happiness > happinessRequiredForNextGoldenAge()){
@@ -98,6 +98,9 @@ public class CivilizationInfo {
             enterGoldenAge();
             numberOfGoldenAges++;
         }
+
+        for (CityInfo city : cities) city.updateCityStats();
+        turns++;
     }
 
     public void addGreatPerson(String unitName){ // This is also done by some wonders and social policies, remember
@@ -105,7 +108,10 @@ public class CivilizationInfo {
         notifications.add("A "+unitName+" has been born!");
     }
 
-    public void checkGreatPersonGeneration(){
+    public void greatPersonPointsForTurn(){
+        for(CityInfo city : cities)
+            greatPersonPoints.add(city.getGreatPersonPoints());
+
         if(greatPersonPoints.science>pointsForNextGreatPerson){
             greatPersonPoints.science-=pointsForNextGreatPerson;
             pointsForNextGreatPerson*=2;
@@ -131,6 +137,7 @@ public class CivilizationInfo {
     public void enterGoldenAge(){
         int turnsToGoldenAge = 10;
         if(getBuildingUniques().contains("GoldenAgeLengthIncrease")) turnsToGoldenAge*=1.5;
+        if(policies.contains("Freedom Complete")) turnsToGoldenAge*=1.5;
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge;
         notifications.add("You have entered a golden age!");
     }
@@ -141,24 +148,39 @@ public class CivilizationInfo {
             statsForTurn.add(city.cityStats);
         }
         statsForTurn.happiness=0;
+
+        int transportationUpkeep = 0;
         for(TileInfo tile : tileMap.values()) {
-            if (tile.roadStatus == RoadStatus.Road) statsForTurn.gold += 1;
-            else if(tile.roadStatus == RoadStatus.Railroad) statsForTurn.gold +=2;
+            if (tile.roadStatus == RoadStatus.Road) transportationUpkeep+=1;
+            else if(tile.roadStatus == RoadStatus.Railroad) transportationUpkeep+=2;
         }
+        if(policies.contains("Trade Unions")) transportationUpkeep *= 2/3f;
+        statsForTurn.gold -=transportationUpkeep;
+        if(policies.contains("Mandate Of Heaven"))
+            statsForTurn.culture+=getHappinessForNextTurn()/2;
         return statsForTurn;
     }
 
     public int getHappinessForNextTurn(){
         int happiness = baseHappiness;
+        int happinessPerUniqueLuxury = 5;
+        if(policies.contains("Protectionism")) happinessPerUniqueLuxury+=1;
         happiness += new LinqCollection<TileResource>(getCivResources().keySet()).count(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {
                 return arg0.resourceType == ResourceType.Luxury;
             }
-        }) * 5; // 5 happiness for each unique luxury in civ
+        }) * happinessPerUniqueLuxury;
         for (CityInfo city : cities) {
             happiness += city.getCityHappiness();
         }
+        if(getBuildingUniques().contains("HappinessPerSocialPolicy"))
+            happiness+=policies.count(new Predicate<String>() {
+                @Override
+                public boolean evaluate(String arg0) {
+                    return !arg0.endsWith("Complete");
+                }
+            });
         return happiness;
     }
 
@@ -181,6 +203,27 @@ public class CivilizationInfo {
                 });
             }
         }).unique();
+    }
+
+    public int getCultureNeededForNextPolicy(){
+        // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
+        int basicPolicies = policies.count(new Predicate<String>() {
+            @Override
+            public boolean evaluate(String arg0) {
+                return !arg0.endsWith("Complete");
+            }
+        });
+        double baseCost = 25+ Math.pow(basicPolicies*6,1.7);
+        double cityModifier = 0.3*(cities.size()-1);
+        if(policies.contains("Representation")) cityModifier *= 2/3f;
+        int cost = (int) Math.round(baseCost*(1+cityModifier));
+        if(policies.contains("Piety Complete")) cost*=0.9;
+        if(getBuildingUniques().contains("PolicyCostReduction")) cost*=0.9;
+        return cost-cost%5; // round down to nearest 5
+    }
+
+    public boolean canAdoptPolicy(){
+        return civStats.culture >= getCultureNeededForNextPolicy();
     }
 }
 

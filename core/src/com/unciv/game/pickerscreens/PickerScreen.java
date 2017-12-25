@@ -21,9 +21,7 @@ public class PickerScreen extends CameraStageBaseScreen {
     SplitPane splitPane;
 
 
-    public PickerScreen(final UnCivGame game) {
-        super(game);
-
+    public PickerScreen() {
         Table buttonTable = new Table();
 
         closeButton = new TextButton("Close", skin);
@@ -58,3 +56,4 @@ public class PickerScreen extends CameraStageBaseScreen {
         stage.addActor(splitPane);
     }
 }
+

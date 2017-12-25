@@ -285,7 +285,7 @@
 				name:"Scientific Theory",
 				row:4,
 				prerequisites:["Archaeology","Acoustics","Economics"],
-				description:"Reveals coal and allows construction of Public Schools, providing science"
+				description:"Reveals coal and allows construction of Public Schools, providing science. Also improves science from Academy."
 			},
 			{
 				name:"Fertilizer",

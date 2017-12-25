@@ -52,7 +52,7 @@ public class WorldTileGroup extends TileGroup {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
                         game.civInfo.currentCity = game.civInfo.cities.indexOf(city);
-                        game.setScreen(new CityScreen(game));
+                        game.setScreen(new CityScreen());
                     }
                 });
 

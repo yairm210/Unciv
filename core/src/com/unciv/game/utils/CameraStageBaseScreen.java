@@ -24,9 +24,8 @@ public class CameraStageBaseScreen implements Screen {
     public Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
     static Batch batch = new SpriteBatch();
 
-
-    public CameraStageBaseScreen(UnCivGame game) {
-        this.game = game;
+    public CameraStageBaseScreen() {
+        this.game = UnCivGame.Current;
         stage = new Stage(new ExtendViewport(1000,600
         ),batch);// FitViewport(1000,600)
         Gdx.input.setInputProcessor(stage);

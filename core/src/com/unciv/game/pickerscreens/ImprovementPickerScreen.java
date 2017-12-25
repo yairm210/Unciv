@@ -14,8 +14,7 @@ import com.unciv.models.gamebasics.TileImprovement;
 public class ImprovementPickerScreen extends PickerScreen {
     private String SelectedImprovement;
 
-    public ImprovementPickerScreen(final UnCivGame game, final TileInfo tileInfo) {
-        super(game);
+    public ImprovementPickerScreen(final TileInfo tileInfo) {
         rightSideButton.setText("Pick improvement");
 
         rightSideButton.addListener(new ClickListener(){

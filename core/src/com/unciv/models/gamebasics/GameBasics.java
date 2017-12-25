@@ -13,4 +13,5 @@ public class GameBasics{
     public static LinqHashMap<String, Technology> Technologies;
     public static LinqHashMap<String, BasicHelp> Helps;
     public static LinkedHashMap<String,Unit> Units;
+    public static LinkedHashMap<String,PolicyBranch> PolicyBranches;
 }

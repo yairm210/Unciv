@@ -27,8 +27,12 @@ public class ImageGetter {
     }
 
     private static TextureRegion getTextureRegion(String fileName) {
-        if (!textureRegionByFileName.containsKey(fileName))
-            textureRegionByFileName.put(fileName, new TextureRegion(new Texture(Gdx.files.internal(fileName))));
+        try {
+            if (!textureRegionByFileName.containsKey(fileName))
+                textureRegionByFileName.put(fileName, new TextureRegion(new Texture(Gdx.files.internal(fileName))));
+        }catch (Exception ex){
+            System.out.print("File "+fileName+" not found!");
+        }
         return textureRegionByFileName.get(fileName);
     }
 

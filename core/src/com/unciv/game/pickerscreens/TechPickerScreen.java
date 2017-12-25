@@ -23,14 +23,12 @@ public class TechPickerScreen extends PickerScreen {
     CivilizationTech civTech = game.civInfo.tech;
     ArrayList<String> techsToResearch = new ArrayList<String>(civTech.techsToResearch);
 
-    public TechPickerScreen(final UnCivGame game, boolean freeTechPick){
-        this(game);
-        isFreeTechPick=true;
+    public TechPickerScreen(boolean freeTechPick){
+        this();
+        isFreeTechPick=freeTechPick;
     }
 
-    public TechPickerScreen(final UnCivGame game) {
-        super(game);
-
+    public TechPickerScreen() {
         Technology[][] techMatrix = new Technology[17][10]; // Divided into columns, then rows
 
         for (Technology technology : GameBasics.Technologies.linqValues()) {
@@ -83,11 +81,11 @@ public class TechPickerScreen extends PickerScreen {
     public void setButtonsInfo() {
         for (String techName : techNameToButton.keySet()) {
             TextButton TB = techNameToButton.get(techName);
-            TB.getStyle().checkedFontColor = Color.BLACK;
+            //TB.getStyle().checkedFontColor = Color.BLACK;
             if (civTech.isResearched(techName)) TB.setColor(Color.GREEN);
-            else if (techsToResearch.contains(techName)) TB.setColor(Color.BLUE);
+            else if (techsToResearch.contains(techName)) TB.setColor(Color.BLUE.cpy().lerp(Color.WHITE,0.3f));
             else if (civTech.canBeResearched(techName)) TB.setColor(Color.WHITE);
-            else TB.setColor(Color.GRAY);
+            else TB.setColor(Color.BLACK);
 
             TB.setChecked(false);
             StringBuilder text = new StringBuilder(techName);
@@ -95,7 +93,7 @@ public class TechPickerScreen extends PickerScreen {
             if (selectedTech != null) {
                 if (techName.equals(selectedTech.name)) {
                     TB.setChecked(true);
-                    TB.setColor(TB.getColor().lerp(Color.LIGHT_GRAY, 0.5f));
+                    TB.setColor(TB.getColor().cpy().lerp(Color.LIGHT_GRAY, 0.5f));
                 }
             }
             if (techsToResearch.contains(techName) && techsToResearch.size()>1) {

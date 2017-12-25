@@ -32,14 +32,12 @@ public class ConstructionPickerScreen extends PickerScreen {
         return TB;
     }
 
-    public ConstructionPickerScreen(final UnCivGame game) {
-        super(game);
-
+    public ConstructionPickerScreen() {
         closeButton.clearListeners(); // Don't go back to the world screen, unlike the other picker screens!
         closeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new CityScreen(game));
+                game.setScreen(new CityScreen());
                 dispose();
             }
         });
@@ -50,7 +48,7 @@ public class ConstructionPickerScreen extends PickerScreen {
             public void clicked(InputEvent event, float x, float y) {
                 game.civInfo.getCurrentCity().cityConstructions.currentConstruction = selectedProduction;
                 game.civInfo.getCurrentCity().updateCityStats(); // Because maybe we set/removed the science or gold production options.
-                game.setScreen(new CityScreen(game));
+                game.setScreen(new CityScreen());
                 dispose();
             }
         });

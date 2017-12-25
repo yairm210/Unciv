@@ -12,7 +12,7 @@ public class MapUnit{
     public String action; // work, automation, fortifying, I dunno what.
 
     public void doAction(TileInfo tile){
-        if(tile.improvementInProgress!=null) workOnImprovement(tile);
+        if(name.equals("Worker") && tile.improvementInProgress!=null) workOnImprovement(tile);
         if ("automation".equals(action)) doAutomatedAction(tile);
     }
 

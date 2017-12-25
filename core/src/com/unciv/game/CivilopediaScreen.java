@@ -21,9 +21,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 
 public class CivilopediaScreen extends com.unciv.game.utils.CameraStageBaseScreen {
-    public CivilopediaScreen(final UnCivGame game) {
-
-        super(game);
+    public CivilopediaScreen() {
         Gdx.input.setInputProcessor(stage);
         Table buttonTable = new Table();
         buttonTable.pad(15);

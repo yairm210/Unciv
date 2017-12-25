@@ -117,7 +117,7 @@ public class CityConstructions
     public FullStats getStats()
     {
         FullStats stats = new FullStats();
-        for(Building building : getBuiltBuildings()) stats.add(building);
+        for(Building building : getBuiltBuildings()) stats.add(building.getStats());
         stats.science += getCity().getBuildingUniques().count(new Predicate<String>() {
             @Override
             public boolean evaluate(String arg0) {

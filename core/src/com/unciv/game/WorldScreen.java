@@ -15,9 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.civinfo.CityConstructions;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.ImprovementPickerScreen;
+import com.unciv.game.pickerscreens.PolicyPickerScreen;
 import com.unciv.game.pickerscreens.TechPickerScreen;
 import com.unciv.game.utils.CameraStageBaseScreen;
 import com.unciv.game.utils.GameSaver;
@@ -51,8 +51,7 @@ public class WorldScreen extends CameraStageBaseScreen {
     Table notificationsTable = new Table();
     TextButton selectIdleUnitButton;
 
-    public WorldScreen(final UnCivGame game) {
-        super(game);
+    public WorldScreen() {
         new Label("",skin).getStyle().font.getData().setScale(game.settings.labelScale);
 
         addTiles();
@@ -71,17 +70,14 @@ public class WorldScreen extends CameraStageBaseScreen {
         civTable.setBackground(civBackground.tint(new Color(0x004085bf)));
 
         stage.addActor(civTable);
-
         stage.addActor(techButton);
-
-        setCenterPosition(Vector2.Zero);
-
+        stage.addActor(notificationsTable);
         addSelectIdleUnitButton();
         update();
+
+        setCenterPosition(Vector2.Zero);
         createNextTurnButton(); // needs civ table to be positioned
         addOptionsTable();
-
-        addNotificationsList();
     }
 
     private void addSelectIdleUnitButton() {
@@ -129,10 +125,6 @@ public class WorldScreen extends CameraStageBaseScreen {
         }
     }
 
-    private void addNotificationsList() {
-        stage.addActor(notificationsTable);
-    }
-
     private void updateNotificationsList() {
         notificationsTable.clearChildren();
         for(String notification : game.civInfo.notifications)
@@ -146,15 +138,15 @@ public class WorldScreen extends CameraStageBaseScreen {
     }
 
     public void update(){
-        if(game.civInfo.tech.freeTechs!=0) {
-            game.setScreen(new TechPickerScreen(game, true));
-        }
         updateTechButton();
         updateTileTable();
         updateTiles();
         updateCivTable();
         updateNotificationsList();
         updateIdleUnitButton();
+        if(game.civInfo.tech.freeTechs!=0) {
+            game.setScreen(new TechPickerScreen(true));
+        }
     }
 
 
@@ -165,7 +157,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         OpenCivilopediaButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new CivilopediaScreen(game));
+                game.setScreen(new CivilopediaScreen());
                 optionsTable.setVisible(false);
             }
         });
@@ -186,10 +178,20 @@ public class WorldScreen extends CameraStageBaseScreen {
         OpenScienceVictoryScreen.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new ScienceVictoryScreen(game));
+                game.setScreen(new ScienceVictoryScreen());
             }
         });
         optionsTable.add(OpenScienceVictoryScreen).pad(10);
+        optionsTable.row();
+
+        TextButton OpenPolicyPickerScreen = new TextButton("Social Policies",skin);
+        OpenPolicyPickerScreen.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new PolicyPickerScreen());
+            }
+        });
+        optionsTable.add(OpenPolicyPickerScreen).pad(10);
         optionsTable.row();
 
 
@@ -213,7 +215,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         techButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new TechPickerScreen(game));
+                game.setScreen(new TechPickerScreen());
             }
         });
 
@@ -259,7 +261,10 @@ public class WorldScreen extends CameraStageBaseScreen {
         Label happinessLabel = new Label(happinessText, skin);
         happinessLabel.setAlignment(Align.center);
         civTable.add(happinessLabel);
-        civTable.add(new Label("Culture: " + Math.round(currentStats.culture) + "(+" + Math.round(nextTurnStats.culture) +")", skin));
+        String cultureString = "Culture: " + Math.round(currentStats.culture) + "(+" + Math.round(nextTurnStats.culture) +")\r\n"
+                +"("+ ((int) game.civInfo.civStats.culture)+"/"+game.civInfo.getCultureNeededForNextPolicy()+")";
+
+        civTable.add(new Label(cultureString, skin));
 
         civTable.pack();
 
@@ -275,7 +280,7 @@ public class WorldScreen extends CameraStageBaseScreen {
             public void clicked(InputEvent event, float x, float y) {
                 if (game.civInfo.tech.currentTechnology() == null
                         && game.civInfo.cities.size()!=0) {
-                    game.setScreen(new TechPickerScreen(game));
+                    game.setScreen(new TechPickerScreen());
                     return;
                 }
                 game.civInfo.nextTurn();
@@ -459,7 +464,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                         ,new ClickListener() {
 
                     @Override
-                    public void clicked(InputEvent event, float x, float y) {game.setScreen(new ImprovementPickerScreen(game, selectedTile));}
+                    public void clicked(InputEvent event, float x, float y) {game.setScreen(new ImprovementPickerScreen(selectedTile));}
                 } );
                 addUnitAction(tileTable, "automation".equals(selectedTile.unit.action)? "Stop automation" : "Automate", true,
                         new ClickListener(){
@@ -480,7 +485,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                             public void clicked(InputEvent event, float x, float y) {
                                 game.civInfo.tech.freeTechs+=1;
                                 selectedTile.unit=null;// destroy!
-                                game.setScreen(new TechPickerScreen(game,true));
+                                game.setScreen(new TechPickerScreen(true));
                             }
                         });
                 addUnitAction(tileTable, "Construct Academy",true,
