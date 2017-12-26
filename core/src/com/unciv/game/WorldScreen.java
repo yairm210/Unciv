@@ -71,7 +71,10 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         stage.addActor(civTable);
         stage.addActor(techButton);
-        stage.addActor(notificationsTable);
+
+        ScrollPane notificationsScroll = new ScrollPane(notificationsTable);
+        notificationsScroll.setSize(stage.getWidth()/3, stage.getHeight()/3);
+        stage.addActor(notificationsScroll);
         addSelectIdleUnitButton();
         update();
 
@@ -473,7 +476,10 @@ public class WorldScreen extends CameraStageBaseScreen {
                             public void clicked(InputEvent event, float x, float y) {
                                 if ("automation".equals(selectedTile.unit.action))
                                     selectedTile.unit.action = null;
-                                else selectedTile.unit.action = "automation";
+                                else {
+                                    selectedTile.unit.action = "automation";
+                                    selectedTile.unit.doAutomatedAction(selectedTile);
+                                }
                                 update();
                             }
                         });

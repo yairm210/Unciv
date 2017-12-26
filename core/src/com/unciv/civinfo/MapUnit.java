@@ -45,7 +45,7 @@ public class MapUnit{
         }
     }
 
-    private void doAutomatedAction(TileInfo tile){
+    public void doAutomatedAction(TileInfo tile){
         if(tile.owner!=null && tile.improvement==null // We'll be working this tile
                 && (tile.workingCity!=null || tile.resource!=null || tile.improvementInProgress!=null)
                 && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile))))
