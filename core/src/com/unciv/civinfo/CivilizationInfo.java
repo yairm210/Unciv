@@ -52,7 +52,8 @@ public class CivilizationInfo {
     }
 
     public void addCity(Vector2 location){
-        new CityInfo(this,location);
+        CityInfo newCity = new CityInfo(this,location);
+        newCity.cityConstructions.chooseNextConstruction();
     }
 
     public CityInfo getCapital(){
@@ -151,11 +152,13 @@ public class CivilizationInfo {
 
         int transportationUpkeep = 0;
         for(TileInfo tile : tileMap.values()) {
+            if(tile.isCityCenter()) continue;
             if (tile.roadStatus == RoadStatus.Road) transportationUpkeep+=1;
             else if(tile.roadStatus == RoadStatus.Railroad) transportationUpkeep+=2;
         }
         if(policies.contains("Trade Unions")) transportationUpkeep *= 2/3f;
         statsForTurn.gold -=transportationUpkeep;
+
         if(policies.contains("Mandate Of Heaven"))
             statsForTurn.culture+=getHappinessForNextTurn()/2;
         return statsForTurn;

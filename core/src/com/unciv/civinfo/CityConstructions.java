@@ -23,7 +23,6 @@ public class CityConstructions
     public CityConstructions(CityInfo cityInfo)
     {
         cityLocation = cityInfo.cityLocation;
-        chooseNextConstruction();
     }
 
     public LinqCollection<String> builtBuildings = new LinqCollection<String>();
@@ -84,7 +83,7 @@ public class CityConstructions
 
     }
 
-    private void chooseNextConstruction() {
+    void chooseNextConstruction() {
         currentConstruction = getBuildableBuildings().first(new Predicate<String>() {
             @Override
             public boolean evaluate(String arg0) {

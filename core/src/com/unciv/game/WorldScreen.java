@@ -261,10 +261,11 @@ public class WorldScreen extends CameraStageBaseScreen {
         Label happinessLabel = new Label(happinessText, skin);
         happinessLabel.setAlignment(Align.center);
         civTable.add(happinessLabel);
-        String cultureString = "Culture: " + Math.round(currentStats.culture) + "(+" + Math.round(nextTurnStats.culture) +")\r\n"
+        String cultureString = "Culture: " + "+" + Math.round(nextTurnStats.culture) +"\r\n"
                 +"("+ ((int) game.civInfo.civStats.culture)+"/"+game.civInfo.getCultureNeededForNextPolicy()+")";
-
-        civTable.add(new Label(cultureString, skin));
+        Label cultureLabel = new Label(cultureString, skin);
+        cultureLabel.setAlignment(Align.center);
+        civTable.add(cultureLabel);
 
         civTable.pack();
 

@@ -57,12 +57,12 @@ public class CityInfo {
     CityInfo(CivilizationInfo civInfo, Vector2 cityLocation) {
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
+        civInfo.cities.add(this);
         cityConstructions = new CityConstructions(this);
         if(civInfo.cities.size()==0) {
             cityConstructions.builtBuildings.add("Palace");
             cityConstructions.currentConstruction = "Worker"; // Default for first city only!
         }
-        civInfo.cities.add(this);
 
         for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
             tileInfo.owner = civInfo.civName;
@@ -194,8 +194,8 @@ public class CityInfo {
             statPercentBonuses.science+=15;
 
         stats.production*=1+statPercentBonuses.production/100;  // So they get bonuses for production and gold/science
-        if(cityConstructions.currentConstruction.equals("Gold")) stats.gold+=stats.production/4;
-        if(cityConstructions.currentConstruction.equals("Science")) {
+        if("Gold".equals(cityConstructions.currentConstruction)) stats.gold+=stats.production/4;
+        if("Science".equals(cityConstructions.currentConstruction)) {
             float scienceProduced=stats.production/4;
             if (civInfo.getBuildingUniques().contains("ScienceConversionIncrease"))
                 scienceProduced*=1.33;
