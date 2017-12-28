@@ -29,7 +29,7 @@
 	},
 	{
 		name:"Stone Works",
-		description: "Stone and marble provide +1 production.", 
+		description: "", 
 		happiness:1,
 		production:1
 		requiredNearbyImprovedResources:["Marble","Stone"]
@@ -111,6 +111,15 @@
 		requiredTech:"Civil Service"
 	},
 	{
+		name:"Chichen Itza",
+		description: "Length of golden ages increased +50%",
+		culture:1,
+		greatPersonPoints:{production:1},
+		isWonder:true,
+		unique:"GoldenAgeLengthIncrease",
+		requiredTech:"Civil Service"
+	},
+	{
 		name:"Stable",
 		description: "", 
 		maintainance:1,
@@ -182,15 +191,6 @@
 		requiredTech:"Theology"
 	},
 	{
-		name:"Chichen Itza",
-		description: "Length of golden ages increased +50%",
-		culture:1,
-		greatPersonPoints:{production:1},
-		isWonder:true,
-		unique:"GoldenAgeLengthIncrease",
-		requiredTech:"Currency"
-	},
-	{
 		name:"Mint",
 		description: "",
 		maintainance:0,
@@ -229,7 +229,7 @@
 	},
 	{
 		name:"Forge",
-		description: "Iron provides +1 production", 
+		description: "",
 		maintainance:1,
 		hurryCostModifier:25,
 		requiredNearbyImprovedResources:["Iron"],

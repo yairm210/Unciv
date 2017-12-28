@@ -21,7 +21,6 @@ public class CityInfo {
     public int population = 1;
     public int foodStored = 0;
     public LinqHashMap<String,FullStats> buildingsSpecialists = new LinqHashMap<String, FullStats>();
-    public FullStats specialists = new FullStats();
 
     public FullStats cityStats; // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones!
 

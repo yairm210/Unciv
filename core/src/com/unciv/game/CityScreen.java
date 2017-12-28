@@ -24,6 +24,7 @@ import com.unciv.game.pickerscreens.ImprovementPickerScreen;
 import com.unciv.game.utils.CameraStageBaseScreen;
 import com.unciv.game.utils.HexMath;
 import com.unciv.game.utils.ImageGetter;
+import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileImprovement;
@@ -32,6 +33,8 @@ import com.unciv.models.stats.FullStats;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+
+import javax.print.attribute.standard.MediaSize;
 
 public class CityScreen extends CameraStageBaseScreen {
 
@@ -119,35 +122,68 @@ public class CityScreen extends CameraStageBaseScreen {
     private void updateBuildingsTable(){
         BuildingsTable.clear();
 
-        for(Building building : getCity().cityConstructions.getBuiltBuildings()){
-            BuildingsTable.add(new Label(building.name,skin)).pad(10);
-            if(building.specialistSlots==null) BuildingsTable.add();
-            else {
-                Table specialists = new Table();
-                specialists.row().size(20).pad(10);
-                if(!getCity().buildingsSpecialists.containsKey(building.name))
-                    getCity().buildingsSpecialists.put(building.name, new FullStats());
-                FullStats currentBuildingSpecialists = getCity().buildingsSpecialists.get(building.name);
-                for (int i = 0; i < building.specialistSlots.production; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationBrown.png",building.name,
-                            currentBuildingSpecialists.production > i, new FullStats(){{production=1;}}) );
-                }
-                for (int i = 0; i < building.specialistSlots.science; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationBlue.png",building.name,
-                            currentBuildingSpecialists.science > i, new FullStats(){{science=1;}}) );
-                }
-                for (int i = 0; i < building.specialistSlots.culture; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationPurple.png",building.name,
-                            currentBuildingSpecialists.culture > i, new FullStats(){{culture=1;}}) );
-                }
-                for (int i = 0; i < building.specialistSlots.gold; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationYellow.png",building.name,
-                            currentBuildingSpecialists.gold > i, new FullStats(){{gold=1;}}) );
-                }
-                BuildingsTable.add(specialists);
-            }
-            BuildingsTable.row();
+
+        LinqCollection<Building> Wonders = new LinqCollection<Building>();
+        LinqCollection<Building> SpecialistBuildings = new LinqCollection<Building>();
+        LinqCollection<Building> Others = new LinqCollection<Building>();
+
+        for(Building building : getCity().cityConstructions.getBuiltBuildings()) {
+            if (building.isWonder) Wonders.add(building);
+            else if (building.specialistSlots != null) SpecialistBuildings.add(building);
+            else Others.add(building);
         }
+
+        Label label = new Label("Wonders",skin);
+        label.setFontScale(1.5f);
+        label.setColor(Color.GREEN);
+        BuildingsTable.add(label).pad(5).row();
+        for(Building building:Wonders) BuildingsTable.add(new Label(building.name,skin)).pad(5).row();
+
+        label = new Label("Specialist Buildings",skin);
+        label.setFontScale(1.5f);
+        label.setColor(Color.GREEN);
+        BuildingsTable.add(label).pad(5).row();
+        for(Building building:SpecialistBuildings) {
+            BuildingsTable.add(new Label(building.name, skin)).pad(5);
+            Table specialists = new Table();
+            specialists.row().size(20).pad(5);
+            if (!getCity().buildingsSpecialists.containsKey(building.name))
+                getCity().buildingsSpecialists.put(building.name, new FullStats());
+            FullStats currentBuildingSpecialists = getCity().buildingsSpecialists.get(building.name);
+            for (int i = 0; i < building.specialistSlots.production; i++) {
+                specialists.add(getSpecialistIcon("StatIcons/populationBrown.png", building.name,
+                        currentBuildingSpecialists.production > i, new FullStats() {{
+                            production = 1;
+                        }}));
+            }
+            for (int i = 0; i < building.specialistSlots.science; i++) {
+                specialists.add(getSpecialistIcon("StatIcons/populationBlue.png", building.name,
+                        currentBuildingSpecialists.science > i, new FullStats() {{
+                            science = 1;
+                        }}));
+            }
+            for (int i = 0; i < building.specialistSlots.culture; i++) {
+                specialists.add(getSpecialistIcon("StatIcons/populationPurple.png", building.name,
+                        currentBuildingSpecialists.culture > i, new FullStats() {{
+                            culture = 1;
+                        }}));
+            }
+            for (int i = 0; i < building.specialistSlots.gold; i++) {
+                specialists.add(getSpecialistIcon("StatIcons/populationYellow.png", building.name,
+                        currentBuildingSpecialists.gold > i, new FullStats() {{
+                            gold = 1;
+                        }}));
+            }
+            BuildingsTable.add(specialists).row();
+        }
+
+        label = new Label("Buildings",skin);
+
+        label.setFontScale(1.5f);
+        label.setColor(Color.GREEN);
+        BuildingsTable.add(label).pad(5).row();
+        for(Building building:Others) BuildingsTable.add(new Label(building.name,skin)).pad(5).row();
+
         BuildingsTable.pack();
     }
 

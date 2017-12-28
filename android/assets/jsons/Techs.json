@@ -161,6 +161,12 @@
 				description:"Enables the Chichen Itza wonder, which increases the length of golden ages, and the National College, increasing science"
 			},
 			{
+				name:"Physics",
+				row:8,
+				prerequisites:["Engineering"],
+				description:"Enables construction of the Porcelain Tower, increasing production to science production"
+			},
+			{
 				name:"Metal Casting",
 				row:10,
 				prerequisites:["Construction","Iron Working"],
@@ -197,14 +203,8 @@
 			{
 				name:"Machinery",
 				row:8,
-				prerequisites:["Physics"],
+				prerequisites:["Physics","Metal Casting"],
 				description:"Speeds movement speed on roads and allows you to construct the Ironworks wonder, which gives a massive boost in production"
-			},
-			{
-				name:"Physics",
-				row:9,
-				prerequisites:["Engineering","Metal Casting"],
-				description:"Enables construction of the Porcelain Tower, increasing production to science production"
 			}
 		]	
 	},
