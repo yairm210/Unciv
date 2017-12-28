@@ -5,6 +5,7 @@ import com.badlogic.gdx.utils.Predicate;
 import com.unciv.game.UnCivGame;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqCounter;
+import com.unciv.models.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileResource;
@@ -19,6 +20,7 @@ public class CityInfo {
     private int tilesClaimed;
     public int population = 1;
     public int foodStored = 0;
+    public LinqHashMap<String,FullStats> buildingsSpecialists = new LinqHashMap<String, FullStats>();
     public FullStats specialists = new FullStats();
 
     public FullStats cityStats; // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones!
@@ -96,7 +98,18 @@ public class CityInfo {
         return cityResources;
     }
 
-    public int getNumberOfSpecialists(){return (int) (specialists.science+specialists.production+specialists.culture+specialists.gold);}
+
+    public FullStats getSpecialists(){
+        FullStats allSpecialists = new FullStats();
+        for(FullStats stats : buildingsSpecialists.values())
+            allSpecialists.add(stats);
+        return allSpecialists;
+    }
+
+    public int getNumberOfSpecialists(){
+        FullStats specialists = getSpecialists();
+        return (int) (specialists.science+specialists.production+specialists.culture+specialists.gold);
+    }
 
     public int getFreePopulation() {
         int workingPopulation = getTilesInRange().count(new Predicate<TileInfo>() {
@@ -123,6 +136,7 @@ public class CityInfo {
                 stats.add(cell.getTileStats(this));
 
         // Specialists
+        FullStats specialists = getSpecialists();
         stats.culture+=specialists.culture*3;
         stats.production+=specialists.production*2;
         stats.science+=specialists.science*3;
@@ -340,6 +354,7 @@ public class CityInfo {
     private boolean isCapital(){ return CivilizationInfo.current().getCapital() == this; }
 
     private boolean isConnectedToCapital(RoadStatus roadType){
+        if(CivilizationInfo.current().getCapital()==null) return false;// first city!
         TileInfo capitalTile = CivilizationInfo.current().getCapital().getTile();
         LinqCollection<TileInfo> tilesReached = new LinqCollection<TileInfo>();
         LinqCollection<TileInfo> tilesToCheck = new LinqCollection<TileInfo>();
@@ -381,7 +396,7 @@ public class CityInfo {
     }
 
     public FullStats getGreatPersonPoints(){
-        FullStats greatPersonPoints = specialists.multiply(3);
+        FullStats greatPersonPoints = getSpecialists().multiply(3);
         CivilizationInfo civInfo = CivilizationInfo.current();
 
         for(Building building : cityConstructions.getBuiltBuildings())

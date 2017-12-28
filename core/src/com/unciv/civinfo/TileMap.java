@@ -62,7 +62,7 @@ public class TileMap{
             resource = GetRandomResource(TileResources, ResourceType.Bonus);
         } else if (Math.random() < 1 / 7f) {
             resource = GetRandomResource(TileResources, ResourceType.Strategic);
-        } else if (Math.random() < 1 / 10f) {
+        } else if (Math.random() < 1 / 15f) {
             resource = GetRandomResource(TileResources, ResourceType.Luxury);
         }
         if (resource != null) tileInfo.resource = resource.name;

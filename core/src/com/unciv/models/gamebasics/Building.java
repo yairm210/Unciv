@@ -69,7 +69,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
             percentStatBonus = new FullStats(){{gold=10;}};
 
         if (policies.contains("Free Thought") && name.equals("University"))
-            percentStatBonus.science+=17;
+            percentStatBonus.science=50;
 
         if (policies.contains("Rationalism Complete") && !isWonder && stats.science>0)
             stats.gold+=1;
@@ -106,6 +106,12 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
             if(this.percentStatBonus.science!=0) stringBuilder.append("+"+(int)this.percentStatBonus.science+"% science\r\n");
             if(this.percentStatBonus.food!=0) stringBuilder.append("+"+(int)this.percentStatBonus.food+"% food\r\n");
             if(this.percentStatBonus.culture!=0) stringBuilder.append("+"+(int)this.percentStatBonus.culture+"% culture\r\n");
+        }
+        if(this.greatPersonPoints!=null){
+            if(this.greatPersonPoints.production!=0) stringBuilder.append("+"+(int)this.greatPersonPoints.production+" Great Engineer points\r\n");
+            if(this.greatPersonPoints.gold!=0) stringBuilder.append("+"+(int)this.greatPersonPoints.gold+" Great Merchant points\r\n");
+            if(this.greatPersonPoints.science!=0) stringBuilder.append("+"+(int)this.greatPersonPoints.science+" Great Scientist points\r\n");
+            if(this.greatPersonPoints.culture!=0) stringBuilder.append("+"+(int)this.greatPersonPoints.culture+" Great Artist points\r\n");
         }
         if(resourceBonusStats!=null){
             String resources = StringUtils.join(",",GameBasics.TileResources.linqValues().where(new Predicate<TileResource>() {

@@ -94,16 +94,21 @@ public class CityScreen extends CameraStageBaseScreen {
         }
     }
 
-    private Image getSpecialistIcon(String imageName, final boolean isFilled, final FullStats specialistType) {
+    private Image getSpecialistIcon(String imageName, final String building, final boolean isFilled, final FullStats specialistType) {
         Image specialist = ImageGetter.getImage(imageName);
         specialist.setSize(40,40);
         if(!isFilled) specialist.setColor(Color.GRAY);
         specialist.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(isFilled) getCity().specialists.add(specialistType.minus()); //unassign
+                if(isFilled) getCity().buildingsSpecialists.get(building).add(specialistType.minus()); //unassign
                 else if(getCity().getFreePopulation()==0) return;
-                else getCity().specialists.add(specialistType); //assign!
+                else {
+                    if(!getCity().buildingsSpecialists.containsKey(building))
+                        getCity().buildingsSpecialists.put(building,new FullStats());
+                    getCity().buildingsSpecialists.get(building).add(specialistType); //assign!}
+                }
+
                 getCity().updateCityStats();
                 update();
             }
@@ -114,28 +119,30 @@ public class CityScreen extends CameraStageBaseScreen {
     private void updateBuildingsTable(){
         BuildingsTable.clear();
 
-
         for(Building building : getCity().cityConstructions.getBuiltBuildings()){
             BuildingsTable.add(new Label(building.name,skin)).pad(10);
             if(building.specialistSlots==null) BuildingsTable.add();
             else {
                 Table specialists = new Table();
                 specialists.row().size(20).pad(10);
+                if(!getCity().buildingsSpecialists.containsKey(building.name))
+                    getCity().buildingsSpecialists.put(building.name, new FullStats());
+                FullStats currentBuildingSpecialists = getCity().buildingsSpecialists.get(building.name);
                 for (int i = 0; i < building.specialistSlots.production; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationBrown.png",
-                            getCity().specialists.production > i, new FullStats(){{production=1;}}) );
+                    specialists.add(getSpecialistIcon("StatIcons/populationBrown.png",building.name,
+                            currentBuildingSpecialists.production > i, new FullStats(){{production=1;}}) );
                 }
                 for (int i = 0; i < building.specialistSlots.science; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationBlue.png",
-                            getCity().specialists.science > i, new FullStats(){{science=1;}}) );
+                    specialists.add(getSpecialistIcon("StatIcons/populationBlue.png",building.name,
+                            currentBuildingSpecialists.science > i, new FullStats(){{science=1;}}) );
                 }
                 for (int i = 0; i < building.specialistSlots.culture; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationPurple.png",
-                            getCity().specialists.culture > i, new FullStats(){{culture=1;}}) );
+                    specialists.add(getSpecialistIcon("StatIcons/populationPurple.png",building.name,
+                            currentBuildingSpecialists.culture > i, new FullStats(){{culture=1;}}) );
                 }
                 for (int i = 0; i < building.specialistSlots.gold; i++) {
-                    specialists.add(getSpecialistIcon("StatIcons/populationYellow.png",
-                            getCity().specialists.gold > i, new FullStats(){{gold=1;}}) );
+                    specialists.add(getSpecialistIcon("StatIcons/populationYellow.png",building.name,
+                            currentBuildingSpecialists.gold > i, new FullStats(){{gold=1;}}) );
                 }
                 BuildingsTable.add(specialists);
             }
