@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.TileInfo;
+import com.unciv.game.utils.ImageGetter;
 
 
 public class WorldTileGroup extends TileGroup {
@@ -15,7 +16,11 @@ public class WorldTileGroup extends TileGroup {
     }
 
     void setIsViewable(boolean isViewable) {
-        if (isViewable) setColor(1, 1, 0, 1); // Only alpha really changes anything
+        if (isViewable) {
+            setColor(1, 1, 0, 1); // Only alpha really changes anything
+            tileInfo.explored=true;
+            update();
+        }
         else setColor(0, 0, 0, 0.3f);
     }
 
@@ -28,7 +33,7 @@ public class WorldTileGroup extends TileGroup {
 
 
         if (tileInfo.owner != null && hexagon == null) {
-            hexagon = com.unciv.game.utils.ImageGetter.getImage("TerrainIcons/Hexagon.png");
+            hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png");
             float imageScale = terrainImage.getWidth() * 1.3f / hexagon.getWidth();
             hexagon.setScale(imageScale);
             hexagon.setPosition((getWidth() - hexagon.getWidth() * imageScale) / 2,
@@ -57,12 +62,10 @@ public class WorldTileGroup extends TileGroup {
                 });
 
                 addActor(cityButton);
-//                cityButton.setColor(1,1,1,0.9f);
                 setZIndex(getParent().getChildren().size); // so this tile is rendered over neighboring tiles
             }
 
             String cityButtonText = city.name +" ("+city.population+")";
-//                    +" ("+city.population+")" + "\r\n" + city.cityConstructions.getCityProductionTextForCityButton();
             TextButton button = cityButton.getActor();
             button.setText(cityButtonText);
             button.setSize(button.getPrefWidth(), button.getPrefHeight());

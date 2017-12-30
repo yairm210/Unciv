@@ -53,13 +53,20 @@ public class TileGroup extends Group {
 
 
     void update() {
+        if(tileInfo.explored){
+            terrainImage.setColor(Color.WHITE);
+        }
+        else{
+            terrainImage.setColor(Color.BLACK);
+        }
+
         if(!terrainType.equals(tileInfo.getLastTerrain().name)) {
             terrainType = tileInfo.getLastTerrain().name;
             String terrainFileName = "TerrainIcons/" + terrainType.replace(' ', '_') + "_(Civ5).png";
             terrainImage.setDrawable(ImageGetter.getDrawable(terrainFileName)); // In case we e.g. removed a jungle
         }
 
-        if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
+        if (tileInfo.explored && tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";
             Image image = ImageGetter.getImage(fileName);
             image.setSize(20,20);
@@ -68,7 +75,7 @@ public class TileGroup extends Group {
             addActor(image);
         }
 
-        if (tileInfo.unit != null && unitImage == null) {
+        if (tileInfo.explored && tileInfo.unit != null && unitImage == null) {
             unitImage = ImageGetter.getImage("StatIcons/" + tileInfo.unit.name.replace(" ","_") + "_(Civ5).png");
             addActor(unitImage);
             unitImage.setSize(20, 20); // not moved - is at bottom left
@@ -85,7 +92,7 @@ public class TileGroup extends Group {
         }
 
 
-        if (tileInfo.improvement != null &&!tileInfo.improvement.equals(improvementType)) {
+        if (tileInfo.explored && tileInfo.improvement != null &&!tileInfo.improvement.equals(improvementType)) {
             improvementImage = ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement.replace(' ','_') + "_(Civ5).png");
             addActor(improvementImage);
             improvementImage.setSize(20, 20);

@@ -24,6 +24,7 @@ public class TileInfo
     public String owner; // owning civ name
     public String workingCity; // Working City name
     public RoadStatus roadStatus = RoadStatus.None;
+    public boolean explored=false;
     public int turnsToImprovement;
 
     public Terrain getBaseTerrain(){return GameBasics.Terrains.get(baseTerrain);}
