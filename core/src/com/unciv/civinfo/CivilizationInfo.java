@@ -90,7 +90,15 @@ public class CivilizationInfo {
 
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
-        for(TileInfo tile : tileMap.values()) tile.nextTurn();
+
+        // Here we need to filter out the tiles that don''t have units, because what happens if a unit in in tile 1,
+        // gets activated, and then moves to tile 2, which is activated later? Problem!
+        for(TileInfo tile : tileMap.values().where(new Predicate<TileInfo>() {
+            @Override
+            public boolean evaluate(TileInfo arg0) {
+                return arg0.unit!=null;
+            }
+        })) tile.nextTurn();
 
         if(isGoldenAge()) turnsLeftForCurrentGoldenAge--;
 

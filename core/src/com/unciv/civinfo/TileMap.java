@@ -84,7 +84,7 @@ public class TileMap{
         return tiles;
     }
 
-    public LinqHashMap<TileInfo,Float> getUnitDistanceToTiles(Vector2 origin, float maximumMovement){
+    public LinqHashMap<TileInfo,Float> getDistanceToTilesWithinTurn(Vector2 origin, float currentUnitMovement){
         LinqHashMap<TileInfo,Float> distanceToTiles = new LinqHashMap<TileInfo, Float>();
         distanceToTiles.put(get(origin), 0f);
         LinqCollection<TileInfo> tilesToCheck = new LinqCollection<TileInfo>();
@@ -102,8 +102,8 @@ public class TileMap{
                     float totalDistanceToTile = distanceToTiles.get(tileToCheck)+ distanceBetweenTiles;
                     if (!distanceToTiles.containsKey(maybeUpdatedTile) || distanceToTiles.get(maybeUpdatedTile) > totalDistanceToTile) {
 
-                        if(totalDistanceToTile<maximumMovement) updatedTiles.add(maybeUpdatedTile);
-                        else totalDistanceToTile = maximumMovement;
+                        if(totalDistanceToTile<currentUnitMovement) updatedTiles.add(maybeUpdatedTile);
+                        else totalDistanceToTile = currentUnitMovement;
                         distanceToTiles.put(maybeUpdatedTile,totalDistanceToTile);
                     }
 
@@ -112,6 +112,44 @@ public class TileMap{
             tilesToCheck = updatedTiles;
         }
         return distanceToTiles;
+    }
+
+    public class BfsInfo{
+
+        final TileInfo parent;
+        final int totalDistance;
+
+        public BfsInfo(TileInfo parent, int totalDistance) {
+            this.parent = parent;
+            this.totalDistance = totalDistance;
+        }
+    }
+
+    public LinqCollection<TileInfo> getShortestPath(Vector2 origin, Vector2 destination, float currentMovement, int maxMovement){
+        LinqCollection<TileInfo> toCheck = new LinqCollection<TileInfo>(get(origin));
+        LinqHashMap<TileInfo,TileInfo> parents = new LinqHashMap<TileInfo, TileInfo>();
+        parents.put(get(origin),null);
+
+        for (int distance = 1; ; distance++) {
+            LinqCollection<TileInfo> newToCheck = new LinqCollection<TileInfo>();
+            for (TileInfo ti : toCheck){
+                for (TileInfo otherTile : getDistanceToTilesWithinTurn(ti.position, distance == 1 ? currentMovement : maxMovement).keySet()){
+                    if(parents.containsKey(otherTile) || otherTile.unit!=null) continue; // We cannot be faster than anything existing...
+                    parents.put(otherTile,ti);
+                    if(otherTile.position.equals(destination)){
+                        LinqCollection<TileInfo> path = new LinqCollection<TileInfo>();
+                        TileInfo current = otherTile;
+                        while(parents.get(current)!=null){
+                            path.add(current);
+                            current = parents.get(current);
+                        }
+                        return path.reverse();
+                    }
+                    newToCheck.add(otherTile);
+                }
+            }
+            toCheck = newToCheck;
+        }
     }
 
     public LinqCollection<TileInfo> values(){return tiles.linqValues();}

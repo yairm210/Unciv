@@ -1,5 +1,6 @@
 package com.unciv.civinfo;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.LinqHashMap;
@@ -12,9 +13,19 @@ public class MapUnit{
     public String action; // work, automation, fortifying, I dunno what.
 
     public void doAction(TileInfo tile){
+        if(currentMovement==0) return; // We've already done stuff this turn, and can't do any more stuff
+        if(action!=null && action.startsWith("moveTo")){
+            String[] destination = action.replace("moveTo ","").split(",");
+            Vector2 destinationVector = new Vector2(Integer.parseInt(destination[0]), Integer.parseInt(destination[1]));
+            TileInfo gotTo = headTowards(tile.position,destinationVector);
+            if(gotTo.position.equals(destinationVector)) action=null;
+            if(currentMovement!=0) doAction(gotTo);
+            return;
+        }
         if(name.equals("Worker") && tile.improvementInProgress!=null) workOnImprovement(tile);
         if ("automation".equals(action)) doAutomatedAction(tile);
     }
+
 
     private void workOnImprovement(TileInfo tile){
         tile.turnsToImprovement -= 1;
@@ -56,7 +67,7 @@ public class MapUnit{
 
         // We'll search for a tile that needs our help in the reachable area
         LinqHashMap<TileInfo, Float> distanceToTiles =
-                CivilizationInfo.current().tileMap.getUnitDistanceToTiles(tile.position,currentMovement);
+                CivilizationInfo.current().tileMap.getDistanceToTilesWithinTurn(tile.position,currentMovement);
         TileInfo tileWithinDistance = new LinqCollection<TileInfo>(distanceToTiles.keySet()).first(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo tile) {
@@ -72,7 +83,6 @@ public class MapUnit{
         // If not, then we don't know what to do. Oh well.
     }
 
-
     private String chooseImprovement(final TileInfo tile){
         if(tile.improvementInProgress!=null) return tile.improvementInProgress;
         if("Forest".equals(tile.terrainFeature)) return "Lumber mill";
@@ -85,5 +95,15 @@ public class MapUnit{
             return "Farm";
         if(tile.baseTerrain.equals("Tundra")) return "Trading post";
         return null;
+    }
+
+    public TileInfo headTowards(Vector2 origin, Vector2 destination){
+        TileMap tileMap = CivilizationInfo.current().tileMap;
+        LinqCollection<TileInfo> path = tileMap.getShortestPath(origin,destination,currentMovement,maxMovement);
+
+        TileInfo destinationThisTurn = path.get(0);
+        float distanceToTile = tileMap.getDistanceToTilesWithinTurn(origin,currentMovement).get(destinationThisTurn);
+        tileMap.get(origin).moveUnitToTile(destinationThisTurn, distanceToTile);
+        return destinationThisTurn;
     }
 }

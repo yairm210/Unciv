@@ -5,7 +5,9 @@ import com.badlogic.gdx.utils.Predicate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Stack;
 
 /**
  * Created by LENOVO on 10/20/2017.
@@ -74,7 +76,9 @@ public class LinqCollection <T> extends ArrayList<T> {
         return newCollection;
     }
 
-
+    public LinqCollection<T> reverse(){
+        LinqCollection<T> newCol = new LinqCollection<T>(this);
+        Collections.reverse(newCol);
+        return newCol;
+    }
 }
-
-

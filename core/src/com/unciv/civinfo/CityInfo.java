@@ -60,7 +60,7 @@ public class CityInfo {
         this.cityLocation = cityLocation;
         civInfo.cities.add(this);
         cityConstructions = new CityConstructions(this);
-        if(civInfo.cities.size()==0) {
+        if(civInfo.cities.size()==1) {
             cityConstructions.builtBuildings.add("Palace");
             cityConstructions.currentConstruction = "Worker"; // Default for first city only!
         }
@@ -174,7 +174,8 @@ public class CityInfo {
             stats.culture+=population/2;
 
         FullStats statPercentBonuses = cityConstructions.getStatPercentBonuses();
-        if(isCapital() || isConnectedToCapital(RoadStatus.Railroad)) statPercentBonuses.production += 25;
+        if( civInfo.tech.isResearched ("Combustion") &&
+                (isCapital() || isConnectedToCapital(RoadStatus.Railroad))) statPercentBonuses.production += 25;
         if(civInfo.isGoldenAge()) statPercentBonuses.production+=20;
         IConstruction currentConstruction = cityConstructions.getCurrentConstruction();
         if(currentConstruction instanceof Building && ((Building)currentConstruction).isWonder){
