@@ -99,7 +99,7 @@ public class CityScreen extends CameraStageBaseScreen {
 
     private Image getSpecialistIcon(String imageName, final String building, final boolean isFilled, final FullStats specialistType) {
         Image specialist = ImageGetter.getImage(imageName);
-        specialist.setSize(40,40);
+        specialist.setSize(50,50);
         if(!isFilled) specialist.setColor(Color.GRAY);
         specialist.addListener(new ClickListener(){
             @Override
