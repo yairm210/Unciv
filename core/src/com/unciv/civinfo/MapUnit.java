@@ -18,6 +18,8 @@ public class MapUnit{
             String[] destination = action.replace("moveTo ","").split(",");
             Vector2 destinationVector = new Vector2(Integer.parseInt(destination[0]), Integer.parseInt(destination[1]));
             TileInfo gotTo = headTowards(tile.position,destinationVector);
+            if(gotTo==null) // we couldn't move there because another unit was in the way!
+                return;
             if(gotTo.position.equals(destinationVector)) action=null;
             if(currentMovement!=0) doAction(gotTo);
             return;
@@ -56,31 +58,56 @@ public class MapUnit{
         }
     }
 
-    public void doAutomatedAction(TileInfo tile){
-        if(tile.owner!=null && tile.improvement==null // We'll be working this tile
+    private boolean isTopPriorityTile(TileInfo tile){
+        return tile.owner!=null && tile.improvement==null
                 && (tile.workingCity!=null || tile.resource!=null || tile.improvementInProgress!=null)
-                && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile))))
-        {
-            if(tile.improvementInProgress==null) tile.startWorkingOnImprovement(chooseImprovement(tile)); // and stay put.
-            return;
-        }
+                && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)));
+    }
 
-        // We'll search for a tile that needs our help in the reachable area
-        LinqHashMap<TileInfo, Float> distanceToTiles =
-                CivilizationInfo.current().tileMap.getDistanceToTilesWithinTurn(tile.position,currentMovement);
-        TileInfo tileWithinDistance = new LinqCollection<TileInfo>(distanceToTiles.keySet()).first(new Predicate<TileInfo>() {
+    private boolean isMediumPriorityTile(TileInfo tile){
+        return tile.owner!=null && tile.improvement==null
+                && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)));
+    }
+
+    private boolean isLowPriorityTile(TileInfo tile){ // Resource near a city's edges
+        return tile.improvement==null
+                && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)))
+                && tile.hasViewableResource()
+                && CivilizationInfo.current().tileMap.getTilesAtDistance(tile.position,1).any(new Predicate<TileInfo>() {
             @Override
-            public boolean evaluate(TileInfo tile) {
-                return tile.owner!=null && tile.improvement==null && tile.unit==null
-                        && (tile.workingCity!=null || tile.resource!=null || tile.improvementInProgress!=null)
-                        && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)));
+            public boolean evaluate(TileInfo arg0) {
+                return arg0.owner!=null;
             }
         });
-        if(tileWithinDistance!=null){
-            tile.moveUnitToTile(tileWithinDistance,distanceToTiles.get(tileWithinDistance)); // go there
-            doAction(tileWithinDistance); // And do the same from there
-        }
-        // If not, then we don't know what to do. Oh well.
+    }
+
+    public TileInfo findTileToWork(TileInfo currentTile){
+        if(isTopPriorityTile(currentTile)) return currentTile;
+        for (int i = 1; i < 5; i++)
+            for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
+                if(tile.unit==null && isTopPriorityTile(tile))
+                    return tile;
+
+        if(isMediumPriorityTile(currentTile)) return currentTile;
+        for (int i = 1; i < 5; i++)
+            for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
+                if(tile.unit==null && isMediumPriorityTile(tile))
+                    return tile;
+
+        if(isLowPriorityTile(currentTile)) return currentTile;
+        for (int i = 1; i < 5; i++)
+            for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
+                if(tile.unit==null && isLowPriorityTile(tile))
+                    return tile;
+        return null;
+    }
+
+    public void doAutomatedAction(TileInfo tile){
+        TileInfo toWork = findTileToWork(tile);
+        if(toWork==null) return; // Don't know what to do. Sorry.
+        if(toWork!=tile) tile = headTowards(tile.position,toWork.position);
+        if(toWork == tile && tile.improvementInProgress==null) tile.startWorkingOnImprovement(chooseImprovement(tile));
+        doAction(tile);
     }
 
     private String chooseImprovement(final TileInfo tile){
@@ -97,11 +124,18 @@ public class MapUnit{
         return null;
     }
 
+    /**
+     *
+     * @param origin
+     * @param destination
+     * @return The tile that we reached this turn
+     */
     public TileInfo headTowards(Vector2 origin, Vector2 destination){
         TileMap tileMap = CivilizationInfo.current().tileMap;
         LinqCollection<TileInfo> path = tileMap.getShortestPath(origin,destination,currentMovement,maxMovement);
 
         TileInfo destinationThisTurn = path.get(0);
+        if(destinationThisTurn.unit!=null) return null;
         float distanceToTile = tileMap.getDistanceToTilesWithinTurn(origin,currentMovement).get(destinationThisTurn);
         tileMap.get(origin).moveUnitToTile(destinationThisTurn, distanceToTile);
         return destinationThisTurn;

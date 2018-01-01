@@ -84,6 +84,16 @@ public class TileMap{
         return tiles;
     }
 
+    public LinqCollection<TileInfo> getTilesAtDistance(Vector2 origin, int distance){
+        LinqCollection<TileInfo> tiles = new LinqCollection<TileInfo>();
+
+        for(Vector2 vector : HexMath.GetVectorsAtDistance(origin, distance))
+            if(contains(vector))
+                tiles.add(get(vector));
+
+        return tiles;
+    }
+
     public LinqHashMap<TileInfo,Float> getDistanceToTilesWithinTurn(Vector2 origin, float currentUnitMovement){
         LinqHashMap<TileInfo,Float> distanceToTiles = new LinqHashMap<TileInfo, Float>();
         distanceToTiles.put(get(origin), 0f);
@@ -134,7 +144,8 @@ public class TileMap{
             LinqCollection<TileInfo> newToCheck = new LinqCollection<TileInfo>();
             for (TileInfo ti : toCheck){
                 for (TileInfo otherTile : getDistanceToTilesWithinTurn(ti.position, distance == 1 ? currentMovement : maxMovement).keySet()){
-                    if(parents.containsKey(otherTile) || otherTile.unit!=null) continue; // We cannot be faster than anything existing...
+                    if(parents.containsKey(otherTile)) continue; // We cannot be faster than anything existing...
+                    if(!otherTile.position.equals(destination) && otherTile.unit!=null) continue; // go to
                     parents.put(otherTile,ti);
                     if(otherTile.position.equals(destination)){
                         LinqCollection<TileInfo> path = new LinqCollection<TileInfo>();

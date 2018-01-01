@@ -52,6 +52,7 @@ public class CityInfo {
         // The second seems to be more based, so I'll go with that
         double a = 6*Math.pow(tilesClaimed+1.4813,1.3);
         if(CivilizationInfo.current().getBuildingUniques().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
+        if(CivilizationInfo.current().policies.contains("Tradition")) a *= 0.75;
         return (int)Math.round(a);
     }
 

@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.civinfo.CivilizationInfo;
+import com.unciv.game.UnCivGame;
 import com.unciv.game.utils.ImageGetter;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Policy;
@@ -23,12 +24,20 @@ public class PolicyPickerScreen extends PickerScreen {
 
     public PolicyPickerScreen() {
         rightSideButton.setText("Adopt policy\r\n(" + ((int) game.civInfo.civStats.culture) + "/" + game.civInfo.getCultureNeededForNextPolicy() + ")");
+
+        if(CivilizationInfo.current().freePolicies>0) {
+            rightSideButton.setText("Adopt free policy");
+            closeButton.setColor(Color.GRAY);
+            closeButton.setTouchable(Touchable.disabled);
+        }
+
         rightSideButton.setColor(Color.GRAY);
         rightSideButton.setTouchable(Touchable.disabled);
         rightSideButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.civInfo.civStats.culture -= game.civInfo.getCultureNeededForNextPolicy();
+                if(game.civInfo.freePolicies>0) game.civInfo.freePolicies--;
+                else game.civInfo.civStats.culture -= game.civInfo.getCultureNeededForNextPolicy();
                 game.civInfo.policies.add(pickedPolicy.name);
 
                 PolicyBranch branch = GameBasics.PolicyBranches.get(pickedPolicy.branch);
@@ -53,6 +62,11 @@ public class PolicyPickerScreen extends PickerScreen {
 
                 if (pickedPolicy.name.equals("Scientific Revolution"))
                     CivilizationInfo.current().tech.freeTechs+=2;
+
+                if (pickedPolicy.name.equals("Free Religion"))
+                    CivilizationInfo.current().freePolicies++;
+
+
                 game.setScreen(new PolicyPickerScreen());
             }
         });

@@ -288,6 +288,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                     return;
                 }
                 game.civInfo.nextTurn();
+                unitTile=null;
                 GameSaver.SaveGame(game,"Autosave");
                 update();
             }

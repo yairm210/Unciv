@@ -32,6 +32,7 @@ public class CivilizationInfo {
 
     public CivilizationTech tech = new CivilizationTech();
     public LinqCollection<String> policies = new LinqCollection<String>();
+    public int freePolicies=0;
     public int turns = 1;
     public LinqCollection<String> notifications = new LinqCollection<String>();
 

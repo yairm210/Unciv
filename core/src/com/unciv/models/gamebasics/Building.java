@@ -8,6 +8,7 @@ import com.unciv.civinfo.IConstruction;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.UnCivGame;
 import com.unciv.game.VictoryScreen;
+import com.unciv.game.pickerscreens.PolicyPickerScreen;
 import com.unciv.models.LinqCollection;
 import com.unciv.models.stats.FullStats;
 import com.unciv.models.stats.NamedStats;
@@ -217,6 +218,10 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
         if("WorkerConstruction".equals(unique)){
             CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
             CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
+        }
+        if("FreeSocialPolicy".equals(unique)){
+            CivilizationInfo.current().freePolicies++;
+            UnCivGame.Current.setScreen(new PolicyPickerScreen());
         }
     }
 }
