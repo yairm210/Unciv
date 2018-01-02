@@ -132,6 +132,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         for (String notification : game.civInfo.notifications) {
             Label label = new Label(notification, skin);
             label.setColor(Color.WHITE);
+            label.setFontScale(0.9f);
             notificationsTable.add(label).pad(10).fill();
             notificationsTable.row();
         }
@@ -346,12 +347,12 @@ public class WorldScreen extends CameraStageBaseScreen {
         }
 
         for (TileGroup group : tileGroups.linqValues()) {
-            group.moveBy(-bottomX, -bottomY);
+            group.moveBy(-bottomX+50, -bottomY+50);
         }
 
 //        allTiles.setPosition(-bottomX,-bottomY); // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        allTiles.setSize(topX - bottomX, topY - bottomY);
+        allTiles.setSize(100 + topX - bottomX, 100 + topY - bottomY);
 
 
         scrollPane = new ScrollPane(allTiles);

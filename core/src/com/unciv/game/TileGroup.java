@@ -107,28 +107,29 @@ public class TileGroup extends Group {
         }
 
         if(tileInfo.roadStatus != RoadStatus.None){
-            for (TileInfo neighbor : CivilizationInfo.current().tileMap.getTilesInDistance(tileInfo.position,1)) {
-                if (neighbor == tileInfo || neighbor.roadStatus == RoadStatus.None) continue;
-                if (roadImages.containsKey(neighbor.position.toString())) continue;
+            for (TileInfo neighbor : CivilizationInfo.current().tileMap.getTilesAtDistance(tileInfo.position,1)) {
+                if (neighbor.roadStatus == RoadStatus.None) continue;
+                if (!roadImages.containsKey(neighbor.position.toString())) {
+                    Image image = ImageGetter.getImage(ImageGetter.WhiteDot);
+                    roadImages.put(neighbor.position.toString(), image);
 
-                Image image = ImageGetter.getImage(ImageGetter.WhiteDot);
+                    Vector2 relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position);
+                    Vector2 relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition);
+
+                    // This is some crazy voodoo magic so I'll explain.
+                    image.moveBy(25, 25); // Move road to center of tile
+                    // in addTiles, we set the position of groups by relative world position *0.8*groupSize, where groupSize = 50
+                    // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
+                    image.moveBy(-relativeWorldPosition.x * 0.8f * 25, -relativeWorldPosition.y * 0.8f * 25);
+                    image.setSize(10, 2);
+                    addActor(image);
+                    image.setOrigin(0, 1); // This is so that the rotation is calculated from the middle of the road and not the edge
+                    image.setRotation((float) (180 / Math.PI * Math.atan2(relativeWorldPosition.y, relativeWorldPosition.x)));
+                }
+
                 if(tileInfo.roadStatus == RoadStatus.Railroad && neighbor.roadStatus == RoadStatus.Railroad)
-                    image.setColor(Color.BLACK); // railroad
-                else image.setColor(Color.BROWN); // road
-                roadImages.put(neighbor.position.toString(), image);
-
-                Vector2 relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position);
-                Vector2 relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition);
-
-                // This is some crazy voodoo magic so I'll explain.
-                image.moveBy(25, 25); // Move road to center of tile
-                // in addTiles, we set the position of groups by relative world position *0.8*groupSize, where groupSize = 50
-                // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
-                image.moveBy(-relativeWorldPosition.x * 0.8f * 25, -relativeWorldPosition.y * 0.8f * 25);
-                image.setSize(10, 2);
-                addActor(image);
-                image.setOrigin(0, 1); // This is so that the rotation is calculated from the middle of the road and not the edge
-                image.setRotation((float) (180 / Math.PI * Math.atan2(relativeWorldPosition.y, relativeWorldPosition.x)));
+                    roadImages.get(neighbor.position.toString()).setColor(Color.GRAY); // railroad
+                else roadImages.get(neighbor.position.toString()).setColor(Color.BROWN); // road
             }
         }
     }

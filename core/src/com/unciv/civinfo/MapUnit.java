@@ -37,23 +37,6 @@ public class MapUnit{
             else if(tile.improvementInProgress.equals("Road")) tile.roadStatus = RoadStatus.Road;
             else if(tile.improvementInProgress.equals("Railroad")) tile.roadStatus = RoadStatus.Railroad;
             else tile.improvement = tile.improvementInProgress;
-
-            String notification = tile.improvementInProgress+" has been completed";
-            if(tile.workingCity!=null) notification+=" for "+tile.getCity().name;
-            else {
-                for (int i = 1; i < 3; i++) {
-                    LinqCollection<TileInfo> tilesWithCity = CivilizationInfo.current().tileMap.getTilesInDistance(tile.position, i).where(new Predicate<TileInfo>() {
-                        @Override
-                        public boolean evaluate(TileInfo arg0) {
-                            return arg0.isCityCenter();
-                        }
-                    });
-                    if(tilesWithCity.isEmpty()) continue;
-                    notification+=" near "+tilesWithCity.get(0).workingCity;
-                    break;
-                }
-            }
-            CivilizationInfo.current().notifications.add(notification+"!");
             tile.improvementInProgress = null;
         }
     }
