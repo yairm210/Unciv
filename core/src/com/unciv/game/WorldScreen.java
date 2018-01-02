@@ -654,5 +654,14 @@ public class WorldScreen extends CameraStageBaseScreen {
         scrollPane.updateVisualScroll();
     }
 
+    @Override
+    public void resize(int width, int height) {
+
+        if(stage.getViewport().getScreenWidth()!=width || stage.getViewport().getScreenHeight()!=height) {
+            super.resize(width, height);
+            game.worldScreen = new WorldScreen(); // start over.
+            game.setWorldScreen();
+        }
+    }
 }
 
