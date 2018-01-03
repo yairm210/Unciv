@@ -185,4 +185,15 @@ public class CityConstructions
         if(currentConstruction.equals("Science")  || currentConstruction.equals("Gold")) return "";
         return " ("+ workDone(currentConstruction) + "/"+ getCurrentConstruction().getProductionCost()+")";
     }
+
+    public void addCultureBuilding() {
+        for (String string : new LinqCollection<String>("Monument","Temple","Opera House","Museum")){
+            if(!builtBuildings.contains(string)){
+                builtBuildings.add(string);
+                if(currentConstruction.equals(string))
+                    chooseNextConstruction();
+                break;
+            };
+        }
+    }
 }

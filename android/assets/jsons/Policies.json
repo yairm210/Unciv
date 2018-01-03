@@ -1,7 +1,7 @@
 [
 	{
 		name:"Tradition",
-		description:"+3 culture in capital and increased rate of border expansion (how much?)",
+		description:"+3 culture in capital and increased rate of border expansion",
 		policies:[
 			{
 				name:"Aristocracy",
@@ -11,7 +11,7 @@
 			},
 			{
 				name:"Legalism",
-				description:"Free culture building in your first 4 cities - todo",
+				description:"Free culture building in your first 4 cities",
 				row:1,
 				column:3
 			},
@@ -114,7 +114,7 @@
 			},
 			{
 				name:"Free Religion",
-				description:"+1 culture for each monument, temple and monastery. Gain a free policy - TODO.",
+				description:"+1 culture for each monument, temple and monastery. Gain a free policy.",
 				requires:["Mandate of Heaven","Reformation"]
 				row:3,
 				column:4

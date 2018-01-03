@@ -61,6 +61,7 @@ public class CityInfo {
         this.cityLocation = cityLocation;
         civInfo.cities.add(this);
         cityConstructions = new CityConstructions(this);
+        if(civInfo.policies.contains("Legalism") && civInfo.cities.size() <= 4) cityConstructions.addCultureBuilding();
         if(civInfo.cities.size()==1) {
             cityConstructions.builtBuildings.add("Palace");
             cityConstructions.currentConstruction = "Worker"; // Default for first city only!

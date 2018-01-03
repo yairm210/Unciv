@@ -94,10 +94,11 @@
 	},
 	{
 		name:"The Oracle",
-		description: "Provides a free social policy - todo",
+		description: "Provides a free social policy",
 		culture:3,
 		greatPersonPoints:{science:1},
 		isWonder:true,
+		unique:"FreeSocialPolicy",
 		requiredTech:"Philosophy"
 	},
 	{
@@ -456,7 +457,7 @@
 	},
 	{
 		name:"Medical Lab",
-		description: "25% of food carried over after a new citizen is born - todo",
+		description: "25% of food carried over after a new citizen is born",
 		requiredBuilding:"Hospital",
 		maintainance:3,
 		requiredTech:"Penicillin"

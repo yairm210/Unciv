@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Predicate;
+import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.game.UnCivGame;
 import com.unciv.game.utils.ImageGetter;
@@ -62,6 +63,10 @@ public class PolicyPickerScreen extends PickerScreen {
 
                 if (pickedPolicy.name.equals("Scientific Revolution"))
                     CivilizationInfo.current().tech.freeTechs+=2;
+
+                if (pickedPolicy.name.equals("Legalism"))
+                    for (CityInfo city : game.civInfo.cities.subList(0,4))
+                        city.cityConstructions.addCultureBuilding();
 
                 if (pickedPolicy.name.equals("Free Religion"))
                     CivilizationInfo.current().freePolicies++;
