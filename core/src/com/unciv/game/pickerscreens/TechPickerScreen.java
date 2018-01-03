@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.civinfo.CivilizationTech;
 import com.unciv.game.UnCivGame;
+import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Technology;
 
@@ -29,6 +30,7 @@ public class TechPickerScreen extends PickerScreen {
     }
 
     public TechPickerScreen() {
+
         Technology[][] techMatrix = new Technology[17][10]; // Divided into columns, then rows
 
         for (Technology technology : GameBasics.Technologies.linqValues()) {
@@ -76,6 +78,18 @@ public class TechPickerScreen extends PickerScreen {
                 dispose();
             }
         });
+
+
+        LinqCollection<String> tutorial = new LinqCollection<String>();
+        tutorial.add("Technology is central to your civilization," +
+                "\r\n as technological progress brings with it" +
+                "\r\n more construction options, improvements, and abilities");
+        tutorial.add("Most technologies are dependant on" +
+                "\r\n other technologies being researched - " +
+                "\r\n but you can choose a technology to aspire to," +
+                "\r\n and your civilization will research the" +
+                "\r\n necessary technologies to get there");
+        displayTutorials("TechPickerScreen",tutorial);
     }
 
     public void setButtonsInfo() {

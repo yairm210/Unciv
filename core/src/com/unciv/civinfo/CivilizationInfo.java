@@ -35,6 +35,7 @@ public class CivilizationInfo {
     public int freePolicies=0;
     public int turns = 1;
     public LinqCollection<String> notifications = new LinqCollection<String>();
+    public LinqCollection<String> tutorial = new LinqCollection<String>();
 
     public LinqCollection<CityInfo> cities = new LinqCollection<CityInfo>();
 

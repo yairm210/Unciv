@@ -15,6 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
+import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.TileInfo;
 import com.unciv.game.pickerscreens.ImprovementPickerScreen;
 import com.unciv.game.pickerscreens.PolicyPickerScreen;
@@ -64,7 +65,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         tileTable.setBackground(tileTableBackground);
         optionsTable.setBackground(tileTableBackground);
 
-        notificationsTable.background(ImageGetter.getSingleColorDrawable(new Color(0x004085bf)));
+        //notificationsTable.background(ImageGetter.getSingleColorDrawable(new Color(0x004085bf)));
 
         TextureRegionDrawable civBackground = ImageGetter.getDrawable("skin/civTableBackground.png");
         civTable.setBackground(civBackground.tint(new Color(0x004085bf)));
@@ -81,6 +82,20 @@ public class WorldScreen extends CameraStageBaseScreen {
         setCenterPosition(Vector2.Zero);
         createNextTurnButton(); // needs civ table to be positioned
         addOptionsTable();
+
+
+        LinqCollection<String> beginningTutorial = new LinqCollection<String>();
+        beginningTutorial.add("Hello, and welcome to Unciv!" +
+                "\r\nCivilization games can be complex, so we'll" +
+                "\r\n  be guiding you along your first journey." +
+                "\r\nBefore we begin, let's review some basic game concepts.");
+        beginningTutorial.add("This is the world map, which is made up of multiple tiles." +
+                "\r\nEach tile can contain units, as well as resources" +
+                "\r\n  and improvements, which we'll get to later");
+        beginningTutorial.add("You start out with a single unit - a Settler - who can found a city." +
+                "\r\nClick on the central tile to assign orders to it!");
+
+        displayTutorials("NewGame",beginningTutorial);
     }
 
     private void addSelectIdleUnitButton() {
@@ -132,14 +147,30 @@ public class WorldScreen extends CameraStageBaseScreen {
         for (String notification : game.civInfo.notifications) {
             Label label = new Label(notification, skin);
             label.setColor(Color.WHITE);
-            label.setFontScale(0.9f);
-            notificationsTable.add(label).pad(10).fill();
+            label.setFontScale(1.2f);
+            Table minitable = new Table();
+
+            minitable.background(ImageGetter.getDrawable("skin/civTableBackground.png")
+                    .tint(new Color(0x004085bf)));
+            minitable.add(label).pad(5);
+
+            notificationsTable.add(minitable).pad(5);
             notificationsTable.row();
         }
         notificationsTable.pack();
     }
 
     public void update() {
+        if(game.civInfo.tutorial.contains("CityEntered")){
+            LinqCollection<String> tutorial = new LinqCollection<String>();
+            tutorial.add("Once you've done everything you can, " +
+                    "\r\nclick the next turn button on the top right to continue.");
+            tutorial.add("Each turn, science, culture and gold are added" +
+                    "\r\n to your civilization, your cities' construction" +
+                    "\r\n continues, and they may grow in population or area.");
+            displayTutorials("NextTurn",tutorial);
+        }
+
         updateTechButton();
         updateTileTable();
         updateTiles();
@@ -314,6 +345,13 @@ public class WorldScreen extends CameraStageBaseScreen {
             group.addListener(new ClickListener() {
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
+
+                    LinqCollection<String> tutorial = new LinqCollection<String>();
+                    tutorial.add("Clicking on a tile selects that tile," +
+                            "\r\n and displays information on that tile on the bottom-right," +
+                            "\r\n as well as unit actions, if the tile contains a unit");
+                    displayTutorials("TileClicked",tutorial);
+
                     selectedTile = tileInfo;
                     if (unitTile != null && group.tileInfo.unit == null) {
                         LinqHashMap<TileInfo, Float> distanceToTiles = game.civInfo.tileMap.getDistanceToTilesWithinTurn(unitTile.position, unitTile.unit.currentMovement);
@@ -455,6 +493,20 @@ public class WorldScreen extends CameraStageBaseScreen {
                         new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
+                                LinqCollection<String> tutorial = new LinqCollection<String>();
+                                tutorial.add("You have founded a city!" +
+                                        "\r\nCities are the lifeblood of your empire," +
+                                        "\r\n  providing gold and science empire-wide," +
+                                        "\r\n  which are displayed on the top bar.");
+                                tutorial.add("You can click the city name to enter" +
+                                        "\r\n  the city screen to assign population," +
+                                        "\r\n  choose production, and see information on the city");
+                                tutorial.add("Science is used to research technologies." +
+                                        "\r\nYou can enter the technology screen by clicking" +
+                                        "\r\n  on the button on the top-left, underneath the bar");
+
+                                displayTutorials("CityFounded",tutorial);
+
                                 game.civInfo.addCity(selectedTile.position);
                                 if (unitTile == selectedTile)
                                     unitTile = null; // The settler was in the middle of moving and we then founded a city with it

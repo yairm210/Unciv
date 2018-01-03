@@ -2,20 +2,25 @@ package com.unciv.game.utils;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.game.UnCivGame;
+import com.unciv.models.LinqCollection;
 
-import java.util.HashMap;
+import java.util.Collection;
+import java.util.Collections;
 
 public class CameraStageBaseScreen implements Screen {
 
@@ -33,9 +38,7 @@ public class CameraStageBaseScreen implements Screen {
 
 
     @Override
-    public void show() {
-
-    }
+    public void show() {    }
 
     @Override
     public void render(float delta) {
@@ -52,24 +55,46 @@ public class CameraStageBaseScreen implements Screen {
     }
 
     @Override
-    public void pause() {
-
-    }
+    public void pause() {    }
 
     @Override
-    public void resume() {
-
-    }
+    public void resume() {    }
 
     @Override
-    public void hide() {
-
-    }
+    public void hide() {    }
 
     @Override
-    public void dispose() {
+    public void dispose() {    }
 
+    public void displayTutorials(String name, LinqCollection<String> texts){
+        if(CivilizationInfo.current().tutorial.contains(name)) return;
+        CivilizationInfo.current().tutorial.add(name);
+        displayTutorial(texts);
     }
 
+    public void displayTutorial(final LinqCollection<String> texts){
+
+        final Table tutorialTable = new Table().pad(10);
+        tutorialTable.background(ImageGetter.getDrawable("skin/tileTableBackground.png")
+                .tint(new Color(0x101050cf)));
+        Label label = new Label(texts.get(0),skin);
+        label.setFontScale(1.5f);
+        label.setAlignment(Align.center);
+        texts.remove(0);
+        tutorialTable.add(label).pad(10).row();
+        TextButton button = new TextButton("Close",skin);
+        button.addListener(new ClickListener(){
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                tutorialTable.remove();
+                if(!texts.isEmpty()) displayTutorial(texts);
+            }
+        });
+        tutorialTable.add(button).pad(10);
+        tutorialTable.pack();
+        tutorialTable.setPosition(stage.getWidth()/2-tutorialTable.getWidth()/2,
+                stage.getHeight()/2-tutorialTable.getHeight()/2);
+        stage.addActor(tutorialTable);
+    }
 
 }

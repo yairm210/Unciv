@@ -19,7 +19,10 @@ public class ImageGetter {
     }
 
     public static TextureRegionDrawable getDrawable(String fileName) {
-        return new TextureRegionDrawable(getTextureRegion(fileName));
+        TextureRegionDrawable drawable =  new TextureRegionDrawable(getTextureRegion(fileName));
+        drawable.setMinHeight(0);
+        drawable.setMinWidth(0);
+        return drawable;
     }
 
     public static Drawable getSingleColorDrawable(Color color){
