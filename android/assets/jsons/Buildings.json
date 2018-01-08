@@ -460,7 +460,7 @@
 		description: "25% of food carried over after a new citizen is born",
 		requiredBuilding:"Hospital",
 		maintainance:3,
-		requiredTech:"Penicillin"
+		requiredTech:"Pharmaceuticals"
 	},
 	{
 		name:"Research Lab",

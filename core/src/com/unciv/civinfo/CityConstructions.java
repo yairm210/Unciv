@@ -104,8 +104,7 @@ public class CityConstructions
                 .where(new Predicate<Building>() {
             @Override
             public boolean evaluate(Building arg0) { return (arg0.isBuildable(self)); }
-        })
-                .select(new LinqCollection.Func<Building, String>() {
+        }).select(new LinqCollection.Func<Building, String>() {
                     @Override
                     public String GetBy(Building arg0) {
                         return arg0.name;

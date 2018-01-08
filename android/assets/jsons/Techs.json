@@ -264,7 +264,7 @@
 				name:"Economics",
 				row:6,
 				prerequisites:["Banking","Printing Press"],
-				description:"Camps and Trading Posts provide +1 gold, allows construction of Windmill"
+				description:"Camps and Trading Posts provide +1 gold, allows construction of Windmill and Big Ben"
 			},
 			{
 				name:"Chemistry",
@@ -328,13 +328,13 @@
 		techCost: 4505,
 		buildingCost:500,
 		wonderCost:1250,
-		techs:[
+		techs:[/*
 			{
 				name:"Refrigeration",
 				row:4,
 				prerequisites:["Electricity"],
 				description:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
-			},
+			},*/
 			{
 				name:"Radio",
 				row:5,
@@ -361,13 +361,13 @@
 				row:3,
 				prerequisites:["Biology"],
 				description:"Allows construction of Research Lab, increasing science"
-			},
+			},/*
 			{
 				name:"Electronics",
 				row:5,
 				prerequisites:["Radio"],
 				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			},
+			},*/
 			{
 				name:"Mass Media",
 				row:6,
@@ -389,15 +389,15 @@
 		buildingCost:500,
 		techs:[
 			{
-				name:"Penicillin",
+				name:"Pharmaceuticals",
 				row:3,
-				prerequisites:["Refrigeration","Biology"],
+				prerequisites:["Plastics"],
 				description:"Enables construction of medical labs, alowing for greater city growth"
 			},
 			{
 				name:"Computers",
 				row:5,
-				prerequisites:["Electronics","Mass Media"],
+				prerequisites:["Mass Media"],
 				description:"+10% science and production in all cities"		
 			},
 			{
@@ -417,7 +417,7 @@
 			{
 				name:"Ecology",
 				row:3,
-				prerequisites:["Penicillin","Plastics","Electronics"],
+				prerequisites:["Pharmaceuticals"],
 				description:"Enables construction of Solar Plants on cities near deserts, increasing production"
 			},
 			{
@@ -429,7 +429,7 @@
 			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Flight","Electronics"],
+				prerequisites:["Flight","Computers"],
 				description:"Allows you to construct the Apollo Project, to find a way off of this planet!"
 			}
 		]	

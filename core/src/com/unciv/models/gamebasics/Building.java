@@ -6,6 +6,7 @@ import com.unciv.civinfo.CivilizationInfo;
 import com.unciv.civinfo.CityConstructions;
 import com.unciv.civinfo.IConstruction;
 import com.unciv.civinfo.TileInfo;
+import com.unciv.game.ScienceVictoryScreen;
 import com.unciv.game.UnCivGame;
 import com.unciv.game.VictoryScreen;
 import com.unciv.game.pickerscreens.PolicyPickerScreen;
@@ -196,15 +197,17 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
 
         if("SpaceshipPart".equals(unique)){
             if(!civInfo.getBuildingUniques().contains("ApolloProgram")) return false;
-            if(civInfo.scienceVictory.requiredParts.get(name)==0) return false; // Don't need to build any more of these!
+            if(civInfo.scienceVictory.unconstructedParts().get(name) ==0) return false; // Don't need to build any more of these!
         }
         return true;
     }
 
     @Override
     public void postBuildEvent(CityConstructions constructions) {
+        if("ApolloProgram".equals(unique)) UnCivGame.Current.setScreen(new ScienceVictoryScreen());
         if("SpaceshipPart".equals(unique)) {
             CivilizationInfo.current().scienceVictory.currentParts.add(name, 1);
+            UnCivGame.Current.setScreen(new ScienceVictoryScreen());
             if(CivilizationInfo.current().scienceVictory.unconstructedParts().isEmpty())
                 UnCivGame.Current.setScreen(new VictoryScreen());
             return;

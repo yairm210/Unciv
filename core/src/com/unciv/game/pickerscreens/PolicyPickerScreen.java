@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.civinfo.CityInfo;
 import com.unciv.civinfo.CivilizationInfo;
-import com.unciv.game.UnCivGame;
 import com.unciv.game.utils.ImageGetter;
+import com.unciv.models.LinqCollection;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Policy;
 import com.unciv.models.gamebasics.PolicyBranch;
@@ -24,6 +24,19 @@ public class PolicyPickerScreen extends PickerScreen {
     private Policy pickedPolicy;
 
     public PolicyPickerScreen() {
+
+        LinqCollection<String> tutorial = new LinqCollection<String>();
+        tutorial.add("Each turn, the culture you gain from all your " +
+                "\r\n  cities is added to your Civilization's culture." +
+                "\r\nWhen you have enough culture, you may pick a " +
+                "\r\n  Social Policy, each one giving you a certain bonus.");
+        tutorial.add("The policies are organized into branches, with each" +
+                "\r\n  branch providing a bonus ability when all policies " +
+                "\r\n  in the branch have been adopted.");
+        tutorial.add("With each policy adopted, and with each city built," +
+                "\r\n  the cost of adopting another policy rises - so choose wisely!");
+        displayTutorials("PolicyPickerScreen",tutorial);
+
         rightSideButton.setText("Adopt policy\r\n(" + ((int) game.civInfo.civStats.culture) + "/" + game.civInfo.getCultureNeededForNextPolicy() + ")");
 
         if(CivilizationInfo.current().freePolicies>0) {

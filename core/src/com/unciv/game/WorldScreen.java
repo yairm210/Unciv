@@ -92,8 +92,10 @@ public class WorldScreen extends CameraStageBaseScreen {
         beginningTutorial.add("This is the world map, which is made up of multiple tiles." +
                 "\r\nEach tile can contain units, as well as resources" +
                 "\r\n  and improvements, which we'll get to later");
-        beginningTutorial.add("You start out with a single unit - a Settler - who can found a city." +
-                "\r\nClick on the central tile to assign orders to it!");
+        beginningTutorial.add("You start out with two units -" +
+                "\r\n  a Settler - who can found a city," +
+                "\r\n  and a scout, for exploring the area." +
+                "\r\n  Click on a tile to assign orders the unit!");
 
         displayTutorials("NewGame",beginningTutorial);
     }
@@ -323,6 +325,14 @@ public class WorldScreen extends CameraStageBaseScreen {
                 unitTile = null;
                 GameSaver.SaveGame(game, "Autosave");
                 update();
+
+                LinqCollection<String> tutorial = new LinqCollection<String>();
+                tutorial.add("In your first couple of turns," +
+                        "\r\n  you will have very little options," +
+                        "\r\n  but as your civilization grows, so do the " +
+                        "\r\n  number of things requiring your attention");
+                displayTutorials("NextTurn",tutorial);
+
             }
         });
         nextTurnButton.setPosition(stage.getWidth() - nextTurnButton.getWidth() - 10,
@@ -498,12 +508,12 @@ public class WorldScreen extends CameraStageBaseScreen {
                                         "\r\nCities are the lifeblood of your empire," +
                                         "\r\n  providing gold and science empire-wide," +
                                         "\r\n  which are displayed on the top bar.");
-                                tutorial.add("You can click the city name to enter" +
-                                        "\r\n  the city screen to assign population," +
-                                        "\r\n  choose production, and see information on the city");
                                 tutorial.add("Science is used to research technologies." +
                                         "\r\nYou can enter the technology screen by clicking" +
                                         "\r\n  on the button on the top-left, underneath the bar");
+                                tutorial.add("You can click the city name to enter" +
+                                        "\r\n  the city screen to assign population," +
+                                        "\r\n  choose production, and see information on the city");
 
                                 displayTutorials("CityFounded",tutorial);
 

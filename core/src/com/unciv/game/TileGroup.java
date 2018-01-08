@@ -76,7 +76,7 @@ public class TileGroup extends Group {
         }
 
         if (tileInfo.explored && tileInfo.unit != null && unitImage == null) {
-            unitImage = ImageGetter.getImage("StatIcons/" + tileInfo.unit.name.replace(" ","_") + "_(Civ5).png");
+            unitImage = ImageGetter.getImage("UnitIcons/" + tileInfo.unit.name.replace(" ","_") + "_(Civ5).png");
             addActor(unitImage);
             unitImage.setSize(20, 20); // not moved - is at bottom left
         }

@@ -66,28 +66,35 @@ public class CameraStageBaseScreen implements Screen {
     @Override
     public void dispose() {    }
 
+    private LinqCollection<String> tutorialTexts = new LinqCollection<String>();
+
     public void displayTutorials(String name, LinqCollection<String> texts){
         if(CivilizationInfo.current().tutorial.contains(name)) return;
         CivilizationInfo.current().tutorial.add(name);
-        displayTutorial(texts);
+
+        tutorialTexts.addAll(texts);
+        if(!isTutorialShowing) displayTutorial();
     }
 
-    public void displayTutorial(final LinqCollection<String> texts){
+    boolean isTutorialShowing=false;
 
+    public void displayTutorial(){
+        isTutorialShowing=true;
         final Table tutorialTable = new Table().pad(10);
         tutorialTable.background(ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(new Color(0x101050cf)));
-        Label label = new Label(texts.get(0),skin);
+        Label label = new Label(tutorialTexts.get(0),skin);
         label.setFontScale(1.5f);
         label.setAlignment(Align.center);
-        texts.remove(0);
+        tutorialTexts.remove(0);
         tutorialTable.add(label).pad(10).row();
         TextButton button = new TextButton("Close",skin);
         button.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 tutorialTable.remove();
-                if(!texts.isEmpty()) displayTutorial(texts);
+                if(!tutorialTexts.isEmpty()) displayTutorial();
+                else isTutorialShowing=false;
             }
         });
         tutorialTable.add(button).pad(10);

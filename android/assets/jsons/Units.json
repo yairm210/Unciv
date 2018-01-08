@@ -14,6 +14,12 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Scout",
+		description: "Has no abilites, can only explore", 
+		unbuildable:true,
+		movement:2
+	},
+	{
 		name:"Great Artist",
 		description: "Can start an 8-turn golden age or construcct a landmark (+5 culture)", 
 		unbuildable:true,

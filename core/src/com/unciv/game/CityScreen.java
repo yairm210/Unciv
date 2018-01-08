@@ -440,31 +440,6 @@ public class CityScreen extends CameraStageBaseScreen {
         }
 
 
-//        TextButton actionButton = new TextButton("Request improvement", skin);
-//        actionButton.getLabel().setFontScale(buttonScale);
-//        actionButton.addListener(action);
-//        if (selectedTile.unit.currentMovement == 0 || !canAct) {
-//            actionButton.setColor(Color.GRAY);
-//            actionButton.setTouchable(Touchable.disabled);
-//        }
-//
-//        tileTable.row();
-//        tileTable.add(actionButton).colspan(2)
-//                .size(actionButton.getWidth() * buttonScale, actionButton.getHeight() * buttonScale);
-//
-//        addUnitAction(tileTable,improvementButtonText, !selectedTile.isCityCenter() ||
-//                        GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
-//                            @Override
-//                            public boolean evaluate(TileImprovement arg0) {
-//                                return selectedTile.canBuildImprovement(arg0);
-//                            }
-//                        })
-//                ,new ClickListener() {
-//
-//                    @Override
-//                    public void clicked(InputEvent event, float x, float y) {game.setScreen(new ImprovementPickerScreen(game, selectedTile));}
-//                } );
-
         TileTable.pack();
 
         TileTable.setPosition(stage.getWidth()-10- TileTable.getWidth(), 10);
