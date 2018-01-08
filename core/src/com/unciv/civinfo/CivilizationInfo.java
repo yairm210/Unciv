@@ -14,10 +14,14 @@ import com.unciv.models.stats.CivStats;
 import com.unciv.models.stats.FullStats;
 
 import java.util.Collection;
+import java.util.Vector;
 
 /**
  * Created by LENOVO on 10/18/2017.
  */
+
+
+
 public class CivilizationInfo {
     public static CivilizationInfo current(){ return UnCivGame.Current.civInfo; }
 
@@ -34,7 +38,20 @@ public class CivilizationInfo {
     public LinqCollection<String> policies = new LinqCollection<String>();
     public int freePolicies=0;
     public int turns = 1;
-    public LinqCollection<String> notifications = new LinqCollection<String>();
+
+    public class Notification{
+        public final String text;
+        public final Vector2 location;
+
+        Notification(String text, Vector2 location) {
+            this.text = text;
+            this.location = location;
+        }
+    }
+    public LinqCollection<Notification> notifications = new LinqCollection<Notification>();
+    public void addNotification(String text, Vector2 location){
+        notifications.add(new Notification(text,location));
+    }
     public LinqCollection<String> tutorial = new LinqCollection<String>();
 
     public LinqCollection<CityInfo> cities = new LinqCollection<CityInfo>();
@@ -116,7 +133,7 @@ public class CivilizationInfo {
 
     public void addGreatPerson(String unitName){ // This is also done by some wonders and social policies, remember
         tileMap.placeUnitNearTile(cities.get(0).cityLocation,unitName);
-        notifications.add("A "+unitName+" has been born!");
+        addNotification("A "+unitName+" has been born!",cities.get(0).cityLocation);
     }
 
     public void greatPersonPointsForTurn(){
@@ -150,7 +167,7 @@ public class CivilizationInfo {
         if(getBuildingUniques().contains("GoldenAgeLengthIncrease")) turnsToGoldenAge*=1.5;
         if(policies.contains("Freedom Complete")) turnsToGoldenAge*=1.5;
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge;
-        notifications.add("You have entered a golden age!");
+        addNotification("You have entered a golden age!",null);
     }
 
     public CivStats getStatsForNextTurn() {

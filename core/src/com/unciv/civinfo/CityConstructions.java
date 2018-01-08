@@ -65,7 +65,7 @@ public class CityConstructions
         currentConstruction = null;
         if(!construction.isBuildable(this)){
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            CivilizationInfo.current().notifications.add("Cannot continue work on "+saveCurrentConstruction);
+            CivilizationInfo.current().addNotification("Cannot continue work on "+saveCurrentConstruction,cityLocation);
             chooseNextConstruction();
             construction = getConstruction(currentConstruction);
         }
@@ -76,7 +76,7 @@ public class CityConstructions
         {
             construction.postBuildEvent(this);
             inProgressConstructions.remove(currentConstruction);
-            CivilizationInfo.current().notifications.add(currentConstruction +" has been built in "+getCity().name);
+            CivilizationInfo.current().addNotification(currentConstruction +" has been built in "+getCity().name,cityLocation);
 
             chooseNextConstruction();
         }
@@ -93,7 +93,7 @@ public class CityConstructions
         });
         if (currentConstruction == null) currentConstruction = Worker;
 
-        CivilizationInfo.current().notifications.add("Work has started on "+ currentConstruction);
+        CivilizationInfo.current().addNotification("Work has started on "+ currentConstruction,cityLocation);
     }
 
 

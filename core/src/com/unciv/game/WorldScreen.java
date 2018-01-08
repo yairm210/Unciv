@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -146,8 +147,8 @@ public class WorldScreen extends CameraStageBaseScreen {
 
     private void updateNotificationsList() {
         notificationsTable.clearChildren();
-        for (String notification : game.civInfo.notifications) {
-            Label label = new Label(notification, skin);
+        for (final CivilizationInfo.Notification notification : game.civInfo.notifications) {
+            Label label = new Label(notification.text, skin);
             label.setColor(Color.WHITE);
             label.setFontScale(1.2f);
             Table minitable = new Table();
@@ -155,6 +156,15 @@ public class WorldScreen extends CameraStageBaseScreen {
             minitable.background(ImageGetter.getDrawable("skin/civTableBackground.png")
                     .tint(new Color(0x004085bf)));
             minitable.add(label).pad(5);
+
+            if(notification.location!=null){
+                minitable.addListener(new ClickListener(){
+                    @Override
+                    public void clicked(InputEvent event, float x, float y) {
+                        setCenterPosition(notification.location);
+                    }
+                });
+            }
 
             notificationsTable.add(minitable).pad(5);
             notificationsTable.row();

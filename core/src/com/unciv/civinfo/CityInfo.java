@@ -60,6 +60,7 @@ public class CityInfo {
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
         civInfo.cities.add(this);
+        CivilizationInfo.current().addNotification(name+" has been founded!",cityLocation);
         cityConstructions = new CityConstructions(this);
         if(civInfo.policies.contains("Legalism") && civInfo.cities.size() <= 4) cityConstructions.addCultureBuilding();
         if(civInfo.cities.size()==1) {
@@ -275,7 +276,7 @@ public class CityInfo {
         {
             population--;
             foodStored = 0;
-            CivilizationInfo.current().notifications.add(name+" is starving!");
+            CivilizationInfo.current().addNotification(name+" is starving!",cityLocation);
         }
         if (foodStored >= foodToNextPopulation()) // growth!
         {
@@ -283,7 +284,7 @@ public class CityInfo {
             if(getBuildingUniques().contains("FoodCarriesOver")) foodStored+=0.4f*foodToNextPopulation(); // Aqueduct special
             population++;
             autoAssignWorker();
-            CivilizationInfo.current().notifications.add(name+" has grown!");
+            CivilizationInfo.current().addNotification(name+" has grown!",cityLocation);
         }
 
         cityConstructions.nextTurn(stats);
@@ -291,7 +292,7 @@ public class CityInfo {
         cultureStored+=stats.culture;
         if(cultureStored>=getCultureToNextTile()){
             addNewTile();
-            CivilizationInfo.current().notifications.add(name+" has expanded its borders!");
+            CivilizationInfo.current().addNotification(name+" has expanded its borders!",cityLocation);
         }
     }
 

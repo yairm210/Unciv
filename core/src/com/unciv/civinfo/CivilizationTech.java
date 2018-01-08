@@ -47,7 +47,7 @@ public class CivilizationTech{
             techsInProgress.remove(CurrentTechnology);
             techsToResearch.remove(CurrentTechnology);
             techsResearched.add(CurrentTechnology);
-            CivilizationInfo.current().notifications.add("Research of "+CurrentTechnology+ " has completed!");
+            CivilizationInfo.current().addNotification("Research of "+CurrentTechnology+ " has completed!",null);
         }
     }
 

@@ -68,7 +68,7 @@ public class TechPickerScreen extends PickerScreen {
                 if (isFreeTechPick) {
                     civTech.techsResearched.add(selectedTech.name);
                     civTech.freeTechs-=1;
-                    game.civInfo.notifications.add("We have stumbled upon the discovery of "+selectedTech.name+"!");
+                    game.civInfo.addNotification("We have stumbled upon the discovery of "+selectedTech.name+"!",null);
                     if(selectedTech.name.equals(civTech.currentTechnology()))
                         civTech.techsToResearch.remove(selectedTech.name);
                 }
