@@ -34,7 +34,7 @@ public class CivilizationInfo {
     public FullStats greatPersonPoints = new FullStats();
 
     public CivilizationTech tech = new CivilizationTech();
-    public Linq<String> policies = new Linq<String>();
+    public CivilizationPolicies policies = new CivilizationPolicies();
     public int freePolicies=0;
     public int turns = 1;
 

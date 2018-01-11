@@ -48,37 +48,7 @@ public class PolicyPickerScreen extends PickerScreen {
             public void clicked(InputEvent event, float x, float y) {
                 if(game.civInfo.freePolicies>0) game.civInfo.freePolicies--;
                 else game.civInfo.civStats.culture -= game.civInfo.getCultureNeededForNextPolicy();
-                game.civInfo.policies.add(pickedPolicy.name);
-
-                PolicyBranch branch = GameBasics.PolicyBranches.get(pickedPolicy.branch);
-                int policiesCompleteInBranch = branch.policies.count(new Predicate<Policy>() {
-                    @Override
-                    public boolean evaluate(Policy arg0) {
-                        return game.civInfo.policies.contains(arg0.name);
-                    }
-                });
-
-                if (policiesCompleteInBranch == branch.policies.size() - 1) { // All done apart from branch completion
-                    game.civInfo.policies.add(branch.policies.get(branch.policies.size() - 1).name); // add branch completion!
-                }
-                if (pickedPolicy.name.equals("Collective Rule"))
-                    CivilizationInfo.current().tileMap.
-                            placeUnitNearTile(CivilizationInfo.current().getCapital().cityLocation, "Settler");
-                if (pickedPolicy.name.equals("Citizenship"))
-                    CivilizationInfo.current().tileMap.
-                            placeUnitNearTile(CivilizationInfo.current().getCapital().cityLocation, "Worker");
-                if (pickedPolicy.name.equals("Representation") || pickedPolicy.name.equals("Reformation"))
-                    CivilizationInfo.current().enterGoldenAge();
-
-                if (pickedPolicy.name.equals("Scientific Revolution"))
-                    CivilizationInfo.current().tech.freeTechs+=2;
-
-                if (pickedPolicy.name.equals("Legalism"))
-                    for (CityInfo city : game.civInfo.cities.subList(0,4))
-                        city.cityConstructions.addCultureBuilding();
-
-                if (pickedPolicy.name.equals("Free Religion"))
-                    CivilizationInfo.current().freePolicies++;
+                game.civInfo.policies.adopt(pickedPolicy);
 
                 if (pickedPolicy.name.equals(""))
 
