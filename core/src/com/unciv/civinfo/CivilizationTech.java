@@ -1,7 +1,9 @@
 package com.unciv.civinfo;
 
+import com.badlogic.gdx.utils.Predicate;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Technology;
+import com.unciv.models.gamebasics.TileResource;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +41,7 @@ public class CivilizationTech{
     }
 
     public void nextTurn(int scienceForNewTurn){
-        String CurrentTechnology = currentTechnology();
+        final String CurrentTechnology = currentTechnology();
 
         techsInProgress.put(CurrentTechnology, researchOfTech(CurrentTechnology) + scienceForNewTurn);
         if (techsInProgress.get(CurrentTechnology) >= getCurrentTechnology().cost) // We finished it!
@@ -47,7 +49,34 @@ public class CivilizationTech{
             techsInProgress.remove(CurrentTechnology);
             techsToResearch.remove(CurrentTechnology);
             techsResearched.add(CurrentTechnology);
-            CivilizationInfo.current().addNotification("Research of "+CurrentTechnology+ " has completed!",null);
+            CivilizationInfo.current().addNotification("Research of " + CurrentTechnology + " has completed!", null);
+
+            TileResource revealedResource = GameBasics.TileResources.linqValues().first(new Predicate<TileResource>() {
+                @Override
+                public boolean evaluate(TileResource arg0) {
+                    return CurrentTechnology.equals(arg0.revealedBy);
+                }
+            });
+
+            if (revealedResource != null)
+                for (TileInfo tileInfo : CivilizationInfo.current().tileMap.values())
+                    if (revealedResource.name.equals(tileInfo.resource) && tileInfo.owner != null) {
+                        for (int i = 0; ; i++) {
+                            TileInfo cityTile = CivilizationInfo.current().tileMap.getTilesAtDistance(tileInfo.position, i)
+                                    .first(new Predicate<TileInfo>() {
+                                        @Override
+                                        public boolean evaluate(TileInfo arg0) {
+                                            return arg0.isCityCenter();
+                                        }
+                                    });
+                            if (cityTile != null) {
+                                CivilizationInfo.current().addNotification(
+                                        revealedResource.name + " revealed near " + cityTile.getCity().name, tileInfo.position);
+                                break;
+                            }
+                        }
+                    }
+            
         }
     }
 
