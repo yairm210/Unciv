@@ -56,7 +56,7 @@ public class MapUnit{
         return tile.improvement==null
                 && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)))
                 && tile.hasViewableResource()
-                && CivilizationInfo.current().tileMap.getTilesAtDistance(tile.position,1).any(new Predicate<TileInfo>() {
+                && tile.getNeighbors().any(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
                 return arg0.owner!=null;

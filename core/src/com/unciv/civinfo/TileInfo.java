@@ -167,4 +167,8 @@ public class TileInfo
         otherTile.unit = unit;
         unit = null;
     }
+
+    public LinqCollection<TileInfo> getNeighbors(){
+        return CivilizationInfo.current().tileMap.getTilesAtDistance(position,1);
+    }
 }

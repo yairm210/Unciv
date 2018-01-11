@@ -107,7 +107,7 @@ public class TileGroup extends Group {
         }
 
         if(tileInfo.roadStatus != RoadStatus.None){
-            for (TileInfo neighbor : CivilizationInfo.current().tileMap.getTilesAtDistance(tileInfo.position,1)) {
+            for (TileInfo neighbor : tileInfo.getNeighbors()) {
                 if (neighbor.roadStatus == RoadStatus.None) continue;
                 if (!roadImages.containsKey(neighbor.position.toString())) {
                     Image image = ImageGetter.getImage(ImageGetter.WhiteDot);

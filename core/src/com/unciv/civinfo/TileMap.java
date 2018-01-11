@@ -124,17 +124,6 @@ public class TileMap{
         return distanceToTiles;
     }
 
-    public class BfsInfo{
-
-        final TileInfo parent;
-        final int totalDistance;
-
-        public BfsInfo(TileInfo parent, int totalDistance) {
-            this.parent = parent;
-            this.totalDistance = totalDistance;
-        }
-    }
-
     public LinqCollection<TileInfo> getShortestPath(Vector2 origin, Vector2 destination, float currentMovement, int maxMovement){
         LinqCollection<TileInfo> toCheck = new LinqCollection<TileInfo>(get(origin));
         LinqHashMap<TileInfo,TileInfo> parents = new LinqHashMap<TileInfo, TileInfo>();
@@ -181,6 +170,34 @@ public class TileMap{
                 return arg0.unit==null;
             }
         }).unit = GameBasics.Units.get(unit).getMapUnit(); // And if there's none, then kill me.
+    }
+
+    public int getTileHeight(TileInfo tileInfo){
+        int height=0;
+        if(new LinqCollection<String>("Forest","Jungle").contains(tileInfo.terrainFeature)) height+=1;
+        if("Hill".equals(tileInfo.baseTerrain)) height+=2;
+        return height;
+    }
+
+    public LinqCollection<TileInfo> getViewableTiles(Vector2 position, int sightDistance){
+        final LinqCollection<TileInfo> tiles = getTilesInDistance(position,1);
+        if(get(position).baseTerrain.equals("Hill")) sightDistance+=1;
+        for (int i = 0; i <= sightDistance; i++) {
+            LinqCollection<TileInfo> tilesForLayer = new LinqCollection<TileInfo>();
+            for (final TileInfo tile : getTilesAtDistance(position, i))
+                if (tile.getNeighbors().any(new Predicate<TileInfo>() {
+                    @Override
+                    public boolean evaluate(TileInfo arg0) {
+                        if (!tiles.contains(arg0))
+                            return false; // Basically, if there's a viewable neighbor which is either flatlands, or I'm taller than him
+                        int tileHeight = getTileHeight(arg0);
+                        return tileHeight == 0 || getTileHeight(tile) > tileHeight;
+                    }
+                })) tilesForLayer.add(tile);
+            tiles.addAll(tilesForLayer);
+        }
+
+        return tiles;
     }
 
 }

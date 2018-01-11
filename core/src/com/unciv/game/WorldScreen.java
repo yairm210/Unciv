@@ -701,8 +701,8 @@ public class WorldScreen extends CameraStageBaseScreen {
                         return arg0.unit != null;
                     }
                 }))
-            for (Vector2 vector : HexMath.GetVectorsInDistance(tile.position, 2))
-                ViewableVectorStrings.add(vector.toString());
+            for (TileInfo tileInfo : game.civInfo.tileMap.getViewableTiles(tile.position,2))
+                ViewableVectorStrings.add(tileInfo.position.toString());
 
         for (String string : ViewableVectorStrings)
             if (tileGroups.containsKey(string))

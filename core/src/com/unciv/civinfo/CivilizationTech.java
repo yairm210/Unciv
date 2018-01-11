@@ -76,7 +76,7 @@ public class CivilizationTech{
                             }
                         }
                     }
-            
+
         }
     }
 
