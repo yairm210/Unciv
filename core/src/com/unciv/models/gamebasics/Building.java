@@ -1,20 +1,18 @@
 package com.unciv.models.gamebasics;
 
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.civinfo.CityInfo;
-import com.unciv.civinfo.CivilizationInfo;
-import com.unciv.civinfo.CityConstructions;
-import com.unciv.civinfo.IConstruction;
-import com.unciv.civinfo.TileInfo;
-import com.unciv.game.ScienceVictoryScreen;
-import com.unciv.game.UnCivGame;
-import com.unciv.game.VictoryScreen;
-import com.unciv.game.pickerscreens.PolicyPickerScreen;
-import com.unciv.models.LinqCollection;
+import com.unciv.logic.city.CityInfo;
+import com.unciv.logic.civilization.CivilizationInfo;
+import com.unciv.logic.city.CityConstructions;
+import com.unciv.logic.city.IConstruction;
+import com.unciv.logic.map.TileInfo;
+import com.unciv.ui.ScienceVictoryScreen;
+import com.unciv.ui.UnCivGame;
+import com.unciv.ui.VictoryScreen;
+import com.unciv.ui.pickerscreens.PolicyPickerScreen;
+import com.unciv.models.linq.Linq;
 import com.unciv.models.stats.FullStats;
 import com.unciv.models.stats.NamedStats;
-
-import java.util.ArrayList;
 
 public class Building extends NamedStats implements IConstruction, ICivilopedia {
     public String description;
@@ -34,7 +32,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
     public String requiredBuilding;
     public String requiredBuildingInAllCities;
     public String requiredResource; // A strategic resource that will be consumed by this building
-    public LinqCollection requiredNearbyImprovedResources; // City can only be built if one of these resources is nearby - it must be improved!
+    public Linq requiredNearbyImprovedResources; // City can only be built if one of these resources is nearby - it must be improved!
     public String cannotBeBuiltWith;
 
     // Uniques
@@ -50,21 +48,21 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
 
     public FullStats getStats(){
         FullStats stats = new FullStats(this);
-        LinqCollection<String> policies = CivilizationInfo.current().policies;
+        Linq<String> policies = CivilizationInfo.current().policies;
         if (policies.contains("Organized Religion") &&
-                new LinqCollection<String>("Monument","Temple","Monastery").contains(name))
+                new Linq<String>("Monument","Temple","Monastery").contains(name))
             stats.happiness+=1;
 
         if (policies.contains("Free Religion") &&
-                new LinqCollection<String>("Monument","Temple","Monastery").contains(name))
+                new Linq<String>("Monument","Temple","Monastery").contains(name))
             stats.culture+=1;
 
         if (policies.contains("Entrepreneurship") &&
-                new LinqCollection<String>("Mint","Market","Bank","Stock Market").contains(name))
+                new Linq<String>("Mint","Market","Bank","Stock Market").contains(name))
             stats.science+=1;
 
         if (policies.contains("Humanism") &&
-                new LinqCollection<String>("University","Observatory","Public School").contains(name))
+                new Linq<String>("University","Observatory","Public School").contains(name))
             stats.science+=1;
 
         if (policies.contains("Theocracy") && name.equals("Temple"))
@@ -121,7 +119,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
                 public boolean evaluate(TileResource arg0) {
                     return name.equals(arg0.building);
                 }
-            }).select(new LinqCollection.Func<TileResource, String>() {
+            }).select(new Linq.Func<TileResource, String>() {
                 @Override
                 public String GetBy(TileResource arg0) {
                     return arg0.name;

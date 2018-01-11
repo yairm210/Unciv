@@ -1,6 +1,6 @@
 package com.unciv.models.gamebasics;
 
-import com.unciv.models.LinqCollection;
+import com.unciv.models.linq.Linq;
 import com.unciv.models.stats.INamed;
 
 /**
@@ -13,7 +13,7 @@ public class Policy implements INamed{
     public String branch;
     public int row;
     public int column;
-    public LinqCollection<String> requires;
+    public Linq<String> requires;
 
     @Override
     public String getName() {

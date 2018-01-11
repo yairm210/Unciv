@@ -1,6 +1,6 @@
 package com.unciv.models.gamebasics;
 
-import com.unciv.civinfo.CivilizationInfo;
+import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.models.stats.FullStats;
 import com.unciv.models.stats.NamedStats;
 

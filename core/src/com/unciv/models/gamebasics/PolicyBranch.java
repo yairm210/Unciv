@@ -1,8 +1,7 @@
 package com.unciv.models.gamebasics;
 
-import com.unciv.models.LinqCollection;
-import com.unciv.models.stats.INamed;
+import com.unciv.models.linq.Linq;
 
 public class PolicyBranch extends Policy{
-    public LinqCollection<Policy> policies;
+    public Linq<Policy> policies;
 }
