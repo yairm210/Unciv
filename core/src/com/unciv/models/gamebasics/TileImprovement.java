@@ -20,7 +20,7 @@ public class TileImprovement extends NamedStats implements ICivilopedia {
         float realTurnsToBuild = turnsToBuild;
         if(CivilizationInfo.current().getBuildingUniques().contains("WorkerConstruction"))
             realTurnsToBuild*=0.75;
-        if(CivilizationInfo.current().policies.contains("Citizenship"))
+        if(CivilizationInfo.current().policies.isAdopted("Citizenship"))
             realTurnsToBuild*=0.75;
         return Math.round(realTurnsToBuild);
     }

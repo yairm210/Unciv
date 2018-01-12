@@ -84,10 +84,10 @@ public class TileInfo
             else stats.add(improvement); // basic improvement
 
             if (isResearched(improvement.improvingTech)) stats.add(improvement.improvingTechStats); // eg Chemistry for mines
-            if(improvement.name.equals("Trading post") && CivilizationInfo.current().policies.contains("Free Thought"))
+            if(improvement.name.equals("Trading post") && CivilizationInfo.current().policies.isAdopted("Free Thought"))
                 stats.science+=1;
             if(new Linq<String>("Academy","Landmark","Manufactory","Customs House").contains(improvement.name)
-                    && CivilizationInfo.current().policies.contains("Freedom Complete"))
+                    && CivilizationInfo.current().policies.isAdopted("Freedom Complete"))
                 stats.add(improvement); // again, for the double effect
         }
 
@@ -100,7 +100,7 @@ public class TileInfo
 
         if("Jungle".equals(terrainFeature) && city!=null
                 && city.getBuildingUniques().contains("JunglesProvideScience")) stats.science+=2;
-        if(stats.gold!=0 && CivilizationInfo.current().isGoldenAge())
+        if(stats.gold!=0 && CivilizationInfo.current().goldenAges.isGoldenAge())
             stats.gold++;
 
         return stats;

@@ -56,7 +56,7 @@ public class CityInfo {
         // The second seems to be more based, so I'll go with that
         double a = 6*Math.pow(tilesClaimed+1.4813,1.3);
         if(CivilizationInfo.current().getBuildingUniques().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
-        if(CivilizationInfo.current().policies.contains("Tradition")) a *= 0.75;
+        if(CivilizationInfo.current().policies.isAdopted("Tradition")) a *= 0.75;
         return (int)Math.round(a);
     }
 
@@ -66,7 +66,7 @@ public class CityInfo {
         civInfo.cities.add(this);
         CivilizationInfo.current().addNotification(name+" has been founded!",cityLocation);
         cityConstructions = new CityConstructions(this);
-        if(civInfo.policies.contains("Legalism") && civInfo.cities.size() <= 4) cityConstructions.addCultureBuilding();
+        if(civInfo.policies.isAdopted("Legalism") && civInfo.cities.size() <= 4) cityConstructions.addCultureBuilding();
         if(civInfo.cities.size()==1) {
             cityConstructions.builtBuildings.add("Palace");
             cityConstructions.currentConstruction = "Worker"; // Default for first city only!
@@ -147,8 +147,8 @@ public class CityInfo {
         stats.production+=specialists.production*2;
         stats.science+=specialists.science*3;
         stats.gold+=specialists.gold*2;
-        if(civInfo.policies.contains("Commerce Complete")) stats.gold+=getNumberOfSpecialists();
-        if(civInfo.policies.contains("Secularism")) stats.science+=getNumberOfSpecialists()*2;
+        if(civInfo.policies.isAdopted("Commerce Complete")) stats.gold+=getNumberOfSpecialists();
+        if(civInfo.policies.isAdopted("Secularism")) stats.science+=getNumberOfSpecialists()*2;
 
         //idle ppl
         stats.production += getFreePopulation();
@@ -157,38 +157,38 @@ public class CityInfo {
             // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             double goldFromTradeRoute = civInfo.getCapital().population * 0.15
                     + population * 1.1 - 1;
-            if(civInfo.policies.contains("Trade Unions")) goldFromTradeRoute+=2;
+            if(civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute+=2;
             if(civInfo.getBuildingUniques().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
             stats.gold += goldFromTradeRoute;
         }
 
         stats.add(cityConstructions.getStats());
-        if(civInfo.policies.contains("Tradition") && isCapital())
+        if(civInfo.policies.isAdopted("Tradition") && isCapital())
             stats.culture+=3;
-        if(civInfo.policies.contains("Landed Elite") && isCapital())
+        if(civInfo.policies.isAdopted("Landed Elite") && isCapital())
             stats.food+=2;
-        if(CivilizationInfo.current().policies.contains("Tradition Complete"))
+        if(CivilizationInfo.current().policies.isAdopted("Tradition Complete"))
             stats.food+=2;
-        if(CivilizationInfo.current().policies.contains("Monarchy") && isCapital())
+        if(CivilizationInfo.current().policies.isAdopted("Monarchy") && isCapital())
             stats.gold+=population/2;
-        if(CivilizationInfo.current().policies.contains("Liberty"))
+        if(CivilizationInfo.current().policies.isAdopted("Liberty"))
             stats.culture+=1;
-        if(CivilizationInfo.current().policies.contains("Republic"))
+        if(CivilizationInfo.current().policies.isAdopted("Republic"))
             stats.production+=1;
-        if(CivilizationInfo.current().policies.contains("Universal Suffrage"))
+        if(CivilizationInfo.current().policies.isAdopted("Universal Suffrage"))
             stats.production+=population/5;
-        if(CivilizationInfo.current().policies.contains("Free Speech"))
+        if(CivilizationInfo.current().policies.isAdopted("Free Speech"))
             stats.culture+=population/2;
 
         FullStats statPercentBonuses = cityConstructions.getStatPercentBonuses();
         if( civInfo.tech.isResearched ("Combustion") &&
                 (isCapital() || isConnectedToCapital(RoadStatus.Railroad))) statPercentBonuses.production += 25;
-        if(civInfo.isGoldenAge()) statPercentBonuses.production+=20;
+        if(civInfo.goldenAges.isGoldenAge()) statPercentBonuses.production+=20;
         IConstruction currentConstruction = cityConstructions.getCurrentConstruction();
         if(currentConstruction instanceof Building && ((Building)currentConstruction).isWonder){
             if(civInfo.getCivResources().containsKey(GameBasics.TileResources.get("Marble")))
                 statPercentBonuses.production+=15;
-            if(civInfo.policies.contains("Aristocracy"))
+            if(civInfo.policies.isAdopted("Aristocracy"))
                 statPercentBonuses.production+=15;
         }
 
@@ -197,21 +197,21 @@ public class CityInfo {
             statPercentBonuses.science+=10;
         }
 
-        if(civInfo.policies.contains("Collective Rule") && isCapital()
+        if(civInfo.policies.isAdopted("Collective Rule") && isCapital()
                 && "Settler".equals(cityConstructions.currentConstruction))
             statPercentBonuses.production+=50;
-        if(civInfo.policies.contains("Republic") && currentConstruction instanceof Building)
+        if(civInfo.policies.isAdopted("Republic") && currentConstruction instanceof Building)
             statPercentBonuses.production+=5;
-        if(civInfo.policies.contains("Reformation") && cityConstructions.builtBuildings.any(new Predicate<String>() {
+        if(civInfo.policies.isAdopted("Reformation") && cityConstructions.builtBuildings.any(new Predicate<String>() {
             @Override
             public boolean evaluate(String arg0) {
                 return GameBasics.Buildings.get(arg0).isWonder;
             }
         }))
             statPercentBonuses.culture+=33;
-        if(civInfo.policies.contains("Commerce") && isCapital())
+        if(civInfo.policies.isAdopted("Commerce") && isCapital())
             statPercentBonuses.gold+=25;
-        if(civInfo.policies.contains("Sovereignty") && civInfo.getHappinessForNextTurn() >= 0)
+        if(civInfo.policies.isAdopted("Sovereignty") && civInfo.getHappinessForNextTurn() >= 0)
             statPercentBonuses.science+=15;
 
         stats.production*=1+statPercentBonuses.production/100;  // So they get bonuses for production and gold/science
@@ -220,7 +220,7 @@ public class CityInfo {
             float scienceProduced=stats.production/4;
             if (civInfo.getBuildingUniques().contains("ScienceConversionIncrease"))
                 scienceProduced*=1.33;
-            if(civInfo.policies.contains("Rationalism")) scienceProduced*=1.33;
+            if(civInfo.policies.isAdopted("Rationalism")) scienceProduced*=1.33;
             stats.science += scienceProduced;
         }
 
@@ -231,13 +231,13 @@ public class CityInfo {
         boolean isUnhappy = civInfo.getHappinessForNextTurn() < 0;
         if (!isUnhappy) stats.food*=1+statPercentBonuses.food/100; // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
         stats.food -= population * 2; // Food reduced after the bonus
-        if(CivilizationInfo.current().policies.contains("Civil Society"))
+        if(CivilizationInfo.current().policies.isAdopted("Civil Society"))
             stats.food+=getNumberOfSpecialists();
 
         if(isUnhappy) stats.food /= 4; // Reduce excess food to 1/4 per the same
-        if(civInfo.policies.contains("Landed Elite")  && isCapital())
+        if(civInfo.policies.isAdopted("Landed Elite")  && isCapital())
             stats.food*=1.1;
-        if(CivilizationInfo.current().policies.contains("Tradition Complete"))
+        if(CivilizationInfo.current().policies.isAdopted("Tradition Complete"))
             stats.food*=1.15;
 
         stats.gold-= cityConstructions.getMaintainanceCosts(); // this is AFTER the bonus calculation!
@@ -249,18 +249,18 @@ public class CityInfo {
         // in order to determine how much food is produced in a city!
         float happiness = -3; // -3 happiness per city
         float unhappinessFromCitizens = population;
-        if(civInfo.policies.contains("Democracy")) unhappinessFromCitizens-=getNumberOfSpecialists()*0.5f;
+        if(civInfo.policies.isAdopted("Democracy")) unhappinessFromCitizens-=getNumberOfSpecialists()*0.5f;
         if(civInfo.getBuildingUniques().contains("CitizenUnhappinessDecreased"))
             unhappinessFromCitizens*=0.9;
-        if(civInfo.policies.contains("Aristocracy"))
+        if(civInfo.policies.isAdopted("Aristocracy"))
             unhappinessFromCitizens*=0.95;
         happiness-=unhappinessFromCitizens;
 
-        if(civInfo.policies.contains("Aristocracy"))
+        if(civInfo.policies.isAdopted("Aristocracy"))
             happiness+=population/10;
-        if(civInfo.policies.contains("Monarchy") && isCapital())
+        if(civInfo.policies.isAdopted("Monarchy") && isCapital())
             happiness+=population/2;
-        if(civInfo.policies.contains("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
+        if(civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
             happiness+=1;
 
         happiness+=(int) cityConstructions.getStats().happiness;
@@ -413,9 +413,9 @@ public class CityInfo {
         float multiplier = 1;
         if(civInfo.getBuildingUniques().contains("GreatPersonGenerationIncrease"))
             greatPersonPoints = greatPersonPoints.multiply(1.33f);
-        if(civInfo.policies.contains("Entrepreneurship"))
+        if(civInfo.policies.isAdopted("Entrepreneurship"))
             greatPersonPoints.gold*=1.25;
-        if(civInfo.policies.contains("Freedom"))
+        if(civInfo.policies.isAdopted("Freedom"))
             greatPersonPoints = greatPersonPoints.multiply(1.25f);
 
         return greatPersonPoints;

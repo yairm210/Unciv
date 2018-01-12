@@ -387,7 +387,7 @@ public class CityScreen extends CameraStageBaseScreen {
                     update();
                 }
             });
-            if(buildingGoldCost > game.civInfo.civStats.gold){
+            if(buildingGoldCost > game.civInfo.gold){
                 buildingBuyButton.setColor(Color.GRAY);
                 buildingBuyButton.setTouchable(Touchable.disabled);
             }

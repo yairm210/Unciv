@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.unciv.logic.civilization.CivilizationTech;
+import com.unciv.logic.civilization.TechManager;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Technology;
@@ -20,7 +20,7 @@ public class TechPickerScreen extends PickerScreen {
     HashMap<String, TextButton> techNameToButton = new HashMap<String, TextButton>();
     boolean isFreeTechPick;
     Technology selectedTech;
-    CivilizationTech civTech = game.civInfo.tech;
+    TechManager civTech = game.civInfo.tech;
     ArrayList<String> techsToResearch = new ArrayList<String>(civTech.techsToResearch);
 
     public TechPickerScreen(boolean freeTechPick){

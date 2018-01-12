@@ -8,17 +8,48 @@ import com.unciv.models.gamebasics.PolicyBranch;
 import com.unciv.models.linq.Linq;
 import com.unciv.ui.UnCivGame;
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen;
+import com.unciv.ui.pickerscreens.PolicyPickerScreen;
 
 
-public class CivilizationPolicies extends Linq<String> {
+public class PolicyManager {
+
+    public int freePolicies=0;
+    public int storedCulture=0;
+    private Linq<String> adoptedPolicies = new Linq<String>();
+
+    public Linq<String> getAdoptedPolicies(){return adoptedPolicies.clone();}
+    public boolean isAdopted(String policyName){return adoptedPolicies.contains(policyName);}
+
+
+    public int getCultureNeededForNextPolicy(){
+        // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
+        int basicPolicies = adoptedPolicies.count(new Predicate<String>() {
+            @Override
+            public boolean evaluate(String arg0) {
+                return !arg0.endsWith("Complete");
+            }
+        });
+        double baseCost = 25+ Math.pow(basicPolicies*6,1.7);
+        double cityModifier = 0.3*(CivilizationInfo.current().cities.size()-1);
+        if(isAdopted("Representation")) cityModifier *= 2/3f;
+        int cost = (int) Math.round(baseCost*(1+cityModifier));
+        if(isAdopted("Piety Complete")) cost*=0.9;
+        if(CivilizationInfo.current().getBuildingUniques().contains("PolicyCostReduction")) cost*=0.9;
+        return cost-cost%5; // round down to nearest 5
+    }
+
+    public boolean canAdoptPolicy(){
+        return storedCulture >= getCultureNeededForNextPolicy();
+    }
 
     public void adopt(Policy policy){
+        adoptedPolicies.add(policy.name);
 
         PolicyBranch branch = GameBasics.PolicyBranches.get(policy.branch);
         int policiesCompleteInBranch = branch.policies.count(new Predicate<Policy>() {
             @Override
             public boolean evaluate(Policy arg0) {
-                return contains(arg0.name);
+                return isAdopted(arg0.name);
             }
         });
 
@@ -32,7 +63,7 @@ public class CivilizationPolicies extends Linq<String> {
             CivilizationInfo.current().tileMap.
                     placeUnitNearTile(CivilizationInfo.current().getCapital().cityLocation, "Worker");
         if (policy.name.equals("Representation") || policy.name.equals("Reformation"))
-            CivilizationInfo.current().enterGoldenAge();
+            CivilizationInfo.current().goldenAges.enterGoldenAge();
 
         if (policy.name.equals("Scientific Revolution"))
             CivilizationInfo.current().tech.freeTechs+=2;
@@ -42,10 +73,17 @@ public class CivilizationPolicies extends Linq<String> {
                 city.cityConstructions.addCultureBuilding();
 
         if (policy.name.equals("Free Religion"))
-            CivilizationInfo.current().freePolicies++;
+            freePolicies++;
 
         if (policy.name.equals("Liberty Complete"))
             UnCivGame.Current.setScreen(new GreatPersonPickerScreen());
 
+    }
+
+    public void nextTurn(float culture) {
+        storedCulture+=culture;
+        boolean couldAdoptPolicyBefore = canAdoptPolicy();
+        if(!couldAdoptPolicyBefore && canAdoptPolicy())
+            UnCivGame.Current.setScreen(new PolicyPickerScreen());
     }
 }

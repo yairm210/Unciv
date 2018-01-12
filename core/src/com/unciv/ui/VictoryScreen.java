@@ -2,6 +2,7 @@ package com.unciv.ui;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.ui.utils.CameraStageBaseScreen;
@@ -9,11 +10,12 @@ import com.unciv.ui.utils.CameraStageBaseScreen;
 public class VictoryScreen extends CameraStageBaseScreen{
 
     public VictoryScreen() {
-        Label label = new Label("Congrendulation!\r\nYou have won!!!!!",skin);
-        label.setFontScale(5);
-        label.setPosition((stage.getWidth()-label.getWidth())/2 , (stage.getHeight()-label.getHeight())/2 );
-        stage.addActor(label);
 
+        Table table = new Table();
+        Label label = new Label("A resounding victory!",skin);
+        label.setFontScale(2);
+
+        table.add(label).pad(20).row();
 
         TextButton newGameButton = new TextButton("New game!",skin);
         newGameButton.addListener(new ClickListener(){
@@ -22,7 +24,13 @@ public class VictoryScreen extends CameraStageBaseScreen{
                 game.startNewGame();
             }
         });
-        newGameButton.setPosition((stage.getWidth()-newGameButton.getWidth())/2 , 10);
+        table.add(newGameButton).pad(20).row();
+
+
+        table.pack();
+        table.setPosition((stage.getWidth()-table.getWidth())/2 , (stage.getHeight()-table.getHeight())/2 );
+
+        stage.addActor(table);
     }
 
 

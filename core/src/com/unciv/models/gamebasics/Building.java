@@ -48,7 +48,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
 
     public FullStats getStats(){
         FullStats stats = new FullStats(this);
-        Linq<String> policies = CivilizationInfo.current().policies;
+        Linq<String> policies = CivilizationInfo.current().policies.getAdoptedPolicies();
         if (policies.contains("Organized Religion") &&
                 new Linq<String>("Monument","Temple","Monastery").contains(name))
             stats.happiness+=1;
@@ -134,15 +134,15 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
 
     @Override
     public int getProductionCost() {
-        if(!isWonder && culture!=0 && CivilizationInfo.current().policies.contains("Piety"))
+        if(!isWonder && culture!=0 && CivilizationInfo.current().policies.isAdopted("Piety"))
             return (int) (cost*0.85);
         return cost;
     }
 
     public int getGoldCost(){
         double cost = Math.pow(30 * getProductionCost(),0.75) * (1 + hurryCostModifier/100);
-        if(CivilizationInfo.current().policies.contains("Mercantilism")) cost*=0.75;
-        if(CivilizationInfo.current().policies.contains("Patronage")) cost*=0.5;
+        if(CivilizationInfo.current().policies.isAdopted("Mercantilism")) cost*=0.75;
+        if(CivilizationInfo.current().policies.isAdopted("Patronage")) cost*=0.5;
         return (int)( cost / 10 ) * 10;
     }
     
@@ -214,14 +214,14 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
         if (providesFreeBuilding != null && !constructions.builtBuildings.contains(providesFreeBuilding))
             constructions.builtBuildings.add(providesFreeBuilding);
         if (freeTechs != 0) UnCivGame.Current.civInfo.tech.freeTechs += freeTechs;
-        if("EmpireEntersGoldenAge".equals(unique)) CivilizationInfo.current().enterGoldenAge();
-        if("FreeGreatArtistAppears".equals(unique)) CivilizationInfo.current().addGreatPerson("Great Artist");
+        if("EmpireEntersGoldenAge".equals(unique)) CivilizationInfo.current().goldenAges.enterGoldenAge();
+        if("FreeGreatArtistAppears".equals(unique)) CivilizationInfo.current().greatPeople.addGreatPerson("Great Artist");
         if("WorkerConstruction".equals(unique)){
             CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
             CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
         }
         if("FreeSocialPolicy".equals(unique)){
-            CivilizationInfo.current().freePolicies++;
+            CivilizationInfo.current().policies.freePolicies++;
             UnCivGame.Current.setScreen(new PolicyPickerScreen());
         }
     }

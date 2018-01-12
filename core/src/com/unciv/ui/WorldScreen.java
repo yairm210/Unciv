@@ -273,7 +273,6 @@ public class WorldScreen extends CameraStageBaseScreen {
     private void updateCivTable() {
         civTable.clear();
         civTable.row().pad(15);
-        CivStats currentStats = game.civInfo.civStats;
 
         TextButton CivilopediaButton = new TextButton("Menu", skin);
         CivilopediaButton.addListener(new ClickListener() {
@@ -291,7 +290,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         CivStats nextTurnStats = game.civInfo.getStatsForNextTurn();
 
-        civTable.add(new Label("Gold: " + Math.round(currentStats.gold)
+        civTable.add(new Label("Gold: " + Math.round(game.civInfo.gold)
                 + "(" + (nextTurnStats.gold > 0 ? "+" : "") + Math.round(nextTurnStats.gold) + ")", skin));
 
         Label scienceLabel = new Label("Science: +" + Math.round(nextTurnStats.science)
@@ -299,15 +298,15 @@ public class WorldScreen extends CameraStageBaseScreen {
         scienceLabel.setAlignment(Align.center);
         civTable.add(scienceLabel);
         String happinessText = "Happiness: " + Math.round(game.civInfo.getHappinessForNextTurn());
-        if (game.civInfo.isGoldenAge())
-            happinessText += "\r\n GOLDEN AGE (" + game.civInfo.turnsLeftForCurrentGoldenAge + ")";
+        if (game.civInfo.goldenAges.isGoldenAge())
+            happinessText += "\r\n GOLDEN AGE (" + game.civInfo.goldenAges.turnsLeftForCurrentGoldenAge + ")";
         else
-            happinessText += "\r\n (" + (int) game.civInfo.civStats.happiness + "/" + game.civInfo.happinessRequiredForNextGoldenAge() + ")";
+            happinessText += "\r\n (" + game.civInfo.goldenAges.storedHappiness + "/" + game.civInfo.goldenAges.happinessRequiredForNextGoldenAge() + ")";
         Label happinessLabel = new Label(happinessText, skin);
         happinessLabel.setAlignment(Align.center);
         civTable.add(happinessLabel);
         String cultureString = "Culture: " + "+" + Math.round(nextTurnStats.culture) + "\r\n"
-                + "(" + ((int) game.civInfo.civStats.culture) + "/" + game.civInfo.getCultureNeededForNextPolicy() + ")";
+                + "(" + game.civInfo.policies.storedCulture + "/" + game.civInfo.policies.getCultureNeededForNextPolicy() + ")";
         Label cultureLabel = new Label(cultureString, skin);
         cultureLabel.setAlignment(Align.center);
         civTable.add(cultureLabel);
@@ -592,7 +591,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                         new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                game.civInfo.enterGoldenAge();
+                                game.civInfo.goldenAges.enterGoldenAge();
                                 selectedTile.unit = null;// destroy!
                                 update();
                             }
@@ -636,7 +635,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                         new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                game.civInfo.civStats.gold += 350; // + 50 * era_number - todo!
+                                game.civInfo.gold += 350; // + 50 * era_number - todo!
                                 selectedTile.unit = null; // destroy!
                                 update();
                             }

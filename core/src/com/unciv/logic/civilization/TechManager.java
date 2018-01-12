@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class CivilizationTech{
+public class TechManager {
     public int freeTechs = 0;
 
     public HashSet<String> techsResearched = new HashSet<String>();

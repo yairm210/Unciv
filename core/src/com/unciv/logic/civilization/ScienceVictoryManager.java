@@ -2,7 +2,7 @@ package com.unciv.logic.civilization;
 
 import com.unciv.models.linq.LinqCounter;
 
-public class ScienceVictory{
+public class ScienceVictoryManager {
     public LinqCounter<String> requiredParts = new LinqCounter<String>(){
         {
             add("SS Booster",3);

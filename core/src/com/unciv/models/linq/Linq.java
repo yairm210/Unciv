@@ -76,8 +76,12 @@ public class Linq<T> extends ArrayList<T> {
     }
 
     public Linq<T> reverse(){
-        Linq<T> newCol = new Linq<T>(this);
+        Linq<T> newCol = clone();
         Collections.reverse(newCol);
         return newCol;
+    }
+
+    public Linq<T> clone(){
+        return new Linq<T>(this);
     }
 }

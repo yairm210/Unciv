@@ -24,18 +24,16 @@ import java.util.Collection;
 public class CivilizationInfo {
     public static CivilizationInfo current(){ return UnCivGame.Current.civInfo; }
 
-    public CivStats civStats = new CivStats();
+    //public CivStats civStats = new CivStats();
+    public int gold = 0;
     public int baseHappiness = 15;
-    public int numberOfGoldenAges=0;
-    public int turnsLeftForCurrentGoldenAge=0;
-    public int pointsForNextGreatPerson=100;
     public String civName = "Babylon";
 
-    public FullStats greatPersonPoints = new FullStats();
 
-    public CivilizationTech tech = new CivilizationTech();
-    public CivilizationPolicies policies = new CivilizationPolicies();
-    public int freePolicies=0;
+    public TechManager tech = new TechManager();
+    public PolicyManager policies = new PolicyManager();
+    public GoldenAgeManager goldenAges = new GoldenAgeManager();
+    public GreatPersonManager greatPeople = new GreatPersonManager();
     public int turns = 1;
 
     public class Notification{
@@ -56,7 +54,7 @@ public class CivilizationInfo {
     public Linq<CityInfo> cities = new Linq<CityInfo>();
 
     public TileMap tileMap = new TileMap(20);
-    public ScienceVictory scienceVictory = new ScienceVictory();
+    public ScienceVictoryManager scienceVictory = new ScienceVictoryManager();
 
     public int currentCity =0; //index!
 
@@ -83,28 +81,19 @@ public class CivilizationInfo {
         });
     }
 
-    public boolean isGoldenAge(){return turnsLeftForCurrentGoldenAge>0;}
-    public int happinessRequiredForNextGoldenAge(){
-        return (int) ((500+numberOfGoldenAges*250)*(1+cities.size()/100.0)); //https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
-    }
-
     public void nextTurn()
     {
         notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();
-        boolean couldAdoptPolicyBefore = canAdoptPolicy();
-        civStats.add(nextTurnStats);
-        if(!couldAdoptPolicyBefore && canAdoptPolicy())
-            UnCivGame.Current.setScreen(new PolicyPickerScreen());
+        policies.nextTurn(nextTurnStats.culture);
 
         int happiness = getHappinessForNextTurn();
-        if(!isGoldenAge() && happiness>0)
-            civStats.happiness += happiness;
 
         if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
         for (CityInfo city : cities) city.nextTurn();
-        greatPersonPointsForTurn();
+
+        greatPeople.greatPersonPointsForTurn();
 
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
@@ -118,55 +107,10 @@ public class CivilizationInfo {
             }
         })) tile.nextTurn();
 
-        if(isGoldenAge()) turnsLeftForCurrentGoldenAge--;
-
-        if(civStats.happiness > happinessRequiredForNextGoldenAge()){
-            civStats.happiness-=happinessRequiredForNextGoldenAge();
-            enterGoldenAge();
-            numberOfGoldenAges++;
-        }
+        goldenAges.nextTurn(happiness);
 
         for (CityInfo city : cities) city.updateCityStats();
         turns++;
-    }
-
-    public void addGreatPerson(String unitName){ // This is also done by some wonders and social policies, remember
-        tileMap.placeUnitNearTile(cities.get(0).cityLocation,unitName);
-        addNotification("A "+unitName+" has been born!",cities.get(0).cityLocation);
-    }
-
-    public void greatPersonPointsForTurn(){
-        for(CityInfo city : cities)
-            greatPersonPoints.add(city.getGreatPersonPoints());
-
-        if(greatPersonPoints.science>pointsForNextGreatPerson){
-            greatPersonPoints.science-=pointsForNextGreatPerson;
-            pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Scientist");
-        }
-        if(greatPersonPoints.production>pointsForNextGreatPerson){
-            greatPersonPoints.production-=pointsForNextGreatPerson;
-            pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Engineer");
-        }
-        if(greatPersonPoints.culture>pointsForNextGreatPerson){
-            greatPersonPoints.culture-=pointsForNextGreatPerson;
-            pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Artist");
-        }
-        if(greatPersonPoints.gold>pointsForNextGreatPerson){
-            greatPersonPoints.gold-=pointsForNextGreatPerson;
-            pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Merchant");
-        }
-    }
-
-    public void enterGoldenAge(){
-        int turnsToGoldenAge = 10;
-        if(getBuildingUniques().contains("GoldenAgeLengthIncrease")) turnsToGoldenAge*=1.5;
-        if(policies.contains("Freedom Complete")) turnsToGoldenAge*=1.5;
-        turnsLeftForCurrentGoldenAge += turnsToGoldenAge;
-        addNotification("You have entered a golden age!",null);
     }
 
     public CivStats getStatsForNextTurn() {
@@ -182,10 +126,10 @@ public class CivilizationInfo {
             if (tile.roadStatus == RoadStatus.Road) transportationUpkeep+=1;
             else if(tile.roadStatus == RoadStatus.Railroad) transportationUpkeep+=2;
         }
-        if(policies.contains("Trade Unions")) transportationUpkeep *= 2/3f;
+        if(policies.isAdopted("Trade Unions")) transportationUpkeep *= 2/3f;
         statsForTurn.gold -=transportationUpkeep;
 
-        if(policies.contains("Mandate Of Heaven"))
+        if(policies.isAdopted("Mandate Of Heaven"))
             statsForTurn.culture+=getHappinessForNextTurn()/2;
         return statsForTurn;
     }
@@ -193,7 +137,7 @@ public class CivilizationInfo {
     public int getHappinessForNextTurn(){
         int happiness = baseHappiness;
         int happinessPerUniqueLuxury = 5;
-        if(policies.contains("Protectionism")) happinessPerUniqueLuxury+=1;
+        if(policies.isAdopted("Protectionism")) happinessPerUniqueLuxury+=1;
         happiness += new Linq<TileResource>(getCivResources().keySet()).count(new Predicate<TileResource>() {
             @Override
             public boolean evaluate(TileResource arg0) {
@@ -204,7 +148,7 @@ public class CivilizationInfo {
             happiness += city.getCityHappiness();
         }
         if(getBuildingUniques().contains("HappinessPerSocialPolicy"))
-            happiness+=policies.count(new Predicate<String>() {
+            happiness+=policies.getAdoptedPolicies().count(new Predicate<String>() {
                 @Override
                 public boolean evaluate(String arg0) {
                     return !arg0.endsWith("Complete");
@@ -232,27 +176,6 @@ public class CivilizationInfo {
                 });
             }
         }).unique();
-    }
-
-    public int getCultureNeededForNextPolicy(){
-        // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
-        int basicPolicies = policies.count(new Predicate<String>() {
-            @Override
-            public boolean evaluate(String arg0) {
-                return !arg0.endsWith("Complete");
-            }
-        });
-        double baseCost = 25+ Math.pow(basicPolicies*6,1.7);
-        double cityModifier = 0.3*(cities.size()-1);
-        if(policies.contains("Representation")) cityModifier *= 2/3f;
-        int cost = (int) Math.round(baseCost*(1+cityModifier));
-        if(policies.contains("Piety Complete")) cost*=0.9;
-        if(getBuildingUniques().contains("PolicyCostReduction")) cost*=0.9;
-        return cost-cost%5; // round down to nearest 5
-    }
-
-    public boolean canAdoptPolicy(){
-        return civStats.culture >= getCultureNeededForNextPolicy();
     }
 }
 
