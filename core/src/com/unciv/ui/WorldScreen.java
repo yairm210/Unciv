@@ -615,7 +615,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                         new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                selectedTile.getCity().cityConstructions.addConstruction(300 + (30 * selectedTile.getCity().population)); //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                                selectedTile.getCity().cityConstructions.addConstruction(300 + (30 * selectedTile.getCity().population.population)); //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                                 selectedTile.unit = null; // destroy!
                                 update();
                             }

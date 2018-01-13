@@ -9,7 +9,6 @@ import com.unciv.logic.map.TileMap;
 import com.unciv.ui.UnCivGame;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.linq.LinqCounter;
-import com.unciv.models.linq.LinqHashMap;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.TileResource;
@@ -19,14 +18,10 @@ public class CityInfo {
     public final Vector2 cityLocation;
     public String name;
 
+    public PopulationManager population = new PopulationManager();
     public CityConstructions cityConstructions;
-    public int cultureStored;
-    private int tilesClaimed;
-    public int population = 1;
-    public int foodStored = 0;
-    public LinqHashMap<String,FullStats> buildingsSpecialists = new LinqHashMap<String, FullStats>();
-
-    public FullStats cityStats; // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones!
+    public CityExpansionManager expansion = new CityExpansionManager();
+    public CityStats cityStats = new CityStats();
 
     private TileMap getTileMap(){return UnCivGame.Current.civInfo.tileMap; }
 
@@ -48,19 +43,14 @@ public class CityInfo {
         cityLocation = Vector2.Zero;
     }  // for json parsing, we need to have a default constructor
 
-    public int getCultureToNextTile(){
-        // This one has conflicting sources -
-        // http://civilization.wikia.com/wiki/Mathematics_of_Civilization_V says it's 20+(10(t-1))^1.1
-        // https://www.reddit.com/r/civ/comments/58rxkk/how_in_gods_name_do_borders_expand_in_civ_vi/ has it
-        //   (per game XML files) at 6*(t+0.4813)^1.3
-        // The second seems to be more based, so I'll go with that
-        double a = 6*Math.pow(tilesClaimed+1.4813,1.3);
-        if(CivilizationInfo.current().getBuildingUniques().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
-        if(CivilizationInfo.current().policies.isAdopted("Tradition")) a *= 0.75;
-        return (int)Math.round(a);
-    }
+
 
     public CityInfo(CivilizationInfo civInfo, Vector2 cityLocation) {
+
+        population.cityInfo = this;
+        expansion.cityInfo = this;
+        cityStats.cityInfo = this;
+
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
         civInfo.cities.add(this);
@@ -83,7 +73,7 @@ public class CityInfo {
             tile.terrainFeature=null;
 
         autoAssignWorker();
-        updateCityStats();
+        cityStats.update();
     }
 
     public LinqCounter<TileResource> getCityResources(){
@@ -105,231 +95,20 @@ public class CityInfo {
     }
 
 
-    public FullStats getSpecialists(){
-        FullStats allSpecialists = new FullStats();
-        for(FullStats stats : buildingsSpecialists.values())
-            allSpecialists.add(stats);
-        return allSpecialists;
-    }
-
-    public int getNumberOfSpecialists(){
-        FullStats specialists = getSpecialists();
-        return (int) (specialists.science+specialists.production+specialists.culture+specialists.gold);
-    }
-
-    public int getFreePopulation() {
-        int workingPopulation = getTilesInRange().count(new Predicate<TileInfo>() {
-            @Override
-            public boolean evaluate(TileInfo arg0) {
-                return name.equals(arg0.workingCity);
-            }
-        })-1; // 1 is the city center
-        return population - workingPopulation - getNumberOfSpecialists();
-    }
-
-    public boolean hasNonWorkingPopulation() {
-        return getFreePopulation() > 0;
-    }
-
-    public void updateCityStats() {
-        CivilizationInfo civInfo = CivilizationInfo.current();
-        FullStats stats = new FullStats();
-        stats.science += population;
-
-        // Working ppl
-        for (TileInfo cell : getTilesInRange())
-            if (name.equals(cell.workingCity))
-                stats.add(cell.getTileStats(this));
-
-        // Specialists
-        FullStats specialists = getSpecialists();
-        stats.culture+=specialists.culture*3;
-        stats.production+=specialists.production*2;
-        stats.science+=specialists.science*3;
-        stats.gold+=specialists.gold*2;
-        if(civInfo.policies.isAdopted("Commerce Complete")) stats.gold+=getNumberOfSpecialists();
-        if(civInfo.policies.isAdopted("Secularism")) stats.science+=getNumberOfSpecialists()*2;
-
-        //idle ppl
-        stats.production += getFreePopulation();
-
-        if(!isCapital() && isConnectedToCapital(RoadStatus.Road)) {
-            // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            double goldFromTradeRoute = civInfo.getCapital().population * 0.15
-                    + population * 1.1 - 1;
-            if(civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute+=2;
-            if(civInfo.getBuildingUniques().contains("TradeRouteGoldIncrease")) goldFromTradeRoute*=1.25; // Machu Pichu speciality
-            stats.gold += goldFromTradeRoute;
-        }
-
-        stats.add(cityConstructions.getStats());
-        if(civInfo.policies.isAdopted("Tradition") && isCapital())
-            stats.culture+=3;
-        if(civInfo.policies.isAdopted("Landed Elite") && isCapital())
-            stats.food+=2;
-        if(CivilizationInfo.current().policies.isAdopted("Tradition Complete"))
-            stats.food+=2;
-        if(CivilizationInfo.current().policies.isAdopted("Monarchy") && isCapital())
-            stats.gold+=population/2;
-        if(CivilizationInfo.current().policies.isAdopted("Liberty"))
-            stats.culture+=1;
-        if(CivilizationInfo.current().policies.isAdopted("Republic"))
-            stats.production+=1;
-        if(CivilizationInfo.current().policies.isAdopted("Universal Suffrage"))
-            stats.production+=population/5;
-        if(CivilizationInfo.current().policies.isAdopted("Free Speech"))
-            stats.culture+=population/2;
-
-        FullStats statPercentBonuses = cityConstructions.getStatPercentBonuses();
-        if( civInfo.tech.isResearched ("Combustion") &&
-                (isCapital() || isConnectedToCapital(RoadStatus.Railroad))) statPercentBonuses.production += 25;
-        if(civInfo.goldenAges.isGoldenAge()) statPercentBonuses.production+=20;
-        IConstruction currentConstruction = cityConstructions.getCurrentConstruction();
-        if(currentConstruction instanceof Building && ((Building)currentConstruction).isWonder){
-            if(civInfo.getCivResources().containsKey(GameBasics.TileResources.get("Marble")))
-                statPercentBonuses.production+=15;
-            if(civInfo.policies.isAdopted("Aristocracy"))
-                statPercentBonuses.production+=15;
-        }
-
-        if(civInfo.tech.isResearched("Computers")){
-            statPercentBonuses.production+=10;
-            statPercentBonuses.science+=10;
-        }
-
-        if(civInfo.policies.isAdopted("Collective Rule") && isCapital()
-                && "Settler".equals(cityConstructions.currentConstruction))
-            statPercentBonuses.production+=50;
-        if(civInfo.policies.isAdopted("Republic") && currentConstruction instanceof Building)
-            statPercentBonuses.production+=5;
-        if(civInfo.policies.isAdopted("Reformation") && cityConstructions.builtBuildings.any(new Predicate<String>() {
-            @Override
-            public boolean evaluate(String arg0) {
-                return GameBasics.Buildings.get(arg0).isWonder;
-            }
-        }))
-            statPercentBonuses.culture+=33;
-        if(civInfo.policies.isAdopted("Commerce") && isCapital())
-            statPercentBonuses.gold+=25;
-        if(civInfo.policies.isAdopted("Sovereignty") && civInfo.getHappinessForNextTurn() >= 0)
-            statPercentBonuses.science+=15;
-
-        stats.production*=1+statPercentBonuses.production/100;  // So they get bonuses for production and gold/science
-        if("Gold".equals(cityConstructions.currentConstruction)) stats.gold+=stats.production/4;
-        if("Science".equals(cityConstructions.currentConstruction)) {
-            float scienceProduced=stats.production/4;
-            if (civInfo.getBuildingUniques().contains("ScienceConversionIncrease"))
-                scienceProduced*=1.33;
-            if(civInfo.policies.isAdopted("Rationalism")) scienceProduced*=1.33;
-            stats.science += scienceProduced;
-        }
-
-        stats.gold*=1+statPercentBonuses.gold/100;
-        stats.science*=1+statPercentBonuses.science/100;
-        stats.culture*=1+statPercentBonuses.culture/100;
-
-        boolean isUnhappy = civInfo.getHappinessForNextTurn() < 0;
-        if (!isUnhappy) stats.food*=1+statPercentBonuses.food/100; // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
-        stats.food -= population * 2; // Food reduced after the bonus
-        if(CivilizationInfo.current().policies.isAdopted("Civil Society"))
-            stats.food+=getNumberOfSpecialists();
-
-        if(isUnhappy) stats.food /= 4; // Reduce excess food to 1/4 per the same
-        if(civInfo.policies.isAdopted("Landed Elite")  && isCapital())
-            stats.food*=1.1;
-        if(CivilizationInfo.current().policies.isAdopted("Tradition Complete"))
-            stats.food*=1.15;
-
-        stats.gold-= cityConstructions.getMaintainanceCosts(); // this is AFTER the bonus calculation!
-        this.cityStats = stats;
-    }
-
-    public float getCityHappiness(){ // needs to be a separate function because we need to know the global happiness state
-        CivilizationInfo civInfo = CivilizationInfo.current();
-        // in order to determine how much food is produced in a city!
-        float happiness = -3; // -3 happiness per city
-        float unhappinessFromCitizens = population;
-        if(civInfo.policies.isAdopted("Democracy")) unhappinessFromCitizens-=getNumberOfSpecialists()*0.5f;
-        if(civInfo.getBuildingUniques().contains("CitizenUnhappinessDecreased"))
-            unhappinessFromCitizens*=0.9;
-        if(civInfo.policies.isAdopted("Aristocracy"))
-            unhappinessFromCitizens*=0.95;
-        happiness-=unhappinessFromCitizens;
-
-        if(civInfo.policies.isAdopted("Aristocracy"))
-            happiness+=population/10;
-        if(civInfo.policies.isAdopted("Monarchy") && isCapital())
-            happiness+=population/2;
-        if(civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
-            happiness+=1;
-
-        happiness+=(int) cityConstructions.getStats().happiness;
-
-        return happiness;
-    }
-
     public void nextTurn() {
-        FullStats stats = cityStats;
+        FullStats stats = cityStats.currentCityStats;
         if (cityConstructions.currentConstruction.equals(CityConstructions.Settler) && stats.food > 0) {
             stats.production += stats.food;
             stats.food = 0;
         }
 
-        foodStored += stats.food;
-        if (foodStored < 0) // starvation!
-        {
-            population--;
-            foodStored = 0;
-            CivilizationInfo.current().addNotification(name+" is starving!",cityLocation);
-        }
-        if (foodStored >= foodToNextPopulation()) // growth!
-        {
-            foodStored -= foodToNextPopulation();
-            if(getBuildingUniques().contains("FoodCarriesOver")) foodStored+=0.4f*foodToNextPopulation(); // Aqueduct special
-            population++;
-            autoAssignWorker();
-            CivilizationInfo.current().addNotification(name+" has grown!",cityLocation);
-        }
-
+        population.nextTurn(stats.food);
         cityConstructions.nextTurn(stats);
-
-        cultureStored+=stats.culture;
-        if(cultureStored>=getCultureToNextTile()){
-            addNewTile();
-            CivilizationInfo.current().addNotification(name+" has expanded its borders!",cityLocation);
-        }
+        expansion.nextTurn(stats.culture);
     }
 
-    private void addNewTile(){
-        cultureStored -= getCultureToNextTile();
-        tilesClaimed++;
-        Linq<Vector2> possibleNewTileVectors = new Linq<Vector2>();
 
-        for (int i = 2; i <4 ; i++) {
-            Linq<TileInfo> tiles = getTileMap().getTilesInDistance(cityLocation,i);
-            tiles = tiles.where(new Predicate<TileInfo>() {
-                @Override
-                public boolean evaluate(TileInfo arg0) {
-                    return arg0.owner == null;
-                }
-            });
-            if(tiles.size()==0) continue;
-
-            TileInfo TileChosen=null;
-            double TileChosenRank=0;
-            for(TileInfo tile : tiles){
-                double rank = rankTile(tile);
-                if(rank>TileChosenRank){
-                    TileChosenRank = rank;
-                    TileChosen = tile;
-                }
-            }
-            TileChosen.owner = UnCivGame.Current.civInfo.civName;
-            return;
-        }
-    }
-
-    private void autoAssignWorker() {
+    void autoAssignWorker() {
         double maxValue = 0;
         TileInfo toWork = null;
         for (TileInfo tileInfo : getTilesInRange()) {
@@ -345,7 +124,7 @@ public class CityInfo {
             toWork.workingCity = name;
     }
 
-    private double rankTile(TileInfo tile){
+    double rankTile(TileInfo tile){
         FullStats stats = tile.getTileStats(this);
         double rank=0;
         if(stats.food <2) rank+=stats.food;
@@ -358,9 +137,9 @@ public class CityInfo {
         return rank;
     }
 
-    private boolean isCapital(){ return CivilizationInfo.current().getCapital() == this; }
+    boolean isCapital(){ return CivilizationInfo.current().getCapital() == this; }
 
-    private boolean isConnectedToCapital(RoadStatus roadType){
+    boolean isConnectedToCapital(RoadStatus roadType){
         if(CivilizationInfo.current().getCapital()==null) return false;// first city!
         TileInfo capitalTile = CivilizationInfo.current().getCapital().getTile();
         Linq<TileInfo> tilesReached = new Linq<TileInfo>();
@@ -382,12 +161,6 @@ public class CityInfo {
         return false;
     }
 
-    public int foodToNextPopulation()
-    {
-        // civ v math,civilization.wikia
-        return 15 + 6 * (population - 1) + (int)Math.floor(Math.pow(population - 1, 1.8f));
-    }
-
     public Linq<String> getBuildingUniques(){
         return cityConstructions.getBuiltBuildings().select(new Linq.Func<Building, String>() {
             @Override
@@ -403,7 +176,7 @@ public class CityInfo {
     }
 
     public FullStats getGreatPersonPoints(){
-        FullStats greatPersonPoints = getSpecialists().multiply(3);
+        FullStats greatPersonPoints = population.getSpecialists().multiply(3);
         CivilizationInfo civInfo = CivilizationInfo.current();
 
         for(Building building : cityConstructions.getBuiltBuildings())
@@ -420,8 +193,4 @@ public class CityInfo {
 
         return greatPersonPoints;
     }
-
-
-
-
 }

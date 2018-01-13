@@ -20,6 +20,7 @@ import com.unciv.models.gamebasics.Terrain;
 import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.INamed;
+import com.unciv.ui.utils.GameSaver;
 
 public class UnCivGame extends Game {
 
@@ -31,11 +32,11 @@ public class UnCivGame extends Game {
     public void create() {
         SetupGameBasics();
         Current = this;
-        if(com.unciv.ui.utils.GameSaver.GetSave("Autosave").exists()) {
+        if(GameSaver.GetSave("Autosave").exists()) {
             try {
-                com.unciv.ui.utils.GameSaver.LoadGame(this, "Autosave");
+                GameSaver.LoadGame(this, "Autosave");
                 for (CityInfo city : this.civInfo.cities) {
-                    if(city.cityStats == null) city.updateCityStats();
+                    if(city.cityStats == null) city.cityStats.update();
                 }
             } catch(Exception ex){ // silent fail if we can't read the autosave
                 startNewGame();

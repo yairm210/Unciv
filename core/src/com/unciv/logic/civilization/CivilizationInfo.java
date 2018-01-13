@@ -109,14 +109,14 @@ public class CivilizationInfo {
 
         goldenAges.nextTurn(happiness);
 
-        for (CityInfo city : cities) city.updateCityStats();
+        for (CityInfo city : cities) city.cityStats.update();
         turns++;
     }
 
     public CivStats getStatsForNextTurn() {
         CivStats statsForTurn = new CivStats();
         for (CityInfo city : cities) {
-            statsForTurn.add(city.cityStats);
+            statsForTurn.add(city.cityStats.currentCityStats);
         }
         statsForTurn.happiness=0;
 
@@ -145,7 +145,7 @@ public class CivilizationInfo {
             }
         }) * happinessPerUniqueLuxury;
         for (CityInfo city : cities) {
-            happiness += city.getCityHappiness();
+            happiness += city.cityStats.getCityHappiness();
         }
         if(getBuildingUniques().contains("HappinessPerSocialPolicy"))
             happiness+=policies.getAdoptedPolicies().count(new Predicate<String>() {

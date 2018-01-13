@@ -122,7 +122,7 @@ public class CityConstructions
             public boolean evaluate(String arg0) {
                 return "SciencePer2Pop".equals(arg0);
             }
-        }) * getCity().population/2; // Library and public school unique (not actualy unique, though...hmm)
+        }) * getCity().population.population/2; // Library and public school unique (not actualy unique, though...hmm)
         return stats;
     }
 
@@ -153,7 +153,7 @@ public class CityConstructions
 
         float workLeft = cost - workDone(constructionName); // needs to be float so that we get the cieling properly ;)
 
-        FullStats cityStats = getCity().cityStats;
+        FullStats cityStats = getCity().cityStats.currentCityStats;
         int production = Math.round(cityStats.production);
         if (constructionName.equals(Settler)) production += cityStats.food;
 
@@ -164,7 +164,7 @@ public class CityConstructions
         CivilizationInfo.current().gold -= getConstruction(buildingName).getGoldCost();
         getConstruction(buildingName).postBuildEvent(this);
         if(currentConstruction.equals(buildingName)) chooseNextConstruction();
-        getCity().updateCityStats();
+        getCity().cityStats.update();
     }
 
     public String getCityProductionTextForCityButton(){

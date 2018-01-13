@@ -119,15 +119,15 @@ public class CityScreen extends CameraStageBaseScreen {
         specialist.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if(isFilled) getCity().buildingsSpecialists.get(building).add(specialistType.minus()); //unassign
-                else if(getCity().getFreePopulation()==0) return;
+                if(isFilled) getCity().population.buildingsSpecialists.get(building).add(specialistType.minus()); //unassign
+                else if(getCity().population.getFreePopulation()==0) return;
                 else {
-                    if(!getCity().buildingsSpecialists.containsKey(building))
-                        getCity().buildingsSpecialists.put(building,new FullStats());
-                    getCity().buildingsSpecialists.get(building).add(specialistType); //assign!}
+                    if(!getCity().population.buildingsSpecialists.containsKey(building))
+                        getCity().population.buildingsSpecialists.put(building,new FullStats());
+                    getCity().population.buildingsSpecialists.get(building).add(specialistType); //assign!}
                 }
 
-                getCity().updateCityStats();
+                getCity().cityStats.update();
                 update();
             }
         });
@@ -162,9 +162,9 @@ public class CityScreen extends CameraStageBaseScreen {
             BuildingsTable.add(new Label(building.name, skin)).pad(5);
             Table specialists = new Table();
             specialists.row().size(20).pad(5);
-            if (!getCity().buildingsSpecialists.containsKey(building.name))
-                getCity().buildingsSpecialists.put(building.name, new FullStats());
-            FullStats currentBuildingSpecialists = getCity().buildingsSpecialists.get(building.name);
+            if (!getCity().population.buildingsSpecialists.containsKey(building.name))
+                getCity().population.buildingsSpecialists.put(building.name, new FullStats());
+            FullStats currentBuildingSpecialists = getCity().population.buildingsSpecialists.get(building.name);
             for (int i = 0; i < building.specialistSlots.production; i++) {
                 specialists.add(getSpecialistIcon("StatIcons/populationBrown.png", building.name,
                         currentBuildingSpecialists.production > i, new FullStats() {{
@@ -281,9 +281,9 @@ public class CityScreen extends CameraStageBaseScreen {
                 group.populationImage.addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        if(tileInfo.workingCity ==null && cityInfo.getFreePopulation() > 0) tileInfo.workingCity = cityInfo.name;
+                        if(tileInfo.workingCity ==null && cityInfo.population.getFreePopulation() > 0) tileInfo.workingCity = cityInfo.name;
                         else if(cityInfo.name.equals(tileInfo.workingCity)) tileInfo.workingCity = null;
-                        cityInfo.updateCityStats();
+                        cityInfo.cityStats.update();
                         update();
                     }
                 });
@@ -329,7 +329,7 @@ public class CityScreen extends CameraStageBaseScreen {
 
     private void updateCityTable() {
         final CityInfo cityInfo = getCity();
-        FullStats stats = cityInfo.cityStats;
+        FullStats stats = cityInfo.cityStats.currentCityStats;
         CityStatsTable.pad(20);
         CityStatsTable.columnDefaults(0).padRight(10);
         CityStatsTable.clear();
@@ -344,12 +344,12 @@ public class CityScreen extends CameraStageBaseScreen {
         CityStatsValues.put("Production",Math.round(stats.production)
                 +cityInfo.cityConstructions.getAmountConstructedText());
         CityStatsValues.put("Food",Math.round(stats.food)
-                +" ("+cityInfo.foodStored+"/"+cityInfo.foodToNextPopulation()+")");
+                +" ("+cityInfo.population.foodStored+"/"+cityInfo.population.foodToNextPopulation()+")");
         CityStatsValues.put("Gold",Math.round(stats.gold) +"");
         CityStatsValues.put("Science",Math.round(stats.science) +"");
         CityStatsValues.put("Culture",Math.round(stats.culture)
-                +" ("+cityInfo.cultureStored+"/"+cityInfo.getCultureToNextTile()+")");
-        CityStatsValues.put("Population",cityInfo.getFreePopulation()+"/"+cityInfo.population);
+                +" ("+cityInfo.expansion.cultureStored+"/"+cityInfo.expansion.getCultureToNextTile()+")");
+        CityStatsValues.put("Population",cityInfo.population.getFreePopulation()+"/"+cityInfo.population.population);
 
         for(String key : CityStatsValues.keySet()){
             CityStatsTable.add(com.unciv.ui.utils.ImageGetter.getStatIcon(key)).align(Align.right);
