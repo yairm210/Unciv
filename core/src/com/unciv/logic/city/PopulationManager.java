@@ -58,8 +58,25 @@ public class PopulationManager {
             foodStored -= foodToNextPopulation();
             if(cityInfo.getBuildingUniques().contains("FoodCarriesOver")) foodStored+=0.4f*foodToNextPopulation(); // Aqueduct special
             population++;
-            cityInfo.autoAssignWorker();
+            autoAssignWorker();
             CivilizationInfo.current().addNotification(cityInfo.name+" has grown!",cityInfo.cityLocation);
         }
     }
+
+    void autoAssignWorker() {
+        double maxValue = 0;
+        TileInfo toWork = null;
+        for (TileInfo tileInfo : cityInfo.getTilesInRange()) {
+            if (tileInfo.workingCity !=null) continue;
+            double value = cityInfo.rankTile(tileInfo);
+            if (value > maxValue) {
+                maxValue = value;
+                toWork = tileInfo;
+            }
+        }
+
+        if(toWork!=null) // This is when we've run out of tiles!
+            toWork.workingCity = cityInfo.name;
+    }
+
 }

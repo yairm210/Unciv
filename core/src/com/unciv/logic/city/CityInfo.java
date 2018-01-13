@@ -23,7 +23,7 @@ public class CityInfo {
     public CityExpansionManager expansion = new CityExpansionManager();
     public CityStats cityStats = new CityStats();
 
-    private TileMap getTileMap(){return UnCivGame.Current.civInfo.tileMap; }
+    TileMap getTileMap(){return UnCivGame.Current.civInfo.tileMap; }
 
     public TileInfo getTile(){return getTileMap().get(cityLocation);}
     public Linq<TileInfo> getTilesInRange(){
@@ -42,7 +42,6 @@ public class CityInfo {
     public CityInfo(){
         cityLocation = Vector2.Zero;
     }  // for json parsing, we need to have a default constructor
-
 
 
     public CityInfo(CivilizationInfo civInfo, Vector2 cityLocation) {
@@ -72,7 +71,7 @@ public class CityInfo {
         if("Forest".equals(tile.terrainFeature) || "Jungle".equals(tile.terrainFeature) || "Marsh".equals(tile.terrainFeature))
             tile.terrainFeature=null;
 
-        autoAssignWorker();
+        population.autoAssignWorker();
         cityStats.update();
     }
 
@@ -107,23 +106,6 @@ public class CityInfo {
         expansion.nextTurn(stats.culture);
     }
 
-
-    void autoAssignWorker() {
-        double maxValue = 0;
-        TileInfo toWork = null;
-        for (TileInfo tileInfo : getTilesInRange()) {
-            if (tileInfo.workingCity !=null) continue;
-            double value = rankTile(tileInfo);
-            if (value > maxValue) {
-                maxValue = value;
-                toWork = tileInfo;
-            }
-        }
-
-        if(toWork!=null) // This is when we've run out of tiles!
-            toWork.workingCity = name;
-    }
-
     double rankTile(TileInfo tile){
         FullStats stats = tile.getTileStats(this);
         double rank=0;
@@ -135,30 +117,6 @@ public class CityInfo {
         rank+=stats.culture;
         if(tile.improvement ==null) rank+=0.5; // improvement potential!
         return rank;
-    }
-
-    boolean isCapital(){ return CivilizationInfo.current().getCapital() == this; }
-
-    boolean isConnectedToCapital(RoadStatus roadType){
-        if(CivilizationInfo.current().getCapital()==null) return false;// first city!
-        TileInfo capitalTile = CivilizationInfo.current().getCapital().getTile();
-        Linq<TileInfo> tilesReached = new Linq<TileInfo>();
-        Linq<TileInfo> tilesToCheck = new Linq<TileInfo>();
-        tilesToCheck.add(getTile());
-        while(!tilesToCheck.isEmpty()){
-            Linq<TileInfo> newTiles = new Linq<TileInfo>();
-            for(TileInfo tile : tilesToCheck)
-                for (TileInfo maybeNewTile : getTileMap().getTilesInDistance(tile.position,1))
-                    if(!tilesReached.contains(maybeNewTile) && !tilesToCheck.contains(maybeNewTile) && !newTiles.contains(maybeNewTile)
-                            && (roadType != RoadStatus.Road || maybeNewTile.roadStatus != RoadStatus.None)
-                            && (roadType!=RoadStatus.Railroad || maybeNewTile.roadStatus == roadType))
-                        newTiles.add(maybeNewTile);
-
-            if(newTiles.contains(capitalTile)) return true;
-            tilesReached.addAll(tilesToCheck);
-            tilesToCheck = newTiles;
-        }
-        return false;
     }
 
     public Linq<String> getBuildingUniques(){
@@ -183,7 +141,6 @@ public class CityInfo {
             if(building.greatPersonPoints!=null)
                 greatPersonPoints.add(building.greatPersonPoints);
 
-        float multiplier = 1;
         if(civInfo.getBuildingUniques().contains("GreatPersonGenerationIncrease"))
             greatPersonPoints = greatPersonPoints.multiply(1.33f);
         if(civInfo.policies.isAdopted("Entrepreneurship"))

@@ -7,6 +7,7 @@ import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
+import com.unciv.models.linq.Linq;
 import com.unciv.models.stats.FullStats;
 
 /**
@@ -46,7 +47,7 @@ public class CityStats{
 
     private FullStats getStatsFromTradeRoute(){
         FullStats stats = new FullStats();
-        if(!cityInfo.isCapital() && cityInfo.isConnectedToCapital(RoadStatus.Road)) {
+        if(!isCapital() && isConnectedToCapital(RoadStatus.Road)) {
             CivilizationInfo civInfo = CivilizationInfo.current();
             // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             double goldFromTradeRoute = civInfo.getCapital().population.population * 0.15
@@ -62,13 +63,13 @@ public class CityStats{
         FullStats stats = new FullStats();
         PolicyManager policies =  CivilizationInfo.current().policies;
 
-        if(policies.isAdopted("Tradition") && cityInfo.isCapital())
+        if(policies.isAdopted("Tradition") && isCapital())
             stats.culture+=3;
-        if(policies.isAdopted("Landed Elite") && cityInfo.isCapital())
+        if(policies.isAdopted("Landed Elite") && isCapital())
             stats.food+=2;
         if(policies.isAdopted("Tradition Complete"))
             stats.food+=2;
-        if(policies.isAdopted("Monarchy") && cityInfo.isCapital())
+        if(policies.isAdopted("Monarchy") && isCapital())
             stats.gold+=cityInfo.population.population/2;
         if(policies.isAdopted("Liberty"))
             stats.culture+=1;
@@ -101,7 +102,7 @@ public class CityStats{
     private FullStats getStatPercentBonusesFromRailroad(){
         FullStats stats = new FullStats();
         if( CivilizationInfo.current().tech.isResearched ("Combustion") &&
-                (cityInfo.isCapital() || cityInfo.isConnectedToCapital(RoadStatus.Railroad)))
+                (isCapital() || isConnectedToCapital(RoadStatus.Railroad)))
             stats.production += 25;
         return stats;
     }
@@ -118,7 +119,7 @@ public class CityStats{
         PolicyManager policies =  CivilizationInfo.current().policies;
 
         CityConstructions cityConstructions = cityInfo.cityConstructions;
-        if(policies.isAdopted("Collective Rule") && cityInfo.isCapital()
+        if(policies.isAdopted("Collective Rule") && isCapital()
                 && "Settler".equals(cityConstructions.currentConstruction))
             stats.production+=50;
         if(policies.isAdopted("Republic") && cityConstructions.getCurrentConstruction() instanceof Building)
@@ -130,7 +131,7 @@ public class CityStats{
             }
         }))
             stats.culture+=33;
-        if(policies.isAdopted("Commerce") && cityInfo.isCapital())
+        if(policies.isAdopted("Commerce") && isCapital())
             stats.gold+=25;
         if(policies.isAdopted("Sovereignty") && CivilizationInfo.current().getHappinessForNextTurn() >= 0)
             stats.science+=15;
@@ -167,7 +168,7 @@ public class CityStats{
 
     private float getGrowthBonusFromPolicies(){
         float bonus = 0;
-        if(CivilizationInfo.current().policies.isAdopted("Landed Elite")  && cityInfo.isCapital())
+        if(CivilizationInfo.current().policies.isAdopted("Landed Elite")  && isCapital())
             bonus+=0.1;
         if(CivilizationInfo.current().policies.isAdopted("Tradition Complete"))
             bonus+=0.15;
@@ -231,14 +232,39 @@ public class CityStats{
 
         if(civInfo.policies.isAdopted("Aristocracy"))
             happiness+=cityInfo.population.population/10;
-        if(civInfo.policies.isAdopted("Monarchy") && cityInfo.isCapital())
+        if(civInfo.policies.isAdopted("Monarchy") && isCapital())
             happiness+=cityInfo.population.population/2;
-        if(civInfo.policies.isAdopted("Meritocracy") && cityInfo.isConnectedToCapital(RoadStatus.Road))
+        if(civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
             happiness+=1;
 
         happiness+=(int) cityInfo.cityConstructions.getStats().happiness;
 
         return happiness;
     }
+
+
+    boolean isConnectedToCapital(RoadStatus roadType){
+        if(CivilizationInfo.current().getCapital()==null) return false;// first city!
+        TileInfo capitalTile = CivilizationInfo.current().getCapital().getTile();
+        Linq<TileInfo> tilesReached = new Linq<TileInfo>();
+        Linq<TileInfo> tilesToCheck = new Linq<TileInfo>();
+        tilesToCheck.add(cityInfo.getTile());
+        while(!tilesToCheck.isEmpty()){
+            Linq<TileInfo> newTiles = new Linq<TileInfo>();
+            for(TileInfo tile : tilesToCheck)
+                for (TileInfo maybeNewTile : cityInfo.getTileMap().getTilesInDistance(tile.position,1))
+                    if(!tilesReached.contains(maybeNewTile) && !tilesToCheck.contains(maybeNewTile) && !newTiles.contains(maybeNewTile)
+                            && (roadType != RoadStatus.Road || maybeNewTile.roadStatus != RoadStatus.None)
+                            && (roadType!=RoadStatus.Railroad || maybeNewTile.roadStatus == roadType))
+                        newTiles.add(maybeNewTile);
+
+            if(newTiles.contains(capitalTile)) return true;
+            tilesReached.addAll(tilesToCheck);
+            tilesToCheck = newTiles;
+        }
+        return false;
+    }
+
+    boolean isCapital(){ return CivilizationInfo.current().getCapital() == cityInfo; }
 
 }
