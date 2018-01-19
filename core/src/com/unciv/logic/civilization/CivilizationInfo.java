@@ -2,6 +2,7 @@ package com.unciv.logic.civilization;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
+import com.sun.jmx.remote.security.NotificationAccessController;
 import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
@@ -36,15 +37,7 @@ public class CivilizationInfo {
     public GreatPersonManager greatPeople = new GreatPersonManager();
     public int turns = 1;
 
-    public class Notification{
-        public final String text;
-        public final Vector2 location;
 
-        Notification(String text, Vector2 location) {
-            this.text = text;
-            this.location = location;
-        }
-    }
     public Linq<Notification> notifications = new Linq<Notification>();
     public void addNotification(String text, Vector2 location){
         notifications.add(new Notification(text,location));

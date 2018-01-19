@@ -68,7 +68,7 @@ public class CityInfo {
         TileInfo tile = getTile();
         tile.workingCity = this.name;
         tile.roadStatus = RoadStatus.Railroad;
-        if("Forest".equals(tile.terrainFeature) || "Jungle".equals(tile.terrainFeature) || "Marsh".equals(tile.terrainFeature))
+        if(new Linq<String>("Forest","Jungle","Marsh").contains(tile.terrainFeature))
             tile.terrainFeature=null;
 
         population.autoAssignWorker();

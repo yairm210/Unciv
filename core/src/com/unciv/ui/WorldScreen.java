@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.logic.civilization.CivilizationInfo;
+import com.unciv.logic.civilization.Notification;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.ui.pickerscreens.PolicyPickerScreen;
 import com.unciv.ui.pickerscreens.TechPickerScreen;
@@ -49,6 +50,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
     Table optionsTable = new Table();
     Table notificationsTable = new Table();
+    ScrollPane notificationsScroll = new ScrollPane(notificationsTable);
     TextButton selectIdleUnitButton;
 
     public WorldScreen() {
@@ -57,7 +59,7 @@ public class WorldScreen extends CameraStageBaseScreen {
         addTiles();
         stage.addActor(tileTable);
 
-        Drawable tileTableBackground = com.unciv.ui.utils.ImageGetter.getDrawable("skin/tileTableBackground.png")
+        Drawable tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(new Color(0x004085bf));
         tileTableBackground.setMinHeight(0);
         tileTableBackground.setMinWidth(0);
@@ -66,14 +68,12 @@ public class WorldScreen extends CameraStageBaseScreen {
 
         //notificationsTable.background(ImageGetter.getSingleColorDrawable(new Color(0x004085bf)));
 
-        TextureRegionDrawable civBackground = com.unciv.ui.utils.ImageGetter.getDrawable("skin/civTableBackground.png");
+        TextureRegionDrawable civBackground = ImageGetter.getDrawable("skin/civTableBackground.png");
         civTable.setBackground(civBackground.tint(new Color(0x004085bf)));
 
         stage.addActor(civTable);
         stage.addActor(techButton);
 
-        ScrollPane notificationsScroll = new ScrollPane(notificationsTable);
-        notificationsScroll.setSize(stage.getWidth() / 3, stage.getHeight() / 3);
         stage.addActor(notificationsScroll);
         addSelectIdleUnitButton();
         update();
@@ -145,13 +145,13 @@ public class WorldScreen extends CameraStageBaseScreen {
 
     private void updateNotificationsList() {
         notificationsTable.clearChildren();
-        for (final CivilizationInfo.Notification notification : game.civInfo.notifications) {
+        for (final Notification notification : game.civInfo.notifications) {
             Label label = new Label(notification.text, skin);
             label.setColor(Color.WHITE);
             label.setFontScale(1.2f);
             Table minitable = new Table();
 
-            minitable.background(com.unciv.ui.utils.ImageGetter.getDrawable("skin/civTableBackground.png")
+            minitable.background(ImageGetter.getDrawable("skin/civTableBackground.png")
                     .tint(new Color(0x004085bf)));
             minitable.add(label).pad(5);
 
@@ -168,6 +168,9 @@ public class WorldScreen extends CameraStageBaseScreen {
             notificationsTable.row();
         }
         notificationsTable.pack();
+
+        notificationsScroll.setSize(stage.getWidth() / 3,
+                Math.min(notificationsTable.getHeight(),stage.getHeight() / 3));
     }
 
     public void update() {

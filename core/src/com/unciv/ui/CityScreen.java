@@ -148,57 +148,64 @@ public class CityScreen extends CameraStageBaseScreen {
             else Others.add(building);
         }
 
-        Label label = new Label("Wonders",skin);
-        label.setFontScale(1.5f);
-        label.setColor(Color.GREEN);
-        BuildingsTable.add(label).pad(5).row();
-        for(Building building:Wonders) BuildingsTable.add(new Label(building.name,skin)).pad(5).row();
-
-        label = new Label("Specialist Buildings",skin);
-        label.setFontScale(1.5f);
-        label.setColor(Color.GREEN);
-        BuildingsTable.add(label).pad(5).row();
-        for(Building building:SpecialistBuildings) {
-            BuildingsTable.add(new Label(building.name, skin)).pad(5);
-            Table specialists = new Table();
-            specialists.row().size(20).pad(5);
-            if (!getCity().population.buildingsSpecialists.containsKey(building.name))
-                getCity().population.buildingsSpecialists.put(building.name, new FullStats());
-            FullStats currentBuildingSpecialists = getCity().population.buildingsSpecialists.get(building.name);
-            for (int i = 0; i < building.specialistSlots.production; i++) {
-                specialists.add(getSpecialistIcon("StatIcons/populationBrown.png", building.name,
-                        currentBuildingSpecialists.production > i, new FullStats() {{
-                            production = 1;
-                        }}));
-            }
-            for (int i = 0; i < building.specialistSlots.science; i++) {
-                specialists.add(getSpecialistIcon("StatIcons/populationBlue.png", building.name,
-                        currentBuildingSpecialists.science > i, new FullStats() {{
-                            science = 1;
-                        }}));
-            }
-            for (int i = 0; i < building.specialistSlots.culture; i++) {
-                specialists.add(getSpecialistIcon("StatIcons/populationPurple.png", building.name,
-                        currentBuildingSpecialists.culture > i, new FullStats() {{
-                            culture = 1;
-                        }}));
-            }
-            for (int i = 0; i < building.specialistSlots.gold; i++) {
-                specialists.add(getSpecialistIcon("StatIcons/populationYellow.png", building.name,
-                        currentBuildingSpecialists.gold > i, new FullStats() {{
-                            gold = 1;
-                        }}));
-            }
-            BuildingsTable.add(specialists).row();
+        if(!Wonders.isEmpty()) {
+            Label label = new Label("Wonders", skin);
+            label.setFontScale(1.5f);
+            label.setColor(Color.GREEN);
+            BuildingsTable.add(label).pad(5).row();
+            for (Building building : Wonders)
+                BuildingsTable.add(new Label(building.name, skin)).pad(5).row();
         }
 
-        label = new Label("Buildings",skin);
+        if(!SpecialistBuildings.isEmpty()) {
+            Label label = new Label("Specialist Buildings", skin);
+            label.setFontScale(1.5f);
+            label.setColor(Color.GREEN);
+            BuildingsTable.add(label).pad(5).row();
+            for (Building building : SpecialistBuildings) {
+                BuildingsTable.add(new Label(building.name, skin)).pad(5);
+                Table specialists = new Table();
+                specialists.row().size(20).pad(5);
+                if (!getCity().population.buildingsSpecialists.containsKey(building.name))
+                    getCity().population.buildingsSpecialists.put(building.name, new FullStats());
+                FullStats currentBuildingSpecialists = getCity().population.buildingsSpecialists.get(building.name);
+                for (int i = 0; i < building.specialistSlots.production; i++) {
+                    specialists.add(getSpecialistIcon("StatIcons/populationBrown.png", building.name,
+                            currentBuildingSpecialists.production > i, new FullStats() {{
+                                production = 1;
+                            }}));
+                }
+                for (int i = 0; i < building.specialistSlots.science; i++) {
+                    specialists.add(getSpecialistIcon("StatIcons/populationBlue.png", building.name,
+                            currentBuildingSpecialists.science > i, new FullStats() {{
+                                science = 1;
+                            }}));
+                }
+                for (int i = 0; i < building.specialistSlots.culture; i++) {
+                    specialists.add(getSpecialistIcon("StatIcons/populationPurple.png", building.name,
+                            currentBuildingSpecialists.culture > i, new FullStats() {{
+                                culture = 1;
+                            }}));
+                }
+                for (int i = 0; i < building.specialistSlots.gold; i++) {
+                    specialists.add(getSpecialistIcon("StatIcons/populationYellow.png", building.name,
+                            currentBuildingSpecialists.gold > i, new FullStats() {{
+                                gold = 1;
+                            }}));
+                }
+                BuildingsTable.add(specialists).row();
+            }
+        }
 
-        label.setFontScale(1.5f);
-        label.setColor(Color.GREEN);
-        BuildingsTable.add(label).pad(5).row();
-        for(Building building:Others) BuildingsTable.add(new Label(building.name,skin)).pad(5).row();
+        if(!Others.isEmpty()) {
+            Label label = new Label("Buildings", skin);
 
+            label.setFontScale(1.5f);
+            label.setColor(Color.GREEN);
+            BuildingsTable.add(label).pad(5).row();
+            for (Building building : Others)
+                BuildingsTable.add(new Label(building.name, skin)).pad(5).row();
+        }
         BuildingsTable.pack();
     }
 

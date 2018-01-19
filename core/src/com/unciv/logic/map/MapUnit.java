@@ -24,8 +24,9 @@ public class MapUnit{
             if(currentMovement!=0) doAction(gotTo);
             return;
         }
+
+        if ("automation".equals(action)) {doAutomatedAction(tile);return;}
         if(name.equals("Worker") && tile.improvementInProgress!=null) workOnImprovement(tile);
-        if ("automation".equals(action)) doAutomatedAction(tile);
     }
 
 
@@ -88,9 +89,13 @@ public class MapUnit{
     public void doAutomatedAction(TileInfo tile){
         TileInfo toWork = findTileToWork(tile);
         if(toWork==null) return; // Don't know what to do. Sorry.
-        if(toWork!=tile) tile = headTowards(tile.position,toWork.position);
-        if(toWork == tile && tile.improvementInProgress==null) tile.startWorkingOnImprovement(chooseImprovement(tile));
-        doAction(tile);
+        if(toWork!=tile) {
+            tile = headTowards(tile.position, toWork.position);
+            doAction(tile);
+            return;
+        }
+        if(tile.improvementInProgress == null) tile.startWorkingOnImprovement(chooseImprovement(tile));
+        workOnImprovement(tile);
     }
 
     private String chooseImprovement(final TileInfo tile){
