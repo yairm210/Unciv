@@ -56,6 +56,10 @@ public class PolicyManager {
         if (policiesCompleteInBranch == branch.policies.size() - 1) { // All done apart from branch completion
             adopt(branch.policies.get(branch.policies.size() - 1)); // add branch completion!
         }
+
+        for(CityInfo cityInfo : CivilizationInfo.current().cities)
+            cityInfo.cityStats.update();
+
         if (policy.name.equals("Collective Rule"))
             CivilizationInfo.current().tileMap.
                     placeUnitNearTile(CivilizationInfo.current().getCapital().cityLocation, "Settler");

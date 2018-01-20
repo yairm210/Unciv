@@ -8,15 +8,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Predicate;
-import com.unciv.logic.city.CityInfo;
-import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.civilization.PolicyManager;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Policy;
 import com.unciv.models.gamebasics.PolicyBranch;
 import com.unciv.models.gamebasics.StringUtils;
+import com.unciv.ui.utils.ImageGetter;
 
 public class PolicyPickerScreen extends PickerScreen {
 
@@ -111,7 +109,7 @@ public class PolicyPickerScreen extends PickerScreen {
     public Button getPolicyButton(final Policy policy, boolean image) {
         Button toReturn = new Button(skin);
         if (image) {
-            Image policyImage = com.unciv.ui.utils.ImageGetter.getImage("PolicyIcons/" + policy.name.replace(" ", "_") + "_(Civ5).png");
+            Image policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name.replace(" ", "_") + "_(Civ5).png");
             toReturn.add(policyImage).size(30);
         } else toReturn = new TextButton(policy.name, skin);
 

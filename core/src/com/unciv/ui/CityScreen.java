@@ -199,7 +199,6 @@ public class CityScreen extends CameraStageBaseScreen {
 
         if(!Others.isEmpty()) {
             Label label = new Label("Buildings", skin);
-
             label.setFontScale(1.5f);
             label.setColor(Color.GREEN);
             BuildingsTable.add(label).pad(5).row();
