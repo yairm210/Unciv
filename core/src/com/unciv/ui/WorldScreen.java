@@ -15,7 +15,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.civilization.Notification;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.ui.pickerscreens.PolicyPickerScreen;
@@ -379,7 +378,7 @@ public class WorldScreen extends CameraStageBaseScreen {
                             unitTile.moveUnitToTile(group.tileInfo, distanceToTiles.get(selectedTile));
                         } else {
                             unitTile.unit.action = "moveTo " + ((int) selectedTile.position.x) + "," + ((int) selectedTile.position.y);
-                            unitTile.unit.doAction(unitTile);
+                            unitTile.unit.doPreTurnAction(unitTile);
                         }
 
                         unitTile = null;

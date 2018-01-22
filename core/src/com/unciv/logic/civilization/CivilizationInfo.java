@@ -79,6 +79,7 @@ public class CivilizationInfo {
         notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();
         policies.nextTurn(nextTurnStats.culture);
+        gold+=nextTurnStats.gold;
 
         int happiness = getHappinessForNextTurn();
 
@@ -124,6 +125,8 @@ public class CivilizationInfo {
 
         if(policies.isAdopted("Mandate Of Heaven"))
             statsForTurn.culture+=getHappinessForNextTurn()/2;
+
+        if(statsForTurn.gold<0) statsForTurn.science+=statsForTurn.gold; // negative gold hurts science
         return statsForTurn;
     }
 

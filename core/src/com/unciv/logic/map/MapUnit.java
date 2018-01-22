@@ -12,7 +12,7 @@ public class MapUnit{
     public float currentMovement;
     public String action; // work, automation, fortifying, I dunno what.
 
-    public void doAction(TileInfo tile){
+    public void doPreTurnAction(TileInfo tile){
         if(currentMovement==0) return; // We've already done stuff this turn, and can't do any more stuff
         if(action!=null && action.startsWith("moveTo")){
             String[] destination = action.replace("moveTo ","").split(",");
@@ -21,11 +21,14 @@ public class MapUnit{
             if(gotTo==null) // we couldn't move there because another unit was in the way!
                 return;
             if(gotTo.position.equals(destinationVector)) action=null;
-            if(currentMovement!=0) doAction(gotTo);
+            if(currentMovement!=0) doPreTurnAction(gotTo);
             return;
         }
 
-        if ("automation".equals(action)) {doAutomatedAction(tile);return;}
+        if ("automation".equals(action)) doAutomatedAction(tile);
+    }
+
+    public void doPostTurnAction(TileInfo tile){
         if(name.equals("Worker") && tile.improvementInProgress!=null) workOnImprovement(tile);
     }
 
@@ -42,60 +45,47 @@ public class MapUnit{
         }
     }
 
-    private boolean isTopPriorityTile(TileInfo tile){
-        return tile.owner!=null && tile.improvement==null
-                && (tile.workingCity!=null || tile.resource!=null || tile.improvementInProgress!=null)
-                && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)));
-    }
 
-    private boolean isMediumPriorityTile(TileInfo tile){
-        return tile.owner!=null && tile.improvement==null
-                && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)));
-    }
-
-    private boolean isLowPriorityTile(TileInfo tile){ // Resource near a city's edges
-        return tile.improvement==null
-                && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)))
-                && tile.hasViewableResource()
-                && tile.getNeighbors().any(new Predicate<TileInfo>() {
+    private int getPriority(TileInfo tileInfo){
+        int priority =0;
+        if(tileInfo.workingCity!=null) priority+=2;
+        if(tileInfo.hasViewableResource()) priority+=1;
+        if(tileInfo.owner!=null) priority+=2;
+        else if(tileInfo.getNeighbors().any(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
                 return arg0.owner!=null;
             }
-        });
+        })) priority+=1;
+        return priority;
     }
 
     public TileInfo findTileToWork(TileInfo currentTile){
-        if(isTopPriorityTile(currentTile)) return currentTile;
+        TileInfo selectedTile = currentTile;
+        int tilePriority = getPriority(currentTile);
         for (int i = 1; i < 5; i++)
             for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
-                if(tile.unit==null && isTopPriorityTile(tile))
-                    return tile;
+                if(tile.unit==null && tile.improvement==null && getPriority(tile)>tilePriority
+                        && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)))){
+                    selectedTile = tile;
+                    tilePriority = getPriority(tile);
+                }
 
-        if(isMediumPriorityTile(currentTile)) return currentTile;
-        for (int i = 1; i < 5; i++)
-            for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
-                if(tile.unit==null && isMediumPriorityTile(tile))
-                    return tile;
-
-        if(isLowPriorityTile(currentTile)) return currentTile;
-        for (int i = 1; i < 5; i++)
-            for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
-                if(tile.unit==null && isLowPriorityTile(tile))
-                    return tile;
-        return null;
+        return selectedTile;
     }
 
     public void doAutomatedAction(TileInfo tile){
         TileInfo toWork = findTileToWork(tile);
-        if(toWork==null) return; // Don't know what to do. Sorry.
         if(toWork!=tile) {
             tile = headTowards(tile.position, toWork.position);
-            doAction(tile);
+            doPreTurnAction(tile);
             return;
         }
-        if(tile.improvementInProgress == null) tile.startWorkingOnImprovement(chooseImprovement(tile));
-        workOnImprovement(tile);
+        if(tile.improvementInProgress == null){
+            String improvement =chooseImprovement(tile);
+            if(tile.canBuildImprovement(GameBasics.TileImprovements.get(improvement))) // What if we're stuck on this tile but can't build there?
+                tile.startWorkingOnImprovement(improvement);
+        }
     }
 
     private String chooseImprovement(final TileInfo tile){

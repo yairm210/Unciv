@@ -133,8 +133,9 @@ public class TileInfo
     public void nextTurn()
     {
         if(unit !=null) {
+            unit.doPostTurnAction(this);
             unit.currentMovement = unit.maxMovement;
-            unit.doAction(this);
+            unit.doPreTurnAction(this);
         }
     }
 
