@@ -62,11 +62,12 @@ public class MapUnit{
 
     public TileInfo findTileToWork(TileInfo currentTile){
         TileInfo selectedTile = currentTile;
-        int tilePriority = getPriority(currentTile);
+        int tilePriority = currentTile.improvement==null && currentTile.canBuildImprovement(chooseImprovement(currentTile))
+                ? getPriority(currentTile) : 1; // min rank to get selected is 2
         for (int i = 1; i < 5; i++)
             for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
                 if(tile.unit==null && tile.improvement==null && getPriority(tile)>tilePriority
-                        && tile.canBuildImprovement(GameBasics.TileImprovements.get(chooseImprovement(tile)))){
+                        && tile.canBuildImprovement(chooseImprovement(tile))){
                     selectedTile = tile;
                     tilePriority = getPriority(tile);
                 }
@@ -83,7 +84,7 @@ public class MapUnit{
         }
         if(tile.improvementInProgress == null){
             String improvement =chooseImprovement(tile);
-            if(tile.canBuildImprovement(GameBasics.TileImprovements.get(improvement))) // What if we're stuck on this tile but can't build there?
+            if(tile.canBuildImprovement(improvement)) // What if we're stuck on this tile but can't build there?
                 tile.startWorkingOnImprovement(improvement);
         }
     }

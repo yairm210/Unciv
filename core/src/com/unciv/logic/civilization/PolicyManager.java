@@ -16,6 +16,7 @@ public class PolicyManager {
     public int freePolicies=0;
     public int storedCulture=0;
     private Linq<String> adoptedPolicies = new Linq<String>();
+    public boolean shouldOpenPolicyPicker=false;
 
     public Linq<String> getAdoptedPolicies(){return adoptedPolicies.clone();}
     public boolean isAdopted(String policyName){return adoptedPolicies.contains(policyName);}
@@ -85,9 +86,9 @@ public class PolicyManager {
     }
 
     public void nextTurn(float culture) {
-        storedCulture+=culture;
         boolean couldAdoptPolicyBefore = canAdoptPolicy();
+        storedCulture+=culture;
         if(!couldAdoptPolicyBefore && canAdoptPolicy())
-            UnCivGame.Current.setScreen(new PolicyPickerScreen());
+            shouldOpenPolicyPicker=true;
     }
 }

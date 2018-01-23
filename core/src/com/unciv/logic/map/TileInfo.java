@@ -106,6 +106,10 @@ public class TileInfo
         return stats;
     }
 
+    public boolean canBuildImprovement(String improvementName){
+        return canBuildImprovement(GameBasics.TileImprovements.get(improvementName));
+    }
+
     public boolean canBuildImprovement(TileImprovement improvement)
     {
         if(isCityCenter() || improvement.name.equals(this.improvement)) return false;

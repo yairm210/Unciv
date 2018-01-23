@@ -192,6 +192,10 @@ public class WorldScreen extends CameraStageBaseScreen {
         if (game.civInfo.tech.freeTechs != 0) {
             game.setScreen(new TechPickerScreen(true));
         }
+        else if(game.civInfo.policies.shouldOpenPolicyPicker){
+            game.setScreen(new PolicyPickerScreen());
+            game.civInfo.policies.shouldOpenPolicyPicker=false;
+        }
     }
 
 
