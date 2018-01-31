@@ -22,7 +22,7 @@ public class CameraStageBaseScreen implements Screen {
 
     public com.unciv.ui.UnCivGame game;
     public Stage stage;
-    public Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
+    public static Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
     static Batch batch = new SpriteBatch();
 
     public CameraStageBaseScreen() {

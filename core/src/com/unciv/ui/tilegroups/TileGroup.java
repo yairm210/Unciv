@@ -1,4 +1,4 @@
-package com.unciv.ui;
+package com.unciv.ui.tilegroups;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
@@ -6,74 +6,87 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.utils.Align;
+import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.models.linq.LinqHashMap;
+import com.unciv.ui.YieldGroup;
+import com.unciv.ui.utils.HexMath;
+import com.unciv.ui.utils.ImageGetter;
 
 public class TileGroup extends Group {
-    Image terrainImage;
+    protected Image terrainImage;
     String terrainType;
     Image resourceImage;
     Image unitImage;
     Image improvementImage;
+    public YieldGroup yield = new YieldGroup();
     String improvementType;
-    Image populationImage;
+    public Image populationImage;
     LinqHashMap<String,Image> roadImages = new LinqHashMap<String, Image>();
-    Image hexagon;
+    protected Image hexagon;
+    private CityInfo city;
 
-    Container<TextButton> cityButton;
-    TileInfo tileInfo;
+    protected Container<TextButton> cityButton;
+    public TileInfo tileInfo;
 
-    TileGroup(TileInfo tileInfo){
+    public TileGroup(CityInfo city, TileInfo tileInfo){
+        this.city = city;
         this.tileInfo = tileInfo;
 
         terrainType = tileInfo.getLastTerrain().name;
         String terrainFileName = "TerrainIcons/" + terrainType.replace(' ','_') + "_(Civ5).png";
-        terrainImage = com.unciv.ui.utils.ImageGetter.getImage(terrainFileName);
-        terrainImage.setSize(50,50);
+        terrainImage = ImageGetter.getImage(terrainFileName);
+        int groupSize = 50;
+        terrainImage.setSize(groupSize,groupSize);
+        setSize(groupSize,groupSize);
         addActor(terrainImage);
+        addActor(yield);
+        if(city==null) yield.setColor(1,1,1,0.4f);
     }
 
-
-    void addPopulationIcon(){
-        populationImage = com.unciv.ui.utils.ImageGetter.getImage("StatIcons/populationGreen.png");
+    public void addPopulationIcon(){
+        populationImage = ImageGetter.getImage("StatIcons/populationGreen.png");
         populationImage.setSize(20,20);
         populationImage.moveBy(0, terrainImage.getHeight()-populationImage.getHeight()); // top left
         addActor(populationImage);
     }
 
-    void removePopulationIcon(){
+    protected void removePopulationIcon(){
         populationImage.remove();
         populationImage = null;
     }
 
 
-    void update() {
-        if(tileInfo.explored){
+    public void update() {
+        if (tileInfo.explored) {
             terrainImage.setColor(Color.WHITE);
-        }
-        else{
+        } else {
             terrainImage.setColor(Color.BLACK);
+            return;
         }
 
-        if(!terrainType.equals(tileInfo.getLastTerrain().name)) {
+        if (!terrainType.equals(tileInfo.getLastTerrain().name)) {
             terrainType = tileInfo.getLastTerrain().name;
             String terrainFileName = "TerrainIcons/" + terrainType.replace(' ', '_') + "_(Civ5).png";
-            terrainImage.setDrawable(com.unciv.ui.utils.ImageGetter.getDrawable(terrainFileName)); // In case we e.g. removed a jungle
+            terrainImage.setDrawable(ImageGetter.getDrawable(terrainFileName)); // In case we e.g. removed a jungle
         }
 
-        if (tileInfo.explored && tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
+        if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";
-            Image image = com.unciv.ui.utils.ImageGetter.getImage(fileName);
-            image.setSize(20,20);
-            image.moveBy(terrainImage.getWidth()-image.getWidth(), 0); // bottom right
+            Image image = ImageGetter.getImage(fileName);
+            image.setSize(20, 20);
+            image.moveBy(terrainImage.getWidth() - image.getWidth(), 0); // bottom right
             resourceImage = image;
+            if (city != null) image.setColor(1, 1, 1, 0.5f);
             addActor(image);
         }
 
-        if (tileInfo.explored && tileInfo.unit != null && unitImage == null) {
-            unitImage = com.unciv.ui.utils.ImageGetter.getImage("UnitIcons/" + tileInfo.unit.name.replace(" ","_") + "_(Civ5).png");
+        if (tileInfo.unit != null && unitImage == null) {
+            unitImage = ImageGetter.getImage("UnitIcons/" + tileInfo.unit.name.replace(" ", "_") + "_(Civ5).png");
             addActor(unitImage);
+            if (city != null) unitImage.setColor(1, 1, 1, 0.5f);
             unitImage.setSize(20, 20); // not moved - is at bottom left
         }
 
@@ -82,35 +95,36 @@ public class TileGroup extends Group {
             unitImage = null;
         }
 
-        if(unitImage!=null){
-            if(!tileInfo.hasIdleUnit()) unitImage.setColor(Color.GRAY);
+        if (unitImage != null) {
+            if (!tileInfo.hasIdleUnit()) unitImage.setColor(Color.GRAY);
             else unitImage.setColor(Color.WHITE);
         }
 
 
-        if (tileInfo.explored && tileInfo.improvement != null &&!tileInfo.improvement.equals(improvementType)) {
-            improvementImage = com.unciv.ui.utils.ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement.replace(' ','_') + "_(Civ5).png");
+        if (tileInfo.improvement != null && !tileInfo.improvement.equals(improvementType)) {
+            improvementImage = ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement.replace(' ', '_') + "_(Civ5).png");
+            if (city != null) improvementImage.setColor(1, 1, 1, 0.5f);
             addActor(improvementImage);
             improvementImage.setSize(20, 20);
-            improvementImage.moveBy(terrainImage.getWidth()-improvementImage.getWidth(),
+            improvementImage.moveBy(terrainImage.getWidth() - improvementImage.getWidth(),
                     terrainImage.getHeight() - improvementImage.getHeight()); // top right
             improvementType = tileInfo.improvement;
         }
 
-        if(populationImage!=null){
-            if(tileInfo.workingCity !=null) populationImage.setColor(Color.WHITE);
+        if (populationImage != null) {
+            if (tileInfo.workingCity != null) populationImage.setColor(Color.WHITE);
             else populationImage.setColor(Color.GRAY);
         }
 
-        if(tileInfo.roadStatus != RoadStatus.None){
+        if (tileInfo.roadStatus != RoadStatus.None) {
             for (TileInfo neighbor : tileInfo.getNeighbors()) {
                 if (neighbor.roadStatus == RoadStatus.None) continue;
                 if (!roadImages.containsKey(neighbor.position.toString())) {
-                    Image image = com.unciv.ui.utils.ImageGetter.getImage(com.unciv.ui.utils.ImageGetter.WhiteDot);
+                    Image image = ImageGetter.getImage(ImageGetter.WhiteDot);
                     roadImages.put(neighbor.position.toString(), image);
 
                     Vector2 relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position);
-                    Vector2 relativeWorldPosition = com.unciv.ui.utils.HexMath.Hex2WorldCoords(relativeHexPosition);
+                    Vector2 relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition);
 
                     // This is some crazy voodoo magic so I'll explain.
                     image.moveBy(25, 25); // Move road to center of tile
@@ -123,10 +137,17 @@ public class TileGroup extends Group {
                     image.setRotation((float) (180 / Math.PI * Math.atan2(relativeWorldPosition.y, relativeWorldPosition.x)));
                 }
 
-                if(tileInfo.roadStatus == RoadStatus.Railroad && neighbor.roadStatus == RoadStatus.Railroad)
+                if (tileInfo.roadStatus == RoadStatus.Railroad && neighbor.roadStatus == RoadStatus.Railroad)
                     roadImages.get(neighbor.position.toString()).setColor(Color.GRAY); // railroad
                 else roadImages.get(neighbor.position.toString()).setColor(Color.BROWN); // road
             }
         }
+
+        yield.setStats(tileInfo.getTileStats(city));
+        yield.setOrigin(Align.center);
+        yield.setScale(0.7f);
+        yield.setPosition(getWidth() / 2 - yield.getWidth() / 2, getHeight() / 2 - yield.getHeight() / 2);
+
     }
 }
+

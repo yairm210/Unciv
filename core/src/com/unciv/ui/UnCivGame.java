@@ -4,7 +4,6 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
-import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.models.gamebasics.Unit;
 import com.unciv.models.linq.Linq;
@@ -28,23 +27,20 @@ public class UnCivGame extends Game {
     public CivilizationInfo civInfo;
     public GameSettings settings = new GameSettings();
 
-    public WorldScreen worldScreen;
+    public com.unciv.ui.worldscreen.WorldScreen worldScreen;
     public void create() {
         SetupGameBasics();
         Current = this;
         if(GameSaver.GetSave("Autosave").exists()) {
             try {
                 GameSaver.LoadGame(this, "Autosave");
-                for (CityInfo city : this.civInfo.cities) {
-                    if(city.cityStats == null) city.cityStats.update();
-                }
             } catch(Exception ex){ // silent fail if we can't read the autosave
                 startNewGame();
             }
         }
         else startNewGame();
 
-        worldScreen = new WorldScreen();
+        worldScreen = new com.unciv.ui.worldscreen.WorldScreen();
         setWorldScreen();
     }
 
@@ -53,7 +49,7 @@ public class UnCivGame extends Game {
         civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Settler");
         civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Scout");
 
-        worldScreen = new WorldScreen();
+        worldScreen = new com.unciv.ui.worldscreen.WorldScreen();
         setWorldScreen();
     }
 

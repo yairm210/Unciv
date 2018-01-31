@@ -2,13 +2,11 @@ package com.unciv.logic.civilization;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
-import com.sun.jmx.remote.security.NotificationAccessController;
 import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.logic.map.TileMap;
 import com.unciv.ui.UnCivGame;
-import com.unciv.ui.pickerscreens.PolicyPickerScreen;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.linq.LinqCounter;
 import com.unciv.models.gamebasics.Building;

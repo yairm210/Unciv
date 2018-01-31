@@ -1,5 +1,7 @@
 package com.unciv.models.stats;
 
+import java.util.HashMap;
+
 public class FullStats extends CivStats // also used for hex stats, since it's basically the same
 {
     public float production = 0;
@@ -60,5 +62,15 @@ public class FullStats extends CivStats // also used for hex stats, since it's b
         return valuableParts.toString();
     }
 
+    public HashMap<String,Integer> toDict(){
+        HashMap<String,Integer> dict = new HashMap<String, Integer>();
+
+        dict.put("Production", (int) production);
+        dict.put("Food", (int) food);
+        dict.put("Gold", (int) gold);
+        dict.put("Science", (int) science);
+        dict.put("Culture", (int) culture);
+        return dict;
+    }
 
 }

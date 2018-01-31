@@ -18,6 +18,7 @@ import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.city.IConstruction;
 import com.unciv.logic.map.TileInfo;
+import com.unciv.ui.tilegroups.TileGroup;
 import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.HexMath;
 import com.unciv.models.linq.Linq;
@@ -56,7 +57,7 @@ public class CityScreen extends CameraStageBaseScreen {
         Table BuildingsTableContainer = new Table();
         BuildingsTableContainer.pad(20);
         BuildingsTableContainer.setBackground(tileTableBackground);
-        BuildingsTableContainer.add(new Label("Buildings",skin)).row();
+        //BuildingsTableContainer.add(new Label("Buildings",skin)).row();
         updateBuildingsTable();
         ScrollPane buildingsScroll = new ScrollPane(BuildingsTable);
         BuildingsTableContainer.add(buildingsScroll).height(stage.getHeight()/2);
@@ -136,7 +137,6 @@ public class CityScreen extends CameraStageBaseScreen {
 
     private void updateBuildingsTable(){
         BuildingsTable.clear();
-
 
         Linq<Building> Wonders = new Linq<Building>();
         Linq<Building> SpecialistBuildings = new Linq<Building>();
@@ -255,7 +255,7 @@ public class CityScreen extends CameraStageBaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 game.setWorldScreen();
-                game.worldScreen.setCenterPosition(getCity().cityLocation);
+                game.worldScreen.tileMapHolder.setCenterPosition(getCity().cityLocation);
                 dispose();
             }
         });
@@ -270,7 +270,7 @@ public class CityScreen extends CameraStageBaseScreen {
         Group allTiles = new Group();
 
         for(final TileInfo tileInfo : game.civInfo.tileMap.getTilesInDistance(cityInfo.cityLocation,5)){
-            TileGroup group = new TileGroup(tileInfo);
+            TileGroup group = new TileGroup(cityInfo, tileInfo);
             group.addListener(new ClickListener(){
                 @Override
                 public void clicked(InputEvent event, float x, float y) {
@@ -280,8 +280,10 @@ public class CityScreen extends CameraStageBaseScreen {
             });
 
             if(!cityInfo.getTilesInRange().contains(tileInfo) ||
-                    (tileInfo.workingCity!=null && !tileInfo.workingCity.equals(cityInfo.name)))
-                group.setColor(0,0,0,0.3f);
+                    (tileInfo.workingCity!=null && !tileInfo.workingCity.equals(cityInfo.name))) {
+                group.setColor(0, 0, 0, 0.3f);
+                group.yield.setVisible(false);
+            }
             else if(!tileInfo.isCityCenter()) {
                 group.addPopulationIcon();
                 group.populationImage.addListener(new ClickListener() {
@@ -307,7 +309,6 @@ public class CityScreen extends CameraStageBaseScreen {
         scrollPane.setFillParent(true);
         scrollPane.setPosition(game.settings.cityTilesX, game.settings.cityTilesY);
         scrollPane.setOrigin(stage.getWidth()/2,stage.getHeight()/2);
-        scrollPane.setScale(game.settings.tilesZoom);
         scrollPane.addListener(new ActorGestureListener(){
             public float lastScale =1;
             float lastInitialDistance=0;
@@ -320,7 +321,6 @@ public class CityScreen extends CameraStageBaseScreen {
                 }
                 float scale = (float) Math.sqrt(distance/initialDistance)* lastScale;
                 scrollPane.setScale(scale);
-                game.settings.tilesZoom=scale;
             }
 
             @Override

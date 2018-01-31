@@ -1,4 +1,4 @@
-package com.unciv.ui;
+package com.unciv.ui.tilegroups;
 
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
@@ -6,17 +6,21 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.TileInfo;
+import com.unciv.ui.CityScreen;
+import com.unciv.ui.UnCivGame;
+import com.unciv.ui.utils.ImageGetter;
+import com.unciv.ui.worldscreen.WorldScreen;
 
 
 public class WorldTileGroup extends TileGroup {
 
-    WorldTileGroup(TileInfo tileInfo) {
-        super(tileInfo);
+    public WorldTileGroup(TileInfo tileInfo) {
+        super(null, tileInfo);
     }
 
-    void setIsViewable(boolean isViewable) {
+    public void setIsViewable(boolean isViewable) {
         if (isViewable) {
-            setColor(1, 1, 0, 1); // Only alpha really changes anything
+            setColor(0, 0, 0, 1); // Only alpha really changes anything
             tileInfo.explored=true;
             update();
         }
@@ -24,7 +28,7 @@ public class WorldTileGroup extends TileGroup {
     }
 
 
-    void update(WorldScreen worldScreen) {
+    public void update(WorldScreen worldScreen) {
         super.update();
 
         if(tileInfo.workingCity != null && populationImage==null) addPopulationIcon();
@@ -32,7 +36,7 @@ public class WorldTileGroup extends TileGroup {
 
 
         if (tileInfo.owner != null && hexagon == null) {
-            hexagon = com.unciv.ui.utils.ImageGetter.getImage("TerrainIcons/Hexagon.png");
+            hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png");
             float imageScale = terrainImage.getWidth() * 1.3f / hexagon.getWidth();
             hexagon.setScale(imageScale);
             hexagon.setPosition((getWidth() - hexagon.getWidth() * imageScale) / 2,
