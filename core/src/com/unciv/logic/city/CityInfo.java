@@ -109,13 +109,14 @@ public class CityInfo {
     double rankTile(TileInfo tile){
         FullStats stats = tile.getTileStats(this);
         double rank=0;
-        if(stats.food <2) rank+=stats.food;
+        if(stats.food <= 2) rank+=stats.food;
         else rank += 2 + (stats.food -2)/2; // 1 point for each food up to 2, from there on half a point
         rank+=stats.gold /2;
         rank+=stats.production;
         rank+=stats.science;
         rank+=stats.culture;
-        if(tile.improvement ==null) rank+=0.5; // improvement potential!
+        if(tile.improvement == null) rank+=0.5; // improvement potential!
+        if(tile.resource!=null) rank+=1;
         return rank;
     }
 

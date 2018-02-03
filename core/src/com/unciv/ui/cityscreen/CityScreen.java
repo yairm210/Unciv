@@ -174,6 +174,7 @@ public class CityScreen extends CameraStageBaseScreen {
         Group allTiles = new Group();
 
         for(final TileInfo tileInfo : game.civInfo.tileMap.getTilesInDistance(cityInfo.cityLocation,5)){
+            if(!tileInfo.explored) continue; // Don't even bother to display it.
             CityTileGroup group = new CityTileGroup(cityInfo, tileInfo);
             group.addListener(new ClickListener(){
                 @Override

@@ -16,7 +16,6 @@ public class CityExpansionManager{
     private void addNewTile(){
         cultureStored -= getCultureToNextTile();
         tilesClaimed++;
-        Linq<Vector2> possibleNewTileVectors = new Linq<Vector2>();
 
         for (int i = 2; i <4 ; i++) {
             Linq<TileInfo> tiles = CivilizationInfo.current().tileMap.getTilesInDistance(cityInfo.cityLocation,i);
