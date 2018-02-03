@@ -16,10 +16,8 @@ import com.unciv.models.stats.FullStats;
 
 public class CityStats{
 
-    public FullStats currentCityStats;  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones!
-
+    public transient FullStats currentCityStats;  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
     public transient CityInfo cityInfo;
-
 
     private FullStats getStatsFromTiles(){
         FullStats stats = new FullStats();
@@ -265,6 +263,6 @@ public class CityStats{
         return false;
     }
 
-    boolean isCapital(){ return CivilizationInfo.current().getCapital() == cityInfo; }
+    private boolean isCapital(){ return CivilizationInfo.current().getCapital() == cityInfo; }
 
 }

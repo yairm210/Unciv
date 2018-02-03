@@ -24,6 +24,7 @@ public class GameSaver {
             cityInfo.population.cityInfo = cityInfo;
             cityInfo.expansion.cityInfo = cityInfo;
             cityInfo.cityStats.cityInfo = cityInfo;
+            cityInfo.cityStats.update();
         }
     }
 }

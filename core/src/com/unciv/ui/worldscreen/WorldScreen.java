@@ -31,7 +31,7 @@ public class WorldScreen extends CameraStageBaseScreen {
     TextButton techButton = new TextButton("", skin);
     public LinqHashMap<String, WorldTileGroup> tileGroups = new LinqHashMap<String, WorldTileGroup>();
 
-    Table optionsTable = new Table();
+    WorldScreenOptionsTable optionsTable = new WorldScreenOptionsTable(this);
     NotificationsScroll notificationsScroll = new NotificationsScroll(this);
     IdleUnitButton idleUnitButton = new IdleUnitButton(this);
 
@@ -44,11 +44,12 @@ public class WorldScreen extends CameraStageBaseScreen {
         stage.addActor(civTable);
         stage.addActor(techButton);
         stage.addActor(notificationsScroll);
+        stage.addActor(idleUnitButton);
         update();
 
         tileMapHolder.setCenterPosition(Vector2.Zero);
         createNextTurnButton(); // needs civ table to be positioned
-        addOptionsTable();
+        stage.addActor(optionsTable);
 
         Linq<String> beginningTutorial = new Linq<String>();
         beginningTutorial.add("Hello, and welcome to Unciv!" +
@@ -92,69 +93,6 @@ public class WorldScreen extends CameraStageBaseScreen {
             game.setScreen(new PolicyPickerScreen());
             game.civInfo.policies.shouldOpenPolicyPicker=false;
         }
-    }
-
-    void addOptionsTable() {
-        Drawable tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
-                .tint(new Color(0x004085bf));
-        optionsTable.setBackground(tileTableBackground);
-
-        optionsTable.setVisible(false);
-
-        TextButton OpenCivilopediaButton = new TextButton("Civilopedia", skin);
-        OpenCivilopediaButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new CivilopediaScreen());
-                optionsTable.setVisible(false);
-            }
-        });
-        optionsTable.add(OpenCivilopediaButton).pad(10);
-        optionsTable.row();
-
-        TextButton StartNewGameButton = new TextButton("Start new game", skin);
-        StartNewGameButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.startNewGame();
-            }
-        });
-        optionsTable.add(StartNewGameButton).pad(10);
-        optionsTable.row();
-
-        TextButton OpenScienceVictoryScreen = new TextButton("Science victory status", skin);
-        OpenScienceVictoryScreen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new com.unciv.ui.ScienceVictoryScreen());
-            }
-        });
-        optionsTable.add(OpenScienceVictoryScreen).pad(10);
-        optionsTable.row();
-
-        TextButton OpenPolicyPickerScreen = new TextButton("Social Policies", skin);
-        OpenPolicyPickerScreen.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new PolicyPickerScreen());
-            }
-        });
-        optionsTable.add(OpenPolicyPickerScreen).pad(10);
-        optionsTable.row();
-
-
-        TextButton closeButton = new TextButton("Close", skin);
-        closeButton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                optionsTable.setVisible(false);
-            }
-        });
-        optionsTable.add(closeButton).pad(10);
-        optionsTable.pack(); // Needed to show the background.
-        optionsTable.setPosition(stage.getWidth() / 2 - optionsTable.getWidth() / 2,
-                stage.getHeight() / 2 - optionsTable.getHeight() / 2);
-        stage.addActor(optionsTable);
     }
 
     private void updateTechButton() {
@@ -214,3 +152,4 @@ public class WorldScreen extends CameraStageBaseScreen {
         }
     }
 }
+

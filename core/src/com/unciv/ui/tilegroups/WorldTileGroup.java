@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.TileInfo;
-import com.unciv.ui.CityScreen;
+import com.unciv.ui.cityscreen.CityScreen;
 import com.unciv.ui.UnCivGame;
 import com.unciv.ui.utils.ImageGetter;
 import com.unciv.ui.worldscreen.WorldScreen;
@@ -15,7 +15,7 @@ import com.unciv.ui.worldscreen.WorldScreen;
 public class WorldTileGroup extends TileGroup {
 
     public WorldTileGroup(TileInfo tileInfo) {
-        super(null, tileInfo);
+        super(tileInfo);
     }
 
     public void setIsViewable(boolean isViewable) {

@@ -1,13 +1,9 @@
-package com.unciv.ui;
+package com.unciv.ui.cityscreen;
 
-import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.unciv.models.stats.FullStats;
-import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.ImageGetter;
 
 import java.util.HashMap;

@@ -11,28 +11,25 @@ import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.models.linq.LinqHashMap;
-import com.unciv.ui.YieldGroup;
+import com.unciv.ui.cityscreen.YieldGroup;
 import com.unciv.ui.utils.HexMath;
 import com.unciv.ui.utils.ImageGetter;
 
 public class TileGroup extends Group {
     protected Image terrainImage;
     String terrainType;
-    Image resourceImage;
-    Image unitImage;
-    Image improvementImage;
-    public YieldGroup yield = new YieldGroup();
+    protected Image resourceImage;
+    protected Image unitImage;
+    protected Image improvementImage;
     String improvementType;
     public Image populationImage;
     LinqHashMap<String,Image> roadImages = new LinqHashMap<String, Image>();
     protected Image hexagon;
-    private CityInfo city;
 
     protected Container<TextButton> cityButton;
     public TileInfo tileInfo;
 
-    public TileGroup(CityInfo city, TileInfo tileInfo){
-        this.city = city;
+    public TileGroup(TileInfo tileInfo){
         this.tileInfo = tileInfo;
 
         terrainType = tileInfo.getLastTerrain().name;
@@ -42,8 +39,6 @@ public class TileGroup extends Group {
         terrainImage.setSize(groupSize,groupSize);
         setSize(groupSize,groupSize);
         addActor(terrainImage);
-        addActor(yield);
-        if(city==null) yield.setColor(1,1,1,0.4f);
     }
 
     public void addPopulationIcon(){
@@ -75,18 +70,15 @@ public class TileGroup extends Group {
 
         if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";
-            Image image = ImageGetter.getImage(fileName);
-            image.setSize(20, 20);
-            image.moveBy(terrainImage.getWidth() - image.getWidth(), 0); // bottom right
-            resourceImage = image;
-            if (city != null) image.setColor(1, 1, 1, 0.5f);
-            addActor(image);
+            resourceImage = ImageGetter.getImage(fileName);
+            resourceImage.setSize(20, 20);
+            resourceImage.moveBy(terrainImage.getWidth() - resourceImage.getWidth(), 0); // bottom right
+            addActor(resourceImage);
         }
 
         if (tileInfo.unit != null && unitImage == null) {
             unitImage = ImageGetter.getImage("UnitIcons/" + tileInfo.unit.name.replace(" ", "_") + "_(Civ5).png");
             addActor(unitImage);
-            if (city != null) unitImage.setColor(1, 1, 1, 0.5f);
             unitImage.setSize(20, 20); // not moved - is at bottom left
         }
 
@@ -103,7 +95,6 @@ public class TileGroup extends Group {
 
         if (tileInfo.improvement != null && !tileInfo.improvement.equals(improvementType)) {
             improvementImage = ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement.replace(' ', '_') + "_(Civ5).png");
-            if (city != null) improvementImage.setColor(1, 1, 1, 0.5f);
             addActor(improvementImage);
             improvementImage.setSize(20, 20);
             improvementImage.moveBy(terrainImage.getWidth() - improvementImage.getWidth(),
@@ -142,11 +133,6 @@ public class TileGroup extends Group {
                 else roadImages.get(neighbor.position.toString()).setColor(Color.BROWN); // road
             }
         }
-
-        yield.setStats(tileInfo.getTileStats(city));
-        yield.setOrigin(Align.center);
-        yield.setScale(0.7f);
-        yield.setPosition(getWidth() / 2 - yield.getWidth() / 2, getHeight() / 2 - yield.getHeight() / 2);
 
     }
 }

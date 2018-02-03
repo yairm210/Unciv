@@ -85,7 +85,7 @@ public class TileMapHolder extends ScrollPane {
             group.moveBy(-bottomX+50, -bottomY+50);
         }
 
-//        allTiles.setPosition(-bottomX,-bottomY); // there are tiles "below the zero",
+        // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(100 + topX - bottomX, 100 + topY - bottomY);
 

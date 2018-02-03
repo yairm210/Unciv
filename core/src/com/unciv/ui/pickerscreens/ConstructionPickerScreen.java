@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.logic.city.CityConstructions;
 import com.unciv.models.gamebasics.Unit;
-import com.unciv.ui.CityScreen;
+import com.unciv.ui.cityscreen.CityScreen;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 

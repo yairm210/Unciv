@@ -73,9 +73,11 @@ public class PolicyManager {
         if (policy.name.equals("Scientific Revolution"))
             CivilizationInfo.current().tech.freeTechs+=2;
 
-        if (policy.name.equals("Legalism"))
-            for (CityInfo city : CivilizationInfo.current().cities.subList(0,4))
+        if (policy.name.equals("Legalism")) {
+            Linq<CityInfo> cities = CivilizationInfo.current().cities;
+            for (CityInfo city : cities.subList(0, Math.min(4, cities.size())))
                 city.cityConstructions.addCultureBuilding();
+        }
 
         if (policy.name.equals("Free Religion"))
             freePolicies++;
