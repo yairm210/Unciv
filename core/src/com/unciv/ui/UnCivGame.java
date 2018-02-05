@@ -20,6 +20,7 @@ import com.unciv.models.gamebasics.TileImprovement;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.INamed;
 import com.unciv.ui.utils.GameSaver;
+import com.unciv.ui.worldscreen.WorldScreen;
 
 public class UnCivGame extends Game {
 
@@ -27,7 +28,7 @@ public class UnCivGame extends Game {
     public CivilizationInfo civInfo;
     public GameSettings settings = new GameSettings();
 
-    public com.unciv.ui.worldscreen.WorldScreen worldScreen;
+    public WorldScreen worldScreen;
     public void create() {
         SetupGameBasics();
         Current = this;
@@ -40,7 +41,7 @@ public class UnCivGame extends Game {
         }
         else startNewGame();
 
-        worldScreen = new com.unciv.ui.worldscreen.WorldScreen();
+        worldScreen = new WorldScreen();
         setWorldScreen();
     }
 
@@ -49,7 +50,7 @@ public class UnCivGame extends Game {
         civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Settler");
         civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Scout");
 
-        worldScreen = new com.unciv.ui.worldscreen.WorldScreen();
+        worldScreen = new WorldScreen();
         setWorldScreen();
     }
 

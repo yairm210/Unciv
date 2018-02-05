@@ -76,7 +76,10 @@ public class HexMath
     }
 
     public static int GetDistance(Vector2 origin, Vector2 destination){ // Yes, this is a dumb implementation. But I can't be arsed to think of a better one right now, other stuff to do.
+
         int distance = 0;
+
+
         while(true){
             if(GetVectorsAtDistance(origin,distance).contains(destination)) return distance;
             distance++;

@@ -24,6 +24,8 @@ public class GameSaver {
             cityInfo.population.cityInfo = cityInfo;
             cityInfo.expansion.cityInfo = cityInfo;
             cityInfo.cityStats.cityInfo = cityInfo;
+        }
+        for (CityInfo cityInfo : game.civInfo.cities){
             cityInfo.cityStats.update();
         }
     }
