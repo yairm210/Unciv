@@ -5,14 +5,15 @@ import com.unciv.models.stats.FullStats;
 
 public class GreatPersonManager{
 
+    public transient CivilizationInfo civInfo;
+
     public void addGreatPerson(String unitName){ // This is also done by some wonders and social policies, remember
-        CivilizationInfo civInfo = CivilizationInfo.current();
-        civInfo.tileMap.placeUnitNearTile(civInfo.getCapital().cityLocation,unitName);
-        civInfo.addNotification("A "+unitName+" has been born!",civInfo.getCapital().cityLocation);
+        civInfo.placeUnitNearTile(civInfo.getCapital().cityLocation,unitName);
+        civInfo.gameInfo.addNotification("A "+unitName+" has been born!",civInfo.getCapital().cityLocation);
     }
 
     public void greatPersonPointsForTurn(){
-        for(CityInfo city : CivilizationInfo.current().cities)
+        for(CityInfo city : civInfo.cities)
             greatPersonPoints.add(city.getGreatPersonPoints());
 
         if(greatPersonPoints.science>pointsForNextGreatPerson){

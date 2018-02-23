@@ -1,41 +1,42 @@
 package com.unciv.ui.worldscreen;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.unciv.logic.civilization.CivilizationInfo;
-import com.unciv.logic.civilization.Notification;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.linq.LinqHashMap;
-import com.unciv.ui.CivilopediaScreen;
+import com.unciv.ui.GameInfo;
 import com.unciv.ui.pickerscreens.PolicyPickerScreen;
 import com.unciv.ui.pickerscreens.TechPickerScreen;
 import com.unciv.ui.tilegroups.WorldTileGroup;
 import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.GameSaver;
-import com.unciv.ui.utils.ImageGetter;
 
 public class WorldScreen extends CameraStageBaseScreen {
+    final CivilizationInfo civInfo;
 
-    public TileMapHolder tileMapHolder = new TileMapHolder(this);
+    final public TileMapHolder tileMapHolder;
 
     float buttonScale = game.settings.buttonScale;
-    TileInfoTable tileInfoTable = new TileInfoTable(this);
-    CivStatsTable civTable = new CivStatsTable();
-    TextButton techButton = new TextButton("", skin);
-    public LinqHashMap<String, WorldTileGroup> tileGroups = new LinqHashMap<String, WorldTileGroup>();
+    final TileInfoTable tileInfoTable;
+    final CivStatsTable civTable = new CivStatsTable();
+    final TextButton techButton = new TextButton("", skin);
+    final public LinqHashMap<String, WorldTileGroup> tileGroups = new LinqHashMap<String, WorldTileGroup>();
 
-    WorldScreenOptionsTable optionsTable = new WorldScreenOptionsTable(this);
-    NotificationsScroll notificationsScroll = new NotificationsScroll(this);
-    IdleUnitButton idleUnitButton = new IdleUnitButton(this);
+    final WorldScreenOptionsTable optionsTable;
+    final NotificationsScroll notificationsScroll;
+    final IdleUnitButton idleUnitButton = new IdleUnitButton(this);
 
     public WorldScreen() {
+        GameInfo gameInfo = game.gameInfo;
+        this.civInfo = gameInfo.getPlayerCivilization();
+        tileMapHolder = new TileMapHolder(this, gameInfo.tileMap, civInfo);
+        tileInfoTable = new TileInfoTable(this, civInfo);
+        notificationsScroll =  new NotificationsScroll(gameInfo.notifications, this);
+        optionsTable = new WorldScreenOptionsTable(this, civInfo);
         new Label("", skin).getStyle().font.getData().setScale(game.settings.labelScale);
 
         tileMapHolder.addTiles();
@@ -70,7 +71,7 @@ public class WorldScreen extends CameraStageBaseScreen {
 
 
     public void update() {
-        if(game.civInfo.tutorial.contains("CityEntered")){
+        if(game.gameInfo.tutorial.contains("CityEntered")){
             Linq<String> tutorial = new Linq<String>();
             tutorial.add("Once you've done everything you can, " +
                     "\r\nclick the next turn button on the top right to continue.");
@@ -86,28 +87,28 @@ public class WorldScreen extends CameraStageBaseScreen {
         civTable.update(this);
         notificationsScroll.update();
         idleUnitButton.update();
-        if (game.civInfo.tech.freeTechs != 0) {
-            game.setScreen(new TechPickerScreen(true));
+        if (civInfo.tech.freeTechs != 0) {
+            game.setScreen(new TechPickerScreen(true, civInfo));
         }
-        else if(game.civInfo.policies.shouldOpenPolicyPicker){
-            game.setScreen(new PolicyPickerScreen());
-            game.civInfo.policies.shouldOpenPolicyPicker=false;
+        else if(civInfo.policies.shouldOpenPolicyPicker){
+            game.setScreen(new PolicyPickerScreen(civInfo));
+            civInfo.policies.shouldOpenPolicyPicker=false;
         }
     }
 
     private void updateTechButton() {
-        techButton.setVisible(game.civInfo.cities.size() != 0);
+        techButton.setVisible(civInfo.cities.size() != 0);
         techButton.clearListeners();
         techButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new TechPickerScreen());
+                game.setScreen(new TechPickerScreen(civInfo));
             }
         });
 
-        if (game.civInfo.tech.currentTechnology() == null) techButton.setText("Choose a tech!");
-        else techButton.setText(game.civInfo.tech.currentTechnology() + "\r\n"
-                + game.civInfo.turnsToTech(game.civInfo.tech.currentTechnology()) + " turns");
+        if (civInfo.tech.currentTechnology() == null) techButton.setText("Choose a tech!");
+        else techButton.setText(civInfo.tech.currentTechnology() + "\r\n"
+                + civInfo.turnsToTech(civInfo.tech.currentTechnology()) + " turns");
 
         techButton.setSize(techButton.getPrefWidth(), techButton.getPrefHeight());
         techButton.setPosition(10, civTable.getY() - techButton.getHeight() - 5);
@@ -118,12 +119,12 @@ public class WorldScreen extends CameraStageBaseScreen {
         nextTurnButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (game.civInfo.tech.currentTechnology() == null
-                        && game.civInfo.cities.size() != 0) {
-                    game.setScreen(new TechPickerScreen());
+                if (civInfo.tech.currentTechnology() == null
+                        && civInfo.cities.size() != 0) {
+                    game.setScreen(new TechPickerScreen(civInfo));
                     return;
                 }
-                game.civInfo.nextTurn();
+                game.gameInfo.nextTurn();
                 tileMapHolder.unitTile = null;
                 GameSaver.SaveGame(game, "Autosave");
                 update();

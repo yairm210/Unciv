@@ -3,7 +3,7 @@ package com.unciv.models.gamebasics;
 import com.unciv.logic.city.IConstruction;
 import com.unciv.logic.city.CityConstructions;
 import com.unciv.logic.map.MapUnit;
-import com.unciv.ui.UnCivGame;
+import com.unciv.models.linq.Linq;
 import com.unciv.models.stats.INamed;
 
 public class Unit implements INamed, IConstruction {
@@ -22,17 +22,16 @@ public class Unit implements INamed, IConstruction {
     }
 
     public boolean isConstructable() {
-        if(unbuildable) return false;
-        return true;
+        return !unbuildable;
     }
 
     @Override
-    public int getProductionCost() {
+    public int getProductionCost(Linq<String> policies) {
         return cost;
     }
 
     @Override
-    public int getGoldCost() {
+    public int getGoldCost(Linq<String> policies) {
         return (int)( Math.pow(30 * cost,0.75) * (1 + hurryCostModifier/100) / 10 ) * 10;
     }
 
@@ -43,7 +42,7 @@ public class Unit implements INamed, IConstruction {
 
     @Override
     public void postBuildEvent(CityConstructions construction) {
-         UnCivGame.Current.civInfo.tileMap.placeUnitNearTile(construction.cityLocation,name);
+         construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.cityLocation,name);
     }
 
     public MapUnit getMapUnit(){

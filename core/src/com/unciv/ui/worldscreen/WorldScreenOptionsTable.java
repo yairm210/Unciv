@@ -6,20 +6,26 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
+import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.ui.CivilopediaScreen;
+import com.unciv.ui.ScienceVictoryScreen;
 import com.unciv.ui.pickerscreens.PolicyPickerScreen;
+import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.ImageGetter;
 
 public class WorldScreenOptionsTable extends Table {
 
-    WorldScreenOptionsTable(final WorldScreen worldScreen) {
+    private final CivilizationInfo civInfo;
+
+    WorldScreenOptionsTable(final WorldScreen worldScreen, CivilizationInfo civInfo) {
+        this.civInfo = civInfo;
         Drawable tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(new Color(0x004085bf));
         setBackground(tileTableBackground);
 
         setVisible(false);
 
-        TextButton OpenCivilopediaButton = new TextButton("Civilopedia", worldScreen.skin);
+        TextButton OpenCivilopediaButton = new TextButton("Civilopedia", CameraStageBaseScreen.skin);
         OpenCivilopediaButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -30,7 +36,7 @@ public class WorldScreenOptionsTable extends Table {
         add(OpenCivilopediaButton).pad(10);
         row();
 
-        TextButton StartNewGameButton = new TextButton("Start new game", worldScreen.skin);
+        TextButton StartNewGameButton = new TextButton("Start new game", CameraStageBaseScreen.skin);
         StartNewGameButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -40,27 +46,27 @@ public class WorldScreenOptionsTable extends Table {
         add(StartNewGameButton).pad(10);
         row();
 
-        TextButton OpenScienceVictoryScreen = new TextButton("Science victory status", worldScreen.skin);
+        TextButton OpenScienceVictoryScreen = new TextButton("Science victory status", CameraStageBaseScreen.skin);
         OpenScienceVictoryScreen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                worldScreen.game.setScreen(new com.unciv.ui.ScienceVictoryScreen());
+                worldScreen.game.setScreen(new ScienceVictoryScreen(WorldScreenOptionsTable.this.civInfo));
             }
         });
         add(OpenScienceVictoryScreen).pad(10);
         row();
 
-        TextButton OpenPolicyPickerScreen = new TextButton("Social Policies", worldScreen.skin);
+        TextButton OpenPolicyPickerScreen = new TextButton("Social Policies", CameraStageBaseScreen.skin);
         OpenPolicyPickerScreen.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                worldScreen.game.setScreen(new PolicyPickerScreen());
+                worldScreen.game.setScreen(new PolicyPickerScreen(WorldScreenOptionsTable.this.civInfo));
             }
         });
         add(OpenPolicyPickerScreen).pad(10);
         row();
 
-        TextButton closeButton = new TextButton("Close", worldScreen.skin);
+        TextButton closeButton = new TextButton("Close", CameraStageBaseScreen.skin);
         closeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {

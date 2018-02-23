@@ -1,9 +1,6 @@
 package com.unciv.logic.city;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.logic.civilization.CivilizationInfo;
-import com.unciv.ui.UnCivGame;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
@@ -14,24 +11,18 @@ import java.util.HashMap;
 
 public class CityConstructions
 {
+    public transient CityInfo cityInfo;
+
     static final String Worker="Worker";
     static final String Settler="Settler";
 
-    public Vector2 cityLocation;
-
     public CityConstructions(){} // for json parsing, we need to have a default constructor
-
-    public CityConstructions(CityInfo cityInfo)
-    {
-        cityLocation = cityInfo.cityLocation;
-    }
 
     public Linq<String> builtBuildings = new Linq<String>();
     public HashMap<String, Integer> inProgressConstructions = new HashMap<String, Integer>();
     public String currentConstruction; // default starting building!
     public IConstruction getCurrentConstruction(){return getConstruction(currentConstruction);}
 
-    public CityInfo getCity(){return UnCivGame.Current.civInfo.tileMap.get(cityLocation).getCity(); }
     public boolean isBuilt(String buildingName) { return builtBuildings.contains(buildingName); }
     public boolean isBuilding(String buildingName) { return currentConstruction !=null && currentConstruction.equals(buildingName); }
 
@@ -66,18 +57,19 @@ public class CityConstructions
         currentConstruction = null;
         if(!construction.isBuildable(this)){
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            CivilizationInfo.current().addNotification("Cannot continue work on "+saveCurrentConstruction,cityLocation);
+            cityInfo.civInfo.gameInfo.addNotification("Cannot continue work on "+saveCurrentConstruction,cityInfo.cityLocation);
             chooseNextConstruction();
             construction = getConstruction(currentConstruction);
         }
         else currentConstruction = saveCurrentConstruction;
 
         addConstruction(Math.round(cityStats.production));
-        if (inProgressConstructions.get(currentConstruction) >= construction.getProductionCost())
+        int productionCost = construction.getProductionCost(cityInfo.civInfo.policies.getAdoptedPolicies());
+        if (inProgressConstructions.get(currentConstruction) >= productionCost)
         {
             construction.postBuildEvent(this);
             inProgressConstructions.remove(currentConstruction);
-            CivilizationInfo.current().addNotification(currentConstruction +" has been built in "+getCity().name,cityLocation);
+            cityInfo.civInfo.gameInfo.addNotification(currentConstruction +" has been built in "+cityInfo.name,cityInfo.cityLocation);
 
             chooseNextConstruction();
         }
@@ -94,7 +86,7 @@ public class CityConstructions
         });
         if (currentConstruction == null) currentConstruction = Worker;
 
-        CivilizationInfo.current().addNotification("Work has started on "+ currentConstruction,cityLocation);
+        cityInfo.civInfo.gameInfo.addNotification("Work has started on "+ currentConstruction,cityInfo.cityLocation);
     }
 
 
@@ -116,13 +108,14 @@ public class CityConstructions
     public FullStats getStats()
     {
         FullStats stats = new FullStats();
-        for(Building building : getBuiltBuildings()) stats.add(building.getStats());
-        stats.science += getCity().getBuildingUniques().count(new Predicate<String>() {
+        for(Building building : getBuiltBuildings())
+            stats.add(building.getStats(cityInfo.civInfo.policies.getAdoptedPolicies()));
+        stats.science += cityInfo.getBuildingUniques().count(new Predicate<String>() {
             @Override
             public boolean evaluate(String arg0) {
                 return "SciencePer2Pop".equals(arg0);
             }
-        }) * getCity().population.population/2; // Library and public school unique (not actualy unique, though...hmm)
+        }) * cityInfo.population.population/2; // Library and public school unique (not actualy unique, though...hmm)
         return stats;
     }
 
@@ -149,11 +142,12 @@ public class CityConstructions
     }
 
     public int turnsToConstruction(String constructionName){
-        int cost = getConstruction(constructionName).getProductionCost();
 
-        float workLeft = cost - workDone(constructionName); // needs to be float so that we get the cieling properly ;)
+        int productionCost = getConstruction(constructionName).getProductionCost(cityInfo.civInfo.policies.getAdoptedPolicies());
 
-        FullStats cityStats = getCity().cityStats.currentCityStats;
+        float workLeft = productionCost - workDone(constructionName); // needs to be float so that we get the cieling properly ;)
+
+        FullStats cityStats = cityInfo.cityStats.currentCityStats;
         int production = Math.round(cityStats.production);
         if (constructionName.equals(Settler)) production += cityStats.food;
 
@@ -161,10 +155,10 @@ public class CityConstructions
     }
 
     public void purchaseBuilding(String buildingName) {
-        CivilizationInfo.current().gold -= getConstruction(buildingName).getGoldCost();
+        cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo.policies.getAdoptedPolicies());
         getConstruction(buildingName).postBuildEvent(this);
         if(currentConstruction.equals(buildingName)) chooseNextConstruction();
-        getCity().cityStats.update();
+        cityInfo.cityStats.update();
     }
 
     public String getCityProductionTextForCityButton(){
@@ -183,7 +177,7 @@ public class CityConstructions
 
     public String getAmountConstructedText(){
         if(currentConstruction.equals("Science")  || currentConstruction.equals("Gold")) return "";
-        return " ("+ workDone(currentConstruction) + "/"+ getCurrentConstruction().getProductionCost()+")";
+        return " ("+ workDone(currentConstruction) + "/"+ getCurrentConstruction().getProductionCost(cityInfo.civInfo.policies.getAdoptedPolicies())+")";
     }
 
     public void addCultureBuilding() {
@@ -193,7 +187,7 @@ public class CityConstructions
                 if(currentConstruction.equals(string))
                     chooseNextConstruction();
                 break;
-            };
+            }
         }
     }
 }

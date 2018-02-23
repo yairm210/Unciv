@@ -11,6 +11,8 @@ import com.unciv.logic.city.CityInfo;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.stats.FullStats;
+import com.unciv.ui.utils.CameraStageBaseScreen;
+
 
 public class BuildingsTable extends Table {
 
@@ -27,7 +29,7 @@ public class BuildingsTable extends Table {
         specialist.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                CityInfo cityInfo = cityScreen.getCity();
+                CityInfo cityInfo = cityScreen.city;
                 if(isFilled) cityInfo.population.buildingsSpecialists.get(building).add(specialistType.minus()); //unassign
                 else if(cityInfo.population.getFreePopulation()==0) return;
                 else {
@@ -45,9 +47,9 @@ public class BuildingsTable extends Table {
 
     void update(){
         clear();
-        Skin skin = cityScreen.skin;
+        Skin skin = CameraStageBaseScreen.skin;
 
-        CityInfo cityInfo = cityScreen.getCity();
+        CityInfo cityInfo = cityScreen.city;
         Linq<Building> Wonders = new Linq<Building>();
         Linq<Building> SpecialistBuildings = new Linq<Building>();
         Linq<Building> Others = new Linq<Building>();

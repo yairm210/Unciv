@@ -3,25 +3,28 @@ package com.unciv.logic.map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.logic.civilization.CivilizationInfo;
-import com.unciv.ui.utils.HexMath;
+import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.linq.LinqHashMap;
-import com.unciv.models.gamebasics.GameBasics;
-import com.unciv.models.gamebasics.ResourceType;
-import com.unciv.models.gamebasics.Terrain;
-import com.unciv.models.gamebasics.TerrainType;
-import com.unciv.models.gamebasics.TileResource;
+import com.unciv.ui.GameInfo;
+import com.unciv.ui.utils.HexMath;
 
 public class TileMap{
 
-    private  LinqHashMap<String, TileInfo> tiles = new LinqHashMap<String, TileInfo>();
+    public transient GameInfo gameInfo;
+
+
+    private Linq<MapUnit> units;
+    private LinqHashMap<String, TileInfo> tiles = new LinqHashMap<String, TileInfo>();
 
     public TileMap(){} // for json parsing, we need to have a default constructor
+    public Linq<TileInfo> values(){return tiles.linqValues();}
+
 
     public TileMap(int distance) {
         tiles = new RandomMapGenerator().generateMap(distance);
+        setTransients();
     }
-
 
     public boolean contains(Vector2 vector){ return tiles.containsKey(vector.toString());}
 
@@ -47,7 +50,7 @@ public class TileMap{
         return tiles;
     }
 
-    public LinqHashMap<TileInfo,Float> getDistanceToTilesWithinTurn(Vector2 origin, float currentUnitMovement){
+    public LinqHashMap<TileInfo,Float> getDistanceToTilesWithinTurn(Vector2 origin, float currentUnitMovement, boolean machineryIsResearched){
         LinqHashMap<TileInfo,Float> distanceToTiles = new LinqHashMap<TileInfo, Float>();
         distanceToTiles.put(get(origin), 0f);
         Linq<TileInfo> tilesToCheck = new Linq<TileInfo>();
@@ -58,7 +61,7 @@ public class TileMap{
                 for (TileInfo maybeUpdatedTile : getTilesInDistance(tileToCheck.position,1)) {
                     float distanceBetweenTiles = maybeUpdatedTile.getLastTerrain().movementCost;
                     if(tileToCheck.roadStatus!=RoadStatus.None && maybeUpdatedTile.roadStatus!=RoadStatus.None) {
-                        if(CivilizationInfo.current().tech.isResearched("Machinery")) distanceBetweenTiles = 1 / 3f;
+                        if(machineryIsResearched) distanceBetweenTiles = 1 / 3f;
                         else distanceBetweenTiles = 1/2f;
                     }
                     if(tileToCheck.roadStatus==RoadStatus.Railroad && maybeUpdatedTile.roadStatus==RoadStatus.Railroad) distanceBetweenTiles = 1/10f;
@@ -77,7 +80,7 @@ public class TileMap{
         return distanceToTiles;
     }
 
-    public Linq<TileInfo> getShortestPath(Vector2 origin, Vector2 destination, float currentMovement, int maxMovement){
+    public Linq<TileInfo> getShortestPath(Vector2 origin, Vector2 destination, float currentMovement, int maxMovement, boolean isMachieneryResearched){
         Linq<TileInfo> toCheck = new Linq<TileInfo>(get(origin));
         LinqHashMap<TileInfo,TileInfo> parents = new LinqHashMap<TileInfo, TileInfo>();
         parents.put(get(origin),null);
@@ -85,7 +88,7 @@ public class TileMap{
         for (int distance = 1; ; distance++) {
             Linq<TileInfo> newToCheck = new Linq<TileInfo>();
             for (TileInfo ti : toCheck){
-                for (TileInfo otherTile : getDistanceToTilesWithinTurn(ti.position, distance == 1 ? currentMovement : maxMovement).keySet()){
+                for (TileInfo otherTile : getDistanceToTilesWithinTurn(ti.position, distance == 1 ? currentMovement : maxMovement, isMachieneryResearched).keySet()){
                     if(parents.containsKey(otherTile)) continue; // We cannot be faster than anything existing...
                     if(!otherTile.position.equals(destination) && otherTile.unit!=null) continue; // go to
                     parents.put(otherTile,ti);
@@ -105,22 +108,16 @@ public class TileMap{
         }
     }
 
-    public Linq<TileInfo> values(){return tiles.linqValues();}
-
-    public void placeUnitNearTile(Vector2 position, final String unit){
+    public void placeUnitNearTile(Vector2 position, final String unitName, final CivilizationInfo civInfo){
+        MapUnit unit = GameBasics.Units.get(unitName).getMapUnit();
+        unit.owner = civInfo.civName;
+        unit.civInfo = civInfo;
         getTilesInDistance(position,2).first(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
                 return arg0.unit==null;
             }
-        }).unit = GameBasics.Units.get(unit).getMapUnit(); // And if there's none, then kill me.
-    }
-
-    public int getTileHeight(TileInfo tileInfo){
-        int height=0;
-        if(new Linq<String>("Forest","Jungle").contains(tileInfo.terrainFeature)) height+=1;
-        if("Hill".equals(tileInfo.baseTerrain)) height+=2;
-        return height;
+        }).unit = unit; // And if there's none, then kill me.
     }
 
     public Linq<TileInfo> getViewableTiles(Vector2 position, int sightDistance){
@@ -131,17 +128,21 @@ public class TileMap{
             for (final TileInfo tile : getTilesAtDistance(position, i))
                 if (tile.getNeighbors().any(new Predicate<TileInfo>() {
                     @Override
-                    public boolean evaluate(TileInfo arg0) {
-                        if (!tiles.contains(arg0))
+                    public boolean evaluate(TileInfo neighbor) {
+                        if (!tiles.contains(neighbor))
                             return false; // Basically, if there's a viewable neighbor which is either flatlands, or I'm taller than him
-                        int tileHeight = getTileHeight(arg0);
-                        return tileHeight == 0 || getTileHeight(tile) > tileHeight;
+                        int tileHeight = neighbor.getHeight();
+                        return tileHeight == 0 || tile.getHeight() > tileHeight;
                     }
                 })) tilesForLayer.add(tile);
             tiles.addAll(tilesForLayer);
         }
 
         return tiles;
+    }
+
+    public void setTransients(){
+        for(TileInfo tileInfo: values()) tileInfo.tileMap=this;
     }
 
 }

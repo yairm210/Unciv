@@ -1,10 +1,8 @@
 package com.unciv.ui.cityscreen;
 
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
 import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.TileInfo;
-import com.unciv.ui.cityscreen.YieldGroup;
 import com.unciv.ui.tilegroups.TileGroup;
 import com.unciv.ui.utils.ImageGetter;
 
@@ -39,7 +37,7 @@ public class CityTileGroup extends TileGroup {
         if(unitImage!=null) unitImage.setColor(1, 1, 1, 0.5f);
         if(resourceImage!=null) resourceImage.setColor(1, 1, 1, 0.5f);
 
-        yield.setStats(tileInfo.getTileStats(city));
+        yield.setStats(tileInfo.getTileStats(city,city.civInfo.gameInfo.getPlayerCivilization()));
         yield.setOrigin(Align.center);
         yield.setScale(0.7f);
         yield.toFront();

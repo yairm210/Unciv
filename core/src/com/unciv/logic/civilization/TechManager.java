@@ -11,12 +11,16 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 public class TechManager {
+    public transient CivilizationInfo civInfo;
+
     public int freeTechs = 0;
 
     public HashSet<String> techsResearched = new HashSet<String>();
     /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
     public ArrayList<String> techsToResearch = new ArrayList<String>();
     public HashMap<String, Integer> techsInProgress = new HashMap<String, Integer>();
+
+
 
     public String currentTechnology(){if(techsToResearch.isEmpty()) return null; return techsToResearch.get(0);}
 
@@ -50,7 +54,7 @@ public class TechManager {
             techsInProgress.remove(CurrentTechnology);
             techsToResearch.remove(CurrentTechnology);
             techsResearched.add(CurrentTechnology);
-            CivilizationInfo.current().addNotification("Research of " + CurrentTechnology + " has completed!", null);
+            civInfo.gameInfo.addNotification("Research of " + CurrentTechnology + " has completed!", null);
 
             TileResource revealedResource = GameBasics.TileResources.linqValues().first(new Predicate<TileResource>() {
                 @Override
@@ -60,10 +64,10 @@ public class TechManager {
             });
 
             if (revealedResource != null)
-                for (TileInfo tileInfo : CivilizationInfo.current().tileMap.values())
+                for (TileInfo tileInfo : civInfo.gameInfo.tileMap.values())
                     if (revealedResource.name.equals(tileInfo.resource) && tileInfo.owner != null) {
                         for (int i = 0; ; i++) {
-                            TileInfo cityTile = CivilizationInfo.current().tileMap.getTilesAtDistance(tileInfo.position, i)
+                            TileInfo cityTile = civInfo.gameInfo.tileMap.getTilesAtDistance(tileInfo.position, i)
                                     .first(new Predicate<TileInfo>() {
                                         @Override
                                         public boolean evaluate(TileInfo arg0) {
@@ -71,7 +75,7 @@ public class TechManager {
                                         }
                                     });
                             if (cityTile != null) {
-                                CivilizationInfo.current().addNotification(
+                                civInfo.gameInfo.addNotification(
                                         revealedResource.name + " revealed near " + cityTile.getCity().name, tileInfo.position);
                                 break;
                             }

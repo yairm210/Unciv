@@ -15,18 +15,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
-import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.models.linq.Linq;
+import com.unciv.ui.UnCivGame;
 
 public class CameraStageBaseScreen implements Screen {
 
-    public com.unciv.ui.UnCivGame game;
+    public UnCivGame game;
     public Stage stage;
     public static Skin skin = new Skin(Gdx.files.internal("skin/flat-earth-ui.json"));
     static Batch batch = new SpriteBatch();
 
     public CameraStageBaseScreen() {
-        this.game = com.unciv.ui.UnCivGame.Current;
+        this.game = UnCivGame.Current;
         stage = new Stage(new ExtendViewport(1000,600
         ),batch);// FitViewport(1000,600)
         Gdx.input.setInputProcessor(stage);
@@ -42,7 +42,7 @@ public class CameraStageBaseScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act();
-        stage.draw();;
+        stage.draw();
     }
 
     @Override
@@ -65,9 +65,8 @@ public class CameraStageBaseScreen implements Screen {
     private Linq<String> tutorialTexts = new Linq<String>();
 
     public void displayTutorials(String name, Linq<String> texts){
-        if(CivilizationInfo.current().tutorial.contains(name)) return;
-        CivilizationInfo.current().tutorial.add(name);
-
+        if(game.gameInfo.tutorial.contains(name)) return;
+        game.gameInfo.tutorial.add(name);
         tutorialTexts.addAll(texts);
         if(!isTutorialShowing) displayTutorial();
     }

@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.civilization.CivilizationInfo;
-import com.unciv.ui.UnCivGame;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.Terrain;
@@ -16,6 +15,8 @@ import java.text.DecimalFormat;
 
 public class TileInfo
 {
+    public transient TileMap tileMap;
+
     public MapUnit unit;
     public Vector2 position;
     public String baseTerrain;
@@ -30,9 +31,20 @@ public class TileInfo
     public int turnsToImprovement;
 
     public Terrain getBaseTerrain(){return GameBasics.Terrains.get(baseTerrain);}
+
+    public CivilizationInfo getOwner(){
+        if(owner==null) return null;
+        return tileMap.gameInfo.civilizations.first(new Predicate<CivilizationInfo>() {
+            @Override
+            public boolean evaluate(CivilizationInfo arg0) {
+                return arg0.civName.equals(owner);
+            }
+        });
+    }
+
     public CityInfo getCity(){
         if(workingCity == null) return null;
-        return CivilizationInfo.current().cities.first(new Predicate<CityInfo>() {
+        return getOwner().cities.first(new Predicate<CityInfo>() {
         @Override
         public boolean evaluate(CityInfo arg0) {
             return arg0.name.equals(workingCity);
@@ -52,11 +64,9 @@ public class TileInfo
     public TileImprovement getTileImprovement(){return improvement ==null ? null : GameBasics.TileImprovements.get(improvement);}
 
 
-    private boolean isResearched(String techName) { return UnCivGame.Current.civInfo.tech.isResearched(techName); }
+    public FullStats getTileStats(CivilizationInfo observingCiv){return getTileStats(getCity(),observingCiv);}
 
-    public FullStats getTileStats(){return getTileStats(getCity());}
-
-    public FullStats getTileStats(CityInfo city)
+    public FullStats getTileStats(CityInfo city, CivilizationInfo observingCiv)
     {
         FullStats stats = new FullStats(getBaseTerrain());
 
@@ -67,7 +77,7 @@ public class TileInfo
         }
 
         TileResource resource = getTileResource();
-        if (hasViewableResource())
+        if (hasViewableResource(observingCiv))
         {
             stats.add(resource); // resource base
             if(resource.building !=null && city!=null && city.cityConstructions.isBuilt(resource.building))
@@ -83,11 +93,11 @@ public class TileInfo
                 stats.add(resource.improvementStats); // resource-specifc improvement
             else stats.add(improvement); // basic improvement
 
-            if (isResearched(improvement.improvingTech)) stats.add(improvement.improvingTechStats); // eg Chemistry for mines
-            if(improvement.name.equals("Trading post") && CivilizationInfo.current().policies.isAdopted("Free Thought"))
+            if (observingCiv.tech.isResearched(improvement.improvingTech)) stats.add(improvement.improvingTechStats); // eg Chemistry for mines
+            if(improvement.name.equals("Trading post") && city.civInfo.policies.isAdopted("Free Thought"))
                 stats.science+=1;
             if(new Linq<String>("Academy","Landmark","Manufactory","Customs House").contains(improvement.name)
-                    && CivilizationInfo.current().policies.isAdopted("Freedom Complete"))
+                    && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement); // again, for the double effect
         }
 
@@ -100,33 +110,29 @@ public class TileInfo
 
         if("Jungle".equals(terrainFeature) && city!=null
                 && city.getBuildingUniques().contains("JunglesProvideScience")) stats.science+=2;
-        if(stats.gold!=0 && CivilizationInfo.current().goldenAges.isGoldenAge())
+        if(stats.gold!=0 && observingCiv.goldenAges.isGoldenAge())
             stats.gold++;
 
         return stats;
     }
 
-    public boolean canBuildImprovement(String improvementName){
-        return canBuildImprovement(GameBasics.TileImprovements.get(improvementName));
-    }
-
-    public boolean canBuildImprovement(TileImprovement improvement)
+    public boolean canBuildImprovement(TileImprovement improvement, CivilizationInfo civInfo)
     {
         if(isCityCenter() || improvement.name.equals(this.improvement)) return false;
         Terrain topTerrain = terrainFeature ==null ? getBaseTerrain() : getTerrainFeature();
-        if (improvement.techRequired != null && !isResearched(improvement.techRequired)) return false;
+        if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired)) return false;
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain.name)) return true;
         if(improvement.name.equals("Road") && this.roadStatus== RoadStatus.None) return true;
         if(improvement.name.equals("Railroad") && this.roadStatus != RoadStatus.Railroad) return true;
         if (topTerrain.unbuildable) return false;
 
-        return hasViewableResource() && getTileResource().improvement.equals(improvement.name);
+        return hasViewableResource(civInfo) && getTileResource().improvement.equals(improvement.name);
     }
 
-    public void startWorkingOnImprovement(String improvementName)
+    public void startWorkingOnImprovement(TileImprovement improvement, CivilizationInfo civInfo)
     {
-        improvementInProgress = improvementName;
-        turnsToImprovement = GameBasics.TileImprovements.get(improvementName).getTurnsToBuild();
+        improvementInProgress = improvement.name;
+        turnsToImprovement = improvement.getTurnsToBuild(civInfo);
     }
 
     public void stopWorkingOnImprovement()
@@ -148,7 +154,7 @@ public class TileInfo
         if (isCityCenter()){SB.append(workingCity+",\r\n"+getCity().cityConstructions.getProductionForTileInfo());}
         SB.append(this.baseTerrain);
         if (terrainFeature != null) SB.append(",\r\n" + terrainFeature);
-        if (hasViewableResource()) SB.append(",\r\n" + resource);
+        if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.append(",\r\n" + resource);
         if (roadStatus!= RoadStatus.None && !isCityCenter()) SB.append(",\r\n" + roadStatus);
         if (improvement != null) SB.append(",\r\n" + improvement);
         if (improvementInProgress != null) SB.append(",\r\n" + improvementInProgress +" in "+this.turnsToImprovement +" turns");
@@ -156,15 +162,14 @@ public class TileInfo
         return SB.toString();
     }
 
-    public boolean hasViewableResource() {
-        return resource != null && (getTileResource().revealedBy ==null || isResearched(getTileResource().revealedBy));
+    public boolean hasViewableResource(CivilizationInfo civInfo) {
+        return resource != null && (getTileResource().revealedBy ==null || civInfo.tech.isResearched(getTileResource().revealedBy));
     }
 
     public boolean hasIdleUnit() {
         if (unit == null) return false;
         if (unit.currentMovement == 0) return false;
-        if (unit.name.equals("Worker") && improvementInProgress != null) return false;
-        return true;
+        return !(unit.name.equals("Worker") && improvementInProgress != null);
     }
 
     public void moveUnitToTile(TileInfo otherTile, float movementDistance){
@@ -176,6 +181,13 @@ public class TileInfo
     }
 
     public Linq<TileInfo> getNeighbors(){
-        return CivilizationInfo.current().tileMap.getTilesAtDistance(position,1);
+        return tileMap.getTilesAtDistance(position,1);
+    }
+
+    public int getHeight(){
+        int height=0;
+        if(new Linq<String>("Forest","Jungle").contains(terrainFeature)) height+=1;
+        if("Hill".equals(baseTerrain)) height+=2;
+        return height;
     }
 }

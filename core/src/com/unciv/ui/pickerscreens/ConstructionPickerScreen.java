@@ -5,12 +5,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.unciv.logic.city.CityConstructions;
+import com.unciv.logic.city.CityInfo;
+import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.models.gamebasics.Unit;
 import com.unciv.ui.cityscreen.CityScreen;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
 
 public class ConstructionPickerScreen extends PickerScreen {
+    public final CityInfo city;
     public String selectedProduction;
 
     TextButton getProductionButton(final String production, String buttonText,
@@ -27,12 +30,15 @@ public class ConstructionPickerScreen extends PickerScreen {
         return TB;
     }
 
-    public ConstructionPickerScreen() {
+    public ConstructionPickerScreen(final CityInfo city) {
+        this.city = city;
+        final CivilizationInfo civInfo = game.gameInfo.getPlayerCivilization();
+
         closeButton.clearListeners(); // Don't go back to the world screen, unlike the other picker screens!
         closeButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new CityScreen());
+                game.setScreen(new CityScreen(ConstructionPickerScreen.this.city));
                 dispose();
             }
         });
@@ -41,14 +47,14 @@ public class ConstructionPickerScreen extends PickerScreen {
         rightSideButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.civInfo.getCurrentCity().cityConstructions.currentConstruction = selectedProduction;
-                game.civInfo.getCurrentCity().cityStats.update(); // Because maybe we set/removed the science or gold production options.
-                game.setScreen(new CityScreen());
+                city.cityConstructions.currentConstruction = selectedProduction;
+                city.cityStats.update(); // Because maybe we set/removed the science or gold production options.
+                game.setScreen(new CityScreen(ConstructionPickerScreen.this.city));
                 dispose();
             }
         });
 
-        CityConstructions cityConstructions = game.civInfo.getCurrentCity().cityConstructions;
+        CityConstructions cityConstructions = city.cityConstructions;
         VerticalGroup regularBuildings = new VerticalGroup().space(10),
                 wonders = new VerticalGroup().space(10),
                 units = new VerticalGroup().space(10),
@@ -58,7 +64,7 @@ public class ConstructionPickerScreen extends PickerScreen {
             if(!building.isBuildable(cityConstructions)) continue;
             TextButton TB = getProductionButton(building.name,
                     building.name +"\r\n"+cityConstructions.turnsToConstruction(building.name)+" turns",
-                    building.getDescription(true),
+                    building.getDescription(true,civInfo.policies.getAdoptedPolicies()),
                     "Build "+building.name);
             if(building.isWonder) wonders.addActor(TB);
             else regularBuildings.addActor(TB);
@@ -71,11 +77,11 @@ public class ConstructionPickerScreen extends PickerScreen {
                     unit.description, "Train "+unit.name));
         }
 
-        if(game.civInfo.tech.isResearched("Education"))
+        if(civInfo.tech.isResearched("Education"))
             specials.addActor(getProductionButton("Science","Produce Science",
                     "Convert production to science at a rate of 4 to 1", "Produce Science"));
 
-        if(game.civInfo.tech.isResearched("Currency"))
+        if(civInfo.tech.isResearched("Currency"))
             specials.addActor(getProductionButton("Gold","Produce Gold",
                     "Convert production to gold at a rate of 4 to 1", "Produce Gold"));
 

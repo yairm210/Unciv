@@ -1,7 +1,6 @@
 package com.unciv.models.gamebasics;
 
 import com.unciv.models.stats.INamed;
-import com.unciv.models.stats.NamedStats;
 
 public class BasicHelp implements ICivilopedia, INamed {
     public String description;

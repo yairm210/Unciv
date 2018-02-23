@@ -6,7 +6,6 @@ import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.logic.map.TileMap;
-import com.unciv.ui.UnCivGame;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.linq.LinqCounter;
 import com.unciv.models.gamebasics.Building;
@@ -15,22 +14,23 @@ import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.FullStats;
 
 public class CityInfo {
-    public final Vector2 cityLocation;
+    public transient CivilizationInfo civInfo;
+    public Vector2 cityLocation;
     public String name;
 
     public PopulationManager population = new PopulationManager();
-    public CityConstructions cityConstructions;
+    public CityConstructions cityConstructions = new CityConstructions();
     public CityExpansionManager expansion = new CityExpansionManager();
     public CityStats cityStats = new CityStats();
 
-    TileMap getTileMap(){return UnCivGame.Current.civInfo.tileMap; }
+    TileMap getTileMap(){return civInfo.gameInfo.tileMap; }
 
     public TileInfo getTile(){return getTileMap().get(cityLocation);}
     public Linq<TileInfo> getTilesInRange(){
         return getTileMap().getTilesInDistance(cityLocation,3).where(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
-                return UnCivGame.Current.civInfo.civName.equals(arg0.owner);
+                return civInfo.civName.equals(arg0.owner);
             }
         });
     }
@@ -46,22 +46,20 @@ public class CityInfo {
 
     public CityInfo(CivilizationInfo civInfo, Vector2 cityLocation) {
 
-        population.cityInfo = this;
-        expansion.cityInfo = this;
-        cityStats.cityInfo = this;
+        this.civInfo =civInfo;
+        setTransients();
 
         name = CityNames[civInfo.cities.size()];
         this.cityLocation = cityLocation;
         civInfo.cities.add(this);
-        CivilizationInfo.current().addNotification(name+" has been founded!",cityLocation);
-        cityConstructions = new CityConstructions(this);
+        civInfo.gameInfo.addNotification(name+" has been founded!",cityLocation);
         if(civInfo.policies.isAdopted("Legalism") && civInfo.cities.size() <= 4) cityConstructions.addCultureBuilding();
         if(civInfo.cities.size()==1) {
             cityConstructions.builtBuildings.add("Palace");
             cityConstructions.currentConstruction = "Worker"; // Default for first city only!
         }
 
-        for(TileInfo tileInfo : civInfo.tileMap.getTilesInDistance(cityLocation,1)) {
+        for(TileInfo tileInfo : civInfo.gameInfo.tileMap.getTilesInDistance(cityLocation,1)) {
             tileInfo.owner = civInfo.civName;
         }
 
@@ -73,6 +71,13 @@ public class CityInfo {
 
         population.autoAssignWorker();
         cityStats.update();
+    }
+
+    public void setTransients(){
+        population.cityInfo = this;
+        expansion.cityInfo = this;
+        cityStats.cityInfo = this;
+        cityConstructions.cityInfo=this;
     }
 
     public LinqCounter<TileResource> getCityResources(){
@@ -107,7 +112,7 @@ public class CityInfo {
     }
 
     double rankTile(TileInfo tile){
-        FullStats stats = tile.getTileStats(this);
+        FullStats stats = tile.getTileStats(this,civInfo);
         double rank=0;
         if(stats.food <= 2) rank+=stats.food;
         else rank += 2 + (stats.food -2)/2; // 1 point for each food up to 2, from there on half a point
@@ -136,7 +141,6 @@ public class CityInfo {
 
     public FullStats getGreatPersonPoints(){
         FullStats greatPersonPoints = population.getSpecialists().multiply(3);
-        CivilizationInfo civInfo = CivilizationInfo.current();
 
         for(Building building : cityConstructions.getBuiltBuildings())
             if(building.greatPersonPoints!=null)

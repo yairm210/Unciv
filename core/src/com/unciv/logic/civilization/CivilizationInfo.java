@@ -5,8 +5,7 @@ import com.badlogic.gdx.utils.Predicate;
 import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
-import com.unciv.logic.map.TileMap;
-import com.unciv.ui.UnCivGame;
+import com.unciv.ui.GameInfo;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.linq.LinqCounter;
 import com.unciv.models.gamebasics.Building;
@@ -14,14 +13,13 @@ import com.unciv.models.gamebasics.GameBasics;
 import com.unciv.models.gamebasics.ResourceType;
 import com.unciv.models.gamebasics.TileResource;
 import com.unciv.models.stats.CivStats;
-import com.unciv.models.stats.FullStats;
 
 import java.util.Collection;
 
 
-
 public class CivilizationInfo {
-    public static CivilizationInfo current(){ return UnCivGame.Current.civInfo; }
+
+    public transient GameInfo gameInfo;
 
     //public CivStats civStats = new CivStats();
     public int gold = 0;
@@ -33,25 +31,31 @@ public class CivilizationInfo {
     public PolicyManager policies = new PolicyManager();
     public GoldenAgeManager goldenAges = new GoldenAgeManager();
     public GreatPersonManager greatPeople = new GreatPersonManager();
-    public int turns = 1;
-
-
-    public Linq<Notification> notifications = new Linq<Notification>();
-    public void addNotification(String text, Vector2 location){
-        notifications.add(new Notification(text,location));
-    }
-    public Linq<String> tutorial = new Linq<String>();
+    public ScienceVictoryManager scienceVictory = new ScienceVictoryManager();
 
     public Linq<CityInfo> cities = new Linq<CityInfo>();
 
-    public TileMap tileMap = new TileMap(20);
-    public ScienceVictoryManager scienceVictory = new ScienceVictoryManager();
-
-    public int currentCity =0; //index!
 
     public CivilizationInfo(){}
 
-    public CityInfo getCurrentCity() { return cities.get(currentCity); }
+    public CivilizationInfo(String civName, Vector2 startingLocation, GameInfo gameInfo) {
+        this.civName = civName;
+        this.gameInfo = gameInfo;
+        this.placeUnitNearTile(startingLocation,"Settler");
+        this.placeUnitNearTile(startingLocation,"Scout");
+    }
+
+    public void setTransients(){
+        goldenAges.civInfo=this;
+        policies.civInfo=this;
+        greatPeople.civInfo=this;
+        tech.civInfo=this;
+
+        for (CityInfo cityInfo : cities) {
+            cityInfo.setTransients();
+            cityInfo.civInfo = this;
+        }
+    }
 
     public int turnsToTech(String TechName) {
         return (int) Math.ceil((float)(GameBasics.Technologies.get(TechName).cost - tech.researchOfTech(TechName))
@@ -74,7 +78,6 @@ public class CivilizationInfo {
 
     public void nextTurn()
     {
-        notifications.clear();
         CivStats nextTurnStats = getStatsForNextTurn();
         policies.nextTurn(nextTurnStats.culture);
         gold+=nextTurnStats.gold;
@@ -87,22 +90,9 @@ public class CivilizationInfo {
 
         greatPeople.greatPersonPointsForTurn();
 
-        // We need to update the stats after ALL the cities are done updating because
-        // maybe one of them has a wonder that affects the stats of all the rest of the cities
-
-        // Here we need to filter out the tiles that don''t have units, because what happens if a unit in in tile 1,
-        // gets activated, and then moves to tile 2, which is activated later? Problem!
-        for(TileInfo tile : tileMap.values().where(new Predicate<TileInfo>() {
-            @Override
-            public boolean evaluate(TileInfo arg0) {
-                return arg0.unit!=null;
-            }
-        })) tile.nextTurn();
 
         goldenAges.nextTurn(happiness);
 
-        for (CityInfo city : cities) city.cityStats.update();
-        turns++;
     }
 
     public CivStats getStatsForNextTurn() {
@@ -113,7 +103,7 @@ public class CivilizationInfo {
         statsForTurn.happiness=0;
 
         int transportationUpkeep = 0;
-        for(TileInfo tile : tileMap.values()) {
+        for(TileInfo tile : gameInfo.tileMap.values()) {
             if(tile.isCityCenter()) continue;
             if (tile.roadStatus == RoadStatus.Road) transportationUpkeep+=1;
             else if(tile.roadStatus == RoadStatus.Railroad) transportationUpkeep+=2;
@@ -170,6 +160,10 @@ public class CivilizationInfo {
                 });
             }
         }).unique();
+    }
+
+    public void placeUnitNearTile(Vector2 location, String unitName){
+        gameInfo.tileMap.placeUnitNearTile(location,unitName,this);
     }
 }
 

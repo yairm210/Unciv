@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Predicate;
+import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.models.gamebasics.Building;
 import com.unciv.models.gamebasics.GameBasics;
@@ -19,6 +20,7 @@ import com.unciv.models.linq.Linq;
 import com.unciv.models.stats.FullStats;
 import com.unciv.ui.tilegroups.TileGroup;
 import com.unciv.ui.pickerscreens.TechPickerScreen;
+import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.ImageGetter;
 
 import java.util.HashMap;
@@ -26,9 +28,11 @@ import java.util.HashMap;
 public class TileInfoTable extends Table {
 
     private final WorldScreen worldScreen;
+    final CivilizationInfo civInfo;
 
-    public TileInfoTable(WorldScreen worldScreen){
+    public TileInfoTable(WorldScreen worldScreen, CivilizationInfo civInfo){
         this.worldScreen = worldScreen;
+        this.civInfo = civInfo;
         Drawable tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(new Color(0x004085bf));
         tileTableBackground.setMinHeight(0);
@@ -39,11 +43,11 @@ public class TileInfoTable extends Table {
     void updateTileTable(final TileInfo selectedTile) {
         if (selectedTile == null) return;
         clearChildren();
-        FullStats stats = selectedTile.getTileStats();
+        FullStats stats = selectedTile.getTileStats(civInfo);
         pad(20);
         columnDefaults(0).padRight(10);
 
-        Skin skin = worldScreen.skin;
+        Skin skin = CameraStageBaseScreen.skin;
 
         if (selectedTile.explored) {
             add(new Label(selectedTile.toString(), skin)).colspan(2);
@@ -82,7 +86,7 @@ public class TileInfoTable extends Table {
 
                     // Set all tiles transparent except those in unit range
                     for (TileGroup TG : worldScreen.tileGroups.linqValues()) TG.setColor(0, 0, 0, 0.3f);
-                    for (TileInfo tile : worldScreen.game.civInfo.tileMap.getDistanceToTilesWithinTurn(worldScreen.tileMapHolder.unitTile.position, worldScreen.tileMapHolder.unitTile.unit.currentMovement).keySet()) {
+                    for (TileInfo tile : civInfo.gameInfo.tileMap.getDistanceToTilesWithinTurn(worldScreen.tileMapHolder.unitTile.position, worldScreen.tileMapHolder.unitTile.unit.currentMovement, civInfo.tech.isResearched("Machinery")).keySet()) {
                         worldScreen.tileGroups.get(tile.position.toString()).setColor(Color.WHITE);
                     }
 
@@ -94,7 +98,7 @@ public class TileInfoTable extends Table {
 
             if (selectedTile.unit.name.equals("Settler")) {
                 addUnitAction("Found City",
-                        !worldScreen.game.civInfo.tileMap.getTilesInDistance(selectedTile.position, 2).any(new Predicate<TileInfo>() {
+                        !civInfo.gameInfo.tileMap.getTilesInDistance(selectedTile.position, 2).any(new Predicate<TileInfo>() {
                             @Override
                             public boolean evaluate(TileInfo arg0) {
                                 return arg0.isCityCenter();
@@ -117,7 +121,7 @@ public class TileInfoTable extends Table {
 
                                 worldScreen.displayTutorials("CityFounded",tutorial);
 
-                                worldScreen.game.civInfo.addCity(selectedTile.position);
+                                civInfo.addCity(selectedTile.position);
                                 if (worldScreen.tileMapHolder.unitTile == selectedTile)
                                     worldScreen.tileMapHolder.unitTile = null; // The settler was in the middle of moving and we then founded a city with it
                                 selectedTile.unit = null; // Remove settler!
@@ -133,7 +137,7 @@ public class TileInfoTable extends Table {
                                 GameBasics.TileImprovements.linqValues().any(new Predicate<TileImprovement>() {
                                     @Override
                                     public boolean evaluate(TileImprovement arg0) {
-                                        return selectedTile.canBuildImprovement(arg0);
+                                        return selectedTile.canBuildImprovement(arg0,civInfo);
                                     }
                                 })
                         , new ClickListener() {
@@ -163,9 +167,9 @@ public class TileInfoTable extends Table {
                         new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                worldScreen.game.civInfo.tech.freeTechs += 1;
+                                civInfo.tech.freeTechs += 1;
                                 selectedTile.unit = null;// destroy!
-                                worldScreen.game.setScreen(new TechPickerScreen(true));
+                                worldScreen.game.setScreen(new TechPickerScreen(true, civInfo));
                             }
                         });
                 addUnitAction("Construct Academy", true,
@@ -184,7 +188,7 @@ public class TileInfoTable extends Table {
                         new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                worldScreen.game.civInfo.goldenAges.enterGoldenAge();
+                                civInfo.goldenAges.enterGoldenAge();
                                 selectedTile.unit = null;// destroy!
                                 worldScreen.update();
                             }
@@ -228,7 +232,7 @@ public class TileInfoTable extends Table {
                         new ClickListener() {
                             @Override
                             public void clicked(InputEvent event, float x, float y) {
-                                worldScreen.game.civInfo.gold += 350; // + 50 * era_number - todo!
+                                civInfo.gold += 350; // + 50 * era_number - todo!
                                 selectedTile.unit = null; // destroy!
                                 worldScreen.update();
                             }
@@ -252,7 +256,7 @@ public class TileInfoTable extends Table {
 
 
     private void addUnitAction(String actionText, boolean canAct, ClickListener action) {
-        TextButton actionButton = new TextButton(actionText, worldScreen.skin);
+        TextButton actionButton = new TextButton(actionText, CameraStageBaseScreen.skin);
         actionButton.getLabel().setFontScale(worldScreen.buttonScale);
         actionButton.addListener(action);
         if (worldScreen.tileMapHolder.selectedTile.unit.currentMovement == 0 || !canAct) {

@@ -6,25 +6,27 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.civilization.Notification;
+import com.unciv.models.linq.Linq;
 import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.ImageGetter;
 
 public class NotificationsScroll extends ScrollPane {
 
+    final Linq<Notification> notifications;
     Table notificationsTable = new Table();
     final WorldScreen worldScreen;
 
-    public NotificationsScroll(WorldScreen worldScreen) {
+    public NotificationsScroll(Linq<Notification> notifications, WorldScreen worldScreen) {
         super(null);
+        this.notifications = notifications;
         this.worldScreen = worldScreen;
         setWidget(notificationsTable);
     }
 
     void update() {
         notificationsTable.clearChildren();
-        for (final Notification notification : CivilizationInfo.current().notifications) {
+        for (final Notification notification : notifications) {
             Label label = new Label(notification.text, CameraStageBaseScreen.skin);
             label.setColor(Color.WHITE);
             label.setFontScale(1.2f);

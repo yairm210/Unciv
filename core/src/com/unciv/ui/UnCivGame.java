@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Json;
 import com.unciv.logic.civilization.CivilizationInfo;
+import com.unciv.logic.map.TileMap;
 import com.unciv.models.gamebasics.Unit;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.BasicHelp;
@@ -25,12 +26,14 @@ import com.unciv.ui.worldscreen.WorldScreen;
 public class UnCivGame extends Game {
 
     public static UnCivGame Current;
-    public CivilizationInfo civInfo;
+    public GameInfo gameInfo;
     public GameSettings settings = new GameSettings();
 
     public WorldScreen worldScreen;
     public void create() {
         SetupGameBasics();
+
+
         Current = this;
         if(GameSaver.GetSave("Autosave").exists()) {
             try {
@@ -46,9 +49,10 @@ public class UnCivGame extends Game {
     }
 
     public void startNewGame(){
-        civInfo = new CivilizationInfo();
-        civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Settler");
-        civInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Scout");
+        gameInfo = new GameInfo();
+        gameInfo.tileMap = new TileMap(20);
+        gameInfo.civilizations.add(new CivilizationInfo("Player", Vector2.Zero,gameInfo));
+        gameInfo.setTransients();
 
         worldScreen = new WorldScreen();
         setWorldScreen();
@@ -111,3 +115,4 @@ public class UnCivGame extends Game {
     }
 
 }
+

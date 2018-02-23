@@ -8,7 +8,7 @@ public class Notification{
 
     Notification(){}
 
-    Notification(String text, Vector2 location) {
+    public Notification(String text, Vector2 location) {
         this.text = text;
         this.location = location;
     }

@@ -46,46 +46,45 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
      */
     public FullStats resourceBonusStats;
 
-    public FullStats getStats(){
+    public FullStats getStats(Linq<String> adoptedPolicies){
         FullStats stats = new FullStats(this);
-        Linq<String> policies = CivilizationInfo.current().policies.getAdoptedPolicies();
-        if (policies.contains("Organized Religion") &&
+        if (adoptedPolicies.contains("Organized Religion") &&
                 new Linq<String>("Monument","Temple","Monastery").contains(name))
             stats.happiness+=1;
 
-        if (policies.contains("Free Religion") &&
+        if (adoptedPolicies.contains("Free Religion") &&
                 new Linq<String>("Monument","Temple","Monastery").contains(name))
             stats.culture+=1;
 
-        if (policies.contains("Entrepreneurship") &&
+        if (adoptedPolicies.contains("Entrepreneurship") &&
                 new Linq<String>("Mint","Market","Bank","Stock Market").contains(name))
             stats.science+=1;
 
-        if (policies.contains("Humanism") &&
+        if (adoptedPolicies.contains("Humanism") &&
                 new Linq<String>("University","Observatory","Public School").contains(name))
             stats.science+=1;
 
-        if (policies.contains("Theocracy") && name.equals("Temple"))
+        if (adoptedPolicies.contains("Theocracy") && name.equals("Temple"))
             percentStatBonus = new FullStats(){{gold=10;}};
 
-        if (policies.contains("Free Thought") && name.equals("University"))
+        if (adoptedPolicies.contains("Free Thought") && name.equals("University"))
             percentStatBonus.science=50;
 
-        if (policies.contains("Rationalism Complete") && !isWonder && stats.science>0)
+        if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science>0)
             stats.gold+=1;
 
-        if (policies.contains("Constitution") && isWonder)
+        if (adoptedPolicies.contains("Constitution") && isWonder)
             stats.culture+=2;
 
         return stats;
     }
 
     public String getDescription() {
-        return getDescription(false);
+        return getDescription(false,new Linq<String>());
     }
 
-    public String getDescription(boolean forBuildingPickerScreen) {
-        FullStats stats = getStats();
+    public String getDescription(boolean forBuildingPickerScreen, Linq<String> adoptedPolicies) {
+        FullStats stats = getStats(adoptedPolicies);
         StringBuilder stringBuilder = new StringBuilder();
         if (!forBuildingPickerScreen) stringBuilder.append("Cost: " + cost + "\r\n");
         if (isWonder) stringBuilder.append("Wonder\r\n");
@@ -133,21 +132,21 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
     }
 
     @Override
-    public int getProductionCost() {
-        if(!isWonder && culture!=0 && CivilizationInfo.current().policies.isAdopted("Piety"))
+    public int getProductionCost(Linq<String> adoptedPolicies) {
+        if(!isWonder && culture!=0 && adoptedPolicies.contains("Piety"))
             return (int) (cost*0.85);
         return cost;
     }
 
-    public int getGoldCost(){
-        double cost = Math.pow(30 * getProductionCost(),0.75) * (1 + hurryCostModifier/100);
-        if(CivilizationInfo.current().policies.isAdopted("Mercantilism")) cost*=0.75;
-        if(CivilizationInfo.current().policies.isAdopted("Patronage")) cost*=0.5;
+    public int getGoldCost(Linq<String> adoptedPolicies) {
+        double cost = Math.pow(30 * getProductionCost(adoptedPolicies),0.75) * (1 + hurryCostModifier/100);
+        if(adoptedPolicies.contains("Mercantilism")) cost*=0.75;
+        if(adoptedPolicies.contains("Patronage")) cost*=0.5;
         return (int)( cost / 10 ) * 10;
     }
     
     public boolean isBuildable(CityConstructions construction){
-        CivilizationInfo civInfo = UnCivGame.Current.civInfo;
+        CivilizationInfo civInfo = construction.cityInfo.civInfo;
         if(construction.isBuilt(name)) return false;
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech)) return false;
         if (isWonder && civInfo.cities
@@ -168,7 +167,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
                 }) ) return false;
         if(cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith)) return false;
         if("MustBeNextToDesert".equals(unique) &&
-                !civInfo.tileMap.getTilesInDistance(construction.cityLocation,1).any(new Predicate<TileInfo>() {
+                !civInfo.gameInfo.tileMap.getTilesInDistance(construction.cityInfo.cityLocation,1).any(new Predicate<TileInfo>() {
                     @Override
                     public boolean evaluate(TileInfo arg0) {
                         return arg0.baseTerrain.equals("Desert");
@@ -181,7 +180,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
 
 
         if(requiredNearbyImprovedResources!=null) {
-            boolean containsResourceWithImprovement = construction.getCity().getTilesInRange()
+            boolean containsResourceWithImprovement = construction.cityInfo.getTilesInRange()
                     .any(new Predicate<TileInfo>() {
                         @Override
                         public boolean evaluate(TileInfo tile) {
@@ -202,27 +201,28 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
 
     @Override
     public void postBuildEvent(CityConstructions constructions) {
-        if("ApolloProgram".equals(unique)) UnCivGame.Current.setScreen(new ScienceVictoryScreen());
+        CivilizationInfo civInfo = constructions.cityInfo.civInfo;
+        if("ApolloProgram".equals(unique)) UnCivGame.Current.setScreen(new ScienceVictoryScreen(civInfo));
         if("SpaceshipPart".equals(unique)) {
-            CivilizationInfo.current().scienceVictory.currentParts.add(name, 1);
-            UnCivGame.Current.setScreen(new ScienceVictoryScreen());
-            if(CivilizationInfo.current().scienceVictory.unconstructedParts().isEmpty())
+            civInfo.scienceVictory.currentParts.add(name, 1);
+            UnCivGame.Current.setScreen(new ScienceVictoryScreen(civInfo));
+            if(civInfo.scienceVictory.unconstructedParts().isEmpty())
                 UnCivGame.Current.setScreen(new VictoryScreen());
             return;
         }
         constructions.builtBuildings.add(name);
         if (providesFreeBuilding != null && !constructions.builtBuildings.contains(providesFreeBuilding))
             constructions.builtBuildings.add(providesFreeBuilding);
-        if (freeTechs != 0) UnCivGame.Current.civInfo.tech.freeTechs += freeTechs;
-        if("EmpireEntersGoldenAge".equals(unique)) CivilizationInfo.current().goldenAges.enterGoldenAge();
-        if("FreeGreatArtistAppears".equals(unique)) CivilizationInfo.current().greatPeople.addGreatPerson("Great Artist");
+        if (freeTechs != 0) civInfo.tech.freeTechs += freeTechs;
+        if("EmpireEntersGoldenAge".equals(unique)) civInfo.goldenAges.enterGoldenAge();
+        if("FreeGreatArtistAppears".equals(unique)) civInfo.greatPeople.addGreatPerson("Great Artist");
         if("WorkerConstruction".equals(unique)){
-            CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
-            CivilizationInfo.current().tileMap.placeUnitNearTile(constructions.cityLocation,"Worker");
+            civInfo.placeUnitNearTile(constructions.cityInfo.cityLocation,"Worker");
+            civInfo.placeUnitNearTile(constructions.cityInfo.cityLocation,"Worker");
         }
         if("FreeSocialPolicy".equals(unique)){
-            CivilizationInfo.current().policies.freePolicies++;
-            UnCivGame.Current.setScreen(new PolicyPickerScreen());
+            civInfo.policies.freePolicies++;
+            UnCivGame.Current.setScreen(new PolicyPickerScreen(civInfo));
         }
     }
 }

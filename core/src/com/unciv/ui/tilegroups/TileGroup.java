@@ -6,12 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.Align;
-import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.RoadStatus;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.models.linq.LinqHashMap;
-import com.unciv.ui.cityscreen.YieldGroup;
 import com.unciv.ui.utils.HexMath;
 import com.unciv.ui.utils.ImageGetter;
 
@@ -68,7 +65,7 @@ public class TileGroup extends Group {
             terrainImage.setDrawable(ImageGetter.getDrawable(terrainFileName)); // In case we e.g. removed a jungle
         }
 
-        if (tileInfo.hasViewableResource() && resourceImage == null) { // Need to add the resource image!
+        if (tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
             String fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png";
             resourceImage = ImageGetter.getImage(fileName);
             resourceImage.setSize(20, 20);

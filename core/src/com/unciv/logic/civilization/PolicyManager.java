@@ -8,19 +8,20 @@ import com.unciv.models.gamebasics.PolicyBranch;
 import com.unciv.models.linq.Linq;
 import com.unciv.ui.UnCivGame;
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen;
-import com.unciv.ui.pickerscreens.PolicyPickerScreen;
 
 
 public class PolicyManager {
+
+    public transient CivilizationInfo civInfo;
 
     public int freePolicies=0;
     public int storedCulture=0;
     private Linq<String> adoptedPolicies = new Linq<String>();
     public boolean shouldOpenPolicyPicker=false;
 
+
     public Linq<String> getAdoptedPolicies(){return adoptedPolicies.clone();}
     public boolean isAdopted(String policyName){return adoptedPolicies.contains(policyName);}
-
 
     public int getCultureNeededForNextPolicy(){
         // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
@@ -31,11 +32,11 @@ public class PolicyManager {
             }
         });
         double baseCost = 25+ Math.pow(basicPolicies*6,1.7);
-        double cityModifier = 0.3*(CivilizationInfo.current().cities.size()-1);
+        double cityModifier = 0.3*(civInfo.cities.size()-1);
         if(isAdopted("Representation")) cityModifier *= 2/3f;
         int cost = (int) Math.round(baseCost*(1+cityModifier));
         if(isAdopted("Piety Complete")) cost*=0.9;
-        if(CivilizationInfo.current().getBuildingUniques().contains("PolicyCostReduction")) cost*=0.9;
+        if(civInfo.getBuildingUniques().contains("PolicyCostReduction")) cost*=0.9;
         return cost-cost%5; // round down to nearest 5
     }
 
@@ -58,24 +59,21 @@ public class PolicyManager {
             adopt(branch.policies.get(branch.policies.size() - 1)); // add branch completion!
         }
 
-        for(CityInfo cityInfo : CivilizationInfo.current().cities)
+        for(CityInfo cityInfo : civInfo.cities)
             cityInfo.cityStats.update();
 
         if (policy.name.equals("Collective Rule"))
-            CivilizationInfo.current().tileMap.
-                    placeUnitNearTile(CivilizationInfo.current().getCapital().cityLocation, "Settler");
+            civInfo.placeUnitNearTile(civInfo.getCapital().cityLocation, "Settler");
         if (policy.name.equals("Citizenship"))
-            CivilizationInfo.current().tileMap.
-                    placeUnitNearTile(CivilizationInfo.current().getCapital().cityLocation, "Worker");
+            civInfo.placeUnitNearTile(civInfo.getCapital().cityLocation, "Worker");
         if (policy.name.equals("Representation") || policy.name.equals("Reformation"))
-            CivilizationInfo.current().goldenAges.enterGoldenAge();
+            civInfo.goldenAges.enterGoldenAge();
 
         if (policy.name.equals("Scientific Revolution"))
-            CivilizationInfo.current().tech.freeTechs+=2;
+            civInfo.tech.freeTechs+=2;
 
         if (policy.name.equals("Legalism")) {
-            Linq<CityInfo> cities = CivilizationInfo.current().cities;
-            for (CityInfo city : cities.subList(0, Math.min(4, cities.size())))
+            for (CityInfo city : civInfo.cities.subList(0, Math.min(4, civInfo.cities.size())))
                 city.cityConstructions.addCultureBuilding();
         }
 

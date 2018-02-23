@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.civilization.TechManager;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.GameBasics;
@@ -20,15 +21,19 @@ public class TechPickerScreen extends PickerScreen {
     HashMap<String, TextButton> techNameToButton = new HashMap<String, TextButton>();
     boolean isFreeTechPick;
     Technology selectedTech;
-    TechManager civTech = game.civInfo.tech;
-    ArrayList<String> techsToResearch = new ArrayList<String>(civTech.techsToResearch);
+    final CivilizationInfo civInfo;
+    TechManager civTech;
+    ArrayList<String> techsToResearch;
 
-    public TechPickerScreen(boolean freeTechPick){
-        this();
+    public TechPickerScreen(boolean freeTechPick, CivilizationInfo civInfo){
+        this(civInfo);
         isFreeTechPick=freeTechPick;
     }
 
-    public TechPickerScreen() {
+    public TechPickerScreen(final CivilizationInfo civInfo) {
+        this.civInfo = civInfo;
+        civTech = civInfo.tech;
+        techsToResearch = new ArrayList<String>(civTech.techsToResearch);
 
         Technology[][] techMatrix = new Technology[17][10]; // Divided into columns, then rows
 
@@ -65,7 +70,7 @@ public class TechPickerScreen extends PickerScreen {
                 if (isFreeTechPick) {
                     civTech.techsResearched.add(selectedTech.name);
                     civTech.freeTechs-=1;
-                    game.civInfo.addNotification("We have stumbled upon the discovery of "+selectedTech.name+"!",null);
+                    civInfo.gameInfo.addNotification("We have stumbled upon the discovery of "+selectedTech.name+"!",null);
                     if(selectedTech.name.equals(civTech.currentTechnology()))
                         civTech.techsToResearch.remove(selectedTech.name);
                 }
@@ -111,7 +116,7 @@ public class TechPickerScreen extends PickerScreen {
                 text.append(" (").append(techsToResearch.indexOf(techName)+1).append(")");
             }
 
-            if(!civTech.isResearched(techName)) text.append("\r\n"+game.civInfo.turnsToTech(techName) + " turns");
+            if(!civTech.isResearched(techName)) text.append("\r\n"+civInfo.turnsToTech(techName) + " turns");
             TB.setText(text.toString());
         }
     }

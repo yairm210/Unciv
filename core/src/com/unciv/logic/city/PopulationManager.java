@@ -1,7 +1,6 @@
 package com.unciv.logic.city;
 
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.models.linq.LinqHashMap;
 import com.unciv.models.stats.FullStats;
@@ -51,7 +50,7 @@ public class PopulationManager {
         {
             population--;
             foodStored = 0;
-            CivilizationInfo.current().addNotification(cityInfo.name+" is starving!",cityInfo.cityLocation);
+            cityInfo.civInfo.gameInfo.addNotification(cityInfo.name+" is starving!",cityInfo.cityLocation);
         }
         if (foodStored >= foodToNextPopulation()) // growth!
         {
@@ -59,7 +58,7 @@ public class PopulationManager {
             if(cityInfo.getBuildingUniques().contains("FoodCarriesOver")) foodStored+=0.4f*foodToNextPopulation(); // Aqueduct special
             population++;
             autoAssignWorker();
-            CivilizationInfo.current().addNotification(cityInfo.name+" has grown!",cityInfo.cityLocation);
+            cityInfo.civInfo.gameInfo.addNotification(cityInfo.name+" has grown!",cityInfo.cityLocation);
         }
     }
 

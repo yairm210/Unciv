@@ -9,6 +9,8 @@ import com.unciv.models.gamebasics.GameBasics;
 
 public class GreatPersonPickerScreen extends PickerScreen{
     Unit theChosenOne;
+    CivilizationInfo civInfo;
+
     public GreatPersonPickerScreen(){
         rightSideButton.setText("Choose a free great person");
         for(final Unit unit : GameBasics.Units.linqValues()){
@@ -26,8 +28,7 @@ public class GreatPersonPickerScreen extends PickerScreen{
         rightSideButton.addListener(new ClickListener(){
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                CivilizationInfo.current().tileMap.placeUnitNearTile(
-                        CivilizationInfo.current().cities.get(0).cityLocation, theChosenOne.name);
+                civInfo.placeUnitNearTile(civInfo.cities.get(0).cityLocation, theChosenOne.name);
             }
         });
     }

@@ -1,11 +1,8 @@
 package com.unciv.logic.city;
 
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
-import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.models.linq.Linq;
-import com.unciv.ui.UnCivGame;
 
 public class CityExpansionManager{
 
@@ -13,12 +10,12 @@ public class CityExpansionManager{
     public int cultureStored;
     private int tilesClaimed;
 
-    private void addNewTile(){
+    private void addNewTileWithCulture(){
         cultureStored -= getCultureToNextTile();
         tilesClaimed++;
 
         for (int i = 2; i <4 ; i++) {
-            Linq<TileInfo> tiles = CivilizationInfo.current().tileMap.getTilesInDistance(cityInfo.cityLocation,i);
+            Linq<TileInfo> tiles = cityInfo.civInfo.gameInfo.tileMap.getTilesInDistance(cityInfo.cityLocation,i);
             tiles = tiles.where(new Predicate<TileInfo>() {
                 @Override
                 public boolean evaluate(TileInfo arg0) {
@@ -36,7 +33,7 @@ public class CityExpansionManager{
                     TileChosen = tile;
                 }
             }
-            TileChosen.owner = UnCivGame.Current.civInfo.civName;
+            TileChosen.owner = cityInfo.civInfo.civName;
             return;
         }
     }
@@ -48,8 +45,8 @@ public class CityExpansionManager{
         //   (per game XML files) at 6*(t+0.4813)^1.3
         // The second seems to be more based, so I'll go with that
         double a = 6*Math.pow(tilesClaimed+1.4813,1.3);
-        if(CivilizationInfo.current().getBuildingUniques().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
-        if(CivilizationInfo.current().policies.isAdopted("Tradition")) a *= 0.75;
+        if(cityInfo.civInfo.getBuildingUniques().contains("NewTileCostReduction")) a *= 0.75; //Speciality of Angkor Wat
+        if(cityInfo.civInfo.policies.isAdopted("Tradition")) a *= 0.75;
         return (int)Math.round(a);
     }
 
@@ -57,8 +54,13 @@ public class CityExpansionManager{
 
         cultureStored+=culture;
         if(cultureStored>=getCultureToNextTile()){
-            addNewTile();
-            CivilizationInfo.current().addNotification(cityInfo.name+" has expanded its borders!",cityInfo.cityLocation);
+            addNewTileWithCulture();
+            cityInfo.civInfo.gameInfo.addNotification(cityInfo.name+" has expanded its borders!",cityInfo.cityLocation);
         }
+    }
+
+    public int getGoldCostOfTile(TileInfo tileInfo){
+        //int distanceFromCenter =
+        return 50;
     }
 }

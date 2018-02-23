@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityInfo;
 import com.unciv.logic.map.TileInfo;
 import com.unciv.ui.cityscreen.CityScreen;
 import com.unciv.ui.UnCivGame;
+import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.ImageGetter;
 import com.unciv.ui.worldscreen.WorldScreen;
 
@@ -51,7 +52,7 @@ public class WorldTileGroup extends TileGroup {
             float buttonScale = 0.7f;
             if (cityButton == null) {
                 cityButton = new Container<TextButton>();
-                cityButton.setActor(new TextButton("", worldScreen.skin));
+                cityButton.setActor(new TextButton("", CameraStageBaseScreen.skin));
 
                 cityButton.getActor().getLabel().setFontScale(buttonScale);
 
@@ -59,8 +60,7 @@ public class WorldTileGroup extends TileGroup {
                 cityButton.getActor().addListener(new ClickListener() {
                     @Override
                     public void clicked(InputEvent event, float x, float y) {
-                        game.civInfo.currentCity = game.civInfo.cities.indexOf(city);
-                        game.setScreen(new CityScreen());
+                        game.setScreen(new CityScreen(city));
                     }
                 });
 

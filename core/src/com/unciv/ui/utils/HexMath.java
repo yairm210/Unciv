@@ -63,7 +63,7 @@ public class HexMath
             vectors.add(Current.cpy());
             vectors.add(origin.cpy().scl(2).sub(Current)); // Get vector on other side of cloick
             Current.add(0,1);
-        };
+        }
         return vectors;
     }
 

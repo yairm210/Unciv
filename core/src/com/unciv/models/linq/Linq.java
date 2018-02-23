@@ -66,7 +66,7 @@ public class Linq<T> extends ArrayList<T> {
     }
 
     public interface Func<T1, T2> {
-        public T2 GetBy(T1 arg0);
+        T2 GetBy(T1 arg0);
     }
 
     public <T2> Linq<T2> as(Class<T2> t2Class){

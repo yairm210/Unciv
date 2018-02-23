@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.models.stats.CivStats;
+import com.unciv.ui.utils.CameraStageBaseScreen;
 import com.unciv.ui.utils.ImageGetter;
 
 public class CivStatsTable extends Table {
@@ -20,8 +21,8 @@ public class CivStatsTable extends Table {
     }
 
     void update(final WorldScreen screen) {
-        CivilizationInfo civInfo = screen.game.civInfo;
-        Skin skin = screen.skin;
+        CivilizationInfo civInfo = screen.civInfo;
+        Skin skin = CameraStageBaseScreen.skin;
         clear();
         row().pad(15);
 
@@ -38,7 +39,7 @@ public class CivStatsTable extends Table {
         add(CivilopediaButton)
                 .size(CivilopediaButton.getWidth() * screen.buttonScale, CivilopediaButton.getHeight() * screen.buttonScale);
 
-        add(new Label("Turns: " + civInfo.turns + "/400", skin));
+        add(new Label("Turns: " + civInfo.gameInfo.turns + "/400", skin));
 
         CivStats nextTurnStats = civInfo.getStatsForNextTurn();
 

@@ -3,10 +3,14 @@ package com.unciv.logic.map;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.logic.civilization.CivilizationInfo;
-import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.GameBasics;
+import com.unciv.models.gamebasics.TileImprovement;
+import com.unciv.models.linq.Linq;
 
 public class MapUnit{
+    public transient CivilizationInfo civInfo;
+
+    public String owner;
     public String name;
     public int maxMovement;
     public float currentMovement;
@@ -32,7 +36,6 @@ public class MapUnit{
         if(name.equals("Worker") && tile.improvementInProgress!=null) workOnImprovement(tile);
     }
 
-
     private void workOnImprovement(TileInfo tile){
         tile.turnsToImprovement -= 1;
         if(tile.turnsToImprovement == 0)
@@ -45,11 +48,10 @@ public class MapUnit{
         }
     }
 
-
     private int getPriority(TileInfo tileInfo){
         int priority =0;
         if(tileInfo.workingCity!=null) priority+=2;
-        if(tileInfo.hasViewableResource()) priority+=1;
+        if(tileInfo.hasViewableResource(civInfo)) priority+=1;
         if(tileInfo.owner!=null) priority+=2;
         else if(tileInfo.getNeighbors().any(new Predicate<TileInfo>() {
             @Override
@@ -62,12 +64,13 @@ public class MapUnit{
 
     public TileInfo findTileToWork(TileInfo currentTile){
         TileInfo selectedTile = currentTile;
-        int tilePriority = currentTile.improvement==null && currentTile.canBuildImprovement(chooseImprovement(currentTile))
+        int tilePriority = currentTile.improvement==null
+                && currentTile.canBuildImprovement(chooseImprovement(currentTile), civInfo)
                 ? getPriority(currentTile) : 1; // min rank to get selected is 2
         for (int i = 1; i < 5; i++)
-            for (TileInfo tile : CivilizationInfo.current().tileMap.getTilesAtDistance(currentTile.position,i))
+            for (TileInfo tile : civInfo.gameInfo.tileMap.getTilesAtDistance(currentTile.position,i))
                 if(tile.unit==null && tile.improvement==null && getPriority(tile)>tilePriority
-                        && tile.canBuildImprovement(chooseImprovement(tile))){
+                        && tile.canBuildImprovement(chooseImprovement(tile),civInfo)){
                     selectedTile = tile;
                     tilePriority = getPriority(tile);
                 }
@@ -83,13 +86,17 @@ public class MapUnit{
             return;
         }
         if(tile.improvementInProgress == null){
-            String improvement =chooseImprovement(tile);
-            if(tile.canBuildImprovement(improvement)) // What if we're stuck on this tile but can't build there?
-                tile.startWorkingOnImprovement(improvement);
+            TileImprovement improvement =chooseImprovement(tile);
+            if(tile.canBuildImprovement(improvement,civInfo)) // What if we're stuck on this tile but can't build there?
+                tile.startWorkingOnImprovement(improvement,civInfo);
         }
     }
 
-    private String chooseImprovement(final TileInfo tile){
+    private TileImprovement chooseImprovement(final TileInfo tile){
+        return GameBasics.TileImprovements.get(chooseImprovementString(tile));
+    }
+
+    private String chooseImprovementString(final TileInfo tile){
         if(tile.improvementInProgress!=null) return tile.improvementInProgress;
         if("Forest".equals(tile.terrainFeature)) return "Lumber mill";
         if("Jungle".equals(tile.terrainFeature)) return "Trading post";
@@ -110,12 +117,13 @@ public class MapUnit{
      * @return The tile that we reached this turn
      */
     public TileInfo headTowards(Vector2 origin, Vector2 destination){
-        TileMap tileMap = CivilizationInfo.current().tileMap;
-        Linq<TileInfo> path = tileMap.getShortestPath(origin,destination,currentMovement,maxMovement);
+        TileMap tileMap = civInfo.gameInfo.tileMap;
+        boolean isMachieneryResearched = civInfo.tech.isResearched("Machinery");
+        Linq<TileInfo> path = tileMap.getShortestPath(origin,destination,currentMovement,maxMovement, isMachieneryResearched);
 
         TileInfo destinationThisTurn = path.get(0);
         if(destinationThisTurn.unit!=null) return null;
-        float distanceToTile = tileMap.getDistanceToTilesWithinTurn(origin,currentMovement).get(destinationThisTurn);
+        float distanceToTile = tileMap.getDistanceToTilesWithinTurn(origin,currentMovement,isMachieneryResearched).get(destinationThisTurn);
         tileMap.get(origin).moveUnitToTile(destinationThisTurn, distanceToTile);
         return destinationThisTurn;
     }

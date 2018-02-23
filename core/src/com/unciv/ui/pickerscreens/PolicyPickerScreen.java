@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.civilization.PolicyManager;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.gamebasics.GameBasics;
@@ -18,11 +19,14 @@ import com.unciv.ui.utils.ImageGetter;
 
 public class PolicyPickerScreen extends PickerScreen {
 
+    final CivilizationInfo civInfo;
+
     private Policy pickedPolicy;
 
-    public PolicyPickerScreen() {
+    public PolicyPickerScreen(final CivilizationInfo civInfo) {
+        this.civInfo = civInfo;
 
-        final PolicyManager policies = game.civInfo.policies;
+        final PolicyManager policies = civInfo.policies;
         Linq<String> tutorial = new Linq<String>();
         tutorial.add("Each turn, the culture you gain from all your " +
                 "\r\n  cities is added to your Civilization's culture." +
@@ -48,9 +52,9 @@ public class PolicyPickerScreen extends PickerScreen {
             public void clicked(InputEvent event, float x, float y) {
                 if(policies.freePolicies>0) policies.freePolicies--;
                 else policies.storedCulture -= policies.getCultureNeededForNextPolicy();
-                game.civInfo.policies.adopt(pickedPolicy);
+                civInfo.policies.adopt(pickedPolicy);
 
-                game.setScreen(new PolicyPickerScreen());
+                game.setScreen(new PolicyPickerScreen(civInfo));
             }
         });
 
@@ -90,9 +94,9 @@ public class PolicyPickerScreen extends PickerScreen {
     }
 
     public void pickPolicy(Policy policy) {
-        if (game.civInfo.policies.isAdopted(policy.name)
-                || !game.civInfo.policies.getAdoptedPolicies().containsAll(policy.requires)
-                || !game.civInfo.policies.canAdoptPolicy()) {
+        if (civInfo.policies.isAdopted(policy.name)
+                || !civInfo.policies.getAdoptedPolicies().containsAll(policy.requires)
+                || !civInfo.policies.canAdoptPolicy()) {
             rightSideButton.setTouchable(Touchable.disabled);
             rightSideButton.setColor(Color.GRAY);
         } else {
@@ -113,9 +117,9 @@ public class PolicyPickerScreen extends PickerScreen {
             toReturn.add(policyImage).size(30);
         } else toReturn = new TextButton(policy.name, skin);
 
-        if (game.civInfo.policies.isAdopted(policy.name)) { // existing
+        if (civInfo.policies.isAdopted(policy.name)) { // existing
             toReturn.setColor(Color.GREEN);
-        } else if (!game.civInfo.policies.getAdoptedPolicies().containsAll(policy.requires)) // non-available
+        } else if (!civInfo.policies.getAdoptedPolicies().containsAll(policy.requires)) // non-available
         {
             toReturn.setColor(Color.GRAY);
         }

@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Predicate;
 import com.unciv.logic.civilization.CivilizationInfo;
 import com.unciv.logic.map.TileInfo;
+import com.unciv.logic.map.TileMap;
 import com.unciv.models.linq.Linq;
 import com.unciv.models.linq.LinqHashMap;
 import com.unciv.ui.tilegroups.TileGroup;
@@ -20,13 +21,17 @@ import java.util.HashSet;
 public class TileMapHolder extends ScrollPane {
 
     final WorldScreen worldScreen;
+    final TileMap tileMap;
+    final CivilizationInfo civInfo;
     TileInfo selectedTile = null;
     TileInfo unitTile = null;
 
 
-    public TileMapHolder(final WorldScreen worldScreen) {
+    public TileMapHolder(final WorldScreen worldScreen, TileMap tileMap, CivilizationInfo civInfo) {
         super(null);
         this.worldScreen=worldScreen;
+        this.tileMap = tileMap;
+        this.civInfo = civInfo;
     }
 
     void addTiles() {
@@ -37,7 +42,7 @@ public class TileMapHolder extends ScrollPane {
         float bottomX = 0;
         float bottomY = 0;
 
-        for (final TileInfo tileInfo : worldScreen.game.civInfo.tileMap.values()) {
+        for (final TileInfo tileInfo : tileMap.values()) {
             final WorldTileGroup group = new WorldTileGroup(tileInfo);
 
             group.addListener(new ClickListener() {
@@ -52,7 +57,7 @@ public class TileMapHolder extends ScrollPane {
 
                     selectedTile = tileInfo;
                     if (unitTile != null && group.tileInfo.unit == null) {
-                        LinqHashMap<TileInfo, Float> distanceToTiles = worldScreen.game.civInfo.tileMap.getDistanceToTilesWithinTurn(unitTile.position, unitTile.unit.currentMovement);
+                        LinqHashMap<TileInfo, Float> distanceToTiles = tileMap.getDistanceToTilesWithinTurn(unitTile.position, unitTile.unit.currentMovement, civInfo.tech.isResearched("Machinery"));
                         if (distanceToTiles.containsKey(selectedTile)) {
                             unitTile.moveUnitToTile(group.tileInfo, distanceToTiles.get(selectedTile));
                         } else {
@@ -125,21 +130,20 @@ public class TileMapHolder extends ScrollPane {
         HashSet<String> ViewableVectorStrings = new HashSet<String>();
 
         // tiles adjacent to city tiles
-        CivilizationInfo civInfo = worldScreen.game.civInfo;
-        for (TileInfo tileInfo : civInfo.tileMap.values())
+        for (TileInfo tileInfo : tileMap.values())
             if (civInfo.civName.equals(tileInfo.owner))
                 for (Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileInfo.position))
                     ViewableVectorStrings.add(adjacentLocation.toString());
 
         // Tiles within 2 tiles of units
-        for (TileInfo tile : civInfo.tileMap.values()
+        for (TileInfo tile : tileMap.values()
                 .where(new Predicate<TileInfo>() {
                     @Override
                     public boolean evaluate(TileInfo arg0) {
                         return arg0.unit != null;
                     }
                 }))
-            for (TileInfo tileInfo : civInfo.tileMap.getViewableTiles(tile.position,2))
+            for (TileInfo tileInfo : tileMap.getViewableTiles(tile.position,2))
                 ViewableVectorStrings.add(tileInfo.position.toString());
 
         for (String string : ViewableVectorStrings)
