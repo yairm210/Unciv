@@ -1,5 +1,11 @@
 buildscript {
-    
+
+    ext.kotlinVersion = '1.2.21'
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+
 
     repositories {
         mavenLocal()
@@ -39,7 +45,7 @@ allprojects {
 }
 
 project(":desktop") {
-    apply plugin: "java"
+    apply plugin: "kotlin"
 
 
     dependencies {
@@ -53,6 +59,7 @@ project(":desktop") {
 
 project(":android") {
     apply plugin: "android"
+    apply plugin: "kotlin-android"
 
     configurations { natives }
 
@@ -75,7 +82,7 @@ project(":android") {
 }
 
 project(":ios") {
-    apply plugin: "java"
+    apply plugin: "kotlin"
     apply plugin: "robovm"
 
 
@@ -107,13 +114,13 @@ project(":html") {
 }
 
 project(":core") {
-    apply plugin: "java"
+    apply plugin: "kotlin"
 
 
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-        
+        compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
     }
 }
 

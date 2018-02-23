@@ -1,6 +1,6 @@
 android {
     buildToolsVersion "26.0.2"
-    compileSdkVersion 25
+    compileSdkVersion 26
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'

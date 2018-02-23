@@ -91,13 +91,16 @@ public class CivilizationInfo {
 
         String greatPerson = greatPeople.getNewGreatPerson();
         if(greatPerson!=null) {
-            CityInfo randomCity = cities.getRandom();
-            placeUnitNearTile(cities.getRandom().cityLocation, greatPerson);
-            gameInfo.addNotification("A " + greatPerson + " has been born!", randomCity.cityLocation);
         }
 
         goldenAges.nextTurn(happiness);
 
+    }
+
+    public void addGreatPerson(String greatPerson){
+        CityInfo randomCity = cities.getRandom();
+        placeUnitNearTile(cities.getRandom().cityLocation, greatPerson);
+        gameInfo.addNotification("A " + greatPerson + " has been born!", randomCity.cityLocation);
     }
 
     public CivStats getStatsForNextTurn() {
