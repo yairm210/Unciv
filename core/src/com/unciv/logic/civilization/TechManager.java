@@ -21,7 +21,6 @@ public class TechManager {
     public HashMap<String, Integer> techsInProgress = new HashMap<String, Integer>();
 
 
-
     public String currentTechnology(){if(techsToResearch.isEmpty()) return null; return techsToResearch.get(0);}
 
     public Technology getCurrentTechnology() {
@@ -65,7 +64,7 @@ public class TechManager {
 
             if (revealedResource != null)
                 for (TileInfo tileInfo : civInfo.gameInfo.tileMap.values())
-                    if (revealedResource.name.equals(tileInfo.resource) && tileInfo.owner != null) {
+                    if (revealedResource.name.equals(tileInfo.resource) && civInfo.civName.equals(tileInfo.owner)) {
                         for (int i = 0; ; i++) {
                             TileInfo cityTile = civInfo.gameInfo.tileMap.getTilesAtDistance(tileInfo.position, i)
                                     .first(new Predicate<TileInfo>() {

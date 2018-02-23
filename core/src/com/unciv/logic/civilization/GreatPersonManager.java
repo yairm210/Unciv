@@ -5,41 +5,33 @@ import com.unciv.models.stats.FullStats;
 
 public class GreatPersonManager{
 
-    public transient CivilizationInfo civInfo;
+    private int pointsForNextGreatPerson=100;
+    private FullStats greatPersonPoints = new FullStats();
 
-    public void addGreatPerson(String unitName){ // This is also done by some wonders and social policies, remember
-        civInfo.placeUnitNearTile(civInfo.getCapital().cityLocation,unitName);
-        civInfo.gameInfo.addNotification("A "+unitName+" has been born!",civInfo.getCapital().cityLocation);
-    }
+    public void addGreatPersonPoints(FullStats greatPersonPoints){ greatPersonPoints.add(greatPersonPoints);}
 
-    public void greatPersonPointsForTurn(){
-        for(CityInfo city : civInfo.cities)
-            greatPersonPoints.add(city.getGreatPersonPoints());
-
+    public String getNewGreatPerson(){
         if(greatPersonPoints.science>pointsForNextGreatPerson){
             greatPersonPoints.science-=pointsForNextGreatPerson;
             pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Scientist");
+            return "Great Scientist";
         }
         if(greatPersonPoints.production>pointsForNextGreatPerson){
             greatPersonPoints.production-=pointsForNextGreatPerson;
             pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Engineer");
+            return "Great Engineer";
         }
         if(greatPersonPoints.culture>pointsForNextGreatPerson){
             greatPersonPoints.culture-=pointsForNextGreatPerson;
             pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Artist");
+            return "Great Artist";
         }
         if(greatPersonPoints.gold>pointsForNextGreatPerson){
             greatPersonPoints.gold-=pointsForNextGreatPerson;
             pointsForNextGreatPerson*=2;
-            addGreatPerson("Great Merchant");
+            return "Great Merchant";
         }
+        return null;
     }
-
-    public int pointsForNextGreatPerson=100;
-
-    public FullStats greatPersonPoints = new FullStats();
-
+    
 }

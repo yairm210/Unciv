@@ -23,7 +23,6 @@ public class CivilizationInfo {
 
     //public CivStats civStats = new CivStats();
     public int gold = 0;
-    public int baseHappiness = 15;
     public String civName = "Babylon";
 
 
@@ -48,7 +47,6 @@ public class CivilizationInfo {
     public void setTransients(){
         goldenAges.civInfo=this;
         policies.civInfo=this;
-        greatPeople.civInfo=this;
         tech.civInfo=this;
 
         for (CityInfo cityInfo : cities) {
@@ -86,10 +84,17 @@ public class CivilizationInfo {
 
         if(cities.size() > 0) tech.nextTurn((int)nextTurnStats.science);
 
-        for (CityInfo city : cities) city.nextTurn();
+        for (CityInfo city : cities){
+            city.nextTurn();
+            greatPeople.addGreatPersonPoints(city.getGreatPersonPoints());
+        }
 
-        greatPeople.greatPersonPointsForTurn();
-
+        String greatPerson = greatPeople.getNewGreatPerson();
+        if(greatPerson!=null) {
+            CityInfo randomCity = cities.getRandom();
+            placeUnitNearTile(cities.getRandom().cityLocation, greatPerson);
+            gameInfo.addNotification("A " + greatPerson + " has been born!", randomCity.cityLocation);
+        }
 
         goldenAges.nextTurn(happiness);
 
@@ -119,7 +124,7 @@ public class CivilizationInfo {
     }
 
     public int getHappinessForNextTurn(){
-        int happiness = baseHappiness;
+        int happiness = 15; // base happiness
         int happinessPerUniqueLuxury = 5;
         if(policies.isAdopted("Protectionism")) happinessPerUniqueLuxury+=1;
         happiness += new Linq<TileResource>(getCivResources().keySet()).count(new Predicate<TileResource>() {

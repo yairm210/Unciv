@@ -33,6 +33,8 @@ public class CityExpansionManager{
                     TileChosen = tile;
                 }
             }
+            if(TileChosen==null) // We can't add any more tiles to this city!
+                return;
             TileChosen.owner = cityInfo.civInfo.civName;
             return;
         }

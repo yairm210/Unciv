@@ -19,8 +19,8 @@ android {
     }
     defaultConfig {
         applicationId "com.unciv.game"
-        minSdkVersion 9
-        targetSdkVersion 25
+        minSdkVersion 14
+        targetSdkVersion 26
         versionCode 26
         versionName "1.2.2"
     }

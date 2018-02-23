@@ -1,3 +1,5 @@
+import de.richsource.gradle.plugins.gwt.GwtSuperDev
+
 apply plugin: "java"
 apply plugin: "jetty"
 
@@ -24,7 +26,7 @@ task draftRun(type: JettyRunWar) {
     daemon=true
 }
 
-task superDev(type: de.richsource.gradle.plugins.gwt.GwtSuperDev) {
+task superDev(type: GwtSuperDev) {
     dependsOn draftRun
     doFirst {
     	gwt.modules = gwt.devModules
