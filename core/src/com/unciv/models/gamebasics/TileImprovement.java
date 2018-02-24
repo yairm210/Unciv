@@ -28,7 +28,7 @@ public class TileImprovement extends NamedStats implements ICivilopedia {
     @Override
     public String getDescription() {
         StringBuilder stringBuilder = new StringBuilder();
-        if(!new FullStats(this).toString().isEmpty()) stringBuilder.append(new FullStats(this)+"\r\n");
+        if(!this.clone().toString().isEmpty()) stringBuilder.append(this.clone()+"\r\n");
         if(!terrainsCanBeBuiltOn.isEmpty()) stringBuilder.append("Can be built on " + StringUtils.join(", ", terrainsCanBeBuiltOn));
 
         HashMap<String,ArrayList<String>> statsToResourceNames = new HashMap<String, ArrayList<String>>();

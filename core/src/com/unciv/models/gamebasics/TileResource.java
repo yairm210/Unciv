@@ -22,7 +22,7 @@ public class TileResource extends NamedStats implements ICivilopedia {
     @Override
     public String getDescription() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(new FullStats(this)+"\r\n");
+        stringBuilder.append(this.clone()+"\r\n");
         stringBuilder.append("Can be found on " + com.unciv.models.gamebasics.StringUtils.join(", ", terrainsCanBeFoundOn));
         stringBuilder.append("\r\n\r\nImproved by "+ improvement +"\r\n");
         stringBuilder.append("\r\nBonus stats for improvement: "+ improvementStats +"\r\n");

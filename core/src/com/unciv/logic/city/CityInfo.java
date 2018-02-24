@@ -140,18 +140,18 @@ public class CityInfo {
     }
 
     public FullStats getGreatPersonPoints(){
-        FullStats greatPersonPoints = population.getSpecialists().multiply(3);
+        FullStats greatPersonPoints = population.getSpecialists().times(3);
 
         for(Building building : cityConstructions.getBuiltBuildings())
             if(building.greatPersonPoints!=null)
                 greatPersonPoints.add(building.greatPersonPoints);
 
         if(civInfo.getBuildingUniques().contains("GreatPersonGenerationIncrease"))
-            greatPersonPoints = greatPersonPoints.multiply(1.33f);
+            greatPersonPoints = greatPersonPoints.times(1.33f);
         if(civInfo.policies.isAdopted("Entrepreneurship"))
             greatPersonPoints.gold*=1.25;
         if(civInfo.policies.isAdopted("Freedom"))
-            greatPersonPoints = greatPersonPoints.multiply(1.25f);
+            greatPersonPoints = greatPersonPoints.times(1.25f);
 
         return greatPersonPoints;
     }

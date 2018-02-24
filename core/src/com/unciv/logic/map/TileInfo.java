@@ -68,11 +68,11 @@ public class TileInfo
 
     public FullStats getTileStats(CityInfo city, CivilizationInfo observingCiv)
     {
-        FullStats stats = new FullStats(getBaseTerrain());
+        FullStats stats = getBaseTerrain().clone();
 
         if(terrainFeature !=null){
             Terrain terrainFeature = getTerrainFeature();
-            if(terrainFeature.overrideStats) stats = new FullStats(terrainFeature);
+            if(terrainFeature.overrideStats) stats = terrainFeature.clone();
             else stats.add(terrainFeature);
         }
 

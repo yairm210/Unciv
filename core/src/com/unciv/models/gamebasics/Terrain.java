@@ -1,6 +1,5 @@
 package com.unciv.models.gamebasics;
 
-import com.unciv.models.stats.FullStats;
 import com.unciv.models.stats.NamedStats;
 
 import java.util.Collection;
@@ -36,7 +35,7 @@ public class Terrain extends NamedStats implements ICivilopedia {
 
     @Override
     public String getDescription() {
-        return ""+new FullStats(this);
+        return ""+this.clone();
     }
 }
 

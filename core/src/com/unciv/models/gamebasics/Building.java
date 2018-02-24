@@ -47,7 +47,7 @@ public class Building extends NamedStats implements IConstruction, ICivilopedia 
     public FullStats resourceBonusStats;
 
     public FullStats getStats(Linq<String> adoptedPolicies){
-        FullStats stats = new FullStats(this);
+        FullStats stats = this.clone();
         if (adoptedPolicies.contains("Organized Religion") &&
                 new Linq<String>("Monument","Temple","Monastery").contains(name))
             stats.happiness+=1;

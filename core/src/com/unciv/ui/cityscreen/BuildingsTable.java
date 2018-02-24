@@ -30,7 +30,7 @@ public class BuildingsTable extends Table {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 CityInfo cityInfo = cityScreen.city;
-                if(isFilled) cityInfo.population.buildingsSpecialists.get(building).add(specialistType.minus()); //unassign
+                if(isFilled) cityInfo.population.buildingsSpecialists.get(building).add(specialistType.getMinus()); //unassign
                 else if(cityInfo.population.getFreePopulation()==0) return;
                 else {
                     if(!cityInfo.population.buildingsSpecialists.containsKey(building))
