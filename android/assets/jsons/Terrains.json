@@ -4,44 +4,38 @@
 		name:"Grassland",
 		type:"BaseTerrain",
 		food:2,
-		movementCost:1,
-		rgb:"0,255,0"
+		movementCost:1
 	},
 	{
 		name:"Plains",
 		type:"BaseTerrain",
 		food:1,
 		production:1,
-		movementCost:1,
-		rgb:"240,180,135"
+		movementCost:1
 	},
 	{
 		name:"Tundra",
 		type:"BaseTerrain",
 		food:1,
-		movementCost:1,
-		rgb:"130,137,121"
+		movementCost:1
 	},
 	{
 		name:"Desert",
 		type:"BaseTerrain",
-		movementCost:1,
-		rgb:"237,201,175"
+		movementCost:1
 	},
 	{
 		name:"Lakes",
 		type:"BaseTerrain",
 		food:1,
-		gold:1,
-		rgb:"104,120,201",
+		gold:1
 		canHaveOverlay:false
 	},
 	{
 		name:"Hill",
 		type:"BaseTerrain",
 		production:2,
-		movementCost:2,
-		rgb:"116,88,62"
+		movementCost:2
 	},
 	
 	// Terrain features

@@ -87,6 +87,7 @@ public class CityConstructions
         });
         if (currentConstruction == null) currentConstruction = Worker;
 
+        GameBasics.TileImprovements.keySet().contains("fds");
         cityInfo.civInfo.gameInfo.addNotification("Work has started on "+ currentConstruction,cityInfo.cityLocation);
     }
 
@@ -122,7 +123,7 @@ public class CityConstructions
 
     public int getMaintainanceCosts(){
         int maintainanceTotal = 0;
-        for( Building building : getBuiltBuildings()) maintainanceTotal+=building.maintainance;
+        for( Building building : getBuiltBuildings()) maintainanceTotal+=building.maintenance;
         return maintainanceTotal;
     }
 
