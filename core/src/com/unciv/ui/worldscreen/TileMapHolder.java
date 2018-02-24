@@ -42,7 +42,7 @@ public class TileMapHolder extends ScrollPane {
         float bottomX = 0;
         float bottomY = 0;
 
-        for (final TileInfo tileInfo : tileMap.values()) {
+        for (final TileInfo tileInfo : tileMap.getValues()) {
             final WorldTileGroup group = new WorldTileGroup(tileInfo);
 
             group.addListener(new ClickListener() {
@@ -130,13 +130,13 @@ public class TileMapHolder extends ScrollPane {
         HashSet<String> ViewableVectorStrings = new HashSet<String>();
 
         // tiles adjacent to city tiles
-        for (TileInfo tileInfo : tileMap.values())
+        for (TileInfo tileInfo : tileMap.getValues())
             if (civInfo.civName.equals(tileInfo.owner))
                 for (Vector2 adjacentLocation : HexMath.GetAdjacentVectors(tileInfo.position))
                     ViewableVectorStrings.add(adjacentLocation.toString());
 
         // Tiles within 2 tiles of units
-        for (TileInfo tile : tileMap.values()
+        for (TileInfo tile : tileMap.getValues()
                 .where(new Predicate<TileInfo>() {
                     @Override
                     public boolean evaluate(TileInfo arg0) {

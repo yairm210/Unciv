@@ -26,7 +26,7 @@ public class GameInfo{
 
         for(CivilizationInfo civInfo : civilizations) civInfo.nextTurn();
 
-        for(TileInfo tile : tileMap.values().where(new Predicate<TileInfo>() {
+        for(TileInfo tile : tileMap.getValues().where(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
                 return arg0.unit!=null;
@@ -52,7 +52,7 @@ public class GameInfo{
             civInfo.setTransients();
         }
 
-        for(final TileInfo tile : tileMap.values())
+        for(final TileInfo tile : tileMap.getValues())
             if(tile.unit!=null) tile.unit.civInfo=civilizations.first(new Predicate<CivilizationInfo>() {
                 @Override
                 public boolean evaluate(CivilizationInfo arg0) {

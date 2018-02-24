@@ -111,7 +111,7 @@ public class CivilizationInfo {
         statsForTurn.happiness=0;
 
         int transportationUpkeep = 0;
-        for(TileInfo tile : gameInfo.tileMap.values()) {
+        for(TileInfo tile : gameInfo.tileMap.getValues()) {
             if(tile.isCityCenter()) continue;
             if (tile.roadStatus == RoadStatus.Road) transportationUpkeep+=1;
             else if(tile.roadStatus == RoadStatus.Railroad) transportationUpkeep+=2;

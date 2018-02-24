@@ -63,7 +63,7 @@ public class TechManager {
             });
 
             if (revealedResource != null)
-                for (TileInfo tileInfo : civInfo.gameInfo.tileMap.values())
+                for (TileInfo tileInfo : civInfo.gameInfo.tileMap.getValues())
                     if (revealedResource.name.equals(tileInfo.resource) && civInfo.civName.equals(tileInfo.owner)) {
                         for (int i = 0; ; i++) {
                             TileInfo cityTile = civInfo.gameInfo.tileMap.getTilesAtDistance(tileInfo.position, i)

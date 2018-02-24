@@ -20,7 +20,7 @@ public class IdleUnitButton extends TextButton {
         addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                Linq<TileInfo> tilesWithIdleUnits = worldScreen.civInfo.gameInfo.tileMap.values().where(new Predicate<TileInfo>() {
+                Linq<TileInfo> tilesWithIdleUnits = worldScreen.civInfo.gameInfo.tileMap.getValues().where(new Predicate<TileInfo>() {
                     @Override
                     public boolean evaluate(TileInfo arg0) {
                         return arg0.hasIdleUnit();
@@ -43,7 +43,7 @@ public class IdleUnitButton extends TextButton {
     }
 
     void update() {
-        if (worldScreen.civInfo.gameInfo.tileMap.values().any(new Predicate<TileInfo>() {
+        if (worldScreen.civInfo.gameInfo.tileMap.getValues().any(new Predicate<TileInfo>() {
             @Override
             public boolean evaluate(TileInfo arg0) {
                 return arg0.hasIdleUnit();

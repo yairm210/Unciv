@@ -15,9 +15,9 @@ open class FullStats : CivStats()
     }
 
     fun clone():FullStats {
-        val FS = FullStats()
-        FS.add(this)
-        return FS
+        val stats = FullStats()
+        stats.add(this)
+        return stats
     }
 
     fun getMinus(): FullStats {
@@ -28,22 +28,22 @@ open class FullStats : CivStats()
         stats.science = -science
         stats.culture = -culture
         stats.happiness = -happiness
-        return stats;
+        return stats
     }
 
     operator fun times(number: Float): FullStats{
-        val FS = FullStats()
-        FS.production = production * number
-        FS.food = food*number
-        FS.gold = gold*number
-        FS.science = science*number
-        FS.culture = culture*number
-        FS.happiness = happiness*number
-        return FS
+        val stats = FullStats()
+        stats.production = production * number
+        stats.food = food*number
+        stats.gold = gold*number
+        stats.science = science*number
+        stats.culture = culture*number
+        stats.happiness = happiness*number
+        return stats
     }
 
     override fun toString(): String {
-        return toDict().filter{it.value!=0}.map{it.key+": "+it.value}.joinToString(",")
+        return toDict().filter{it.value!=0}.map{it.key+": "+it.value}.joinToString()
     }
 
     fun toDict(): HashMap<String, Int> {

@@ -45,8 +45,8 @@ public class HexMath
         return vectors;
     }
 
-    public static ArrayList<Vector2> GetVectorsAtDistance(Vector2 origin, int distance){
-        ArrayList<Vector2> vectors = new ArrayList<Vector2>();
+    public static Linq<Vector2> GetVectorsAtDistance(Vector2 origin, int distance){
+        Linq<Vector2> vectors = new Linq<Vector2>();
         if(distance==0){vectors.add(origin.cpy()); return  vectors;}
         Vector2 Current = origin.cpy().sub(distance,distance); // start at 6 o clock
         for (int i = 0; i < distance; i++) { // From 6 to 8
