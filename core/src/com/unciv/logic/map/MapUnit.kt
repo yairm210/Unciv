@@ -14,7 +14,7 @@ class MapUnit {
     @JvmField var owner: String? = null
     @JvmField var name: String? = null
     @JvmField var maxMovement: Int = 0
-    @JvmField var currentMovement: Float = 0.toFloat()
+    @JvmField var currentMovement: Float = 0f
     @JvmField var action: String? = null // work, automation, fortifying, I dunno what.
 
     val movementString: String
@@ -82,9 +82,9 @@ class MapUnit {
 
     fun doAutomatedAction(tile: TileInfo) {
         var tile = tile
-        val toWork = findTileToWork(tile)
-        if (toWork != tile) {
-            tile = headTowards(tile.position, toWork.position)
+        val tileToWork = findTileToWork(tile)
+        if (tileToWork != tile) {
+            tile = headTowards(tile.position, tileToWork.position)
             doPreTurnAction(tile)
             return
         }
@@ -106,7 +106,7 @@ class MapUnit {
             tile.terrainFeature == "Forest" -> return "Lumber mill"
             tile.terrainFeature == "Jungle" -> return "Trading post"
             tile.terrainFeature == "Marsh" -> return "Remove Marsh"
-            tile.resource != null -> return tile.tileResource!!.improvement
+            tile.resource != null -> return tile.tileResource.improvement
             tile.baseTerrain == "Hill" -> return "Mine"
             tile.baseTerrain == "Grassland" || tile.baseTerrain == "Desert" || tile.baseTerrain == "Plains" -> return "Farm"
             tile.baseTerrain == "Tundra" -> return "Trading post"
@@ -126,7 +126,7 @@ class MapUnit {
         val isMachineryResearched = civInfo!!.tech.isResearched("Machinery")
         val path = tileMap.getShortestPath(origin, destination, currentMovement, maxMovement, isMachineryResearched)
 
-        val destinationThisTurn = path[0]
+        val destinationThisTurn = path.first()
         if (destinationThisTurn.unit != null) return tileMap[origin] // Someone is blocking tohe path to the final tile...
         val distanceToTile = tileMap.getDistanceToTilesWithinTurn(origin, currentMovement, isMachineryResearched)[destinationThisTurn]!!
         tileMap[origin].moveUnitToTile(destinationThisTurn, distanceToTile)

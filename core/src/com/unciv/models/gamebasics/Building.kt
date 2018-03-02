@@ -7,7 +7,7 @@ import com.unciv.ui.UnCivGame
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.models.linq.Linq
-import com.unciv.models.stats.FullStats
+import com.unciv.models.stats.Stats
 import com.unciv.models.stats.NamedStats
 
 class Building : NamedStats(), IConstruction, ICivilopedia {
@@ -19,9 +19,9 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
 
     @JvmField var cost: Int = 0
     @JvmField var maintenance = 0
-    @JvmField var percentStatBonus: FullStats? = null
-    @JvmField var specialistSlots: FullStats? = null
-    @JvmField var greatPersonPoints: FullStats? = null
+    @JvmField var percentStatBonus: Stats? = null
+    @JvmField var specialistSlots: Stats? = null
+    @JvmField var greatPersonPoints: Stats? = null
     /** Extra cost percentage when purchasing */
     @JvmField var hurryCostModifier: Int = 0
     @JvmField var isWonder = false
@@ -42,16 +42,14 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
     /**
      * The bonus stats that a resource gets when this building is built
      */
-    @JvmField var resourceBonusStats: FullStats? = null
+    @JvmField var resourceBonusStats: Stats? = null
 
-    fun getRequiredTech(): Technology {
-        return GameBasics.Technologies[requiredTech]!!
-    }
+    fun getRequiredTech(): Technology = GameBasics.Technologies[requiredTech]!!
 
-    fun getStats(adoptedPolicies: Linq<String>): FullStats {
+    fun getStats(adoptedPolicies: Linq<String>): Stats {
         val stats = this.clone()
         if (adoptedPolicies.contains("Organized Religion") && Linq("Monument", "Temple", "Monastery").contains(name))
-            stats.happiness += 1f
+            stats.happiness += 1
 
         if (adoptedPolicies.contains("Free Religion") && Linq("Monument", "Temple", "Monastery").contains(name))
             stats.culture += 1f
@@ -63,7 +61,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
             stats.science += 1f
 
         if (adoptedPolicies.contains("Theocracy") && name == "Temple")
-            percentStatBonus = object : FullStats() {
+            percentStatBonus = object : Stats() {
                 init {
                     gold = 10f
                 }
@@ -136,18 +134,18 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
     override fun isBuildable(construction: CityConstructions): Boolean {
         if (construction.isBuilt(name)) return false
         val civInfo = construction.cityInfo.civInfo
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech)) return false
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return false
         if (isWonder && civInfo.cities.any {
                             it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
                         })
             return false
-        if (requiredBuilding != null && !construction.isBuilt(requiredBuilding)) return false
-        if (requiredBuildingInAllCities != null || civInfo.cities.any { it.cityConstructions.isBuilt(requiredBuildingInAllCities) })
+        if (requiredBuilding != null && !construction.isBuilt(requiredBuilding!!)) return false
+        if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })
             return false
-        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith)) return false
+        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
         if ("MustBeNextToDesert" == unique && !civInfo.gameInfo.tileMap.getTilesInDistance(construction.cityInfo.cityLocation, 1).any { it.baseTerrain == "Desert" })
             return false
-        if (requiredResource != null && !civInfo.civResources.containsKey(GameBasics.TileResources[requiredResource]))
+        if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource]))
             return false // Only checks if exists, doesn't check amount - todo
 
 
@@ -156,7 +154,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
                     .any { tile ->
                         (tile.resource != null
                                 && requiredNearbyImprovedResources!!.contains(tile.resource)
-                                && tile.tileResource!!.improvement == tile.improvement)
+                                && tile.tileResource.improvement == tile.improvement)
                     }
             if (!containsResourceWithImprovement) return false
         }

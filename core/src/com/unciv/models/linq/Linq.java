@@ -40,10 +40,6 @@ public class Linq<T> extends ArrayList<T> {
 
     public boolean any(Predicate<T> p){ return first(p) != null;}
 
-    public int count(Predicate<T> p) {
-        return where(p).size();
-    }
-
     public <T2> Linq<T2> select(Func<T, T2> selector) {
         Linq<T2> newCollection = new Linq<T2>();
         for (T t : this) newCollection.add(selector.GetBy(t));

@@ -3,10 +3,10 @@ package com.unciv.models.gamebasics
 import java.util.HashSet
 
 class Technology {
-    @JvmField var name: String? = null
+    lateinit var name: String
 
-    @JvmField var description: String? = null
-    @JvmField var cost: Int = 0
+    var description: String? = null
+    var cost: Int = 0
     @JvmField var prerequisites = HashSet<String>()
 
     @JvmField var column: TechColumn? = null // The column that this tech is in the tech tree

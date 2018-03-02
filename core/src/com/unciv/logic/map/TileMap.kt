@@ -5,7 +5,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.linq.Linq
 import com.unciv.models.linq.LinqHashMap
-import com.unciv.ui.GameInfo
+import com.unciv.logic.GameInfo
 import com.unciv.ui.utils.HexMath
 
 class TileMap {
@@ -15,7 +15,7 @@ class TileMap {
 
     private var tiles = LinqHashMap<String, TileInfo>()
 
-    constructor() {} // for json parsing, we need to have a default constructor
+    constructor()  // for json parsing, we need to have a default constructor
 
     val values: Linq<TileInfo>
         get() = tiles.linqValues()
@@ -34,7 +34,7 @@ class TileMap {
         return tiles[vector.toString()]!!
     }
 
-    fun getTilesInDistance(origin: Vector2?, distance: Int): Linq<TileInfo> {
+    fun getTilesInDistance(origin: Vector2, distance: Int): Linq<TileInfo> {
         return HexMath.GetVectorsInDistance(origin, distance).where{contains(it)}.select { get(it) }
     }
 

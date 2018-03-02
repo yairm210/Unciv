@@ -36,7 +36,7 @@ class RandomMapGenerator {
         var TileResources = GameBasics.TileResources.linqValues()
 
         // Resources are placed according to TerrainFeature, if exists, otherwise according to BaseLayer.
-        TileResources = TileResources.where { it.terrainsCanBeFoundOn.contains(tileInfo.lastTerrain!!.name) }
+        TileResources = TileResources.where { it.terrainsCanBeFoundOn.contains(tileInfo.lastTerrain.name) }
 
         var resource: TileResource? = null
         if (Math.random() < 1 / 5f) {

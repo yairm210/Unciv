@@ -1,7 +1,7 @@
 package com.unciv.models.gamebasics
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.stats.FullStats
+import com.unciv.models.stats.Stats
 import com.unciv.models.stats.NamedStats
 
 import java.util.ArrayList
@@ -13,7 +13,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
     @JvmField var techRequired: String? = null
 
     @JvmField var improvingTech: String? = null
-    @JvmField var improvingTechStats: FullStats? = null
+    @JvmField var improvingTechStats: Stats? = null
 
     private val turnsToBuild: Int = 0 // This is the base cost.
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
