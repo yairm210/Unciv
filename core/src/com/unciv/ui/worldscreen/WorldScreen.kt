@@ -5,11 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.linq.Linq
-import com.unciv.models.linq.LinqHashMap
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
-import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.GameSaver
 
@@ -22,7 +20,7 @@ class WorldScreen : CameraStageBaseScreen() {
     private val tileInfoTable: TileInfoTable
     private val civTable = CivStatsTable()
     private val techButton = TextButton("", CameraStageBaseScreen.skin)
-    val tileGroups = LinqHashMap<String, WorldTileGroup>()
+
 
     internal val optionsTable: WorldScreenOptionsTable
     private val notificationsScroll: NotificationsScroll

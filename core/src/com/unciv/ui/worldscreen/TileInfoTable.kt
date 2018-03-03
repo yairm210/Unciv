@@ -44,31 +44,32 @@ class TileInfoTable(private val worldScreen: WorldScreen, internal val civInfo: 
 
 
         if (tile.unit != null) {
-            var moveUnitButton = TextButton("Move to", skin)
-            if (worldScreen.tileMapHolder.unitTile == tile) moveUnitButton = TextButton("Stop movement", skin)
+            val tileMapHolder = worldScreen.tileMapHolder
+            val buttonText = if (tileMapHolder.unitTile == tile)"Stop movement" else "Move to"
+            var moveUnitButton = TextButton(buttonText, skin)
             moveUnitButton.label.setFontScale(worldScreen.buttonScale)
             if (tile.unit!!.currentMovement == 0f) {
                 moveUnitButton.color = Color.GRAY
                 moveUnitButton.touchable = Touchable.disabled
             }
             moveUnitButton.addClickListener {
-                if (worldScreen.tileMapHolder.unitTile != null) {
-                    worldScreen.tileMapHolder.unitTile = null
-                    worldScreen.update()
+                if (tileMapHolder.unitTile != null) {
+                    tileMapHolder.unitTile = null
+                    tileMapHolder.updateTiles()
                     return@addClickListener
                 }
-                worldScreen.tileMapHolder.unitTile = tile
+                tileMapHolder.unitTile = tile
 
                 // Set all tiles transparent except those in unit range
-                for (TG in worldScreen.tileGroups.linqValues()) TG.setColor(0f, 0f, 0f, 0.3f)
+                for (TG in tileMapHolder.tileGroups.linqValues()) TG.setColor(0f, 0f, 0f, 0.3f)
 
                 val distanceToTiles = civInfo.gameInfo.tileMap.getDistanceToTilesWithinTurn(
-                        worldScreen.tileMapHolder.unitTile!!.position,
-                        worldScreen.tileMapHolder.unitTile!!.unit!!.currentMovement,
+                        tileMapHolder.unitTile!!.position,
+                        tileMapHolder.unitTile!!.unit!!.currentMovement,
                         civInfo.tech.isResearched("Machinery"))
 
                 for (tile in distanceToTiles.keys) {
-                    worldScreen.tileGroups[tile.position.toString()]!!.color = Color.WHITE
+                    tileMapHolder.tileGroups[tile.position.toString()]!!.color = Color.WHITE
                 }
 
                 worldScreen.update()

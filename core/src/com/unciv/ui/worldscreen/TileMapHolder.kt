@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.linq.Linq
+import com.unciv.models.linq.LinqHashMap
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.HexMath
@@ -17,6 +18,7 @@ import java.util.*
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
     internal var unitTile: TileInfo? = null
+    val tileGroups = LinqHashMap<String, WorldTileGroup>()
 
     internal fun addTiles() {
         val allTiles = Group()
@@ -59,7 +61,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val groupSize = 50
             group.setPosition(worldScreen.stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     worldScreen.stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
-            worldScreen.tileGroups[tileInfo.position.toString()] = group
+            tileGroups[tileInfo.position.toString()] = group
             allTiles.addActor(group)
             topX = Math.max(topX, group.x + groupSize)
             topY = Math.max(topY, group.y + groupSize)
@@ -67,7 +69,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             bottomY = Math.min(bottomY, group.y)
         }
 
-        for (group in worldScreen.tileGroups.linqValues()) {
+        for (group in tileGroups.linqValues()) {
             group.moveBy(-bottomX + 50, -bottomY + 50)
         }
 
@@ -98,7 +100,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles() {
-        for (WG in worldScreen.tileGroups.linqValues()) WG.update(worldScreen)
+        for (WG in tileGroups.linqValues()) WG.update(worldScreen)
 
         if (unitTile != null)
             return  // While we're in "unit move" mode, no tiles but the tiles the unit can move to will be "visible"
@@ -106,7 +108,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         // YES A TRIPLE FOR, GOT PROBLEMS WITH THAT?
         // Seriously though, there is probably a more efficient way of doing this, probably?
         // The original implementation caused serious lag on android, so efficiency is key, here
-        for (WG in worldScreen.tileGroups.linqValues()) WG.setIsViewable(false)
+        for (WG in tileGroups.linqValues()) WG.setIsViewable(false)
         val veiwableVectorStrings = HashSet<String>()
 
         // tiles adjacent to city tiles
@@ -122,19 +124,19 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 veiwableVectorStrings.add(tileInfo.position.toString())
 
         for (string in veiwableVectorStrings)
-            if (worldScreen.tileGroups.containsKey(string))
-                worldScreen.tileGroups[string]!!.setIsViewable(true)
+            if (tileGroups.containsKey(string))
+                tileGroups[string]!!.setIsViewable(true)
     }
 
 
     fun setCenterPosition(vector: Vector2) {
-        val TG = worldScreen.tileGroups.linqValues().first { arg0 -> arg0.tileInfo.position == vector }
+        val tileGroup = tileGroups.linqValues().first { it.tileInfo.position == vector }
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
         // We want to center on the middle of TG (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== where the screen starts) needs to be half a screen away
-        scrollX = TG!!.x + TG.width / 2 - worldScreen.stage.width / 2
+        scrollX = tileGroup!!.x + tileGroup.width / 2 - worldScreen.stage.width / 2
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
-        scrollY = maxY - (TG.y + TG.width / 2 - worldScreen.stage.height / 2)
+        scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - worldScreen.stage.height / 2)
         updateVisualScroll()
     }
 
