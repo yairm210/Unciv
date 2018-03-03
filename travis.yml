@@ -1,0 +1,29 @@
+language: android
+
+jdk:
+  - oraclejdk8
+
+install:
+  - echo yes | sdkmanager "tools" &>/dev/null
+  - echo yes | sdkmanager "platform-tools" &>/dev/null
+  - echo yes | sdkmanager "build-tools;26.0.2" &>/dev/null
+  - echo yes | sdkmanager "platforms;android-26" &>/dev/null
+
+script:
+  - ./gradlew clean testDebug lintDebug jacocoDebugReport coveralls -Dscan --stacktrace
+
+branches:
+  except:
+    - gh-pages
+
+sudo: false
+
+before_cache:
+  - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+  - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+
+cache:
+  directories:
+    - $HOME/.gradle/caches/
+    - $HOME/.gradle/wrapper/
+    - $HOME/.android/build-cache
