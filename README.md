@@ -1,4 +1,4 @@
-# UnCiv
+# [UnCiv](https://play.google.com/store/apps/details?id=com.unciv.game)
 
 ![](https://travis-ci.org/yairm210/UnCiv.svg?branch=master)
 
