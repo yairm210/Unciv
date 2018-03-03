@@ -9,9 +9,6 @@ install:
   - echo yes | sdkmanager "build-tools;26.0.2" &>/dev/null
   - echo yes | sdkmanager "platforms;android-26" &>/dev/null
 
-script:
-  - ./gradlew clean testDebug lintDebug jacocoDebugReport coveralls -Dscan --stacktrace
-
 branches:
   except:
     - gh-pages
