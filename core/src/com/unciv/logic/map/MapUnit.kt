@@ -138,4 +138,5 @@ class MapUnit {
         currentMovement = maxMovement.toFloat()
         doPreTurnAction(tileInfo)
     }
+
 }
