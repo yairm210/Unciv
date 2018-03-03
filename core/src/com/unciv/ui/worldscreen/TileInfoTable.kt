@@ -1,12 +1,10 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
@@ -57,28 +55,29 @@ class TileInfoTable(private val worldScreen: WorldScreen, internal val civInfo: 
                 moveUnitButton.color = Color.GRAY
                 moveUnitButton.touchable = Touchable.disabled
             }
-            moveUnitButton.addListener(object : ClickListener() {
-                override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                    if (worldScreen.tileMapHolder.unitTile != null) {
-                        worldScreen.tileMapHolder.unitTile = null
-                        worldScreen.update()
-                        return
-                    }
-                    worldScreen.tileMapHolder.unitTile = selectedTile
-
-                    // Set all tiles transparent except those in unit range
-                    for (TG in worldScreen.tileGroups.linqValues()) TG.setColor(0f, 0f, 0f, 0.3f)
-                    for (tile in civInfo.gameInfo.tileMap.getDistanceToTilesWithinTurn(
-                            worldScreen.tileMapHolder.unitTile!!.position,
-                            worldScreen.tileMapHolder.unitTile!!.unit!!.currentMovement,
-                            civInfo.tech.isResearched("Machinery")
-                    ).keys) {
-                        worldScreen.tileGroups[tile.position.toString()]!!.color = Color.WHITE
-                    }
-
+            moveUnitButton.addClickListener {
+                if (worldScreen.tileMapHolder.unitTile != null) {
+                    worldScreen.tileMapHolder.unitTile = null
                     worldScreen.update()
+                    return@addClickListener
                 }
-            })
+                worldScreen.tileMapHolder.unitTile = selectedTile
+
+                // Set all tiles transparent except those in unit range
+                for (TG in worldScreen.tileGroups.linqValues()) TG.setColor(0f, 0f, 0f, 0.3f)
+
+                val distanceToTiles = civInfo.gameInfo.tileMap.getDistanceToTilesWithinTurn(
+                        worldScreen.tileMapHolder.unitTile!!.position,
+                        worldScreen.tileMapHolder.unitTile!!.unit!!.currentMovement,
+                        civInfo.tech.isResearched("Machinery"))
+
+                for (tile in distanceToTiles.keys) {
+                    worldScreen.tileGroups[tile.position.toString()]!!.color = Color.WHITE
+                }
+
+                worldScreen.update()
+            }
+
             add(moveUnitButton).colspan(2)
                     .size(moveUnitButton.width * worldScreen.buttonScale, moveUnitButton.height * worldScreen.buttonScale)
 

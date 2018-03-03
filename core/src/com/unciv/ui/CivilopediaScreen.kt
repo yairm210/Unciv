@@ -2,10 +2,8 @@ package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.ui.List
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
@@ -29,12 +27,10 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         label.setWrap(true)
 
         val goToGameButton = TextButton("Return \r\nto game", CameraStageBaseScreen.skin)
-        goToGameButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        goToGameButton.addClickListener {
                 game.setWorldScreen()
                 dispose()
             }
-        })
         buttonTable.add(goToGameButton)
 
         val map = LinkedHashMap<String, Collection<ICivilopedia>>()

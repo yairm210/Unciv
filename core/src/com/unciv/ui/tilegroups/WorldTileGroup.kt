@@ -1,13 +1,10 @@
 package com.unciv.ui.tilegroups
 
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.CityScreen
-import com.unciv.ui.UnCivGame
+import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
@@ -53,11 +50,8 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 cityButton!!.actor.label.setFontScale(buttonScale)
 
                 val game = worldScreen.game
-                cityButton!!.actor.addListener(object : ClickListener() {
-                    override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                        game.screen = CityScreen(city!!)
+                cityButton!!.actor.addClickListener { game.screen = CityScreen(city!!)
                     }
-                })
 
                 addActor(cityButton!!)
                 zIndex = parent.children.size // so this tile is rendered over neighboring tiles
@@ -70,7 +64,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             cityButton!!.setPosition((width - cityButton!!.width) / 2,
                     height * 0.9f)
-            cityButton!!.zIndex = cityButton!!.parent.children.size // so city button is rendere over oeverything else in this tile
+            cityButton!!.zIndex = cityButton!!.parent.children.size // so city button is rendered over everything else in this tile
         }
 
     }

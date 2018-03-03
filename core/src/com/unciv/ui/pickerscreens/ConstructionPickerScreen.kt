@@ -1,27 +1,24 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
-    var selectedProduction: String?=null
+    private var selectedProduction: String?=null
 
     private fun getProductionButton(production: String, buttonText: String,
                                     description: String?, rightSideButtonText: String): TextButton {
         val productionTextButton = TextButton(buttonText, CameraStageBaseScreen.skin)
-        productionTextButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        productionTextButton.addClickListener {
                 selectedProduction = production
                 pick(rightSideButtonText)
                 descriptionLabel.setText(description)
             }
-        })
         return productionTextButton
     }
 
@@ -29,22 +26,18 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         val civInfo = game.gameInfo.getPlayerCivilization()
 
         closeButton.clearListeners() // Don't go back to the world screen, unlike the other picker screens!
-        closeButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        closeButton.addClickListener {
                 game.screen = CityScreen(this@ConstructionPickerScreen.city)
                 dispose()
             }
-        })
 
         rightSideButton.setText("Pick building")
-        rightSideButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        rightSideButton.addClickListener {
                 city.cityConstructions.currentConstruction = selectedProduction!!
                 city.cityStats.update() // Because maybe we set/removed the science or gold production options.
                 game.screen = CityScreen(this@ConstructionPickerScreen.city)
                 dispose()
             }
-        })
 
         val cityConstructions = city.cityConstructions
         val regularBuildings = VerticalGroup().space(10f)

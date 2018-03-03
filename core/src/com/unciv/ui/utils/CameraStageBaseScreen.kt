@@ -6,17 +6,16 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.models.linq.Linq
 import com.unciv.ui.UnCivGame
+import com.unciv.ui.cityscreen.addClickListener
 
 open class CameraStageBaseScreen : Screen {
 
@@ -75,15 +74,13 @@ open class CameraStageBaseScreen : Screen {
         tutorialTexts.removeAt(0)
         tutorialTable.add(label).pad(10f).row()
         val button = TextButton("Close", skin)
-        button.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        button.addClickListener {
                 tutorialTable.remove()
                 if (!tutorialTexts.isEmpty())
                     displayTutorial()
                 else
                     isTutorialShowing = false
             }
-        })
         tutorialTable.add(button).pad(10f)
         tutorialTable.pack()
         tutorialTable.setPosition(stage.width / 2 - tutorialTable.width / 2,

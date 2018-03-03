@@ -1,15 +1,10 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
+import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 
 open class PickerScreen : CameraStageBaseScreen() {
@@ -25,12 +20,10 @@ open class PickerScreen : CameraStageBaseScreen() {
         val buttonTable = Table()
 
         closeButton = TextButton("Close", CameraStageBaseScreen.skin)
-        closeButton.addListener(object : ClickListener() {
-            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+        closeButton.addClickListener {
                 game.setWorldScreen()
                 dispose()
             }
-        })
         buttonTable.add(closeButton).width(stage.width / 4)
 
         descriptionLabel = Label("", CameraStageBaseScreen.skin)
