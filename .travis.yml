@@ -3,15 +3,14 @@ language: android
 jdk:
   - oraclejdk8
 
+ before_install:
+ - chmod +x gradlew
+ 
 install:
   - echo yes | sdkmanager "tools" &>/dev/null
   - echo yes | sdkmanager "platform-tools" &>/dev/null
   - echo yes | sdkmanager "build-tools;26.0.2" &>/dev/null
   - echo yes | sdkmanager "platforms;android-26" &>/dev/null
-
-branches:
-  except:
-    - gh-pages
 
 sudo: false
 
