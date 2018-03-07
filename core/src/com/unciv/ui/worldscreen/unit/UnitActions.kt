@@ -7,7 +7,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.linq.Linq
 import com.unciv.ui.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
@@ -37,7 +36,7 @@ class UnitActions {
             actionList += getUnitActionButton(unit, "Move unit", true, {
                 unitTable.currentlyExecutingAction = "moveTo"
                 // Set all tiles transparent except those in unit range
-                for (TG in tileMapHolder.tileGroups.linqValues()) TG.setColor(0f, 0f, 0f, 0.3f)
+                for (TG in tileMapHolder.tileGroups.values) TG.setColor(0f, 0f, 0f, 0.3f)
 
                 val distanceToTiles = tileMapHolder.tileMap.getDistanceToTilesWithinTurn(
                         unitTable.selectedUnitTile!!.position,
@@ -61,7 +60,7 @@ class UnitActions {
             actionList += getUnitActionButton(unit, "Found City",
                     !tileMapHolder.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter },
                     {
-                        val tutorial = Linq<String>()
+                        val tutorial = mutableListOf<String>()
                         tutorial.add("You have founded a city!" +
                                 "\r\nCities are the lifeblood of your empire," +
                                 "\r\n  providing gold and science empire-wide," +
@@ -87,7 +86,7 @@ class UnitActions {
                     if (tile.improvementInProgress == null) "Construct\r\nimprovement"
                     else tile.improvementInProgress!! + "\r\nin progress"
             actionList += getUnitActionButton(unit, improvementButtonText,
-                    !tile.isCityCenter || GameBasics.TileImprovements.linqValues().any { tile.canBuildImprovement(it, unit.civInfo) },
+                    !tile.isCityCenter || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) })
 
             if("automation" == tile.unit!!.action){

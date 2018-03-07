@@ -7,7 +7,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
-import com.unciv.models.linq.Linq
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import java.util.*
@@ -30,7 +29,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
 
         val techMatrix = Array<Array<Technology?>>(17) { arrayOfNulls(10) } // Divided into columns, then rows
 
-        for (technology in GameBasics.Technologies.linqValues()) {
+        for (technology in GameBasics.Technologies.values) {
             techMatrix[technology.column!!.columnNumber - 1][technology.row - 1] = technology
         }
 
@@ -69,7 +68,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 dispose()
             }
 
-        val tutorial = Linq<String>()
+        val tutorial = mutableListOf<String>()
         tutorial.add("Technology is central to your civilization," +
                 "\r\n as technological progress brings with it" +
                 "\r\n more construction options, improvements, and abilities")
@@ -133,15 +132,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             techsToResearch.add(tech.name)
         } else {
             val prerequisites = Stack<String>()
-            val CheckPrerequisites = ArrayDeque<String>()
-            CheckPrerequisites.add(tech.name)
-            while (!CheckPrerequisites.isEmpty()) {
-                val techNameToCheck = CheckPrerequisites.pop()
+            val checkPrerequisites = ArrayDeque<String>()
+            checkPrerequisites.add(tech.name)
+            while (!checkPrerequisites.isEmpty()) {
+                val techNameToCheck = checkPrerequisites.pop()
                 if (civTech.isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck))
                     continue //no need to add or check prerequisites
                 val techToCheck = GameBasics.Technologies[techNameToCheck]
                 for (str in techToCheck!!.prerequisites)
-                    if (!CheckPrerequisites.contains(str)) CheckPrerequisites.add(str)
+                    if (!checkPrerequisites.contains(str)) checkPrerequisites.add(str)
                 prerequisites.add(techNameToCheck)
             }
             techsToResearch.clear()

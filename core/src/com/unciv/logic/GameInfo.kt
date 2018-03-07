@@ -4,14 +4,13 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileMap
-import com.unciv.models.linq.Linq
 
 class GameInfo {
 
-    var notifications = Linq<Notification>()
+    var notifications = mutableListOf<Notification>()
 
-    var tutorial = Linq<String>()
-    var civilizations = Linq<CivilizationInfo>()
+    var tutorial = mutableListOf<String>()
+    var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
     var turns = 1
 
@@ -26,15 +25,18 @@ class GameInfo {
 
         for (civInfo in civilizations) civInfo.nextTurn()
 
-        for (tile in tileMap.values.where { it.unit != null })
+        for (tile in tileMap.values.filter { it.unit != null })
             tile.nextTurn()
 
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
-        for (civInfo in civilizations)
+        for (civInfo in civilizations){
             for (city in civInfo.cities)
                 city.cityStats.update()
+            civInfo.happiness = civInfo.getHappinessForNextTurn()
+        }
+
 
         turns++
     }

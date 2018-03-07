@@ -10,7 +10,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
-import com.unciv.models.linq.Linq
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.HexMath
@@ -59,7 +58,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         stage.addActor(buildingsTableContainer)
         update()
 
-        val tutorial = Linq<String>()
+        val tutorial = mutableListOf<String>()
         tutorial.add("Welcome to your first city!" +
                 "\r\nAs on now, you only have 1 population," +
                 "\r\n  but this will grow when you amass enough surplus food")

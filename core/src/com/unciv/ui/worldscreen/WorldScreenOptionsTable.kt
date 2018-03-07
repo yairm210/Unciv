@@ -20,12 +20,12 @@ class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, pri
 
         isVisible = false
 
-        val OpenCivilopediaButton = TextButton("Civilopedia", CameraStageBaseScreen.skin)
-        OpenCivilopediaButton.addClickListener {
+        val openCivilopediaButton = TextButton("Civilopedia", CameraStageBaseScreen.skin)
+        openCivilopediaButton.addClickListener {
             worldScreen.game.screen = CivilopediaScreen()
             isVisible = false
         }
-        add(OpenCivilopediaButton).pad(10f)
+        add(openCivilopediaButton).pad(10f)
         row()
 
         val StartNewGameButton = TextButton("Start new game", CameraStageBaseScreen.skin)

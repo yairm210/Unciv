@@ -1,6 +1,5 @@
 package com.unciv.models.gamebasics
 
-import com.unciv.models.linq.Linq
 import com.unciv.models.stats.INamed
 
 open class Policy : INamed {
@@ -9,7 +8,7 @@ open class Policy : INamed {
     @JvmField var branch: String? = null
     @JvmField var row: Int = 0
     @JvmField var column: Int = 0
-    @JvmField var requires: Linq<String>? = null
+    @JvmField var requires: ArrayList<String>? = null
 
 }
 

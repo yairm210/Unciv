@@ -11,7 +11,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 class IdleUnitButton internal constructor(internal val worldScreen: WorldScreen) : TextButton("Select next idle unit", CameraStageBaseScreen.skin) {
     init {
         addClickListener {
-            val tilesWithIdleUnits = worldScreen.civInfo.gameInfo.tileMap.values.where { it.hasIdleUnit() }
+            val tilesWithIdleUnits = worldScreen.civInfo.gameInfo.tileMap.values.filter { it.hasIdleUnit() }
 
             val tileToSelect: TileInfo
             if (!tilesWithIdleUnits.contains(worldScreen.tileMapHolder.selectedTile))

@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.linq.LinqHashMap
 import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
 
@@ -19,7 +18,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var improvementImage: Image? =null
     private var improvementType: String? = null
     var populationImage: Image? = null
-    private var roadImages = LinqHashMap<String, Image>()
+    private var roadImages = HashMap<String, Image>()
     protected var hexagon: Image? = null
 
     protected var cityButton: Container<TextButton>? = null
@@ -121,7 +120,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
                     // This is some crazy voodoo magic so I'll explain.
                     image.moveBy(25f, 25f) // Move road to center of tile
-                    // in addTiles, we set the position of groups by relative world position *0.8*groupSize, where groupSize = 50
+                    // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
                     // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
                     image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
                     image.setSize(10f, 2f)

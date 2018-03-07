@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.models.gamebasics.Building
-import com.unciv.models.linq.Linq
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -21,9 +20,9 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
         clear()
         val skin = CameraStageBaseScreen.skin
         val cityInfo = cityScreen.city
-        val wonders = Linq<Building>()
-        val specialistBuildings = Linq<Building>()
-        val others = Linq<Building>()
+        val wonders = mutableListOf<Building>()
+        val specialistBuildings = mutableListOf<Building>()
+        val others = mutableListOf<Building>()
 
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {

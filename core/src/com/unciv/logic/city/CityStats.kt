@@ -4,7 +4,6 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.linq.Linq
 import com.unciv.models.stats.Stats
 
 
@@ -16,7 +15,7 @@ class CityStats {
     private val statsFromTiles: Stats
         get() {
             val stats = Stats()
-            for (cell in cityInfo.tilesInRange.where { cityInfo.name == it.workingCity })
+            for (cell in cityInfo.tilesInRange.filter { cityInfo.name == it.workingCity })
                 stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
             return stats
         }
@@ -98,35 +97,34 @@ class CityStats {
     // needs to be a separate function because we need to know the global happiness state
     // in order to determine how much food is produced in a city!
     // -3 happiness per city
-    val cityHappiness: Float
-        get() {
-            val civInfo = cityInfo.civInfo
-            var happiness = -3f
-            var unhappinessFromCitizens = cityInfo.population.population.toFloat()
-            if (civInfo.policies.isAdopted("Democracy"))
-                unhappinessFromCitizens -= cityInfo.population.numberOfSpecialists * 0.5f
-            if (civInfo.buildingUniques.contains("CitizenUnhappinessDecreased"))
-                unhappinessFromCitizens *= 0.9f
-            if (civInfo.policies.isAdopted("Aristocracy"))
-                unhappinessFromCitizens *= 0.95f
-            happiness -= unhappinessFromCitizens
+    fun getCityHappiness(): Float {
+        val civInfo = cityInfo.civInfo
+        var happiness = -3f
+        var unhappinessFromCitizens = cityInfo.population.population.toFloat()
+        if (civInfo.policies.isAdopted("Democracy"))
+            unhappinessFromCitizens -= cityInfo.population.numberOfSpecialists * 0.5f
+        if (civInfo.buildingUniques.contains("CitizenUnhappinessDecreased"))
+            unhappinessFromCitizens *= 0.9f
+        if (civInfo.policies.isAdopted("Aristocracy"))
+            unhappinessFromCitizens *= 0.95f
+        happiness -= unhappinessFromCitizens
 
-            if (civInfo.policies.isAdopted("Aristocracy"))
-                happiness += (cityInfo.population.population / 10).toFloat()
-            if (civInfo.policies.isAdopted("Monarchy") && isCapital)
-                happiness += (cityInfo.population.population / 2).toFloat()
-            if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
-                happiness += 1f
+        if (civInfo.policies.isAdopted("Aristocracy"))
+            happiness += (cityInfo.population.population / 10).toFloat()
+        if (civInfo.policies.isAdopted("Monarchy") && isCapital)
+            happiness += (cityInfo.population.population / 2).toFloat()
+        if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
+            happiness += 1f
 
-            happiness += cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
+        happiness += cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
 
-            return happiness
-        }
+        return happiness
+    }
 
     private val isCapital: Boolean
         get() = cityInfo.civInfo.capital === cityInfo
 
-    private fun getStatsFromSpecialists(specialists: Stats, policies: Linq<String>): Stats {
+    private fun getStatsFromSpecialists(specialists: Stats, policies: List<String>): Stats {
         val stats = Stats()
 
         // Specialists
@@ -141,7 +139,7 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromPolicies(adoptedPolicies: Linq<String>): Stats {
+    private fun getStatsFromPolicies(adoptedPolicies: List<String>): Stats {
         val stats = Stats()
         if (adoptedPolicies.contains("Tradition") && isCapital)
             stats.culture += 3f
@@ -169,7 +167,7 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromPolicies(policies: Linq<String>, cityConstructions: CityConstructions): Stats {
+    private fun getStatPercentBonusesFromPolicies(policies: List<String>, cityConstructions: CityConstructions): Stats {
         val stats = Stats()
 
         if (policies.contains("Collective Rule") && isCapital
@@ -239,7 +237,7 @@ class CityStats {
         if(cityInfo.civInfo.cities.count()<2) return false// first city!
         val capitalTile = cityInfo.civInfo.capital.tile
         val tilesReached = HashSet<TileInfo>()
-        var tilesToCheck : List<TileInfo> = Linq<TileInfo>(cityInfo.tile)
+        var tilesToCheck : List<TileInfo> = listOf(cityInfo.tile)
         while (tilesToCheck.any()) {
             val newTiles = tilesToCheck
                     .flatMap { cityInfo.tileMap.getTilesInDistance(it.position, 1) }.distinct()

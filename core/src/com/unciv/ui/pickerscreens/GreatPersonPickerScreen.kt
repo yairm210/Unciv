@@ -13,7 +13,7 @@ class GreatPersonPickerScreen : PickerScreen() {
 
     init {
         rightSideButton.setText("Choose a free great person")
-        for (unit in GameBasics.Units.linqValues()) {
+        for (unit in GameBasics.Units.values) {
             if (!unit.name.startsWith("Great")) continue
             val button = TextButton(unit.name, CameraStageBaseScreen.skin)
             button.addClickListener {

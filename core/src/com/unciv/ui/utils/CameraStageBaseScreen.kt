@@ -13,21 +13,19 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.models.linq.Linq
 import com.unciv.ui.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 
 open class CameraStageBaseScreen : Screen {
 
-    var game: UnCivGame
+    var game: UnCivGame = UnCivGame.Current
     var stage: Stage
 
-    private val tutorialTexts = Linq<String>()
+    private val tutorialTexts = mutableListOf<String>()
 
-    internal var isTutorialShowing = false
+    private var isTutorialShowing = false
 
     init {
-        this.game = UnCivGame.Current
         stage = Stage(ExtendViewport(1000f, 600f
         ), batch)// FitViewport(1000,600)
         Gdx.input.inputProcessor = stage
@@ -56,14 +54,14 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
-    fun displayTutorials(name: String, texts: Linq<String>) {
+    fun displayTutorials(name: String, texts: List<String>) {
         if (game.gameInfo.tutorial.contains(name)) return
         game.gameInfo.tutorial.add(name)
         tutorialTexts.addAll(texts)
         if (!isTutorialShowing) displayTutorial()
     }
 
-    fun displayTutorial() {
+    private fun displayTutorial() {
         isTutorialShowing = true
         val tutorialTable = Table().pad(10f)
         tutorialTable.background(ImageGetter.getDrawable("skin/tileTableBackground.png")

@@ -1,6 +1,5 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.ui.List
@@ -13,7 +12,6 @@ import java.util.*
 
 class CivilopediaScreen : CameraStageBaseScreen() {
     init {
-        Gdx.input.inputProcessor = stage
         val buttonTable = Table()
         buttonTable.pad(15f)
         val entryTable = Table()
@@ -35,11 +33,11 @@ class CivilopediaScreen : CameraStageBaseScreen() {
 
         val map = LinkedHashMap<String, Collection<ICivilopedia>>()
 
-        map["Basics"] = GameBasics.Helps.linqValues().`as`(ICivilopedia::class.java)
-        map["Buildings"] = GameBasics.Buildings.linqValues().`as`(ICivilopedia::class.java)
-        map["Resources"] = GameBasics.TileResources.linqValues().`as`(ICivilopedia::class.java)
-        map["Terrains"] = GameBasics.Terrains.linqValues().`as`(ICivilopedia::class.java)
-        map["Tile Improvements"] = GameBasics.TileImprovements.linqValues().`as`(ICivilopedia::class.java)
+        map["Basics"] = GameBasics.Helps.values
+        map["Buildings"] = GameBasics.Buildings.values
+        map["Resources"] = GameBasics.TileResources.values
+        map["Terrains"] = GameBasics.Terrains.values
+        map["Tile Improvements"] = GameBasics.TileImprovements.values
 
         val nameList = List<ICivilopedia>(CameraStageBaseScreen.skin)
 

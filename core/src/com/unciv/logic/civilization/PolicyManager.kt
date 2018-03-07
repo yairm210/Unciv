@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
-import com.unciv.models.linq.Linq
 import com.unciv.ui.UnCivGame
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 
@@ -14,7 +13,7 @@ class PolicyManager {
 
     var freePolicies = 0
     var storedCulture = 0
-    internal val adoptedPolicies = Linq<String>()
+    internal val adoptedPolicies = ArrayList<String>()
     var shouldOpenPolicyPicker = false
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
@@ -31,7 +30,7 @@ class PolicyManager {
     }
 
 
-    fun getAdoptedPolicies(): Linq<String> = adoptedPolicies
+    fun getAdoptedPolicies(): List<String> = adoptedPolicies
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 

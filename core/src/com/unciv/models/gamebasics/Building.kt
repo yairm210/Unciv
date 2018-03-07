@@ -2,7 +2,6 @@ package com.unciv.models.gamebasics
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
-import com.unciv.models.linq.Linq
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.ScienceVictoryScreen
@@ -13,7 +12,7 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 class Building : NamedStats(), IConstruction, ICivilopedia {
     private lateinit var baseDescription: String
     override val description: String
-        get() = getDescription(false, Linq())
+        get() = getDescription(false, listOf())
 
     @JvmField var requiredTech: String? = null
 
@@ -30,7 +29,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
     /** A strategic resource that will be consumed by this building */
     @JvmField var requiredResource: String? = null
     /** City can only be built if one of these resources is nearby - it must be improved! */
-    @JvmField var requiredNearbyImprovedResources: Linq<String>? = null
+    @JvmField var requiredNearbyImprovedResources: List<String>? = null
     @JvmField var cannotBeBuiltWith: String? = null
 
     // Uniques
@@ -46,18 +45,18 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
 
     fun getRequiredTech(): Technology = GameBasics.Technologies[requiredTech]!!
 
-    fun getStats(adoptedPolicies: Linq<String>): Stats {
+    fun getStats(adoptedPolicies: List<String>): Stats {
         val stats = this.clone()
-        if (adoptedPolicies.contains("Organized Religion") && Linq("Monument", "Temple", "Monastery").contains(name))
+        if (adoptedPolicies.contains("Organized Religion") && listOf("Monument", "Temple", "Monastery").contains(name))
             stats.happiness += 1
 
-        if (adoptedPolicies.contains("Free Religion") && Linq("Monument", "Temple", "Monastery").contains(name))
+        if (adoptedPolicies.contains("Free Religion") && listOf("Monument", "Temple", "Monastery").contains(name))
             stats.culture += 1f
 
-        if (adoptedPolicies.contains("Entrepreneurship") && Linq("Mint", "Market", "Bank", "Stock Market").contains(name))
+        if (adoptedPolicies.contains("Entrepreneurship") && listOf("Mint", "Market", "Bank", "Stock Market").contains(name))
             stats.science += 1f
 
-        if (adoptedPolicies.contains("Humanism") && Linq("University", "Observatory", "Public School").contains(name))
+        if (adoptedPolicies.contains("Humanism") && listOf("University", "Observatory", "Public School").contains(name))
             stats.science += 1f
 
         if (adoptedPolicies.contains("Theocracy") && name == "Temple")
@@ -80,7 +79,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
     }
 
 
-    fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: Linq<String>): String {
+    fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: List<String>): String {
         val stats = getStats(adoptedPolicies)
         val stringBuilder = StringBuilder()
         if (!forBuildingPickerScreen) stringBuilder.appendln("Cost: " + cost)
@@ -111,7 +110,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " Great Artist points")
         }
         if (resourceBonusStats != null) {
-            val resources = GameBasics.TileResources.linqValues().where { name == it.building }.select { it.name }.joinToString()
+            val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name }
             stringBuilder.appendln("$resources provide $resourceBonusStats")
         }
         if (maintenance != 0)
@@ -119,12 +118,12 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         return stringBuilder.toString()
     }
 
-    override fun getProductionCost(adoptedPolicies: Linq<String>): Int {
+    override fun getProductionCost(adoptedPolicies: List<String>): Int {
         return if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety")) (cost * 0.85).toInt()
         else cost
     }
 
-    override fun getGoldCost(adoptedPolicies: Linq<String>): Int {
+    override fun getGoldCost(adoptedPolicies: List<String>): Int {
         var cost = Math.pow((30 * getProductionCost(adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
         if (adoptedPolicies.contains("Mercantilism")) cost *= 0.75
         if (adoptedPolicies.contains("Patronage")) cost *= 0.5
@@ -145,16 +144,16 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
         if ("MustBeNextToDesert" == unique && !civInfo.gameInfo.tileMap.getTilesInDistance(construction.cityInfo.cityLocation, 1).any { it.baseTerrain == "Desert" })
             return false
-        if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource]))
+        if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource!!]))
             return false
 
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.tilesInRange
-                    .any { tile ->
-                        (tile.resource != null
-                                && requiredNearbyImprovedResources!!.contains(tile.resource)
-                                && tile.tileResource.improvement == tile.improvement)
+                    .any {
+                        it.resource != null
+                                && requiredNearbyImprovedResources!!.contains(it.resource!!)
+                                && it.tileResource.improvement == it.improvement
                     }
             if (!containsResourceWithImprovement) return false
         }
@@ -178,8 +177,8 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         }
         construction.builtBuildings.add(name)
 
-        if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding))
-            construction.builtBuildings.add(providesFreeBuilding)
+        if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
+            construction.builtBuildings.add(providesFreeBuilding!!)
         when (unique) {
             "ApolloProgram" -> UnCivGame.Current.screen = ScienceVictoryScreen(civInfo)
             "EmpireEntersGoldenAge" -> civInfo.goldenAges.enterGoldenAge()

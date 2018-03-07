@@ -5,10 +5,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.linq.Linq
-import com.unciv.models.linq.LinqCounter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.TileResource
+import com.unciv.models.linq.Counter
 import com.unciv.models.stats.Stats
 
 class CityInfo {
@@ -27,14 +26,14 @@ class CityInfo {
 
     val tile: TileInfo
         get() = tileMap[cityLocation]
-    val tilesInRange: Linq<TileInfo>
-        get() = tileMap.getTilesInDistance(cityLocation, 3).where { civInfo.civName == it.owner }
+    val tilesInRange: List<TileInfo>
+        get() = tileMap.getTilesInDistance(cityLocation, 3).filter { civInfo.civName == it.owner }
 
     private val CityNames = arrayOf("New Bark", "Cherrygrove", "Violet", "Azalea", "Goldenrod", "Ecruteak", "Olivine", "Cianwood", "Mahogany", "Blackthorn", "Pallet", "Viridian", "Pewter", "Cerulean", "Vermillion", "Lavender", "Celadon", "Fuchsia", "Saffron", "Cinnibar")
 
     // Remove resources required by buildings
-    fun getCityResources(): LinqCounter<TileResource> {
-        val cityResources = LinqCounter<TileResource>()
+    fun getCityResources(): Counter<TileResource> {
+        val cityResources = Counter<TileResource>()
 
         for (tileInfo in tilesInRange.filter { it.resource != null }) {
             val resource = tileInfo.tileResource
@@ -49,8 +48,8 @@ class CityInfo {
         return cityResources
     }
 
-    val buildingUniques: Linq<String>
-        get() = cityConstructions.getBuiltBuildings().where { it.unique!=null }.select { it.unique }
+    val buildingUniques: List<String?>
+        get() = cityConstructions.getBuiltBuildings().filter { it.unique!=null }.map { it.unique }
 
     val greatPersonPoints: Stats
         get() {
@@ -95,7 +94,7 @@ class CityInfo {
         val tile = tile
         tile.workingCity = this.name
         tile.roadStatus = RoadStatus.Railroad
-        if (Linq("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
+        if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
             tile.terrainFeature = null
 
         population.autoAssignWorker()

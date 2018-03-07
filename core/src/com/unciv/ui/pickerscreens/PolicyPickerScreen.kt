@@ -9,7 +9,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
 import com.unciv.models.gamebasics.StringUtils
-import com.unciv.models.linq.Linq
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -21,7 +20,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
     init {
 
         val policies = civInfo.policies
-        val tutorial = Linq<String>()
+        val tutorial = mutableListOf<String>()
         tutorial.add("Each turn, the culture you gain from all your " +
                 "\r\n  cities is added to your Civilization's culture." +
                 "\r\nWhen you have enough culture, you may pick a " +
@@ -98,7 +97,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         }
         pickedPolicy = policy
         var policyText = policy.name + "\r\n" + policy.description + "\r\n"
-        if (!policy.name.endsWith("Complete") && policy.requires!!.size > 0)
+        if (!policy.name.endsWith("Complete") && policy.requires!!.isNotEmpty())
             policyText += "Requires " + StringUtils.join(", ", policy.requires)
         descriptionLabel.setText(policyText)
     }

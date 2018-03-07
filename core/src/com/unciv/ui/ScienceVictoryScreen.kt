@@ -4,8 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.linq.Linq
-import com.unciv.models.linq.LinqCounter
+import com.unciv.models.linq.Counter
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 
@@ -27,8 +26,8 @@ class ScienceVictoryScreen(internal val civInfo: CivilizationInfo) : PickerScree
         else
             descriptionLabel.setText("Apollo program is built - you may construct spaceship parts in your cities!")
 
-        val tutorial = Linq<String>()
-        tutorial.add("This is the science victory screen, where you" +
+        val tutorial = ArrayList<String>()
+        tutorial.add("This is the science victory screen, filter you" +
                 "\r\n  can see your progress towards constructing a " +
                 "\r\n  spaceship to propel you towards the stars.")
         tutorial.add("There are 6 spaceship parts you must build, " + "\r\n  and they all require advanced technologies")
@@ -37,7 +36,7 @@ class ScienceVictoryScreen(internal val civInfo: CivilizationInfo) : PickerScree
         displayTutorials("ScienceVictoryScreenEntered", tutorial)
     }
 
-    private fun addPartButton(partName: String, parts: LinqCounter<String>) {
+    private fun addPartButton(partName: String, parts: Counter<String>) {
         topTable.row()
         val button = TextButton(partName, CameraStageBaseScreen.skin)
         button.touchable = Touchable.disabled

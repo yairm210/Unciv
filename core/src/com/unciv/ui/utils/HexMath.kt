@@ -1,9 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.linq.Linq
-
-import java.util.ArrayList
+import java.util.*
 
 object HexMath {
 
@@ -41,8 +39,8 @@ object HexMath {
         return vectors
     }
 
-    fun GetVectorsAtDistance(origin: Vector2, distance: Int): Linq<Vector2> {
-        val vectors = Linq<Vector2>()
+    fun GetVectorsAtDistance(origin: Vector2, distance: Int): List<Vector2> {
+        val vectors = mutableListOf<Vector2>()
         if (distance == 0) {
             vectors.add(origin.cpy())
             return vectors
@@ -66,8 +64,8 @@ object HexMath {
         return vectors
     }
 
-    fun GetVectorsInDistance(origin: Vector2, distance: Int): Linq<Vector2> {
-        val hexesToReturn = Linq<Vector2>()
+    fun GetVectorsInDistance(origin: Vector2, distance: Int): List<Vector2> {
+        val hexesToReturn = mutableListOf<Vector2>()
         for (i in 0 until distance + 1) {
             hexesToReturn.addAll(GetVectorsAtDistance(origin, i))
         }

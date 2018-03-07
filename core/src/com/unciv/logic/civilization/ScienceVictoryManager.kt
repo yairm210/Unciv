@@ -1,13 +1,13 @@
 package com.unciv.logic.civilization
 
-import com.unciv.models.linq.LinqCounter
+import com.unciv.models.linq.Counter
 
 class ScienceVictoryManager {
 
-    var requiredParts = LinqCounter<String>()
-    var currentParts = LinqCounter<String>()
+    var requiredParts = Counter<String>()
+    var currentParts = Counter<String>()
 
-    fun unconstructedParts(): LinqCounter<String> {
+    fun unconstructedParts(): Counter<String> {
         val counter = requiredParts.clone()
         counter.remove(currentParts)
         return counter

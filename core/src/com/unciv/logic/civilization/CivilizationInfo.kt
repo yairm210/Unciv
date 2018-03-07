@@ -1,14 +1,13 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.RoadStatus
-import com.unciv.logic.GameInfo
-import com.unciv.models.linq.Linq
-import com.unciv.models.linq.LinqCounter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ResourceType
 import com.unciv.models.gamebasics.TileResource
+import com.unciv.models.linq.Counter
 import com.unciv.models.stats.Stats
 
 
@@ -27,7 +26,7 @@ class CivilizationInfo {
     private var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
 
-    var cities = Linq<CityInfo>()
+    var cities = ArrayList<CityInfo>()
 
     val capital: CityInfo
         get() = cities.first { it.cityConstructions.isBuilt("Palace") }
@@ -61,26 +60,26 @@ class CivilizationInfo {
     }
 
     // base happiness
-    private fun getHappinessForNextTurn(): Int {
+    fun getHappinessForNextTurn(): Int {
         var happiness = 15
         var happinessPerUniqueLuxury = 5
         if (policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
         happiness += getCivResources().keys
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
-        happiness += cities.sumBy { it.cityStats.cityHappiness.toInt() }
+        happiness += cities.sumBy { it.cityStats.getCityHappiness().toInt() }
         if (buildingUniques.contains("HappinessPerSocialPolicy"))
             happiness += policies.getAdoptedPolicies().count { !it.endsWith("Complete") }
         return happiness
     }
 
-    fun getCivResources(): LinqCounter<TileResource> {
-        val civResources = LinqCounter<TileResource>()
+    fun getCivResources(): Counter<TileResource> {
+        val civResources = Counter<TileResource>()
         for (city in cities) civResources.add(city.getCityResources())
         return civResources
     }
 
-    val buildingUniques: Linq<String>
-        get() = cities.selectMany { it.cityConstructions.getBuiltBuildings().select { it.unique }.filterNotNull() }.unique()
+    val buildingUniques: List<String>
+        get() = cities.flatMap{ it.cityConstructions.getBuiltBuildings().map { it.unique }.filterNotNull() }.distinct()
 
 
     constructor()
@@ -115,7 +114,6 @@ class CivilizationInfo {
 
     fun nextTurn() {
         val nextTurnStats = getStatsForNextTurn()
-        happiness = nextTurnStats.happiness.toInt()
         policies.nextTurn(nextTurnStats.culture.toInt())
         gold += nextTurnStats.gold.toInt()
 
@@ -135,9 +133,9 @@ class CivilizationInfo {
     }
 
     fun addGreatPerson(greatPerson: String) {
-        val randomCity = cities.random
-        placeUnitNearTile(cities.random.cityLocation, greatPerson)
-        gameInfo.addNotification("A $greatPerson has been born!", randomCity!!.cityLocation)
+        val randomCity = cities.getRandom()
+        placeUnitNearTile(cities.getRandom().cityLocation, greatPerson)
+        gameInfo.addNotification("A $greatPerson has been born!", randomCity.cityLocation)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String) {
@@ -145,3 +143,4 @@ class CivilizationInfo {
     }
 }
 
+fun <E> List<E>.getRandom(): E = if (size == 0) throw Exception() else get((Math.random() * size).toInt())

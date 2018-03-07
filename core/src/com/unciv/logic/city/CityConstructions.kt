@@ -1,26 +1,24 @@
 package com.unciv.logic.city
 
-import com.unciv.models.linq.Linq
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.stats.Stats
-
-import java.util.HashMap
+import java.util.*
 
 
 class CityConstructions {
     @Transient
     lateinit var cityInfo: CityInfo
 
-    var builtBuildings = Linq<String>()
+    var builtBuildings = ArrayList<String>()
     private val inProgressConstructions = HashMap<String, Int>()
     var currentConstruction: String = "Monument" // default starting building!
 
 
-    private val buildableBuildings: Linq<String>
+    private val buildableBuildings: List<String>
         get() {
-            return Linq(GameBasics.Buildings.values)
-                    .where { it.isBuildable(this) }.select { it.name }
+            return GameBasics.Buildings.values
+                    .filter { it.isBuildable(this) }.map { it.name }
         }
 
     // Library and public school unique (not actualy unique, though...hmm)
@@ -36,7 +34,7 @@ class CityConstructions {
 
     fun getStatPercentBonuses(): Stats {
         val stats = Stats()
-        for (building in getBuiltBuildings().where { it.percentStatBonus != null })
+        for (building in getBuiltBuildings().filter { it.percentStatBonus != null })
             stats.add(building.percentStatBonus!!)
         return stats
     }
@@ -75,7 +73,7 @@ class CityConstructions {
         throw Exception(constructionName+ " is not a building or a unit!")
     }
 
-    internal fun getBuiltBuildings(): Linq<Building> = builtBuildings.select { GameBasics.Buildings[it] }
+    internal fun getBuiltBuildings(): List<Building> = builtBuildings.map { GameBasics.Buildings[it]!! }
 
     fun addConstruction(constructionToAdd: Int) {
         if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions[currentConstruction] = 0
@@ -139,7 +137,7 @@ class CityConstructions {
     }
 
     fun addCultureBuilding() {
-        val cultureBuildingToBuild = Linq("Monument", "Temple", "Opera House", "Museum").first { !builtBuildings.contains(it) }
+        val cultureBuildingToBuild = listOf("Monument", "Temple", "Opera House", "Museum").firstOrNull { !builtBuildings.contains(it) }
         if (cultureBuildingToBuild == null) return
         builtBuildings.add(cultureBuildingToBuild)
         if (currentConstruction == cultureBuildingToBuild)

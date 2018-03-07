@@ -1,6 +1,5 @@
 package com.unciv.models.gamebasics
 
-import com.unciv.models.linq.Linq
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 
@@ -17,7 +16,7 @@ class TileResource : NamedStats(), ICivilopedia {
         }
 
     @JvmField var resourceType: ResourceType = ResourceType.Bonus
-    @JvmField var terrainsCanBeFoundOn: Linq<String> = Linq()
+    @JvmField var terrainsCanBeFoundOn: List<String> = listOf()
     @JvmField var improvement: String? = null
     @JvmField var improvementStats: Stats? = null
 
@@ -27,8 +26,8 @@ class TileResource : NamedStats(), ICivilopedia {
     @JvmField var building: String? = null
     @JvmField var revealedBy: String? = null
 
-    fun GetBuilding(): Building? {
-        return if (building == null) null else GameBasics.Buildings[building]
+    fun getBuilding(): Building? {
+        return if (building == null) null else GameBasics.Buildings[building!!]
     }
 }
 

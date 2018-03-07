@@ -1,7 +1,6 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.linq.LinqHashMap
 import com.unciv.models.stats.Stats
 
 class PopulationManager {
@@ -11,7 +10,7 @@ class PopulationManager {
     @JvmField var population = 1
     @JvmField var foodStored = 0
 
-    @JvmField var buildingsSpecialists = LinqHashMap<String, Stats>()
+    @JvmField var buildingsSpecialists = HashMap<String, Stats>()
 
     val specialists: Stats
         get() {
@@ -64,7 +63,7 @@ class PopulationManager {
     }
 
     internal fun autoAssignWorker() {
-        var toWork: TileInfo? = cityInfo!!.tilesInRange.where { it.workingCity==null }.maxBy { cityInfo!!.rankTile(it) }
+        val toWork: TileInfo? = cityInfo!!.tilesInRange.filter { it.workingCity==null }.maxBy { cityInfo!!.rankTile(it) }
         if (toWork != null) // This is when we've run out of tiles!
             toWork.workingCity = cityInfo!!.name
     }

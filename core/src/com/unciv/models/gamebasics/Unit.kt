@@ -1,9 +1,8 @@
 package com.unciv.models.gamebasics
 
-import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.linq.Linq
 import com.unciv.models.stats.INamed
 
 class Unit : INamed, IConstruction {
@@ -27,11 +26,11 @@ class Unit : INamed, IConstruction {
         }
 
 
-    override fun getProductionCost(adoptedPolicies: Linq<String>): Int {
+    override fun getProductionCost(adoptedPolicies: List<String>): Int {
         return cost
     }
 
-    override fun getGoldCost(adoptedPolicies: Linq<String>): Int {
+    override fun getGoldCost(adoptedPolicies: List<String>): Int {
         return (Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100) / 10).toInt() * 10
     }
 

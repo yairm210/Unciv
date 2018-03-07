@@ -1,16 +1,12 @@
 package com.unciv.models.gamebasics
 
-import com.unciv.models.linq.LinqHashMap
-
-import java.util.LinkedHashMap
-
 object GameBasics {
-    @JvmField var Buildings: LinqHashMap<String, Building> = LinqHashMap()
-    @JvmField var Terrains: LinqHashMap<String, Terrain> = LinqHashMap()
-    @JvmField var TileResources: LinqHashMap<String, TileResource> = LinqHashMap()
-    @JvmField var TileImprovements: LinqHashMap<String, TileImprovement> = LinqHashMap()
-    @JvmField var Technologies: LinqHashMap<String, Technology> = LinqHashMap()
-    @JvmField var Helps: LinqHashMap<String, BasicHelp> = LinqHashMap()
-    @JvmField var Units: LinqHashMap<String, Unit> = LinqHashMap()
-    @JvmField var PolicyBranches: LinqHashMap<String, PolicyBranch> = LinqHashMap()
+    @JvmField var Buildings: HashMap<String, Building> = HashMap()
+    @JvmField var Terrains: HashMap<String, Terrain> = HashMap()
+    @JvmField var TileResources: HashMap<String, TileResource> = HashMap()
+    @JvmField var TileImprovements: HashMap<String, TileImprovement> = HashMap()
+    @JvmField var Technologies: HashMap<String, Technology> = HashMap()
+    @JvmField var Helps: HashMap<String, BasicHelp> = HashMap()
+    @JvmField var Units: HashMap<String, Unit> = HashMap()
+    @JvmField var PolicyBranches: HashMap<String, PolicyBranch> = HashMap()
 }

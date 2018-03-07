@@ -1,12 +1,9 @@
 package com.unciv.logic.civilization
 
+
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
-
-
-import java.util.ArrayList
-import java.util.HashMap
-import java.util.HashSet
+import java.util.*
 
 class TechManager {
     @Transient
@@ -54,14 +51,14 @@ class TechManager {
         techsResearched.add(currentTechnology)
         civInfo.gameInfo.addNotification("Research of $currentTechnology has completed!", null)
 
-        val revealedResource = GameBasics.TileResources.linqValues().first { currentTechnology == it.revealedBy }
+        val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
 
         if (revealedResource == null) return
         for (tileInfo in civInfo.gameInfo.tileMap.values
-                .where { it.resource == revealedResource.name && civInfo.civName == it.owner }) {
+                .filter { it.resource == revealedResource.name && civInfo.civName == it.owner }) {
 
             val closestCityTile = civInfo.gameInfo.tileMap.getTilesInDistance(tileInfo.position, 4)
-                    .first { it.isCityCenter }
+                    .firstOrNull { it.isCityCenter }
             if (closestCityTile != null) {
                 civInfo.gameInfo.addNotification(
                         revealedResource.name + " revealed near " + closestCityTile.city!!.name, tileInfo.position)

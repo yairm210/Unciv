@@ -9,14 +9,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.Unit
-import com.unciv.models.linq.Linq
-import com.unciv.models.linq.LinqHashMap
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.GameSaver
 import com.unciv.ui.worldscreen.WorldScreen
-import kotlin.Array
-import kotlin.Exception
-import kotlin.String
 
 class UnCivGame : Game() {
     var gameInfo: GameInfo = GameInfo()
@@ -61,8 +56,8 @@ class UnCivGame : Game() {
         return Json().fromJson(tClass, jsonText)
     }
 
-    private fun <T : INamed> createHashmap(items: Array<T>): LinqHashMap<String, T> {
-        val hashMap = LinqHashMap<String, T>()
+    private fun <T : INamed> createHashmap(items: Array<T>): HashMap<String, T> {
+        val hashMap = HashMap<String, T>()
         for (item in items)
             hashMap[item.name] = item
         return hashMap
@@ -78,7 +73,7 @@ class UnCivGame : Game() {
         GameBasics.PolicyBranches = createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
 
         val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
-        GameBasics.Technologies = LinqHashMap()
+        GameBasics.Technologies = HashMap()
         for (techColumn in techColumns) {
             for (tech in techColumn.techs) {
                 tech.cost = techColumn.techCost
@@ -94,12 +89,12 @@ class UnCivGame : Game() {
         }
 
         for (branch in GameBasics.PolicyBranches.values) {
-            branch.requires = Linq()
+            branch.requires = ArrayList()
             branch.branch = branch.name
             for (policy in branch.policies) {
                 policy.branch = branch.name
                 if (policy.requires == null) {
-                    policy.requires = Linq()
+                    policy.requires = ArrayList()
                     policy.requires!!.add(branch.name)
                 }
             }

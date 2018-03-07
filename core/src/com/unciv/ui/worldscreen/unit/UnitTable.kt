@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.linq.LinqHashMap
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
@@ -37,7 +36,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun update() {
         idleUnitButton.update()
-
         unitActionsTable.clear()
         if(selectedUnitTile!=null && selectedUnitTile!!.unit==null) selectedUnitTile=null // The unit that was there no longer exists
 
@@ -47,6 +45,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
         }
+        else unitLabel.setText("")
+
         unitActionsTable.pack()
         pack()
 
@@ -65,7 +65,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if(selectedTile.unit!=null) selectedUnitTile = selectedTile
     }
 
-    private fun getDistanceToTiles(): LinqHashMap<TileInfo, Float> {
+    private fun getDistanceToTiles(): HashMap<TileInfo, Float> {
         return worldScreen.tileMapHolder.tileMap.getDistanceToTilesWithinTurn(selectedUnitTile!!.position,
                 getSelectedUnit().currentMovement,
                 getSelectedUnit().civInfo.tech.isResearched("Machinery"))

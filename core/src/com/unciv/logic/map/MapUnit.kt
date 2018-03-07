@@ -54,30 +54,19 @@ class MapUnit {
 
     private fun getPriority(tileInfo: TileInfo): Int {
         var priority = 0
-        if (tileInfo.workingCity != null) priority += 2
-        if (tileInfo.hasViewableResource(civInfo)) priority += 1
+        if (tileInfo.workingCity != null) priority += 3
         if (tileInfo.owner == owner) priority += 2
+        if (tileInfo.hasViewableResource(civInfo)) priority += 1
         else if (tileInfo.neighbors.any { it.owner != null }) priority += 1
         return priority
     }
 
     private fun findTileToWork(currentTile: TileInfo): TileInfo {
-        var selectedTile = currentTile
-        var selectedTilePriority =
-                if (currentTile.improvement == null && currentTile.canBuildImprovement(chooseImprovement(currentTile), civInfo))
-                    getPriority(currentTile)
-        else
-            1 // min rank to get selected is 2
-
-        for (i in 1..4)
-            for (tile in civInfo.gameInfo.tileMap.getTilesAtDistance(currentTile.position, i))
-                if (tile.unit == null && tile.improvement == null && getPriority(tile) > selectedTilePriority
-                        && tile.canBuildImprovement(chooseImprovement(tile), civInfo)) {
-                    selectedTile = tile
-                    selectedTilePriority = getPriority(tile)
-                }
-
-        return selectedTile
+        val selectedTile = civInfo.gameInfo.tileMap.getTilesInDistance(currentTile.position, 4)
+                .filter { (it.unit==null || it==currentTile ) && it.improvement==null && it.canBuildImprovement(chooseImprovement(it),civInfo) }
+                .maxBy { getPriority(it) }
+        if(selectedTile!=null && getPriority(selectedTile) > 1) return selectedTile
+        else return currentTile
     }
 
     fun doAutomatedAction(tile: TileInfo) {

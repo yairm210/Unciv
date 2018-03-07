@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.linq.Linq
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -49,7 +48,7 @@ class WorldScreen : CameraStageBaseScreen() {
         createNextTurnButton() // needs civ table to be positioned
         stage.addActor(optionsTable)
 
-        val beginningTutorial = Linq<String>()
+        val beginningTutorial = mutableListOf<String>()
         beginningTutorial.add("Hello, and welcome to Unciv!" +
                 "\r\nCivilization games can be complex, so we'll" +
                 "\r\n  be guiding you along your first journey." +
@@ -68,7 +67,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     fun update() {
         if (game.gameInfo.tutorial.contains("CityEntered")) {
-            val tutorial = Linq<String>()
+            val tutorial = ArrayList<String>()
             tutorial.add("Once you've done everything you can, " + "\r\nclick the next turn button on the top right to continue.")
             tutorial.add("Each turn, science, culture and gold are added" +
                     "\r\n to your civilization, your cities' construction" +
@@ -91,7 +90,7 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     private fun updateTechButton() {
-        techButton.isVisible = civInfo.cities.size != 0
+        techButton.isVisible = civInfo.cities.isNotEmpty()
         techButton.clearListeners()
         techButton.addClickListener {
             game.screen = TechPickerScreen(civInfo)
@@ -110,7 +109,7 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton() {
         val nextTurnButton = TextButton("Next turn", CameraStageBaseScreen.skin)
         nextTurnButton.addClickListener {
-            if (civInfo.tech.currentTechnology() == null && civInfo.cities.size != 0) {
+            if (civInfo.tech.currentTechnology() == null && civInfo.cities.isNotEmpty()) {
                 game.screen = TechPickerScreen(civInfo)
                 return@addClickListener
             }
@@ -120,7 +119,7 @@ class WorldScreen : CameraStageBaseScreen() {
             GameSaver.SaveGame(game, "Autosave")
             update()
 
-            val tutorial = Linq<String>()
+            val tutorial = ArrayList<String>()
             tutorial.add("In your first couple of turns," +
                     "\r\n  you will have very little options," +
                     "\r\n  but as your civilization grows, so do the " +

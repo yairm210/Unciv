@@ -2,7 +2,7 @@ package com.unciv.models.linq;
 
 import java.util.LinkedHashMap;
 
-public class LinqCounter<K> extends LinkedHashMap<K,Integer> {
+public class Counter<K> extends LinkedHashMap<K,Integer> {
 
     public Integer get(Object key){ // don't return null if empty
         if(containsKey(key)) return super.get(key);
@@ -15,21 +15,21 @@ public class LinqCounter<K> extends LinkedHashMap<K,Integer> {
         if(get(key)==0) remove(key); // No objects of this sort left, no need to count
     }
 
-    public void add(LinqCounter<K> other){
+    public void add(Counter<K> other){
         for (K key : other.keySet()) {
             add(key,other.get(key));
         }
     }
 
-    public void remove(LinqCounter<K> other){
+    public void remove(Counter<K> other){
         for (K key : other.keySet()) {
             add(key,-other.get(key));
         }
     }
 
     @Override
-    public LinqCounter<K> clone() {
-        LinqCounter<K> newCounter = new LinqCounter<K>();
+    public Counter<K> clone() {
+        Counter<K> newCounter = new Counter<K>();
         newCounter.add(this);
         return newCounter;
     }

@@ -7,7 +7,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Terrain
 import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.models.gamebasics.TileResource
-import com.unciv.models.linq.Linq
 import com.unciv.models.stats.Stats
 
 class TileInfo {
@@ -33,21 +32,21 @@ class TileInfo {
         get() = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!
 
     val tileResource: TileResource
-        get() = if (resource == null) throw Exception("No resource exists for this tile!") else GameBasics.TileResources[resource]!!
+        get() = if (resource == null) throw Exception("No resource exists for this tile!") else GameBasics.TileResources[resource!!]!!
 
     val isCityCenter: Boolean
         get() = city != null && position == city!!.cityLocation
 
     val tileImprovement: TileImprovement?
-        get() = if (improvement == null) null else GameBasics.TileImprovements[improvement]
+        get() = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
 
-    val neighbors: Linq<TileInfo>
+    val neighbors: List<TileInfo>
         get() = tileMap!!.getTilesAtDistance(position, 1)
 
     val height: Int
         get() {
             var height = 0
-            if (Linq("Forest", "Jungle").contains(terrainFeature)) height += 1
+            if (listOf("Forest", "Jungle").contains(terrainFeature)) height += 1
             if ("Hill" == baseTerrain) height += 2
             return height
         }
@@ -62,7 +61,7 @@ class TileInfo {
     }
 
     fun getTerrainFeature(): Terrain? {
-        return if (terrainFeature == null) null else GameBasics.Terrains[terrainFeature]
+        return if (terrainFeature == null) null else GameBasics.Terrains[terrainFeature!!]
     }
 
 
@@ -85,7 +84,7 @@ class TileInfo {
             val resource = tileResource
             stats.add(tileResource) // resource base
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
-                stats.add(resource.GetBuilding()!!.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
+                stats.add(resource.getBuilding()!!.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
         }
 
@@ -99,7 +98,7 @@ class TileInfo {
             if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
             if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
                 stats.science += 1f
-            if (Linq("Academy", "Landmark", "Manufactory", "Customs House").contains(improvement.name) && observingCiv.policies.isAdopted("Freedom Complete"))
+            if (listOf("Academy", "Landmark", "Manufactory", "Customs House").contains(improvement.name) && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement) // again, for the double effect
         }
 
