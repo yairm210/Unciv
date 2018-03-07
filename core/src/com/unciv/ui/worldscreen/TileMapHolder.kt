@@ -13,11 +13,10 @@ import com.unciv.models.linq.LinqHashMap
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.HexMath
-import java.util.*
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
-    internal var unitTile: TileInfo? = null
+    //internal var unitTile: TileInfo? = null
     val tileGroups = LinqHashMap<String, WorldTileGroup>()
 
     internal fun addTiles() {
@@ -39,19 +38,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 worldScreen.displayTutorials("TileClicked", tutorial)
 
                 selectedTile = tileInfo
-                if (unitTile != null && group.tileInfo.unit == null) {
-                    val distanceToTiles = tileMap.getDistanceToTilesWithinTurn(unitTile!!.position, unitTile!!.unit!!.currentMovement, civInfo.tech.isResearched("Machinery"))
-                    if (distanceToTiles.containsKey(selectedTile)) {
-                        unitTile!!.moveUnitToTile(group.tileInfo, distanceToTiles[selectedTile]!!)
-                    } else {
-                        unitTile!!.unit!!.action = "moveTo " + selectedTile!!.position.x.toInt() + "," + selectedTile!!.position.y.toInt()
-                        unitTile!!.unit!!.doPreTurnAction(unitTile!!)
-                    }
-
-                    unitTile = null
-                    selectedTile = group.tileInfo
-                }
-
+                worldScreen.unitTable.tileSelected(tileInfo)
                 worldScreen.update()
             }
 
@@ -102,35 +89,28 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     internal fun updateTiles() {
         for (WG in tileGroups.linqValues()) WG.update(worldScreen)
 
-        if (unitTile != null)
-            return  // While we're in "unit move" mode, no tiles but the tiles the unit can move to will be "visible"
 
-        // YES A TRIPLE FOR, GOT PROBLEMS WITH THAT?
-        // Seriously though, there is probably a more efficient way of doing this, probably?
-        // The original implementation caused serious lag on android, so efficiency is key, here
         for (WG in tileGroups.linqValues()) WG.setIsViewable(false)
-        val veiwableVectorStrings = HashSet<String>()
+        var viewablePositions = emptyList<Vector2>()
+        if(worldScreen.unitTable.currentlyExecutingAction == null) {
+            viewablePositions += tileMap.values.where { it.owner == civInfo.civName }
+                    .flatMap { HexMath.GetAdjacentVectors(it.position) } // tiles adjacent to city tiles
+            viewablePositions += tileMap.values.where { it.unit != null }
+                    .flatMap { tileMap.getViewableTiles(it.position, 2).select { it.position } } // Tiles within 2 tiles of units
+        }
 
-        // tiles adjacent to city tiles
-        for (tileInfo in tileMap.values)
-            if (civInfo.civName == tileInfo.owner)
-                for (adjacentLocation in HexMath.GetAdjacentVectors(tileInfo.position))
-                    veiwableVectorStrings.add(adjacentLocation.toString())
+        else
+            viewablePositions += worldScreen.unitTable.getViewablePositionsForExecutingAction()
 
-        // Tiles within 2 tiles of units
-        for (tile in tileMap.values
-                .where { arg0 -> arg0.unit != null })
-            for (tileInfo in tileMap.getViewableTiles(tile.position, 2))
-                veiwableVectorStrings.add(tileInfo.position.toString())
+        for (string in viewablePositions.map { it.toString() }.filter { tileGroups.containsKey(it) })
+            tileGroups[string]!!.setIsViewable(true)
 
-        for (string in veiwableVectorStrings)
-            if (tileGroups.containsKey(string))
-                tileGroups[string]!!.setIsViewable(true)
     }
-
 
     fun setCenterPosition(vector: Vector2) {
         val tileGroup = tileGroups.linqValues().first { it.tileInfo.position == vector }
+        selectedTile = tileGroup.tileInfo
+        if(selectedTile!!.unit!=null) worldScreen.unitTable.selectedUnitTile = selectedTile
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
         // We want to center on the middle of TG (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== where the screen starts) needs to be half a screen away
@@ -138,6 +118,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - worldScreen.stage.height / 2)
         updateVisualScroll()
+        worldScreen.update()
     }
 
 

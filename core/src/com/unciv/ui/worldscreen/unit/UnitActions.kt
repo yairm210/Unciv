@@ -1,9 +1,8 @@
-package com.unciv.ui.worldscreen
+package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
@@ -11,11 +10,12 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.linq.Linq
 import com.unciv.ui.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
+import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
-import java.util.ArrayList
+import java.util.*
 
-public class UnitActions {
+class UnitActions {
 
     private fun constructImprovementAndDestroyUnit(tileInfo: TileInfo, improvementName: String): () -> Unit {
         return {
@@ -24,15 +24,42 @@ public class UnitActions {
         }
     }
 
-    fun getUnitActions(unit: MapUnit, tile: TileInfo, civInfo: CivilizationInfo): List<TextButton> {
+    fun getUnitActions(tile: TileInfo): List<TextButton> {
 
+        val unit = tile.unit!!
         val worldScreen = UnCivGame.Current.worldScreen!!
+        val tileMapHolder = worldScreen.tileMapHolder
+        val unitTable = worldScreen.unitTable
 
         val actionList = ArrayList<TextButton>()
 
+        if (unitTable.currentlyExecutingAction != "moveTo"){
+            actionList += getUnitActionButton(unit, "Move unit", true, {
+                unitTable.currentlyExecutingAction = "moveTo"
+                // Set all tiles transparent except those in unit range
+                for (TG in tileMapHolder.tileGroups.linqValues()) TG.setColor(0f, 0f, 0f, 0.3f)
+
+                val distanceToTiles = tileMapHolder.tileMap.getDistanceToTilesWithinTurn(
+                        unitTable.selectedUnitTile!!.position,
+                        unitTable.getSelectedUnit().currentMovement,
+                        unit.civInfo.tech.isResearched("Machinery"))
+
+                for (tileInRange in distanceToTiles.keys) {
+                    tileMapHolder.tileGroups[tileInRange.position.toString()]!!.color = Color.WHITE
+                }
+            })
+        }
+
+        else {
+            actionList += getUnitActionButton(unit, "Stop movement", true, {
+                unitTable.currentlyExecutingAction = null
+                tileMapHolder.updateTiles()
+            })
+        }
+
         if (unit.name == "Settler") {
             actionList += getUnitActionButton(unit, "Found City",
-                    !civInfo.gameInfo.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter },
+                    !tileMapHolder.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter },
                     {
                         val tutorial = Linq<String>()
                         tutorial.add("You have founded a city!" +
@@ -48,9 +75,8 @@ public class UnitActions {
 
                         worldScreen.displayTutorials("CityFounded", tutorial)
 
-                        civInfo.addCity(tile.position)
-                        if (worldScreen.tileMapHolder.unitTile == tile)
-                            worldScreen.tileMapHolder.unitTile = null // The settler was in the middle of moving and we then founded a city with it
+                        unit.civInfo.addCity(tile.position)
+                        unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                         tile.unit = null // Remove settler!
                         worldScreen.update()
                     })
@@ -60,25 +86,30 @@ public class UnitActions {
             val improvementButtonText =
                     if (tile.improvementInProgress == null) "Construct\r\nimprovement"
                     else tile.improvementInProgress!! + "\r\nin progress"
-            actionList += getUnitActionButton(unit, improvementButtonText, !tile.isCityCenter || GameBasics.TileImprovements.linqValues().any { arg0 -> tile.canBuildImprovement(arg0, civInfo) },
-                    { worldScreen.game.screen = com.unciv.ui.pickerscreens.ImprovementPickerScreen(tile) })
-            actionList += getUnitActionButton(unit, if ("automation" == tile.unit!!.action) "Stop automation" else "Automate", true, {
-                if ("automation" == tile.unit!!.action)
-                    tile.unit!!.action = null
-                else {
-                    tile.unit!!.action = "automation"
-                    tile.unit!!.doAutomatedAction(tile)
-                }
-                worldScreen.update()
-            })
+            actionList += getUnitActionButton(unit, improvementButtonText,
+                    !tile.isCityCenter || GameBasics.TileImprovements.linqValues().any { tile.canBuildImprovement(it, unit.civInfo) },
+                    { worldScreen.game.screen = ImprovementPickerScreen(tile) })
+
+            if("automation" == tile.unit!!.action){
+                actionList += getUnitActionButton(unit,"Stop automation",true,
+                        {tile.unit!!.action = null})
+            }
+            else {
+                actionList += getUnitActionButton(unit, "Automate", true,
+                        {
+                            tile.unit!!.action = "automation"
+                            tile.unit!!.doAutomatedAction(tile)
+                        }
+                )
+            }
         }
 
         if (unit.name == "Great Scientist") {
             actionList += getUnitActionButton(unit, "Discover Technology", true,
                     {
-                        civInfo.tech.freeTechs += 1
+                        unit.civInfo.tech.freeTechs += 1
                         tile.unit = null// destroy!
-                        worldScreen.game.screen = TechPickerScreen(true, civInfo)
+                        worldScreen.game.screen = TechPickerScreen(true, unit.civInfo)
 
                     })
             actionList += getUnitActionButton(unit, "Construct Academy", true,
@@ -88,7 +119,7 @@ public class UnitActions {
         if (unit.name == "Great Artist") {
             actionList += getUnitActionButton(unit, "Start Golden Age", true,
                     {
-                        civInfo.goldenAges.enterGoldenAge()
+                        unit.civInfo.goldenAges.enterGoldenAge()
                         tile.unit = null// destroy!
                         worldScreen.update()
                     }
@@ -112,7 +143,7 @@ public class UnitActions {
         if (unit.name == "Great Merchant") {
             actionList += getUnitActionButton(unit, "Conduct Trade Mission", true,
                     {
-                        civInfo.gold += 350 // + 50 * era_number - todo!
+                        unit.civInfo.gold += 350 // + 50 * era_number - todo!
                         tile.unit = null // destroy!
                     })
             actionList += getUnitActionButton(unit, "Construct Customs House", true,

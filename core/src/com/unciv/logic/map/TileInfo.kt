@@ -3,11 +3,11 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.linq.Linq
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Terrain
 import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.models.gamebasics.TileResource
+import com.unciv.models.linq.Linq
 import com.unciv.models.stats.Stats
 
 class TileInfo {

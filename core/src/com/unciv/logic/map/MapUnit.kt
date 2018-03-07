@@ -9,7 +9,7 @@ import java.text.DecimalFormat
 
 class MapUnit {
     @Transient
-    @JvmField var civInfo: CivilizationInfo? = null
+    lateinit var civInfo: CivilizationInfo
 
     @JvmField var owner: String? = null
     @JvmField var name: String? = null
@@ -55,7 +55,7 @@ class MapUnit {
     private fun getPriority(tileInfo: TileInfo): Int {
         var priority = 0
         if (tileInfo.workingCity != null) priority += 2
-        if (tileInfo.hasViewableResource(civInfo!!)) priority += 1
+        if (tileInfo.hasViewableResource(civInfo)) priority += 1
         if (tileInfo.owner == owner) priority += 2
         else if (tileInfo.neighbors.any { it.owner != null }) priority += 1
         return priority
@@ -64,15 +64,15 @@ class MapUnit {
     private fun findTileToWork(currentTile: TileInfo): TileInfo {
         var selectedTile = currentTile
         var selectedTilePriority =
-                if (currentTile.improvement == null && currentTile.canBuildImprovement(chooseImprovement(currentTile), civInfo!!))
+                if (currentTile.improvement == null && currentTile.canBuildImprovement(chooseImprovement(currentTile), civInfo))
                     getPriority(currentTile)
         else
             1 // min rank to get selected is 2
 
         for (i in 1..4)
-            for (tile in civInfo!!.gameInfo.tileMap.getTilesAtDistance(currentTile.position, i))
+            for (tile in civInfo.gameInfo.tileMap.getTilesAtDistance(currentTile.position, i))
                 if (tile.unit == null && tile.improvement == null && getPriority(tile) > selectedTilePriority
-                        && tile.canBuildImprovement(chooseImprovement(tile), civInfo!!)) {
+                        && tile.canBuildImprovement(chooseImprovement(tile), civInfo)) {
                     selectedTile = tile
                     selectedTilePriority = getPriority(tile)
                 }
@@ -90,9 +90,9 @@ class MapUnit {
         }
         if (tile.improvementInProgress == null) {
             val improvement = chooseImprovement(tile)
-            if (tile.canBuildImprovement(improvement, civInfo!!))
+            if (tile.canBuildImprovement(improvement, civInfo))
             // What if we're stuck on this tile but can't build there?
-                tile.startWorkingOnImprovement(improvement, civInfo!!)
+                tile.startWorkingOnImprovement(improvement, civInfo)
         }
     }
 
@@ -121,16 +121,23 @@ class MapUnit {
      * @param destination
      * @return The tile that we reached this turn
      */
-    private fun headTowards(origin: Vector2, destination: Vector2): TileInfo {
-        val tileMap = civInfo!!.gameInfo.tileMap
-        val isMachineryResearched = civInfo!!.tech.isResearched("Machinery")
-        val path = tileMap.getShortestPath(origin, destination, currentMovement, maxMovement, isMachineryResearched)
+    fun headTowards(origin: Vector2, destination: Vector2): TileInfo {
+        val tileMap = civInfo.gameInfo.tileMap
+        val isMachineryResearched = civInfo.tech.isResearched("Machinery")
+        val distanceToTiles = tileMap.getDistanceToTilesWithinTurn(origin, currentMovement, isMachineryResearched)
 
-        val destinationThisTurn = path.first()
-        if (destinationThisTurn.unit != null) return tileMap[origin] // Someone is blocking tohe path to the final tile...
-        val distanceToTile = tileMap.getDistanceToTilesWithinTurn(origin, currentMovement, isMachineryResearched)[destinationThisTurn]!!
-        tileMap[origin].moveUnitToTile(destinationThisTurn, distanceToTile)
-        return destinationThisTurn
+        val destinationTileThisTurn:TileInfo
+        if (distanceToTiles.containsKey(tileMap.get(destination)))
+            destinationTileThisTurn = tileMap.get(destination)
+
+        else { // If the tile is far away, we need to build a path how to get there, and then take the first step
+            val path = tileMap.getShortestPath(origin, destination, currentMovement, maxMovement, isMachineryResearched)
+            destinationTileThisTurn = path.first()
+        }
+        if (destinationTileThisTurn.unit != null) return tileMap[origin] // Someone is blocking tohe path to the final tile...
+        val distanceToTile: Float = distanceToTiles[destinationTileThisTurn]!!
+        tileMap[origin].moveUnitToTile(destinationTileThisTurn, distanceToTile)
+        return destinationTileThisTurn
     }
 
     fun nextTurn(tileInfo: TileInfo) {

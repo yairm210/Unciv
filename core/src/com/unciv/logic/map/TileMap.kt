@@ -1,11 +1,11 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.linq.Linq
 import com.unciv.models.linq.LinqHashMap
-import com.unciv.logic.GameInfo
 import com.unciv.ui.utils.HexMath
 
 class TileMap {
@@ -74,7 +74,7 @@ class TileMap {
         return distanceToTiles
     }
 
-    fun getShortestPath(origin: Vector2, destination: Vector2, currentMovement: Float, maxMovement: Int, isMachineryResearched: Boolean): Linq<TileInfo> {
+    fun getShortestPath(origin: Vector2, destination: Vector2, currentMovement: Float, maxMovement: Int, isMachineryResearched: Boolean): List<TileInfo> {
         var tilesToCheck: Linq<TileInfo> = Linq(get(origin))
         val movementTreeParents = LinqHashMap<TileInfo, TileInfo>() // contains a map of "you can get from X to Y in that turn"
         movementTreeParents[get(origin)] = null
@@ -82,24 +82,32 @@ class TileMap {
         var distance = 1
         while (true) {
             val newTilesToCheck = Linq<TileInfo>()
+            val distanceToDestination = HashMap<TileInfo, Float>()
+            val movementThisTurn = if (distance == 1) currentMovement else maxMovement.toFloat()
             for (tileToCheck in tilesToCheck) {
-                val movementThisTurn = if (distance == 1) currentMovement else maxMovement.toFloat()
-                for (reachableTile in getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, isMachineryResearched).keys) {
-                    if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                    if (reachableTile.position != destination && reachableTile.unit != null) continue // This is an intermediary tile that contains a unit - we can't go there!
-                    movementTreeParents[reachableTile] = tileToCheck
-                    if (reachableTile.position == destination) {
-                        val path = Linq<TileInfo>() // Traverse the tree upwards to get the list of tiles leading to the destination,
-                        var current = reachableTile
-                        while (movementTreeParents[current] != null) {
-                            path.add(current)
-                            current = movementTreeParents[current]
-                        }
-                        return path.reverse() // and reverse in order to get the list in chronological order
+                val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, isMachineryResearched)
+                for (reachableTile in distanceToTilesThisTurn.keys) {
+                    if(reachableTile.position == destination)
+                        distanceToDestination.put(tileToCheck, distanceToTilesThisTurn[reachableTile]!!)
+                    else {
+                        if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
+                        if (reachableTile.position != destination && reachableTile.unit != null) continue // This is an intermediary tile that contains a unit - we can't go there!
+                        movementTreeParents[reachableTile] = tileToCheck
+                        newTilesToCheck.add(reachableTile)
                     }
-                    newTilesToCheck.add(reachableTile)
                 }
             }
+
+            if (distanceToDestination.isNotEmpty()) {
+                val path = Linq<TileInfo>() // Traverse the tree upwards to get the list of tiles leading to the destination,
+                var currentTile = distanceToDestination.minBy { it.value }!!.key
+                while (currentTile.position != origin) {
+                    path.add(currentTile)
+                    currentTile = movementTreeParents[currentTile]!!
+                }
+                return path.reversed() // and reverse in order to get the list in chronological order
+            }
+
             tilesToCheck = newTilesToCheck
             distance++
         }

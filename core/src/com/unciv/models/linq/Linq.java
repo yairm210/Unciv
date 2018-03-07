@@ -5,7 +5,6 @@ import com.badlogic.gdx.utils.Predicate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 
 /**
@@ -69,12 +68,6 @@ public class Linq<T> extends ArrayList<T> {
         Linq<T2> newCollection = new Linq<T2>();
         for (T t:this) newCollection.add((T2)t);
         return newCollection;
-    }
-
-    public Linq<T> reverse(){
-        Linq<T> newCol = clone();
-        Collections.reverse(newCol);
-        return newCol;
     }
 
     public Linq<T> clone(){

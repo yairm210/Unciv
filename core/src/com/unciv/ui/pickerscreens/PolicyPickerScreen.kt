@@ -88,7 +88,6 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
 
     private fun pickPolicy(policy: Policy) {
         if (civInfo.policies.isAdopted(policy.name)
-                || policy.name.endsWith("Complete")
                 || !civInfo.policies.getAdoptedPolicies().containsAll(policy.requires!!)
                 || !civInfo.policies.canAdoptPolicy()) {
             rightSideButton.touchable = Touchable.disabled
@@ -112,12 +111,13 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         } else
             toReturn = TextButton(policy.name, CameraStageBaseScreen.skin)
 
-        when {
-            civInfo.policies.isAdopted(policy.name) -> toReturn.color = Color.GREEN
-            policy.name.endsWith("Complete") || !civInfo.policies.getAdoptedPolicies().containsAll(policy.requires!!)
-                -> toReturn.color = Color.GRAY
+        if (civInfo.policies.isAdopted(policy.name)) { // existing
+            toReturn.color = Color.GREEN
+        } else if (!civInfo.policies.getAdoptedPolicies().containsAll(policy.requires!!))
+        // non-available
+        {
+            toReturn.color = Color.GRAY
         }
-
         toReturn.addClickListener { pickPolicy(policy) }
         toReturn.pack()
         return toReturn

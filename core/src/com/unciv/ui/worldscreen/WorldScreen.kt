@@ -10,6 +10,7 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.GameSaver
+import com.unciv.ui.worldscreen.unit.UnitTable
 
 class WorldScreen : CameraStageBaseScreen() {
     internal val civInfo: CivilizationInfo
@@ -24,7 +25,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     internal val optionsTable: WorldScreenOptionsTable
     private val notificationsScroll: NotificationsScroll
-    internal val idleUnitButton = IdleUnitButton(this)
+    internal val unitTable = UnitTable(this)
 
     init {
         val gameInfo = game.gameInfo
@@ -41,7 +42,7 @@ class WorldScreen : CameraStageBaseScreen() {
         stage.addActor(civTable)
         stage.addActor(techButton)
         stage.addActor(notificationsScroll)
-        stage.addActor(idleUnitButton)
+        stage.addActor(unitTable)
         update()
 
         tileMapHolder.setCenterPosition(Vector2.Zero)
@@ -80,7 +81,7 @@ class WorldScreen : CameraStageBaseScreen() {
         tileMapHolder.updateTiles()
         civTable.update(this)
         notificationsScroll.update()
-        idleUnitButton.update()
+        unitTable.update()
         if (civInfo.tech.freeTechs != 0) {
             game.screen = TechPickerScreen(true, civInfo)
         } else if (civInfo.policies.shouldOpenPolicyPicker) {
@@ -93,8 +94,8 @@ class WorldScreen : CameraStageBaseScreen() {
         techButton.isVisible = civInfo.cities.size != 0
         techButton.clearListeners()
         techButton.addClickListener {
-                game.screen = TechPickerScreen(civInfo)
-            }
+            game.screen = TechPickerScreen(civInfo)
+        }
 
         if (civInfo.tech.currentTechnology() == null)
             techButton.setText("Choose a tech!")
@@ -109,22 +110,23 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton() {
         val nextTurnButton = TextButton("Next turn", CameraStageBaseScreen.skin)
         nextTurnButton.addClickListener {
-                if (civInfo.tech.currentTechnology() == null && civInfo.cities.size != 0) {
-                    game.screen = TechPickerScreen(civInfo)
-                    return@addClickListener
-                }
-                game.gameInfo.nextTurn()
-                tileMapHolder.unitTile = null
-                GameSaver.SaveGame(game, "Autosave")
-                update()
-
-                val tutorial = Linq<String>()
-                tutorial.add("In your first couple of turns," +
-                        "\r\n  you will have very little options," +
-                        "\r\n  but as your civilization grows, so do the " +
-                        "\r\n  number of things requiring your attention")
-                displayTutorials("NextTurn", tutorial)
+            if (civInfo.tech.currentTechnology() == null && civInfo.cities.size != 0) {
+                game.screen = TechPickerScreen(civInfo)
+                return@addClickListener
             }
+            game.gameInfo.nextTurn()
+            unitTable.selectedUnitTile = null
+            unitTable.currentlyExecutingAction = null
+            GameSaver.SaveGame(game, "Autosave")
+            update()
+
+            val tutorial = Linq<String>()
+            tutorial.add("In your first couple of turns," +
+                    "\r\n  you will have very little options," +
+                    "\r\n  but as your civilization grows, so do the " +
+                    "\r\n  number of things requiring your attention")
+            displayTutorials("NextTurn", tutorial)
+        }
 
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
                 civTable.y - nextTurnButton.height - 10f)

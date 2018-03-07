@@ -2,13 +2,13 @@ package com.unciv.models.gamebasics
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
+import com.unciv.models.linq.Linq
+import com.unciv.models.stats.NamedStats
+import com.unciv.models.stats.Stats
 import com.unciv.ui.ScienceVictoryScreen
 import com.unciv.ui.UnCivGame
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
-import com.unciv.models.linq.Linq
-import com.unciv.models.stats.Stats
-import com.unciv.models.stats.NamedStats
 
 class Building : NamedStats(), IConstruction, ICivilopedia {
     private lateinit var baseDescription: String
@@ -146,7 +146,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if ("MustBeNextToDesert" == unique && !civInfo.gameInfo.tileMap.getTilesInDistance(construction.cityInfo.cityLocation, 1).any { it.baseTerrain == "Desert" })
             return false
         if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource]))
-            return false // Only checks if exists, doesn't check amount - todo
+            return false
 
 
         if (requiredNearbyImprovedResources != null) {
