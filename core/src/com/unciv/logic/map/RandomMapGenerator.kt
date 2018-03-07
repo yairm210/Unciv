@@ -47,7 +47,9 @@ class RandomMapGenerator {
     }
 
     private fun getRandomResource(resources: List<TileResource>, resourceType: ResourceType): TileResource? {
-        return resources.filter { it.resourceType == resourceType }.getRandom()
+        val filtered = resources.filter { it.resourceType == resourceType }
+        if (filtered.isEmpty()) return null
+        else return filtered.getRandom()
     }
 
 
