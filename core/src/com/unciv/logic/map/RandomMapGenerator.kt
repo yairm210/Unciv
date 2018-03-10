@@ -43,18 +43,33 @@ class SeedRandomMapGenerator : RandomMapGenerator() {
             areas += area
         }
 
-        val expandableAreas = ArrayList<Area>(areas)
 
-        while (expandableAreas.isNotEmpty()){
-            val areaToExpand = expandableAreas.getRandom()
-            val availableExpansionVectors = areaToExpand.locations.flatMap { HexMath.GetAdjacentVectors(it) }.distinct()
-                    .filter { map.containsKey(it) && map[it] == null }
-            if(availableExpansionVectors.isEmpty()) expandableAreas -= areaToExpand
-            else {
-                val expansionVector = availableExpansionVectors.getRandom()
-                map[expansionVector] = areaToExpand.addTile(expansionVector)
+
+        fun expandAreas(){
+            val expandableAreas = ArrayList<Area>(areas)
+            while (expandableAreas.isNotEmpty()){
+                val areaToExpand = expandableAreas.getRandom()
+                val availableExpansionVectors = areaToExpand.locations.flatMap { HexMath.GetAdjacentVectors(it) }.distinct()
+                        .filter { map.containsKey(it) && map[it] == null }
+                if(availableExpansionVectors.isEmpty()) expandableAreas -= areaToExpand
+                else {
+                    val expansionVector = availableExpansionVectors.getRandom()
+                    map[expansionVector] = areaToExpand.addTile(expansionVector)
+                }
             }
         }
+        expandAreas()
+
+        // After we've assigned all the tiles, there will be some areas that contain only 1 or 2 tiles.
+        // So, we kill those areas, and have the world expand on and cover them too.
+        for(area in areas.toList()){
+            if(area.locations.size<3){
+                areas -= area
+                for(location in area.locations) map[location] = null
+            }
+        }
+
+        expandAreas()
 
         val mapToReturn = HashMap<String,TileInfo>()
         for (entry in map){
