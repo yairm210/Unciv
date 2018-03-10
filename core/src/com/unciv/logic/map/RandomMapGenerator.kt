@@ -8,7 +8,64 @@ import com.unciv.models.gamebasics.TerrainType
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.ui.utils.HexMath
 
-class RandomMapGenerator {
+class SeedRandomMapGenerator : RandomMapGenerator() {
+
+    override fun generateMap(distance: Int): HashMap<String, TileInfo> {
+
+        val map = HashMap<Vector2, TileInfo?>()
+
+        for (vector in HexMath.GetVectorsInDistance(Vector2.Zero, distance))
+            map[vector] = null
+
+        class Area(val terrain: String) {
+            val locations = ArrayList<Vector2>()
+            fun addTile(position: Vector2) : TileInfo{
+                locations+=position
+
+                val tile = TileInfo()
+                tile.position = position
+                tile.baseTerrain = terrain
+                addRandomOverlay(tile)
+                addRandomResourceToTile(tile)
+                return tile
+            }
+        }
+
+        val areas = ArrayList<Area>()
+
+        val terrains = GameBasics.Terrains.values.filter { it.type === TerrainType.BaseTerrain && it.name != "Lakes" }
+
+
+        for (i in 0..(distance*distance/2)){
+            val area = Area(terrains.getRandom().name)
+            val location = map.filter { it.value==null }.map { it.key }.getRandom()
+            map[location] = area.addTile(location)
+            areas += area
+        }
+
+        val expandableAreas = ArrayList<Area>(areas)
+
+        while (expandableAreas.isNotEmpty()){
+            val areaToExpand = expandableAreas.getRandom()
+            val availableExpansionVectors = areaToExpand.locations.flatMap { HexMath.GetAdjacentVectors(it) }.distinct()
+                    .filter { map.containsKey(it) && map[it] == null }
+            if(availableExpansionVectors.isEmpty()) expandableAreas -= areaToExpand
+            else {
+                val expansionVector = availableExpansionVectors.getRandom()
+                map[expansionVector] = areaToExpand.addTile(expansionVector)
+            }
+        }
+
+        val mapToReturn = HashMap<String,TileInfo>()
+        for (entry in map){
+            mapToReturn.put(entry.key.toString(),entry.value!!)
+        }
+
+        return mapToReturn
+    }
+}
+
+open class RandomMapGenerator {
 
     private fun addRandomTile(position: Vector2): TileInfo {
         val tileInfo = TileInfo()
@@ -18,19 +75,22 @@ class RandomMapGenerator {
         val baseTerrain = terrains.filter { it.type === TerrainType.BaseTerrain && it.name != "Lakes" }.getRandom()
         tileInfo.baseTerrain = baseTerrain.name
 
-        if (baseTerrain.canHaveOverlay) {
-            if (Math.random() > 0.7f) {
-                val secondaryTerrains = terrains.filter { it.type === TerrainType.TerrainFeature && it.occursOn!!.contains(baseTerrain.name) }
-                if (secondaryTerrains.any()) tileInfo.terrainFeature = secondaryTerrains.getRandom().name
-            }
-        }
-
+        addRandomOverlay(tileInfo)
         addRandomResourceToTile(tileInfo)
 
         return tileInfo
     }
 
-    private fun addRandomResourceToTile(tileInfo: TileInfo) {
+    protected fun addRandomOverlay(tileInfo: TileInfo) {
+        if (tileInfo.getBaseTerrain().canHaveOverlay && Math.random() > 0.7f) {
+            val secondaryTerrains = GameBasics.Terrains.values
+                    .filter { it.type === TerrainType.TerrainFeature && it.occursOn!!.contains(tileInfo.baseTerrain) }
+            if (secondaryTerrains.any()) tileInfo.terrainFeature = secondaryTerrains.getRandom().name
+        }
+    }
+
+
+    internal fun addRandomResourceToTile(tileInfo: TileInfo) {
 
         var tileResources = GameBasics.TileResources.values.toList()
 
@@ -53,7 +113,7 @@ class RandomMapGenerator {
     }
 
 
-    fun generateMap(distance: Int): HashMap<String, TileInfo> {
+    open fun generateMap(distance: Int): HashMap<String, TileInfo> {
         val map = HashMap<String, TileInfo>()
         for (vector in HexMath.GetVectorsInDistance(Vector2.Zero, distance))
             map[vector.toString()] = addRandomTile(vector)

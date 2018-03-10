@@ -97,8 +97,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     .flatMap { tileMap.getViewableTiles(it.position, 2).map { it.position } } // Tiles within 2 tiles of units
         }
 
-        else
+        else {
             viewablePositions += worldScreen.unitTable.getViewablePositionsForExecutingAction()
+        }
 
         for (string in viewablePositions.map { it.toString() }.filter { tileGroups.containsKey(it) })
             tileGroups[string]!!.setIsViewable(true)

@@ -20,7 +20,7 @@ class TileMap {
 
 
     constructor(distance: Int) {
-        tiles = RandomMapGenerator().generateMap(distance)
+        tiles = SeedRandomMapGenerator().generateMap(distance)
         setTransients()
     }
 

@@ -18,7 +18,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             tileInfo.explored = true
             update()
         } else
-            setColor(0f, 0f, 0f, 0.3f)
+            setColor(0f, 0f, 0f, 0.5f)
     }
 
 

@@ -63,7 +63,9 @@ class MapUnit {
 
     private fun findTileToWork(currentTile: TileInfo): TileInfo {
         val selectedTile = civInfo.gameInfo.tileMap.getTilesInDistance(currentTile.position, 4)
-                .filter { (it.unit==null || it==currentTile ) && it.improvement==null && it.canBuildImprovement(chooseImprovement(it),civInfo) }
+                .filter { (it.unit==null || it==currentTile )
+                        && it.improvement==null
+                        && it.canBuildImprovement(chooseImprovement(it),civInfo) }
                 .maxBy { getPriority(it) }
         if(selectedTile!=null && getPriority(selectedTile) > 1) return selectedTile
         else return currentTile
