@@ -81,12 +81,6 @@ class WorldScreen : CameraStageBaseScreen() {
         civTable.update(this)
         notificationsScroll.update()
         unitTable.update()
-        if (civInfo.tech.freeTechs != 0) {
-            game.screen = TechPickerScreen(true, civInfo)
-        } else if (civInfo.policies.shouldOpenPolicyPicker) {
-            game.screen = PolicyPickerScreen(civInfo)
-            civInfo.policies.shouldOpenPolicyPicker = false
-        }
     }
 
     private fun updateTechButton() {
@@ -109,10 +103,19 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton() {
         val nextTurnButton = TextButton("Next turn", CameraStageBaseScreen.skin)
         nextTurnButton.addClickListener {
-            if (civInfo.tech.currentTechnology() == null && civInfo.cities.isNotEmpty()) {
+            if (civInfo.tech.freeTechs != 0) {
+                game.screen = TechPickerScreen(true, civInfo)
+                return@addClickListener
+            } else if (civInfo.policies.shouldOpenPolicyPicker) {
+                game.screen = PolicyPickerScreen(civInfo)
+                civInfo.policies.shouldOpenPolicyPicker = false
+                return@addClickListener
+            }
+            else if (civInfo.tech.currentTechnology() == null && civInfo.cities.isNotEmpty()) {
                 game.screen = TechPickerScreen(civInfo)
                 return@addClickListener
             }
+
             game.gameInfo.nextTurn()
             unitTable.selectedUnitTile = null
             unitTable.currentlyExecutingAction = null
