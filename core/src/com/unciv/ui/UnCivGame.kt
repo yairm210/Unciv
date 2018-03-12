@@ -56,24 +56,23 @@ class UnCivGame : Game() {
         return Json().fromJson(tClass, jsonText)
     }
 
-    private fun <T : INamed> createHashmap(items: Array<T>): HashMap<String, T> {
-        val hashMap = HashMap<String, T>()
+    private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
+        val hashMap = LinkedHashMap<String, T>()
         for (item in items)
             hashMap[item.name] = item
         return hashMap
     }
 
     private fun setupGameBasics() {
-        GameBasics.Buildings = createHashmap(getFromJson(Array<Building>::class.java, "Buildings"))
-        GameBasics.Terrains = createHashmap(getFromJson(Array<Terrain>::class.java, "Terrains"))
-        GameBasics.TileResources = createHashmap(getFromJson(Array<TileResource>::class.java, "TileResources"))
-        GameBasics.TileImprovements = createHashmap(getFromJson(Array<TileImprovement>::class.java, "TileImprovements"))
-        GameBasics.Helps = createHashmap(getFromJson(Array<BasicHelp>::class.java, "BasicHelp"))
-        GameBasics.Units = createHashmap(getFromJson(Array<Unit>::class.java, "Units"))
-        GameBasics.PolicyBranches = createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
+        GameBasics.Buildings += createHashmap(getFromJson(Array<Building>::class.java, "Buildings"))
+        GameBasics.Terrains += createHashmap(getFromJson(Array<Terrain>::class.java, "Terrains"))
+        GameBasics.TileResources += createHashmap(getFromJson(Array<TileResource>::class.java, "TileResources"))
+        GameBasics.TileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "TileImprovements"))
+        GameBasics.Helps += createHashmap(getFromJson(Array<BasicHelp>::class.java, "BasicHelp"))
+        GameBasics.Units += createHashmap(getFromJson(Array<Unit>::class.java, "Units"))
+        GameBasics.PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
 
         val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
-        GameBasics.Technologies = HashMap()
         for (techColumn in techColumns) {
             for (tech in techColumn.techs) {
                 tech.cost = techColumn.techCost
