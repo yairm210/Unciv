@@ -29,11 +29,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val group = WorldTileGroup(tileInfo)
 
             group.addClickListener {
-                val tutorial = mutableListOf<String>()
-                tutorial.add("Clicking on a tile selects that tile," +
-                        "\r\n and displays information on that tile on the bottom-right," +
-                        "\r\n as well as unit actions, if the tile contains a unit")
-                worldScreen.displayTutorials("TileClicked", tutorial)
+                worldScreen.displayTutorials("TileClicked")
 
                 selectedTile = tileInfo
                 worldScreen.unitTable.tileSelected(tileInfo)

@@ -1,0 +1,150 @@
+
+{
+	PolicyPickerScreen: [
+		[
+			"Each turn, the culture you gain from all your ",
+			"  cities is added to your Civilization's culture.",
+			"When you have enough culture, you may pick a ",
+			"  Social Policy, each one giving you a certain bonus."
+		],
+		[
+			"The policies are organized into branches, with each",
+			"  branch providing a bonus ability when all policies ",
+			"  in the branch have been adopted."
+		],
+		[
+			"With each policy adopted, and with each city built,",
+			"  the cost of adopting another policy rises - so choose wisely!"
+		]
+	],
+	
+	CityEntered: [
+		[
+			"Welcome to your first city!",
+			"As on now, you only have 1 population,",
+			"  but this will grow when you amass enough surplus food"
+		],
+		[
+			"Similarly, your city's borders grow when you",
+			"  amass enough culture, which is not generated",
+			"  by tiles but rather by buildings."
+		],
+		[
+			"Each population in your city can work",
+			"  a single tile, providing the city with that tile's yields.",
+		],
+		[
+			"Population can be assigned and unassigned",
+			"  by clicking on the green population symbols on the tiles - ",
+			"  but of course, you can only assign population",
+			"  if you have idle population to spare!"
+		],
+		[
+			"The center tile off a city is always worked,",
+			"  and doesn't require population,",
+			"  but it cannot be improved by tile improvements."
+		],
+		[
+			"The city's production always goes towards the",
+			"  current construction - you can pick the city's",
+			"  construction by clicking on the construction",
+			"  button on the bottom-left"
+		]
+	],
+	
+	ScienceVictoryScreenEntered : [
+		[
+			"This is the science victory screen, filter you",
+			"  can see your progress towards constructing a ",
+			"  spaceship to propel you towards the stars."
+		],
+		[
+			"There are 6 spaceship parts you must build, ",
+			"  and they all require advanced technologies"
+		],
+	],
+	
+	TechPickerScreen : [
+		[
+			"Technology is central to your civilization,",
+			" as technological progress brings with it",
+			" more construction options, improvements, and abilities"
+		],
+		[
+			"Most technologies are dependent on",
+			" other technologies being researched - ",
+			" but you can choose a technology to aspire to,",
+			" and your civilization will research the",
+			" necessary technologies to get there"
+		]
+	],
+	
+	TileClicked : [
+		[
+			"Clicking on a tile selects that tile,",
+			" and displays information on that tile on the bottom-right,",
+			" as well as unit actions, if the tile contains a unit"
+		]
+	],
+	
+	CityFounded : [
+		[
+			"You have founded a city!",
+			"Cities are the lifeblood of your empire,",
+			"  providing gold and science empire-wide,",
+			"  which are displayed on the top bar."
+		],
+		[
+			"Science is used to research technologies.",
+			"You can enter the technology screen by clicking",
+			"  on the button on the top-left, underneath the bar",
+		],
+		[
+			"You can click the city name to enter",
+			"  the city screen to assign population,",
+			"  choose production, and see information on the city"
+		]
+	],
+	
+	NewGame: [
+		[
+			"Hello, and welcome to Unciv!",
+			"Civilization games can be complex, so we'll",
+			"  be guiding you along your first journey.",
+			"Before we begin, let's review some basic game concepts."
+		],
+		[
+			"This is the world map, which is made up of multiple tiles.",
+			"Each tile can contain units, as well as resources",
+			"  and improvements, which we'll get to later"
+		],
+		[
+			"You start out with two units -",
+			"  a Settler - who can found a city,",
+			"  and a scout, for exploring the area.",
+			"  Click on a tile to assign orders the unit!"
+		]
+	],
+	
+	AfterCityEntered : [
+		[
+			"Once you've done everything you can, ",
+			"click the next turn button on the top right to continue."
+		],
+		[
+			"Each turn, science, culture and gold are added",
+			" to your civilization, your cities' construction",
+			" continues, and they may grow in population or area."
+		]
+	],
+	
+	NextTurn: [
+		[
+			"In your first couple of turns,",
+			"  you will have very little options,",
+			"  but as your civilization grows, so do the ",
+			"  number of things requiring your attention"
+		]
+	]
+	
+}

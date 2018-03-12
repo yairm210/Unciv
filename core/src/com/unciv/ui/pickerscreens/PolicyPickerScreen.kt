@@ -18,18 +18,8 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
     private var pickedPolicy: Policy? = null
 
     init {
-
         val policies = civInfo.policies
-        val tutorial = mutableListOf<String>()
-        tutorial.add("Each turn, the culture you gain from all your " +
-                "\r\n  cities is added to your Civilization's culture." +
-                "\r\nWhen you have enough culture, you may pick a " +
-                "\r\n  Social Policy, each one giving you a certain bonus.")
-        tutorial.add("The policies are organized into branches, with each" +
-                "\r\n  branch providing a bonus ability when all policies " +
-                "\r\n  in the branch have been adopted.")
-        tutorial.add("With each policy adopted, and with each city built," + "\r\n  the cost of adopting another policy rises - so choose wisely!")
-        displayTutorials("PolicyPickerScreen", tutorial)
+        displayTutorials("PolicyPickerScreen")
 
         rightSideButton.setText("Adopt policy\r\n(" + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
 

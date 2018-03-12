@@ -72,6 +72,12 @@ class UnCivGame : Game() {
         GameBasics.Units += createHashmap(getFromJson(Array<Unit>::class.java, "Units"))
         GameBasics.PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
 
+        // ...Yes. Total Voodoo. I wish I didn't have to do this.
+        val x = LinkedHashMap<String,com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>>()
+        val tutorials = getFromJson(x.javaClass, "Tutorials")
+        for (tut in tutorials)
+            GameBasics.Tutorials.put(tut.key,tut.value.map{it.joinToString("\r\n")})
+
         val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
         for (techColumn in techColumns) {
             for (tech in techColumn.techs) {

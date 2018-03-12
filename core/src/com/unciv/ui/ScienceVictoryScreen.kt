@@ -25,15 +25,7 @@ class ScienceVictoryScreen(internal val civInfo: CivilizationInfo) : PickerScree
             descriptionLabel.setText("You must build the Apollo Program before you can build spaceship parts!")
         else
             descriptionLabel.setText("Apollo program is built - you may construct spaceship parts in your cities!")
-
-        val tutorial = ArrayList<String>()
-        tutorial.add("This is the science victory screen, filter you" +
-                "\r\n  can see your progress towards constructing a " +
-                "\r\n  spaceship to propel you towards the stars.")
-        tutorial.add("There are 6 spaceship parts you must build, " + "\r\n  and they all require advanced technologies")
-        if (!civInfo.buildingUniques.contains("ApolloProgram"))
-            tutorial.add("You can start constructing spaceship parts" + "\r\n  only after you have finished the Apollo Program")
-        displayTutorials("ScienceVictoryScreenEntered", tutorial)
+        displayTutorials("ScienceVictoryScreenEntered")
     }
 
     private fun addPartButton(partName: String, parts: Counter<String>) {

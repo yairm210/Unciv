@@ -57,28 +57,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         stage.addActor(cityPickerTable)
         stage.addActor(buildingsTableContainer)
         update()
-
-        val tutorial = mutableListOf<String>()
-        tutorial.add("Welcome to your first city!" +
-                "\r\nAs on now, you only have 1 population," +
-                "\r\n  but this will grow when you amass enough surplus food")
-        tutorial.add("Similarly, your city's borders grow when you" +
-                "\r\n  amass enough culture, which is not generated" +
-                "\r\n  by tiles but rather by buildings.")
-        tutorial.add("Each population in your city can work" + "\r\n  a single tile, providing the city with that tile's yields.")
-        tutorial.add("Population can be assigned and unassigned" +
-                "\r\n  by clicking on the green population symbols on the tiles - " +
-                "\r\n  but of course, you can only assign population" +
-                "\r\n  if you have idle population to spare!")
-        tutorial.add("The center tile off a city is always worked," +
-                "\r\n  and doesn't require population," +
-                "\r\n  but it cannot be improved by tile improvements.")
-        tutorial.add("The city's production always goes towards the" +
-                "\r\n  current construction - you can pick the city's" +
-                "\r\n  construction by clicking on the construction" +
-                "\r\n  button on the bottom-left")
-
-        displayTutorials("CityEntered", tutorial)
+        displayTutorials("CityEntered")
     }
 
     internal fun update() {

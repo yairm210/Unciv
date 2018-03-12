@@ -9,4 +9,5 @@ object GameBasics {
     val Helps = LinkedHashMap<String, BasicHelp>()
     val Units = LinkedHashMap<String, Unit>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
+    val Tutorials = LinkedHashMap<String, List<String>>()
 }

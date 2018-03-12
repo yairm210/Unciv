@@ -60,19 +60,7 @@ class UnitActions {
             actionList += getUnitActionButton(unit, "Found City",
                     !tileMapHolder.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter },
                     {
-                        val tutorial = mutableListOf<String>()
-                        tutorial.add("You have founded a city!" +
-                                "\r\nCities are the lifeblood of your empire," +
-                                "\r\n  providing gold and science empire-wide," +
-                                "\r\n  which are displayed on the top bar.")
-                        tutorial.add("Science is used to research technologies." +
-                                "\r\nYou can enter the technology screen by clicking" +
-                                "\r\n  on the button on the top-left, underneath the bar")
-                        tutorial.add("You can click the city name to enter" +
-                                "\r\n  the city screen to assign population," +
-                                "\r\n  choose production, and see information on the city")
-
-                        worldScreen.displayTutorials("CityFounded", tutorial)
+                        worldScreen.displayTutorials("CityFounded")
 
                         unit.civInfo.addCity(tile.position)
                         unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it

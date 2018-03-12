@@ -47,32 +47,13 @@ class WorldScreen : CameraStageBaseScreen() {
         tileMapHolder.setCenterPosition(Vector2.Zero)
         createNextTurnButton() // needs civ table to be positioned
         stage.addActor(optionsTable)
-
-        val beginningTutorial = mutableListOf<String>()
-        beginningTutorial.add("Hello, and welcome to Unciv!" +
-                "\r\nCivilization games can be complex, so we'll" +
-                "\r\n  be guiding you along your first journey." +
-                "\r\nBefore we begin, let's review some basic game concepts.")
-        beginningTutorial.add("This is the world map, which is made up of multiple tiles." +
-                "\r\nEach tile can contain units, as well as resources" +
-                "\r\n  and improvements, which we'll get to later")
-        beginningTutorial.add("You start out with two units -" +
-                "\r\n  a Settler - who can found a city," +
-                "\r\n  and a scout, for exploring the area." +
-                "\r\n  Click on a tile to assign orders the unit!")
-
-        displayTutorials("NewGame", beginningTutorial)
+        displayTutorials("NewGame")
     }
 
 
     fun update() {
         if (game.gameInfo.tutorial.contains("CityEntered")) {
-            val tutorial = ArrayList<String>()
-            tutorial.add("Once you've done everything you can, " + "\r\nclick the next turn button on the top right to continue.")
-            tutorial.add("Each turn, science, culture and gold are added" +
-                    "\r\n to your civilization, your cities' construction" +
-                    "\r\n continues, and they may grow in population or area.")
-            displayTutorials("NextTurn", tutorial)
+            displayTutorials("AfterCityEntered")
         }
 
         updateTechButton()
@@ -121,13 +102,7 @@ class WorldScreen : CameraStageBaseScreen() {
             unitTable.currentlyExecutingAction = null
             GameSaver.SaveGame(game, "Autosave")
             update()
-
-            val tutorial = ArrayList<String>()
-            tutorial.add("In your first couple of turns," +
-                    "\r\n  you will have very little options," +
-                    "\r\n  but as your civilization grows, so do the " +
-                    "\r\n  number of things requiring your attention")
-            displayTutorials("NextTurn", tutorial)
+            displayTutorials("NextTurn")
         }
 
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,

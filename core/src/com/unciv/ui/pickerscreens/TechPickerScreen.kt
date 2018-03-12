@@ -68,16 +68,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 dispose()
             }
 
-        val tutorial = mutableListOf<String>()
-        tutorial.add("Technology is central to your civilization," +
-                "\r\n as technological progress brings with it" +
-                "\r\n more construction options, improvements, and abilities")
-        tutorial.add("Most technologies are dependant on" +
-                "\r\n other technologies being researched - " +
-                "\r\n but you can choose a technology to aspire to," +
-                "\r\n and your civilization will research the" +
-                "\r\n necessary technologies to get there")
-        displayTutorials("TechPickerScreen", tutorial)
+        displayTutorials("TechPickerScreen")
     }
 
     fun setButtonsInfo() {
