@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.disable
 
 open class PickerScreen : CameraStageBaseScreen() {
 
@@ -36,8 +37,7 @@ open class PickerScreen : CameraStageBaseScreen() {
         buttonTable.add(rightSideButton).width(stage.width / 4)
         buttonTable.height = stage.height * (1 - screenSplit)
         buttonTable.align(Align.center)
-        rightSideButton.color = Color.GRAY
-        rightSideButton.touchable = Touchable.disabled
+        rightSideButton.disable()
 
         topTable = Table()
         val scrollPane = ScrollPane(topTable)

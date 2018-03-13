@@ -124,9 +124,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
                     image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
                     image.setSize(10f, 2f)
-                    addActor(image)
+
                     image.setOrigin(0f, 1f) // This is so that the rotation is calculated from the middle of the road and not the edge
                     image.rotation = (180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
+                    addActor(image)
                 }
 
                 if (tileInfo.roadStatus === RoadStatus.Railroad && neighbor.roadStatus === RoadStatus.Railroad)
@@ -134,6 +135,31 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 else
                     roadImages[neighbor.position.toString()]!!.color = Color.BROWN // road
             }
+        }
+
+        if(tileInfo.owner!=null){
+            for (neighbor in tileInfo.neighbors.filter { it.owner!=tileInfo.owner }){
+                val image = ImageGetter.getImage(ImageGetter.WhiteDot)
+//                roadImages[neighbor.position.toString()] = image
+
+                val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
+                val relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition)
+
+                // This is some crazy voodoo magic so I'll explain.
+
+                image.setSize(20f, 2f)
+                image.moveBy(this.width/2-image.width/2,
+                        this.height/2-image.height/2)
+                // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
+                // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
+                image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
+
+                image.setColor(Color.RED)
+                image.setOrigin(image.width/2, image.height/2) // This is so that the rotation is calculated from the middle of the road and not the edge
+                image.rotation = (90 + 180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
+                addActor(image)
+            }
+
         }
 
     }

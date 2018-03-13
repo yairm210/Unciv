@@ -1,7 +1,6 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
@@ -9,6 +8,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.disable
 import java.util.*
 
 class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
@@ -112,8 +112,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
 
         if (civTech.isResearched(tech.name)) {
             rightSideButton.setText("Research")
-            rightSideButton.touchable = Touchable.disabled
-            rightSideButton.color = Color.GRAY
+            rightSideButton.disable()
             setButtonsInfo()
             return
         }
@@ -147,8 +146,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             pick("Pick " + selectedTech!!.name + "\r\n as free tech!")
         } else {
             rightSideButton.setText("Pick a free tech")
-            rightSideButton.touchable = Touchable.disabled
-            rightSideButton.color = Color.GRAY
+            rightSideButton.disable()
         }
     }
 

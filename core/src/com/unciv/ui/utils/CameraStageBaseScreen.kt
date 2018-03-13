@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -93,4 +94,14 @@ open class CameraStageBaseScreen : Screen {
         internal var batch: Batch = SpriteBatch()
     }
 
+}
+
+
+fun TextButton.disable(){
+    touchable= Touchable.disabled
+    color= Color.GRAY
+}
+fun TextButton.enable() {
+    color = Color.WHITE
+    touchable = Touchable.enabled
 }

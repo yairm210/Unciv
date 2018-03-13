@@ -3,7 +3,6 @@ package com.unciv.ui.cityscreen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
@@ -14,6 +13,7 @@ import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.disable
 import java.util.*
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
@@ -235,8 +235,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     update()
                 }
             if (buildingGoldCost > city.civInfo.gold) {
-                buildingBuyButton.color = Color.GRAY
-                buildingBuyButton.touchable = Touchable.disabled
+                buildingBuyButton.disable()
             }
             buildingBuyButton.label.setFontScale(buttonScale)
             cityStatsTable.add(buildingBuyButton).colspan(2).pad(10f)

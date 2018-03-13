@@ -1,7 +1,6 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -12,6 +11,8 @@ import com.unciv.models.gamebasics.StringUtils
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
 
 class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
 
@@ -25,8 +26,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
 
         if (policies.freePolicies > 0) {
             rightSideButton.setText("Adopt free policy")
-            closeButton.color = Color.GRAY
-            closeButton.touchable = Touchable.disabled
+            closeButton.disable()
         }
 
         rightSideButton.addClickListener {
@@ -79,11 +79,9 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         if (civInfo.policies.isAdopted(policy.name)
                 || !civInfo.policies.getAdoptedPolicies().containsAll(policy.requires!!)
                 || !civInfo.policies.canAdoptPolicy()) {
-            rightSideButton.touchable = Touchable.disabled
-            rightSideButton.color = Color.GRAY
+            rightSideButton.disable()
         } else {
-            rightSideButton.color = Color.WHITE
-            rightSideButton.touchable = Touchable.enabled
+            rightSideButton.enable()
         }
         pickedPolicy = policy
         var policyText = policy.name + "\r\n" + policy.description + "\r\n"

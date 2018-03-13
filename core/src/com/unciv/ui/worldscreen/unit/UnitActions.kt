@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -12,6 +11,8 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
 import java.util.*
 
 class UnitActions {
@@ -32,7 +33,8 @@ class UnitActions {
 
         val actionList = ArrayList<TextButton>()
 
-        if (unitTable.currentlyExecutingAction != "moveTo"){
+        if (unitTable.currentlyExecutingAction != "moveTo"
+                && (unit.action==null || !unit.action!!.startsWith("moveTo") )){
             actionList += getUnitActionButton(unit, "Move unit", true, {
                 unitTable.currentlyExecutingAction = "moveTo"
                 // Set all tiles transparent except those in unit range
@@ -50,10 +52,13 @@ class UnitActions {
         }
 
         else {
-            actionList += getUnitActionButton(unit, "Stop movement", true, {
+            val stopUnitAction =getUnitActionButton(unit, "Stop movement", true, {
                 unitTable.currentlyExecutingAction = null
+                unit.action=null
                 tileMapHolder.updateTiles()
             })
+            stopUnitAction.enable() // Stopping automation is always enabled;
+            actionList += stopUnitAction
         }
 
         if (unit.name == "Settler") {
@@ -78,8 +83,10 @@ class UnitActions {
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) })
 
             if("automation" == tile.unit!!.action){
-                actionList += getUnitActionButton(unit,"Stop automation",true,
+                val automationAction = getUnitActionButton(unit,"Stop automation",true,
                         {tile.unit!!.action = null})
+                automationAction.enable() // Stopping automation is always enabled;
+                actionList += automationAction
             }
             else {
                 actionList += getUnitActionButton(unit, "Automate", true,
@@ -144,10 +151,8 @@ class UnitActions {
     private fun getUnitActionButton(unit: MapUnit, actionText: String, canAct: Boolean, action: () -> Unit): TextButton {
         val actionButton = TextButton(actionText, CameraStageBaseScreen.skin)
         actionButton.addClickListener({ action(); UnCivGame.Current.worldScreen!!.update() })
-        if (unit.currentMovement == 0f || !canAct) {
-            actionButton.color = Color.GRAY
-            actionButton.touchable = Touchable.disabled
-        }
+        if (unit.currentMovement == 0f || !canAct) actionButton.disable()
         return actionButton
     }
 }
+

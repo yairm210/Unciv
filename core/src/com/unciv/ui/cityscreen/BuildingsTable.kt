@@ -32,20 +32,22 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
             }
         }
 
-        if (!wonders.isEmpty()) {
-            val label = Label("Wonders", skin)
+        fun createLabel(text:String): Label {
+            val label = Label(text, skin)
             label.setFontScale(1.5f)
             label.color = Color.GREEN
-            add(label).pad(5f).row()
+            return label
+        }
+
+        if (!wonders.isEmpty()) {
+
+            add(createLabel("Wonders")).pad(5f).row()
             for (building in wonders)
                 add(Label(building.name, skin)).pad(5f).row()
         }
 
         if (!specialistBuildings.isEmpty()) {
-            val label = Label("Specialist Buildings", skin)
-            label.setFontScale(1.5f)
-            label.color = Color.GREEN
-            add(label).pad(5f).row()
+            add(createLabel("Specialist Buildings")).pad(5f).row()
             for (building in specialistBuildings) {
                 add(Label(building.name, skin)).pad(5f)
                 val specialists = Table()
@@ -66,10 +68,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
         }
 
         if (!others.isEmpty()) {
-            val label = Label("Buildings", skin)
-            label.setFontScale(1.5f)
-            label.color = Color.GREEN
-            add(label).pad(5f).row()
+            add(createLabel("Buildings")).pad(5f).row()
             for (building in others)
                 add(Label(building.name, skin)).pad(5f).row()
         }

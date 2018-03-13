@@ -1,11 +1,11 @@
 package com.unciv.ui.worldscreen.unit
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
 import com.unciv.ui.worldscreen.WorldScreen
 
 class IdleUnitButton internal constructor(internal val worldScreen: WorldScreen) : TextButton("Select next idle unit", CameraStageBaseScreen.skin) {
@@ -27,13 +27,8 @@ class IdleUnitButton internal constructor(internal val worldScreen: WorldScreen)
     }
 
     internal fun update() {
-        if (worldScreen.civInfo.gameInfo.tileMap.values.any { it.hasIdleUnit() }) {
-            color = Color.WHITE
-            touchable = Touchable.enabled
-        } else {
-            color = Color.GRAY
-            touchable = Touchable.disabled
-        }
+        if (worldScreen.civInfo.gameInfo.tileMap.values.any { it.hasIdleUnit() }) enable()
+        else disable()
     }
 }
 
