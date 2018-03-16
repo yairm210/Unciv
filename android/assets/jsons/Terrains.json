@@ -4,25 +4,29 @@
 		name:"Grassland",
 		type:"BaseTerrain",
 		food:2,
-		movementCost:1
+		movementCost:1,
+		RGB: [109,139,53]
 	},
 	{
 		name:"Plains",
 		type:"BaseTerrain",
 		food:1,
 		production:1,
-		movementCost:1
+		movementCost:1,
+		RGB: [200,208,161]
 	},
 	{
 		name:"Tundra",
 		type:"BaseTerrain",
 		food:1,
-		movementCost:1
+		movementCost:1,
+		RGB: [125,122,113]
 	},
 	{
 		name:"Desert",
 		type:"BaseTerrain",
-		movementCost:1
+		movementCost:1,
+		RGB: [188,189,145]
 	},
 	{
 		name:"Lakes",
@@ -35,7 +39,8 @@
 		name:"Hill",
 		type:"BaseTerrain",
 		production:2,
-		movementCost:2
+		movementCost:2,
+		RGB: [74,81,40]
 	},
 	
 	// Terrain features

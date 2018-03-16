@@ -6,7 +6,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 
 
@@ -27,17 +26,6 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
         if (tileInfo.workingCity != null && populationImage == null) addPopulationIcon()
         if (tileInfo.workingCity == null && populationImage != null) removePopulationIcon()
-
-
-        if (tileInfo.owner != null && hexagon == null) {
-            hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
-            val imageScale = terrainImage.width * 1.3f / hexagon!!.width
-            hexagon!!.setScale(imageScale)
-            hexagon!!.setPosition((width - hexagon!!.width * imageScale) / 2,
-                    (height - hexagon!!.height * imageScale) / 2)
-            addActor(hexagon!!)
-            hexagon!!.zIndex = 0
-        }
 
 
         val city = tileInfo.city

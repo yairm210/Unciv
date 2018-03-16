@@ -5,27 +5,32 @@ import com.unciv.models.stats.NamedStats
 class Terrain : NamedStats(), ICivilopedia {
     override val description: String
         get() = this.clone().toString()
-    @JvmField var type: TerrainType? = null // BaseTerrain or TerrainFeature
+    lateinit var type: TerrainType
 
-    @JvmField var overrideStats = false
+    var overrideStats = false
 
     /***
      * If true, other terrain layers can come over this one. For mountains, lakes etc. this is false
      */
 
-    @JvmField var canHaveOverlay = true
+    var canHaveOverlay = true
 
     /***
      * If true, nothing can be built here - not even resource improvements
      */
-    @JvmField var unbuildable = false
+    var unbuildable = false
 
     /***
      * For terrain features
      */
-    @JvmField var occursOn: Collection<String>? = null
+    var occursOn: Collection<String>? = null
 
-    @JvmField var movementCost = 1
+    /**
+     * RGB color of base terrain
+     */
+    var RGB: List<Int>? = null
+
+    var movementCost = 1
 
 }
 
