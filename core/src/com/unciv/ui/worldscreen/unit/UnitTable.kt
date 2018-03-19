@@ -27,7 +27,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(Color(0x004085bf))
         pad(20f)
-        setBackground(tileTableBackground)
+        background = tileTableBackground
         add(unitLabel)
         add(unitActionsTable)
         row()
@@ -41,7 +41,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnitTile!=null) {
             unitLabel.setText(getSelectedUnit().name+"  "+getSelectedUnit().movementString)
-            for (button in UnitActions().getUnitActions(selectedUnitTile!!))
+            for (button in UnitActions().getUnitActions(selectedUnitTile!!,worldScreen))
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
         }

@@ -13,6 +13,7 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
+import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 
 class UnitActions {
@@ -24,10 +25,9 @@ class UnitActions {
         }
     }
 
-    fun getUnitActions(tile: TileInfo): List<TextButton> {
+    fun getUnitActions(tile: TileInfo, worldScreen: WorldScreen): List<TextButton> {
 
         val unit = tile.unit!!
-        val worldScreen = UnCivGame.Current.worldScreen!!
         val tileMapHolder = worldScreen.tileMapHolder
         val unitTable = worldScreen.unitTable
 

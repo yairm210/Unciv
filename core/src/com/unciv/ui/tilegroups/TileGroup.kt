@@ -29,7 +29,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         val groupSize = 50f
         this.setSize(groupSize,groupSize)
         hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
-        val imageScale = groupSize * 1.3f / hexagon.width
+        val imageScale = groupSize * 1.5f / hexagon.width
         hexagon.setScale(imageScale)
         hexagon.setOrigin(Align.center)
         hexagon.setPosition((width - hexagon.width) / 2,
@@ -43,7 +43,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         populationImage!!.run {
             setSize(20f, 20f)
             setPosition(this@TileGroup.width/2 - width/2,
-                    this@TileGroup.height/2 - height/2 - 15)
+                    this@TileGroup.height/2 - height/2 - 20)
         } // top left
         addActor(populationImage)
     }
@@ -94,7 +94,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             addActor(unitImage!!)
             unitImage!!.setSize(20f, 20f)
             unitImage!!.setPosition(width/2 - unitImage!!.width/2,
-            height/2 - unitImage!!.height/2 +15) // top
+            height/2 - unitImage!!.height/2 +20) // top
         }
 
         if (tileInfo.unit == null && unitImage != null) {
