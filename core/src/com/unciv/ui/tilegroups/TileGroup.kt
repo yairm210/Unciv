@@ -3,7 +3,6 @@ package com.unciv.ui.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -23,7 +22,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private var roadImages = HashMap<String, Image>()
     private var borderImages = ArrayList<Image>()
 
-    public var cityButton: TextButton? = null
 
     init {
         val groupSize = 50f
@@ -69,12 +67,21 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 setPosition(this@TileGroup.width /2-width/2,
                         this@TileGroup.height/2-height/2)
             }
-
         }
 
         if(terrainFeatureImage!=null && tileInfo.terrainFeature==null){
             terrainFeatureImage!!.remove()
             terrainFeatureImage=null
+        }
+
+        if(cityImage==null && tileInfo.isCityCenter){
+            terrainFeatureImage = ImageGetter.getImage("TerrainIcons/City.png")
+            addActor(terrainFeatureImage)
+                setSize(30f,30f)
+                setColor(1f,1f,1f,0.5f)
+                setPosition(this@TileGroup.width /2-width/2,
+                        this@TileGroup.height/2-height/2)
+            }
         }
 
         val RGB= tileInfo.getBaseTerrain().RGB!!

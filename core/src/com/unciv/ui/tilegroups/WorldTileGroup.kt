@@ -9,6 +9,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
+    var cityButton: TextButton? = null
 
     fun setIsViewable(isViewable: Boolean) {
         if (isViewable) {
