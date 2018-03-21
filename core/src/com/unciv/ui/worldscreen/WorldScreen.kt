@@ -18,9 +18,9 @@ class WorldScreen : CameraStageBaseScreen() {
 
     internal var buttonScale = game.settings.buttonScale
     private val tileInfoTable: TileInfoTable
-    private val civTable = CivStatsTable()
+    private val civTable = CivStatsTable(this)
     private val techButton = TextButton("", CameraStageBaseScreen.skin)
-
+    private val nextTurnButton = createNextTurnButton()
 
     internal val optionsTable: WorldScreenOptionsTable
     private val notificationsScroll: NotificationsScroll
@@ -29,19 +29,30 @@ class WorldScreen : CameraStageBaseScreen() {
     init {
         val gameInfo = game.gameInfo
         this.civInfo = gameInfo.getPlayerCivilization()
+
+        unitTable.setPosition(5f, 5f)
         tileMapHolder = TileMapHolder(this, gameInfo.tileMap, civInfo)
         tileInfoTable = TileInfoTable(this, civInfo)
+        civTable.setPosition(10f, stage.height - civTable.height - 10f )
+        nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
+                civTable.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
+        notificationsScroll.setSize(stage.width/3,stage.height/4)
+        notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
+                nextTurnButton.y - notificationsScroll.height - 5f)
         optionsTable = WorldScreenOptionsTable(this, civInfo)
         Label("", CameraStageBaseScreen.skin).style.font.data.setScale(game.settings.labelScale)
 
         tileMapHolder.addTiles()
+
         stage.addActor(tileMapHolder)
         stage.addActor(tileInfoTable)
         stage.addActor(civTable)
+        stage.addActor(nextTurnButton)
         stage.addActor(techButton)
         stage.addActor(notificationsScroll)
         stage.addActor(unitTable)
+
         update()
 
         tileMapHolder.setCenterPosition(Vector2.Zero)
@@ -81,7 +92,7 @@ class WorldScreen : CameraStageBaseScreen() {
         techButton.setPosition(10f, civTable.y - techButton.height - 5f)
     }
 
-    private fun createNextTurnButton() {
+    private fun createNextTurnButton(): TextButton {
         val nextTurnButton = TextButton("Next turn", CameraStageBaseScreen.skin)
         nextTurnButton.addClickListener {
             if (civInfo.tech.freeTechs != 0) {
@@ -105,9 +116,7 @@ class WorldScreen : CameraStageBaseScreen() {
             displayTutorials("NextTurn")
         }
 
-        nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
-                civTable.y - nextTurnButton.height - 10f)
-        stage.addActor(nextTurnButton)
+        return nextTurnButton
     }
 
     override fun resize(width: Int, height: Int) {

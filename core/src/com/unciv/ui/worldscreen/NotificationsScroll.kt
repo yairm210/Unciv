@@ -39,8 +39,6 @@ class NotificationsScroll(private val notifications: List<Notification>, interna
         }
         notificationsTable.pack()
 
-        setSize(worldScreen.stage.width / 3,
-                Math.min(notificationsTable.height, worldScreen.stage.height / 3))
     }
 
 }

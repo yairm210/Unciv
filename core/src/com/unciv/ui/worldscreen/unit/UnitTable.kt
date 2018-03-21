@@ -50,7 +50,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         unitActionsTable.pack()
         pack()
 
-        setPosition(worldScreen.stage.width / 2 - width / 2, 5f)
     }
 
     fun tileSelected(selectedTile: TileInfo) {

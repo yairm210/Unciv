@@ -160,7 +160,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         // Borders
         if(tileInfo.owner!=null){
-            for(border in borderImages) border.remove()
+            for (border in borderImages) border.remove()
             for (neighbor in tileInfo.neighbors.filter { it.owner!=tileInfo.owner }){
                 val image = ImageGetter.getImage(ImageGetter.WhiteDot)
 
