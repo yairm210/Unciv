@@ -1,6 +1,5 @@
 package com.unciv.ui.tilegroups
 
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.CityScreen
@@ -32,23 +31,19 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         if (tileInfo.isCityCenter) {
             val buttonScale = 0.7f
             if (cityButton == null) {
-                cityButton = Container()
-                cityButton!!.actor = TextButton("", CameraStageBaseScreen.skin)
-
-                cityButton!!.actor.label.setFontScale(buttonScale)
+                cityButton =  TextButton("", CameraStageBaseScreen.skin)
+                cityButton!!.label.setFontScale(buttonScale)
 
                 val game = worldScreen.game
-                cityButton!!.actor.addClickListener { game.screen = CityScreen(city!!)
-                    }
+                cityButton!!.addClickListener { game.screen = CityScreen(city!!)}
 
-                addActor(cityButton!!)
+                addActor(cityButton)
                 zIndex = parent.children.size // so this tile is rendered over neighboring tiles
             }
 
             val cityButtonText = city!!.name + " (" + city.population.population + ")"
-            val button = cityButton!!.actor
-            button.setText(cityButtonText)
-            button.setSize(button.prefWidth, button.prefHeight)
+            cityButton!!.setText(cityButtonText)
+            cityButton!!.setSize(cityButton!!.prefWidth, cityButton!!.prefHeight)
 
             cityButton!!.setPosition((width - cityButton!!.width) / 2,
                     height * 0.9f)

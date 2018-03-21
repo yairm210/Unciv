@@ -72,7 +72,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     lastInitialDistance = initialDistance
                     lastScale = scaleX
                 }
-                val scale = Math.sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
+                val scale: Float = Math.sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
                 if (scale < 1) return
                 setScale(scale)
             }

@@ -2,7 +2,6 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
@@ -22,8 +21,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private var improvementType: String? = null
     var populationImage: Image? = null
     private var roadImages = HashMap<String, Image>()
+    private var borderImages = ArrayList<Image>()
 
-    protected var cityButton: Container<TextButton>? = null
+    public var cityButton: TextButton? = null
 
     init {
         val groupSize = 50f
@@ -158,10 +158,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             }
         }
 
+        // Borders
         if(tileInfo.owner!=null){
+            for(border in borderImages) border.remove()
             for (neighbor in tileInfo.neighbors.filter { it.owner!=tileInfo.owner }){
                 val image = ImageGetter.getImage(ImageGetter.WhiteDot)
-//                roadImages[neighbor.position.toString()] = image
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
                 val relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition)
@@ -179,6 +180,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 image.setOrigin(image.width/2, image.height/2) // This is so that the rotation is calculated from the middle of the road and not the edge
                 image.rotation = (90 + 180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
                 addActor(image)
+                borderImages.add(image)
             }
 
         }
