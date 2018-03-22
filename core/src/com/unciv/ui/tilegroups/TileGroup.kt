@@ -15,7 +15,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var terrainFeatureImage:Image?=null
 
     protected var resourceImage: Image? = null
-    protected var unitImage: Image? = null
+    protected var unitImage: Group? = null
     protected var improvementImage: Image? =null
     private var improvementType: String? = null
     var populationImage: Image? = null
@@ -74,15 +74,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             terrainFeatureImage=null
         }
 
-        if(cityImage==null && tileInfo.isCityCenter){
-            terrainFeatureImage = ImageGetter.getImage("TerrainIcons/City.png")
-            addActor(terrainFeatureImage)
-                setSize(30f,30f)
-                setColor(1f,1f,1f,0.5f)
-                setPosition(this@TileGroup.width /2-width/2,
-                        this@TileGroup.height/2-height/2)
-            }
-        }
 
         val RGB= tileInfo.getBaseTerrain().RGB!!
         hexagon.color = Color(RGB[0]/255f,RGB[1]/255f,RGB[2]/255f,1f)
@@ -97,7 +88,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         if (tileInfo.unit != null && unitImage == null) {
-            unitImage = ImageGetter.getImage("UnitIcons/" + tileInfo.unit!!.name!!.replace(" ", "_") + "_(Civ5).png")
+            val unit = tileInfo.unit!!
+            unitImage = getUnitImage(unit.name!!, unit.civInfo.getCivilization().getColor())
             addActor(unitImage!!)
             unitImage!!.setSize(20f, 20f)
             unitImage!!.setPosition(width/2 - unitImage!!.width/2,
@@ -183,7 +175,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
                 image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
 
-                image.color = Color.RED
+                image.color = tileInfo.getOwner()!!.getCivilization().getColor()
                 image.setOrigin(image.width/2, image.height/2) // This is so that the rotation is calculated from the middle of the road and not the edge
                 image.rotation = (90 + 180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
                 addActor(image)
@@ -192,6 +184,23 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         }
 
+    }
+
+    private fun getUnitImage(unitType:String, color:Color): Group {
+        val unitBaseImage = ImageGetter.getImage("UnitIcons/$unitType.png")
+                .apply { setSize(15f,15f) }
+        val background = ImageGetter.getImage("UnitIcons/Circle.png").apply {
+            this.color = color
+            setSize(20f,20f)
+        }
+        val group = Group().apply {
+            setSize(background.width,background.height)
+            addActor(background)
+        }
+        unitBaseImage.setPosition(group.width/2-unitBaseImage.width/2,
+                group.height/2-unitBaseImage.height/2)
+        group.addActor(unitBaseImage)
+        return group
     }
 }
 

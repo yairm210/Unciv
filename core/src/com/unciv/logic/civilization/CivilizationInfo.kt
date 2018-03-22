@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.RoadStatus
+import com.unciv.models.gamebasics.Civilization
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ResourceType
 import com.unciv.models.gamebasics.TileResource
@@ -27,6 +28,8 @@ class CivilizationInfo {
     var scienceVictory = ScienceVictoryManager()
 
     var cities = ArrayList<CityInfo>()
+
+    fun getCivilization(): Civilization {return GameBasics.Civilizations[civName]!!}
 
     val capital: CityInfo
         get() = cities.first { it.cityConstructions.isBuilt("Palace") }

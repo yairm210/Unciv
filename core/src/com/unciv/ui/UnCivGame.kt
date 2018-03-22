@@ -25,6 +25,11 @@ class UnCivGame : Game() {
         if (GameSaver.GetSave("Autosave").exists()) {
             try {
                 GameSaver.LoadGame(this, "Autosave")
+                gameInfo.getPlayerCivilization().civName="Babylon"
+                gameInfo.tileMap.values.forEach {
+                    if (it.owner == "Player") it.owner = "Babylon"
+                    if (it.unit != null && it.unit!!.owner == "Player") it.unit!!.owner = "Babylon"
+                }
             } catch (ex: Exception) { // silent fail if we can't read the autosave
                 startNewGame()
             }
@@ -38,7 +43,7 @@ class UnCivGame : Game() {
     fun startNewGame() {
         gameInfo = GameInfo()
         gameInfo.tileMap = TileMap(20)
-        gameInfo.civilizations.add(CivilizationInfo("Player", Vector2.Zero, gameInfo))
+        gameInfo.civilizations.add(CivilizationInfo("Babylon", Vector2.Zero, gameInfo))
         gameInfo.setTransients()
 
         worldScreen = WorldScreen()
@@ -71,12 +76,13 @@ class UnCivGame : Game() {
         GameBasics.Helps += createHashmap(getFromJson(Array<BasicHelp>::class.java, "BasicHelp"))
         GameBasics.Units += createHashmap(getFromJson(Array<Unit>::class.java, "Units"))
         GameBasics.PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
+        GameBasics.Civilizations += createHashmap(getFromJson(Array<Civilization>::class.java, "Civilizations"))
 
         // ...Yes. Total Voodoo. I wish I didn't have to do this.
         val x = LinkedHashMap<String,com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>>()
         val tutorials = getFromJson(x.javaClass, "Tutorials")
         for (tut in tutorials)
-            GameBasics.Tutorials.put(tut.key,tut.value.map{it.joinToString("\r\n")})
+            GameBasics.Tutorials[tut.key] = tut.value.map{it.joinToString("\r\n")}
 
         val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
         for (techColumn in techColumns) {
