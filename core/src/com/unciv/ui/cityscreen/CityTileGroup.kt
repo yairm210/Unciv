@@ -6,12 +6,11 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.ImageGetter
 
-class CityTileGroup : TileGroup {
+class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(tileInfo) {
 
-    private val city: CityInfo
+    var yieldGroup: YieldGroup
 
-    constructor(city: CityInfo, tileInfo: TileInfo) : super(tileInfo) {
-        this.city = city
+    init {
         this.yieldGroup = YieldGroup()
         addActor(yieldGroup)
         if (city.cityLocation == tileInfo.position) {
@@ -19,8 +18,6 @@ class CityTileGroup : TileGroup {
             addActor(populationImage)
         }
     }
-
-    var yieldGroup: YieldGroup
 
     override fun update() {
         super.update()
@@ -32,7 +29,6 @@ class CityTileGroup : TileGroup {
         }
 
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
-        if (unitImage != null) unitImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (resourceImage != null) resourceImage!!.setColor(1f, 1f, 1f, 0.5f)
 
         yieldGroup.setStats(tileInfo.getTileStats(city, city.civInfo.gameInfo.getPlayerCivilization()))
@@ -42,4 +38,6 @@ class CityTileGroup : TileGroup {
         yieldGroup.setPosition(width / 2 - yieldGroup.width / 2, height * 0.25f - yieldGroup.height / 2)
 
     }
+
+
 }

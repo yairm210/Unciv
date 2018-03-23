@@ -37,9 +37,7 @@ class WorldScreen : CameraStageBaseScreen() {
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
                 civTable.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
-        notificationsScroll.setSize(stage.width/3,stage.height/4)
-        notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
-                nextTurnButton.y - notificationsScroll.height - 5f)
+        notificationsScroll.width = stage.width/3
         optionsTable = WorldScreenOptionsTable(this, civInfo)
         Label("", CameraStageBaseScreen.skin).style.font.data.setScale(game.settings.labelScale)
 
@@ -72,6 +70,9 @@ class WorldScreen : CameraStageBaseScreen() {
         tileMapHolder.updateTiles()
         civTable.update(this)
         notificationsScroll.update()
+        notificationsScroll.width = stage.width/3
+        notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
+                nextTurnButton.y - notificationsScroll.height - 5f)
         unitTable.update()
     }
 

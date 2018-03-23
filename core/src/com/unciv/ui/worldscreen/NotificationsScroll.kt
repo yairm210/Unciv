@@ -38,7 +38,7 @@ class NotificationsScroll(private val notifications: List<Notification>, interna
             notificationsTable.row()
         }
         notificationsTable.pack()
-
+        pack()
     }
 
 }
