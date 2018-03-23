@@ -15,7 +15,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var terrainFeatureImage:Image?=null
 
     protected var resourceImage: Image? = null
-    protected var unitImage: Group? = null
     protected var improvementImage: Image? =null
     private var improvementType: String? = null
     var populationImage: Image? = null
@@ -87,26 +86,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             addActor(resourceImage!!)
         }
 
-        if (tileInfo.unit != null && unitImage == null) {
-            val unit = tileInfo.unit!!
-            unitImage = getUnitImage(unit.name!!, unit.civInfo.getCivilization().getColor())
-            addActor(unitImage!!)
-            unitImage!!.setSize(20f, 20f)
-            unitImage!!.setPosition(width/2 - unitImage!!.width/2,
-            height/2 - unitImage!!.height/2 +20) // top
-        }
-
-        if (tileInfo.unit == null && unitImage != null) {
-            unitImage!!.remove()
-            unitImage = null
-        }
-
-        if (unitImage != null) {
-            if (!tileInfo.hasIdleUnit())
-                unitImage!!.color = Color.GRAY
-            else
-                unitImage!!.color = Color.WHITE
-        }
 
 
         if (tileInfo.improvement != null && tileInfo.improvement != improvementType) {
@@ -186,21 +165,5 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     }
 
-    private fun getUnitImage(unitType:String, color:Color): Group {
-        val unitBaseImage = ImageGetter.getImage("UnitIcons/$unitType.png")
-                .apply { setSize(15f,15f) }
-        val background = ImageGetter.getImage("UnitIcons/Circle.png").apply {
-            this.color = color
-            setSize(20f,20f)
-        }
-        val group = Group().apply {
-            setSize(background.width,background.height)
-            addActor(background)
-        }
-        unitBaseImage.setPosition(group.width/2-unitBaseImage.width/2,
-                group.height/2-unitBaseImage.height/2)
-        group.addActor(unitBaseImage)
-        return group
-    }
 }
 
