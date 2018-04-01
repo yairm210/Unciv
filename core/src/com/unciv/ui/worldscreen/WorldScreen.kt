@@ -2,8 +2,11 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.logic.Battle
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -25,6 +28,7 @@ class WorldScreen : CameraStageBaseScreen() {
     internal val optionsTable: WorldScreenOptionsTable
     private val notificationsScroll: NotificationsScroll
     internal val unitTable = UnitTable(this)
+    internal val battleTable = BattleTable(this)
 
     init {
         val gameInfo = game.gameInfo
@@ -41,6 +45,7 @@ class WorldScreen : CameraStageBaseScreen() {
         optionsTable = WorldScreenOptionsTable(this, civInfo)
         Label("", CameraStageBaseScreen.skin).style.font.data.setScale(game.settings.labelScale)
 
+
         tileMapHolder.addTiles()
 
         stage.addActor(tileMapHolder)
@@ -50,6 +55,7 @@ class WorldScreen : CameraStageBaseScreen() {
         stage.addActor(techButton)
         stage.addActor(notificationsScroll)
         stage.addActor(unitTable)
+        stage.addActor(battleTable)
 
         update()
 
@@ -66,7 +72,8 @@ class WorldScreen : CameraStageBaseScreen() {
         }
 
         updateTechButton()
-        if (tileMapHolder.selectedTile != null) tileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
+        if (tileMapHolder.selectedTile != null)
+            tileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
         tileMapHolder.updateTiles()
         civTable.update(this)
         notificationsScroll.update()
@@ -74,6 +81,13 @@ class WorldScreen : CameraStageBaseScreen() {
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
         unitTable.update()
+
+        if(tileMapHolder.selectedTile!=null
+                && tileMapHolder.selectedTile!!.unit!=null
+                && tileMapHolder.selectedTile!!.unit!!.owner!=civInfo.civName
+                && unitTable.selectedUnitTile!=null)
+            battleTable.simulateBattle(unitTable.getSelectedUnit(), tileMapHolder.selectedTile!!.unit!!)
+        else battleTable.clear()
     }
 
     private fun updateTechButton() {
@@ -127,6 +141,29 @@ class WorldScreen : CameraStageBaseScreen() {
             game.worldScreen = WorldScreen() // start over.
             game.setWorldScreen()
         }
+    }
+}
+
+class BattleTable(val worldScreen: WorldScreen): Table() {
+    fun simulateBattle(attacker:MapUnit,defender:MapUnit){
+        clear()
+        add(Label(attacker.name, CameraStageBaseScreen.skin))
+        add(Label(defender.name, CameraStageBaseScreen.skin))
+        row()
+
+        val battle = Battle()
+        val damageToAttacker = battle.calculateDamage(attacker,defender)
+        add(Label(attacker.health.toString()+"/10 -> "
+                +(attacker.health-damageToAttacker)+"/10",
+                CameraStageBaseScreen.skin))
+
+        val damageToDefender = battle.calculateDamage(defender,attacker)
+        add(Label(defender.health.toString()+"/10 -> "
+                +(defender.health-damageToDefender)+"/10",
+                CameraStageBaseScreen.skin))
+        pack()
+        setPosition(worldScreen.stage.width/2-width/2,
+                5f)
     }
 }
 

@@ -40,7 +40,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if(selectedUnitTile!=null && selectedUnitTile!!.unit==null) selectedUnitTile=null // The unit that was there no longer exists
 
         if(selectedUnitTile!=null) {
-            unitLabel.setText(getSelectedUnit().name+"  "+getSelectedUnit().movementString)
+            unitLabel.setText(getSelectedUnit().name+"  "+getSelectedUnit().getMovementString())
             for (button in UnitActions().getUnitActions(selectedUnitTile!!,worldScreen))
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
@@ -61,7 +61,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             currentlyExecutingAction = null
         }
 
-        if(selectedTile.unit!=null) selectedUnitTile = selectedTile
+        if(selectedTile.unit!=null && selectedTile.unit!!.civInfo == worldScreen.civInfo)
+            selectedUnitTile = selectedTile
     }
 
     private fun getDistanceToTiles(): HashMap<TileInfo, Float> {

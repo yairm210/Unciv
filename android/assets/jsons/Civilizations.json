@@ -2,5 +2,9 @@
 	{
 		name:"Babylon",
 		RGB:[220,20,60]
-	}	
+	},
+	{
+		name:"Barbarians",
+		RGB:[200,200,200]
+	}
 ]

@@ -7,18 +7,27 @@ import com.unciv.models.gamebasics.TileImprovement
 
 import java.text.DecimalFormat
 
+enum class UnitType{
+    Civilian,
+    Melee,
+    Ranged
+}
+
 class MapUnit {
     @Transient
     lateinit var civInfo: CivilizationInfo
 
-    @JvmField var owner: String? = null
-    @JvmField var name: String? = null
-    @JvmField var maxMovement: Int = 0
-    @JvmField var currentMovement: Float = 0f
-    @JvmField var action: String? = null // work, automation, fortifying, I dunno what.
+    var owner: String? = null
+    var name: String? = null
+    var maxMovement: Int = 0
+    var currentMovement: Float = 0f
+    lateinit var unitType:UnitType
+    var health:Int = 10
+    var strength:Int = 1
+    var rangedStrength:Int = 0
+    var action: String? = null // work, automation, fortifying, I dunno what.
 
-    val movementString: String
-        get() = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
+    fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
 
     fun doPreTurnAction(tile: TileInfo) {
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
