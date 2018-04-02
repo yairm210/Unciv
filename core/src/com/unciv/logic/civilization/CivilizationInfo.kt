@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.Civilization
 import com.unciv.models.gamebasics.GameBasics
@@ -33,6 +34,9 @@ class CivilizationInfo {
 
     val capital: CityInfo
         get() = cities.first { it.cityConstructions.isBuilt("Palace") }
+
+    fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this
+
 
     // negative gold hurts science
     fun getStatsForNextTurn(): Stats {
@@ -105,10 +109,6 @@ class CivilizationInfo {
         }
     }
 
-    fun turnsToTech(TechName: String): Int {
-        return Math.ceil(((GameBasics.Technologies[TechName]!!.cost - tech.researchOfTech(TechName))
-                / getStatsForNextTurn().science).toDouble()).toInt()
-    }
 
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
@@ -144,6 +144,11 @@ class CivilizationInfo {
     fun placeUnitNearTile(location: Vector2, unitName: String) {
         gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
     }
+
+    fun getCivUnits(): List<MapUnit> {
+        return gameInfo.tileMap.values.filter { it.unit!=null && it.unit!!.owner==civName }.map { it.unit!! }
+    }
+
 }
 
 fun <E> List<E>.getRandom(): E = if (size == 0) throw Exception() else get((Math.random() * size).toInt())

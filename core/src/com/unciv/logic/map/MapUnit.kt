@@ -188,7 +188,7 @@ class MapUnit {
     fun nextTurn() {
         val tile = getTile()
         doPostTurnAction(tile)
-        if(currentMovement==maxMovement.toFloat()){
+        if(currentMovement==maxMovement.toFloat()){ // didn't move this turn
             heal()
         }
         currentMovement = maxMovement.toFloat()

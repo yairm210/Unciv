@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitType
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
@@ -40,10 +41,17 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) {
             val unit = selectedUnit!!
-            unitLabel.setText(unit.name
-                    +"\r\nMovement: " +unit.getMovementString()
-                    +"\r\nHealth: "+unit.health
-            )
+            if (unit.getBaseUnit().unitType == UnitType.Civilian) {
+                unitLabel.setText(unit.name
+                        + "\r\nMovement: " + unit.getMovementString()
+                )
+            } else {
+                unitLabel.setText(unit.name
+                        + "\r\nMovement: " + unit.getMovementString()
+                        + "\r\nHealth: " + unit.health
+                        + "\r\nStrength: " + unit.getBaseUnit().strength
+                )
+            }
             for (button in UnitActions().getUnitActions(selectedUnit!!, worldScreen))
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()

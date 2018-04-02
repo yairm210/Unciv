@@ -5,11 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.Battle
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
-import java.util.*
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
@@ -29,8 +27,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(defenderLabel)
 
         row()
-
-        // todo: when damage exceeds health, it shows negative health numbers! Also not indicative of who is more likely to win
 
         var damageToDefender = battle.calculateDamage(attacker,defender)
         var damageToAttacker = battle.calculateDamage(defender,attacker)
@@ -70,7 +66,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attackButton = TextButton("Attack",CameraStageBaseScreen.skin)
 
         attackButton.addClickListener {
-            attack(attacker,defender)
+            battle.attack(attacker,defender)
+            worldScreen.update()
         }
 
         val attackerCanReachDefender = attacker.getDistanceToTiles().containsKey(defender.getTile())
@@ -82,42 +79,4 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 5f)
     }
 
-    fun attack(attacker: MapUnit, defender: MapUnit){
-
-        var damageToDefender = battle.calculateDamage(attacker,defender)
-        var damageToAttacker = battle.calculateDamage(defender,attacker)
-
-        // randomize things so
-
-        if(attacker.getBaseUnit().unitType == UnitType.Ranged) defender.health -= damageToDefender // straight up
-        else { //melee attack is complicated, because either side may defeat the other midway
-            //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
-            //attacker..moveUnitToTile()
-            attacker.headTowards(defender.getTile().position)
-            while(damageToDefender+damageToAttacker>0) {
-                if (Random().nextInt(damageToDefender + damageToAttacker) < damageToDefender) {
-                    damageToDefender--
-                    defender.health--
-                    if(defender.health==0) {
-                        val defenderTile = defender.getTile()
-                        defenderTile.unit = null // Ded
-                        attacker.moveToTile(defenderTile)
-                        break
-                    }
-                }
-                else{
-                    damageToAttacker--
-                    attacker.health--
-                    if(attacker.health==0) {
-                        attacker.getTile().unit = null
-                        break
-                    }
-                }
-            }
-        }
-        attacker.currentMovement=0f
-
-        worldScreen.update()
-
-    }
 }

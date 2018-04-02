@@ -41,7 +41,7 @@ class TileInfo {
         get() = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
 
     val neighbors: List<TileInfo>
-        get() = tileMap!!.getTilesAtDistance(position, 1)
+        get() = tileMap.getTilesAtDistance(position, 1)
 
     val height: Int
         get() {
@@ -57,7 +57,7 @@ class TileInfo {
 
     fun getOwner(): CivilizationInfo? {
         return if (owner == null) null
-        else tileMap!!.gameInfo!!.civilizations.first { it.civName == owner }
+        else tileMap.gameInfo!!.civilizations.first { it.civName == owner }
     }
 
     fun getTerrainFeature(): Terrain? {
@@ -150,7 +150,7 @@ class TileInfo {
         }
         SB.appendln(this.baseTerrain)
         if (terrainFeature != null) SB.appendln(terrainFeature!!)
-        if (hasViewableResource(tileMap!!.gameInfo!!.getPlayerCivilization())) SB.appendln(resource!!)
+        if (hasViewableResource(tileMap.gameInfo!!.getPlayerCivilization())) SB.appendln(resource!!)
         if (roadStatus !== RoadStatus.None && !isCityCenter) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")

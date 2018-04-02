@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.getRandom
 import com.unciv.logic.map.TileMap
 
 class GameInfo {
@@ -35,7 +36,10 @@ class GameInfo {
             for (city in civInfo.cities)
                 city.cityStats.update()
             civInfo.happiness = civInfo.getHappinessForNextTurn()
+            if(!civInfo.isPlayerCivilization())
+                automateMoves(civInfo)
         }
+
 
 
         turns++
@@ -58,4 +62,35 @@ class GameInfo {
             for (cityInfo in civInfo.cities)
                 cityInfo.cityStats.update()
     }
+
+
+    private fun automateMoves(civInfo: CivilizationInfo) {
+        for(unit in civInfo.getCivUnits()){
+            // if there is an attackable unit in the vicinity, attack!
+            val distanceToTiles = unit.getDistanceToTiles()
+            val unitTileToAttack = distanceToTiles.keys.firstOrNull{ it.unit!=null && it.unit!!.owner!=civInfo.civName }
+            if(unitTileToAttack!=null){
+                Battle().attack(unit,unitTileToAttack.unit!!)
+                continue
+            }
+
+            // else, if there is a reachable spot from which we can attack this turn
+            // (say we're an archer and there's a unit 3 tiles away), go there and attack
+            // todo
+
+            // else, find the closest enemy unit that we know of within 5 spaces and advance towards it
+            // todo this doesn't take into account which tiles are visible to the civ
+            val closestUnit = tileMap.getTilesInDistance(unit.getTile().position, 5)
+                    .firstOrNull{ it.unit!=null && it.unit!!.owner!=civInfo.civName }
+
+            if(closestUnit!=null){
+                unit.headTowards(closestUnit.position)
+                continue
+            }
+
+            // else, go to a random space
+            unit.moveToTile(distanceToTiles.keys.toList().getRandom())
+        }
+    }
+
 }

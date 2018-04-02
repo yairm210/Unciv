@@ -97,7 +97,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 text.append(" (").append(techsToResearch.indexOf(techName) + 1).append(")")
             }
 
-            if (!civTech.isResearched(techName)) text.append("\r\n" + civInfo.turnsToTech(techName) + " turns")
+            if (!civTech.isResearched(techName)) text.append("\r\n" + civInfo.tech.turnsToTech(techName) + " turns")
             TB.setText(text.toString())
         }
     }

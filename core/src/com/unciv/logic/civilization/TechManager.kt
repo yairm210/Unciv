@@ -27,11 +27,15 @@ class TechManager {
         else return techsToResearch[0]
     }
 
-    fun researchOfTech(TechName: String?): Int {
+    private fun researchOfTech(TechName: String?): Int {
         if (techsInProgress.containsKey(TechName)) return techsInProgress[TechName]!!
         else return 0
     }
 
+    fun turnsToTech(TechName: String): Int {
+        return Math.ceil(((GameBasics.Technologies[TechName]!!.cost - researchOfTech(TechName))
+                / civInfo.getStatsForNextTurn().science).toDouble()).toInt()
+    }
 
     fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)
 

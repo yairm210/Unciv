@@ -145,7 +145,6 @@ class UnitActions {
         return actionList
     }
 
-
     private fun getUnitActionButton(unit: MapUnit, actionText: String, canAct: Boolean, action: () -> Unit): TextButton {
         val actionButton = TextButton(actionText, CameraStageBaseScreen.skin)
         actionButton.addClickListener({ action(); UnCivGame.Current.worldScreen!!.update() })
