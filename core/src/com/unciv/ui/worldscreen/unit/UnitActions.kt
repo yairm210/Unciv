@@ -25,9 +25,10 @@ class UnitActions {
         }
     }
 
-    fun getUnitActions(tile: TileInfo, worldScreen: WorldScreen): List<TextButton> {
+    fun getUnitActions(unit:MapUnit,worldScreen: WorldScreen): List<TextButton> {
 
-        val unit = tile.unit!!
+        val tile = unit.getTile()
+
         val tileMapHolder = worldScreen.tileMapHolder
         val unitTable = worldScreen.unitTable
 
@@ -40,10 +41,7 @@ class UnitActions {
                 // Set all tiles transparent except those in unit range
                 for (TG in tileMapHolder.tileGroups.values) TG.setColor(0f, 0f, 0f, 0.3f)
 
-                val distanceToTiles = tileMapHolder.tileMap.getDistanceToTilesWithinTurn(
-                        unitTable.selectedUnitTile!!.position,
-                        unitTable.getSelectedUnit().currentMovement,
-                        unit.civInfo.tech.isResearched("Machinery"))
+                val distanceToTiles = unitTable.selectedUnit!!.getDistanceToTiles()
 
                 for (tileInRange in distanceToTiles.keys) {
                     tileMapHolder.tileGroups[tileInRange.position.toString()]!!.color = Color.WHITE
@@ -62,7 +60,7 @@ class UnitActions {
         }
 
         if (unit.name == "Settler") {
-            actionList += getUnitActionButton(unit, "Found City",
+            actionList += getUnitActionButton(unit, "Found city",
                     !tileMapHolder.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter },
                     {
                         worldScreen.displayTutorials("CityFounded")
@@ -75,16 +73,16 @@ class UnitActions {
         }
         
         if (unit.name == "Worker") {
-            val improvementButtonText =
-                    if (tile.improvementInProgress == null) "Construct\r\nimprovement"
-                    else tile.improvementInProgress!! + "\r\nin progress"
+            val improvementButtonText: String
+            if (tile.improvementInProgress == null) improvementButtonText = "Construct\r\nimprovement"
+            else improvementButtonText = tile.improvementInProgress!! + "\r\nin progress"
             actionList += getUnitActionButton(unit, improvementButtonText,
                     !tile.isCityCenter || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) })
 
-            if("automation" == tile.unit!!.action){
+            if("automation" == unit.action){
                 val automationAction = getUnitActionButton(unit,"Stop automation",true,
-                        {tile.unit!!.action = null})
+                        {unit.action = null})
                 automationAction.enable() // Stopping automation is always enabled;
                 actionList += automationAction
             }
@@ -92,7 +90,7 @@ class UnitActions {
                 actionList += getUnitActionButton(unit, "Automate", true,
                         {
                             tile.unit!!.action = "automation"
-                            tile.unit!!.doAutomatedAction(tile)
+                            tile.unit!!.doAutomatedAction()
                         }
                 )
             }

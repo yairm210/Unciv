@@ -29,7 +29,7 @@ class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, pri
         row()
 
         val StartNewGameButton = TextButton("Start new game", CameraStageBaseScreen.skin)
-        StartNewGameButton.addClickListener { worldScreen.game.startNewGame() }
+        StartNewGameButton.addClickListener { worldScreen.game.startNewGame(true) }
 
         add(StartNewGameButton).pad(10f)
         row()

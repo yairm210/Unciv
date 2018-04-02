@@ -10,7 +10,7 @@ import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.stats.Stats
 
 class TileInfo {
-    @Transient @JvmField var tileMap: TileMap? = null
+    @Transient lateinit var tileMap: TileMap
 
     @JvmField var unit: MapUnit? = null
     @JvmField var position: Vector2 = Vector2.Zero
@@ -140,7 +140,7 @@ class TileInfo {
     }
 
     fun nextTurn() {
-        if (unit != null) unit!!.nextTurn(this)
+        if (unit != null) unit!!.nextTurn()
     }
 
     override fun toString(): String {
@@ -154,7 +154,7 @@ class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")
-        if (unit != null) SB.appendln(unit!!.name + "(" + unit!!.getMovementString() + ")")
+        if (unit != null) SB.appendln(unit!!.name + "(" + unit!!.health + ")")
         return SB.toString()
     }
 
@@ -169,11 +169,4 @@ class TileInfo {
         return true
     }
 
-    fun moveUnitToTile(otherTile: TileInfo, movementDistance: Float) {
-        if (otherTile.unit != null) return  // Fail.
-        unit!!.currentMovement -= movementDistance
-        if (unit!!.currentMovement < 0.1) unit!!.currentMovement = 0f // silly floats which are "almost zero"
-        otherTile.unit = unit
-        unit = null
-    }
 }

@@ -3,13 +3,15 @@
 		name:"Worker",
 		description: "Can build improvements on tiles", 
 		movement:2,
+		unitType:"Civilian",
 		hurryCostModifier:20,
-		cost:60
+		cost:70
 	},
 	{
 		name:"Settler",
 		description: "Founds a new city", 
 		movement:2,
+		unitType:"Civilian",
 		cost:106,
 		hurryCostModifier:20
 	},
@@ -17,30 +19,43 @@
 		name:"Scout",
 		description: "Has no abilites, can only explore", 
 		unbuildable:true,
+		unitType:"Melee",
 		movement:2
+	},
+	{
+		name:"Warrior",
+		description: "A basic fighting unit",
+		unitType:"Melee",
+		movement:2,
+		cost: 40,
+		hurryCostModifier:20
 	},
 	{
 		name:"Great Artist",
 		description: "Can start an 8-turn golden age or construcct a landmark (+5 culture)", 
 		unbuildable:true,
+		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Scientist",
 		description: "Can discover a technology, or construct an academy (+4 science(", 
 		unbuildable:true,
+		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Merchant",
 		description: "Can undertake a trade mission, giving a large sum of gold, or construct a ?", 
 		unbuildable:true,
+		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Engineer",
 		description: "Can speed up construction of a wonder, or construct a refinery, giving +? production?", 
 		unbuildable:true,
+		unitType:"Civilian",
 		movement:2
 	},
 	

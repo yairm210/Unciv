@@ -25,7 +25,7 @@ class GameInfo {
 
         for (civInfo in civilizations) civInfo.nextTurn()
 
-        for (tile in tileMap.values.filter { it.unit != null })
+        for (tile in tileMap.values)
             tile.nextTurn()
 
         // We need to update the stats after ALL the cities are done updating because

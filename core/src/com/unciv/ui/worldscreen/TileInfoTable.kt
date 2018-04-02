@@ -39,13 +39,6 @@ class TileInfoTable(private val worldScreen: WorldScreen, internal val civInfo: 
             }
         }
 
-
-//        if (tile.unit != null) {
-//            for (button in UnitActions().getUnitActions(tile))
-//                add(button).colspan(2)
-//                        .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
-//        }
-
         pack()
 
         setPosition(worldScreen.stage.width - 10f - width, 10f)

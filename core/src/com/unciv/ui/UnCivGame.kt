@@ -40,8 +40,14 @@ class UnCivGame : Game() {
         setWorldScreen()
     }
 
-    fun startNewGame() {
-        gameInfo = GameInfo()
+    fun startNewGame(saveTutorialState:Boolean = false) {
+        if(saveTutorialState) {
+            val tutorials = gameInfo.tutorial
+            gameInfo = GameInfo()
+            gameInfo.tutorial = tutorials
+        }
+        else gameInfo = GameInfo()
+
         gameInfo.tileMap = TileMap(20)
         gameInfo.civilizations.add(CivilizationInfo("Babylon", Vector2.Zero, gameInfo))
         val barbarians = CivilizationInfo()

@@ -3,27 +3,30 @@ package com.unciv.models.gamebasics
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.UnitType
 import com.unciv.models.stats.INamed
 
 class Unit : INamed, IConstruction {
     override lateinit var name: String
-    @JvmField var description: String? = null
-    @JvmField var cost: Int = 0
-    @JvmField var hurryCostModifier: Int = 0
-    @JvmField var movement: Int = 0
-    @JvmField internal var unbuildable: Boolean = false // for special units like great people
+    var description: String? = null
+    var cost: Int = 0
+    var hurryCostModifier: Int = 0
+    var movement: Int = 0
+    var strength:Int = 1
+    var rangedStrength:Int = 0
+    lateinit var unitType: UnitType
+    internal var unbuildable: Boolean = false // for special units like great people
 
     val isConstructable: Boolean
         get() = !unbuildable
 
-    val mapUnit: MapUnit
-        get() {
-            val unit = MapUnit()
-            unit.name = name
-            unit.maxMovement = movement
-            unit.currentMovement = movement.toFloat()
-            return unit
-        }
+    fun getMapUnit(): MapUnit {
+        val unit = MapUnit()
+        unit.name = name
+        unit.maxMovement = movement
+        unit.currentMovement = movement.toFloat()
+        return unit
+    }
 
 
     override fun getProductionCost(adoptedPolicies: List<String>): Int {

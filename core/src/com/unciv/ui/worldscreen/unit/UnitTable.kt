@@ -13,15 +13,10 @@ import com.unciv.ui.worldscreen.WorldScreen
 class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val idleUnitButton = IdleUnitButton(worldScreen)
     private val unitLabel = Label("",CameraStageBaseScreen.skin)
-    var selectedUnitTile : TileInfo? = null
+    var selectedUnit : MapUnit? = null
     var currentlyExecutingAction : String? = null
 
     private val unitActionsTable = Table()
-
-    fun getSelectedUnit(): MapUnit {
-        if(selectedUnitTile==null) throw Exception("getSelectedUnit was called when no unit was selected!")
-        else return selectedUnitTile!!.unit!!
-    }
 
     init {
         val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
@@ -37,11 +32,19 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun update() {
         idleUnitButton.update()
         unitActionsTable.clear()
-        if(selectedUnitTile!=null && selectedUnitTile!!.unit==null) selectedUnitTile=null // The unit that was there no longer exists
+        if(selectedUnit!=null)
+        {
+            try{ selectedUnit!!.getTile()}
+            catch(ex:Exception) {selectedUnit=null} // The unit that was there no longer exists}
+        }
 
-        if(selectedUnitTile!=null) {
-            unitLabel.setText(getSelectedUnit().name+"  "+getSelectedUnit().getMovementString())
-            for (button in UnitActions().getUnitActions(selectedUnitTile!!,worldScreen))
+        if(selectedUnit!=null) {
+            val unit = selectedUnit!!
+            unitLabel.setText(unit.name
+                    +"\r\nMovement: " +unit.getMovementString()
+                    +"\r\nHealth: "+unit.health
+            )
+            for (button in UnitActions().getUnitActions(selectedUnit!!, worldScreen))
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
         }
@@ -54,27 +57,21 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun tileSelected(selectedTile: TileInfo) {
         if(currentlyExecutingAction=="moveTo"){
-            val reachedTile = getSelectedUnit().headTowards(selectedUnitTile!!.position, selectedTile.position)
-            selectedUnitTile = reachedTile
+            val reachedTile = selectedUnit!!.headTowards(selectedTile.position)
+
             if(reachedTile!=selectedTile) // Didn't get all the way there
-                getSelectedUnit().action = "moveTo " + selectedTile.position.x.toInt() + "," + selectedTile.position.y.toInt()
+                selectedUnit!!.action = "moveTo " + selectedTile.position.x.toInt() + "," + selectedTile.position.y.toInt()
             currentlyExecutingAction = null
         }
 
         if(selectedTile.unit!=null && selectedTile.unit!!.civInfo == worldScreen.civInfo)
-            selectedUnitTile = selectedTile
-    }
-
-    private fun getDistanceToTiles(): HashMap<TileInfo, Float> {
-        return worldScreen.tileMapHolder.tileMap.getDistanceToTilesWithinTurn(selectedUnitTile!!.position,
-                getSelectedUnit().currentMovement,
-                getSelectedUnit().civInfo.tech.isResearched("Machinery"))
+            selectedUnit= selectedTile.unit
     }
 
     fun getViewablePositionsForExecutingAction(): List<Vector2>
     {
         if(currentlyExecutingAction == "moveTo")
-            return getDistanceToTiles().keys.map { it.position }
+            return selectedUnit!!.getDistanceToTiles().keys.map { it.position }
         return emptyList()
     }
 }

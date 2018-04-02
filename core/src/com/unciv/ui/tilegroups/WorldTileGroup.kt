@@ -55,7 +55,12 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         }
 
 
-        if (tileInfo.unit != null && unitImage == null) {
+        if (unitImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+            unitImage!!.remove()
+            unitImage = null
+        }
+
+        if (tileInfo.unit != null) {
             val unit = tileInfo.unit!!
             unitImage = getUnitImage(unit.name!!, unit.civInfo.getCivilization().getColor())
             addActor(unitImage!!)
@@ -64,10 +69,6 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                     height/2 - unitImage!!.height/2 +20) // top
         }
 
-        if (tileInfo.unit == null && unitImage != null) {
-            unitImage!!.remove()
-            unitImage = null
-        }
 
         if (unitImage != null) {
             if (!tileInfo.hasIdleUnit())
