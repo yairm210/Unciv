@@ -60,9 +60,9 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             unitImage = null
         }
 
-        if (tileInfo.unit != null) {
+        if (tileInfo.unit != null && color.a==1f) { // Tile is visible
             val unit = tileInfo.unit!!
-            unitImage = getUnitImage(unit.name!!, unit.civInfo.getCivilization().getColor())
+            unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
             addActor(unitImage!!)
             unitImage!!.setSize(20f, 20f)
             unitImage!!.setPosition(width/2 - unitImage!!.width/2,

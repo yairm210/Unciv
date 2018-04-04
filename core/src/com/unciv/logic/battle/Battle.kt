@@ -2,15 +2,51 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.GameInfo
 import java.util.*
+import kotlin.collections.HashMap
 
 class Battle(val gameInfo:GameInfo) {
 
+    fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
+        return HashMap<String,Float>()
+    }
+
+    fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
+        val modifiers = HashMap<String,Float>()
+        val tileDefenceBonus = defender.getTile().getDefensiveBonus()
+        if(tileDefenceBonus > 0) modifiers.put("Terrain",tileDefenceBonus)
+        return modifiers
+    }
+
+    fun modifiersToMultiplicationBonus(modifiers:HashMap<String,Float> ):Float{
+        // modifiers are like 0.1 for a 10% bonus, -0.1 for a 10% loss
+        var modifier = 1f
+        for(m in modifiers.values) modifier *= (1+m)
+        return modifier
+    }
+
+    /**
+     * Includes attack modifiers
+     */
+    fun getAttackingStrength(attacker: ICombatant, defender: ICombatant): Float {
+        val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker,defender))
+        return attacker.getAttackingStrength(defender) * attackModifier
+    }
+
+
+    /**
+     * Includes defence modifiers
+     */
+    fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
+        val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
+        return defender.getDefendingStrength(attacker) * defenceModifier
+    }
+
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
-        return defender.getDefendingStrength(attacker) * 50 / attacker.getAttackingStrength(defender)
+        return (getDefendingStrength(attacker,defender) * 50 / getAttackingStrength(attacker,defender)).toInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
-        return attacker.getAttackingStrength(defender)*50/defender.getDefendingStrength(attacker)
+        return (getAttackingStrength(attacker, defender)*50/ getDefendingStrength(attacker,defender)).toInt()
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {

@@ -8,10 +8,14 @@ import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
+import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
     private val battle = Battle(worldScreen.civInfo.gameInfo)
+    init{
+        skin = CameraStageBaseScreen.skin
+    }
 
     fun update(){
         if(worldScreen.unitTable.selectedUnit==null
@@ -38,17 +42,34 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     fun simulateBattle(attacker: MapUnitCombatant, defender: ICombatant){
         clear()
 
-        val attackerLabel = Label(attacker.getName(), CameraStageBaseScreen.skin)
+        row().pad(5f)
+        val attackerLabel = Label(attacker.getName(), skin)
         attackerLabel.style= Label.LabelStyle(attackerLabel.style)
         attackerLabel.style.fontColor=attacker.getCivilization().getCivilization().getColor()
         add(attackerLabel)
 
-        val defenderLabel = Label(attacker.getName(), CameraStageBaseScreen.skin)
+        val defenderLabel = Label(attacker.getName(), skin)
         defenderLabel.style= Label.LabelStyle(defenderLabel.style)
         defenderLabel.style.fontColor=defender.getCivilization().getCivilization().getColor()
         add(defenderLabel)
 
-        row()
+        row().pad(5f)
+
+        add("Strength: "+attacker.getAttackingStrength(defender)/100f)
+        add("Strength: "+defender.getDefendingStrength(attacker)/100f)
+        row().pad(5f)
+
+        val attackerModifiers = battle.getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+        val defenderModifiers = battle.getDefenceModifiers(attacker, defender).map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+
+        for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
+            if (attackerModifiers.size > i) add(attackerModifiers[i]) else add()
+            if (defenderModifiers.size > i) add(defenderModifiers[i]) else add()
+            row().pad(5f)
+        }
+        add((battle.getAttackingStrength(attacker,defender)/100f).toString())
+        add((battle.getDefendingStrength(attacker,defender)/100f).toString())
+        row().pad(5f)
 
         var damageToDefender = battle.calculateDamageToDefender(attacker,defender)
         var damageToAttacker = battle.calculateDamageToAttacker(attacker,defender)
@@ -73,20 +94,16 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else if (damageToDefender>defender.getHealth()) damageToDefender=defender.getHealth()
 
 
-        val attackLabel = Label(attacker.getHealth().toString() + " -> "
-                + (attacker.getHealth()- damageToAttacker), CameraStageBaseScreen.skin)
-        add(attackLabel)
+        add("Health: "+attacker.getHealth().toString() + " -> "
+                + (attacker.getHealth()- damageToAttacker))
 
-        val defendLabel = Label(defender.getHealth().toString() + " -> "
-                + (defender.getHealth()- damageToDefender),
-                CameraStageBaseScreen.skin)
-        add(defendLabel)
+        add("Health: "+defender.getHealth().toString() + " -> "
+                + (defender.getHealth()- damageToDefender))
 
-        row()
-        val attackButton = TextButton("Attack",CameraStageBaseScreen.skin)
+        row().pad(5f)
+        val attackButton = TextButton("Attack", skin)
 
         attackButton.addClickListener {
-            //todo this should be in battletabl and not n the logic! It's to make things easier for the player!
             if(attacker.getCombatantType() == CombatantType.Melee)
                 attacker.unit.headTowards(defender.getTile().position)
             battle.attack(attacker,defender)
@@ -98,8 +115,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attackButton).colspan(2)
 
         pack()
-        setPosition(worldScreen.stage.width/2-width/2,
-                5f)
+        setPosition(worldScreen.stage.width/2-width/2, 5f)
     }
 
 }

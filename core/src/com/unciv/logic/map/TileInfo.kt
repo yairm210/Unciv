@@ -173,4 +173,10 @@ class TileInfo {
         return tileMap.getViewableTiles(this.position,distance)
     }
 
+    fun getDefensiveBonus(): Float {
+        var bonus = getBaseTerrain().defenceBonus
+        if(terrainFeature!=null) bonus += getTerrainFeature()!!.defenceBonus
+        return bonus
+    }
+
 }

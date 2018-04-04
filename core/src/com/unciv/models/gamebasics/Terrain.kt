@@ -32,6 +32,7 @@ class Terrain : NamedStats(), ICivilopedia {
 
     var movementCost = 1
 
+    var defenceBonus:Float = 0f
 }
 
 
