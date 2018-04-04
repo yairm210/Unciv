@@ -86,10 +86,11 @@ class GameInfo {
             if(unit.health < 50) continue // do nothing but heal
 
             // if there is an attackable unit in the vicinity, attack!
-            val tilesViewableToCiv = civInfo.getViewableTiles().toHashSet()
+            val attackableTiles = civInfo.getViewableTiles()
+                    .filter { it.unit != null && it.unit!!.owner != civInfo.civName && !it.isCityCenter }.toHashSet()
             val distanceToTiles = unit.getDistanceToTiles()
-            val unitTileToAttack = distanceToTiles.keys.firstOrNull{ tilesViewableToCiv.contains(it) &&
-                    it.unit != null && it.unit!!.owner != civInfo.civName && !it.isCityCenter }
+            val unitTileToAttack = distanceToTiles.keys.firstOrNull{ attackableTiles.contains(it)}
+
             if(unitTileToAttack!=null){
                 val unitToAttack =unitTileToAttack.unit!!
                 if(unitToAttack.getBaseUnit().unitType == UnitType.Civilian){ // kill
@@ -118,7 +119,7 @@ class GameInfo {
 
             // else, find the closest enemy unit that we know of within 5 spaces and advance towards it
             val closestUnit = tileMap.getTilesInDistance(unit.getTile().position, 5)
-                    .firstOrNull{ tilesViewableToCiv.contains(it) && it.unit!=null && it.unit!!.owner!=civInfo.civName }
+                    .firstOrNull{ attackableTiles.contains(it) }
 
             if(closestUnit!=null){
                 unit.headTowards(closestUnit.position)

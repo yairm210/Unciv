@@ -51,7 +51,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         row()
 
         var damageToDefender = battle.calculateDamageToDefender(attacker,defender)
-        var damageToAttacker = battle.calculateDamageToAttacker(defender,attacker)
+        var damageToAttacker = battle.calculateDamageToAttacker(attacker,defender)
 
 
         if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth() // when damage exceeds health, we don't want to show negative health numbers
