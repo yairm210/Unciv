@@ -9,7 +9,7 @@ import com.unciv.ui.utils.HexMath
 class TileMap {
 
     @Transient
-    @JvmField var gameInfo: GameInfo? = null
+    lateinit var gameInfo: GameInfo
 
     private var tiles = HashMap<String, TileInfo>()
 
@@ -41,75 +41,6 @@ class TileMap {
 
     }
 
-    fun getDistanceToTilesWithinTurn(origin: Vector2, currentUnitMovement: Float, machineryIsResearched: Boolean): HashMap<TileInfo, Float> {
-        val distanceToTiles = HashMap<TileInfo, Float>()
-        distanceToTiles[get(origin)] = 0f
-        var tilesToCheck = listOf(get(origin))
-        while (!tilesToCheck.isEmpty()) {
-            val updatedTiles = ArrayList<TileInfo>()
-            for (tileToCheck in tilesToCheck)
-                for (maybeUpdatedTile in getTilesInDistance(tileToCheck.position, 1)) {
-                    var distanceBetweenTiles = maybeUpdatedTile.lastTerrain.movementCost.toFloat() // no road
-                    if (tileToCheck.roadStatus !== RoadStatus.None && maybeUpdatedTile.roadStatus !== RoadStatus.None) //Road
-                        distanceBetweenTiles = if (machineryIsResearched) 1 / 3f else 1 / 2f
-
-                    if (tileToCheck.roadStatus === RoadStatus.Railroad && maybeUpdatedTile.roadStatus === RoadStatus.Railroad) // Railroad
-                        distanceBetweenTiles = 1 / 10f
-
-                    var totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
-                    if (!distanceToTiles.containsKey(maybeUpdatedTile) || distanceToTiles[maybeUpdatedTile]!! > totalDistanceToTile) {
-                        if (totalDistanceToTile < currentUnitMovement)
-                            updatedTiles += maybeUpdatedTile
-                        else
-                            totalDistanceToTile = currentUnitMovement
-                        distanceToTiles[maybeUpdatedTile] = totalDistanceToTile
-                    }
-
-                }
-
-            tilesToCheck = updatedTiles
-        }
-        return distanceToTiles
-    }
-
-    fun getShortestPath(origin: Vector2, destination: Vector2, currentMovement: Float, maxMovement: Int, isMachineryResearched: Boolean): List<TileInfo> {
-        var tilesToCheck: List<TileInfo> = listOf(get(origin))
-        val movementTreeParents = HashMap<TileInfo, TileInfo?>() // contains a map of "you can get from X to Y in that turn"
-        movementTreeParents[get(origin)] = null
-
-        var distance = 1
-        while (true) {
-            val newTilesToCheck = ArrayList<TileInfo>()
-            val distanceToDestination = HashMap<TileInfo, Float>()
-            val movementThisTurn = if (distance == 1) currentMovement else maxMovement.toFloat()
-            for (tileToCheck in tilesToCheck) {
-                val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, isMachineryResearched)
-                for (reachableTile in distanceToTilesThisTurn.keys) {
-                    if(reachableTile.position == destination)
-                        distanceToDestination.put(tileToCheck, distanceToTilesThisTurn[reachableTile]!!)
-                    else {
-                        if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                        if (reachableTile.position != destination && reachableTile.unit != null) continue // This is an intermediary tile that contains a unit - we can't go there!
-                        movementTreeParents[reachableTile] = tileToCheck
-                        newTilesToCheck.add(reachableTile)
-                    }
-                }
-            }
-
-            if (distanceToDestination.isNotEmpty()) {
-                val path = ArrayList<TileInfo>() // Traverse the tree upwards to get the list of tiles leading to the destination,
-                var currentTile = distanceToDestination.minBy { it.value }!!.key
-                while (currentTile.position != origin) {
-                    path.add(currentTile)
-                    currentTile = movementTreeParents[currentTile]!!
-                }
-                return path.reversed() // and reverse in order to get the list in chronological order
-            }
-
-            tilesToCheck = newTilesToCheck
-            distance++
-        }
-    }
 
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo) {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()

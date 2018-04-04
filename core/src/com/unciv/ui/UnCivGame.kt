@@ -50,11 +50,15 @@ class UnCivGame : Game() {
 
         gameInfo.tileMap = TileMap(20)
         gameInfo.civilizations.add(CivilizationInfo("Babylon", Vector2.Zero, gameInfo))
-        val barbarians = CivilizationInfo()
-        barbarians.civName = "Barbarians"
-        gameInfo.civilizations.add(barbarians)
+        val barbarianCivilization = CivilizationInfo()
+        barbarianCivilization.civName = "Barbarians"
+        gameInfo.civilizations.add(barbarianCivilization)
+
+        for(i in 1..5) {
+            gameInfo.placeBarbarianUnit()
+        }
+
         gameInfo.setTransients()
-        gameInfo.tileMap.placeUnitNearTile(Vector2.Zero,"Scout",barbarians)
 
         worldScreen = WorldScreen()
         setWorldScreen()

@@ -12,6 +12,7 @@ enum class UnitType{
     Civilian,
     Melee,
     Ranged
+
 }
 
 class MapUnit {
@@ -33,8 +34,8 @@ class MapUnit {
 
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
         val tile = getTile()
-        return tile.tileMap.getDistanceToTilesWithinTurn(tile.position,currentMovement,
-                civInfo.tech.isResearched("Machinery"))
+        return UnitMovementAlgorithms(tile.tileMap).getDistanceToTilesWithinTurn(tile.position,currentMovement,
+                civInfo)
     }
 
     fun doPreTurnAction(tile: TileInfo) {
@@ -133,7 +134,6 @@ class MapUnit {
         val tileMap = currentTile.tileMap
 
         val finalDestinationTile = tileMap.get(destination)
-        val isMachineryResearched = civInfo.tech.isResearched("Machinery")
         val distanceToTiles = getDistanceToTiles()
 
         val destinationTileThisTurn:TileInfo
@@ -155,7 +155,8 @@ class MapUnit {
         }
 
         else { // If the tile is far away, we need to build a path how to get there, and then take the first step
-            val path = tileMap.getShortestPath(currentTile.position, destination, currentMovement, maxMovement, isMachineryResearched)
+            val path = UnitMovementAlgorithms(tileMap)
+                    .getShortestPath(currentTile.position, destination, currentMovement, maxMovement, civInfo)
             destinationTileThisTurn = path.first()
         }
 
@@ -196,3 +197,4 @@ class MapUnit {
     }
 
 }
+

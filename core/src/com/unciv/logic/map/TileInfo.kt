@@ -169,4 +169,8 @@ class TileInfo {
         return true
     }
 
+    fun getViewableTiles(distance:Int): MutableList<TileInfo> {
+        return tileMap.getViewableTiles(this.position,distance)
+    }
+
 }

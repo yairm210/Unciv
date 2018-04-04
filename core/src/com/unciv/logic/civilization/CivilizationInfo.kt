@@ -5,6 +5,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Civilization
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ResourceType
@@ -16,7 +17,7 @@ import com.unciv.models.stats.Stats
 class CivilizationInfo {
 
     @Transient
-    var gameInfo: GameInfo = GameInfo()
+    lateinit var gameInfo: GameInfo
 
     var gold = 0
     var happiness = 15
@@ -147,6 +148,15 @@ class CivilizationInfo {
 
     fun getCivUnits(): List<MapUnit> {
         return gameInfo.tileMap.values.filter { it.unit!=null && it.unit!!.owner==civName }.map { it.unit!! }
+    }
+
+    fun getViewableTiles(): List<TileInfo> {
+        var viewablePositions = emptyList<TileInfo>()
+        viewablePositions += gameInfo.tileMap.values.filter { it.owner == civName }
+                .flatMap { it.neighbors } // tiles adjacent to city tiles
+        viewablePositions += gameInfo.tileMap.values.filter { it.unit != null && it.unit!!.owner == civName }
+                .flatMap { it.getViewableTiles(2)} // Tiles within 2 tiles of units
+        return viewablePositions
     }
 
 }

@@ -14,7 +14,6 @@ import com.unciv.ui.utils.HexMath
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
-    //internal var unitTile: TileInfo? = null
     val tileGroups = HashMap<String, WorldTileGroup>()
 
     internal fun addTiles() {
@@ -83,19 +82,14 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     internal fun updateTiles() {
         for (WG in tileGroups.values) WG.update(worldScreen)
 
-
         for (WG in tileGroups.values) WG.setIsViewable(false)
-        var viewablePositions = emptyList<Vector2>()
-        if(worldScreen.unitTable.currentlyExecutingAction == null) {
-            viewablePositions += tileMap.values.filter { it.owner == civInfo.civName }
-                    .flatMap { HexMath.GetAdjacentVectors(it.position) } // tiles adjacent to city tiles
-            viewablePositions += tileMap.values.filter { it.unit != null }
-                    .flatMap { tileMap.getViewableTiles(it.position, 2).map { it.position } } // Tiles within 2 tiles of units
-        }
+        val viewablePositions: List<Vector2>
+        if(worldScreen.unitTable.currentlyExecutingAction == null)
+            viewablePositions = civInfo.getViewableTiles().map { it.position }
 
-        else {
-            viewablePositions += worldScreen.unitTable.getViewablePositionsForExecutingAction()
-        }
+        else
+            viewablePositions = worldScreen.unitTable.getViewablePositionsForExecutingAction()
+
 
         for (string in viewablePositions.map { it.toString() }.filter { tileGroups.containsKey(it) })
             tileGroups[string]!!.setIsViewable(true)

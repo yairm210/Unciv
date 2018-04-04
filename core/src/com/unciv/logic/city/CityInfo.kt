@@ -9,12 +9,14 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.linq.Counter
 import com.unciv.models.stats.Stats
+import kotlin.math.min
 
 class CityInfo {
     @Transient
     lateinit var civInfo: CivilizationInfo
     var cityLocation: Vector2 = Vector2.Zero
     var name: String = ""
+    var health = 200
 
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
@@ -29,7 +31,9 @@ class CityInfo {
     val tilesInRange: List<TileInfo>
         get() = tileMap.getTilesInDistance(cityLocation, 3).filter { civInfo.civName == it.owner }
 
-    private val CityNames = arrayOf("New Bark", "Cherrygrove", "Violet", "Azalea", "Goldenrod", "Ecruteak", "Olivine", "Cianwood", "Mahogany", "Blackthorn", "Pallet", "Viridian", "Pewter", "Cerulean", "Vermillion", "Lavender", "Celadon", "Fuchsia", "Saffron", "Cinnibar")
+    private val CityNames = arrayOf("New Bark", "Cherrygrove", "Violet", "Azalea", "Goldenrod", "Ecruteak", "Olivine",
+            "Cianwood", "Mahogany", "Blackthorn", "Pallet", "Viridian", "Pewter", "Cerulean", "Vermillion", "Lavender",
+            "Celadon", "Fuchsia", "Saffron", "Cinnibar")
 
     // Remove resources required by buildings
     fun getCityResources(): Counter<TileResource> {
@@ -119,6 +123,9 @@ class CityInfo {
         population.nextTurn(stats.food)
         cityConstructions.nextTurn(stats)
         expansion.nextTurn(stats.culture)
+
+        val maxHealth =getMaxHealth()
+        health = min(health+maxHealth/10, maxHealth)
     }
 
     internal fun rankTile(tile: TileInfo): Float {
@@ -133,5 +140,9 @@ class CityInfo {
         if (tile.improvement == null) rank += 0.5f // improvement potential!
         if (tile.resource != null) rank += 1.0f
         return rank
+    }
+
+    internal fun getMaxHealth(): Int {
+        return 200 // add more later when walls citadl etc.
     }
 }

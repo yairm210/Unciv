@@ -1,10 +1,13 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.getRandom
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.UnitType
 
 class GameInfo {
 
@@ -15,7 +18,10 @@ class GameInfo {
     var tileMap: TileMap = TileMap()
     var turns = 1
 
+
     fun getPlayerCivilization(): CivilizationInfo = civilizations[0]
+    fun getBarbarianCivilization(): CivilizationInfo = civilizations[1]
+
 
     fun addNotification(text: String, location: Vector2?) {
         notifications.add(Notification(text, location))
@@ -40,9 +46,17 @@ class GameInfo {
                 automateMoves(civInfo)
         }
 
-
+        if(turns%10 == 0){ // every 10 turns add a barbarian in a random place
+            placeBarbarianUnit()
+        }
 
         turns++
+    }
+
+    fun placeBarbarianUnit() {
+        val playerViewableTiles = getPlayerCivilization().getViewableTiles().toHashSet()
+        val viableTiles = tileMap.values.filterNot { playerViewableTiles.contains(it) || it.unit!=null }
+        tileMap.placeUnitNearTile(viableTiles.getRandom().position,"Warrior",getBarbarianCivilization())
     }
 
     fun setTransients() {
@@ -66,13 +80,35 @@ class GameInfo {
 
     private fun automateMoves(civInfo: CivilizationInfo) {
         for(unit in civInfo.getCivUnits()){
+            // If we're low on health then heal
+            // todo: go to a more defensible place if there is one
+
+            if(unit.health < 50) continue // do nothing but heal
+
             // if there is an attackable unit in the vicinity, attack!
             val distanceToTiles = unit.getDistanceToTiles()
-            val unitTileToAttack = distanceToTiles.keys.firstOrNull{ it.unit!=null && it.unit!!.owner!=civInfo.civName }
+            val unitTileToAttack = distanceToTiles.keys.firstOrNull{ it.unit != null && it.unit!!.owner != civInfo.civName && !it.isCityCenter }
             if(unitTileToAttack!=null){
-                Battle().attack(unit,unitTileToAttack.unit!!)
-                continue
+                val unitToAttack =unitTileToAttack.unit!!
+                if(unitToAttack.getBaseUnit().unitType == UnitType.Civilian){ // kill
+                    if(unitToAttack.civInfo == getPlayerCivilization())
+                        addNotification("Our "+unitToAttack.name+" was destroyed by an enemy "+unit.name+"!", unitTileToAttack.position)
+                    unitTileToAttack.unit=null
+                    unit.headTowards(unitTileToAttack.position)
+                    continue
+                }
+
+                val damageToAttacker = Battle(this).calculateDamageToAttacker(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
+                if(damageToAttacker < unit.health) { // don't attack if we'll die from the attack
+                    unit.headTowards(unitTileToAttack.position)
+                    Battle(this).attack(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
+                    continue
+                }
             }
+
+            if(unit.health < 80) continue // do nothing but heal until 80 health
+
+
 
             // else, if there is a reachable spot from which we can attack this turn
             // (say we're an archer and there's a unit 3 tiles away), go there and attack

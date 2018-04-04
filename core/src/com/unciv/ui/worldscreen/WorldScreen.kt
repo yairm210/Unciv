@@ -4,7 +4,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -26,12 +25,13 @@ class WorldScreen : CameraStageBaseScreen() {
     internal val optionsTable: WorldScreenOptionsTable
     private val notificationsScroll: NotificationsScroll
     internal val unitTable = UnitTable(this)
-    private val battleTable = BattleTable(this)
+    private val battleTable:BattleTable
 
     init {
         val gameInfo = game.gameInfo
         this.civInfo = gameInfo.getPlayerCivilization()
 
+        battleTable = BattleTable(this)
         unitTable.setPosition(5f, 5f)
         tileMapHolder = TileMapHolder(this, gameInfo.tileMap, civInfo)
         tileInfoTable = TileInfoTable(this, civInfo)
@@ -80,13 +80,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 nextTurnButton.y - notificationsScroll.height - 5f)
         unitTable.update()
 
-        if(tileMapHolder.selectedTile!=null
-                && tileMapHolder.selectedTile!!.unit!=null
-                && tileMapHolder.selectedTile!!.unit!!.owner!=civInfo.civName  // enemy unit on selected tile,
-                && unitTable.selectedUnit!=null
-                && unitTable.selectedUnit!!.getBaseUnit().unitType!=UnitType.Civilian) // and non-civilian unit selected for us
-            battleTable.simulateBattle(unitTable.selectedUnit!!, tileMapHolder.selectedTile!!.unit!!)
-        else battleTable.clear()
+        battleTable.update()
     }
 
     private fun updateTechButton() {
