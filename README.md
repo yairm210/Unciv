@@ -20,10 +20,10 @@ An Android port of Civ V
 * Cities, production and buildings
   * Population and Specialists
 * Policies and Golden Ages
+* Combat and barbarians
 
 # What's next?
 
-* Combat and barbarians
 * Other civilizations (combat-only)
 * Diplomacy options
 
@@ -34,3 +34,5 @@ Everything that's been implemented so far, works.
 You can start and finish a game by winning a Science victory - by building the Apollo Program and then all the required spaceship parts.
 
 You can also (technically) win a culture victory, although it is unfeasable at this point
+
+I'd love to hear your feedback, either here or via mail to yairm210@hotmail.com!
