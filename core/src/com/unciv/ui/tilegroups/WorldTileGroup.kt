@@ -4,11 +4,11 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.UnCivGame
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.worldscreen.WorldScreen
 
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
@@ -20,11 +20,13 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             setColor(0f, 0f, 0f, 1f) // Only alpha really changes anything
             tileInfo.explored = true
             update()
-        } else
+        } else{
             setColor(0f, 0f, 0f, 0.6f)
+            update()
+        }
     }
 
-    fun update(worldScreen: WorldScreen) {
+    override fun update() {
         super.update()
 
         if (tileInfo.workingCity != null && populationImage == null) addPopulationIcon()
@@ -38,8 +40,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 cityButton =  TextButton("", CameraStageBaseScreen.skin)
                 cityButton!!.label.setFontScale(buttonScale)
 
-                val game = worldScreen.game
-                cityButton!!.addClickListener { game.screen = CityScreen(city!!)}
+                cityButton!!.addClickListener { UnCivGame.Current.screen = CityScreen(city!!)}
 
                 addActor(cityButton)
                 zIndex = parent.children.size // so this tile is rendered over neighboring tiles

@@ -80,20 +80,16 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles() {
-        for (WG in tileGroups.values) WG.update(worldScreen)
+        for (WG in tileGroups.values) WG.setIsViewable(false) // also updates them
 
-        for (WG in tileGroups.values) WG.setIsViewable(false)
         val viewablePositions: List<Vector2>
         if(worldScreen.unitTable.currentlyExecutingAction == null)
             viewablePositions = civInfo.getViewableTiles().map { it.position }
-
         else
             viewablePositions = worldScreen.unitTable.getViewablePositionsForExecutingAction()
 
-
         for (string in viewablePositions.map { it.toString() }.filter { tileGroups.containsKey(it) })
             tileGroups[string]!!.setIsViewable(true)
-
     }
 
     fun setCenterPosition(vector: Vector2) {
