@@ -74,6 +74,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 val scale: Float = Math.sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
                 if (scale < 1) return
                 setScale(scale)
+                for(tilegroup in tileGroups.values.filter { it.cityButton!=null })
+                    tilegroup.cityButton!!.setScale(1/scale)
             }
 
         })

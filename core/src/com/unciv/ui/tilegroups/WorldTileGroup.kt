@@ -2,7 +2,9 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.UnCivGame
 import com.unciv.ui.cityscreen.CityScreen
@@ -12,7 +14,7 @@ import com.unciv.ui.utils.ImageGetter
 
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
-    private var cityButton: TextButton? = null
+    var cityButton: Table? = null
     private var unitImage: Group? = null
 
     fun setIsViewable(isViewable: Boolean) {
@@ -29,30 +31,41 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     override fun update() {
         super.update()
 
-        if (tileInfo.workingCity != null && populationImage == null) addPopulationIcon()
-        if (tileInfo.workingCity == null && populationImage != null) removePopulationIcon()
+        if (populationImage != null) removePopulationIcon()
+        if (tileInfo.workingCity != null && !tileInfo.isCityCenter && populationImage == null) addPopulationIcon()
 
 
         val city = tileInfo.city
-        if (tileInfo.isCityCenter) {
-            val buttonScale = 0.7f
+        if (city != null && tileInfo.isCityCenter) {
             if (cityButton == null) {
-                cityButton =  TextButton("", CameraStageBaseScreen.skin)
-                cityButton!!.label.setFontScale(buttonScale)
-
-                cityButton!!.addClickListener { UnCivGame.Current.screen = CityScreen(city!!)}
+                cityButton = Table()
+                cityButton!!.background = ImageGetter.getDrawable("skin/civTableBackground.png")
+                cityButton!!.isTransform=true
 
                 addActor(cityButton)
                 zIndex = parent.children.size // so this tile is rendered over neighboring tiles
             }
 
-            val cityButtonText = city!!.name + " (" + city.population.population + ")"
-            cityButton!!.setText(cityButtonText)
-            cityButton!!.setSize(cityButton!!.prefWidth, cityButton!!.prefHeight)
+            val cityButtonText = city.name + " (" + city.population.population + ")"
+            val label = Label(cityButtonText, CameraStageBaseScreen.skin)
+            val labelStyle = Label.LabelStyle(label.style)
+            labelStyle.fontColor= city.civInfo.getCivilization().getColor()
+            label.style=labelStyle
+            label.addClickListener {
+                UnCivGame.Current.screen = CityScreen(city)
+            }
 
-            cityButton!!.setPosition((width - cityButton!!.width) / 2,
-                    height * 0.9f)
-            cityButton!!.zIndex = cityButton!!.parent.children.size // so city button is rendered over everything else in this tile
+            cityButton!!.run {
+                clear()
+                add(label).pad(5f)
+                pack()
+                setOrigin(Align.center)
+                toFront()
+            }
+
+            cityButton!!.setPosition(width/2 - cityButton!!.width / 2,
+                    height/2 - cityButton!!.height/2)
+
         }
 
 
