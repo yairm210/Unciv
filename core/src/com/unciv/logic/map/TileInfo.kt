@@ -139,9 +139,6 @@ class TileInfo {
         improvementInProgress = null
     }
 
-    fun nextTurn() {
-        if (unit != null) unit!!.nextTurn()
-    }
 
     override fun toString(): String {
         val SB = StringBuilder()

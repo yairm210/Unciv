@@ -32,8 +32,7 @@ class GameInfo {
 
         for (civInfo in civilizations) civInfo.nextTurn()
 
-        for (tile in tileMap.values)
-            tile.nextTurn()
+        tileMap.values.filter { it.unit!=null }.map { it.unit!! }.forEach { it.nextTurn() }
 
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
@@ -80,10 +79,32 @@ class GameInfo {
 
     private fun automateMoves(civInfo: CivilizationInfo) {
         for(unit in civInfo.getCivUnits()){
-            // If we're low on health then heal
-            // todo: go to a more defensible place if there is one
 
-            if(unit.health < 50) continue // do nothing but heal
+            fun healUnit(){
+                // If we're low on health then heal
+                // todo: go to a more defensible place if there is one
+                val tilesInDistance = unit.getDistanceToTiles().keys
+                val unitTile=unit.getTile()
+
+                // Go to friendly tile if within distance - better healing!
+                val friendlyTile = tilesInDistance.firstOrNull { it.owner==unit.owner && it.unit==null }
+                if(unitTile.owner!=unit.owner && friendlyTile!=null){
+                    unit.moveToTile(friendlyTile)
+                    return
+                }
+
+                // Or at least get out of enemy territory yaknow
+                val neutralTile = tilesInDistance.firstOrNull { it.owner==null && it.unit==null }
+                if(unitTile.owner!=unit.owner && unitTile.owner!=null && neutralTile!=null){
+                    unit.moveToTile(neutralTile)
+                    return
+                }
+            }
+
+            if(unit.health < 50) {
+                healUnit()
+                continue
+            } // do nothing but heal
 
             // if there is an attackable unit in the vicinity, attack!
             val attackableTiles = civInfo.getViewableTiles()
@@ -109,7 +130,10 @@ class GameInfo {
                 }
             }
 
-            if(unit.health < 80) continue // do nothing but heal until 80 health
+            if(unit.health < 80){
+                healUnit()
+                continue
+            } // do nothing but heal until 80 health
 
 
 
