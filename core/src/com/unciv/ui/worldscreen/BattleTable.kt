@@ -48,7 +48,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         attackerLabel.style.fontColor=attacker.getCivilization().getCivilization().getColor()
         add(attackerLabel)
 
-        val defenderLabel = Label(attacker.getName(), skin)
+        val defenderLabel = Label(defender.getName(), skin)
         defenderLabel.style= Label.LabelStyle(defenderLabel.style)
         defenderLabel.style.fontColor=defender.getCivilization().getCivilization().getColor()
         add(defenderLabel)
