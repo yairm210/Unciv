@@ -4,12 +4,15 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 
 
 class CityStats {
 
-    @Transient @JvmField var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
+    @Transient var baseStatList = LinkedHashMap<String,Stats>()
+    @Transient var statModifiers = LinkedHashMap<String,Stats>()
+    @Transient var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
     @Transient lateinit var cityInfo: CityInfo
 
     private fun getStatsFromTiles(): Stats {
@@ -182,19 +185,17 @@ class CityStats {
         return stats
     }
 
-
     fun update() {
+        baseStatList = LinkedHashMap<String, Stats>()
         val civInfo = cityInfo.civInfo
 
-        val stats = Stats()
-        stats.science += cityInfo.population.population.toFloat()
-        stats.production += cityInfo.population.freePopulation.toFloat()
-
-        stats.add(getStatsFromTiles())
-        stats.add(getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies))
-        stats.add(getStatsFromTradeRoute())
-        stats.add(cityInfo.cityConstructions.getStats())
-        stats.add(getStatsFromPolicies(civInfo.policies.adoptedPolicies))
+        baseStatList["Population"] = Stats().add(Stat.Science,cityInfo.population.population.toFloat())
+                .add(Stat.Production,cityInfo.population.freePopulation.toFloat())
+        baseStatList["Tile yields"] = getStatsFromTiles()
+        baseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies)
+        baseStatList["Trade route"] = getStatsFromTradeRoute()
+        baseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
+        baseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
 
         val statPercentBonuses = cityInfo.cityConstructions.getStatPercentBonuses()
         statPercentBonuses.add(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()))
@@ -203,6 +204,8 @@ class CityStats {
         statPercentBonuses.add(getStatPercentBonusesFromMarble())
         statPercentBonuses.add(getStatPercentBonusesFromComputers())
 
+        val stats = Stats()
+        for (stat in baseStatList.values) stats.add(stat)
         stats.production *= 1 + statPercentBonuses.production / 100  // So they get bonuses for production and gold/science
 
         stats.add(getStatsFromProduction())
@@ -214,17 +217,20 @@ class CityStats {
 
         val isUnhappy = civInfo.happiness < 0
         if (!isUnhappy) stats.food *= 1 + statPercentBonuses.food / 100 // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
-        stats.food -= (cityInfo.population.population * 2).toFloat() // Food reduced after the bonus
+        val foodEaten = (cityInfo.population.population * 2).toFloat()
+        baseStatList["Population"]!!.food -= foodEaten // to display it to the user
+        stats.food -= foodEaten // Food reduced after the bonus
         if (civInfo.policies.isAdopted("Civil Society"))
             stats.food += cityInfo.population.numberOfSpecialists.toFloat()
 
         if (isUnhappy) stats.food /= 4f // Reduce excess food to 1/4 per the same
         stats.food *= 1 + getGrowthBonusFromPolicies()
 
-        stats.gold -= cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
+        val buildingsMaintainance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
+        baseStatList["Buildings"]!!.gold -= buildingsMaintainance
+        stats.gold -= buildingsMaintainance
         this.currentCityStats = stats
     }
-
 
     private fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if(cityInfo.civInfo.cities.count()<2) return false// first city!

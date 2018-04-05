@@ -29,10 +29,11 @@ open class Stats() {
         setStats(hashMap)
     }
 
-    fun add(stat:Stat, value:Float) {
+    fun add(stat:Stat, value:Float): Stats {
         val hashMap = toHashMap()
         hashMap[stat] = hashMap[stat]!!+value
         setStats(hashMap)
+        return this
     }
 
     fun clone(): Stats {

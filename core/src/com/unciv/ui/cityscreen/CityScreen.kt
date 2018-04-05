@@ -8,21 +8,19 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.Building
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.disable
 import java.util.*
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var selectedTile: TileInfo? = null
 
-    private var buttonScale = game.settings.buttonScale
     private var tileTable = Table()
     private var buildingsTable = BuildingsTable(this)
-    private var cityStatsTable = Table()
+    private var cityStatsTable = CityStatsTable(this)
+    private var statExplainer = Table(skin)
     private var cityPickerTable = Table()
     private var goToWorldButton = TextButton("Exit city", CameraStageBaseScreen.skin)
     private var tileGroups = ArrayList<TileGroup>()
@@ -42,7 +40,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         val buildingsTableContainer = Table()
         buildingsTableContainer.pad(20f)
         buildingsTableContainer.background = tileTableBackground
-        //BuildingsTableContainer.add(new Label("Buildings",skin)).row();
         buildingsTable.update()
         val buildingsScroll = ScrollPane(buildingsTable)
         buildingsTableContainer.add(buildingsScroll).height(stage.height / 2)
@@ -55,6 +52,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         stage.addActor(cityStatsTable)
         stage.addActor(goToWorldButton)
         stage.addActor(cityPickerTable)
+        stage.addActor(statExplainer)
         stage.addActor(buildingsTableContainer)
         update()
         displayTutorials("CityEntered")
@@ -63,10 +61,37 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     internal fun update() {
         buildingsTable.update()
         updateCityPickerTable()
-        updateCityTable()
+        cityStatsTable.update()
+        updateStatExplainer()
         updateGoToWorldButton()
         updateTileTable()
         updateTileGroups()
+    }
+
+    private fun updateStatExplainer() {
+        statExplainer.defaults().pad(5f)
+        statExplainer.clear()
+        statExplainer.add()
+        statExplainer.add("Production")
+        statExplainer.add("Food")
+        statExplainer.add("Science")
+        statExplainer.add("Gold")
+        statExplainer.add("Culture")
+
+        for (entry in city.cityStats.baseStatList){
+            if(entry.value.toHashMap().values.all { it==0f }) continue //irrelevant!
+            statExplainer.row()
+            statExplainer.add(entry.key)
+            statExplainer.add(entry.value.production.toInt().toString())
+            statExplainer.add(entry.value.food.toInt().toString())
+            statExplainer.add(entry.value.science.toInt().toString())
+            statExplainer.add(entry.value.gold.toInt().toString())
+            statExplainer.add(entry.value.culture.toInt().toString())
+        }
+        statExplainer.pack()
+        statExplainer.isTransform=true
+        statExplainer.setScale(0.8f)
+        statExplainer.setPosition(5f,cityStatsTable.top + 10)
     }
 
 
@@ -184,68 +209,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         stage.addActor(scrollPane)
     }
 
-    private fun updateCityTable() {
-        val stats = city.cityStats.currentCityStats
-        cityStatsTable.pad(20f)
-        cityStatsTable.columnDefaults(0).padRight(10f)
-        cityStatsTable.clear()
-
-        val cityStatsHeader = Label("City Stats", CameraStageBaseScreen.skin)
-
-        cityStatsHeader.setFontScale(2f)
-        cityStatsTable.add(cityStatsHeader).colspan(2).pad(10f)
-        cityStatsTable.row()
-
-        val cityStatsValues = LinkedHashMap<String, String>()
-        cityStatsValues["Production"] = Math.round(stats.production).toString() + city.cityConstructions.getAmountConstructedText()
-        cityStatsValues["Food"] = (Math.round(stats.food).toString()
-                + " (" + city.population.foodStored + "/" + city.population.foodToNextPopulation + ")")
-        cityStatsValues["Gold"] = Math.round(stats.gold).toString() + ""
-        cityStatsValues["Science"] = Math.round(stats.science).toString() + ""
-        cityStatsValues["Culture"] = (Math.round(stats.culture).toString()
-                + " (" + city.expansion.cultureStored + "/" + city.expansion.cultureToNextTile + ")")
-        cityStatsValues["Population"] = city.population.freePopulation.toString() + "/" + city.population.population
-
-        for (key in cityStatsValues.keys) {
-            cityStatsTable.add<Image>(com.unciv.ui.utils.ImageGetter.getStatIcon(key)).align(Align.right)
-            cityStatsTable.add(Label(cityStatsValues[key], CameraStageBaseScreen.skin)).align(Align.left)
-            cityStatsTable.row()
-        }
-
-        val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
-        val buildingPickButton = TextButton(buildingText, CameraStageBaseScreen.skin)
-        buildingPickButton.addClickListener {
-                game.screen = com.unciv.ui.pickerscreens.ConstructionPickerScreen(city)
-                dispose()
-            }
-
-        buildingPickButton.label.setFontScale(buttonScale)
-        cityStatsTable.add(buildingPickButton).colspan(2).pad(10f)
-                .size(buildingPickButton.width * buttonScale, buildingPickButton.height * buttonScale)
-
-
-        // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        val construction = city.cityConstructions.getCurrentConstruction()
-        if (!(construction is Building && construction.isWonder)) {
-            cityStatsTable.row()
-            val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
-            val buildingBuyButton = TextButton("Buy for \r\n$buildingGoldCost gold", CameraStageBaseScreen.skin)
-            buildingBuyButton.addClickListener {
-                    city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
-                    update()
-                }
-            if (buildingGoldCost > city.civInfo.gold) {
-                buildingBuyButton.disable()
-            }
-            buildingBuyButton.label.setFontScale(buttonScale)
-            cityStatsTable.add(buildingBuyButton).colspan(2).pad(10f)
-                    .size(buildingBuyButton.width * buttonScale, buildingBuyButton.height * buttonScale)
-        }
-
-        cityStatsTable.setPosition(10f, 10f)
-        cityStatsTable.pack()
-    }
-
     private fun updateTileTable() {
         if (selectedTile == null) return
         tileTable.clearChildren()
@@ -268,9 +231,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             tileTable.row()
         }
 
-
         tileTable.pack()
-
         tileTable.setPosition(stage.width - 10f - tileTable.width, 10f)
     }
 
