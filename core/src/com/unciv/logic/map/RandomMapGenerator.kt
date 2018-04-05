@@ -1,12 +1,12 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.civilization.getRandom
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ResourceType
 import com.unciv.models.gamebasics.TerrainType
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.ui.utils.HexMath
+import com.unciv.ui.utils.getRandom
 
 class SeedRandomMapGenerator : RandomMapGenerator() {
 
@@ -73,7 +73,7 @@ class SeedRandomMapGenerator : RandomMapGenerator() {
 
         val mapToReturn = HashMap<String,TileInfo>()
         for (entry in map){
-            mapToReturn.put(entry.key.toString(),entry.value!!)
+            mapToReturn[entry.key.toString()] = entry.value!!
         }
 
         return mapToReturn

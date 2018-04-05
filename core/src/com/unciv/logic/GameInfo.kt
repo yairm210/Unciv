@@ -5,9 +5,9 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
-import com.unciv.logic.civilization.getRandom
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.UnitType
+import com.unciv.ui.utils.getRandom
 
 class GameInfo {
 

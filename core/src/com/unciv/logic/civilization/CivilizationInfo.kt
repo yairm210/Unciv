@@ -12,6 +12,9 @@ import com.unciv.models.gamebasics.ResourceType
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.linq.Counter
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.getRandom
+import kotlin.math.max
+import kotlin.math.pow
 
 
 class CivilizationInfo {
@@ -46,13 +49,26 @@ class CivilizationInfo {
         statsForTurn.happiness = getHappinessForNextTurn().toFloat()
 
         val transportationUpkeep = getTransportationUpkeep()
-        statsForTurn.gold -= transportationUpkeep.toFloat()
+        statsForTurn.gold -= transportationUpkeep
+
+        val unitUpkeep = getUnitUpkeep()
+        statsForTurn.gold -= unitUpkeep
 
         if (policies.isAdopted("Mandate Of Heaven"))
             statsForTurn.culture += statsForTurn.happiness / 2
 
         if (statsForTurn.gold < 0) statsForTurn.science += statsForTurn.gold
         return statsForTurn
+    }
+
+    private fun getUnitUpkeep(): Int {
+        val baseUnitCost = 0.5f
+        val freeUnits = 3
+        val totalPaidUnits = max(0,getCivUnits().count()-freeUnits)
+        val gameProgress = gameInfo.turns/400f // as game progresses maintainance cost rises
+        val cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
+        val finalCost = cost.pow(1+gameProgress/3) // Why 3? No reason.
+        return finalCost.toInt()
     }
 
     private fun getTransportationUpkeep(): Int {
@@ -160,5 +176,3 @@ class CivilizationInfo {
     }
 
 }
-
-fun <E> List<E>.getRandom(): E = if (size == 0) throw Exception() else get((Math.random() * size).toInt())
