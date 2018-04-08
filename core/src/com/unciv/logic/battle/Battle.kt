@@ -1,13 +1,24 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.map.UnitType
 import java.util.*
 import kotlin.collections.HashMap
 
 class Battle(val gameInfo:GameInfo) {
 
     fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
-        return HashMap<String,Float>()
+        val modifiers = HashMap<String,Float>()
+        if(attacker.getCombatantType()==CombatantType.Melee) {
+            val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
+                it.unit != null
+                        && it.unit!!.owner == attacker.getCivilization().civName
+                        && it.unit!!.getBaseUnit().unitType == UnitType.Melee
+            }
+            if(numberOfAttackersSurroundingDefender >1) modifiers.put("Flanking",0.15f)
+        }
+
+        return modifiers
     }
 
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
