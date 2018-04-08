@@ -57,7 +57,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
                 regularBuildings.addActor(productionTextButton)
         }
 
-        for (unit in GameBasics.Units.values.filter { it.isConstructable }) {
+        for (unit in GameBasics.Units.values.filterNot { it.unbuildable }) {
             units.addActor(getProductionButton(unit.name,
                     unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " turns",
                     unit.description, "Train " + unit.name))

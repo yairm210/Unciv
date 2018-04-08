@@ -17,9 +17,6 @@ class Unit : INamed, IConstruction {
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
 
-    val isConstructable: Boolean
-        get() = !unbuildable
-
     fun getMapUnit(): MapUnit {
         val unit = MapUnit()
         unit.name = name

@@ -57,7 +57,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             cityButton!!.run {
                 clear()
-                add(label).pad(5f)
+                add(label).pad(10f)
                 pack()
                 setOrigin(Align.center)
                 toFront()

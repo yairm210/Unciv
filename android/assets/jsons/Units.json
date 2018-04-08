@@ -27,6 +27,7 @@
 		description: "A basic fighting unit",
 		unitType:"Melee",
 		movement:2,
+		strength:2,
 		cost: 40,
 		hurryCostModifier:20
 	},
