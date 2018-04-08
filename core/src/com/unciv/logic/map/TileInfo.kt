@@ -151,7 +151,11 @@ class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")
-        if (unit != null) SB.appendln(unit!!.name + "(" + unit!!.health + ")")
+        if (unit != null){
+            var unitString = unit!!.name
+            if(unit!!.getBaseUnit().unitType!=UnitType.Civilian) unitString += "(" + unit!!.health + ")"
+            SB.appendln(unitString)
+        }
         return SB.toString()
     }
 

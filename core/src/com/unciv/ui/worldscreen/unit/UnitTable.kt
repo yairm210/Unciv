@@ -24,7 +24,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 .tint(Color(0x004085bf))
         pad(20f)
         background = tileTableBackground
-        add(unitLabel)
+        add(unitLabel).pad(10f)
         add(unitActionsTable)
         row()
         add(idleUnitButton).colspan(2)
