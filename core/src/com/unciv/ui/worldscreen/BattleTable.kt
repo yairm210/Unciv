@@ -17,20 +17,21 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         skin = CameraStageBaseScreen.skin
     }
 
-    fun update(){
-        if(worldScreen.unitTable.selectedUnit==null
-                || worldScreen.unitTable.selectedUnit!!.getBaseUnit().unitType== UnitType.Civilian) return // no attacker
+    fun update() {
+        if (worldScreen.unitTable.selectedUnit == null
+                || worldScreen.unitTable.selectedUnit!!.getBaseUnit().unitType == UnitType.Civilian) return // no attacker
         val attacker = MapUnitCombatant(worldScreen.unitTable.selectedUnit!!)
 
 
-        if(worldScreen.tileMapHolder.selectedTile==null) return
+        if (worldScreen.tileMapHolder.selectedTile == null) return
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!
-        val defender:ICombatant
-        if(selectedTile.isCityCenter && selectedTile.getOwner() != worldScreen.civInfo)
+        val defender: ICombatant
+        if (selectedTile.explored && selectedTile.isCityCenter && selectedTile.getOwner() != worldScreen.civInfo)
             defender = CityCombatant(selectedTile.city!!)
-        else if(selectedTile.unit!=null
-            && selectedTile.unit!!.owner != worldScreen.civInfo.civName)  // enemy unit on selected tile,
-                defender = MapUnitCombatant(selectedTile.unit!!)
+        else if (selectedTile.unit != null
+                && selectedTile.unit!!.owner != worldScreen.civInfo.civName // enemy unit on selected tile,
+                && worldScreen.civInfo.getViewableTiles().contains(selectedTile))
+            defender = MapUnitCombatant(selectedTile.unit!!)
         else {
             clear()
             return
