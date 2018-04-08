@@ -55,7 +55,7 @@ open class Stats() {
     }
 
     override fun toString(): String {
-        return toHashMap().filter { it.value != 0f }.map { it.key.toString() + ": " + it.value }.joinToString()
+        return toHashMap().filter { it.value != 0f }.map { it.key.toString() + ": " + it.value.toInt() }.joinToString()
     }
 
     fun toHashMap(): HashMap<Stat, Float> {
