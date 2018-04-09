@@ -8,22 +8,23 @@ import com.unciv.models.gamebasics.Terrain
 import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.stats.Stats
+import com.unciv.ui.UnCivGame
 
 class TileInfo {
     @Transient lateinit var tileMap: TileMap
 
-    @JvmField var unit: MapUnit? = null
-    @JvmField var position: Vector2 = Vector2.Zero
-    @JvmField var baseTerrain: String? = null
-    @JvmField var terrainFeature: String? = null
-    @JvmField var resource: String? = null
-    @JvmField var improvement: String? = null
-    @JvmField var improvementInProgress: String? = null
-    @JvmField var owner: String? = null // owning civ name
-    @JvmField var workingCity: String? = null // Working City name
-    @JvmField var roadStatus = RoadStatus.None
-    @JvmField var explored = false
-    @JvmField var turnsToImprovement: Int = 0
+    var unit: MapUnit? = null
+    var position: Vector2 = Vector2.Zero
+    var baseTerrain: String? = null
+    var terrainFeature: String? = null
+    var resource: String? = null
+    var improvement: String? = null
+    var improvementInProgress: String? = null
+    var owner: String? = null // owning civ name
+    var workingCity: String? = null // Working City name
+    var roadStatus = RoadStatus.None
+    var explored = false
+    var turnsToImprovement: Int = 0
 
     val city: CityInfo?
         get() = if (workingCity == null) null else getOwner()!!.cities.first { it.name == workingCity }
@@ -151,7 +152,7 @@ class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")
-        if (unit != null){
+        if (unit != null && UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)){
             var unitString = unit!!.name
             if(unit!!.getBaseUnit().unitType!=UnitType.Civilian) unitString += "(" + unit!!.health + ")"
             SB.appendln(unitString)
