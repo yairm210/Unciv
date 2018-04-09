@@ -150,8 +150,13 @@ class GameInfo {
                 continue
             }
 
+            if(unit.health < 100){
+                healUnit()
+                continue
+            }
+
             // else, go to a random space
-            unit.moveToTile(distanceToTiles.keys.toList().getRandom())
+            unit.moveToTile(distanceToTiles.keys.filter { it.unit==null }.toList().getRandom())
         }
     }
 
