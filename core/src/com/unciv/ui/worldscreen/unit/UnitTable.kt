@@ -40,17 +40,17 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) {
             val unit = selectedUnit!!
-            if (unit.getBaseUnit().unitType == UnitType.Civilian) {
-                unitLabel.setText(unit.name
-                        + "\r\nMovement: " + unit.getMovementString()
-                )
-            } else {
-                unitLabel.setText(unit.name
-                        + "\r\nMovement: " + unit.getMovementString()
-                        + "\r\nHealth: " + unit.health
-                        + "\r\nStrength: " + unit.getBaseUnit().strength
-                )
+            var unitLabelText = unit.name +
+                    "\r\nMovement: " + unit.getMovementString()
+            if (unit.getBaseUnit().unitType != UnitType.Civilian) {
+                unitLabelText += "\r\nHealth: " + unit.health +
+                        "\r\nStrength: " + unit.getBaseUnit().strength
             }
+            if (unit.getBaseUnit().unitType == UnitType.Ranged)
+                unitLabelText += "\r\nRanged strength: "+unit.getBaseUnit().rangedStrength
+
+            unitLabel.setText(unitLabelText)
+
             for (button in UnitActions().getUnitActions(selectedUnit!!, worldScreen))
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
