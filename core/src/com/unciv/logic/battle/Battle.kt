@@ -53,6 +53,7 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
+        if(attacker.getCombatantType() == CombatantType.Ranged) return 0
         return (getDefendingStrength(attacker,defender) * 50 / getAttackingStrength(attacker,defender)).toInt()
     }
 
