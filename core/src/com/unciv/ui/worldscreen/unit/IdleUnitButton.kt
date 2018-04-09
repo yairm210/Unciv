@@ -9,9 +9,11 @@ import com.unciv.ui.utils.enable
 import com.unciv.ui.worldscreen.WorldScreen
 
 class IdleUnitButton internal constructor(internal val worldScreen: WorldScreen) : TextButton("Select next idle unit", CameraStageBaseScreen.skin) {
+
+    fun getTilesWithIdleUnits() = worldScreen.civInfo.gameInfo.tileMap.values.filter { it.hasIdleUnit() && it.unit!!.owner == worldScreen.civInfo.civName }
     init {
         addClickListener {
-            val tilesWithIdleUnits = worldScreen.civInfo.gameInfo.tileMap.values.filter { it.hasIdleUnit() && it.unit!!.owner == worldScreen.civInfo.civName }
+            val tilesWithIdleUnits = getTilesWithIdleUnits()
 
             val tileToSelect: TileInfo
             if (!tilesWithIdleUnits.contains(worldScreen.tileMapHolder.selectedTile))
@@ -27,7 +29,7 @@ class IdleUnitButton internal constructor(internal val worldScreen: WorldScreen)
     }
 
     internal fun update() {
-        if (worldScreen.civInfo.gameInfo.tileMap.values.any { it.hasIdleUnit() }) enable()
+        if (getTilesWithIdleUnits().isNotEmpty()) enable()
         else disable()
     }
 }
