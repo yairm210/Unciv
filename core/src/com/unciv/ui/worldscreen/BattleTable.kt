@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.UnitType
+import com.unciv.ui.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
@@ -111,7 +112,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             worldScreen.update()
         }
 
-        val attackerCanReachDefender = attacker.unit.getDistanceToTiles().containsKey(defender.getTile())
+        val attackerCanReachDefender:Boolean
+        if (attacker.getCombatantType() == CombatantType.Ranged) {
+            val tilesInRange = UnCivGame.Current.gameInfo.tileMap.getTilesInDistance(attacker.getTile().position, 2)
+            attackerCanReachDefender = tilesInRange.contains(defender.getTile())
+        }
+        else attackerCanReachDefender = attacker.unit.getDistanceToTiles().containsKey(defender.getTile())
+
         if(attacker.unit.currentMovement==0f || !attackerCanReachDefender)  attackButton.disable()
         add(attackButton).colspan(2)
 
