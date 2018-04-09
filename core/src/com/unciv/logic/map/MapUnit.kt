@@ -179,6 +179,7 @@ class MapUnit {
     fun moveToTile(otherTile: TileInfo) {
         val distanceToTiles = getDistanceToTiles()
         if (!distanceToTiles.containsKey(otherTile)) throw Exception("You can't get there from here!")
+        if (otherTile.unit != null ) throw Exception("Tile already contains a unit!")
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"
