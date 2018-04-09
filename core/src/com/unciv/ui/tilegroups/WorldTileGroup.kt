@@ -17,6 +17,25 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
     private var unitImage: Group? = null
 
+    private var circleImage = ImageGetter.getImage("UnitIcons/Circle.png")
+
+    init{
+        circleImage.width = 50f
+        circleImage.height = 50f
+        circleImage.setPosition(width/2-circleImage.width/2,
+                height/2-circleImage.height/2)
+        addActor(circleImage)
+        circleImage.isVisible = false
+    }
+
+    fun showCircle(color:Color){
+        circleImage.isVisible = true
+        color.a = 0.3f
+        circleImage.setColor(color)
+    }
+
+    fun hideCircle(){circleImage.isVisible=false}
+
     fun setIsViewable(isViewable: Boolean) {
         if (isViewable) {
             setColor(0f, 0f, 0f, 1f) // Only alpha really changes anything

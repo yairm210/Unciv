@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
@@ -82,16 +83,19 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles() {
-        for (WG in tileGroups.values) WG.setIsViewable(false) // also updates them
+        for (WG in tileGroups.values){
+            WG.setIsViewable(false)
+            WG.hideCircle()
+        } // also updates them
 
-        val viewablePositions: List<Vector2>
-        if(worldScreen.unitTable.currentlyExecutingAction == null)
-            viewablePositions = civInfo.getViewableTiles().map { it.position }
-        else
-            viewablePositions = worldScreen.unitTable.getViewablePositionsForExecutingAction()
-
-        for (string in viewablePositions.map { it.toString() }.filter { tileGroups.containsKey(it) })
+        for (string in civInfo.getViewableTiles()
+                .map { it.position.toString() }
+                .filter { tileGroups.containsKey(it) })
             tileGroups[string]!!.setIsViewable(true)
+
+        if(worldScreen.unitTable.currentlyExecutingAction!=null)
+            for(tile: TileInfo in worldScreen.unitTable.getTilesForCurrentlyExecutingAction())
+                tileGroups[tile.position.toString()]!!.showCircle(Color(0f,120/255f,215/255f,1f))
     }
 
     fun setCenterPosition(vector: Vector2) {

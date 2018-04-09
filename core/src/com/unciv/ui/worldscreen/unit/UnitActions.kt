@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen.unit
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -38,14 +37,6 @@ class UnitActions {
                 && (unit.action==null || !unit.action!!.startsWith("moveTo") )){
             actionList += getUnitActionButton(unit, "Move unit", true, {
                 unitTable.currentlyExecutingAction = "moveTo"
-                // Set all tiles transparent except those in unit range
-                for (TG in tileMapHolder.tileGroups.values) TG.setColor(0f, 0f, 0f, 0.3f)
-
-                val distanceToTiles = unitTable.selectedUnit!!.getDistanceToTiles()
-
-                for (tileInRange in distanceToTiles.keys) {
-                    tileMapHolder.tileGroups[tileInRange.position.toString()]!!.color = Color.WHITE
-                }
             })
         }
 

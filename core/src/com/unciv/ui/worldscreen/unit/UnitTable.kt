@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
@@ -76,10 +75,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             selectedUnit= selectedTile.unit
     }
 
-    fun getViewablePositionsForExecutingAction(): List<Vector2>
+    fun getTilesForCurrentlyExecutingAction(): Set<TileInfo>
     {
         if(currentlyExecutingAction == "moveTo")
-            return selectedUnit!!.getDistanceToTiles().keys.map { it.position }
-        return emptyList()
+            return selectedUnit!!.getDistanceToTiles().keys
+        return emptySet()
     }
 }
