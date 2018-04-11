@@ -32,6 +32,17 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Archer",
+		description: "A basic fighting unit",
+		unitType:"Ranged",
+		movement:2,
+		strength:2,
+		rangedStrength:3,
+		cost: 40,
+		requiredTech:"Writing",
+		hurryCostModifier:20
+	},
+	{
 		name:"Great Artist",
 		description: "Can start an 8-turn golden age or construcct a landmark (+5 culture)", 
 		unbuildable:true,

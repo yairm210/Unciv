@@ -16,6 +16,7 @@ class Unit : INamed, IConstruction {
     var rangedStrength:Int = 0
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
+    var requiredTech:String? = null
 
     fun getMapUnit(): MapUnit {
         val unit = MapUnit()
