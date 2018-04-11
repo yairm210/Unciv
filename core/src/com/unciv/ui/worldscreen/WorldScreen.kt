@@ -118,7 +118,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
             game.gameInfo.nextTurn()
             unitTable.currentlyExecutingAction = null
-            GameSaver.SaveGame(game, "Autosave")
+            GameSaver.saveGame(game, "Autosave")
             update()
             displayTutorials("NextTurn")
         }

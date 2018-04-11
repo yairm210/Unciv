@@ -10,8 +10,8 @@ class TileResource : NamedStats(), ICivilopedia {
             stringBuilder.appendln(this.clone().toString())
             stringBuilder.appendln("Can be found on " + terrainsCanBeFoundOn.joinToString())
             stringBuilder.appendln()
-            stringBuilder.appendln("Improved by " + improvement)
-            stringBuilder.appendln("Bonus stats for improvement: " + improvementStats)
+            stringBuilder.appendln("Improved by $improvement")
+            stringBuilder.appendln("Bonus stats for improvement: $improvementStats")
             return stringBuilder.toString()
         }
 

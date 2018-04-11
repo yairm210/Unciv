@@ -15,7 +15,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.UnCivGame
+import com.unciv.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 
 open class CameraStageBaseScreen : Screen {
@@ -59,7 +59,7 @@ open class CameraStageBaseScreen : Screen {
     fun displayTutorials(name: String) {
         if (game.gameInfo.tutorial.contains(name)) return
         game.gameInfo.tutorial.add(name)
-        val texts = GameBasics.Tutorials.get(name)!!
+        val texts = GameBasics.Tutorials[name]!!
         tutorialTexts.addAll(texts)
         if (!isTutorialShowing) displayTutorial()
     }

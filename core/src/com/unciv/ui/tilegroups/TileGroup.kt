@@ -79,7 +79,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         if(!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK,0.6f)
 
 
-        if (tileInfo.hasViewableResource(tileInfo.tileMap!!.gameInfo!!.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
+        if (tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
             resourceImage = ImageGetter.getImage(fileName)
             resourceImage!!.setSize(20f, 20f)

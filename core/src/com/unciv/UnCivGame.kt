@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
@@ -10,6 +10,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.Unit
 import com.unciv.models.stats.INamed
+import com.unciv.ui.GameSettings
 import com.unciv.ui.utils.GameSaver
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -22,9 +23,9 @@ class UnCivGame : Game() {
         setupGameBasics()
 
         Current = this
-        if (GameSaver.GetSave("Autosave").exists()) {
+        if (GameSaver.getSave("Autosave").exists()) {
             try {
-                GameSaver.LoadGame(this, "Autosave")
+                GameSaver.loadGame(this, "Autosave")
                 gameInfo.getPlayerCivilization().civName="Babylon"
                 gameInfo.tileMap.values.forEach {
                     if (it.owner == "Player") it.owner = "Babylon"

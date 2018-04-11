@@ -1,18 +1,15 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
-
-import java.util.HashMap
+import java.util.*
 
 object ImageGetter {
-    var textureRegionByFileName = HashMap<String, TextureRegion>()
-    val WhiteDot = "skin/whiteDot.png"
+    private var textureRegionByFileName = HashMap<String, TextureRegion>()
+    const val WhiteDot = "skin/whiteDot.png"
 
     fun getImage(fileName: String): Image {
         return Image(getTextureRegion(fileName))
@@ -23,10 +20,6 @@ object ImageGetter {
         drawable.minHeight = 0f
         drawable.minWidth = 0f
         return drawable
-    }
-
-    fun getSingleColorDrawable(color: Color): Drawable {
-        return getDrawable(WhiteDot).tint(color)
     }
 
     private fun getTextureRegion(fileName: String): TextureRegion {

@@ -5,7 +5,7 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.ScienceVictoryScreen
-import com.unciv.ui.UnCivGame
+import com.unciv.UnCivGame
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 
@@ -14,28 +14,28 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
     override val description: String
         get() = getDescription(false, listOf())
 
-    @JvmField var requiredTech: String? = null
+    var requiredTech: String? = null
 
-    @JvmField var cost: Int = 0
-    @JvmField var maintenance = 0
-    @JvmField var percentStatBonus: Stats? = null
-    @JvmField var specialistSlots: Stats? = null
-    @JvmField var greatPersonPoints: Stats? = null
+    var cost: Int = 0
+    var maintenance = 0
+    var percentStatBonus: Stats? = null
+    var specialistSlots: Stats? = null
+    var greatPersonPoints: Stats? = null
     /** Extra cost percentage when purchasing */
-    @JvmField var hurryCostModifier: Int = 0
-    @JvmField var isWonder = false
-    @JvmField var requiredBuilding: String? = null
-    @JvmField var requiredBuildingInAllCities: String? = null
+    var hurryCostModifier: Int = 0
+    var isWonder = false
+    var requiredBuilding: String? = null
+    var requiredBuildingInAllCities: String? = null
     /** A strategic resource that will be consumed by this building */
-    @JvmField var requiredResource: String? = null
+    var requiredResource: String? = null
     /** City can only be built if one of these resources is nearby - it must be improved! */
-    @JvmField var requiredNearbyImprovedResources: List<String>? = null
-    @JvmField var cannotBeBuiltWith: String? = null
+    var requiredNearbyImprovedResources: List<String>? = null
+    var cannotBeBuiltWith: String? = null
 
     // Uniques
-    @JvmField var providesFreeBuilding: String? = null
-    @JvmField var freeTechs: Int = 0
-    @JvmField var unique: String? = null // for wonders which have individual functions that are totally unique
+    var providesFreeBuilding: String? = null
+    var freeTechs: Int = 0
+    var unique: String? = null // for wonders which have individual functions that are totally unique
 
 
     /**
@@ -82,7 +82,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
     fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: List<String>): String {
         val stats = getStats(adoptedPolicies)
         val stringBuilder = StringBuilder()
-        if (!forBuildingPickerScreen) stringBuilder.appendln("Cost: " + cost)
+        if (!forBuildingPickerScreen) stringBuilder.appendln("Cost: $cost")
         if (isWonder) stringBuilder.appendln("Wonder")
         if (!forBuildingPickerScreen && requiredTech != null)
             stringBuilder.appendln("Requires $requiredTech to be researched")

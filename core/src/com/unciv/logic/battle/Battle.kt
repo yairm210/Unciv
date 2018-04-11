@@ -15,7 +15,7 @@ class Battle(val gameInfo:GameInfo) {
                         && it.unit!!.owner == attacker.getCivilization().civName
                         && it.unit!!.getBaseUnit().unitType == UnitType.Melee
             }
-            if(numberOfAttackersSurroundingDefender >1) modifiers.put("Flanking",0.15f)
+            if(numberOfAttackersSurroundingDefender >1) modifiers["Flanking"] = 0.15f
         }
 
         return modifiers
@@ -24,7 +24,7 @@ class Battle(val gameInfo:GameInfo) {
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String,Float>()
         val tileDefenceBonus = defender.getTile().getDefensiveBonus()
-        if(tileDefenceBonus > 0) modifiers.put("Terrain",tileDefenceBonus)
+        if(tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         return modifiers
     }
 

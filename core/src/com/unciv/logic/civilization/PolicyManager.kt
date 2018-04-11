@@ -2,7 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
-import com.unciv.ui.UnCivGame
+import com.unciv.UnCivGame
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 
 

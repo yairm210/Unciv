@@ -26,7 +26,7 @@ class CityExpansionManager {
 
         for (i in 2..3) {
             val tiles = cityInfo.civInfo.gameInfo.tileMap.getTilesInDistance(cityInfo.cityLocation, i).filter { it.owner == null }
-            if (tiles.size == 0) continue
+            if (tiles.isEmpty()) continue
             val chosenTile = tiles.maxBy { cityInfo.rankTile(it) }
             chosenTile!!.owner = cityInfo.civInfo.civName
             tilesClaimed++

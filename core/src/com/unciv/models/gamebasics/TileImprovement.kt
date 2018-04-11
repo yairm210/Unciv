@@ -1,11 +1,9 @@
 package com.unciv.models.gamebasics
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.stats.Stats
 import com.unciv.models.stats.NamedStats
-
-import java.util.ArrayList
-import java.util.HashMap
+import com.unciv.models.stats.Stats
+import java.util.*
 
 class TileImprovement : NamedStats(), ICivilopedia {
 
@@ -42,7 +40,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
                 stringBuilder.appendln(it.key + " for " + it.value.joinToString(", "))
             }
 
-            if (techRequired != null) stringBuilder.appendln("Tech required: " + techRequired)
+            if (techRequired != null) stringBuilder.appendln("Tech required: $techRequired")
 
             return stringBuilder.toString()
         }

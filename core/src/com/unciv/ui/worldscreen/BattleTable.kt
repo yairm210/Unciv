@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.UnitType
-import com.unciv.ui.UnCivGame
+import com.unciv.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable

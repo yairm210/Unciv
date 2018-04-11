@@ -5,7 +5,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.UnCivGame
+import com.unciv.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen

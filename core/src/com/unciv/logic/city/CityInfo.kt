@@ -84,7 +84,7 @@ class CityInfo {
         name = CityNames[civInfo.cities.size]
         this.cityLocation = cityLocation
         civInfo.cities.add(this)
-        civInfo.gameInfo.addNotification(name + " has been founded!", cityLocation)
+        civInfo.gameInfo.addNotification("$name has been founded!", cityLocation)
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
             cityConstructions.builtBuildings.add("Palace")

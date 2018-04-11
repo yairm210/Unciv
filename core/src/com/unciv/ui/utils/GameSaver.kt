@@ -4,21 +4,21 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
 import com.unciv.logic.GameInfo
-import com.unciv.ui.UnCivGame
+import com.unciv.UnCivGame
 
 object GameSaver {
-    val saveFilesFolder = "SaveFiles"
+    private const val saveFilesFolder = "SaveFiles"
 
-    fun GetSave(GameName: String): FileHandle {
-        return Gdx.files.local(saveFilesFolder + "/" + GameName)
+    fun getSave(GameName: String): FileHandle {
+        return Gdx.files.local("$saveFilesFolder/$GameName")
     }
 
-    fun SaveGame(game: UnCivGame, GameName: String) {
-        GetSave(GameName).writeString(Json().toJson(game.gameInfo), false)
+    fun saveGame(game: UnCivGame, GameName: String) {
+        getSave(GameName).writeString(Json().toJson(game.gameInfo), false)
     }
 
-    fun LoadGame(game: UnCivGame, GameName: String) {
-        game.gameInfo = Json().fromJson(GameInfo::class.java, GetSave(GameName).readString())
+    fun loadGame(game: UnCivGame, GameName: String) {
+        game.gameInfo = Json().fromJson(GameInfo::class.java, getSave(GameName).readString())
         game.gameInfo.setTransients()
     }
 }

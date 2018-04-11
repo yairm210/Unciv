@@ -8,7 +8,7 @@ import com.unciv.models.gamebasics.Terrain
 import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.stats.Stats
-import com.unciv.ui.UnCivGame
+import com.unciv.UnCivGame
 
 class TileInfo {
     @Transient lateinit var tileMap: TileMap
@@ -58,7 +58,7 @@ class TileInfo {
 
     fun getOwner(): CivilizationInfo? {
         return if (owner == null) null
-        else tileMap.gameInfo!!.civilizations.first { it.civName == owner }
+        else tileMap.gameInfo.civilizations.first { it.civName == owner }
     }
 
     fun getTerrainFeature(): Terrain? {
@@ -148,7 +148,7 @@ class TileInfo {
         }
         SB.appendln(this.baseTerrain)
         if (terrainFeature != null) SB.appendln(terrainFeature!!)
-        if (hasViewableResource(tileMap.gameInfo!!.getPlayerCivilization())) SB.appendln(resource!!)
+        if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!)
         if (roadStatus !== RoadStatus.None && !isCityCenter) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")

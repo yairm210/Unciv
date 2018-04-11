@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
-import com.unciv.models.gamebasics.StringUtils
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -86,7 +85,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         pickedPolicy = policy
         var policyText = policy.name + "\r\n" + policy.description + "\r\n"
         if (!policy.name.endsWith("Complete") && policy.requires!!.isNotEmpty())
-            policyText += "Requires " + StringUtils.join(", ", policy.requires)
+            policyText += "Requires " + policy.requires!!.joinToString()
         descriptionLabel.setText(policyText)
     }
 
