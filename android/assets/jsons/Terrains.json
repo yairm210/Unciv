@@ -26,7 +26,7 @@
 		name:"Desert",
 		type:"BaseTerrain",
 		movementCost:1,
-		RGB: [188,189,145]
+		RGB: [ 255, 255, 102]
 	},
 	{
 		name:"Lakes",
