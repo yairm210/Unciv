@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
@@ -23,7 +22,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var statExplainer = Table(skin)
     private var cityPickerTable = Table()
     private var goToWorldButton = TextButton("Exit city", CameraStageBaseScreen.skin)
-    private var tileGroups = ArrayList<TileGroup>()
+    private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
         Label("", CameraStageBaseScreen.skin).style.font.data.setScale(game.settings.labelScale)

@@ -19,8 +19,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
         }
     }
 
-    override fun update() {
-        super.update()
+    fun update() {
+        super.update(true)
 
         if (populationImage != null) {
             populationImage!!.setSize(30f, 30f)

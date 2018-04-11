@@ -84,14 +84,19 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     internal fun updateTiles() {
         for (WG in tileGroups.values){
-            WG.setIsViewable(false)
             WG.hideCircle()
-        } // also updates them
+            WG.update(false)
+        }
 
         for (string in civInfo.getViewableTiles()
                 .map { it.position.toString() }
-                .filter { tileGroups.containsKey(it) })
-            tileGroups[string]!!.setIsViewable(true)
+                .filter { tileGroups.containsKey(it) }) {
+
+            tileGroups[string]!!.run {
+                update(true)
+                tileInfo.explored = true
+            }
+        }
 
         if(worldScreen.unitTable.currentlyExecutingAction!=null)
             for(tile: TileInfo in worldScreen.unitTable.getTilesForCurrentlyExecutingAction())

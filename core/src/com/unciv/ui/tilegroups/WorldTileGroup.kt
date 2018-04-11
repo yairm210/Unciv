@@ -36,19 +36,9 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
     fun hideCircle(){circleImage.isVisible=false}
 
-    fun setIsViewable(isViewable: Boolean) {
-        if (isViewable) {
-            setColor(0f, 0f, 0f, 1f) // Only alpha really changes anything
-            tileInfo.explored = true
-            update()
-        } else{
-            setColor(0f, 0f, 0f, 0.6f)
-            update()
-        }
-    }
 
-    override fun update() {
-        super.update()
+    override fun update(isViewable: Boolean) {
+        super.update(isViewable)
 
         if (populationImage != null) removePopulationIcon()
         if (tileInfo.workingCity != null && !tileInfo.isCityCenter && populationImage == null) addPopulationIcon()

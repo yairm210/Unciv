@@ -51,7 +51,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    open fun update() {
+    open fun update(isViewable: Boolean) {
         if (!tileInfo.explored) {
             hexagon.color = Color.BLACK
             return
@@ -76,6 +76,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         val RGB= tileInfo.getBaseTerrain().RGB!!
         hexagon.color = Color(RGB[0]/255f,RGB[1]/255f,RGB[2]/255f,1f)
+        if(!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK,0.6f)
+
 
         if (tileInfo.hasViewableResource(tileInfo.tileMap!!.gameInfo!!.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
@@ -119,7 +121,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
                     // This is some crazy voodoo magic so I'll explain.
                     image.moveBy(25f, 25f) // Move road to center of tile
-                    // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
+                    // in addTiles, we set   the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
                     // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
                     image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
                     image.setSize(10f, 2f)
