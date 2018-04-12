@@ -5,8 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
-import com.unciv.logic.map.TileInfo
 import com.unciv.UnCivGame
+import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -16,6 +16,7 @@ import com.unciv.ui.utils.ImageGetter
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
     private var unitImage: Group? = null
+    //private var  whiteCircleAroundUnit
 
     private var circleImage = ImageGetter.getImage("UnitIcons/Circle.png")
 
@@ -83,7 +84,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             unitImage = null
         }
 
-        if (tileInfo.unit != null && color.a==1f) { // Tile is visible
+        if (tileInfo.unit != null && isViewable) { // Tile is visible
             val unit = tileInfo.unit!!
             unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
             addActor(unitImage!!)
