@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.HexMath
@@ -101,6 +102,18 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         if(worldScreen.unitTable.currentlyExecutingAction!=null)
             for(tile: TileInfo in worldScreen.unitTable.getTilesForCurrentlyExecutingAction())
                 tileGroups[tile.position.toString()]!!.showCircle(Color(0f,120/255f,215/255f,1f))
+        else if(worldScreen.unitTable.selectedUnit!=null){
+            val unit = worldScreen.unitTable.selectedUnit!!
+            val attackableTiles:List<TileInfo>
+            when(unit.getBaseUnit().unitType){
+                UnitType.Civilian -> return
+                UnitType.Melee -> attackableTiles = unit.getDistanceToTiles().keys.toList()
+                UnitType.Ranged -> attackableTiles = unit.getTile().getTilesInDistance(2)
+            }
+
+            for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner })
+                tileGroups[tile.position.toString()]!!.showCircle(Color(237/255f,41/255f,57/255f,1f))
+        }
     }
 
     fun setCenterPosition(vector: Vector2) {

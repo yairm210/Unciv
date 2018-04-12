@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -8,7 +9,6 @@ import com.unciv.models.gamebasics.Terrain
 import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.stats.Stats
-import com.unciv.UnCivGame
 
 class TileInfo {
     @Transient lateinit var tileMap: TileMap
@@ -173,6 +173,10 @@ class TileInfo {
 
     fun getViewableTiles(distance:Int): MutableList<TileInfo> {
         return tileMap.getViewableTiles(this.position,distance)
+    }
+
+    fun getTilesInDistance(distance:Int): List<TileInfo> {
+        return tileMap.getTilesInDistance(position,distance)
     }
 
     fun getDefensiveBonus(): Float {
