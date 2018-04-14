@@ -94,14 +94,15 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 .filter { tileGroups.containsKey(it) }) {
 
             tileGroups[string]!!.run {
-                update(true)
                 tileInfo.explored = true
+                update(true)
             }
         }
 
         if(worldScreen.unitTable.currentlyExecutingAction!=null)
             for(tile: TileInfo in worldScreen.unitTable.getTilesForCurrentlyExecutingAction())
                 tileGroups[tile.position.toString()]!!.showCircle(Color(0f,120/255f,215/255f,1f))
+
         else if(worldScreen.unitTable.selectedUnit!=null){
             val unit = worldScreen.unitTable.selectedUnit!!
             val attackableTiles:List<TileInfo>
