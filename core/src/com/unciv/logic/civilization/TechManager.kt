@@ -53,7 +53,7 @@ class TechManager {
         techsInProgress.remove(currentTechnology)
         techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
-        civInfo.gameInfo.addNotification("Research of $currentTechnology has completed!", null)
+        civInfo.addNotification("Research of $currentTechnology has completed!", null)
 
         val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
 
@@ -64,7 +64,7 @@ class TechManager {
             val closestCityTile = civInfo.gameInfo.tileMap.getTilesInDistance(tileInfo.position, 4)
                     .firstOrNull { it.isCityCenter }
             if (closestCityTile != null) {
-                civInfo.gameInfo.addNotification(
+                civInfo.addNotification(
                         revealedResource.name + " revealed near " + closestCityTile.city!!.name, tileInfo.position)
                 break
             }

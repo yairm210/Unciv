@@ -149,7 +149,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
 
 
         if (requiredNearbyImprovedResources != null) {
-            val containsResourceWithImprovement = construction.cityInfo.tilesInRange
+            val containsResourceWithImprovement = construction.cityInfo.getTilesInRange()
                     .any {
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)

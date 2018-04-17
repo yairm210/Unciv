@@ -12,34 +12,30 @@ class PopulationManager {
 
     @JvmField var buildingsSpecialists = HashMap<String, Stats>()
 
-    val specialists: Stats
-        get() {
-            val allSpecialists = Stats()
-            for (stats in buildingsSpecialists.values)
-                allSpecialists.add(stats)
-            return allSpecialists
-        }
+    fun getSpecialists(): Stats {
+        val allSpecialists = Stats()
+        for (stats in buildingsSpecialists.values)
+            allSpecialists.add(stats)
+        return allSpecialists
+    }
 
-    val numberOfSpecialists: Int
-        get() {
-            val specialists = specialists
-            return (specialists.science + specialists.production + specialists.culture + specialists.gold).toInt()
-        }
+    fun getNumberOfSpecialists(): Int {
+        val specialists = getSpecialists()
+        return (specialists.science + specialists.production + specialists.culture + specialists.gold).toInt()
+    }
 
 
     // 1 is the city center
-    val freePopulation: Int
-        get() {
-            val workingPopulation = cityInfo!!.tilesInRange.count { cityInfo!!.name == it.workingCity } - 1
-            return population - workingPopulation - numberOfSpecialists
-        }
+    fun getFreePopulation(): Int {
+        val workingPopulation = cityInfo!!.getTilesInRange().count { cityInfo!!.name == it.workingCity } - 1
+        return population - workingPopulation - getNumberOfSpecialists()
+    }
 
 
-    val foodToNextPopulation: Int
-        get() {
-            // civ v math,civilization.wikia
-            return 15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8)).toInt()
-        }
+    fun getFoodToNextPopulation(): Int {
+        // civ v math,civilization.wikia
+        return 15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8)).toInt()
+    }
 
 
     fun nextTurn(food: Float) {
@@ -49,21 +45,21 @@ class PopulationManager {
         {
             population--
             foodStored = 0
-            cityInfo!!.civInfo.gameInfo.addNotification(cityInfo!!.name + " is starving!", cityInfo!!.cityLocation)
+            cityInfo!!.civInfo.addNotification(cityInfo!!.name + " is starving!", cityInfo!!.cityLocation)
         }
-        if (foodStored >= foodToNextPopulation)
+        if (foodStored >= getFoodToNextPopulation())
         // growth!
         {
-            foodStored -= foodToNextPopulation
-            if (cityInfo!!.buildingUniques.contains("FoodCarriesOver")) foodStored += (0.4f * foodToNextPopulation).toInt() // Aqueduct special
+            foodStored -= getFoodToNextPopulation()
+            if (cityInfo!!.buildingUniques.contains("FoodCarriesOver")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
             population++
             autoAssignWorker()
-            cityInfo!!.civInfo.gameInfo.addNotification(cityInfo!!.name + " has grown!", cityInfo!!.cityLocation)
+            cityInfo!!.civInfo.addNotification(cityInfo!!.name + " has grown!", cityInfo!!.cityLocation)
         }
     }
 
     internal fun autoAssignWorker() {
-        val toWork: TileInfo? = cityInfo!!.tilesInRange.filter { it.workingCity==null }.maxBy { cityInfo!!.rankTile(it) }
+        val toWork: TileInfo? = cityInfo!!.getTilesInRange().filter { it.workingCity==null }.maxBy { cityInfo!!.rankTile(it) }
         if (toWork != null) // This is when we've run out of tiles!
             toWork.workingCity = cityInfo!!.name
     }

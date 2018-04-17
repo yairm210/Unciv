@@ -9,7 +9,7 @@ import kotlin.math.max
 class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getHealth(): Int = city.health
     override fun getCivilization(): CivilizationInfo = city.civInfo
-    override fun getTile(): TileInfo = city.tile
+    override fun getTile(): TileInfo = city.getTile()
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health==1
 

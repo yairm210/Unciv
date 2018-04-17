@@ -17,7 +17,7 @@ class CityStats {
 
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
-        for (cell in cityInfo.tilesInRange.filter { cityInfo.name == it.workingCity })
+        for (cell in cityInfo.getTilesInRange().filter { cityInfo.name == it.workingCity })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
@@ -98,7 +98,7 @@ class CityStats {
         var happiness = -3f
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
-            unhappinessFromCitizens -= cityInfo.population.numberOfSpecialists * 0.5f
+            unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
         if (civInfo.buildingUniques.contains("CitizenUnhappinessDecreased"))
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Aristocracy"))
@@ -128,7 +128,7 @@ class CityStats {
         stats.production += specialists.production * 2
         stats.science += specialists.science * 3
         stats.gold += specialists.gold * 2
-        val numOfSpecialists = cityInfo.population.numberOfSpecialists
+        val numOfSpecialists = cityInfo.population.getNumberOfSpecialists()
         if (policies.contains("Commerce Complete")) stats.gold += numOfSpecialists.toFloat()
         if (policies.contains("Secularism")) stats.science += (numOfSpecialists * 2).toFloat()
 
@@ -190,9 +190,9 @@ class CityStats {
         val civInfo = cityInfo.civInfo
 
         baseStatList["Population"] = Stats().add(Stat.Science,cityInfo.population.population.toFloat())
-                .add(Stat.Production,cityInfo.population.freePopulation.toFloat())
+                .add(Stat.Production,cityInfo.population.getFreePopulation().toFloat())
         baseStatList["Tile yields"] = getStatsFromTiles()
-        baseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies)
+        baseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getSpecialists(), civInfo.policies.adoptedPolicies)
         baseStatList["Trade route"] = getStatsFromTradeRoute()
         baseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         baseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
@@ -221,7 +221,7 @@ class CityStats {
         baseStatList["Population"]!!.food -= foodEaten // to display it to the user
         stats.food -= foodEaten // Food reduced after the bonus
         if (civInfo.policies.isAdopted("Civil Society"))
-            stats.food += cityInfo.population.numberOfSpecialists.toFloat()
+            stats.food += cityInfo.population.getNumberOfSpecialists().toFloat()
 
         if (isUnhappy) stats.food /= 4f // Reduce excess food to 1/4 per the same
         stats.food *= 1 + getGrowthBonusFromPolicies()
@@ -234,9 +234,9 @@ class CityStats {
 
     private fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if(cityInfo.civInfo.cities.count()<2) return false// first city!
-        val capitalTile = cityInfo.civInfo.capital.tile
+        val capitalTile = cityInfo.civInfo.capital.getTile()
         val tilesReached = HashSet<TileInfo>()
-        var tilesToCheck : List<TileInfo> = listOf(cityInfo.tile)
+        var tilesToCheck : List<TileInfo> = listOf(cityInfo.getTile())
         while (tilesToCheck.isNotEmpty()) {
             val newTiles = tilesToCheck
                     .flatMap { cityInfo.tileMap.getTilesInDistance(it.position, 1) }.distinct()

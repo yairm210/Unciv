@@ -155,7 +155,7 @@ class CivilizationInfo {
     fun addGreatPerson(greatPerson: String) {
         val randomCity = cities.getRandom()
         placeUnitNearTile(cities.getRandom().cityLocation, greatPerson)
-        gameInfo.addNotification("A $greatPerson has been born!", randomCity.cityLocation)
+        addNotification("A $greatPerson has been born!", randomCity.cityLocation)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String) {
@@ -175,4 +175,8 @@ class CivilizationInfo {
         return viewablePositions
     }
 
+    fun addNotification(text: String, location: Vector2?) {
+        if(isPlayerCivilization())
+            gameInfo.notifications.add(Notification(text, location))
+    }
 }

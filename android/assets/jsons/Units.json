@@ -20,6 +20,7 @@
 		description: "Has no abilites, can only explore", 
 		unbuildable:true,
 		unitType:"Melee",
+		strength:5,
 		movement:2
 	},
 	{
@@ -27,7 +28,7 @@
 		description: "A basic fighting unit",
 		unitType:"Melee",
 		movement:2,
-		strength:2,
+		strength:8,
 		cost: 40,
 		hurryCostModifier:20
 	},
@@ -36,8 +37,8 @@
 		description: "A basic fighting unit",
 		unitType:"Ranged",
 		movement:2,
-		strength:2,
-		rangedStrength:3,
+		strength:5,
+		rangedStrength:7,
 		cost: 40,
 		requiredTech:"Writing",
 		hurryCostModifier:20

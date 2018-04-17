@@ -1,6 +1,6 @@
 package com.unciv.logic
 
-import com.badlogic.gdx.math.Vector2
+import com.unciv.UnCivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.utils.getRandom
+import com.unciv.ui.worldscreen.unit.UnitActions
 
 class GameInfo {
 
@@ -21,11 +22,6 @@ class GameInfo {
 
     fun getPlayerCivilization(): CivilizationInfo = civilizations[0]
     fun getBarbarianCivilization(): CivilizationInfo = civilizations[1]
-
-
-    fun addNotification(text: String, location: Vector2?) {
-        notifications.add(Notification(text, location))
-    }
 
     fun nextTurn() {
         notifications.clear()
@@ -127,7 +123,7 @@ class GameInfo {
                 val unitToAttack =unitTileToAttack.unit!!
                 if(unitToAttack.getBaseUnit().unitType == UnitType.Civilian){ // kill
                     if(unitToAttack.civInfo == getPlayerCivilization())
-                        addNotification("Our "+unitToAttack.name+" was destroyed by an enemy "+unit.name+"!", unitTileToAttack.position)
+                        getPlayerCivilization().addNotification("Our "+unitToAttack.name+" was destroyed by an enemy "+unit.name+"!", unitTileToAttack.position)
                     unitTileToAttack.unit=null
                     unit.headTowards(unitTileToAttack.position)
                     continue

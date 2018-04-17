@@ -51,7 +51,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
             unitLabel.setText(unitLabelText)
 
-            for (button in UnitActions().getUnitActions(selectedUnit!!, worldScreen))
+            for (button in UnitActions().getUnitActionButtons(selectedUnit!!, worldScreen))
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
         }

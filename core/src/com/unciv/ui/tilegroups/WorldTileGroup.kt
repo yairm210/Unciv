@@ -47,6 +47,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
     override fun update(isViewable: Boolean) {
         super.update(isViewable)
+        if (!tileInfo.explored) return
 
         if (populationImage != null) removePopulationIcon()
         if (tileInfo.workingCity != null && !tileInfo.isCityCenter && populationImage == null) addPopulationIcon()
@@ -68,9 +69,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             val labelStyle = Label.LabelStyle(label.style)
             labelStyle.fontColor= city.civInfo.getCivilization().getColor()
             label.style=labelStyle
-            label.addClickListener {
-                UnCivGame.Current.screen = CityScreen(city)
-            }
+            if(city.civInfo.isPlayerCivilization())
+                label.addClickListener {
+                    UnCivGame.Current.screen = CityScreen(city)
+                }
 
             cityButton!!.run {
                 clear()

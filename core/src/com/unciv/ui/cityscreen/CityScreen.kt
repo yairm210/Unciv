@@ -160,13 +160,13 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     update()
                 }
 
-            if (!cityInfo.tilesInRange.contains(tileInfo) || tileInfo.workingCity != null && tileInfo.workingCity != cityInfo.name) {
+            if (!cityInfo.getTilesInRange().contains(tileInfo) || tileInfo.workingCity != null && tileInfo.workingCity != cityInfo.name) {
                 group.setColor(0f, 0f, 0f, 0.3f)
                 group.yieldGroup.isVisible = false
             } else if (!tileInfo.isCityCenter) {
                 group.addPopulationIcon()
                 group.populationImage!!.addClickListener {
-                        if (tileInfo.workingCity == null && cityInfo.population.freePopulation > 0)
+                        if (tileInfo.workingCity == null && cityInfo.population.getFreePopulation() > 0)
                             tileInfo.workingCity = cityInfo.name
                         else if (cityInfo.name == tileInfo.workingCity) tileInfo.workingCity = null
                         cityInfo.cityStats.update()

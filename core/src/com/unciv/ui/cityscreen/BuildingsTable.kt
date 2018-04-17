@@ -84,7 +84,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
             val cityInfo = cityScreen.city
             when {
                 isFilled -> cityInfo.population.buildingsSpecialists[building]!!.add(stat,-1f) //unassign
-                cityInfo.population.freePopulation == 0 -> return@addClickListener
+                cityInfo.population.getFreePopulation() == 0 -> return@addClickListener
                 else -> {
                     if (!cityInfo.population.buildingsSpecialists.containsKey(building))
                         cityInfo.population.buildingsSpecialists[building] = Stats()

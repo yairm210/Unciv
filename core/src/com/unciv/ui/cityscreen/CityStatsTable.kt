@@ -30,12 +30,12 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         val cityStatsValues = LinkedHashMap<String, String>()
         cityStatsValues["Production"] = Math.round(stats.production).toString() + city.cityConstructions.getAmountConstructedText()
         cityStatsValues["Food"] = (Math.round(stats.food).toString()
-                + " (" + city.population.foodStored + "/" + city.population.foodToNextPopulation + ")")
+                + " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")")
         cityStatsValues["Gold"] = Math.round(stats.gold).toString() + ""
         cityStatsValues["Science"] = Math.round(stats.science).toString() + ""
         cityStatsValues["Culture"] = (Math.round(stats.culture).toString()
                 + " (" + city.expansion.cultureStored + "/" + city.expansion.cultureToNextTile + ")")
-        cityStatsValues["Population"] = city.population.freePopulation.toString() + "/" + city.population.population
+        cityStatsValues["Population"] = city.population.getFreePopulation().toString() + "/" + city.population.population
 
         for (key in cityStatsValues.keys) {
             add(ImageGetter.getStatIcon(key)).align(Align.right)

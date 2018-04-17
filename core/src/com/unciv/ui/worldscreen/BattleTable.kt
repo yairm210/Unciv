@@ -3,9 +3,9 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.UnitType
-import com.unciv.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
@@ -20,9 +20,12 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     fun update() {
         if (worldScreen.unitTable.selectedUnit == null
-                || worldScreen.unitTable.selectedUnit!!.getBaseUnit().unitType == UnitType.Civilian) return // no attacker
-        val attacker = MapUnitCombatant(worldScreen.unitTable.selectedUnit!!)
+                || worldScreen.unitTable.selectedUnit!!.getBaseUnit().unitType == UnitType.Civilian){
+            clear()
+            return
+        } // no attacker
 
+        val attacker = MapUnitCombatant(worldScreen.unitTable.selectedUnit!!)
 
         if (worldScreen.tileMapHolder.selectedTile == null) return
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!

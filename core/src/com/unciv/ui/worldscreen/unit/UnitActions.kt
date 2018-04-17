@@ -1,19 +1,20 @@
 package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.UnCivGame
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
+
+class UnitAction(var name: String, var action:()->Unit, var canAct:Boolean)
 
 class UnitActions {
 
@@ -24,35 +25,37 @@ class UnitActions {
         }
     }
 
-    fun getUnitActions(unit:MapUnit,worldScreen: WorldScreen): List<TextButton> {
+    fun getUnitActionButtons(unit:MapUnit,worldScreen: WorldScreen): List<TextButton> {
+        return getUnitActions(unit, worldScreen).map { getUnitActionButton(it) }
+    }
+
+    fun getUnitActions(unit:MapUnit,worldScreen: WorldScreen): List<UnitAction> {
 
         val tile = unit.getTile()
 
         val tileMapHolder = worldScreen.tileMapHolder
         val unitTable = worldScreen.unitTable
 
-        val actionList = ArrayList<TextButton>()
+        val actionList = ArrayList<UnitAction>()
 
         if (unitTable.currentlyExecutingAction != "moveTo"
                 && (unit.action==null || !unit.action!!.startsWith("moveTo") )){
-            actionList += getUnitActionButton(unit, "Move unit", true, {
+            actionList += UnitAction("Move unit", {
                 unitTable.currentlyExecutingAction = "moveTo"
-            })
+            }, unit.currentMovement != 0f )
         }
 
         else {
-            val stopUnitAction =getUnitActionButton(unit, "Stop movement", true, {
+            actionList +=
+                    UnitAction("Stop movement", {
                 unitTable.currentlyExecutingAction = null
                 unit.action=null
                 tileMapHolder.updateTiles()
-            })
-            stopUnitAction.enable() // Stopping automation is always enabled;
-            actionList += stopUnitAction
+            },unit.currentMovement != 0f)
         }
 
         if (unit.name == "Settler") {
-            actionList += getUnitActionButton(unit, "Found city",
-                    !tileMapHolder.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter },
+            actionList += UnitAction("Found city",
                     {
                         worldScreen.displayTutorials("CityFounded")
 
@@ -60,86 +63,91 @@ class UnitActions {
                         unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                         tile.unit = null // Remove settler!
                         worldScreen.update()
-                    })
+                    },
+                    unit.currentMovement != 0f &&
+                            !tileMapHolder.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter })
         }
         
         if (unit.name == "Worker") {
             val improvementButtonText: String
             if (tile.improvementInProgress == null) improvementButtonText = "Construct\r\nimprovement"
             else improvementButtonText = tile.improvementInProgress!! + "\r\nin progress"
-            actionList += getUnitActionButton(unit, improvementButtonText,
-                    !tile.isCityCenter || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
-                    { worldScreen.game.screen = ImprovementPickerScreen(tile) })
+            actionList += UnitAction(improvementButtonText,
+                    { worldScreen.game.screen = ImprovementPickerScreen(tile) },
+                    unit.currentMovement != 0f &&
+                            !tile.isCityCenter || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) })
 
             if("automation" == unit.action){
-                val automationAction = getUnitActionButton(unit,"Stop automation",true,
-                        {unit.action = null})
-                automationAction.enable() // Stopping automation is always enabled;
-                actionList += automationAction
+                actionList += UnitAction("Stop automation",
+                        {unit.action = null},unit.currentMovement != 0f)
             }
             else {
-                actionList += getUnitActionButton(unit, "Automate", true,
+                actionList += UnitAction("Automate",
                         {
                             tile.unit!!.action = "automation"
                             tile.unit!!.doAutomatedAction()
-                        }
+                        },unit.currentMovement != 0f
                 )
             }
         }
 
         if (unit.name == "Great Scientist") {
-            actionList += getUnitActionButton(unit, "Discover Technology", true,
+            actionList += UnitAction( "Discover Technology",
                     {
                         unit.civInfo.tech.freeTechs += 1
                         tile.unit = null// destroy!
                         worldScreen.game.screen = TechPickerScreen(true, unit.civInfo)
 
-                    })
-            actionList += getUnitActionButton(unit, "Construct Academy", true,
-                    constructImprovementAndDestroyUnit(tile, "Academy"))
+                    },unit.currentMovement != 0f)
+            actionList += UnitAction("Construct Academy",
+                    constructImprovementAndDestroyUnit(tile, "Academy"),unit.currentMovement != 0f)
         }
 
         if (unit.name == "Great Artist") {
-            actionList += getUnitActionButton(unit, "Start Golden Age", true,
+            actionList += UnitAction( "Start Golden Age",
                     {
                         unit.civInfo.goldenAges.enterGoldenAge()
                         tile.unit = null// destroy!
                         worldScreen.update()
-                    }
+                    },unit.currentMovement != 0f
             )
-            actionList += getUnitActionButton(unit, "Construct Landmark", true,
-                    constructImprovementAndDestroyUnit(tile, "Landmark"))
+            actionList += UnitAction("Construct Landmark",
+                    constructImprovementAndDestroyUnit(tile, "Landmark"),unit.currentMovement != 0f)
         }
 
         if (unit.name == "Great Engineer") {
-            actionList += getUnitActionButton(unit, "Hurry Wonder", tile.isCityCenter &&
-                    tile.city!!.cityConstructions.getCurrentConstruction() is Building &&
-                    (tile.city!!.cityConstructions.getCurrentConstruction() as Building).isWonder,
+            actionList += UnitAction( "Hurry Wonder",
                     {
                         tile.city!!.cityConstructions.addConstruction(300 + 30 * tile.city!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                         tile.unit = null // destroy!
-                    })
-            actionList += getUnitActionButton(unit, "Construct Manufactory", true,
-                    constructImprovementAndDestroyUnit(tile, "Manufactory"))
+                    },
+                    unit.currentMovement != 0f &&
+                    tile.isCityCenter &&
+                    tile.city!!.cityConstructions.getCurrentConstruction() is Building &&
+                    (tile.city!!.cityConstructions.getCurrentConstruction() as Building).isWonder)
+
+            actionList += UnitAction("Construct Manufactory",
+                    constructImprovementAndDestroyUnit(tile, "Manufactory"),unit.currentMovement != 0f)
         }
 
         if (unit.name == "Great Merchant") {
-            actionList += getUnitActionButton(unit, "Conduct Trade Mission", true,
+            actionList += UnitAction("Conduct Trade Mission",
                     {
                         unit.civInfo.gold += 350 // + 50 * era_number - todo!
                         tile.unit = null // destroy!
-                    })
-            actionList += getUnitActionButton(unit, "Construct Customs House", true,
-                    constructImprovementAndDestroyUnit(tile, "Customs House"))
+                    },unit.currentMovement != 0f)
+            actionList += UnitAction( "Construct Customs House",
+                    constructImprovementAndDestroyUnit(tile, "Customs House"),
+                    unit.currentMovement != 0f)
         }
 
         return actionList
     }
 
-    private fun getUnitActionButton(unit: MapUnit, actionText: String, canAct: Boolean, action: () -> Unit): TextButton {
-        val actionButton = TextButton(actionText, CameraStageBaseScreen.skin)
-        actionButton.addClickListener({ action(); UnCivGame.Current.worldScreen!!.update() })
-        if (unit.currentMovement == 0f || !canAct) actionButton.disable()
+    private fun getUnitActionButton(unitAction: UnitAction): TextButton {
+        val actionButton = TextButton(unitAction.name, CameraStageBaseScreen.skin)
+        actionButton.addClickListener({ unitAction.action(); UnCivGame.Current.worldScreen!!.update() })
+        if (!unitAction.canAct) actionButton.disable()
         return actionButton
     }
 }

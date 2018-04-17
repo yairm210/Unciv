@@ -58,7 +58,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 if (isFreeTechPick) {
                     civTech.techsResearched.add(selectedTech!!.name)
                     civTech.freeTechs -= 1
-                    civInfo.gameInfo.addNotification("We have stumbled upon the discovery of " + selectedTech!!.name + "!", null)
+                    civInfo.addNotification("We have stumbled upon the discovery of " + selectedTech!!.name + "!", null)
                     if (selectedTech!!.name == civTech.currentTechnology())
                         civTech.techsToResearch.remove(selectedTech!!.name)
                 } else

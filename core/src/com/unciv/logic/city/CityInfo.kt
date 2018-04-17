@@ -26,17 +26,16 @@ class CityInfo {
     internal val tileMap: TileMap
         get() = civInfo.gameInfo.tileMap
 
-    val tile: TileInfo
-        get() = tileMap[cityLocation]
-    val tilesInRange: List<TileInfo>
-        get() = tileMap.getTilesInDistance(cityLocation, 3).filter { civInfo.civName == it.owner }
+    fun getTile(): TileInfo = tileMap[cityLocation]
+
+    fun getTilesInRange(): List<TileInfo> = tileMap.getTilesInDistance(cityLocation, 3).filter { civInfo.civName == it.owner }
 
 
     // Remove resources required by buildings
     fun getCityResources(): Counter<TileResource> {
         val cityResources = Counter<TileResource>()
 
-        for (tileInfo in tilesInRange.filter { it.resource != null }) {
+        for (tileInfo in getTilesInRange().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter)
                 cityResources.add(resource, 1)
@@ -54,7 +53,7 @@ class CityInfo {
 
     val greatPersonPoints: Stats
         get() {
-            var greatPersonPoints = population.specialists.times(3f)
+            var greatPersonPoints = population.getSpecialists().times(3f)
 
             for (building in cityConstructions.getBuiltBuildings())
                 if (building.greatPersonPoints != null)
@@ -81,7 +80,8 @@ class CityInfo {
         name = civInfo.getCivilization().cities[civInfo.cities.size]
         this.cityLocation = cityLocation
         civInfo.cities.add(this)
-        civInfo.gameInfo.addNotification("$name has been founded!", cityLocation)
+        if(civInfo == civInfo.gameInfo.getPlayerCivilization())
+            civInfo.addNotification("$name has been founded!", cityLocation)
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
             cityConstructions.builtBuildings.add("Palace")
@@ -92,7 +92,7 @@ class CityInfo {
             tileInfo.owner = civInfo.civName
         }
 
-        val tile = tile
+        val tile = getTile()
         tile.workingCity = this.name
         tile.roadStatus = RoadStatus.Railroad
         if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))

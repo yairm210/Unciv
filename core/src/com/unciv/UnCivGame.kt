@@ -51,13 +51,13 @@ class UnCivGame : Game() {
 
         gameInfo.tileMap = TileMap(20)
         gameInfo.civilizations.add(CivilizationInfo("Babylon", Vector2.Zero, gameInfo))
+
+        gameInfo.civilizations.add(CivilizationInfo("Greece", Vector2(3f,5f), gameInfo))
+
         val barbarianCivilization = CivilizationInfo()
         barbarianCivilization.civName = "Barbarians"
         gameInfo.civilizations.add(barbarianCivilization)
-
-        for(i in 1..5) {
-            gameInfo.placeBarbarianUnit()
-        }
+        (1..5).forEach { gameInfo.placeBarbarianUnit() }
 
         gameInfo.setTransients()
 

@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.logic.map.UnitType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.stats.Stats
@@ -15,11 +16,8 @@ class CityConstructions {
     var currentConstruction: String = "Monument" // default starting building!
 
 
-    private val buildableBuildings: List<String>
-        get() {
-            return GameBasics.Buildings.values
-                    .filter { it.isBuildable(this) }.map { it.name }
-        }
+    private fun getBuildableBuildings(): List<String> = GameBasics.Buildings.values
+            .filter { it.isBuildable(this) }.map { it.name }
 
     // Library and public school unique (not actualy unique, though...hmm)
     fun getStats(): Stats {
@@ -70,7 +68,7 @@ class CityConstructions {
         else if (GameBasics.Units.containsKey(constructionName))
             return GameBasics.Units[constructionName]!!
 
-        throw Exception(constructionName+ " is not a building or a unit!")
+        throw Exception("$constructionName is not a building or a unit!")
     }
 
     internal fun getBuiltBuildings(): List<Building> = builtBuildings.map { GameBasics.Buildings[it]!! }
@@ -88,7 +86,7 @@ class CityConstructions {
         currentConstruction = "lie"
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            cityInfo.civInfo.gameInfo.addNotification("Cannot continue work on " + saveCurrentConstruction, cityInfo.cityLocation)
+            cityInfo.civInfo.addNotification("Cannot continue work on $saveCurrentConstruction", cityInfo.cityLocation)
             chooseNextConstruction()
             construction = getConstruction(currentConstruction)
         } else
@@ -99,7 +97,7 @@ class CityConstructions {
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {
             construction.postBuildEvent(this)
             inProgressConstructions.remove(currentConstruction)
-            cityInfo.civInfo.gameInfo.addNotification(currentConstruction + " has been built in " + cityInfo.name, cityInfo.cityLocation)
+            cityInfo.civInfo.addNotification(currentConstruction + " has been built in " + cityInfo.name, cityInfo.cityLocation)
 
             chooseNextConstruction()
         }
@@ -107,14 +105,25 @@ class CityConstructions {
     }
 
     fun chooseNextConstruction() {
-        val buildableNotWonders = buildableBuildings.filterNot{(getConstruction(it) as Building).isWonder}
-        if(buildableNotWonders.isEmpty()) currentConstruction = Worker
-        else currentConstruction = buildableNotWonders.first()
-        cityInfo.civInfo.gameInfo.addNotification("Work has started on " + currentConstruction, cityInfo.cityLocation)
+        val buildableNotWonders = getBuildableBuildings().filterNot{(getConstruction(it) as Building).isWonder}
+        if(!buildableNotWonders.isEmpty()){
+            currentConstruction = buildableNotWonders.first()
+        }
+        else {
+            val militaryUnits = cityInfo.civInfo.getCivUnits().filter { it.getBaseUnit().unitType != UnitType.Civilian }.size
+            if (cityInfo.civInfo.getCivUnits().none { it.name== Worker } || militaryUnits > cityInfo.civInfo.cities.size*2) {
+                currentConstruction = Worker
+            } else {
+                currentConstruction = "Archer"
+            }
+        }
+        if(cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
+            cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.cityLocation)
     }
 
     private fun workDone(constructionName: String): Int {
-        return if (inProgressConstructions.containsKey(constructionName)) inProgressConstructions[constructionName]!! else 0
+        if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
+        else return 0
     }
 
     fun turnsToConstruction(constructionName: String): Int {

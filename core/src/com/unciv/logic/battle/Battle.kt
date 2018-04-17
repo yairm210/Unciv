@@ -97,7 +97,7 @@ class Battle(val gameInfo:GameInfo) {
                     if (defender.getCombatantType() == CombatantType.City) defender.getName()
                     else " our " + defender.getName()
             val notificationString = "An enemy " + attacker.getName() + whatHappenedString + defenderString
-            gameInfo.addNotification(notificationString, attackedTile.position)
+            gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position)
         }
 
         if (defender.isDefeated() && attacker.getCombatantType() == CombatantType.Melee)

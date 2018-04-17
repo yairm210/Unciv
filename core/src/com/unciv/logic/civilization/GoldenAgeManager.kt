@@ -19,7 +19,7 @@ class GoldenAgeManager {
         if (civInfo.buildingUniques.contains("GoldenAgeLengthIncrease")) turnsToGoldenAge *= 1.5
         if (civInfo.policies.isAdopted("Freedom Complete")) turnsToGoldenAge *= 1.5
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
-        civInfo.gameInfo.addNotification("You have entered a golden age!", null)
+        civInfo.addNotification("You have entered a golden age!", null)
     }
 
     fun nextTurn(happiness: Int) {

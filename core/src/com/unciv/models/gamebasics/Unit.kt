@@ -12,7 +12,7 @@ class Unit : INamed, IConstruction {
     var cost: Int = 0
     var hurryCostModifier: Int = 0
     var movement: Int = 0
-    var strength:Int = 1
+    var strength:Int = 0
     var rangedStrength:Int = 0
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
