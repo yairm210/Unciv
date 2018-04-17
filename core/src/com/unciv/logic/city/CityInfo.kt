@@ -31,9 +31,6 @@ class CityInfo {
     val tilesInRange: List<TileInfo>
         get() = tileMap.getTilesInDistance(cityLocation, 3).filter { civInfo.civName == it.owner }
 
-    private val CityNames = arrayOf("New Bark", "Cherrygrove", "Violet", "Azalea", "Goldenrod", "Ecruteak", "Olivine",
-            "Cianwood", "Mahogany", "Blackthorn", "Pallet", "Viridian", "Pewter", "Cerulean", "Vermillion", "Lavender",
-            "Celadon", "Fuchsia", "Saffron", "Cinnibar")
 
     // Remove resources required by buildings
     fun getCityResources(): Counter<TileResource> {
@@ -81,7 +78,7 @@ class CityInfo {
         this.civInfo = civInfo
         setTransients()
 
-        name = CityNames[civInfo.cities.size]
+        name = civInfo.getCivilization().cities[civInfo.cities.size]
         this.cityLocation = cityLocation
         civInfo.cities.add(this)
         civInfo.gameInfo.addNotification("$name has been founded!", cityLocation)

@@ -9,4 +9,5 @@ class Civilization : INamed {
     fun getColor(): Color {
         return Color(RGB[0]/256f, RGB[1]/256f, RGB[2]/256f, 1f)
     }
+    lateinit var cities: List<String>
 }

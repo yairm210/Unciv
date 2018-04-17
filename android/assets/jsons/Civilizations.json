@@ -1,7 +1,15 @@
 [
 	{
 		name:"Babylon",
-		RGB:[220,20,60]
+		RGB:[220,20,60],
+		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
+		"Ellasar","Erech","Kutha","Sirpurla","Neribtum"]
+	},
+	{
+		name:"Greece",
+		RGB:[ 101, 153, 255],
+		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
+		"Eretria","Pergamon","Miletos","Megara","Phocaea"]
 	},
 	{
 		name:"Barbarians",
