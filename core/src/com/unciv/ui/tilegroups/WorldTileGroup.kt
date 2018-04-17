@@ -16,9 +16,7 @@ import com.unciv.ui.utils.ImageGetter
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
     private var unitImage: Group? = null
-    //private var  whiteCircleAroundUnit
-
-    private var circleImage = ImageGetter.getImage("UnitIcons/Circle.png")
+    private var circleImage = ImageGetter.getImage("UnitIcons/Circle.png") // for blue and red circles on the tile
 
     init{
         circleImage.width = 50f
@@ -29,10 +27,19 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         circleImage.isVisible = false
     }
 
+    fun addWhiteCircleAroundUnit(){
+        val whiteCircle = ImageGetter.getImage("UnitIcons/Circle.png")
+        whiteCircle.setSize(25f,25f)
+        whiteCircle.setPosition(unitImage!!.width/2 - whiteCircle.width/2,
+                unitImage!!.height/2 - whiteCircle.height/2)
+        unitImage!!.addActor(whiteCircle)
+        whiteCircle.toBack()
+    }
+
     fun showCircle(color:Color){
         circleImage.isVisible = true
         color.a = 0.3f
-        circleImage.setColor(color)
+        circleImage.color = color
     }
 
     fun hideCircle(){circleImage.isVisible=false}

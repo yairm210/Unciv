@@ -16,7 +16,7 @@ import com.unciv.ui.utils.HexMath
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
-    val tileGroups = HashMap<String, WorldTileGroup>()
+    val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
     internal fun addTiles() {
         val allTiles = Group()
@@ -43,7 +43,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val groupSize = 50
             group.setPosition(worldScreen.stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     worldScreen.stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
-            tileGroups[tileInfo.position.toString()] = group
+            tileGroups[tileInfo] = group
             allTiles.addActor(group)
             topX = Math.max(topX, group.x + groupSize)
             topY = Math.max(topY, group.y + groupSize)
@@ -90,7 +90,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
 
         for (string in civInfo.getViewableTiles()
-                .map { it.position.toString() }
                 .filter { tileGroups.containsKey(it) }) {
 
             tileGroups[string]!!.run {
@@ -101,10 +100,11 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if(worldScreen.unitTable.currentlyExecutingAction!=null)
             for(tile: TileInfo in worldScreen.unitTable.getTilesForCurrentlyExecutingAction())
-                tileGroups[tile.position.toString()]!!.showCircle(Color(0f,120/255f,215/255f,1f))
+                tileGroups[tile]!!.showCircle(Color(0f,120/255f,215/255f,1f))
 
         else if(worldScreen.unitTable.selectedUnit!=null){
             val unit = worldScreen.unitTable.selectedUnit!!
+            tileGroups[unit.getTile()]!!.addWhiteCircleAroundUnit()
             val attackableTiles:List<TileInfo>
             when(unit.getBaseUnit().unitType){
                 UnitType.Civilian -> return
@@ -113,7 +113,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
             for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner })
-                tileGroups[tile.position.toString()]!!.showCircle(Color(237/255f,41/255f,57/255f,1f))
+                tileGroups[tile]!!.showCircle(Color(237/255f,41/255f,57/255f,1f))
         }
     }
 
