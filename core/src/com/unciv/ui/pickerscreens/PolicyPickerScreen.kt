@@ -76,6 +76,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
 
     private fun pickPolicy(policy: Policy) {
         if (civInfo.policies.isAdopted(policy.name)
+                || policy.name.endsWith("Complete")
                 || !civInfo.policies.getAdoptedPolicies().containsAll(policy.requires!!)
                 || !civInfo.policies.canAdoptPolicy()) {
             rightSideButton.disable()
