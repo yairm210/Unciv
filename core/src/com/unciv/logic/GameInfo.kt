@@ -80,6 +80,17 @@ class GameInfo {
     private fun automateMoves(civInfo: CivilizationInfo) {
         for(unit in civInfo.getCivUnits()){
 
+            if(unit.name=="Settler") {
+                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+                continue
+            }
+
+            if(unit.name=="Worker") {
+                unit.doAutomatedAction()
+                continue
+            }
+
+
             fun healUnit(){
                 // If we're low on health then heal
                 // todo: go to a more defensible place if there is one
