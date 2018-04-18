@@ -89,7 +89,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             WG.update(false)
         }
 
-        for (string in civInfo.getViewableTiles()
+        val civViewableTiles = civInfo.getViewableTiles()
+        for (string in civViewableTiles
                 .filter { tileGroups.containsKey(it) }) {
 
             tileGroups[string]!!.run {
@@ -112,7 +113,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 UnitType.Ranged -> attackableTiles = unit.getTile().getTilesInDistance(2)
             }
 
-            for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner })
+            for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner && civViewableTiles.contains(it)})
                 tileGroups[tile]!!.showCircle(Color(237/255f,41/255f,57/255f,1f))
         }
     }

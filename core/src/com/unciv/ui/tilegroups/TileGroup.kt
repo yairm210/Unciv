@@ -149,9 +149,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
                 // This is some crazy voodoo magic so I'll explain.
 
-                image.setSize(40f, 2f)
-                image.moveBy(this.width/2-image.width/2,
-                        this.height/2-image.height/2)
+                image.setSize(35f, 2f)
+                image.moveBy(width/2-image.width/2, // center
+                        height/2-image.height/2)
                 // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
                 // Here, we want to have the borders start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
                 // BUT, we don't actually want it all the way out there, because we want to display the borders of 2 different civs!

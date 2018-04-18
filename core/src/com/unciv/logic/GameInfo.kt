@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -34,11 +35,11 @@ class GameInfo {
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
         for (civInfo in civilizations){
+            if(!civInfo.isPlayerCivilization())
+                automateMoves(civInfo)
             for (city in civInfo.cities)
                 city.cityStats.update()
             civInfo.happiness = civInfo.getHappinessForNextTurn()
-            if(!civInfo.isPlayerCivilization())
-                automateMoves(civInfo)
         }
 
         if(turns%10 == 0){ // every 10 turns add a barbarian in a random place
@@ -74,6 +75,12 @@ class GameInfo {
 
 
     private fun automateMoves(civInfo: CivilizationInfo) {
+        if(civInfo.tech.techsToResearch.isEmpty()) {
+            val researchableTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name) }
+            val techToResearch = researchableTechs.minBy { it.cost }
+            civInfo.tech.techsResearched.add(techToResearch!!.name)
+        }
+
         for(unit in civInfo.getCivUnits()){
 
             if(unit.name=="Settler") {
