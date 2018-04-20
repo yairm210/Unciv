@@ -34,7 +34,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         cityStatsValues["Gold"] = Math.round(stats.gold).toString() + ""
         cityStatsValues["Science"] = Math.round(stats.science).toString() + ""
         cityStatsValues["Culture"] = (Math.round(stats.culture).toString()
-                + " (" + city.expansion.cultureStored + "/" + city.expansion.cultureToNextTile + ")")
+                + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")")
         cityStatsValues["Population"] = city.population.getFreePopulation().toString() + "/" + city.population.population
 
         for (key in cityStatsValues.keys) {

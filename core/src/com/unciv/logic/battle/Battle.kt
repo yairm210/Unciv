@@ -1,6 +1,8 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.GameInfo
+import com.unciv.logic.city.CityInfo
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import java.util.*
 import kotlin.collections.HashMap
@@ -67,12 +69,14 @@ class Battle(val gameInfo:GameInfo) {
         var damageToDefender = calculateDamageToDefender(attacker,defender)
         var damageToAttacker = calculateDamageToAttacker(attacker,defender)
 
-        if (attacker.getCombatantType() == CombatantType.Ranged) {
+        if(defender.getCombatantType() == CombatantType.Civilian){
+            defender.takeDamage(100) // kill
+        }
+        else if (attacker.getCombatantType() == CombatantType.Ranged) {
             defender.takeDamage(damageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
             //so...for each round, we randomize who gets the attack in. Seems to be a good way to work for now.
-
 
             while (damageToDefender + damageToAttacker > 0) {
                 if (Random().nextInt(damageToDefender + damageToAttacker) < damageToDefender) {
@@ -87,7 +91,11 @@ class Battle(val gameInfo:GameInfo) {
             }
         }
 
-        // After dust as settled
+        postBattleAction(attacker,defender,attackedTile)
+
+    }
+
+    fun postBattleAction(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo){
 
         if (defender.getCivilization().isPlayerCivilization()) {
             val whatHappenedString =
@@ -100,10 +108,38 @@ class Battle(val gameInfo:GameInfo) {
             gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position)
         }
 
+        if(defender.isDefeated()
+                && defender.getCombatantType() == CombatantType.City
+                && attacker.getCombatantType() == CombatantType.Melee){
+            conquerCity((defender as CityCombatant).city, attacker)
+        }
+
         if (defender.isDefeated() && attacker.getCombatantType() == CombatantType.Melee)
             (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
 
         if(attacker is MapUnitCombatant) attacker.unit.currentMovement = 0f
+    }
+
+    private fun conquerCity(city: CityInfo, attacker: ICombatant) {
+        val enemyCiv = city.civInfo
+        attacker.getCivilization().addNotification("We have conquered the city of ${city.name}!",city.cityLocation)
+        enemyCiv.cities.remove(city)
+        attacker.getCivilization().cities.add(city)
+        city.civInfo = attacker.getCivilization()
+        city.health = city.getMaxHealth() / 2 // I think that cities recover to half health?
+        city.getTile().unit = null
+        city.expansion.cultureStored = 0;
+        city.expansion.reset()
+        if(city.cityConstructions.isBuilt("Palace")){
+            city.cityConstructions.builtBuildings.remove("Palace")
+            if(enemyCiv.cities.isEmpty()) {
+                gameInfo.getPlayerCivilization()
+                        .addNotification("The ${enemyCiv.civName} civilization has been destroyed!", null)
+            }
+            else{
+                enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace
+            }
+        }
     }
 
 }

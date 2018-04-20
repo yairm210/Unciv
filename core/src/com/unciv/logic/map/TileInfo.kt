@@ -21,6 +21,11 @@ class TileInfo {
     var improvement: String? = null
     var improvementInProgress: String? = null
     var owner: String? = null // owning civ name
+        get() {
+            val containingCity = tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.expansion.cityTiles.contains(position)}
+            if(containingCity==null) return null
+            return containingCity.civInfo.civName
+        }
     var workingCity: String? = null // Working City name
     var roadStatus = RoadStatus.None
     var explored = false

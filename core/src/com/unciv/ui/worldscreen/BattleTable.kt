@@ -108,21 +108,38 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         row().pad(5f)
         val attackButton = TextButton("Attack", skin)
 
-        attackButton.addClickListener {
-            if(attacker.getCombatantType() == CombatantType.Melee)
-                attacker.unit.headTowards(defender.getTile().position)
-            battle.attack(attacker,defender)
-            worldScreen.update()
+        val attackerDistanceToTiles = attacker.unit.getDistanceToTiles()
+
+        if(attacker.getCombatantType() == CombatantType.Melee){
+            val tilesCanAttackFrom = attackerDistanceToTiles.filter {
+                attacker.unit.currentMovement - it.value > 0 // once we reach it we'll still have energy to attack
+                        && it.key.unit==null
+                        && it.key.neighbors.contains(defender.getTile()) }
+
+            if(tilesCanAttackFrom.isEmpty()) attackButton.disable()
+            else {
+                val tileToMoveTo = tilesCanAttackFrom.minBy { it.value }!!.key // travel least distance
+                attackButton.addClickListener {
+                    attacker.unit.moveToTile(tileToMoveTo)
+                    battle.attack(attacker,defender)
+                    worldScreen.update()
+                }
+            }
         }
 
-        val attackerCanReachDefender:Boolean
-        if (attacker.getCombatantType() == CombatantType.Ranged) {
+        else { // ranged
             val tilesInRange = UnCivGame.Current.gameInfo.tileMap.getTilesInDistance(attacker.getTile().position, 2)
-            attackerCanReachDefender = tilesInRange.contains(defender.getTile())
+            val attackerCanReachDefender = tilesInRange.contains(defender.getTile())
+            if(!attackerCanReachDefender) attackButton.disable()
+            else {
+                attackButton.addClickListener {
+                    battle.attack(attacker, defender)
+                    worldScreen.update()
+                }
+            }
         }
-        else attackerCanReachDefender = attacker.unit.getDistanceToTiles().containsKey(defender.getTile())
 
-        if(attacker.unit.currentMovement==0f || !attackerCanReachDefender)  attackButton.disable()
+        if(attacker.unit.currentMovement==0f)  attackButton.disable()
         add(attackButton).colspan(2)
 
         pack()

@@ -57,50 +57,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             return
         }
 
-        if(terrainFeatureImage==null && tileInfo.terrainFeature!=null){
-            terrainFeatureImage = ImageGetter.getImage("TerrainIcons/${tileInfo.terrainFeature}.png")
-            addActor(terrainFeatureImage)
-            terrainFeatureImage!!.run {
-                setSize(30f,30f)
-                setColor(1f,1f,1f,0.5f)
-                setPosition(this@TileGroup.width /2-width/2,
-                        this@TileGroup.height/2-height/2)
-            }
-        }
-
-        if(terrainFeatureImage!=null && tileInfo.terrainFeature==null){
-            terrainFeatureImage!!.remove()
-            terrainFeatureImage=null
-        }
-
-
-        val RGB= tileInfo.getBaseTerrain().RGB!!
-        hexagon.color = Color(RGB[0]/255f,RGB[1]/255f,RGB[2]/255f,1f)
-        if(!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK,0.6f)
-
-
-        if (tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
-            val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
-            resourceImage = ImageGetter.getImage(fileName)
-            resourceImage!!.setSize(20f, 20f)
-            resourceImage!!.setPosition(width/2 - resourceImage!!.width/2-20f,
-                    height/2 - resourceImage!!.height/2) // left
-            addActor(resourceImage!!)
-        }
-
-
-
-        if (tileInfo.improvement != null && tileInfo.improvement != improvementType) {
-            improvementImage = ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement!!.replace(' ', '_') + "_(Civ5).png")
-            addActor(improvementImage)
-            improvementImage!!.run {
-                setSize(20f, 20f)
-
-                setPosition(this@TileGroup.width/2 - width/2+20f,
-                        this@TileGroup.height/2 - height/2) // right
-            }
-            improvementType = tileInfo.improvement
-        }
+        updateTerrainFeatureImage()
+        updateTileColor(isViewable)
+        updateResourceImage()
+        updateImprovementImage()
 
         if (populationImage != null) {
             if (tileInfo.workingCity != null)
@@ -109,6 +69,43 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 populationImage!!.color = Color.GRAY
         }
 
+        updateRoadImages()
+        updateBorderImages()
+    }
+
+    private fun updateBorderImages() {
+        for (border in borderImages) border.remove() //clear
+        borderImages = arrayListOf()
+
+        if (tileInfo.owner != null) {
+            for (neighbor in tileInfo.neighbors.filter { it.owner != tileInfo.owner }) {
+                val image = ImageGetter.getImage(ImageGetter.WhiteDot)
+
+                val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
+                val relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition)
+
+                // This is some crazy voodoo magic so I'll explain.
+
+                image.setSize(35f, 2f)
+                image.moveBy(width / 2 - image.width / 2, // center
+                        height / 2 - image.height / 2)
+                // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
+                // Here, we want to have the borders start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
+                // BUT, we don't actually want it all the way out there, because we want to display the borders of 2 different civs!
+                // So we set it to 0.75
+                image.moveBy(-relativeWorldPosition.x * 0.75f * 25f, -relativeWorldPosition.y * 0.75f * 25f)
+
+                image.color = tileInfo.getOwner()!!.getCivilization().getColor()
+                image.setOrigin(image.width / 2, image.height / 2) // This is so that the rotation is calculated from the middle of the road and not the edge
+                image.rotation = (90 + 180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
+                addActor(image)
+                borderImages.add(image)
+            }
+
+        }
+    }
+
+    private fun updateRoadImages() {
         if (tileInfo.roadStatus !== RoadStatus.None) {
             for (neighbor in tileInfo.neighbors) {
                 if (neighbor.roadStatus === RoadStatus.None) continue
@@ -137,37 +134,54 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     roadImages[neighbor.position.toString()]!!.color = Color.BROWN // road
             }
         }
-
-        // Borders
-        if(tileInfo.owner!=null){
-            for (border in borderImages) border.remove()
-            for (neighbor in tileInfo.neighbors.filter { it.owner!=tileInfo.owner }){
-                val image = ImageGetter.getImage(ImageGetter.WhiteDot)
-
-                val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
-                val relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition)
-
-                // This is some crazy voodoo magic so I'll explain.
-
-                image.setSize(35f, 2f)
-                image.moveBy(width/2-image.width/2, // center
-                        height/2-image.height/2)
-                // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
-                // Here, we want to have the borders start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
-                // BUT, we don't actually want it all the way out there, because we want to display the borders of 2 different civs!
-                // So we set it to 0.75
-                image.moveBy(-relativeWorldPosition.x * 0.75f * 25f, -relativeWorldPosition.y * 0.75f * 25f)
-
-                image.color = tileInfo.getOwner()!!.getCivilization().getColor()
-                image.setOrigin(image.width/2, image.height/2) // This is so that the rotation is calculated from the middle of the road and not the edge
-                image.rotation = (90 + 180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
-                addActor(image)
-                borderImages.add(image)
-            }
-
-        }
-
     }
 
-}
+    private fun updateTileColor(isViewable: Boolean) {
+        val RGB = tileInfo.getBaseTerrain().RGB!!
+        hexagon.color = Color(RGB[0] / 255f, RGB[1] / 255f, RGB[2] / 255f, 1f)
+        if (!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK, 0.6f)
+    }
 
+    private fun updateTerrainFeatureImage() {
+        if (terrainFeatureImage == null && tileInfo.terrainFeature != null) {
+            terrainFeatureImage = ImageGetter.getImage("TerrainIcons/${tileInfo.terrainFeature}.png")
+            addActor(terrainFeatureImage)
+            terrainFeatureImage!!.run {
+                setSize(30f, 30f)
+                setColor(1f, 1f, 1f, 0.5f)
+                setPosition(this@TileGroup.width / 2 - width / 2,
+                        this@TileGroup.height / 2 - height / 2)
+            }
+        }
+
+        if (terrainFeatureImage != null && tileInfo.terrainFeature == null) {
+            terrainFeatureImage!!.remove()
+            terrainFeatureImage = null
+        }
+    }
+
+    private fun updateImprovementImage() {
+        if (tileInfo.improvement != null && tileInfo.improvement != improvementType) {
+            improvementImage = ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement!!.replace(' ', '_') + "_(Civ5).png")
+            addActor(improvementImage)
+            improvementImage!!.run {
+                setSize(20f, 20f)
+
+                setPosition(this@TileGroup.width / 2 - width / 2 + 20f,
+                        this@TileGroup.height / 2 - height / 2) // right
+            }
+            improvementType = tileInfo.improvement
+        }
+    }
+
+    private fun updateResourceImage() {
+        if (tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
+            val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
+            resourceImage = ImageGetter.getImage(fileName)
+            resourceImage!!.setSize(20f, 20f)
+            resourceImage!!.setPosition(width / 2 - resourceImage!!.width / 2 - 20f,
+                    height / 2 - resourceImage!!.height / 2) // left
+            addActor(resourceImage!!)
+        }
+    }
+}

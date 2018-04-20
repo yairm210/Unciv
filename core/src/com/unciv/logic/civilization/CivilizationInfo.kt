@@ -141,7 +141,7 @@ class CivilizationInfo {
 
         for (city in cities) {
             city.nextTurn()
-            greatPeople.addGreatPersonPoints(city.greatPersonPoints)
+            greatPeople.addGreatPersonPoints(city.getGreatPersonPoints())
         }
 
         val greatPerson = greatPeople.getNewGreatPerson()

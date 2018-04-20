@@ -137,6 +137,7 @@ class GameInfo {
                 }
 
                 val damageToAttacker = Battle(this).calculateDamageToAttacker(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
+
                 if(damageToAttacker < unit.health) { // don't attack if we'll die from the attack
                     unit.headTowards(unitTileToAttack.position)
                     Battle(this).attack(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))

@@ -23,6 +23,8 @@ class CityInfo {
     var expansion = CityExpansionManager()
     var cityStats = CityStats()
 
+
+
     internal val tileMap: TileMap
         get() = civInfo.gameInfo.tileMap
 
@@ -51,23 +53,22 @@ class CityInfo {
     val buildingUniques: List<String?>
         get() = cityConstructions.getBuiltBuildings().filter { it.unique!=null }.map { it.unique }
 
-    val greatPersonPoints: Stats
-        get() {
-            var greatPersonPoints = population.getSpecialists().times(3f)
+    fun getGreatPersonPoints(): Stats {
+        var greatPersonPoints = population.getSpecialists().times(3f)
 
-            for (building in cityConstructions.getBuiltBuildings())
-                if (building.greatPersonPoints != null)
-                    greatPersonPoints.add(building.greatPersonPoints!!)
+        for (building in cityConstructions.getBuiltBuildings())
+            if (building.greatPersonPoints != null)
+                greatPersonPoints.add(building.greatPersonPoints!!)
 
-            if (civInfo.buildingUniques.contains("GreatPersonGenerationIncrease"))
-                greatPersonPoints = greatPersonPoints.times(1.33f)
-            if (civInfo.policies.isAdopted("Entrepreneurship"))
-                greatPersonPoints.gold *= 1.25f
-            if (civInfo.policies.isAdopted("Freedom"))
-                greatPersonPoints = greatPersonPoints.times(1.25f)
+        if (civInfo.buildingUniques.contains("GreatPersonGenerationIncrease"))
+            greatPersonPoints = greatPersonPoints.times(1.33f)
+        if (civInfo.policies.isAdopted("Entrepreneurship"))
+            greatPersonPoints.gold *= 1.25f
+        if (civInfo.policies.isAdopted("Freedom"))
+            greatPersonPoints = greatPersonPoints.times(1.25f)
 
-            return greatPersonPoints
-        }
+        return greatPersonPoints
+    }
 
     constructor()   // for json parsing, we need to have a default constructor
 
@@ -88,9 +89,8 @@ class CityInfo {
             cityConstructions.currentConstruction = "Worker" // Default for first city only!
         }
 
-        for (tileInfo in civInfo.gameInfo.tileMap.getTilesInDistance(cityLocation, 1)) {
-            tileInfo.owner = civInfo.civName
-        }
+        expansion.reset()
+
 
         val tile = getTile()
         tile.workingCity = this.name

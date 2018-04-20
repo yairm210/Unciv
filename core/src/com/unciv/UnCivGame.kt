@@ -58,9 +58,11 @@ class UnCivGame : Game() {
         gameInfo.civilizations.add(CivilizationInfo("Greece", Vector2(3f,5f), gameInfo)) // all the rest whatever
 
         barbarianCivilization.civName = "Barbarians"
+
+        gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
+
         (1..5).forEach { gameInfo.placeBarbarianUnit() }
 
-        gameInfo.setTransients()
 
         worldScreen = WorldScreen()
         setWorldScreen()

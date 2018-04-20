@@ -4,7 +4,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import kotlin.math.max
 
 class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getHealth(): Int = city.health
@@ -14,7 +13,8 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun isDefeated(): Boolean = city.health==1
 
     override fun takeDamage(damage: Int) {
-        city.health = max(1, city.health - damage)  // min health is 1
+        city.health -= damage
+        if(city.health<1) city.health=1  // min health is 1
     }
 
     override fun getCombatantType(): CombatantType = CombatantType.City
@@ -37,7 +37,9 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // 10% bonus foreach pop
         val strengthWithPop = (baseStrength + strengthFromTechs) * (1 + 0.1*city.population.population)
 
-        return strengthWithPop.toInt()
+
+
+        return strengthWithPop.toInt() * 100 // *100 because a city is always at 100% strength
     }
 
 }
