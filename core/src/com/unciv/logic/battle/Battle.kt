@@ -108,33 +108,34 @@ class Battle(val gameInfo:GameInfo) {
             gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position)
         }
 
+
+        if (defender.isDefeated() && attacker.getCombatantType() == CombatantType.Melee)
+            (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
+        
         if(defender.isDefeated()
                 && defender.getCombatantType() == CombatantType.City
                 && attacker.getCombatantType() == CombatantType.Melee){
             conquerCity((defender as CityCombatant).city, attacker)
         }
 
-        if (defender.isDefeated() && attacker.getCombatantType() == CombatantType.Melee)
-            (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
-
         if(attacker is MapUnitCombatant) attacker.unit.currentMovement = 0f
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
-        attacker.getCivilization().addNotification("We have conquered the city of ${city.name}!",city.cityLocation)
+        attacker.getCivilization().addNotification("We have conquered the city of ${city.name}!",city.location)
         enemyCiv.cities.remove(city)
         attacker.getCivilization().cities.add(city)
         city.civInfo = attacker.getCivilization()
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health?
-        city.getTile().unit = null
+        city.getCenterTile().unit = null
         city.expansion.cultureStored = 0;
         city.expansion.reset()
         if(city.cityConstructions.isBuilt("Palace")){
             city.cityConstructions.builtBuildings.remove("Palace")
             if(enemyCiv.cities.isEmpty()) {
                 gameInfo.getPlayerCivilization()
-                        .addNotification("The ${enemyCiv.civName} civilization has been destroyed!", null)
+                        .addNotification("The civilization of ${enemyCiv.civName} has been destroyed!", null)
             }
             else{
                 enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace

@@ -24,7 +24,7 @@ class GreatPersonPickerScreen : PickerScreen() {
         }
 
         rightSideButton.addClickListener {
-            civInfo!!.placeUnitNearTile(civInfo!!.cities[0].cityLocation, theChosenOne!!.name)
+            civInfo!!.placeUnitNearTile(civInfo!!.cities[0].location, theChosenOne!!.name)
         }
 
     }

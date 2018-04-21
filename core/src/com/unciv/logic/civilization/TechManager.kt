@@ -59,13 +59,13 @@ class TechManager {
 
         if (revealedResource == null) return
         for (tileInfo in civInfo.gameInfo.tileMap.values
-                .filter { it.resource == revealedResource.name && civInfo.civName == it.owner }) {
+                .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
 
             val closestCityTile = civInfo.gameInfo.tileMap.getTilesInDistance(tileInfo.position, 4)
                     .firstOrNull { it.isCityCenter }
             if (closestCityTile != null) {
                 civInfo.addNotification(
-                        revealedResource.name + " revealed near " + closestCityTile.city!!.name, tileInfo.position)
+                        revealedResource.name + " revealed near " + closestCityTile.getCity()!!.name, tileInfo.position)
                 break
             }
         }

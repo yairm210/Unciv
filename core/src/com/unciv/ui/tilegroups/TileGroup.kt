@@ -62,13 +62,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         updateResourceImage()
         updateImprovementImage()
 
-        if (populationImage != null) {
-            if (tileInfo.workingCity != null)
-                populationImage!!.color = Color.WHITE
-            else
-                populationImage!!.color = Color.GRAY
-        }
-
         updateRoadImages()
         updateBorderImages()
     }
@@ -77,8 +70,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         for (border in borderImages) border.remove() //clear
         borderImages = arrayListOf()
 
-        if (tileInfo.owner != null) {
-            for (neighbor in tileInfo.neighbors.filter { it.owner != tileInfo.owner }) {
+        if (tileInfo.getOwner() != null) {
+            for (neighbor in tileInfo.neighbors.filter { it.getOwner() != tileInfo.getOwner() }) {
                 val image = ImageGetter.getImage(ImageGetter.WhiteDot)
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)

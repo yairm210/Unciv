@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
+import com.unciv.logic.Automation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
@@ -85,7 +86,7 @@ class UnitActions {
                 actionList += UnitAction("Automate",
                         {
                             tile.unit!!.action = "automation"
-                            tile.unit!!.doAutomatedAction()
+                            Automation().automateWorkerAction(tile.unit!!)
                         },unit.currentMovement != 0f
                 )
             }
@@ -118,13 +119,13 @@ class UnitActions {
         if (unit.name == "Great Engineer") {
             actionList += UnitAction( "Hurry Wonder",
                     {
-                        tile.city!!.cityConstructions.addConstruction(300 + 30 * tile.city!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                        tile.getCity()!!.cityConstructions.addConstruction(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                         tile.unit = null // destroy!
                     },
                     unit.currentMovement != 0f &&
                     tile.isCityCenter &&
-                    tile.city!!.cityConstructions.getCurrentConstruction() is Building &&
-                    (tile.city!!.cityConstructions.getCurrentConstruction() as Building).isWonder)
+                    tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building &&
+                    (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder)
 
             actionList += UnitAction("Construct Manufactory",
                     constructImprovementAndDestroyUnit(tile, "Manufactory"),unit.currentMovement != 0f)

@@ -17,7 +17,7 @@ class CityStats {
 
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
-        for (cell in cityInfo.getTilesInRange().filter { cityInfo.name == it.workingCity })
+        for (cell in cityInfo.getTilesInRange().filter { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position})
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
@@ -234,9 +234,9 @@ class CityStats {
 
     private fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if(cityInfo.civInfo.cities.count()<2) return false// first city!
-        val capitalTile = cityInfo.civInfo.capital.getTile()
+        val capitalTile = cityInfo.civInfo.capital.getCenterTile()
         val tilesReached = HashSet<TileInfo>()
-        var tilesToCheck : List<TileInfo> = listOf(cityInfo.getTile())
+        var tilesToCheck : List<TileInfo> = listOf(cityInfo.getCenterTile())
         while (tilesToCheck.isNotEmpty()) {
             val newTiles = tilesToCheck
                     .flatMap { cityInfo.tileMap.getTilesInDistance(it.position, 1) }.distinct()

@@ -40,6 +40,6 @@ class Unit : INamed, IConstruction {
     }
 
     override fun postBuildEvent(construction: CityConstructions) {
-        construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.cityLocation, name)
+        construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
     }
 }  // for json parsing, we need to have a default constructor

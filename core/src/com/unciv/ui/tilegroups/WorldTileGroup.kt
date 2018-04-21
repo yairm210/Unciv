@@ -51,8 +51,8 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
         if (populationImage != null) removePopulationIcon()
 
-        val city = tileInfo.city
-        if (city != null && city.civInfo.isPlayerCivilization() && !tileInfo.isCityCenter  && populationImage == null)
+        val city = tileInfo.getCity()
+        if (tileInfo.isWorked() && city!!.civInfo.isPlayerCivilization() && populationImage == null)
             addPopulationIcon()
 
         if (city != null && tileInfo.isCityCenter) {

@@ -139,7 +139,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         goToWorldButton.clearListeners()
         goToWorldButton.addClickListener {
                 game.setWorldScreen()
-                game.worldScreen!!.tileMapHolder.setCenterPosition(city.cityLocation)
+                game.worldScreen!!.tileMapHolder.setCenterPosition(city.location)
                 dispose()
             }
 
@@ -152,7 +152,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val allTiles = Group()
 
-        for (tileInfo in game.gameInfo.tileMap.getTilesInDistance(cityInfo.cityLocation, 5)) {
+        for (tileInfo in game.gameInfo.tileMap.getTilesInDistance(cityInfo.location, 5)) {
             if (!tileInfo.explored) continue // Don't even bother to display it.
             val group = CityTileGroup(cityInfo, tileInfo)
             group.addClickListener {
@@ -160,21 +160,21 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     update()
                 }
 
-            if (!cityInfo.getTilesInRange().contains(tileInfo) || tileInfo.workingCity != null && tileInfo.workingCity != cityInfo.name) {
+            if (tileInfo.getCity()!=city) {
                 group.setColor(0f, 0f, 0f, 0.3f)
                 group.yieldGroup.isVisible = false
             } else if (!tileInfo.isCityCenter) {
                 group.addPopulationIcon()
                 group.populationImage!!.addClickListener {
-                        if (tileInfo.workingCity == null && cityInfo.population.getFreePopulation() > 0)
-                            tileInfo.workingCity = cityInfo.name
-                        else if (cityInfo.name == tileInfo.workingCity) tileInfo.workingCity = null
+                        if (!tileInfo.isWorked() && cityInfo.population.getFreePopulation() > 0)
+                            cityInfo.workedTiles.add(tileInfo.position)
+                        else if (tileInfo.isWorked()) cityInfo.workedTiles.remove(tileInfo.position)
                         cityInfo.cityStats.update()
                         update()
                     }
             }
 
-            val positionalVector = HexMath.Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.cityLocation))
+            val positionalVector = HexMath.Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
             val groupSize = 50
             group.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())

@@ -6,11 +6,11 @@ import com.unciv.models.stats.Stats
 class PopulationManager {
 
     @Transient
-    @JvmField var cityInfo: CityInfo? = null
-    @JvmField var population = 1
-    @JvmField var foodStored = 0
+    lateinit var cityInfo: CityInfo
+    var population = 1
+    var foodStored = 0
 
-    @JvmField var buildingsSpecialists = HashMap<String, Stats>()
+    var buildingsSpecialists = HashMap<String, Stats>()
 
     fun getSpecialists(): Stats {
         val allSpecialists = Stats()
@@ -27,7 +27,7 @@ class PopulationManager {
 
     // 1 is the city center
     fun getFreePopulation(): Int {
-        val workingPopulation = cityInfo!!.getTilesInRange().count { cityInfo!!.name == it.workingCity } - 1
+        val workingPopulation = cityInfo.workedTiles.size
         return population - workingPopulation - getNumberOfSpecialists()
     }
 
@@ -45,23 +45,25 @@ class PopulationManager {
         {
             population--
             foodStored = 0
-            cityInfo!!.civInfo.addNotification(cityInfo!!.name + " is starving!", cityInfo!!.cityLocation)
+            cityInfo.civInfo.addNotification(cityInfo.name + " is starving!", cityInfo.location)
         }
         if (foodStored >= getFoodToNextPopulation())
         // growth!
         {
             foodStored -= getFoodToNextPopulation()
-            if (cityInfo!!.buildingUniques.contains("FoodCarriesOver")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
+            if (cityInfo.buildingUniques.contains("FoodCarriesOver")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
             population++
             autoAssignWorker()
-            cityInfo!!.civInfo.addNotification(cityInfo!!.name + " has grown!", cityInfo!!.cityLocation)
+            cityInfo.civInfo.addNotification(cityInfo.name + " has grown!", cityInfo.location)
         }
     }
 
     internal fun autoAssignWorker() {
-        val toWork: TileInfo? = cityInfo!!.getTilesInRange().filter { it.workingCity==null }.maxBy { cityInfo!!.rankTile(it) }
+        val toWork: TileInfo? = cityInfo.getTiles()
+                .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
+                .maxBy { cityInfo.rankTile(it) }
         if (toWork != null) // This is when we've run out of tiles!
-            toWork.workingCity = cityInfo!!.name
+            cityInfo.workedTiles.add(toWork.position)
     }
 
 }

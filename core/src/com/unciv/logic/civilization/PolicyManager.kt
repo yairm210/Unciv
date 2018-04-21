@@ -46,8 +46,8 @@ class PolicyManager {
         }
 
         when(policy.name ) {
-            "Collective Rule" -> civInfo.placeUnitNearTile(civInfo.capital.cityLocation, "Settler")
-            "Citizenship" -> civInfo.placeUnitNearTile(civInfo.capital.cityLocation, "Worker")
+            "Collective Rule" -> civInfo.placeUnitNearTile(civInfo.capital.location, "Settler")
+            "Citizenship" -> civInfo.placeUnitNearTile(civInfo.capital.location, "Worker")
             "Representation", "Reformation" -> civInfo.goldenAges.enterGoldenAge()
             "Scientific Revolution" -> civInfo.tech.freeTechs += 2
             "Legalism" ->

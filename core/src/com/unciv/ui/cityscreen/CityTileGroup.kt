@@ -1,5 +1,6 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
@@ -13,7 +14,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
     init {
         this.yieldGroup = YieldGroup()
         addActor(yieldGroup)
-        if (city.cityLocation == tileInfo.position) {
+        if (city.location == tileInfo.position) {
             populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6).png")
             addActor(populationImage)
         }
@@ -26,7 +27,13 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
             populationImage!!.setSize(30f, 30f)
             populationImage!!.setPosition(width / 2 - populationImage!!.width / 2,
                     height * 0.85f - populationImage!!.height / 2)
+
+            if (tileInfo.isWorked())
+                populationImage!!.color = Color.WHITE
+            else populationImage!!.color = Color.GRAY
         }
+
+
 
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (resourceImage != null) resourceImage!!.setColor(1f, 1f, 1f, 0.5f)

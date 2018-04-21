@@ -86,7 +86,7 @@ class CityConstructions {
         currentConstruction = "lie"
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            cityInfo.civInfo.addNotification("Cannot continue work on $saveCurrentConstruction", cityInfo.cityLocation)
+            cityInfo.civInfo.addNotification("Cannot continue work on $saveCurrentConstruction", cityInfo.location)
             chooseNextConstruction()
             construction = getConstruction(currentConstruction)
         } else
@@ -97,7 +97,7 @@ class CityConstructions {
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {
             construction.postBuildEvent(this)
             inProgressConstructions.remove(currentConstruction)
-            cityInfo.civInfo.addNotification(currentConstruction + " has been built in " + cityInfo.name, cityInfo.cityLocation)
+            cityInfo.civInfo.addNotification(currentConstruction + " has been built in " + cityInfo.name, cityInfo.location)
 
             chooseNextConstruction()
         }
@@ -118,7 +118,7 @@ class CityConstructions {
             }
         }
         if(cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
-            cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.cityLocation)
+            cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.location)
     }
 
     private fun workDone(constructionName: String): Int {

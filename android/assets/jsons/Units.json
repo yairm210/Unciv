@@ -40,7 +40,6 @@
 		strength:5,
 		rangedStrength:7,
 		cost: 40,
-		requiredTech:"Writing",
 		hurryCostModifier:20
 	},
 	{

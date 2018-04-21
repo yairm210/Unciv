@@ -1,17 +1,14 @@
 package com.unciv.logic.city
 
-import com.badlogic.gdx.math.Vector2
-
 class CityExpansionManager {
 
     @Transient
     lateinit var cityInfo: CityInfo
-    var cityTiles = ArrayList<Vector2>()
     var cultureStored: Int = 0
 
     fun reset(){
-            cityTiles = ArrayList(cityInfo.civInfo.gameInfo.tileMap
-                    .getTilesInDistance(cityInfo.cityLocation, 1).map { it.position })
+            cityInfo.tiles = ArrayList(cityInfo.civInfo.gameInfo.tileMap
+                    .getTilesInDistance(cityInfo.location, 1).map { it.position })
     }
 
     // This one has conflicting sources -
@@ -21,7 +18,7 @@ class CityExpansionManager {
     // The second seems to be more based, so I'll go with that
     //Speciality of Angkor Wat
     fun getCultureToNextTile(): Int {
-        val numTilesClaimed = cityTiles.size - 7
+        val numTilesClaimed = cityInfo.tiles.size - 7
         var cultureToNextTile = 6 * Math.pow(numTilesClaimed + 1.4813, 1.3)
         if (cityInfo.civInfo.buildingUniques.contains("NewTileCostReduction")) cultureToNextTile *= 0.75
         if (cityInfo.civInfo.policies.isAdopted("Tradition")) cultureToNextTile *= 0.75
@@ -32,11 +29,10 @@ class CityExpansionManager {
         cultureStored -= getCultureToNextTile()
 
         for (i in 2..3) {
-            val tiles = cityInfo.civInfo.gameInfo.tileMap.getTilesInDistance(cityInfo.cityLocation, i).filter { it.owner == null }
+            val tiles = cityInfo.civInfo.gameInfo.tileMap.getTilesInDistance(cityInfo.location, i).filter { it.getOwner() == null }
             if (tiles.isEmpty()) continue
             val chosenTile = tiles.maxBy { cityInfo.rankTile(it) }
-            cityTiles.add(chosenTile!!.position)
-            chosenTile.owner = cityInfo.civInfo.civName
+            cityInfo.tiles.add(chosenTile!!.position)
             return
         }
     }
@@ -45,7 +41,7 @@ class CityExpansionManager {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
             addNewTileWithCulture()
-            cityInfo.civInfo.addNotification(cityInfo.name + " has expanded its borders!", cityInfo.cityLocation)
+            cityInfo.civInfo.addNotification(cityInfo.name + " has expanded its borders!", cityInfo.location)
         }
     }
 

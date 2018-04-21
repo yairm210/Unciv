@@ -1,11 +1,10 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.Automation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.models.gamebasics.Unit
-
 import java.text.DecimalFormat
 
 enum class UnitType{
@@ -51,7 +50,7 @@ class MapUnit {
             return
         }
 
-        if ("automation" == action) doAutomatedAction()
+        if (action == "automation") Automation().automateWorkerAction(this)
     }
 
     private fun doPostTurnAction(tile: TileInfo) {
@@ -70,59 +69,6 @@ class MapUnit {
         tile.improvementInProgress = null
     }
 
-    private fun getPriority(tileInfo: TileInfo): Int {
-        var priority = 0
-        if (tileInfo.workingCity != null) priority += 3
-        if (tileInfo.owner == owner) priority += 2
-        if (tileInfo.hasViewableResource(civInfo)) priority += 1
-        else if (tileInfo.neighbors.any { it.owner != null }) priority += 1
-        return priority
-    }
-
-    private fun findTileToWork(currentTile: TileInfo): TileInfo {
-        val selectedTile = civInfo.gameInfo.tileMap.getTilesInDistance(currentTile.position, 4)
-                .filter { (it.unit==null || it==currentTile )
-                        && it.improvement==null
-                        && it.canBuildImprovement(chooseImprovement(it),civInfo) }
-                .maxBy { getPriority(it) }
-        if(selectedTile!=null && getPriority(selectedTile) > 1) return selectedTile
-        else return currentTile
-    }
-
-    fun doAutomatedAction() {
-        var tile = getTile()
-        val tileToWork = findTileToWork(tile)
-        if (tileToWork != tile) {
-            tile = headTowards(tileToWork.position)
-            doPreTurnAction(tile)
-            return
-        }
-        if (tile.improvementInProgress == null) {
-            val improvement = chooseImprovement(tile)
-            if (tile.canBuildImprovement(improvement, civInfo))
-            // What if we're stuck on this tile but can't build there?
-                tile.startWorkingOnImprovement(improvement, civInfo)
-        }
-    }
-
-    private fun chooseImprovement(tile: TileInfo): TileImprovement {
-        return GameBasics.TileImprovements[chooseImprovementString(tile)]!!
-    }
-
-    private fun chooseImprovementString(tile: TileInfo): String? {
-        when {
-            tile.improvementInProgress != null -> return tile.improvementInProgress
-            tile.terrainFeature == "Forest" -> return "Lumber mill"
-            tile.terrainFeature == "Jungle" -> return "Trading post"
-            tile.terrainFeature == "Marsh" -> return "Remove Marsh"
-            tile.resource != null -> return tile.tileResource.improvement
-            tile.baseTerrain == "Hill" -> return "Mine"
-            tile.baseTerrain == "Grassland" || tile.baseTerrain == "Desert" || tile.baseTerrain == "Plains" -> return "Farm"
-            tile.baseTerrain == "Tundra" -> return "Trading post"
-            else -> return null
-        }
-
-    }
 
     /**
      * @param origin
@@ -168,8 +114,8 @@ class MapUnit {
         val tile = getTile()
         health += when{
             tile.isCityCenter -> 20
-            tile.owner == owner -> 15 // home territory
-            tile.owner == null -> 10 // no man's land (neutral)
+            tile.getOwner()?.civName == owner -> 15 // home territory
+            tile.getOwner() == null -> 10 // no man's land (neutral)
             else -> 5 // enemy territory
         }
         if(health>100) health=100

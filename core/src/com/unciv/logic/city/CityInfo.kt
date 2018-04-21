@@ -14,7 +14,7 @@ import kotlin.math.min
 class CityInfo {
     @Transient
     lateinit var civInfo: CivilizationInfo
-    var cityLocation: Vector2 = Vector2.Zero
+    var location: Vector2 = Vector2.Zero
     var name: String = ""
     var health = 200
 
@@ -23,14 +23,17 @@ class CityInfo {
     var expansion = CityExpansionManager()
     var cityStats = CityStats()
 
+    var tiles = ArrayList<Vector2>()
+    var workedTiles = ArrayList<Vector2>()
 
 
     internal val tileMap: TileMap
         get() = civInfo.gameInfo.tileMap
 
-    fun getTile(): TileInfo = tileMap[cityLocation]
+    fun getCenterTile(): TileInfo = tileMap[location]
+    fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
 
-    fun getTilesInRange(): List<TileInfo> = tileMap.getTilesInDistance(cityLocation, 3).filter { civInfo.civName == it.owner }
+    fun getTilesInRange(): List<TileInfo> = tileMap.getTilesInDistance(location, 3).filter { civInfo == it.getOwner() }
 
 
     // Remove resources required by buildings
@@ -79,7 +82,7 @@ class CityInfo {
         setTransients()
 
         name = civInfo.getCivilization().cities[civInfo.cities.size]
-        this.cityLocation = cityLocation
+        this.location = cityLocation
         civInfo.cities.add(this)
         if(civInfo == civInfo.gameInfo.getPlayerCivilization())
             civInfo.addNotification("$name has been founded!", cityLocation)
@@ -92,8 +95,7 @@ class CityInfo {
         expansion.reset()
 
 
-        val tile = getTile()
-        tile.workingCity = this.name
+        val tile = getCenterTile()
         tile.roadStatus = RoadStatus.Railroad
         if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
             tile.terrainFeature = null

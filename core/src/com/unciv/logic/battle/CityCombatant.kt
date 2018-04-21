@@ -8,7 +8,7 @@ import com.unciv.models.gamebasics.GameBasics
 class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getHealth(): Int = city.health
     override fun getCivilization(): CivilizationInfo = city.civInfo
-    override fun getTile(): TileInfo = city.getTile()
+    override fun getTile(): TileInfo = city.getCenterTile()
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health==1
 

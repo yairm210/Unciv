@@ -154,8 +154,8 @@ class CivilizationInfo {
 
     fun addGreatPerson(greatPerson: String) {
         val randomCity = cities.getRandom()
-        placeUnitNearTile(cities.getRandom().cityLocation, greatPerson)
-        addNotification("A $greatPerson has been born!", randomCity.cityLocation)
+        placeUnitNearTile(cities.getRandom().location, greatPerson)
+        addNotification("A $greatPerson has been born!", randomCity.location)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String) {
@@ -168,9 +168,10 @@ class CivilizationInfo {
 
     fun getViewableTiles(): List<TileInfo> {
         var viewablePositions = emptyList<TileInfo>()
-        viewablePositions += gameInfo.tileMap.values.filter { it.owner == civName }
-                .flatMap { it.neighbors } // tiles adjacent to city tiles
-        viewablePositions += gameInfo.tileMap.values.filter { it.unit != null && it.unit!!.owner == civName }
+        viewablePositions += cities.flatMap { it.getTiles() }
+                        .flatMap { it.neighbors } // tiles adjacent to city tiles
+        viewablePositions += gameInfo.tileMap.values
+                .filter { it.unit != null && it.unit!!.owner == civName }
                 .flatMap { it.getViewableTiles(2)} // Tiles within 2 tiles of units
         return viewablePositions
     }

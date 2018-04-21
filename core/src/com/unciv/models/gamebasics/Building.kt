@@ -142,7 +142,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })
             return false
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
-        if ("MustBeNextToDesert" == unique && !civInfo.gameInfo.tileMap.getTilesInDistance(construction.cityInfo.cityLocation, 1).any { it.baseTerrain == "Desert" })
+        if ("MustBeNextToDesert" == unique && !civInfo.gameInfo.tileMap.getTilesInDistance(construction.cityInfo.location, 1).any { it.baseTerrain == "Desert" })
             return false
         if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource!!]))
             return false
@@ -184,8 +184,8 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
             "EmpireEntersGoldenAge" -> civInfo.goldenAges.enterGoldenAge()
             "FreeGreatArtistAppears" -> civInfo.addGreatPerson("Great Artist")
             "WorkerConstruction" -> {
-                civInfo.placeUnitNearTile(construction.cityInfo.cityLocation, "Worker")
-                civInfo.placeUnitNearTile(construction.cityInfo.cityLocation, "Worker")
+                civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
+                civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
             }
             "FreeSocialPolicy" -> {
                 civInfo.policies.freePolicies++

@@ -20,19 +20,12 @@ class TileInfo {
     var resource: String? = null
     var improvement: String? = null
     var improvementInProgress: String? = null
-    var owner: String? = null // owning civ name
-        get() {
-            val containingCity = tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.expansion.cityTiles.contains(position)}
-            if(containingCity==null) return null
-            return containingCity.civInfo.civName
-        }
-    var workingCity: String? = null // Working City name
+
     var roadStatus = RoadStatus.None
     var explored = false
     var turnsToImprovement: Int = 0
 
-    val city: CityInfo?
-        get() = if (workingCity == null) null else getOwner()!!.cities.first { it.name == workingCity }
+    fun getCity(): CityInfo? = tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.tiles.contains(position)}
 
     val lastTerrain: Terrain
         get() = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!
@@ -41,7 +34,7 @@ class TileInfo {
         get() = if (resource == null) throw Exception("No resource exists for this tile!") else GameBasics.TileResources[resource!!]!!
 
     val isCityCenter: Boolean
-        get() = city != null && position == city!!.cityLocation
+        get() = getCity() != null && position == getCity()!!.location
 
     val tileImprovement: TileImprovement?
         get() = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
@@ -62,8 +55,9 @@ class TileInfo {
     }
 
     fun getOwner(): CivilizationInfo? {
-        return if (owner == null) null
-        else tileMap.gameInfo.civilizations.first { it.civName == owner }
+        val containingCity = getCity()
+        if(containingCity==null) return null
+        return containingCity.civInfo
     }
 
     fun getTerrainFeature(): Terrain? {
@@ -72,7 +66,7 @@ class TileInfo {
 
 
     fun getTileStats(observingCiv: CivilizationInfo): Stats {
-        return getTileStats(city, observingCiv)
+        return getTileStats(getCity(), observingCiv)
     }
 
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
@@ -149,7 +143,8 @@ class TileInfo {
     override fun toString(): String {
         val SB = StringBuilder()
         if (isCityCenter) {
-            SB.appendln(workingCity + ",\r\n" + city!!.cityConstructions.getProductionForTileInfo())
+            val city = getCity()!!
+            SB.appendln(city.name+ ",\r\n" + city.cityConstructions.getProductionForTileInfo())
         }
         SB.appendln(this.baseTerrain)
         if (terrainFeature != null) SB.appendln(terrainFeature!!)
@@ -188,6 +183,11 @@ class TileInfo {
         var bonus = getBaseTerrain().defenceBonus
         if(terrainFeature!=null) bonus += getTerrainFeature()!!.defenceBonus
         return bonus
+    }
+
+    fun isWorked(): Boolean {
+        val city = getCity()
+        return city!=null && city.workedTiles.contains(position)
     }
 
 }

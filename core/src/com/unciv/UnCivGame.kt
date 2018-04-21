@@ -28,7 +28,7 @@ class UnCivGame : Game() {
                 GameSaver.loadGame(this, "Autosave")
                 gameInfo.getPlayerCivilization().civName="Babylon"
                 gameInfo.tileMap.values.forEach {
-                    if (it.owner == "Player") it.owner = "Babylon"
+                    //if (it.getOwner() == "Player") it.getOwner() = "Babylon"
                     if (it.unit != null && it.unit!!.owner == "Player") it.unit!!.owner = "Babylon"
                 }
             } catch (ex: Exception) { // silent fail if we can't read the autosave

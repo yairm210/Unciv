@@ -16,9 +16,8 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
            val updatedTiles = ArrayList<TileInfo>()
            for (tileToCheck in tilesToCheck)
                for (maybeUpdatedTile in tileToCheck.neighbors) {
-                   if(maybeUpdatedTile.owner  != null && maybeUpdatedTile.owner != civInfo.civName && maybeUpdatedTile.isCityCenter)
+                   if(maybeUpdatedTile.getOwner() != null && maybeUpdatedTile.getOwner() != civInfo && maybeUpdatedTile.isCityCenter)
                        continue // Enemy city, can't move through it!
-       //            if(maybeUpdatedTile.unit!=null && maybeUpdatedTile.unit!!.civInfo != civInfo) continue // Enemy unit!
 
                    var distanceBetweenTiles = maybeUpdatedTile.lastTerrain.movementCost.toFloat() // no road
                    if (tileToCheck.roadStatus !== RoadStatus.None && maybeUpdatedTile.roadStatus !== RoadStatus.None) //Road
@@ -35,15 +34,10 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
                            totalDistanceToTile = unitMovement
                        distanceToTiles[maybeUpdatedTile] = totalDistanceToTile
                    }
-
                }
 
            tilesToCheck = updatedTiles
        }
-
-       // now that we've used the tiles that have friendly units to "pass through" them,
-       // we have to remove them from the final result since we can't actually get there.
-//       distanceToTiles.filterKeys { it.unit!=null }.forEach { distanceToTiles.remove(it.key)  }
 
        return distanceToTiles
    }
