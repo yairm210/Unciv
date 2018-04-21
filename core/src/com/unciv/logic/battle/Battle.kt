@@ -109,14 +109,14 @@ class Battle(val gameInfo:GameInfo) {
         }
 
 
-        if (defender.isDefeated() && attacker.getCombatantType() == CombatantType.Melee)
-            (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
-        
         if(defender.isDefeated()
                 && defender.getCombatantType() == CombatantType.City
                 && attacker.getCombatantType() == CombatantType.Melee){
             conquerCity((defender as CityCombatant).city, attacker)
         }
+
+        if (defender.isDefeated() && attacker.getCombatantType() == CombatantType.Melee)
+            (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
 
         if(attacker is MapUnitCombatant) attacker.unit.currentMovement = 0f
     }
@@ -141,6 +141,7 @@ class Battle(val gameInfo:GameInfo) {
                 enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace
             }
         }
+        (attacker as MapUnitCombatant).unit.moveToTile(city.getCenterTile())
     }
 
 }
