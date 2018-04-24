@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.logic.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
 
@@ -61,7 +62,7 @@ class PopulationManager {
     internal fun autoAssignWorker() {
         val toWork: TileInfo? = cityInfo.getTiles()
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
-                .maxBy { cityInfo.rankTile(it) }
+                .maxBy { Automation().rankTile(it,cityInfo.civInfo) }
         if (toWork != null) // This is when we've run out of tiles!
             cityInfo.workedTiles.add(toWork.position)
     }

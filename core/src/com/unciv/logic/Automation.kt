@@ -3,11 +3,13 @@ package com.unciv.logic
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.ui.utils.getRandom
@@ -20,11 +22,27 @@ class Automation {
                 .filter {
                     (it.unit == null || it == currentTile)
                             && it.improvement == null
+                            && (it.getCity()==null || it.getCity()!!.civInfo == civInfo) // don't work tiles belonging to another civ
                             && it.canBuildImprovement(chooseImprovement(it), civInfo)
                 }
                 .maxBy { getPriority(it, civInfo) }
         if (selectedTile != null && getPriority(selectedTile, civInfo) > 1) return selectedTile
         else return currentTile
+    }
+
+
+    internal fun rankTile(tile: TileInfo, civInfo: CivilizationInfo): Float {
+        val stats = tile.getTileStats(null, civInfo)
+        var rank = 0.0f
+        if (stats.food <= 2) rank += stats.food
+        else rank += (2 + (stats.food - 2) / 2f) // 1 point for each food up to 2, from there on half a point
+        rank += (stats.gold / 2)
+        rank += stats.production
+        rank += stats.science
+        rank += stats.culture
+        if (tile.improvement == null) rank += 0.5f // improvement potential!
+        if (tile.resource != null) rank += 1.0f
+        return rank
     }
 
     private fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
@@ -67,6 +85,15 @@ class Automation {
         }
     }
 
+    fun rankTileAsCityCenter(tileInfo: TileInfo, civInfo: CivilizationInfo): Float {
+        val bestTilesFromOuterLayer = tileInfo.tileMap.getTilesAtDistance(tileInfo.position,2)
+                .sortedByDescending { rankTile(it,civInfo) }.take(2)
+        val top5Tiles = tileInfo.neighbors.union(bestTilesFromOuterLayer)
+                .sortedByDescending { rankTile(it,civInfo) }
+                .take(5)
+        return top5Tiles.map { rankTile(it,civInfo) }.sum()
+    }
+
     fun automateCivMoves(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
             val researchableTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name) }
@@ -74,13 +101,25 @@ class Automation {
             civInfo.tech.techsResearched.add(techToResearch!!.name)
         }
 
+        for (unit in civInfo.getCivUnits()) {
+            automateUnitMoves(unit)
+        }
+
+        // train settler?
+        if (civInfo.cities.any()
+                && civInfo.happiness > 2*civInfo.cities.size +5
+                && civInfo.getCivUnits().none { it.name == "Settler" }
+                && civInfo.cities.none { it.cityConstructions.currentConstruction == "Settler" }) {
+
+            val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
+            if(bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwisse focus on self first
+                bestCity.cityConstructions.currentConstruction = "Settler"
+        }
+
         for (city in civInfo.cities) {
             if (city.health < city.getMaxHealth()) trainCombatUnit(city)
         }
 
-        for (unit in civInfo.getCivUnits()) {
-            automateUnitMoves(unit)
-        }
     }
 
     private fun trainCombatUnit(city: CityInfo) {
@@ -90,7 +129,24 @@ class Automation {
     fun automateUnitMoves(unit: MapUnit) {
 
         if (unit.name == "Settler") {
-            UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+
+            val tileMap = unit.civInfo.gameInfo.tileMap
+
+            // find best city location within 5 tiles
+            val bestCityLocation = tileMap.getTilesInDistance(unit.getTile().position, 5)
+                    .filterNot { it.isCityCenter || it.neighbors.any { it.isCityCenter } }
+                    .sortedByDescending { rankTileAsCityCenter(it, unit.civInfo) }
+                    .first()
+
+            if(unit.getTile() == bestCityLocation)
+                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+
+            else {
+                unit.headTowards(bestCityLocation.position)
+                if(unit.currentMovement>0 && unit.getTile()==bestCityLocation)
+                    UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+            }
+
             return
         }
 
@@ -178,4 +234,24 @@ class Automation {
         // else, go to a random space
         unit.moveToTile(distanceToTiles.keys.filter { it.unit == null }.toList().getRandom())
     }
+
+
+    fun chooseNextConstruction(cityConstructions: CityConstructions) {
+        cityConstructions.run {
+            val buildableNotWonders = getBuildableBuildings().filterNot { (getConstruction(it) as Building).isWonder }
+            if (!buildableNotWonders.isEmpty()) {
+                currentConstruction = buildableNotWonders.first()
+            } else {
+                val militaryUnits = cityInfo.civInfo.getCivUnits().filter { it.getBaseUnit().unitType != UnitType.Civilian }.size
+                if (cityInfo.civInfo.getCivUnits().none { it.name == CityConstructions.Worker } || militaryUnits > cityInfo.civInfo.cities.size * 2) {
+                    currentConstruction = CityConstructions.Worker
+                } else {
+                    trainCombatUnit(cityInfo)
+                }
+            }
+            if (cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
+                cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.location)
+        }
+    }
+
 }

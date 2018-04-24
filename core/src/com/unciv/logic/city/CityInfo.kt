@@ -127,19 +127,6 @@ class CityInfo {
         health = min(health+maxHealth/10, maxHealth)
     }
 
-    internal fun rankTile(tile: TileInfo): Float {
-        val stats = tile.getTileStats(this, civInfo)
-        var rank = 0.0f
-        if (stats.food <= 2) rank += stats.food
-        else rank += (2 + (stats.food - 2) / 2f) // 1 point for each food up to 2, from there on half a point
-        rank += (stats.gold / 2)
-        rank += stats.production
-        rank += stats.science
-        rank += stats.culture
-        if (tile.improvement == null) rank += 0.5f // improvement potential!
-        if (tile.resource != null) rank += 1.0f
-        return rank
-    }
 
     internal fun getMaxHealth(): Int {
         return 200 // add more later when walls citadl etc.
