@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.*
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -110,36 +111,42 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val attackerDistanceToTiles = attacker.unit.getDistanceToTiles()
 
-        if(attacker.getCombatantType() == CombatantType.Melee){
-            val tilesCanAttackFrom = attackerDistanceToTiles.filter {
-                attacker.unit.currentMovement - it.value > 0 // once we reach it we'll still have energy to attack
-                        && it.key.unit==null
-                        && it.key.neighbors.contains(defender.getTile()) }
+        val attackerCanReachDefender:Boolean
+        var tileToMoveTo:TileInfo? = null
 
-            if(tilesCanAttackFrom.isEmpty()) attackButton.disable()
+        if(attacker.getCombatantType() == CombatantType.Melee){
+            if(attacker.getTile().neighbors.contains(defender.getTile())){
+                attackerCanReachDefender=true
+            }
             else {
-                val tileToMoveTo = tilesCanAttackFrom.minBy { it.value }!!.key // travel least distance
-                attackButton.addClickListener {
-                    attacker.unit.moveToTile(tileToMoveTo)
-                    battle.attack(attacker,defender)
-                    worldScreen.update()
+                val tilesCanAttackFrom = attackerDistanceToTiles.filter {
+                    attacker.unit.currentMovement - it.value > 0 // once we reach it we'll still have energy to attack
+                            && it.key.unit == null
+                            && it.key.neighbors.contains(defender.getTile())
+                }
+
+                if (tilesCanAttackFrom.isEmpty()) attackerCanReachDefender=false
+                else {
+                    tileToMoveTo = tilesCanAttackFrom.minBy { it.value }!!.key // travel least distance
+                    attackerCanReachDefender=true
                 }
             }
         }
 
         else { // ranged
             val tilesInRange = UnCivGame.Current.gameInfo.tileMap.getTilesInDistance(attacker.getTile().position, 2)
-            val attackerCanReachDefender = tilesInRange.contains(defender.getTile())
-            if(!attackerCanReachDefender) attackButton.disable()
-            else {
-                attackButton.addClickListener {
-                    battle.attack(attacker, defender)
-                    worldScreen.update()
-                }
+            attackerCanReachDefender = tilesInRange.contains(defender.getTile())
+        }
+
+        if(!attackerCanReachDefender || attacker.unit.currentMovement==0f) attackButton.disable()
+        else {
+            attackButton.addClickListener {
+                if(tileToMoveTo!=null) attacker.unit.moveToTile(tileToMoveTo)
+                battle.attack(attacker, defender)
+                worldScreen.update()
             }
         }
 
-        if(attacker.unit.currentMovement==0f)  attackButton.disable()
         add(attackButton).colspan(2)
 
         pack()
