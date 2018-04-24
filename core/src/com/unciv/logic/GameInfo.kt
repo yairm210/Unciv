@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileMap
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 
 class GameInfo {
@@ -21,7 +22,16 @@ class GameInfo {
     fun nextTurn() {
         notifications.clear()
 
-        for (civInfo in civilizations) civInfo.nextTurn()
+        for (civInfo in civilizations){
+            if(civInfo.tech.techsToResearch.isEmpty()){
+                val researchableTechs = GameBasics.Technologies.values
+                        .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+                civInfo.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
+            }
+        }
+
+        for (civInfo in civilizations)
+            civInfo.nextTurn()
 
         tileMap.values.filter { it.unit!=null }.map { it.unit!! }.forEach { it.nextTurn() }
 

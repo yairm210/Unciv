@@ -47,7 +47,8 @@ class TileMap {
         unit.owner = civInfo.civName
         unit.civInfo = civInfo
         val tilesInDistance = getTilesInDistance(position, 2)
-        tilesInDistance.first { it.unit == null }.unit = unit // And if there's none, then kill me.
+        val unitToPlaceTile = tilesInDistance.firstOrNull { it.unit == null }
+        if(unitToPlaceTile!=null) unitToPlaceTile.unit = unit // And if there's none, then kill me.
     }
 
     fun getViewableTiles(position: Vector2, sightDistance: Int): MutableList<TileInfo> {

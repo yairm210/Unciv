@@ -131,4 +131,6 @@ class CityInfo {
     internal fun getMaxHealth(): Int {
         return 200 // add more later when walls citadl etc.
     }
+
+    override fun toString(): String {return name} // for debug
 }

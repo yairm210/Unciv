@@ -77,6 +77,8 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
                return path.reversed() // and reverse in order to get the list in chronological order
            }
 
+           if(newTilesToCheck.isEmpty()) return emptyList() // there is NO PATH (eg blocked by enemy units)
+
            tilesToCheck = newTilesToCheck
            distance++
        }

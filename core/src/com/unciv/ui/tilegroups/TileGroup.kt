@@ -53,8 +53,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     open fun update(isViewable: Boolean) {
         if (!tileInfo.explored) {
-            hexagon.color = Color.BLACK
-            return
+            //hexagon.color = Color.BLACK
+            //return
         }
 
         updateTerrainFeatureImage()

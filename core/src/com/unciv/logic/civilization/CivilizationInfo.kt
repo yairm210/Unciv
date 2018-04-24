@@ -180,4 +180,6 @@ class CivilizationInfo {
         if(isPlayerCivilization())
             gameInfo.notifications.add(Notification(text, location))
     }
+
+    override fun toString(): String {return civName} // for debug
 }

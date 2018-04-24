@@ -38,4 +38,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
             else -> throw Exception("Should never get here!")
         }
     }
+
+    override fun toString(): String {
+        return unit.name+" of "+unit.civInfo.civName
+    }
 }

@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.map.UnitType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
@@ -24,6 +25,8 @@ class Automation {
                             && it.improvement == null
                             && (it.getCity()==null || it.getCity()!!.civInfo == civInfo) // don't work tiles belonging to another civ
                             && it.canBuildImprovement(chooseImprovement(it), civInfo)
+                        && UnitMovementAlgorithms(currentTile.tileMap) // the tile is actually reachable - more difficult than it seems!
+                            .getShortestPath(currentTile.position, it.position, 2f, 2, civInfo).isNotEmpty()
                 }
                 .maxBy { getPriority(it, civInfo) }
         if (selectedTile != null && getPriority(selectedTile, civInfo) > 1) return selectedTile
@@ -129,24 +132,7 @@ class Automation {
     fun automateUnitMoves(unit: MapUnit) {
 
         if (unit.name == "Settler") {
-
-            val tileMap = unit.civInfo.gameInfo.tileMap
-
-            // find best city location within 5 tiles
-            val bestCityLocation = tileMap.getTilesInDistance(unit.getTile().position, 5)
-                    .filterNot { it.isCityCenter || it.neighbors.any { it.isCityCenter } }
-                    .sortedByDescending { rankTileAsCityCenter(it, unit.civInfo) }
-                    .first()
-
-            if(unit.getTile() == bestCityLocation)
-                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
-
-            else {
-                unit.headTowards(bestCityLocation.position)
-                if(unit.currentMovement>0 && unit.getTile()==bestCityLocation)
-                    UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
-            }
-
+            automateSettlerActions(unit)
             return
         }
 
@@ -233,6 +219,24 @@ class Automation {
 
         // else, go to a random space
         unit.moveToTile(distanceToTiles.keys.filter { it.unit == null }.toList().getRandom())
+    }
+
+    private fun automateSettlerActions(unit: MapUnit) {
+        val tileMap = unit.civInfo.gameInfo.tileMap
+
+        // find best city location within 5 tiles
+        val bestCityLocation = tileMap.getTilesInDistance(unit.getTile().position, 7)
+                .filterNot { tileMap.getTilesInDistance(it.position,2).any { tid -> tid.isCityCenter } }
+                .sortedByDescending { rankTileAsCityCenter(it, unit.civInfo) }
+                .first()
+
+        if (unit.getTile() == bestCityLocation)
+            UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+        else {
+            unit.headTowards(bestCityLocation.position)
+            if (unit.currentMovement > 0 && unit.getTile() == bestCityLocation)
+                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+        }
     }
 
 
