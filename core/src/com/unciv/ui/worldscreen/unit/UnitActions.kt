@@ -2,7 +2,7 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
-import com.unciv.logic.Automation
+import com.unciv.logic.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
@@ -86,7 +86,7 @@ class UnitActions {
                 actionList += UnitAction("Automate",
                         {
                             tile.unit!!.action = "automation"
-                            Automation().automateWorkerAction(tile.unit!!)
+                            WorkerAutomation().automateWorkerAction(tile.unit!!)
                         },unit.currentMovement != 0f
                 )
             }

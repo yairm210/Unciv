@@ -36,7 +36,7 @@ public class WorkerAutomation(){
                                 .getShortestPath(currentTile.position, it.position, 2f, 2, civInfo).isNotEmpty()
                 }
                 .maxBy { getPriority(it, civInfo) }
-        if (selectedTile != null && getPriority(selectedTile, civInfo) > 1) return selectedTile
+        if (selectedTile != null && getPriority(selectedTile, civInfo) > getPriority(currentTile,civInfo)) return selectedTile
         else return currentTile
     }
 
