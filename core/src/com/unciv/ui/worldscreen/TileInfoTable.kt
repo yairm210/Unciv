@@ -27,7 +27,7 @@ class TileInfoTable(private val worldScreen: WorldScreen, internal val civInfo: 
 
         val skin = CameraStageBaseScreen.skin
 
-        if (tile.explored) {
+        if (civInfo.exploredTiles.contains(tile.position)) {
             add(Label(tile.toString(), skin)).colspan(2)
             row()
 

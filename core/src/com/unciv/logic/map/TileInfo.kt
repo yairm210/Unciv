@@ -22,7 +22,6 @@ class TileInfo {
     var improvementInProgress: String? = null
 
     var roadStatus = RoadStatus.None
-    var explored = false
     var turnsToImprovement: Int = 0
 
     fun getCity(): CityInfo? = tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.tiles.contains(position)}

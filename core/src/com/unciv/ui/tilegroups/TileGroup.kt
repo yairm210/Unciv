@@ -52,9 +52,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
 
     open fun update(isViewable: Boolean) {
-        if (!tileInfo.explored) {
-            //hexagon.color = Color.BLACK
-            //return
+        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
+//            hexagon.color = Color.BLACK
+//            return
         }
 
         updateTerrainFeatureImage()

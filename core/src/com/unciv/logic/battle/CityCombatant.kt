@@ -21,7 +21,8 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getAttackingStrength(defender: ICombatant): Int = getCityStrength()
     override fun getDefendingStrength(attacker: ICombatant): Int = getCityStrength()
 
-    fun getCityStrength(): Int {
+    private fun
+            getCityStrength(): Int {
         val baseStrength = 10
         // as tech progresses so does city strength
         val techsPercentKnown: Float = city.civInfo.tech.techsResearched.count().toFloat() /
@@ -37,9 +38,9 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // 10% bonus foreach pop
         val strengthWithPop = (baseStrength + strengthFromTechs) * (1 + 0.1*city.population.population)
 
-
-
         return strengthWithPop.toInt() * 100 // *100 because a city is always at 100% strength
     }
+
+    override fun toString(): String {return city.name} // for debug
 
 }

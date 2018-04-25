@@ -94,7 +94,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 .filter { tileGroups.containsKey(it) }) {
 
             tileGroups[string]!!.run {
-                tileInfo.explored = true
                 update(true)
             }
         }

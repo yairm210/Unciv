@@ -12,6 +12,11 @@
 		"Eretria","Pergamon","Miletos","Megara","Phocaea"]
 	},
 	{
+		name:"Chinese",
+		RGB:[ 101, 253, 155],
+		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong"]
+	},
+	{
 		name:"Barbarians",
 		RGB:[200,200,200]
 	}

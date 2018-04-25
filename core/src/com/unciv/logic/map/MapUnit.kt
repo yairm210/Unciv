@@ -1,7 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.Automation
+import com.unciv.logic.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Unit
@@ -50,7 +50,7 @@ class MapUnit {
             return
         }
 
-        if (action == "automation") Automation().automateWorkerAction(this)
+        if (action == "automation") WorkerAutomation().automateWorkerAction(this)
     }
 
     private fun doPostTurnAction(tile: TileInfo) {

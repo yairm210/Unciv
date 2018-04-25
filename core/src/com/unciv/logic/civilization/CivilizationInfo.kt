@@ -33,6 +33,7 @@ class CivilizationInfo {
     var scienceVictory = ScienceVictoryManager()
 
     var cities = ArrayList<CityInfo>()
+    var exploredTiles = ArrayList<Vector2>()
 
     fun getCivilization(): Civilization {return GameBasics.Civilizations[civName]!!}
 
@@ -173,6 +174,7 @@ class CivilizationInfo {
         viewablePositions += gameInfo.tileMap.values
                 .filter { it.unit != null && it.unit!!.owner == civName }
                 .flatMap { it.getViewableTiles(2)} // Tiles within 2 tiles of units
+        viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
         return viewablePositions
     }
 

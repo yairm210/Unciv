@@ -39,6 +39,7 @@ class GameInfo {
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
         for (civInfo in civilizations){
+            civInfo.getViewableTiles() // adds explored tiles for auto civs
             if(!civInfo.isPlayerCivilization())
                 Automation().automateCivMoves(civInfo)
             for (city in civInfo.cities)
