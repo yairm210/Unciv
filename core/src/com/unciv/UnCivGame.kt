@@ -12,6 +12,7 @@ import com.unciv.models.gamebasics.Unit
 import com.unciv.models.stats.INamed
 import com.unciv.ui.GameSettings
 import com.unciv.ui.utils.GameSaver
+import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnCivGame : Game() {
@@ -52,19 +53,23 @@ class UnCivGame : Game() {
         gameInfo.tileMap = TileMap(20)
         gameInfo.civilizations.add(CivilizationInfo("Babylon", Vector2.Zero, gameInfo)) // first one is player civ
 
-        val freeTiles = gameInfo.tileMap.values
-        freeTiles.removeAll()
+        val freeTiles = gameInfo.tileMap.values.toMutableList()
+        freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(Vector2.Zero,6))
 
         val barbarianCivilization = CivilizationInfo()
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
-        gameInfo.civilizations.add(CivilizationInfo("Greece", Vector2(3f,5f), gameInfo)) // all the rest whatever
+        for (civname in listOf("Greece","China","Egypt")) {
+            val startingLocation = freeTiles.toList().getRandom().position
+            gameInfo.civilizations.add(CivilizationInfo(civname, startingLocation, gameInfo)) // all the rest whatever
+            freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, 6))
+        }
 
         barbarianCivilization.civName = "Barbarians"
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
-        (1..5).forEach { gameInfo.placeBarbarianUnit() }
+        (1..5).forEach { gameInfo.placeBarbarianUnit(freeTiles.toList().getRandom()) }
 
 
         worldScreen = WorldScreen()

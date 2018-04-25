@@ -97,7 +97,11 @@ class CityConstructions {
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {
             construction.postBuildEvent(this)
             inProgressConstructions.remove(currentConstruction)
-            cityInfo.civInfo.addNotification(currentConstruction + " has been built in " + cityInfo.name, cityInfo.location)
+
+            if(construction is Building && construction.isWonder)
+                cityInfo.civInfo.gameInfo.getPlayerCivilization().addNotification(currentConstruction + " has been built in " + cityInfo.name, cityInfo.location)
+            else
+                cityInfo.civInfo.addNotification(currentConstruction + " has been built in " + cityInfo.name, cityInfo.location)
 
             Automation().chooseNextConstruction(this)
         }

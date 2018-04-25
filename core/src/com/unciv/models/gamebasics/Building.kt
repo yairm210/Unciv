@@ -134,7 +134,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if (construction.isBuilt(name)) return false
         val civInfo = construction.cityInfo.civInfo
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return false
-        if (isWonder && civInfo.cities.any {
+        if (isWonder && civInfo.gameInfo.civilizations.flatMap { it.cities }.any {
                             it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
                         })
             return false

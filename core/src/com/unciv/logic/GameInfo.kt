@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
@@ -48,16 +49,20 @@ class GameInfo {
         }
 
         if(turns%10 == 0){ // every 10 turns add a barbarian in a random place
-            placeBarbarianUnit()
+            placeBarbarianUnit(null)
         }
 
         turns++
     }
 
-    fun placeBarbarianUnit() {
-        val playerViewableTiles = getPlayerCivilization().getViewableTiles().toHashSet()
-        val viableTiles = tileMap.values.filterNot { playerViewableTiles.contains(it) || it.unit!=null }
-        tileMap.placeUnitNearTile(viableTiles.getRandom().position,"Warrior",getBarbarianCivilization())
+    fun placeBarbarianUnit(tileToPlace: TileInfo?) {
+        var tile = tileToPlace
+        if(tileToPlace==null) {
+            val playerViewableTiles = getPlayerCivilization().getViewableTiles().toHashSet()
+            val viableTiles = tileMap.values.filterNot { playerViewableTiles.contains(it) || it.unit != null }
+            tile=viableTiles.getRandom()
+        }
+        tileMap.placeUnitNearTile(tile!!.position,"Warrior",getBarbarianCivilization())
     }
 
     fun setTransients() {

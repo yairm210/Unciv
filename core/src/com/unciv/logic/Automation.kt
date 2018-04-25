@@ -186,16 +186,23 @@ class Automation {
     fun chooseNextConstruction(cityConstructions: CityConstructions) {
         cityConstructions.run {
             val buildableNotWonders = getBuildableBuildings().filterNot { (getConstruction(it) as Building).isWonder }
-            if (!buildableNotWonders.isEmpty()) {
-                currentConstruction = buildableNotWonders.first()
-            } else {
-                val militaryUnits = cityInfo.civInfo.getCivUnits().filter { it.getBaseUnit().unitType != UnitType.Civilian }.size
-                if (cityInfo.civInfo.getCivUnits().none { it.name == CityConstructions.Worker } || militaryUnits > cityInfo.civInfo.cities.size * 2) {
-                    currentConstruction = CityConstructions.Worker
-                } else {
-                    trainCombatUnit(cityInfo)
-                }
+            val buildableWonders = getBuildableBuildings().filter { (getConstruction(it) as Building).isWonder }
+
+            val civUnits = cityInfo.civInfo.getCivUnits()
+            val militaryUnits = civUnits.filter { it.getBaseUnit().unitType != UnitType.Civilian }.size
+            val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
+            val cities = cityInfo.civInfo.cities.size
+
+            when {
+                !buildableNotWonders.isEmpty() -> currentConstruction = buildableNotWonders.first()
+                militaryUnits==0 -> trainCombatUnit(cityInfo)
+                workers==0 -> currentConstruction = CityConstructions.Worker
+                militaryUnits<cities -> trainCombatUnit(cityInfo)
+                workers<cities -> currentConstruction = CityConstructions.Worker
+                buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.getRandom()
+                else -> trainCombatUnit(cityInfo)
             }
+
             if (cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
                 cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.location)
         }
