@@ -61,7 +61,7 @@ class TechManager {
         for (tileInfo in civInfo.gameInfo.tileMap.values
                 .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
 
-            val closestCityTile = civInfo.gameInfo.tileMap.getTilesInDistance(tileInfo.position, 4)
+            val closestCityTile = tileInfo.getTilesInDistance(4)
                     .firstOrNull { it.isCityCenter }
             if (closestCityTile != null) {
                 civInfo.addNotification(

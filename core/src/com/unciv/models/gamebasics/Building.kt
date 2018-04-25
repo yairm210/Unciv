@@ -1,11 +1,11 @@
 package com.unciv.models.gamebasics
 
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.ScienceVictoryScreen
-import com.unciv.UnCivGame
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 
@@ -142,7 +142,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })
             return false
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
-        if ("MustBeNextToDesert" == unique && !civInfo.gameInfo.tileMap.getTilesInDistance(construction.cityInfo.location, 1).any { it.baseTerrain == "Desert" })
+        if ("MustBeNextToDesert" == unique && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
             return false
         if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource!!]))
             return false

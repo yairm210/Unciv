@@ -52,6 +52,9 @@ class UnCivGame : Game() {
         gameInfo.tileMap = TileMap(20)
         gameInfo.civilizations.add(CivilizationInfo("Babylon", Vector2.Zero, gameInfo)) // first one is player civ
 
+        val freeTiles = gameInfo.tileMap.values
+        freeTiles.removeAll()
+
         val barbarianCivilization = CivilizationInfo()
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 

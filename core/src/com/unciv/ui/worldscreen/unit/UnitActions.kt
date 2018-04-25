@@ -66,7 +66,7 @@ class UnitActions {
                         worldScreen.update()
                     },
                     unit.currentMovement != 0f &&
-                            !tileMapHolder.tileMap.getTilesInDistance(tile.position, 2).any { it.isCityCenter })
+                            !tile.getTilesInDistance(2).any { it.isCityCenter })
         }
         
         if (unit.name == "Worker") {

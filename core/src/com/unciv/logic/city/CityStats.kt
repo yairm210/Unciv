@@ -239,7 +239,7 @@ class CityStats {
         var tilesToCheck : List<TileInfo> = listOf(cityInfo.getCenterTile())
         while (tilesToCheck.isNotEmpty()) {
             val newTiles = tilesToCheck
-                    .flatMap { cityInfo.tileMap.getTilesInDistance(it.position, 1) }.distinct()
+                    .flatMap { it.neighbors }.distinct()
                     .filter{ !tilesReached.contains(it) && !tilesToCheck.contains(it)
                             && (roadType !== RoadStatus.Road || it.roadStatus !== RoadStatus.None)
                             && (roadType !== RoadStatus.Railroad || it.roadStatus === roadType) }

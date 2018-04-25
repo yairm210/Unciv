@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
@@ -135,7 +134,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         else { // ranged
-            val tilesInRange = UnCivGame.Current.gameInfo.tileMap.getTilesInDistance(attacker.getTile().position, 2)
+            val tilesInRange = attacker.getTile().getTilesInDistance(2)
             attackerCanReachDefender = tilesInRange.contains(defender.getTile())
         }
 

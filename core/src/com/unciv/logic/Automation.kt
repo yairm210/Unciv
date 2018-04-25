@@ -147,7 +147,7 @@ class Automation {
         // todo
 
         // else, find the closest enemy unit that we know of within 5 spaces and advance towards it
-        val closestUnit = unit.civInfo.gameInfo.tileMap.getTilesInDistance(unit.getTile().position, 5)
+        val closestUnit = unit.getTile().getTilesInDistance(5)
                 .firstOrNull { attackableTiles.contains(it) }
 
         if (closestUnit != null) {
@@ -168,8 +168,8 @@ class Automation {
         val tileMap = unit.civInfo.gameInfo.tileMap
 
         // find best city location within 5 tiles
-        val bestCityLocation = tileMap.getTilesInDistance(unit.getTile().position, 7)
-                .filterNot { tileMap.getTilesInDistance(it.position,2).any { tid -> tid.isCityCenter } }
+        val bestCityLocation = unit.getTile().getTilesInDistance(7)
+                .filterNot { it.getTilesInDistance(2).any { tid -> tid.isCityCenter } }
                 .sortedByDescending { rankTileAsCityCenter(it, unit.civInfo) }
                 .first()
 

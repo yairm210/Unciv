@@ -8,9 +8,8 @@ class CityExpansionManager {
     lateinit var cityInfo: CityInfo
     var cultureStored: Int = 0
 
-    fun reset(){
-            cityInfo.tiles = ArrayList(cityInfo.civInfo.gameInfo.tileMap
-                    .getTilesInDistance(cityInfo.location, 1).map { it.position })
+    fun reset() {
+        cityInfo.tiles = ArrayList(cityInfo.getCenterTile().getTilesInDistance(1).map { it.position })
     }
 
     // This one has conflicting sources -
@@ -31,7 +30,7 @@ class CityExpansionManager {
         cultureStored -= getCultureToNextTile()
 
         for (i in 2..3) {
-            val tiles = cityInfo.civInfo.gameInfo.tileMap.getTilesInDistance(cityInfo.location, i).filter { it.getOwner() == null }
+            val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter { it.getOwner() == null }
             if (tiles.isEmpty()) continue
             val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
             cityInfo.tiles.add(chosenTile!!.position)

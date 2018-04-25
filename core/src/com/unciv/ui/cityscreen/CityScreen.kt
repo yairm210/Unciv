@@ -152,7 +152,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val allTiles = Group()
 
-        for (tileInfo in game.gameInfo.tileMap.getTilesInDistance(cityInfo.location, 5)) {
+        for (tileInfo in cityInfo.getCenterTile().getTilesInDistance(5)) {
             if (!city.civInfo.exploredTiles.contains(tileInfo.position)) continue // Don't even bother to display it.
             val group = CityTileGroup(cityInfo, tileInfo)
             group.addClickListener {

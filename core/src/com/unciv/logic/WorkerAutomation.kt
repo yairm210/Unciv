@@ -26,7 +26,7 @@ public class WorkerAutomation(){
     }
 
     private fun findTileToWork(currentTile: TileInfo, civInfo: CivilizationInfo): TileInfo {
-        val selectedTile = currentTile.tileMap.getTilesInDistance(currentTile.position, 4)
+        val selectedTile = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.unit == null || it == currentTile)
                             && it.improvement == null
