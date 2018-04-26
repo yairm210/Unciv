@@ -168,8 +168,10 @@ class Automation {
         val tileMap = unit.civInfo.gameInfo.tileMap
 
         // find best city location within 5 tiles
-        val bestCityLocation = unit.getTile().getTilesInDistance(7)
-                .filterNot { it.getTilesInDistance(2).any { tid -> tid.isCityCenter } }
+        val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
+                .flatMap { it.getCenterTile().getTilesInDistance(2) }
+        val bestCityLocation = unit.getTile().getTilesInDistance(5)
+                .minus(tilesNearCities)
                 .sortedByDescending { rankTileAsCityCenter(it, unit.civInfo) }
                 .first()
 

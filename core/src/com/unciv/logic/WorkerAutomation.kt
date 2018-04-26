@@ -26,7 +26,7 @@ public class WorkerAutomation(){
     }
 
     private fun findTileToWork(currentTile: TileInfo, civInfo: CivilizationInfo): TileInfo {
-        val selectedTile = currentTile.getTilesInDistance(4)
+        val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.unit == null || it == currentTile)
                             && it.improvement == null
@@ -35,8 +35,12 @@ public class WorkerAutomation(){
                             && UnitMovementAlgorithms(currentTile.tileMap) // the tile is actually reachable - more difficult than it seems!
                                 .getShortestPath(currentTile.position, it.position, 2f, 2, civInfo).isNotEmpty()
                 }
-                .maxBy { getPriority(it, civInfo) }
-        if (selectedTile != null && getPriority(selectedTile, civInfo) > getPriority(currentTile,civInfo)) return selectedTile
+        val selectedTile = workableTiles.maxBy { getPriority(it, civInfo) }
+        if (selectedTile != null
+                && getPriority(selectedTile, civInfo)>1
+                && (!workableTiles.contains(currentTile)
+                        || getPriority(selectedTile, civInfo) > getPriority(currentTile,civInfo)))
+            return selectedTile
         else return currentTile
     }
 

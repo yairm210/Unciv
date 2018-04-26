@@ -47,7 +47,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
     override fun update(isViewable: Boolean) {
         super.update(isViewable)
-        //if (!tileInfo.explored) return
+        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) return
 
         if (populationImage != null) removePopulationIcon()
 
@@ -94,7 +94,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             unitImage = null
         }
 
-        if (tileInfo.unit != null /*&& isViewable*/) { // Tile is visible
+        if (tileInfo.unit != null && isViewable) { // Tile is visible
             val unit = tileInfo.unit!!
             unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
             addActor(unitImage!!)

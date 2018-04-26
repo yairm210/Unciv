@@ -79,7 +79,7 @@ class MapUnit {
         val currentTile = getTile()
         val tileMap = currentTile.tileMap
 
-        val finalDestinationTile = tileMap.get(destination)
+        val finalDestinationTile = tileMap[destination]
         val distanceToTiles = getDistanceToTiles()
 
         val destinationTileThisTurn:TileInfo
