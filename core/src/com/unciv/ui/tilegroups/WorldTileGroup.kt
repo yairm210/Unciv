@@ -55,7 +55,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         if (tileInfo.isWorked() && city!!.civInfo.isPlayerCivilization() && populationImage == null)
             addPopulationIcon()
 
-        if (city != null && tileInfo.isCityCenter) {
+        if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = Table()
                 cityButton!!.background = ImageGetter.getDrawable("skin/civTableBackground.png")

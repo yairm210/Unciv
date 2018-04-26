@@ -163,7 +163,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             if (tileInfo.getCity()!=city) {
                 group.setColor(0f, 0f, 0f, 0.3f)
                 group.yieldGroup.isVisible = false
-            } else if (!tileInfo.isCityCenter) {
+            } else if (!tileInfo.isCityCenter()) {
                 group.addPopulationIcon()
                 group.populationImage!!.addClickListener {
                         if (!tileInfo.isWorked() && cityInfo.population.getFreePopulation() > 0)

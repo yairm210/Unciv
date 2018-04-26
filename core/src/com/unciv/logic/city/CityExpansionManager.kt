@@ -9,7 +9,7 @@ class CityExpansionManager {
     var cultureStored: Int = 0
 
     fun reset() {
-        cityInfo.tiles = ArrayList(cityInfo.getCenterTile().getTilesInDistance(1).map { it.position })
+        cityInfo.tiles = cityInfo.getCenterTile().getTilesInDistance(1).map { it.position }.toHashSet()
     }
 
     // This one has conflicting sources -

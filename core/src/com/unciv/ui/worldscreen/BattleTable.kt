@@ -31,7 +31,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!
         val defender: ICombatant
         if (attacker.getCivilization().exploredTiles.contains(selectedTile.position)
-                && selectedTile.isCityCenter && selectedTile.getOwner() != worldScreen.civInfo)
+                && selectedTile.isCityCenter() && selectedTile.getOwner() != worldScreen.civInfo)
             defender = CityCombatant(selectedTile.getCity()!!)
         else if (selectedTile.unit != null
                 && selectedTile.unit!!.owner != worldScreen.civInfo.civName // enemy unit on selected tile,

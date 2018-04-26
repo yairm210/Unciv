@@ -66,7 +66,7 @@ class UnitActions {
                         worldScreen.update()
                     },
                     unit.currentMovement != 0f &&
-                            !tile.getTilesInDistance(2).any { it.isCityCenter })
+                            !tile.getTilesInDistance(2).any { it.isCityCenter() })
         }
         
         if (unit.name == "Worker") {
@@ -76,7 +76,7 @@ class UnitActions {
             actionList += UnitAction(improvementButtonText,
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) },
                     unit.currentMovement != 0f &&
-                            !tile.isCityCenter || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) })
+                            !tile.isCityCenter() || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) })
 
             if("automation" == unit.action){
                 actionList += UnitAction("Stop automation",
@@ -123,7 +123,7 @@ class UnitActions {
                         tile.unit = null // destroy!
                     },
                     unit.currentMovement != 0f &&
-                    tile.isCityCenter &&
+                    tile.isCityCenter() &&
                     tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building &&
                     (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder)
 

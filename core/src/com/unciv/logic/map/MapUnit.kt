@@ -113,7 +113,7 @@ class MapUnit {
     private fun heal(){
         val tile = getTile()
         health += when{
-            tile.isCityCenter -> 20
+            tile.isCityCenter() -> 20
             tile.getOwner()?.civName == owner -> 15 // home territory
             tile.getOwner() == null -> 10 // no man's land (neutral)
             else -> 5 // enemy territory

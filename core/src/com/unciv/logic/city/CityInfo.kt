@@ -23,8 +23,8 @@ class CityInfo {
     var expansion = CityExpansionManager()
     var cityStats = CityStats()
 
-    var tiles = ArrayList<Vector2>()
-    var workedTiles = ArrayList<Vector2>()
+    var tiles = HashSet<Vector2>()
+    var workedTiles = HashSet<Vector2>()
 
 
     internal val tileMap: TileMap
@@ -42,7 +42,7 @@ class CityInfo {
 
         for (tileInfo in getTilesInRange().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
-            if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter)
+            if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter())
                 cityResources.add(resource, 1)
         }
 

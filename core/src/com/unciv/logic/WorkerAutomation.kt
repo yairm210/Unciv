@@ -30,8 +30,8 @@ public class WorkerAutomation(){
                 .filter {
                     (it.unit == null || it == currentTile)
                             && it.improvement == null
-                            && (it.getCity()==null || it.getCity()!!.civInfo == civInfo) // don't work tiles belonging to another civ
                             && it.canBuildImprovement(chooseImprovement(it), civInfo)
+                            && {val city=it.getCity();  city==null || it.getCity()?.civInfo == civInfo}() // don't work tiles belonging to another civ
                             && UnitMovementAlgorithms(currentTile.tileMap) // the tile is actually reachable - more difficult than it seems!
                                 .getShortestPath(currentTile.position, it.position, 2f, 2, civInfo).isNotEmpty()
                 }

@@ -16,7 +16,7 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
            val updatedTiles = ArrayList<TileInfo>()
            for (tileToCheck in tilesToCheck)
                for (maybeUpdatedTile in tileToCheck.neighbors) {
-                   if(maybeUpdatedTile.getOwner() != null && maybeUpdatedTile.getOwner() != civInfo && maybeUpdatedTile.isCityCenter)
+                   if(maybeUpdatedTile.getOwner() != null && maybeUpdatedTile.getOwner() != civInfo && maybeUpdatedTile.isCityCenter())
                        continue // Enemy city, can't move through it!
 
                    var distanceBetweenTiles = maybeUpdatedTile.lastTerrain.movementCost.toFloat() // no road

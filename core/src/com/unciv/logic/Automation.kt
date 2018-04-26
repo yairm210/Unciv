@@ -22,22 +22,22 @@ class Automation {
         var rank = 0.0f
         if (stats.food <= 2) rank += stats.food
         else rank += (2 + (stats.food - 2) / 2f) // 1 point for each food up to 2, from there on half a point
-        rank += (stats.gold / 2)
+        rank += stats.gold / 2
         rank += stats.production
         rank += stats.science
         rank += stats.culture
         if (tile.improvement == null) rank += 0.5f // improvement potential!
-        if (tile.resource != null) rank += 1.0f
+        if (tile.hasViewableResource(civInfo)) rank += 1.0f
         return rank
     }
 
-    fun rankTileAsCityCenter(tileInfo: TileInfo, civInfo: CivilizationInfo): Float {
+    fun rankTileAsCityCenter(tileInfo: TileInfo, civInfo: CivilizationInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
         val bestTilesFromOuterLayer = tileInfo.tileMap.getTilesAtDistance(tileInfo.position,2)
-                .sortedByDescending { rankTile(it,civInfo) }.take(2)
+                .sortedByDescending { nearbyTileRankings[it] }.take(2)
         val top5Tiles = tileInfo.neighbors.union(bestTilesFromOuterLayer)
-                .sortedByDescending { rankTile(it,civInfo) }
+                .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
-        return top5Tiles.map { rankTile(it,civInfo) }.sum()
+        return top5Tiles.map { nearbyTileRankings[it]!! }.sum()
     }
 
     fun automateCivMoves(civInfo: CivilizationInfo) {
@@ -113,7 +113,7 @@ class Automation {
 
         // if there is an attackable unit in the vicinity, attack!
         val attackableTiles = unit.civInfo.getViewableTiles()
-                .filter { it.unit != null && it.unit!!.owner != unit.civInfo.civName && !it.isCityCenter }.toHashSet()
+                .filter { it.unit != null && it.unit!!.owner != unit.civInfo.civName && !it.isCityCenter() }.toHashSet()
         val distanceToTiles = unit.getDistanceToTiles()
         val unitTileToAttack = distanceToTiles.keys.firstOrNull { attackableTiles.contains(it) }
 
@@ -170,10 +170,12 @@ class Automation {
         // find best city location within 5 tiles
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
                 .flatMap { it.getCenterTile().getTilesInDistance(2) }
+
+        // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
+        val nearbyTileRankings = unit.getTile().getTilesInDistance(7).associateBy ( {it},{rankTile(it,unit.civInfo) })
         val bestCityLocation = unit.getTile().getTilesInDistance(5)
                 .minus(tilesNearCities)
-                .sortedByDescending { rankTileAsCityCenter(it, unit.civInfo) }
-                .first()
+                .maxBy { rankTileAsCityCenter(it, unit.civInfo, nearbyTileRankings) }!!
 
         if (unit.getTile() == bestCityLocation)
             UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()

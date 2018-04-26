@@ -32,8 +32,7 @@ class TileInfo {
     val tileResource: TileResource
         get() = if (resource == null) throw Exception("No resource exists for this tile!") else GameBasics.TileResources[resource!!]!!
 
-    val isCityCenter: Boolean
-        get() = getCity() != null && position == getCity()!!.location
+    fun isCityCenter(): Boolean = getCity()?.location == position
 
     val tileImprovement: TileImprovement?
         get() = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
@@ -101,7 +100,7 @@ class TileInfo {
                 stats.add(improvement) // again, for the double effect
         }
 
-        if (isCityCenter) {
+        if (isCityCenter()) {
             if (stats.food < 2) stats.food = 2f
             if (stats.production < 1) stats.production = 1f
         }
@@ -118,7 +117,7 @@ class TileInfo {
     }
 
     fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
-        if (isCityCenter || improvement.name == this.improvement) return false
+        if (isCityCenter() || improvement.name == this.improvement) return false
         val topTerrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain!!.name)) return true
@@ -141,14 +140,14 @@ class TileInfo {
 
     override fun toString(): String {
         val SB = StringBuilder()
-        if (isCityCenter) {
+        if (isCityCenter()) {
             val city = getCity()!!
             SB.appendln(city.name+ ",\r\n" + city.cityConstructions.getProductionForTileInfo())
         }
         SB.appendln(this.baseTerrain)
         if (terrainFeature != null) SB.appendln(terrainFeature!!)
         if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!)
-        if (roadStatus !== RoadStatus.None && !isCityCenter) SB.appendln(roadStatus)
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")
         if (unit != null && UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)){
