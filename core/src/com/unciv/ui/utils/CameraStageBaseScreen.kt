@@ -8,14 +8,11 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.UnCivGame
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.addClickListener
 
 open class CameraStageBaseScreen : Screen {
@@ -97,11 +94,11 @@ open class CameraStageBaseScreen : Screen {
 }
 
 
-fun TextButton.disable(){
+fun Button.disable(){
     touchable= Touchable.disabled
     color= Color.GRAY
 }
-fun TextButton.enable() {
+fun Button.enable() {
     color = Color.WHITE
     touchable = Touchable.enabled
 }

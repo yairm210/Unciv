@@ -27,11 +27,11 @@ class Unit : INamed, IConstruction {
     }
 
 
-    override fun getProductionCost(adoptedPolicies: List<String>): Int {
+    override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
         return cost
     }
 
-    override fun getGoldCost(adoptedPolicies: List<String>): Int {
+    override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
         return (Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100) / 10).toInt() * 10
     }
 

@@ -100,10 +100,11 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
 
         if (civInfo.policies.isAdopted(policy.name)) { // existing
             toReturn.color = Color.GREEN
-        } else if (!civInfo.policies.getAdoptedPolicies().containsAll(policy.requires!!))
+        } else if (!civInfo.policies.
+                        getAdoptedPolicies().containsAll(policy.requires!!))
         // non-available
         {
-            toReturn.color = Color.GRAY
+            toReturn.disable()
         }
         toReturn.addClickListener { pickPolicy(policy) }
         toReturn.pack()

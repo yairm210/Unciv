@@ -120,7 +120,7 @@ class CityStats {
     private val isCapital: Boolean
         get() = cityInfo.civInfo.capital === cityInfo
 
-    private fun getStatsFromSpecialists(specialists: Stats, policies: List<String>): Stats {
+    private fun getStatsFromSpecialists(specialists: Stats, policies: HashSet<String>): Stats {
         val stats = Stats()
 
         // Specialists
@@ -135,7 +135,7 @@ class CityStats {
         return stats
     }
 
-    private fun getStatsFromPolicies(adoptedPolicies: List<String>): Stats {
+    private fun getStatsFromPolicies(adoptedPolicies: HashSet<String>): Stats {
         val stats = Stats()
         if (adoptedPolicies.contains("Tradition") && isCapital)
             stats.culture += 3f
@@ -163,7 +163,7 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromPolicies(policies: List<String>, cityConstructions: CityConstructions): Stats {
+    private fun getStatPercentBonusesFromPolicies(policies: HashSet<String>, cityConstructions: CityConstructions): Stats {
         val stats = Stats()
 
         if (policies.contains("Collective Rule") && isCapital

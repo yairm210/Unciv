@@ -12,7 +12,7 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 class Building : NamedStats(), IConstruction, ICivilopedia {
     private lateinit var baseDescription: String
     override val description: String
-        get() = getDescription(false, listOf())
+        get() = getDescription(false, hashSetOf())
 
     var requiredTech: String? = null
 
@@ -45,18 +45,18 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
 
     fun getRequiredTech(): Technology = GameBasics.Technologies[requiredTech]!!
 
-    fun getStats(adoptedPolicies: List<String>): Stats {
+    fun getStats(adoptedPolicies: HashSet<String>): Stats {
         val stats = this.clone()
-        if (adoptedPolicies.contains("Organized Religion") && listOf("Monument", "Temple", "Monastery").contains(name))
+        if (adoptedPolicies.contains("Organized Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
             stats.happiness += 1
 
-        if (adoptedPolicies.contains("Free Religion") && listOf("Monument", "Temple", "Monastery").contains(name))
+        if (adoptedPolicies.contains("Free Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
             stats.culture += 1f
 
-        if (adoptedPolicies.contains("Entrepreneurship") && listOf("Mint", "Market", "Bank", "Stock Market").contains(name))
+        if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(name))
             stats.science += 1f
 
-        if (adoptedPolicies.contains("Humanism") && listOf("University", "Observatory", "Public School").contains(name))
+        if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(name))
             stats.science += 1f
 
         if (adoptedPolicies.contains("Theocracy") && name == "Temple")
@@ -79,7 +79,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
     }
 
 
-    fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: List<String>): String {
+    fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: HashSet<String>): String {
         val stats = getStats(adoptedPolicies)
         val stringBuilder = StringBuilder()
         if (!forBuildingPickerScreen) stringBuilder.appendln("Cost: $cost")
@@ -118,12 +118,12 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         return stringBuilder.toString()
     }
 
-    override fun getProductionCost(adoptedPolicies: List<String>): Int {
+    override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
         return if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety")) (cost * 0.85).toInt()
         else cost
     }
 
-    override fun getGoldCost(adoptedPolicies: List<String>): Int {
+    override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
         var cost = Math.pow((30 * getProductionCost(adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
         if (adoptedPolicies.contains("Mercantilism")) cost *= 0.75
         if (adoptedPolicies.contains("Patronage")) cost *= 0.5
