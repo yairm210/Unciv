@@ -21,10 +21,12 @@ An Android port of Civ V
   * Population and Specialists
 * Policies and Golden Ages
 * Combat and barbarians
+* Other civilizations (No diplomacy)
 
 # What's next?
 
-* Other civilizations (combat-only)
+* Expanding combat - available units, combat modifiers, and promotions
+* UI+UX improvements
 * Diplomacy options
 
 ## So, does it work?
