@@ -32,10 +32,18 @@ public class WorkerAutomation(){
                             && it.improvement == null
                             && it.canBuildImprovement(chooseImprovement(it), civInfo)
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == civInfo}() // don't work tiles belonging to another civ
-                            && UnitMovementAlgorithms(currentTile.tileMap) // the tile is actually reachable - more difficult than it seems!
-                                .getShortestPath(currentTile.position, it.position, 2f, 2, civInfo).isNotEmpty()
-                }
-        val selectedTile = workableTiles.maxBy { getPriority(it, civInfo) }
+                }.sortedByDescending { getPriority(it, civInfo) }.toMutableList()
+
+        // the tile needs to be actually reachable - more difficult than it seems,
+        // which is why we DON'T calculate this for every possible tile in the radius,
+        // but only for the tile that's about to be chosen.
+        while (workableTiles.isNotEmpty()
+                && UnitMovementAlgorithms(currentTile.tileMap)
+                        .getShortestPath(currentTile.position, workableTiles.first().position,2f, 2, civInfo)
+                        .isEmpty())
+            workableTiles.removeAt(0)
+
+        val selectedTile = workableTiles.firstOrNull()
         if (selectedTile != null
                 && getPriority(selectedTile, civInfo)>1
                 && (!workableTiles.contains(currentTile)

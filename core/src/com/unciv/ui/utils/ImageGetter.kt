@@ -24,8 +24,12 @@ object ImageGetter {
 
     private fun getTextureRegion(fileName: String): TextureRegion {
         try {
-            if (!textureRegionByFileName.containsKey(fileName))
-                textureRegionByFileName[fileName] = TextureRegion(Texture(Gdx.files.internal(fileName)))
+            if (!textureRegionByFileName.containsKey(fileName)) {
+                val texture = Texture(Gdx.files.internal(fileName))
+                texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+                textureRegionByFileName[fileName] = TextureRegion(texture)
+            }
+
         } catch (ex: Exception) {
             print("File $fileName not found!")
             throw ex

@@ -81,7 +81,11 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
 
            if(newTilesToCheck.isEmpty()) return emptyList() // there is NO PATH (eg blocked by enemy units)
 
+           // no need to check tiles that are surrounded by reachable tiles, only need to check the edgemost tiles.
+           // Because anything we can reach from intermediate tiles, can be more easily reached by the edgemost tiles,
+           // since we'll have to pass through an edgemost tile in order to reach the diestination anyway
            tilesToCheck = newTilesToCheck.filterNot {tile -> tile.neighbors.all{newTilesToCheck.contains(it) || tilesToCheck.contains(it) } }
+
            distance++
        }
    }

@@ -51,7 +51,6 @@ class UnitActions {
                     UnitAction("Stop movement", {
                 unitTable.currentlyExecutingAction = null
                 unit.action=null
-                tileMapHolder.updateTiles()
             },unit.currentMovement != 0f)
         }
 
@@ -63,7 +62,6 @@ class UnitActions {
                         unit.civInfo.addCity(tile.position)
                         unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                         tile.unit = null // Remove settler!
-                        worldScreen.update()
                     },
                     unit.currentMovement != 0f &&
                             !tile.getTilesInDistance(2).any { it.isCityCenter() })
@@ -109,7 +107,6 @@ class UnitActions {
                     {
                         unit.civInfo.goldenAges.enterGoldenAge()
                         tile.unit = null// destroy!
-                        worldScreen.update()
                     },unit.currentMovement != 0f
             )
             actionList += UnitAction("Construct Landmark",
