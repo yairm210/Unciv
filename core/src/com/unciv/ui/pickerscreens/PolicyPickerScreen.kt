@@ -13,11 +13,23 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 
+
+
 class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
 
     private var pickedPolicy: Policy? = null
 
     init {
+
+
+        // Proof-of-concept for font generation
+//        val generator = FreeTypeFontGenerator(Gdx.files.internal("skin/Esteban-Regular.ttf"))
+//        val parameter = FreeTypeFontParameter()
+//        parameter.size = 25
+//        val font12 = generator.generateFont(parameter) // font size 12 pixels
+//        generator.dispose() // don't forget to dispose to avoid memory leaks!
+//        rightSideButton.style.font = font12
+
         val policies = civInfo.policies
         displayTutorials("PolicyPickerScreen")
 
@@ -91,24 +103,24 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
     }
 
     private fun getPolicyButton(policy: Policy, image: Boolean): Button {
-        var toReturn = Button(CameraStageBaseScreen.skin)
+        var policyButton = Button(CameraStageBaseScreen.skin)
         if (image) {
             val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name.replace(" ", "_") + "_(Civ5).png")
-            toReturn.add(policyImage).size(30f)
+            policyButton.add(policyImage).size(30f)
         } else
-            toReturn = TextButton(policy.name, CameraStageBaseScreen.skin)
+            policyButton = TextButton(policy.name, CameraStageBaseScreen.skin)
 
         if (civInfo.policies.isAdopted(policy.name)) { // existing
-            toReturn.color = Color.GREEN
+            policyButton.color = Color.GREEN
         } else if (!civInfo.policies.
                         getAdoptedPolicies().containsAll(policy.requires!!))
         // non-available
         {
-            toReturn.disable()
+            policyButton.color = Color.GRAY
         }
-        toReturn.addClickListener { pickPolicy(policy) }
-        toReturn.pack()
-        return toReturn
+        policyButton.addClickListener { pickPolicy(policy) }
+        policyButton.pack()
+        return policyButton
     }
 
 }
