@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.addClickListener
@@ -55,11 +56,40 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         if (tileInfo.isWorked() && city!!.civInfo.isPlayerCivilization() && populationImage == null)
             addPopulationIcon()
 
+        updateCityButton(city)
+        updateUnitImage(isViewable)
+    }
+
+    private fun updateUnitImage(isViewable: Boolean) {
+        if (unitImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+            unitImage!!.remove()
+            unitImage = null
+        }
+
+        if (tileInfo.unit != null && isViewable) { // Tile is visible
+            val unit = tileInfo.unit!!
+            unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
+            addActor(unitImage!!)
+            unitImage!!.setSize(20f, 20f)
+            unitImage!!.setPosition(width / 2 - unitImage!!.width / 2,
+                    height / 2 - unitImage!!.height / 2 + 20) // top
+        }
+
+
+        if (unitImage != null) {
+            if (!tileInfo.hasIdleUnit())
+                unitImage!!.color = Color(1f, 1f, 1f, 0.5f)
+            else
+                unitImage!!.color = Color.WHITE
+        }
+    }
+
+    private fun updateCityButton(city: CityInfo?) {
         if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = Table()
                 cityButton!!.background = ImageGetter.getDrawable("skin/civTableBackground.png")
-                cityButton!!.isTransform=true
+                cityButton!!.isTransform = true
 
                 addActor(cityButton)
                 zIndex = parent.children.size // so this tile is rendered over neighboring tiles
@@ -68,9 +98,9 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             val cityButtonText = city.name + " (" + city.population.population + ")"
             val label = Label(cityButtonText, CameraStageBaseScreen.skin)
             val labelStyle = Label.LabelStyle(label.style)
-            labelStyle.fontColor= city.civInfo.getCivilization().getColor()
-            label.style=labelStyle
-            if(city.civInfo.isPlayerCivilization())
+            labelStyle.fontColor = city.civInfo.getCivilization().getColor()
+            label.style = labelStyle
+            if (city.civInfo.isPlayerCivilization())
                 label.addClickListener {
                     UnCivGame.Current.screen = CityScreen(city)
                 }
@@ -83,34 +113,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 toFront()
             }
 
-            cityButton!!.setPosition(width/2 - cityButton!!.width / 2,
-                    height/2 - cityButton!!.height/2)
+            cityButton!!.setPosition(width / 2 - cityButton!!.width / 2,
+                    height / 2 - cityButton!!.height / 2)
 
         }
-
-
-        if (unitImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
-            unitImage!!.remove()
-            unitImage = null
-        }
-
-        if (tileInfo.unit != null && isViewable) { // Tile is visible
-            val unit = tileInfo.unit!!
-            unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
-            addActor(unitImage!!)
-            unitImage!!.setSize(20f, 20f)
-            unitImage!!.setPosition(width/2 - unitImage!!.width/2,
-                    height/2 - unitImage!!.height/2 +20) // top
-        }
-
-
-        if (unitImage != null) {
-            if (!tileInfo.hasIdleUnit())
-                unitImage!!.color = Color(1f,1f,1f,0.5f)
-            else
-                unitImage!!.color = Color.WHITE
-        }
-
     }
 
 

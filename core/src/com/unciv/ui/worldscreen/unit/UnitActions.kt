@@ -62,6 +62,7 @@ class UnitActions {
                         unit.civInfo.addCity(tile.position)
                         unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                         tile.unit = null // Remove settler!
+                        unit.civInfo.gameInfo.updateTilesToCities()
                     },
                     unit.currentMovement != 0f &&
                             !tile.getTilesInDistance(2).any { it.isCityCenter() })

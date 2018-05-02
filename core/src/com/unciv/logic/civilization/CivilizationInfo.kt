@@ -33,7 +33,7 @@ class CivilizationInfo {
     var scienceVictory = ScienceVictoryManager()
 
     var cities = ArrayList<CityInfo>()
-    var exploredTiles = ArrayList<Vector2>()
+    var exploredTiles = HashSet<Vector2>()
 
     fun getCivilization(): Civilization {return GameBasics.Civilizations[civName]!!}
 

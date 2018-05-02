@@ -24,7 +24,10 @@ class TileInfo {
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
 
-    fun getCity(): CityInfo? = tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.tiles.contains(position)}
+    fun getCity(): CityInfo? {
+        return tileMap.gameInfo.tilesToCities.get(this)
+        //return tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.tiles.contains(position)}
+    }
 
     val lastTerrain: Terrain
         get() = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!

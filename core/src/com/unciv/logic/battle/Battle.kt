@@ -142,6 +142,7 @@ class Battle(val gameInfo:GameInfo) {
             }
         }
         (attacker as MapUnitCombatant).unit.moveToTile(city.getCenterTile())
+        city.civInfo.gameInfo.updateTilesToCities()
     }
 
 }

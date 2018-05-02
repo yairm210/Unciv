@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileInfo
@@ -15,6 +16,7 @@ class GameInfo {
     var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
     var turns = 1
+    @Transient var tilesToCities = HashMap<TileInfo,CityInfo>()
 
 
     fun getPlayerCivilization(): CivilizationInfo = civilizations[0]
@@ -53,6 +55,7 @@ class GameInfo {
         }
 
         turns++
+        updateTilesToCities()
     }
 
     fun placeBarbarianUnit(tileToPlace: TileInfo?) {
@@ -81,9 +84,15 @@ class GameInfo {
         for (civInfo in civilizations)
             for (cityInfo in civInfo.cities)
                 cityInfo.cityStats.update()
+
+        updateTilesToCities()
     }
 
-
-
+    fun updateTilesToCities(){
+        tilesToCities.clear()
+        for (city in civilizations.flatMap { it.cities }){
+            for (tile in city.getTiles()) tilesToCities.put(tile,city)
+        }
+    }
 }
 
