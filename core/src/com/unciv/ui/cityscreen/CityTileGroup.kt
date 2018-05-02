@@ -31,8 +31,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
             if (tileInfo.isWorked())
                 populationImage!!.color = Color.WHITE
             else populationImage!!.color = Color.GRAY
+            populationImage!!.toFront()
         }
-
 
 
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
