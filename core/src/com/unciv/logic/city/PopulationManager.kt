@@ -54,12 +54,12 @@ class PopulationManager {
             foodStored -= getFoodToNextPopulation()
             if (cityInfo.buildingUniques.contains("FoodCarriesOver")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
             population++
-            autoAssignWorker()
+            autoAssignPopulation()
             cityInfo.civInfo.addNotification(cityInfo.name + " has grown!", cityInfo.location)
         }
     }
 
-    internal fun autoAssignWorker() {
+    internal fun autoAssignPopulation() {
         val toWork: TileInfo? = cityInfo.getTiles()
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
                 .maxBy { Automation().rankTile(it,cityInfo.civInfo) }

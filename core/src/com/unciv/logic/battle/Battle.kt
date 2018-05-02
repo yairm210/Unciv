@@ -131,6 +131,11 @@ class Battle(val gameInfo:GameInfo) {
         city.getCenterTile().unit = null
         city.expansion.cultureStored = 0;
         city.expansion.reset()
+
+        // now that the tiles have changed, we need to reassign population
+        city.workedTiles.filterNot { city.tiles.contains(it) }
+                .forEach { city.workedTiles.remove(it); city.population.autoAssignPopulation() }
+
         if(city.cityConstructions.isBuilt("Palace")){
             city.cityConstructions.builtBuildings.remove("Palace")
             if(enemyCiv.cities.isEmpty()) {

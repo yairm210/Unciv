@@ -100,7 +100,7 @@ class CityInfo {
         if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
             tile.terrainFeature = null
 
-        population.autoAssignWorker()
+        population.autoAssignPopulation()
         cityStats.update()
     }
 
