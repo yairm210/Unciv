@@ -1,7 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.WorkerAutomation
+import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Unit

@@ -1,0 +1,95 @@
+package com.unciv.logic.automation
+
+import com.unciv.logic.city.CityConstructions
+import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.Building
+import com.unciv.models.gamebasics.GameBasics
+import com.unciv.ui.utils.getRandom
+
+class Automation {
+
+
+    internal fun rankTile(tile: TileInfo, civInfo: CivilizationInfo): Float {
+        val stats = tile.getTileStats(null, civInfo)
+        var rank = 0.0f
+        if (stats.food <= 2) rank += stats.food
+        else rank += (2 + (stats.food - 2) / 2f) // 1 point for each food up to 2, from there on half a point
+        rank += stats.gold / 2
+        rank += stats.production
+        rank += stats.science
+        rank += stats.culture
+        if (tile.improvement == null) rank += 0.5f // improvement potential!
+        if (tile.hasViewableResource(civInfo)) rank += 1.0f
+        return rank
+    }
+
+    fun automateCivMoves(civInfo: CivilizationInfo) {
+        if (civInfo.tech.techsToResearch.isEmpty()) {
+            val researchableTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name) }
+            val techToResearch = researchableTechs.minBy { it.cost }
+            civInfo.tech.techsResearched.add(techToResearch!!.name)
+        }
+
+        while(civInfo.policies.canAdoptPolicy()){
+            val adoptablePolicies = GameBasics.PolicyBranches.values.flatMap { it.policies.union(listOf(it))}
+                    .filter { civInfo.policies.isAdoptable(it) }
+            val policyToAdopt = adoptablePolicies.getRandom()
+            civInfo.policies.adopt(policyToAdopt)
+        }
+
+        for (unit in civInfo.getCivUnits()) {
+            UnitAutomation().automateUnitMoves(unit)
+        }
+
+        // train settler?
+        if (civInfo.cities.any()
+                && civInfo.happiness > 2*civInfo.cities.size +5
+                && civInfo.getCivUnits().none { it.name == "Settler" }
+                && civInfo.cities.none { it.cityConstructions.currentConstruction == "Settler" }) {
+
+            val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
+            if(bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwisse focus on self first
+                bestCity.cityConstructions.currentConstruction = "Settler"
+        }
+
+        for (city in civInfo.cities) {
+            if (city.health < city.getMaxHealth()) trainCombatUnit(city)
+        }
+
+    }
+
+    private fun trainCombatUnit(city: CityInfo) {
+        city.cityConstructions.currentConstruction = "Archer" // when we have more units then we'll see.
+    }
+
+
+    fun chooseNextConstruction(cityConstructions: CityConstructions) {
+        cityConstructions.run {
+            val buildableNotWonders = getBuildableBuildings().filterNot { (getConstruction(it) as Building).isWonder }
+            val buildableWonders = getBuildableBuildings().filter { (getConstruction(it) as Building).isWonder }
+
+            val civUnits = cityInfo.civInfo.getCivUnits()
+            val militaryUnits = civUnits.filter { it.getBaseUnit().unitType != UnitType.Civilian }.size
+            val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
+            val cities = cityInfo.civInfo.cities.size
+
+            when {
+                !buildableNotWonders.isEmpty() -> currentConstruction = buildableNotWonders.first()
+                militaryUnits==0 -> trainCombatUnit(cityInfo)
+                workers==0 -> currentConstruction = CityConstructions.Worker
+                militaryUnits<cities -> trainCombatUnit(cityInfo)
+                workers<cities -> currentConstruction = CityConstructions.Worker
+                buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.getRandom()
+                else -> trainCombatUnit(cityInfo)
+            }
+
+            if (cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
+                cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.location)
+        }
+    }
+
+}
+

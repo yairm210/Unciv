@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification

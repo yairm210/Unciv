@@ -1,6 +1,6 @@
 package com.unciv.logic.city
 
-import com.unciv.logic.Automation
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
 

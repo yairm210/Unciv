@@ -1,4 +1,4 @@
-package com.unciv.logic
+package com.unciv.logic.automation
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit

@@ -2,7 +2,7 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
-import com.unciv.logic.WorkerAutomation
+import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
