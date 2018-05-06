@@ -5,7 +5,6 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
-import com.unciv.ui.ScienceVictoryScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 
@@ -171,9 +170,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
 
         if (unique == "SpaceshipPart") {
             civInfo.scienceVictory.currentParts.add(name, 1)
-            UnCivGame.Current.screen = ScienceVictoryScreen(civInfo)
-            if (civInfo.scienceVictory.unconstructedParts().isEmpty())
-                UnCivGame.Current.screen = VictoryScreen()
+            UnCivGame.Current.screen = VictoryScreen()
             return
         }
         construction.builtBuildings.add(name)
@@ -181,7 +178,7 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
             construction.builtBuildings.add(providesFreeBuilding!!)
         when (unique) {
-            "ApolloProgram" -> UnCivGame.Current.screen = ScienceVictoryScreen(civInfo)
+            "ApolloProgram" -> UnCivGame.Current.screen = VictoryScreen()
             "EmpireEntersGoldenAge" -> civInfo.goldenAges.enterGoldenAge()
             "FreeGreatArtistAppears" -> civInfo.addGreatPerson("Great Artist")
             "WorkerConstruction" -> {

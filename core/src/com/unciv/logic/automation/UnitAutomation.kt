@@ -11,6 +11,27 @@ import com.unciv.ui.worldscreen.unit.UnitActions
 
 class UnitAutomation{
 
+    fun healUnit(unit:MapUnit) {
+        // If we're low on health then heal
+        // todo: go to a more defensible place if there is one
+        val tilesInDistance = unit.getDistanceToTiles().keys
+        val unitTile = unit.getTile()
+
+        // Go to friendly tile if within distance - better healing!
+        val friendlyTile = tilesInDistance.firstOrNull { it.getOwner()?.civName == unit.owner && it.unit == null }
+        if (unitTile.getOwner()?.civName != unit.owner && friendlyTile != null) {
+            unit.moveToTile(friendlyTile)
+            return
+        }
+
+        // Or at least get out of enemy territory yaknow
+        val neutralTile = tilesInDistance.firstOrNull { it.getOwner() == null && it.unit == null }
+        if (unitTile.getOwner()?.civName != unit.owner && unitTile.getOwner() != null && neutralTile != null) {
+            unit.moveToTile(neutralTile)
+            return
+        }
+    }
+
     fun automateUnitMoves(unit: MapUnit) {
 
         if (unit.name == "Settler") {
@@ -23,30 +44,12 @@ class UnitAutomation{
             return
         }
 
+        if(unit.name.startsWith("Great")) return // DON'T MOVE A MUSCLE
 
-        fun healUnit() {
-            // If we're low on health then heal
-            // todo: go to a more defensible place if there is one
-            val tilesInDistance = unit.getDistanceToTiles().keys
-            val unitTile = unit.getTile()
-
-            // Go to friendly tile if within distance - better healing!
-            val friendlyTile = tilesInDistance.firstOrNull { it.getOwner()?.civName == unit.owner && it.unit == null }
-            if (unitTile.getOwner()?.civName != unit.owner && friendlyTile != null) {
-                unit.moveToTile(friendlyTile)
-                return
-            }
-
-            // Or at least get out of enemy territory yaknow
-            val neutralTile = tilesInDistance.firstOrNull { it.getOwner() == null && it.unit == null }
-            if (unitTile.getOwner()?.civName != unit.owner && unitTile.getOwner() != null && neutralTile != null) {
-                unit.moveToTile(neutralTile)
-                return
-            }
-        }
+        if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center
 
         if (unit.health < 50) {
-            healUnit()
+            healUnit(unit)
             return
         } // do nothing but heal
 
@@ -76,7 +79,7 @@ class UnitAutomation{
         }
 
         if (unit.health < 80) {
-            healUnit()
+            healUnit(unit)
             return
         } // do nothing but heal until 80 health
 
@@ -95,7 +98,7 @@ class UnitAutomation{
         }
 
         if (unit.health < 100) {
-            healUnit()
+            healUnit(unit)
             return
         }
 

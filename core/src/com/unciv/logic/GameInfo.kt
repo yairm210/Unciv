@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.unciv.UnCivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -7,6 +8,7 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.ui.VictoryScreen
 import com.unciv.ui.utils.getRandom
 
 class GameInfo {

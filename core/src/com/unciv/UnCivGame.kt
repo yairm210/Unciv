@@ -73,6 +73,7 @@ class UnCivGame : Game() {
 
         worldScreen = WorldScreen()
         setWorldScreen()
+
     }
 
     fun setWorldScreen() {

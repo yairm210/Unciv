@@ -44,28 +44,28 @@
 	},
 	{
 		name:"Great Artist",
-		description: "Can start an 8-turn golden age or construcct a landmark (+5 culture)", 
+		description: "Can start an 8-turn golden age or construct a Landmark (+6 culture)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Scientist",
-		description: "Can discover a technology, or construct an academy (+4 science(", 
+		description: "Can discover a technology, or construct an Academy (+4 science)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Merchant",
-		description: "Can undertake a trade mission, giving a large sum of gold, or construct a ?", 
+		description: "Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Engineer",
-		description: "Can speed up construction of a wonder, or construct a refinery, giving +? production?", 
+		description: "Can speed up construction of a wonder, or construct a Manufactory (+4 production)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2

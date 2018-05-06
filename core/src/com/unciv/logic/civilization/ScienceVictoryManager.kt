@@ -13,6 +13,8 @@ class ScienceVictoryManager {
         return counter
     }
 
+    fun hasWon() = requiredParts.equals(currentParts)
+
     init {
         requiredParts.add("SS Booster", 3)
         requiredParts.add("SS Cockpit", 1)
