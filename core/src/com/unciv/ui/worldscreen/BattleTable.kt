@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -8,6 +9,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.disable
 import kotlin.math.max
 
@@ -18,10 +20,15 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         skin = CameraStageBaseScreen.skin
     }
 
+    fun hide(){
+        clear()
+        background=null
+    }
+
     fun update() {
         if (worldScreen.unitTable.selectedUnit == null
                 || worldScreen.unitTable.selectedUnit!!.getBaseUnit().unitType == UnitType.Civilian){
-            clear()
+            hide()
             return
         } // no attacker
 
@@ -38,16 +45,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                 && worldScreen.civInfo.getViewableTiles().contains(selectedTile))
             defender = MapUnitCombatant(selectedTile.unit!!)
         else {
-            clear()
+            hide()
             return
         }
         simulateBattle(attacker, defender)
-
     }
 
     fun simulateBattle(attacker: MapUnitCombatant, defender: ICombatant){
         clear()
-
         row().pad(5f)
         val attackerLabel = Label(attacker.getName(), skin)
         attackerLabel.style= Label.LabelStyle(attackerLabel.style)
@@ -81,10 +86,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         var damageToAttacker = battle.calculateDamageToAttacker(attacker,defender)
 
 
-        if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth() // when damage exceeds health, we don't want to show negative health numbers
+        if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth()) // when damage exceeds health, we don't want to show negative health numbers
         // Also if both parties are supposed to die it's not indicative of who is more likely to win
         // So we "normalize" the damages until one dies
-        ) {
+        {
             if(damageToDefender/defender.getHealth().toFloat() > damageToAttacker/attacker.getHealth().toFloat()) // defender dies quicker ie first
             {
                 // Both damages *= (defender.health/damageToDefender)
@@ -150,6 +155,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attackButton).colspan(2)
 
         pack()
+
+        val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
+                .tint(Color(0x004085bf))
+        tileTableBackground.minHeight = 0f
+        tileTableBackground.minWidth = 0f
+        background = tileTableBackground
+
         setPosition(worldScreen.stage.width/2-width/2, 5f)
     }
 

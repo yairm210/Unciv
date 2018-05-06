@@ -5,6 +5,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.CivilopediaScreen
+import com.unciv.ui.LoadScreen
+import com.unciv.ui.SaveScreen
 import com.unciv.ui.ScienceVictoryScreen
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -17,7 +19,6 @@ class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, pri
         val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(Color(0x004085bf))
         background = tileTableBackground
-
         isVisible = false
 
         val openCivilopediaButton = TextButton("Civilopedia", CameraStageBaseScreen.skin)
@@ -25,32 +26,42 @@ class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, pri
             worldScreen.game.screen = CivilopediaScreen()
             isVisible = false
         }
-        add(openCivilopediaButton).pad(10f)
-        row()
+        add(openCivilopediaButton).pad(10f).row()
 
+        val LoadGameButton = TextButton("Load game", CameraStageBaseScreen.skin)
+        LoadGameButton .addClickListener {
+            worldScreen.game.screen = LoadScreen()
+            isVisible=false
+        }
+        add(LoadGameButton ).pad(10f).row()
+
+
+        val SaveGameButton = TextButton("Save game", CameraStageBaseScreen.skin)
+        SaveGameButton .addClickListener {
+            worldScreen.game.screen = SaveScreen()
+            isVisible=false
+        }
+        add(SaveGameButton ).pad(10f).row()
         val StartNewGameButton = TextButton("Start new game", CameraStageBaseScreen.skin)
         StartNewGameButton.addClickListener { worldScreen.game.startNewGame(true) }
-
-        add(StartNewGameButton).pad(10f)
-        row()
+        add(StartNewGameButton).pad(10f).row()
 
         val OpenScienceVictoryScreen = TextButton("Science victory status", CameraStageBaseScreen.skin)
         OpenScienceVictoryScreen.addClickListener {
             worldScreen.game.screen = ScienceVictoryScreen(this@WorldScreenOptionsTable.civInfo)
         }
-        add(OpenScienceVictoryScreen).pad(10f)
-        row()
+        add(OpenScienceVictoryScreen).pad(10f).row()
 
         val OpenPolicyPickerScreen = TextButton("Social Policies", CameraStageBaseScreen.skin)
         OpenPolicyPickerScreen.addClickListener {
             worldScreen.game.screen = PolicyPickerScreen(this@WorldScreenOptionsTable.civInfo)
         }
-        add(OpenPolicyPickerScreen).pad(10f)
-        row()
+        add(OpenPolicyPickerScreen).pad(10f).row()
 
         val closeButton = TextButton("Close", CameraStageBaseScreen.skin)
         closeButton.addClickListener { isVisible = false }
         add(closeButton).pad(10f)
+
         pack() // Needed to show the background.
         setPosition(worldScreen.stage.width / 2 - width / 2,
                 worldScreen.stage.height / 2 - height / 2)

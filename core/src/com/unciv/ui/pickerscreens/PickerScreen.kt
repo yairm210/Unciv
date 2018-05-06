@@ -10,33 +10,34 @@ import com.unciv.ui.utils.disable
 
 open class PickerScreen : CameraStageBaseScreen() {
 
-    internal var closeButton: TextButton
+    internal var closeButton: TextButton = TextButton("Close", CameraStageBaseScreen.skin)
     protected var descriptionLabel: Label
+    protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
-    internal var screenSplit = 0.85f
+    private var screenSplit = 0.85f
     protected var topTable: Table
+    var bottomTable:Table = Table()
     internal var splitPane: SplitPane
 
     init {
-        val buttonTable = Table()
 
-        closeButton = TextButton("Close", CameraStageBaseScreen.skin)
         closeButton.addClickListener {
                 game.setWorldScreen()
                 dispose()
             }
-        buttonTable.add(closeButton).width(stage.width / 4)
+        bottomTable.add(closeButton).width(stage.width / 4)
 
         descriptionLabel = Label("", CameraStageBaseScreen.skin)
         descriptionLabel.setWrap(true)
         descriptionLabel.setFontScale(game.settings.labelScale)
         descriptionLabel.width = stage.width / 2
-        buttonTable.add(descriptionLabel).pad(5f).width(stage.width / 2)
+        bottomTable.add(descriptionLabel).pad(5f).width(stage.width / 2)
 
         rightSideButton = TextButton("", CameraStageBaseScreen.skin)
-        buttonTable.add(rightSideButton).width(stage.width / 4)
-        buttonTable.height = stage.height * (1 - screenSplit)
-        buttonTable.align(Align.center)
+        rightSideGroup.addActor(rightSideButton)
+        bottomTable.add(rightSideGroup).width(stage.width / 4)
+        bottomTable.height = stage.height * (1 - screenSplit)
+        bottomTable.align(Align.center)
         rightSideButton.disable()
 
         topTable = Table()
@@ -44,7 +45,7 @@ open class PickerScreen : CameraStageBaseScreen() {
 
         scrollPane.setSize(stage.width, stage.height * screenSplit)
 
-        splitPane = SplitPane(scrollPane, buttonTable, true, CameraStageBaseScreen.skin)
+        splitPane = SplitPane(scrollPane, bottomTable, true, CameraStageBaseScreen.skin)
         splitPane.setSplitAmount(screenSplit)
         splitPane.setFillParent(true)
         stage.addActor(splitPane)

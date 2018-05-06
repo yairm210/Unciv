@@ -20,24 +20,23 @@ class UnCivGame : Game() {
     var settings = GameSettings()
 
     var worldScreen: WorldScreen? = null
+
     override fun create() {
         setupGameBasics()
 
         Current = this
         if (GameSaver.getSave("Autosave").exists()) {
             try {
-                GameSaver.loadGame(this, "Autosave")
-                gameInfo.getPlayerCivilization().civName="Babylon"
-                gameInfo.tileMap.values.forEach {
-                    //if (it.getOwner() == "Player") it.getOwner() = "Babylon"
-                    if (it.unit != null && it.unit!!.owner == "Player") it.unit!!.owner = "Babylon"
-                }
+                loadGame("Autosave")
             } catch (ex: Exception) { // silent fail if we can't read the autosave
                 startNewGame()
             }
         }
         else startNewGame()
+    }
 
+    fun loadGame(gameName:String){
+        gameInfo = GameSaver.loadGame( gameName)
         worldScreen = WorldScreen()
         setWorldScreen()
     }
