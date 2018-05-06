@@ -129,12 +129,9 @@ class UnCivGame : Game() {
             branch.branch = branch.name
             for (policy in branch.policies) {
                 policy.branch = branch.name
-                if (policy.requires == null) {
-                    policy.requires = ArrayList()
-                    policy.requires!!.add(branch.name)
-                }
+                if (policy.requires == null) policy.requires = arrayListOf(branch.name)
             }
-            branch.policies[branch.policies.size - 1].name = branch.name + " Complete"
+            branch.policies.last().name = branch.name + " Complete"
         }
     }
 

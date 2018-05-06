@@ -34,15 +34,23 @@ class PolicyManager {
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
-    fun canAdoptPolicy(): Boolean = storedCulture >= getCultureNeededForNextPolicy()
+    fun isAdoptable(policy: Policy) = getAdoptedPolicies().containsAll(policy.requires!!)
 
-    fun adopt(policy: Policy) {
+    fun canAdoptPolicy(): Boolean = freePolicies>0 || storedCulture >= getCultureNeededForNextPolicy()
+
+    fun adopt(policy: Policy, branchCompletion: Boolean =false) {
+        if (freePolicies > 0)
+            freePolicies--
+        else
+            storedCulture -= getCultureNeededForNextPolicy()
+
         adoptedPolicies.add(policy.name)
 
-        val branch = GameBasics.PolicyBranches[policy.branch]!!
-
-        if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
-            adopt(branch.policies.last()) // add branch completion!
+        if(!branchCompletion) {
+            val branch = GameBasics.PolicyBranches[policy.branch]!!
+            if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
+                adopt(branch.policies.last(), true) // add branch completion!
+            }
         }
 
         when(policy.name ) {

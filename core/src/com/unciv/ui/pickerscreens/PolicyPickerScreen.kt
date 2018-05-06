@@ -41,12 +41,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         }
 
         rightSideButton.addClickListener {
-            if (policies.freePolicies > 0)
-                policies.freePolicies--
-            else
-                policies.storedCulture -= policies.getCultureNeededForNextPolicy()
             civInfo.policies.adopt(pickedPolicy!!)
-
             game.screen = PolicyPickerScreen(civInfo)
         }
 
@@ -79,7 +74,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             branchTable.pack()
             branchGroup.add(branchTable).height(150f).row()
 
-            branchGroup.add(getPolicyButton(branch.policies[branch.policies.size - 1], false)) // finisher
+            branchGroup.add(getPolicyButton(branch.policies.last(), false)) // finisher
 
             topTable.add(branchGroup)
         }
@@ -89,7 +84,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
     private fun pickPolicy(policy: Policy) {
         if (civInfo.policies.isAdopted(policy.name)
                 || policy.name.endsWith("Complete")
-                || !civInfo.policies.getAdoptedPolicies().containsAll(policy.requires!!)
+                || !civInfo.policies.isAdoptable(policy)
                 || !civInfo.policies.canAdoptPolicy()) {
             rightSideButton.disable()
         } else {
@@ -112,8 +107,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
 
         if (civInfo.policies.isAdopted(policy.name)) { // existing
             policyButton.color = Color.GREEN
-        } else if (!civInfo.policies.
-                        getAdoptedPolicies().containsAll(policy.requires!!))
+        } else if (!civInfo.policies.isAdoptable(policy))
         // non-available
         {
             policyButton.color = Color.GRAY

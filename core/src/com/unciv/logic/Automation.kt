@@ -47,6 +47,13 @@ class Automation {
             civInfo.tech.techsResearched.add(techToResearch!!.name)
         }
 
+        while(civInfo.policies.canAdoptPolicy()){
+            val adoptablePolicies = GameBasics.PolicyBranches.values.flatMap { it.policies.union(listOf(it))}
+                    .filter { civInfo.policies.isAdoptable(it) }
+            val policyToAdopt = adoptablePolicies.getRandom()
+            civInfo.policies.adopt(policyToAdopt)
+        }
+
         for (unit in civInfo.getCivUnits()) {
             automateUnitMoves(unit)
         }

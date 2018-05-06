@@ -4,11 +4,10 @@ import com.unciv.models.stats.INamed
 
 open class Policy : INamed {
     override lateinit var name: String
-    @JvmField var description: String? = null
-    @JvmField var branch: String? = null
-    @JvmField var row: Int = 0
-    @JvmField var column: Int = 0
-    @JvmField var requires: ArrayList<String>? = null
-
+    var description: String? = null
+    var branch: String? = null
+    var row: Int = 0
+    var column: Int = 0
+    var requires: ArrayList<String>? = null
 }
 
