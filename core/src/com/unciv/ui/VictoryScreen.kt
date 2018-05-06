@@ -17,24 +17,31 @@ class VictoryScreen : PickerScreen() {
         topTable.defaults().pad(10f)
         topTable.add("Science victory")
         topTable.add("Cultural victory")
+        topTable.add("Conquest victory")
         topTable.row()
         topTable.add(scienceVictoryColumn())
         topTable.add(culturalVictoryColumn())
+        topTable.add(conquestVictoryColumn())
         topTable.row()
-        topTable.add("Complete all the spaceship parts to win!")
-        topTable.add("Complete 4 policy branches to win!")
+        topTable.add("Complete all the spaceship parts\n to win!")
+        topTable.add("Complete 4 policy branches\n to win!")
+        topTable.add("Destroy all enemies\n to win!")
 
         rightSideButton.isVisible=false
 
         if(civInfo.scienceVictory.hasWon()){
-            rightSideButton.setText("Start new game")
-            rightSideButton.isVisible=true
-            closeButton.isVisible=false
             descriptionLabel.setText("You have won a scientific victory!")
+            won()
         }
 
         if(civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3){
             descriptionLabel.setText("You have won a cultural victory!")
+            won()
+        }
+
+        if(civInfo.gameInfo.civilizations.all { it.isPlayerCivilization() || it.isDefeated() }){
+            descriptionLabel.setText("You have won a cultural victory!")
+            won()
         }
     }
 
@@ -65,6 +72,16 @@ class VictoryScreen : PickerScreen() {
         for(branch in GameBasics.PolicyBranches.values) {
             val finisher = branch.policies.last().name
             t.add(getMilestone(finisher, civInfo.policies.isAdopted(finisher))).row()
+        }
+        return t
+    }
+
+    fun conquestVictoryColumn():Table{
+        val t=Table()
+        t.defaults().pad(5f)
+        for (civ in civInfo.gameInfo.civilizations){
+            if(civ.isPlayerCivilization() || civ == civInfo.gameInfo.getBarbarianCivilization()) continue
+            t.add(getMilestone("Destroy "+civ.civName, civ.isDefeated())).row()
         }
         return t
     }

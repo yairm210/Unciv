@@ -184,4 +184,6 @@ class CivilizationInfo {
     }
 
     override fun toString(): String {return civName} // for debug
+
+    fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
 }
