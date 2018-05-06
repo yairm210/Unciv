@@ -20,6 +20,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     var populationImage: Image? = null
     private var roadImages = HashMap<String, Image>()
     private var borderImages = ArrayList<Image>()
+    protected var unitImage: Group? = null
 
 
     init {
@@ -177,4 +178,47 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             addActor(resourceImage!!)
         }
     }
+
+
+    protected fun updateUnitImage(isViewable: Boolean) {
+        if (unitImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+            unitImage!!.remove()
+            unitImage = null
+        }
+
+        if (tileInfo.unit != null && isViewable) { // Tile is visible
+            val unit = tileInfo.unit!!
+            unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
+            addActor(unitImage!!)
+            unitImage!!.setSize(20f, 20f)
+        }
+
+
+        if (unitImage != null) {
+            if (!tileInfo.hasIdleUnit())
+                unitImage!!.color = Color(1f, 1f, 1f, 0.5f)
+            else
+                unitImage!!.color = Color.WHITE
+        }
+    }
+
+
+    private fun getUnitImage(unitType:String, color:Color): Group {
+        val unitBaseImage = ImageGetter.getImage("UnitIcons/$unitType.png")
+                .apply { setSize(15f,15f) }
+        val background = ImageGetter.getImage("UnitIcons/Circle.png").apply {
+            this.color = color
+            setSize(20f,20f)
+        }
+        val group = Group().apply {
+            setSize(background.width,background.height)
+            addActor(background)
+        }
+        unitBaseImage.setPosition(group.width/2-unitBaseImage.width/2,
+                group.height/2-unitBaseImage.height/2)
+        group.addActor(unitBaseImage)
+        return group
+    }
+
+
 }

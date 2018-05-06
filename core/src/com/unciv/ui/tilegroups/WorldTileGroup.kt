@@ -1,7 +1,6 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -16,7 +15,6 @@ import com.unciv.ui.utils.ImageGetter
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
-    private var unitImage: Group? = null
     private var circleImage = ImageGetter.getImage("UnitIcons/Circle.png") // for blue and red circles on the tile
 
     init{
@@ -58,29 +56,9 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
         updateCityButton(city)
         updateUnitImage(isViewable)
-    }
-
-    private fun updateUnitImage(isViewable: Boolean) {
-        if (unitImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
-            unitImage!!.remove()
-            unitImage = null
-        }
-
-        if (tileInfo.unit != null && isViewable) { // Tile is visible
-            val unit = tileInfo.unit!!
-            unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
-            addActor(unitImage!!)
-            unitImage!!.setSize(20f, 20f)
+        if(unitImage!=null) {
             unitImage!!.setPosition(width / 2 - unitImage!!.width / 2,
                     height / 2 - unitImage!!.height / 2 + 20) // top
-        }
-
-
-        if (unitImage != null) {
-            if (!tileInfo.hasIdleUnit())
-                unitImage!!.color = Color(1f, 1f, 1f, 0.5f)
-            else
-                unitImage!!.color = Color.WHITE
         }
     }
 
@@ -120,20 +98,4 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     }
 
 
-    private fun getUnitImage(unitType:String, color:Color): Group {
-        val unitBaseImage = ImageGetter.getImage("UnitIcons/$unitType.png")
-                .apply { setSize(15f,15f) }
-        val background = ImageGetter.getImage("UnitIcons/Circle.png").apply {
-            this.color = color
-            setSize(20f,20f)
-        }
-        val group = Group().apply {
-            setSize(background.width,background.height)
-            addActor(background)
-        }
-        unitBaseImage.setPosition(group.width/2-unitBaseImage.width/2,
-                group.height/2-unitBaseImage.height/2)
-        group.addActor(unitBaseImage)
-        return group
-    }
 }
