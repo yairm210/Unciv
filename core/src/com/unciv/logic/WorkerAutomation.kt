@@ -37,13 +37,11 @@ public class WorkerAutomation(){
         // the tile needs to be actually reachable - more difficult than it seems,
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
-        while (workableTiles.isNotEmpty()
-                && UnitMovementAlgorithms(currentTile.tileMap)
-                        .getShortestPath(currentTile.position, workableTiles.first().position,2f, 2, civInfo)
-                        .isEmpty())
-            workableTiles.removeAt(0)
+        val selectedTile = workableTiles.firstOrNull{
+            UnitMovementAlgorithms(currentTile.tileMap)
+                .getShortestPath(currentTile.position, workableTiles.first().position,2f, 2, civInfo)
+                .isNotEmpty()}
 
-        val selectedTile = workableTiles.firstOrNull()
         if (selectedTile != null
                 && getPriority(selectedTile, civInfo)>1
                 && (!workableTiles.contains(currentTile)
