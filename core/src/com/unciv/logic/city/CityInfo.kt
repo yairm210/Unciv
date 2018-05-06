@@ -33,7 +33,7 @@ class CityInfo {
     fun getCenterTile(): TileInfo = tileMap[location]
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
 
-    fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
+    fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3).filter { civInfo == it.getOwner() }
 
 
     // Remove resources required by buildings

@@ -45,6 +45,10 @@ class PopulationManager {
         // starvation!
         {
             population--
+            val lowestRankedWorkedTile = cityInfo.workedTiles
+                    .map{cityInfo.tileMap[it]}
+                    .minBy { Automation().rankTile(it,cityInfo.civInfo) }!!
+            cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
             foodStored = 0
             cityInfo.civInfo.addNotification(cityInfo.name + " is starving!", cityInfo.location)
         }
