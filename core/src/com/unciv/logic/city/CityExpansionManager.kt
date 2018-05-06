@@ -1,6 +1,7 @@
 package com.unciv.logic.city
 
 import com.unciv.logic.Automation
+import com.unciv.logic.map.TileInfo
 
 class CityExpansionManager {
 
@@ -29,13 +30,18 @@ class CityExpansionManager {
     private fun addNewTileWithCulture() {
         cultureStored -= getCultureToNextTile()
 
-        for (i in 2..3) {
+        val chosenTile = getNewTile()
+        cityInfo.tiles.add(chosenTile!!.position)
+    }
+
+    fun getNewTile(): TileInfo? {
+        for (i in 2..5) {
             val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter { it.getOwner() == null }
             if (tiles.isEmpty()) continue
             val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
-            cityInfo.tiles.add(chosenTile!!.position)
-            return
+            return chosenTile
         }
+        return null
     }
 
     fun nextTurn(culture: Float) {

@@ -85,7 +85,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     internal fun updateTiles() {
         for (WG in tileGroups.values){
-            WG.hideCircle()
             WG.update(false)
         }
 

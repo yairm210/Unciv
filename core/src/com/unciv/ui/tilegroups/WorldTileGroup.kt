@@ -1,6 +1,5 @@
 package com.unciv.ui.tilegroups
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -15,16 +14,6 @@ import com.unciv.ui.utils.ImageGetter
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
-    private var circleImage = ImageGetter.getImage("UnitIcons/Circle.png") // for blue and red circles on the tile
-
-    init{
-        circleImage.width = 50f
-        circleImage.height = 50f
-        circleImage.setPosition(width/2-circleImage.width/2,
-                height/2-circleImage.height/2)
-        addActor(circleImage)
-        circleImage.isVisible = false
-    }
 
     fun addWhiteCircleAroundUnit(){
         val whiteCircle = ImageGetter.getImage("UnitIcons/Circle.png")
@@ -34,14 +23,6 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         unitImage!!.addActor(whiteCircle)
         whiteCircle.toBack()
     }
-
-    fun showCircle(color:Color){
-        circleImage.isVisible = true
-        color.a = 0.3f
-        circleImage.color = color
-    }
-
-    fun hideCircle(){circleImage.isVisible=false}
 
 
     override fun update(isViewable: Boolean) {

@@ -95,9 +95,15 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
 
     private fun updateTileGroups() {
+        val nextTile = city.expansion.getNewTile()
         for (HG in tileGroups) {
             HG.update()
+            if(HG.tileInfo == nextTile){
+                HG.showCircle(Color.PURPLE)
+                HG.setColor(0f,0f,0f,0.7f)
+            }
         }
+
     }
 
     private fun updateCityPickerTable() {

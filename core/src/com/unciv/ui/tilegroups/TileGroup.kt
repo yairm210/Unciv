@@ -11,29 +11,42 @@ import com.unciv.ui.utils.ImageGetter
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
 
-    protected var hexagon: Image
+    protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
     protected var terrainFeatureImage:Image?=null
 
     protected var resourceImage: Image? = null
     protected var improvementImage: Image? =null
     private var improvementType: String? = null
     var populationImage: Image? = null
-    private var roadImages = HashMap<String, Image>()
-    private var borderImages = ArrayList<Image>()
+    private val roadImages = HashMap<String, Image>()
+    private val borderImages = ArrayList<Image>()
     protected var unitImage: Group? = null
-
+    private val circleImage = ImageGetter.getImage("UnitIcons/Circle.png") // for blue and red circles on the tile
 
     init {
         val groupSize = 50f
         this.setSize(groupSize,groupSize)
-        hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
+        addHexagon(groupSize)
+        addCircleImage()
+    }
+
+    private fun addCircleImage() {
+        circleImage.width = 50f
+        circleImage.height = 50f
+        circleImage.setPosition(width / 2 - circleImage.width / 2,
+                height / 2 - circleImage.height / 2)
+        addActor(circleImage)
+        circleImage.isVisible = false
+    }
+
+    private fun addHexagon(groupSize: Float) {
         val imageScale = groupSize * 1.5f / hexagon.width
         hexagon.setScale(imageScale)
         hexagon.setOrigin(Align.center)
         hexagon.setPosition((width - hexagon.width) / 2,
                 (height - hexagon.height) / 2)
-        this.addActor(hexagon)
         hexagon.zIndex = 0
+        addActor(hexagon)
     }
 
     fun addPopulationIcon() {
@@ -58,6 +71,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             return
         }
 
+        hideCircle()
         updateTerrainFeatureImage()
         updateTileColor(isViewable)
         updateResourceImage()
@@ -69,7 +83,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun updateBorderImages() {
         for (border in borderImages) border.remove() //clear
-        borderImages = arrayListOf()
+        borderImages.clear()
 
         if (tileInfo.getOwner() != null) {
             for (neighbor in tileInfo.neighbors.filter { it.getOwner() != tileInfo.getOwner() }) {
@@ -221,4 +235,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
+    fun showCircle(color:Color){
+        circleImage.isVisible = true
+        color.a = 0.3f
+        circleImage.color = color
+    }
+
+    fun hideCircle(){circleImage.isVisible=false}
 }
