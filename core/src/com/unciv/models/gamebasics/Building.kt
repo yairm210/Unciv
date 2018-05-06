@@ -151,9 +151,10 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getTilesInRange()
                     .any {
-                        it.resource != null
+                                it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)
                                 && it.tileResource.improvement == it.improvement
+                        && it.getOwner() == civInfo
                     }
             if (!containsResourceWithImprovement) return false
         }

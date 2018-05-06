@@ -33,14 +33,14 @@ class CityInfo {
     fun getCenterTile(): TileInfo = tileMap[location]
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
 
-    fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3).filter { civInfo == it.getOwner() }
+    fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
 
 
     // Remove resources required by buildings
     fun getCityResources(): Counter<TileResource> {
         val cityResources = Counter<TileResource>()
 
-        for (tileInfo in getTilesInRange().filter { it.resource != null }) {
+        for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter())
                 cityResources.add(resource, 1)
@@ -77,7 +77,6 @@ class CityInfo {
 
 
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
-
         this.civInfo = civInfo
         setTransients()
 
@@ -93,7 +92,6 @@ class CityInfo {
         }
 
         expansion.reset()
-
 
         val tile = getCenterTile()
         tile.roadStatus = RoadStatus.Railroad
