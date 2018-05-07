@@ -60,7 +60,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         for (unit in GameBasics.Units.values.filterNot { it.unbuildable }) {
             units.addActor(getProductionButton(unit.name,
                     unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " turns",
-                    unit.description, "Train " + unit.name))
+                    unit.baseDescription, "Train " + unit.name))
         }
 
         if (civInfo.tech.isResearched("Education"))

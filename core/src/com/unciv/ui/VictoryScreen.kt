@@ -40,7 +40,7 @@ class VictoryScreen : PickerScreen() {
         }
 
         if(civInfo.gameInfo.civilizations.all { it.isPlayerCivilization() || it.isDefeated() }){
-            descriptionLabel.setText("You have won a cultural victory!")
+            descriptionLabel.setText("You have won a conquest victory!")
             won()
         }
     }

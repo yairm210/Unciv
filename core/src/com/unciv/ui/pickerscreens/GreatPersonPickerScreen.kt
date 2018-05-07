@@ -18,7 +18,7 @@ class GreatPersonPickerScreen : PickerScreen() {
             button.addClickListener {
                 theChosenOne = unit
                 pick("Get " +unit.name)
-                descriptionLabel.setText(unit.description)
+                descriptionLabel.setText(unit.baseDescription)
             }
             topTable.add(button).pad(10f)
         }

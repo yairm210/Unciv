@@ -38,17 +38,16 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         map["Resources"] = GameBasics.TileResources.values
         map["Terrains"] = GameBasics.Terrains.values
         map["Tile Improvements"] = GameBasics.TileImprovements.values
+        map["Units"] = GameBasics.Units.values
 
         val nameList = List<ICivilopedia>(CameraStageBaseScreen.skin)
 
         val nameListClickListener = {
-            if(nameList.selected!=null) {
-                val building = nameList.selected
-                label.setText(building.description)
-            }
+            if(nameList.selected!=null) label.setText(nameList.selected.description)
         }
         nameList.addClickListener (nameListClickListener)
 
+        nameList.style = List.ListStyle(nameList.style)
         nameList.style.fontColorSelected = Color.BLACK
         nameList.style.font.data.setScale(1.5f)
 
@@ -56,13 +55,15 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         var first = true
         for (str in map.keys) {
             val button = TextButton(str, CameraStageBaseScreen.skin)
+            button.style = TextButton.TextButtonStyle(button.style)
             button.style.checkedFontColor = Color.BLACK
             buttons.add(button)
             val buttonClicked = {
                 val newArray = Array<ICivilopedia>()
-                for (civ in map[str]!!) newArray.add(civ)
+                for (civilopediaEntry in map[str]!!) newArray.add(civilopediaEntry)
                 nameList.setItems(newArray)
                 nameList.selected = nameList.items.get(0)
+                label.setText(nameList.selected.description)
 
                 for (btn in buttons) btn.isChecked = false
                 button.isChecked = true
@@ -82,6 +83,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
                 .pad(Value.percentWidth(0.02f, entryTable))
         entryTable.add(label).colspan(4).width(Value.percentWidth(0.65f, entryTable)).height(Value.percentHeight(0.7f, entryTable))
                 .pad(Value.percentWidth(0.02f, entryTable))
+        // Simply changing these to x*width, y*height won't work
 
         buttonTable.width = stage.width
     }

@@ -1,7 +1,7 @@
 [
 	{
 		name:"Worker",
-		description: "Can build improvements on tiles", 
+		baseDescription: "Can build improvements on tiles", 
 		movement:2,
 		unitType:"Civilian",
 		hurryCostModifier:20,
@@ -9,7 +9,7 @@
 	},
 	{
 		name:"Settler",
-		description: "Founds a new city", 
+		baseDescription: "Founds a new city", 
 		movement:2,
 		unitType:"Civilian",
 		cost:106,
@@ -17,7 +17,7 @@
 	},
 	{
 		name:"Scout",
-		description: "Has no abilites, can only explore", 
+		baseDescription: "Has no abilites, can only explore", 
 		unbuildable:true,
 		unitType:"Melee",
 		strength:5,
@@ -25,7 +25,7 @@
 	},
 	{
 		name:"Warrior",
-		description: "A basic fighting unit",
+		baseDescription: "A basic fighting unit",
 		unitType:"Melee",
 		movement:2,
 		strength:8,
@@ -34,7 +34,7 @@
 	},
 	{
 		name:"Archer",
-		description: "A basic fighting unit",
+		baseDescription: "A basic fighting unit",
 		unitType:"Ranged",
 		movement:2,
 		strength:5,
@@ -44,28 +44,28 @@
 	},
 	{
 		name:"Great Artist",
-		description: "Can start an 8-turn golden age or construct a Landmark (+6 culture)", 
+		baseDescription: "Can start an 8-turn golden age or construct a Landmark (+6 culture)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Scientist",
-		description: "Can discover a technology, or construct an Academy (+4 science)", 
+		baseDescription: "Can discover a technology, or construct an Academy (+4 science)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Merchant",
-		description: "Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)", 
+		baseDescription: "Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2
 	},
 	{
 		name:"Great Engineer",
-		description: "Can speed up construction of a wonder, or construct a Manufactory (+4 production)", 
+		baseDescription: "Can speed up construction of a wonder, or construct a Manufactory (+4 production)", 
 		unbuildable:true,
 		unitType:"Civilian",
 		movement:2

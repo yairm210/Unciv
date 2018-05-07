@@ -4,7 +4,23 @@ import com.unciv.models.stats.NamedStats
 
 class Terrain : NamedStats(), ICivilopedia {
     override val description: String
-        get() = this.clone().toString()
+        get(){
+            val sb = StringBuilder()
+            sb.appendln(this.clone().toString())
+
+            if(occursOn!=null)
+                sb.appendln("Occurs on: "+occursOn!!.joinToString())
+
+            val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}.joinToString()
+            if(resourcesFound.isNotEmpty())
+                sb.appendln("May contain: $resourcesFound")
+            sb.appendln("Movement cost: $movementCost")
+            if(defenceBonus!=0f){
+                sb.appendln("Defence bonus: "+(defenceBonus*100).toInt()+"%")
+            }
+
+            return sb.toString()
+        }
     lateinit var type: TerrainType
 
     var overrideStats = false
@@ -34,6 +50,3 @@ class Terrain : NamedStats(), ICivilopedia {
 
     var defenceBonus:Float = 0f
 }
-
-
-
