@@ -18,6 +18,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     private val battle = Battle(worldScreen.civInfo.gameInfo)
     init{
         skin = CameraStageBaseScreen.skin
+        pad(10f)
     }
 
     fun hide(){
@@ -157,7 +158,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         pack()
 
         val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
-                .tint(Color(0x004085bf))
+                .tint(Color(0x004085ff))
         tileTableBackground.minHeight = 0f
         tileTableBackground.minWidth = 0f
         background = tileTableBackground

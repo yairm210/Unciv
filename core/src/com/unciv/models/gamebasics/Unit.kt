@@ -28,6 +28,8 @@ class Unit : INamed, IConstruction, ICivilopedia {
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null
+    var requiredResource:String? = null
+    var uniques:HashSet<String>?=null
 
     fun getMapUnit(): MapUnit {
         val unit = MapUnit()
@@ -37,6 +39,7 @@ class Unit : INamed, IConstruction, ICivilopedia {
         return unit
     }
 
+    fun hasUnique(unique:String) = uniques!=null && uniques!!.contains(unique)
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int = cost
 
@@ -45,7 +48,11 @@ class Unit : INamed, IConstruction, ICivilopedia {
     }
 
     override fun isBuildable(construction: CityConstructions): Boolean {
-        return !unbuildable
+        val civInfo = construction.cityInfo.civInfo
+        if (unbuildable) return false
+        if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
+        if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
+        return true
     }
 
     override fun postBuildEvent(construction: CityConstructions) {

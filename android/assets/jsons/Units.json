@@ -21,6 +21,7 @@
 		unbuildable:true,
 		unitType:"Melee",
 		strength:5,
+		uniques:["Ignores terrain cost"]
 		movement:2
 	},
 	{
@@ -42,6 +43,22 @@
 		cost: 40,
 		hurryCostModifier:20
 	},
+	{
+		name:"Chariot Archer",
+		baseDescription: "",
+		unitType:"Ranged",
+		movement:4,
+		strength:6,
+		rangedStrength:10,
+		cost: 56,
+		requiredTech:"The Wheel",
+		requiredResource:"Horses",
+		uniques:["No Defensive Terrain Bonus","Rough Terrain Penalty"],
+		hurryCostModifier:20
+	},
+	
+	
+	
 	{
 		name:"Great Artist",
 		baseDescription: "Can start an 8-turn golden age or construct a Landmark (+6 culture)", 

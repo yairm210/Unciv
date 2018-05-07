@@ -19,6 +19,9 @@ class CityConstructions {
     internal fun getBuildableBuildings(): List<String> = GameBasics.Buildings.values
             .filter { it.isBuildable(this) }.map { it.name }
 
+    fun getConstructableUnits() = GameBasics.Units.values
+            .filter { it.isBuildable(this) }.map { it.name }
+
     // Library and public school unique (not actualy unique, though...hmm)
     fun getStats(): Stats {
         val stats = Stats()

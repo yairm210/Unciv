@@ -7,11 +7,11 @@ import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.TileImprovement
 
-public class WorkerAutomation(){
+class WorkerAutomation {
 
     fun automateWorkerAction(unit: MapUnit) {
         var tile = unit.getTile()
-        val tileToWork = findTileToWork(tile, unit.civInfo)
+        val tileToWork = findTileToWork(unit)
         if (tileToWork != tile) {
             tile = unit.headTowards(tileToWork.position)
             unit.doPreTurnAction(tile)
@@ -25,27 +25,28 @@ public class WorkerAutomation(){
         }
     }
 
-    private fun findTileToWork(currentTile: TileInfo, civInfo: CivilizationInfo): TileInfo {
+    private fun findTileToWork(worker:MapUnit): TileInfo {
+        val currentTile=worker.getTile()
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.unit == null || it == currentTile)
                             && it.improvement == null
-                            && it.canBuildImprovement(chooseImprovement(it), civInfo)
-                            && {val city=it.getCity();  city==null || it.getCity()?.civInfo == civInfo}() // don't work tiles belonging to another civ
-                }.sortedByDescending { getPriority(it, civInfo) }.toMutableList()
+                            && it.canBuildImprovement(chooseImprovement(it), worker.civInfo)
+                            && {val city=it.getCity();  city==null || it.getCity()?.civInfo == worker.civInfo}() // don't work tiles belonging to another civ
+                }.sortedByDescending { getPriority(it, worker.civInfo) }.toMutableList()
 
         // the tile needs to be actually reachable - more difficult than it seems,
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
         val selectedTile = workableTiles.firstOrNull{
             UnitMovementAlgorithms(currentTile.tileMap)
-                .getShortestPath(currentTile.position, workableTiles.first().position,2f, 2, civInfo)
+                .getShortestPath(currentTile.position, workableTiles.first().position,worker)
                 .isNotEmpty()}
 
         if (selectedTile != null
-                && getPriority(selectedTile, civInfo)>1
+                && getPriority(selectedTile, worker.civInfo)>1
                 && (!workableTiles.contains(currentTile)
-                        || getPriority(selectedTile, civInfo) > getPriority(currentTile,civInfo)))
+                        || getPriority(selectedTile, worker.civInfo) > getPriority(currentTile,worker.civInfo)))
             return selectedTile
         else return currentTile
     }

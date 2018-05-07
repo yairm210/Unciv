@@ -31,12 +31,8 @@ class UnitActions {
     }
 
     fun getUnitActions(unit:MapUnit,worldScreen: WorldScreen): List<UnitAction> {
-
         val tile = unit.getTile()
-
-        val tileMapHolder = worldScreen.tileMapHolder
         val unitTable = worldScreen.unitTable
-
         val actionList = ArrayList<UnitAction>()
 
         if (unitTable.currentlyExecutingAction != "moveTo"
@@ -51,7 +47,7 @@ class UnitActions {
                     UnitAction("Stop movement", {
                 unitTable.currentlyExecutingAction = null
                 unit.action=null
-            },unit.currentMovement != 0f)
+            },true)
         }
 
         if (unit.name == "Settler") {
@@ -78,7 +74,7 @@ class UnitActions {
 
             if("automation" == unit.action){
                 actionList += UnitAction("Stop automation",
-                        {unit.action = null},unit.currentMovement != 0f)
+                        {unit.action = null},true)
             }
             else {
                 actionList += UnitAction("Automate",

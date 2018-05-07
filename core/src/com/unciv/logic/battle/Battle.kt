@@ -25,8 +25,10 @@ class Battle(val gameInfo:GameInfo) {
 
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String,Float>()
-        val tileDefenceBonus = defender.getTile().getDefensiveBonus()
-        if(tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
+        if(!(defender is MapUnitCombatant && defender.unit.getBaseUnit().hasUnique("No Defensive Terrain Bonus"))){
+            val tileDefenceBonus = defender.getTile().getDefensiveBonus()
+            if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
+        }
         return modifiers
     }
 

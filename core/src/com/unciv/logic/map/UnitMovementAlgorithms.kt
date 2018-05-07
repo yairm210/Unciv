@@ -1,38 +1,49 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val tileMap: TileMap){
+   private fun getMovementCostBetweenAdjacentTiles(from:TileInfo, to:TileInfo, unit:MapUnit): Float {
+        if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
+            return 1 / 10f
 
-   fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement:Float, civInfo:CivilizationInfo): HashMap<TileInfo, Float> {
+        if (from.roadStatus !== RoadStatus.None && to.roadStatus !== RoadStatus.None) //Road
+        {
+            if(unit.civInfo.tech.isResearched("Machinery")) return 1/3f
+            else return 1/2f
+        }
+        if(unit.getBaseUnit().hasUnique("Ignores terrain cost")) return 1f;
+
+        if(unit.getBaseUnit().hasUnique("Rough Terrain Penalty")
+                && (to.baseTerrain=="Hill" || to.terrainFeature=="Forest" || to.terrainFeature=="Jungle"))
+            return 4f
+
+        return to.lastTerrain.movementCost.toFloat() // no road
+    }
+
+   fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement:Float, unit: MapUnit): HashMap<TileInfo, Float> {
        val distanceToTiles = HashMap<TileInfo, Float>()
        val unitTile = tileMap[origin]
        distanceToTiles[unitTile] = 0f
        var tilesToCheck = listOf(unitTile)
-       val isMachineryResearched = civInfo.tech.isResearched("Machinery")
 
        while (!tilesToCheck.isEmpty()) {
            val updatedTiles = ArrayList<TileInfo>()
            for (tileToCheck in tilesToCheck)
-               for (maybeUpdatedTile in tileToCheck.neighbors) {
-                   if(maybeUpdatedTile.getOwner() != null && maybeUpdatedTile.getOwner() != civInfo && maybeUpdatedTile.isCityCenter())
+               for (neighbor in tileToCheck.neighbors) {
+                   if(neighbor.getOwner() != null && neighbor.getOwner() != unit.civInfo
+                           && neighbor.isCityCenter())
                        continue // Enemy city, can't move through it!
 
-                   var distanceBetweenTiles = maybeUpdatedTile.lastTerrain.movementCost.toFloat() // no road
-                   if (tileToCheck.roadStatus !== RoadStatus.None && maybeUpdatedTile.roadStatus !== RoadStatus.None) //Road
-                       distanceBetweenTiles = if (isMachineryResearched) 1 / 3f else 1 / 2f
-
-                   if (tileToCheck.roadStatus === RoadStatus.Railroad && maybeUpdatedTile.roadStatus === RoadStatus.Railroad) // Railroad
-                       distanceBetweenTiles = 1 / 10f
+                   var distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck,neighbor,unit)
 
                    var totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
-                   if (!distanceToTiles.containsKey(maybeUpdatedTile) || distanceToTiles[maybeUpdatedTile]!! > totalDistanceToTile) {
+                   if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) {
                        if (totalDistanceToTile < unitMovement)
-                           updatedTiles += maybeUpdatedTile
+                           updatedTiles += neighbor
                        else
                            totalDistanceToTile = unitMovement
-                       distanceToTiles[maybeUpdatedTile] = totalDistanceToTile
+                       distanceToTiles[neighbor] = totalDistanceToTile
                    }
                }
 
@@ -42,8 +53,7 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
        return distanceToTiles
    }
 
-
-   fun getShortestPath(origin: Vector2, destination: Vector2, currentMovement: Float, maxMovement: Int, civInfo: CivilizationInfo): List<TileInfo> {
+   fun getShortestPath(origin: Vector2, destination: Vector2, unit:MapUnit): List<TileInfo> {
        if(origin.equals(destination)) return listOf(tileMap[origin]) // edge case that's needed, so that workers will know that they can reach their own tile. *sig
 
        var tilesToCheck: List<TileInfo> = listOf(tileMap[origin])
@@ -54,9 +64,9 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
        while (true) {
            val newTilesToCheck = ArrayList<TileInfo>()
            val distanceToDestination = HashMap<TileInfo, Float>()
-           val movementThisTurn = if (distance == 1) currentMovement else maxMovement.toFloat()
+           val movementThisTurn = if (distance == 1) unit.currentMovement else unit.maxMovement.toFloat()
            for (tileToCheck in tilesToCheck) {
-               val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, civInfo)
+               val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn, unit)
                for (reachableTile in distanceToTilesThisTurn.keys) {
                    if(reachableTile.position == destination)
                        distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!

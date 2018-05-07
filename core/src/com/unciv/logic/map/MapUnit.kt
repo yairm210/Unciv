@@ -34,7 +34,7 @@ class MapUnit {
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
         val tile = getTile()
         return UnitMovementAlgorithms(tile.tileMap).getDistanceToTilesWithinTurn(tile.position,currentMovement,
-                civInfo)
+                this)
     }
 
     fun doPreTurnAction(tile: TileInfo) {
@@ -102,7 +102,7 @@ class MapUnit {
 
         else { // If the tile is far away, we need to build a path how to get there, and then take the first step
             val path = UnitMovementAlgorithms(tileMap)
-                    .getShortestPath(currentTile.position, destination, currentMovement, maxMovement, civInfo)
+                    .getShortestPath(currentTile.position, destination, this)
             destinationTileThisTurn = path.first()
         }
 
