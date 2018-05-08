@@ -28,7 +28,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // as tech progresses so does city strength
         val techsPercentKnown: Float = city.civInfo.tech.techsResearched.count().toFloat() /
                 GameBasics.Technologies.count()
-        val strengthFromTechs = Math.pow(techsPercentKnown*5.0,2.0) *5
+        val strengthFromTechs = Math.pow(techsPercentKnown*3.0,2.0) *5
 
         // The way all of this adds up...
         // 25% of the way through the game provides an extra 3.12

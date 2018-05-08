@@ -47,7 +47,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitLabelText += "\r\nHealth: " + unit.health +
                         "\r\nStrength: " + unit.getBaseUnit().strength
             }
-            if (unit.getBaseUnit().unitType == UnitType.Ranged)
+            if (unit.getBaseUnit().rangedStrength!=0)
                 unitLabelText += "\r\nRanged strength: "+unit.getBaseUnit().rangedStrength
 
             unitLabel.setText(unitLabelText)

@@ -94,7 +94,7 @@ class Battle(val gameInfo:GameInfo) {
         var damageToDefender = calculateDamageToDefender(attacker,defender)
         var damageToAttacker = calculateDamageToAttacker(attacker,defender)
 
-        if(defender.getUnitType() == CombatantType.Civilian){
+        if(defender.getUnitType() == UnitType.Civilian){
             defender.takeDamage(100) // kill
         }
         else if (attacker.isRanged()) {
@@ -127,7 +127,7 @@ class Battle(val gameInfo:GameInfo) {
                     if (attacker.isDefeated()) " was destroyed while attacking"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
             val defenderString =
-                    if (defender.getUnitType() == CombatantType.City) defender.getName()
+                    if (defender.getUnitType() == UnitType.City) defender.getName()
                     else " our " + defender.getName()
             val notificationString = "An enemy " + attacker.getName() + whatHappenedString + defenderString
             gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position)
@@ -135,7 +135,7 @@ class Battle(val gameInfo:GameInfo) {
 
 
         if(defender.isDefeated()
-                && defender.getUnitType() == CombatantType.City
+                && defender.getUnitType() == UnitType.City
                 && attacker.isMelee()){
             conquerCity((defender as CityCombatant).city, attacker)
         }
@@ -154,7 +154,7 @@ class Battle(val gameInfo:GameInfo) {
         city.civInfo = attacker.getCivilization()
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health?
         city.getCenterTile().unit = null
-        city.expansion.cultureStored = 0;
+        city.expansion.cultureStored = 0
         city.expansion.reset()
 
         // now that the tiles have changed, we need to reassign population

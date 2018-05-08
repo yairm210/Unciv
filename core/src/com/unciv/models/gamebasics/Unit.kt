@@ -9,14 +9,31 @@ import com.unciv.models.stats.INamed
 class Unit : INamed, IConstruction, ICivilopedia {
     override val description: String
         get(){
-            val sb = StringBuilder()
-            sb.appendln(baseDescription)
-            if(unbuildable) sb.appendln("Unbuildable")
-            else sb.appendln("Cost: $cost")
-            if(strength!=0)  sb.appendln("Strength: $strength")
-            if(rangedStrength!=0)  sb.appendln("Ranged strength: $rangedStrength")
-            return sb.toString()
+            return getDescription(false)
         }
+
+    fun getDescription(forPickerScreen:Boolean): String {
+        val sb = StringBuilder()
+        if(baseDescription!="") sb.appendln(baseDescription)
+        if(!forPickerScreen) {
+            if (unbuildable) sb.appendln("Unbuildable")
+            else sb.appendln("Cost: $cost")
+            if(requiredResource!=null) sb.appendln("Required resource: $requiredResource")
+            if(requiredTech!=null) sb.appendln("Required tech: $requiredTech")
+        }
+        if(strength!=0){
+            sb.append("Strength: $strength")
+            if(rangedStrength!=0)  sb.append(",  Ranged strength: $rangedStrength")
+            sb.appendln()
+        }
+
+        if(uniques!=null){
+            for(unique in uniques!!)
+                sb.appendln(unique)
+        }
+        sb.appendln("Movement: $movement")
+        return sb.toString()
+    }
 
     override lateinit var name: String
     var baseDescription: String? = null
@@ -30,6 +47,7 @@ class Unit : INamed, IConstruction, ICivilopedia {
     var requiredTech:String? = null
     var requiredResource:String? = null
     var uniques:HashSet<String>?=null
+    var upgradesTo:String? = null
 
     fun getMapUnit(): MapUnit {
         val unit = MapUnit()

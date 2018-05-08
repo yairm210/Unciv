@@ -4,7 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.logic.battle.*
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
@@ -120,7 +123,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attackerCanReachDefender:Boolean
         var tileToMoveTo:TileInfo? = null
 
-        if(attacker.getCombatantType() == CombatantType.Melee){
+        if(attacker.isMelee()){
             if(attacker.getTile().neighbors.contains(defender.getTile())){
                 attackerCanReachDefender=true
             }

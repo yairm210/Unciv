@@ -46,8 +46,6 @@ class UnitAutomation{
 
         if(unit.name.startsWith("Great")) return // DON'T MOVE A MUSCLE
 
-        if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center
-
         if (unit.health < 50) {
             healUnit(unit)
             return
@@ -77,6 +75,9 @@ class UnitAutomation{
                 return
             }
         }
+
+        if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center, so if you havn't found annyonw aroud to attack, forget it.
+
 
         if (unit.health < 80) {
             healUnit(unit)
