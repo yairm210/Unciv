@@ -18,7 +18,7 @@
 	{
 		name:"Scout",
 		baseDescription: "Has no abilites, can only explore", 
-		unbuildable:true,
+		cost:25,
 		unitType:"Melee",
 		strength:5,
 		uniques:["Ignores terrain cost"]
@@ -31,32 +31,68 @@
 		movement:2,
 		strength:8,
 		cost: 40,
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		upgradesTo:"Swordsman"
 	},
 	{
 		name:"Archer",
 		baseDescription: "A basic fighting unit",
-		unitType:"Ranged",
+		unitType:"Archery",
 		movement:2,
 		strength:5,
 		rangedStrength:7,
 		cost: 40,
+		uniques:["Penalty vs City 33%"]
 		hurryCostModifier:20
 	},
 	{
 		name:"Chariot Archer",
 		baseDescription: "",
-		unitType:"Ranged",
+		unitType:"Archery",
 		movement:4,
 		strength:6,
 		rangedStrength:10,
 		cost: 56,
 		requiredTech:"The Wheel",
 		requiredResource:"Horses",
-		uniques:["No Defensive Terrain Bonus","Rough Terrain Penalty"],
+		uniques:["No defensive terrain bonus","Rough terrain penalty"],
 		hurryCostModifier:20
 	},
-	
+	{
+		name:"Spearman",
+		baseDescription: "",
+		unitType:"Melee",
+		movement:2,
+		strength:11,
+		cost: 56,
+		requiredTech:"Bronze Working",
+		uniques:["Bonus vs Mounted 50%"],
+		hurryCostModifier:20
+	},
+	{
+		name:"Catapult",
+		baseDescription: "",
+		unitType:"Siege",
+		movement:2,
+		strength:7,
+		rangedStrength:8,
+		cost: 75,
+		requiredTech:"Mathematics",
+		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
+		hurryCostModifier:20
+	},
+	{
+		name:"Horseman",
+		baseDescription:"",
+		unitType:"Mounted",
+		movement:4,
+		strength:12,
+		cost: 75,
+		requiredTech:"Horseback Riding",
+		requiredResource:"Horses",
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		hurryCostModifier:20
+	},
 	
 	
 	{

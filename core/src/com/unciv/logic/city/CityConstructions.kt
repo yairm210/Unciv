@@ -16,11 +16,11 @@ class CityConstructions {
     var currentConstruction: String = "Monument" // default starting building!
 
 
-    internal fun getBuildableBuildings(): List<String> = GameBasics.Buildings.values
-            .filter { it.isBuildable(this) }.map { it.name }
+    internal fun getBuildableBuildings(): List<Building> = GameBasics.Buildings.values
+            .filter { it.isBuildable(this) }
 
     fun getConstructableUnits() = GameBasics.Units.values
-            .filter { it.isBuildable(this) }.map { it.name }
+            .filter { it.isBuildable(this) }
 
     // Library and public school unique (not actualy unique, though...hmm)
     fun getStats(): Stats {

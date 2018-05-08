@@ -7,13 +7,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Unit
 import java.text.DecimalFormat
 
-enum class UnitType{
-    Civilian,
-    Melee,
-    Ranged
-
-}
-
 class MapUnit {
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -69,45 +62,11 @@ class MapUnit {
         tile.improvementInProgress = null
     }
 
-
     /**
-     * @param origin
-     * @param destination
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: Vector2): TileInfo {
-        val currentTile = getTile()
-        val tileMap = currentTile.tileMap
-
-        val finalDestinationTile = tileMap[destination]
-        val distanceToTiles = getDistanceToTiles()
-
-        val destinationTileThisTurn:TileInfo
-        if (distanceToTiles.containsKey(finalDestinationTile)) { // we can get there this turn
-            if (finalDestinationTile.unit == null)
-                destinationTileThisTurn = finalDestinationTile
-            else   // Someone is blocking to the path to the final tile...
-            {
-                val destinationNeighbors = tileMap[destination].neighbors
-                if(destinationNeighbors.contains(currentTile)) // We're right nearby anyway, no need to move
-                    return currentTile
-
-                val reachableDestinationNeighbors = destinationNeighbors.filter { distanceToTiles.containsKey(it) && it.unit==null }
-                if(reachableDestinationNeighbors.isEmpty()) // We can't get closer...
-                    return currentTile
-
-                destinationTileThisTurn = reachableDestinationNeighbors.minBy { distanceToTiles[it]!! }!!
-            }
-        }
-
-        else { // If the tile is far away, we need to build a path how to get there, and then take the first step
-            val path = UnitMovementAlgorithms(tileMap)
-                    .getShortestPath(currentTile.position, destination, this)
-            destinationTileThisTurn = path.first()
-        }
-
-        moveToTile(destinationTileThisTurn)
-        return destinationTileThisTurn
+        return UnitMovementAlgorithms(getTile().tileMap).headTowards(this,destination)
     }
 
     private fun heal(){

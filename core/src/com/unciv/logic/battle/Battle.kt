@@ -9,13 +9,36 @@ import kotlin.collections.HashMap
 
 class Battle(val gameInfo:GameInfo) {
 
-    fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
+
+    fun getGeneralModifiers(combatant:ICombatant,enemy:ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String,Float>()
-        if(attacker.getCombatantType()==CombatantType.Melee) {
+        if(combatant is MapUnitCombatant){
+            val uniques = combatant.unit.getBaseUnit().uniques
+            if(uniques!=null) {
+                // This beut allows  us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
+                for (unique in uniques){
+                    val regexResult = Regex("""(Bonus|Penalty) vs (\S*) (\d*)%""").matchEntire(unique)
+                    if(regexResult==null) continue
+                    val vsType = UnitType.valueOf(regexResult.groups[2]!!.value)
+                    val modificationAmount = regexResult.groups[3]!!.value.toFloat()/100  // if it says 15%, that's 0.15f in modification
+                    if(enemy.getUnitType() == vsType){
+                        if(regexResult.groups[1]!!.value=="Bonus")
+                            modifiers.put("Bonus vs $vsType",modificationAmount)
+                        else modifiers.put("Penalty vs $vsType",-modificationAmount)
+                    }
+                }
+            }
+        }
+        return modifiers
+    }
+
+    fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
+        val modifiers = getGeneralModifiers(attacker,defender)
+        if(attacker.isMelee()) {
             val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
                 it.unit != null
                         && it.unit!!.owner == attacker.getCivilization().civName
-                        && it.unit!!.getBaseUnit().unitType == UnitType.Melee
+                        && MapUnitCombatant(it.unit!!).isMelee()
             }
             if(numberOfAttackersSurroundingDefender >1) modifiers["Flanking"] = 0.15f
         }
@@ -24,8 +47,8 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
-        val modifiers = HashMap<String,Float>()
-        if(!(defender is MapUnitCombatant && defender.unit.getBaseUnit().hasUnique("No Defensive Terrain Bonus"))){
+        val modifiers = getGeneralModifiers(defender,attacker)
+        if(!(defender is MapUnitCombatant && defender.unit.getBaseUnit().hasUnique("No defensive terrain bonus"))){
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
@@ -57,7 +80,7 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
-        if(attacker.getCombatantType() == CombatantType.Ranged) return 0
+        if(attacker.isRanged()) return 0
         return (getDefendingStrength(attacker,defender) * 50 / getAttackingStrength(attacker,defender)).toInt()
     }
 
@@ -71,10 +94,10 @@ class Battle(val gameInfo:GameInfo) {
         var damageToDefender = calculateDamageToDefender(attacker,defender)
         var damageToAttacker = calculateDamageToAttacker(attacker,defender)
 
-        if(defender.getCombatantType() == CombatantType.Civilian){
+        if(defender.getUnitType() == CombatantType.Civilian){
             defender.takeDamage(100) // kill
         }
-        else if (attacker.getCombatantType() == CombatantType.Ranged) {
+        else if (attacker.isRanged()) {
             defender.takeDamage(damageToDefender) // straight up
         } else {
             //melee attack is complicated, because either side may defeat the other midway
@@ -104,7 +127,7 @@ class Battle(val gameInfo:GameInfo) {
                     if (attacker.isDefeated()) " was destroyed while attacking"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
             val defenderString =
-                    if (defender.getCombatantType() == CombatantType.City) defender.getName()
+                    if (defender.getUnitType() == CombatantType.City) defender.getName()
                     else " our " + defender.getName()
             val notificationString = "An enemy " + attacker.getName() + whatHappenedString + defenderString
             gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position)
@@ -112,12 +135,12 @@ class Battle(val gameInfo:GameInfo) {
 
 
         if(defender.isDefeated()
-                && defender.getCombatantType() == CombatantType.City
-                && attacker.getCombatantType() == CombatantType.Melee){
+                && defender.getUnitType() == CombatantType.City
+                && attacker.isMelee()){
             conquerCity((defender as CityCombatant).city, attacker)
         }
 
-        if (defender.isDefeated() && attacker.getCombatantType() == CombatantType.Melee)
+        if (defender.isDefeated() && attacker.isMelee())
             (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
 
         if(attacker is MapUnitCombatant) attacker.unit.currentMovement = 0f
@@ -151,5 +174,4 @@ class Battle(val gameInfo:GameInfo) {
         (attacker as MapUnitCombatant).unit.moveToTile(city.getCenterTile())
         city.civInfo.gameInfo.updateTilesToCities()
     }
-
 }

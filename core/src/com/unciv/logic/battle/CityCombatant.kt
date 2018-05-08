@@ -3,6 +3,7 @@ package com.unciv.logic.battle
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitType
 import com.unciv.models.gamebasics.GameBasics
 
 class CityCombatant(val city: CityInfo) : ICombatant {
@@ -17,7 +18,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         if(city.health<1) city.health=1  // min health is 1
     }
 
-    override fun getCombatantType(): CombatantType = CombatantType.City
+    override fun getUnitType():UnitType=UnitType.City
     override fun getAttackingStrength(defender: ICombatant): Int = getCityStrength()
     override fun getDefendingStrength(attacker: ICombatant): Int = getCityStrength()
 

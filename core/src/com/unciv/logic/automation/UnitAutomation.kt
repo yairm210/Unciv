@@ -71,7 +71,7 @@ class UnitAutomation{
             val damageToAttacker = Battle(unit.civInfo.gameInfo).calculateDamageToAttacker(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
 
             if (damageToAttacker < unit.health) { // don't attack if we'll die from the attack
-                if(unit.getBaseUnit().unitType == UnitType.Melee)
+                if(MapUnitCombatant(unit).isMelee())
                     unit.headTowards(unitTileToAttack.position)
                 Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
                 return

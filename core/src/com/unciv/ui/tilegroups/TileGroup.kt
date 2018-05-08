@@ -66,12 +66,12 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
 
     open fun update(isViewable: Boolean) {
+        hideCircle()
         if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
             hexagon.color = Color.BLACK
             return
         }
 
-        hideCircle()
         updateTerrainFeatureImage()
         updateTileColor(isViewable)
         updateResourceImage()

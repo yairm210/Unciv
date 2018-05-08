@@ -18,10 +18,9 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getAttackingStrength(defender: ICombatant): Int {
-        val attackerStrength =
-                if (unit.getBaseUnit().unitType == UnitType.Ranged)
-                    unit.getBaseUnit().rangedStrength
-                else unit.getBaseUnit().strength
+        val attackerStrength: Int
+        if (isRanged()) attackerStrength = unit.getBaseUnit().rangedStrength
+        else attackerStrength = unit.getBaseUnit().strength
         return attackerStrength*unit.health
     }
 
@@ -30,13 +29,8 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         return unit.getBaseUnit().strength*unit.health
     }
 
-    override fun getCombatantType(): CombatantType {
-        when(unit.getBaseUnit().unitType){
-            UnitType.Melee -> return CombatantType.Melee
-            UnitType.Ranged -> return CombatantType.Ranged
-            UnitType.Civilian -> return CombatantType.Civilian
-            else -> throw Exception("Should never get here!")
-        }
+    override fun getUnitType(): UnitType {
+        return unit.getBaseUnit().unitType
     }
 
     override fun toString(): String {

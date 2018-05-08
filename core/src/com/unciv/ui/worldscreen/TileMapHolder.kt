@@ -107,8 +107,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val attackableTiles:List<TileInfo>
             when(unit.getBaseUnit().unitType){
                 UnitType.Civilian -> return
-                UnitType.Melee -> attackableTiles = unit.getDistanceToTiles().keys.toList()
-                UnitType.Ranged -> attackableTiles = unit.getTile().getTilesInDistance(2)
+                UnitType.Melee, UnitType.Mounted -> attackableTiles = unit.getDistanceToTiles().keys.toList()
+                UnitType.Ranged, UnitType.Siege -> attackableTiles = unit.getTile().getTilesInDistance(2)
+                UnitType.City -> throw Exception("How are you attacking with a city?")
             }
 
             for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner && civViewableTiles.contains(it)})
