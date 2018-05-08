@@ -13,3 +13,6 @@ All from [the Noun Project](https://thenounproject.com) licenced under Creative 
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio
 * [Axe](https://thenounproject.com/search/?q=Axe&i=1688143) By ehab.abdullah
 * [Hammer](https://thenounproject.com/search/?q=Hammer&i=667666) By Hea Poh Lin
+* [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger
+* [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera
+* [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
