@@ -38,3 +38,5 @@ You can start and finish a game by winning a Science victory - by building the A
 You can also (technically) win a culture victory, although it is unfeasable at this point
 
 I'd love to hear your feedback, either here or via mail to yairm210@hotmail.com!
+
+# [Credits and 3rd parties](Credits.md)
