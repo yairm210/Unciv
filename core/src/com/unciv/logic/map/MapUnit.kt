@@ -26,31 +26,32 @@ class MapUnit {
 
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
         val tile = getTile()
-        return UnitMovementAlgorithms(tile.tileMap).getDistanceToTilesWithinTurn(tile.position,currentMovement,
-                this)
+        return movementAlgs().getDistanceToTilesWithinTurn(tile.position,currentMovement)
     }
 
-    fun doPreTurnAction(tile: TileInfo) {
+    fun doPreTurnAction() {
+        val currentTile = getTile()
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
             val destinationVector = Vector2(Integer.parseInt(destination[0]).toFloat(), Integer.parseInt(destination[1]).toFloat())
-            val gotTo = headTowards(destinationVector)
-            if(gotTo==tile) // We didn't move at all
+            val gotTo = movementAlgs().headTowards(currentTile.tileMap[destinationVector])
+            if(gotTo==currentTile) // We didn't move at all
                 return
             if (gotTo.position == destinationVector) action = null
-            if (currentMovement != 0f) doPreTurnAction(gotTo)
+            if (currentMovement != 0f) doPreTurnAction()
             return
         }
 
         if (action == "automation") WorkerAutomation().automateWorkerAction(this)
     }
 
-    private fun doPostTurnAction(tile: TileInfo) {
-        if (name == "Worker" && tile.improvementInProgress != null) workOnImprovement(tile)
+    private fun doPostTurnAction() {
+        if (name == "Worker" && getTile().improvementInProgress != null) workOnImprovement()
     }
 
-    private fun workOnImprovement(tile: TileInfo) {
+    private fun workOnImprovement() {
+        val tile=getTile()
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
         when {
@@ -65,9 +66,6 @@ class MapUnit {
     /**
      * @return The tile that we reached this turn
      */
-    fun headTowards(destination: Vector2): TileInfo {
-        return UnitMovementAlgorithms(getTile().tileMap).headTowards(this,destination)
-    }
 
     private fun heal(){
         val tile = getTile()
@@ -93,13 +91,12 @@ class MapUnit {
     }
 
     fun nextTurn() {
-        val tile = getTile()
-        doPostTurnAction(tile)
+        doPostTurnAction()
         if(currentMovement==maxMovement.toFloat()){ // didn't move this turn
             heal()
         }
         currentMovement = maxMovement.toFloat()
-        doPreTurnAction(tile)
+        doPreTurnAction()
     }
 
     fun hasUnique(unique:String): Boolean {
@@ -107,4 +104,5 @@ class MapUnit {
         return baseUnit.uniques!=null && baseUnit.uniques!!.contains(unique)
     }
 
+    fun movementAlgs() = UnitMovementAlgorithms(this)
 }

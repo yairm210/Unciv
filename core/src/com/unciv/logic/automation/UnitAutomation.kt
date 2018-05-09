@@ -62,7 +62,7 @@ class UnitAutomation{
             if (unitToAttack.getBaseUnit().unitType == UnitType.Civilian) { // kill
                 unitToAttack.civInfo.addNotification("Our " + unitToAttack.name + " was destroyed by an enemy " + unit.name + "!", unitTileToAttack.position)
                 unitTileToAttack.unit = null
-                unit.headTowards(unitTileToAttack.position)
+                unit.movementAlgs().headTowards(unitTileToAttack)
                 return
             }
 
@@ -70,7 +70,7 @@ class UnitAutomation{
 
             if (damageToAttacker < unit.health) { // don't attack if we'll die from the attack
                 if(MapUnitCombatant(unit).isMelee())
-                    unit.headTowards(unitTileToAttack.position)
+                    unit.movementAlgs().headTowards(unitTileToAttack)
                 Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
                 return
             }
@@ -78,6 +78,13 @@ class UnitAutomation{
 
         if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center, so if you havn't found annyonw aroud to attack, forget it.
 
+        val reachableCitiesWithoutUnits = unit.civInfo.cities.filter { it.getCenterTile().unit==null
+                && unit.movementAlgs().canReach(it.getCenterTile())  }
+        if(reachableCitiesWithoutUnits.isNotEmpty()){
+            val closestCityWithoutUnit = reachableCitiesWithoutUnits
+                    .minBy { unit.movementAlgs().getShortestPath(it.getCenterTile()).size }!!
+            unit.movementAlgs().headTowards(closestCityWithoutUnit.getCenterTile())
+        }
 
         if (unit.health < 80) {
             healUnit(unit)
@@ -94,7 +101,7 @@ class UnitAutomation{
                 .firstOrNull { attackableTiles.contains(it) }
 
         if (closestUnit != null) {
-            unit.headTowards(closestUnit.position)
+            unit.movementAlgs().headTowards(closestUnit)
             return
         }
 
@@ -132,7 +139,7 @@ class UnitAutomation{
         if (unit.getTile() == bestCityLocation)
             UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
         else {
-            unit.headTowards(bestCityLocation.position)
+            unit.movementAlgs().headTowards(bestCityLocation)
             if (unit.currentMovement > 0 && unit.getTile() == bestCityLocation)
                 UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
         }

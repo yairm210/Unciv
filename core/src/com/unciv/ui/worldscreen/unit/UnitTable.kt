@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -66,8 +65,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun tileSelected(selectedTile: TileInfo) {
         if(currentlyExecutingAction=="moveTo"){
 
-            if(UnitMovementAlgorithms(selectedTile.tileMap)
-                    .getShortestPath(selectedTile.position, selectedTile.position, selectedUnit!!).isEmpty())
+            if(selectedUnit!!.movementAlgs()
+                    .getShortestPath(selectedUnit!!.getTile().position, selectedTile.position).isEmpty())
                 return // can't reach there with the selected unit, watcha want me to do?
 
             val reachedTile = selectedUnit!!.headTowards(selectedTile.position)

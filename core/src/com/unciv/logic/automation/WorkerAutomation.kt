@@ -3,18 +3,17 @@ package com.unciv.logic.automation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitMovementAlgorithms
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.TileImprovement
 
 class WorkerAutomation {
 
     fun automateWorkerAction(unit: MapUnit) {
-        var tile = unit.getTile()
+        val tile = unit.getTile()
         val tileToWork = findTileToWork(unit)
         if (tileToWork != tile) {
-            tile = unit.headTowards(tileToWork.position)
-            unit.doPreTurnAction(tile)
+            unit.movementAlgs().headTowards(tileToWork)
+            unit.doPreTurnAction()
             return
         }
         if (tile.improvementInProgress == null) {
@@ -39,8 +38,8 @@ class WorkerAutomation {
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
         val selectedTile = workableTiles.firstOrNull{
-            UnitMovementAlgorithms(currentTile.tileMap)
-                .getShortestPath(currentTile.position, workableTiles.first().position,worker)
+            worker.movementAlgs()
+                .getShortestPath(workableTiles.first())
                 .isNotEmpty()}
 
         if (selectedTile != null
