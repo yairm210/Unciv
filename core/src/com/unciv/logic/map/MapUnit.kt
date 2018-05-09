@@ -102,4 +102,9 @@ class MapUnit {
         doPreTurnAction(tile)
     }
 
+    fun hasUnique(unique:String): Boolean {
+        val baseUnit = getBaseUnit()
+        return baseUnit.uniques!=null && baseUnit.uniques!!.contains(unique)
+    }
+
 }

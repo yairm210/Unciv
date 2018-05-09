@@ -42,7 +42,6 @@
 		strength:5,
 		rangedStrength:7,
 		cost: 40,
-		uniques:["Penalty vs City 33%"]
 		hurryCostModifier:20
 	},
 	{

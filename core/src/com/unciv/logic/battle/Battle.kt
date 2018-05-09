@@ -6,6 +6,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.max
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -14,7 +15,7 @@ class Battle(val gameInfo:GameInfo) {
 
 
 
-    fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
+    private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
         if (combatant is MapUnitCombatant) {
             val uniques = combatant.unit.getBaseUnit().uniques
@@ -27,8 +28,8 @@ class Battle(val gameInfo:GameInfo) {
                     val modificationAmount = regexResult.groups[3]!!.value.toFloat() / 100  // if it says 15%, that's 0.15f in modification
                     if (enemy.getUnitType() == vsType) {
                         if (regexResult.groups[1]!!.value == "Bonus")
-                            modifiers.put("Bonus vs $vsType", modificationAmount)
-                        else modifiers.put("Penalty vs $vsType", -modificationAmount)
+                            modifiers["Bonus vs $vsType"] = modificationAmount
+                        else modifiers["Penalty vs $vsType"] = -modificationAmount
                     }
                 }
             }
@@ -52,22 +53,22 @@ class Battle(val gameInfo:GameInfo) {
 
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
         val modifiers = getGeneralModifiers(defender, attacker)
-        if (!(defender is MapUnitCombatant && defender.unit.getBaseUnit().hasUnique("No defensive terrain bonus"))) {
+        if (!(defender is MapUnitCombatant && defender.unit.hasUnique("No defensive terrain bonus"))) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
         return modifiers
     }
 
-    fun modifiersToMultiplicationBonus(modifiers: HashMap<String, Float>): Float {
+    private fun modifiersToMultiplicationBonus(modifiers: HashMap<String, Float>): Float {
         // modifiers are like 0.1 for a 10% bonus, -0.1 for a 10% loss
         var modifier = 1f
         for (m in modifiers.values) modifier *= (1 + m)
         return modifier
     }
 
-    fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        if (combatant.getUnitType() == UnitType.City) return 1f;
+    private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
+        if (combatant.getUnitType() == UnitType.City) return 1f
         return 1 / 2f + combatant.getHealth() / 200f // Each point of health reduces damage dealt by 0.5%
     }
 
@@ -132,7 +133,7 @@ class Battle(val gameInfo:GameInfo) {
 
     }
 
-    fun postBattleAction(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo){
+    private fun postBattleAction(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo){
 
         if (defender.getCivilization().isPlayerCivilization()) {
             val whatHappenedString =
@@ -155,7 +156,11 @@ class Battle(val gameInfo:GameInfo) {
         if (defender.isDefeated() && attacker.isMelee())
             (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
 
-        if(attacker is MapUnitCombatant) attacker.unit.currentMovement = 0f
+        if(attacker is MapUnitCombatant) {
+            if (attacker.unit.hasUnique("Can move after attacking"))
+                attacker.unit.currentMovement = max(0f, attacker.unit.currentMovement - 1)
+            else attacker.unit.currentMovement = 0f
+        }
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {

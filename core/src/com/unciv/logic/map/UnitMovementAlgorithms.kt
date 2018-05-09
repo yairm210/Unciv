@@ -12,9 +12,9 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
             if(unit.civInfo.tech.isResearched("Machinery")) return 1/3f
             else return 1/2f
         }
-        if(unit.getBaseUnit().hasUnique("Ignores terrain cost")) return 1f;
+        if(unit.hasUnique("Ignores terrain cost")) return 1f
 
-        if(unit.getBaseUnit().hasUnique("Rough terrain penalty")
+       if(unit.hasUnique("Rough terrain penalty")
                 && (to.baseTerrain=="Hill" || to.terrainFeature=="Forest" || to.terrainFeature=="Jungle"))
             return 4f
 
@@ -35,7 +35,7 @@ class UnitMovementAlgorithms(val tileMap: TileMap){
                            && neighbor.isCityCenter())
                        continue // Enemy city, can't move through it!
 
-                   var distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck,neighbor,unit)
+                   val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck,neighbor,unit)
 
                    var totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) {

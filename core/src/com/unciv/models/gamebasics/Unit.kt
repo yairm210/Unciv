@@ -57,8 +57,6 @@ class Unit : INamed, IConstruction, ICivilopedia {
         return unit
     }
 
-    fun hasUnique(unique:String) = uniques!=null && uniques!!.contains(unique)
-
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int = cost
 
     override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
