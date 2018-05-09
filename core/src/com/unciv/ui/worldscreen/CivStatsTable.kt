@@ -39,6 +39,7 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
             resourceLabels.put(resource.name, resourceLabel)
             resourceTable.add(resourceLabel)
         }
+        resourceTable.pack()
         add(resourceTable).row()
 
 
@@ -50,11 +51,12 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
         statsTable.add(scienceLabel.apply { setAlignment(Align.center) })
         statsTable.add(happinessLabel.apply { setAlignment(Align.center) })
         statsTable.add(cultureLabel.apply { setAlignment(Align.center) })
-        add(statsTable)
 
+        statsTable.pack()
+        statsTable.width = screen.stage.width - 20
+        add(statsTable)
         pack()
         width = screen.stage.width - 20
-        statsTable.width = width
     }
 
     internal fun getMenuButton(): TextButton {

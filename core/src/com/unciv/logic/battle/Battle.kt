@@ -7,24 +7,28 @@ import com.unciv.logic.map.UnitType
 import java.util.*
 import kotlin.collections.HashMap
 
+/**
+ * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
+ */
 class Battle(val gameInfo:GameInfo) {
 
 
-    fun getGeneralModifiers(combatant:ICombatant,enemy:ICombatant): HashMap<String, Float> {
-        val modifiers = HashMap<String,Float>()
-        if(combatant is MapUnitCombatant){
+
+    fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
+        val modifiers = HashMap<String, Float>()
+        if (combatant is MapUnitCombatant) {
             val uniques = combatant.unit.getBaseUnit().uniques
-            if(uniques!=null) {
+            if (uniques != null) {
                 // This beut allows  us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
-                for (unique in uniques){
+                for (unique in uniques) {
                     val regexResult = Regex("""(Bonus|Penalty) vs (\S*) (\d*)%""").matchEntire(unique)
-                    if(regexResult==null) continue
+                    if (regexResult == null) continue
                     val vsType = UnitType.valueOf(regexResult.groups[2]!!.value)
-                    val modificationAmount = regexResult.groups[3]!!.value.toFloat()/100  // if it says 15%, that's 0.15f in modification
-                    if(enemy.getUnitType() == vsType){
-                        if(regexResult.groups[1]!!.value=="Bonus")
-                            modifiers.put("Bonus vs $vsType",modificationAmount)
-                        else modifiers.put("Penalty vs $vsType",-modificationAmount)
+                    val modificationAmount = regexResult.groups[3]!!.value.toFloat() / 100  // if it says 15%, that's 0.15f in modification
+                    if (enemy.getUnitType() == vsType) {
+                        if (regexResult.groups[1]!!.value == "Bonus")
+                            modifiers.put("Bonus vs $vsType", modificationAmount)
+                        else modifiers.put("Penalty vs $vsType", -modificationAmount)
                     }
                 }
             }
@@ -33,34 +37,40 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     fun getAttackModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
-        val modifiers = getGeneralModifiers(attacker,defender)
-        if(attacker.isMelee()) {
+        val modifiers = getGeneralModifiers(attacker, defender)
+        if (attacker.isMelee()) {
             val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
                 it.unit != null
                         && it.unit!!.owner == attacker.getCivilization().civName
                         && MapUnitCombatant(it.unit!!).isMelee()
             }
-            if(numberOfAttackersSurroundingDefender >1) modifiers["Flanking"] = 0.15f
+            if (numberOfAttackersSurroundingDefender > 1) modifiers["Flanking"] = 0.15f
         }
 
         return modifiers
     }
 
     fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
-        val modifiers = getGeneralModifiers(defender,attacker)
-        if(!(defender is MapUnitCombatant && defender.unit.getBaseUnit().hasUnique("No defensive terrain bonus"))){
+        val modifiers = getGeneralModifiers(defender, attacker)
+        if (!(defender is MapUnitCombatant && defender.unit.getBaseUnit().hasUnique("No defensive terrain bonus"))) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
         return modifiers
     }
 
-    fun modifiersToMultiplicationBonus(modifiers:HashMap<String,Float> ):Float{
+    fun modifiersToMultiplicationBonus(modifiers: HashMap<String, Float>): Float {
         // modifiers are like 0.1 for a 10% bonus, -0.1 for a 10% loss
         var modifier = 1f
-        for(m in modifiers.values) modifier *= (1+m)
+        for (m in modifiers.values) modifier *= (1 + m)
         return modifier
     }
+
+    fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
+        if (combatant.getUnitType() == UnitType.City) return 1f;
+        return 1 / 2f + combatant.getHealth() / 200f // Each point of health reduces damage dealt by 0.5%
+    }
+
 
     /**
      * Includes attack modifiers
@@ -81,11 +91,13 @@ class Battle(val gameInfo:GameInfo) {
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
         if(attacker.isRanged()) return 0
-        return (getDefendingStrength(attacker,defender) * 50 / getAttackingStrength(attacker,defender)).toInt()
+        val ratio = getDefendingStrength(attacker,defender) / getAttackingStrength(attacker,defender)
+        return (ratio * 30 * getHealthDependantDamageRatio(defender)).toInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
-        return (getAttackingStrength(attacker, defender)*50/ getDefendingStrength(attacker,defender)).toInt()
+        val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
+        return (ratio * 30 * getHealthDependantDamageRatio(attacker)).toInt()
     }
 
     fun attack(attacker: ICombatant, defender: ICombatant) {
