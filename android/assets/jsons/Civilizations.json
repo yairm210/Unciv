@@ -3,23 +3,25 @@
 		name:"Babylon",
 		RGB:[220,20,60],
 		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
-		"Ellasar","Erech","Kutha","Sirpurla","Neribtum"]
+			"Ellasar","Erech","Kutha","Sirpurla","Neribtum"]
 	},
 	{
 		name:"Greece",
 		RGB:[ 101, 153, 255],
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
-		"Eretria","Pergamon","Miletos","Megara","Phocaea"]
+			"Eretria","Pergamon","Miletos","Megara","Phocaea"]
 	},
 	{
 		name:"China",
 		RGB:[ 9, 112, 84],
-		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong"]
+		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
+			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin"]
 	},
 	{
 		name:"Egypt",
 		RGB:[ 255, 153, 0],
-		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis"]
+		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
+			"Abydos","Asyut","Avaris","Lisht","Buto"]
 	},
 	{
 		name:"Barbarians",

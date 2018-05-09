@@ -66,10 +66,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if(currentlyExecutingAction=="moveTo"){
 
             if(selectedUnit!!.movementAlgs()
-                    .getShortestPath(selectedUnit!!.getTile().position, selectedTile.position).isEmpty())
+                    .getShortestPath(selectedTile).isEmpty())
                 return // can't reach there with the selected unit, watcha want me to do?
 
-            val reachedTile = selectedUnit!!.headTowards(selectedTile.position)
+            val reachedTile = selectedUnit!!.movementAlgs().headTowards(selectedTile)
 
             if(reachedTile!=selectedTile) // Didn't get all the way there
                 selectedUnit!!.action = "moveTo " + selectedTile.position.x.toInt() + "," + selectedTile.position.y.toInt()
