@@ -75,7 +75,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         unitTable.update() // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         tileMapHolder.updateTiles()
-        civTable.update(this)
+        civTable.update()
         notificationsScroll.update()
         notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,

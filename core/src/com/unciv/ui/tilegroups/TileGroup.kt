@@ -185,8 +185,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private fun updateResourceImage() {
         if (tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
-            resourceImage = ImageGetter.getImage(fileName)
-            resourceImage!!.setSize(20f, 20f)
+                resourceImage = ImageGetter.getImage(fileName)
+                resourceImage!!.setSize(20f, 20f)
             resourceImage!!.setPosition(width / 2 - resourceImage!!.width / 2 - 20f,
                     height / 2 - resourceImage!!.height / 2) // left
             addActor(resourceImage!!)

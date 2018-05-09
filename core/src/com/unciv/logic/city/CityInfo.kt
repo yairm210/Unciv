@@ -6,6 +6,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.ResourceType
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.linq.Counter
 import com.unciv.models.stats.Stats
@@ -42,8 +43,11 @@ class CityInfo {
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
-            if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter())
-                cityResources.add(resource, 1)
+            if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()){
+                if(resource.resourceType == ResourceType.Strategic) cityResources.add(resource, 2)
+                else cityResources.add(resource, 1)
+            }
+
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
