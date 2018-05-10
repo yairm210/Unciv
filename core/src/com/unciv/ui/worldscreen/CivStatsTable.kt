@@ -27,7 +27,7 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
         background = civBackground.tint(Color(0x004085e0))
 
         val resourceTable = Table()
-        resourceTable.defaults().pad(10f)
+        resourceTable.defaults().pad(5f)
         val revealedStrategicResources = GameBasics.TileResources.values
                 .filter { it.resourceType== ResourceType.Strategic} // && civInfo.tech.isResearched(it.revealedBy!!) }
         for(resource in revealedStrategicResources){

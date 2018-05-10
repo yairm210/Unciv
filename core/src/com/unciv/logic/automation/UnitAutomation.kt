@@ -84,6 +84,7 @@ class UnitAutomation{
             val closestCityWithoutUnit = reachableCitiesWithoutUnits
                     .minBy { unit.movementAlgs().getShortestPath(it.getCenterTile()).size }!!
             unit.movementAlgs().headTowards(closestCityWithoutUnit.getCenterTile())
+            return
         }
 
         if (unit.health < 80) {

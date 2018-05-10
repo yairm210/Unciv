@@ -88,6 +88,7 @@ class CityInfo {
         // we need to check which other cities exist globally and name accordingly
         val allExistingCityNames = civInfo.gameInfo.civilizations.flatMap { it.cities }.map { it.name }.toHashSet()
         name = civInfo.getCivilization().cities.first { !allExistingCityNames.contains(it) }
+
         this.location = cityLocation
         civInfo.cities.add(this)
         if(civInfo == civInfo.gameInfo.getPlayerCivilization())
@@ -135,7 +136,7 @@ class CityInfo {
 
 
     internal fun getMaxHealth(): Int {
-        return 200 // add more later when walls citadl etc.
+        return 200 // add more later when walls citadel etc.
     }
 
     override fun toString(): String {return name} // for debug
