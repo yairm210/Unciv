@@ -22,7 +22,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
                 .tint(Color(0x004085bf))
         pad(20f)
-        background = tileTableBackground
+        //background = tileTableBackground
         add(unitLabel).pad(10f)
         add(unitActionsTable)
         row()

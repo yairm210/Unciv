@@ -103,3 +103,8 @@ fun Button.enable() {
     touchable = Touchable.enabled
 }
 fun <E> List<E>.getRandom(): E = if (size == 0) throw Exception() else get((Math.random() * size).toInt())
+
+
+fun Color.fromRGB(r:Int,g:Int,b:Int): Color {
+    return Color(r/255f, g/255f, b/255f, 1f)
+}

@@ -84,4 +84,5 @@ class PolicyManager {
         if (!couldAdoptPolicyBefore && canAdoptPolicy())
             shouldOpenPolicyPicker = true
     }
+
 }

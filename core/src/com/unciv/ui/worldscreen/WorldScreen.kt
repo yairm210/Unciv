@@ -35,7 +35,10 @@ class WorldScreen : CameraStageBaseScreen() {
         unitTable.setPosition(5f, 5f)
         tileMapHolder = TileMapHolder(this, gameInfo.tileMap, civInfo)
         tileInfoTable = TileInfoTable(this, civInfo)
-        civTable.setPosition(10f, stage.height - civTable.height - 10f )
+
+        civTable.setPosition(0f, stage.height - civTable.height)
+        civTable.width = stage.width
+
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
                 civTable.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)

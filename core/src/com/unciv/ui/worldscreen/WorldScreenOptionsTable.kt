@@ -16,51 +16,55 @@ import com.unciv.ui.utils.ImageGetter
 class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, private val civInfo: CivilizationInfo) : Table() {
 
     init {
-        val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
+        val tileTableBackground = ImageGetter.getDrawable("skin/whiteDot.png")
                 .tint(Color(0x004085bf))
         background = tileTableBackground
         isVisible = false
 
-        val openCivilopediaButton = TextButton("Civilopedia", CameraStageBaseScreen.skin)
+        pad(20f)
+        defaults().pad(5f)
+
+        val openCivilopediaButton = TextButton("Civilopedia", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue(); background=null }
         openCivilopediaButton.addClickListener {
             worldScreen.game.screen = CivilopediaScreen()
             isVisible = false
         }
-        add(openCivilopediaButton).pad(10f).row()
+        add(openCivilopediaButton).row()
 
-        val loadGameButton = TextButton("Load game", CameraStageBaseScreen.skin)
+        val loadGameButton = TextButton("Load game", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }
         loadGameButton .addClickListener {
             worldScreen.game.screen = LoadScreen()
             isVisible=false
         }
-        add(loadGameButton ).pad(10f).row()
+        add(loadGameButton ).row()
 
 
-        val saveGameButton = TextButton("Save game", CameraStageBaseScreen.skin)
+        val saveGameButton = TextButton("Save game", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }
         saveGameButton .addClickListener {
             worldScreen.game.screen = SaveScreen()
             isVisible=false
         }
-        add(saveGameButton ).pad(10f).row()
-        val startNewGameButton = TextButton("Start new game", CameraStageBaseScreen.skin)
-        startNewGameButton.addClickListener { worldScreen.game.startNewGame(true) }
-        add(startNewGameButton).pad(10f).row()
+        add(saveGameButton ).row()
 
-        val openVictoryScreen = TextButton("Victory status", CameraStageBaseScreen.skin)
+        val startNewGameButton = TextButton("Start new game", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }
+        startNewGameButton.addClickListener { worldScreen.game.startNewGame(true) }
+        add(startNewGameButton).row()
+
+        val openVictoryScreen = TextButton("Victory status", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }
         openVictoryScreen.addClickListener {
             worldScreen.game.screen = VictoryScreen()
         }
-        add(openVictoryScreen).pad(10f).row()
+        add(openVictoryScreen).row()
 
-        val openPolicyPickerScreen = TextButton("Social Policies", CameraStageBaseScreen.skin)
+        val openPolicyPickerScreen = TextButton("Social Policies", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }
         openPolicyPickerScreen.addClickListener {
             worldScreen.game.screen = PolicyPickerScreen(this@WorldScreenOptionsTable.civInfo)
         }
-        add(openPolicyPickerScreen).pad(10f).row()
+        add(openPolicyPickerScreen).row()
 
-        val closeButton = TextButton("Close", CameraStageBaseScreen.skin)
+        val closeButton = TextButton("Close", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }
         closeButton.addClickListener { isVisible = false }
-        add(closeButton).pad(10f)
+        add(closeButton)
 
         pack() // Needed to show the background.
         setPosition(worldScreen.stage.width / 2 - width / 2,

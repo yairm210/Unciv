@@ -81,6 +81,17 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Swordsman",
+		baseDescription: "",
+		unitType:"Melee",
+		movement:2,
+		strength:14,
+		cost: 75,
+		requiredTech:"Iron Working",
+		requiredResource:"Iron",
+		hurryCostModifier:20
+	},
+	{
 		name:"Horseman",
 		baseDescription:"",
 		unitType:"Mounted",

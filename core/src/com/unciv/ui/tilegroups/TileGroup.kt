@@ -8,6 +8,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.fromRGB
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
 
@@ -146,7 +147,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun updateTileColor(isViewable: Boolean) {
         val RGB = tileInfo.getBaseTerrain().RGB!!
-        hexagon.color = Color(RGB[0] / 255f, RGB[1] / 255f, RGB[2] / 255f, 1f)
+        hexagon.color = Color().fromRGB(RGB[0], RGB[1],RGB[2])
         if (!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK, 0.6f)
     }
 

@@ -4,66 +4,87 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ResourceType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.fromRGB
+import kotlin.math.ceil
 
 class CivStatsTable(val screen: WorldScreen) : Table() {
 
-    private val turnsLabel = Label("Turns: 0/400", CameraStageBaseScreen.skin)
-    private val goldLabel = Label("Gold:",CameraStageBaseScreen.skin)
-    private val scienceLabel = Label("Science:",CameraStageBaseScreen.skin)
-    private val happinessLabel = Label("Happiness:",CameraStageBaseScreen.skin)
-    private val cultureLabel = Label("Culture:",CameraStageBaseScreen.skin)
+    val labelStyle = Label.LabelStyle(Label("",CameraStageBaseScreen.skin).style)
+            .apply { fontColor = Color.valueOf("f5f5f5ff") }
+
+    private val turnsLabel = Label("Turns: 0/400", labelStyle)
+    private val goldLabel = Label("Gold:",labelStyle).apply { color = Color().fromRGB(225,217,71) }
+    private val scienceLabel = Label("Science:",labelStyle).apply { color = Color().fromRGB(78,140,151) }
+    private val happinessLabel = Label("Happiness:",labelStyle).apply { color = Color().fromRGB(92,194,77) }
+    private val cultureLabel = Label("Culture:",labelStyle).apply { color = Color().fromRGB(200,60,200) }
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Image>()
 
     init{
-        val civBackground = ImageGetter.getDrawable("skin/civTableBackground.png")
-        background = civBackground.tint(Color(0x004085e0))
+        background = ImageGetter.getDrawable("skin/whiteDot.png").tint(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
 
+        //add(Table().apply {
+            add(getStatsTable()).row()
+            add(getResourceTable())
+//            pack()
+//        })
+
+        pad(5f)
+        pack()
+        addActor(getMenuButton()) // needs to be after pack
+    }
+
+    private fun getResourceTable(): Table {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
         val revealedStrategicResources = GameBasics.TileResources.values
-                .filter { it.resourceType== ResourceType.Strategic} // && civInfo.tech.isResearched(it.revealedBy!!) }
-        for(resource in revealedStrategicResources){
+                .filter { it.resourceType == ResourceType.Strategic } // && civInfo.tech.isResearched(it.revealedBy!!) }
+        for (resource in revealedStrategicResources) {
             val fileName = "ResourceIcons/${resource.name}_(Civ5).png"
             val resourceImage = ImageGetter.getImage(fileName)
-            resourceImages.put(resource.name,resourceImage)
+            resourceImages.put(resource.name, resourceImage)
             resourceTable.add(resourceImage).size(20f)
-            val resourceLabel = Label("0",CameraStageBaseScreen.skin)
+            val resourceLabel = Label("0", labelStyle)
             resourceLabels.put(resource.name, resourceLabel)
             resourceTable.add(resourceLabel)
         }
         resourceTable.pack()
-        add(resourceTable).row()
-
-
-        val statsTable = Table()
-        statsTable.defaults().padRight(20f).padBottom(10f)
-        statsTable.add(getMenuButton())
-        statsTable.add(turnsLabel)
-        statsTable.add(goldLabel)
-        statsTable.add(scienceLabel.apply { setAlignment(Align.center) })
-        statsTable.add(happinessLabel.apply { setAlignment(Align.center) })
-        statsTable.add(cultureLabel.apply { setAlignment(Align.center) })
-
-        statsTable.pack()
-        statsTable.width = screen.stage.width - 20
-        add(statsTable)
-        pack()
-        width = screen.stage.width - 20
+        return resourceTable
     }
 
-    internal fun getMenuButton(): TextButton {
-        val menuButton = TextButton("Menu", CameraStageBaseScreen.skin)
+    private fun getStatsTable(): Table {
+        val statsTable = Table()
+        statsTable.defaults().pad(3f)//.align(Align.top)
+        statsTable.add(turnsLabel).padRight(20f)
+        statsTable.add(goldLabel)
+        statsTable.add(ImageGetter.getStatIcon("Gold")).padRight(20f)
+        statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
+        statsTable.add(ImageGetter.getStatIcon("Science")).padRight(20f)
+
+        statsTable.add(ImageGetter.getStatIcon("Happiness"))
+        statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
+
+        statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
+        statsTable.add(ImageGetter.getStatIcon("Culture"))
+        statsTable.pack()
+        statsTable.width = screen.stage.width - 20
+        return statsTable
+    }
+
+    internal fun getMenuButton(): Image {
+        val menuButton = ImageGetter.getImage("skin/menuIcon.png")
+                .apply { setSize(50f,50f) }
+        menuButton.color = Color.WHITE
         menuButton.addClickListener {
             screen.optionsTable.isVisible = !screen.optionsTable.isVisible
         }
+        menuButton.y = this.height/2-menuButton.height/2
+        menuButton.x = menuButton.y
         return menuButton
     }
 
@@ -87,23 +108,22 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
         val nextTurnStats = civInfo.getStatsForNextTurn()
 
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + Math.round(nextTurnStats.gold) + ")"
-        goldLabel.setText("Gold: " + Math.round(civInfo.gold.toFloat()) + goldPerTurn)
+        goldLabel.setText("" + Math.round(civInfo.gold.toFloat()) + goldPerTurn)
 
-        scienceLabel.setText("Science: +" + Math.round(nextTurnStats.science)
-                + "\r\n" + civInfo.tech.getAmountResearchedText())
+        scienceLabel.setText("+" + Math.round(nextTurnStats.science))
 
-        var happinessText = "Happiness: " + civInfo.happiness+"\r\n"
+        var happinessText = civInfo.happiness.toString()
         if (civInfo.goldenAges.isGoldenAge())
-            happinessText += "GOLDEN AGE (${civInfo.goldenAges.turnsLeftForCurrentGoldenAge})"
+            happinessText += " GOLDEN AGE (${civInfo.goldenAges.turnsLeftForCurrentGoldenAge})"
         else
             happinessText += ("(" + civInfo.goldenAges.storedHappiness + "/"
                     + civInfo.goldenAges.happinessRequiredForNextGoldenAge() + ")")
-
         happinessLabel.setText(happinessText)
 
-        val cultureString = "Culture: " + "+" + Math.round(nextTurnStats.culture) + "\r\n" +
-                "(" + civInfo.policies.storedCulture + "/" + civInfo.policies.getCultureNeededForNextPolicy() + ")"
-
+        val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
+        var cultureString = "+" + Math.round(nextTurnStats.culture)
+        if(turnsToNextPolicy>0) cultureString+= " ("+ ceil(turnsToNextPolicy)+")"
+        else cultureString += " (!)"
         cultureLabel.setText(cultureString)
     }
 
