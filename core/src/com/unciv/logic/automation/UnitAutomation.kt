@@ -133,16 +133,19 @@ class UnitAutomation{
         // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
                 .associateBy ( {it},{ Automation().rankTile(it,unit.civInfo) })
-        var bestCityLocation = unit.getTile().getTilesInDistance(5)
-                .minus(tilesNearCities)
-                .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }
 
-        if(bestCityLocation==null) { // We got a badass over here, all tiles within 5 are taken? SEARCH EVERYWHERE
-            bestCityLocation = unit.civInfo.getViewableTiles()
+        var possibleTiles =  unit.getTile().getTilesInDistance(5)
+                .minus(tilesNearCities)
+
+        if(possibleTiles.isEmpty()) // We got a badass over here, all tiles within 5 are taken? SEARCH EVERYWHERE
+            possibleTiles = unit.civInfo.getViewableTiles()
                     .minus(tilesNearCities)
-                    .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }
-        }
-        bestCityLocation!!
+
+        if(possibleTiles.isEmpty())// STILL? Practically impossibru but this may prevent a crash
+            return  // todo: add random walk?
+
+        val bestCityLocation = possibleTiles
+                .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }!!
 
         if (unit.getTile() == bestCityLocation)
             UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
