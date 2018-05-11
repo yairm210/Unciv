@@ -1,6 +1,5 @@
 package com.unciv.logic
 
-import com.unciv.UnCivGame
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -8,13 +7,11 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.VictoryScreen
 import com.unciv.ui.utils.getRandom
 
 class GameInfo {
-
+    //var gameOptions=HashMap<String,String>()
     var notifications = mutableListOf<Notification>()
-
     var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
@@ -29,36 +26,32 @@ class GameInfo {
         notifications.clear()
 
         for (civInfo in civilizations){
-            if(civInfo.tech.techsToResearch.isEmpty()){
+            if(civInfo.tech.techsToResearch.isEmpty()){  // should belong in automation? yes/no?
                 val researchableTechs = GameBasics.Technologies.values
                         .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
                 civInfo.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
             }
+            civInfo.endTurn()
         }
 
-        for (civInfo in civilizations)
-            civInfo.nextTurn()
-
-        tileMap.values.filter { it.unit!=null }.map { it.unit!! }.forEach { it.nextTurn() }
 
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
-        for (civInfo in civilizations){
-            civInfo.getViewableTiles() // adds explored tiles for auto civs
-            if(!civInfo.isPlayerCivilization())
-                Automation().automateCivMoves(civInfo)
-            for (city in civInfo.cities)
-                city.cityStats.update()
-            civInfo.happiness = civInfo.getHappinessForNextTurn()
+        for (civInfo in civilizations.filterNot { it.isPlayerCivilization() }){
+            Automation().automateCivMoves(civInfo)
+            civInfo.startTurn()
         }
 
         if(turns%10 == 0){ // every 10 turns add a barbarian in a random place
             placeBarbarianUnit(null)
         }
 
+        // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
+
+        getPlayerCivilization().startTurn()
+
         turns++
-        updateTilesToCities()
     }
 
     fun placeBarbarianUnit(tileToPlace: TileInfo?) {

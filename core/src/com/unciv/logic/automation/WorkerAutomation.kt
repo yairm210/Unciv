@@ -9,6 +9,11 @@ import com.unciv.models.gamebasics.TileImprovement
 class WorkerAutomation {
 
     fun automateWorkerAction(unit: MapUnit) {
+        val enemyUnitsInWalkingDistance = unit.getDistanceToTiles().keys
+                .filter { it.unit!=null && it.unit!!.civInfo!=unit.civInfo }
+
+        if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
+
         val tile = unit.getTile()
         val tileToWork = findTileToWork(unit)
         if (tileToWork != tile) {
