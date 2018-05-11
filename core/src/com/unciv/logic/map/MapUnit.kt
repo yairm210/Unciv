@@ -90,11 +90,14 @@ class MapUnit {
         otherTile.unit = this
     }
 
-    fun nextTurn() {
+    fun endTurn() {
         doPostTurnAction()
         if(currentMovement==maxMovement.toFloat()){ // didn't move this turn
             heal()
         }
+    }
+
+    fun startTurn(){
         currentMovement = maxMovement.toFloat()
         doPreTurnAction()
     }

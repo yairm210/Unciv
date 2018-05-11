@@ -119,7 +119,7 @@ class CityInfo {
     }
 
 
-    fun nextTurn() {
+    fun endTurn() {
         val stats = cityStats.currentCityStats
         if (cityConstructions.currentConstruction == CityConstructions.Settler && stats.food > 0) {
             stats.production += stats.food

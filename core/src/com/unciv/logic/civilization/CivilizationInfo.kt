@@ -133,15 +133,15 @@ class CivilizationInfo {
         newCity.cityConstructions.chooseNextConstruction()
     }
 
-    fun nextTurn() {
+    fun endTurn() {
         val nextTurnStats = getStatsForNextTurn()
-        policies.nextTurn(nextTurnStats.culture.toInt())
+        policies.endTurn(nextTurnStats.culture.toInt())
         gold += nextTurnStats.gold.toInt()
 
         if (cities.size > 0) tech.nextTurn(nextTurnStats.science.toInt())
 
         for (city in cities) {
-            city.nextTurn()
+            city.endTurn()
             greatPeople.addGreatPersonPoints(city.getGreatPersonPoints())
         }
 
@@ -150,7 +150,17 @@ class CivilizationInfo {
             addGreatPerson(greatPerson)
         }
 
-        goldenAges.nextTurn(happiness)
+        goldenAges.endTurn(happiness)
+        getCivUnits().forEach { it.endTurn() }
+        gameInfo.updateTilesToCities()
+    }
+
+    fun startTurn(){
+        getViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
+        for (city in cities)
+            city.cityStats.update()
+        happiness = getHappinessForNextTurn()
+        getCivUnits().forEach { it.startTurn() }
     }
 
     fun addGreatPerson(greatPerson: String) {

@@ -78,7 +78,7 @@ class PolicyManager {
             cityInfo.cityStats.update()
     }
 
-    fun nextTurn(culture: Int) {
+    fun endTurn(culture: Int) {
         val couldAdoptPolicyBefore = canAdoptPolicy()
         storedCulture += culture
         if (!couldAdoptPolicyBefore && canAdoptPolicy())

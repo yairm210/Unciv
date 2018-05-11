@@ -22,7 +22,7 @@ class GoldenAgeManager {
         civInfo.addNotification("You have entered a golden age!", null)
     }
 
-    fun nextTurn(happiness: Int) {
+    fun endTurn(happiness: Int) {
         if (happiness > 0 && !isGoldenAge()) storedHappiness += happiness
 
         if (isGoldenAge())
