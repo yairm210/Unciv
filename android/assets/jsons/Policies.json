@@ -227,6 +227,7 @@
 			{
 				name:"Civil Society",
 				description:"-50% food consumption by specialists",
+				requires:["Constitution"],
 				row:2,
 				column:1
 			},

@@ -20,10 +20,11 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
     private val turnsLabel = Label("Turns: 0/400", labelStyle)
     private val goldLabel = Label("Gold:",labelStyle).apply { color = Color().fromRGB(225,217,71) }
     private val scienceLabel = Label("Science:",labelStyle).apply { color = Color().fromRGB(78,140,151) }
-    private val happinessLabel = Label("Happiness:",labelStyle).apply { color = Color().fromRGB(92,194,77) }
-    private val cultureLabel = Label("Culture:",labelStyle).apply { color = Color().fromRGB(200,60,200) }
+    private val happinessLabel = Label("Happiness:",labelStyle)
+    private val cultureLabel = Label("Culture:",labelStyle).apply { color = Color().fromRGB(210,94,210) }
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Image>()
+    private val happinessImage = ImageGetter.getStatIcon("Happiness")
 
     init{
         background = ImageGetter.getDrawable("skin/whiteDot.png").tint(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
@@ -66,7 +67,7 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
         statsTable.add(scienceLabel) //.apply { setAlignment(Align.center) }).align(Align.top)
         statsTable.add(ImageGetter.getStatIcon("Science")).padRight(20f)
 
-        statsTable.add(ImageGetter.getStatIcon("Happiness"))
+        statsTable.add(happinessImage)
         statsTable.add(happinessLabel).padRight(20f)//.apply { setAlignment(Align.center) }).align(Align.top)
 
         statsTable.add(cultureLabel)//.apply { setAlignment(Align.center) }).align(Align.top)
@@ -116,9 +117,18 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
         if (civInfo.goldenAges.isGoldenAge())
             happinessText += " GOLDEN AGE (${civInfo.goldenAges.turnsLeftForCurrentGoldenAge})"
         else
-            happinessText += ("(" + civInfo.goldenAges.storedHappiness + "/"
+            happinessText += (" (" + civInfo.goldenAges.storedHappiness + "/"
                     + civInfo.goldenAges.happinessRequiredForNextGoldenAge() + ")")
         happinessLabel.setText(happinessText)
+
+        if(civInfo.happiness<0){
+            happinessLabel.color = Color.valueOf("ef5350")
+            happinessImage.drawable = ImageGetter.getStatIcon("Malcontent").drawable
+        }
+        else{
+            happinessLabel.color = Color().fromRGB(92,194,77)
+            happinessImage.drawable = ImageGetter.getStatIcon("Happiness").drawable
+        }
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
         var cultureString = "+" + Math.round(nextTurnStats.culture)
