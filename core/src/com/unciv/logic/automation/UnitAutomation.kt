@@ -115,7 +115,6 @@ class UnitAutomation{
         unit.moveToTile(distanceToTiles.keys.filter { it.unit == null }.toList().getRandom())
     }
 
-
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
         val bestTilesFromOuterLayer = tileInfo.tileMap.getTilesAtDistance(tileInfo.position,2)
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)

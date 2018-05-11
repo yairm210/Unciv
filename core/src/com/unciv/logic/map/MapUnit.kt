@@ -32,6 +32,11 @@ class MapUnit {
     fun doPreTurnAction() {
         val currentTile = getTile()
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
+
+        val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
+                .filter { it.unit!=null && it.unit!!.civInfo!=civInfo }
+        if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
+
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
             val destinationVector = Vector2(Integer.parseInt(destination[0]).toFloat(), Integer.parseInt(destination[1]).toFloat())
