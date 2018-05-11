@@ -133,9 +133,16 @@ class UnitAutomation{
         // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
                 .associateBy ( {it},{ Automation().rankTile(it,unit.civInfo) })
-        val bestCityLocation = unit.getTile().getTilesInDistance(5)
+        var bestCityLocation = unit.getTile().getTilesInDistance(5)
                 .minus(tilesNearCities)
-                .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }!!
+                .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }
+
+        if(bestCityLocation==null) { // We got a badass over here, all tiles within 5 are taken? SEARCH EVERYWHERE
+            bestCityLocation = unit.civInfo.getViewableTiles()
+                    .minus(tilesNearCities)
+                    .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }
+        }
+        bestCityLocation!!
 
         if (unit.getTile() == bestCityLocation)
             UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()

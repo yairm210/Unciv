@@ -122,7 +122,7 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
 
         val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
         var cultureString = "+" + Math.round(nextTurnStats.culture)
-        if(turnsToNextPolicy>0) cultureString+= " ("+ ceil(turnsToNextPolicy)+")"
+        if(turnsToNextPolicy>0) cultureString+= " ("+ ceil(turnsToNextPolicy).toInt()+")"
         else cultureString += " (!)"
         cultureLabel.setText(cultureString)
     }
