@@ -178,7 +178,9 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
         if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
             construction.builtBuildings.add(providesFreeBuilding!!)
         when (unique) {
-            "ApolloProgram" -> UnCivGame.Current.screen = VictoryScreen()
+            "ApolloProgram" ->
+                if(construction.cityInfo.civInfo.isPlayerCivilization())
+                    UnCivGame.Current.screen = VictoryScreen()
             "EmpireEntersGoldenAge" -> civInfo.goldenAges.enterGoldenAge()
             "FreeGreatArtistAppears" -> civInfo.addGreatPerson("Great Artist")
             "WorkerConstruction" -> {
@@ -187,7 +189,8 @@ class Building : NamedStats(), IConstruction, ICivilopedia {
             }
             "FreeSocialPolicy" -> {
                 civInfo.policies.freePolicies++
-                UnCivGame.Current.screen = PolicyPickerScreen(civInfo)
+                if(construction.cityInfo.civInfo.isPlayerCivilization())
+                    UnCivGame.Current.screen = PolicyPickerScreen(civInfo)
             }
         }
 
