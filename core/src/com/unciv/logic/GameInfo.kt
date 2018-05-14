@@ -39,8 +39,8 @@ class GameInfo {
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
         for (civInfo in civilizations.filterNot { it.isPlayerCivilization() }){
-            Automation().automateCivMoves(civInfo)
             civInfo.startTurn()
+            Automation().automateCivMoves(civInfo)
         }
 
         if(turns%10 == 0){ // every 10 turns add a barbarian in a random place

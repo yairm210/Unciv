@@ -31,7 +31,7 @@ class CityExpansionManager {
         cultureStored -= getCultureToNextTile()
 
         val chosenTile = getNewTile()
-        cityInfo.tiles.add(chosenTile!!.position)
+        if(chosenTile!=null) cityInfo.tiles.add(chosenTile!!.position)
     }
 
     fun getNewTile(): TileInfo? {

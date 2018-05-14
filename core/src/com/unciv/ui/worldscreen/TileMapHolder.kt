@@ -13,6 +13,7 @@ import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.HexMath
+import com.unciv.ui.utils.fromRGB
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
@@ -113,7 +114,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
             for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner && civViewableTiles.contains(it)})
-                tileGroups[tile]!!.showCircle(Color(237/255f,41/255f,57/255f,1f))
+                tileGroups[tile]!!.showCircle(Color().fromRGB(237,41,57))
         }
     }
 

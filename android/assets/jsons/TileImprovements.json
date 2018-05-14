@@ -121,7 +121,7 @@
 		improvingTechStats:{production:1}
 	},
 	{
-		name:"Customs House",
+		name:"Customs house",
 		gold:4,
 		improvingTech:"Economics",
 		improvingTechStats:{gold:1}

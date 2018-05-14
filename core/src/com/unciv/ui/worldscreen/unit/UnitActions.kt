@@ -131,7 +131,7 @@ class UnitActions {
                         tile.unit = null // destroy!
                     },unit.currentMovement != 0f)
             actionList += UnitAction( "Construct Customs House",
-                    constructImprovementAndDestroyUnit(tile, "Customs House"),
+                    constructImprovementAndDestroyUnit(tile, "Customs house"),
                     unit.currentMovement != 0f)
         }
 
