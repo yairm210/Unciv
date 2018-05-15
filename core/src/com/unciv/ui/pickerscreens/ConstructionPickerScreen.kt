@@ -9,16 +9,16 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
-    private var selectedProduction: String?=null
+    private var selectedProduction: String? = null
 
     private fun getProductionButton(production: String, buttonText: String,
                                     description: String?, rightSideButtonText: String): TextButton {
         val productionTextButton = TextButton(buttonText, CameraStageBaseScreen.skin)
         productionTextButton.addClickListener {
-                selectedProduction = production
-                pick(rightSideButtonText)
-                descriptionLabel.setText(description)
-            }
+            selectedProduction = production
+            pick(rightSideButtonText)
+            descriptionLabel.setText(description)
+        }
         return productionTextButton
     }
 
@@ -27,17 +27,17 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
 
         closeButton.clearListeners() // Don't go back to the world screen, unlike the other picker screens!
         closeButton.addClickListener {
-                game.screen = CityScreen(this@ConstructionPickerScreen.city)
-                dispose()
-            }
+            game.screen = CityScreen(this@ConstructionPickerScreen.city)
+            dispose()
+        }
 
         rightSideButton.setText("Pick building")
         rightSideButton.addClickListener {
-                city.cityConstructions.currentConstruction = selectedProduction!!
-                city.cityStats.update() // Because maybe we set/removed the science or gold production options.
-                game.screen = CityScreen(this@ConstructionPickerScreen.city)
-                dispose()
-            }
+            city.cityConstructions.currentConstruction = selectedProduction!!
+            city.cityStats.update() // Because maybe we set/removed the science or gold production options.
+            game.screen = CityScreen(this@ConstructionPickerScreen.city)
+            dispose()
+        }
 
         val cityConstructions = city.cityConstructions
         val regularBuildings = VerticalGroup().space(10f)
@@ -57,7 +57,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
                 regularBuildings.addActor(productionTextButton)
         }
 
-        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
+        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions) }) {
             units.addActor(getProductionButton(unit.name,
                     unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " turns",
                     unit.getDescription(true), "Train " + unit.name))

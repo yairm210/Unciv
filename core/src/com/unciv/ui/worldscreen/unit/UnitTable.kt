@@ -80,10 +80,4 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             selectedUnit= selectedTile.unit
     }
 
-    fun getTilesForCurrentlyExecutingAction(): Set<TileInfo>
-    {
-        if(currentlyExecutingAction == "moveTo")
-            return selectedUnit!!.getDistanceToTiles().keys
-        return emptySet()
-    }
 }

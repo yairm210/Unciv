@@ -24,6 +24,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     }
 
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): HashMap<TileInfo, Float> {
+        if(unitMovement==0f) return hashMapOf()
         val distanceToTiles = HashMap<TileInfo, Float>()
         val unitTile = tileMap[origin]
         distanceToTiles[unitTile] = 0f

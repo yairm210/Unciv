@@ -34,11 +34,12 @@ open class PickerScreen : CameraStageBaseScreen() {
         bottomTable.add(descriptionLabel).pad(5f).width(stage.width / 2)
 
         rightSideButton = TextButton("", CameraStageBaseScreen.skin)
+        rightSideButton.disable()
         rightSideGroup.addActor(rightSideButton)
+
         bottomTable.add(rightSideGroup).width(stage.width / 4)
         bottomTable.height = stage.height * (1 - screenSplit)
         bottomTable.align(Align.center)
-        rightSideButton.disable()
 
         topTable = Table()
         val scrollPane = ScrollPane(topTable)

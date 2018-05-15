@@ -98,11 +98,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
         }
 
-        if(worldScreen.unitTable.currentlyExecutingAction!=null)
-            for(tile: TileInfo in worldScreen.unitTable.getTilesForCurrentlyExecutingAction())
-                tileGroups[tile]!!.showCircle(Color(0f,120/255f,215/255f,1f))
-
-        else if(worldScreen.unitTable.selectedUnit!=null){
+        if(worldScreen.unitTable.selectedUnit!=null){
             val unit = worldScreen.unitTable.selectedUnit!!
             tileGroups[unit.getTile()]!!.addWhiteCircleAroundUnit()
             val attackableTiles:List<TileInfo>
@@ -113,9 +109,16 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 UnitType.City -> throw Exception("How are you attacking with a city?")
             }
 
+            for(tile: TileInfo in unit.getDistanceToTiles().keys)
+                tileGroups[tile]!!.showCircle(Color().fromRGB(0,120,215))
+
             for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner && civViewableTiles.contains(it)})
                 tileGroups[tile]!!.showCircle(Color().fromRGB(237,41,57))
         }
+
+        if(selectedTile!=null)
+            tileGroups[selectedTile!!]!!.showCircle(Color.WHITE)
+
     }
 
     fun setCenterPosition(vector: Vector2) {
