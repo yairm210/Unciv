@@ -87,7 +87,9 @@ class CityInfo {
         // Since cities can be captures between civilizations,
         // we need to check which other cities exist globally and name accordingly
         val allExistingCityNames = civInfo.gameInfo.civilizations.flatMap { it.cities }.map { it.name }.toHashSet()
-        name = civInfo.getCivilization().cities.first { !allExistingCityNames.contains(it) }
+        val probablyName = civInfo.getCivilization().cities.firstOrNull { !allExistingCityNames.contains(it) }
+        if(probablyName!=null) name=probablyName
+        else name = civInfo.getCivilization().cities.first { !allExistingCityNames.contains("New $it") }
 
         this.location = cityLocation
         civInfo.cities.add(this)
