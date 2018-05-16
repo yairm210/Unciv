@@ -133,15 +133,16 @@ class UnitAutomation{
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
                 .associateBy ( {it},{ Automation().rankTile(it,unit.civInfo) })
 
-        var possibleTiles =  unit.getTile().getTilesInDistance(5)
+        val possibleTiles =  unit.getTile().getTilesInDistance(5)
                 .minus(tilesNearCities)
 
-        if(possibleTiles.isEmpty()) // We got a badass over here, all tiles within 5 are taken? SEARCH EVERYWHERE
-            possibleTiles = unit.civInfo.getViewableTiles()
-                    .minus(tilesNearCities)
-
-        if(possibleTiles.isEmpty())// STILL? Practically impossibru but this may prevent a crash
-            return  // todo: add random walk?
+        if(possibleTiles.isEmpty()) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
+        {
+            unit.moveToTile(unit.getDistanceToTiles()
+                    .filter { it.key.unit == null && it.value==unit.currentMovement } // at edge of walking distance
+                    .toList().getRandom().first)
+            return
+        }
 
         val bestCityLocation = possibleTiles
                 .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }!!
