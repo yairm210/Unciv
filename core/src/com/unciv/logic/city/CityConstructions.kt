@@ -70,6 +70,10 @@ class CityConstructions {
             return GameBasics.Buildings[constructionName]!!
         else if (GameBasics.Units.containsKey(constructionName))
             return GameBasics.Units[constructionName]!!
+        else{
+            val special = getSpecialConstructions().firstOrNull{it.name==constructionName}
+            if(special!=null) return special
+        }
 
         throw Exception("$constructionName is not a building or a unit!")
     }
@@ -83,6 +87,7 @@ class CityConstructions {
 
     fun nextTurn(cityStats: Stats) {
         var construction = getConstruction(currentConstruction)
+        if(construction is SpecialConstruction) return
 
         // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
         val saveCurrentConstruction = currentConstruction
@@ -150,5 +155,19 @@ class CityConstructions {
 
     fun chooseNextConstruction() {
         Automation().chooseNextConstruction(this)
+    }
+
+    fun getSpecialConstructions(): List<SpecialConstruction> {
+        val science =  object:SpecialConstruction("Science", "Convert production to science at a rate of 4 to 1"){
+            override fun isBuildable(construction: CityConstructions): Boolean {
+                return construction.cityInfo.civInfo.tech.isResearched("Education")
+            }
+        }
+        val gold =  object:SpecialConstruction("Gold", "Convert production to gold at a rate of 4 to 1"){
+            override fun isBuildable(construction: CityConstructions): Boolean {
+                return construction.cityInfo.civInfo.tech.isResearched("Currency")
+            }
+        }
+        return listOf(science,gold)
     }
 } // for json parsing, we need to have a default constructor

@@ -4,8 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.models.gamebasics.Building
 import com.unciv.UnCivGame
+import com.unciv.logic.city.SpecialConstruction
+import com.unciv.models.gamebasics.Building
 import com.unciv.ui.pickerscreens.ConstructionPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -57,7 +58,8 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
 
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         val construction = city.cityConstructions.getCurrentConstruction()
-        if (!(construction is Building && construction.isWonder)) {
+        if (construction !is SpecialConstruction &&
+                !(construction is Building && construction.isWonder)) {
             row()
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
             val buildingBuyButton = TextButton("Buy for \r\n$buildingGoldCost gold", CameraStageBaseScreen.skin)

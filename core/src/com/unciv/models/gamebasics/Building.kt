@@ -8,7 +8,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 
-class Building : NamedStats(), IConstruction, ICivilopedia {
+class Building : NamedStats(), IConstruction{
     private lateinit var baseDescription: String
     override val description: String
         get() = getDescription(false, hashSetOf())

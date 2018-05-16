@@ -6,14 +6,13 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.addClickListener
-import com.unciv.ui.utils.CameraStageBaseScreen
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     private var selectedProduction: String? = null
 
     private fun getProductionButton(production: String, buttonText: String,
                                     description: String?, rightSideButtonText: String): TextButton {
-        val productionTextButton = TextButton(buttonText, CameraStageBaseScreen.skin)
+        val productionTextButton = TextButton(buttonText, skin)
         productionTextButton.addClickListener {
             selectedProduction = production
             pick(rightSideButtonText)
@@ -63,13 +62,10 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
                     unit.getDescription(true), "Train " + unit.name))
         }
 
-        if (civInfo.tech.isResearched("Education"))
-            specials.addActor(getProductionButton("Science", "Produce Science",
-                    "Convert production to science at a rate of 4 to 1", "Produce Science"))
-
-        if (civInfo.tech.isResearched("Currency"))
-            specials.addActor(getProductionButton("Gold", "Produce Gold",
-                    "Convert production to gold at a rate of 4 to 1", "Produce Gold"))
+        for(specialConstruction in cityConstructions.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }){
+            specials.addActor(getProductionButton(specialConstruction.name, "Produce ${specialConstruction.name}",
+                    specialConstruction.description, "Produce ${specialConstruction.name}"))
+        }
 
         topTable.add(units)
         topTable.add(regularBuildings)

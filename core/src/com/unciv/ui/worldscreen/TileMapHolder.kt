@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
-import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -64,7 +63,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         widget = allTiles
         setFillParent(true)
-        setOrigin(Align.center)
+        setOrigin(worldScreen.stage.width/2,worldScreen.stage.height/2)
         setSize(worldScreen.stage.width, worldScreen.stage.height)
         addListener(object : ActorGestureListener() {
             var lastScale = 1f

@@ -37,15 +37,17 @@ class CityStats {
     }
 
 
-    private fun getStatsFromProduction(): Stats {
+    private fun getStatsFromProduction(production:Float): Stats {
         val stats = Stats()
 
-        if ("Gold" == cityInfo.cityConstructions.currentConstruction) stats.gold += stats.production / 4
-        if ("Science" == cityInfo.cityConstructions.currentConstruction) {
-            var scienceProduced = stats.production / 4
-            if (cityInfo.civInfo.buildingUniques.contains("ScienceConversionIncrease")) scienceProduced *= 1.33f
-            if (cityInfo.civInfo.policies.isAdopted("Rationalism")) scienceProduced *= 1.33f
-            stats.science += scienceProduced
+        when(cityInfo.cityConstructions.currentConstruction) {
+            "Gold" -> stats.gold += production / 4
+            "Science" -> {
+                var scienceProduced = production / 4
+                if (cityInfo.civInfo.buildingUniques.contains("ScienceConversionIncrease")) scienceProduced *= 1.33f
+                if (cityInfo.civInfo.policies.isAdopted("Rationalism")) scienceProduced *= 1.33f
+                stats.science += scienceProduced
+            }
         }
         return stats
     }
@@ -208,7 +210,9 @@ class CityStats {
         for (stat in baseStatList.values) stats.add(stat)
         stats.production *= 1 + statPercentBonuses.production / 100  // So they get bonuses for production and gold/science
 
-        stats.add(getStatsFromProduction())
+        val statsFromProduction = getStatsFromProduction(stats.production)
+        stats.add(statsFromProduction)
+        baseStatList["Construction"] = statsFromProduction
 
 
         stats.gold *= 1 + statPercentBonuses.gold / 100
