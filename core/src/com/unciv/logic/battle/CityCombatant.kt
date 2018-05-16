@@ -39,7 +39,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         // 10% bonus foreach pop
         val strengthWithPop = (baseStrength + strengthFromTechs) * (1 + 0.1*city.population.population)
 
-        return strengthWithPop.toInt() * 100 // *100 because a city is always at 100% strength
+        return strengthWithPop.toInt()
     }
 
     override fun toString(): String {return city.name} // for debug

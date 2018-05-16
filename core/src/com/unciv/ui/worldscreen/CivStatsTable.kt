@@ -9,7 +9,8 @@ import com.unciv.models.gamebasics.ResourceType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.fromRGB
+import com.unciv.ui.utils.centerY
+import com.unciv.ui.utils.colorFromRGB
 import kotlin.math.ceil
 
 class CivStatsTable(val screen: WorldScreen) : Table() {
@@ -18,10 +19,10 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
             .apply { fontColor = Color.valueOf("f5f5f5ff") }
 
     private val turnsLabel = Label("Turns: 0/400", labelStyle)
-    private val goldLabel = Label("Gold:",labelStyle).apply { color = Color().fromRGB(225,217,71) }
-    private val scienceLabel = Label("Science:",labelStyle).apply { color = Color().fromRGB(78,140,151) }
+    private val goldLabel = Label("Gold:",labelStyle).apply { color = colorFromRGB(225, 217, 71) }
+    private val scienceLabel = Label("Science:",labelStyle).apply { color = colorFromRGB(78, 140, 151) }
     private val happinessLabel = Label("Happiness:",labelStyle)
-    private val cultureLabel = Label("Culture:",labelStyle).apply { color = Color().fromRGB(210,94,210) }
+    private val cultureLabel = Label("Culture:",labelStyle).apply { color = colorFromRGB(210, 94, 210) }
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Image>()
     private val happinessImage = ImageGetter.getStatIcon("Happiness")
@@ -84,7 +85,7 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
         menuButton.addClickListener {
             screen.optionsTable.isVisible = !screen.optionsTable.isVisible
         }
-        menuButton.y = this.height/2-menuButton.height/2
+        menuButton.centerY(this)
         menuButton.x = menuButton.y
         return menuButton
     }
@@ -126,7 +127,7 @@ class CivStatsTable(val screen: WorldScreen) : Table() {
             happinessImage.drawable = ImageGetter.getStatIcon("Malcontent").drawable
         }
         else{
-            happinessLabel.color = Color().fromRGB(92,194,77)
+            happinessLabel.color = colorFromRGB(92, 194, 77)
             happinessImage.drawable = ImageGetter.getStatIcon("Happiness").drawable
         }
 

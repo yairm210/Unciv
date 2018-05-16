@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -13,7 +14,7 @@ import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.HexMath
-import com.unciv.ui.utils.fromRGB
+import com.unciv.ui.utils.colorFromRGB
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
@@ -63,7 +64,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         widget = allTiles
         setFillParent(true)
-        setOrigin(worldScreen.stage.width / 2, worldScreen.stage.height / 2)
+        setOrigin(Align.center)
         setSize(worldScreen.stage.width, worldScreen.stage.height)
         addListener(object : ActorGestureListener() {
             var lastScale = 1f
@@ -110,10 +111,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
             for(tile: TileInfo in unit.getDistanceToTiles().keys)
-                tileGroups[tile]!!.showCircle(Color().fromRGB(0,120,215))
+                tileGroups[tile]!!.showCircle(colorFromRGB(0, 120, 215))
 
             for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner && civViewableTiles.contains(it)})
-                tileGroups[tile]!!.showCircle(Color().fromRGB(237,41,57))
+                tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
         }
 
         if(selectedTile!=null)

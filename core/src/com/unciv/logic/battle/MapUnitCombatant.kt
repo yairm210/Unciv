@@ -18,15 +18,12 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getAttackingStrength(defender: ICombatant): Int {
-        val attackerStrength: Int
-        if (isRanged()) attackerStrength = unit.getBaseUnit().rangedStrength
-        else attackerStrength = unit.getBaseUnit().strength
-        return attackerStrength*unit.health
+        if (isRanged()) return unit.getBaseUnit().rangedStrength
+        else return unit.getBaseUnit().strength
     }
 
     override fun getDefendingStrength(attacker: ICombatant): Int {
-        // too: if ranged units get ranged attacked, they use their ranged str to defend!
-        return unit.getBaseUnit().strength*unit.health
+        return unit.getBaseUnit().strength
     }
 
     override fun getUnitType(): UnitType {

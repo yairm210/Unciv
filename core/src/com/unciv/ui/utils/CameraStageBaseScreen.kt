@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -81,8 +82,7 @@ open class CameraStageBaseScreen : Screen {
             }
         tutorialTable.add(button).pad(10f)
         tutorialTable.pack()
-        tutorialTable.setPosition(stage.width / 2 - tutorialTable.width / 2,
-                stage.height / 2 - tutorialTable.height / 2)
+        tutorialTable.center(stage)
         stage.addActor(tutorialTable)
     }
 
@@ -105,6 +105,14 @@ fun Button.enable() {
 fun <E> List<E>.getRandom(): E = if (size == 0) throw Exception() else get((Math.random() * size).toInt())
 
 
-fun Color.fromRGB(r:Int,g:Int,b:Int): Color {
+fun colorFromRGB(r: Int, g: Int, b: Int): Color {
     return Color(r/255f, g/255f, b/255f, 1f)
 }
+
+fun Actor.centerX(parent:Actor){ x = parent.width/2 - width/2 }
+fun Actor.centerY(parent:Actor){ y = parent.height/2- height/2}
+fun Actor.center(parent:Actor){ centerX(parent); centerY(parent)}
+
+fun Actor.centerX(parent:Stage){ x = parent.width/2 - width/2 }
+fun Actor.centerY(parent:Stage){ y = parent.height/2- height/2}
+fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}

@@ -8,7 +8,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.fromRGB
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.colorFromRGB
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
 
@@ -34,8 +35,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private fun addCircleImage() {
         circleImage.width = 50f
         circleImage.height = 50f
-        circleImage.setPosition(width / 2 - circleImage.width / 2,
-                height / 2 - circleImage.height / 2)
+        circleImage.center(this)
         addActor(circleImage)
         circleImage.isVisible = false
     }
@@ -44,8 +44,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         val imageScale = groupSize * 1.5f / hexagon.width
         hexagon.setScale(imageScale)
         hexagon.setOrigin(Align.center)
-        hexagon.setPosition((width - hexagon.width) / 2,
-                (height - hexagon.height) / 2)
+        hexagon.center(this)
         hexagon.zIndex = 0
         addActor(hexagon)
     }
@@ -54,8 +53,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         populationImage = ImageGetter.getImage("StatIcons/populationGreen.png")
         populationImage!!.run {
             setSize(20f, 20f)
-            setPosition(this@TileGroup.width/2 - width/2,
-                    this@TileGroup.height/2 - height/2 - 20)
+            center(this@TileGroup)
+            y -= 20
         } // top left
         addActor(populationImage)
     }
@@ -98,8 +97,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 for(i in -2..2) {
                     val image = ImageGetter.getImage("UnitIcons/Circle.png")
                     image.setSize(5f, 5f)
-                    image.moveBy(width / 2 - image.width / 2, // center
-                            height / 2 - image.height / 2)
+                    image.center(this)
                     // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
                     // Here, we want to have the borders start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
                     // BUT, we don't actually want it all the way out there, because we want to display the borders of 2 different civs!
@@ -113,8 +111,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     image.moveBy(relativeWorldPosition.y*i * 4,  -relativeWorldPosition.x*i * 4)
 
                     image.color = tileInfo.getOwner()!!.getCivilization().getColor()
-                    //image.setOrigin(image.width / 2, image.height / 2) // This is so that the rotation is calculated from the middle of the road and not the edge
-                    //image.rotation = (90 + 180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
                     addActor(image)
                     borderImages.add(image)
                 }
@@ -157,7 +153,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun updateTileColor(isViewable: Boolean) {
         val RGB = tileInfo.getBaseTerrain().RGB!!
-        hexagon.color = Color().fromRGB(RGB[0], RGB[1],RGB[2])
+        hexagon.color = colorFromRGB(RGB[0], RGB[1], RGB[2])
         if (!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK, 0.6f)
     }
 
@@ -168,8 +164,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             terrainFeatureImage!!.run {
                 setSize(30f, 30f)
                 setColor(1f, 1f, 1f, 0.5f)
-                setPosition(this@TileGroup.width / 2 - width / 2,
-                        this@TileGroup.height / 2 - height / 2)
+                center(this@TileGroup)
             }
         }
 
@@ -185,9 +180,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             addActor(improvementImage)
             improvementImage!!.run {
                 setSize(20f, 20f)
-
-                setPosition(this@TileGroup.width / 2 - width / 2 + 20f,
-                        this@TileGroup.height / 2 - height / 2) // right
+                center(this@TileGroup)
+                this.x+=20 // right
             }
             improvementType = tileInfo.improvement
         }
@@ -198,8 +192,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
                 resourceImage = ImageGetter.getImage(fileName)
                 resourceImage!!.setSize(20f, 20f)
-            resourceImage!!.setPosition(width / 2 - resourceImage!!.width / 2 - 20f,
-                    height / 2 - resourceImage!!.height / 2) // left
+            resourceImage!!.center(this)
+            resourceImage!!.x -= 20 // left
             addActor(resourceImage!!)
         }
     }
@@ -239,8 +233,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             setSize(background.width,background.height)
             addActor(background)
         }
-        unitBaseImage.setPosition(group.width/2-unitBaseImage.width/2,
-                group.height/2-unitBaseImage.height/2)
+        unitBaseImage.center(group)
         group.addActor(unitBaseImage)
         return group
     }

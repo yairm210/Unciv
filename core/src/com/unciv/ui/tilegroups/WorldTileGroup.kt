@@ -10,6 +10,7 @@ import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.center
 
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
@@ -18,8 +19,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     fun addWhiteCircleAroundUnit(){
         val whiteCircle = ImageGetter.getImage("UnitIcons/Circle.png")
         whiteCircle.setSize(25f,25f)
-        whiteCircle.setPosition(unitImage!!.width/2 - whiteCircle.width/2,
-                unitImage!!.height/2 - whiteCircle.height/2)
+        whiteCircle.center(unitImage!!)
         unitImage!!.addActor(whiteCircle)
         whiteCircle.toBack()
     }
@@ -38,8 +38,8 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         updateCityButton(city)
         updateUnitImage(isViewable)
         if(unitImage!=null) {
-            unitImage!!.setPosition(width / 2 - unitImage!!.width / 2,
-                    height / 2 - unitImage!!.height / 2 + 20) // top
+            unitImage!!.center(this)
+            unitImage!!.y += 20 // top
         }
     }
 
@@ -72,8 +72,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 toFront()
             }
 
-            cityButton!!.setPosition(width / 2 - cityButton!!.width / 2,
-                    height / 2 - cityButton!!.height / 2)
+            cityButton!!.center(this)
 
         }
     }

@@ -13,6 +13,7 @@ import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.centerX
 import com.unciv.ui.utils.disable
 import kotlin.math.max
 
@@ -70,8 +71,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         row().pad(5f)
 
-        add("Strength: "+attacker.getAttackingStrength(defender)/100f)
-        add("Strength: "+defender.getDefendingStrength(attacker)/100f)
+        add("Strength: "+attacker.getAttackingStrength(defender))
+        add("Strength: "+defender.getDefendingStrength(attacker))
         row().pad(5f)
 
         val attackerModifiers = battle.getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
@@ -82,8 +83,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             if (defenderModifiers.size > i) add(defenderModifiers[i]) else add()
             row().pad(5f)
         }
-        add((battle.getAttackingStrength(attacker,defender)/100f).toString())
-        add((battle.getDefendingStrength(attacker,defender)/100f).toString())
+        add(battle.getAttackingStrength(attacker,defender).toString())
+        add(battle.getDefendingStrength(attacker,defender).toString())
         row().pad(5f)
 
         var damageToDefender = battle.calculateDamageToDefender(attacker,defender)

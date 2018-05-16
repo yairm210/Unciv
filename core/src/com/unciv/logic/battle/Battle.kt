@@ -69,7 +69,7 @@ class Battle(val gameInfo:GameInfo) {
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         if (combatant.getUnitType() == UnitType.City) return 1f
-        return 1 / 2f + combatant.getHealth() / 200f // Each point of health reduces damage dealt by 0.5%
+        return 1/2f + combatant.getHealth()/200f // Each point of health reduces damage dealt by 0.5%
     }
 
 

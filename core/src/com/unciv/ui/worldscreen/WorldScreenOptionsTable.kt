@@ -12,6 +12,7 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.center
 
 class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, private val civInfo: CivilizationInfo) : Table() {
 
@@ -67,7 +68,6 @@ class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, pri
         add(closeButton)
 
         pack() // Needed to show the background.
-        setPosition(worldScreen.stage.width / 2 - width / 2,
-                worldScreen.stage.height / 2 - height / 2)
+        center(worldScreen.stage)
     }
 }

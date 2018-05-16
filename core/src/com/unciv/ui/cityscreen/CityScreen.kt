@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.centerX
 import java.util.*
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
@@ -137,7 +138,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             cityPickerTable.add(nextCityButton)
         }
         cityPickerTable.pack()
-        cityPickerTable.setPosition(stage.width / 2 - cityPickerTable.width / 2, 0f)
+        cityPickerTable.centerX(stage)
         stage.addActor(cityPickerTable)
     }
 
