@@ -13,8 +13,6 @@ import kotlin.math.max
  */
 class Battle(val gameInfo:GameInfo) {
 
-
-
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
         if (combatant is MapUnitCombatant) {
@@ -140,7 +138,7 @@ class Battle(val gameInfo:GameInfo) {
                     if (attacker.isDefeated()) " was destroyed while attacking"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
             val defenderString =
-                    if (defender.getUnitType() == UnitType.City) defender.getName()
+                    if (defender.getUnitType() == UnitType.City) " "+defender.getName()
                     else " our " + defender.getName()
             val notificationString = "An enemy " + attacker.getName() + whatHappenedString + defenderString
             gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position)

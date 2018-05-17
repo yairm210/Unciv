@@ -4,16 +4,15 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.centerX
 import com.unciv.ui.utils.disable
 import kotlin.math.max
 
@@ -121,37 +120,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val attackerDistanceToTiles = attacker.unit.getDistanceToTiles()
 
-        val attackerCanReachDefender:Boolean
-        var tileToMoveTo:TileInfo? = null
-
-        if(attacker.isMelee()){
-            if(attacker.getTile().neighbors.contains(defender.getTile())){
-                attackerCanReachDefender=true
-            }
-            else {
-                val tilesCanAttackFrom = attackerDistanceToTiles.filter {
-                    attacker.unit.currentMovement - it.value > 0 // once we reach it we'll still have energy to attack
-                            && it.key.unit == null
-                            && it.key.neighbors.contains(defender.getTile())
-                }
-
-                if (tilesCanAttackFrom.isEmpty()) attackerCanReachDefender=false
-                else {
-                    tileToMoveTo = tilesCanAttackFrom.minBy { it.value }!!.key // travel least distance
-                    attackerCanReachDefender=true
-                }
-            }
-        }
-
-        else { // ranged
-            val tilesInRange = attacker.getTile().getTilesInDistance(2)
-            attackerCanReachDefender = tilesInRange.contains(defender.getTile())
-        }
+        val attackerCanReachDefender = UnitAutomation().getAttackableEnemies(attacker.unit)
+                .contains(defender.getTile())
 
         if(!attackerCanReachDefender || attacker.unit.currentMovement==0f) attackButton.disable()
         else {
             attackButton.addClickListener {
-                if(tileToMoveTo!=null) attacker.unit.moveToTile(tileToMoveTo)
+                if(attacker.isMelee())
+                    attacker.unit.movementAlgs().headTowards(defender.getTile())
                 battle.attack(attacker, defender)
                 worldScreen.update()
             }

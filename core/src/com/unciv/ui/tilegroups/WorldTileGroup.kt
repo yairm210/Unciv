@@ -27,7 +27,8 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
     override fun update(isViewable: Boolean) {
         super.update(isViewable)
-        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) return
+        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
+            && !viewEntireMapForDebug) return
 
         if (populationImage != null) removePopulationIcon()
 

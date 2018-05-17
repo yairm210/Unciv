@@ -83,12 +83,18 @@ class MapUnit {
         if(health>100) health=100
     }
 
+    fun canMove(tile: TileInfo): Boolean {
+        if(tile.unit!=null) return false
+        if(tile.isCityCenter() && tile.getOwner()!=civInfo) return false
+        return true
+    }
 
     fun moveToTile(otherTile: TileInfo) {
         val distanceToTiles = getDistanceToTiles()
         if (!distanceToTiles.containsKey(otherTile))
             throw Exception("You can't get there from here!")
         if (otherTile.unit != null ) throw Exception("Tile already contains a unit!")
+        if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo) throw Exception("This is an enemy city, you can't go here!")
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"

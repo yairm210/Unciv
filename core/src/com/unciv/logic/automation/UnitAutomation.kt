@@ -2,7 +2,10 @@ package com.unciv.logic.automation
 
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
@@ -32,6 +35,36 @@ class UnitAutomation{
         }
     }
 
+    fun containsAttackableEnemy(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+        return (tile.unit != null && tile.unit!!.owner != civInfo.civName)
+                || (tile.isCityCenter() && tile.getCity()!!.civInfo!=civInfo)
+    }
+
+    fun getAttackableEnemies(unit: MapUnit): List<TileInfo> {
+        val attackableTiles = unit.civInfo.getViewableTiles()
+                .filter { containsAttackableEnemy(it,unit.civInfo) }
+
+        if(MapUnitCombatant(unit).isMelee()) {
+            val distanceToTiles = unit.getDistanceToTiles()
+            // If we're conducting a melee attack,
+            // then there needs to be a tile adjacent to the enemy that we can get to,
+            // AND STILL HAVE MOVEMENT POINTS REMAINING,
+            return attackableTiles.filter {
+                it.neighbors.any {
+                    unit.getTile()==it || // We're already right nearby
+                    it.unit == null
+                            && distanceToTiles.containsKey(it)
+                            && distanceToTiles[it]!! < unit.currentMovement  // We can get there
+                }
+            }
+        }
+
+        else { // Range attack, so enemy needs to be in range
+            return attackableTiles.filter { unit.getTile().getTilesInDistance(2).contains(it) }
+        }
+
+    }
+
     fun automateUnitMoves(unit: MapUnit) {
 
         if (unit.name == "Settler") {
@@ -52,26 +85,32 @@ class UnitAutomation{
         } // do nothing but heal
 
         // if there is an attackable unit in the vicinity, attack!
-        val attackableTiles = unit.civInfo.getViewableTiles()
-                .filter { it.unit != null && it.unit!!.owner != unit.civInfo.civName && !it.isCityCenter() }.toHashSet()
-        val distanceToTiles = unit.getDistanceToTiles()
-        val unitTileToAttack = distanceToTiles.keys.firstOrNull { attackableTiles.contains(it) }
+        val enemyTileToAttack = getAttackableEnemies(unit).firstOrNull()
 
-        if (unitTileToAttack != null) {
-            val unitToAttack = unitTileToAttack.unit!!
-            if (unitToAttack.getBaseUnit().unitType == UnitType.Civilian) { // kill
-                unitToAttack.civInfo.addNotification("Our " + unitToAttack.name + " was destroyed by an enemy " + unit.name + "!", unitTileToAttack.position)
-                unitTileToAttack.unit = null
-                unit.movementAlgs().headTowards(unitTileToAttack)
-                return
+        if (enemyTileToAttack != null) {
+
+            val enemy:ICombatant
+            if(enemyTileToAttack.isCityCenter()){
+                enemy = CityCombatant(enemyTileToAttack.getCity()!!)
             }
 
-            val damageToAttacker = Battle(unit.civInfo.gameInfo).calculateDamageToAttacker(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
+            else {
+                val unitToAttack = enemyTileToAttack.unit!!
+                if (unitToAttack.getBaseUnit().unitType == UnitType.Civilian) { // kill
+                    unitToAttack.civInfo.addNotification("Our " + unitToAttack.name + " was destroyed by an enemy " + unit.name + "!", enemyTileToAttack.position)
+                    enemyTileToAttack.unit = null
+                    unit.movementAlgs().headTowards(enemyTileToAttack)
+                    return
+                }
+                enemy=MapUnitCombatant(unitToAttack)
+            }
+
+            val damageToAttacker = Battle(unit.civInfo.gameInfo).calculateDamageToAttacker(MapUnitCombatant(unit), enemy)
 
             if (damageToAttacker < unit.health) { // don't attack if we'll die from the attack
                 if(MapUnitCombatant(unit).isMelee())
-                    unit.movementAlgs().headTowards(unitTileToAttack)
-                Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), MapUnitCombatant(unitToAttack))
+                    unit.movementAlgs().headTowards(enemyTileToAttack)
+                Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
                 return
             }
         }
@@ -98,11 +137,11 @@ class UnitAutomation{
         // todo
 
         // else, find the closest enemy unit that we know of within 5 spaces and advance towards it
-        val closestUnit = unit.getTile().getTilesInDistance(5)
-                .firstOrNull { attackableTiles.contains(it) }
+        val closestEnemy = unit.getTile().getTilesInDistance(5)
+                .firstOrNull { containsAttackableEnemy(it,unit.civInfo) && unit.movementAlgs().canReach(it) }
 
-        if (closestUnit != null) {
-            unit.movementAlgs().headTowards(closestUnit)
+        if (closestEnemy != null) {
+            unit.movementAlgs().headTowards(closestEnemy)
             return
         }
 
@@ -112,7 +151,9 @@ class UnitAutomation{
         }
 
         // else, go to a random space
-        unit.moveToTile(distanceToTiles.keys.filter { it.unit == null }.toList().getRandom())
+        unit.moveToTile(unit.getDistanceToTiles()
+                .filter { it.key.unit == null && it.value==unit.currentMovement } // at edge of walking distance
+                .toList().getRandom().first)
     }
 
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
@@ -157,3 +198,4 @@ class UnitAutomation{
     }
 
 }
+

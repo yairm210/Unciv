@@ -12,6 +12,12 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.colorFromRGB
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
+    /**
+     * This exists so that when debugging we can see the entire map.
+     * Remember to turn this to false before commit and upload!
+     */
+    protected val viewEntireMapForDebug = false
+
 
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
     protected var terrainFeatureImage:Image?=null
@@ -67,7 +73,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     open fun update(isViewable: Boolean) {
         hideCircle()
-        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
+        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
+            && !viewEntireMapForDebug) {
             hexagon.color = Color.BLACK
             return
         }
@@ -205,7 +212,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             unitImage = null
         }
 
-        if (tileInfo.unit != null && isViewable) { // Tile is visible
+        if (tileInfo.unit != null && (isViewable || viewEntireMapForDebug)) { // Tile is visible
             val unit = tileInfo.unit!!
             unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
             addActor(unitImage!!)

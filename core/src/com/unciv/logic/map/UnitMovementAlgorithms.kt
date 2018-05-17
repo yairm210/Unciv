@@ -34,13 +34,17 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
-                    if (neighbor.getOwner() != null && neighbor.getOwner() != unit.civInfo
+
+                    var totalDistanceToTile:Float
+                    if (neighbor.getOwner() != unit.civInfo
                             && neighbor.isCityCenter())
-                        continue // Enemy city, can't move through it!
+                        totalDistanceToTile = unitMovement // Enemy city, can't move through it - we'll be "stuck" there
 
-                    val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor)
+                    else {
+                        val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor)
+                        totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
+                    }
 
-                    var totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
                     if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) {
                         if (totalDistanceToTile < unitMovement)
                             updatedTiles += neighbor
@@ -76,7 +80,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!
                     else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                        if (reachableTile != destination && reachableTile.unit != null) continue // This is an intermediary tile that contains a unit - we can't go there!
+                        if (!unit.canMove(reachableTile)) continue // This is a tile that we can''t actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
@@ -111,12 +115,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     fun headTowards(destination: TileInfo): TileInfo {
         val currentTile = unit.getTile()
+        if(currentTile==destination) return currentTile
 
         val distanceToTiles = unit.getDistanceToTiles()
 
         val destinationTileThisTurn: TileInfo
         if (distanceToTiles.containsKey(destination)) { // we can get there this turn
-            if (destination.unit == null)
+            if (unit.canMove(destination))
                 destinationTileThisTurn = destination
             else   // Someone is blocking to the path to the final tile...
             {
@@ -125,7 +130,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     return currentTile
 
                 val reachableDestinationNeighbors = destinationNeighbors
-                        .filter { distanceToTiles.containsKey(it) && it.unit == null }
+                        .filter { distanceToTiles.containsKey(it) && unit.canMove(it)}
                 if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
                     return currentTile
 
