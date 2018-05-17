@@ -89,7 +89,7 @@ class CityInfo {
         val allExistingCityNames = civInfo.gameInfo.civilizations.flatMap { it.cities }.map { it.name }.toHashSet()
         val probablyName = civInfo.getCivilization().cities.firstOrNull { !allExistingCityNames.contains(it) }
         if(probablyName!=null) name=probablyName
-        else name = civInfo.getCivilization().cities.first { !allExistingCityNames.contains("New $it") }
+        else name = civInfo.getCivilization().cities.map { "New $it" }.first { !allExistingCityNames.contains(it) }
 
         this.location = cityLocation
         civInfo.cities.add(this)
