@@ -8,31 +8,36 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
+    init{
+        skin = CameraStageBaseScreen.skin
+    }
 
     internal fun updateTileTable(tile: TileInfo) {
         clearChildren()
         val civInfo = worldScreen.civInfo
-        val stats = tile.getTileStats(civInfo)
         pad(20f)
         columnDefaults(0).padRight(10f)
 
-        val skin = CameraStageBaseScreen.skin
-
         if (civInfo.exploredTiles.contains(tile.position)) {
+            add(getStatsTable(tile)).pad(20f)
             add(Label(tile.toString(), skin)).colspan(2)
-            row()
-
-
-            for (entry in stats.toHashMap().filterNot { it.value == 0f }) {
-                add(ImageGetter.getStatIcon(entry.key.toString())).align(Align.right)
-                add(Label(entry.value.toInt().toString(), skin)).align(Align.left)
-                row()
-            }
         }
 
         pack()
 
         setPosition(worldScreen.stage.width - 10f - width, 10f)
+    }
+
+    fun getStatsTable(tile: TileInfo):Table{
+        val table=Table()
+
+
+        for (entry in tile.getTileStats(worldScreen.civInfo).toHashMap().filterNot { it.value == 0f }) {
+            table.add(ImageGetter.getStatIcon(entry.key.toString())).align(Align.right)
+            table.add(Label(entry.value.toInt().toString(), skin)).align(Align.left)
+            table.row()
+        }
+        return table
     }
 }
 

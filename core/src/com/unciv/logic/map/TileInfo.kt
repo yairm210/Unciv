@@ -158,7 +158,7 @@ class TileInfo {
             if(unit!!.getBaseUnit().unitType!=UnitType.Civilian) unitString += "(" + unit!!.health + ")"
             SB.appendln(unitString)
         }
-        return SB.toString()
+        return SB.toString().trim()
     }
 
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
