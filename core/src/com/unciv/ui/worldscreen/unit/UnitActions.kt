@@ -32,7 +32,7 @@ class UnitActions {
 
     fun getUnitActions(unit:MapUnit,worldScreen: WorldScreen): List<UnitAction> {
         val tile = unit.getTile()
-        val unitTable = worldScreen.unitTable
+        val unitTable = worldScreen.bottomBar.unitTable
         val actionList = ArrayList<UnitAction>()
 
         if (unitTable.currentlyExecutingAction != "moveTo"

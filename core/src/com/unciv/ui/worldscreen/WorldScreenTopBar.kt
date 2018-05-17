@@ -16,7 +16,7 @@ import com.unciv.ui.utils.colorFromRGB
 import kotlin.math.abs
 import kotlin.math.ceil
 
-class CivStatsTable(val screen: WorldScreen) : Table() {
+class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
     val labelStyle = Label.LabelStyle(Label("", CameraStageBaseScreen.skin).style)
             .apply { fontColor = Color.valueOf("f5f5f5ff") }

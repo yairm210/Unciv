@@ -26,8 +26,7 @@ open class CameraStageBaseScreen : Screen {
     private var isTutorialShowing = false
 
     init {
-        stage = Stage(ExtendViewport(1000f, 600f
-        ), batch)// FitViewport(1000,600)
+        stage = Stage(ExtendViewport(1500f, 900f), batch)// FitViewport(1000,600)
         Gdx.input.inputProcessor = stage
     }
 

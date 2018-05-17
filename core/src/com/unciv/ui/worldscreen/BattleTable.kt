@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -21,22 +20,24 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     private val battle = Battle(worldScreen.civInfo.gameInfo)
     init{
         skin = CameraStageBaseScreen.skin
+        background = ImageGetter.getDrawable(ImageGetter.WhiteDot)
+                .tint(ImageGetter.getBlue())
         pad(10f)
     }
 
     fun hide(){
         clear()
-        background=null
     }
 
     fun update() {
-        if (worldScreen.unitTable.selectedUnit == null
-                || worldScreen.unitTable.selectedUnit!!.getBaseUnit().unitType == UnitType.Civilian){
+        val unitTable = worldScreen.bottomBar.unitTable
+        if (unitTable.selectedUnit == null
+                || unitTable.selectedUnit!!.getBaseUnit().unitType == UnitType.Civilian){
             hide()
             return
         } // no attacker
 
-        val attacker = MapUnitCombatant(worldScreen.unitTable.selectedUnit!!)
+        val attacker = MapUnitCombatant(unitTable.selectedUnit!!)
 
         if (worldScreen.tileMapHolder.selectedTile == null) return
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!
@@ -118,7 +119,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         row().pad(5f)
         val attackButton = TextButton("Attack", skin)
 
-        val attackerDistanceToTiles = attacker.unit.getDistanceToTiles()
+        attacker.unit.getDistanceToTiles()
 
         val attackerCanReachDefender = UnitAutomation().getAttackableEnemies(attacker.unit)
                 .contains(defender.getTile())
@@ -136,12 +137,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attackButton).colspan(2)
 
         pack()
-
-        val tileTableBackground = ImageGetter.getDrawable("skin/tileTableBackground.png")
-                .tint(Color(0x004085ff))
-        tileTableBackground.minHeight = 0f
-        tileTableBackground.minWidth = 0f
-        background = tileTableBackground
 
         setPosition(worldScreen.stage.width/2-width/2, 5f)
     }

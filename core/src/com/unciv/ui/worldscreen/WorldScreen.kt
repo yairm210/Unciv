@@ -9,38 +9,31 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.GameSaver
-import com.unciv.ui.worldscreen.unit.UnitTable
 
 class WorldScreen : CameraStageBaseScreen() {
-    internal val civInfo: CivilizationInfo
+    val gameInfo = game.gameInfo
+    internal val civInfo: CivilizationInfo = gameInfo.getPlayerCivilization()
 
     val tileMapHolder: TileMapHolder
 
     internal var buttonScale = game.settings.buttonScale
-    private val tileInfoTable: TileInfoTable
-    private val civTable = CivStatsTable(this)
+    private val topBar = WorldScreenTopBar(this)
+    val bottomBar = WorldScreenBottomBar(this)
+
     private val techButton = TextButton("", CameraStageBaseScreen.skin)
     private val nextTurnButton = createNextTurnButton()
 
     internal val optionsTable: WorldScreenOptionsTable
     private val notificationsScroll: NotificationsScroll
-    internal val unitTable = UnitTable(this)
-    private val battleTable:BattleTable
 
     init {
-        val gameInfo = game.gameInfo
-        this.civInfo = gameInfo.getPlayerCivilization()
-
-        battleTable = BattleTable(this)
-        unitTable.setPosition(5f, 5f)
         tileMapHolder = TileMapHolder(this, gameInfo.tileMap, civInfo)
-        tileInfoTable = TileInfoTable(this, civInfo)
 
-        civTable.setPosition(0f, stage.height - civTable.height)
-        civTable.width = stage.width
+        topBar.setPosition(0f, stage.height - topBar.height)
+        topBar.width = stage.width
 
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
-                civTable.y - nextTurnButton.height - 10f)
+                topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
         notificationsScroll.width = stage.width/3
         optionsTable = WorldScreenOptionsTable(this, civInfo)
@@ -50,13 +43,13 @@ class WorldScreen : CameraStageBaseScreen() {
         tileMapHolder.addTiles()
 
         stage.addActor(tileMapHolder)
-        stage.addActor(tileInfoTable)
-        stage.addActor(civTable)
+        stage.addActor(topBar)
         stage.addActor(nextTurnButton)
         stage.addActor(techButton)
         stage.addActor(notificationsScroll)
-        stage.addActor(unitTable)
-        stage.addActor(battleTable)
+
+        bottomBar.width = stage.width
+        stage.addActor(bottomBar)
 
         update()
 
@@ -73,19 +66,14 @@ class WorldScreen : CameraStageBaseScreen() {
         }
 
         updateTechButton()
-        if (tileMapHolder.selectedTile != null)
-            tileInfoTable.updateTileTable(tileMapHolder.selectedTile!!)
-
-        unitTable.update() // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
+        bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         tileMapHolder.updateTiles()
-        civTable.update()
+        topBar.update()
         notificationsScroll.update()
         notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
-
-        battleTable.update()
     }
 
     private fun updateTechButton() {
@@ -102,7 +90,7 @@ class WorldScreen : CameraStageBaseScreen() {
                     + civInfo.tech.turnsToTech(civInfo.tech.currentTechnology()!!) + " turns")
 
         techButton.setSize(techButton.prefWidth, techButton.prefHeight)
-        techButton.setPosition(10f, civTable.y - techButton.height - 5f)
+        techButton.setPosition(10f, topBar.y - techButton.height - 5f)
     }
 
     private fun createNextTurnButton(): TextButton {
@@ -122,7 +110,7 @@ class WorldScreen : CameraStageBaseScreen() {
             }
 
             game.gameInfo.nextTurn()
-            unitTable.currentlyExecutingAction = null
+            bottomBar.unitTable.currentlyExecutingAction = null
             GameSaver.saveGame(game.gameInfo, "Autosave")
             update()
             displayTutorials("NextTurn")
@@ -140,3 +128,4 @@ class WorldScreen : CameraStageBaseScreen() {
         }
     }
 }
+

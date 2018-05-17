@@ -34,7 +34,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 worldScreen.displayTutorials("TileClicked")
 
                 selectedTile = tileInfo
-                worldScreen.unitTable.tileSelected(tileInfo)
+                worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
                 worldScreen.update()
             }
 
@@ -98,8 +98,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
         }
 
-        if(worldScreen.unitTable.selectedUnit!=null){
-            val unit = worldScreen.unitTable.selectedUnit!!
+        if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
+            val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
             tileGroups[unit.getTile()]!!.addWhiteCircleAroundUnit()
             val attackableTiles:List<TileInfo>
             when(unit.getBaseUnit().unitType){
@@ -124,7 +124,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     fun setCenterPosition(vector: Vector2) {
         val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
         selectedTile = tileGroup.tileInfo
-        worldScreen.unitTable.tileSelected(selectedTile!!)
+        worldScreen.bottomBar.unitTable.tileSelected(selectedTile!!)
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
         // We want to center on the middle of TG (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== filter the screen starts) needs to be half a screen away
