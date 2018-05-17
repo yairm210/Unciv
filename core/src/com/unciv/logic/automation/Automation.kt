@@ -62,12 +62,12 @@ class Automation {
     }
 
     private fun trainCombatUnit(city: CityInfo) {
-        val buildableUnits = city.cityConstructions.getConstructableUnits()
+        val combatUnits = city.cityConstructions.getConstructableUnits().filter { it.unitType != UnitType.Civilian }
         val chosenUnit:Unit
         if(city.civInfo.cities.any { it.getCenterTile().unit==null}
-                && buildableUnits.any { it.unitType==UnitType.Archery }) // this is for city defence so get an archery unit if we can
-            chosenUnit = buildableUnits.filter { it.unitType==UnitType.Archery }.maxBy { it.cost }!!
-        else chosenUnit = buildableUnits.maxBy { it.cost }!!
+                && combatUnits.any { it.unitType==UnitType.Archery }) // this is for city defence so get an archery unit if we can
+            chosenUnit = combatUnits.filter { it.unitType==UnitType.Archery }.maxBy { it.cost }!!
+        else chosenUnit = combatUnits.maxBy { it.cost }!!
 
         city.cityConstructions.currentConstruction = chosenUnit.name
     }

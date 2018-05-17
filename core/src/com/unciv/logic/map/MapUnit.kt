@@ -86,7 +86,8 @@ class MapUnit {
 
     fun moveToTile(otherTile: TileInfo) {
         val distanceToTiles = getDistanceToTiles()
-        if (!distanceToTiles.containsKey(otherTile)) throw Exception("You can't get there from here!")
+        if (!distanceToTiles.containsKey(otherTile))
+            throw Exception("You can't get there from here!")
         if (otherTile.unit != null ) throw Exception("Tile already contains a unit!")
 
         currentMovement -= distanceToTiles[otherTile]!!
@@ -113,4 +114,8 @@ class MapUnit {
     }
 
     fun movementAlgs() = UnitMovementAlgorithms(this)
+
+    override fun toString(): String {
+        return name +" - "+owner
+    }
 }
