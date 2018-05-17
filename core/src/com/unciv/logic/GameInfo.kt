@@ -15,7 +15,7 @@ class GameInfo {
     var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
-    var turns = 1
+    var turns = 0
     @Transient var tilesToCities = HashMap<TileInfo,CityInfo>()
 
 
