@@ -1,4 +1,6 @@
 [
+
+	/* Ancient Era */
 	{
 		name:"Worker",
 		baseDescription: "Can build improvements on tiles", 
@@ -68,6 +70,9 @@
 		uniques:["Bonus vs Mounted 50%"],
 		hurryCostModifier:20
 	},
+	
+	
+	/* Classical Era */
 	{
 		name:"Catapult",
 		baseDescription: "",
@@ -104,6 +109,20 @@
 		hurryCostModifier:20
 	},
 	
+	/* Medieval Era */
+	{
+		name:"Crossbowman",
+		baseDescription: "",
+		unitType:"Archery",
+		movement:2,
+		strength:13,
+		rangedStrength:18,
+		cost: 120,
+		requiredTech:"Machinery",
+		hurryCostModifier:20
+	}
+	
+	/* Great people */
 	
 	{
 		name:"Great Artist",
