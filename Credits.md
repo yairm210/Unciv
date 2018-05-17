@@ -16,3 +16,9 @@ All from [the Noun Project](https://thenounproject.com) licenced under Creative 
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger
 * [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
+* [Crossbow](https://thenounproject.com/search/?q=Crossbow&i=964657) By Creaticca Creative Agency
+* [Trebuchet](https://thenounproject.com/search/?q=Trebuchet&i=827987) By Ben Davis
+* [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
+* [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun
+* [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski
+* [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
