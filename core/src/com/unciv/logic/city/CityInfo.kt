@@ -67,7 +67,7 @@ class CityInfo {
             if (building.greatPersonPoints != null)
                 greatPersonPoints.add(building.greatPersonPoints!!)
 
-        if (civInfo.buildingUniques.contains("GreatPersonGenerationIncrease"))
+        if (civInfo.buildingUniques.contains("+33% great person generation in all cities"))
             greatPersonPoints = greatPersonPoints.times(1.33f)
         if (civInfo.policies.isAdopted("Entrepreneurship"))
             greatPersonPoints.gold *= 1.25f

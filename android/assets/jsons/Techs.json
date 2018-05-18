@@ -8,17 +8,14 @@
 			{
 				name:"Pottery",
 				row:2,
-				description:"Allows your cities to construct a granary, which provides food."
 			},
 			{
 				name:"Animal Husbandry",
-				row:5,
-				description:"Reveals horses, and allows workers to build pastures, which improve various animal resources."
+				row:5
 			},
 			{
 				name:"Mining",
-				row:9,
-				description:"Allows workers to build mines, which grant access to several strategic and luxury resources and increases production. Also allows workers to clear forests."
+				row:9
 			}
 			
 		]	
@@ -34,43 +31,37 @@
 				name:"Sailing",
 				row:1,
 				prerequisites:["Pottery"],
-				description:"Does nothing since we have no sea tiles - In theory, Allows access to sea resources by building work boats"
+				baseDescription:"Does nothing since we have no sea tiles - In theory, Allows access to sea resources by building work boats"
 			},*/
 			{
 				name:"Calendar",
 				row:2,
-				prerequisites:["Pottery"],
-				description:"Allows your workers to build Plantations, which grant access to several luxury resources, and the Stonehenge wonder, providing culture"
+				prerequisites:["Pottery"]
 			},
 			{
 				name:"Writing",
 				row:3,
-				prerequisites:["Pottery"],
-				description:"Allows your cities to construct libraries, which increases science produced.  Also enables construction of the Great Library wonder."
+				prerequisites:["Pottery"]
 			},
 			{
 				name:"Trapping",
 				row:5,
-				prerequisites:["Animal Husbandry"],
-				description:"Allows your workers to build Camps, increasing gold and granting access to several luxury resources. Also enables construction of Circuses, providing happiness."
+				prerequisites:["Animal Husbandry"]
 			},
 			{
 				name:"The Wheel",
 				row:6,
-				prerequisites:["Animal Husbandry"],
-				description:"Allows construction of roads, speeding movement and providing gold from trade. ALSO WATERWHEELS-TODO"
+				prerequisites:["Animal Husbandry"]
 			},
 			{
 				name:"Masonry",
 				row:9,
-				prerequisites:["Mining"],
-				description:"Allows workers to build quarries, granting access to stone and marble resources."
+				prerequisites:["Mining"]
 			},
 			{
 				name:"Bronze Working",
 				row:10,
-				prerequisites:["Mining"],
-				description:"Allows workers to remove jungles and clear marshes"
+				prerequisites:["Mining"]
 			}			
 		]	
 	},
@@ -86,25 +77,22 @@
 				cost:95,
 				row:1,
 				prerequisites:["Sailing"],
-				description:"Does nothing since we have no sea tiles - In theory, Allows construction of lighthouses, providing more food for sea tiles"
+				baseDescription:"Does nothing since we have no sea tiles - In theory, Allows construction of lighthouses, providing more food for sea tiles"
 			},*/
 			{
 				name:"Horseback Riding",
 				row:5,
-				prerequisites:["Trapping","The Wheel"],
-				description:"Allows construction of stables, which increase production on cattle, sheep and horses, and the Circus Maximus wonder"
+				prerequisites:["Trapping","The Wheel"]
 			},
 			{
 				name:"Mathematics",
 				row:7,
-				prerequisites:["The Wheel"],
-				description: "Enables construction of the Hanging Gardens wonder. Also enables construction of the Pyramids wonder."
+				prerequisites:["The Wheel"]
 			},
 			{
 				name:"Construction",
 				row:9,
-				prerequisites:["Masonry"],
-				description:"Allows construction of colosseums, which generate happiness, and building lumber mills on forests, providing production"
+				prerequisites:["Masonry"]
 			}
 		]	
 	},
@@ -118,26 +106,23 @@
 			{
 				name:"Philosophy",
 				row:3,
-				prerequisites:["Writing","Calendar"],
-				description:"Allows construction of temples, which generate culture, and the Oracle wonder"
+				prerequisites:["Writing","Calendar"]
 			},
 			{
 				name:"Currency",
 				row:7,
 				prerequisites:["Mathematics"],
-				description:"Enables construction of Markets and Mints, which increase gold, and conversion of city production to gold. Also enables the Machu Pichu wonder."
+				baseDescription:"Enables conversion of city production to gold"
 			},
 			{
 				name:"Engineering",
 				row:8,
-				prerequisites:["Mathematics","Construction"],
-				description:"Enables construction of aqueducts, which speed up city growth"
+				prerequisites:["Mathematics","Construction"]
 			},
 			{
 				name:"Iron Working",
 				row:10,
-				prerequisites:["Bronze Working"],
-				description:"Reveals Iron on map"
+				prerequisites:["Bronze Working"]
 			}
 		]	
 	},
@@ -151,26 +136,22 @@
 			{
 				name:"Theology",
 				row:2,
-				prerequisites:["Philosophy"],
-				description:"Enables construction of Monasteries, providing culture, and the Hagia Sophia, increasing Great Person generation"
+				prerequisites:["Philosophy"]
 			},
 			{
 				name:"Civil Service",
 				row:4,
-				prerequisites:["Horseback Riding","Philosophy"],
-				description:"Enables the Chichen Itza wonder, which increases the length of golden ages, and the National College, increasing science"
+				prerequisites:["Horseback Riding","Philosophy"]
 			},
 			{
 				name:"Physics",
 				row:8,
-				prerequisites:["Engineering"],
-				description:"Enables construction of the Porcelain Tower, increasing production to science production"
+				prerequisites:["Engineering"]
 			},
 			{
 				name:"Metal Casting",
 				row:10,
-				prerequisites:["Construction","Iron Working"],
-				description:"Enables construction of Forges and Workshops, increasing production, and the Notre Dame wonder, providing happiness,"
+				prerequisites:["Construction","Iron Working"]
 			}
 		]
 	},
@@ -186,25 +167,24 @@
 				row:1,
 				cost:415,
 				prerequisites:["Optics"],
-				description:"Does nothing since we have no sea tiles - In theory, allows construction of harbors"
+				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of harbors"
 			},*/
 			{
 				name:"Education",
 				row:3,
 				prerequisites:["Theology","Civil Service"],
-				description:"Allows cities to convert production to science, construction of Universities which provide science"
+				baseDescription:"Allows cities to convert production to science,"
 			},
 			{
 				name:"Chivalry",
 				row:5,
-				prerequisites:["Civil Service","Currency"],
-				description:"Enables construction of the Angkor Wat wonder, reducing cost of aquiring new tiles, construction of Trading Posts on tiles, providing gold"
+				prerequisites:["Civil Service","Currency"]
 			},
 			{
 				name:"Machinery",
 				row:8,
 				prerequisites:["Physics","Metal Casting"],
-				description:"Speeds movement speed on roads and allows you to construct the Ironworks wonder, which gives a massive boost in production"
+				baseDescription:"Speeds movement speed on roads"
 			}
 		]	
 	},
@@ -218,26 +198,22 @@
 			{
 				name:"Astronomy",
 				row:2,
-				prerequisites:[/*"Compass",*/"Education"],
-				description:"Enables construction of Observatories in cities near mountains"
+				prerequisites:[/*"Compass",*/"Education"]
 			},
 			{
 				name:"Acoustics",
 				row:4,
-				prerequisites:["Education","Chivalry"],
-				description:"Enables construction of Opera Houses and the Sistine Chapel, providing culture"
+				prerequisites:["Education","Chivalry"]
 			},
 			{
 				name:"Banking",
 				row:6,
-				prerequisites:["Chivalry"],
-				description:"Enables construction of banks, increasing gold, and allows construciton of the Forbidden Palace, decreasing unhappiness form population"
+				prerequisites:["Chivalry"]
 			},
 			{
 				name:"Printing Press",
 				row:8,
-				prerequisites:["Machinery","Physics"],
-				description:"Enables construction of the Theatre and Taj Mahal, increasing happiness"
+				prerequisites:["Machinery","Physics"]
 			},
 		]	
 	},
@@ -252,25 +228,22 @@
 				name:"Navigation",
 				row:2,
 				prerequisites:["Astronomy"],
-				description:"Does nothing since we have no sea tiles - In theory, allows construction of Frigates and Seaports"
+				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of Frigates and Seaports"
 			},*/
 			{
 				name:"Archaeology",
 				row:2,
-				prerequisites:["Astronomy"],
-				description:"Allows construction of Museums and the Hermitage and Louvre wonders, providing culture"
+				prerequisites:["Astronomy"]
 			},
 			{
 				name:"Economics",
 				row:6,
-				prerequisites:["Banking","Printing Press"],
-				description:"Camps and Trading Posts provide +1 gold, allows construction of Windmill and Big Ben"
+				prerequisites:["Banking","Printing Press"]
 			},
 			{
 				name:"Chemistry",
 				row:9,
-				prerequisites:["Machinery"],
-				description:"Mines and Quarries provide +1 production"
+				prerequisites:["Machinery"]
 			}
 		]	
 	},
@@ -284,14 +257,12 @@
 			{
 				name:"Scientific Theory",
 				row:4,
-				prerequisites:["Archaeology","Acoustics","Economics"],
-				description:"Reveals coal and allows construction of Public Schools, providing science. Also improves science from Academy."
+				prerequisites:["Archaeology","Acoustics","Economics"]
 			},
 			{
 				name:"Fertilizer",
 				row:7,
-				prerequisites:["Chemistry"],
-				description:"+1 food from Farms, Plantations and Pastures"
+				prerequisites:["Chemistry"]
 			}
 		]	
 	},
@@ -305,20 +276,17 @@
 			{
 				name:"Biology",
 				row:3,
-				prerequisites:["Archaeology","Scientific Theory","Fertilizer"],
-				description:"Reveals oil and allows construction of oil wells, and construction of hospitals, providing a large amount of food"
+				prerequisites:["Archaeology","Scientific Theory","Fertilizer"]
 			},
 			{
 				name:"Electricity",
 				row:5,
-				prerequisites:["Scientific Theory"],
-				description:"Reveals Aluminium on map and allows construction of stock exchange, increasing gold"
+				prerequisites:["Scientific Theory"]
 			},
 			{
 				name:"Steam Power",
 				row:7,
-				prerequisites:["Scientific Theory","Chemistry"],
-				description:"Enables construction of factories, boosting production, and increases produciton of lumber mills, "
+				prerequisites:["Scientific Theory","Chemistry"]
 			}
 		]	
 	},
@@ -333,19 +301,17 @@
 				name:"Refrigeration",
 				row:4,
 				prerequisites:["Electricity"],
-				description:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
+				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
 			},*/
 			{
 				name:"Radio",
 				row:5,
-				prerequisites:["Electricity"],
-				description:"Allows construction of broadcast towers and the Eiffel Tower, increasing culture"
+				prerequisites:["Electricity"]
 			},
 			{
 				name:"Combustion",
 				row:8,
-				prerequisites:["Steam Power"],
-				description:"Allows construction of railroads, providing fast transport and a 25% production boost to cities"
+				prerequisites:["Steam Power"]
 			}
 		]	
 	},
@@ -359,26 +325,23 @@
 			{
 				name:"Plastics",
 				row:3,
-				prerequisites:["Biology"],
-				description:"Allows construction of Research Lab, increasing science"
+				prerequisites:["Biology"]
 			},/*
 			{
 				name:"Electronics",
 				row:5,
 				prerequisites:["Radio"],
-				description:"Contributes only war-relatied things - on hold until AI is introduced - todo"
+				baseDescription:"Contributes only war-relatied things - on hold until AI is introduced - todo"
 			},*/
 			{
 				name:"Mass Media",
 				row:6,
-				prerequisites:["Radio"],
-				description:"Allows construction of Stadiums and the Sydney Opera House, boosting happiness"
+				prerequisites:["Radio"]
 			},
 			{
 				name:"Flight",
 				row:7,
-				prerequisites:["Combustion"],
-				description:"Allows construction of the Cristo Redentor, reducing cost of new policies"
+				prerequisites:["Combustion"]
 			},
 		]	
 	},
@@ -391,20 +354,18 @@
 			{
 				name:"Pharmaceuticals",
 				row:3,
-				prerequisites:["Plastics"],
-				description:"Enables construction of medical labs, alowing for greater city growth"
+				prerequisites:["Plastics"]
 			},
 			{
 				name:"Computers",
 				row:5,
 				prerequisites:["Mass Media"],
-				description:"+10% science and production in all cities"		
+				baseDescription:"+10% science and production in all cities"		
 			},
 			{
 				name:"Nuclear Fission",
 				row:7,
-				prerequisites:["Combustion"],
-				description:"Allows construction of Nuclear Plants, increasing production"
+				prerequisites:["Combustion"]
 			}
 		]	
 	},
@@ -417,20 +378,17 @@
 			{
 				name:"Ecology",
 				row:3,
-				prerequisites:["Pharmaceuticals"],
-				description:"Enables construction of Solar Plants on cities near deserts, increasing production"
+				prerequisites:["Pharmaceuticals"]
 			},
 			{
 				name:"Robotics",
 				row:4,
-				prerequisites:["Computers"],
-				description:"Allow construction of SS Boosters, a vital part of the spaceship, and the Spaceship Factory, which speeds the production of spaceship parts"
+				prerequisites:["Computers"]
 			},
 			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Flight","Computers"],
-				description:"Allows you to construct the Apollo Project, to find a way off of this planet!"
+				prerequisites:["Flight","Computers"]
 			}
 		]	
 	},
@@ -444,20 +402,17 @@
 			{
 				name:"Nanotechnology",
 				row:3,
-				prerequisites:["Robotics","Ecology"],
-				description:"Allow construction of the SS Statis Chamber, a vital part of the spaceship"
+				prerequisites:["Robotics","Ecology"]
 			}
 			{
 				name:"Satellites",
 				row:5,
-				prerequisites:["Rocketry","Computers","Ecology"],
-				description:"Allow construction of the SS Cockpit, a vital part of the spaceship"
+				prerequisites:["Rocketry","Computers","Ecology"]
 			}
 			{
 				name:"Particle Physics",
 				row:6,
-				prerequisites:["Ecology","Computers","Nuclear Fission"],
-				description:"Allow construction of the SS Engine, a vital part of the spaceship"
+				prerequisites:["Ecology","Computers","Nuclear Fission"]
 			}
 		]	
 	},
@@ -472,7 +427,7 @@
 				name:"Future Tech",
 				row:5,
 				prerequisites:["Nanotechnology","Particle Physics","Satellites"],
-				description:"Who knows what the future holds?"
+				baseDescription:"Who knows what the future holds?"
 			}
 		]	
 	}

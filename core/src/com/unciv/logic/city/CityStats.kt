@@ -30,7 +30,7 @@ class CityStats {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2.0
-            if (civInfo.buildingUniques.contains("TradeRouteGoldIncrease")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
+            if (civInfo.buildingUniques.contains("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
         }
         return stats
@@ -102,7 +102,7 @@ class CityStats {
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
-        if (civInfo.buildingUniques.contains("CitizenUnhappinessDecreased"))
+        if (civInfo.buildingUniques.contains("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Aristocracy"))
             unhappinessFromCitizens *= 0.95f
@@ -163,6 +163,14 @@ class CityStats {
         return stats
     }
 
+
+    private fun getStatPercentBonusesFromWonders(): Stats {
+        val stats = Stats()
+        val civUniques = cityInfo.civInfo.buildingUniques
+        if (civUniques.contains("Culture in all cities increased by 25%")) stats.culture += 25f
+        return stats
+    }
+
     private fun getStatPercentBonusesFromPolicies(policies: HashSet<String>, cityConstructions: CityConstructions): Stats {
         val stats = Stats()
 
@@ -200,6 +208,8 @@ class CityStats {
         val statPercentBonuses = cityInfo.cityConstructions.getStatPercentBonuses()
         statPercentBonuses.add(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()))
         statPercentBonuses.add(getStatPercentBonusesFromPolicies(civInfo.policies.adoptedPolicies, cityInfo.cityConstructions))
+        // from wonders - Culture in all cities increased by 25%
+        statPercentBonuses.add(getStatPercentBonusesFromWonders())
         statPercentBonuses.add(getStatPercentBonusesFromRailroad())
         statPercentBonuses.add(getStatPercentBonusesFromMarble())
         statPercentBonuses.add(getStatPercentBonusesFromComputers())

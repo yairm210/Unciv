@@ -39,6 +39,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         map["Terrains"] = GameBasics.Terrains.values
         map["Tile Improvements"] = GameBasics.TileImprovements.values
         map["Units"] = GameBasics.Units.values
+        map["Technologies"] = GameBasics.Technologies.values
 
         val nameList = List<ICivilopedia>(CameraStageBaseScreen.skin)
 

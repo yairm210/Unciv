@@ -44,6 +44,12 @@ class Building : NamedStats(), IConstruction{
 
     fun getRequiredTech(): Technology = GameBasics.Technologies[requiredTech]!!
 
+    fun getShortDescription(): String { // should fit in one line
+        var str = getStats(hashSetOf()).toString()
+        if(unique!=null) str += ", "+ unique!!
+        return str
+    }
+
     fun getStats(adoptedPolicies: HashSet<String>): Stats {
         val stats = this.clone()
         if (adoptedPolicies.contains("Organized Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
@@ -141,7 +147,7 @@ class Building : NamedStats(), IConstruction{
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })
             return false
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
-        if ("MustBeNextToDesert" == unique && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
+        if ("Must be next to desert" == unique && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
             return false
         if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource!!]))
             return false
@@ -158,8 +164,8 @@ class Building : NamedStats(), IConstruction{
             if (!containsResourceWithImprovement) return false
         }
 
-        if ("SpaceshipPart" == unique) {
-            if (!civInfo.buildingUniques.contains("ApolloProgram")) return false
+        if ("Spaceship part" == unique) {
+            if (!civInfo.buildingUniques.contains("Allows the building of spaceship parts")) return false
             if (civInfo.scienceVictory.unconstructedParts()[name] == 0) return false // Don't need to build any more of these!
         }
         return true
@@ -168,7 +174,7 @@ class Building : NamedStats(), IConstruction{
     override fun postBuildEvent(construction: CityConstructions) {
         val civInfo = construction.cityInfo.civInfo
 
-        if (unique == "SpaceshipPart") {
+        if (unique == "Spaceship part") {
             civInfo.scienceVictory.currentParts.add(name, 1)
             UnCivGame.Current.screen = VictoryScreen()
             return
@@ -178,16 +184,16 @@ class Building : NamedStats(), IConstruction{
         if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
             construction.builtBuildings.add(providesFreeBuilding!!)
         when (unique) {
-            "ApolloProgram" ->
+            "Enables construction of Spaceship parts" ->
                 if(construction.cityInfo.civInfo.isPlayerCivilization())
                     UnCivGame.Current.screen = VictoryScreen()
-            "EmpireEntersGoldenAge" -> civInfo.goldenAges.enterGoldenAge()
-            "FreeGreatArtistAppears" -> civInfo.addGreatPerson("Great Artist")
-            "WorkerConstruction" -> {
+            "Empire enters golden age" -> civInfo.goldenAges.enterGoldenAge()
+            "Free Great Artist Appears" -> civInfo.addGreatPerson("Great Artist")
+            "Worker construction increased 25%, provides 2 free workers" -> {
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
             }
-            "FreeSocialPolicy" -> {
+            "Free Social Policy" -> {
                 civInfo.policies.freePolicies++
                 if(construction.cityInfo.civInfo.isPlayerCivilization())
                     UnCivGame.Current.screen = PolicyPickerScreen(civInfo)

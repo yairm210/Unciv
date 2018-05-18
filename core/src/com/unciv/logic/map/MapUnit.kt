@@ -124,4 +124,10 @@ class MapUnit {
     override fun toString(): String {
         return name +" - "+owner
     }
+
+    fun getVisibilityRange(): Int {
+        var visibilityRange = 2
+        if(hasUnique("Limited Visibility")) visibilityRange-=1
+        return visibilityRange
+    }
 }

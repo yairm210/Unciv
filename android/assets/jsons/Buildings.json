@@ -62,7 +62,7 @@
 		baseDescription: "Adds 1 science for each 2 population in the city.", 
 		hurryCostModifier:25,
 		maintenance:1,
-		unique:"SciencePer2Pop",
+		unique:"Science Per 2 Population",
 		requiredTech:"Writing"
 	},
 	{
@@ -79,7 +79,7 @@
 		culture:1,
 		greatPersonPoints:{production:1},
 		isWonder:true,
-		unique:"WorkerConstruction",
+		unique:"Worker construction increased 25%, provides 2 free workers",
 		requiredTech:"Mathematics"
 	},
 	{
@@ -98,7 +98,7 @@
 		culture:3,
 		greatPersonPoints:{science:1},
 		isWonder:true,
-		unique:"FreeSocialPolicy",
+		unique:"Free Social Policy",
 		requiredTech:"Philosophy"
 	},
 	{
@@ -117,7 +117,7 @@
 		culture:1,
 		greatPersonPoints:{production:1},
 		isWonder:true,
-		unique:"GoldenAgeLengthIncrease",
+		unique:"Golden Age length increases +50%",
 		requiredTech:"Civil Service"
 	},
 	{
@@ -188,7 +188,7 @@
 		culture:1,
 		greatPersonPoints:{culture:1},
 		isWonder:true,
-		unique:"GreatPersonGenerationIncrease",
+		unique:"+33% great person generation in all cities",
 		requiredTech:"Theology"
 	},
 	{
@@ -207,7 +207,7 @@
 		greatPersonPoints:{gold:1},
 		culture:1,
 		isWonder:true,
-		unique:"TradeRouteGoldIncrease",
+		unique:"Gold from all trade routes +25%",
 		requiredTech:"Currency"
 	},
 	{
@@ -215,7 +215,7 @@
 		baseDescription: "40% of food is carried over after a new citizen is born", 
 		maintenance:1,
 		hurryCostModifier:25,
-		unique:"FoodCarriesOver"
+		unique:"40% of food is carried over after a new citizen is born"
 		requiredTech:"Engineering"
 	},
 	{
@@ -245,7 +245,7 @@
 		percentStatBonus:{science:33},
 		specialistSlots:{science:2},
 		requiredBuilding:"Library",
-		unique:"JunglesProvideScience",
+		unique:"Jungles provide +2 science",
 		requiredTech:"Education"
 	},
 	{
@@ -261,11 +261,11 @@
 	},
 	{
 		name:"Angkor Wat",
-		baseDescription: "Cost of aquiring new tiles reduced by 25%",
+		baseDescription: "Cost of acquiring new tiles reduced by 25%",
 		culture:1,
 		greatPersonPoints:{production:1},
 		isWonder:true,
-		unique:"NewTileCostReduction",
+		unique:"Cost of acquiring new tiles reduced by 25%",
 		requiredTech:"Chivalry"
 	},
 	{
@@ -310,7 +310,7 @@
 		baseDescription: "Culture in all cities increased by 25%",
 		culture:1,
 		isWonder:true,
-		unique:"CultureIncrease",
+		unique:"Culture in all cities increased by 25%",
 		requiredTech:"Acoustics"
 	},
 	{
@@ -328,7 +328,7 @@
 		baseDescription: "Unhappiness from population decreased by 10%",
 		culture:1,
 		isWonder:true,
-		unique:"CitizenUnhappinessDecreased",
+		unique:"Unhappiness from population decreased by 10%",
 		requiredTech:"Banking"
 	},
 	{
@@ -346,7 +346,7 @@
 		culture:1,
 		happiness:4,
 		isWonder:true,
-		unique:"EmpireEntersGoldenAge",
+		unique:"Empire enters golden age",
 		requiredTech:"Acoustics"
 	},
 	{
@@ -384,7 +384,7 @@
 		culture:1,
 		happiness:4,
 		isWonder:true,
-		unique:"FreeGreatArtistAppears",
+		unique:"Free Great Artist Appears",
 		requiredTech:"Archaeology"
 	},
 	{
@@ -395,7 +395,7 @@
 		requiredBuilding:"University",
 		maintenance:3,
 		hurryCostModifier:0,
-		unique:"SciencePer2Pop",
+		unique:"Science Per 2 Population",
 		requiredTech:"Scientific Theory"
 	},
 	{
@@ -434,7 +434,7 @@
 		baseDescription: "Culture cost of adopting new Policies reduced by 10%",
 		culture:5,
 		isWonder:true,
-		unique:"PolicyCostReduction",
+		unique:"Culture cost of adopting new Policies reduced by 10%",
 		requiredTech:"Flight"
 	},
 	{
@@ -452,7 +452,7 @@
 		culture:1,
 		happiness:5
 		isWonder:true,
-		unique:"HappinessPerSocialPolicy",
+		unique:"Provides 1 happiness per social policy",
 		requiredTech:"Radio"
 	},
 	{
@@ -496,14 +496,14 @@
 		maintenance:3,
 		cannotBeBuiltWith:"Nuclear Plant",
 		requiredTech:"Ecology",
-		unique:"MustBeNextToDesert"
+		unique:"Must be next to desert"
 	},
 	{
 		name:"Apollo Program",
 		baseDescription: "Allows the building of spaceship parts",
 		cost:1500,
 		isWonder:true,
-		unique:"ApolloProgram",
+		unique:"Enables construction of Spaceship parts",
 		requiredTech:"Rocketry"
 	},
 	{
@@ -523,7 +523,7 @@
 		production:3,
 		requiredResource:"Aluminum",
 		cost:360,
-		unique:"SpaceshipPartProductionBoost"
+		unique:"Increases production of spaceship parts by 50%"
 		requiredTech:"Robotics"
 	},
 	{
@@ -531,27 +531,27 @@
 		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Robotics",
-		unique:"SpaceshipPart"
+		unique:"Spaceship part"
 	},
 	{
 		name:"SS Cockpit",
 		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Satellites",
-		unique:"SpaceshipPart"
+		unique:"Spaceship part"
 	},
 	{
 		name:"SS Engine",
 		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Particle Physics",
-		unique:"SpaceshipPart"
+		unique:"Spaceship part"
 	},
 	{
 		name:"SS Statis Chamber",
 		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Nanotechnology",
-		unique:"SpaceshipPart"
+		unique:"Spaceship part"
 	}
 ]

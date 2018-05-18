@@ -91,7 +91,7 @@ class CivilizationInfo {
         happiness += getCivResources().keys
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
         happiness += cities.sumBy { it.cityStats.getCityHappiness().toInt() }
-        if (buildingUniques.contains("HappinessPerSocialPolicy"))
+        if (buildingUniques.contains("Provides 1 happiness per social policy"))
             happiness += policies.getAdoptedPolicies().count { !it.endsWith("Complete") }
         return happiness
     }
@@ -182,7 +182,7 @@ class CivilizationInfo {
                         .flatMap { it.neighbors } // tiles adjacent to city tiles
         viewablePositions += gameInfo.tileMap.values
                 .filter { it.unit != null && it.unit!!.owner == civName }
-                .flatMap { it.getViewableTiles(2)} // Tiles within 2 tiles of units
+                .flatMap { it.getViewableTiles(it.unit!!.getVisibilityRange())} // Tiles within 2 tiles of units
         viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
         return viewablePositions
     }

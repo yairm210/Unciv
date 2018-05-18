@@ -109,7 +109,7 @@
 		hurryCostModifier:20
 	},
 	
-	/* Medieval Era */
+	// Medieval Era
 	{
 		name:"Crossbowman",
 		baseDescription: "",
@@ -120,7 +120,41 @@
 		cost: 120,
 		requiredTech:"Machinery",
 		hurryCostModifier:20
-	}
+	},
+	{
+		name:"Trebuchet",
+		baseDescription: "",
+		unitType:"Siege",
+		movement:2,
+		strength:12,
+		rangedStrength:14,
+		cost: 120,
+		requiredTech:"Physics",
+		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		hurryCostModifier:20
+	},
+	{
+		name:"Longswordsman",
+		baseDescription: "",
+		unitType:"Melee",
+		movement:2,
+		strength:21,
+		cost: 120,
+		requiredTech:"Steel",
+		requiredResource:"Iron",
+		hurryCostModifier:20
+	},
+	{
+		name:"Pikeman",
+		baseDescription: "",
+		unitType:"Melee",
+		movement:2,
+		strength:16,
+		cost: 90,
+		requiredTech:"Civil Service",
+		uniques:["Bonus vs Mounted 50%"],
+		hurryCostModifier:20
+	},
 	
 	/* Great people */
 	

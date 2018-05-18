@@ -111,7 +111,7 @@ class TileInfo {
         if (stats.production < 0) stats.production = 0f
 
         if ("Jungle" == terrainFeature && city != null
-                && city.buildingUniques.contains("JunglesProvideScience"))
+                && city.buildingUniques.contains("Jungles provide +2 science"))
             stats.science += 2f
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++

@@ -22,7 +22,7 @@ class CityExpansionManager {
     fun getCultureToNextTile(): Int {
         val numTilesClaimed = cityInfo.tiles.size - 7
         var cultureToNextTile = 6 * Math.pow(numTilesClaimed + 1.4813, 1.3)
-        if (cityInfo.civInfo.buildingUniques.contains("NewTileCostReduction")) cultureToNextTile *= 0.75 //Speciality of Angkor Wat
+        if (cityInfo.civInfo.buildingUniques.contains("Cost of acquiring new tiles reduced by 25%")) cultureToNextTile *= 0.75 //Speciality of Angkor Wat
         if (cityInfo.civInfo.policies.isAdopted("Tradition")) cultureToNextTile *= 0.75
         return Math.round(cultureToNextTile).toInt()
     }
