@@ -32,6 +32,8 @@ class Battle(val gameInfo:GameInfo) {
                 }
             }
         }
+        if(enemy.getCivilization() == enemy.getCivilization().gameInfo.getBarbarianCivilization())
+            modifiers["vs Barbarians"] = 0.33f
         return modifiers
     }
 

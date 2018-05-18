@@ -14,7 +14,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     internal val civInfo: CivilizationInfo = gameInfo.getPlayerCivilization()
 
-    val tileMapHolder: TileMapHolder
+    val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap, civInfo)
 
     internal var buttonScale = game.settings.buttonScale
     private val topBar = WorldScreenTopBar(this)
@@ -27,8 +27,6 @@ class WorldScreen : CameraStageBaseScreen() {
     private val notificationsScroll: NotificationsScroll
 
     init {
-        tileMapHolder = TileMapHolder(this, gameInfo.tileMap, civInfo)
-
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
 

@@ -6,25 +6,30 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
-import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.TileMapHolder
 
-class IdleUnitButton internal constructor(internal val worldScreen: WorldScreen) : TextButton("Select next idle unit", CameraStageBaseScreen.skin) {
+class IdleUnitButton internal constructor(internal val unitTable: UnitTable,
+                                          val tileMapHolder: TileMapHolder, val previous:Boolean)
+    : TextButton(if(previous)"<" else ">", CameraStageBaseScreen.skin) {
 
-    fun getTilesWithIdleUnits() = worldScreen.civInfo.gameInfo.tileMap.values.filter { it.hasIdleUnit() && it.unit!!.owner == worldScreen.civInfo.civName }
+    fun getTilesWithIdleUnits() = tileMapHolder.tileMap.values
+                    .filter { it.hasIdleUnit() && it.unit!!.owner == unitTable.worldScreen.civInfo.civName }
     init {
         addClickListener {
             val tilesWithIdleUnits = getTilesWithIdleUnits()
 
             val tileToSelect: TileInfo
-            if (!tilesWithIdleUnits.contains(worldScreen.tileMapHolder.selectedTile))
+            if (unitTable.selectedUnit==null || !tilesWithIdleUnits.contains(unitTable.selectedUnit!!.getTile()))
                 tileToSelect = tilesWithIdleUnits[0]
             else {
-                var index = tilesWithIdleUnits.indexOf(worldScreen.tileMapHolder.selectedTile) + 1
-                if (tilesWithIdleUnits.size == index) index = 0
+                var index = tilesWithIdleUnits.indexOf(unitTable.selectedUnit!!.getTile())
+                if(previous) index-- else index++
+                index += tilesWithIdleUnits.size
+                index %= tilesWithIdleUnits.size // for looping
                 tileToSelect = tilesWithIdleUnits[index]
             }
-            worldScreen.tileMapHolder.setCenterPosition(tileToSelect.position)
-            worldScreen.update()
+            tileMapHolder.setCenterPosition(tileToSelect.position)
+            unitTable.worldScreen.update()
         }
     }
 

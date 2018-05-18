@@ -1,18 +1,18 @@
 package com.unciv.ui.worldscreen.unit
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){
-    private val idleUnitButton = IdleUnitButton(worldScreen)
-    private val unitLabel = Label("",CameraStageBaseScreen.skin)
+    private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,true)
+    private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,false)
+    private val unitNameLabel = Label("",CameraStageBaseScreen.skin)
+    private val unitDescriptionLabel = Label("",CameraStageBaseScreen.skin)
     var selectedUnit : MapUnit? = null
     var currentlyExecutingAction : String? = null
 
@@ -22,14 +22,20 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         pad(20f)
         //background = tileTableBackground
-        add(unitLabel).pad(10f)
-        add(unitActionsTable)
+
+        add(Table().apply {
+            add(prevIdleUnitButton)
+            add(unitNameLabel).pad(10f)
+            add(nextIdleUnitButton)
+        }).colspan(2)
         row()
-        add(idleUnitButton).colspan(2)
+        add(unitDescriptionLabel)
+        add(unitActionsTable)
     }
 
     fun update() {
-        idleUnitButton.update()
+        prevIdleUnitButton.update()
+        nextIdleUnitButton.update()
         unitActionsTable.clear()
         if(selectedUnit!=null)
         {
@@ -39,8 +45,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) {
             val unit = selectedUnit!!
-            var unitLabelText = unit.name +
-                    "\r\nMovement: " + unit.getMovementString()
+            unitNameLabel.setText(unit.name)
+
+            var unitLabelText = "Movement: " + unit.getMovementString()
             if (unit.getBaseUnit().unitType != UnitType.Civilian) {
                 unitLabelText += "\r\nHealth: " + unit.health +
                         "\r\nStrength: " + unit.getBaseUnit().strength
@@ -48,13 +55,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if (unit.getBaseUnit().rangedStrength!=0)
                 unitLabelText += "\r\nRanged strength: "+unit.getBaseUnit().rangedStrength
 
-            unitLabel.setText(unitLabelText)
+            unitDescriptionLabel.setText(unitLabelText)
 
             for (button in UnitActions().getUnitActionButtons(selectedUnit!!, worldScreen))
                 unitActionsTable.add(button).colspan(2).pad(5f)
                         .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
         }
-        else unitLabel.setText("")
+        else {
+            unitNameLabel.setText("")
+            unitDescriptionLabel.setText("")
+        }
 
         unitActionsTable.pack()
         pack()
