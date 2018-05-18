@@ -26,9 +26,9 @@ class CityStats {
 
     fun getStatsFromTradeRoute(): Stats {
         val stats = Stats()
-        if (!isCapital && isConnectedToCapital(RoadStatus.Road)) {
+        if (!cityInfo.isCapital() && isConnectedToCapital(RoadStatus.Road)) {
             val civInfo = cityInfo.civInfo
-            var goldFromTradeRoute = civInfo.capital.population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
+            var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2.0
             if (civInfo.buildingUniques.contains("TradeRouteGoldIncrease")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
@@ -55,7 +55,8 @@ class CityStats {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        if (cityInfo.civInfo.tech.isResearched("Combustion") && (isCapital || isConnectedToCapital(RoadStatus.Railroad)))
+        if (cityInfo.civInfo.tech.isResearched("Combustion")
+                && (cityInfo.isCapital() || isConnectedToCapital(RoadStatus.Railroad)))
             stats.production += 25f
         return stats
     }
@@ -85,7 +86,7 @@ class CityStats {
 
     private fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
-        if (cityInfo.civInfo.policies.isAdopted("Landed Elite") && isCapital)
+        if (cityInfo.civInfo.policies.isAdopted("Landed Elite") && cityInfo.isCapital())
             bonus += 0.1f
         if (cityInfo.civInfo.policies.isAdopted("Tradition Complete"))
             bonus += 0.15f
@@ -109,7 +110,7 @@ class CityStats {
 
         if (civInfo.policies.isAdopted("Aristocracy"))
             happiness += (cityInfo.population.population / 10).toFloat()
-        if (civInfo.policies.isAdopted("Monarchy") && isCapital)
+        if (civInfo.policies.isAdopted("Monarchy") && cityInfo.isCapital())
             happiness += (cityInfo.population.population / 2).toFloat()
         if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
             happiness += 1f
@@ -118,9 +119,6 @@ class CityStats {
 
         return happiness
     }
-
-    private val isCapital: Boolean
-        get() = cityInfo.civInfo.capital === cityInfo
 
     private fun getStatsFromSpecialists(specialists: Stats, policies: HashSet<String>): Stats {
         val stats = Stats()
@@ -139,13 +137,13 @@ class CityStats {
 
     private fun getStatsFromPolicies(adoptedPolicies: HashSet<String>): Stats {
         val stats = Stats()
-        if (adoptedPolicies.contains("Tradition") && isCapital)
+        if (adoptedPolicies.contains("Tradition") && cityInfo.isCapital())
             stats.culture += 3f
-        if (adoptedPolicies.contains("Landed Elite") && isCapital)
+        if (adoptedPolicies.contains("Landed Elite") && cityInfo.isCapital())
             stats.food += 2f
         if (adoptedPolicies.contains("Tradition Complete"))
             stats.food += 2f
-        if (adoptedPolicies.contains("Monarchy") && isCapital)
+        if (adoptedPolicies.contains("Monarchy") && cityInfo.isCapital())
             stats.gold += (cityInfo.population.population / 2).toFloat()
         if (adoptedPolicies.contains("Liberty"))
             stats.culture += 1f
@@ -168,14 +166,14 @@ class CityStats {
     private fun getStatPercentBonusesFromPolicies(policies: HashSet<String>, cityConstructions: CityConstructions): Stats {
         val stats = Stats()
 
-        if (policies.contains("Collective Rule") && isCapital
+        if (policies.contains("Collective Rule") && cityInfo.isCapital()
                 && "Settler" == cityConstructions.currentConstruction)
             stats.production += 50f
         if (policies.contains("Republic") && cityConstructions.getCurrentConstruction() is Building)
             stats.production += 5f
         if (policies.contains("Reformation") && cityConstructions.builtBuildings.any { GameBasics.Buildings[it]!!.isWonder })
             stats.culture += 33f
-        if (policies.contains("Commerce") && isCapital)
+        if (policies.contains("Commerce") && cityInfo.isCapital())
             stats.gold += 25f
         if (policies.contains("Sovereignty") && cityInfo.civInfo.happiness >= 0)
             stats.science += 15f
@@ -238,7 +236,7 @@ class CityStats {
 
     private fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if(cityInfo.civInfo.cities.count()<2) return false// first city!
-        val capitalTile = cityInfo.civInfo.capital.getCenterTile()
+        val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
         val tilesReached = HashSet<TileInfo>()
         var tilesToCheck : List<TileInfo> = listOf(cityInfo.getCenterTile())
         while (tilesToCheck.isNotEmpty()) {

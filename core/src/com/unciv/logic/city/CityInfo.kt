@@ -136,6 +136,7 @@ class CityInfo {
         health = min(health+maxHealth/10, maxHealth)
     }
 
+    fun isCapital() = cityConstructions.isBuilt("Palace")
 
     internal fun getMaxHealth(): Int {
         return 200 // add more later when walls citadel etc.

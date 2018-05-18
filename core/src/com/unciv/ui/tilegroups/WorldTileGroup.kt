@@ -1,5 +1,7 @@
 package com.unciv.ui.tilegroups
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -67,6 +69,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             cityButton!!.run {
                 clear()
+                if(city.isCapital()){
+                    val starImage = Image(ImageGetter.getDrawable("StatIcons/Star.png").tint(Color.LIGHT_GRAY))
+                    add(starImage).size(20f).padLeft(10f)
+                }
                 add(label).pad(10f)
                 pack()
                 setOrigin(Align.center)

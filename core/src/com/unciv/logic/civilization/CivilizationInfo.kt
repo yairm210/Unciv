@@ -37,8 +37,7 @@ class CivilizationInfo {
 
     fun getCivilization(): Civilization {return GameBasics.Civilizations[civName]!!}
 
-    val capital: CityInfo
-        get() = cities.first { it.cityConstructions.isBuilt("Palace") }
+    fun getCapital()=cities.first { it.isCapital() }
 
     fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this
 
