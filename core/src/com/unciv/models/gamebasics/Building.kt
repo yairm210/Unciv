@@ -9,7 +9,7 @@ import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 
 class Building : NamedStats(), IConstruction{
-    private lateinit var baseDescription: String
+    private var baseDescription: String? = null
     override val description: String
         get() = getDescription(false, hashSetOf())
 
@@ -45,9 +45,16 @@ class Building : NamedStats(), IConstruction{
     fun getRequiredTech(): Technology = GameBasics.Technologies[requiredTech]!!
 
     fun getShortDescription(): String { // should fit in one line
-        var str = getStats(hashSetOf()).toString()
-        if(unique!=null) str += ", "+ unique!!
-        return str
+        val infoList= mutableListOf<String>()
+        val str = getStats(hashSetOf()).toString()
+        if(str.isNotEmpty()) infoList += str
+        val improvedResources = GameBasics.TileResources.values.filter { it.building==name }
+        if(improvedResources.isNotEmpty()){
+            // buildings that improve resources
+            infoList += resourceBonusStats.toString() +" from "+improvedResources.joinToString()
+        }
+        if(unique!=null) infoList += unique!!
+        return infoList.joinToString()
     }
 
     fun getStats(adoptedPolicies: HashSet<String>): Stats {
@@ -97,7 +104,7 @@ class Building : NamedStats(), IConstruction{
             stringBuilder.appendln("Requires a $requiredBuildingInAllCities to be built in all cities")
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free $providesFreeBuilding in this city")
-        stringBuilder.appendln(baseDescription)
+        if(baseDescription!=null) stringBuilder.appendln(baseDescription)
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
         if (this.percentStatBonus != null) {
@@ -120,7 +127,7 @@ class Building : NamedStats(), IConstruction{
         }
         if (maintenance != 0)
             stringBuilder.appendln("Maintenance cost: $maintenance gold")
-        return stringBuilder.toString()
+        return stringBuilder.toString().trim()
     }
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {

@@ -83,8 +83,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             if (defenderModifiers.size > i) add(defenderModifiers[i]) else add()
             row().pad(5f)
         }
-        add(battle.getAttackingStrength(attacker,defender).toString())
-        add(battle.getDefendingStrength(attacker,defender).toString())
+        add("%.2f".format(battle.getAttackingStrength(attacker,defender)))
+        add("%.2f".format(battle.getDefendingStrength(attacker,defender)))
         row().pad(5f)
 
         var damageToDefender = battle.calculateDamageToDefender(attacker,defender)

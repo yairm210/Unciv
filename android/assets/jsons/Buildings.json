@@ -19,8 +19,7 @@
 		maintenance:1
 	},
 	{
-		name:"Granary",
-		baseDescription: "", 
+		name:"Granary", 
 		food:2,
 		resourceBonusStats:{food:1},
 		maintenance:1,
@@ -28,8 +27,7 @@
 		requiredTech:"Pottery"
 	},
 	{
-		name:"Stone Works",
-		baseDescription: "", 
+		name:"Stone Works", 
 		happiness:1,
 		production:1
 		requiredNearbyImprovedResources:["Marble","Stone"]
@@ -40,7 +38,6 @@
 	},
 	{
 		name:"Stonehenge",
-		baseDescription: "",
 		culture:6,
 		isWonder:true,
 		greatPersonPoints:{production:1},
@@ -62,12 +59,11 @@
 		baseDescription: "Adds 1 science for each 2 population in the city.", 
 		hurryCostModifier:25,
 		maintenance:1,
-		unique:"Science Per 2 Population",
+		unique:"+1 Science Per 2 Population",
 		requiredTech:"Writing"
 	},
 	{
-		name:"Circus",
-		baseDescription: "", 
+		name:"Circus", 
 		requiredNearbyImprovedResources:["Ivory","Horses"]
 		happiness:2,
 		hurryCostModifier:25,
@@ -84,7 +80,6 @@
 	},
 	{
 		name:"Temple",
-		baseDescription: "",
 		culture:3,
 		specialistSlots:{culture:1},
 		requiredBuilding:"Monument",
@@ -103,7 +98,6 @@
 	},
 	{
 		name:"National College",
-		baseDescription: "",
 		science:3,
 		culture:1,
 		isWonder:true,
@@ -121,8 +115,7 @@
 		requiredTech:"Civil Service"
 	},
 	{
-		name:"Stable",
-		baseDescription: "", 
+		name:"Stable", 
 		maintenance:1,
 		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]
 		resourceBonusStats:{production:1},
@@ -131,7 +124,6 @@
 	},
 	{
 		name:"Circus Maximus",
-		baseDescription: "",
 		happiness:5,
 		culture:1,
 		isWonder:true,
@@ -140,7 +132,6 @@
 	},
 	{
 		name:"Hanging Gardens",
-		baseDescription: "",
 		greatPersonPoints:{culture:1},
 		food:10,
 		culture:1,
@@ -148,8 +139,7 @@
 		requiredTech:"Mathematics"
 	},
 	{
-		name:"Colloseum",
-		baseDescription: "", 
+		name:"Colloseum", 
 		maintenance:1,
 		happiness:2,
 		hurryCostModifier:25,
@@ -157,7 +147,6 @@
 	},
 	{
 		name:"Market",
-		baseDescription: "",
 		gold:2,
 		specialistSlots:{gold:1},
 		hurryCostModifier:25,
@@ -166,7 +155,6 @@
 	},
 	{
 		name:"Monastery",
-		baseDescription: "",
 		maintenance:0,
 		requiredNearbyImprovedResources:["Wine","Incense"],
 		resourceBonusStats:{culture:2},
@@ -175,7 +163,6 @@
 	},
 	{
 		name:"Notre Dame",
-		baseDescription: "",
 		culture:1,
 		happiness:10,
 		greatPersonPoints:{gold:1},
@@ -193,7 +180,6 @@
 	},
 	{
 		name:"Mint",
-		baseDescription: "",
 		maintenance:0,
 		requiredNearbyImprovedResources:["Gold","Silver"],
 		resourceBonusStats:{gold:2},
@@ -219,8 +205,7 @@
 		requiredTech:"Engineering"
 	},
 	{
-		name:"Workshop",
-		baseDescription: "", 
+		name:"Workshop", 
 		maintenance:2,
 		production:2,
 		specialistSlots:{production:1},
@@ -230,7 +215,6 @@
 	},
 	{
 		name:"Forge",
-		baseDescription: "",
 		maintenance:1,
 		hurryCostModifier:25,
 		requiredNearbyImprovedResources:["Iron"],
@@ -279,7 +263,6 @@
 	},
 	{
 		name:"Ironworks",
-		baseDescription: "",
 		production:8,
 		culture:1,
 		isWonder:true,
@@ -297,7 +280,6 @@
 	}, 
 	{
 		name:"Opera House",
-		baseDescription: "",
 		culture:4,
 		specialistSlots:{culture:1},
 		hurryCostModifier:10,
@@ -315,7 +297,6 @@
 	},
 	{
 		name:"Bank",
-		baseDescription: "",
 		gold:2,
 		specialistSlots:{gold:1},
 		hurryCostModifier:15,
@@ -333,7 +314,6 @@
 	},
 	{
 		name:"Theatre",
-		baseDescription: "",
 		happiness:3,
 		hurryCostModifier:10,
 		maintenance:2,
@@ -351,7 +331,6 @@
 	},
 	{
 		name:"Windmill",
-		baseDescription: "",
 		production:2,
 		specialistSlots:{production:1},
 		hurryCostModifier:25,
@@ -361,7 +340,6 @@
 	}, 
 	{
 		name:"Museum",
-		baseDescription: "",
 		culture:5,
 		specialistSlots:{culture:1},
 		requiredBuilding:"Opera House",
@@ -371,7 +349,6 @@
 	},
 	{
 		name:"Hermitage",
-		baseDescription: "",
 		percentStatBonus:{culture:50},
 		culture:5,
 		isWonder:true,
@@ -395,12 +372,11 @@
 		requiredBuilding:"University",
 		maintenance:3,
 		hurryCostModifier:0,
-		unique:"Science Per 2 Population",
+		unique:"+1 Science Per 2 Population",
 		requiredTech:"Scientific Theory"
 	},
 	{
 		name:"Hospital",
-		baseDescription: "",
 		food:5,
 		requiredBuilding:"Aqueduct",
 		maintenance:2,
@@ -409,7 +385,6 @@
 	},
 	{
 		name:"Factory",
-		baseDescription: "",
 		production:4,
 		percentStatBonus:{production:10},
 		specialistSlots:{production:1},
@@ -421,7 +396,6 @@
 	},
 	{
 		name:"Stock Exchange",
-		baseDescription: "",
 		gold:3,
 		percentStatBonus:{gold:25},
 		specialistSlots:{gold:2},
@@ -439,7 +413,6 @@
 	},
 	{
 		name:"Broadcast Tower",
-		baseDescription: "",
 		culture:3,
 		percentStatBonus:{culture:33},
 		requiredBuilding:"Museum",
@@ -464,7 +437,6 @@
 	},
 	{
 		name:"Research Lab",
-		baseDescription: "",
 		science:4,		
 		percentStatBonus:{science:50},
 		specialistSlots:{science:1},
@@ -481,7 +453,6 @@
 	},
 	{
 		name:"Stadium",
-		baseDescription: "",
 		happiness:4,
 		requiredBuilding:"Theatre",
 		maintenance:2,

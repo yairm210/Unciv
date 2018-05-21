@@ -19,7 +19,6 @@
 	},
 	{
 		name:"Scout",
-		baseDescription: "", 
 		cost:25,
 		unitType:"Melee",
 		strength:5,
@@ -28,7 +27,6 @@
 	},
 	{
 		name:"Warrior",
-		baseDescription: "A basic fighting unit",
 		unitType:"Melee",
 		movement:2,
 		strength:8,
@@ -38,7 +36,6 @@
 	},
 	{
 		name:"Archer",
-		baseDescription: "A basic fighting unit",
 		unitType:"Archery",
 		movement:2,
 		strength:5,
@@ -48,7 +45,6 @@
 	},
 	{
 		name:"Chariot Archer",
-		baseDescription: "",
 		unitType:"Archery",
 		movement:4,
 		strength:6,
@@ -61,7 +57,6 @@
 	},
 	{
 		name:"Spearman",
-		baseDescription: "",
 		unitType:"Melee",
 		movement:2,
 		strength:11,
@@ -75,7 +70,6 @@
 	/* Classical Era */
 	{
 		name:"Catapult",
-		baseDescription: "",
 		unitType:"Siege",
 		movement:2,
 		strength:7,
@@ -87,7 +81,6 @@
 	},
 	{
 		name:"Swordsman",
-		baseDescription: "",
 		unitType:"Melee",
 		movement:2,
 		strength:14,
@@ -98,7 +91,6 @@
 	},
 	{
 		name:"Horseman",
-		baseDescription:"",
 		unitType:"Mounted",
 		movement:4,
 		strength:12,
@@ -112,7 +104,6 @@
 	// Medieval Era
 	{
 		name:"Crossbowman",
-		baseDescription: "",
 		unitType:"Archery",
 		movement:2,
 		strength:13,
@@ -123,7 +114,6 @@
 	},
 	{
 		name:"Trebuchet",
-		baseDescription: "",
 		unitType:"Siege",
 		movement:2,
 		strength:12,
@@ -135,7 +125,6 @@
 	},
 	{
 		name:"Longswordsman",
-		baseDescription: "",
 		unitType:"Melee",
 		movement:2,
 		strength:21,
@@ -146,7 +135,6 @@
 	},
 	{
 		name:"Pikeman",
-		baseDescription: "",
 		unitType:"Melee",
 		movement:2,
 		strength:16,

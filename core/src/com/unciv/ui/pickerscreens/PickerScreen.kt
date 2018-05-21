@@ -30,8 +30,8 @@ open class PickerScreen : CameraStageBaseScreen() {
         descriptionLabel = Label("", CameraStageBaseScreen.skin)
         descriptionLabel.setWrap(true)
         descriptionLabel.setFontScale(game.settings.labelScale)
-        descriptionLabel.width = stage.width / 2
-        bottomTable.add(descriptionLabel).pad(5f).width(stage.width / 2)
+        val labelScroll = ScrollPane(descriptionLabel)
+        bottomTable.add(labelScroll).pad(5f).width(stage.width / 2)
 
         rightSideButton = TextButton("", CameraStageBaseScreen.skin)
         rightSideButton.disable()

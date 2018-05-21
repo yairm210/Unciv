@@ -12,9 +12,18 @@ class Unit : INamed, IConstruction, ICivilopedia {
             return getDescription(false)
         }
 
+    fun getShortDescription(): String {
+        val infoList= mutableListOf<String>()
+        if(baseDescription!=null) infoList+=baseDescription!!
+        if(strength!=0) infoList += "strength: $strength"
+        if(rangedStrength!=0) infoList += "ranged strength: $rangedStrength"
+        if(movement!=2) infoList+="movement: $movement"
+        return infoList.joinToString()
+    }
+
     fun getDescription(forPickerScreen:Boolean): String {
         val sb = StringBuilder()
-        if(baseDescription!="") sb.appendln(baseDescription)
+        if(baseDescription!=null) sb.appendln(baseDescription)
         if(!forPickerScreen) {
             if (unbuildable) sb.appendln("Unbuildable")
             else sb.appendln("Cost: $cost")
