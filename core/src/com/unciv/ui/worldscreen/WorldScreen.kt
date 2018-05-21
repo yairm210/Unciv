@@ -112,6 +112,9 @@ class WorldScreen : CameraStageBaseScreen() {
             GameSaver.saveGame(game.gameInfo, "Autosave")
             update()
             displayTutorials("NextTurn")
+
+            if(gameInfo.turns>=100)
+                displayTutorials("ContactMe")
         }
 
         return nextTurnButton

@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
+import com.unciv.models.gamebasics.Unit
 import java.util.*
 
 class TechManager {
@@ -49,6 +50,7 @@ class TechManager {
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
         if (techsInProgress[currentTechnology]!! < getCurrentTechnology().cost)
             return
+
         // We finished it!
         techsInProgress.remove(currentTechnology)
         techsToResearch.remove(currentTechnology)
@@ -57,18 +59,26 @@ class TechManager {
 
         val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
 
-        if (revealedResource == null) return
-        for (tileInfo in civInfo.gameInfo.tileMap.values
-                .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
+        if (revealedResource != null) {
+            for (tileInfo in civInfo.gameInfo.tileMap.values
+                    .filter { it.resource == revealedResource.name && civInfo == it.getOwner() }) {
 
-            val closestCityTile = tileInfo.getTilesInDistance(4)
-                    .firstOrNull { it.isCityCenter() }
-            if (closestCityTile != null) {
-                civInfo.addNotification(
-                        revealedResource.name + " revealed near " + closestCityTile.getCity()!!.name, tileInfo.position)
-                break
+                val closestCityTile = tileInfo.getTilesInDistance(4)
+                        .firstOrNull { it.isCityCenter() }
+                if (closestCityTile != null) {
+                    civInfo.addNotification(
+                            revealedResource.name + " revealed near " + closestCityTile.getCity()!!.name, tileInfo.position)
+                    break
+                }
             }
         }
+
+        val obsoleteUnits = GameBasics.Units.values.filter { it.obsoleteTech==currentTechnology }
+        for(city in civInfo.cities)
+            if(city.cityConstructions.getCurrentConstruction() in obsoleteUnits){
+                val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as Unit
+                city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
+            }
     }
 }
 

@@ -7,6 +7,23 @@ import com.unciv.logic.map.UnitType
 import com.unciv.models.stats.INamed
 
 class Unit : INamed, IConstruction, ICivilopedia {
+
+    override lateinit var name: String
+    var baseDescription: String? = null
+    var cost: Int = 0
+    var hurryCostModifier: Int = 0
+    var movement: Int = 0
+    var strength:Int = 0
+    var rangedStrength:Int = 0
+    lateinit var unitType: UnitType
+    internal var unbuildable: Boolean = false // for special units like great people
+    var requiredTech:String? = null
+    var requiredResource:String? = null
+    var uniques:HashSet<String>?=null
+    var obsoleteTech:String?=null
+    var upgradesTo:String? = null
+
+
     override val description: String
         get(){
             return getDescription(false)
@@ -44,20 +61,6 @@ class Unit : INamed, IConstruction, ICivilopedia {
         return sb.toString()
     }
 
-    override lateinit var name: String
-    var baseDescription: String? = null
-    var cost: Int = 0
-    var hurryCostModifier: Int = 0
-    var movement: Int = 0
-    var strength:Int = 0
-    var rangedStrength:Int = 0
-    lateinit var unitType: UnitType
-    internal var unbuildable: Boolean = false // for special units like great people
-    var requiredTech:String? = null
-    var requiredResource:String? = null
-    var uniques:HashSet<String>?=null
-    var upgradesTo:String? = null
-
     fun getMapUnit(): MapUnit {
         val unit = MapUnit()
         unit.name = name
@@ -76,6 +79,7 @@ class Unit : INamed, IConstruction, ICivilopedia {
         val civInfo = construction.cityInfo.civInfo
         if (unbuildable) return false
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
+        if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
         if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
         return true
     }

@@ -147,4 +147,25 @@
 		]
 	]
 	
+	ContactMe:  [
+		[
+			"Hi there! If you've played this far, you've probably",
+			"  seen that the game is currently incomplete.",
+			"UnCiv is meant to be open-source and free, forever.",
+			"  That means no ads or any other nonsense.",
+		],
+		[
+			"What motivates me to keep working on it, ",
+			"  besides the fact I think it's amazingly cool that I can,"
+			"  is the support from the players - you guys are the best!"
+		],
+		[
+			"Every rating and review that I get puts a smile on my face =)",
+			"  So contact me! Send me an email, review, Github issue"
+			"  or mail pigeon, and let's figure out how to make the game ",
+			"  even more awesome!"
+			"(Contact info is in the Play Store)" 
+		]
+	],
+	
 }

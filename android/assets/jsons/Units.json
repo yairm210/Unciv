@@ -1,5 +1,7 @@
 [
 
+// Info according to Civilization Wiki and https://www.civfanatics.com/civ5/info/units/
+
 	/* Ancient Era */
 	{
 		name:"Worker",
@@ -32,6 +34,7 @@
 		strength:8,
 		cost: 40,
 		hurryCostModifier:20,
+		obsoleteTech:"Metal Casting",
 		upgradesTo:"Swordsman"
 	},
 	{
@@ -42,6 +45,8 @@
 		rangedStrength:7,
 		cost: 40,
 		hurryCostModifier:20
+		obsoleteTech:"Machinery",
+		upgradesTo:"Crossbowman"
 	},
 	{
 		name:"Chariot Archer",
@@ -62,6 +67,8 @@
 		strength:11,
 		cost: 56,
 		requiredTech:"Bronze Working",
+		obsoleteTech:"Civil Service",
+		upgradesTo: "Pikeman",
 		uniques:["Bonus vs Mounted 50%"],
 		hurryCostModifier:20
 	},
@@ -76,6 +83,8 @@
 		rangedStrength:8,
 		cost: 75,
 		requiredTech:"Mathematics",
+		obsoleteTech:"Physics",
+		upgradesTo: "Trebuchet",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
 		hurryCostModifier:20
 	},
