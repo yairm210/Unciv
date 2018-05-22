@@ -5,6 +5,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.addClickListener
@@ -48,6 +49,11 @@ class UnitActions {
                 unitTable.currentlyExecutingAction = null
                 unit.action=null
             },true)
+        }
+
+        if(unit.getBaseUnit().unitType!=UnitType.Civilian && !unit.hasUnique("No defensive terrain bonus")){
+            if(!unit.isFortified())
+                actionList += UnitAction("Fortify",{unit.action="Fortify 0"}, unit.currentMovement != 0f)
         }
 
         if (unit.name == "Settler") {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.HexMath
@@ -235,7 +236,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         if (tileInfo.unit != null && (isViewable || viewEntireMapForDebug)) { // Tile is visible
             val unit = tileInfo.unit!!
-            unitImage = getUnitImage(unit.name, unit.civInfo.getCivilization().getColor())
+            unitImage = getUnitImage(unit, unit.civInfo.getCivilization().getColor())
             addActor(unitImage!!)
             unitImage!!.setSize(20f, 20f)
         }
@@ -250,10 +251,13 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    private fun getUnitImage(unitType:String, color:Color): Group {
-        val unitBaseImage = ImageGetter.getImage("UnitIcons/$unitType.png")
+    private fun getUnitImage(unit: MapUnit, color:Color): Group {
+        val unitBaseImage = ImageGetter.getImage("UnitIcons/${unit.name}.png")
                 .apply { setSize(15f,15f) }
-        val background = ImageGetter.getImage("UnitIcons/Circle.png").apply {
+
+        val background = if(unit.isFortified())  ImageGetter.getImage("UnitIcons/Shield.png")
+                else ImageGetter.getImage("UnitIcons/Circle.png")
+        background.apply {
             this.color = color
             setSize(20f,20f)
         }

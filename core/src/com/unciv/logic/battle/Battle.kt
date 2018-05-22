@@ -31,9 +31,14 @@ class Battle(val gameInfo:GameInfo) {
                     }
                 }
             }
+
+            if(enemy.getCivilization() == enemy.getCivilization().gameInfo.getBarbarianCivilization())
+                modifiers["vs Barbarians"] = 0.33f
+
+            if(combatant.getCivilization().happiness<0)
+                modifiers["Unhappiness"] = 0.02f * combatant.getCivilization().happiness  //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
         }
-        if(enemy.getCivilization() == enemy.getCivilization().gameInfo.getBarbarianCivilization())
-            modifiers["vs Barbarians"] = 0.33f
+
         return modifiers
     }
 
@@ -45,7 +50,8 @@ class Battle(val gameInfo:GameInfo) {
                         && it.unit!!.owner == attacker.getCivilization().civName
                         && MapUnitCombatant(it.unit!!).isMelee()
             }
-            if (numberOfAttackersSurroundingDefender > 1) modifiers["Flanking"] = 0.15f
+            if (numberOfAttackersSurroundingDefender > 1)
+                modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
         }
 
         return modifiers
@@ -57,6 +63,8 @@ class Battle(val gameInfo:GameInfo) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
+        if(defender is MapUnitCombatant && defender.unit.isFortified())
+            modifiers["Fortification"]=0.2f*defender.unit.getFortificationTurns()
         return modifiers
     }
 
@@ -160,6 +168,7 @@ class Battle(val gameInfo:GameInfo) {
             if (attacker.unit.hasUnique("Can move after attacking"))
                 attacker.unit.currentMovement = max(0f, attacker.unit.currentMovement - 1)
             else attacker.unit.currentMovement = 0f
+            attacker.unit.action=null // for instance, if it was fortified
         }
     }
 

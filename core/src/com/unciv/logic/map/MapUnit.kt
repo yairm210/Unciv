@@ -53,6 +53,11 @@ class MapUnit {
 
     private fun doPostTurnAction() {
         if (name == "Worker" && getTile().improvementInProgress != null) workOnImprovement()
+        if(currentMovement==maxMovement.toFloat()
+                && isFortified()){
+            val currentTurnsFortified = getFortificationTurns()
+            if(currentTurnsFortified<2) action = "Fortify ${currentTurnsFortified+1}"
+        }
     }
 
     private fun workOnImprovement() {
@@ -122,12 +127,21 @@ class MapUnit {
     fun movementAlgs() = UnitMovementAlgorithms(this)
 
     override fun toString(): String {
-        return name +" - "+owner
+        return "$name - $owner"
     }
 
     fun getVisibilityRange(): Int {
         var visibilityRange = 2
         if(hasUnique("Limited Visibility")) visibilityRange-=1
         return visibilityRange
+    }
+
+    fun isFortified(): Boolean {
+        return action!=null && action!!.startsWith("Fortify")
+    }
+
+    fun getFortificationTurns(): Int {
+        if(!isFortified()) return 0
+        return action!!.split(" ")[1].toInt()
     }
 }

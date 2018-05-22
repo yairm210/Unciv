@@ -45,15 +45,19 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) {
             val unit = selectedUnit!!
-            unitNameLabel.setText(unit.name)
+            var nameLabelText = unit.name
+            if(unit.health<100) nameLabelText+=" ("+unit.health+")"
+            unitNameLabel.setText(nameLabelText)
 
             var unitLabelText = "Movement: " + unit.getMovementString()
             if (unit.getBaseUnit().unitType != UnitType.Civilian) {
-                unitLabelText += "\r\nHealth: " + unit.health +
-                        "\r\nStrength: " + unit.getBaseUnit().strength
+                unitLabelText += "\nStrength: " + unit.getBaseUnit().strength
             }
             if (unit.getBaseUnit().rangedStrength!=0)
-                unitLabelText += "\r\nRanged strength: "+unit.getBaseUnit().rangedStrength
+                unitLabelText += "\nRanged strength: "+unit.getBaseUnit().rangedStrength
+
+            if(unit.isFortified() && unit.getFortificationTurns()>0)
+                unitLabelText+="\n+"+unit.getFortificationTurns()*20+"% fortification"
 
             unitDescriptionLabel.setText(unitLabelText)
 
@@ -80,6 +84,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
             val reachedTile = selectedUnit!!.movementAlgs().headTowards(selectedTile)
 
+            selectedUnit!!.action=null // Disable any prior action (automation, fortification...)
             if(reachedTile!=selectedTile) // Didn't get all the way there
                 selectedUnit!!.action = "moveTo " + selectedTile.position.x.toInt() + "," + selectedTile.position.y.toInt()
             currentlyExecutingAction = null

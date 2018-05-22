@@ -155,7 +155,7 @@ class TileInfo {
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")
         if (unit != null && UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)){
             var unitString = unit!!.name
-            if(unit!!.getBaseUnit().unitType!=UnitType.Civilian) unitString += "(" + unit!!.health + ")"
+            if(unit!!.getBaseUnit().unitType!=UnitType.Civilian && unit!!.health<100) unitString += "(" + unit!!.health + ")"
             SB.appendln(unitString)
         }
         return SB.toString().trim()
@@ -169,6 +169,7 @@ class TileInfo {
         if (unit == null) return false
         if (unit!!.currentMovement == 0f) return false
         if (unit!!.name == "Worker" && improvementInProgress != null) return false
+        if (unit!!.isFortified()) return false
         return true
     }
 
