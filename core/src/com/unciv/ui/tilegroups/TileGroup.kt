@@ -30,12 +30,14 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private val borderImages = ArrayList<Image>()
     protected var unitImage: Group? = null
     private val circleImage = ImageGetter.getImage("UnitIcons/Circle.png") // for blue and red circles on the tile
+    private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
 
     init {
         val groupSize = 50f
         this.setSize(groupSize,groupSize)
         addHexagon(groupSize)
         addCircleImage()
+        addFogImage()
     }
 
     private fun addCircleImage() {
@@ -44,6 +46,14 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         circleImage.center(this)
         addActor(circleImage)
         circleImage.isVisible = false
+    }
+
+    private fun addFogImage(){
+        fogImage.width=70f
+        fogImage.height=70f
+        fogImage.center(this)
+        fogImage.color= Color.WHITE.cpy().apply { a=0.5f }
+        addActor(fogImage)
     }
 
     private fun addHexagon(groupSize: Float) {
@@ -81,11 +91,15 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         updateTerrainFeatureImage()
         updateTileColor(isViewable)
-        updateResourceImage()
-        updateImprovementImage()
+
+        updateResourceImage(isViewable)
+        updateImprovementImage(isViewable)
 
         updateRoadImages()
         updateBorderImages()
+
+        fogImage.toFront()
+        fogImage.isVisible=!isViewable
     }
 
     private fun updateBorderImages() {
@@ -94,7 +108,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         if (tileInfo.getOwner() != null) {
             for (neighbor in tileInfo.neighbors.filter { it.getOwner() != tileInfo.getOwner() }) {
-
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
                 val relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition)
@@ -181,7 +194,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
     }
 
-    private fun updateImprovementImage() {
+    private fun updateImprovementImage(viewable: Boolean) {
         if (tileInfo.improvement != null && tileInfo.improvement != improvementType) {
             improvementImage = ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement!!.replace(' ', '_') + "_(Civ5).png")
             addActor(improvementImage)
@@ -192,9 +205,13 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             }
             improvementType = tileInfo.improvement
         }
+        if(improvementImage!=null){
+            if(viewable) improvementImage!!.color= Color.WHITE
+            else improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
+        }
     }
 
-    private fun updateResourceImage() {
+    private fun updateResourceImage(viewable: Boolean) {
         if (tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
                 resourceImage = ImageGetter.getImage(fileName)
@@ -202,6 +219,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             resourceImage!!.center(this)
             resourceImage!!.x -= 20 // left
             addActor(resourceImage!!)
+        }
+        if(resourceImage!=null){
+            if(viewable) resourceImage!!.color= Color.WHITE
+            else resourceImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
         }
     }
 
