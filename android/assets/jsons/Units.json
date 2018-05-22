@@ -152,6 +152,17 @@
 		uniques:["Bonus vs Mounted 50%"],
 		hurryCostModifier:20
 	},
+	{
+		name:"Knight",
+		unitType:"Mounted",
+		movement:3,
+		strength:20,
+		cost: 120,
+		requiredTech:"Chivalry",
+		requiredResource:"Horses",
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		hurryCostModifier:20
+	},
 	
 	/* Great people */
 	
