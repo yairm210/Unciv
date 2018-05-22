@@ -36,9 +36,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 for (neighbor in tileToCheck.neighbors) {
 
                     var totalDistanceToTile:Float
-                    if (neighbor.getOwner() != unit.civInfo
-                            && neighbor.isCityCenter())
-                        totalDistanceToTile = unitMovement // Enemy city, can't move through it - we'll be "stuck" there
+                    if ((neighbor.getOwner() != unit.civInfo && neighbor.isCityCenter())// Enemy city,
+                    || neighbor.unit!=null && neighbor.unit!!.civInfo!=unit.civInfo) // Enemy unit
+                        totalDistanceToTile = unitMovement // can't move through it - we'll be "stuck" there
 
                     else {
                         val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor)
