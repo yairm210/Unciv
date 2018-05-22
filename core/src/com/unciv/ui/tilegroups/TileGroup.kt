@@ -33,7 +33,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
 
     init {
-        val groupSize = 50f
+        val groupSize = 54f
         this.setSize(groupSize,groupSize)
         addHexagon(groupSize)
         addCircleImage()
