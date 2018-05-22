@@ -64,7 +64,7 @@ open class CameraStageBaseScreen : Screen {
     private fun displayTutorial() {
         isTutorialShowing = true
         val tutorialTable = Table().pad(10f)
-        tutorialTable.background(ImageGetter.getDrawable("skin/tileTableBackground.png")
+        tutorialTable.background(ImageGetter.getDrawable(ImageGetter.WhiteDot)
                 .tint(Color(0x101050cf)))
         val label = Label(tutorialTexts[0], skin)
         label.setFontScale(1.5f)
