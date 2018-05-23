@@ -9,6 +9,7 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.GameSaver
+import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
@@ -19,6 +20,7 @@ class WorldScreen : CameraStageBaseScreen() {
     internal var buttonScale = game.settings.buttonScale
     private val topBar = WorldScreenTopBar(this)
     val bottomBar = WorldScreenBottomBar(this)
+    val unitActionsTable = UnitActionsTable(this)
 
     private val techButton = TextButton("", CameraStageBaseScreen.skin)
     private val nextTurnButton = createNextTurnButton()
@@ -48,6 +50,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         bottomBar.width = stage.width
         stage.addActor(bottomBar)
+        stage.addActor(unitActionsTable)
 
         update()
 
@@ -65,13 +68,16 @@ class WorldScreen : CameraStageBaseScreen() {
 
         updateTechButton()
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
+
+        unitActionsTable.update(bottomBar.unitTable.selectedUnit)
+        unitActionsTable.y = bottomBar.height
+
         tileMapHolder.updateTiles()
         topBar.update()
         notificationsScroll.update()
         notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
-
     }
 
     private fun updateTechButton() {

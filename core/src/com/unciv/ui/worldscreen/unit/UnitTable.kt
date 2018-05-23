@@ -16,12 +16,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     var selectedUnit : MapUnit? = null
     var currentlyExecutingAction : String? = null
 
-    private val unitActionsTable = Table()
-
     init {
 
         pad(20f)
-        //background = tileTableBackground
 
         add(Table().apply {
             add(prevIdleUnitButton)
@@ -30,13 +27,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }).colspan(2)
         row()
         add(unitDescriptionLabel)
-        add(unitActionsTable)
     }
 
     fun update() {
         prevIdleUnitButton.update()
         nextIdleUnitButton.update()
-        unitActionsTable.clear()
+
         if(selectedUnit!=null)
         {
             try{ selectedUnit!!.getTile()}
@@ -61,18 +57,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
             unitDescriptionLabel.setText(unitLabelText)
 
-            for (button in UnitActions().getUnitActionButtons(selectedUnit!!, worldScreen))
-                unitActionsTable.add(button).colspan(2).pad(5f)
-                        .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
+
         }
         else {
             unitNameLabel.setText("")
             unitDescriptionLabel.setText("")
         }
 
-        unitActionsTable.pack()
         pack()
-
     }
 
     fun tileSelected(selectedTile: TileInfo) {
@@ -95,3 +87,4 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     }
 
 }
+

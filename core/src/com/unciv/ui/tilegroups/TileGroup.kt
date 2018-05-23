@@ -273,7 +273,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     fun showCircle(color:Color){
         circleImage.isVisible = true
-        val color = Color(color)
+        val color = color.cpy()
         color.a = 0.3f
         circleImage.color = color
     }
