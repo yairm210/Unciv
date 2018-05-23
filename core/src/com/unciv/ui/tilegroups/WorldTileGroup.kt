@@ -18,12 +18,13 @@ import com.unciv.ui.utils.center
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
 
-    fun addWhiteCircleAroundUnit(){
-        val whiteCircle = ImageGetter.getImage("UnitIcons/Circle.png")
-        whiteCircle.setSize(25f,25f)
-        whiteCircle.center(unitImage!!)
-        unitImage!!.addActor(whiteCircle)
-        whiteCircle.toBack()
+    fun addWhiteHaloAroundUnit(){
+        val whiteHalo = if(tileInfo.unit!!.isFortified())  ImageGetter.getImage("UnitIcons/Shield.png")
+        else ImageGetter.getImage("UnitIcons/Circle.png")
+        whiteHalo.setSize(25f,25f)
+        whiteHalo.center(unitImage!!)
+        unitImage!!.addActor(whiteHalo)
+        whiteHalo.toBack()
     }
 
 

@@ -100,7 +100,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
-            tileGroups[unit.getTile()]!!.addWhiteCircleAroundUnit()
+            tileGroups[unit.getTile()]!!.addWhiteHaloAroundUnit()
             val attackableTiles:List<TileInfo>
             when(unit.getBaseUnit().unitType){
                 UnitType.Civilian -> return
