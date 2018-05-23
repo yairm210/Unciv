@@ -1,18 +1,13 @@
 package com.unciv.ui.worldscreen.unit
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.UnCivGame
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.disable
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
 
@@ -27,9 +22,6 @@ class UnitActions {
         }
     }
 
-    fun getUnitActionButtons(unit:MapUnit,worldScreen: WorldScreen): List<TextButton> {
-        return getUnitActions(unit, worldScreen).map { getUnitActionButton(it) }
-    }
 
     fun getUnitActions(unit:MapUnit,worldScreen: WorldScreen): List<UnitAction> {
         val tile = unit.getTile()
@@ -70,10 +62,7 @@ class UnitActions {
         }
         
         if (unit.name == "Worker") {
-            val improvementButtonText: String
-            if (tile.improvementInProgress == null) improvementButtonText = "Construct\r\nimprovement"
-            else improvementButtonText = tile.improvementInProgress!! + "\r\nin progress"
-            actionList += UnitAction(improvementButtonText,
+            actionList += UnitAction("Construct improvement",
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) },
                     unit.currentMovement != 0f &&
                             !tile.isCityCenter() || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) })
@@ -144,11 +133,5 @@ class UnitActions {
         return actionList
     }
 
-    private fun getUnitActionButton(unitAction: UnitAction): TextButton {
-        val actionButton = TextButton(unitAction.name, CameraStageBaseScreen.skin)
-        actionButton.addClickListener({ unitAction.action(); UnCivGame.Current.worldScreen!!.update() })
-        if (!unitAction.canAct) actionButton.disable()
-        return actionButton
-    }
 }
 
