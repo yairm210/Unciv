@@ -252,7 +252,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
 
     private fun getUnitImage(unit: MapUnit, color:Color): Group {
-        val unitBaseImage = ImageGetter.getImage("UnitIcons/${unit.name}.png")
+        val unitBaseImage = ImageGetter.getUnitIcon(unit.name)
                 .apply { setSize(15f,15f) }
 
         val background = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")

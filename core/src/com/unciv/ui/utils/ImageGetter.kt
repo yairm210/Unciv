@@ -41,5 +41,9 @@ object ImageGetter {
         return getImage("StatIcons/20x" + name + "5.png")
     }
 
+    fun getUnitIcon(unitName:String):Image{
+        return getImage("UnitIcons/$unitName.png")
+    }
+
     fun getBlue() = Color(0x004085bf)
 }

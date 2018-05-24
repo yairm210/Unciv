@@ -1,11 +1,13 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Unit
 import com.unciv.ui.cityscreen.addClickListener
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
 
 class GreatPersonPickerScreen : PickerScreen() {
     private var theChosenOne: Unit? = null
@@ -14,7 +16,12 @@ class GreatPersonPickerScreen : PickerScreen() {
         closeButton.isVisible=false
         rightSideButton.setText("Choose a free great person")
         for (unit in GameBasics.Units.values.filter { it.name.startsWith("Great") }) {
-            val button = TextButton(unit.name, CameraStageBaseScreen.skin)
+            val button = Button(skin)
+
+            button.add(ImageGetter.getUnitIcon(unit.name)).size(30f).pad(10f)
+            button.add(Label(unit.name, skin).apply { style = Label.LabelStyle(style).apply { fontColor= Color.WHITE} })
+                    .pad(10f)
+            button.pack()
             button.addClickListener {
                 theChosenOne = unit
                 pick("Get " +unit.name)
