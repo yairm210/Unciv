@@ -1,5 +1,6 @@
 package com.unciv.ui.pickerscreens
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.city.CityInfo
@@ -18,6 +19,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
             pick(rightSideButtonText)
             descriptionLabel.setText(description)
         }
+        if(production==city.cityConstructions.currentConstruction) productionTextButton.color= Color.GREEN
         return productionTextButton
     }
 
@@ -56,7 +58,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
                 regularBuildings.addActor(productionTextButton)
         }
 
-        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions) }) {
+        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions) || it.name==cityConstructions.currentConstruction}) {
             units.addActor(getProductionButton(unit.name,
                     unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " turns",
                     unit.getDescription(true), "Train " + unit.name))
