@@ -30,7 +30,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private val roadImages = HashMap<String, Image>()
     private val borderImages = ArrayList<Image>()
     protected var unitImage: Group? = null
-    private val circleImage = ImageGetter.getImage("UnitIcons/Circle.png") // for blue and red circles on the tile
+    private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
 
     init {
@@ -116,7 +116,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 // This is some crazy voodoo magic so I'll explain.
 
                 for(i in -2..2) {
-                    val image = ImageGetter.getImage("UnitIcons/Circle.png")
+                    val image = ImageGetter.getImage("OtherIcons/Circle.png")
                     image.setSize(5f, 5f)
                     image.center(this)
                     // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
@@ -255,8 +255,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         val unitBaseImage = ImageGetter.getImage("UnitIcons/${unit.name}.png")
                 .apply { setSize(15f,15f) }
 
-        val background = if(unit.isFortified())  ImageGetter.getImage("UnitIcons/Shield.png")
-                else ImageGetter.getImage("UnitIcons/Circle.png")
+        val background = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
+                else ImageGetter.getImage("OtherIcons/Circle.png")
         background.apply {
             this.color = color
             setSize(20f,20f)

@@ -19,8 +19,8 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
 
     fun addWhiteHaloAroundUnit(){
-        val whiteHalo = if(tileInfo.unit!!.isFortified())  ImageGetter.getImage("UnitIcons/Shield.png")
-        else ImageGetter.getImage("UnitIcons/Circle.png")
+        val whiteHalo = if(tileInfo.unit!!.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
+        else ImageGetter.getImage("OtherIcons/Circle.png")
         whiteHalo.setSize(25f,25f)
         whiteHalo.center(unitImage!!)
         unitImage!!.addActor(whiteHalo)
@@ -71,7 +71,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             cityButton!!.run {
                 clear()
                 if(city.isCapital()){
-                    val starImage = Image(ImageGetter.getDrawable("StatIcons/Star.png").tint(Color.LIGHT_GRAY))
+                    val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
                     add(starImage).size(20f).padLeft(10f)
                 }
                 add(label).pad(10f)

@@ -19,7 +19,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         when(unitAction){
             "Move unit" -> return ImageGetter.getStatIcon("Movement")
             "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
-            "Fortify" -> return ImageGetter.getImage("UnitIcons/Shield.png").apply { color= Color.BLACK }
+            "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield.png").apply { color= Color.BLACK }
             "Construct improvement" -> return ImageGetter.getImage("UnitIcons/Worker.png")
             "Automate" -> return ImageGetter.getImage("UnitIcons/Great Engineer.png")
             "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop.png")
@@ -32,7 +32,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Construct Manufactory" -> return ImageGetter.getImage("ImprovementIcons/Manufactory_(Civ5).png")
             "Conduct Trade Mission" -> return ImageGetter.getImage("UnitIcons/Great Merchant.png")
             "Construct Customs House" -> return ImageGetter.getImage("ImprovementIcons/Customs_house_(Civ5).png")
-            else -> return ImageGetter.getImage("StatIcons/Star.png")
+            else -> return ImageGetter.getImage("OtherIcons/Star.png")
         }
     }
 
