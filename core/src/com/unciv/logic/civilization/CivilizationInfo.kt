@@ -168,8 +168,8 @@ class CivilizationInfo {
         addNotification("A $greatPerson has been born!", randomCity.location)
     }
 
-    fun placeUnitNearTile(location: Vector2, unitName: String) {
-        gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
+    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit {
+        return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
     }
 
     fun getCivUnits(): List<MapUnit> {

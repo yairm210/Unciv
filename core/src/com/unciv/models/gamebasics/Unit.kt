@@ -2,6 +2,7 @@ package com.unciv.models.gamebasics
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.UnitType
 import com.unciv.models.stats.INamed
@@ -75,13 +76,16 @@ class Unit : INamed, IConstruction, ICivilopedia {
         return (Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100) / 10).toInt() * 10
     }
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        val civInfo = construction.cityInfo.civInfo
+    fun isBuildable(civInfo:CivilizationInfo): Boolean {
         if (unbuildable) return false
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
         if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
         return true
+    }
+
+    override fun isBuildable(construction: CityConstructions): Boolean {
+        return isBuildable(construction.cityInfo.civInfo)
     }
 
     override fun postBuildEvent(construction: CityConstructions) {

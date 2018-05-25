@@ -17,6 +17,10 @@ import com.unciv.ui.worldscreen.WorldScreen
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
     fun getIconForUnitAction(unitAction:String): Image {
+        if(unitAction.startsWith("Upgrade to")){
+            val unitToUpgradeTo = Regex("""Upgrade to (\S*)""").find(unitAction)!!.groups[1]!!.value
+            return ImageGetter.getUnitIcon(unitToUpgradeTo)
+        }
         when(unitAction){
             "Move unit" -> return ImageGetter.getStatIcon("Movement")
             "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
@@ -51,7 +55,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.name)).size(20f).pad(5f)
         actionButton.add(Label(unitAction.name,CameraStageBaseScreen.skin)
-                .setFontColor(Color.WHITE))
+                .setFontColor(Color.WHITE)).pad(5f)
         actionButton.pack()
         actionButton.addClickListener({ unitAction.action(); UnCivGame.Current.worldScreen!!.update() })
         if (!unitAction.canAct) actionButton.disable()

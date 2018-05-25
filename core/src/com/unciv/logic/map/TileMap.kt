@@ -42,13 +42,14 @@ class TileMap {
     }
 
 
-    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo) {
+    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
         unit.owner = civInfo.civName
         unit.civInfo = civInfo
         val tilesInDistance = getTilesInDistance(position, 2)
         val unitToPlaceTile = tilesInDistance.firstOrNull { it.unit == null }
         if(unitToPlaceTile!=null) unitToPlaceTile.unit = unit // And if there's none, then kill me.
+        return unit
     }
 
     fun getViewableTiles(position: Vector2, sightDistance: Int): MutableList<TileInfo> {

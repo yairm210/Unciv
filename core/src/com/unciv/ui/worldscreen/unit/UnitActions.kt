@@ -48,6 +48,24 @@ class UnitActions {
                 actionList += UnitAction("Fortify",{unit.action="Fortify 0"}, unit.currentMovement != 0f)
         }
 
+        if(unit.getBaseUnit().upgradesTo!=null) {
+            val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
+            if (upgradedUnit.isBuildable(unit.civInfo)) {
+                val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
+                actionList += UnitAction("Upgrade to ${upgradedUnit.name} ($goldCostOfUpgrade gold)",
+                        {
+                            unit.civInfo.gold -= goldCostOfUpgrade
+                            val unitTile = unit.getTile()
+                            unitTile.unit = null
+                            val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                            newunit.health = unit.health
+                            newunit.currentMovement=0f
+                        },
+                        unit.civInfo.gold >= goldCostOfUpgrade
+                                && unit.currentMovement == unit.maxMovement.toFloat()  )
+            }
+        }
+
         if (unit.name == "Settler") {
             actionList += UnitAction("Found city",
                     {
