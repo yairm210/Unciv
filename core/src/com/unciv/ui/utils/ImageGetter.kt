@@ -31,6 +31,7 @@ object ImageGetter {
                 textureRegionByFileName[fileName] = TextureRegion(texture)
             }
         } catch (ex: Exception) {
+            return getTextureRegion(WhiteDot)
             throw Exception("File $fileName not found!",ex)
         }
 

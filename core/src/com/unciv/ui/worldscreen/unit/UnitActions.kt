@@ -64,8 +64,9 @@ class UnitActions {
         if (unit.name == "Worker") {
             actionList += UnitAction("Construct improvement",
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) },
-                    unit.currentMovement != 0f &&
-                            !tile.isCityCenter() || GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) })
+                    unit.currentMovement != 0f
+                            && !tile.isCityCenter()
+                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) })
 
             if("automation" == unit.action){
                 actionList += UnitAction("Stop automation",

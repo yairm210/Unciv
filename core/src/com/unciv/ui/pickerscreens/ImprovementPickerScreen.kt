@@ -30,7 +30,11 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
             if (!tileInfo.canBuildImprovement(improvement, civInfo) || improvement.name == tileInfo.improvement) continue
             val improvementButton = Button(skin)
 
-            improvementButton.add(ImageGetter.getImprovementIcon(improvement.name)).size(30f).pad(10f)
+
+            if(improvement.name.startsWith("Remove"))
+                improvementButton.add(ImageGetter.getImage("OtherIcons/Stop.png")).size(30f).pad(10f)
+            else  improvementButton.add(ImageGetter.getImprovementIcon(improvement.name)).size(30f).pad(10f)
+
             improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(civInfo) + " turns",skin)
                     .setFontColor(Color.WHITE)).pad(10f)
 
