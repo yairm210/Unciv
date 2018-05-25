@@ -146,13 +146,19 @@ class Building : NamedStats(), IConstruction{
         if (construction.isBuilt(name)) return false
         val civInfo = construction.cityInfo.civInfo
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return false
-        if (isWonder && civInfo.gameInfo.civilizations.flatMap { it.cities }.any {
+        if (isWonder && requiredBuildingInAllCities==null
+                && civInfo.gameInfo.civilizations.flatMap { it.cities }.any {
                             it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
                         })
             return false
         if (requiredBuilding != null && !construction.isBuilt(requiredBuilding!!)) return false
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })
             return false
+        if(requiredBuildingInAllCities!=null && civInfo.cities.any {
+                    it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
+                })
+            return false
+
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
         if ("Must be next to desert" == unique && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
             return false

@@ -47,7 +47,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         val specials = VerticalGroup().space(10f)
 
         for (building in GameBasics.Buildings.values) {
-            if (!building.isBuildable(cityConstructions)) continue
+            if (!building.isBuildable(cityConstructions) && building.name!=cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
                     building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " turns",
                     building.getDescription(true, civInfo.policies.getAdoptedPolicies()),
@@ -58,7 +58,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
                 regularBuildings.addActor(productionTextButton)
         }
 
-        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions) || it.name==cityConstructions.currentConstruction}) {
+        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
             units.addActor(getProductionButton(unit.name,
                     unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " turns",
                     unit.getDescription(true), "Train " + unit.name))
