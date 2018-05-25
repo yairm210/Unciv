@@ -9,23 +9,19 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.cityscreen.addClickListener
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.centerY
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.*
 import kotlin.math.abs
 import kotlin.math.ceil
 
 class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
-    val labelStyle = Label.LabelStyle(Label("", CameraStageBaseScreen.skin).style)
-            .apply { fontColor = Color.valueOf("f5f5f5ff") }
+    val labelSkin = CameraStageBaseScreen.skin
 
-    private val turnsLabel = Label("Turns: 0/400", labelStyle)
-    private val goldLabel = Label("Gold:", labelStyle).apply { color = colorFromRGB(225, 217, 71) }
-    private val scienceLabel = Label("Science:", labelStyle).apply { color = colorFromRGB(78, 140, 151) }
-    private val happinessLabel = Label("Happiness:", labelStyle)
-    private val cultureLabel = Label("Culture:", labelStyle).apply { color = colorFromRGB(210, 94, 210) }
+    private val turnsLabel = Label("Turns: 0/400",labelSkin)
+    private val goldLabel = Label("Gold:", labelSkin).setFontColor(colorFromRGB(225, 217, 71) )
+    private val scienceLabel = Label("Science:", labelSkin).setFontColor(colorFromRGB(78, 140, 151) )
+    private val happinessLabel = Label("Happiness:", labelSkin)
+    private val cultureLabel = Label("Culture:", labelSkin).setFontColor(colorFromRGB(210, 94, 210) )
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Image>()
     private val happinessImage = ImageGetter.getStatIcon("Happiness")
@@ -51,7 +47,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
             val resourceImage = ImageGetter.getImage(fileName)
             resourceImages.put(resource.name, resourceImage)
             resourceTable.add(resourceImage).size(20f)
-            val resourceLabel = Label("0", labelStyle)
+            val resourceLabel = Label("0", labelSkin)
             resourceLabels.put(resource.name, resourceLabel)
             resourceTable.add(resourceLabel)
         }
@@ -127,10 +123,10 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         happinessLabel.setText(getHappinessText(civInfo))
 
         if (civInfo.happiness < 0) {
-            happinessLabel.color = Color.valueOf("ef5350")
+            happinessLabel.setFontColor(Color.valueOf("ef5350"))
             happinessImage.drawable = ImageGetter.getStatIcon("Malcontent").drawable
         } else {
-            happinessLabel.color = colorFromRGB(92, 194, 77)
+            happinessLabel.setFontColor(colorFromRGB(92, 194, 77))
             happinessImage.drawable = ImageGetter.getStatIcon("Happiness").drawable
         }
 

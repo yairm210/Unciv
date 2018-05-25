@@ -11,6 +11,7 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
@@ -50,7 +51,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.name)).size(20f).pad(5f)
         actionButton.add(Label(unitAction.name,CameraStageBaseScreen.skin)
-                .apply { style= Label.LabelStyle(style); style.fontColor = Color.WHITE })
+                .setFontColor(Color.WHITE))
         actionButton.pack()
         actionButton.addClickListener({ unitAction.action(); UnCivGame.Current.worldScreen!!.update() })
         if (!unitAction.canAct) actionButton.disable()

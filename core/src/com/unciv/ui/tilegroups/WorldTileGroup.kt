@@ -13,6 +13,7 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
+import com.unciv.ui.utils.setFontColor
 
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
@@ -60,9 +61,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             val cityButtonText = city.name + " (" + city.population.population + ")"
             val label = Label(cityButtonText, CameraStageBaseScreen.skin)
-            val labelStyle = Label.LabelStyle(label.style)
-            labelStyle.fontColor = city.civInfo.getCivilization().getColor()
-            label.style = labelStyle
+            label.setFontColor(city.civInfo.getCivilization().getColor())
             if (city.civInfo.isPlayerCivilization())
                 label.addClickListener {
                     UnCivGame.Current.screen = CityScreen(city)

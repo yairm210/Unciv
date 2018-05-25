@@ -8,6 +8,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Unit
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.setFontColor
 
 class GreatPersonPickerScreen : PickerScreen() {
     private var theChosenOne: Unit? = null
@@ -19,8 +20,7 @@ class GreatPersonPickerScreen : PickerScreen() {
             val button = Button(skin)
 
             button.add(ImageGetter.getUnitIcon(unit.name)).size(30f).pad(10f)
-            button.add(Label(unit.name, skin).apply { style = Label.LabelStyle(style).apply { fontColor= Color.WHITE} })
-                    .pad(10f)
+            button.add(Label(unit.name, skin).setFontColor(Color.WHITE)).pad(10f)
             button.pack()
             button.addClickListener {
                 theChosenOne = unit

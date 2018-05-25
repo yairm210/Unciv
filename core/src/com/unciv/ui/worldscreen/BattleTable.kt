@@ -13,6 +13,7 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.setFontColor
 import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
@@ -60,13 +61,11 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         clear()
         row().pad(5f)
         val attackerLabel = Label(attacker.getName(), skin)
-        attackerLabel.style= Label.LabelStyle(attackerLabel.style)
-        attackerLabel.style.fontColor=attacker.getCivilization().getCivilization().getColor()
+                .setFontColor(attacker.getCivilization().getCivilization().getColor())
         add(attackerLabel)
 
         val defenderLabel = Label(defender.getName(), skin)
-        defenderLabel.style= Label.LabelStyle(defenderLabel.style)
-        defenderLabel.style.fontColor=defender.getCivilization().getCivilization().getColor()
+                .setFontColor(defender.getCivilization().getCivilization().getColor())
         add(defenderLabel)
 
         row().pad(5f)

@@ -115,3 +115,5 @@ fun Actor.center(parent:Actor){ centerX(parent); centerY(parent)}
 fun Actor.centerX(parent:Stage){ x = parent.width/2 - width/2 }
 fun Actor.centerY(parent:Stage){ y = parent.height/2- height/2}
 fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
+
+fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
