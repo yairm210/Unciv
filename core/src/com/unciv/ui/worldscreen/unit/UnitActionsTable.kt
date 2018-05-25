@@ -25,13 +25,13 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop.png")
             "Found city" -> return ImageGetter.getUnitIcon("Settler")
             "Discover Technology" -> return ImageGetter.getUnitIcon("Great Scientist")
-            "Construct Academy" -> return ImageGetter.getImage("ImprovementIcons/Academy_(Civ5).png")
+            "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
             "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")
-            "Construct Landmark" -> return ImageGetter.getImage("ImprovementIcons/Landmark_(Civ5).png")
+            "Construct Landmark" -> return ImageGetter.getImprovementIcon("Landmark")
             "Hurry Wonder" -> return ImageGetter.getUnitIcon("Great Engineer")
-            "Construct Manufactory" -> return ImageGetter.getImage("ImprovementIcons/Manufactory_(Civ5).png")
+            "Construct Manufactory" -> return ImageGetter.getImprovementIcon("Manufactory")
             "Conduct Trade Mission" -> return ImageGetter.getUnitIcon("Great Merchant")
-            "Construct Customs House" -> return ImageGetter.getImage("ImprovementIcons/Customs_house_(Civ5).png")
+            "Construct Customs House" -> return ImageGetter.getImprovementIcon("Customs house")
             else -> return ImageGetter.getImage("OtherIcons/Star.png")
         }
     }

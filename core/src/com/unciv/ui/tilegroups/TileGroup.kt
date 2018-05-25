@@ -197,7 +197,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun updateImprovementImage(viewable: Boolean) {
         if (tileInfo.improvement != null && tileInfo.improvement != improvementType) {
-            improvementImage = ImageGetter.getImage("ImprovementIcons/" + tileInfo.improvement!!.replace(' ', '_') + "_(Civ5).png")
+            improvementImage = ImageGetter.getImprovementIcon(tileInfo.improvement!!)
             addActor(improvementImage)
             improvementImage!!.run {
                 setSize(20f, 20f)

@@ -45,5 +45,9 @@ object ImageGetter {
         return getImage("UnitIcons/$unitName.png")
     }
 
+    fun getImprovementIcon(improvementName:String):Image{
+        return getImage("ImprovementIcons/" + improvementName.replace(' ', '_') + "_(Civ5).png")
+    }
+
     fun getBlue() = Color(0x004085bf)
 }
