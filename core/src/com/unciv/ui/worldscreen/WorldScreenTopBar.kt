@@ -17,7 +17,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
     val labelSkin = CameraStageBaseScreen.skin
 
-    private val turnsLabel = Label("Turns: 0/400",labelSkin)
+    private val turnsLabel = Label("Turns: 0/400",labelSkin).setFontColor(Color.WHITE)
     private val goldLabel = Label("Gold:", labelSkin).setFontColor(colorFromRGB(225, 217, 71) )
     private val scienceLabel = Label("Science:", labelSkin).setFontColor(colorFromRGB(78, 140, 151) )
     private val happinessLabel = Label("Happiness:", labelSkin)

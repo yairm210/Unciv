@@ -1,12 +1,15 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.ui.cityscreen.addClickListener
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.setFontColor
 
 class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
@@ -25,17 +28,18 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
         regularImprovements.space(10f)
         for (improvement in GameBasics.TileImprovements.values) {
             if (!tileInfo.canBuildImprovement(improvement, civInfo) || improvement.name == tileInfo.improvement) continue
-            val improvementTextButton = TextButton(
-                    improvement.name + "\r\n" + improvement.getTurnsToBuild(civInfo) + " turns",
-                    CameraStageBaseScreen.skin
-            )
+            val improvementButton = Button(skin)
 
-            improvementTextButton.addClickListener {
+            improvementButton.add(ImageGetter.getImprovementIcon(improvement.name)).size(30f).pad(10f)
+            improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(civInfo) + " turns",skin)
+                    .setFontColor(Color.WHITE)).pad(10f)
+
+            improvementButton.addClickListener {
                     selectedImprovement = improvement
                     pick(improvement.name)
                     descriptionLabel.setText(improvement.description)
                 }
-            regularImprovements.addActor(improvementTextButton)
+            regularImprovements.addActor(improvementButton)
         }
         topTable.add(regularImprovements)
     }
