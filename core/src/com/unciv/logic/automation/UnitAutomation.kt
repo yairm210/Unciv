@@ -151,9 +151,12 @@ class UnitAutomation{
         }
 
         // else, go to a random space
-        unit.moveToTile(unit.getDistanceToTiles()
-                .filter { it.key.unit == null && it.value==unit.currentMovement } // at edge of walking distance
-                .toList().getRandom().first)
+        val reachableTiles = unit.getDistanceToTiles()
+                .filter { it.key.unit == null} // at edge of walking distance
+        val reachableTilesMaxWalkingDistance =  reachableTiles.filter { it.value==unit.currentMovement}
+        if(reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
+        else if(reachableTiles.any()) unit.moveToTile(reachableTiles.toList().getRandom().first)
+        // if both failed, then... there aren't any reachable tiles. Which is possible.
     }
 
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
