@@ -134,8 +134,10 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     }
 
     private fun getCultureText(civInfo: CivilizationInfo, nextTurnStats: Stats): String {
-        val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
         var cultureString = "+" + Math.round(nextTurnStats.culture)
+        if(nextTurnStats.culture==0f) return cultureString // when you start the game, you're not producing any culture
+
+        val turnsToNextPolicy = (civInfo.policies.getCultureNeededForNextPolicy() - civInfo.policies.storedCulture) / nextTurnStats.culture
         if (turnsToNextPolicy > 0) cultureString += " (" + ceil(turnsToNextPolicy).toInt() + ")"
         else cultureString += " (!)"
         return cultureString
