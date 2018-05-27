@@ -14,6 +14,10 @@
 				row:5
 			},
 			{
+				name:"Archery",
+				row:5
+			},
+			{
 				name:"Mining",
 				row:9
 			}
@@ -51,7 +55,7 @@
 			{
 				name:"The Wheel",
 				row:6,
-				prerequisites:["Animal Husbandry"]
+				prerequisites:["Animal Husbandry", "Archery"]
 			},
 			{
 				name:"Masonry",
@@ -92,7 +96,7 @@
 			{
 				name:"Construction",
 				row:9,
-				prerequisites:["Masonry"]
+				prerequisites:["Masonry","The Wheel"]
 			}
 		]	
 	},
@@ -141,7 +145,7 @@
 			{
 				name:"Civil Service",
 				row:4,
-				prerequisites:["Horseback Riding","Philosophy"]
+				prerequisites:["Currency","Horseback Riding","Philosophy"]
 			},
 			{
 				name:"Physics",
@@ -151,7 +155,7 @@
 			{
 				name:"Metal Casting",
 				row:10,
-				prerequisites:["Construction","Iron Working"]
+				prerequisites:["Engineering","Iron Working"]
 			}
 		]
 	},
