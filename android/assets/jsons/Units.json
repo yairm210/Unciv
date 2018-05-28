@@ -130,8 +130,8 @@
 		rangedStrength:14,
 		cost: 120,
 		requiredTech:"Physics",
-		obsoleteTech:"Chemistry",
-		upgradesTo:"Cannon",
+		/*obsoleteTech:"Chemistry",
+		upgradesTo:"Cannon",*/
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
 		hurryCostModifier:20
 	},
