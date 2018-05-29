@@ -5,9 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.unciv.UnCivGame
+import com.unciv.logic.GameSaver
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.GameSaver
 import com.unciv.ui.utils.enable
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,7 +19,7 @@ class SaveScreen : PickerScreen() {
         val currentSaves = Table()
 
         currentSaves.add(Label("Current saves:",skin)).row()
-        val saves = GameSaver.getSaves()
+        val saves = GameSaver().getSaves()
         saves.forEach {
             val textButton = TextButton(it, skin)
             textButton.addClickListener {
@@ -44,7 +44,7 @@ class SaveScreen : PickerScreen() {
 
         rightSideButton.setText("Save game")
         rightSideButton.addClickListener {
-            GameSaver.saveGame(UnCivGame.Current.gameInfo, textField.text)
+            GameSaver().saveGame(UnCivGame.Current.gameInfo, textField.text)
             UnCivGame.Current.setWorldScreen()
         }
         rightSideButton.enable()

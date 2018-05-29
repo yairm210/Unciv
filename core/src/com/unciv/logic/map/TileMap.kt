@@ -2,9 +2,9 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
+import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.HexMath
 
 class TileMap {
 
@@ -33,11 +33,11 @@ class TileMap {
     }
 
     fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath.GetVectorsInDistance(origin, distance).filter {contains(it)}.map { get(it) }
+        return HexMath().GetVectorsInDistance(origin, distance).filter {contains(it)}.map { get(it) }
     }
 
     fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath.GetVectorsAtDistance(origin, distance).filter {contains(it)}.map { get(it) }
+        return HexMath().GetVectorsAtDistance(origin, distance).filter {contains(it)}.map { get(it) }
 
     }
 

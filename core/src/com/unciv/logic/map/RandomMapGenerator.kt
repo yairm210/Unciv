@@ -1,11 +1,11 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.HexMath
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ResourceType
 import com.unciv.models.gamebasics.TerrainType
 import com.unciv.models.gamebasics.TileResource
-import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.getRandom
 
 class SeedRandomMapGenerator : RandomMapGenerator() {
@@ -14,7 +14,7 @@ class SeedRandomMapGenerator : RandomMapGenerator() {
 
         val map = HashMap<Vector2, TileInfo?>()
 
-        for (vector in HexMath.GetVectorsInDistance(Vector2.Zero, distance))
+        for (vector in HexMath().GetVectorsInDistance(Vector2.Zero, distance))
             map[vector] = null
 
         class Area(val terrain: String) {
@@ -49,7 +49,7 @@ class SeedRandomMapGenerator : RandomMapGenerator() {
             val expandableAreas = ArrayList<Area>(areas)
             while (expandableAreas.isNotEmpty()){
                 val areaToExpand = expandableAreas.getRandom()
-                val availableExpansionVectors = areaToExpand.locations.flatMap { HexMath.GetAdjacentVectors(it) }.distinct()
+                val availableExpansionVectors = areaToExpand.locations.flatMap { HexMath().GetAdjacentVectors(it) }.distinct()
                         .filter { map.containsKey(it) && map[it] == null }
                 if(availableExpansionVectors.isEmpty()) expandableAreas -= areaToExpand
                 else {
@@ -130,7 +130,7 @@ open class RandomMapGenerator {
 
     open fun generateMap(distance: Int): HashMap<String, TileInfo> {
         val map = HashMap<String, TileInfo>()
-        for (vector in HexMath.GetVectorsInDistance(Vector2.Zero, distance))
+        for (vector in HexMath().GetVectorsInDistance(Vector2.Zero, distance))
             map[vector.toString()] = addRandomTile(vector)
         return map
     }

@@ -4,10 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.HexMath
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.colorFromRGB
@@ -111,7 +111,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             for (neighbor in tileInfo.neighbors.filter { it.getOwner() != tileInfo.getOwner() }) {
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
-                val relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition)
+                val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
 
                 // This is some crazy voodoo magic so I'll explain.
 
@@ -150,7 +150,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     roadImages[neighbor.position.toString()] = image
 
                     val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
-                    val relativeWorldPosition = HexMath.Hex2WorldCoords(relativeHexPosition)
+                    val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
 
                     // This is some crazy voodoo magic so I'll explain.
                     image.moveBy(25f, 25f) // Move road to center of tile

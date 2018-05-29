@@ -6,10 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.centerX
 import java.util.*
@@ -181,7 +181,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     }
             }
 
-            val positionalVector = HexMath.Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
+            val positionalVector = HexMath().Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
             val groupSize = 50
             group.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())

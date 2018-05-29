@@ -1,12 +1,11 @@
-package com.unciv.ui.utils
+package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
-import com.unciv.logic.GameInfo
 
-object GameSaver {
-    private const val saveFilesFolder = "SaveFiles"
+class GameSaver {
+    private val saveFilesFolder = "SaveFiles"
 
     fun getSave(GameName: String): FileHandle {
         return Gdx.files.local("$saveFilesFolder/$GameName")

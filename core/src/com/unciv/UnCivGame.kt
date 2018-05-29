@@ -5,13 +5,14 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Json
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.Unit
 import com.unciv.models.stats.INamed
 import com.unciv.ui.GameSettings
-import com.unciv.ui.utils.GameSaver
+import com.unciv.ui.NewGameScreen
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -25,7 +26,7 @@ class UnCivGame : Game() {
         setupGameBasics()
 
         Current = this
-        if (GameSaver.getSave("Autosave").exists()) {
+        if (GameSaver().getSave("Autosave").exists()) {
             try {
                 loadGame("Autosave")
             } catch (ex: Exception) { // silent fail if we can't read the autosave
@@ -36,7 +37,7 @@ class UnCivGame : Game() {
     }
 
     fun loadGame(gameName:String){
-        gameInfo = GameSaver.loadGame( gameName)
+        gameInfo = GameSaver().loadGame( gameName)
         worldScreen = WorldScreen()
         setWorldScreen()
     }

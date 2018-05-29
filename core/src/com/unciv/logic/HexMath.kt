@@ -1,9 +1,9 @@
-package com.unciv.ui.utils
+package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import java.util.*
 
-object HexMath {
+class HexMath {
 
     fun GetVectorForAngle(angle: Float): Vector2 {
         return Vector2(Math.sin(angle.toDouble()).toFloat(), Math.cos(angle.toDouble()).toFloat())

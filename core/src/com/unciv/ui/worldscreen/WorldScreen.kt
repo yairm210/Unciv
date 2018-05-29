@@ -3,12 +3,12 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.GameSaver
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {
@@ -115,7 +115,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
             game.gameInfo.nextTurn()
             bottomBar.unitTable.currentlyExecutingAction = null
-            kotlin.concurrent.thread { GameSaver.saveGame(game.gameInfo, "Autosave") }
+            kotlin.concurrent.thread { GameSaver().saveGame(game.gameInfo, "Autosave") }
             update()
             displayTutorials("NextTurn")
 

@@ -6,13 +6,13 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.tilegroups.WorldTileGroup
-import com.unciv.ui.utils.HexMath
 import com.unciv.ui.utils.colorFromRGB
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
@@ -40,7 +40,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
 
 
-            val positionalVector = HexMath.Hex2WorldCoords(tileInfo.position)
+            val positionalVector = HexMath().Hex2WorldCoords(tileInfo.position)
             val groupSize = 50
             group.setPosition(worldScreen.stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     worldScreen.stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
