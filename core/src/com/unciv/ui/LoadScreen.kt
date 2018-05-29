@@ -10,6 +10,8 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
+import java.text.SimpleDateFormat
+import java.util.*
 
 class LoadScreen : PickerScreen() {
     lateinit var selectedSave:String
@@ -34,7 +36,17 @@ class LoadScreen : PickerScreen() {
             textButton.addClickListener {
                 selectedSave=it
 
-                descriptionLabel.setText(it)
+                var textToSet = it
+
+                val savedAt = Date(GameSaver().getSave(it).lastModified())
+                textToSet+="\nSaved at: "+ SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
+                try{
+                    val game = GameSaver().loadGame(it)
+                    textToSet+="\n"+game.getPlayerCivilization()+", turn "+game.turns
+                }catch (ex:Exception){
+                    textToSet+="\nCould not load game!"
+                }
+                descriptionLabel.setText(textToSet)
                 rightSideButton.setText("Load\r\n$it")
                 rightSideButton.enable()
                 deleteSaveButton.enable()
@@ -52,4 +64,3 @@ class LoadScreen : PickerScreen() {
     }
 
 }
-

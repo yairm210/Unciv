@@ -9,8 +9,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
-import java.text.SimpleDateFormat
-import java.util.*
+import com.unciv.ui.utils.getRandom
 
 class SaveScreen : PickerScreen() {
     val textField = TextField("", skin)
@@ -32,8 +31,11 @@ class SaveScreen : PickerScreen() {
 
 
         val newSave = Table()
-        val defaultSaveName = SimpleDateFormat("dd-MM-yy HH.mm").format(Date())+
-                "   Turn "+ UnCivGame.Current.gameInfo.turns
+        val adjectives = listOf("Prancing","Obese","Junior","Senior","Abstract","Discombobulating","Simple","Awkward","Holy",
+                "Dangerous","Greasy","Stinky","Purple","Majestic","Incomprehensible","Cardboard","Chocolate","Robot","Ninja")
+        val nouns = listOf("Moose","Pigeon","Weasel","Ferret","Onion","Marshmellow","Crocodile","Inu Shiba",
+                "Sandwich","Elephant","Kangaroo","Marmot","Beagle","Dolphin","Fish","Tomato","Duck")
+        val defaultSaveName = adjectives.getRandom()+" "+nouns.getRandom()
         textField.text = defaultSaveName
 
         newSave.add(Label("Saved game name:",skin)).row()
