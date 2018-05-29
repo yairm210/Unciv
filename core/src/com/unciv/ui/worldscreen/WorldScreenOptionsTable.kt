@@ -4,10 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.ui.CivilopediaScreen
-import com.unciv.ui.LoadScreen
-import com.unciv.ui.SaveScreen
-import com.unciv.ui.VictoryScreen
+import com.unciv.ui.*
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -48,7 +45,7 @@ class WorldScreenOptionsTable internal constructor(worldScreen: WorldScreen, pri
         add(saveGameButton ).row()
 
         val startNewGameButton = TextButton("Start new game", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }
-        startNewGameButton.addClickListener { worldScreen.game.startNewGame(true) }
+        startNewGameButton.addClickListener { worldScreen.game.screen = NewGameScreen() }
         add(startNewGameButton).row()
 
         val openVictoryScreen = TextButton("Victory status", CameraStageBaseScreen.skin).apply { color=ImageGetter.getBlue() }

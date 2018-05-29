@@ -1,13 +1,10 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -56,36 +53,3 @@ class LoadScreen : PickerScreen() {
 
 }
 
-class NewGameScreen:CameraStageBaseScreen(){
-    init {
-        val table = Table()
-        table.skin=skin
-
-        table.add("Civilization: ")
-        val civSelectBox = SelectBox<String>(skin)
-        val civArray = Array<String>()
-        GameBasics.Civilizations.keys.filterNot { it=="Barbarians" }.forEach{civArray.add(it)}
-        civSelectBox.setItems(civArray)
-        civSelectBox.selected = civSelectBox.items.first()
-        table.add(civSelectBox).pad(10f).row()
-
-        table.add("World size: ")
-        val worldSizeToRadius=LinkedHashMap<String,Int>()
-        worldSizeToRadius.put("Small",10)
-        worldSizeToRadius.put("Medium",20)
-        worldSizeToRadius.put("Large",30)
-        val worldSizeSelectBox = SelectBox<String>(skin)
-        val worldSizeArray = Array<String>()
-        worldSizeToRadius.keys.forEach{worldSizeArray.add(it)}
-        worldSizeSelectBox.setItems(worldSizeArray)
-        worldSizeSelectBox.selected = "Medium"
-        table.add(worldSizeSelectBox)
-
-        val createButton = TextButton("Start game!",skin)
-        createButton.addClickListener {  }
-
-        table.setFillParent(true)
-        table.pack()
-        stage.addActor(table)
-    }
-}

@@ -34,7 +34,6 @@ class GameInfo {
             civInfo.endTurn()
         }
 
-
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
