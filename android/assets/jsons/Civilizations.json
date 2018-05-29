@@ -24,6 +24,18 @@
 			"Abydos","Asyut","Avaris","Lisht","Buto"]
 	},
 	{
+		name:"England",
+		RGB:[ 100, 100, 201],
+		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
+			"Dover","Brighton","Norwich","Leeds","Reading"]
+	},
+	{
+		name:"France",
+		RGB:[ 20, 160, 220],
+		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
+			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse"]
+	},
+	{
 		name:"Barbarians",
 		RGB:[200,200,200]
 	}
