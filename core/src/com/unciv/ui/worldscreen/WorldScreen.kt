@@ -115,7 +115,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
             game.gameInfo.nextTurn()
             bottomBar.unitTable.currentlyExecutingAction = null
-            GameSaver.saveGame(game.gameInfo, "Autosave")
+            kotlin.concurrent.thread { GameSaver.saveGame(game.gameInfo, "Autosave") }
             update()
             displayTutorials("NextTurn")
 

@@ -60,7 +60,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
             unitDescriptionLabel.setText(unitLabelText)
 
-
         }
         else {
             unitNameLabel.setText("")

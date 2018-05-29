@@ -85,27 +85,20 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles() {
+        val civViewableTiles = civInfo.getViewableTiles().toHashSet()
+
         for (WG in tileGroups.values){
-            WG.update(false)
-        }
-
-        val civViewableTiles = civInfo.getViewableTiles()
-        for (string in civViewableTiles
-                .filter { tileGroups.containsKey(it) }) {
-
-            tileGroups[string]!!.run {
-                update(true)
-            }
+            WG.update(civViewableTiles.contains(WG.tileInfo))
         }
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
             tileGroups[unit.getTile()]!!.addWhiteHaloAroundUnit()
-            val attackableTiles:List<TileInfo>
-            when(unit.getBaseUnit().unitType){
-                UnitType.Civilian -> attackableTiles = listOf()
-                UnitType.Melee, UnitType.Mounted -> attackableTiles = unit.getDistanceToTiles().keys.toList()
-                UnitType.Archery, UnitType.Siege -> attackableTiles = unit.getTile().getTilesInDistance(2)
+            
+            val attackableTiles: List<TileInfo> = when(unit.getBaseUnit().unitType){
+                UnitType.Civilian -> listOf()
+                UnitType.Melee, UnitType.Mounted -> unit.getDistanceToTiles().keys.toList()
+                UnitType.Archery, UnitType.Siege -> unit.getTile().getTilesInDistance(2)
                 UnitType.City -> throw Exception("A unit shouldn't have a City unittype!")
             }
 
