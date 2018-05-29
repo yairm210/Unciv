@@ -72,6 +72,7 @@ class UnitActions {
                         worldScreen.displayTutorials("CityFounded")
 
                         unit.civInfo.addCity(tile.position)
+                        tile.improvement=null
                         unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                         tile.unit = null // Remove settler!
                     },
