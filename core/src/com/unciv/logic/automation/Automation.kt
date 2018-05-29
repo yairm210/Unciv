@@ -57,6 +57,9 @@ class Automation {
 
         for (city in civInfo.cities) {
             if (city.health < city.getMaxHealth()) trainCombatUnit(city)
+            // reassign everyone from scratch
+            city.workedTiles.clear()
+            (0..city.population.population).forEach { city.population.autoAssignPopulation()}
         }
 
     }
