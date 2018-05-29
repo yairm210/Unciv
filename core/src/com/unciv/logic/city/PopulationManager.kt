@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
@@ -52,7 +53,7 @@ class PopulationManager {
                 cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
             }
             foodStored = 0
-            cityInfo.civInfo.addNotification(cityInfo.name + " is starving!", cityInfo.location)
+            cityInfo.civInfo.addNotification(cityInfo.name + " is starving!", cityInfo.location, Color.RED)
         }
         if (foodStored >= getFoodToNextPopulation())
         // growth!
@@ -61,7 +62,7 @@ class PopulationManager {
             if (cityInfo.buildingUniques.contains("40% of food is carried over after a new citizen is born")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
             population++
             autoAssignPopulation()
-            cityInfo.civInfo.addNotification(cityInfo.name + " has grown!", cityInfo.location)
+            cityInfo.civInfo.addNotification(cityInfo.name + " has grown!", cityInfo.location, Color.GREEN)
         }
     }
 

@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.setFontColor
 
 class NotificationsScroll(private val notifications: List<Notification>, internal val worldScreen: WorldScreen) : ScrollPane(null) {
     private var notificationsTable = Table()
@@ -19,14 +20,15 @@ class NotificationsScroll(private val notifications: List<Notification>, interna
     internal fun update() {
         notificationsTable.clearChildren()
         for (notification in notifications) {
-            val label = Label(notification.text, CameraStageBaseScreen.skin)
-            label.color = Color.WHITE
+            val label = Label(notification.text, CameraStageBaseScreen.skin).setFontColor(Color.BLACK)
             label.setFontScale(1.2f)
+
             val minitable = Table()
 
-            minitable.background(ImageGetter.getDrawable("skin/civTableBackground.png")
-                    .tint(Color(0x004085bf)))
-            minitable.add(label).pad(5f)
+            minitable.add(ImageGetter.getImage("OtherIcons/Circle.png")
+                    .apply { color=notification.color }).size(10f).pad(5f)
+            minitable.background(ImageGetter.getDrawable("skin/civTableBackground.png"))
+            minitable.add(label).pad(10f)
 
             if (notification.location != null) {
                 minitable.addClickListener {

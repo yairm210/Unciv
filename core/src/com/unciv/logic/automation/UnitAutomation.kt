@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.CityCombatant
@@ -97,7 +98,7 @@ class UnitAutomation{
             else {
                 val unitToAttack = enemyTileToAttack.unit!!
                 if (unitToAttack.getBaseUnit().unitType == UnitType.Civilian) { // kill
-                    unitToAttack.civInfo.addNotification("Our " + unitToAttack.name + " was destroyed by an enemy " + unit.name + "!", enemyTileToAttack.position)
+                    unitToAttack.civInfo.addNotification("Our " + unitToAttack.name + " was destroyed by an enemy " + unit.name + "!", enemyTileToAttack.position, Color.RED)
                     enemyTileToAttack.unit = null
                     unit.movementAlgs().headTowards(enemyTileToAttack)
                     return

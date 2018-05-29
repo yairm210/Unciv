@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -101,7 +102,7 @@ class Automation {
             }
 
             if (cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
-                cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.location)
+                cityInfo.civInfo.addNotification("Work has started on $currentConstruction", cityInfo.location, Color.BROWN)
         }
     }
 

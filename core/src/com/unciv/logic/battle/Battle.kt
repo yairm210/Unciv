@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
@@ -151,7 +152,7 @@ class Battle(val gameInfo:GameInfo) {
                     if (defender.getUnitType() == UnitType.City) " "+defender.getName()
                     else " our " + defender.getName()
             val notificationString = "An enemy " + attacker.getName() + whatHappenedString + defenderString
-            gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position)
+            gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
 
@@ -174,7 +175,7 @@ class Battle(val gameInfo:GameInfo) {
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
-        attacker.getCivilization().addNotification("We have conquered the city of ${city.name}!",city.location)
+        attacker.getCivilization().addNotification("We have conquered the city of ${city.name}!",city.location, Color.RED)
         enemyCiv.cities.remove(city)
         attacker.getCivilization().cities.add(city)
         city.civInfo = attacker.getCivilization()
@@ -191,7 +192,7 @@ class Battle(val gameInfo:GameInfo) {
             city.cityConstructions.builtBuildings.remove("Palace")
             if(enemyCiv.cities.isEmpty()) {
                 gameInfo.getPlayerCivilization()
-                        .addNotification("The civilization of ${enemyCiv.civName} has been destroyed!", null)
+                        .addNotification("The civilization of ${enemyCiv.civName} has been destroyed!", null, Color.RED)
             }
             else{
                 enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace

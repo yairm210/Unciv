@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 
@@ -48,7 +49,7 @@ class CityExpansionManager {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
             addNewTileWithCulture()
-            cityInfo.civInfo.addNotification(cityInfo.name + " has expanded its borders!", cityInfo.location)
+            cityInfo.civInfo.addNotification(cityInfo.name + " has expanded its borders!", cityInfo.location, Color.PURPLE)
         }
     }
 

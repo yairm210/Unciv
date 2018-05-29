@@ -33,7 +33,7 @@ class SaveScreen : PickerScreen() {
         val newSave = Table()
         val adjectives = listOf("Prancing","Obese","Junior","Senior","Abstract","Discombobulating","Simple","Awkward","Holy",
                 "Dangerous","Greasy","Stinky","Purple","Majestic","Incomprehensible","Cardboard","Chocolate","Robot","Ninja")
-        val nouns = listOf("Moose","Pigeon","Weasel","Ferret","Onion","Marshmellow","Crocodile","Inu Shiba",
+        val nouns = listOf("Moose","Pigeon","Weasel","Ferret","Onion","Marshmallow","Crocodile","Inu Shiba",
                 "Sandwich","Elephant","Kangaroo","Marmot","Beagle","Dolphin","Fish","Tomato","Duck")
         val defaultSaveName = adjectives.getRandom()+" "+nouns.getRandom()
         textField.text = defaultSaveName

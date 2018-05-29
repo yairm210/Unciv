@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization
 
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
 import com.unciv.models.gamebasics.Unit
@@ -55,7 +56,7 @@ class TechManager {
         techsInProgress.remove(currentTechnology)
         techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
-        civInfo.addNotification("Research of $currentTechnology has completed!", null)
+        civInfo.addNotification("Research of $currentTechnology has completed!", null, Color.BLUE)
 
         val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
 
@@ -67,7 +68,7 @@ class TechManager {
                         .firstOrNull { it.isCityCenter() }
                 if (closestCityTile != null) {
                     civInfo.addNotification(
-                            revealedResource.name + " revealed near " + closestCityTile.getCity()!!.name, tileInfo.position)
+                            revealedResource.name + " revealed near " + closestCityTile.getCity()!!.name, tileInfo.position, Color.BLUE)
                     break
                 }
             }

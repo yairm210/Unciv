@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
@@ -165,7 +166,7 @@ class CivilizationInfo {
     fun addGreatPerson(greatPerson: String) {
         val randomCity = cities.getRandom()
         placeUnitNearTile(cities.getRandom().location, greatPerson)
-        addNotification("A $greatPerson has been born!", randomCity.location)
+        addNotification("A $greatPerson has been born!", randomCity.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit {
@@ -187,9 +188,9 @@ class CivilizationInfo {
         return viewablePositions
     }
 
-    fun addNotification(text: String, location: Vector2?) {
+    fun addNotification(text: String, location: Vector2?,color: Color) {
         if(isPlayerCivilization())
-            gameInfo.notifications.add(Notification(text, location))
+            gameInfo.notifications.add(Notification(text, location,color))
     }
 
     override fun toString(): String {return civName} // for debug

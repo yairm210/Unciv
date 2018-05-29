@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
@@ -94,7 +95,7 @@ class CityInfo {
         this.location = cityLocation
         civInfo.cities.add(this)
         if(civInfo == civInfo.gameInfo.getPlayerCivilization())
-            civInfo.addNotification("$name has been founded!", cityLocation)
+            civInfo.addNotification("$name has been founded!", cityLocation, Color.PURPLE)
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
             cityConstructions.builtBuildings.add("Palace")

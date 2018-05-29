@@ -1,5 +1,7 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.graphics.Color
+
 class GoldenAgeManager {
     @Transient
     lateinit var civInfo: CivilizationInfo
@@ -19,7 +21,7 @@ class GoldenAgeManager {
         if (civInfo.buildingUniques.contains("Golden Age length increases +50%")) turnsToGoldenAge *= 1.5
         if (civInfo.policies.isAdopted("Freedom Complete")) turnsToGoldenAge *= 1.5
         turnsLeftForCurrentGoldenAge += turnsToGoldenAge.toInt()
-        civInfo.addNotification("You have entered a golden age!", null)
+        civInfo.addNotification("You have entered a golden age!", null, Color.GOLD)
     }
 
     fun endTurn(happiness: Int) {
