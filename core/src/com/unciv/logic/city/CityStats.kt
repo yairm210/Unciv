@@ -11,7 +11,7 @@ import com.unciv.models.stats.Stats
 class CityStats {
 
     @Transient var baseStatList = LinkedHashMap<String,Stats>()
-    @Transient var statModifiers = LinkedHashMap<String,Stats>()
+    @Transient var happinessList = LinkedHashMap<String,Float>()
     @Transient var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
     @Transient lateinit var cityInfo: CityInfo
 
@@ -106,16 +106,24 @@ class CityStats {
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Aristocracy"))
             unhappinessFromCitizens *= 0.95f
+
+        happinessList["Population"]=-unhappinessFromCitizens
         happiness -= unhappinessFromCitizens
 
+        var happinessFromPolicies = 0f
         if (civInfo.policies.isAdopted("Aristocracy"))
-            happiness += (cityInfo.population.population / 10).toFloat()
+            happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
         if (civInfo.policies.isAdopted("Monarchy") && cityInfo.isCapital())
-            happiness += (cityInfo.population.population / 2).toFloat()
+            happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
         if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
-            happiness += 1f
+            happinessFromPolicies += 1f
 
-        happiness += cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
+        happinessList["Policies"] = happinessFromPolicies
+        happiness += happinessFromPolicies
+
+        val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
+        happinessList["Buildings"] =happinessFromBuildings
+        happiness += happinessFromBuildings
 
         return happiness
     }

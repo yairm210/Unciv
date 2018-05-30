@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.centerX
@@ -77,8 +78,15 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         statExplainer.add("Science")
         statExplainer.add("Gold")
         statExplainer.add("Culture")
+        statExplainer.add("Happiness")
 
-        for (entry in city.cityStats.baseStatList){
+        val unifiedStatList = LinkedHashMap<String, Stats>(city.cityStats.baseStatList)
+        for(entry in city.cityStats.happinessList.filter { it.value!=0f }){
+            if(!unifiedStatList.containsKey(entry.key)) unifiedStatList[entry.key]= Stats()
+            unifiedStatList[entry.key]!!.happiness=entry.value
+        }
+
+        for (entry in unifiedStatList){
             if(entry.value.toHashMap().values.all { it==0f }) continue //irrelevant!
             statExplainer.row()
             statExplainer.add(entry.key)
@@ -87,6 +95,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             statExplainer.add(entry.value.science.toInt().toString())
             statExplainer.add(entry.value.gold.toInt().toString())
             statExplainer.add(entry.value.culture.toInt().toString())
+            statExplainer.add(entry.value.happiness.toInt().toString())
         }
         statExplainer.pack()
         statExplainer.isTransform=true

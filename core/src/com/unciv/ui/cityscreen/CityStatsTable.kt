@@ -37,6 +37,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         cityStatsValues["Culture"] = (Math.round(stats.culture).toString()
                 + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")")
         cityStatsValues["Population"] = city.population.getFreePopulation().toString() + "/" + city.population.population
+        cityStatsValues["Happiness"] = city.cityStats.getCityHappiness().toInt().toString()
 
         for (key in cityStatsValues.keys) {
             add(ImageGetter.getStatIcon(key)).align(Align.right)
