@@ -28,7 +28,7 @@ class NotificationsScroll(private val notifications: List<Notification>, interna
             minitable.add(ImageGetter.getImage("OtherIcons/Circle.png")
                     .apply { color=notification.color }).size(10f).pad(5f)
             minitable.background(ImageGetter.getDrawable("skin/civTableBackground.png"))
-            minitable.add(label).pad(10f)
+            minitable.add(label).pad(5f).padRight(10f)
 
             if (notification.location != null) {
                 minitable.addClickListener {

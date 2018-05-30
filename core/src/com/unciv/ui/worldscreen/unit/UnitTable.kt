@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
+import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -32,6 +33,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun update() {
         prevIdleUnitButton.update()
         nextIdleUnitButton.update()
+        unitDescriptionLabel.clearListeners()
 
         if(selectedUnit!=null)
         {
@@ -59,7 +61,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitLabelText+="\n+"+unit.getFortificationTurns()*20+"% fortification"
 
             unitDescriptionLabel.setText(unitLabelText)
-
+            unitDescriptionLabel.addClickListener { worldScreen.tileMapHolder.setCenterPosition(unit.getTile().position) }
         }
         else {
             unitNameLabel.setText("")
