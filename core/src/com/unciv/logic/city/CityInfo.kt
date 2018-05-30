@@ -27,7 +27,7 @@ class CityInfo {
 
     var tiles = HashSet<Vector2>()
     var workedTiles = HashSet<Vector2>()
-
+    var isBeingRazed = false
 
     internal val tileMap: TileMap
         get() = civInfo.gameInfo.tileMap
@@ -132,6 +132,14 @@ class CityInfo {
         population.nextTurn(stats.food)
         cityConstructions.nextTurn(stats)
         expansion.nextTurn(stats.culture)
+        if(isBeingRazed){
+            population.population--
+            population.unassignExtraPopulation()
+            if(population.population==0){
+                civInfo.addNotification("$name has been razed to the ground!",location, Color.RED)
+                civInfo.cities.remove(this)
+            }
+        }
 
         val maxHealth =getMaxHealth()
         health = min(health+maxHealth/10, maxHealth)

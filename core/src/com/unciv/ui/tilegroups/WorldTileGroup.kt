@@ -49,6 +49,11 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     }
 
     private fun updateCityButton(city: CityInfo?) {
+        if(city==null && cityButton!=null)// there used to be a city here but it was razed
+        {
+            cityButton!!.remove()
+            cityButton=null
+        }
         if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = Table()

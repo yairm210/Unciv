@@ -140,7 +140,7 @@ class CivilizationInfo {
 
         if (cities.size > 0) tech.nextTurn(nextTurnStats.science.toInt())
 
-        for (city in cities) {
+        for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
             greatPeople.addGreatPersonPoints(city.getGreatPersonPoints())
         }

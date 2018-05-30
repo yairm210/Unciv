@@ -46,12 +46,7 @@ class PopulationManager {
         // starvation!
         {
             population--
-            if(cityInfo.workedTiles.size>population) {
-                val lowestRankedWorkedTile = cityInfo.workedTiles
-                        .map { cityInfo.tileMap[it] }
-                        .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
-                cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
-            }
+            unassignExtraPopulation()
             foodStored = 0
             cityInfo.civInfo.addNotification(cityInfo.name + " is starving!", cityInfo.location, Color.RED)
         }
@@ -72,6 +67,15 @@ class PopulationManager {
                 .maxBy { Automation().rankTile(it,cityInfo.civInfo) }
         if (toWork != null) // This is when we've run out of tiles!
             cityInfo.workedTiles.add(toWork.position)
+    }
+
+    fun unassignExtraPopulation() {
+        while (cityInfo.workedTiles.size > population) {
+            val lowestRankedWorkedTile = cityInfo.workedTiles
+                    .map { cityInfo.tileMap[it] }
+                    .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
+            cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
+        }
     }
 
 }

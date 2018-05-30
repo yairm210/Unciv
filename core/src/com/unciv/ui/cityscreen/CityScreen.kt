@@ -123,7 +123,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             cityPickerTable.add(prevCityButton)
         }
 
-        val currentCityLabel = Label(city.name, CameraStageBaseScreen.skin)
+        val currentCityLabel = Label(city.name+" ("+city.population.population+")", CameraStageBaseScreen.skin)
         currentCityLabel.setFontScale(2f)
         cityPickerTable.add(currentCityLabel)
 
@@ -137,6 +137,19 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 }
             cityPickerTable.add(nextCityButton)
         }
+        cityPickerTable.row()
+
+        if(!city.isBeingRazed) {
+            val razeCityButton = TextButton("Raze city", skin)
+            razeCityButton.addClickListener { city.isBeingRazed=true; update() }
+            cityPickerTable.add(razeCityButton)
+        }
+        else{
+            val stopRazingCityButton = TextButton("Stop razing city", skin)
+            stopRazingCityButton.addClickListener { city.isBeingRazed=false; update() }
+            cityPickerTable.add(stopRazingCityButton)
+        }
+
         cityPickerTable.pack()
         cityPickerTable.centerX(stage)
         stage.addActor(cityPickerTable)
