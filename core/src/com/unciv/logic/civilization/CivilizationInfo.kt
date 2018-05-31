@@ -174,16 +174,15 @@ class CivilizationInfo {
     }
 
     fun getCivUnits(): List<MapUnit> {
-        return gameInfo.tileMap.values.filter { it.unit!=null && it.unit!!.owner==civName }.map { it.unit!! }
+        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.civInfo==this }
     }
 
     fun getViewableTiles(): List<TileInfo> {
         var viewablePositions = emptyList<TileInfo>()
         viewablePositions += cities.flatMap { it.getTiles() }
                         .flatMap { it.neighbors } // tiles adjacent to city tiles
-        viewablePositions += gameInfo.tileMap.values
-                .filter { it.unit != null && it.unit!!.owner == civName }
-                .flatMap { it.getViewableTiles(it.unit!!.getVisibilityRange())} // Tiles within 2 tiles of units
+        viewablePositions += getCivUnits()
+                .flatMap { it.getViewableTiles()} // Tiles within 2 tiles of units
         viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
         return viewablePositions
     }

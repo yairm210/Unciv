@@ -47,8 +47,8 @@ class TileMap {
         unit.owner = civInfo.civName
         unit.civInfo = civInfo
         val tilesInDistance = getTilesInDistance(position, 2)
-        val unitToPlaceTile = tilesInDistance.firstOrNull { it.unit == null }
-        if(unitToPlaceTile!=null) unitToPlaceTile.unit = unit // And if there's none, then kill me.
+        val unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
+        if(unitToPlaceTile!=null) unit.putInTile(unitToPlaceTile)
         return unit
     }
 
@@ -65,7 +65,13 @@ class TileMap {
     }
 
     fun setTransients() {
-        for (tileInfo in values) tileInfo.tileMap = this
+        for (tileInfo in values){
+            tileInfo.tileMap = this
+            if(tileInfo.unit!=null){
+                tileInfo.unit!!.putInTile(tileInfo)
+                tileInfo.unit=null
+            }
+        }
     }
 
 }

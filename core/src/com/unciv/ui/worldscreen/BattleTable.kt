@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.Battle
-import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.map.UnitType
@@ -42,15 +41,11 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (worldScreen.tileMapHolder.selectedTile == null) return
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!
-        val defender: ICombatant
-        if (attacker.getCivilization().exploredTiles.contains(selectedTile.position)
-                && selectedTile.isCityCenter() && selectedTile.getOwner() != worldScreen.civInfo)
-            defender = CityCombatant(selectedTile.getCity()!!)
-        else if (selectedTile.unit != null
-                && selectedTile.unit!!.owner != worldScreen.civInfo.civName // enemy unit on selected tile,
-                && worldScreen.civInfo.getViewableTiles().contains(selectedTile))
-            defender = MapUnitCombatant(selectedTile.unit!!)
-        else {
+
+        val defender: ICombatant? = Battle().getMapCombatantOfTile(selectedTile)
+
+        if(defender==null || defender.getCivilization()==worldScreen.civInfo
+                || !attacker.getCivilization().exploredTiles.contains(selectedTile.position)) {
             hide()
             return
         }

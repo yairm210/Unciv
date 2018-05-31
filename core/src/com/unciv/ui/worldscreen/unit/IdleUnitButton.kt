@@ -13,7 +13,7 @@ class IdleUnitButton internal constructor(internal val unitTable: UnitTable,
     : TextButton(if(previous)"<" else ">", CameraStageBaseScreen.skin) {
 
     fun getTilesWithIdleUnits() = tileMapHolder.tileMap.values
-                    .filter { it.hasIdleUnit() && it.unit!!.owner == unitTable.worldScreen.civInfo.civName }
+                    .filter { it.hasIdleUnit() && it.getUnits().first().owner == unitTable.worldScreen.civInfo.civName }
     init {
         addClickListener {
             val tilesWithIdleUnits = getTilesWithIdleUnits()

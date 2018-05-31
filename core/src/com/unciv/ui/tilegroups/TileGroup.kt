@@ -29,7 +29,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     var populationImage: Image? = null
     private val roadImages = HashMap<String, Image>()
     private val borderImages = ArrayList<Image>()
-    protected var unitImage: Group? = null
+    protected var civilianUnitImage: Group? = null
+    protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
 
@@ -71,8 +72,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         populationImage!!.run {
             setSize(20f, 20f)
             center(this@TileGroup)
-            y -= 20
-        } // top left
+            x += 20 // right
+        }
         addActor(populationImage)
     }
 
@@ -95,6 +96,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         updateResourceImage(isViewable)
         updateImprovementImage(isViewable)
+
+        civilianUnitImage = newUnitImage(tileInfo.civilianUnit,civilianUnitImage,isViewable,-20f)
+        militaryUnitImage = newUnitImage(tileInfo.militaryUnit,militaryUnitImage,isViewable,20f)
 
         updateRoadImages()
         updateBorderImages()
@@ -202,7 +206,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             improvementImage!!.run {
                 setSize(20f, 20f)
                 center(this@TileGroup)
-                this.x+=20 // right
+                this.x -= 22 // left
+                this.y -= 10 // bottom
             }
             improvementType = tileInfo.improvement
         }
@@ -218,7 +223,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 resourceImage = ImageGetter.getImage(fileName)
                 resourceImage!!.setSize(20f, 20f)
             resourceImage!!.center(this)
-            resourceImage!!.x -= 20 // left
+            resourceImage!!.x -= 22 // left
+            resourceImage!!.y += 10 // top
             addActor(resourceImage!!)
         }
         if(resourceImage!=null){
@@ -228,41 +234,35 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    protected fun updateUnitImage(isViewable: Boolean) {
-        if (unitImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
-            unitImage!!.remove()
-            unitImage = null
+    protected fun newUnitImage(unit:MapUnit?, currentImage:Group?, isViewable: Boolean, yFromCenter:Float): Group? {
+        var newImage:Group? = null
+        if (currentImage!= null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+            currentImage.remove()
         }
 
-        if (tileInfo.unit != null && (isViewable || viewEntireMapForDebug)) { // Tile is visible
-            val unit = tileInfo.unit!!
-            unitImage = getUnitImage(unit, unit.civInfo.getCivilization().getColor())
-            addActor(unitImage!!)
-            unitImage!!.setSize(20f, 20f)
+        if (unit != null && (isViewable || viewEntireMapForDebug)) { // Tile is visible
+            newImage = getUnitImage(unit, unit.civInfo.getCivilization().getColor(), 25f)
+            addActor(newImage)
+            newImage.center(this)
+            newImage.y+=yFromCenter
+            if(!unit.isIdle()) newImage.color = Color(1f, 1f, 1f, 0.5f)
         }
-
-
-        if (unitImage != null) {
-            if (!tileInfo.hasIdleUnit())
-                unitImage!!.color = Color(1f, 1f, 1f, 0.5f)
-            else
-                unitImage!!.color = Color.WHITE
-        }
+        return newImage
     }
 
 
-    private fun getUnitImage(unit: MapUnit, color:Color): Group {
+    private fun getUnitImage(unit: MapUnit, color: Color, size: Float): Group {
         val unitBaseImage = ImageGetter.getUnitIcon(unit.name)
-                .apply { setSize(15f,15f) }
+                .apply { setSize(20f,20f) }
 
         val background = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
                 else ImageGetter.getImage("OtherIcons/Circle.png")
         background.apply {
             this.color = color
-            setSize(20f,20f)
+            setSize(size,size)
         }
         val group = Group().apply {
-            setSize(background.width,background.height)
+            setSize(size,size)
             addActor(background)
         }
         unitBaseImage.center(group)

@@ -57,7 +57,7 @@ class GameInfo {
         var tile = tileToPlace
         if(tileToPlace==null) {
             val playerViewableTiles = getPlayerCivilization().getViewableTiles().toHashSet()
-            val viableTiles = tileMap.values.filterNot { playerViewableTiles.contains(it) || it.unit != null }
+            val viableTiles = tileMap.values.filterNot { playerViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit!=null}
             tile=viableTiles.getRandom()
         }
         tileMap.placeUnitNearTile(tile!!.position,"Warrior",getBarbarianCivilization())
@@ -72,8 +72,12 @@ class GameInfo {
             civInfo.setTransients()
         }
 
-        for (tile in tileMap.values.filter { it.unit!=null })
-            tile.unit!!.civInfo = civilizations.first { it.civName == tile.unit!!.owner }
+        val civNameToCiv = civilizations.associateBy ({ it.civName},{it})
+
+        for (tile in tileMap.values) {
+            if (tile.militaryUnit != null) tile.militaryUnit!!.civInfo = civNameToCiv[tile.militaryUnit!!.owner]!!
+            if (tile.civilianUnit!= null) tile.civilianUnit!!.civInfo = civNameToCiv[tile.civilianUnit!!.owner]!!
+        }
 
 
         for (civInfo in civilizations)

@@ -12,6 +12,7 @@ class GameStarter(){
         val gameInfo = GameInfo()
 
         gameInfo.tileMap = TileMap(mapRadius)
+        gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         gameInfo.civilizations.add(CivilizationInfo(civilization, Vector2.Zero, gameInfo)) // first one is player civ
 
         val freeTiles = gameInfo.tileMap.values.toMutableList()

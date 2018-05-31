@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
@@ -12,7 +13,7 @@ import kotlin.math.max
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
  */
-class Battle(val gameInfo:GameInfo) {
+class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
@@ -47,9 +48,9 @@ class Battle(val gameInfo:GameInfo) {
         val modifiers = getGeneralModifiers(attacker, defender)
         if (attacker.isMelee()) {
             val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
-                it.unit != null
-                        && it.unit!!.owner == attacker.getCivilization().civName
-                        && MapUnitCombatant(it.unit!!).isMelee()
+                it.militaryUnit != null
+                        && it.militaryUnit!!.owner == attacker.getCivilization().civName
+                        && MapUnitCombatant(it.militaryUnit!!).isMelee()
             }
             if (numberOfAttackersSurroundingDefender > 1)
                 modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
@@ -101,6 +102,7 @@ class Battle(val gameInfo:GameInfo) {
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
         if(attacker.isRanged()) return 0
+        if(defender.getUnitType()==UnitType.Civilian) return 0
         val ratio = getDefendingStrength(attacker,defender) / getAttackingStrength(attacker,defender)
         return (ratio * 30 * getHealthDependantDamageRatio(defender)).toInt()
     }
@@ -180,7 +182,11 @@ class Battle(val gameInfo:GameInfo) {
         attacker.getCivilization().cities.add(city)
         city.civInfo = attacker.getCivilization()
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health?
-        city.getCenterTile().unit = null
+        city.getCenterTile().apply {
+            militaryUnit = null
+            civilianUnit=null
+        }
+
         city.expansion.cultureStored = 0
         city.expansion.reset()
 
@@ -200,5 +206,12 @@ class Battle(val gameInfo:GameInfo) {
         }
         (attacker as MapUnitCombatant).unit.moveToTile(city.getCenterTile())
         city.civInfo.gameInfo.updateTilesToCities()
+    }
+
+    fun getMapCombatantOfTile(tile:TileInfo): ICombatant? {
+        if(tile.isCityCenter()) return CityCombatant(tile.getCity()!!)
+        if(tile.militaryUnit!=null) return MapUnitCombatant(tile.militaryUnit!!)
+        if(tile.civilianUnit!=null) return MapUnitCombatant(tile.civilianUnit!!)
+        return null
     }
 }

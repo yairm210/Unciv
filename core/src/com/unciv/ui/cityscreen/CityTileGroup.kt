@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
 import com.unciv.ui.utils.centerX
 
 class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(tileInfo) {
@@ -24,12 +23,6 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
 
     fun update() {
         super.update(true)
-
-        updateUnitImage(true)
-        if(unitImage!=null) {
-            unitImage!!.center(this)
-            unitImage!!.y += 20 // top
-        }
 
         updatePopulationImage()
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)

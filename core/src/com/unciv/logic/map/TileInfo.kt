@@ -10,10 +10,14 @@ import com.unciv.models.gamebasics.TileImprovement
 import com.unciv.models.gamebasics.TileResource
 import com.unciv.models.stats.Stats
 
-class TileInfo {
+open class TileInfo {
     @Transient lateinit var tileMap: TileMap
 
-    var unit: MapUnit? = null
+    var unit:MapUnit?=null
+    var militaryUnit:MapUnit?=null
+    var civilianUnit:MapUnit?=null
+    fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()
+
     var position: Vector2 = Vector2.Zero
     var baseTerrain: String? = null
     var terrainFeature: String? = null
@@ -153,10 +157,12 @@ class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
         if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")
-        if (unit != null && UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)){
-            var unitString = unit!!.name
-            if(unit!!.getBaseUnit().unitType!=UnitType.Civilian && unit!!.health<100) unitString += "(" + unit!!.health + ")"
-            SB.appendln(unitString)
+        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
+        if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name)
+        if(militaryUnit!=null && isViewableToPlayer){
+            var milUnitString = militaryUnit!!.name
+            if(militaryUnit!!.health<100) milUnitString += "(" + militaryUnit!!.health + ")"
+            SB.appendln(milUnitString)
         }
         return SB.toString().trim()
     }
@@ -166,11 +172,7 @@ class TileInfo {
     }
 
     fun hasIdleUnit(): Boolean {
-        if (unit == null) return false
-        if (unit!!.currentMovement == 0f) return false
-        if (unit!!.name == "Worker" && improvementInProgress != null) return false
-        if (unit!!.isFortified()) return false
-        return true
+        return getUnits().any{it.isIdle()}
     }
 
     fun getViewableTiles(distance:Int): MutableList<TileInfo> {
@@ -191,5 +193,4 @@ class TileInfo {
         val city = getCity()
         return city!=null && city.workedTiles.contains(position)
     }
-
 }

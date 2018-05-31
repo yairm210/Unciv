@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.UnitType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -19,33 +21,28 @@ import com.unciv.ui.utils.setFontColor
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: Table? = null
 
-    fun addWhiteHaloAroundUnit(){
-        val whiteHalo = if(tileInfo.unit!!.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
+    fun addWhiteHaloAroundUnit(unit: MapUnit) {
+        val whiteHalo = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
         else ImageGetter.getImage("OtherIcons/Circle.png")
-        whiteHalo.setSize(25f,25f)
-        whiteHalo.center(unitImage!!)
-        unitImage!!.addActor(whiteHalo)
+        whiteHalo.setSize(30f,30f)
+        val unitImage = if(unit.getBaseUnit().unitType==UnitType.Civilian) civilianUnitImage!!
+                        else militaryUnitImage!!
+        whiteHalo.center(unitImage)
+        unitImage.addActor(whiteHalo)
         whiteHalo.toBack()
     }
 
 
     override fun update(isViewable: Boolean) {
-        super.update(isViewable)
-        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
-            && !viewEntireMapForDebug) return
-
-        if (populationImage != null) removePopulationIcon()
 
         val city = tileInfo.getCity()
-        if (tileInfo.isWorked() && city!!.civInfo.isPlayerCivilization() && populationImage == null)
+        if (isViewable && tileInfo.isWorked() && city!!.civInfo.isPlayerCivilization() && populationImage == null)
             addPopulationIcon()
 
-        updateCityButton(city)
-        updateUnitImage(isViewable)
-        if(unitImage!=null) {
-            unitImage!!.center(this)
-            unitImage!!.y += 20 // top
-        }
+        if (tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
+                || viewEntireMapForDebug) updateCityButton(city) // needs to be before the update so the units will be above the city button
+
+        super.update(isViewable)
     }
 
     private fun updateCityButton(city: CityInfo?) {

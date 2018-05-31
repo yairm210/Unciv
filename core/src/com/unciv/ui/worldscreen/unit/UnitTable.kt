@@ -73,7 +73,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun tileSelected(selectedTile: TileInfo) {
         if(currentlyExecutingAction=="moveTo"){
-
             if(selectedUnit!!.movementAlgs()
                     .getShortestPath(selectedTile).isEmpty())
                 return // can't reach there with the selected unit, watcha want me to do?
@@ -86,8 +85,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             currentlyExecutingAction = null
         }
 
-        if(selectedTile.unit!=null && selectedTile.unit!!.civInfo == worldScreen.civInfo)
-            selectedUnit= selectedTile.unit
+        if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.civInfo
+                && selectedUnit!=selectedTile.militaryUnit)
+            selectedUnit = selectedTile.militaryUnit
+
+        else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.civInfo
+                        && selectedUnit!=selectedTile.civilianUnit)
+                selectedUnit = selectedTile.civilianUnit
     }
 
 }

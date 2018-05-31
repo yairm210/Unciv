@@ -2,7 +2,6 @@ package com.unciv.ui.worldscreen.unit
 
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.UnitType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
@@ -15,10 +14,10 @@ class UnitAction(var name: String, var action:()->Unit, var canAct:Boolean)
 
 class UnitActions {
 
-    private fun constructImprovementAndDestroyUnit(tileInfo: TileInfo, improvementName: String): () -> Unit {
+    private fun constructImprovementAndDestroyUnit(unit:MapUnit, improvementName: String): () -> Unit {
         return {
-            tileInfo.improvement = improvementName
-            tileInfo.unit = null// destroy!
+            unit.getTile().improvement = improvementName
+            unit.removeFromTile()
         }
     }
 
@@ -56,7 +55,7 @@ class UnitActions {
                         {
                             unit.civInfo.gold -= goldCostOfUpgrade
                             val unitTile = unit.getTile()
-                            unitTile.unit = null
+                            unit.removeFromTile()
                             val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
                             newunit.health = unit.health
                             newunit.currentMovement=0f
@@ -74,7 +73,7 @@ class UnitActions {
                         unit.civInfo.addCity(tile.position)
                         tile.improvement=null
                         unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
-                        tile.unit = null // Remove settler!
+                        unit.removeFromTile()
                     },
                     unit.currentMovement != 0f &&
                             !tile.getTilesInDistance(2).any { it.isCityCenter() })
@@ -94,8 +93,8 @@ class UnitActions {
             else {
                 actionList += UnitAction("Automate",
                         {
-                            tile.unit!!.action = "automation"
-                            WorkerAutomation().automateWorkerAction(tile.unit!!)
+                            unit.action = "automation"
+                            WorkerAutomation().automateWorkerAction(unit)
                         },unit.currentMovement != 0f
                 )
             }
@@ -105,30 +104,30 @@ class UnitActions {
             actionList += UnitAction( "Discover Technology",
                     {
                         unit.civInfo.tech.freeTechs += 1
-                        tile.unit = null// destroy!
+                        unit.removeFromTile()
                         worldScreen.game.screen = TechPickerScreen(true, unit.civInfo)
 
                     },unit.currentMovement != 0f)
             actionList += UnitAction("Construct Academy",
-                    constructImprovementAndDestroyUnit(tile, "Academy"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Academy"),unit.currentMovement != 0f)
         }
 
         if (unit.name == "Great Artist") {
             actionList += UnitAction( "Start Golden Age",
                     {
                         unit.civInfo.goldenAges.enterGoldenAge()
-                        tile.unit = null// destroy!
+                        unit.removeFromTile()
                     },unit.currentMovement != 0f
             )
             actionList += UnitAction("Construct Landmark",
-                    constructImprovementAndDestroyUnit(tile, "Landmark"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Landmark"),unit.currentMovement != 0f)
         }
 
         if (unit.name == "Great Engineer") {
             actionList += UnitAction( "Hurry Wonder",
                     {
                         tile.getCity()!!.cityConstructions.addConstruction(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
-                        tile.unit = null // destroy!
+                        unit.removeFromTile()
                     },
                     unit.currentMovement != 0f &&
                     tile.isCityCenter() &&
@@ -136,17 +135,17 @@ class UnitActions {
                     (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder)
 
             actionList += UnitAction("Construct Manufactory",
-                    constructImprovementAndDestroyUnit(tile, "Manufactory"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Manufactory"),unit.currentMovement != 0f)
         }
 
         if (unit.name == "Great Merchant") {
             actionList += UnitAction("Conduct Trade Mission",
                     {
                         unit.civInfo.gold += 350 // + 50 * era_number - todo!
-                        tile.unit = null // destroy!
+                        unit.removeFromTile()
                     },unit.currentMovement != 0f)
             actionList += UnitAction( "Construct Customs House",
-                    constructImprovementAndDestroyUnit(tile, "Customs house"),
+                    constructImprovementAndDestroyUnit(unit, "Customs house"),
                     unit.currentMovement != 0f)
         }
 

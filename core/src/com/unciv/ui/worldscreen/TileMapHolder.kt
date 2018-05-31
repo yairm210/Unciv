@@ -93,20 +93,26 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
-            tileGroups[unit.getTile()]!!.addWhiteHaloAroundUnit()
-            
+            tileGroups[unit.getTile()]!!.addWhiteHaloAroundUnit(unit)
+
+            for(tile: TileInfo in unit.getDistanceToTiles().keys)
+                tileGroups[tile]!!.showCircle(colorFromRGB(0, 120, 215))
+
             val attackableTiles: List<TileInfo> = when(unit.getBaseUnit().unitType){
-                UnitType.Civilian -> listOf()
+                UnitType.Civilian -> unit.getDistanceToTiles().keys.toList()
                 UnitType.Melee, UnitType.Mounted -> unit.getDistanceToTiles().keys.toList()
                 UnitType.Archery, UnitType.Siege -> unit.getTile().getTilesInDistance(2)
                 UnitType.City -> throw Exception("A unit shouldn't have a City unittype!")
             }
 
-            for(tile: TileInfo in unit.getDistanceToTiles().keys)
-                tileGroups[tile]!!.showCircle(colorFromRGB(0, 120, 215))
 
-            for (tile in attackableTiles.filter { it.unit!=null && it.unit!!.owner != unit.owner && civViewableTiles.contains(it)})
-                tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
+            for (tile in attackableTiles.filter {
+                it.getUnits().isNotEmpty()
+                        && it.getUnits().first().owner != unit.owner
+                        && civViewableTiles.contains(it)}) {
+                if(unit.getBaseUnit().unitType==UnitType.Civilian) tileGroups[tile]!!.hideCircle()
+                else tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
+            }
         }
 
         if(selectedTile!=null)

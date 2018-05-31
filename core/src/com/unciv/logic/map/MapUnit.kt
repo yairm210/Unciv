@@ -21,7 +21,7 @@ class MapUnit {
     fun getBaseUnit(): Unit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
     fun getTile(): TileInfo {
-        return civInfo.gameInfo.tileMap.values.first{it.unit==this}
+        return civInfo.gameInfo.tileMap.values.first{it.militaryUnit==this || it.civilianUnit==this}
     }
 
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
@@ -34,7 +34,7 @@ class MapUnit {
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
 
         val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
-                .filter { it.unit!=null && it.unit!!.civInfo!=civInfo }
+                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=civInfo }
         if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
 
         if (action != null && action!!.startsWith("moveTo")) {
@@ -88,23 +88,17 @@ class MapUnit {
         if(health>100) health=100
     }
 
-    fun canMove(tile: TileInfo): Boolean {
-        if(tile.unit!=null) return false
-        if(tile.isCityCenter() && tile.getOwner()!=civInfo) return false
-        return true
-    }
-
     fun moveToTile(otherTile: TileInfo) {
         val distanceToTiles = getDistanceToTiles()
         if (!distanceToTiles.containsKey(otherTile))
             throw Exception("You can't get there from here!")
-        if (otherTile.unit != null ) throw Exception("Tile already contains a unit!")
+        if(!canMoveTo(otherTile)) throw Exception("Can't enter this tile!")
         if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo) throw Exception("This is an enemy city, you can't go here!")
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"
-        getTile().unit = null
-        otherTile.unit = this
+        removeFromTile()
+        putInTile(otherTile)
     }
 
     fun endTurn() {
@@ -130,10 +124,10 @@ class MapUnit {
         return "$name - $owner"
     }
 
-    fun getVisibilityRange(): Int {
+    fun getViewableTiles(): MutableList<TileInfo> {
         var visibilityRange = 2
         if(hasUnique("Limited Visibility")) visibilityRange-=1
-        return visibilityRange
+        return getTile().getViewableTiles(visibilityRange)
     }
 
     fun isFortified(): Boolean {
@@ -143,5 +137,34 @@ class MapUnit {
     fun getFortificationTurns(): Int {
         if(!isFortified()) return 0
         return action!!.split(" ")[1].toInt()
+    }
+
+    fun removeFromTile(){
+        if (getBaseUnit().unitType==UnitType.Civilian) getTile().civilianUnit=null
+        else getTile().militaryUnit=null
+    }
+
+    fun putInTile(tile:TileInfo){
+        if(!canMoveTo(tile)) throw Exception("I can't go there!")
+        if(getBaseUnit().unitType==UnitType.Civilian)
+            tile.civilianUnit=this
+        else tile.militaryUnit=this
+    }
+
+    /**
+     * Designates whether we can walk to the tile - without attacking
+     */
+    fun canMoveTo(tile: TileInfo): Boolean {
+        if(tile.isCityCenter() && tile.getOwner()!!.civName!=owner) return false
+        if (getBaseUnit().unitType==UnitType.Civilian)
+            return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)
+       else return tile.militaryUnit==null
+    }
+
+    fun isIdle(): Boolean {
+        if (currentMovement == 0f) return false
+        if (name == "Worker" && getTile().improvementInProgress != null) return false
+        if (isFortified()) return false
+        return true
     }
 }

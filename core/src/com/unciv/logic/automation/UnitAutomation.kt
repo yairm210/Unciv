@@ -1,15 +1,11 @@
 package com.unciv.logic.automation
 
-import com.badlogic.gdx.graphics.Color
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.Battle
-import com.unciv.logic.battle.CityCombatant
-import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitType
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -22,14 +18,14 @@ class UnitAutomation{
         val unitTile = unit.getTile()
 
         // Go to friendly tile if within distance - better healing!
-        val friendlyTile = tilesInDistance.firstOrNull { it.getOwner()?.civName == unit.owner && it.unit == null }
+        val friendlyTile = tilesInDistance.firstOrNull { it.getOwner()?.civName == unit.owner && unit.canMoveTo(it) }
         if (unitTile.getOwner()?.civName != unit.owner && friendlyTile != null) {
             unit.moveToTile(friendlyTile)
             return
         }
 
         // Or at least get out of enemy territory yaknow
-        val neutralTile = tilesInDistance.firstOrNull { it.getOwner() == null && it.unit == null }
+        val neutralTile = tilesInDistance.firstOrNull { it.getOwner() == null && unit.canMoveTo(it)}
         if (unitTile.getOwner()?.civName != unit.owner && unitTile.getOwner() != null && neutralTile != null) {
             unit.moveToTile(neutralTile)
             return
@@ -37,8 +33,9 @@ class UnitAutomation{
     }
 
     fun containsAttackableEnemy(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        return (tile.unit != null && tile.unit!!.owner != civInfo.civName)
-                || (tile.isCityCenter() && tile.getCity()!!.civInfo!=civInfo)
+        val tileCombatant = Battle().getMapCombatantOfTile(tile)
+        if(tileCombatant==null) return false
+        return tileCombatant.getCivilization()!=civInfo
     }
 
     fun getAttackableEnemies(unit: MapUnit): List<TileInfo> {
@@ -53,7 +50,7 @@ class UnitAutomation{
             return attackableTiles.filter {
                 it.neighbors.any {
                     unit.getTile()==it || // We're already right nearby
-                    it.unit == null
+                        unit.canMoveTo(it)
                             && distanceToTiles.containsKey(it)
                             && distanceToTiles[it]!! < unit.currentMovement  // We can get there
                 }
@@ -89,23 +86,7 @@ class UnitAutomation{
         val enemyTileToAttack = getAttackableEnemies(unit).firstOrNull()
 
         if (enemyTileToAttack != null) {
-
-            val enemy:ICombatant
-            if(enemyTileToAttack.isCityCenter()){
-                enemy = CityCombatant(enemyTileToAttack.getCity()!!)
-            }
-
-            else {
-                val unitToAttack = enemyTileToAttack.unit!!
-                if (unitToAttack.getBaseUnit().unitType == UnitType.Civilian) { // kill
-                    unitToAttack.civInfo.addNotification("Our " + unitToAttack.name + " was destroyed by an enemy " + unit.name + "!", enemyTileToAttack.position, Color.RED)
-                    enemyTileToAttack.unit = null
-                    unit.movementAlgs().headTowards(enemyTileToAttack)
-                    return
-                }
-                enemy=MapUnitCombatant(unitToAttack)
-            }
-
+            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack)!!
             val damageToAttacker = Battle(unit.civInfo.gameInfo).calculateDamageToAttacker(MapUnitCombatant(unit), enemy)
 
             if (damageToAttacker < unit.health) { // don't attack if we'll die from the attack
@@ -118,7 +99,8 @@ class UnitAutomation{
 
         if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center, so if you havn't found annyonw aroud to attack, forget it.
 
-        val reachableCitiesWithoutUnits = unit.civInfo.cities.filter { it.getCenterTile().unit==null
+        val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
+            unit.canMoveTo(it.getCenterTile())
                 && unit.movementAlgs().canReach(it.getCenterTile())  }
         if(reachableCitiesWithoutUnits.isNotEmpty()){
             val closestCityWithoutUnit = reachableCitiesWithoutUnits
@@ -153,7 +135,7 @@ class UnitAutomation{
 
         // else, go to a random space
         val reachableTiles = unit.getDistanceToTiles()
-                .filter { it.key.unit == null} // at edge of walking distance
+                .filter { unit.canMoveTo(it.key)}
         val reachableTilesMaxWalkingDistance =  reachableTiles.filter { it.value==unit.currentMovement}
         if(reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
         else if(reachableTiles.any()) unit.moveToTile(reachableTiles.toList().getRandom().first)
@@ -184,7 +166,7 @@ class UnitAutomation{
         if(possibleTiles.isEmpty()) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
         {
             unit.moveToTile(unit.getDistanceToTiles()
-                    .filter { it.key.unit == null && it.value==unit.currentMovement } // at edge of walking distance
+                    .filter { unit.canMoveTo(it.key) && it.value==unit.currentMovement } // at edge of walking distance
                     .toList().getRandom().first)
             return
         }

@@ -37,7 +37,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
                     var totalDistanceToTile:Float
                     if ((neighbor.getOwner() != unit.civInfo && neighbor.isCityCenter())// Enemy city,
-                    || neighbor.unit!=null && neighbor.unit!!.civInfo!=unit.civInfo) // Enemy unit
+                    || neighbor.getUnits().isNotEmpty() && neighbor.getUnits().first().civInfo!=unit.civInfo) // Enemy unit
                         totalDistanceToTile = unitMovement // can't move through it - we'll be "stuck" there
 
                     else {
@@ -80,7 +80,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!
                     else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                        if (!unit.canMove(reachableTile)) continue // This is a tile that we can''t actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                        if (!unit.canMoveTo(reachableTile)) continue // This is a tile that we can''t actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
@@ -121,7 +121,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         val destinationTileThisTurn: TileInfo
         if (distanceToTiles.containsKey(destination)) { // we can get there this turn
-            if (unit.canMove(destination))
+            if (unit.canMoveTo(destination))
                 destinationTileThisTurn = destination
             else   // Someone is blocking to the path to the final tile...
             {
@@ -130,7 +130,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     return currentTile
 
                 val reachableDestinationNeighbors = destinationNeighbors
-                        .filter { distanceToTiles.containsKey(it) && unit.canMove(it)}
+                        .filter { distanceToTiles.containsKey(it) && unit.canMoveTo(it)}
                 if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
                     return currentTile
 

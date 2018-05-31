@@ -10,7 +10,7 @@ class WorkerAutomation {
 
     fun automateWorkerAction(unit: MapUnit) {
         val enemyUnitsInWalkingDistance = unit.getDistanceToTiles().keys
-                .filter { it.unit!=null && it.unit!!.civInfo!=unit.civInfo }
+                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=unit.civInfo }
 
         if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
 
@@ -33,7 +33,7 @@ class WorkerAutomation {
         val currentTile=worker.getTile()
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
-                    (it.unit == null || it == currentTile)
+                    (it.civilianUnit== null || it == currentTile)
                             && it.improvement == null
                             && it.canBuildImprovement(chooseImprovement(it), worker.civInfo)
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == worker.civInfo}() // don't work tiles belonging to another civ
