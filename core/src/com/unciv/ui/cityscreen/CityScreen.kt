@@ -27,7 +27,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
-        Label("", CameraStageBaseScreen.skin).style.font.data.setScale(game.settings.labelScale)
+        Label("", CameraStageBaseScreen.skin).style.font.data.setScale(1.5f)
 
         addTiles()
         stage.addActor(tileTable)
@@ -169,7 +169,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         goToWorldButton.clearListeners()
         goToWorldButton.addClickListener {
                 game.setWorldScreen()
-                game.worldScreen!!.tileMapHolder.setCenterPosition(city.location)
+                game.worldScreen.tileMapHolder.setCenterPosition(city.location)
                 dispose()
             }
 
@@ -214,7 +214,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val scrollPane = ScrollPane(allTiles)
         scrollPane.setFillParent(true)
-        scrollPane.setPosition(game.settings.cityTilesX, game.settings.cityTilesY)
+        scrollPane.setPosition(cityTilesX, cityTilesY)
         scrollPane.setOrigin(stage.width / 2, stage.height / 2)
         scrollPane.addListener(object : ActorGestureListener() {
             var lastScale = 1f
@@ -231,8 +231,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
             override fun pan(event: InputEvent?, x: Float, y: Float, deltaX: Float, deltaY: Float) {
                 scrollPane.moveBy(deltaX * scrollPane.scaleX, deltaY * scrollPane.scaleX)
-                game.settings.cityTilesX = scrollPane.x
-                game.settings.cityTilesY = scrollPane.y
+                cityTilesX = scrollPane.x
+                cityTilesY = scrollPane.y
             }
         })
         stage.addActor(scrollPane)
@@ -264,5 +264,9 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         tileTable.setPosition(stage.width - 10f - tileTable.width, 10f)
     }
 
+    companion object {
+        @Transient var cityTilesX = 0f
+        @Transient var cityTilesY = 0f
+    }
 }
 

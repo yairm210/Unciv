@@ -79,7 +79,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.addClickListener {
-            screen.optionsTable.isVisible = !screen.optionsTable.isVisible
+            screen.stage.addActor(WorldScreenOptionsTable())
         }
         menuButton.centerY(this)
         menuButton.x = menuButton.y

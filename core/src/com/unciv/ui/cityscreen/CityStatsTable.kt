@@ -16,7 +16,7 @@ import java.util.*
 class CityStatsTable(val cityScreen: CityScreen) : Table(){
     fun update() {
         val city = cityScreen.city
-        val buttonScale = cityScreen.game.settings.buttonScale
+        val buttonScale = 0.9f
         val stats = city.cityStats.currentCityStats
         pad(20f)
         columnDefaults(0).padRight(10f)

@@ -17,7 +17,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap, civInfo)
 
-    internal var buttonScale = game.settings.buttonScale
+    internal var buttonScale = 0.9f
     private val topBar = WorldScreenTopBar(this)
     val bottomBar = WorldScreenBottomBar(this)
     val unitActionsTable = UnitActionsTable(this)
@@ -25,7 +25,6 @@ class WorldScreen : CameraStageBaseScreen() {
     private val techButton = TextButton("", CameraStageBaseScreen.skin)
     private val nextTurnButton = createNextTurnButton()
 
-    internal val optionsTable: WorldScreenOptionsTable
     private val notificationsScroll: NotificationsScroll
 
     init {
@@ -36,8 +35,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
         notificationsScroll.width = stage.width/3
-        optionsTable = WorldScreenOptionsTable(this, civInfo)
-        Label("", CameraStageBaseScreen.skin).style.font.data.setScale(game.settings.labelScale)
+        Label("", skin).style.font.data.setScale(1.5f)
 
 
         tileMapHolder.addTiles()
@@ -56,7 +54,6 @@ class WorldScreen : CameraStageBaseScreen() {
 
         tileMapHolder.setCenterPosition(Vector2.Zero)
         createNextTurnButton() // needs civ table to be positioned
-        stage.addActor(optionsTable)
         displayTutorials("NewGame")
     }
 

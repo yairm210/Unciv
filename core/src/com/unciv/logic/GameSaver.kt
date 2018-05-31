@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
+import com.unciv.ui.GameSettings
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
@@ -27,5 +28,13 @@ class GameSaver {
 
     fun deleteSave(GameName: String){
         getSave(GameName).delete()
+    }
+
+    fun getGeneralSettings():GameSettings{
+        return Json().fromJson(GameSettings::class.java, Gdx.files.local("GameSettings.json"))
+    }
+
+    fun setGeneralSettings(gameSettings: GameSettings){
+        Gdx.files.local("GameSettings.json").writeString(Json().toJson(gameSettings), false)
     }
 }

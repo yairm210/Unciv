@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -25,7 +26,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     protected var resourceImage: Image? = null
     protected var improvementImage: Image? =null
-    private var improvementType: String? = null
     var populationImage: Image? = null
     private val roadImages = HashMap<String, Image>()
     private val borderImages = ArrayList<Image>()
@@ -78,8 +78,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     protected fun removePopulationIcon() {
-        populationImage!!.remove()
-        populationImage = null
+        if(populationImage!=null) {
+            populationImage!!.remove()
+            populationImage = null
+        }
     }
 
 
@@ -96,6 +98,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         updateResourceImage(isViewable)
         updateImprovementImage(isViewable)
+
 
         civilianUnitImage = newUnitImage(tileInfo.civilianUnit,civilianUnitImage,isViewable,-20f)
         militaryUnitImage = newUnitImage(tileInfo.militaryUnit,militaryUnitImage,isViewable,20f)
@@ -188,7 +191,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             addActor(terrainFeatureImage)
             terrainFeatureImage!!.run {
                 setSize(30f, 30f)
-                setColor(1f, 1f, 1f, 0.5f)
+                //setColor(1f, 1f, 1f, 0.5f)
                 center(this@TileGroup)
             }
         }
@@ -200,7 +203,12 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateImprovementImage(viewable: Boolean) {
-        if (tileInfo.improvement != null && tileInfo.improvement != improvementType) {
+        if(improvementImage!=null){
+            improvementImage!!.remove()
+            improvementImage=null
+        }
+
+        if (tileInfo.improvement != null && UnCivGame.Current.settings.showResourcesAndImprovements) {
             improvementImage = ImageGetter.getImprovementIcon(tileInfo.improvement!!)
             addActor(improvementImage)
             improvementImage!!.run {
@@ -209,7 +217,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 this.x -= 22 // left
                 this.y -= 10 // bottom
             }
-            improvementType = tileInfo.improvement
         }
         if(improvementImage!=null){
             if(viewable) improvementImage!!.color= Color.WHITE
@@ -218,7 +225,13 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateResourceImage(viewable: Boolean) {
-        if (tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization()) && resourceImage == null) { // Need to add the resource image!
+        if(resourceImage!=null){
+            resourceImage!!.remove()
+            resourceImage=null
+        }
+
+        if(UnCivGame.Current.settings.showResourcesAndImprovements
+                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())) { // Need to add the resource image!
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
                 resourceImage = ImageGetter.getImage(fileName)
                 resourceImage!!.setSize(20f, 20f)

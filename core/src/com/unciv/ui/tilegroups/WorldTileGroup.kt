@@ -36,7 +36,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     override fun update(isViewable: Boolean) {
 
         val city = tileInfo.getCity()
-        if (isViewable && tileInfo.isWorked() && city!!.civInfo.isPlayerCivilization() && populationImage == null)
+
+        removePopulationIcon()
+        if (isViewable && tileInfo.isWorked() && UnCivGame.Current.settings.showWorkedTiles
+                && city!!.civInfo.isPlayerCivilization())
             addPopulationIcon()
 
         if (tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)

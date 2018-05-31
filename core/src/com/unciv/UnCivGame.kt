@@ -6,14 +6,13 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.GameSettings
-import com.unciv.ui.NewGameScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnCivGame : Game() {
     var gameInfo: GameInfo = GameInfo()
     var settings = GameSettings()
 
-    var worldScreen: WorldScreen? = null
+    lateinit var worldScreen: WorldScreen
 
     override fun create() {
         GameBasics.run {  } // just to initialize
@@ -48,8 +47,8 @@ class UnCivGame : Game() {
 
     fun setWorldScreen() {
         setScreen(worldScreen)
-        worldScreen!!.update()
-        Gdx.input.inputProcessor = worldScreen!!.stage
+        worldScreen.update()
+        Gdx.input.inputProcessor = worldScreen.stage
     }
 
 
