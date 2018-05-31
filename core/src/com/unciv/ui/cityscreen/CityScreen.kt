@@ -148,6 +148,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         }
         cityPickerTable.row()
 
+        if (civInfo.cities.size > 1) cityPickerTable.add()
         if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city", skin)
             razeCityButton.addClickListener { city.isBeingRazed=true; update() }
