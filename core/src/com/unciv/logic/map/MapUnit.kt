@@ -158,7 +158,7 @@ class MapUnit {
         if(tile.isCityCenter() && tile.getOwner()!!.civName!=owner) return false
         if (getBaseUnit().unitType==UnitType.Civilian)
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)
-       else return tile.militaryUnit==null
+       else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==owner)
     }
 
     fun isIdle(): Boolean {
