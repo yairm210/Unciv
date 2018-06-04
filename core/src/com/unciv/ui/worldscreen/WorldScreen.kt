@@ -75,6 +75,9 @@ class WorldScreen : CameraStageBaseScreen() {
         notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
+
+        if(civInfo.policies.freePolicies>0) game.screen = PolicyPickerScreen(civInfo)
+        else if(civInfo.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
     }
 
     private fun updateTechButton() {

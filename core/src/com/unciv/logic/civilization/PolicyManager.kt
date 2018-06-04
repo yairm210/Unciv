@@ -1,10 +1,7 @@
 package com.unciv.logic.civilization
 
-import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
-import com.unciv.ui.VictoryScreen
-import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.utils.getRandom
 
 
@@ -55,8 +52,6 @@ class PolicyManager {
             if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
                 adopt(branch.policies.last(), true) // add branch completion!
             }
-        } else {
-            UnCivGame.Current.screen = VictoryScreen()
         }
 
         when (policy.name) {
@@ -69,7 +64,7 @@ class PolicyManager {
                     city.cityConstructions.addCultureBuilding()
             "Free Religion" -> freePolicies++
             "Liberty Complete" -> {
-                if (civInfo.isPlayerCivilization()) UnCivGame.Current.screen = GreatPersonPickerScreen() // screw the victory screen!
+                if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
                 else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.getRandom())
             }
         }

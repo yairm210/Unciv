@@ -1,12 +1,9 @@
 package com.unciv.models.gamebasics
 
-import com.unciv.UnCivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
-import com.unciv.ui.VictoryScreen
-import com.unciv.ui.pickerscreens.PolicyPickerScreen
 
 class Building : NamedStats(), IConstruction{
     private var baseDescription: String? = null
@@ -189,7 +186,6 @@ class Building : NamedStats(), IConstruction{
 
         if (unique == "Spaceship part") {
             civInfo.scienceVictory.currentParts.add(name, 1)
-            UnCivGame.Current.screen = VictoryScreen()
             return
         }
         construction.builtBuildings.add(name)
@@ -197,9 +193,6 @@ class Building : NamedStats(), IConstruction{
         if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
             construction.builtBuildings.add(providesFreeBuilding!!)
         when (unique) {
-            "Enables construction of Spaceship parts" ->
-                if(construction.cityInfo.civInfo.isPlayerCivilization())
-                    UnCivGame.Current.screen = VictoryScreen()
             "Empire enters golden age" -> civInfo.goldenAges.enterGoldenAge()
             "Free Great Artist Appears" -> civInfo.addGreatPerson("Great Artist")
             "Worker construction increased 25%, provides 2 free workers" -> {
@@ -208,8 +201,6 @@ class Building : NamedStats(), IConstruction{
             }
             "Free Social Policy" -> {
                 civInfo.policies.freePolicies++
-                if(construction.cityInfo.civInfo.isPlayerCivilization())
-                    UnCivGame.Current.screen = PolicyPickerScreen(civInfo)
             }
         }
 

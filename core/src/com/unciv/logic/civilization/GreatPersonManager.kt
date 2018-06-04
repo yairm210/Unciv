@@ -5,6 +5,7 @@ import com.unciv.models.stats.Stats
 class GreatPersonManager {
     private var pointsForNextGreatPerson = 100
     private val greatPersonPoints = Stats()
+    var freeGreatPeople=0
 
     fun getNewGreatPerson(): String? {
         var greatPerson: String? = null

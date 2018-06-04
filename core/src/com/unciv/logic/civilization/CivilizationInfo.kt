@@ -30,7 +30,7 @@ class CivilizationInfo {
     var tech = TechManager()
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
-    private var greatPeople = GreatPersonManager()
+    var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
 
     var cities = ArrayList<CityInfo>()
