@@ -115,6 +115,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         borderImages.clear()
 
         if (tileInfo.getOwner() != null) {
+            val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
             for (neighbor in tileInfo.neighbors.filter { it.getOwner() != tileInfo.getOwner() }) {
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
@@ -138,7 +139,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     // we can move with multiples of (b,-a) which is perpendicular to (a,b)
                     image.moveBy(relativeWorldPosition.y*i * 4,  -relativeWorldPosition.x*i * 4)
 
-                    image.color = tileInfo.getOwner()!!.getCivilization().getColor()
+                    image.color = civColor
                     addActor(image)
                     borderImages.add(image)
                 }

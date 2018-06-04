@@ -1,14 +1,18 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.cityscreen.addClickListener
+import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {
@@ -113,10 +117,21 @@ class WorldScreen : CameraStageBaseScreen() {
                 return@addClickListener
             }
 
-            game.gameInfo.nextTurn()
             bottomBar.unitTable.currentlyExecutingAction = null
-            kotlin.concurrent.thread { GameSaver().saveGame(game.gameInfo, "Autosave") }
-            update()
+
+            Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
+            nextTurnButton.disable()
+            nextTurnButton.setText("Working...")
+
+            kotlin.concurrent.thread {
+                game.gameInfo.nextTurn()
+                shouldUpdate=true
+                GameSaver().saveGame(game.gameInfo, "Autosave")
+
+                nextTurnButton.setText("Next turn")
+                nextTurnButton.enable()
+                Gdx.input.inputProcessor = stage
+            }
             displayTutorials("NextTurn")
 
             if(gameInfo.turns>=100)
@@ -133,6 +148,16 @@ class WorldScreen : CameraStageBaseScreen() {
             game.worldScreen = WorldScreen() // start over.
             game.setWorldScreen()
         }
+    }
+
+    var shouldUpdate=false
+    override fun render(delta: Float) {
+        if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+            // otherwise images will not load properly!
+            update()
+            shouldUpdate=false
+        }
+        super.render(delta)
     }
 }
 
