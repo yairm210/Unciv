@@ -164,8 +164,10 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             conquerCity((defender as CityCombatant).city, attacker)
         }
 
-        if (defender.isDefeated() && attacker.isMelee())
+        if (defender.isDefeated() && attacker.isMelee()) {
+            attackedTile.civilianUnit = null // Maybe we defeated the military unit (so it's now removed) but the civilian unit is still there
             (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
+        }
 
         if(attacker is MapUnitCombatant) {
             if (attacker.unit.hasUnique("Can move after attacking"))
