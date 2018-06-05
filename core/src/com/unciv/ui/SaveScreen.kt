@@ -4,12 +4,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
+import com.badlogic.gdx.utils.Json
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.getRandom
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
 class SaveScreen : PickerScreen() {
     val textField = TextField("", skin)
@@ -39,7 +42,13 @@ class SaveScreen : PickerScreen() {
         textField.text = defaultSaveName
 
         newSave.add(Label("Saved game name:",skin)).row()
-        newSave.add(textField).width(300f)
+        newSave.add(textField).width(300f).row()
+
+
+        val copyJsonButton = TextButton("Copy game info",skin)
+        val copiedString = StringSelection(Json().toJson(game.gameInfo))
+        copyJsonButton.addClickListener { Toolkit.getDefaultToolkit().systemClipboard.setContents(copiedString,copiedString) }
+        newSave.add(copyJsonButton)
 
         topTable.add(newSave)
         topTable.pack()
