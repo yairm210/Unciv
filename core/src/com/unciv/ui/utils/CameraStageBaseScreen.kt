@@ -4,8 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
@@ -117,3 +120,23 @@ fun Actor.centerY(parent:Stage){ y = parent.height/2- height/2}
 fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
 
 fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
+fun String.tr(): String {return GameBasics.Translations.get(this,UnCivGame.Current.settings.language)}
+
+fun getFont(size: Int): BitmapFont {
+    val generator = FreeTypeFontGenerator(Gdx.files.internal("skin/Roboto-Regular.ttf"))
+    val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
+    parameter.size = size
+    parameter.genMipMaps = true
+    parameter.minFilter = Texture.TextureFilter.MipMapLinearLinear
+    parameter.magFilter = Texture.TextureFilter.MipMapLinearLinear
+    parameter.characters = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽabcčćdđefghijklmnopqrsštuvwxyzžАБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюяΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάΆέΈέΉίϊΐΊόΌύΰϋΎΫΏĂÂÊÔƠƯăâêôơư1234567890‘?’“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
+    val font = generator.generateFont(parameter) // font size 12 pixels
+    generator.dispose() // don't forget to dispose to avoid memory leaks!
+    return font
+}
+
+fun Label.setFont(size:Int) {
+    style = Label.LabelStyle(style)
+    style.font = getFont(size)
+    style = style // because we need it to call the SetStyle function. Yuk, I know.
+}
