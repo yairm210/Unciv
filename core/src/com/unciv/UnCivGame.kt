@@ -10,12 +10,13 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class UnCivGame : Game() {
     var gameInfo: GameInfo = GameInfo()
-    var settings = GameSettings()
+    lateinit var settings : GameSettings
 
     lateinit var worldScreen: WorldScreen
 
     override fun create() {
         GameBasics.run {  } // just to initialize
+        settings = GameSaver().getGeneralSettings()
         Current = this
         if (GameSaver().getSave("Autosave").exists()) {
             try {
@@ -27,10 +28,14 @@ class UnCivGame : Game() {
         else startNewGame()
     }
 
-    fun loadGame(gameName:String){
-        gameInfo = GameSaver().loadGame( gameName)
+    fun loadGame(gameInfo:GameInfo){
+        this.gameInfo = gameInfo
         worldScreen = WorldScreen()
         setWorldScreen()
+    }
+
+    fun loadGame(gameName:String){
+        loadGame(GameSaver().loadGame( gameName))
     }
 
     fun startNewGame(saveTutorialState:Boolean = false) {
@@ -57,4 +62,3 @@ class UnCivGame : Game() {
     }
 
 }
-

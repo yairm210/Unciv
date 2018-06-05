@@ -13,6 +13,7 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {

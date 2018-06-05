@@ -30,11 +30,17 @@ class GameSaver {
         getSave(GameName).delete()
     }
 
+    fun getGeneralSettingsFile(): FileHandle {
+        return Gdx.files.local("GameSettings.json")
+    }
+
     fun getGeneralSettings():GameSettings{
-        return Json().fromJson(GameSettings::class.java, Gdx.files.local("GameSettings.json"))
+        val settingsFile = getGeneralSettingsFile()
+        if(!settingsFile.exists()) return GameSettings()
+        return Json().fromJson(GameSettings::class.java, settingsFile)
     }
 
     fun setGeneralSettings(gameSettings: GameSettings){
-        Gdx.files.local("GameSettings.json").writeString(Json().toJson(gameSettings), false)
+        getGeneralSettingsFile().writeString(Json().toJson(gameSettings), false)
     }
 }

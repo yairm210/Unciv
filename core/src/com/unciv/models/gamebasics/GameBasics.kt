@@ -3,6 +3,7 @@ package com.unciv.models.gamebasics
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
 import com.unciv.models.stats.INamed
+import kotlin.collections.set
 
 object GameBasics {
     val Buildings = LinkedHashMap<String, Building>()
@@ -15,8 +16,9 @@ object GameBasics {
     val Civilizations = LinkedHashMap<String, Civilization>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
     val Tutorials = LinkedHashMap<String, List<String>>()
+    val Translations = Translations(Gdx.files.internal("jsons/Translations.json").readString())
 
-    private fun <T> getFromJson(tClass: Class<T>, name: String): T {
+    fun <T> getFromJson(tClass: Class<T>, name: String): T {
         val jsonText = Gdx.files.internal("jsons/$name.json").readString()
         return Json().fromJson(tClass, jsonText)
     }
@@ -70,3 +72,4 @@ object GameBasics {
             }
         }
 }
+

@@ -19,4 +19,13 @@ class GameSettings : LinkedHashMap<String, String>() {
         set(value) {
             this["ShowResourcesAndImprovements"]=value.toString()
         }
+
+    var language:String
+        get() {
+            if(this.containsKey("Language")) return get("Language")!!
+            else return "English"
+        }
+        set(value) {
+            this["Language"]=value
+        }
 }
