@@ -1,5 +1,6 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -14,8 +15,6 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.setFontColor
-import java.awt.Toolkit
-import java.awt.datatransfer.DataFlavor
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -66,9 +65,8 @@ class LoadScreen : PickerScreen() {
         val errorLabel = Label("",skin).setFontColor(Color.RED)
         loadFromClipboardButton.addClickListener {
             try{
-                val clipbordContents = Toolkit.getDefaultToolkit().systemClipboard.getContents(null)
-                var clipbordContentsString = clipbordContents.getTransferData(DataFlavor.stringFlavor).toString()
-                val loadedGame = Json().fromJson(GameInfo::class.java, clipbordContentsString)
+                val clipboardContentsString = Gdx.app.clipboard.contents
+                val loadedGame = Json().fromJson(GameInfo::class.java, clipboardContentsString)
                 loadedGame.setTransients()
                 UnCivGame.Current.loadGame(loadedGame)
             }catch (ex:Exception){

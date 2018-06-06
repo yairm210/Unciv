@@ -1,5 +1,6 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -11,8 +12,6 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.getRandom
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 
 class SaveScreen : PickerScreen() {
     val textField = TextField("", skin)
@@ -37,17 +36,15 @@ class SaveScreen : PickerScreen() {
         val adjectives = listOf("Prancing","Obese","Junior","Senior","Abstract","Discombobulating","Simple","Awkward","Holy",
                 "Dangerous","Greasy","Stinky","Purple","Majestic","Incomprehensible","Cardboard","Chocolate","Robot","Ninja")
         val nouns = listOf("Moose","Pigeon","Weasel","Ferret","Onion","Marshmallow","Crocodile","Inu Shiba",
-                "Sandwich","Elephant","Kangaroo","Marmot","Beagle","Dolphin","Fish","Tomato","Duck")
+                "Sandwich","Elephant","Kangaroo","Marmot","Beagle","Dolphin","Fish","Tomato","Duck","Dinosaur")
         val defaultSaveName = adjectives.getRandom()+" "+nouns.getRandom()
         textField.text = defaultSaveName
 
         newSave.add(Label("Saved game name:",skin)).row()
-        newSave.add(textField).width(300f).row()
-
+        newSave.add(textField).width(300f).pad(10f).row()
 
         val copyJsonButton = TextButton("Copy game info",skin)
-        val copiedString = StringSelection(Json().toJson(game.gameInfo))
-        copyJsonButton.addClickListener { Toolkit.getDefaultToolkit().systemClipboard.setContents(copiedString,copiedString) }
+        copyJsonButton.addClickListener { Gdx.app.clipboard.contents =  Json().toJson(game.gameInfo)}
         newSave.add(copyJsonButton)
 
         topTable.add(newSave)

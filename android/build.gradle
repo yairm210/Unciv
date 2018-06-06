@@ -21,8 +21,8 @@ android {
         applicationId "com.unciv.game"
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 72
-        versionName "2.4.2"
+        versionCode 74
+        versionName "2.4.4"
     }
     buildTypes {
         release {
