@@ -10,10 +10,8 @@ import com.unciv.ui.utils.centerX
 
 class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(tileInfo) {
 
-    var yieldGroup: YieldGroup
 
     init {
-        this.yieldGroup = YieldGroup()
         addActor(yieldGroup)
         if (city.location == tileInfo.position) {
             populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6).png")

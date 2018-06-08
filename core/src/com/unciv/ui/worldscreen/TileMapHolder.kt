@@ -82,6 +82,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
         })
+        layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
     internal fun updateTiles() {
@@ -124,7 +125,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
         selectedTile = tileGroup.tileInfo
         worldScreen.bottomBar.unitTable.tileSelected(selectedTile!!)
-        layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
         // We want to center on the middle of TG (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== filter the screen starts) needs to be half a screen away
         scrollX = tileGroup.x + tileGroup.width / 2 - worldScreen.stage.width / 2

@@ -32,6 +32,11 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         whiteHalo.toBack()
     }
 
+    init{
+        yieldGroup.center(this)
+        yieldGroup.moveBy(-22f,0f)
+    }
+
 
     override fun update(isViewable: Boolean) {
 
@@ -46,6 +51,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 || viewEntireMapForDebug) updateCityButton(city) // needs to be before the update so the units will be above the city button
 
         super.update(isViewable)
+
+        yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
+        if(yieldGroup.isVisible)
+            yieldGroup.setStats(tileInfo.getTileStats(UnCivGame.Current.gameInfo.getPlayerCivilization()))
     }
 
     private fun updateCityButton(city: CityInfo?) {

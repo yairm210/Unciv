@@ -9,6 +9,7 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.colorFromRGB
@@ -33,6 +34,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
+    var yieldGroup = YieldGroup()
 
     init {
         val groupSize = 54f

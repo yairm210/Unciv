@@ -13,7 +13,6 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {
@@ -21,6 +20,7 @@ class WorldScreen : CameraStageBaseScreen() {
     internal val civInfo: CivilizationInfo = gameInfo.getPlayerCivilization()
 
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap, civInfo)
+    val minimap = Minimap(tileMapHolder)
 
     internal var buttonScale = 0.9f
     private val topBar = WorldScreenTopBar(this)
@@ -40,12 +40,15 @@ class WorldScreen : CameraStageBaseScreen() {
                 topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
         notificationsScroll.width = stage.width/3
+        notificationsScroll.height = stage.height/3
         Label("", skin).style.font.data.setScale(1.5f)
-
+        minimap.setSize(stage.width/5,stage.height/5)
+        minimap.x = stage.width - minimap.width
 
         tileMapHolder.addTiles()
 
         stage.addActor(tileMapHolder)
+        stage.addActor(minimap)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
         stage.addActor(techButton)
@@ -70,6 +73,8 @@ class WorldScreen : CameraStageBaseScreen() {
 
         updateTechButton()
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
+        minimap.update()
+        minimap.y = bottomBar.height
 
         unitActionsTable.update(bottomBar.unitTable.selectedUnit)
         unitActionsTable.y = bottomBar.height

@@ -15,11 +15,10 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
     internal fun updateTileTable(tile: TileInfo) {
         clearChildren()
         val civInfo = worldScreen.civInfo
-        pad(20f)
         columnDefaults(0).padRight(10f)
 
         if (civInfo.exploredTiles.contains(tile.position)) {
-            add(getStatsTable(tile)).pad(20f)
+            add(getStatsTable(tile)).pad(10f)
             add(Label(tile.toString(), skin)).colspan(2)
         }
 
