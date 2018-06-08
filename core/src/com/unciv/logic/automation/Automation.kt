@@ -69,8 +69,8 @@ class Automation {
         val combatUnits = city.cityConstructions.getConstructableUnits().filter { it.unitType != UnitType.Civilian }
         val chosenUnit: Unit
         if(city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
-                && combatUnits.any { it.unitType== UnitType.Archery }) // this is for city defence so get an archery unit if we can
-            chosenUnit = combatUnits.filter { it.unitType== UnitType.Archery }.maxBy { it.cost }!!
+                && combatUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
+            chosenUnit = combatUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
 
         else{ // randomize type of unit and takee the most expensive of its kind
             val chosenUnitType = combatUnits.map { it.unitType }.distinct().getRandom()

@@ -102,7 +102,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val attackableTiles: List<TileInfo> = when(unit.getBaseUnit().unitType){
                 UnitType.Civilian -> unit.getDistanceToTiles().keys.toList()
                 UnitType.Melee, UnitType.Mounted -> unit.getDistanceToTiles().keys.toList()
-                UnitType.Archery, UnitType.Siege -> unit.getTile().getTilesInDistance(2)
+                UnitType.Ranged, UnitType.Siege -> unit.getTile().getTilesInDistance(2)
                 UnitType.City -> throw Exception("A unit shouldn't have a City unittype!")
             }
 

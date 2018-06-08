@@ -39,19 +39,19 @@
 	},
 	{
 		name:"Archer",
-		unitType:"Archery",
+		unitType:"Ranged",
 		movement:2,
 		strength:5,
 		rangedStrength:7,
 		cost: 40,
 		hurryCostModifier:20
-		requiredTech:"Archery",
+		requiredTech:"Ranged",
 		obsoleteTech:"Machinery",
 		upgradesTo:"Crossbowman"
 	},
 	{
 		name:"Chariot Archer",
-		unitType:"Archery",
+		unitType:"Ranged",
 		movement:4,
 		strength:6,
 		rangedStrength:10,
@@ -114,7 +114,7 @@
 	// Medieval Era
 	{
 		name:"Crossbowman",
-		unitType:"Archery",
+		unitType:"Ranged",
 		movement:2,
 		strength:13,
 		rangedStrength:18,

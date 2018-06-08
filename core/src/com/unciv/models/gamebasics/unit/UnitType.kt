@@ -4,7 +4,7 @@ enum class UnitType{
     City,
     Civilian,
     Melee,
-    Archery,
+    Ranged,
     Mounted,
     Siege
 }

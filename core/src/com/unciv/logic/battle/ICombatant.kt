@@ -19,6 +19,6 @@ interface ICombatant{
         return this.getUnitType() in listOf(UnitType.Melee, UnitType.Mounted)
     }
     fun isRanged(): Boolean {
-        return this.getUnitType() in listOf(UnitType.Archery, UnitType.Siege)
+        return this.getUnitType() in listOf(UnitType.Ranged, UnitType.Siege)
     }
 }
