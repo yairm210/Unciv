@@ -59,7 +59,11 @@ class CivilizationInfo {
             statsForTurn.culture += statsForTurn.happiness / 2
 
         if (statsForTurn.gold < 0) statsForTurn.science += statsForTurn.gold
-        if(statsForTurn.science<0) statsForTurn.science=0f
+
+        // if we have - or 0, then the techs will never be complete and the tech button
+        // will show a negative number of turns and int.max, respectively
+        if(statsForTurn.science<1) statsForTurn.science=1f
+
         return statsForTurn
     }
 
