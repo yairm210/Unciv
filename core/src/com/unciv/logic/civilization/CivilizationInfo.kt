@@ -59,6 +59,7 @@ class CivilizationInfo {
             statsForTurn.culture += statsForTurn.happiness / 2
 
         if (statsForTurn.gold < 0) statsForTurn.science += statsForTurn.gold
+        if(statsForTurn.science<0) statsForTurn.science=0f
         return statsForTurn
     }
 
