@@ -1,16 +1,18 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.unciv.UnCivGame
-import com.unciv.ui.LoadScreen
-import com.unciv.ui.NewGameScreen
-import com.unciv.ui.SaveScreen
-import com.unciv.ui.VictoryScreen
+import com.unciv.ui.*
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.utils.center
 
 class WorldScreenOptionsTable internal constructor() : OptionsTable() {
 
     init {
+        addButton("Civilopedia"){
+            UnCivGame.Current.screen = CivilopediaScreen()
+            remove()
+        }
+
         addButton("Load game"){
             UnCivGame.Current.screen = LoadScreen()
             remove()
