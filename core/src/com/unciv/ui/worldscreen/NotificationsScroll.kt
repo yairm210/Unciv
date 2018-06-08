@@ -9,6 +9,7 @@ import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.setFontColor
+import kotlin.math.min
 
 class NotificationsScroll(private val notifications: List<Notification>, internal val worldScreen: WorldScreen) : ScrollPane(null) {
     private var notificationsTable = Table()
@@ -41,6 +42,7 @@ class NotificationsScroll(private val notifications: List<Notification>, interna
         }
         notificationsTable.pack()
         pack()
+        height = min(notificationsTable.height,worldScreen.stage.height/3)
     }
 
 }

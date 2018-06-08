@@ -40,7 +40,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
         notificationsScroll.width = stage.width/3
-        notificationsScroll.height = stage.height/3
         Label("", skin).style.font.data.setScale(1.5f)
         minimap.setSize(stage.width/5,stage.height/5)
         minimap.x = stage.width - minimap.width
