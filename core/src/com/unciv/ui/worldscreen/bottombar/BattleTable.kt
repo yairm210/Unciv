@@ -98,11 +98,18 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else if (damageToDefender>defender.getHealth()) damageToDefender=defender.getHealth()
 
 
-        add("Health: "+attacker.getHealth().toString() + " -> "
-                + (attacker.getHealth()- damageToAttacker))
+        if(attacker.isMelee() && defender.getUnitType()==UnitType.Civilian) {
+            add("")
+            add("Captured!")
+        }
 
-        add("Health: "+defender.getHealth().toString() + " -> "
-                + (defender.getHealth()- damageToDefender))
+        else {
+            add("Health: " + attacker.getHealth().toString() + " -> "
+                    + (attacker.getHealth() - damageToAttacker))
+
+            add("Health: " + defender.getHealth().toString() + " -> "
+                    + (defender.getHealth() - damageToDefender))
+        }
 
         row().pad(5f)
         val attackButton = TextButton("Attack", skin)

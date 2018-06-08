@@ -118,8 +118,8 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         var damageToDefender = calculateDamageToDefender(attacker,defender)
         var damageToAttacker = calculateDamageToAttacker(attacker,defender)
 
-        if(defender.getUnitType() == UnitType.Civilian){
-            defender.takeDamage(100) // kill
+        if(defender.getUnitType() == UnitType.Civilian && attacker.isMelee()){
+            captureCivilianUnit(attacker,defender)
         }
         else if (attacker.isRanged()) {
             defender.takeDamage(damageToDefender) // straight up
@@ -164,8 +164,9 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             conquerCity((defender as CityCombatant).city, attacker)
         }
 
-        if (defender.isDefeated() && attacker.isMelee()) {
-            attackedTile.civilianUnit = null // Maybe we defeated the military unit (so it's now removed) but the civilian unit is still there
+        if (attacker.isMelee() && (defender.isDefeated() || defender.getCivilization()==attacker.getCivilization() )) {
+            if(attackedTile.civilianUnit!=null)
+                captureCivilianUnit(attacker,MapUnitCombatant(attackedTile.civilianUnit!!))
             (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
         }
 
@@ -183,10 +184,10 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         enemyCiv.cities.remove(city)
         attacker.getCivilization().cities.add(city)
         city.civInfo = attacker.getCivilization()
-        city.health = city.getMaxHealth() / 2 // I think that cities recover to half health?
+        city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.getCenterTile().apply {
             militaryUnit = null
-            civilianUnit=null
+            if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
         }
 
         city.expansion.cultureStored = 0
@@ -215,5 +216,11 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         if(tile.militaryUnit!=null) return MapUnitCombatant(tile.militaryUnit!!)
         if(tile.civilianUnit!=null) return MapUnitCombatant(tile.civilianUnit!!)
         return null
+    }
+
+    fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
+        val capturedUnit = (defender as MapUnitCombatant).unit
+        capturedUnit.civInfo = attacker.getCivilization()
+        capturedUnit.owner = capturedUnit.civInfo.civName
     }
 }
