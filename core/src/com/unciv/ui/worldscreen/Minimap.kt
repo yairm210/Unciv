@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.colorFromRGB
 
 class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
@@ -37,7 +37,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
             hex.addClickListener {
-                tileMapHolder.setCenterPosition(tileInfo.position);
+                tileMapHolder.setCenterPosition(tileInfo.position)
                 setScrollToTileMapHolder()
             }
             allTiles.addActor(hex)

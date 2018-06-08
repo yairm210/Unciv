@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.List
 import com.badlogic.gdx.utils.Array
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.addClickListener
 import java.util.*
 
 class CivilopediaScreen : CameraStageBaseScreen() {

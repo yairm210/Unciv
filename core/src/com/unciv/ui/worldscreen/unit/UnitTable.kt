@@ -4,9 +4,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitType
-import com.unciv.ui.cityscreen.addClickListener
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){

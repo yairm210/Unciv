@@ -1,6 +1,8 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.gamebasics.tile
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import java.util.*

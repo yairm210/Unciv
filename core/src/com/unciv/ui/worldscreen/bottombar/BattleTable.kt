@@ -1,4 +1,4 @@
-package com.unciv.ui.worldscreen
+package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -7,12 +7,9 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
-import com.unciv.logic.map.UnitType
-import com.unciv.ui.cityscreen.addClickListener
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.setFontColor
+import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {

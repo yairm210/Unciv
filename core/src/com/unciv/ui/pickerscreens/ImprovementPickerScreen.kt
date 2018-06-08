@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.TileImprovement
-import com.unciv.ui.cityscreen.addClickListener
+import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.setFontColor
 
 class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {

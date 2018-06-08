@@ -4,7 +4,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
-import com.unciv.models.gamebasics.Unit
+import com.unciv.models.gamebasics.unit.Unit
 import java.util.*
 
 class TechManager {

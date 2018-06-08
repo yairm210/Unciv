@@ -7,11 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.ui.cityscreen.addClickListener
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){

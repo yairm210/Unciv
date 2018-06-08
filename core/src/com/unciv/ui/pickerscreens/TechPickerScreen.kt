@@ -6,8 +6,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
 import java.util.*
 

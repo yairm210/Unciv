@@ -1,10 +1,10 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.gamebasics.unit
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.INamed
 
 class Unit : INamed, IConstruction, ICivilopedia {

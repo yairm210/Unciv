@@ -10,6 +10,7 @@ import com.unciv.models.gamebasics.Building
 import com.unciv.ui.pickerscreens.ConstructionPickerScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
 import java.util.*
 

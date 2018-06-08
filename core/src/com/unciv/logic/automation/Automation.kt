@@ -5,9 +5,9 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Unit
+import com.unciv.models.gamebasics.unit.Unit
 import com.unciv.ui.utils.getRandom
 
 class Automation {
@@ -67,10 +67,10 @@ class Automation {
 
     private fun trainCombatUnit(city: CityInfo) {
         val combatUnits = city.cityConstructions.getConstructableUnits().filter { it.unitType != UnitType.Civilian }
-        val chosenUnit:Unit
+        val chosenUnit: Unit
         if(city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
-                && combatUnits.any { it.unitType==UnitType.Archery }) // this is for city defence so get an archery unit if we can
-            chosenUnit = combatUnits.filter { it.unitType==UnitType.Archery }.maxBy { it.cost }!!
+                && combatUnits.any { it.unitType== UnitType.Archery }) // this is for city defence so get an archery unit if we can
+            chosenUnit = combatUnits.filter { it.unitType== UnitType.Archery }.maxBy { it.cost }!!
 
         else{ // randomize type of unit and takee the most expensive of its kind
             val chosenUnitType = combatUnits.map { it.unitType }.distinct().getRandom()

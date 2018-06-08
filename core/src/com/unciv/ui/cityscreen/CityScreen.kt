@@ -12,6 +12,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.centerX
 import java.util.*
 

@@ -10,14 +10,15 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.cityscreen.addClickListener
 
 open class CameraStageBaseScreen : Screen {
 
@@ -139,4 +140,12 @@ fun Label.setFont(size:Int) {
     style = Label.LabelStyle(style)
     style.font = getFont(size)
     style = style // because we need it to call the SetStyle function. Yuk, I know.
+}
+
+fun Actor.addClickListener(function: () -> Unit) {
+    this.addListener(object : ClickListener() {
+        override fun clicked(event: InputEvent?, x: Float, y: Float) {
+            function()
+        }
+    } )
 }

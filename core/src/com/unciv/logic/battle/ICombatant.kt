@@ -2,7 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.unit.UnitType
 
 interface ICombatant{
     fun getName(): String
@@ -16,9 +16,9 @@ interface ICombatant{
     fun getTile(): TileInfo
 
     fun isMelee(): Boolean {
-        return this.getUnitType() in listOf(UnitType.Melee,UnitType.Mounted)
+        return this.getUnitType() in listOf(UnitType.Melee, UnitType.Mounted)
     }
     fun isRanged(): Boolean {
-        return this.getUnitType() in listOf(UnitType.Archery,UnitType.Siege)
+        return this.getUnitType() in listOf(UnitType.Archery, UnitType.Siege)
     }
 }

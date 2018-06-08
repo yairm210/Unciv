@@ -5,7 +5,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -102,7 +102,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
         if(attacker.isRanged()) return 0
-        if(defender.getUnitType()==UnitType.Civilian) return 0
+        if(defender.getUnitType()== UnitType.Civilian) return 0
         val ratio = getDefendingStrength(attacker,defender) / getAttackingStrength(attacker,defender)
         return (ratio * 30 * getHealthDependantDamageRatio(defender)).toInt()
     }

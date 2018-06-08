@@ -1,14 +1,5 @@
 package com.unciv.models.stats
 
-enum class Stat{
-    Production,
-    Food,
-    Gold,
-    Science,
-    Culture,
-    Happiness
-}
-
 
 open class Stats() {
     var production: Float=0f

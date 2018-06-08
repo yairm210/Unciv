@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
-import com.unciv.ui.cityscreen.addClickListener
+import com.unciv.ui.utils.addClickListener
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     private var selectedProduction: String? = null

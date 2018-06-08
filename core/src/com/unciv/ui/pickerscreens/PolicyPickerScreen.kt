@@ -1,15 +1,12 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.*
 
 
@@ -41,7 +38,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         rightSideButton.addClickListener {
             civInfo.policies.adopt(pickedPolicy!!)
 
-            // If we've mmoved to another screen in the meantime (great person pick, victory screen) ignore this
+            // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if(game.screen is PolicyPickerScreen) game.screen = PolicyPickerScreen(civInfo)
         }
 

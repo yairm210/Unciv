@@ -3,9 +3,9 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.HexMath
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.ResourceType
-import com.unciv.models.gamebasics.TerrainType
-import com.unciv.models.gamebasics.TileResource
+import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.gamebasics.tile.TerrainType
+import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.ui.utils.getRandom
 
 class SeedRandomMapGenerator : RandomMapGenerator() {

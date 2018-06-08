@@ -1,17 +1,15 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter.getImage
+import com.unciv.ui.utils.addClickListener
 
 
 class BuildingsTable(private val cityScreen: CityScreen) : Table() {
@@ -100,12 +98,4 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
     }
 
 
-}
-
-fun Actor.addClickListener(function: () -> Unit) {
-    this.addListener(object : ClickListener() {
-        override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            function()
-        }
-    } )
 }

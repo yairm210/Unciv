@@ -6,10 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.ResourceType
+import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.optionstable.WorldScreenOptionsTable
 import kotlin.math.abs
 import kotlin.math.ceil
 

@@ -10,9 +10,9 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.logic.map.UnitType
-import com.unciv.ui.cityscreen.addClickListener
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.WorldTileGroup
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.colorFromRGB
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
@@ -111,7 +111,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 it.getUnits().isNotEmpty()
                         && it.getUnits().first().owner != unit.owner
                         && civViewableTiles.contains(it)}) {
-                if(unit.getBaseUnit().unitType==UnitType.Civilian) tileGroups[tile]!!.hideCircle()
+                if(unit.getBaseUnit().unitType== UnitType.Civilian) tileGroups[tile]!!.hideCircle()
                 else tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
             }
         }

@@ -9,12 +9,8 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 

@@ -9,13 +9,9 @@ import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.cityscreen.CityScreen
-import com.unciv.ui.cityscreen.addClickListener
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.*
 
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
@@ -25,7 +21,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         val whiteHalo = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
         else ImageGetter.getImage("OtherIcons/Circle.png")
         whiteHalo.setSize(30f,30f)
-        val unitImage = if(unit.getBaseUnit().unitType==UnitType.Civilian) civilianUnitImage!!
+        val unitImage = if(unit.getBaseUnit().unitType== UnitType.Civilian) civilianUnitImage!!
                         else militaryUnitImage!!
         whiteHalo.center(unitImage)
         unitImage.addActor(whiteHalo)

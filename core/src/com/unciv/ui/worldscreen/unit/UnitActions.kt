@@ -2,7 +2,7 @@ package com.unciv.ui.worldscreen.unit
 
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.UnitType
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
@@ -42,7 +42,7 @@ class UnitActions {
             },true)
         }
 
-        if(unit.getBaseUnit().unitType!=UnitType.Civilian && !unit.hasUnique("No defensive terrain bonus")){
+        if(unit.getBaseUnit().unitType!= UnitType.Civilian && !unit.hasUnique("No defensive terrain bonus")){
             if(!unit.isFortified())
                 actionList += UnitAction("Fortify",{unit.action="Fortify 0"}, unit.currentMovement != 0f)
         }

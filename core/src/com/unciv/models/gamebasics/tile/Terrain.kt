@@ -1,5 +1,7 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.gamebasics.tile
 
+import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.NamedStats
 
 class Terrain : NamedStats(), ICivilopedia {

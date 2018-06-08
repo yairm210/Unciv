@@ -2,8 +2,8 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.worldscreen.TileMapHolder

@@ -8,8 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
-import com.unciv.ui.cityscreen.addClickListener
 import com.unciv.ui.pickerscreens.PickerScreen
+import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.getRandom
 

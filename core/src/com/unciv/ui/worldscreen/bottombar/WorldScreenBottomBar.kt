@@ -1,9 +1,10 @@
-package com.unciv.ui.worldscreen
+package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.unit.UnitTable
 
 class WorldScreenBottomBar(val worldScreen: WorldScreen) : Table(){

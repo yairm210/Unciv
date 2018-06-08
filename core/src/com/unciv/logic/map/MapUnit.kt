@@ -4,7 +4,8 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Unit
+import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.unit.UnitType
 import java.text.DecimalFormat
 
 class MapUnit {
@@ -140,13 +141,13 @@ class MapUnit {
     }
 
     fun removeFromTile(){
-        if (getBaseUnit().unitType==UnitType.Civilian) getTile().civilianUnit=null
+        if (getBaseUnit().unitType== UnitType.Civilian) getTile().civilianUnit=null
         else getTile().militaryUnit=null
     }
 
     fun putInTile(tile:TileInfo){
         if(!canMoveTo(tile)) throw Exception("I can't go there!")
-        if(getBaseUnit().unitType==UnitType.Civilian)
+        if(getBaseUnit().unitType== UnitType.Civilian)
             tile.civilianUnit=this
         else tile.militaryUnit=this
     }
@@ -156,7 +157,7 @@ class MapUnit {
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         if(tile.isCityCenter() && tile.getOwner()!!.civName!=owner) return false
-        if (getBaseUnit().unitType==UnitType.Civilian)
+        if (getBaseUnit().unitType== UnitType.Civilian)
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)
        else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==owner)
     }
