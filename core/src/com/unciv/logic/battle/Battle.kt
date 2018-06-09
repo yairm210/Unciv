@@ -164,7 +164,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             conquerCity((defender as CityCombatant).city, attacker)
         }
 
-        if (attacker.isMelee() && (defender.isDefeated() || defender.getCivilization()==attacker.getCivilization() )) {
+        else if (attacker.isMelee() && (defender.isDefeated() || defender.getCivilization()==attacker.getCivilization() )) {
             if(attackedTile.civilianUnit!=null)
                 captureCivilianUnit(attacker,MapUnitCombatant(attackedTile.civilianUnit!!))
             (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)

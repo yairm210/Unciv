@@ -90,6 +90,7 @@ class MapUnit {
     }
 
     fun moveToTile(otherTile: TileInfo) {
+        if(otherTile==getTile()) return // already here!
         val distanceToTiles = getDistanceToTiles()
         if (!distanceToTiles.containsKey(otherTile))
             throw Exception("You can't get there from here!")
