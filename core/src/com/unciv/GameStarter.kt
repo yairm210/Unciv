@@ -31,7 +31,14 @@ class GameStarter(){
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
-        (1..5).forEach { gameInfo.placeBarbarianUnit(freeTiles.toList().getRandom()) }
+        (1..5).forEach {
+            val freeTilesList = freeTiles.toList()
+            if(freeTilesList.isNotEmpty()){
+                val placedTile =  freeTilesList.getRandom()
+                gameInfo.placeBarbarianUnit(placedTile)
+                freeTiles.remove(placedTile)
+            }
+        }
 
         return gameInfo
     }
