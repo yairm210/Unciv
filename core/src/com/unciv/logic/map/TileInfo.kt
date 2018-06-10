@@ -149,7 +149,7 @@ open class TileInfo {
         val SB = StringBuilder()
         if (isCityCenter()) {
             val city = getCity()!!
-            SB.appendln(city.name+ ",\r\n" + city.cityConstructions.getProductionForTileInfo())
+            SB.appendln(city.name+ " ("+city.health+"),\r\n" + city.cityConstructions.getProductionForTileInfo())
         }
         SB.appendln(this.baseTerrain)
         if (terrainFeature != null) SB.appendln(terrainFeature!!)

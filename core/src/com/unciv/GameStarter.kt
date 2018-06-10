@@ -23,7 +23,7 @@ class GameStarter(){
 
         for (civname in GameBasics.Civilizations.keys.filterNot { it=="Barbarians" || it==civilization }.take(numberOfCivs)) {
             val startingLocation = freeTiles.toList().getRandom().position
-            gameInfo.civilizations.add(CivilizationInfo(civname, startingLocation, gameInfo)) // all the rest whatever
+            gameInfo.civilizations.add(CivilizationInfo(civname, startingLocation, gameInfo))
             freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, 6))
         }
 

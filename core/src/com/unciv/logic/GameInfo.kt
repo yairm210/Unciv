@@ -10,7 +10,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 
 class GameInfo {
-    //var gameOptions=HashMap<String,String>()
     var notifications = mutableListOf<Notification>()
     var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
