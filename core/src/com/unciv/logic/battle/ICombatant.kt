@@ -16,9 +16,9 @@ interface ICombatant{
     fun getTile(): TileInfo
 
     fun isMelee(): Boolean {
-        return this.getUnitType() in listOf(UnitType.Melee, UnitType.Mounted)
+        return this.getUnitType().isMelee()
     }
     fun isRanged(): Boolean {
-        return this.getUnitType() in listOf(UnitType.Ranged, UnitType.Siege)
+        return this.getUnitType().isRanged()
     }
 }

@@ -99,11 +99,12 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             for(tile: TileInfo in unit.getDistanceToTiles().keys)
                 tileGroups[tile]!!.showCircle(colorFromRGB(0, 120, 215))
 
-            val attackableTiles: List<TileInfo> = when(unit.getBaseUnit().unitType){
-                UnitType.Civilian -> unit.getDistanceToTiles().keys.toList()
-                UnitType.Melee, UnitType.Mounted -> unit.getDistanceToTiles().keys.toList()
-                UnitType.Ranged, UnitType.Siege -> unit.getTile().getTilesInDistance(2)
-                UnitType.City -> throw Exception("A unit shouldn't have a City unittype!")
+            val unitType = unit.getBaseUnit().unitType
+            val attackableTiles: List<TileInfo> = when{
+                unitType==UnitType.Civilian -> unit.getDistanceToTiles().keys.toList()
+                unit.getBaseUnit().unitType.isMelee() -> unit.getDistanceToTiles().keys.toList()
+                unitType.isRanged() -> unit.getTile().getTilesInDistance(2)
+                else -> throw Exception("UnitType isn't Civilian, Melee or Ranged???")
             }
 
 

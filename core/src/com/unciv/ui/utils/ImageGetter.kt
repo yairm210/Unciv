@@ -50,5 +50,9 @@ object ImageGetter {
         return getImage("ImprovementIcons/" + improvementName.replace(' ', '_') + "_(Civ5).png")
     }
 
+    fun getPromotionIcon(promotionName:String):Image{
+        return getImage("UnitPromotionIcons/" + promotionName.replace(' ', '_') + "_(Civ5).png")
+    }
+
     fun getBlue() = Color(0x004085bf)
 }

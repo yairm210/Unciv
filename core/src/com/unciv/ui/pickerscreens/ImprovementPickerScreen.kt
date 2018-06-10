@@ -48,3 +48,4 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
         topTable.add(regularImprovements)
     }
 }
+

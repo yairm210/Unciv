@@ -6,6 +6,7 @@ import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.unit.UnitPromotion
 import com.unciv.models.stats.INamed
 import kotlin.collections.set
 
@@ -17,6 +18,7 @@ object GameBasics {
     val Technologies = LinkedHashMap<String, Technology>()
     val Helps = LinkedHashMap<String, BasicHelp>()
     val Units = LinkedHashMap<String, Unit>()
+    val UnitPromotions = LinkedHashMap<String, UnitPromotion>()
     val Civilizations = LinkedHashMap<String, Civilization>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
     val Tutorials = LinkedHashMap<String, List<String>>()
@@ -41,6 +43,7 @@ object GameBasics {
             TileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "TileImprovements"))
             Helps += createHashmap(getFromJson(Array<BasicHelp>::class.java, "BasicHelp"))
             Units += createHashmap(getFromJson(Array<Unit>::class.java, "Units"))
+            UnitPromotions += createHashmap(getFromJson(Array<UnitPromotion>::class.java, "UnitPromotions"))
             PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
             Civilizations += createHashmap(getFromJson(Array<Civilization>::class.java, "Civilizations"))
 

@@ -22,7 +22,7 @@
 	{
 		name:"Scout",
 		cost:25,
-		unitType:"Melee",
+		unitType:"Scout",
 		strength:5,
 		uniques:["Ignores terrain cost"]
 		movement:2

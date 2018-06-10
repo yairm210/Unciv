@@ -9,11 +9,11 @@ import java.util.*
 
 class TileImprovement : NamedStats(), ICivilopedia {
 
-    @JvmField var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
-    @JvmField var techRequired: String? = null
+    var terrainsCanBeBuiltOn: Collection<String> = ArrayList()
+    var techRequired: String? = null
 
-    @JvmField var improvingTech: String? = null
-    @JvmField var improvingTechStats: Stats? = null
+    var improvingTech: String? = null
+    var improvingTechStats: Stats? = null
 
     private val turnsToBuild: Int = 0 // This is the base cost.
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
@@ -47,3 +47,4 @@ class TileImprovement : NamedStats(), ICivilopedia {
             return stringBuilder.toString()
         }
 }
+
