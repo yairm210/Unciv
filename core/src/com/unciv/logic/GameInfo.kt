@@ -58,6 +58,7 @@ class GameInfo {
         if(tileToPlace==null) {
             val playerViewableTiles = getPlayerCivilization().getViewableTiles().toHashSet()
             val viableTiles = tileMap.values.filterNot { playerViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit!=null}
+            if(viableTiles.isEmpty()) return // no place for more barbs =(
             tile=viableTiles.getRandom()
         }
         tileMap.placeUnitNearTile(tile!!.position,"Warrior",getBarbarianCivilization())
