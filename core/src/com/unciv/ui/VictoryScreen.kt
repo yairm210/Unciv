@@ -80,7 +80,7 @@ class VictoryScreen : PickerScreen() {
         val t=Table()
         t.defaults().pad(5f)
         for (civ in civInfo.gameInfo.civilizations){
-            if(civ.isPlayerCivilization() || civ == civInfo.gameInfo.getBarbarianCivilization()) continue
+            if(civ.isPlayerCivilization() || civ.isBarbarianCivilization()) continue
             t.add(getMilestone("Destroy "+civ.civName, civ.isDefeated())).row()
         }
         return t

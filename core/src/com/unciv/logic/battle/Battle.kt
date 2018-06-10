@@ -34,7 +34,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
                 }
             }
 
-            if(enemy.getCivilization() == enemy.getCivilization().gameInfo.getBarbarianCivilization())
+            if(enemy.getCivilization().isBarbarianCivilization())
                 modifiers["vs Barbarians"] = 0.33f
 
             if(combatant.getCivilization().happiness<0)
@@ -219,6 +219,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
     }
 
     fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
+        if(attacker.getCivilization().isBarbarianCivilization()) defender.takeDamage(100) // barbarians don't capture civilians!
         val capturedUnit = (defender as MapUnitCombatant).unit
         capturedUnit.civInfo = attacker.getCivilization()
         capturedUnit.owner = capturedUnit.civInfo.civName

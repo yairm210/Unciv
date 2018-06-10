@@ -41,6 +41,7 @@ class CivilizationInfo {
     fun getCapital()=cities.first { it.isCapital() }
 
     fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this
+    fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
 
 
     // negative gold hurts science
