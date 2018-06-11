@@ -44,7 +44,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             addPopulationIcon()
 
         if (tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
-                || viewEntireMapForDebug) updateCityButton(city) // needs to be before the update so the units will be above the city button
+                || viewEntireMapForDebug) updateCityButton(city, isViewable) // needs to be before the update so the units will be above the city button
 
         super.update(isViewable)
 
@@ -53,7 +53,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             yieldGroup.setStats(tileInfo.getTileStats(UnCivGame.Current.gameInfo.getPlayerCivilization()))
     }
 
-    private fun updateCityButton(city: CityInfo?) {
+    private fun updateCityButton(city: CityInfo?, viewable: Boolean) {
         if(city==null && cityButton!=null)// there used to be a city here but it was razed
         {
             cityButton!!.remove()
@@ -79,19 +79,22 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             cityButton!!.run {
                 clear()
-                val healthBarSize=100f
-                val healthPercent = city.health/city.getMaxHealth().toFloat()
-                val healthBar = Table()
-                val healthPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot)
-                healthPartOfBar.color = when{
-                    healthPercent>2/3f -> Color.GREEN
-                    healthPercent>1/3f -> Color.ORANGE
-                    else -> Color.RED
+                if(viewable) {
+                    val healthBarSize = 100f
+                    val healthPercent = city.health / city.getMaxHealth().toFloat()
+                    val healthBar = Table()
+                    val healthPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot)
+                    healthPartOfBar.color = when {
+                        healthPercent > 2 / 3f -> Color.GREEN
+                        healthPercent > 1 / 3f -> Color.ORANGE
+                        else -> Color.RED
+                    }
+                    val emptyPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BLACK }
+                    healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
+                    healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
+                    add(healthBar).colspan(2).row()
                 }
-                val emptyPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= Color.BLACK }
-                healthBar.add(healthPartOfBar).width(healthBarSize*healthPercent).height(5f)
-                healthBar.add(emptyPartOfBar).width(healthBarSize*(1-healthPercent)).height(5f)
-                add(healthBar).colspan(2).row()
+
                 if(city.isCapital()){
                     val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
                     add(starImage).size(20f).padLeft(10f)
