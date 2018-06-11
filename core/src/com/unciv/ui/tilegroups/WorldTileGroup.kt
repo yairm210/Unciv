@@ -79,10 +79,23 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             cityButton!!.run {
                 clear()
+                val healthBarSize=100f
+                val healthPercent = city.health/city.getMaxHealth().toFloat()
+                val healthBar = Table()
+                val healthPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot)
+                healthPartOfBar.color = when{
+                    healthPercent>2/3f -> Color.GREEN
+                    healthPercent>1/3f -> Color.ORANGE
+                    else -> Color.RED
+                }
+                val emptyPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= Color.BLACK }
+                healthBar.add(healthPartOfBar).width(healthBarSize*healthPercent).height(5f)
+                healthBar.add(emptyPartOfBar).width(healthBarSize*(1-healthPercent)).height(5f)
+                add(healthBar).colspan(2).row()
                 if(city.isCapital()){
                     val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
                     add(starImage).size(20f).padLeft(10f)
-                }
+                } else{add()} // this is so the health bar is always 2 columns wide
                 add(label).pad(10f)
                 pack()
                 setOrigin(Align.center)
