@@ -170,8 +170,10 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         }
 
         if(attacker is MapUnitCombatant) {
-            if (attacker.unit.hasUnique("Can move after attacking"))
-                attacker.unit.currentMovement = max(0f, attacker.unit.currentMovement - 1)
+            if (attacker.unit.hasUnique("Can move after attacking")){
+                if(!attacker.getUnitType().isMelee() || !defender.isDefeated()) // if it was a melee attack and we won, then the unit ALREADY got movement points deducted, for the movement to the enemie's tile!
+                    attacker.unit.currentMovement = max(0f, attacker.unit.currentMovement - 1)
+            }
             else attacker.unit.currentMovement = 0f
             attacker.unit.attacksThisTurn+=1
             attacker.unit.action=null // for instance, if it was fortified
