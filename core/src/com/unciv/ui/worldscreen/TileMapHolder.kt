@@ -21,6 +21,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     internal fun addTiles() {
         val allTiles = Group()
+        val groupPadding = 300f // This is so that no tile will be stuck "on the side" and be unreachable or difficult to reach
 
         var topX = 0f
         var topY = 0f
@@ -53,12 +54,12 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
 
         for (group in tileGroups.values) {
-            group.moveBy(-bottomX + 50, -bottomY + 50)
+            group.moveBy(-bottomX + groupPadding, -bottomY + groupPadding)
         }
 
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
-        allTiles.setSize(100 + topX - bottomX, 100 + topY - bottomY)
+        allTiles.setSize(topX - bottomX + groupPadding*2, topY - bottomY + groupPadding*2)
 
 
         widget = allTiles
