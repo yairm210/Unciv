@@ -37,6 +37,7 @@
 	},
 	{
 		name:"Barbarians",
-		RGB:[200,200,200]
+		RGB:[200,200,200],
+		cities:["Barbar"] // this is to deal with a specific bug where they could capture settlers. They can't anymore and this should be removed by, say, 11.7.18
 	}
 ]

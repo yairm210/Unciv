@@ -141,7 +141,6 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         }
 
         postBattleAction(attacker,defender,attackedTile)
-
     }
 
     private fun postBattleAction(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo){
@@ -174,6 +173,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             if (attacker.unit.hasUnique("Can move after attacking"))
                 attacker.unit.currentMovement = max(0f, attacker.unit.currentMovement - 1)
             else attacker.unit.currentMovement = 0f
+            attacker.unit.attacksThisTurn+=1
             attacker.unit.action=null // for instance, if it was fortified
         }
     }

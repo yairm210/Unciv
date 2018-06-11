@@ -18,6 +18,7 @@ class MapUnit {
     var currentMovement: Float = 0f
     var health:Int = 100
     var action: String? = null // work, automation, fortifying, I dunno what.
+    var attacksThisTurn = 0
 
     fun getBaseUnit(): Unit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
@@ -167,6 +168,13 @@ class MapUnit {
         if (currentMovement == 0f) return false
         if (name == "Worker" && getTile().improvementInProgress != null) return false
         if (isFortified()) return false
+        return true
+    }
+
+    fun canAttack(): Boolean {
+        if(currentMovement==0f) return false
+        if(attacksThisTurn>0) return false
+        if(hasUnique("Must set up to ranged attack") && action != "Set Up") return false
         return true
     }
 }

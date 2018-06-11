@@ -2,13 +2,14 @@ package com.unciv.ui.worldscreen.unit
 
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
+import kotlin.math.max
 
 class UnitAction(var name: String, var action:()->Unit, var canAct:Boolean)
 
@@ -64,6 +65,11 @@ class UnitActions {
                                 && unit.currentMovement == unit.maxMovement.toFloat()  )
             }
         }
+
+        if(unit.hasUnique("Must set up to ranged attack") && unit.action != "Set Up")
+            actionList+=UnitAction("Set up",
+                    {unit.action="Set Up"; unit.currentMovement = max(0f, unit.currentMovement-1)},
+                    unit.currentMovement != 0f)
 
         if (unit.name == "Settler") {
             actionList += UnitAction("Found city",

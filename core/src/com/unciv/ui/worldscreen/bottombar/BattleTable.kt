@@ -119,7 +119,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attackerCanReachDefender = UnitAutomation().getAttackableEnemies(attacker.unit)
                 .contains(defender.getTile())
 
-        if(!attackerCanReachDefender || attacker.unit.currentMovement==0f) attackButton.disable()
+        if(!attackerCanReachDefender || !attacker.unit.canAttack()) attackButton.disable()
         else {
             attackButton.addClickListener {
                 if(attacker.isMelee())

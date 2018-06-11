@@ -86,6 +86,9 @@ class UnitAutomation{
         val enemyTileToAttack = getAttackableEnemies(unit).firstOrNull()
 
         if (enemyTileToAttack != null) {
+            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).firstOrNull{ it.name == "Set up" }
+            if(setupAction!=null) setupAction.action()
+
             val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack)!!
             val damageToAttacker = Battle(unit.civInfo.gameInfo).calculateDamageToAttacker(MapUnitCombatant(unit), enemy)
 
