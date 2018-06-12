@@ -10,10 +10,7 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addClickListener
-import com.unciv.ui.utils.centerX
+import com.unciv.ui.utils.*
 import java.util.*
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
@@ -24,12 +21,10 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var cityStatsTable = CityStatsTable(this)
     private var statExplainer = Table(skin)
     private var cityPickerTable = Table()
-    private var goToWorldButton = TextButton("Exit city", CameraStageBaseScreen.skin)
+    private var goToWorldButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
     private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
-        Label("", CameraStageBaseScreen.skin).style.font.data.setScale(1.5f)
-
         addTiles()
         stage.addActor(tileTable)
 
@@ -119,7 +114,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     private fun updateCityPickerTable() {
         cityPickerTable.clear()
-        cityPickerTable.row().pad(20f)
+        cityPickerTable.row()
 
         val civInfo = city.civInfo
         if (civInfo.cities.size > 1) {
@@ -130,12 +125,18 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     game.screen = CityScreen(civInfo.cities[indexOfNextCity])
                     dispose()
                 }
-            cityPickerTable.add(prevCityButton)
+            cityPickerTable.add(prevCityButton).pad(20f)
+        }
+
+        if(city.isCapital()){
+            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
+            cityPickerTable.add(starImage).size(20f).padRight(5f)
         }
 
         val currentCityLabel = Label(city.name+" ("+city.population.population+")", CameraStageBaseScreen.skin)
-        currentCityLabel.setFontScale(2f)
+        currentCityLabel.setFont(25)
         cityPickerTable.add(currentCityLabel)
+
 
         if (civInfo.cities.size > 1) {
             val nextCityButton = TextButton(">", CameraStageBaseScreen.skin)
@@ -145,20 +146,19 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     game.screen = CityScreen(civInfo.cities[indexOfNextCity])
                     dispose()
                 }
-            cityPickerTable.add(nextCityButton)
+            cityPickerTable.add(nextCityButton).pad(20f)
         }
         cityPickerTable.row()
 
-        if (civInfo.cities.size > 1) cityPickerTable.add()
         if(!city.isBeingRazed) {
-            val razeCityButton = TextButton("Raze city", skin)
+            val razeCityButton = TextButton("Raze city".tr(), skin)
             razeCityButton.addClickListener { city.isBeingRazed=true; update() }
-            cityPickerTable.add(razeCityButton)
+            cityPickerTable.add(razeCityButton).colspan(cityPickerTable.columns)
         }
         else{
-            val stopRazingCityButton = TextButton("Stop razing city", skin)
+            val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
             stopRazingCityButton.addClickListener { city.isBeingRazed=false; update() }
-            cityPickerTable.add(stopRazingCityButton)
+            cityPickerTable.add(stopRazingCityButton).colspan(cityPickerTable.columns)
         }
 
         cityPickerTable.pack()
@@ -174,8 +174,9 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 dispose()
             }
 
+        goToWorldButton.pad(5f)
         goToWorldButton.setSize(goToWorldButton.prefWidth, goToWorldButton.prefHeight)
-        goToWorldButton.setPosition(10f, stage.height - goToWorldButton.height - 5f)
+        goToWorldButton.setPosition(20f, stage.height - goToWorldButton.height - 20)
     }
 
     private fun addTiles() {
@@ -248,7 +249,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         tileTable.columnDefaults(0).padRight(10f)
 
         val cityStatsHeader = Label("Tile Stats", CameraStageBaseScreen.skin)
-        cityStatsHeader.setFontScale(2f)
+        cityStatsHeader.setFont(25)
         tileTable.add(cityStatsHeader).colspan(2).pad(10f)
         tileTable.row()
 

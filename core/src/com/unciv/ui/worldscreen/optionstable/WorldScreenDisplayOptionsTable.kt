@@ -8,6 +8,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.center
+import com.unciv.ui.worldscreen.WorldScreen
 
 class WorldScreenDisplayOptionsTable() : OptionsTable(){
     init {
@@ -35,6 +36,8 @@ class WorldScreenDisplayOptionsTable() : OptionsTable(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.language = languageSelectBox.selected;
                 GameSaver().setGeneralSettings(UnCivGame.Current.settings)
+                UnCivGame.Current.worldScreen = WorldScreen()
+                UnCivGame.Current.setWorldScreen()
             }
         })
 

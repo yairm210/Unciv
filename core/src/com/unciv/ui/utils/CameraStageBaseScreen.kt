@@ -91,6 +91,9 @@ open class CameraStageBaseScreen : Screen {
 
     companion object {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
+                .apply {
+                    get<TextButton.TextButtonStyle>(TextButton.TextButtonStyle::class.java).font = getFont(20)
+                    get<Label.LabelStyle>(Label.LabelStyle::class.java).font = getFont(18) }
         internal var batch: Batch = SpriteBatch()
     }
 
@@ -124,22 +127,30 @@ fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply 
 fun String.tr(): String {return GameBasics.Translations.get(this,UnCivGame.Current.settings.language)}
 
 fun getFont(size: Int): BitmapFont {
+//    var screenScale = Gdx.graphics.width / 1000f // screen virtual width as defined in CameraStageBaseScreen
+//    if(screenScale<1) screenScale=1f
+
     val generator = FreeTypeFontGenerator(Gdx.files.internal("skin/Roboto-Regular.ttf"))
     val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
     parameter.size = size
-    parameter.genMipMaps = true
-    parameter.minFilter = Texture.TextureFilter.MipMapLinearLinear
-    parameter.magFilter = Texture.TextureFilter.MipMapLinearLinear
+//    parameter.genMipMaps = true
+    parameter.minFilter = Texture.TextureFilter.Linear
+    parameter.magFilter = Texture.TextureFilter.Linear
     parameter.characters = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽabcčćdđefghijklmnopqrsštuvwxyzžАБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюяΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάΆέΈέΉίϊΐΊόΌύΰϋΎΫΏĂÂÊÔƠƯăâêôơư1234567890‘?’“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
+    //generator.scaleForPixelHeight(size)
+
+
     val font = generator.generateFont(parameter) // font size 12 pixels
+//    font.data.setScale(1f/screenScale)
     generator.dispose() // don't forget to dispose to avoid memory leaks!
     return font
 }
 
-fun Label.setFont(size:Int) {
+fun Label.setFont(size:Int): Label {
     style = Label.LabelStyle(style)
     style.font = getFont(size)
     style = style // because we need it to call the SetStyle function. Yuk, I know.
+    return this // for chaining
 }
 
 fun Actor.addClickListener(function: () -> Unit) {

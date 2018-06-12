@@ -7,6 +7,7 @@ import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.tr
 
 class VictoryScreen : PickerScreen() {
 
@@ -46,7 +47,7 @@ class VictoryScreen : PickerScreen() {
     }
 
     fun won(){
-        rightSideButton.setText("Start new game")
+        rightSideButton.setText("Start new game".tr())
         rightSideButton.isVisible=true
         closeButton.isVisible=false
         rightSideButton.addClickListener { UnCivGame.Current.startNewGame(true) }

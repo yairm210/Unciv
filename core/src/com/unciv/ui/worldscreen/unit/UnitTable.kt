@@ -7,6 +7,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){
@@ -50,12 +51,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if(unit.health<100) nameLabelText+=" ("+unit.health+")"
             unitNameLabel.setText(nameLabelText)
 
-            var unitLabelText = "Movement: " + unit.getMovementString()
+            var unitLabelText = "Movement".tr()+": " + unit.getMovementString()
             if (unit.getBaseUnit().unitType != UnitType.Civilian) {
-                unitLabelText += "\nStrength: " + unit.getBaseUnit().strength
+                unitLabelText += "\n"+"Strength".tr()+": " + unit.getBaseUnit().strength
             }
             if (unit.getBaseUnit().rangedStrength!=0)
-                unitLabelText += "\nRanged strength: "+unit.getBaseUnit().rangedStrength
+                unitLabelText += "\n"+"Ranged strength".tr()+": "+unit.getBaseUnit().rangedStrength
 
             if(unit.isFortified() && unit.getFortificationTurns()>0)
                 unitLabelText+="\n+"+unit.getFortificationTurns()*20+"% fortification"

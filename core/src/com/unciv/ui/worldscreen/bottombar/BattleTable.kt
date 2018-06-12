@@ -98,7 +98,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else if (damageToDefender>defender.getHealth()) damageToDefender=defender.getHealth()
 
 
-        if(attacker.isMelee() && (defender.getUnitType()==UnitType.Civilian || defender.getUnitType()==UnitType.City && defender.isDefeated())) {
+        if(attacker.isMelee() && (defender.getUnitType()==UnitType.Civilian
+                        || defender.getUnitType()==UnitType.City && defender.isDefeated())) {
             add("")
             add("Captured!")
         }

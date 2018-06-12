@@ -8,10 +8,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
 import com.unciv.ui.pickerscreens.ConstructionPickerScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addClickListener
-import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.*
 import java.util.*
 
 class CityStatsTable(val cityScreen: CityScreen) : Table(){
@@ -25,7 +22,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
 
         val cityStatsHeader = Label("City Stats", CameraStageBaseScreen.skin)
 
-        cityStatsHeader.setFontScale(2f)
+        cityStatsHeader.setFont(15)
         add(cityStatsHeader).colspan(2).pad(10f)
         row()
 
@@ -64,7 +61,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
                 !(construction is Building && construction.isWonder)) {
             row()
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
-            val buildingBuyButton = TextButton("Buy for \r\n$buildingGoldCost gold", CameraStageBaseScreen.skin)
+            val buildingBuyButton = TextButton("Buy for".tr()+"\r\n$buildingGoldCost gold", CameraStageBaseScreen.skin)
             buildingBuyButton.addClickListener {
                 city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
                 update()

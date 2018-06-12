@@ -2,17 +2,13 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.addClickListener
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
@@ -41,7 +37,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
         notificationsScroll.width = stage.width/3
-        Label("", skin).style.font.data.setScale(1.5f)
         minimap.setSize(stage.width/5,stage.height/5)
         minimap.x = stage.width - minimap.width
 
@@ -108,7 +103,7 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     private fun createNextTurnButton(): TextButton {
-        val nextTurnButton = TextButton("Next turn", CameraStageBaseScreen.skin)
+        val nextTurnButton = TextButton("Next turn".tr(), CameraStageBaseScreen.skin)
         nextTurnButton.addClickListener {
             if (civInfo.tech.freeTechs != 0) {
                 game.screen = TechPickerScreen(true, civInfo)
@@ -134,7 +129,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 shouldUpdate=true
                 GameSaver().saveGame(game.gameInfo, "Autosave")
 
-                nextTurnButton.setText("Next turn")
+                nextTurnButton.setText("Next turn".tr())
                 nextTurnButton.enable()
                 Gdx.input.inputProcessor = stage
             }
