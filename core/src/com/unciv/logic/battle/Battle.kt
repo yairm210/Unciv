@@ -145,15 +145,15 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
 
     private fun postBattleAction(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo){
 
-        if (defender.getCivilization().isPlayerCivilization()) {
+        if(attacker.getCivilization()!=defender.getCivilization()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
             val whatHappenedString =
                     if (attacker.isDefeated()) " was destroyed while attacking"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
             val defenderString =
-                    if (defender.getUnitType() == UnitType.City) " "+defender.getName()
+                    if (defender.getUnitType() == UnitType.City) " " + defender.getName()
                     else " our " + defender.getName()
             val notificationString = "An enemy " + attacker.getName() + whatHappenedString + defenderString
-            gameInfo.getPlayerCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
+            defender.getCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
 
@@ -224,6 +224,8 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
     fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
         if(attacker.getCivilization().isBarbarianCivilization()) defender.takeDamage(100) // barbarians don't capture civilians!
         val capturedUnit = (defender as MapUnitCombatant).unit
+        capturedUnit.civInfo.addNotification("Our "+defender.getName()+" was captured by an enemy "+attacker.getName(),
+                defender.getTile().position, Color.RED)
         capturedUnit.civInfo = attacker.getCivilization()
         capturedUnit.owner = capturedUnit.civInfo.civName
     }
