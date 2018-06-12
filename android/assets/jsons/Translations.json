@@ -1,6 +1,89 @@
 {
-	"Next turn":
-	{
+	"Next turn":{
 		Spanish:"июня"
+	}
+	
+	"Turn":{ // For main screen at top left, e.g. Turn 234
+	}
+	
+	"turns":{ // for e.g. turns to technology
+	
+	}
+
+	// Unit
+	"Movement":{
+	}
+
+	"Strength":{
+	}
+
+	"Ranged strength":{
+	}
+
+	"Move unit":{
+	}
+
+	"Stop movement":{
+	}
+
+	"Construct improvement":{
+	}
+
+	"Automate":{
+	}
+
+	"Fortify":{
+	}
+
+	"Health":{
+	}
+
+	// Stats
+	"Gold":{
+	}
+	"Science":{
+	}
+	"Happiness":{
+	}
+	"Culture":{
+	}
+	"Food":{
+	}
+
+	
+	// Menu table
+
+	"Start new game":{
+	}
+	
+	"Save game":{
+	}
+	
+	"Load game":{
+	}
+
+	"Victory status":{
+	}
+
+	"Social policies":{
+	}
+
+	"Display options":{
+	}
+
+	"Close":{
+	}
+
+	// City screen
+	"Exit city":{
+	}
+
+	"Raze city":{
+	}
+
+	"Stop razing city":{
+	}
+
+	"Buy for":{ // as in "Buy for X gold"
 	}
 }
