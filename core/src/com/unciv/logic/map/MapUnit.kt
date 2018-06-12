@@ -113,6 +113,7 @@ class MapUnit {
 
     fun startTurn(){
         currentMovement = maxMovement.toFloat()
+        attacksThisTurn=0
         doPreTurnAction()
     }
 

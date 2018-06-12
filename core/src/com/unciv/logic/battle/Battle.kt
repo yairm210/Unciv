@@ -163,8 +163,10 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             conquerCity((defender as CityCombatant).city, attacker)
         }
 
+        // we're a melee unit and we destroyed\captured an enemy unit
         else if (attacker.isMelee() && (defender.isDefeated() || defender.getCivilization()==attacker.getCivilization() )) {
-            if(attackedTile.civilianUnit!=null)
+            // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
+            if(attackedTile.civilianUnit!=null && attackedTile.civilianUnit!!.civInfo != attacker.getCivilization())
                 captureCivilianUnit(attacker,MapUnitCombatant(attackedTile.civilianUnit!!))
             (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
         }
@@ -222,7 +224,10 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
     }
 
     fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
-        if(attacker.getCivilization().isBarbarianCivilization()) defender.takeDamage(100) // barbarians don't capture civilians!
+        if(attacker.getCivilization().isBarbarianCivilization()){
+            defender.takeDamage(100)
+            return
+        } // barbarians don't capture civilians!
         val capturedUnit = (defender as MapUnitCombatant).unit
         capturedUnit.civInfo.addNotification("Our "+defender.getName()+" was captured by an enemy "+attacker.getName(),
                 defender.getTile().position, Color.RED)
