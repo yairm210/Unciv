@@ -138,6 +138,8 @@ class CityInfo {
             if(population.population==0){
                 civInfo.addNotification("$name has been razed to the ground!",location, Color.RED)
                 civInfo.cities.remove(this)
+                if(isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
+                    civInfo.cities.first().cityConstructions.builtBuildings.add("Palace")
             }
         }
 
