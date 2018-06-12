@@ -29,7 +29,6 @@ open class PickerScreen : CameraStageBaseScreen() {
 
         descriptionLabel = Label("", CameraStageBaseScreen.skin)
         descriptionLabel.setWrap(true)
-        descriptionLabel.setFontScale(1.5f)
         val labelScroll = ScrollPane(descriptionLabel)
         bottomTable.add(labelScroll).pad(5f).width(stage.width / 2)
 

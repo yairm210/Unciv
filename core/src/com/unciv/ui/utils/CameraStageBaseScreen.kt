@@ -93,7 +93,11 @@ open class CameraStageBaseScreen : Screen {
         var skin = Skin(Gdx.files.internal("skin/flat-earth-ui.json"))
                 .apply {
                     get<TextButton.TextButtonStyle>(TextButton.TextButtonStyle::class.java).font = getFont(20)
-                    get<Label.LabelStyle>(Label.LabelStyle::class.java).font = getFont(18) }
+                    get<Label.LabelStyle>(Label.LabelStyle::class.java).font = getFont(18)
+                    get<TextField.TextFieldStyle>(TextField.TextFieldStyle::class.java).font = getFont(18)
+                    get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).font = getFont(20)
+                    get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).listStyle.font = getFont(20)
+                }
         internal var batch: Batch = SpriteBatch()
     }
 

@@ -5,27 +5,27 @@
 	/* Ancient Era */
 	{
 		name:"Worker",
+		unitType:"Civilian",
 		baseDescription: "Can build improvements on tiles", 
 		movement:2,
-		unitType:"Civilian",
 		hurryCostModifier:20,
 		cost:70
 	},
 	{
 		name:"Settler",
+		unitType:"Civilian",
 		baseDescription: "Founds a new city", 
 		movement:2,
-		unitType:"Civilian",
 		cost:106,
 		hurryCostModifier:20
 	},
 	{
 		name:"Scout",
-		cost:25,
 		unitType:"Scout",
+		movement:2,
 		strength:5,
+		cost:25,
 		uniques:["Ignores terrain cost"]
-		movement:2
 	},
 	{
 		name:"Warrior",
