@@ -126,7 +126,11 @@ fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
 fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
 fun String.tr(): String {return GameBasics.Translations.get(this,UnCivGame.Current.settings.language)}
 
+
+
+val fontCache = HashMap<Int,BitmapFont>()
 fun getFont(size: Int): BitmapFont {
+    if(fontCache.containsKey(size)) return fontCache[size]!!
 //    var screenScale = Gdx.graphics.width / 1000f // screen virtual width as defined in CameraStageBaseScreen
 //    if(screenScale<1) screenScale=1f
 
@@ -140,9 +144,10 @@ fun getFont(size: Int): BitmapFont {
     //generator.scaleForPixelHeight(size)
 
 
-    val font = generator.generateFont(parameter) // font size 12 pixels
+    val font = generator.generateFont(parameter)
 //    font.data.setScale(1f/screenScale)
     generator.dispose() // don't forget to dispose to avoid memory leaks!
+    fontCache[size]=font
     return font
 }
 

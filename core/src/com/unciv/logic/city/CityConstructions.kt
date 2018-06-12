@@ -51,7 +51,7 @@ class CityConstructions {
     fun getProductionForTileInfo(): String {
         var result = currentConstruction
         if (result != "Science" && result != "Gold")
-            result += "\r\nin " + turnsToConstruction(currentConstruction) + " turns,\r\n"
+            result += "\r\nin " + turnsToConstruction(currentConstruction) + " turns"
         return result
     }
 
