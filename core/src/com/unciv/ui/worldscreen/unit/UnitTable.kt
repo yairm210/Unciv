@@ -38,11 +38,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null)
         {
-            try{ selectedUnit!!.getTile()}
-            catch(ex:Exception) {
-                selectedUnit=null;
-                currentlyExecutingAction=null
-            } // The unit that was there no longer exists}
+            if(selectedUnit!!.civInfo != worldScreen.civInfo) { // The unit that was selected, was captured. It exists but is no longer ours.
+                selectedUnit = null
+                currentlyExecutingAction = null
+            }
+            else {
+                try {
+                    selectedUnit!!.getTile()
+                } catch (ex: Exception) { // The unit that was there no longer exists}
+                    selectedUnit = null
+                    currentlyExecutingAction = null
+                }
+            }
         }
 
         if(selectedUnit!=null) {
