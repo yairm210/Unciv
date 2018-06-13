@@ -1,89 +1,199 @@
 {
 	"Next turn":{
-		Spanish:"июня"
+		Italian:"Turno successivo"
+		Russian:"Следующий чод"
+		French:"Tour prochain"
+		Romanian:"Runda urmatoare"
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
+		Italian:"Turno"
+		Russian:"Ход"
+		French:"Tour"
+		Romanian:"Runda"
 	}
 	
 	"turns":{ // for e.g. turns to technology
-	
+		Italian:"Turni"
+		Russian:"Ходов"
+		French:"Tours"
+		Romanian:"Runde"
 	}
 
 	// Unit
 	"Movement":{
+		Italian:"Movimento"
+		Russian:"Переместить"
+		French:"Deplacer"
+		Romanian:"Mișcare"
 	}
 
 	"Strength":{
+		Italian:"Forza"
+		Russian:"Сила"
+		French:"Force"
+		Romanian:"Putere"
 	}
 
 	"Ranged strength":{
+		Italian:"Forza a distanza"
+		Russian:"Дальний бой"
+		French:"Force à distance"
+		Romanian:"Puterea la distanta"
 	}
 
 	"Move unit":{
+		Italian:"Sposta unità"
+		Russian:"Переместить юнит"
+		French:"Dèplacer unité"
+		Romanian:"Mutați unitatea"
 	}
 
 	"Stop movement":{
+		Italian:"Ferma movimento"
+		Russian:"Отмена деиствья"
+		French:"Arrêter le mouvement"
+		Romanian:"Opriți mișcarea"
 	}
 
 	"Construct improvement":{
+		Italian:"Migliorare costruzione"
+		Russian:"Улучшыть строение"
+		French:"Amèlioré construcion"
+		Romanian:"îmbunătățirea construcției"
 	}
 
 	"Automate":{
+		Italian:"Automatizzare"
+		Russian:"Автоматизацыя"
+		French:"Automacion"
+		Romanian:"Automatizare"
 	}
 
 	"Fortify":{
+		Italian:"Fortifica"
+		Russian:"Укрепить"
+		French:"Fortifier"
+		Romanian:"Fortifica"
 	}
 
 	"Health":{
+		Italian:"Salute"
+		Russian:"Здоровье"
+		French:"Santé"
+		Romanian:"Sanatate"
 	}
 
 	// Stats
 	"Gold":{
+		Italian:"Oro"
+		Russian:"Золото"
+		French:"Or"
+		Romanian:"Aur"
 	}
 	"Science":{
+		Italian:"Scienza"
+		Russian:"Наука
+		French:"Science"
+		Romanian:"Ştiinţă"
 	}
 	"Happiness":{
+		Italian:"Felicità"
+		Russian:"Счастье"
+		French:"Bonheur"
+		Romanian:"Fericire"
 	}
 	"Culture":{
+		Italian:"Cultura"
+		Russian:"Культура"
+		French:"Culture"
+		Romanian:"Cultură"
 	}
 	"Food":{
+		Italian:"Cibo"
+		Russian:"ИДА"
+		French:"Nourriture"
+		Romanian:"Hrană"
 	}
 
 	
 	// Menu table
 
 	"Start new game":{
+		Italian:"Nuovo gioco"
+		Russian:"Новая игра"
+		French:"Nouveau jeu"
+		Romanian:"Joc nou"
 	}
 	
 	"Save game":{
+		Italian:"Salvataggio"
+		Russian:"Сохранить игру"
+		French:"Sauvegarder la partie"
+		Romanian:"Salveaza jocul"
 	}
 	
 	"Load game":{
+		Italian:"Carica gioco"
+		Russian:"Загрузить игру"
+		French:"Chargement du jeu"
+		Romanian:"Incarca jocul"
 	}
 
 	"Victory status":{
+		Italian:"Stato di vittoria"
+		Russian:"Статус победы"
+		French:"Statut de la victoire"
+		Romanian:"Statutul victoriei"
 	}
 
 	"Social policies":{
+		Italian:"Politiche sociali"
+		Russian:"Социальная политика"
+		French:"Politiques sociales"
+		Romanian:"Politici sociale"
 	}
 
 	"Display options":{
+		Italian:"Opzioni display"
+		Russian:"Параметры экрана"
+		French:"Option d'affichage"
+		Romanian:"Opțiuni ecran"
 	}
 
 	"Close":{
+		Italian:"Chiudi"
+		Russian:"Закрыть"
+		French:"Fermer"
+		Romanian:"Inchide"
 	}
 
 	// City screen
 	"Exit city":{
+		Italian:"Esci dalla città"
+		Russian:"Выход из города"
+		French:"Quitter la ville"
+		Romanian:"Ieșiți din oraș"
 	}
 
 	"Raze city":{
+		Italian:"Demolizione città"
+		Russian:"Разрущение города"
+		French:"Demolition de la ville"
+		Romanian:"Demolarea orașului"
 	}
 
 	"Stop razing city":{
+		Italian:"Anulla demolizione città"
+		Russian:"Отменить разрущение города"
+		French:"Anuller demolition de la ville"
+		Romanian:"Anuleaza demolarea orașului"
 	}
 
 	"Buy for":{ // as in "Buy for X gold"
+		Italian:"Compra con"
+		Russian:"Купить с"
+		French:"Acheter avec"
+		Romanian:"Cumpara cu"
 	}
 }
