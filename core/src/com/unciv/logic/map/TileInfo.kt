@@ -9,6 +9,7 @@ import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.tr
 
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
@@ -156,7 +157,7 @@ open class TileInfo {
         if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!)
         if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus)
         if (improvement != null) SB.appendln(improvement!!)
-        if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} turns")
+        if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} "+"turns".tr())
         val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
         if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name)
         if(militaryUnit!=null && isViewableToPlayer){

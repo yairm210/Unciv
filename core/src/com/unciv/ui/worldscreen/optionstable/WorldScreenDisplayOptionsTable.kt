@@ -8,6 +8,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.center
+import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.WorldScreen
 
 class WorldScreenDisplayOptionsTable() : OptionsTable(){
@@ -42,7 +43,7 @@ class WorldScreenDisplayOptionsTable() : OptionsTable(){
         })
 
 
-        addButton("Close"){ remove() }
+        addButton("Close".tr()){ remove() }
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)

@@ -96,7 +96,7 @@ class WorldScreen : CameraStageBaseScreen() {
             techButton.setText("Choose a tech!")
         else
             techButton.setText(civInfo.tech.currentTechnology() + "\r\n"
-                    + civInfo.tech.turnsToTech(civInfo.tech.currentTechnology()!!) + " turns")
+                    + civInfo.tech.turnsToTech(civInfo.tech.currentTechnology()!!) + " "+"turns".tr())
 
         techButton.setSize(techButton.prefWidth, techButton.prefHeight)
         techButton.setPosition(10f, topBar.y - techButton.height - 5f)

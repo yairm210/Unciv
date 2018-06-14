@@ -28,7 +28,7 @@ class WorldScreenOptionsTable internal constructor() : OptionsTable() {
 
         addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
 
-        addButton("Social Policies".tr()){
+        addButton("Social policies".tr()){
             UnCivGame.Current.screen = PolicyPickerScreen(UnCivGame.Current.gameInfo.getPlayerCivilization())
         }
 

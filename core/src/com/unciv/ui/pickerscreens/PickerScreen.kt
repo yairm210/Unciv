@@ -7,10 +7,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.tr
 
 open class PickerScreen : CameraStageBaseScreen() {
 
-    internal var closeButton: TextButton = TextButton("Close", CameraStageBaseScreen.skin)
+    internal var closeButton: TextButton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
     protected var descriptionLabel: Label
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton

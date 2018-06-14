@@ -34,6 +34,6 @@ class Translations() : HashMap<String, HashMap<String, String>>(){
     }
 
     fun getLanguages(): List<String> {
-        return mutableListOf("English").apply { addAll(values.flatMap { it.keys }) }
+        return mutableListOf("English").apply { addAll(values.flatMap { it.keys }.distinct()) }
     }
 }

@@ -7,6 +7,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.tr
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     private var selectedProduction: String? = null
@@ -49,7 +50,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         for (building in GameBasics.Buildings.values) {
             if (!building.isBuildable(cityConstructions) && building.name!=cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
-                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " turns",
+                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " "+"turns".tr(),
                     building.getDescription(true, civInfo.policies.getAdoptedPolicies()),
                     "Build " + building.name)
             if (building.isWonder)
@@ -60,7 +61,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
 
         for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
             units.addActor(getProductionButton(unit.name,
-                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " turns",
+                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " "+"turns".tr(),
                     unit.getDescription(true), "Train " + unit.name))
         }
 

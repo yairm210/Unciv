@@ -5,6 +5,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.tr
 import java.util.*
 
 
@@ -44,14 +45,14 @@ class CityConstructions {
     fun getCityProductionTextForCityButton(): String {
         var result = currentConstruction
         if (result != "Science" && result != "Gold")
-            result += "\r\n" + turnsToConstruction(currentConstruction) + " turns"
+            result += "\r\n" + turnsToConstruction(currentConstruction) + " "+"turns".tr()
         return result
     }
 
     fun getProductionForTileInfo(): String {
         var result = currentConstruction
         if (result != "Science" && result != "Gold")
-            result += "\r\nin " + turnsToConstruction(currentConstruction) + " turns"
+            result += "\r\nin " + turnsToConstruction(currentConstruction) + " "+"turns".tr()
         return result
     }
 

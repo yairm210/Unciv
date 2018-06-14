@@ -74,7 +74,7 @@ open class CameraStageBaseScreen : Screen {
         label.setAlignment(Align.center)
         tutorialTexts.removeAt(0)
         tutorialTable.add(label).pad(10f).row()
-        val button = TextButton("Close", skin)
+        val button = TextButton("Close".tr(), skin)
         button.addClickListener {
                 tutorialTable.remove()
                 if (!tutorialTexts.isEmpty())

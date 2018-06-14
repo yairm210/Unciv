@@ -9,6 +9,7 @@ import com.unciv.models.gamebasics.Technology
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.tr
 import java.util.*
 
 class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
@@ -98,7 +99,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 text += " (" + techsToResearch.indexOf(techName) + ")"
             }
 
-            if (!civTech.isResearched(techName)) text += "\r\n" + turnsToTech[techName] + " turns"
+            if (!civTech.isResearched(techName)) text += "\r\n" + turnsToTech[techName] + " "+"turns".tr()
             TB.setText(text)
         }
     }
