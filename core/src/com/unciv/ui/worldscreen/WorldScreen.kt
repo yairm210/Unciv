@@ -138,6 +138,9 @@ class WorldScreen : CameraStageBaseScreen() {
             if(civInfo.happiness<0)
                 displayTutorials("Unhappiness")
 
+            if(civInfo.goldenAges.isGoldenAge())
+                displayTutorials("GoldenAge")
+
             if(gameInfo.turns>=100)
                 displayTutorials("ContactMe")
         }

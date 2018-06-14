@@ -167,7 +167,10 @@ class CityStats {
 
     private fun getStatPercentBonusesFromGoldenAge(isGoldenAge: Boolean): Stats {
         val stats = Stats()
-        if (isGoldenAge) stats.production += 20f
+        if (isGoldenAge){
+            stats.production += 20f
+            stats.culture += 20f
+        }
         return stats
     }
 

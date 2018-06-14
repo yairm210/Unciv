@@ -21,7 +21,7 @@
 	CityEntered: [
 		[
 			"Welcome to your first city!",
-			"As on now, you only have 1 population,",
+			"As of now, you only have 1 population,",
 			"  but this will grow when you amass enough surplus food"
 		],
 		[
@@ -176,10 +176,22 @@
 		],
 		[
 			"Unhappiness has two main causes: Population and cities",
-			"  Each city causes 3 unhappiness, and each population, 1",
+			"  Each city causes 3 unhappiness, and each population, 1"
+		],
+		[
 			"There are 2 main ways to combat unhappiness:",
 			"  by building happiness buildings for your population",
 			"  or by having improved luxury resources within your borders"
+		]
+	],
+	
+	GoldenAge:  [
+		[
+			"You have entered a golden age!",
+			"Golden age points are accumulated each turn by the total happiness ",
+			"  of your civilization",
+			"When in a golden age, culture and production generation increases +20%,",
+			"  and every tile already providing at least one gold will provide an extra gold."
 		]
 	],
 	

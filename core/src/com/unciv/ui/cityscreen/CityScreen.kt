@@ -248,11 +248,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         tileTable.pad(20f)
         tileTable.columnDefaults(0).padRight(10f)
 
-        val cityStatsHeader = Label("Tile Stats", CameraStageBaseScreen.skin)
-        cityStatsHeader.setFont(25)
-        tileTable.add(cityStatsHeader).colspan(2).pad(10f)
-        tileTable.row()
-
         tileTable.add(Label(selectedTile!!.toString(), CameraStageBaseScreen.skin)).colspan(2)
         tileTable.row()
 

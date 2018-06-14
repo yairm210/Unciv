@@ -10,6 +10,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter.getImage
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.setFont
 
 
 class BuildingsTable(private val cityScreen: CityScreen) : Table() {
@@ -32,7 +33,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
 
         fun createLabel(text:String): Label {
             val label = Label(text, skin)
-            label.setFontScale(1.5f)
+            label.setFont(20)
             label.color = Color.GREEN
             return label
         }
