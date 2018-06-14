@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.ui.utils.tr
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
@@ -229,7 +230,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             return
         } // barbarians don't capture civilians!
         val capturedUnit = (defender as MapUnitCombatant).unit
-        capturedUnit.civInfo.addNotification("Our "+defender.getName()+" was captured by an enemy "+attacker.getName(),
+        capturedUnit.civInfo.addNotification("An enemy ".tr()+attacker.getName()+" has captured our "+defender.getName()+"!",
                 defender.getTile().position, Color.RED)
         capturedUnit.civInfo = attacker.getCivilization()
         capturedUnit.owner = capturedUnit.civInfo.civName

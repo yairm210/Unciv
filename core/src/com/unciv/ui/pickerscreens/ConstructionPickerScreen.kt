@@ -33,7 +33,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
             dispose()
         }
 
-        rightSideButton.setText("Pick building")
+        rightSideButton.setText("Pick construction".tr())
         rightSideButton.addClickListener {
             city.cityConstructions.currentConstruction = selectedProduction!!
             city.cityStats.update() // Because maybe we set/removed the science or gold production options.

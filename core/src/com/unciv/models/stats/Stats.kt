@@ -1,5 +1,7 @@
 package com.unciv.models.stats
 
+import com.unciv.ui.utils.tr
+
 
 open class Stats() {
     var production: Float=0f
@@ -47,7 +49,7 @@ open class Stats() {
 
     override fun toString(): String {
         return toHashMap().filter { it.value != 0f }
-                .map {  (if(it.value>0)"+" else "") + it.value.toInt()+" "+it.key.toString() }.joinToString()
+                .map {  (if(it.value>0)"+" else "") + it.value.toInt()+" "+it.key.toString().tr() }.joinToString()
     }
 
     fun toHashMap(): HashMap<Stat, Float> {

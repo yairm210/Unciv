@@ -81,6 +81,9 @@
 		Romanian:"Fortifica"
 	}
 
+	"Set up":{ // For siege units
+	}
+
 	"Health":{
 		Italian:"Salute"
 		Russian:"Здоровье"
@@ -203,28 +206,73 @@
 
 	"Maintainance cost":{
 	}
+	
+	
+	"Pick construction":{ // eg Build Granary
+	}
+	
+	"Build":{ // eg Build Granary
+	}
+	
+	"Train":{ // eg Train Scout
+	}
 
 	// Notifications
-	" has grown":{ // eg Alexandria has grown
+	// Some notifications have an exclamation mark after them - is the exclamation mark different in other languages?
+	// If so then we need to deal with that as well
+	// I remember that some languages have upside-down question marks before to mark a question
+	
+	" has grown":{
+	}
+	
+	" has been founded!":{
+	}
+	
+	" has been razed to the ground!":{
+	}
+	
+	"We have conquered the city of ":{
+	}
+	
+	"Research of ":{ // For technology notifications EG Research of Writing has completed
+	}
+	
+	" has completed":{
 	}
 
-	" is starving":{
+	" is starving!":{
+	}
+	
+	"has been built in":{
+	}
+	
+	"Work has started on":{
+	}
+	
+	"Cannot continue work on":{
 	}
 
-	" has expanded its borders":{ // eg Alexandria has grown
+	" has expanded its borders":{
 	}
 
 	"An enemy ":{
 	}
 
-	" has attacked our ":{ // eg Alexandria has grown
+	" has attacked ":{
 	}
 
-	" has destroyed our ":{ // eg Alexandria has grown
+	" has destroyed ":{
 	}
-
-
-
-
+	
+	" has captured ":{
+	}
+	
+	" revealed near ":{ // As in "Coal revealed near London"
+	}
+	
+	"The civilization of":{
+	}
+	"has been destroyed!":{
+	}
 
 }

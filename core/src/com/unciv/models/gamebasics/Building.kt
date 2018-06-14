@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.tr
 
 class Building : NamedStats(), IConstruction{
     private var baseDescription: String? = null
@@ -105,11 +106,11 @@ class Building : NamedStats(), IConstruction{
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
         if (this.percentStatBonus != null) {
-            if (this.percentStatBonus!!.production != 0f) stringBuilder.append("+" + this.percentStatBonus!!.production.toInt() + "% production\r\n")
-            if (this.percentStatBonus!!.gold != 0f) stringBuilder.append("+" + this.percentStatBonus!!.gold.toInt() + "% gold\r\n")
-            if (this.percentStatBonus!!.science != 0f) stringBuilder.append("+" + this.percentStatBonus!!.science.toInt() + "% science\r\n")
-            if (this.percentStatBonus!!.food != 0f) stringBuilder.append("+" + this.percentStatBonus!!.food.toInt() + "% food\r\n")
-            if (this.percentStatBonus!!.culture != 0f) stringBuilder.append("+" + this.percentStatBonus!!.culture.toInt() + "% culture\r\n")
+            if (this.percentStatBonus!!.production != 0f) stringBuilder.append("+" + this.percentStatBonus!!.production.toInt() + "% "+"Production".tr()+"\r\n")
+            if (this.percentStatBonus!!.gold != 0f) stringBuilder.append("+" + this.percentStatBonus!!.gold.toInt() + "% "+"Gold".tr()+"\r\n")
+            if (this.percentStatBonus!!.science != 0f) stringBuilder.append("+" + this.percentStatBonus!!.science.toInt() + "% "+"Science".tr()+"\r\n")
+            if (this.percentStatBonus!!.food != 0f) stringBuilder.append("+" + this.percentStatBonus!!.food.toInt() + "% "+"Food".tr()+"\r\n")
+            if (this.percentStatBonus!!.culture != 0f) stringBuilder.append("+" + this.percentStatBonus!!.culture.toInt() + "% "+"Culture".tr()+"\r\n")
         }
         if (this.greatPersonPoints != null) {
             val gpp = this.greatPersonPoints!!
