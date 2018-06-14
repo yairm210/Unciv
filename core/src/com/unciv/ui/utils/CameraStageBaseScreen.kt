@@ -71,7 +71,6 @@ open class CameraStageBaseScreen : Screen {
         tutorialTable.background(ImageGetter.getDrawable(ImageGetter.WhiteDot)
                 .tint(Color(0x101050cf)))
         val label = Label(tutorialTexts[0], skin)
-        label.setFontScale(1.5f)
         label.setAlignment(Align.center)
         tutorialTexts.removeAt(0)
         tutorialTable.add(label).pad(10f).row()

@@ -135,6 +135,9 @@ class WorldScreen : CameraStageBaseScreen() {
             }
             displayTutorials("NextTurn")
 
+            if(civInfo.happiness<0)
+                displayTutorials("Unhappiness")
+
             if(gameInfo.turns>=100)
                 displayTutorials("ContactMe")
         }

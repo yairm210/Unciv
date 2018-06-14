@@ -168,4 +168,19 @@
 		]
 	],
 	
+	Unhappiness:  [
+		[
+			"It seems that your citizens are unhappy!",
+			"While unhappy, cities  will grow at 1/4 the speed,",
+			"  and your units will suffer a 2% penalty for each unhappiness"
+		],
+		[
+			"Unhappiness has two main causes: Population and cities",
+			"  Each city causes 3 unhappiness, and each population, 1",
+			"There are 2 main ways to combat unhappiness:",
+			"  by building happiness buildings for your population",
+			"  or by having improved luxury resources within your borders"
+		]
+	],
+	
 }
