@@ -50,7 +50,6 @@ class CivilopediaScreen : CameraStageBaseScreen() {
 
         nameList.style = List.ListStyle(nameList.style)
         nameList.style.fontColorSelected = Color.BLACK
-        nameList.style.font.data.setScale(1.5f)
 
         val buttons = ArrayList<Button>()
         var first = true
@@ -74,7 +73,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
                 first = false
                 buttonClicked()
             }
-            button.label.setFontScale(0.7f)
+
             buttonTable.add(button).width(button.width * 0.7f)
         }
 

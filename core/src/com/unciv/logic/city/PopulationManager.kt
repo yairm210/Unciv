@@ -46,7 +46,6 @@ class PopulationManager {
         // starvation!
         {
             population--
-            unassignExtraPopulation()
             foodStored = 0
             cityInfo.civInfo.addNotification(cityInfo.name + " is starving!", cityInfo.location, Color.RED)
         }
