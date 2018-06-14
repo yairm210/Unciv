@@ -12,6 +12,10 @@
 		French:"Tour"
 		Romanian:"Runda"
 	}
+
+	"in "{ // As in "Opera House in 3 turns"
+		
+	}
 	
 	"turns":{ // for e.g. turns to technology
 		Italian:"Turni"
@@ -196,4 +200,31 @@
 		French:"Acheter avec"
 		Romanian:"Cumpara cu"
 	}
+
+	"Maintainance cost":{
+	}
+
+	// Notifications
+	" has grown"{ // eg Alexandria has grown
+	}
+
+	" is starving"{
+	}
+
+	" has expanded its borders"{ // eg Alexandria has grown
+	}
+
+	"An enemy "{
+	}
+
+	" has attacked our "{ // eg Alexandria has grown
+	}
+
+	" has destroyed our "{ // eg Alexandria has grown
+	}
+
+
+
+
+
 }
