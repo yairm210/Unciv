@@ -45,7 +45,7 @@
 		rangedStrength:7,
 		cost: 40,
 		hurryCostModifier:20
-		requiredTech:"Ranged",
+		requiredTech:"Archery",
 		obsoleteTech:"Machinery",
 		upgradesTo:"Crossbowman"
 	},

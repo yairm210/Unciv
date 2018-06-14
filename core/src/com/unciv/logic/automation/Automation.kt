@@ -85,7 +85,7 @@ class Automation {
             chosenUnit = combatUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
 
         else{ // randomize type of unit and takee the most expensive of its kind
-            val chosenUnitType = combatUnits.map { it.unitType }.distinct().getRandom()
+            val chosenUnitType = combatUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.getRandom()
             chosenUnit = combatUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
         }
 

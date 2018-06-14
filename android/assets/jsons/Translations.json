@@ -13,7 +13,7 @@
 		Romanian:"Runda"
 	}
 
-	"in "{ // As in "Opera House in 3 turns"
+	"in ":{ // As in "Opera House in 3 turns"
 		
 	}
 	
@@ -97,7 +97,7 @@
 	}
 	"Science":{
 		Italian:"Scienza"
-		Russian:"Наука
+		Russian:"Наука"
 		French:"Science"
 		Romanian:"Ştiinţă"
 	}
@@ -205,22 +205,22 @@
 	}
 
 	// Notifications
-	" has grown"{ // eg Alexandria has grown
+	" has grown":{ // eg Alexandria has grown
 	}
 
-	" is starving"{
+	" is starving":{
 	}
 
-	" has expanded its borders"{ // eg Alexandria has grown
+	" has expanded its borders":{ // eg Alexandria has grown
 	}
 
-	"An enemy "{
+	"An enemy ":{
 	}
 
-	" has attacked our "{ // eg Alexandria has grown
+	" has attacked our ":{ // eg Alexandria has grown
 	}
 
-	" has destroyed our "{ // eg Alexandria has grown
+	" has destroyed our ":{ // eg Alexandria has grown
 	}
 
 

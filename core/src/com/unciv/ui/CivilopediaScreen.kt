@@ -74,7 +74,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
                 buttonClicked()
             }
 
-            buttonTable.add(button).width(button.width * 0.7f)
+            buttonTable.add(button)
         }
 
         val sp = ScrollPane(nameList)
