@@ -4,10 +4,11 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
 
 class Automation {
@@ -41,9 +42,20 @@ class Automation {
             civInfo.policies.adopt(policyToAdopt)
         }
 
+        val rangedUnits = mutableListOf<MapUnit>()
+        val meleeUnits = mutableListOf<MapUnit>()
+        val civilianUnits = mutableListOf<MapUnit>()
+
         for (unit in civInfo.getCivUnits()) {
-            UnitAutomation().automateUnitMoves(unit)
+            val unitType = unit.getBaseUnit().unitType
+            if(unitType.isRanged()) rangedUnits.add(unit)
+            else if(unitType.isMelee()) meleeUnits.add(unit)
+            else civilianUnits.add(unit)
         }
+
+        for (unit in rangedUnits) UnitAutomation().automateUnitMoves(unit)
+        for (unit in meleeUnits) UnitAutomation().automateUnitMoves(unit)
+        for (unit in civilianUnits) UnitAutomation().automateUnitMoves(unit)
 
         // train settler?
         if (civInfo.cities.any()

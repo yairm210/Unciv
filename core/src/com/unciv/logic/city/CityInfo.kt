@@ -134,7 +134,6 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if(isBeingRazed){
             population.population--
-            population.unassignExtraPopulation()
             if(population.population==0){
                 civInfo.addNotification("$name has been razed to the ground!",location, Color.RED)
                 civInfo.cities.remove(this)
@@ -145,6 +144,7 @@ class CityInfo {
 
         val maxHealth =getMaxHealth()
         health = min(health+maxHealth/10, maxHealth)
+        population.unassignExtraPopulation()
     }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")

@@ -2,70 +2,70 @@
 
 	{
 		name:"Accuracy I",
-		effect:"Bonus vs units in open terrain +15%",
+		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
 	{
 		name:"Accuracy II",
 		prerequisites:["Accuracy I"],
-		effect:"Bonus vs units in open terrain +15%",
+		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
 	{
 		name:"Accuracy III",
 		prerequisites:["Accuracy II"],
-		effect:"Bonus vs units in open terrain +15%",
+		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
 	{
 		name:"Barrage I",
-		effect:"Bonus vs units in rough terrain +15%",
+		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
 	{
 		name:"Barrage II",
 		prerequisites:["Barrage I"],
-		effect:"Bonus vs units in rough terrain +15%",
+		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
 	{
 		name:"Barrage III",
 		prerequisites:["Barrage II"],
-		effect:"Bonus vs units in rough terrain +15%",
+		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
 	{
 		name:"Shock I",
-		effect:"Bonus vs units in open terrain +15%",
+		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
 	{
 		name:"Shock II",
 		prerequisites:["Shock I"],
-		effect:"Bonus vs units in open terrain +15%",
+		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
 	{
 		name:"Shock III",
 		prerequisites:["Shock II"],
-		effect:"Bonus vs units in open terrain +15%",
+		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
 	{
 		name:"Drill I",
-		effect:"Bonus vs units in rough terrain +15%",
+		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
 	{
 		name:"Drill II",
 		prerequisites:["Drill I"],
-		effect:"Bonus vs units in rough terrain +15%",
+		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
 	{
 		name:"Drill III",
 		prerequisites:["Drill II"],
-		effect:"Bonus vs units in rough terrain +15%",
+		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
 	{
