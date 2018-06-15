@@ -137,12 +137,16 @@ class UnitAutomation{
         }
 
         // else, go to a random space
-        val reachableTiles = unit.getDistanceToTiles()
-                .filter { unit.canMoveTo(it.key)}
-        val reachableTilesMaxWalkingDistance =  reachableTiles.filter { it.value==unit.currentMovement}
-        if(reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
-        else if(reachableTiles.any()) unit.moveToTile(reachableTiles.toList().getRandom().first)
+        randomWalk(unit)
         // if both failed, then... there aren't any reachable tiles. Which is possible.
+    }
+
+    private fun randomWalk(unit: MapUnit) {
+        val reachableTiles = unit.getDistanceToTiles()
+                .filter { unit.canMoveTo(it.key) }
+        val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
+        if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
+        else if (reachableTiles.any()) unit.moveToTile(reachableTiles.toList().getRandom().first)
     }
 
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
@@ -166,25 +170,23 @@ class UnitAutomation{
         val possibleTiles =  unit.getTile().getTilesInDistance(5)
                 .minus(tilesNearCities)
 
-        if(possibleTiles.isEmpty()) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
+        val bestCityLocation: TileInfo? = possibleTiles
+                .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings) }
+                .firstOrNull { unit.movementAlgs().canReach(it) }
+
+        if(bestCityLocation==null) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
         {
-            unit.moveToTile(unit.getDistanceToTiles()
-                    .filter { unit.canMoveTo(it.key) && it.value==unit.currentMovement } // at edge of walking distance
-                    .toList().getRandom().first)
+            randomWalk(unit)
             return
         }
 
-        val bestCityLocation = possibleTiles
-                .maxBy { rankTileAsCityCenter(it, nearbyTileRankings) }!!
-
-        if (unit.getTile() == bestCityLocation)
-            UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+        if (unit.getTile() == bestCityLocation) // already there!
+            UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen).first { it.name == "Found city" }.action()
         else {
             unit.movementAlgs().headTowards(bestCityLocation)
             if (unit.currentMovement > 0 && unit.getTile() == bestCityLocation)
-                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).first { it.name == "Found city" }.action()
+                UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen).first { it.name == "Found city" }.action()
         }
     }
 
 }
-
