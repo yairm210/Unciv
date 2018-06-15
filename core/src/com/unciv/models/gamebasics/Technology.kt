@@ -16,7 +16,8 @@ class Technology : ICivilopedia {
             }
 
             val enabledUnits = GameBasics.Units.values.filter { it.requiredTech==name }
-            if(enabledUnits.isNotEmpty()) SB.appendln("Units enabled: "+enabledUnits.map { it.name + " ("+it.getShortDescription()+")" }.joinToString())
+            if(enabledUnits.isNotEmpty()) SB.appendln("" +
+                    "Units enabled: "+enabledUnits.map { it.name + " ("+it.getShortDescription()+")" }.joinToString())
 
             val enabledBuildings = GameBasics.Buildings.values.filter { it.requiredTech==name }
             val regularBuildings = enabledBuildings.filter { !it.isWonder }

@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.INamed
+import com.unciv.ui.utils.tr
 
 class Unit : INamed, IConstruction, ICivilopedia {
 
@@ -33,9 +34,9 @@ class Unit : INamed, IConstruction, ICivilopedia {
     fun getShortDescription(): String {
         val infoList= mutableListOf<String>()
         if(baseDescription!=null) infoList+=baseDescription!!
-        if(strength!=0) infoList += "strength: $strength"
-        if(rangedStrength!=0) infoList += "ranged strength: $rangedStrength"
-        if(movement!=2) infoList+="movement: $movement"
+        if(strength!=0) infoList += "Strength".tr()+": $strength"
+        if(rangedStrength!=0) infoList += "Ranged strength".tr()+": $rangedStrength"
+        if(movement!=2) infoList+="Movement".tr()+": $movement"
         return infoList.joinToString()
     }
 
@@ -49,8 +50,8 @@ class Unit : INamed, IConstruction, ICivilopedia {
             if(requiredTech!=null) sb.appendln("Required tech: $requiredTech")
         }
         if(strength!=0){
-            sb.append("Strength: $strength")
-            if(rangedStrength!=0)  sb.append(",  Ranged strength: $rangedStrength")
+            sb.append("Strength".tr()+": $strength")
+            if(rangedStrength!=0)  sb.append(",  "+"Ranged strength".tr()+": $rangedStrength")
             sb.appendln()
         }
 
@@ -58,7 +59,7 @@ class Unit : INamed, IConstruction, ICivilopedia {
             for(unique in uniques!!)
                 sb.appendln(unique)
         }
-        sb.appendln("Movement: $movement")
+        sb.appendln("Movement".tr()+": $movement")
         return sb.toString()
     }
 

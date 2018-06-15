@@ -113,6 +113,8 @@
 		French:"Bonheur"
 		Romanian:"Fericire"
 	}
+	"Production":{
+	}
 	"Culture":{
 		Italian:"Cultura"
 		Russian:"Культура"
@@ -218,6 +220,20 @@
 	}
 	
 	"Train":{ // eg Train Scout
+	}
+	
+	// Tech picker
+	"Pick a tech":{ // eg "Research Pottery"
+	}
+	"Research":{ // eg "Research Pottery"
+	}
+	"Units enabled":{ // eg "Research Pottery"
+	}
+	"Buildings enabled":{ // eg "Research Pottery"
+	}
+	"Wonders enabled":{ // eg "Research Pottery"
+	}
+	"Tile improvements enabled":{ // eg "Research Pottery"
 	}
 
 	// Notifications
@@ -357,8 +373,6 @@
 	}
 	"Gems":{
 	}
-	"Gold":{
-	}
 	"Silver":{
 	}
 	"Incense":{
@@ -412,6 +426,7 @@
 	}
 	"Customs house":{
 	}
+	
 	
 	// Technologies (Ancient Era)
 	

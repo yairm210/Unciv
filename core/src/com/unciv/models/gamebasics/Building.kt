@@ -124,7 +124,7 @@ class Building : NamedStats(), IConstruction{
             stringBuilder.appendln("$resources provide $resourceBonusStats")
         }
         if (maintenance != 0)
-            stringBuilder.appendln("Maintenance cost: $maintenance gold")
+            stringBuilder.appendln("Maintenance cost: $maintenance "+"Gold".tr())
         return stringBuilder.toString().trim()
     }
 
