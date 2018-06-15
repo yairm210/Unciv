@@ -54,7 +54,7 @@
 		overrideStats:true,
 		unbuildable:true,
 		defenceBonus: 0.25,
-		occursOn:["Tundra","Plains","Grassland"]
+		occursOn:["Tundra","Plains","Grassland","Hill"]
 	},
 	{
 		name:"Jungle",
@@ -92,4 +92,4 @@
 		defenceBonus: -0.1,
 		occursOn:["Desert"]
 	}
-]
+]	

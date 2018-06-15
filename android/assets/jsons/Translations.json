@@ -80,6 +80,9 @@
 		French:"Fortifier"
 		Romanian:"Fortifica"
 	}
+	
+	"Fortification":{ // as in "+40% Fortification"
+	}
 
 	"Set up":{ // For siege units
 	}
@@ -274,5 +277,279 @@
 	}
 	"has been destroyed!":{
 	}
-
+	
+	// Save and load game
+	
+	"Current saves":{
+	}
+	"Saved game name":{
+	}
+	"Copy game info":{
+	}
+	"Could not load game":{
+	}
+	"Load":{ // as in "Load SaveFile2"
+	}
+	"Delete save":{
+	}
+	"Saved at":{
+	}
+	
+	// Terrains
+	
+	"Grassland":{
+	}
+	"Plains":{
+	}
+	"Tundra":{
+	}
+	"Desert":{
+	}
+	"Lakes":{
+	}
+	"Hill":{
+	}
+	"Forest":{
+	}
+	"Jungle":{
+	}
+	"Marsh":{
+	}
+	"Oasis":{
+	}
+	"Food plains":{
+	}
+	
+	// Bonus Resources
+	"Cattle":{
+	}
+	"Sheep":{
+	}
+	"Deer":{
+	}
+	"Bananas":{
+	}
+	"Wheat":{
+	}
+	"Stone":{
+	}
+	
+	// Strategic Resources
+	"Horses":{
+	}
+	"Iron":{
+	}
+	"Coal":{
+	}
+	"Oil":{
+	}
+	"Aluminum":{
+	}
+	"Uranium":{
+	}
+	
+	// Luxury Resources
+	"Furs":{
+	}
+	"Cotton":{
+	}
+	"Dyes":{
+	}
+	"Gems":{
+	}
+	"Gold":{
+	}
+	"Silver":{
+	}
+	"Incense":{
+	}
+	"Silk":{
+	}
+	"Spices":{
+	}
+	"Wine":{
+	}
+	"Sugar":{
+	}
+	"Marble":{
+	}
+	"Pearls":{
+	}
+	"Whales":{
+	}
+	
+	// Tile improvements
+	
+	"Farm":{
+	}
+	"Lumber Mill":{
+	}
+	"Mine":{
+	}
+	"Trading post":{
+	}
+	"Camp":{
+	}
+	"Oil Well":{
+	}
+	"Pasture":{
+	}
+	"Plantation":{
+	}
+	"Quarry":{
+	}
+	"Road":{
+	}
+	"Railroad":{
+	}
+	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
+	}
+	"Academy":{
+	}
+	"Landmark":{
+	}
+	"Manufactory":{
+	}
+	"Customs house":{
+	}
+	
+	// Technologies (Ancient Era)
+	
+	"Pottery":{
+	}
+	"Animal Husbandry":{
+	}
+	"Archery":{
+	}
+	"Mining":{
+	}
+	"Sailing":{
+	}
+	"Calendar":{
+	}
+	"Writing":{
+	}
+	"Trapping":{
+	}
+	"The Wheel":{
+	}
+	"Masonry":{
+	}
+	"Bronze Working":{
+	}
+	
+	
+	// Technologies (Classical Era)
+	
+	"Optics":{
+	}
+	"Horseback Riding":{
+	}
+	"Mathematics":{
+	}
+	"Construction":{
+	}
+	"Philosophy":{
+	}
+	"Currency":{
+	}
+	"Engineering":{
+	}
+	"Iron Working":{
+	}
+	
+	
+	// Technologies (Medieval Era)
+	
+	"Theology":{
+	}
+	"Civil Service":{
+	}
+	"Physics":{
+	}
+	"Metal Casting":{
+	}
+	"Compass":{
+	}
+	"Education":{
+	}
+	"Chivalry":{
+	}
+	"Machinery":{
+	}
+	
+	
+	// Technologies (Renaissance Era)
+	
+	"Astronomy":{
+	}
+	"Acoustics":{
+	}
+	"Banking":{
+	}
+	"Printing Press":{
+	}
+	"Navigation":{
+	}
+	"Archaeology":{
+	}
+	"Economics":{
+	}
+	"Chemistry":{
+	}
+	
+	// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
+	
+	"Scientific Theory":{
+	}
+	"Fertilizer":{
+	}
+	"Biology":{
+	}
+	"Electricity":{
+	}
+	"Steam Power":{
+	}
+	
+	
+	// Technologies (Modern Era)
+	
+	"Refrigeration":{
+	}
+	"Radio":{
+	}
+	"Combustion":{
+	}
+	"Plastics":{
+	}
+	"Electronics":{
+	}
+	"Mass Media":{
+	}
+	
+	// Technologies (Information Era)
+	
+	"Pharmaceuticals":{
+	}
+	"Computers":{
+	}
+	"Nuclear Fission":{
+	}
+	"Ecology":{
+	}
+	"Robotics":{
+	}
+	"Rocketry":{
+	}
+	
+	// Technologies (Future Era)
+	"Nanotechnology":{
+	}
+	"Satellites":{
+	}
+	"Particle Physics":{
+	}
+	"Future Tech":{
+	}
+	
 }

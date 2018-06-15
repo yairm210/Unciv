@@ -31,7 +31,7 @@ class LoadScreen : PickerScreen() {
 
         topTable.add(saveTable)
         val saves = GameSaver().getSaves()
-        rightSideButton.setText("Load game")
+        rightSideButton.setText("Load game".tr())
         saves.forEach {
             val textButton = TextButton(it,skin)
             textButton.addClickListener {
