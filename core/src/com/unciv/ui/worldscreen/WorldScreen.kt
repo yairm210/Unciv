@@ -126,23 +126,29 @@ class WorldScreen : CameraStageBaseScreen() {
 
             kotlin.concurrent.thread {
                 game.gameInfo.nextTurn()
-                shouldUpdate=true
                 GameSaver().saveGame(game.gameInfo, "Autosave")
+
+                // If we put this BEFORE the save game, then we try to save the game...
+                // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
+                // BOOM! Exception!
+                // That's why this needs to be after the game is saved.
+                shouldUpdate=true
 
                 nextTurnButton.setText("Next turn".tr())
                 nextTurnButton.enable()
                 Gdx.input.inputProcessor = stage
+
+                displayTutorials("NextTurn")
+
+                if(civInfo.happiness<0)
+                    displayTutorials("Unhappiness")
+
+                if(civInfo.goldenAges.isGoldenAge())
+                    displayTutorials("GoldenAge")
+
+                if(gameInfo.turns>=100)
+                    displayTutorials("ContactMe")
             }
-            displayTutorials("NextTurn")
-
-            if(civInfo.happiness<0)
-                displayTutorials("Unhappiness")
-
-            if(civInfo.goldenAges.isGoldenAge())
-                displayTutorials("GoldenAge")
-
-            if(gameInfo.turns>=100)
-                displayTutorials("ContactMe")
         }
 
         return nextTurnButton

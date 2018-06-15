@@ -92,12 +92,16 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                     val emptyPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BLACK }
                     healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
                     healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
-                    add(healthBar).colspan(2).row()
+                    add(healthBar).colspan(3).row()
                 }
 
+                if(city.isBeingRazed){
+                    val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
+                    add(fireImage).size(20f).padLeft(5f)
+                }
                 if(city.isCapital()){
                     val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
-                    add(starImage).size(20f).padLeft(10f)
+                    add(starImage).size(20f).padLeft(5f)
                 } else{add()} // this is so the health bar is always 2 columns wide
                 add(label).pad(10f)
                 pack()

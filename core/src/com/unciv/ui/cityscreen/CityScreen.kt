@@ -128,6 +128,11 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             cityPickerTable.add(prevCityButton).pad(20f)
         }
 
+        if(city.isBeingRazed){
+            val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
+            cityPickerTable.add(fireImage).size(20f).padRight(5f)
+        }
+
         if(city.isCapital()){
             val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
             cityPickerTable.add(starImage).size(20f).padRight(5f)
