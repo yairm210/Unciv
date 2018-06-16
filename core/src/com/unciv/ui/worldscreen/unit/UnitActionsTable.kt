@@ -21,6 +21,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Move unit" -> return ImageGetter.getStatIcon("Movement")
             "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
             "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield.png").apply { color= Color.BLACK }
+            "Promote" -> return ImageGetter.getImage("OtherIcons/Star.png").apply { color= Color.GOLD }
             "Construct improvement" -> return ImageGetter.getUnitIcon("Worker")
             "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
             "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop.png")

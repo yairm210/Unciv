@@ -1,13 +1,8 @@
 package com.unciv.ui.pickerscreens
 
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.addClickListener
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.tr
+import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {
 
@@ -53,9 +48,7 @@ open class PickerScreen : CameraStageBaseScreen() {
     }
 
     protected fun pick(rightButtonText: String) {
-        rightSideButton.touchable = Touchable.enabled
-        rightSideButton.color = Color.WHITE
+        rightSideButton.enable()
         rightSideButton.setText(rightButtonText)
     }
 }
-

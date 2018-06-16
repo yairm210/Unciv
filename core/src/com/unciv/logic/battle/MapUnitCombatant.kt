@@ -17,12 +17,12 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
         if(isDefeated()) unit.removeFromTile()
     }
 
-    override fun getAttackingStrength(defender: ICombatant): Int {
+    override fun getAttackingStrength(defender: ICombatant): Int { // todo remove defender
         if (isRanged()) return unit.getBaseUnit().rangedStrength
         else return unit.getBaseUnit().strength
     }
 
-    override fun getDefendingStrength(attacker: ICombatant): Int {
+    override fun getDefendingStrength(attacker: ICombatant): Int {  // todo remove attacker
         return unit.getBaseUnit().strength
     }
 

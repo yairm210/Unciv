@@ -71,18 +71,18 @@
 	{
 		name:"Scouting I",
 		effect:"+1 Visibility Range",
-		unitTypes:["Melee","Mounted"]
+		unitTypes:["Scout"]
 	}
 	{
 		name:"Scouting II",
 		prerequisites:["Scouting I"],
 		effect:"+1 Visibility Range",
-		unitTypes:["Melee","Mounted"]
+		unitTypes:["Scout"]
 	}
 	{
 		name:"Scouting III",
 		prerequisites:["Scouting II"],
 		effect:"+1 Visibility Range",
-		unitTypes:["Melee","Mounted"]
+		unitTypes:["Scout"]
 	}
 ]

@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
@@ -90,7 +91,7 @@ class UnitAutomation{
             if(setupAction!=null) setupAction.action()
 
             val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack)!!
-            val damageToAttacker = Battle(unit.civInfo.gameInfo).calculateDamageToAttacker(MapUnitCombatant(unit), enemy)
+            val damageToAttacker = BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit), enemy)
 
             if (damageToAttacker < unit.health) { // don't attack if we'll die from the attack
                 if(MapUnitCombatant(unit).isMelee())

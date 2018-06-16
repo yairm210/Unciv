@@ -61,7 +61,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
                 !(construction is Building && construction.isWonder)) {
             row()
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
-            val buildingBuyButton = TextButton("Buy for".tr()+"\r\n$buildingGoldCost gold", CameraStageBaseScreen.skin)
+            val buildingBuyButton = TextButton("Buy for".tr()+"\r\n$buildingGoldCost "+"Gold".tr(), CameraStageBaseScreen.skin)
             buildingBuyButton.addClickListener {
                 city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
                 update()

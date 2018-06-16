@@ -19,6 +19,7 @@ class MapUnit {
     var health:Int = 100
     var action: String? = null // work, automation, fortifying, I dunno what.
     var attacksThisTurn = 0
+    var promotions = UnitPromotions()
 
     fun getBaseUnit(): Unit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement

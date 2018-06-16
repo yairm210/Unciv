@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.models.gamebasics.unit.UnitType
@@ -19,7 +20,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getDrawable(ImageGetter.WhiteDot)
                 .tint(ImageGetter.getBlue())
-        pad(10f)
+        pad(5f)
     }
 
     fun hide(){
@@ -66,17 +67,17 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add("Strength: "+defender.getDefendingStrength(attacker))
         row().pad(5f)
 
-        val attackerModifiers = battle.getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
-        val defenderModifiers = battle.getDefenceModifiers(attacker, defender).map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+        val defenderModifiers = BattleDamage().getDefenceModifiers(attacker, defender).map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
             if (attackerModifiers.size > i) add(attackerModifiers[i]) else add()
             if (defenderModifiers.size > i) add(defenderModifiers[i]) else add()
-            row().pad(5f)
+            row().pad(2f)
         }
 
-        var damageToDefender = battle.calculateDamageToDefender(attacker,defender)
-        var damageToAttacker = battle.calculateDamageToAttacker(attacker,defender)
+        var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
+        var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
 
         if (damageToAttacker>attacker.getHealth() && damageToDefender>defender.getHealth()) // when damage exceeds health, we don't want to show negative health numbers

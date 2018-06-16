@@ -1,11 +1,13 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.unciv.UnCivGame
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
+import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import java.util.*
@@ -34,7 +36,6 @@ class UnitActions {
                 unitTable.currentlyExecutingAction = "moveTo"
             }, unit.currentMovement != 0f )
         }
-
         else {
             actionList +=
                     UnitAction("Stop movement", {
@@ -43,9 +44,15 @@ class UnitActions {
             },true)
         }
 
-        if(unit.getBaseUnit().unitType!= UnitType.Civilian && !unit.hasUnique("No defensive terrain bonus")){
-            if(!unit.isFortified())
-                actionList += UnitAction("Fortify",{unit.action="Fortify 0"}, unit.currentMovement != 0f)
+        if(unit.getBaseUnit().unitType!= UnitType.Civilian
+                && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
+            actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
+        }
+
+        if(unit.promotions.canBePromoted()){
+                actionList += UnitAction("Promote",
+                        {UnCivGame.Current.screen = PromotionPickerScreen(unit)},
+                        unit.currentMovement != 0f)
         }
 
         if(unit.getBaseUnit().upgradesTo!=null) {
@@ -159,4 +166,3 @@ class UnitActions {
     }
 
 }
-
