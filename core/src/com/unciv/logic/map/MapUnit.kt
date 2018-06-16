@@ -118,15 +118,16 @@ class MapUnit {
         doPreTurnAction()
     }
 
-    fun getUniques(): MutableList<String> {
-        val uniques = mutableListOf<String>()
+    fun getSpecialAbilities(): MutableList<String> {
+        val abilities = mutableListOf<String>()
         val baseUnit = getBaseUnit()
-        if(baseUnit.uniques!=null) uniques.addAll(baseUnit.uniques!!)
-        return uniques
+        if(baseUnit.uniques!=null) abilities.addAll(baseUnit.uniques!!)
+        abilities.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })
+        return abilities
     }
 
     fun hasUnique(unique:String): Boolean {
-        return getUniques().contains(unique)
+        return getSpecialAbilities().contains(unique)
     }
 
     fun movementAlgs() = UnitMovementAlgorithms(this)
@@ -137,7 +138,7 @@ class MapUnit {
 
     fun getViewableTiles(): MutableList<TileInfo> {
         var visibilityRange = 2
-        visibilityRange += getUniques().count{it=="+1 Visibility Range"}
+        visibilityRange += getSpecialAbilities().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
         return getTile().getViewableTiles(visibilityRange)
     }
