@@ -23,3 +23,4 @@ All from [the Noun Project](https://thenounproject.com) licenced under Creative 
 * [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski
 * [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
 * [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys
+* [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain
