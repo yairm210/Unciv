@@ -142,15 +142,14 @@ class CityInfo {
             }
         }
 
-        val maxHealth =getMaxHealth()
-        health = min(health+maxHealth/10, maxHealth)
+        health = min(health+20, getMaxHealth())
         population.unassignExtraPopulation()
     }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
 
     internal fun getMaxHealth(): Int {
-        return 200 // add more later when walls citadel etc.
+        return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
     }
 
     override fun toString(): String {return name} // for debug

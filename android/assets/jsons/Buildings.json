@@ -70,6 +70,13 @@
 		requiredTech:"Trapping"
 	},
 	{
+		name:"Walls",
+		cityStrength:5,
+		cityHealth:50,
+		hurryCostModifier:25,
+		requiredTech:"Masonry"
+	},
+	{
 		name:"The Pyramids",
 		baseDescription: "Worker construction increased 25%, provides 2 free workers",
 		culture:1,
@@ -242,6 +249,14 @@
 		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"University",
 		requiredTech:"Education"
+	},
+	{
+		name:"Castle",
+		cityStrength:7,
+		cityHealth:25,
+		hurryCostModifier:25,
+		requiredBuilding:"Walls",
+		requiredTech:"Chivalry"
 	},
 	{
 		name:"Angkor Wat",

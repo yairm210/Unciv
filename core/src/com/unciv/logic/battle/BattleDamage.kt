@@ -76,33 +76,32 @@ class BattleDamage{
         return modifiers
     }
 
-    fun getDefenceModifiers(attacker: ICombatant, defender: ICombatant): HashMap<String, Float> {
+    fun getDefenceModifiers(attacker: ICombatant, defender: MapUnitCombatant): HashMap<String, Float> {
         val modifiers = getGeneralModifiers(defender, attacker)
-        if (!(defender is MapUnitCombatant && defender.unit.hasUnique("No defensive terrain bonus"))) {
+        if (!(defender.unit.hasUnique("No defensive terrain bonus"))) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
 
-        if(defender is MapUnitCombatant) {
-            val defenderTile = defender.getTile()
-            val isDefenderInRoughTerrain = defenderTile.baseTerrain=="Hill" || defenderTile.terrainFeature == "Forest" || defenderTile.terrainFeature == "Jungle"
-            for (BDM in getBattleDamageModifiersOfUnit(defender.unit)) {
-                val text = BDM.getText()
-                if (BDM.vs == "units in open terrain" && !isDefenderInRoughTerrain) {
-                    if(modifiers.containsKey(text))
-                        modifiers[text] =modifiers[text]!! + BDM.modificationAmount
-                    else modifiers[text] = BDM.modificationAmount
-                }
-                if (BDM.vs == "units in rough terrain" && isDefenderInRoughTerrain) {
-                    if (modifiers.containsKey(text))
-                        modifiers[text] = modifiers[text]!! + BDM.modificationAmount
-                    else modifiers[text] = BDM.modificationAmount
-                }
+        val defenderTile = defender.getTile()
+        val isDefenderInRoughTerrain = defenderTile.baseTerrain == "Hill" || defenderTile.terrainFeature == "Forest" || defenderTile.terrainFeature == "Jungle"
+        for (BDM in getBattleDamageModifiersOfUnit(defender.unit)) {
+            val text = BDM.getText()
+            if (BDM.vs == "units in open terrain" && !isDefenderInRoughTerrain) {
+                if (modifiers.containsKey(text))
+                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
+                else modifiers[text] = BDM.modificationAmount
+            }
+            if (BDM.vs == "units in rough terrain" && isDefenderInRoughTerrain) {
+                if (modifiers.containsKey(text))
+                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
+                else modifiers[text] = BDM.modificationAmount
             }
         }
 
-        if(defender is MapUnitCombatant && defender.unit.isFortified())
-            modifiers["Fortification"]=0.2f*defender.unit.getFortificationTurns()
+
+        if (defender.unit.isFortified())
+            modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()
 
         return modifiers
     }
@@ -133,7 +132,8 @@ class BattleDamage{
      * Includes defence modifiers
      */
     fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
-        val defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
+        var defenceModifier = 1f
+        if(defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
         return defender.getDefendingStrength(attacker) * defenceModifier
     }
 

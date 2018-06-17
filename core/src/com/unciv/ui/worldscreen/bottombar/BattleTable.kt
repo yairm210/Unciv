@@ -68,7 +68,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         row().pad(5f)
 
         val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
-        val defenderModifiers = BattleDamage().getDefenceModifiers(attacker, defender).map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+        val defenderModifiers = if (defender is MapUnitCombatant)
+                                    BattleDamage().getDefenceModifiers(attacker, defender).map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+                                else listOf()
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
             if (attackerModifiers.size > i) add(attackerModifiers[i]).actor.setFont(14) else add()

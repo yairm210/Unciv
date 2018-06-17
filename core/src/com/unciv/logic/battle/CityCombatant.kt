@@ -3,8 +3,8 @@ package com.unciv.logic.battle
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.unit.UnitType
 
 class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getHealth(): Int = city.health
@@ -25,24 +25,29 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         return getCityStrength()
     }
 
-    private fun
-            getCityStrength(): Int {
-        val baseStrength = 10
+    private fun getCityStrength(): Int { // Civ fanatics forum, from a modder who went through the original code
+        var strength = 8f
+        if(city.isCapital()) strength+=2.5f
+        strength += (city.population.population/5) * 2 // Each 5 pop gives 2 defence
+        val cityTile = city.getCenterTile()
+        if(cityTile.baseTerrain=="Hill") strength+=5
         // as tech progresses so does city strength
         val techsPercentKnown: Float = city.civInfo.tech.techsResearched.count().toFloat() /
                 GameBasics.Technologies.count()
-        val strengthFromTechs = Math.pow(techsPercentKnown*3.0,2.0) *5
+        strength += Math.pow(techsPercentKnown*5.5, 2.8).toFloat()
 
         // The way all of this adds up...
-        // 25% of the way through the game provides an extra 3.12
-        // 50% of the way through the game provides an extra 12.50
-        // 75% of the way through the game provides an extra 28.12
+        // All ancient techs - 0.5 extra, Classical - 2.7, Medieval - 8, Renaissance - 17.5,
+        // Industrial - 32.4, Modern - 51, Atomic - 72.5, All - 118.3
         // 100% of the way through the game provides an extra 50.00
 
-        // 10% bonus foreach pop
-        val strengthWithPop = (baseStrength + strengthFromTechs) * (1 + 0.1*city.population.population)
+        // Garrisoned unit gives up to 20% of strength to city, health-dependant
+        if(cityTile.militaryUnit!=null)
+            strength += cityTile.militaryUnit!!.getBaseUnit().strength * cityTile.militaryUnit!!.health/100f
 
-        return strengthWithPop.toInt()
+        strength += city.cityConstructions.getBuiltBuildings().sumBy{ it.cityStrength }
+
+        return strength.toInt()
     }
 
     override fun toString(): String {return city.name} // for debug

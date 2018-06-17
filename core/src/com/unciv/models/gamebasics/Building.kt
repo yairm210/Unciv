@@ -28,6 +28,8 @@ class Building : NamedStats(), IConstruction{
     /** City can only be built if one of these resources is nearby - it must be improved! */
     var requiredNearbyImprovedResources: List<String>? = null
     var cannotBeBuiltWith: String? = null
+    var cityStrength=0
+    var cityHealth=0
 
     // Uniques
     var providesFreeBuilding: String? = null
@@ -52,6 +54,8 @@ class Building : NamedStats(), IConstruction{
             infoList += resourceBonusStats.toString() +" from "+improvedResources.joinToString()
         }
         if(unique!=null) infoList += unique!!
+        if(cityStrength!=0) infoList+="city strength +"+cityStrength
+        if(cityHealth!=0) infoList+="city health +"+cityHealth
         return infoList.joinToString()
     }
 
@@ -123,6 +127,9 @@ class Building : NamedStats(), IConstruction{
             val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name }
             stringBuilder.appendln("$resources provide $resourceBonusStats")
         }
+
+        if(cityStrength!=0) stringBuilder.appendln("City strength +"+cityStrength)
+        if(cityHealth!=0) stringBuilder.appendln("City health +"+cityHealth)
         if (maintenance != 0)
             stringBuilder.appendln("Maintenance cost: $maintenance "+"Gold".tr())
         return stringBuilder.toString().trim()
