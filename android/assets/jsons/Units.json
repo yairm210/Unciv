@@ -50,6 +50,20 @@
 		upgradesTo:"Crossbowman"
 	},
 	{
+		name:"Bowman",
+		unitType:"Ranged",
+		movement:2,
+		strength:7,
+		rangedStrength:9,
+		cost: 40,
+		hurryCostModifier:20
+		requiredTech:"Archery",
+		obsoleteTech:"Machinery",
+		replaces:"Archer",
+		uniqueTo:"Babylon"
+		upgradesTo:"Crossbowman"
+	},
+	{
 		name:"Chariot Archer",
 		unitType:"Ranged",
 		movement:4,

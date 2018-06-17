@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.tr
@@ -24,6 +25,8 @@ class Unit : INamed, IConstruction, ICivilopedia {
     var uniques:HashSet<String>?=null
     var obsoleteTech:String?=null
     var upgradesTo:String? = null
+    var replaces:String?=null
+    var uniqueTo:String?=null
 
 
     override val description: String
@@ -81,6 +84,8 @@ class Unit : INamed, IConstruction, ICivilopedia {
         if (unbuildable) return false
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
+        if(uniqueTo!=null && uniqueTo!=civInfo.civName) return false
+        if(GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
         if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
         return true
     }

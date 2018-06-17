@@ -131,7 +131,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         // Remove all national wonders when conquering a city
         for(building in city.cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             city.cityConstructions.builtBuildings.remove(building.name)
-        
+
         (attacker as MapUnitCombatant).unit.moveToTile(city.getCenterTile())
         city.civInfo.gameInfo.updateTilesToCities()
     }
