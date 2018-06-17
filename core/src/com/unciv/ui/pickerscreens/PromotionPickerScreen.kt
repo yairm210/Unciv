@@ -24,9 +24,10 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
         val availablePromotions = VerticalGroup()
         availablePromotions.space(10f)
         val unitType = mapUnit.getBaseUnit().unitType
-        for (promotion in GameBasics.UnitPromotions.values) {
-            if (!promotion.unitTypes.contains(unitType.toString())) continue
-            val isPromotionAvailable = promotion.prerequisites.all { mapUnit.promotions.promotions.contains(it) }
+        val promotionsForUnitType = GameBasics.UnitPromotions.values.filter { it.unitTypes.contains(unitType.toString()) }
+        for (promotion in promotionsForUnitType) {
+            val isPromotionAvailable = promotion.prerequisites.isEmpty()
+                    || promotion.prerequisites.any { mapUnit.promotions.promotions.contains(it) }
             val unitHasPromotion = mapUnit.promotions.promotions.contains(promotion.name)
             val promotionButton = Button(skin)
 
@@ -42,7 +43,9 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
                 if(isPromotionAvailable && !unitHasPromotion) rightSideButton.enable()
                 else rightSideButton.disable()
                 var descriptionText = promotion.effect
-                if(promotion.prerequisites.isNotEmpty()) descriptionText +="\nRequires: "+promotion.prerequisites.joinToString()
+                if(promotion.prerequisites.isNotEmpty()) descriptionText +="\nRequires: "+
+                        promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }
+                                .joinToString(" OR ")
                 descriptionLabel.setText(descriptionText)
             }
             availablePromotions.addActor(promotionButton)

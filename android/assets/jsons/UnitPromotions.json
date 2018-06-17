@@ -85,4 +85,28 @@
 		effect:"+1 Visibility Range",
 		unitTypes:["Scout"]
 	}
+	{
+		name:"Cover I",
+		effect:"+25% Defence against ranged attacks",
+		unitTypes:["Melee","Ranged","Siege"]
+	}
+	{
+		name:"Cover II",
+		prerequisites:["Cover I"],
+		effect:"+25% Defence against ranged attacks",
+		unitTypes:["Melee","Ranged","Siege"]
+	}
+	{
+		name:"March",
+		prerequisites:["Accuracy II","Barrage II","Shock III","Drill III"],
+		effect:"Unit will heal every turn, even if it performs an action",
+		unitTypes:["Melee","Ranged","Siege","Mounted"]
+	}
+	{
+		name:"Charge",
+		prerequisites:["Shock II","Drill II"],
+		effect:"Bonus vs wounded units 33%",
+		unitTypes:["Mounted"]
+	}
+	
 ]

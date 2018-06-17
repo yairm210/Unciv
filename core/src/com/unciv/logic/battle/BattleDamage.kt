@@ -30,7 +30,10 @@ class BattleDamage{
         val modifiers = HashMap<String, Float>()
         if (combatant is MapUnitCombatant) {
             for (BDM in getBattleDamageModifiersOfUnit(combatant.unit)) {
-                if (BDM.vs == enemy.getUnitType().toString()) modifiers[BDM.getText()] = BDM.modificationAmount
+                if (BDM.vs == enemy.getUnitType().toString())
+                    modifiers[BDM.getText()] = BDM.modificationAmount
+                if(BDM.vs == "wounded units" && enemy is MapUnitCombatant && enemy.getHealth()<100)
+                    modifiers[BDM.getText()] = BDM.modificationAmount
             }
             if (combatant.getCivilization().happiness < 0)
                 modifiers["Unhappiness"] = 0.02f * combatant.getCivilization().happiness  //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
@@ -83,6 +86,11 @@ class BattleDamage{
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
 
+        if(attacker.isRanged()){
+            val defenceVsRanged = 0.25f * defender.unit.getSpecialAbilities().count{it=="+25% Defence against ranged attacks"}
+            if(defenceVsRanged>0) modifiers["defence vs ranged"] = defenceVsRanged
+        }
+
         val defenderTile = defender.getTile()
         val isDefenderInRoughTerrain = defenderTile.baseTerrain == "Hill" || defenderTile.terrainFeature == "Forest" || defenderTile.terrainFeature == "Jungle"
         for (BDM in getBattleDamageModifiersOfUnit(defender.unit)) {
@@ -98,7 +106,6 @@ class BattleDamage{
                 else modifiers[text] = BDM.modificationAmount
             }
         }
-
 
         if (defender.unit.isFortified())
             modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()

@@ -107,7 +107,8 @@ class MapUnit {
 
     fun endTurn() {
         doPostTurnAction()
-        if(currentMovement==maxMovement.toFloat()){ // didn't move this turn
+        if(currentMovement==maxMovement.toFloat() // didn't move this turn
+                || getSpecialAbilities().contains("Unit will heal every turn, even if it performs an action")){
             heal()
         }
     }
