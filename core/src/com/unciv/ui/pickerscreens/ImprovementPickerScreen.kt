@@ -36,7 +36,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
                 improvementButton.add(ImageGetter.getImage("OtherIcons/Stop.png")).size(30f).pad(10f)
             else  improvementButton.add(ImageGetter.getImprovementIcon(improvement.name)).size(30f).pad(10f)
 
-            improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(civInfo) + " "+"turns".tr(),skin)
+            improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(civInfo) + " {turns}".tr(),skin)
                     .setFontColor(Color.WHITE)).pad(10f)
 
             improvementButton.addClickListener {

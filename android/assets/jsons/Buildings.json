@@ -114,7 +114,6 @@
 	},
 	{
 		name:"Chichen Itza",
-		baseDescription: "Length of golden ages increased +50%",
 		culture:1,
 		greatPersonPoints:{production:1},
 		isWonder:true,
@@ -260,7 +259,6 @@
 	},
 	{
 		name:"Angkor Wat",
-		baseDescription: "Cost of acquiring new tiles reduced by 25%",
 		culture:1,
 		greatPersonPoints:{production:1},
 		isWonder:true,
@@ -304,7 +302,6 @@
 	},
 	{
 		name:"Sistine Chapel",
-		baseDescription: "Culture in all cities increased by 25%",
 		culture:1,
 		isWonder:true,
 		unique:"Culture in all cities increased by 25%",
@@ -321,7 +318,6 @@
 	},
 	{
 		name:"Forbidden Palace",
-		baseDescription: "Unhappiness from population decreased by 10%",
 		culture:1,
 		isWonder:true,
 		unique:"Unhappiness from population decreased by 10%",
@@ -486,7 +482,6 @@
 	},
 	{
 		name:"Apollo Program",
-		baseDescription: "Allows the building of spaceship parts",
 		cost:1500,
 		isWonder:true,
 		unique:"Enables construction of Spaceship parts",
@@ -494,7 +489,6 @@
 	},
 	{
 		name:"Nuclear Plant",
-		baseDescription: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
 		production:5,		
 		percentStatBonus:{production:15},
 		requiredBuilding:"Factory",
@@ -505,7 +499,6 @@
 	},
 	{
 		name:"Spaceship Factory",
-		baseDescription: "Increases production of spaceship parts by 50%",
 		production:3,
 		requiredResource:"Aluminum",
 		cost:360,
@@ -514,28 +507,24 @@
 	},
 	{
 		name:"SS Booster",
-		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Robotics",
 		unique:"Spaceship part"
 	},
 	{
 		name:"SS Cockpit",
-		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Satellites",
 		unique:"Spaceship part"
 	},
 	{
 		name:"SS Engine",
-		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Particle Physics",
 		unique:"Spaceship part"
 	},
 	{
 		name:"SS Statis Chamber",
-		baseDescription: "Spaceship part",
 		requiredResource:"Aluminum",
 		requiredTech:"Nanotechnology",
 		unique:"Spaceship part"

@@ -18,7 +18,7 @@ class NotificationsScroll(private val notifications: List<Notification>, interna
     internal fun update() {
         notificationsTable.clearChildren()
         for (notification in notifications) {
-            val label = Label(notification.text, CameraStageBaseScreen.skin).setFontColor(Color.BLACK)
+            val label = Label(notification.text.tr(), CameraStageBaseScreen.skin).setFontColor(Color.BLACK)
                     .setFont(14)
             val minitable = Table()
 

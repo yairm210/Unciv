@@ -6,6 +6,9 @@
 		Romanian:"Runda urmatoare"
 	}
 	
+	"Waiting":{ // Displayed when next turn is being...turned
+	}
+	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
 		Italian:"Turno"
 		Russian:"Ход"
@@ -13,10 +16,10 @@
 		Romanian:"Runda"
 	}
 
-	"in ":{ // As in "Opera House in 3 turns"
-		Italian:"in "
+	"in":{ // As in "Opera House in 3 turns"
+		Italian:"in"
 		Russian:"в"
-		French:"dans "
+		French:"dans"
 		Romanian:"în"
 		
 	}
@@ -98,6 +101,9 @@
 		French:"Implanter"
 		Romanian:"Dispune"
 	}
+	
+	"Promote":{
+	}
 
 	"Health":{
 		Italian:"Salute"
@@ -126,10 +132,6 @@
 		Romanian:"Fericire"
 	}
 	"Production":{
-		Italian:""
-		Russian:""
-		French:""
-		Romanian:""
 	}
 	"Culture":{
 		Italian:"Cultura"
@@ -142,6 +144,9 @@
 		Russian:"ИДА"
 		French:"Nourriture"
 		Romanian:"Hrană"
+	}
+	
+	"GOLDEN AGE":{
 	}
 
 	
@@ -167,6 +172,9 @@
 		French:"Chargement du jeu"
 		Romanian:"Incarca jocul"
 	}
+	
+	"Load copied data":{
+	}
 
 	"Victory status":{
 		Italian:"Stato di vittoria"
@@ -187,6 +195,16 @@
 		Russian:"Параметры экрана"
 		French:"Option d'affichage"
 		Romanian:"Opțiuni ecran"
+	}
+	
+	"Show":{
+	}
+	"Hide":{
+	}
+	
+	"worked tiles":{
+	}
+	"resources and improvements":{
 	}
 
 	"Close":{
@@ -233,7 +251,7 @@
 	}
 	
 	
-	"Pick construction":{ // eg Build Granary
+	"Pick construction":{
 		Italian:"Scegli la costruzione"
 		Russian:"Выбор здания"
 		French:"Choisissez la construction"
@@ -267,83 +285,99 @@
 		French:"Recherche"
 		Romanian:"Exploreaza"
 	}
-	"Units enabled":{ // eg "Research Pottery"
+	"Units enabled":{
 		Italian:"Unità abilitate"
 		Russian:"Активные юниты"
 		French:"Unités activées"
 		Romanian:"Unități activate"
 	}
-	"Buildings enabled":{ // eg "Research Pottery"
+	"Buildings enabled":{
 		Italian:"Edifici abilitati"
 		Russian:"Активные здания"
 		French:"Bâtiments activés"
 		Romanian:"Clădirile active"
 	}
-	"Wonders enabled":{ // eg "Research Pottery"
+	
+	"Wonder":{}
+	
+	"Wonders enabled":{
 		Italian:"Meraviglie abilitate"
 		Russian:"Активные чудеса"
 		French:"Merveilles activées"
 		Romanian:"Minuni active"
 	}
-	"Tile improvements enabled":{ // eg "Research Pottery"
+	"Tile improvements enabled":{
 		Italian:"Miglioramenti delle celle abilitati"
 		Russian:"Улучшены улучшения плит"
 		French:"Améliorations apportées aux carreaux"
 		Romanian:"Ameliorare activa a plăcilor"
 	}
+	"Reveals":{ // As in "Reveals Coal on the map"
+	}
+	"on the map":{
+	}
+	
+	"provide":{ // as in "Camp, Customs House provide +1 Gold"
+	}
+	"provides":{ // as in "Camp provides +1 Gold" (singular of above)
+	}
+	
 
 	// Notifications
 	// Some notifications have an exclamation mark after them - is the exclamation mark different in other languages?
 	// If so then we need to deal with that as well
 	// I remember that some languages have upside-down question marks before to mark a question
 	
-	" has grown":{
-		Italian:" è cresciuto"
-		Russian:" вырос"
-		French:" a grandi"
-		Romanian:" a crescut"
+	"has grown":{
+		Italian:"è cresciuto"
+		Russian:"вырос"
+		French:"a grandi"
+		Romanian:"a crescut"
 	}
 	
-	" has been founded!":{
-		Italian:" è stato fondato!"
-		Russian:" была создана!"
-		French:" a été fondé!"
-		Romanian:" a fost fondat!"
+	"has been founded":{
+		Italian:"è stato fondato"
+		Russian:"была создана"
+		French:"a été fondé"
+		Romanian:"a fost fondat"
 	}
 	
-	" has been razed to the ground!":{
-		Italian:" è stato raso al suolo!"
-		Russian:" был снесен на землю!"
-		French:" a été rasé à terre!"
-		Romanian:" a fost distrus la pământ!"
+	"has been razed to the ground":{
+		Italian:"è stato raso al suolo"
+		Russian:"был снесен на землю"
+		French:"a été rasé à terre"
+		Romanian:"a fost distrus la pământ"
 	}
 	
-	"We have conquered the city of ":{
-		Italian:"Abbiamo conquistato la città di "
-		Russian:"Мы завоевали город "
-		French:"Nous avons conquis la ville de "
-		Romanian:"Am cucerit orașul "
+	"We have conquered the city of":{
+		Italian:"Abbiamo conquistato la città di"
+		Russian:"Мы завоевали город"
+		French:"Nous avons conquis la ville de"
+		Romanian:"Am cucerit orașul"
 	}
 	
-	"Research of ":{ // For technology notifications EG Research of Writing has completed
-		Italian:"Ricerca di "
-		Russian:"Исследование "
-		French:"Recherche de "
-		Romanian:"Cercetarea "
+	"Research of":{ // For technology notifications EG Research of Writing has completed
+		Italian:"Ricerca di"
+		Russian:"Исследование"
+		French:"Recherche de"
+		Romanian:"Cercetarea"
 	}
 	
-	" has completed":{
-		Italian:" ha completato"
-		Russian:" завершилось"
-		French:" a completé"
-		Romanian:" a finalizat"
+	"has completed":{
+		Italian:"ha completato"
+		Russian:"завершилось"
+		French:"a completé"
+		Romanian:"a finalizat"
+	}
+	
+	"You have entered a golden age":{
 	}
 
-	" is starving!":{
-		Italian:" sta morendo di fame!"
-		Russian:" голодает!"
-		French:" est affamé!"
-		Romanian:" suferă de foame!"
+	"is starving":{
+		Italian:"sta morendo di fame"
+		Russian:"голодает"
+		French:"est affamé"
+		Romanian:"suferă de foame"
 	}
 	
 	"has been built in":{
@@ -367,47 +401,57 @@
 		Romanian:"Nu pot continua munca pentru"
 	}
 
-	" has expanded its borders":{
-		Italian:" ha allargato i suoi confini"
-		Russian:" расширил границы"
-		French:" a élargi ses frontières"
-		Romanian:" și-a extins frontierele"
+	"has expanded its borders":{
+		Italian:"ha allargato i suoi confini"
+		Russian:"расширил границы"
+		French:"a élargi ses frontières"
+		Romanian:"și-a extins frontierele"
 	}
 
-	"An enemy ":{
-		Italian:"Un nemico "
-		Russian:"Враг "
-		French:"Un ennemi "
-		Romanian:"Un dusman "
+	"An enemy":{
+		Italian:"Un nemico"
+		Russian:"Враг"
+		French:"Un ennemi"
+		Romanian:"Un dusman"
 	}
 
-	" has attacked ":{
-		Italian:" ha attaccato "
-		Russian:" атаковал "
-		French:" a attaqué "
-		Romanian:" a atacat "
+	"has attacked":{
+		Italian:"ha attaccato"
+		Russian:"атаковал"
+		French:"a attaqué"
+		Romanian:"a atacat"
 	}
 
-	" has destroyed ":{
-		Italian:" ha distrutto "
-		Russian:" уничтожил "
-		French:" a détruit "
-		Romanian:" a distrus "
+	"has destroyed":{
+		Italian:"ha distrutto"
+		Russian:"уничтожил"
+		French:"a détruit"
+		Romanian:"a distrus"
 	}
 	
-	" has captured ":{
-		Italian:" ha catturato "
-		Russian:" захватил "
-		French:" a capturé "
-		Romanian:" a capturat "
+	"has captured":{
+		Italian:"ha catturato"
+		Russian:"захватил"
+		French:"a capturé"
+		Romanian:"a capturat"
 	}
 	
-	" revealed near ":{ // As in "Coal revealed near London"
-		Italian:" rivelato vicino a"
-		Russian:" выявлено вблизи "
-		French:" a capturé "
-		Romanian:" dezvăluit aproape "
+	
+	"was destroyed while attacking":{
 	}
+	
+	"our":{
+	}
+	
+	
+	"revealed near":{ // As in "Coal revealed near London"
+		Italian:"rivelato vicino a"
+		Russian:"выявлено вблизи "
+		French:"a capturé"
+		Romanian:"dezvăluit aproape"
+	}
+	
+	
 	
 	"The civilization of":{
 		Italian:"La civiltà di"
@@ -415,11 +459,11 @@
 		French:"La civilisation de"
 		Romanian:"Civilizația"
 	}
-	"has been destroyed!":{
-		Italian:"è stata distrutta!"
-		Russian:"был уничтожен!"
-		French:"a été détruit!"
-		Romanian:"a fost distrus!"
+	"has been destroyed":{
+		Italian:"è stata distrutta"
+		Russian:"был уничтожен"
+		French:"a été détruit"
+		Romanian:"a fost distrus"
 	}
 	
 	// Save and load game
@@ -465,6 +509,19 @@
 		Russian:"Сохранено в"
 		French:"Enregistré à"
 		Romanian:"Salvat la"
+	}
+	
+	
+	// Battle table
+	
+	"City strength":{}
+	
+	"City health":{}
+	
+	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
+	}
+	
+	"Attack":{
 	}
 	
 	// Terrains
@@ -1089,6 +1146,8 @@
 		French:"Médias de masse"
 		Romanian:"Mass media"
 	}
+	"Flight":{
+	}
 	
 	// Technologies (Information Era)
 	
@@ -1154,5 +1213,27 @@
 		French:"Technologie future"
 		Romanian:"Tehnologia viitoare"
 	}
+	
+	// Building unique abilities
+	
+	"+1 Science Per 2 Population":{}
+	"Worker construction increased 25%, provides 2 free workers":{}
+	"Free Social Policy":{}
+	"Golden Age length increases +50%":{}
+	"+33% great person generation in all cities":{}
+	"Gold from all trade routes +25%":{}
+	"40% of food is carried over after a new citizen is born":{}
+	"Jungles provide +2 science":{}
+	"Cost of acquiring new tiles reduced by 25%":{}
+	"Culture in all cities increased by 25%":{}
+	"Unhappiness from population decreased by 10%":{}
+	"Empire enters golden age":{}
+	"Free Great Artist Appears":{}
+	"Culture cost of adopting new Policies reduced by 10%":{}
+	"Provides 1 happiness per social policy":{}
+	"Must be next to desert":{}
+	"Enables construction of Spaceship parts":{}
+	"Increases production of spaceship parts by 50%":{}
+	"Spaceship part":{}
 	
 }

@@ -63,8 +63,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         row().pad(5f)
 
-        add("Strength: "+attacker.getAttackingStrength(defender))
-        add("Strength: "+defender.getDefendingStrength(attacker))
+        add("{Strength}: ".tr()+attacker.getAttackingStrength(defender))
+        add("{Strength}: ".tr()+defender.getDefendingStrength(attacker))
         row().pad(5f)
 
         val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
@@ -104,14 +104,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if(attacker.isMelee() && (defender.getUnitType()==UnitType.Civilian
                         || defender.getUnitType()==UnitType.City && defender.isDefeated())) {
             add("")
-            add("Captured!")
+            add("{Captured!}".tr())
         }
 
         else {
-            add("Health: " + attacker.getHealth().toString() + " -> "
+            add("{Health}: ".tr() + attacker.getHealth().toString() + " -> "
                     + (attacker.getHealth() - damageToAttacker))
 
-            add("Health: " + defender.getHealth().toString() + " -> "
+            add("{Health}: ".tr() + defender.getHealth().toString() + " -> "
                     + (defender.getHealth() - damageToDefender))
         }
 

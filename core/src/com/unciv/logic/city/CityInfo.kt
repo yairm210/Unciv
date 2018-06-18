@@ -95,7 +95,7 @@ class CityInfo {
         this.location = cityLocation
         civInfo.cities.add(this)
         if(civInfo == civInfo.gameInfo.getPlayerCivilization())
-            civInfo.addNotification("$name has been founded!", cityLocation, Color.PURPLE)
+            civInfo.addNotification("$name {has been founded}!", cityLocation, Color.PURPLE)
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
             cityConstructions.builtBuildings.add("Palace")
@@ -135,7 +135,7 @@ class CityInfo {
         if(isBeingRazed){
             population.population--
             if(population.population==0){
-                civInfo.addNotification("$name has been razed to the ground!",location, Color.RED)
+                civInfo.addNotification("$name {has been razed to the ground}!",location, Color.RED)
                 civInfo.cities.remove(this)
                 if(isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
                     civInfo.cities.first().cityConstructions.builtBuildings.add("Palace")

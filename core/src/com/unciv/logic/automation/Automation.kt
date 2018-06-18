@@ -10,7 +10,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.Unit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
-import com.unciv.ui.utils.tr
 
 class Automation {
 
@@ -115,7 +114,7 @@ class Automation {
             }
 
             if (cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
-                cityInfo.civInfo.addNotification("{Work has started on} $currentConstruction".tr(), cityInfo.location, Color.BROWN)
+                cityInfo.civInfo.addNotification("{Work has started on} {$currentConstruction}", cityInfo.location, Color.BROWN)
         }
     }
 

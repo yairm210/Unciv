@@ -130,7 +130,7 @@ fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply 
 fun String.tr(): String {
     if(contains("{")){ // sentence
         var toReturn = this
-        return Regex("\\{(.*)}").replace(this,{matchResult -> matchResult.groups[1]!!.value.tr() })
+        return Regex("\\{(.*?)}").replace(this,{matchResult -> matchResult.groups[1]!!.value.tr() })
     }
     else return GameBasics.Translations.get(this,UnCivGame.Current.settings.language) // single word
 }

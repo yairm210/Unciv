@@ -12,8 +12,8 @@ class Technology : ICivilopedia {
 
             val improvedImprovements = GameBasics.TileImprovements.values.filter { it.improvingTech==name }.groupBy { it.improvingTechStats.toString() }
             improvedImprovements.forEach{
-                val impimpString = it.value.joinToString { it.name } +" provide" + (if(it.value.size==1) "s" else "") +" "+it.key
-                SB.appendln(impimpString)
+                val impimpString = it.value.joinToString { it.name.tr() } +" {provide" + (if(it.value.size==1) "s" else "") +"} "+it.key
+                SB.appendln(impimpString.tr())
             }
 
             val enabledUnits = GameBasics.Units.values.filter { it.requiredTech==name }

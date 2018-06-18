@@ -64,7 +64,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             if (isFreeTechPick) {
                 civTech.techsResearched.add(selectedTech!!.name)
                 civTech.freeTechs -= 1
-                civInfo.addNotification("We have stumbled upon the discovery of " + selectedTech!!.name + "!", null, Color.BLUE)
                 if (selectedTech!!.name == civTech.currentTechnology())
                     civTech.techsToResearch.remove(selectedTech!!.name)
             } else
@@ -99,7 +98,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 text += " (" + techsToResearch.indexOf(techName) + ")"
             }
 
-            if (!civTech.isResearched(techName)) text += "\r\n" + turnsToTech[techName] + " "+"turns".tr()
+            if (!civTech.isResearched(techName)) text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
             TB.setText(text)
         }
     }
@@ -139,13 +138,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             while (!prerequisites.isEmpty()) techsToResearch.add(prerequisites.pop())
         }
 
-        pick("{Research} \r\n".tr() + techsToResearch[0])
+        pick("{Research} \r\n".tr() + techsToResearch[0].tr())
         setButtonsInfo()
     }
 
     private fun selectTechnologyForFreeTech(tech: Technology) {
         if (researchableTechs.contains(tech.name)) {
-            pick("Pick " + selectedTech!!.name + "\r\n as free tech!")
+            pick("Pick " + selectedTech!!.name.tr() + "\r\n as free tech!")
         } else {
             rightSideButton.setText("Pick a free tech")
             rightSideButton.disable()

@@ -52,7 +52,7 @@ class CityConstructions {
     fun getProductionForTileInfo(): String {
         var result = currentConstruction
         if (result != "Science" && result != "Gold")
-            result += "\r\nin " + turnsToConstruction(currentConstruction) + " {turns}".tr()
+            result += "\r\n{in} ".tr() + turnsToConstruction(currentConstruction) + " {turns}".tr()
         return result
     }
 
@@ -96,7 +96,7 @@ class CityConstructions {
         currentConstruction = "lie"
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            cityInfo.civInfo.addNotification("{Cannot continue work on} $saveCurrentConstruction".tr(), cityInfo.location, Color.BROWN)
+            cityInfo.civInfo.addNotification("{Cannot continue work on} {$saveCurrentConstruction}", cityInfo.location, Color.BROWN)
             Automation().chooseNextConstruction(this)
             construction = getConstruction(currentConstruction)
         } else
@@ -111,10 +111,10 @@ class CityConstructions {
             if(construction is Building && construction.isWonder && construction.requiredBuildingInAllCities==null) {
                 val playerCiv = cityInfo.civInfo.gameInfo.getPlayerCivilization() 
                 val builtLocation = if(playerCiv.exploredTiles.contains(cityInfo.location)) cityInfo.name else "a faraway land"
-                playerCiv.addNotification("$currentConstruction {has been built in} $builtLocation".tr(), cityInfo.location, Color.BROWN)
+                playerCiv.addNotification("{$currentConstruction} {has been built in} $builtLocation", cityInfo.location, Color.BROWN)
             }
             else
-                cityInfo.civInfo.addNotification(currentConstruction + " {has been built in} ".tr() + cityInfo.name, cityInfo.location, Color.BROWN)
+                cityInfo.civInfo.addNotification("{$currentConstruction} {has been built in} "  + cityInfo.name, cityInfo.location, Color.BROWN)
 
             Automation().chooseNextConstruction(this)
         }

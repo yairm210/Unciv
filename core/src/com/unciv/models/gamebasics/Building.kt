@@ -40,7 +40,7 @@ class Building : NamedStats(), IConstruction{
     /**
      * The bonus stats that a resource gets when this building is built
      */
-    @JvmField var resourceBonusStats: Stats? = null
+    var resourceBonusStats: Stats? = null
 
     fun getRequiredTech(): Technology = GameBasics.Technologies[requiredTech]!!
 
@@ -51,11 +51,11 @@ class Building : NamedStats(), IConstruction{
         val improvedResources = GameBasics.TileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){
             // buildings that improve resources
-            infoList += resourceBonusStats.toString() +" from "+improvedResources.joinToString()
+            infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
         }
         if(unique!=null) infoList += unique!!
-        if(cityStrength!=0) infoList+="city strength +"+cityStrength
-        if(cityHealth!=0) infoList+="city health +"+cityHealth
+        if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
+        if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
         return infoList.joinToString()
     }
 
@@ -96,8 +96,8 @@ class Building : NamedStats(), IConstruction{
     fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: HashSet<String>): String {
         val stats = getStats(adoptedPolicies)
         val stringBuilder = StringBuilder()
-        if (!forBuildingPickerScreen) stringBuilder.appendln("Cost: $cost")
-        if (isWonder) stringBuilder.appendln("Wonder")
+        if (!forBuildingPickerScreen) stringBuilder.appendln("{Cost}: $cost".tr())
+        if (isWonder) stringBuilder.appendln("Wonder".tr())
         if (!forBuildingPickerScreen && requiredTech != null)
             stringBuilder.appendln("Requires {$requiredTech} to be researched".tr())
         if (!forBuildingPickerScreen && requiredBuilding != null)
@@ -125,13 +125,13 @@ class Building : NamedStats(), IConstruction{
         }
         if (resourceBonusStats != null) {
             val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendln("$resources provide $resourceBonusStats")
+            stringBuilder.appendln("$resources {provide} $resourceBonusStats")
         }
 
-        if(cityStrength!=0) stringBuilder.appendln("City strength +"+cityStrength)
-        if(cityHealth!=0) stringBuilder.appendln("City health +"+cityHealth)
+        if(cityStrength!=0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)
+        if(cityHealth!=0) stringBuilder.appendln("{City health} +".tr() + cityHealth)
         if (maintenance != 0)
-            stringBuilder.appendln("Maintenance cost: $maintenance {Gold}".tr())
+            stringBuilder.appendln("{Maintenance cost}: $maintenance {Gold}".tr())
         return stringBuilder.toString().trim()
     }
 
