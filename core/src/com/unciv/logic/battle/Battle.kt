@@ -54,7 +54,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             val defenderString =
                     if (defender.getUnitType() == UnitType.City) " " + defender.getName()
                     else " our " + defender.getName()
-            val notificationString = "An enemy " + attacker.getName() + whatHappenedString + defenderString
+            val notificationString = "{An enemy} ".tr() + attacker.getName() + whatHappenedString + defenderString
             defender.getCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
@@ -149,7 +149,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             return
         } // barbarians don't capture civilians!
         val capturedUnit = (defender as MapUnitCombatant).unit
-        capturedUnit.civInfo.addNotification("An enemy ".tr()+attacker.getName()+" has captured our "+defender.getName()+"!",
+        capturedUnit.civInfo.addNotification("{An enemy} ".tr()+attacker.getName()+" {has captured} our "+defender.getName()+"!",
                 defender.getTile().position, Color.RED)
         capturedUnit.civInfo = attacker.getCivilization()
         capturedUnit.owner = capturedUnit.civInfo.civName

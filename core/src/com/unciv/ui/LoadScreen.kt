@@ -21,7 +21,7 @@ class LoadScreen : PickerScreen() {
         val saveTable = Table()
 
 
-        val deleteSaveButton = TextButton("Delete save", CameraStageBaseScreen.skin)
+        val deleteSaveButton = TextButton("Delete save".tr(), CameraStageBaseScreen.skin)
         deleteSaveButton .addClickListener {
             GameSaver().deleteSave(selectedSave)
             UnCivGame.Current.screen = LoadScreen()
@@ -40,12 +40,12 @@ class LoadScreen : PickerScreen() {
                 var textToSet = it
 
                 val savedAt = Date(GameSaver().getSave(it).lastModified())
-                textToSet+="\nSaved at: "+ SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
+                textToSet+="\n{Saved at}: ".tr()+ SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
                 try{
                     val game = GameSaver().loadGame(it)
-                    textToSet+="\n"+game.getPlayerCivilization()+", ${"Turn".tr()} "+game.turns
+                    textToSet+="\n"+game.getPlayerCivilization()+", {Turn} ".tr()+game.turns
                 }catch (ex:Exception){
-                    textToSet+="\nCould not load game!"
+                    textToSet+="\n{Could not load game}!".tr()
                 }
                 descriptionLabel.setText(textToSet)
                 rightSideButton.setText("Load\r\n$it")
@@ -57,7 +57,7 @@ class LoadScreen : PickerScreen() {
         }
 
         val loadFromClipboardTable = Table()
-        val loadFromClipboardButton = TextButton("Load copied data",skin)
+        val loadFromClipboardButton = TextButton("Load copied data".tr(),skin)
         val errorLabel = Label("",skin).setFontColor(Color.RED)
         loadFromClipboardButton.addClickListener {
             try{

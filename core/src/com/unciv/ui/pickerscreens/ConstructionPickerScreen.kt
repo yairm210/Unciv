@@ -50,9 +50,9 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         for (building in GameBasics.Buildings.values) {
             if (!building.isBuildable(cityConstructions) && building.name!=cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
-                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " "+"turns".tr(),
+                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
                     building.getDescription(true, civInfo.policies.getAdoptedPolicies()),
-                    "Build " + building.name)
+                    "{Build} ".tr() + building.name)
             if (building.isWonder)
                 wonders.addActor(productionTextButton)
             else
@@ -61,8 +61,8 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
 
         for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
             units.addActor(getProductionButton(unit.name,
-                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " "+"turns".tr(),
-                    unit.getDescription(true), "Train " + unit.name))
+                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr(),
+                    unit.getDescription(true), "{Train} ".tr() + unit.name))
         }
 
         for(specialConstruction in cityConstructions.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }){

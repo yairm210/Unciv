@@ -113,7 +113,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         }
 
         if (civTech.isResearched(tech.name)) {
-            rightSideButton.setText("Research")
+            rightSideButton.setText("Research".tr())
             rightSideButton.disable()
             setButtonsInfo()
             return
@@ -139,7 +139,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             while (!prerequisites.isEmpty()) techsToResearch.add(prerequisites.pop())
         }
 
-        pick("Research \r\n" + techsToResearch[0])
+        pick("{Research} \r\n".tr() + techsToResearch[0])
         setButtonsInfo()
     }
 
