@@ -124,6 +124,19 @@
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
 		hurryCostModifier:20
 	},
+	{
+		name:"Companion Cavalry",
+		unitType:"Mounted",
+		movement:5,
+		strength:14,
+		cost: 75,
+		uniqueTo:"Greece",
+		replaces:"Horseman",
+		requiredTech:"Horseback Riding",
+		requiredResource:"Horses",
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		hurryCostModifier:20
+	},
 	
 	// Medieval Era
 	{
