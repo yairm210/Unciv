@@ -1,7 +1,7 @@
 {
 	"Next turn":{
 		Italian:"Turno successivo"
-		Russian:"Следующий чод"
+		Russian:"Следующий ход"
 		French:"Tour prochain"
 		Romanian:"Runda urmatoare"
 	}
@@ -14,6 +14,10 @@
 	}
 
 	"in ":{ // As in "Opera House in 3 turns"
+		Italian:"in "
+		Russian:"в"
+		French:"dans "
+		Romanian:"în"
 		
 	}
 	
@@ -82,9 +86,17 @@
 	}
 	
 	"Fortification":{ // as in "+40% Fortification"
+		Italian:"Fortificazione"
+		Russian:"Фортификация"
+		French:"Fortification"
+		Romanian:"Fortificație"
 	}
 
 	"Set up":{ // For siege units
+		Italian:"Impostare"
+		Russian:"Приказ"
+		French:"Implanter"
+		Romanian:"Dispune"
 	}
 
 	"Health":{
@@ -114,6 +126,10 @@
 		Romanian:"Fericire"
 	}
 	"Production":{
+		Italian:""
+		Russian:""
+		French:""
+		Romanian:""
 	}
 	"Culture":{
 		Italian:"Cultura"
@@ -209,31 +225,71 @@
 		Romanian:"Cumpara cu"
 	}
 
-	"Maintainance cost":{
+	"Maintenance cost":{
+		Italian:"Costo di manutenzione"
+		Russian:"Стоимость обслуживания"
+		French:"Coût de maintenance"
+		Romanian:"Costuri de întreținere"
 	}
 	
 	
 	"Pick construction":{ // eg Build Granary
+		Italian:"Scegli la costruzione"
+		Russian:"Выбор здания"
+		French:"Choisissez la construction"
+		Romanian:"Alegeți construcția"
 	}
 	
 	"Build":{ // eg Build Granary
+		Italian:"Costruire"
+		Russian:"Строить"
+		French:"Construire"
+		Romanian:"Construiste"
 	}
 	
 	"Train":{ // eg Train Scout
+		Italian:"Adestrare"
+		Russian:"Обучать"
+		French:"Former"
+		Romanian:"Instrui"
 	}
 	
 	// Tech picker
 	"Pick a tech":{ // eg "Research Pottery"
+		Italian:"Scegli una tecnologia"
+		Russian:"Выберите технологию"
+		French:"Choisissez une technologie"
+		Romanian:"Alege o tehnologie"
 	}
 	"Research":{ // eg "Research Pottery"
+		Italian:"Ricerca"
+		Russian:"Исследование"
+		French:"Recherche"
+		Romanian:"Exploreaza"
 	}
 	"Units enabled":{ // eg "Research Pottery"
+		Italian:"Unità abilitate"
+		Russian:"Активные юниты"
+		French:"Unités activées"
+		Romanian:"Unități activate"
 	}
 	"Buildings enabled":{ // eg "Research Pottery"
+		Italian:"Edifici abilitati"
+		Russian:"Активные здания"
+		French:"Bâtiments activés"
+		Romanian:"Clădirile active"
 	}
 	"Wonders enabled":{ // eg "Research Pottery"
+		Italian:"Meraviglie abilitate"
+		Russian:"Активные чудеса"
+		French:"Merveilles activées"
+		Romanian:"Minuni active"
 	}
 	"Tile improvements enabled":{ // eg "Research Pottery"
+		Italian:"Miglioramenti delle celle abilitati"
+		Russian:"Улучшены улучшения плит"
+		French:"Améliorations apportées aux carreaux"
+		Romanian:"Ameliorare activa a plăcilor"
 	}
 
 	// Notifications
@@ -242,329 +298,861 @@
 	// I remember that some languages have upside-down question marks before to mark a question
 	
 	" has grown":{
+		Italian:" è cresciuto"
+		Russian:" вырос"
+		French:" a grandi"
+		Romanian:" a crescut"
 	}
 	
 	" has been founded!":{
+		Italian:" è stato fondato!"
+		Russian:" была создана!"
+		French:" a été fondé!"
+		Romanian:" a fost fondat!"
 	}
 	
 	" has been razed to the ground!":{
+		Italian:" è stato raso al suolo!"
+		Russian:" был снесен на землю!"
+		French:" a été rasé à terre!"
+		Romanian:" a fost distrus la pământ!"
 	}
 	
 	"We have conquered the city of ":{
+		Italian:"Abbiamo conquistato la città di "
+		Russian:"Мы завоевали город "
+		French:"Nous avons conquis la ville de "
+		Romanian:"Am cucerit orașul "
 	}
 	
 	"Research of ":{ // For technology notifications EG Research of Writing has completed
+		Italian:"Ricerca di "
+		Russian:"Исследование "
+		French:"Recherche de "
+		Romanian:"Cercetarea "
 	}
 	
 	" has completed":{
+		Italian:" ha completato"
+		Russian:" завершилось"
+		French:" a completé"
+		Romanian:" a finalizat"
 	}
 
 	" is starving!":{
+		Italian:" sta morendo di fame!"
+		Russian:" голодает!"
+		French:" est affamé!"
+		Romanian:" suferă de foame!"
 	}
 	
 	"has been built in":{
+		Italian:"è stato costruito in"
+		Russian:"была построена в"
+		French:"a été construit en"
+		Romanian:"a fost construit in"
 	}
 	
 	"Work has started on":{
+		Italian:"Il lavoro è iniziato per"
+		Russian:"Началась работа над"
+		French:"Le travail a commencé sur le"
+		Romanian:"Munca a început pentru"
 	}
 	
 	"Cannot continue work on":{
+		Italian:"Non posso continuare a lavorare su"
+		Russian:"Не удается продолжить работу над"
+		French:"Impossible de continuer à travailler sur"
+		Romanian:"Nu pot continua munca pentru"
 	}
 
 	" has expanded its borders":{
+		Italian:" ha allargato i suoi confini"
+		Russian:" расширил границы"
+		French:" a élargi ses frontières"
+		Romanian:" și-a extins frontierele"
 	}
 
 	"An enemy ":{
+		Italian:"Un nemico "
+		Russian:"Враг "
+		French:"Un ennemi "
+		Romanian:"Un dusman "
 	}
 
 	" has attacked ":{
+		Italian:" ha attaccato "
+		Russian:" атаковал "
+		French:" a attaqué "
+		Romanian:" a atacat "
 	}
 
 	" has destroyed ":{
+		Italian:" ha distrutto "
+		Russian:" уничтожил "
+		French:" a détruit "
+		Romanian:" a distrus "
 	}
 	
 	" has captured ":{
+		Italian:" ha catturato "
+		Russian:" захватил "
+		French:" a capturé "
+		Romanian:" a capturat "
 	}
 	
 	" revealed near ":{ // As in "Coal revealed near London"
+		Italian:" rivelato vicino a"
+		Russian:" выявлено вблизи "
+		French:" a capturé "
+		Romanian:" dezvăluit aproape "
 	}
 	
 	"The civilization of":{
+		Italian:"La civiltà di"
+		Russian:"Цивилизация"
+		French:"La civilisation de"
+		Romanian:"Civilizația"
 	}
 	"has been destroyed!":{
+		Italian:"è stata distrutta!"
+		Russian:"был уничтожен!"
+		French:"a été détruit!"
+		Romanian:"a fost distrus!"
 	}
 	
 	// Save and load game
 	
 	"Current saves":{
+		Italian:"Salvataggio corrente"
+		Russian:"Текущие сейвы"
+		French:"Текущие сейвы"
+		Romanian:"Salvatajul curent"
 	}
 	"Saved game name":{
+		Italian:"Nome del gioco salvato"
+		Russian:"Сохраненное название игры"
+		French:"Nom du jeu sauvegardé"
+		Romanian:"Numele jocului salvat"
 	}
 	"Copy game info":{
+		Italian:"Copia le informazioni sul gioco"
+		Russian:"Копировать информацию об игре"
+		French:"Copier les informations du jeu"
+		Romanian:"Copiați informațiile jocului"
 	}
 	"Could not load game":{
+		Italian:"Impossibile caricare il gioco"
+		Russian:"Не удалось загрузить игру"
+		French:"Impossible de charger le jeu"
+		Romanian:"Nu s-a putut încărca jocul"
 	}
 	"Load":{ // as in "Load SaveFile2"
+		Italian:"Caricare"
+		Russian:"загрузить"
+		French:"Charger"
+		Romanian:"încărca"
 	}
 	"Delete save":{
+		Italian:"Elimina Salvataggio"
+		Russian:"Удалить сохранение"
+		French:"Supprimer enregistrer"
+		Romanian:"Ștergeți salvatajul"
 	}
 	"Saved at":{
+		Italian:"Salvato a"
+		Russian:"Сохранено в"
+		French:"Enregistré à"
+		Romanian:"Salvat la"
 	}
 	
 	// Terrains
 	
 	"Grassland":{
+		Italian:"Prateria"
+		Russian:"Луг"
+		French:"Herbage"
+		Romanian:"Fâneață"
 	}
 	"Plains":{
+		Italian:"Pianura"
+		Russian:"Pавнины"
+		French:"Plaines"
+		Romanian:"Inalzat"
 	}
 	"Tundra":{
+		Italian:"Tundra"
+		Russian:"Tундра"
+		French:"Toundra"
+		Romanian:"Tundră"
 	}
 	"Desert":{
+		Italian:"Deserto"
+		Russian:"Пустынный"
+		French:"Désert"
+		Romanian:"Deşert"
 	}
 	"Lakes":{
+		Italian:"Laghi"
+		Russian:"Озера"
+		French:"Lacs"
+		Romanian:"Lacurile"
 	}
 	"Hill":{
+		Italian:"Collina"
+		Russian:"Bозвышенность"
+		French:""
+		Romanian:""
 	}
 	"Forest":{
+		Italian:"Foresta"
+		Russian:"Лес"
+		French:"Forêt"
+		Romanian:"Pădure"
 	}
 	"Jungle":{
+		Italian:"Giungla"
+		Russian:"Джунгли"
+		French:"Jungle"
+		Romanian:"Junglă"
 	}
 	"Marsh":{
+		Italian:"Palude"
+		Russian:"Болотный"
+		French:"Marais"
+		Romanian:"Mlaştină"
 	}
 	"Oasis":{
+		Italian:"Oasi"
+		Russian:"Оазис"
+		French:"Oasis"
+		Romanian:"Oază"
 	}
 	"Food plains":{
+		Italian:"Pianure alimentari"
+		Russian:"Пищевые равнины"
+		French:"Plaines alimentaires"
+		Romanian:"Câmpiile alimentare"
 	}
 	
 	// Bonus Resources
 	"Cattle":{
+		Italian:"Bestiame"
+		Russian:"Скот"
+		French:"Bétail"
+		Romanian:"Bovine"
 	}
 	"Sheep":{
+		Italian:"Pecora"
+		Russian:"Овца"
+		French:"Mouton"
+		Romanian:"Oaie"
 	}
 	"Deer":{
+		Italian:"Cervo"
+		Russian:"Oлень"
+		French:"Cerf"
+		Romanian:"Cerb"
 	}
 	"Bananas":{
+		Italian:"Banane"
+		Russian:"Бананы"
+		French:"Bananes"
+		Romanian:"Banane"
 	}
 	"Wheat":{
+		Italian:"Grano"
+		Russian:"Пшеница"
+		French:"Blé"
+		Romanian:"Grâu"
 	}
 	"Stone":{
+		Italian:"Pietra"
+		Russian:"Камень"
+		French:"Pierre"
+		Romanian:"Piatră"
 	}
 	
 	// Strategic Resources
 	"Horses":{
+		Italian:"Cavalli"
+		Russian:"Лошади"
+		French:"Chevaux"
+		Romanian:"Cai"
 	}
 	"Iron":{
+		Italian:"Ferro"
+		Russian:"Железо"
+		French:"Fer"
+		Romanian:"Fier"
 	}
 	"Coal":{
+		Italian:"Carbone"
+		Russian:"Уголь"
+		French:"Charbon"
+		Romanian:"Cărbune"
 	}
 	"Oil":{
+		Italian:"Petrolio"
+		Russian:"Нефть"
+		French:"Pétrole"
+		Romanian:"Petrol"
 	}
 	"Aluminum":{
+		Italian:"Aluminio"
+		Russian:"Aлюминий"
+		French:"Aluminium"
+		Romanian:"Aluminiu"
 	}
 	"Uranium":{
+		Italian:"Uranio"
+		Russian:"Уран"
+		French:"Uranium"
+		Romanian:"Uraniu"
 	}
 	
 	// Luxury Resources
 	"Furs":{
+		Italian:"Pellicceria"
+		Russian:"Меха"
+		French:"Fourrures"
+		Romanian:"Blănărie"
 	}
 	"Cotton":{
+		Italian:"Cotone"
+		Russian:"Хлопок"
+		French:"Coton"
+		Romanian:"Bumbac"
 	}
 	"Dyes":{
+		Italian:"Coloranti"
+		Russian:"Красители"
+		French:"Colorants"
+		Romanian:"Coloranți"
 	}
 	"Gems":{
+		Italian:"Pietre preziose"
+		Russian:"Драгоценные камни"
+		French:"Gems"
+		Romanian:"Pietre pretioase"
 	}
 	"Silver":{
+		Italian:"Argento"
+		Russian:"Серебро"
+		French:"Argent"
+		Romanian:"Argint"
 	}
 	"Incense":{
+		Italian:"Incenso"
+		Russian:"Паофюмы"
+		French:"Encens"
+		Romanian:"Parfume"
 	}
 	"Silk":{
+		Italian:"Seta"
+		Russian:"Шелк"
+		French:"Soie"
+		Romanian:"Mătase"
 	}
 	"Spices":{
+		Italian:"Spezie"
+		Russian:"Cпеции"
+		French:"Épices"
+		Romanian:"Aromate"
 	}
 	"Wine":{
+		Italian:"Vino"
+		Russian:"Вино"
+		French:"Vin"
+		Romanian:"Vin"
 	}
 	"Sugar":{
+		Italian:"Zucchero"
+		Russian:"Сахар"
+		French:"Sucre"
+		Romanian:"Zahar"
 	}
 	"Marble":{
+		Italian:"Marmo"
+		Russian:"Мрамор"
+		French:"Marbre"
+		Romanian:"Marmură"
 	}
 	"Pearls":{
+		Italian:""
+		Russian:""
+		French:""
+		Romanian:""
 	}
 	"Whales":{
+		Italian:"Perle"
+		Russian:"Жемчуг"
+		French:"Perles"
+		Romanian:"Perle"
 	}
 	
 	// Tile improvements
 	
 	"Farm":{
+		Italian:"Fattoria"
+		Russian:"Ферма"
+		French:"Ferme"
+		Romanian:"Fermă"
 	}
 	"Lumber Mill":{
+		Italian:"Segheria"
+		Russian:"Лесопилка"
+		French:"Scierie"
+		Romanian:"Cherestea"
 	}
 	"Mine":{
+		Italian:"Miniera"
+		Russian:"Мина"
+		French:"Mine"
+		Romanian:"Mina"
 	}
 	"Trading post":{
+		Italian:"Base commerciale"
+		Russian:"Торговая точка"
+		French:"Comptoir commercial"
+		Romanian:"Post de vinzare"
 	}
 	"Camp":{
+		Italian:"Accampamento"
+		Russian:"Лагерь"
+		French:"Campement"
+		Romanian:"Tabără"
 	}
 	"Oil Well":{
+		Italian:"Pozzo di petrolio"
+		Russian:"Нефтяная скважина"
+		French:"Puits de pétrole"
+		Romanian:"Sondă de nafta"
 	}
 	"Pasture":{
+		Italian:"Pascolo"
+		Russian:"Выгон"
+		French:"Pâturage"
+		Romanian:"Păşune"
 	}
 	"Plantation":{
+		Italian:"Piantagione"
+		Russian:"Плантация"
+		French:"Plantation"
+		Romanian:"Plantaţie"
 	}
 	"Quarry":{
+		Italian:"Cava"
+		Russian:"Карьер"
+		French:"Carrière"
+		Romanian:"Carieră"
 	}
 	"Road":{
+		Italian:"Strada"
+		Russian:"Дорога"
+		French:"Route"
+		Romanian:"Drum"
 	}
 	"Railroad":{
+		Italian:"Ferrovia"
+		Russian:"Железная дорога"
+		French:"Chemin de fer"
+		Romanian:"Cale ferată"
 	}
 	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
+		Italian:"Rimuovi"
+		Russian:"Удалить"
+		French:"Suprimer"
+		Romanian:"Elimina"
 	}
 	"Academy":{
+		Italian:"Accademia"
+		Russian:"Академия"
+		French:"Académie"
+		Romanian:"Academie"
 	}
 	"Landmark":{
+		Italian:"Punto di riferimento"
+		Russian:"Ориентир"
+		French:"Point de repère"
+		Romanian:"Reper"
 	}
 	"Manufactory":{
+		Italian:"Fabbrica"
+		Russian:"Мануфактура"
+		French:"Manufacture"
+		Romanian:"Fabrică"
 	}
 	"Customs house":{
+		Italian:"Dogana"
+		Russian:"Таможня"
+		French:"Maison des douanes"
+		Romanian:"Casa vamală"
 	}
 	
 	
 	// Technologies (Ancient Era)
 	
 	"Pottery":{
+		Italian:"Ceramica"
+		Russian:"Керамика"
+		French:"Poterie"
+		Romanian:"Ceramică"
 	}
 	"Animal Husbandry":{
+		Italian:"Allevamento di animali"
+		Russian:"Животноводство"
+		French:"Élevage"
+		Romanian:"Creșterea animalelor"
 	}
 	"Archery":{
+		Italian:"Tiro con l'arco"
+		Russian:"Стрельба из лука"
+		French:"Tir à l'arc"
+		Romanian:"TIR cu arcul"
 	}
 	"Mining":{
+		Italian:"Estrazione minerarie"
+		Russian:"Добыча руды"
+		French:"Exploitation minière"
+		Romanian:"Exploatare minieră"
 	}
 	"Sailing":{
+		Italian:"Andare in barca"
+		Russian:"Мореплаванье"
+		French:"Navigation à voile"
+		Romanian:"Navigație"
 	}
 	"Calendar":{
+		Italian:"Calendario"
+		Russian:"Календарь"
+		French:"Calendrier"
+		Romanian:"Calendar"
 	}
 	"Writing":{
+		Italian:"Scrittura"
+		Russian:"Письменность"
+		French:"L'écriture"
+		Romanian:"Scriere"
 	}
 	"Trapping":{
+		Italian:"Caccia"
+		Russian:"Охота"
+		French:"Chasse"
+		Romanian:"Vânătoare"
 	}
 	"The Wheel":{
+		Italian:"La ruota"
+		Russian:"Колесо"
+		French:"La roue"
+		Romanian:"Roata"
 	}
 	"Masonry":{
+		Italian:"Opere murarie"
+		Russian:"Каменная кладка"
+		French:"Maçonnerie"
+		Romanian:"Zidărie"
 	}
 	"Bronze Working":{
+		Italian:"Lavorazione bronzo"
+		Russian:"Обработка бронза"
+		French:"Traitement de bronze"
+		Romanian:"Prelucrarea bronzului"
 	}
 	
 	
 	// Technologies (Classical Era)
 	
 	"Optics":{
+		Italian:"Ottica"
+		Russian:"Оптика"
+		French:"Optique"
+		Romanian:"Optica"
 	}
 	"Horseback Riding":{
+		Italian:"Equitazione"
+		Russian:"Верховая езда"
+		French:"Monter à cheval"
+		Romanian:"Călărie"
 	}
 	"Mathematics":{
+		Italian:"Matematica"
+		Russian:"Математика"
+		French:"Mathématiques"
+		Romanian:"Matematică"
 	}
 	"Construction":{
+		Italian:"Costruzione"
+		Russian:"Строительство"
+		French:"Bâtiment"
+		Romanian:"Clădire"
 	}
 	"Philosophy":{
+		Italian:"Filosofia"
+		Russian:"Философия"
+		French:"Philosophie"
+		Romanian:"Filozofie"
 	}
 	"Currency":{
+		Italian:"Moneta"
+		Russian:"Деньги"
+		French:"Monnaie"
+		Romanian:"Valută"
 	}
 	"Engineering":{
+		Italian:"Ingegneria"
+		Russian:"Инженерия"
+		French:"Ingénierie"
+		Romanian:"Inginerie"
 	}
 	"Iron Working":{
+		Italian:"Lavorazione del ferro"
+		Russian:"Обработка железа"
+		French:"Traitement du fer"
+		Romanian:"Prelucrarea fierului"
 	}
 	
 	
 	// Technologies (Medieval Era)
 	
 	"Theology":{
+		Italian:"Teologia"
+		Russian:"Теология"
+		French:"Théologie"
+		Romanian:"Teologie"
 	}
 	"Civil Service":{
+		Italian:"Servizio civile"
+		Russian:"Гражданская служба"
+		French:"Service civil"
+		Romanian:"Serviciu civil"
 	}
 	"Physics":{
+		Italian:"Fisica"
+		Russian:"Физика"
+		French:"La physique"
+		Romanian:"Fizică"
 	}
 	"Metal Casting":{
+		Italian:"colata di metallo"
+		Russian:"Литье"
+		French:"Coulée de métal"
+		Romanian:"Turnarea metalului"
 	}
 	"Compass":{
+		Italian:"Bussola"
+		Russian:"Компас"
+		French:"Boussole"
+		Romanian:"Busolă"
 	}
 	"Education":{
+		Italian:"Istruzione"
+		Russian:"Образование"
+		French:"Éducation"
+		Romanian:"Educaţie"
 	}
 	"Chivalry":{
+		Italian:"Cavalleria"
+		Russian:"Рыцарство"
+		French:"Chevalerie"
+		Romanian:"Cavalerime"
 	}
 	"Machinery":{
+		Italian:"Macchinari"
+		Russian:"Машыни"
+		French:"Machinerie"
+		Romanian:"Mașini"
 	}
 	
 	
 	// Technologies (Renaissance Era)
 	
 	"Astronomy":{
+		Italian:"Astronomia"
+		Russian:"Астрономия"
+		French:"Astronomie"
+		Romanian:"Astronomie"
 	}
 	"Acoustics":{
+		Italian:"Acustica"
+		Russian:"Акустика"
+		French:"Acoustique"
+		Romanian:"Acustică"
 	}
 	"Banking":{
+		Italian:"Bancario"
+		Russian:"Банковское дело"
+		French:"Bancaire"
+		Romanian:"Banca"
 	}
 	"Printing Press":{
+		Italian:"Macchina da stampa"
+		Russian:"Печатный пресс"
+		French:"Presse d'imprimerie"
+		Romanian:"Presă de tipar"
 	}
 	"Navigation":{
+		Italian:"Navigazione"
+		Russian:"Навигация"
+		French:"La navigation"
+		Romanian:"Navigare"
 	}
 	"Archaeology":{
+		Italian:"Archeologia"
+		Russian:"Aрхеология"
+		French:"Archéologie"
+		Romanian:"Arheologie"
 	}
 	"Economics":{
+		Italian:"Economia"
+		Russian:"Экономика"
+		French:"Économie"
+		Romanian:"Economie"
 	}
 	"Chemistry":{
+		Italian:"Chimica"
+		Russian:"Химия"
+		French:"Chimie"
+		Romanian:"Chimie"
 	}
 	
 	// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
 	
 	"Scientific Theory":{
+		Italian:"Teoria scientifica"
+		Russian:"Научная теория"
+		French:"Théorie scientifique"
+		Romanian:"Teoria științifică"
 	}
 	"Fertilizer":{
+		Italian:"Fertilizzante"
+		Russian:"Yдобрение"
+		French:"Engrais"
+		Romanian:"Îngrăşământ"
 	}
 	"Biology":{
+		Italian:"Biologia"
+		Russian:"Биология"
+		French:"La biologie"
+		Romanian:"Biologie"
 	}
 	"Electricity":{
+		Italian:"Electricità"
+		Russian:"Электричество"
+		French:"Électricité"
+		Romanian:"Electricitate"
 	}
 	"Steam Power":{
+		Italian:"Forza vapore"
+		Russian:"Сила пара"
+		French:"Puissance de la vapeur"
+		Romanian:"Puterea aburului"
 	}
 	
 	
 	// Technologies (Modern Era)
 	
 	"Refrigeration":{
+		Italian:"Refrigeratori"
+		Russian:"Oхлаждение"
+		French:"Réfrigération"
+		Romanian:"Refrigeraţie"
 	}
 	"Radio":{
+		Italian:"Radio"
+		Russian:"Радио"
+		French:"Radio"
+		Romanian:"Radio"
 	}
 	"Combustion":{
+		Italian:"Combustione"
+		Russian:"Горение"
+		French:"La combustion"
+		Romanian:"Combustie"
 	}
 	"Plastics":{
+		Italian:"Plastica"
+		Russian:"Пластики"
+		French:"Plastiques"
+		Romanian:"Materiale plastice"
 	}
 	"Electronics":{
+		Italian:"Elettronica"
+		Russian:"Электроника"
+		French:"Électronique"
+		Romanian:"Electronică"
 	}
 	"Mass Media":{
+		Italian:"Mass media"
+		Russian:"СМИ"
+		French:"Médias de masse"
+		Romanian:"Mass media"
 	}
 	
 	// Technologies (Information Era)
 	
 	"Pharmaceuticals":{
+		Italian:"Pharmaceuticals"
+		Russian:"Фармацевтические препараты"
+		French:"Médicaments"
+		Romanian:"Produse farmaceutice"
 	}
 	"Computers":{
+		Italian:"Computers"
+		Russian:"Kомпьютеры"
+		French:"Ordinateurs"
+		Romanian:"Calculatoare"
 	}
 	"Nuclear Fission":{
+		Italian:"Fissione nucleare"
+		Russian:"Ядерное деление"
+		French:"Fission nucléaire"
+		Romanian:"Fisiune nucleara"
 	}
 	"Ecology":{
+		Italian:"Ecologia"
+		Russian:"Экология"
+		French:"Écologie"
+		Romanian:"Ecologie"
 	}
 	"Robotics":{
+		Italian:"Robotica"
+		Russian:"Робототехника"
+		French:"Robotique"
+		Romanian:"Robotică"
 	}
 	"Rocketry":{
+		Italian:"Missilistica"
+		Russian:"Ракетная техника"
+		French:"Rocketry"
+		Romanian:"Rachete"
 	}
 	
 	// Technologies (Future Era)
 	"Nanotechnology":{
+		Italian:"Nanotecnologia"
+		Russian:"Нанотехнологии"
+		French:"Nanotechnologie"
+		Romanian:"Nanotehnologie"
 	}
 	"Satellites":{
+		Italian:"Satelliti"
+		Russian:"Спутники"
+		French:"Satellites"
+		Romanian:"Sateliții"
 	}
 	"Particle Physics":{
+		Italian:"Fisica delle particelle"
+		Russian:"Физика частиц"
+		French:"La physique des particules"
+		Romanian:"Fizica particulelor"
 	}
 	"Future Tech":{
+		Italian:"Tecnologia del futuro"
+		Russian:"Технология будущчего"
+		French:"Technologie future"
+		Romanian:"Tehnologia viitoare"
 	}
 	
 }
