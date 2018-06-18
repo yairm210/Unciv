@@ -25,3 +25,4 @@ All from [the Noun Project](https://thenounproject.com) licenced under Creative 
 * [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain
 * [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish
+* [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo
