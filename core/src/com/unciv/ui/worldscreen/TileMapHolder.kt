@@ -87,11 +87,15 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles() {
-        val civViewableTiles = civInfo.getViewableTiles().toHashSet()
+        val playerViewableTiles = civInfo.getViewableTiles().toHashSet()
 
         for (WG in tileGroups.values){
-            WG.update(civViewableTiles.contains(WG.tileInfo))
-        }
+            WG.update(playerViewableTiles.contains(WG.tileInfo))
+            val unitsInTile = WG.tileInfo.getUnits()
+            if(playerViewableTiles.contains(WG.tileInfo)
+                    && unitsInTile.isNotEmpty() && unitsInTile.first().civInfo!=civInfo)
+                WG.showCircle(Color.RED)
+        } // Display ALL viewable enemies ewith a red circle so that users don't need to go "hunting" for enemy units
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
@@ -112,7 +116,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             for (tile in attackableTiles.filter {
                 it.getUnits().isNotEmpty()
                         && it.getUnits().first().owner != unit.owner
-                        && civViewableTiles.contains(it)}) {
+                        && playerViewableTiles.contains(it)}) {
                 if(unit.getBaseUnit().unitType== UnitType.Civilian) tileGroups[tile]!!.hideCircle()
                 else tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
             }

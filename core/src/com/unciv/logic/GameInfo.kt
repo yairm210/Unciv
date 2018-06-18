@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -23,6 +24,7 @@ class GameInfo {
 
     fun nextTurn() {
         notifications.clear()
+        val player = getPlayerCivilization()
 
         for (civInfo in civilizations){
             if(civInfo.tech.techsToResearch.isEmpty()){  // should belong in automation? yes/no?
@@ -36,7 +38,7 @@ class GameInfo {
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
-        for (civInfo in civilizations.filterNot { it.isPlayerCivilization() }){
+        for (civInfo in civilizations.filterNot { it==player }){
             civInfo.startTurn()
             Automation().automateCivMoves(civInfo)
         }
@@ -47,7 +49,14 @@ class GameInfo {
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
 
-        getPlayerCivilization().startTurn()
+        player.startTurn()
+
+        val enemyUnitsCloseToTerritory = player.getViewableTiles().filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=player
+                && (it.getOwner()==player || it.neighbors.any { neighbor -> neighbor.getOwner()==player }) }
+        for(enemyUnitTile in enemyUnitsCloseToTerritory) {
+            val inOrNear = if(enemyUnitTile.getOwner()==player) "in" else "near"
+            player.addNotification("Enemy spotted $inOrNear our territory!", enemyUnitTile.position, Color.RED)
+        }
 
         turns++
     }

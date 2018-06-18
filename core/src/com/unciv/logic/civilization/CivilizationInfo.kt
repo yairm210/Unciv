@@ -190,7 +190,7 @@ class CivilizationInfo {
         viewablePositions += getCivUnits()
                 .flatMap { it.getViewableTiles()} // Tiles within 2 tiles of units
         viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
-        return viewablePositions
+        return viewablePositions.distinct()
     }
 
     fun addNotification(text: String, location: Vector2?,color: Color) {
