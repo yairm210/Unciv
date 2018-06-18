@@ -137,17 +137,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 nextTurnButton.setText("Next turn".tr())
                 nextTurnButton.enable()
                 Gdx.input.inputProcessor = stage
-
-                displayTutorials("NextTurn")
-
-                if(civInfo.happiness<0)
-                    displayTutorials("Unhappiness")
-
-                if(civInfo.goldenAges.isGoldenAge())
-                    displayTutorials("GoldenAge")
-
-                if(gameInfo.turns>=100)
-                    displayTutorials("ContactMe")
             }
         }
 
@@ -168,6 +157,18 @@ class WorldScreen : CameraStageBaseScreen() {
         if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
             // otherwise images will not load properly!
             update()
+
+            displayTutorials("NextTurn")
+
+            if(civInfo.happiness<0)
+                displayTutorials("Unhappiness")
+
+            if(civInfo.goldenAges.isGoldenAge())
+                displayTutorials("GoldenAge")
+
+            if(gameInfo.turns>=100)
+                displayTutorials("ContactMe")
+
             shouldUpdate=false
         }
         super.render(delta)
