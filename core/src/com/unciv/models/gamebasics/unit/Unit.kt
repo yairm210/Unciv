@@ -37,9 +37,9 @@ class Unit : INamed, IConstruction, ICivilopedia {
     fun getShortDescription(): String {
         val infoList= mutableListOf<String>()
         if(baseDescription!=null) infoList+=baseDescription!!
-        if(strength!=0) infoList += "Strength".tr()+": $strength"
-        if(rangedStrength!=0) infoList += "Ranged strength".tr()+": $rangedStrength"
-        if(movement!=2) infoList+="Movement".tr()+": $movement"
+        if(strength!=0) infoList += "{Strength}: $strength".tr()
+        if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
+        if(movement!=2) infoList+="{Movement}: $movement".tr()
         return infoList.joinToString()
     }
 
@@ -49,12 +49,12 @@ class Unit : INamed, IConstruction, ICivilopedia {
         if(!forPickerScreen) {
             if (unbuildable) sb.appendln("Unbuildable")
             else sb.appendln("Cost: $cost")
-            if(requiredResource!=null) sb.appendln("Required resource: $requiredResource")
-            if(requiredTech!=null) sb.appendln("Required tech: $requiredTech")
+            if(requiredResource!=null) sb.appendln("Required resource: {$requiredResource}".tr())
+            if(requiredTech!=null) sb.appendln("Required tech: {$requiredTech}".tr())
         }
         if(strength!=0){
-            sb.append("Strength".tr()+": $strength")
-            if(rangedStrength!=0)  sb.append(",  "+"Ranged strength".tr()+": $rangedStrength")
+            sb.append("{Strength} $strength".tr())
+            if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
             sb.appendln()
         }
 
@@ -62,7 +62,7 @@ class Unit : INamed, IConstruction, ICivilopedia {
             for(unique in uniques!!)
                 sb.appendln(unique)
         }
-        sb.appendln("Movement".tr()+": $movement")
+        sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
     }
 

@@ -127,7 +127,13 @@ fun Actor.centerY(parent:Stage){ y = parent.height/2- height/2}
 fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
 
 fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
-fun String.tr(): String {return GameBasics.Translations.get(this,UnCivGame.Current.settings.language)}
+fun String.tr(): String {
+    if(contains("{")){ // sentence
+        var toReturn = this
+        return Regex("\\{(.*)}").replace(this,{matchResult -> matchResult.groups[1]!!.value.tr() })
+    }
+    else return GameBasics.Translations.get(this,UnCivGame.Current.settings.language) // single word
+}
 
 
 

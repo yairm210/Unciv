@@ -88,7 +88,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             }
 
             TB.isChecked = false
-            var text = techName
+            var text = techName.tr()
 
             if (techName == selectedTech?.name) {
                 TB.isChecked = true

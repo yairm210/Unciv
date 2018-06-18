@@ -20,7 +20,7 @@ open class TileInfo {
     fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()
 
     var position: Vector2 = Vector2.Zero
-    var baseTerrain: String? = null
+    lateinit var baseTerrain: String
     var terrainFeature: String? = null
     var resource: String? = null
     var improvement: String? = null
@@ -152,12 +152,12 @@ open class TileInfo {
             val city = getCity()!!
             SB.appendln(city.name+ " ("+city.health+"),\r\n" + city.cityConstructions.getProductionForTileInfo())
         }
-        SB.appendln(this.baseTerrain)
-        if (terrainFeature != null) SB.appendln(terrainFeature!!)
-        if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!)
-        if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus)
-        if (improvement != null) SB.appendln(improvement!!)
-        if (improvementInProgress != null) SB.appendln("$improvementInProgress in ${this.turnsToImprovement} "+"turns".tr())
+        SB.appendln(this.baseTerrain.tr())
+        if (terrainFeature != null) SB.appendln(terrainFeature!!.tr())
+        if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!.tr())
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus.toString().tr())
+        if (improvement != null) SB.appendln(improvement!!.tr())
+        if (improvementInProgress != null) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
         val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
         if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name)
         if(militaryUnit!=null && isViewableToPlayer){

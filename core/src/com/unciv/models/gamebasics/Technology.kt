@@ -1,5 +1,6 @@
 package com.unciv.models.gamebasics
 
+import com.unciv.ui.utils.tr
 import java.util.*
 
 class Technology : ICivilopedia {
@@ -9,9 +10,9 @@ class Technology : ICivilopedia {
             if(baseDescription!=null) SB.appendln(baseDescription)
 
 
-            val improvedImprovements = GameBasics.TileImprovements.values.filter { it.improvingTech==name }.groupBy { it.improvingTechStats.toString()!! }
+            val improvedImprovements = GameBasics.TileImprovements.values.filter { it.improvingTech==name }.groupBy { it.improvingTechStats.toString() }
             improvedImprovements.forEach{
-                val impimpString = it.value.joinToString { it.name } +" provide" + (if(it.value.size==1) "s" else "") +" "+it.key
+                val impimpString = it.value.joinToString { it.name.tr() } +" provide" + (if(it.value.size==1) "s" else "") +" "+it.key
                 SB.appendln(impimpString)
             }
 
@@ -26,11 +27,11 @@ class Technology : ICivilopedia {
             val wonders = enabledBuildings.filter { it.isWonder }
             if(wonders.isNotEmpty()) SB.appendln("Wonders enabled: "+wonders.map { "\n * "+it.name+ " ("+it.getShortDescription()+")" }.joinToString())
 
-            val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy==name }.firstOrNull() // can only be one
+            val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy==name }.map { it.name.tr() }.firstOrNull() // can only be one
             if(revealedResource!=null) SB.appendln("Reveals $revealedResource on map")
 
             val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired==name }
-            if(tileImprovements.isNotEmpty()) SB.appendln("Tile improvements enabled: "+tileImprovements.map { it.name }.joinToString())
+            if(tileImprovements.isNotEmpty()) SB.appendln("Tile improvements enabled: "+tileImprovements.map { it.name.tr() }.joinToString())
 
             return SB.toString().trim()
         }

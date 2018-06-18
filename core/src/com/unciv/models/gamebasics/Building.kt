@@ -48,7 +48,7 @@ class Building : NamedStats(), IConstruction{
         val infoList= mutableListOf<String>()
         val str = getStats(hashSetOf()).toString()
         if(str.isNotEmpty()) infoList += str
-        val improvedResources = GameBasics.TileResources.values.filter { it.building==name }
+        val improvedResources = GameBasics.TileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){
             // buildings that improve resources
             infoList += resourceBonusStats.toString() +" from "+improvedResources.joinToString()
@@ -99,7 +99,7 @@ class Building : NamedStats(), IConstruction{
         if (!forBuildingPickerScreen) stringBuilder.appendln("Cost: $cost")
         if (isWonder) stringBuilder.appendln("Wonder")
         if (!forBuildingPickerScreen && requiredTech != null)
-            stringBuilder.appendln("Requires $requiredTech to be researched")
+            stringBuilder.appendln("Requires {$requiredTech} to be researched".tr())
         if (!forBuildingPickerScreen && requiredBuilding != null)
             stringBuilder.appendln("Requires a $requiredBuilding to be built in this city")
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
@@ -110,11 +110,11 @@ class Building : NamedStats(), IConstruction{
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
         if (this.percentStatBonus != null) {
-            if (this.percentStatBonus!!.production != 0f) stringBuilder.append("+" + this.percentStatBonus!!.production.toInt() + "% "+"Production".tr()+"\r\n")
-            if (this.percentStatBonus!!.gold != 0f) stringBuilder.append("+" + this.percentStatBonus!!.gold.toInt() + "% "+"Gold".tr()+"\r\n")
-            if (this.percentStatBonus!!.science != 0f) stringBuilder.append("+" + this.percentStatBonus!!.science.toInt() + "% "+"Science".tr()+"\r\n")
-            if (this.percentStatBonus!!.food != 0f) stringBuilder.append("+" + this.percentStatBonus!!.food.toInt() + "% "+"Food".tr()+"\r\n")
-            if (this.percentStatBonus!!.culture != 0f) stringBuilder.append("+" + this.percentStatBonus!!.culture.toInt() + "% "+"Culture".tr()+"\r\n")
+            if (this.percentStatBonus!!.production != 0f) stringBuilder.append("+" + this.percentStatBonus!!.production.toInt() + "% {Production}\n".tr())
+            if (this.percentStatBonus!!.gold != 0f) stringBuilder.append("+" + this.percentStatBonus!!.gold.toInt() + "% {Gold}\n".tr())
+            if (this.percentStatBonus!!.science != 0f) stringBuilder.append("+" + this.percentStatBonus!!.science.toInt() + "% {Science}\r\n".tr())
+            if (this.percentStatBonus!!.food != 0f) stringBuilder.append("+" + this.percentStatBonus!!.food.toInt() + "% {Food}\n".tr())
+            if (this.percentStatBonus!!.culture != 0f) stringBuilder.append("+" + this.percentStatBonus!!.culture.toInt() + "% {Culture}\r\n".tr())
         }
         if (this.greatPersonPoints != null) {
             val gpp = this.greatPersonPoints!!
@@ -124,14 +124,14 @@ class Building : NamedStats(), IConstruction{
             if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " Great Artist points")
         }
         if (resourceBonusStats != null) {
-            val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name }
+            val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
             stringBuilder.appendln("$resources provide $resourceBonusStats")
         }
 
         if(cityStrength!=0) stringBuilder.appendln("City strength +"+cityStrength)
         if(cityHealth!=0) stringBuilder.appendln("City health +"+cityHealth)
         if (maintenance != 0)
-            stringBuilder.appendln("Maintenance cost: $maintenance "+"Gold".tr())
+            stringBuilder.appendln("Maintenance cost: $maintenance {Gold}".tr())
         return stringBuilder.toString().trim()
     }
 
