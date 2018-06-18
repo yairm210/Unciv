@@ -1,5 +1,6 @@
 package com.unciv.models.gamebasics
 
+import com.unciv.UnCivGame
 import com.unciv.ui.utils.tr
 import java.util.*
 
@@ -16,7 +17,9 @@ class Technology : ICivilopedia {
                 SB.appendln(impimpString.tr())
             }
 
-            val enabledUnits = GameBasics.Units.values.filter { it.requiredTech==name }
+            var enabledUnits = GameBasics.Units.values.filter { it.requiredTech==name && (it.uniqueTo==null || it.uniqueTo==UnCivGame.Current.gameInfo.getPlayerCivilization().civName) }
+            val replacedUnits = enabledUnits.map { it.replaces }.filterNotNull()
+            enabledUnits = enabledUnits.filter { it.name !in replacedUnits}
             if(enabledUnits.isNotEmpty()) SB.appendln("{Units enabled}: "+enabledUnits.map { it.name + " ("+it.getShortDescription()+")" }.joinToString())
 
             val enabledBuildings = GameBasics.Buildings.values.filter { it.requiredTech==name }

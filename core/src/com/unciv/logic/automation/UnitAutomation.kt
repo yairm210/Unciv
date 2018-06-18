@@ -59,7 +59,7 @@ class UnitAutomation{
         }
 
         else { // Range attack, so enemy needs to be in range
-            return attackableTiles.filter { unit.getTile().getTilesInDistance(2).contains(it) }
+            return attackableTiles.filter { unit.getTile().getTilesInDistance(unit.getBaseUnit().range).contains(it) }
         }
 
     }

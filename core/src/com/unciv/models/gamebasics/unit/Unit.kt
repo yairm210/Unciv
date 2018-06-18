@@ -18,6 +18,7 @@ class Unit : INamed, IConstruction, ICivilopedia {
     var movement: Int = 0
     var strength:Int = 0
     var rangedStrength:Int = 0
+    var range:Int = 2
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null

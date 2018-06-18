@@ -137,6 +137,19 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Longbowman",
+		unitType:"Ranged",
+		range:3,
+		movement:2,
+		strength:13,
+		rangedStrength:18,
+		replaces:"Crossbowman",
+		uniqueTo:"England",
+		cost: 120,
+		requiredTech:"Machinery",
+		hurryCostModifier:20
+	},
+	{
 		name:"Trebuchet",
 		unitType:"Siege",
 		movement:2,
