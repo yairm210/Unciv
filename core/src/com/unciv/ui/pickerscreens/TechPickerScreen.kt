@@ -59,7 +59,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
 
         setButtonsInfo()
 
-        rightSideButton.setText("Pick a tech")
+        rightSideButton.setText("Pick a tech".tr())
         rightSideButton.addClickListener {
             if (isFreeTechPick) {
                 civTech.techsResearched.add(selectedTech!!.name)

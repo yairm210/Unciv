@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.addClickListener
@@ -65,7 +66,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
                     unit.getDescription(true), "{Train} ".tr() + unit.name))
         }
 
-        for(specialConstruction in cityConstructions.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }){
+        for(specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }){
             specials.addActor(getProductionButton(specialConstruction.name, "Produce ${specialConstruction.name}",
                     specialConstruction.description, "Produce ${specialConstruction.name}"))
         }

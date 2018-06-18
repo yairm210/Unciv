@@ -272,6 +272,10 @@
 		Romanian:"Instrui"
 	}
 	
+	"Produce":{} // eg Produce gold
+	
+	"Nothing":{} // A city can choose to "idle and produce nothing
+	
 	// Tech picker
 	"Pick a tech":{ // eg "Research Pottery"
 		Italian:"Scegli una tecnologia"
@@ -434,6 +438,12 @@
 		Russian:"захватил"
 		French:"a capturé"
 		Romanian:"a capturat"
+	}
+	
+	"spotted near our territory":{
+	}
+	
+	"spotted in our territory":{
 	}
 	
 	

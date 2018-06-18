@@ -44,20 +44,20 @@ class CityConstructions {
 
     fun getCityProductionTextForCityButton(): String {
         var result = currentConstruction
-        if (result != "Science" && result != "Gold")
+        if (SpecialConstruction.getSpecialConstructions().none { it.name==result })
             result += "\r\n" + turnsToConstruction(currentConstruction) + " {turns}".tr()
         return result
     }
 
     fun getProductionForTileInfo(): String {
         var result = currentConstruction
-        if (result != "Science" && result != "Gold")
+        if (SpecialConstruction.getSpecialConstructions().none { it.name==result })
             result += "\r\n{in} ".tr() + turnsToConstruction(currentConstruction) + " {turns}".tr()
         return result
     }
 
     fun getAmountConstructedText(): String =
-            if (currentConstruction == "Science" || currentConstruction == "Gold") ""
+            if (SpecialConstruction.getSpecialConstructions().any { it.name== currentConstruction}) ""
             else " (" + workDone(currentConstruction) + "/" +
                 getCurrentConstruction().getProductionCost(cityInfo.civInfo.policies.adoptedPolicies) + ")"
 
@@ -73,7 +73,7 @@ class CityConstructions {
         else if (GameBasics.Units.containsKey(constructionName))
             return GameBasics.Units[constructionName]!!
         else{
-            val special = getSpecialConstructions().firstOrNull{it.name==constructionName}
+            val special = SpecialConstruction.getSpecialConstructions().firstOrNull{it.name==constructionName}
             if(special!=null) return special
         }
 
@@ -162,17 +162,4 @@ class CityConstructions {
         Automation().chooseNextConstruction(this)
     }
 
-    fun getSpecialConstructions(): List<SpecialConstruction> {
-        val science =  object:SpecialConstruction("Science", "Convert production to science at a rate of 4 to 1"){
-            override fun isBuildable(construction: CityConstructions): Boolean {
-                return construction.cityInfo.civInfo.tech.isResearched("Education")
-            }
-        }
-        val gold =  object:SpecialConstruction("Gold", "Convert production to gold at a rate of 4 to 1"){
-            override fun isBuildable(construction: CityConstructions): Boolean {
-                return construction.cityInfo.civInfo.tech.isResearched("Currency")
-            }
-        }
-        return listOf(science,gold)
-    }
 } // for json parsing, we need to have a default constructor

@@ -14,19 +14,27 @@ interface IConstruction : INamed, ICivilopedia {
 
 open class SpecialConstruction(override var name: String, override val description: String) : IConstruction{
 
-    fun getSpecialConstructions(): List<SpecialConstruction> {
-        val science =  object:SpecialConstruction("Science", "Convert production to science at a rate of 4 to 1"){
-            override fun isBuildable(construction: CityConstructions): Boolean {
-                return construction.cityInfo.civInfo.tech.isResearched("Education")
+    companion object {
+        fun getSpecialConstructions(): List<SpecialConstruction> {
+            val science =  object:SpecialConstruction("Science", "Convert production to science at a rate of 4 to 1"){
+                override fun isBuildable(construction: CityConstructions): Boolean {
+                    return construction.cityInfo.civInfo.tech.isResearched("Education")
+                }
             }
-        }
-        val gold =  object:SpecialConstruction("Gold", "Convert production to gold at a rate of 4 to 1"){
-            override fun isBuildable(construction: CityConstructions): Boolean {
-                return construction.cityInfo.civInfo.tech.isResearched("Currency")
+            val gold =  object:SpecialConstruction("Gold", "Convert production to gold at a rate of 4 to 1"){
+                override fun isBuildable(construction: CityConstructions): Boolean {
+                    return construction.cityInfo.civInfo.tech.isResearched("Currency")
+                }
             }
+            val idle =  object:SpecialConstruction("Nothing", "The city will not produce anything."){
+                override fun isBuildable(construction: CityConstructions): Boolean {
+                    return true
+                }
+            }
+            return listOf(science,gold,idle)
         }
-        return listOf(science,gold)
     }
+
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
