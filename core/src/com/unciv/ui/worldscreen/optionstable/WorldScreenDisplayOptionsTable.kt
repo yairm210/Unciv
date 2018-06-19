@@ -44,7 +44,7 @@ class WorldScreenDisplayOptionsTable() : OptionsTable(){
 
         val resolutionSelectBox= SelectBox<String>(CameraStageBaseScreen.skin)
         val resolutionArray = com.badlogic.gdx.utils.Array<String>()
-        resolutionArray.addAll("900x600","1200x800","1500x1000")
+        resolutionArray.addAll("900x600","1050x700","1200x800","1500x1000")
         resolutionSelectBox.setItems(resolutionArray)
         resolutionSelectBox.selected = UnCivGame.Current.settings.resolution
         add(resolutionSelectBox).pad(10f).row()

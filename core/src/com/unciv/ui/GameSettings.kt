@@ -32,7 +32,7 @@ class GameSettings : LinkedHashMap<String, String>() {
     var resolution:String
         get() {
             if(this.containsKey("Resolution")) return get("Resolution")!!
-            else return "900x600"
+            else return "1050x700"
         }
         set(value) {
             this["Resolution"]=value
