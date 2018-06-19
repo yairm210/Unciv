@@ -43,7 +43,9 @@ class MapUnit {
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
             val destinationVector = Vector2(Integer.parseInt(destination[0]).toFloat(), Integer.parseInt(destination[1]).toFloat())
-            val gotTo = movementAlgs().headTowards(currentTile.tileMap[destinationVector])
+            val destinationTile = currentTile.tileMap[destinationVector]
+            if(!movementAlgs().canReach(destinationTile)) return // That tile that we were moving towards is now unreachable
+            val gotTo = movementAlgs().headTowards(destinationTile)
             if(gotTo==currentTile) // We didn't move at all
                 return
             if (gotTo.position == destinationVector) action = null
