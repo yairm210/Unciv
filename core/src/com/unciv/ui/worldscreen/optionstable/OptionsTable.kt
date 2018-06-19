@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.tr
 
 open class OptionsTable: Table(){
     init {
@@ -18,7 +19,7 @@ open class OptionsTable: Table(){
     }
 
     fun addButton(text:String, action:()->Unit){
-        val button = TextButton(text, CameraStageBaseScreen.skin).apply { color= ImageGetter.getBlue() }
+        val button = TextButton(text.tr(), CameraStageBaseScreen.skin).apply { color= ImageGetter.getBlue() }
         button.addClickListener(action)
         add(button).row()
     }

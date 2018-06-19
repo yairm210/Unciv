@@ -30,7 +30,8 @@ open class CameraStageBaseScreen : Screen {
     private var isTutorialShowing = false
 
     init {
-        stage = Stage(ExtendViewport(1000f, 600f), batch)// FitViewport(1000,600)
+        val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
+        stage = Stage(ExtendViewport(resolutions[0], resolutions[1]), batch)// FitViewport(1000,600)
         Gdx.input.inputProcessor = stage
     }
 

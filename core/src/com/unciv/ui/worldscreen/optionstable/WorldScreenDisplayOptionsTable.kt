@@ -8,7 +8,6 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.center
-import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.WorldScreen
 
 class WorldScreenDisplayOptionsTable() : OptionsTable(){
@@ -20,12 +19,12 @@ class WorldScreenDisplayOptionsTable() : OptionsTable(){
         clear()
         val tileMapHolder = UnCivGame.Current.worldScreen.tileMapHolder
         val settings = UnCivGame.Current.settings
-        if (settings.showWorkedTiles) addButton("Hide worked tiles") { settings.showWorkedTiles = false; update() }
-        else addButton("Show worked tiles") { settings.showWorkedTiles = true; update() }
+        if (settings.showWorkedTiles) addButton("{Hide} {worked tiles}") { settings.showWorkedTiles = false; update() }
+        else addButton("{Show} {worked tiles}") { settings.showWorkedTiles = true; update() }
 
         if (settings.showResourcesAndImprovements)
-            addButton("Hide resources and improvements") { settings.showResourcesAndImprovements = false; update() }
-        else addButton("Show resources and improvements") { settings.showResourcesAndImprovements = true; update() }
+            addButton("{Hide} {resources and improvements}") { settings.showResourcesAndImprovements = false; update() }
+        else addButton("{Show} {resources and improvements}") { settings.showResourcesAndImprovements = true; update() }
 
         val languageSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
         val languageArray = com.badlogic.gdx.utils.Array<String>()
@@ -39,11 +38,28 @@ class WorldScreenDisplayOptionsTable() : OptionsTable(){
                 GameSaver().setGeneralSettings(UnCivGame.Current.settings)
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()
+                UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())
             }
         })
 
+        val resolutionSelectBox= SelectBox<String>(CameraStageBaseScreen.skin)
+        val resolutionArray = com.badlogic.gdx.utils.Array<String>()
+        resolutionArray.addAll("900x600","1200x800","1500x1000")
+        resolutionSelectBox.setItems(resolutionArray)
+        resolutionSelectBox.selected = UnCivGame.Current.settings.resolution
+        add(resolutionSelectBox).pad(10f).row()
 
-        addButton("Close".tr()){ remove() }
+        resolutionSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UnCivGame.Current.settings.resolution = resolutionSelectBox.selected
+                GameSaver().setGeneralSettings(UnCivGame.Current.settings)
+                UnCivGame.Current.worldScreen = WorldScreen()
+                UnCivGame.Current.setWorldScreen()
+                UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())
+            }
+        })
+
+        addButton("Close"){ remove() }
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)
