@@ -159,6 +159,7 @@ open class TileInfo {
         if (improvement != null) SB.appendln(improvement!!.tr())
         if (improvementInProgress != null) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
         val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
+            || UnCivGame.Current.viewEntireMapForDebug
         if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name)
         if(militaryUnit!=null && isViewableToPlayer){
             var milUnitString = militaryUnit!!.name

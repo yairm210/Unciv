@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen.bottombar
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
@@ -43,7 +44,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val defender: ICombatant? = Battle().getMapCombatantOfTile(selectedTile)
 
         if(defender==null || defender.getCivilization()==worldScreen.civInfo
-                || !attacker.getCivilization().exploredTiles.contains(selectedTile.position)) {
+                || !(attacker.getCivilization().exploredTiles.contains(selectedTile.position) || UnCivGame.Current.viewEntireMapForDebug)) {
             hide()
             return
         }
@@ -120,14 +121,13 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         attacker.unit.getDistanceToTiles()
 
-        val attackerCanReachDefender = UnitAutomation().getAttackableEnemies(attacker.unit)
-                .contains(defender.getTile())
+        val attackableEnemy = UnitAutomation().getAttackableEnemies(attacker.unit)
+                .firstOrNull{ it.tileToAttack == defender.getTile()}
 
-        if(!attackerCanReachDefender || !attacker.unit.canAttack()) attackButton.disable()
+        if(attackableEnemy==null || !attacker.unit.canAttack()) attackButton.disable()
         else {
             attackButton.addClickListener {
-                if(attacker.isMelee())
-                    attacker.unit.movementAlgs().headTowards(defender.getTile())
+                attacker.unit.moveToTile(attackableEnemy.tileToAttackFrom)
                 battle.attack(attacker, defender)
                 worldScreen.update()
             }

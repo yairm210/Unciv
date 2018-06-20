@@ -6,7 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -33,7 +35,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
             group.addClickListener {
                 worldScreen.displayTutorials("TileClicked")
-
                 selectedTile = tileInfo
                 worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
                 worldScreen.update()
@@ -92,7 +93,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         for (WG in tileGroups.values){
             WG.update(playerViewableTiles.contains(WG.tileInfo))
             val unitsInTile = WG.tileInfo.getUnits()
-            if(playerViewableTiles.contains(WG.tileInfo)
+            if((playerViewableTiles.contains(WG.tileInfo) || UnCivGame.Current.viewEntireMapForDebug)
                     && unitsInTile.isNotEmpty() && unitsInTile.first().civInfo!=civInfo)
                 WG.showCircle(Color.RED)
         } // Display ALL viewable enemies ewith a red circle so that users don't need to go "hunting" for enemy units
@@ -107,16 +108,14 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val unitType = unit.getBaseUnit().unitType
             val attackableTiles: List<TileInfo> = when{
                 unitType==UnitType.Civilian -> unit.getDistanceToTiles().keys.toList()
-                unit.getBaseUnit().unitType.isMelee() -> unit.getDistanceToTiles().keys.toList()
-                unitType.isRanged() -> unit.getTile().getTilesInDistance(2)
-                else -> throw Exception("UnitType isn't Civilian, Melee or Ranged???")
+                else -> UnitAutomation().getAttackableEnemies(unit).map { it.tileToAttack }
             }
 
 
             for (tile in attackableTiles.filter {
                 it.getUnits().isNotEmpty()
                         && it.getUnits().first().owner != unit.owner
-                        && playerViewableTiles.contains(it)}) {
+                        && (playerViewableTiles.contains(it) || UnCivGame.Current.viewEntireMapForDebug)}) {
                 if(unit.getBaseUnit().unitType== UnitType.Civilian) tileGroups[tile]!!.hideCircle()
                 else tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
             }

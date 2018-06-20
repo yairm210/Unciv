@@ -39,29 +39,23 @@ class UnitAutomation{
         return tileCombatant.getCivilization()!=civInfo
     }
 
-    fun getAttackableEnemies(unit: MapUnit): List<TileInfo> {
-        val attackableTiles = unit.civInfo.getViewableTiles()
+    class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
+
+    fun getAttackableEnemies(unit: MapUnit): ArrayList<AttackableTile> {
+        val tilesWithEnemies = unit.civInfo.getViewableTiles()
                 .filter { containsAttackableEnemy(it,unit.civInfo) }
 
-        if(MapUnitCombatant(unit).isMelee()) {
-            val distanceToTiles = unit.getDistanceToTiles()
-            // If we're conducting a melee attack,
-            // then there needs to be a tile adjacent to the enemy that we can get to,
-            // AND STILL HAVE MOVEMENT POINTS REMAINING,
-            return attackableTiles.filter {
-                it.neighbors.any {
-                    unit.getTile()==it || // We're already right nearby
-                        unit.canMoveTo(it)
-                            && distanceToTiles.containsKey(it)
-                            && distanceToTiles[it]!! < unit.currentMovement  // We can get there
-                }
-            }
-        }
+        val distanceToTiles = unit.getDistanceToTiles()
+        val rangeOfAttack = if(MapUnitCombatant(unit).isMelee()) 1 else unit.getBaseUnit().range
 
-        else { // Range attack, so enemy needs to be in range
-            return attackableTiles.filter { unit.getTile().getTilesInDistance(unit.getBaseUnit().range).contains(it) }
+        val attackableTiles = ArrayList<AttackableTile>()
+        val tilesToAttackFrom = distanceToTiles.filter { it.value!=unit.currentMovement }.map { it.key }
+                .filter { unit.canMoveTo(it) || it==unit.getTile() }
+        for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
+            attackableTiles += reachableTile.getTilesInDistance(rangeOfAttack).filter { it in tilesWithEnemies }
+                    .map { AttackableTile(reachableTile,it) }
         }
-
+        return attackableTiles
     }
 
     fun automateUnitMoves(unit: MapUnit) {
@@ -93,21 +87,20 @@ class UnitAutomation{
         } // do nothing but heal
 
         // if there is an attackable unit in the vicinity, attack!
-        val enemyTileToAttack = getAttackableEnemies(unit).firstOrNull()
+        val enemyTileToAttack = getAttackableEnemies(unit)
+                // Only take enemies we can fight without dying
+                .filter { BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                        Battle().getMapCombatantOfTile(it.tileToAttack)!!) < unit.health }
+                .firstOrNull()
 
         if (enemyTileToAttack != null) {
+            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
+            unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
             val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen).firstOrNull{ it.name == "Set up" }
             if(setupAction!=null) setupAction.action()
-
-            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack)!!
-            val damageToAttacker = BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit), enemy)
-
-            if (damageToAttacker < unit.health) { // don't attack if we'll die from the attack
-                if(MapUnitCombatant(unit).isMelee())
-                    unit.movementAlgs().headTowards(enemyTileToAttack)
+            if(unit.currentMovement>0) // This can be 0, if the set up action took away what action points we had left...
                 Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
-                return
-            }
+            return
         }
 
         if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center, so if you havn't found annyonw aroud to attack, forget it.
