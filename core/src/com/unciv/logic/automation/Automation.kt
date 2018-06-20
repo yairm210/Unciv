@@ -47,19 +47,25 @@ class Automation {
         val civilianUnits = mutableListOf<MapUnit>()
 
         for (unit in civInfo.getCivUnits()) {
+            if(unit.promotions.canBePromoted()){
+                val availablePromotions = unit.promotions.getAvailablePromotions()
+                if(availablePromotions.isNotEmpty())
+                    unit.promotions.addPromotion(availablePromotions.getRandom().name)
+            }
+
             val unitType = unit.getBaseUnit().unitType
             if(unitType.isRanged()) rangedUnits.add(unit)
             else if(unitType.isMelee()) meleeUnits.add(unit)
             else civilianUnits.add(unit)
         }
 
+        for (unit in civilianUnits) UnitAutomation().automateUnitMoves(unit) // They move first so that combat units can accompany a settler
         for (unit in rangedUnits) UnitAutomation().automateUnitMoves(unit)
         for (unit in meleeUnits) UnitAutomation().automateUnitMoves(unit)
-        for (unit in civilianUnits) UnitAutomation().automateUnitMoves(unit)
 
         // train settler?
         if (civInfo.cities.any()
-                && civInfo.happiness > 2*civInfo.cities.size +5
+                && civInfo.happiness > civInfo.cities.size +5
                 && civInfo.getCivUnits().none { it.name == "Settler" }
                 && civInfo.cities.none { it.cityConstructions.currentConstruction == "Settler" }) {
 

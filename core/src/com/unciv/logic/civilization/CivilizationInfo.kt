@@ -127,6 +127,12 @@ class CivilizationInfo {
         policies.civInfo = this
         tech.civInfo = this
 
+        for (unit in getCivUnits()) {
+            unit.civInfo=this
+            unit.setTransients()
+        }
+
+
         for (cityInfo in cities) {
             cityInfo.setTransients()
             cityInfo.civInfo = this
@@ -180,7 +186,7 @@ class CivilizationInfo {
     }
 
     fun getCivUnits(): List<MapUnit> {
-        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.civInfo==this }
+        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.owner==civName }
     }
 
     fun getViewableTiles(): List<TileInfo> {

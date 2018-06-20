@@ -21,6 +21,10 @@ class MapUnit {
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
 
+    init{
+        promotions.unit=this
+    }
+
     fun getBaseUnit(): Unit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
     fun getTile(): TileInfo {
@@ -189,5 +193,9 @@ class MapUnit {
         if(attacksThisTurn>0) return false
         if(hasUnique("Must set up to ranged attack") && action != "Set Up") return false
         return true
+    }
+
+    fun setTransients(){
+        promotions.unit=this
     }
 }

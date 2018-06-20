@@ -76,7 +76,16 @@ class UnitAutomation{
             return
         }
 
-        if(unit.name.startsWith("Great")) return // DON'T MOVE A MUSCLE
+        if(unit.name.startsWith("Great")) return // I don't know what to do with you yet.
+
+
+        // Accompany settlers
+        val closeTileWithSettler = unit.getDistanceToTiles().keys.firstOrNull{
+            it.civilianUnit!=null && it.civilianUnit!!.name=="Settler"}
+        if(closeTileWithSettler != null && unit.canMoveTo(closeTileWithSettler)){
+            unit.movementAlgs().headTowards(closeTileWithSettler)
+            return
+        }
 
         if (unit.health < 50) {
             healUnit(unit)
@@ -87,7 +96,7 @@ class UnitAutomation{
         val enemyTileToAttack = getAttackableEnemies(unit).firstOrNull()
 
         if (enemyTileToAttack != null) {
-            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).firstOrNull{ it.name == "Set up" }
+            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen).firstOrNull{ it.name == "Set up" }
             if(setupAction!=null) setupAction.action()
 
             val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack)!!
@@ -160,6 +169,8 @@ class UnitAutomation{
     }
 
     private fun automateSettlerActions(unit: MapUnit) {
+        if(unit.getTile().militaryUnit==null) return // Don;t move until you're accompanied by a military unit
+
         // find best city location within 5 tiles
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
                 .flatMap { it.getCenterTile().getTilesInDistance(2) }

@@ -81,14 +81,6 @@ class GameInfo {
             civInfo.setTransients()
         }
 
-        val civNameToCiv = civilizations.associateBy ({ it.civName},{it})
-
-        for (tile in tileMap.values) {
-            if (tile.militaryUnit != null) tile.militaryUnit!!.civInfo = civNameToCiv[tile.militaryUnit!!.owner]!!
-            if (tile.civilianUnit!= null) tile.civilianUnit!!.civInfo = civNameToCiv[tile.civilianUnit!!.owner]!!
-        }
-
-
         for (civInfo in civilizations)
             for (cityInfo in civInfo.cities)
                 cityInfo.cityStats.update()

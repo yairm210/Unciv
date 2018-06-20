@@ -44,9 +44,9 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             addPopulationIcon()
 
         if (tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
-                || viewEntireMapForDebug) updateCityButton(city, isViewable) // needs to be before the update so the units will be above the city button
+                || UnCivGame.Current.viewEntireMapForDebug) updateCityButton(city, isViewable) // needs to be before the update so the units will be above the city button
 
-        super.update(isViewable)
+        super.update(isViewable || UnCivGame.Current.viewEntireMapForDebug)
 
         yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
         if(yieldGroup.isVisible)

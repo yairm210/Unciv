@@ -12,6 +12,14 @@ class UnCivGame : Game() {
     var gameInfo: GameInfo = GameInfo()
     lateinit var settings : GameSettings
 
+    /**
+     * This exists so that when debugging we can see the entire map.
+     * Remember to turn this to false before commit and upload!
+     */
+    val viewEntireMapForDebug = false
+
+
+
     lateinit var worldScreen: WorldScreen
 
     override fun create() {
