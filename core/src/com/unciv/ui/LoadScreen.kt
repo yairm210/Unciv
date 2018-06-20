@@ -48,7 +48,7 @@ class LoadScreen : PickerScreen() {
                     textToSet+="\n{Could not load game}!".tr()
                 }
                 descriptionLabel.setText(textToSet)
-                rightSideButton.setText("Load\r\n$it")
+                rightSideButton.setText("Load [$it]".tr())
                 rightSideButton.enable()
                 deleteSaveButton.enable()
                 deleteSaveButton.color= Color.RED

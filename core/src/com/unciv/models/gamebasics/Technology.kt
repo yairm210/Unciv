@@ -30,7 +30,7 @@ class Technology : ICivilopedia {
             if(wonders.isNotEmpty()) SB.appendln("{Wonders enabled}: "+wonders.map { "\n * "+it.name+ " ("+it.getShortDescription()+")" }.joinToString())
 
             val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy==name }.map { it.name }.firstOrNull() // can only be one
-            if(revealedResource!=null) SB.appendln("Reveals $revealedResource on map")
+            if(revealedResource!=null) SB.appendln("Reveals [$revealedResource] on map".tr())
 
             val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired==name }
             if(tileImprovements.isNotEmpty()) SB.appendln("{Tile improvements enabled}: "+tileImprovements.map { it.name }.joinToString())

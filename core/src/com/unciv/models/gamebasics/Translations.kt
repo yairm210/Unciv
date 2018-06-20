@@ -26,6 +26,13 @@ class Translations() : HashMap<String, HashMap<String, String>>(){
             }
             currentEntry = currentEntry.next
         }
+//
+//        val squareBraceRegex = Regex("\\[(.*?)\\]")
+//        for (word in values)
+//            for(translationLanguage in word.keys)
+//                if(word[translationLanguage]!!.contains(squareBraceRegex))
+//                    word[translationLanguage] = word[translationLanguage]!!.replace(squareBraceRegex,"[]")
+
     }
 
     fun get(text:String,language:String): String {

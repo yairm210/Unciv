@@ -56,7 +56,7 @@ class TechManager {
         techsInProgress.remove(currentTechnology)
         techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
-        civInfo.addNotification("{Research of} {$currentTechnology} {has completed}!", null, Color.BLUE)
+        civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
 
         val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
 

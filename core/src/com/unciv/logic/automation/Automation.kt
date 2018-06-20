@@ -120,7 +120,7 @@ class Automation {
             }
 
             if (cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
-                cityInfo.civInfo.addNotification("{Work has started on} {$currentConstruction}", cityInfo.location, Color.BROWN)
+                cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
         }
     }
 

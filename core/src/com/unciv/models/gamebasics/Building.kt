@@ -53,7 +53,7 @@ class Building : NamedStats(), IConstruction{
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
         }
-        if(unique!=null) infoList += unique!!
+        if(unique!=null) infoList += unique!!.tr()
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
         return infoList.joinToString()

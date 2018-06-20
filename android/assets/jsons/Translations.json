@@ -97,7 +97,7 @@
 		Russian:"Укрепить"
 		French:"Fortifier"
 		Romanian:"Fortifica"
-		Germnan:"Befestigen"
+		German:"Befestigen"
 	}
 	
 	"Fortification":{ // as in "+40% Fortification"
@@ -285,12 +285,12 @@
 		German:"Zerstörung aufheben"
 	}
 
-	"Buy for":{ // as in "Buy for X gold"
-		Italian:"Compra con"
-		Russian:"Купить с"
-		French:"Acheter avec"
-		Romanian:"Cumpara cu"
-		German:"Kaufen für" // In German "Für" x gold "kaufen" would fit better
+	"Buy for [amount] gold":{
+		Italian:"Compra con [amount] gold"
+		Russian:"Купить с [amount] gold"
+		French:"Acheter avec [amount] gold"
+		Romanian:"Cumpara cu [amount] gold"
+		German:"Für [amount] gold kaufen"
 	}
 
 	"Maintenance cost":{
@@ -309,32 +309,32 @@
 		German:"Bauwerk auswählen"
 	}
 	
-	"Build":{ // eg Build Granary
-		Italian:"Costruire"
-		Russian:"Строить"
-		French:"Construire"
-		Romanian:"Construiste"
-		German:"Bauen:"// In German the verb should be behind the object
+	"Build [building]":{ // eg Build Granary
+		Italian:"Costruire [building]"
+		Russian:"Строить [building]"
+		French:"Construire [building]"
+		Romanian:"Construiste [building]"
+		German:"[building] bauen"
 	}
 	
-	"Train":{ // eg Train Scout
-		Italian:"Adestrare"
-		Russian:"Обучать"
-		French:"Former"
-		Romanian:"Instrui"
-		German:"Rekrutieren:"// In German the verb should be behind the object
+	"Train [unit]":{ // eg Train Scout
+		Italian:"Adestrare [unit]"
+		Russian:"Обучать [unit]"
+		French:"Former [unit]"
+		Romanian:"Instrui [unit]"
+		German:"[unit] rekrutieren"
 	}
 	
-	"Produce":{ // eg Produce gold
-		German:"Herstellen:"// In German the verb should be behind the object
+	"Produce [thingToProduce]":{ // eg Produce gold
+		German:"[thingToProduce] Herstellen"
 	} 
 	
-	"Nothing":{ // A city can choose to "idle and produce nothing
+	"Nothing":{ // A city can choose to "idle" and produce nothing
 		German:"Faul dasitzen"
 	} 
 	
 	// Tech picker
-	"Pick a tech":{ // eg "Research Pottery"
+	"Pick a tech":{
 		Italian:"Scegli una tecnologia"
 		Russian:"Выберите технологию"
 		French:"Choisissez une technologie"
@@ -342,12 +342,12 @@
 		German:"Technologie auswählen"
 	}
 
-	"Research":{ // eg "Research Pottery"
-		Italian:"Ricerca"
-		Russian:"Исследование"
-		French:"Recherche"
-		Romanian:"Exploreaza"
-		German:"Erforschen: "// In German the verb should be behind the object
+	"Research [technology]":{ // eg "Research Pottery"
+		Italian:"Ricerca [technology]"
+		Russian:"Исследование [technology]"
+		French:"Recherche [technology]"
+		Romanian:"Exploreaza [technology]"
+		German:"[technology] Erforschen"
 	}
 
 	"Units enabled":{
@@ -386,12 +386,8 @@
 		German:"Freigschaltete Feldverbesserungen"
 	}
 
-	"Reveals":{ // As in "Reveals Coal on the map"
-		German:"Zeigt"
-	}
-
-	"on the map":{
-		German:"auf der Karte"
+	"Reveals [resource] on the map":{ // As in "Reveals Coal on the map"
+		German:"Zeigt [resource] auf der Karte"
 	}
 	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
@@ -432,28 +428,20 @@
 		German:"wurde dem Erdboden gleichgemacht"
 	}
 	
-	"We have conquered the city of":{
-		Italian:"Abbiamo conquistato la città di"
-		Russian:"Мы завоевали город"
-		French:"Nous avons conquis la ville de"
-		Romanian:"Am cucerit orașul"
-		German:"Wir haben eine Stadt eingenommen:"// German uses a structure like "Wir haben die Stadt <City name> eingenommen"
+	"We have conquered the city of [cityname]!":{
+		Italian:"Abbiamo conquistato la città di [cityname]!"
+		Russian:"Мы завоевали город [cityname]!"
+		French:"Nous avons conquis la ville de [cityname]!"
+		Romanian:"Am cucerit orașul [cityname]!"
+		German:"Wir haben die Stadt [cityname] eingenommen!"
 	}
 	
-	"Research of":{ // For technology notifications EG Research of Writing has completed
-		Italian:"Ricerca di"
-		Russian:"Исследование"
-		French:"Recherche de"
-		Romanian:"Cercetarea"
-		German:"Endteckung von" // Verb behind object again
-	}
-	
-	"has completed":{
-		Italian:"ha completato"
-		Russian:"завершилось"
-		French:"a completé"
-		Romanian:"a finalizat"
-		German:"wurde fertiggestellt"
+	"Research of [tehnologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
+		Italian:"Ricerca di [tehnologyName] ha completato!"
+		Russian:"Исследование [tehnologyName] завершилось!"
+		French:"Recherche de [tehnologyName] a completé!"
+		Romanian:"Cercetarea [tehnologyName] a finalizat!"
+		German:"Wurde fertiggestellt [tehnologyName] endteckung!" // Verb behind object again
 	}
 	
 	"You have entered a golden age":{
@@ -476,20 +464,20 @@
 		German:"wurde erbaut in"
 	}
 	
-	"Work has started on":{
-		Italian:"Il lavoro è iniziato per"
-		Russian:"Началась работа над"
-		French:"Le travail a commencé sur le"
-		Romanian:"Munca a început pentru"
-		German:"Arbeit hat begonnen an" // verb should be behind object again
+	"Work has started on [construction]":{
+		Italian:"Il lavoro è iniziato per [construction]"
+		Russian:"Началась работа над [construction]"
+		French:"Le travail a commencé sur le [construction]"
+		Romanian:"Munca a început pentru [construction]"
+		German:"Arbeit hat begonnen an [construction]" // verb should be behind object again
 	}
 	
-	"Cannot continue work on":{
-		Italian:"Non posso continuare a lavorare su"
-		Russian:"Не удается продолжить работу над"
-		French:"Impossible de continuer à travailler sur"
-		Romanian:"Nu pot continua munca pentru"
-		German:"Arbeit konnte nicht fortgeführt werden an" // verb should be behind object again
+	"Cannot continue work on [construction]":{
+		Italian:"Non posso continuare a lavorare su [construction]"
+		Russian:"Не удается продолжить работу над [construction]"
+		French:"Impossible de continuer à travailler sur [construction]"
+		Romanian:"Nu pot continua munca pentru [construction]"
+		German:"Arbeit konnte nicht fortgeführt werden an [construction]" // verb should be behind object again
 	}
 
 	"has expanded its borders":{
@@ -500,37 +488,51 @@
 		German:"hat seine Grenzen erweitert"
 	}
 
-	"An enemy":{
-		Italian:"Un nemico"
-		Russian:"Враг"
-		French:"Un ennemi"
-		Romanian:"Un dusman"
-		German:"Ein Feind"
-	}
-
-	"has attacked":{
-		Italian:"ha attaccato"
-		Russian:"атаковал"
-		French:"a attaqué"
-		Romanian:"a atacat"
-		German:"hat eine Attacke ausgeführt auf" // verb should be behind object again
-	}
-
-	"has destroyed":{
-		Italian:"ha distrutto"
-		Russian:"уничтожил"
-		French:"a détruit"
-		Romanian:"a distrus"
-		German:"hat den Tod gebracht über" // verb should be behind object again
+	"An enemy [unit] has attacked [cityname]":{
+		Italian:"Un nemico [unit] ha attaccato [cityname]"
+		Russian:"Враг [unit] атаковал [cityname]"
+		French:"Un ennemi [unit] a attaqué [cityname]"
+		Romanian:"Un dusman [unit] a atacat [cityname]"
+		German:"Ein Feind [unit] hat eine Attacke ausgeführt auf [cityname]"
 	}
 	
-	"has captured":{
-		Italian:"ha catturato"
-		Russian:"захватил"
-		French:"a capturé"
-		Romanian:"a capturat"
-		German:"hat die Gefangenschaft gebracht über" // verb should be behind object again
+	"An enemy [unit] has attacked our [ourUnit]":{
+		Italian:"Un nemico [unit] ha attaccato [ourUnit]"
+		Russian:"Враг [unit] атаковал [ourUnit]"
+		French:"Un ennemi [unit] a attaqué [ourUnit]"
+		Romanian:"Un dusman [unit] a atacat [ourUnit]"
+		German:"Ein Feind [unit] hat eine Attacke ausgeführt auf [ourUnit]"
 	}
+	"An enemy [unit] has captured [cityname]":{
+		Italian:"Un nemico [unit] ha catturato [cityname]"
+		Russian:"Враг [unit] захватил [cityname]"
+		French:"Un ennemi [unit] a capturé [cityname]"
+		Romanian:"Un dusman [unit] a capturat [cityname]"
+		German:"Ein Feind [unit] hat die Gefangenschaft gebracht über [cityname]"
+	}
+	
+	"An enemy [unit] has captured our [ourUnit]":{
+		Italian:"Un nemico [unit] ha catturato [ourUnit]"
+		Russian:"Враг [unit] захватил [ourUnit]"
+		French:"Un ennemi [unit] a capturé [ourUnit]"
+		Romanian:"Un dusman [unit] a capturat [ourUnit]"
+		German:"Ein Feind [unit] hat die Gefangenschaft gebracht über [ourUnit]"
+	}
+
+	"An enemy [unit] has destroyed our [ourUnit]":{
+		Italian:"Un nemico [unit] ha distrutto [ourUnit]"
+		Russian:"Враг [unit] уничтожил [ourUnit]"
+		French:"Un ennemi [unit] a détruit [ourUnit]"
+		Romanian:"Un dusman [unit] a distrus [ourUnit]"
+		German:"Ein Feind [unit] hat den Tod gebracht über über [ourUnit]"
+	}
+	
+	"An enemy [unit] was destroyed while attacking [cityname]":{
+	}
+	
+	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
+	}
+	
 	
 	"spotted near our territory":{
 		German:"wurde nahe unserer Grenzen entdeckt"
@@ -540,13 +542,6 @@
 		German:"wurde in unseren Grenzen entdeckt"
 	}
 	
-	"was destroyed while attacking":{
-		German:"wurde bei einem Angriff zerstört"
-	}
-	
-	"our":{
-		German:"unser(en)"// Gender sensitive
-	}
 	
 	"revealed near":{ // As in "Coal revealed near London"
 		Italian:"rivelato vicino a"
@@ -556,21 +551,14 @@
 		German:"gefunden in der Nähe von"
 	}
 	
-	"The civilization of":{
-		Italian:"La civiltà di"
-		Russian:"Цивилизация"
-		French:"La civilisation de"
-		Romanian:"Civilizația"
-		German:"Die Zivilisation"
+	"The civilization of [civName] has been destroyed!":{
+		Italian:"La civiltà di [civName] è stata distrutta!"
+		Russian:"Цивилизация [civName] был уничтожен!"
+		French:"La civilisation de [civName] a été détruit!"
+		Romanian:"Civilizația [civName] a fost distrus!"
+		German:"Die Zivilisation [civName] wurde vernichtet!"
 	}
 
-	"has been destroyed":{
-		Italian:"è stata distrutta"
-		Russian:"был уничтожен"
-		French:"a été détruit"
-		Romanian:"a fost distrus"
-		German:"wurde vernichtet"
-	}
 	
 	// Save and load game
 	
@@ -606,12 +594,12 @@
 		German:"Spiel konnte nicht geladen werden"
 	}
 
-	"Load":{ // as in "Load SaveFile2"
-		Italian:"Caricare"
-		Russian:"загрузить"
-		French:"Charger"
-		Romanian:"încărca"
-		German:"Laden:" // verb should be behind object again
+	"Load [saveFileName]":{ // as in "Load SaveFile2"
+		Italian:"Caricare [saveFileName]"
+		Russian:"загрузить [saveFileName]"
+		French:"Charger [saveFileName]"
+		Romanian:"încărca [saveFileName]"
+		German:"[saveFileName] laden" // verb should be behind object again
 	}
 
 	"Delete save":{
@@ -934,7 +922,7 @@
 	}
 
 	"Whales":{
-		German:"Wale
+		German:"Wale"
 	}
 	
 	// Tile improvements
@@ -1520,7 +1508,7 @@
 		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
 	}
 	"Provides 1 happiness per social policy":{
-		German:"Gibt 1 Zufriedenheit pro Sozialpolitik
+		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
 	}
 	"Must be next to desert":{
 		German:"Muss an eine Wüste grenzen"

@@ -53,7 +53,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
             val productionTextButton = getProductionButton(building.name,
                     building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
                     building.getDescription(true, civInfo.policies.getAdoptedPolicies()),
-                    "{Build} ".tr() + building.name)
+                    "Build [${building.name}]".tr())
             if (building.isWonder)
                 wonders.addActor(productionTextButton)
             else
@@ -63,12 +63,12 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
             units.addActor(getProductionButton(unit.name,
                     unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr(),
-                    unit.getDescription(true), "{Train} ".tr() + unit.name))
+                    unit.getDescription(true), "Train [${unit.name}]".tr()))
         }
 
         for(specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }){
-            specials.addActor(getProductionButton(specialConstruction.name, "Produce ${specialConstruction.name}",
-                    specialConstruction.description, "Produce ${specialConstruction.name}"))
+            specials.addActor(getProductionButton(specialConstruction.name, "Produce [${specialConstruction.name}]".tr(),
+                    specialConstruction.description, "Produce [${specialConstruction.name}]".tr()))
         }
 
         topTable.add(units)
