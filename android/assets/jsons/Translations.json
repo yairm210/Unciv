@@ -4,9 +4,11 @@
 		Russian:"Следующий ход"
 		French:"Tour prochain"
 		Romanian:"Runda urmatoare"
+		German:"Nächste Runde"
 	}
 	
 	"Waiting":{ // Displayed when next turn is being...turned
+		German:"Warten..."
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -14,6 +16,7 @@
 		Russian:"Ход"
 		French:"Tour"
 		Romanian:"Runda"
+		German:"Runde"
 	}
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -21,7 +24,7 @@
 		Russian:"в"
 		French:"dans"
 		Romanian:"în"
-		
+		German:"in"
 	}
 	
 	"turns":{ // for e.g. turns to technology
@@ -29,6 +32,7 @@
 		Russian:"Ходов"
 		French:"Tours"
 		Romanian:"Runde"
+		German:"Runden"
 	}
 
 	// Unit
@@ -37,6 +41,7 @@
 		Russian:"Переместить"
 		French:"Deplacer"
 		Romanian:"Mișcare"
+		German:"Bewegungen"
 	}
 
 	"Strength":{
@@ -44,6 +49,7 @@
 		Russian:"Сила"
 		French:"Force"
 		Romanian:"Putere"
+		German:"Stärke"
 	}
 
 	"Ranged strength":{
@@ -51,6 +57,7 @@
 		Russian:"Дальний бой"
 		French:"Force à distance"
 		Romanian:"Puterea la distanta"
+		German:"Fernkampf Stärkte"
 	}
 
 	"Move unit":{
@@ -58,6 +65,7 @@
 		Russian:"Переместить юнит"
 		French:"Dèplacer unité"
 		Romanian:"Mutați unitatea"
+		German:"Einheit bewegen"
 	}
 
 	"Stop movement":{
@@ -65,6 +73,7 @@
 		Russian:"Отмена деиствья"
 		French:"Arrêter le mouvement"
 		Romanian:"Opriți mișcarea"
+		German:"Bewgen abbrechen"
 	}
 
 	"Construct improvement":{
@@ -72,6 +81,7 @@
 		Russian:"Улучшыть строение"
 		French:"Amèlioré construcion"
 		Romanian:"îmbunătățirea construcției"
+		German:"Verbesserung bauen"
 	}
 
 	"Automate":{
@@ -79,6 +89,7 @@
 		Russian:"Автоматизацыя"
 		French:"Automacion"
 		Romanian:"Automatizare"
+		German:"Automatisieren"
 	}
 
 	"Fortify":{
@@ -86,6 +97,7 @@
 		Russian:"Укрепить"
 		French:"Fortifier"
 		Romanian:"Fortifica"
+		Germnan:"Befestigen"
 	}
 	
 	"Fortification":{ // as in "+40% Fortification"
@@ -93,6 +105,7 @@
 		Russian:"Фортификация"
 		French:"Fortification"
 		Romanian:"Fortificație"
+		German:"Befestigung"
 	}
 
 	"Set up":{ // For siege units
@@ -100,12 +113,15 @@
 		Russian:"Приказ"
 		French:"Implanter"
 		Romanian:"Dispune"
+		// German translation not sure
 	}
 	
 	"Found city":{
+		German:"Stadt gründen"
 	}
 	
 	"Promote":{
+		German:"Befördern"
 	}
 
 	"Health":{
@@ -113,6 +129,7 @@
 		Russian:"Здоровье"
 		French:"Santé"
 		Romanian:"Sanatate"
+		German:"Gesundheit"
 	}
 
 	// Stats
@@ -121,35 +138,47 @@
 		Russian:"Золото"
 		French:"Or"
 		Romanian:"Aur"
+		German:"Gold"
 	}
+
 	"Science":{
 		Italian:"Scienza"
 		Russian:"Наука"
 		French:"Science"
 		Romanian:"Ştiinţă"
+		German:"Erforschung"
 	}
+
 	"Happiness":{
 		Italian:"Felicità"
 		Russian:"Счастье"
 		French:"Bonheur"
 		Romanian:"Fericire"
+		German:"Zufriedenheit"
 	}
+
 	"Production":{
+		German:"Produktion"
 	}
+
 	"Culture":{
 		Italian:"Cultura"
 		Russian:"Культура"
 		French:"Culture"
 		Romanian:"Cultură"
+		German:"Kultur"
 	}
+
 	"Food":{
 		Italian:"Cibo"
 		Russian:"ИДА"
 		French:"Nourriture"
 		Romanian:"Hrană"
+		German:"Speise"
 	}
 	
 	"GOLDEN AGE":{
+		German:"GOLDENES ZEITALTER"
 	}
 
 	
@@ -160,6 +189,7 @@
 		Russian:"Новая игра"
 		French:"Nouveau jeu"
 		Romanian:"Joc nou"
+		German:"Neues Spiel"
 	}
 	
 	"Save game":{
@@ -167,6 +197,7 @@
 		Russian:"Сохранить игру"
 		French:"Sauvegarder la partie"
 		Romanian:"Salveaza jocul"
+		German:"Speichern"
 	}
 	
 	"Load game":{
@@ -174,9 +205,11 @@
 		Russian:"Загрузить игру"
 		French:"Chargement du jeu"
 		Romanian:"Incarca jocul"
+		German:"Spiel laden"
 	}
 	
 	"Load copied data":{
+		German:"Aus ZWischenablage laden"
 	}
 
 	"Victory status":{
@@ -184,6 +217,7 @@
 		Russian:"Статус победы"
 		French:"Statut de la victoire"
 		Romanian:"Statutul victoriei"
+		German:"Siegesstatus"
 	}
 
 	"Social policies":{
@@ -191,6 +225,7 @@
 		Russian:"Социальная политика"
 		French:"Politiques sociales"
 		Romanian:"Politici sociale"
+		German:"Sozialpolitiken"
 	}
 
 	"Display options":{
@@ -198,16 +233,23 @@
 		Russian:"Параметры экрана"
 		French:"Option d'affichage"
 		Romanian:"Opțiuni ecran"
+		German:"Anzeigeeinstellungen"
 	}
 	
 	"Show":{
+		German:"Zeigen"
 	}
+
 	"Hide":{
+		German:"Verstecken"
 	}
 	
 	"worked tiles":{
+		German:"bearbeitete Felder"
 	}
+
 	"resources and improvements":{
+		German:"Ressourcen und Verbesserungen"
 	}
 
 	"Close":{
@@ -215,6 +257,7 @@
 		Russian:"Закрыть"
 		French:"Fermer"
 		Romanian:"Inchide"
+		German:"Schliessen"
 	}
 
 	// City screen
@@ -223,6 +266,7 @@
 		Russian:"Выход из города"
 		French:"Quitter la ville"
 		Romanian:"Ieșiți din oraș"
+		German:"Stadt schliessen"
 	}
 
 	"Raze city":{
@@ -230,6 +274,7 @@
 		Russian:"Разрущение города"
 		French:"Demolition de la ville"
 		Romanian:"Demolarea orașului"
+		German:"Stadt zerstören"
 	}
 
 	"Stop razing city":{
@@ -237,6 +282,7 @@
 		Russian:"Отменить разрущение города"
 		French:"Anuller demolition de la ville"
 		Romanian:"Anuleaza demolarea orașului"
+		German:"Zerstörung aufheben"
 	}
 
 	"Buy for":{ // as in "Buy for X gold"
@@ -244,6 +290,7 @@
 		Russian:"Купить с"
 		French:"Acheter avec"
 		Romanian:"Cumpara cu"
+		German:"Kaufen für" // In German "Für" x gold "kaufen" would fit better
 	}
 
 	"Maintenance cost":{
@@ -251,14 +298,15 @@
 		Russian:"Стоимость обслуживания"
 		French:"Coût de maintenance"
 		Romanian:"Costuri de întreținere"
+		German:"Wartungskosten"
 	}
-	
 	
 	"Pick construction":{
 		Italian:"Scegli la costruzione"
 		Russian:"Выбор здания"
 		French:"Choisissez la construction"
 		Romanian:"Alegeți construcția"
+		German:"Bauwerk auswählen"
 	}
 	
 	"Build":{ // eg Build Granary
@@ -266,6 +314,7 @@
 		Russian:"Строить"
 		French:"Construire"
 		Romanian:"Construiste"
+		German:"Bauen:"// In German the verb should be behind the object
 	}
 	
 	"Train":{ // eg Train Scout
@@ -273,9 +322,12 @@
 		Russian:"Обучать"
 		French:"Former"
 		Romanian:"Instrui"
+		German:"Rekrutieren:"// In German the verb should be behind the object
 	}
 	
-	"Produce":{} // eg Produce gold
+	"Produce":{ // eg Produce gold
+		
+	} 
 	
 	"Nothing":{} // A city can choose to "idle and produce nothing
 	
