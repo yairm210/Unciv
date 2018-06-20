@@ -944,96 +944,112 @@
 		Russian:"Ферма"
 		French:"Ferme"
 		Romanian:"Fermă"
+		German:"Farm"
 	}
 	"Lumber mill":{
 		Italian:"Segheria"
 		Russian:"Лесопилка"
 		French:"Scierie"
 		Romanian:"Cherestea"
+		German:"Sägewerk"
 	}
 	"Mine":{
 		Italian:"Miniera"
 		Russian:"Мина"
 		French:"Mine"
 		Romanian:"Mina"
+		German:"Mine"
 	}
 	"Trading post":{
 		Italian:"Base commerciale"
 		Russian:"Торговая точка"
 		French:"Comptoir commercial"
 		Romanian:"Post de vinzare"
+		German:"Handelsposten"
 	}
 	"Camp":{
 		Italian:"Accampamento"
 		Russian:"Лагерь"
 		French:"Campement"
 		Romanian:"Tabără"
+		German:"Lager"
 	}
 	"Oil well":{
 		Italian:"Pozzo di petrolio"
 		Russian:"Нефтяная скважина"
 		French:"Puits de pétrole"
 		Romanian:"Sondă de nafta"
+		German:"Ölbrunnen"
 	}
 	"Pasture":{
 		Italian:"Pascolo"
 		Russian:"Выгон"
 		French:"Pâturage"
 		Romanian:"Păşune"
+		German:"Weide"
 	}
 	"Plantation":{
 		Italian:"Piantagione"
 		Russian:"Плантация"
 		French:"Plantation"
 		Romanian:"Plantaţie"
+		German:"Plantage"
 	}
 	"Quarry":{
 		Italian:"Cava"
 		Russian:"Карьер"
 		French:"Carrière"
 		Romanian:"Carieră"
+		German:"Steinbruch"
 	}
 	"Road":{
 		Italian:"Strada"
 		Russian:"Дорога"
 		French:"Route"
 		Romanian:"Drum"
+		German:"Strasse"
 	}
 	"Railroad":{
 		Italian:"Ferrovia"
 		Russian:"Железная дорога"
 		French:"Chemin de fer"
 		Romanian:"Cale ferată"
+		German:"Gleis"
 	}
 	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
 		Italian:"Rimuovi"
 		Russian:"Удалить"
 		French:"Suprimer"
 		Romanian:"Elimina"
+		German:"Entfernen" // verb behind object again
 	}
 	"Academy":{
 		Italian:"Accademia"
 		Russian:"Академия"
 		French:"Académie"
 		Romanian:"Academie"
+		German:"Akademie"
 	}
 	"Landmark":{
 		Italian:"Punto di riferimento"
 		Russian:"Ориентир"
 		French:"Point de repère"
 		Romanian:"Reper"
+		// German translation not sure
 	}
 	"Manufactory":{
 		Italian:"Fabbrica"
 		Russian:"Мануфактура"
 		French:"Manufacture"
 		Romanian:"Fabrică"
+		German:"Fabrik"
 	}
 	"Customs house":{
 		Italian:"Dogana"
 		Russian:"Таможня"
 		French:"Maison des douanes"
 		Romanian:"Casa vamală"
+		German:"Zollamt"
 	}
 	
 	
@@ -1044,66 +1060,77 @@
 		Russian:"Керамика"
 		French:"Poterie"
 		Romanian:"Ceramică"
+		German:"Töpferkunst"
 	}
 	"Animal Husbandry":{
 		Italian:"Allevamento di animali"
 		Russian:"Животноводство"
 		French:"Élevage"
 		Romanian:"Creșterea animalelor"
+		German:"Tierhalutung"
 	}
 	"Archery":{
 		Italian:"Tiro con l'arco"
 		Russian:"Стрельба из лука"
 		French:"Tir à l'arc"
 		Romanian:"TIR cu arcul"
+		German:"Bogenschiessen"
 	}
 	"Mining":{
 		Italian:"Estrazione minerarie"
 		Russian:"Добыча руды"
 		French:"Exploitation minière"
 		Romanian:"Exploatare minieră"
+		German:"Bergbau"
 	}
 	"Sailing":{
 		Italian:"Andare in barca"
 		Russian:"Мореплаванье"
 		French:"Navigation à voile"
 		Romanian:"Navigație"
+		German:"Segeln"
 	}
 	"Calendar":{
 		Italian:"Calendario"
 		Russian:"Календарь"
 		French:"Calendrier"
 		Romanian:"Calendar"
+		German:"Kalender"
 	}
 	"Writing":{
 		Italian:"Scrittura"
 		Russian:"Письменность"
 		French:"L'écriture"
 		Romanian:"Scriere"
+		German:"Schrift"
 	}
 	"Trapping":{
 		Italian:"Caccia"
 		Russian:"Охота"
 		French:"Chasse"
 		Romanian:"Vânătoare"
+		German:"Fallen"
 	}
 	"The Wheel":{
 		Italian:"La ruota"
 		Russian:"Колесо"
 		French:"La roue"
 		Romanian:"Roata"
+		German:"Das Rad"
 	}
 	"Masonry":{
 		Italian:"Opere murarie"
 		Russian:"Каменная кладка"
 		French:"Maçonnerie"
 		Romanian:"Zidărie"
+		German:"Maurerei"
 	}
 	"Bronze Working":{
 		Italian:"Lavorazione bronzo"
 		Russian:"Обработка бронза"
 		French:"Traitement de bronze"
 		Romanian:"Prelucrarea bronzului"
+		German:"Bronze Bearbeitung"
 	}
 	
 	
@@ -1114,48 +1141,56 @@
 		Russian:"Оптика"
 		French:"Optique"
 		Romanian:"Optica"
+		German:"Optik"
 	}
 	"Horseback Riding":{
 		Italian:"Equitazione"
 		Russian:"Верховая езда"
 		French:"Monter à cheval"
 		Romanian:"Călărie"
+		German:"Reiten"
 	}
 	"Mathematics":{
 		Italian:"Matematica"
 		Russian:"Математика"
 		French:"Mathématiques"
 		Romanian:"Matematică"
+		German:"Mathematik"
 	}
 	"Construction":{
 		Italian:"Costruzione"
 		Russian:"Строительство"
 		French:"Bâtiment"
 		Romanian:"Clădire"
+		German:"Baukunst"
 	}
 	"Philosophy":{
 		Italian:"Filosofia"
 		Russian:"Философия"
 		French:"Philosophie"
 		Romanian:"Filozofie"
+		German:"Philosophie"
 	}
 	"Currency":{
 		Italian:"Moneta"
 		Russian:"Деньги"
 		French:"Monnaie"
 		Romanian:"Valută"
+		German:"Geld"
 	}
 	"Engineering":{
 		Italian:"Ingegneria"
 		Russian:"Инженерия"
 		French:"Ingénierie"
 		Romanian:"Inginerie"
+		German:"Ingenieurwesen"
 	}
 	"Iron Working":{
 		Italian:"Lavorazione del ferro"
 		Russian:"Обработка железа"
 		French:"Traitement du fer"
 		Romanian:"Prelucrarea fierului"
+		German:"Eisen Bearbeitung"
 	}
 	
 	
@@ -1166,48 +1201,56 @@
 		Russian:"Теология"
 		French:"Théologie"
 		Romanian:"Teologie"
+		German:"Theologie"
 	}
 	"Civil Service":{
 		Italian:"Servizio civile"
 		Russian:"Гражданская служба"
 		French:"Service civil"
 		Romanian:"Serviciu civil"
+		German:"Zivildienst"
 	}
 	"Physics":{
 		Italian:"Fisica"
 		Russian:"Физика"
 		French:"La physique"
 		Romanian:"Fizică"
+		German:"Physik"
 	}
 	"Metal Casting":{
 		Italian:"colata di metallo"
 		Russian:"Литье"
 		French:"Coulée de métal"
 		Romanian:"Turnarea metalului"
+		German:"Metallurgie"
 	}
 	"Compass":{
 		Italian:"Bussola"
 		Russian:"Компас"
 		French:"Boussole"
 		Romanian:"Busolă"
+		German:"Kompass"
 	}
 	"Education":{
 		Italian:"Istruzione"
 		Russian:"Образование"
 		French:"Éducation"
 		Romanian:"Educaţie"
+		German:"Bildung"
 	}
 	"Chivalry":{
 		Italian:"Cavalleria"
 		Russian:"Рыцарство"
 		French:"Chevalerie"
 		Romanian:"Cavalerime"
+		German:"Kavallerie"
 	}
 	"Machinery":{
 		Italian:"Macchinari"
 		Russian:"Машыни"
 		French:"Machinerie"
 		Romanian:"Mașini"
+		German:"Maschienenbau"
 	}
 	
 	
@@ -1218,48 +1261,56 @@
 		Russian:"Астрономия"
 		French:"Astronomie"
 		Romanian:"Astronomie"
+		German:"Astronomie"
 	}
 	"Acoustics":{
 		Italian:"Acustica"
 		Russian:"Акустика"
 		French:"Acoustique"
 		Romanian:"Acustică"
+		German:"Akustik"
 	}
 	"Banking":{
 		Italian:"Bancario"
 		Russian:"Банковское дело"
 		French:"Bancaire"
 		Romanian:"Banca"
+		German:"Bank"
 	}
 	"Printing Press":{
 		Italian:"Macchina da stampa"
 		Russian:"Печатный пресс"
 		French:"Presse d'imprimerie"
 		Romanian:"Presă de tipar"
+		German:"Druckpresse"
 	}
 	"Navigation":{
 		Italian:"Navigazione"
 		Russian:"Навигация"
 		French:"La navigation"
 		Romanian:"Navigare"
+		German:"Navigation"
 	}
 	"Archaeology":{
 		Italian:"Archeologia"
 		Russian:"Aрхеология"
 		French:"Archéologie"
 		Romanian:"Arheologie"
+		German:"Archeologie"
 	}
 	"Economics":{
 		Italian:"Economia"
 		Russian:"Экономика"
 		French:"Économie"
 		Romanian:"Economie"
+		German:"Ökonomie"
 	}
 	"Chemistry":{
 		Italian:"Chimica"
 		Russian:"Химия"
 		French:"Chimie"
 		Romanian:"Chimie"
+		German:"Chemie"
 	}
 	
 	// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
@@ -1269,30 +1320,35 @@
 		Russian:"Научная теория"
 		French:"Théorie scientifique"
 		Romanian:"Teoria științifică"
+		German:"Wissenschaftliche Thorie"
 	}
 	"Fertilizer":{
 		Italian:"Fertilizzante"
 		Russian:"Yдобрение"
 		French:"Engrais"
 		Romanian:"Îngrăşământ"
+		German:"Dünger"
 	}
 	"Biology":{
 		Italian:"Biologia"
 		Russian:"Биология"
 		French:"La biologie"
 		Romanian:"Biologie"
+		German:"Biologie"
 	}
 	"Electricity":{
 		Italian:"Electricità"
 		Russian:"Электричество"
 		French:"Électricité"
 		Romanian:"Electricitate"
+		German:"Elektrizität"
 	}
 	"Steam Power":{
 		Italian:"Forza vapore"
 		Russian:"Сила пара"
 		French:"Puissance de la vapeur"
 		Romanian:"Puterea aburului"
+		German:"Dampfkraft"
 	}
 	
 	
@@ -1303,38 +1359,45 @@
 		Russian:"Oхлаждение"
 		French:"Réfrigération"
 		Romanian:"Refrigeraţie"
+		German:"Kühlung"
 	}
 	"Radio":{
 		Italian:"Radio"
 		Russian:"Радио"
 		French:"Radio"
 		Romanian:"Radio"
+		German:"Radio"
 	}
 	"Combustion":{
 		Italian:"Combustione"
 		Russian:"Горение"
 		French:"La combustion"
 		Romanian:"Combustie"
+		German:"Verbrennung"
 	}
 	"Plastics":{
 		Italian:"Plastica"
 		Russian:"Пластики"
 		French:"Plastiques"
 		Romanian:"Materiale plastice"
+		German:"Plastik"
 	}
 	"Electronics":{
 		Italian:"Elettronica"
 		Russian:"Электроника"
 		French:"Électronique"
 		Romanian:"Electronică"
+		German:"Elektronik"
 	}
 	"Mass Media":{
 		Italian:"Mass media"
 		Russian:"СМИ"
 		French:"Médias de masse"
 		Romanian:"Mass media"
+		German:"Massenmedien"
 	}
 	"Flight":{
+		German:"Flug"
 	}
 	
 	// Technologies (Information Era)
@@ -1344,36 +1407,42 @@
 		Russian:"Фармацевтические препараты"
 		French:"Médicaments"
 		Romanian:"Produse farmaceutice"
+		German:"Pharmazeut"
 	}
 	"Computers":{
 		Italian:"Computers"
 		Russian:"Kомпьютеры"
 		French:"Ordinateurs"
 		Romanian:"Calculatoare"
+		German:"Computer"
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
 		Russian:"Ядерное деление"
 		French:"Fission nucléaire"
 		Romanian:"Fisiune nucleara"
+		German:"Kernspaltung"
 	}
 	"Ecology":{
 		Italian:"Ecologia"
 		Russian:"Экология"
 		French:"Écologie"
 		Romanian:"Ecologie"
+		German:"Ökologie"
 	}
 	"Robotics":{
 		Italian:"Robotica"
 		Russian:"Робототехника"
 		French:"Robotique"
 		Romanian:"Robotică"
+		German:"Robotik"
 	}
 	"Rocketry":{
 		Italian:"Missilistica"
 		Russian:"Ракетная техника"
 		French:"Rocketry"
 		Romanian:"Rachete"
+		German:"Raketentechnik"
 	}
 	
 	// Technologies (Future Era)
@@ -1382,46 +1451,88 @@
 		Russian:"Нанотехнологии"
 		French:"Nanotechnologie"
 		Romanian:"Nanotehnologie"
+		German:"Nanotechnologie"
 	}
 	"Satellites":{
 		Italian:"Satelliti"
 		Russian:"Спутники"
 		French:"Satellites"
 		Romanian:"Sateliții"
+		German:"Satelitten"
 	}
 	"Particle Physics":{
 		Italian:"Fisica delle particelle"
 		Russian:"Физика частиц"
 		French:"La physique des particules"
 		Romanian:"Fizica particulelor"
+		German:"Teilchenphysik"
 	}
 	"Future Tech":{
 		Italian:"Tecnologia del futuro"
 		Russian:"Технология будущчего"
 		French:"Technologie future"
 		Romanian:"Tehnologia viitoare"
+		German:"Zukünftige Technologien"
 	}
 	
 	// Building unique abilities
 	
-	"+1 Science Per 2 Population":{}
-	"Worker construction increased 25%, provides 2 free workers":{}
-	"Free Social Policy":{}
-	"Golden Age length increases +50%":{}
-	"+33% great person generation in all cities":{}
-	"Gold from all trade routes +25%":{}
-	"40% of food is carried over after a new citizen is born":{}
-	"Jungles provide +2 science":{}
-	"Cost of acquiring new tiles reduced by 25%":{}
-	"Culture in all cities increased by 25%":{}
-	"Unhappiness from population decreased by 10%":{}
-	"Empire enters golden age":{}
-	"Free Great Artist Appears":{}
-	"Culture cost of adopting new Policies reduced by 10%":{}
-	"Provides 1 happiness per social policy":{}
-	"Must be next to desert":{}
-	"Enables construction of Spaceship parts":{}
-	"Increases production of spaceship parts by 50%":{}
-	"Spaceship part":{}
+	"+1 Science Per 2 Population":{
+		German:"+1 Erforschung pro 2 Bewohner"
+	}
+	"Worker construction increased 25%, provides 2 free workers":{
+		German:"Arbeiterproduktion um 25% erhöht, gibt 2 freie Arbeiter"
+	}
+	"Free Social Policy":{
+		German:"Freie Sozialpolitik"
+	}
+	"Golden Age length increases +50%":{
+		German:"Länge eines Goldenen Zeitalters um 50% erhöht"
+	}
+	"+33% great person generation in all cities":{
+		// German translation not sure
+	}
+	"Gold from all trade routes +25%":{
+		German:"Gold von allen Handelsrouten um 25% erhöht"
+	}
+	"40% of food is carried over after a new citizen is born":{
+		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
+	}
+	"Jungles provide +2 science":{
+		German:"Dschungel produziert 2 Erforschung"
+	}
+	"Cost of acquiring new tiles reduced by 25%":{
+		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
+	}
+	"Culture in all cities increased by 25%":{
+		German:"Kultur wird in allen Städten um 25% erhöht"
+	}
+	"Unhappiness from population decreased by 10%":{
+		German:"Unzufriedenheit vom Volk um 10% verringert"
+	}
+	"Empire enters golden age":{
+		German:"Das Reich tritt ein goldenes Zeitalter an"
+	}
+	"Free Great Artist Appears":{
+		// German translation not sure
+	}
+	"Culture cost of adopting new Policies reduced by 10%":{
+		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
+	}
+	"Provides 1 happiness per social policy":{
+		German:"Gibt 1 Zufriedenheit pro Sozialpolitik
+	}
+	"Must be next to desert":{
+		German:"Muss an eine Wüste grenzen"
+	}
+	"Enables construction of Spaceship parts":{
+		German:"Schaltet Arbeit an Raumschiffteilen frei"
+	}
+	"Increases production of spaceship parts by 50%":{
+		German:"Erhöht Produktion an Raumschiffteilen um 50%"
+	}
+	"Spaceship part":{
+		German:"Raumschiffteil"
+	}
 	
 }
