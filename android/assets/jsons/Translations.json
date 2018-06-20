@@ -326,10 +326,12 @@
 	}
 	
 	"Produce":{ // eg Produce gold
-		
+		German:"Herstellen:"// In German the verb should be behind the object
 	} 
 	
-	"Nothing":{} // A city can choose to "idle and produce nothing
+	"Nothing":{ // A city can choose to "idle and produce nothing
+		German:"Faul dasitzen"
+	} 
 	
 	// Tech picker
 	"Pick a tech":{ // eg "Research Pottery"
@@ -337,48 +339,67 @@
 		Russian:"Выберите технологию"
 		French:"Choisissez une technologie"
 		Romanian:"Alege o tehnologie"
+		German:"Technologie auswählen"
 	}
+
 	"Research":{ // eg "Research Pottery"
 		Italian:"Ricerca"
 		Russian:"Исследование"
 		French:"Recherche"
 		Romanian:"Exploreaza"
+		German:"Erforschen: "// In German the verb should be behind the object
 	}
+
 	"Units enabled":{
 		Italian:"Unità abilitate"
 		Russian:"Активные юниты"
 		French:"Unités activées"
 		Romanian:"Unități activate"
+		German:"Freigeschaltete Einheiten"
 	}
+
 	"Buildings enabled":{
 		Italian:"Edifici abilitati"
 		Russian:"Активные здания"
 		French:"Bâtiments activés"
 		Romanian:"Clădirile active"
+		German:"Freigeschaltete Bauwerke"
 	}
 	
-	"Wonder":{}
+	"Wonder":{
+		German:"Wunder"
+	}
 	
 	"Wonders enabled":{
 		Italian:"Meraviglie abilitate"
 		Russian:"Активные чудеса"
 		French:"Merveilles activées"
 		Romanian:"Minuni active"
+		German:"Freigschaltete Wunder"
 	}
+
 	"Tile improvements enabled":{
 		Italian:"Miglioramenti delle celle abilitati"
 		Russian:"Улучшены улучшения плит"
 		French:"Améliorations apportées aux carreaux"
 		Romanian:"Ameliorare activa a plăcilor"
+		German:"Freigschaltete Feldverbesserungen"
 	}
+
 	"Reveals":{ // As in "Reveals Coal on the map"
+		German:"Zeigt"
 	}
+
 	"on the map":{
+		German:"auf der Karte"
 	}
 	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
+		// German translation not sure
 	}
+
 	"provides":{ // as in "Camp provides +1 Gold" (singular of above)
+		// German translation not sure
 	}
 	
 
@@ -392,6 +413,7 @@
 		Russian:"вырос"
 		French:"a grandi"
 		Romanian:"a crescut"
+		German:"ist gewachsen"
 	}
 	
 	"has been founded":{
@@ -399,6 +421,7 @@
 		Russian:"была создана"
 		French:"a été fondé"
 		Romanian:"a fost fondat"
+		German:"wurde gegründet"
 	}
 	
 	"has been razed to the ground":{
@@ -406,6 +429,7 @@
 		Russian:"был снесен на землю"
 		French:"a été rasé à terre"
 		Romanian:"a fost distrus la pământ"
+		German:"wurde dem Erdboden gleichgemacht"
 	}
 	
 	"We have conquered the city of":{
@@ -413,6 +437,7 @@
 		Russian:"Мы завоевали город"
 		French:"Nous avons conquis la ville de"
 		Romanian:"Am cucerit orașul"
+		German:"Wir haben eine Stadt eingenommen:"// German uses a structure like "Wir haben die Stadt <City name> eingenommen"
 	}
 	
 	"Research of":{ // For technology notifications EG Research of Writing has completed
@@ -420,6 +445,7 @@
 		Russian:"Исследование"
 		French:"Recherche de"
 		Romanian:"Cercetarea"
+		German:"Endteckung von" // Verb behind object again
 	}
 	
 	"has completed":{
@@ -427,9 +453,11 @@
 		Russian:"завершилось"
 		French:"a completé"
 		Romanian:"a finalizat"
+		German:"wurde fertiggestellt"
 	}
 	
 	"You have entered a golden age":{
+		German:"Ein goldenes Zeitalter ist eingetreten"
 	}
 
 	"is starving":{
@@ -437,6 +465,7 @@
 		Russian:"голодает"
 		French:"est affamé"
 		Romanian:"suferă de foame"
+		German:"verhungert"
 	}
 	
 	"has been built in":{
@@ -444,6 +473,7 @@
 		Russian:"была построена в"
 		French:"a été construit en"
 		Romanian:"a fost construit in"
+		German:"wurde erbaut in"
 	}
 	
 	"Work has started on":{
@@ -451,6 +481,7 @@
 		Russian:"Началась работа над"
 		French:"Le travail a commencé sur le"
 		Romanian:"Munca a început pentru"
+		German:"Arbeit hat begonnen an" // verb should be behind object again
 	}
 	
 	"Cannot continue work on":{
@@ -458,6 +489,7 @@
 		Russian:"Не удается продолжить работу над"
 		French:"Impossible de continuer à travailler sur"
 		Romanian:"Nu pot continua munca pentru"
+		German:"Arbeit konnte nicht fortgeführt werden an" // verb should be behind object again
 	}
 
 	"has expanded its borders":{
@@ -465,6 +497,7 @@
 		Russian:"расширил границы"
 		French:"a élargi ses frontières"
 		Romanian:"și-a extins frontierele"
+		German:"hat seine Grenzen erweitert"
 	}
 
 	"An enemy":{
@@ -472,6 +505,7 @@
 		Russian:"Враг"
 		French:"Un ennemi"
 		Romanian:"Un dusman"
+		German:"Ein Feind"
 	}
 
 	"has attacked":{
@@ -479,6 +513,7 @@
 		Russian:"атаковал"
 		French:"a attaqué"
 		Romanian:"a atacat"
+		German:"hat eine Attacke ausgeführt auf" // verb should be behind object again
 	}
 
 	"has destroyed":{
@@ -486,6 +521,7 @@
 		Russian:"уничтожил"
 		French:"a détruit"
 		Romanian:"a distrus"
+		German:"hat den Tod gebracht über" // verb should be behind object again
 	}
 	
 	"has captured":{
@@ -493,42 +529,47 @@
 		Russian:"захватил"
 		French:"a capturé"
 		Romanian:"a capturat"
+		German:"hat die Gefangenschaft gebracht über" // verb should be behind object again
 	}
 	
 	"spotted near our territory":{
+		German:"wurde nahe unserer Grenzen entdeckt"
 	}
 	
 	"spotted in our territory":{
+		German:"wurde in unseren Grenzen entdeckt"
 	}
 	
-	
 	"was destroyed while attacking":{
+		German:"wurde bei einem Angriff zerstört"
 	}
 	
 	"our":{
+		German:"unser(en)"// Gender sensitive
 	}
-	
 	
 	"revealed near":{ // As in "Coal revealed near London"
 		Italian:"rivelato vicino a"
 		Russian:"выявлено вблизи "
 		French:"a capturé"
 		Romanian:"dezvăluit aproape"
+		German:"gefunden in der Nähe von"
 	}
-	
-	
 	
 	"The civilization of":{
 		Italian:"La civiltà di"
 		Russian:"Цивилизация"
 		French:"La civilisation de"
 		Romanian:"Civilizația"
+		German:"Die Zivilisation"
 	}
+
 	"has been destroyed":{
 		Italian:"è stata distrutta"
 		Russian:"был уничтожен"
 		French:"a été détruit"
 		Romanian:"a fost distrus"
+		German:"wurde vernichtet"
 	}
 	
 	// Save and load game
@@ -538,55 +579,74 @@
 		Russian:"Текущие сейвы"
 		French:"Текущие сейвы"
 		Romanian:"Salvatajul curent"
+		German:"Gespeicherte Spiele"
 	}
+
 	"Saved game name":{
 		Italian:"Nome del gioco salvato"
 		Russian:"Сохраненное название игры"
 		French:"Nom du jeu sauvegardé"
 		Romanian:"Numele jocului salvat"
+		German:"Name des gespeicherten Spiels"
 	}
+
 	"Copy game info":{
 		Italian:"Copia le informazioni sul gioco"
 		Russian:"Копировать информацию об игре"
 		French:"Copier les informations du jeu"
 		Romanian:"Copiați informațiile jocului"
+		German:"Spielinfo kopieren"
 	}
+
 	"Could not load game":{
 		Italian:"Impossibile caricare il gioco"
 		Russian:"Не удалось загрузить игру"
 		French:"Impossible de charger le jeu"
 		Romanian:"Nu s-a putut încărca jocul"
+		German:"Spiel konnte nicht geladen werden"
 	}
+
 	"Load":{ // as in "Load SaveFile2"
 		Italian:"Caricare"
 		Russian:"загрузить"
 		French:"Charger"
 		Romanian:"încărca"
+		German:"Laden:" // verb should be behind object again
 	}
+
 	"Delete save":{
 		Italian:"Elimina Salvataggio"
 		Russian:"Удалить сохранение"
 		French:"Supprimer enregistrer"
 		Romanian:"Ștergeți salvatajul"
+		German:"Spiel löschen"
 	}
+
 	"Saved at":{
 		Italian:"Salvato a"
 		Russian:"Сохранено в"
 		French:"Enregistré à"
 		Romanian:"Salvat la"
+		German:"Gespeichert in"
 	}
 	
 	
 	// Battle table
 	
-	"City strength":{}
+	"City strength":{
+		German:"Stärke der Stadt"
+	}
 	
-	"City health":{}
+	"City health":{
+		German:"Gesundheit der Stadt"
+	}
 	
 	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
+		German:"Gefangen"
 	}
 	
 	"Attack":{
+		German:"Angreiffen"
 	}
 	
 	// Terrains
@@ -596,66 +656,86 @@
 		Russian:"Луг"
 		French:"Herbage"
 		Romanian:"Fâneață"
+		German:"Wiese"
 	}
+
 	"Plains":{
 		Italian:"Pianura"
 		Russian:"Pавнины"
 		French:"Plaines"
 		Romanian:"Inalzat"
+		German:"Flachland"
 	}
+
 	"Tundra":{
 		Italian:"Tundra"
 		Russian:"Tундра"
 		French:"Toundra"
 		Romanian:"Tundră"
+		German:"Tundra"
 	}
+
 	"Desert":{
 		Italian:"Deserto"
 		Russian:"Пустынный"
 		French:"Désert"
 		Romanian:"Deşert"
+		German:"Wüste"
 	}
+
 	"Lakes":{
 		Italian:"Laghi"
 		Russian:"Озера"
 		French:"Lacs"
 		Romanian:"Lacurile"
+		German:"Seen"
 	}
+
 	"Hill":{
 		Italian:"Collina"
 		Russian:"Bозвышенность"
-		French:""
-		Romanian:""
+		French:"Colline"
+		German:"Hügel"
 	}
+
 	"Forest":{
 		Italian:"Foresta"
 		Russian:"Лес"
 		French:"Forêt"
 		Romanian:"Pădure"
+		German:"Wald"
 	}
+
 	"Jungle":{
 		Italian:"Giungla"
 		Russian:"Джунгли"
 		French:"Jungle"
 		Romanian:"Junglă"
+		German:"Dschungel"
 	}
+
 	"Marsh":{
 		Italian:"Palude"
 		Russian:"Болотный"
 		French:"Marais"
 		Romanian:"Mlaştină"
+		German:"Sumpf"
 	}
+
 	"Oasis":{
 		Italian:"Oasi"
 		Russian:"Оазис"
 		French:"Oasis"
 		Romanian:"Oază"
+		German:"Oase"
 	}
+
 	"Food plains":{
 		Italian:"Pianure alimentari"
 		Russian:"Пищевые равнины"
 		French:"Plaines alimentaires"
 		Romanian:"Câmpiile alimentare"
+		// German translation not sure
 	}
 	
 	// Bonus Resources
@@ -664,36 +744,47 @@
 		Russian:"Скот"
 		French:"Bétail"
 		Romanian:"Bovine"
+		German:"Rind"
 	}
+
 	"Sheep":{
 		Italian:"Pecora"
 		Russian:"Овца"
 		French:"Mouton"
 		Romanian:"Oaie"
+		German:"Schaf"
 	}
+
 	"Deer":{
 		Italian:"Cervo"
 		Russian:"Oлень"
 		French:"Cerf"
 		Romanian:"Cerb"
+		German:"Hirsch"
 	}
+
 	"Bananas":{
 		Italian:"Banane"
 		Russian:"Бананы"
 		French:"Bananes"
 		Romanian:"Banane"
+		German:"Bananen"
 	}
+
 	"Wheat":{
 		Italian:"Grano"
 		Russian:"Пшеница"
 		French:"Blé"
 		Romanian:"Grâu"
+		German:"Weizen"
 	}
+
 	"Stone":{
 		Italian:"Pietra"
 		Russian:"Камень"
 		French:"Pierre"
 		Romanian:"Piatră"
+		German:"Stein"
 	}
 	
 	// Strategic Resources
@@ -702,36 +793,47 @@
 		Russian:"Лошади"
 		French:"Chevaux"
 		Romanian:"Cai"
+		German:"Pferde"
 	}
+
 	"Iron":{
 		Italian:"Ferro"
 		Russian:"Железо"
 		French:"Fer"
 		Romanian:"Fier"
+		German:"Eisen"
 	}
+
 	"Coal":{
 		Italian:"Carbone"
 		Russian:"Уголь"
 		French:"Charbon"
 		Romanian:"Cărbune"
+		German:"Kohle"
 	}
+
 	"Oil":{
 		Italian:"Petrolio"
 		Russian:"Нефть"
 		French:"Pétrole"
 		Romanian:"Petrol"
+		German:"Erdöl"
 	}
+
 	"Aluminum":{
 		Italian:"Aluminio"
 		Russian:"Aлюминий"
 		French:"Aluminium"
 		Romanian:"Aluminiu"
+		German:"Aluminium"
 	}
+
 	"Uranium":{
 		Italian:"Uranio"
 		Russian:"Уран"
 		French:"Uranium"
 		Romanian:"Uraniu"
+		German:"Uran"
 	}
 	
 	// Luxury Resources
@@ -740,78 +842,99 @@
 		Russian:"Меха"
 		French:"Fourrures"
 		Romanian:"Blănărie"
+		German:"Felle"
 	}
+
 	"Cotton":{
 		Italian:"Cotone"
 		Russian:"Хлопок"
 		French:"Coton"
 		Romanian:"Bumbac"
+		German:"Baumwolle"
 	}
+
 	"Dyes":{
 		Italian:"Coloranti"
 		Russian:"Красители"
 		French:"Colorants"
 		Romanian:"Coloranți"
+		German:"Farbstoffe"
 	}
+
 	"Gems":{
 		Italian:"Pietre preziose"
 		Russian:"Драгоценные камни"
 		French:"Gems"
 		Romanian:"Pietre pretioase"
+		German:"Edelsteine"
 	}
+
 	"Silver":{
 		Italian:"Argento"
 		Russian:"Серебро"
 		French:"Argent"
 		Romanian:"Argint"
+		German:"Silber"
 	}
+
 	"Incense":{
 		Italian:"Incenso"
 		Russian:"Паофюмы"
 		French:"Encens"
 		Romanian:"Parfume"
+		German:"Weihrauch"
 	}
+
 	"Silk":{
 		Italian:"Seta"
 		Russian:"Шелк"
 		French:"Soie"
 		Romanian:"Mătase"
+		German:"Seide"
 	}
+
 	"Spices":{
 		Italian:"Spezie"
 		Russian:"Cпеции"
 		French:"Épices"
 		Romanian:"Aromate"
+		German:"Gewürze"
 	}
+
 	"Wine":{
 		Italian:"Vino"
 		Russian:"Вино"
 		French:"Vin"
 		Romanian:"Vin"
+		German:"Wein"
 	}
+
 	"Sugar":{
 		Italian:"Zucchero"
 		Russian:"Сахар"
 		French:"Sucre"
 		Romanian:"Zahar"
+		German:"Zucker"
 	}
+
 	"Marble":{
 		Italian:"Marmo"
 		Russian:"Мрамор"
 		French:"Marbre"
 		Romanian:"Marmură"
+		German:"Marmor"
 	}
+
 	"Pearls":{
-		Italian:""
-		Russian:""
-		French:""
-		Romanian:""
-	}
-	"Whales":{
 		Italian:"Perle"
 		Russian:"Жемчуг"
 		French:"Perles"
 		Romanian:"Perle"
+		German:"Perlen"
+	}
+
+	"Whales":{
+		German:"Wale
 	}
 	
 	// Tile improvements
