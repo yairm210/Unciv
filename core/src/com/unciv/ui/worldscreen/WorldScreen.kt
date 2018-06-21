@@ -42,6 +42,10 @@ class WorldScreen : CameraStageBaseScreen() {
 
         tileMapHolder.addTiles()
 
+        techButton.addClickListener {
+            game.screen = TechPickerScreen(civInfo)
+        }
+
         stage.addActor(tileMapHolder)
         stage.addActor(minimap)
         stage.addActor(topBar)
@@ -87,10 +91,6 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private fun updateTechButton() {
         techButton.isVisible = civInfo.cities.isNotEmpty()
-        techButton.clearListeners()
-        techButton.addClickListener {
-            game.screen = TechPickerScreen(civInfo)
-        }
 
         if (civInfo.tech.currentTechnology() == null)
             techButton.setText("{Pick a tech}!".tr())
@@ -132,6 +132,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
                 // BOOM! Exception!
                 // That's why this needs to be after the game is saved.
+                bottomBar.unitTable.shouldUpdateVisually=true
                 shouldUpdate=true
 
                 nextTurnButton.setText("Next turn".tr())

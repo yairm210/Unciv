@@ -45,8 +45,16 @@ open class TileInfo {
     val tileImprovement: TileImprovement?
         get() = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
 
+
+    // This is for performance - since we access the neighbors of a tile ALL THE TIME,
+    // and the neighbors of a tile never change, it's much more CPU efficient to save the list once and for all!
+    @Transient private var internalNeighbors : List<TileInfo>?=null
     val neighbors: List<TileInfo>
-        get() = tileMap.getTilesAtDistance(position, 1)
+        get(){
+            if(internalNeighbors==null)
+                internalNeighbors = tileMap.getTilesAtDistance(position, 1)
+            return internalNeighbors!!
+        }
 
     val height: Int
         get() {

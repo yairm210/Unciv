@@ -21,8 +21,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var resourceImage: Image? = null
     protected var improvementImage: Image? =null
     var populationImage: Image? = null
-    private val roadImages = HashMap<String, Image>()
-    private val borderImages = ArrayList<Image>()
+    private val roadImages = HashMap<TileInfo, Image>()
+    private val borderImages = HashMap<TileInfo, List<Image>>() // map of neiboring tile to border images
     protected var civilianUnitImage: Group? = null
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
@@ -106,18 +106,36 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateBorderImages() {
-        for (border in borderImages) border.remove() //clear
-        borderImages.clear()
+        // This is longer than it could be, because of performance -
+        // before fixing, about half (!) the time of update() was wasted on
+        // removing all the border images and putting them back again!
+        val tileOwner = tileInfo.getOwner()
+        if (tileOwner == null){
+            for(images in borderImages.values)
+                for(image in images)
+                    image.remove()
 
-        if (tileInfo.getOwner() != null) {
-            val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
-            for (neighbor in tileInfo.neighbors.filter { it.getOwner() != tileInfo.getOwner() }) {
+            borderImages.clear()
+            return
+        }
+
+        val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
+        for (neighbor in tileInfo.neighbors) {
+            val neigborOwner = neighbor.getOwner()
+            if(neigborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
+            {
+                for(image in borderImages[neighbor]!!)
+                    image.remove()
+                borderImages.remove(neighbor)
+            }
+            if(neigborOwner!=tileOwner && !borderImages.containsKey(neighbor)){ // there should be a border here but there isn't
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
                 val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
 
                 // This is some crazy voodoo magic so I'll explain.
-
+                val images = mutableListOf<Image>()
+                borderImages.put(neighbor,images)
                 for(i in -2..2) {
                     val image = ImageGetter.getImage("OtherIcons/Circle.png")
                     image.setSize(5f, 5f)
@@ -136,11 +154,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
                     image.color = civColor
                     addActor(image)
-                    borderImages.add(image)
+                    images.add(image)
                 }
-
             }
-
         }
     }
 
@@ -148,9 +164,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         if (tileInfo.roadStatus !== RoadStatus.None) {
             for (neighbor in tileInfo.neighbors) {
                 if (neighbor.roadStatus === RoadStatus.None) continue
-                if (!roadImages.containsKey(neighbor.position.toString())) {
+                if (!roadImages.containsKey(neighbor)) {
                     val image = ImageGetter.getImage(ImageGetter.WhiteDot)
-                    roadImages[neighbor.position.toString()] = image
+                    roadImages[neighbor] = image
 
                     val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
                     val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
@@ -168,9 +184,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 }
 
                 if (tileInfo.roadStatus === RoadStatus.Railroad && neighbor.roadStatus === RoadStatus.Railroad)
-                    roadImages[neighbor.position.toString()]!!.color = Color.GRAY // railroad
+                    roadImages[neighbor]!!.color = Color.GRAY // railroad
                 else
-                    roadImages[neighbor.position.toString()]!!.color = Color.BROWN // road
+                    roadImages[neighbor]!!.color = Color.BROWN // road
             }
         }
     }
@@ -220,13 +236,15 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateResourceImage(viewable: Boolean) {
-        if(resourceImage!=null){
+        val shouldDisplayResource = UnCivGame.Current.settings.showResourcesAndImprovements
+                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())
+
+        if(resourceImage!=null && !shouldDisplayResource){
             resourceImage!!.remove()
             resourceImage=null
         }
 
-        if(UnCivGame.Current.settings.showResourcesAndImprovements
-                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())) { // Need to add the resource image!
+        if(resourceImage==null && shouldDisplayResource) { // Need to add the resource image!
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
                 resourceImage = ImageGetter.getImage(fileName)
                 resourceImage!!.setSize(20f, 20f)

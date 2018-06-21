@@ -5,10 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addClickListener
-import com.unciv.ui.utils.tr
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){
@@ -19,6 +16,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val unitDescriptionLabel = Label("",CameraStageBaseScreen.skin)
     var selectedUnit : MapUnit? = null
     var currentlyExecutingAction : String? = null
+
+    // This is so that not on every update(), we will update the unit table.
+    // Most of the time it's the same unit with the same stats so why waste precious time?
+    var shouldUpdateVisually = false
 
     init {
         pad(5f)
@@ -33,16 +34,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     }
 
     fun update() {
-        prevIdleUnitButton.update()
-        nextIdleUnitButton.update()
-        promotionsTable.clear()
-        unitDescriptionLabel.clearListeners()
-
         if(selectedUnit!=null)
         {
             if(selectedUnit!!.civInfo != worldScreen.civInfo) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 currentlyExecutingAction = null
+                shouldUpdateVisually = true
             }
             else {
                 try {
@@ -50,9 +47,24 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 } catch (ex: Exception) { // The unit that was there no longer exists}
                     selectedUnit = null
                     currentlyExecutingAction = null
+                    shouldUpdateVisually=true
                 }
             }
         }
+
+        if(!shouldUpdateVisually) return
+
+        if(prevIdleUnitButton.getTilesWithIdleUnits().isNotEmpty()) { // more efficient to do this check once for both
+            prevIdleUnitButton.enable()
+            nextIdleUnitButton.enable()
+        }
+        else{
+            prevIdleUnitButton.disable()
+            nextIdleUnitButton.disable()
+        }
+
+        promotionsTable.clear()
+        unitDescriptionLabel.clearListeners()
 
         if(selectedUnit!=null) {
             val unit = selectedUnit!!
@@ -84,9 +96,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         pack()
+        shouldUpdateVisually=false
     }
 
     fun tileSelected(selectedTile: TileInfo) {
+        val previouslySelectedUnit = selectedUnit
         if(currentlyExecutingAction=="moveTo"){
             if(selectedUnit!!.movementAlgs()
                     .getShortestPath(selectedTile).isEmpty())
@@ -100,13 +114,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             currentlyExecutingAction = null
         }
 
-        if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.civInfo
+        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.civInfo
                 && selectedUnit!=selectedTile.militaryUnit)
             selectedUnit = selectedTile.militaryUnit
 
         else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.civInfo
                         && selectedUnit!=selectedTile.civilianUnit)
                 selectedUnit = selectedTile.civilianUnit
+
+        if(selectedUnit != previouslySelectedUnit)
+            shouldUpdateVisually = true
     }
 
 }

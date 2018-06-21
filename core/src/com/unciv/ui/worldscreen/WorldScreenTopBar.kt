@@ -25,6 +25,11 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Image>()
     private val happinessImage = ImageGetter.getStatIcon("Happiness")
+    // These are all to improve performance IE recude update time (was 150 ms on my phone, which is a lot!)
+    private val malcontentColor = Color.valueOf("ef5350")
+    val happinessColor = colorFromRGB(92, 194, 77)
+    val malcontentDrawable = ImageGetter.getStatIcon("Malcontent").drawable
+    val happinessDrawable = ImageGetter.getStatIcon("Happiness").drawable
 
     init {
         background = ImageGetter.getDrawable("skin/whiteDot.png").tint(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
@@ -123,11 +128,11 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         happinessLabel.setText(getHappinessText(civInfo))
 
         if (civInfo.happiness < 0) {
-            happinessLabel.setFontColor(Color.valueOf("ef5350"))
-            happinessImage.drawable = ImageGetter.getStatIcon("Malcontent").drawable
+            happinessLabel.setFontColor(malcontentColor)
+            happinessImage.drawable = malcontentDrawable
         } else {
-            happinessLabel.setFontColor(colorFromRGB(92, 194, 77))
-            happinessImage.drawable = ImageGetter.getStatIcon("Happiness").drawable
+            happinessLabel.setFontColor(happinessColor)
+            happinessImage.drawable = happinessDrawable
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))
