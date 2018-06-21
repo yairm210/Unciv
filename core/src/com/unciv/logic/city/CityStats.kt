@@ -255,7 +255,7 @@ class CityStats {
         this.currentCityStats = stats
     }
 
-    private fun isConnectedToCapital(roadType: RoadStatus): Boolean {
+    fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if(cityInfo.civInfo.cities.count()<2) return false// first city!
         val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
         val tilesReached = HashSet<TileInfo>()

@@ -70,7 +70,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if (unit.getBaseUnit().rangedStrength!=0)
                 unitLabelText += "\n"+"Ranged strength".tr()+": "+unit.getBaseUnit().rangedStrength
 
-            unitLabelText += "\n"+"XP".tr()+": "+unit.promotions.XP
+            unitLabelText += "\n"+"XP".tr()+": "+unit.promotions.XP+"/"+unit.promotions.xpForNextPromotion()
 
             if(unit.isFortified() && unit.getFortificationTurns()>0)
                 unitLabelText+="\n+"+unit.getFortificationTurns()*20+"% fortification"

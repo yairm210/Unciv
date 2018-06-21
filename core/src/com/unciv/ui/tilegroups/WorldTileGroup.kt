@@ -1,13 +1,13 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.cityscreen.CityScreen
@@ -101,9 +101,15 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                     add(fireImage).size(20f).padLeft(5f)
                 }
                 if(city.isCapital()){
-                    val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
+                    val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY}
                     add(starImage).size(20f).padLeft(5f)
-                } else{add()} // this is so the health bar is always 2 columns wide
+                }
+                else if (city.cityStats.isConnectedToCapital(RoadStatus.Road)){
+                    val connectionImage = ImageGetter.getStatIcon("CityConnection")
+                    add(connectionImage).size(20f).padLeft(5f)
+                }
+
+                else{add()} // this is so the health bar is always 2 columns wide
                 add(label).pad(10f)
                 pack()
                 setOrigin(Align.center)

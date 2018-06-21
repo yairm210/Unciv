@@ -14,8 +14,7 @@ import com.unciv.models.stats.Stats
 import kotlin.math.min
 
 class CityInfo {
-    @Transient
-    lateinit var civInfo: CivilizationInfo
+    @Transient lateinit var civInfo: CivilizationInfo
     var location: Vector2 = Vector2.Zero
     var name: String = ""
     var health = 200

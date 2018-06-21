@@ -215,8 +215,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             }
         }
         if(improvementImage!=null){
-            if(viewable) improvementImage!!.color= Color.WHITE
-            else improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
+            if(!viewable) improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
         }
     }
 
