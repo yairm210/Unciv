@@ -194,6 +194,11 @@
 				name:"Physics",
 				row:9,
 				prerequisites:["Metal Casting"]
+			},
+			{
+				name:"Steel",
+				row:10,
+				prerequisites:["Metal Casting"]
 			}
 		]	
 	},
@@ -227,7 +232,7 @@
 			{
 				name:"Gunpowder",
 				row:9,
-				prerequisites:["Physics"]
+				prerequisites:["Physics","Steel"]
 			}
 		]	
 	},
