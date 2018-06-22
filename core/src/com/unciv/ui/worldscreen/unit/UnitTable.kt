@@ -19,7 +19,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
-    var shouldUpdateVisually = false
+    var selectedUnitHasChanged = false
 
     init {
         pad(5f)
@@ -39,7 +39,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if(selectedUnit!!.civInfo != worldScreen.civInfo) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 currentlyExecutingAction = null
-                shouldUpdateVisually = true
+                selectedUnitHasChanged = true
             }
             else {
                 try {
@@ -47,12 +47,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 } catch (ex: Exception) { // The unit that was there no longer exists}
                     selectedUnit = null
                     currentlyExecutingAction = null
-                    shouldUpdateVisually=true
+                    selectedUnitHasChanged=true
                 }
             }
         }
-
-        if(!shouldUpdateVisually) return
 
         if(prevIdleUnitButton.getTilesWithIdleUnits().isNotEmpty()) { // more efficient to do this check once for both
             prevIdleUnitButton.enable()
@@ -63,40 +61,49 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             nextIdleUnitButton.disable()
         }
 
-        promotionsTable.clear()
-        unitDescriptionLabel.clearListeners()
-
-        if(selectedUnit!=null) {
+        if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because movement points and health change
             val unit = selectedUnit!!
             var nameLabelText = unit.name
             if(unit.health<100) nameLabelText+=" ("+unit.health+")"
             unitNameLabel.setText(nameLabelText)
 
-            for(promotion in unit.promotions.promotions)
-                promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
-
             var unitLabelText = "Movement".tr()+": " + unit.getMovementString()
-            if (unit.getBaseUnit().unitType != UnitType.Civilian) {
+            if (unit.getBaseUnit().unitType != UnitType.Civilian)
                 unitLabelText += "\n"+"Strength".tr()+": " + unit.getBaseUnit().strength
-            }
+
             if (unit.getBaseUnit().rangedStrength!=0)
                 unitLabelText += "\n"+"Ranged strength".tr()+": "+unit.getBaseUnit().rangedStrength
 
-            unitLabelText += "\n"+"XP".tr()+": "+unit.promotions.XP+"/"+unit.promotions.xpForNextPromotion()
+            if (unit.getBaseUnit().unitType != UnitType.Civilian)
+                unitLabelText += "\n"+"XP".tr()+": "+unit.promotions.XP+"/"+unit.promotions.xpForNextPromotion()
 
             if(unit.isFortified() && unit.getFortificationTurns()>0)
                 unitLabelText+="\n+"+unit.getFortificationTurns()*20+"% fortification"
 
             unitDescriptionLabel.setText(unitLabelText)
-            unitDescriptionLabel.addClickListener { worldScreen.tileMapHolder.setCenterPosition(unit.getTile().position) }
+
+            if(unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
+                selectedUnitHasChanged = true
         }
         else {
             unitNameLabel.setText("")
             unitDescriptionLabel.setText("")
         }
 
+        if(!selectedUnitHasChanged) return
+
+        promotionsTable.clear()
+        unitDescriptionLabel.clearListeners()
+
+        if(selectedUnit!=null) {
+            for(promotion in selectedUnit!!.promotions.promotions)
+                promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
+
+            unitDescriptionLabel.addClickListener { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
+        }
+
         pack()
-        shouldUpdateVisually=false
+        selectedUnitHasChanged=false
     }
 
     fun tileSelected(selectedTile: TileInfo) {
@@ -123,7 +130,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 selectedUnit = selectedTile.civilianUnit
 
         if(selectedUnit != previouslySelectedUnit)
-            shouldUpdateVisually = true
+            selectedUnitHasChanged = true
     }
 
 }

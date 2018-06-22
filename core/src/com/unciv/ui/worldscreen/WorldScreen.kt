@@ -132,7 +132,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
                 // BOOM! Exception!
                 // That's why this needs to be after the game is saved.
-                bottomBar.unitTable.shouldUpdateVisually=true
                 shouldUpdate=true
 
                 nextTurnButton.setText("Next turn".tr())
