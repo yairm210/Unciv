@@ -255,6 +255,11 @@
 				prerequisites:["Astronomy"]
 			},
 			{
+				name:"Architecture",
+				row:4,
+				prerequisites:["Acoustics","Banking"]
+			},
+			{
 				name:"Economics",
 				row:6,
 				prerequisites:["Banking","Printing Press"]
@@ -276,7 +281,7 @@
 			{
 				name:"Scientific Theory",
 				row:4,
-				prerequisites:["Archaeology","Acoustics","Economics"]
+				prerequisites:["Archaeology","Architecture","Economics"]
 			},
 			{
 				name:"Fertilizer",

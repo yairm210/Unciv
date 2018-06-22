@@ -173,7 +173,7 @@
 		happiness:10,
 		greatPersonPoints:{gold:1},
 		isWonder:true,
-		requiredTech:"Metal Casting"
+		requiredTech:"Physics"
 	},
 	{
 		name:"Hagia Sophia",
@@ -272,7 +272,7 @@
 		greatPersonPoints:{science:2},
 		isWonder:true,
 		unique:"ScienceConversionIncrease",
-		requiredTech:"Physics"
+		requiredTech:"Architecture"
 	},
 	{
 		name:"Ironworks",
@@ -338,7 +338,7 @@
 		happiness:4,
 		isWonder:true,
 		unique:"Empire enters golden age",
-		requiredTech:"Acoustics"
+		requiredTech:"Architecture"
 	},
 	{
 		name:"Windmill",

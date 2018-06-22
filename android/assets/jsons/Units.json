@@ -229,6 +229,16 @@
 		cost: 150,
 		requiredTech:"Gunpowder",
 		hurryCostModifier:20
+	},{
+		name:"Lancer",
+		unitType:"Mounted",
+		movement:4,
+		strength:25,
+		cost: 185,
+		requiredTech:"Metallurgy",
+		requiredResource:"Horses",
+		hurryCostModifier:20
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Formation I" ],
 	},
 	*/
 	
