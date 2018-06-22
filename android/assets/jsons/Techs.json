@@ -54,7 +54,7 @@
 			},
 			{
 				name:"The Wheel",
-				row:6,
+				row:7,
 				prerequisites:["Animal Husbandry", "Archery"]
 			},
 			{
@@ -115,8 +115,7 @@
 			{
 				name:"Currency",
 				row:7,
-				prerequisites:["Mathematics"],
-				baseDescription:"Enables conversion of city production to gold"
+				prerequisites:["Mathematics"]
 			},
 			{
 				name:"Engineering",
@@ -144,8 +143,14 @@
 			},
 			{
 				name:"Civil Service",
-				row:4,
+				row:5,
 				prerequisites:["Currency","Horseback Riding","Philosophy"]
+			},
+			{
+				name:"Guilds",
+				row:7,
+				prerequisites:["Currency"],
+				baseDescription:"Enables conversion of city production to gold"
 			},
 			{
 				name:"Physics",
@@ -181,8 +186,8 @@
 			},
 			{
 				name:"Chivalry",
-				row:5,
-				prerequisites:["Civil Service","Currency"]
+				row:6,
+				prerequisites:["Civil Service","Guilds"]
 			},
 			{
 				name:"Machinery",

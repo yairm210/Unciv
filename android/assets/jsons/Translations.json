@@ -1530,4 +1530,29 @@
 		German:"Raumschiffteil"
 	}
 	
+	// Unit types
+	"Civilian":{}
+	"Melee":{}
+	"Ranged":{}
+	"Siege":{}
+	"Mounted":{}
+	"Scout":{}
+	"City":{}
+	
+	
+	// Unit uniques
+	"Can build improvements on tiles":{}
+	"Founds a new city":{}
+	"Ignores terrain cost":{}
+	"No defensive terrain bonus":{}
+	"Rough terrain penalty":{}
+	"Bonus vs [unitType]":{}
+	"Penalty vs [unitType]":{}
+	"Must set up to ranged attack":{}
+	"Can move after attacking":{}
+	"Limited Visibility":{}
+	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{}
+	"Can discover a technology, or construct an Academy (+4 science)" :{}
+	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)":{}
+	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{}
 }

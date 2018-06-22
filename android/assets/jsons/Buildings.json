@@ -200,7 +200,7 @@
 		culture:1,
 		isWonder:true,
 		unique:"Gold from all trade routes +25%",
-		requiredTech:"Currency"
+		requiredTech:"Guilds"
 	},
 	{
 		name:"Aqueduct",
