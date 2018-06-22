@@ -69,6 +69,10 @@ class PopulationManager {
     }
 
     fun unassignExtraPopulation() {
+        for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] })
+            if(tile.getOwner()!=cityInfo.civInfo)
+                cityInfo.workedTiles.remove(tile.position)
+
         while (cityInfo.workedTiles.size > population) {
             val lowestRankedWorkedTile = cityInfo.workedTiles
                     .map { cityInfo.tileMap[it] }

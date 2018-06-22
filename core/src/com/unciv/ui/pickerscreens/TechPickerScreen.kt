@@ -138,15 +138,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             while (!prerequisites.isEmpty()) techsToResearch.add(prerequisites.pop())
         }
 
-        pick("Research [${techsToResearch[0].tr()}]")
+        pick("Research [${techsToResearch[0]}]".tr())
         setButtonsInfo()
     }
 
     private fun selectTechnologyForFreeTech(tech: Technology) {
         if (researchableTechs.contains(tech.name)) {
-            pick("Pick [${selectedTech!!.name.tr()}] as free tech")
+            pick("Pick [${selectedTech!!.name}] as free tech".tr())
         } else {
-            rightSideButton.setText("Pick a free tech")
+            rightSideButton.setText("Pick a free tech".tr())
             rightSideButton.disable()
         }
     }

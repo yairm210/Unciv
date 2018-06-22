@@ -341,6 +341,9 @@
 		Romanian:"Alege o tehnologie"
 		German:"Technologie auswählen"
 	}
+	
+	"Pick a free tech":{
+	}
 
 	"Research [technology]":{ // eg "Research Pottery"
 		Italian:"Ricerca [technology]"
@@ -348,6 +351,10 @@
 		French:"Recherche [technology]"
 		Romanian:"Exploreaza [technology]"
 		German:"[technology] Erforschen"
+	}
+	
+	
+	"Pick [technology] as free tech":{
 	}
 
 	"Units enabled":{
