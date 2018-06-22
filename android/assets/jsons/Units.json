@@ -238,7 +238,7 @@
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Formation I" ],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 50%" ],
 	},
 	*/
 	

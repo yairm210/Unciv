@@ -284,8 +284,13 @@
 				prerequisites:["Archaeology","Architecture","Economics"]
 			},
 			{
+				name:"Industrialization",
+				row:8,
+				prerequisites:["Economics"]
+			},
+			{
 				name:"Fertilizer",
-				row:7,
+				row:9,
 				prerequisites:["Chemistry"]
 			}
 		]	
@@ -310,7 +315,7 @@
 			{
 				name:"Steam Power",
 				row:7,
-				prerequisites:["Scientific Theory","Chemistry"]
+				prerequisites:["Industrialization","Scientific Theory","Chemistry"]
 			}
 		]	
 	},

@@ -403,7 +403,7 @@
 		maintenance:3,
 		hurryCostModifier:0,
 		requiredResource:"Coal",
-		requiredTech:"Steam Power"
+		requiredTech:"Industrialization"
 	},
 	{
 		name:"Stock Exchange",
