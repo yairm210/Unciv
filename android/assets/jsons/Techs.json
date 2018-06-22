@@ -153,13 +153,8 @@
 				baseDescription:"Enables conversion of city production to gold"
 			},
 			{
-				name:"Physics",
-				row:8,
-				prerequisites:["Engineering"]
-			},
-			{
 				name:"Metal Casting",
-				row:10,
+				row:9,
 				prerequisites:["Engineering","Iron Working"]
 			}
 		]
@@ -192,8 +187,13 @@
 			{
 				name:"Machinery",
 				row:8,
-				prerequisites:["Physics","Metal Casting"],
+				prerequisites:["Guilds","Engineering"],
 				baseDescription:"Speeds movement speed on roads"
+			},
+			{
+				name:"Physics",
+				row:9,
+				prerequisites:["Metal Casting"]
 			}
 		]	
 	},
@@ -212,7 +212,7 @@
 			{
 				name:"Acoustics",
 				row:4,
-				prerequisites:["Education","Chivalry"]
+				prerequisites:["Education"]
 			},
 			{
 				name:"Banking",
@@ -222,8 +222,13 @@
 			{
 				name:"Printing Press",
 				row:8,
-				prerequisites:["Machinery","Physics"]
+				prerequisites:["Machinery","Physics","Chivalry"]
 			},
+			{
+				name:"Gunpowder",
+				row:9,
+				prerequisites:["Physics"]
+			}
 		]	
 	},
 	{
@@ -252,7 +257,7 @@
 			{
 				name:"Chemistry",
 				row:9,
-				prerequisites:["Machinery"]
+				prerequisites:["Gunpowder"]
 			}
 		]	
 	},
