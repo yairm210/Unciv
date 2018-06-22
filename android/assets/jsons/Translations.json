@@ -113,7 +113,7 @@
 		Russian:"Приказ"
 		French:"Implanter"
 		Romanian:"Dispune"
-		// German translation not sure
+		German:"Aufstellen"
 	}
 	
 	"Found city":{
@@ -398,11 +398,11 @@
 	}
 	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
-		// German translation not sure
+		German:"generieren"
 	}
 
 	"provides":{ // as in "Camp provides +1 Gold" (singular of above)
-		// German translation not sure
+		German:"generiert"
 	}
 	
 
@@ -448,7 +448,7 @@
 		Russian:"Исследование [tehnologyName] завершилось!"
 		French:"Recherche de [tehnologyName] a completé!"
 		Romanian:"Cercetarea [tehnologyName] a finalizat!"
-		German:"Wurde fertiggestellt [tehnologyName] endteckung!" // Verb behind object again
+		German:"[tehnologyName] wurde erforscht!"
 	}
 	
 	"You have entered a golden age":{
@@ -476,7 +476,7 @@
 		Russian:"Началась работа над [construction]"
 		French:"Le travail a commencé sur le [construction]"
 		Romanian:"Munca a început pentru [construction]"
-		German:"Arbeit hat begonnen an [construction]" // verb should be behind object again
+		German:"Arbeit an [construction] hat begonnen"
 	}
 	
 	"Cannot continue work on [construction]":{
@@ -484,7 +484,7 @@
 		Russian:"Не удается продолжить работу над [construction]"
 		French:"Impossible de continuer à travailler sur [construction]"
 		Romanian:"Nu pot continua munca pentru [construction]"
-		German:"Arbeit konnte nicht fortgeführt werden an [construction]" // verb should be behind object again
+		German:"Arbeit an [construction] konnte nicht fortgeführt werden"
 	}
 
 	"has expanded its borders":{
@@ -500,7 +500,7 @@
 		Russian:"Враг [unit] атаковал [cityname]"
 		French:"Un ennemi [unit] a attaqué [cityname]"
 		Romanian:"Un dusman [unit] a atacat [cityname]"
-		German:"Ein Feind [unit] hat eine Attacke ausgeführt auf [cityname]"
+		German:"Ein(e) feindliche(r) [unit] hat [cityname] angegriffen" // Gender sensitive
 	}
 	
 	"An enemy [unit] has attacked our [ourUnit]":{
@@ -508,14 +508,14 @@
 		Russian:"Враг [unit] атаковал [ourUnit]"
 		French:"Un ennemi [unit] a attaqué [ourUnit]"
 		Romanian:"Un dusman [unit] a atacat [ourUnit]"
-		German:"Ein Feind [unit] hat eine Attacke ausgeführt auf [ourUnit]"
+		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] agegriffen" // Gender sensitive
 	}
 	"An enemy [unit] has captured [cityname]":{
 		Italian:"Un nemico [unit] ha catturato [cityname]"
 		Russian:"Враг [unit] захватил [cityname]"
 		French:"Un ennemi [unit] a capturé [cityname]"
 		Romanian:"Un dusman [unit] a capturat [cityname]"
-		German:"Ein Feind [unit] hat die Gefangenschaft gebracht über [cityname]"
+		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen"
 	}
 	
 	"An enemy [unit] has captured our [ourUnit]":{
@@ -523,7 +523,7 @@
 		Russian:"Враг [unit] захватил [ourUnit]"
 		French:"Un ennemi [unit] a capturé [ourUnit]"
 		Romanian:"Un dusman [unit] a capturat [ourUnit]"
-		German:"Ein Feind [unit] hat die Gefangenschaft gebracht über [ourUnit]"
+		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] gefangen"
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
@@ -531,15 +531,16 @@
 		Russian:"Враг [unit] уничтожил [ourUnit]"
 		French:"Un ennemi [unit] a détruit [ourUnit]"
 		Romanian:"Un dusman [unit] a distrus [ourUnit]"
-		German:"Ein Feind [unit] hat den Tod gebracht über über [ourUnit]"
+		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] zerstört"
 	}
 	
 	"An enemy [unit] was destroyed while attacking [cityname]":{
+		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf [cityname]" // Gender sensitive
 	}
 	
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
+		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf unsere(n) [ourUnit]" // Gender sensitive
 	}
-	
 	
 	"spotted near our territory":{
 		German:"wurde nahe unserer Grenzen entdeckt"
@@ -606,7 +607,7 @@
 		Russian:"загрузить [saveFileName]"
 		French:"Charger [saveFileName]"
 		Romanian:"încărca [saveFileName]"
-		German:"[saveFileName] laden" // verb should be behind object again
+		German:"[saveFileName] laden"
 	}
 
 	"Delete save":{
@@ -1016,7 +1017,7 @@
 		Russian:"Удалить"
 		French:"Suprimer"
 		Romanian:"Elimina"
-		German:"Entfernen" // verb behind object again
+		German:"Entfernen:" // verb behind object again
 	}
 	"Academy":{
 		Italian:"Accademia"
@@ -1531,28 +1532,70 @@
 	}
 	
 	// Unit types
-	"Civilian":{}
-	"Melee":{}
-	"Ranged":{}
-	"Siege":{}
-	"Mounted":{}
-	"Scout":{}
-	"City":{}
+	"Civilian":{
+		German:"Zivilist"
+	}
+	"Melee":{
+		German:"Nahkämpfer"
+	}
+	"Ranged":{
+		German:"Fernkämpfer"
+	}
+	"Siege":{
+		German:"Belagerungsmaschiene"
+	}
+	"Mounted":{
+		German:"Kavallerie"
+	}
+	"Scout":{
+		German:"Kundschafter"
+	}
+	"City":{
+		German:"Stadt"
+	}
 	
 	
 	// Unit uniques
-	"Can build improvements on tiles":{}
-	"Founds a new city":{}
-	"Ignores terrain cost":{}
-	"No defensive terrain bonus":{}
-	"Rough terrain penalty":{}
-	"Bonus vs [unitType]":{}
-	"Penalty vs [unitType]":{}
-	"Must set up to ranged attack":{}
-	"Can move after attacking":{}
-	"Limited Visibility":{}
-	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{}
-	"Can discover a technology, or construct an Academy (+4 science)" :{}
-	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)":{}
-	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{}
+	"Can build improvements on tiles":{
+		German:"Kan Verbesserungen auf Feldern bauen"
+	}
+	"Founds a new city":{
+		German:"Gründet eine neue Stadt"
+	}
+	"Ignores terrain cost":{
+		// German translation not sure
+	}
+	"No defensive terrain bonus":{
+		German:"Keinen Geländeabhängigen Verteidigunsbonus"
+	}
+	"Rough terrain penalty":{
+		German:"Nachteil bei rauem Gelände"
+	}
+	"Bonus vs [unitType]":{
+		German:"Vorteil gegen eine(n)" // Gender sensitive
+	}
+	"Penalty vs [unitType]":{
+		German:"Nachteil gegen eine(n)" // Gender sensitive
+	}
+	"Must set up to ranged attack":{
+		German:"Muss aufstellen um Fernattacken auszuführen"
+	}
+	"Can move after attacking":{
+		German:"Kann sich nach dem Angriff bewegen"
+	}
+	"Limited Visibility":{
+		German:"Begrenzte Sichtweite"
+	}
+	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
+		// German translation not sure
+	}
+	"Can discover a technology, or construct an Academy (+4 science)" :{
+		German:"Kann eine Technologie entdecken, oder eine Akademie (+4 Erforschung) bauen"
+	}
+	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)":{
+		German:"Kann eine Handelsmission unternehmen, viel Gold geben oder ein Zollamt (+4 Gold) bauen"
+	}
+	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{
+		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
+	}
 }
