@@ -205,4 +205,14 @@
 		]
 	]
 	
+	EnemyCity:  [
+		[
+			"You have encoutered an enemy city!",
+			"Cities can be conquered by reducing their health to 1,",
+			"  and entering the city with a melee unit.",
+			"Since cities heal each turn, it is best to attack with ranged units"
+			"  and use your melee units to defend them until the city has been defeated!"
+		]
+	]
+	
 }

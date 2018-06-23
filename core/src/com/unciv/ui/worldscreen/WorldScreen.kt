@@ -160,6 +160,9 @@ class WorldScreen : CameraStageBaseScreen() {
 
             displayTutorials("NextTurn")
 
+            if(civInfo.cities.size > 2)
+                displayTutorials("SecondCity")
+
             if(civInfo.happiness<0)
                 displayTutorials("Unhappiness")
 
@@ -168,6 +171,9 @@ class WorldScreen : CameraStageBaseScreen() {
 
             if(gameInfo.turns>=100)
                 displayTutorials("ContactMe")
+
+            if(civInfo.exploredTiles.map { gameInfo.tileMap[it] }.any { it.isCityCenter() && it.getOwner()!=civInfo })
+                displayTutorials("EnemyCity")
 
             shouldUpdate=false
         }

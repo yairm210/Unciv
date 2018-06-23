@@ -1572,10 +1572,10 @@
 		German:"Nachteil bei rauem Gelände"
 	}
 	"Bonus vs [unitType]":{
-		German:"Vorteil gegen eine(n)" // Gender sensitive
+		German:"Vorteil gegen eine(n) [unitType]" // Gender sensitive
 	}
 	"Penalty vs [unitType]":{
-		German:"Nachteil gegen eine(n)" // Gender sensitive
+		German:"Nachteil gegen eine(n) [unitType]" // Gender sensitive
 	}
 	"Must set up to ranged attack":{
 		German:"Muss aufstellen um Fernattacken auszuführen"
