@@ -72,6 +72,7 @@
 		cost: 56,
 		requiredTech:"The Wheel",
 		requiredResource:"Horses",
+		upgradesTo:"Knight",
 		uniques:["No defensive terrain bonus","Rough terrain penalty"],
 		hurryCostModifier:20
 	},
@@ -110,6 +111,8 @@
 		strength:14,
 		cost: 75,
 		requiredTech:"Iron Working",
+		upgradesTo:"Longswordsman",
+		obsoleteTech:"Steel",
 		requiredResource:"Iron",
 		hurryCostModifier:20
 	},
@@ -170,8 +173,8 @@
 		rangedStrength:14,
 		cost: 120,
 		requiredTech:"Physics",
-		/*obsoleteTech:"Chemistry",
-		upgradesTo:"Cannon",*/
+		obsoleteTech:"Chemistry",
+		upgradesTo:"Cannon",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
 		hurryCostModifier:20
 	},
@@ -193,6 +196,8 @@
 		cost: 90,
 		requiredTech:"Civil Service",
 		uniques:["Bonus vs Mounted 50%"],
+		upgradesTo:"Musketman",
+		obsoleteTech:"Gunpowder",
 		hurryCostModifier:20
 	},
 	{
@@ -209,7 +214,7 @@
 	
 	// Rennaisance Era
 
-/*
+
 	{
 		name:"Cannon",
 		unitType:"Siege",
@@ -229,7 +234,9 @@
 		cost: 150,
 		requiredTech:"Gunpowder",
 		hurryCostModifier:20
-	},{
+	}
+	/*
+	,{
 		name:"Lancer",
 		unitType:"Mounted",
 		movement:4,

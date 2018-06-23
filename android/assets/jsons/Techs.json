@@ -285,7 +285,7 @@
 			},
 			{
 				name:"Industrialization",
-				row:8,
+				row:7,
 				prerequisites:["Economics"]
 			},
 			{
