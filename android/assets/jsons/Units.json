@@ -186,6 +186,7 @@
 		cost: 120,
 		requiredTech:"Steel",
 		requiredResource:"Iron",
+		upgradesTo:"Rifleman",
 		hurryCostModifier:20
 	},
 	{
@@ -249,6 +250,18 @@
 	},
 	*/
 	
+	/* Industrial Era */
+	
+	
+	{
+        name:"Rifleman",
+		unitType:"Melee",
+		movement:2,
+		strength:34,
+		cost: 225,
+		requiredTech:"Metallurgy",
+		hurryCostModifier:20
+	},
 	
 	/* Great people */
 	
