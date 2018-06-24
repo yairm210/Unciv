@@ -259,7 +259,7 @@
 		movement:2,
 		strength:34,
 		cost: 225,
-		requiredTech:"Metallurgy",
+		requiredTech:"Rifling",
 		hurryCostModifier:20
 	},
 	
