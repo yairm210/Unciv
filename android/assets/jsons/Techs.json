@@ -265,10 +265,10 @@
 				prerequisites:["Banking","Printing Press"]
 			},
 			{
-                name:"Metallurgy",
-                row:8,
-                prerequisites:[Gunpowder]
-			}
+				name:"Metallurgy",
+				row:8,
+				prerequisites:["Gunpowder"]
+			},
 			{
 				name:"Chemistry",
 				row:9,
