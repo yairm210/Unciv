@@ -4,6 +4,7 @@
 		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Flood plains"],
 		food:1,
 		turnsToBuild:7,
+		techRequired:"Agriculture",
 		improvingTech:"Fertilizer",
 		improvingTechStats:{food:1}
 	},

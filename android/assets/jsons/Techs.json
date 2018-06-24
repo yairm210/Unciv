@@ -1,5 +1,18 @@
 [
 	{
+		columnNumber: 0,
+		era:"Ancient",
+		techCost: 20,
+		buildingCost:40,
+		techs:[
+			{
+				name:"Agriculture",
+				row:5,
+			}
+			
+		]	
+	},
+	{
 		columnNumber: 1,
 		era:"Ancient",
 		techCost: 35, 

@@ -33,10 +33,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     init {
         techsToResearch = ArrayList(civTech.techsToResearch)
 
-        val techMatrix = Array<Array<Technology?>>(17) { arrayOfNulls(10) } // Divided into columns, then rows
+        val techMatrix = Array<Array<Technology?>>(18) { arrayOfNulls(10) } // Divided into columns, then rows
 
         for (technology in GameBasics.Technologies.values) {
-            techMatrix[technology.column!!.columnNumber - 1][technology.row - 1] = technology
+            techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
         for (i in 0..9) {

@@ -118,6 +118,7 @@ class CivilizationInfo {
     constructor(civName: String, startingLocation: Vector2, gameInfo: GameInfo) {
         this.civName = civName
         this.gameInfo = gameInfo
+        tech.techsResearched.add("Agriculture")
         this.placeUnitNearTile(startingLocation, "Settler")
         this.placeUnitNearTile(startingLocation, "Scout")
     }
