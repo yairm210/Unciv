@@ -96,7 +96,8 @@ class Unit : INamed, IConstruction, ICivilopedia {
     }
 
     override fun postBuildEvent(construction: CityConstructions) {
-        construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
     }
 
     override fun toString(): String = name

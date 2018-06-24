@@ -56,7 +56,6 @@
 	},
 	{
 		name:"Library",
-		baseDescription: "Adds 1 science for each 2 population in the city.", 
 		hurryCostModifier:25,
 		maintenance:1,
 		unique:"+1 Science Per 2 Population",
@@ -84,6 +83,13 @@
 		isWonder:true,
 		unique:"Worker construction increased 25%, provides 2 free workers",
 		requiredTech:"Mathematics"
+	},
+	{
+		name:"Barracks",
+		xpForNewUnits:15,
+		hurryCostModifier:25,
+		maintenance:1,
+		requiredTech:"Bronze Working"
 	},
 	{
 		name:"Temple",
@@ -281,6 +287,14 @@
 		isWonder:true,
 		requiredBuildingInAllCities:"Workshop",
 		requiredTech:"Machinery"
+	},
+	{
+		name:"Armory",
+		xpForNewUnits:15,
+		hurryCostModifier:25,
+		maintenance:1,
+		requiredBuilding:"Barracks",
+		requiredTech:"Steel"
 	},
 	{
 		name:"Observatory",

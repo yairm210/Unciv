@@ -30,6 +30,7 @@ class Building : NamedStats(), IConstruction{
     var cannotBeBuiltWith: String? = null
     var cityStrength=0
     var cityHealth=0
+    var xpForNewUnits=0
 
     // Uniques
     var providesFreeBuilding: String? = null
@@ -56,6 +57,7 @@ class Building : NamedStats(), IConstruction{
         if(unique!=null) infoList += unique!!.tr()
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
+        if(xpForNewUnits!=0) infoList+= "+$xpForNewUnits {XP for new units}".tr()
         return infoList.joinToString()
     }
 

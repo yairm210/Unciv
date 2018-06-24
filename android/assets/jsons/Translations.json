@@ -397,6 +397,9 @@
 		German:"Zeigt [resource] auf der Karte"
 	}
 	
+	"XP for new units":{
+	}
+	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
 		German:"generieren"
 	}
