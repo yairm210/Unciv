@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Technology
 import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.ui.utils.tr
 import java.util.*
 
 class TechManager {
@@ -52,11 +53,20 @@ class TechManager {
         if (techsInProgress[currentTechnology]!! < getCurrentTechnology().cost)
             return
 
+        val previousEra = civInfo.getEra()
+
         // We finished it!
         techsInProgress.remove(currentTechnology)
         techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
         civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
+
+        val currentEra = civInfo.getEra()
+        if(previousEra < currentEra){
+            civInfo.addNotification("You have entered the [$currentEra] era!".tr(),null,Color.GOLD)
+            GameBasics.PolicyBranches.values.filter { it.era==currentEra }
+                .forEach{civInfo.addNotification("["+it.name+"] policy branch unlocked!".tr(),null,Color.PURPLE)}
+        }
 
         val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
 

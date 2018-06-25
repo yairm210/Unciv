@@ -1601,4 +1601,9 @@
 	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{
 		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
 	}
+	
+	// Policy picker screen
+	"You have entered the [newEra] era!":{}
+	"[policyBranch] policy branch unlocked!":{} // EG Rationalism policy branch unlocked!
+	
 }

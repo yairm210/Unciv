@@ -1,6 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
@@ -33,11 +34,16 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     init {
         techsToResearch = ArrayList(civTech.techsToResearch)
 
-        val techMatrix = Array<Array<Technology?>>(18) { arrayOfNulls(10) } // Divided into columns, then rows
+        val columns = 17
+        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
 
         for (technology in GameBasics.Technologies.values) {
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
+
+        val eras = ArrayList<Label>()
+        for(i in techMatrix.indices) eras.add(Label("",CameraStageBaseScreen.skin))
+        eras.forEach { topTable.add(it) }
 
         for (i in 0..9) {
             topTable.row().pad(5f)
@@ -46,13 +52,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 val tech = techMatrix[j][i]
                 if (tech == null)
                     topTable.add() // empty cell
+
                 else {
                     val TB = TextButton("", CameraStageBaseScreen.skin)
                     techNameToButton[tech.name] = TB
                     TB.addClickListener {
                         selectTechnology(tech)
                     }
-                    topTable.add<TextButton>(TB)
+                    topTable.add(TB)
+                    if(eras[j].text.toString()=="") eras[j].setText(tech.era().toString())
                 }
             }
         }
