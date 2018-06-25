@@ -1045,10 +1045,10 @@
 	}
 
 	"Whales":{
-		Italian:""
-		Russian:""
-		French:""
-		Romanian:""
+		Italian:"Balene"
+		Russian:"Киты"
+		French:"Baleines"
+		Romanian:"Balene"
 		German:"Wale"
 	}
 	
@@ -1597,128 +1597,288 @@
 	// Building unique abilities
 	
 	"+1 Science Per 2 Population":{
+		Italian:"+1 Scienza per 2 popolazione"
+		Russian:"+1 Наука за 2 населения"
+		French:"+1 Science par 2 Population"
+		Romanian:"+1 știință pe 2 persoane"
 		German:"+1 Erforschung pro 2 Bewohner"
 	}
 	"Worker construction increased 25%, provides 2 free workers":{
+		Italian:"La costruzione dei lavoratori è aumentata del 25%, offre 2 lavoratori liberi"
+		Russian:"Строительство рабочих увеличилось на 25%, предоставлено 2 свободных рабочих"
+		French:"La construction des travailleurs a augmenté de 25%, fournit 2 travailleurs libres"
+		Romanian:"Lucrările de construcție a crescut cu 25%, oferă 2 lucrători liberi"
 		German:"Arbeiterproduktion um 25% erhöht, gibt 2 freie Arbeiter"
 	}
 	"Free Social Policy":{
+		Italian:"Politica sociale gratuita"
+		Russian:"Бесплатная социальная политика"
+		French:"Politique sociale gratuite"
+		Romanian:"Politica socială gratuită"
 		German:"Freie Sozialpolitik"
 	}
 	"Golden Age length increases +50%":{
+		Italian:"La lunghezza dell'età dell'oro aumenta + 50%"
+		Russian:"Длина золотого века + 50%"
+		French:"La longueur de l'âge d'or augmente de 50%"
+		Romanian:"Vârsta de aur crește + 50%"
 		German:"Länge eines Goldenen Zeitalters um 50% erhöht"
 	}
 	"+33% great person generation in all cities":{
+		Italian:"+ 33% di generazione di grandi persone in tutte le città"
+		Russian:"+ 33% отличное поколение людей во всех городах"
+		French:"+ 33% de génération géniale dans toutes les villes"
+		Romanian:"+ 33% generație mare de persoane în toate orașele"
 		// German translation not sure
 	}
 	"Gold from all trade routes +25%":{
+		Italian:"Oro da tutte le rotte commerciali + 25%"
+		Russian:"Золото со всех торговых путей + 25%"
+		French:"Or de toutes les routes commerciales + 25%"
+		Romanian:"Aur din toate rutele comerciale + 25%"
 		German:"Gold von allen Handelsrouten um 25% erhöht"
 	}
 	"40% of food is carried over after a new citizen is born":{
+		Italian:"Il 40% del cibo viene mantenuto dopo la nascita di un nuovo cittadino"
+		Russian:"40% продовольствия переносится после рождения нового гражданина"
+		French:"40% de la nourriture est reportée après la naissance d'un nouveau citoyen"
+		Romanian:"40% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
 		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
 	}
 	"Jungles provide +2 science":{
+		Italian:"Giungle forniscono +2 scienza"
+		Russian:"Джунгли обеспечивают +2 науку"
+		French:"Jungles fournissent +2 science"
+		Romanian:"Junglele oferă știință +2"
 		German:"Dschungel produziert 2 Erforschung"
 	}
 	"Cost of acquiring new tiles reduced by 25%":{
+		Italian:"Costo di acquisto di nuove celle ridotto del 25%"
+		Russian:"Стоимость приобретения новых плиток сократилась на 25%"
+		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
+		Romanian:"Costul de achiziționare a plăcilor noi a scăzut cu 25%"
 		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
 	}
 	"Culture in all cities increased by 25%":{
+		Italian:"La cultura in tutte le città è aumentata del 25%"
+		Russian:"Культура во всех городах увеличилась на 25%"
+		French:"La culture dans toutes les villes a augmenté de 25%"
+		Romanian:"Cultura în toate orașele a crescut cu 25%"
 		German:"Kultur wird in allen Städten um 25% erhöht"
 	}
 	"Unhappiness from population decreased by 10%":{
+		Italian:"L'infelicità della popolazione è diminuita del 10%"
+		Russian:"Неспособность населения снизилась на 10%"
+		French:"Le mécontentement de la population a diminué de 10%"
+		Romanian:"Nefericirea de la populație a scăzut cu 10%"
 		German:"Unzufriedenheit vom Volk um 10% verringert"
 	}
 	"Empire enters golden age":{
+		Italian:"L'impero entra nell'età dell'oro"
+		Russian:"Империя вступает в золотой век"
+		French:"L'Empire entre dans l'âge d'or"
+		Romanian:"Imperiul intră în epoca de aur"
 		German:"Das Reich tritt ein goldenes Zeitalter an"
 	}
 	"Free Great Artist Appears":{
+		Italian:"Il grande artista gratuito appare"
+		Russian:"Появляется бесплатный великий артист"
+		French:"Grand artiste libre apparaît"
+		Romanian:"Artistul Mare apare gratuit"
 		// German translation not sure
 	}
 	"Culture cost of adopting new Policies reduced by 10%":{
+		Italian:"Costo della cultura dell'adozione di nuove politiche ridotto del 10%"
+		Russian:"Стоимость культуры принятия новой политики сократилась на 10%"
+		French:"Coût culturel de l'adoption de nouvelles polices réduit de 10%"
+		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
 		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
 	}
 	"Provides 1 happiness per social policy":{
+		Italian:"Fornisce 1 felicità per politica sociale"
+		Russian:"Обеспечивает 1 счастье за социальную политику"
+		French:"Fournit 1 bonheur par politique sociale"
+		Romanian:"Oferă 1 fericire pe politică socială"
 		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
 	}
 	"Must be next to desert":{
+		Italian:"Deve essere vicino al deserto"
+		Russian:"Должно быть рядом с пустыней"
+		French:"Doit être à côté du désert"
+		Romanian:"Trebuie să fie lângă deșert"
 		German:"Muss an eine Wüste grenzen"
 	}
 	"Enables construction of Spaceship parts":{
+		Italian:"Consente la costruzione di parti di navi spaziali"
+		Russian:"Разрешает строительство частей космического корабля"
+		French:"Permet la construction de pièces de vaisseau spatial"
+		Romanian:"Permite construcția de părți ale navelor spațiale"
 		German:"Schaltet Arbeit an Raumschiffteilen frei"
 	}
 	"Increases production of spaceship parts by 50%":{
+		Italian:"Aumenta la produzione di parti di navi spaziali del 50%"
+		Russian:"Увеличивает выпуск космических кораблей на 50%"
+		French:"Augmente la production de pièces de vaisseaux spatiaux de 50%"
+		Romanian:"Crește producția de piese de navă spațială cu 50%"
 		German:"Erhöht Produktion an Raumschiffteilen um 50%"
 	}
 	"Spaceship part":{
+		Italian:"Parte della nave spaziale"
+		Russian:"Часть космического корабля"
+		French:"Pièce de navire spatial"
+		Romanian:"Partea spațială a navei"
 		German:"Raumschiffteil"
 	}
 	
 	// Unit types
 	"Civilian":{
+		Italian:"Civile"
+		Russian:"Цивильный"
+		French:"Civil"
+		Romanian:"Civil"
 		German:"Zivilist"
 	}
 	"Melee":{
+		Italian:"Mischia"
+		Russian:"Рукопашная"
+		French:"Mêlée"
+		Romanian:"Incăierare"
 		German:"Nahkämpfer"
 	}
 	"Ranged":{
+		Italian:"a Distanza"
+		Russian:"Дальний бой"
+		French:"À distance"
+		Romanian:"ranged"
 		German:"Fernkämpfer"
 	}
 	"Siege":{
+		Italian:"Assedio"
+		Russian:"Осада"
+		French:"Siège"
+		Romanian:"Asediu"
 		German:"Belagerungsmaschiene"
 	}
 	"Mounted":{
+		Italian:"Cavaliere"
+		Russian:"Конный"
+		French:"Monté"
+		Romanian:"Montat"
 		German:"Kavallerie"
 	}
 	"Scout":{
+		Italian:"Esploratore"
+		Russian:"Разведчик"
+		French:"Scout"
+		Romanian:"Cercetaș"
 		German:"Kundschafter"
 	}
 	"City":{
+		Italian:"Città"
+		Russian:"Город"
+		French:"Ville"
+		Romanian:"Oraș"
 		German:"Stadt"
 	}
 	
 	
 	// Unit uniques
 	"Can build improvements on tiles":{
+		Italian:"Può migliorare le celle"
+		Russian:"Может создавать улучшения на клетках"
+		French:"Peut construire des améliorations sur les carreaux"
+		Romanian:"Poate construi îmbunătățiri pe plăci"
 		German:"Kan Verbesserungen auf Feldern bauen"
 	}
 	"Founds a new city":{
+		Italian:"Fonda una nuova città"
+		Russian:"Нашел новый город"
+		French:"Trouve une nouvelle ville"
+		Romanian:"Creează un oraș nou"
 		German:"Gründet eine neue Stadt"
 	}
 	"Ignores terrain cost":{
+		Italian:"Ignora il costo del terreno"
+		Russian:"Игнорирует стоимость местности"
+		French:"Ignore le coût du terrain"
+		Romanian:"Ignoră costul terenului"
 		// German translation not sure
 	}
 	"No defensive terrain bonus":{
+		Italian:"Nessun bonus sul terreno difensivo"
+		Russian:"Отсутствие бонуса за боеголовок"
+		French:"Aucun bonus de terrain défensif"
+		Romanian:"Niciun bonus de teren defensiv"
 		German:"Keinen Geländeabhängigen Verteidigunsbonus"
 	}
 	"Rough terrain penalty":{
+		Italian:"Penalità di terreno grezzo"
+		Russian:"Штраф грубой местности"
+		French:"Pénalité de terrain rugueux"
+		Romanian:"Зenalizare pentru teren accidentat"
 		German:"Nachteil bei rauem Gelände"
 	}
 	"Bonus vs [unitType]":{
+		Italian:"Bonus vs [unitType]"
+		Russian:"Бонус против [unitType]"
+		French:"Bonus vs [unitType]"
+		Romanian:"Bonus vs [unitType]"
 		German:"Vorteil gegen eine(n) [unitType]" // Gender sensitive
 	}
 	"Penalty vs [unitType]":{
+		Italian:"Penalità vs [unitType]"
+		Russian:"Штраф vs [unitType]"
+		French:"Pénalité vs [unitType]"
+		Romanian:"Penalitate vs [unitType]"
 		German:"Nachteil gegen eine(n) [unitType]" // Gender sensitive
 	}
 	"Must set up to ranged attack":{
+		Italian:"Deve impostare un attacco a distanza"
+		Russian:"Необходимо настроить атаку дальнего боя"
+		French:"Doit être configuré pour une attaque à distance"
+		Romanian:"Trebuie să fie pregătit să atace"
 		German:"Muss aufstellen um Fernattacken auszuführen"
 	}
 	"Can move after attacking":{
+		Italian:"Può muoversi dopo aver attaccato"
+		Russian:"Может двигаться после атаки"
+		French:"Peut se déplacer après avoir attaqué"
+		Romanian:"Poate să se miște după ce a atacat"
 		German:"Kann sich nach dem Angriff bewegen"
 	}
 	"Limited Visibility":{
+		Italian:"Visibilità limitata"
+		Russian:"Ограниченная видимость"
+		French:"Visibilité limitée"
+		Romanian:"Vizibilitate redusă"
 		German:"Begrenzte Sichtweite"
 	}
 	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
+		Italian:"Può iniziare un'età dell'oro a 8 turni o costruire un monument (+6 cultura)"
+		Russian:"Может начать 8-ти золотистый век или построить памятник (+6 культура)"
+		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 culture)"
+		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (cultura + 6)"
 		// German translation not sure
 	}
 	"Can discover a technology, or construct an Academy (+4 science)" :{
+		Italian:"Può scoprire una tecnologia o costruire un'accademia (+4 scienza)"
+		Russian:"Может открыть технологию или построить Академию (+4 наука)"
+		French:"Peut découvrir une technologie, ou construire une Académie (+4 science)"
+		Romanian:"Poate să descopere o tehnologie sau să construiască o Academie (știință +4)"
 		German:"Kann eine Technologie entdecken, oder eine Akademie (+4 Erforschung) bauen"
 	}
 	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)":{
+		Italian:"Può intraprendere una missione commerciale, dare una grande somma di oro, o costruire una dogana (+4 oro)"
+		Russian:"Может предпринять торговую миссию, дать большую сумму золота или построить Таможенную палату (+4 золота)"
+		French:"Peut entreprendre une mission commerciale, donner une grosse somme d'or, ou construire une maison de douane (+4 pièces d'or)"
+		Romanian:"Poate să întreprindă o misiune comercială, să dea o sumă mare de aur sau să construiască o casă vamală (+4 de aur)"
 		German:"Kann eine Handelsmission unternehmen, viel Gold geben oder ein Zollamt (+4 Gold) bauen"
 	}
 	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{
+		Italian:"Può velocizzare la costruzione di una meraviglia, o costruire una manifattura (+4 produzione)"
+		Russian:"Может ускорить строительство чуда или построить мануфактуру (+4 производства)"
+		French:"Peut accélérer la construction d'une merveille, ou construire une manufacture (+4 production)"
+		Romanian:"Poate accelera construcția unei minune sau poate construi o fabrică (+4 producție)"
 		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
 	}
 }
