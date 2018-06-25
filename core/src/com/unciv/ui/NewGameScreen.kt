@@ -1,12 +1,15 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.GameStarter
+import com.unciv.logic.GameInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -47,16 +50,29 @@ class NewGameScreen: PickerScreen(){
         rightSideButton.enable()
         rightSideButton.setText("Start game!")
         rightSideButton.addClickListener {
-            val newGame = GameStarter().startNewGame(
-                    worldSizeToRadius[worldSizeSelectBox.selected]!!, enemiesSelectBox.selected, civSelectBox.selected )
-            newGame.tutorial =game.gameInfo.tutorial
-            game.gameInfo=newGame
-            game.worldScreen = WorldScreen()
-            game.setWorldScreen()
+            Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
+            rightSideButton.disable()
+            rightSideButton.setText("Working...")
+
+            kotlin.concurrent.thread { // Creating a new game can tke a while and we don't want ANRs
+                newGame = GameStarter().startNewGame(
+                        worldSizeToRadius[worldSizeSelectBox.selected]!!, enemiesSelectBox.selected, civSelectBox.selected )
+                        .apply { tutorial=game.gameInfo.tutorial }
+            }
         }
 
         table.setFillParent(true)
         table.pack()
         stage.addActor(table)
+    }
+    var newGame:GameInfo?=null
+
+    override fun render(delta: Float) {
+        if(newGame!=null){
+            game.gameInfo=newGame!!
+            game.worldScreen = WorldScreen()
+            game.setWorldScreen()
+        }
+        super.render(delta)
     }
 }
