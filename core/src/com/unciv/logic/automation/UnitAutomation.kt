@@ -49,12 +49,12 @@ class UnitAutomation{
         val rangeOfAttack = if(MapUnitCombatant(unit).isMelee()) 1 else unit.getBaseUnit().range
 
         val attackableTiles = ArrayList<AttackableTile>()
-        // The +0.09 solves a bug where you've moved 2/3 road tiles,
+        // The >0.1 (instead of >0) solves a bug where you've moved 2/3 road tiles,
         // you come to move a third (distance is less that remaining movements),
         // and then later we round it off to a whole.
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no moveement points!
         // Silly floats, basically
-        val tilesToAttackFrom = distanceToTiles.filter { (it.value+0.09) < unit.currentMovement }
+        val tilesToAttackFrom = distanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there

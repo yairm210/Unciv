@@ -46,7 +46,7 @@ class Unit : INamed, IConstruction, ICivilopedia {
 
     fun getDescription(forPickerScreen:Boolean): String {
         val sb = StringBuilder()
-        if(baseDescription!=null) sb.appendln(baseDescription)
+        if(baseDescription!=null) sb.appendln(baseDescription!!.tr())
         if(!forPickerScreen) {
             if (unbuildable) sb.appendln("Unbuildable")
             else sb.appendln("Cost: $cost")
@@ -60,8 +60,9 @@ class Unit : INamed, IConstruction, ICivilopedia {
         }
 
         if(uniques!=null){
-            for(unique in uniques!!)
-                sb.appendln(unique)
+            for(unique in uniques!!) {
+                sb.appendln(unique.tr())
+            }
         }
         sb.appendln("{Movement}: $movement".tr())
         return sb.toString()

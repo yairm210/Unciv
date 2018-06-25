@@ -55,7 +55,7 @@ class GameInfo {
                 && (it.getOwner()==player || it.neighbors.any { neighbor -> neighbor.getOwner()==player }) }
         for(enemyUnitTile in enemyUnitsCloseToTerritory) {
             val inOrNear = if(enemyUnitTile.getOwner()==player) "in" else "near"
-            player.addNotification("Enemy spotted $inOrNear our territory!", enemyUnitTile.position, Color.RED)
+            player.addNotification("An enemy [${enemyUnitTile.militaryUnit!!.name}] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
         }
 
         turns++

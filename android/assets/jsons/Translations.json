@@ -7,12 +7,7 @@
 		German:"Nächste Runde"
 	}
 	
-	"Waiting":{ // Displayed when next turn is being...turned
-		Italian:"In attesa"
-		Russian:"В ожидании"
-		French:"Attendre"
-		Romanian:"Aşteptare"
-		German:"Warten..."
+	"Working...":{ // Displayed when next turn is being...turned
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -633,20 +628,20 @@
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf unsere(n) [ourUnit]" // Gender sensitive
 	}
 	
-	"spotted near our territory":{
-		Italian:"avvistato vicino al nostro territorio"
-		Russian:"пятнистый у нашей территории"
-		French:"repéré près de notre territoire"
-		Romanian:"reperat în apropierea teritoriului nostru"
-		German:"wurde nahe unserer Grenzen entdeckt"
+	"An enemy [unit] was spotted near our territory":{
+		Italian:"Un'unità [unit] avvistato vicino al nostro territorio"
+		Russian:"Враг [unit] пятнистый у нашей территории"
+		French:"Un ennemi [unit] repéré près de notre territoire"
+		Romanian:"Un inamic [unit] reperat în apropierea teritoriului nostru"
+		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt"
 	}
 	
-	"spotted in our territory":{
-		Italian:"avvistato nel nostro territorio"
-		Russian:"пятнистый на нашей территории"
-		French:"repéré sur notre territoire"
-		Romanian:"reperat pe teritoriul nostru"
-		German:"wurde in unseren Grenzen entdeckt"
+	"An enemy [unit] was spotted in our territory":{
+		Italian:"Un'unità [unit] avvistato nel nostro territorio"
+		Russian:"Враг [unit] пятнистый на нашей территории"
+		French:"Un ennemi [unit] repéré sur notre territoire"
+		Romanian:"Un inamic [unit] reperat pe teritoriul nostru"
+		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt"
 	}
 	
 	
@@ -1608,6 +1603,8 @@
 		Romanian:"Tehnologia viitoare"
 		German:"Zukünftige Technologien"
 	}
+	
+	"Who knows what the future holds?":{}
 	
 	// Tech Eras
 	"Ancient":{}
