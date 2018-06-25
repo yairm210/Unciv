@@ -160,7 +160,7 @@ fun String.tr(): String {
 
         var languageSpecificPlaceholder = GameBasics.Translations[englishTranslationPlaceholder]!![UnCivGame.Current.settings.language]!!
         for(i in 0 until termsInMessage.size){
-            languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i])
+            languageSpecificPlaceholder = languageSpecificPlaceholder.replace(termsInTranslationPlaceholder[i], termsInMessage[i].tr())
         }
         return languageSpecificPlaceholder.tr()
     }

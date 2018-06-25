@@ -234,9 +234,8 @@
 		cost: 150,
 		requiredTech:"Gunpowder",
 		hurryCostModifier:20
-	}
-	
-	,{
+	},
+	{
 		name:"Lancer",
 		unitType:"Mounted",
 		movement:4,
@@ -245,10 +244,11 @@
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 50%" ],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%" ],
 	},
 	
-	// UNITS FROM HERE NEED IMAGES
+	// Industrial Era
+	
 	{
 		name:"Rifleman",
 		unitType:"Melee",

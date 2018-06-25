@@ -1170,6 +1170,8 @@
 	
 	// Technologies (Ancient Era)
 	
+	"Agriculture":{}
+	
 	"Pottery":{
 		Italian:"Ceramica"
 		Russian:"Керамика"
@@ -1325,6 +1327,7 @@
 		Romanian:"Serviciu civil"
 		German:"Zivildienst"
 	}
+	"Guilds":{}
 	"Physics":{
 		Italian:"Fisica"
 		Russian:"Физика"
@@ -1332,6 +1335,7 @@
 		Romanian:"Fizică"
 		German:"Physik"
 	}
+	"Steel":{}
 	"Metal Casting":{
 		Italian:"colata di metallo"
 		Russian:"Литье"
@@ -1399,6 +1403,7 @@
 		Romanian:"Presă de tipar"
 		German:"Druckpresse"
 	}
+	"Gunpowder":{}
 	"Navigation":{
 		Italian:"Navigazione"
 		Russian:"Навигация"
@@ -1420,6 +1425,9 @@
 		Romanian:"Economie"
 		German:"Ökonomie"
 	}
+	
+	"Metallurgy":{}
+	
 	"Chemistry":{
 		Italian:"Chimica"
 		Russian:"Химия"
@@ -1437,6 +1445,11 @@
 		Romanian:"Teoria științifică"
 		German:"Wissenschaftliche Thorie"
 	}
+	
+	"Industrialization":{}
+	"Rifling":{}
+	"Military Science":{}
+	
 	"Fertilizer":{
 		Italian:"Fertilizzante"
 		Russian:"Yдобрение"
@@ -1465,6 +1478,8 @@
 		Romanian:"Puterea aburului"
 		German:"Dampfkraft"
 	}
+	
+	"Dynamite":{}
 	
 	
 	// Technologies (Modern Era)
@@ -1593,6 +1608,16 @@
 		Romanian:"Tehnologia viitoare"
 		German:"Zukünftige Technologien"
 	}
+	
+	// Tech Eras
+	"Ancient":{}
+	"Classical":{}
+	"Medieval":{}
+	"Renaissance":{}
+	"Industrial":{}
+	"Modern":{}
+	"Information":{}
+	"Future":{}
 	
 	// Building unique abilities
 	
