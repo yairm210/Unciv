@@ -235,7 +235,7 @@
 		requiredTech:"Gunpowder",
 		hurryCostModifier:20
 	}
-	/*
+	
 	,{
 		name:"Lancer",
 		unitType:"Mounted",
@@ -247,7 +247,6 @@
 		hurryCostModifier:20
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 50%" ],
 	},
-	*/
 	
 	{
 		name:"Cavalry",
