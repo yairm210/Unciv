@@ -249,6 +249,18 @@
 	},
 	*/
 	
+	{
+		name:"Artillery",
+		unitType:"Siege",
+		movement:2,
+		strength:21,
+		rangedStrength:28,
+		range:3,
+		cost: 120,
+		requiredTech:"Dynamite",
+		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		hurryCostModifier:20
+	},
 	
 	/* Great people */
 	

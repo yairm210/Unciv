@@ -329,6 +329,11 @@
 				name:"Steam Power",
 				row:7,
 				prerequisites:["Industrialization","Scientific Theory","Chemistry"]
+			},
+			{
+				name:"Dynamite",
+				row:9,
+				prerequisites:["Fertilizer"]
 			}
 		]	
 	},
@@ -353,7 +358,7 @@
 			{
 				name:"Combustion",
 				row:8,
-				prerequisites:["Steam Power"]
+				prerequisites:["Steam Power","Dynamite"]
 			}
 		]	
 	},
