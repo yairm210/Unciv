@@ -108,7 +108,7 @@ class Building : NamedStats(), IConstruction{
             stringBuilder.appendln("Requires a $requiredBuildingInAllCities to be built in all cities")
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free $providesFreeBuilding in this city")
-        if(baseDescription!=null) stringBuilder.appendln(baseDescription)
+        if(unique!=null) stringBuilder.appendln(unique!!.tr())
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
         if (this.percentStatBonus != null) {
@@ -127,7 +127,7 @@ class Building : NamedStats(), IConstruction{
         }
         if (resourceBonusStats != null) {
             val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendln("$resources {provide} $resourceBonusStats")
+            stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
         }
 
         if(cityStrength!=0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)

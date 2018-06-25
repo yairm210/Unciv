@@ -104,7 +104,7 @@ class CityStats {
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
         if (civInfo.buildingUniques.contains("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
-        if (civInfo.policies.isAdopted("Aristocracy"))
+        if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
 
         happinessList["Population"]=-unhappinessFromCitizens

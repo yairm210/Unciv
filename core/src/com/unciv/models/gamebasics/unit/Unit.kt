@@ -86,8 +86,8 @@ class Unit : INamed, IConstruction, ICivilopedia {
         if (unbuildable) return false
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
-        if(uniqueTo!=null && uniqueTo!=civInfo.civName) return false
-        if(GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
+        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
+        if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
         if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
         return true
     }
@@ -102,4 +102,4 @@ class Unit : INamed, IConstruction, ICivilopedia {
     }
 
     override fun toString(): String = name
-}  // for json parsing, we need to have a default constructor
+}

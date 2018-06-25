@@ -72,7 +72,9 @@ class CivilizationInfo {
     private fun getUnitUpkeep(): Int {
         val baseUnitCost = 0.5f
         val freeUnits = 3
-        val totalPaidUnits = max(0,getCivUnits().count()-freeUnits)
+        var unitsToPayFor = getCivUnits()
+        if(policies.isAdopted("Oligarchy")) unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
+        val totalPaidUnits = max(0,unitsToPayFor.count()-freeUnits)
         val gameProgress = gameInfo.turns/400f // as game progresses maintainance cost rises
         val cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
         val finalCost = cost.pow(1+gameProgress/3) // Why 3? No reason.

@@ -783,7 +783,7 @@
 
 	"Desert":{
 		Italian:"Deserto"
-		Russian:"Пустынный"
+		Russian:"Пустыня"
 		French:"Désert"
 		Romanian:"Deşert"
 		German:"Wüste"
@@ -799,7 +799,7 @@
 
 	"Hill":{
 		Italian:"Collina"
-		Russian:"Bозвышенность"
+		Russian:"Холм"
 		French:"Colline"
 		German:"Hügel"
 	}
