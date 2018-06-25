@@ -278,6 +278,11 @@
 				prerequisites:["Banking","Printing Press"]
 			},
 			{
+				name:"Metallurgy",
+				row:8,
+				prerequisites:["Gunpowder"]
+			},
+			{
 				name:"Chemistry",
 				row:9,
 				prerequisites:["Gunpowder"]
@@ -300,6 +305,11 @@
 				name:"Industrialization",
 				row:7,
 				prerequisites:["Economics"]
+			},
+			{
+				name:"Rifling",
+				row:8,
+				prerequisites:["Metallurgy"]
 			},
 			{
 				name:"Fertilizer",
