@@ -89,8 +89,12 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         }
         pickedPolicy = policy
         var policyText = policy.name + "\r\n" + policy.description + "\r\n"
-        if (!policy.name.endsWith("Complete") && policy.requires!!.isNotEmpty())
-            policyText += "Requires " + policy.requires!!.joinToString()
+        if (!policy.name.endsWith("Complete")){
+            if(policy.requires!!.isNotEmpty())
+                policyText += "Requires " + policy.requires!!.joinToString()
+            else
+                policyText += "Unlocked at "+policy.getBranch().era+" era"
+        }
         descriptionLabel.setText(policyText)
     }
 
@@ -99,8 +103,9 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         if (image) {
             val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name.replace(" ", "_") + "_(Civ5).png")
             policyButton.add(policyImage).size(30f)
-        } else
+        } else {
             policyButton = TextButton(policy.name, CameraStageBaseScreen.skin)
+        }
 
         if (civInfo.policies.isAdopted(policy.name)) { // existing
             policyButton.color = Color.GREEN

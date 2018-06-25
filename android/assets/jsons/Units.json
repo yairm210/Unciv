@@ -247,6 +247,8 @@
 		hurryCostModifier:20
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 50%" ],
 	},
+	
+	// UNITS FROM HERE NEED IMAGES
 	{
 		name:"Rifleman",
 		unitType:"Melee",

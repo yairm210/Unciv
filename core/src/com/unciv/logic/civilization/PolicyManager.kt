@@ -35,6 +35,7 @@ class PolicyManager {
 
     fun isAdoptable(policy: Policy) = !policy.name.endsWith("Complete")
             && getAdoptedPolicies().containsAll(policy.requires!!)
+            && policy.getBranch().era <= civInfo.getEra()
 
     fun canAdoptPolicy(): Boolean = freePolicies > 0 || storedCulture >= getCultureNeededForNextPolicy()
 
@@ -48,7 +49,7 @@ class PolicyManager {
         adoptedPolicies.add(policy.name)
 
         if (!branchCompletion) {
-            val branch = GameBasics.PolicyBranches[policy.branch]!!
+            val branch = policy.getBranch()
             if (branch.policies.count { isAdopted(it.name) } == branch.policies.size - 1) { // All done apart from branch completion
                 adopt(branch.policies.last(), true) // add branch completion!
             }

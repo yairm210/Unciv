@@ -9,6 +9,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Civilization
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.linq.Counter
@@ -208,4 +209,19 @@ class CivilizationInfo {
     override fun toString(): String {return civName} // for debug
 
     fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
+    fun getEra(): TechEra {
+        return tech.techsResearched.map { GameBasics.Technologies[it]!! }
+                .map { it.era() }
+                .max()!!
+    }
 }
+
+//enum class DiplomaticStatus{
+//    Peace,
+//    War
+//}
+//
+//class DiplomacyManager {
+//    lateinit var otherCivName:String
+//    var status:DiplomaticStatus = DiplomaticStatus.Peace
+//}

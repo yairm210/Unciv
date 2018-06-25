@@ -1,6 +1,7 @@
 [
 	{
 		name:"Tradition",
+		era:"Ancient",
 		description:"+3 culture in capital and increased rate of border expansion",
 		policies:[
 			{
@@ -42,6 +43,7 @@
 		]
 	},{
 		name:"Liberty",
+		era:"Ancient",
 		description:"+1 culture in evey city",
 		policies:[
 			{
@@ -84,6 +86,7 @@
 		]
 	},{
 		name:"Piety",
+		era:"Classical",
 		description:"Building time of culture buildings reduced by 15%",
 		policies:[
 			{
@@ -127,6 +130,7 @@
 	},{
 		name:"Commerce",
 		description:"+25% gold in capital",
+		era:"Medieval",
 		policies:[
 			{
 				name:"Trade Unions",
@@ -168,6 +172,7 @@
 		]
 	},{
 		name:"Rationalism",
+		era:"Renaissance",
 		description:"Production to science conversion in cities increased by 33%",
 		policies:[
 			{
@@ -210,6 +215,7 @@
 		]
 	},{
 		name:"Freedom",
+		era:"Renaissance",
 		description:"+25% great people rate",
 		policies:[
 			{

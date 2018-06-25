@@ -1,12 +1,24 @@
 package com.unciv.models.gamebasics
 
-import java.util.ArrayList
+import java.util.*
 
 class TechColumn {
-    @JvmField var columnNumber: Int = 0
-    @JvmField var era: String? = null
-    @JvmField var techs = ArrayList<Technology>()
-    @JvmField var techCost: Int = 0
-    @JvmField var buildingCost: Int = 0
-    @JvmField var wonderCost: Int = 0
+    var columnNumber: Int = 0
+    lateinit var era: TechEra
+    var techs = ArrayList<Technology>()
+    var techCost: Int = 0
+    var buildingCost: Int = 0
+    var wonderCost: Int = 0
+}
+
+
+enum class TechEra{
+    Ancient,
+    Classical,
+    Medieval,
+    Renaissance,
+    Industrial,
+    Modern,
+    Information,
+    Future
 }

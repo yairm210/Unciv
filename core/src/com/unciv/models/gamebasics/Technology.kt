@@ -49,4 +49,6 @@ class Technology : ICivilopedia {
     override fun toString(): String {
         return name
     }
+
+    fun era() = column!!.era
 }
