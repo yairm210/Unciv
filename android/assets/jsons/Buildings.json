@@ -437,6 +437,14 @@
 		requiredTech:"Flight"
 	},
 	{
+		name:"Military Academy",
+		xpForNewUnits:15,
+		hurryCostModifier:25,
+		maintenance:1,
+		requiredBuilding:"Armory",
+		requiredTech:"Military Science"
+	},
+	{
 		name:"Broadcast Tower",
 		culture:3,
 		percentStatBonus:{culture:33},

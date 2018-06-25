@@ -302,6 +302,11 @@
 				prerequisites:["Economics"]
 			},
 			{
+				name:"Military Science",
+				row:8,
+				prerequisites:["Chemistry"]
+			},
+			{
 				name:"Fertilizer",
 				row:9,
 				prerequisites:["Chemistry"]
@@ -333,7 +338,7 @@
 			{
 				name:"Dynamite",
 				row:9,
-				prerequisites:["Fertilizer"]
+				prerequisites:["Fertilizer","Military Science"]
 			}
 		]	
 	},
