@@ -247,7 +247,15 @@
 		hurryCostModifier:20
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 50%" ],
 	},
-	
+	{
+		name:"Rifleman",
+		unitType:"Melee",
+		movement:2,
+		strength:34,
+		cost: 225,
+		requiredTech:"Rifling",
+		hurryCostModifier:20
+	},
 	{
 		name:"Cavalry",
 		unitType:"Mounted",

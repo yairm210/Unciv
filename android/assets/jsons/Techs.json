@@ -303,8 +303,13 @@
 			},
 			{
 				name:"Industrialization",
-				row:7,
+				row:6,
 				prerequisites:["Economics"]
+			},
+			{
+				name:"Rifling",
+				row:7,
+				prerequisites:["Economics","Metallurgy"]
 			},
 			{
 				name:"Military Science",
@@ -338,7 +343,7 @@
 			{
 				name:"Steam Power",
 				row:7,
-				prerequisites:["Industrialization","Scientific Theory","Chemistry"]
+				prerequisites:["Industrialization","Scientific Theory","Rifling"]
 			},
 			{
 				name:"Dynamite",
