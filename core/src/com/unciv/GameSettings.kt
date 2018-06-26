@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv
 
 class GameSettings : LinkedHashMap<String, String>() {
 

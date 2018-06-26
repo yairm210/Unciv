@@ -2,6 +2,7 @@ package com.unciv.models.gamebasics
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
+import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.tr

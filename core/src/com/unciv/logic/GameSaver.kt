@@ -3,7 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
-import com.unciv.ui.GameSettings
+import com.unciv.GameSettings
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
@@ -34,7 +34,7 @@ class GameSaver {
         return Gdx.files.local("GameSettings.json")
     }
 
-    fun getGeneralSettings():GameSettings{
+    fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
         if(!settingsFile.exists()) return GameSettings()
         return Json().fromJson(GameSettings::class.java, settingsFile)

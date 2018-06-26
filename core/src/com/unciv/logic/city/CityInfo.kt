@@ -9,7 +9,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.linq.Counter
+import com.unciv.models.Counter
 import com.unciv.models.stats.Stats
 import kotlin.math.min
 

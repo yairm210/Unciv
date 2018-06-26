@@ -2,6 +2,8 @@ package com.unciv.models.gamebasics
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.utils.Json
+import com.unciv.models.gamebasics.tech.TechColumn
+import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource

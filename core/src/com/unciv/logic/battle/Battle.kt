@@ -154,4 +154,3 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         capturedUnit.owner = capturedUnit.civInfo.civName
     }
 }
-

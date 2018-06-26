@@ -112,7 +112,7 @@ open class TileInfo {
             if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
             if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
                 stats.science += 1f
-            if (listOf("Academy", "Landmark", "Manufactory", "Customs House").contains(improvement.name) && observingCiv.policies.isAdopted("Freedom Complete"))
+            if (improvement.name in listOf("Academy", "Landmark", "Manufactory", "Customs house") && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement) // again, for the double effect
         }
 

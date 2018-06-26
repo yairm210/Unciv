@@ -1,4 +1,4 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.gamebasics.tech
 
 import java.util.*
 
@@ -12,13 +12,3 @@ class TechColumn {
 }
 
 
-enum class TechEra{
-    Ancient,
-    Classical,
-    Medieval,
-    Renaissance,
-    Industrial,
-    Modern,
-    Information,
-    Future
-}

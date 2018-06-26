@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.GameSettings
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnCivGame : Game() {

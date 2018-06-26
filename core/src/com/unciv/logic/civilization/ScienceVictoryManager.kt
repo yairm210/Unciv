@@ -1,6 +1,6 @@
 package com.unciv.logic.civilization
 
-import com.unciv.models.linq.Counter
+import com.unciv.models.Counter
 
 class ScienceVictoryManager {
 

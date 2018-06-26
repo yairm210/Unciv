@@ -9,10 +9,10 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Civilization
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.TechEra
+import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.linq.Counter
+import com.unciv.models.Counter
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import kotlin.math.max

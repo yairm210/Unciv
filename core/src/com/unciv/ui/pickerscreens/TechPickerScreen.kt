@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Technology
+import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
@@ -60,7 +60,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                         selectTechnology(tech)
                     }
                     topTable.add(TB)
-                    if(eras[j].text.toString()=="") eras[j].setText(tech.era().toString())
+                    if(eras[j].text.toString()=="") eras[j].setText(tech.era().toString().tr())
                 }
             }
         }
