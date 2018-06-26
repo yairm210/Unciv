@@ -10,19 +10,21 @@ import com.unciv.models.stats.Stats
 
 class CityStats {
 
-    @Transient var baseStatList = LinkedHashMap<String,Stats>()
-    @Transient var happinessList = LinkedHashMap<String,Float>()
-    @Transient var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
-    @Transient lateinit var cityInfo: CityInfo
+    @Transient
+    var baseStatList = LinkedHashMap<String, Stats>()
+    @Transient
+    var happinessList = LinkedHashMap<String, Float>()
+    @Transient
+    var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
+    @Transient
+    lateinit var cityInfo: CityInfo
 
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
-        for (cell in cityInfo.getTilesInRange().filter { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position})
+        for (cell in cityInfo.getTilesInRange().filter { cityInfo.workedTiles.contains(it.position) || cityInfo.location == it.position })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }
-
-    private
 
     fun getStatsFromTradeRoute(): Stats {
         val stats = Stats()
@@ -37,10 +39,10 @@ class CityStats {
     }
 
 
-    private fun getStatsFromProduction(production:Float): Stats {
+    private fun getStatsFromProduction(production: Float): Stats {
         val stats = Stats()
 
-        when(cityInfo.cityConstructions.currentConstruction) {
+        when (cityInfo.cityConstructions.currentConstruction) {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
@@ -107,7 +109,7 @@ class CityStats {
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
 
-        happinessList["Population"]=-unhappinessFromCitizens
+        happinessList["Population"] = -unhappinessFromCitizens
 
         var happinessFromPolicies = 0f
         if (civInfo.policies.isAdopted("Aristocracy"))
@@ -120,7 +122,7 @@ class CityStats {
         happinessList["Policies"] = happinessFromPolicies
 
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
-        happinessList["Buildings"] =happinessFromBuildings
+        happinessList["Buildings"] = happinessFromBuildings
 
         return happinessList
     }
@@ -164,7 +166,7 @@ class CityStats {
 
     private fun getStatPercentBonusesFromGoldenAge(isGoldenAge: Boolean): Stats {
         val stats = Stats()
-        if (isGoldenAge){
+        if (isGoldenAge) {
             stats.production += 20f
             stats.culture += 20f
         }
@@ -205,8 +207,8 @@ class CityStats {
         baseStatList = LinkedHashMap<String, Stats>()
         val civInfo = cityInfo.civInfo
 
-        baseStatList["Population"] = Stats().add(Stat.Science,cityInfo.population.population.toFloat())
-                .add(Stat.Production,cityInfo.population.getFreePopulation().toFloat())
+        baseStatList["Population"] = Stats().add(Stat.Science, cityInfo.population.population.toFloat())
+                .add(Stat.Production, cityInfo.population.getFreePopulation().toFloat())
         baseStatList["Tile yields"] = getStatsFromTiles()
         baseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getSpecialists(), civInfo.policies.adoptedPolicies)
         baseStatList["Trade route"] = getStatsFromTradeRoute()
@@ -222,47 +224,59 @@ class CityStats {
         statPercentBonuses.add(getStatPercentBonusesFromMarble())
         statPercentBonuses.add(getStatPercentBonusesFromComputers())
 
-        val stats = Stats()
-        for (stat in baseStatList.values) stats.add(stat)
-        stats.production *= 1 + statPercentBonuses.production / 100  // So they get bonuses for production and gold/science
 
-        val statsFromProduction = getStatsFromProduction(stats.production)
-        stats.add(statsFromProduction)
+        //val stats = Stats()
+        for (stat in baseStatList.values) stat.production *= 1 + statPercentBonuses.production / 100
+        //stats.production *= 1 + statPercentBonuses.production / 100  // So they get bonuses for production and gold/science
+
+        val statsFromProduction = getStatsFromProduction(baseStatList.values.map { it.production }.sum())
         baseStatList["Construction"] = statsFromProduction
 
+        for (stat in baseStatList.values) {
+            stat.gold *= 1 + statPercentBonuses.gold / 100
+            stat.science *= 1 + statPercentBonuses.science / 100
+            stat.culture *= 1 + statPercentBonuses.culture / 100
+        }
 
-        stats.gold *= 1 + statPercentBonuses.gold / 100
-        stats.science *= 1 + statPercentBonuses.science / 100
-        stats.culture *= 1 + statPercentBonuses.culture / 100
 
         val isUnhappy = civInfo.happiness < 0
-        if (!isUnhappy) stats.food *= 1 + statPercentBonuses.food / 100 // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
-        val foodEaten = (cityInfo.population.population * 2).toFloat()
-        baseStatList["Population"]!!.food -= foodEaten // to display it to the user
-        stats.food -= foodEaten // Food reduced after the bonus
-        if (civInfo.policies.isAdopted("Civil Society"))
-            stats.food += cityInfo.population.getNumberOfSpecialists().toFloat()
+        if (!isUnhappy) // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+            for (stat in baseStatList.values) stat.food *= 1 + statPercentBonuses.food / 100
 
-        if (isUnhappy) stats.food /= 4f // Reduce excess food to 1/4 per the same
-        stats.food *= 1 + getGrowthBonusFromPolicies()
+        var foodEaten = (cityInfo.population.population * 2).toFloat()
+        if (civInfo.policies.isAdopted("Civil Society"))
+            foodEaten -= cityInfo.population.getNumberOfSpecialists()
+        baseStatList["Population"]!!.food -= foodEaten // to display it to the user
+
+        val excessFood = baseStatList.values.sumByDouble { it.food.toDouble() }.toFloat()
+
+        if (isUnhappy && excessFood > 0) // Reduce excess food to 1/4 per the same
+            baseStatList["Unhappiness"] = Stats().apply { food = -excessFood * (3 / 4f) }
+
+        if (!baseStatList.containsKey("Policies")) baseStatList["Policies"] = Stats()
+        baseStatList["Policies"]!!.food += getGrowthBonusFromPolicies() * excessFood
 
         val buildingsMaintainance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        baseStatList["Buildings"]!!.gold -= buildingsMaintainance
-        stats.gold -= buildingsMaintainance
-        this.currentCityStats = stats
+        baseStatList["Maintainance"] = Stats().apply { gold = -buildingsMaintainance }
+
+        currentCityStats = Stats()
+        for (stat in baseStatList.values) currentCityStats.add(stat)
     }
 
+
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
-        if(cityInfo.civInfo.cities.count()<2) return false// first city!
+        if (cityInfo.civInfo.cities.count() < 2) return false// first city!
         val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
         val tilesReached = HashSet<TileInfo>()
-        var tilesToCheck : List<TileInfo> = listOf(cityInfo.getCenterTile())
+        var tilesToCheck: List<TileInfo> = listOf(cityInfo.getCenterTile())
         while (tilesToCheck.isNotEmpty()) {
             val newTiles = tilesToCheck
                     .flatMap { it.neighbors }.distinct()
-                    .filter{ !tilesReached.contains(it) && !tilesToCheck.contains(it)
-                            && (roadType !== RoadStatus.Road || it.roadStatus !== RoadStatus.None)
-                            && (roadType !== RoadStatus.Railroad || it.roadStatus === roadType) }
+                    .filter {
+                        !tilesReached.contains(it) && !tilesToCheck.contains(it)
+                                && (roadType !== RoadStatus.Road || it.roadStatus !== RoadStatus.None)
+                                && (roadType !== RoadStatus.Railroad || it.roadStatus === roadType)
+                    }
 
             if (newTiles.contains(capitalTile)) return true
             tilesReached.addAll(tilesToCheck)
@@ -270,5 +284,4 @@ class CityStats {
         }
         return false
     }
-
 }

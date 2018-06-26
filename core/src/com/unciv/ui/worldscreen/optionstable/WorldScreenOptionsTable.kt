@@ -14,10 +14,10 @@ class WorldScreenOptionsTable internal constructor() : OptionsTable() {
             remove()
         }
 
-        addButton("Overview".tr()){
-            UnCivGame.Current.screen = EmpireOverviewScreen()
-            remove()
-        }
+//        addButton("Overview".tr()){
+//            UnCivGame.Current.screen = EmpireOverviewScreen()
+//            remove()
+//        }
 
         addButton("Load game".tr()){
             UnCivGame.Current.screen = LoadScreen()

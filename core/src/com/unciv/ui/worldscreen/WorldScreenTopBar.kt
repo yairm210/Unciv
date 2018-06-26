@@ -40,6 +40,11 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         pad(5f)
         pack()
         addActor(getMenuButton()) // needs to be after pack
+
+//        val button = TextButton("Overview",CameraStageBaseScreen.skin)
+//        button.center(this)
+//        button.x = screen.stage.width-button.width-10
+//        addActor(button)
     }
 
     private fun getResourceTable(): Table {
