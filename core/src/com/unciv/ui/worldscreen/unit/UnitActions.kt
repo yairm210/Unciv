@@ -49,7 +49,7 @@ class UnitActions {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }
 
-        if(unit.promotions.canBePromoted()){
+        if(unit.getBaseUnit().unitType!= UnitType.Civilian && unit.promotions.canBePromoted()){
                 actionList += UnitAction("Promote",
                         {UnCivGame.Current.screen = PromotionPickerScreen(unit)},
                         unit.currentMovement != 0f)
