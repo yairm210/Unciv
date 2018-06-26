@@ -7,12 +7,12 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.Counter
 import com.unciv.models.gamebasics.Civilization
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.Counter
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import kotlin.math.max
@@ -46,27 +46,41 @@ class CivilizationInfo {
 
 
     // negative gold hurts science
-    fun getStatsForNextTurn(): Stats {
-        val statsForTurn = Stats()
-        for (city in cities) statsForTurn.add(city.cityStats.currentCityStats)
-        statsForTurn.happiness = getHappinessForNextTurn().toFloat()
+    fun getStatsForNextTurn(): HashMap<String, Stats> {
+        val statMap = HashMap<String,Stats>()
+        for (city in cities){
+            for(entry in city.cityStats.baseStatList){
+                if(statMap.containsKey(entry.key))
+                    statMap[entry.key] = statMap[entry.key]!! + entry.value
+                else statMap[entry.key] = entry.value
+            }
+        }
 
-        val transportationUpkeep = getTransportationUpkeep()
-        statsForTurn.gold -= transportationUpkeep
+        for (entry in getHappinessForNextTurn()) {
+            if (!statMap.containsKey(entry.key))
+                statMap[entry.key] = Stats()
+            statMap[entry.key]!!.happiness += entry.value
+        }
 
-        val unitUpkeep = getUnitUpkeep()
-        statsForTurn.gold -= unitUpkeep
+        statMap.put("Transportation upkeep",Stats().apply { gold=- getTransportationUpkeep().toFloat()})
+        statMap.put("Unit upkeep",Stats().apply { gold=- getUnitUpkeep().toFloat()})
 
         if (policies.isAdopted("Mandate Of Heaven"))
-            statsForTurn.culture += statsForTurn.happiness / 2
 
-        if (statsForTurn.gold < 0) statsForTurn.science += statsForTurn.gold
+            if (!statMap.containsKey("Policies"))
+                statMap["Policies"] = Stats()
+            statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum()/ 2
+
 
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
-        if(statsForTurn.science<1) statsForTurn.science=1f
+        if (statMap.values.map { it.gold }.sum() < 0) {
+            val scienceDeficit = max(statMap.values.map { it.gold }.sum(),
+                    1 - statMap.values.map { it.science }.sum())// Leave at least 1
+            statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
+        }
 
-        return statsForTurn
+        return statMap
     }
 
     private fun getUnitUpkeep(): Int {
@@ -94,16 +108,27 @@ class CivilizationInfo {
     }
 
     // base happiness
-    fun getHappinessForNextTurn(): Int {
-        var happiness = 15
+    fun getHappinessForNextTurn(): HashMap<String, Int> {
+        val statMap = HashMap<String,Int>()
+        statMap["Base happiness"] = 15
+
         var happinessPerUniqueLuxury = 5
         if (policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
-        happiness += getCivResources().keys
+        statMap["Luxury resources"]= getCivResources().keys
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
-        happiness += cities.sumBy { it.cityStats.getCityHappiness().toInt() }
+
+        for(city in cities){
+            for(keyvalue in city.cityStats.getCityHappiness()){
+                if(statMap.containsKey(keyvalue.key))
+                    statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value.toInt()
+                else statMap[keyvalue.key] = keyvalue.value.toInt()
+            }
+        }
+
         if (buildingUniques.contains("Provides 1 happiness per social policy"))
-            happiness += policies.getAdoptedPolicies().count { !it.endsWith("Complete") }
-        return happiness
+            statMap["Policies"] = policies.getAdoptedPolicies().count { !it.endsWith("Complete") }
+
+        return statMap
     }
 
     fun getCivResources(): Counter<TileResource> {
@@ -143,14 +168,15 @@ class CivilizationInfo {
         }
     }
 
-
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
         newCity.cityConstructions.chooseNextConstruction()
     }
 
     fun endTurn() {
-        val nextTurnStats = getStatsForNextTurn()
+        val nextTurnStats = Stats()
+        for(stat in getStatsForNextTurn().values) nextTurnStats.add(stat)
+
         policies.endTurn(nextTurnStats.culture.toInt())
         gold += nextTurnStats.gold.toInt()
 
@@ -175,7 +201,7 @@ class CivilizationInfo {
         getViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         for (city in cities)
             city.cityStats.update()
-        happiness = getHappinessForNextTurn()
+        happiness = getHappinessForNextTurn().values.sum()
         getCivUnits().forEach { it.startTurn() }
     }
 

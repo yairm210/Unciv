@@ -25,11 +25,18 @@ open class Stats() {
         happiness += other.happiness
     }
 
+
     fun add(stat:Stat, value:Float): Stats {
         val hashMap = toHashMap()
         hashMap[stat] = hashMap[stat]!!+value
         setStats(hashMap)
         return this
+    }
+
+    operator fun plus(stat: Stats): Stats {
+        val clone = clone()
+        clone.add(stat)
+        return clone
     }
 
     fun clone(): Stats {

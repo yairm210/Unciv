@@ -121,7 +121,8 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
         turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ abs(year)+(if (year<0) " BCE" else " CE"))
 
-        val nextTurnStats = civInfo.getStatsForNextTurn()
+        val nextTurnStats = Stats()
+        for(stat in civInfo.getStatsForNextTurn().values) nextTurnStats.add(stat)
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + Math.round(nextTurnStats.gold) + ")"
         goldLabel.setText("" + Math.round(civInfo.gold.toFloat()) + goldPerTurn)
 

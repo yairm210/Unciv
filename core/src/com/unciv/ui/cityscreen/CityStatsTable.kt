@@ -30,12 +30,12 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         cityStatsValues["Production"] = Math.round(stats.production).toString() + city.cityConstructions.getAmountConstructedText()
         cityStatsValues["Food"] = (Math.round(stats.food).toString()
                 + " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")")
-        cityStatsValues["Gold"] = Math.round(stats.gold).toString() + ""
-        cityStatsValues["Science"] = Math.round(stats.science).toString() + ""
+        cityStatsValues["Gold"] = Math.round(stats.gold).toString()
+        cityStatsValues["Science"] = Math.round(stats.science).toString()
         cityStatsValues["Culture"] = (Math.round(stats.culture).toString()
                 + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")")
         cityStatsValues["Population"] = city.population.getFreePopulation().toString() + "/" + city.population.population
-        cityStatsValues["Happiness"] = city.cityStats.getCityHappiness().toInt().toString()
+        cityStatsValues["Happiness"] = city.cityStats.getCityHappiness().values.sum().toInt().toString()
 
         for (key in cityStatsValues.keys) {
             add(ImageGetter.getStatIcon(key)).align(Align.right)

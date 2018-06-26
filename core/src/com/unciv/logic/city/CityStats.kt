@@ -96,9 +96,9 @@ class CityStats {
     // needs to be a separate function because we need to know the global happiness state
     // in order to determine how much food is produced in a city!
     // -3 happiness per city
-    fun getCityHappiness(): Float {
+    fun getCityHappiness(): LinkedHashMap<String, Float> {
+        happinessList["Cities"] = -3f
         val civInfo = cityInfo.civInfo
-        var happiness = -3f
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
@@ -108,7 +108,6 @@ class CityStats {
             unhappinessFromCitizens *= 0.95f
 
         happinessList["Population"]=-unhappinessFromCitizens
-        happiness -= unhappinessFromCitizens
 
         var happinessFromPolicies = 0f
         if (civInfo.policies.isAdopted("Aristocracy"))
@@ -119,13 +118,11 @@ class CityStats {
             happinessFromPolicies += 1f
 
         happinessList["Policies"] = happinessFromPolicies
-        happiness += happinessFromPolicies
 
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         happinessList["Buildings"] =happinessFromBuildings
-        happiness += happinessFromBuildings
 
-        return happiness
+        return happinessList
     }
 
     private fun getStatsFromSpecialists(specialists: Stats, policies: HashSet<String>): Stats {
