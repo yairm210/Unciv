@@ -67,10 +67,10 @@ class CivilizationInfo {
 
         if (policies.isAdopted("Mandate Of Heaven"))
 
-            if (!statMap.containsKey("Policies"))
+            if (!statMap.containsKey("Policies")) {
                 statMap["Policies"] = Stats()
-            statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum()/ 2
-
+                statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum() / 2
+            }
 
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
