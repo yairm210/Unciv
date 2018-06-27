@@ -4,10 +4,13 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stats
+import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.WorldScreenOptionsTable
 import kotlin.math.abs
@@ -41,10 +44,11 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         pack()
         addActor(getMenuButton()) // needs to be after pack
 
-//        val button = TextButton("Overview",CameraStageBaseScreen.skin)
-//        button.center(this)
-//        button.x = screen.stage.width-button.width-10
-//        addActor(button)
+        val button = TextButton("Overview",CameraStageBaseScreen.skin)
+        button.addClickListener { UnCivGame.Current.screen = EmpireOverviewScreen() }
+        button.center(this)
+        button.x = screen.stage.width-button.width-10
+        addActor(button)
     }
 
     private fun getResourceTable(): Table {
