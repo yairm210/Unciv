@@ -8,6 +8,10 @@
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
+		Italian:"Lavoro..."
+		Russian:"Работает..."
+		French:"Travail..."
+		Romanian:"Lucru..."
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -1165,7 +1169,12 @@
 	
 	// Technologies (Ancient Era)
 	
-	"Agriculture":{}
+	"Agriculture":{
+		Italian:"Agricoltura"
+		Russian:"Земледелие"
+		French:"Agriculture"
+		Romanian:"Agricultură"
+	}
 	
 	"Pottery":{
 		Italian:"Ceramica"
@@ -1322,7 +1331,12 @@
 		Romanian:"Serviciu civil"
 		German:"Zivildienst"
 	}
-	"Guilds":{}
+	"Guilds":{
+		Italian:"Gilde"
+		Russian:"Гильдий"
+		French:"Guildes"
+		Romanian:"Bresle"
+	}
 	"Physics":{
 		Italian:"Fisica"
 		Russian:"Физика"
@@ -1330,7 +1344,12 @@
 		Romanian:"Fizică"
 		German:"Physik"
 	}
-	"Steel":{}
+	"Steel":{
+		Italian:"Acciaio"
+		Russian:"Сталь"
+		French:"Acier"
+		Romanian:"Oţel"
+	}
 	"Metal Casting":{
 		Italian:"colata di metallo"
 		Russian:"Литье"
@@ -1398,7 +1417,12 @@
 		Romanian:"Presă de tipar"
 		German:"Druckpresse"
 	}
-	"Gunpowder":{}
+	"Gunpowder":{
+		Italian:"Polvere da sparo"
+		Russian:"Порох"
+		French:"Poudre à canon"
+		Romanian:"Praf de puşcă"
+	}
 	"Navigation":{
 		Italian:"Navigazione"
 		Russian:"Навигация"
@@ -1421,7 +1445,12 @@
 		German:"Ökonomie"
 	}
 	
-	"Metallurgy":{}
+	"Metallurgy":{
+		Italian:"Metallurgia"
+		Russian:"Металлургия"
+		French:"Métallurgie"
+		Romanian:"Metalurgie"
+	}
 	
 	"Chemistry":{
 		Italian:"Chimica"
@@ -1441,9 +1470,24 @@
 		German:"Wissenschaftliche Thorie"
 	}
 	
-	"Industrialization":{}
-	"Rifling":{}
-	"Military Science":{}
+	"Industrialization":{
+		Italian:"Industrializzazione"
+		Russian:"Индустриализация"
+		French:"Industrialisation"
+		Romanian:"Industrializare"
+	}
+	"Rifling":{
+		Italian:"Rigatura"
+		Russian:"Нарезка"
+		French:"Rayeur"
+		Romanian:"Ghintuire"
+	}
+	"Military Science":{
+		Italian:""
+		Russian:""
+		French:""
+		Romanian:""
+	}
 	
 	"Fertilizer":{
 		Italian:"Fertilizzante"
@@ -1474,7 +1518,12 @@
 		German:"Dampfkraft"
 	}
 	
-	"Dynamite":{}
+	"Dynamite":{
+		Italian:"Dinamite"
+		Russian:"Динамит"
+		French:"Dynamiter"
+		Romanian:"Dinamită"
+	}
 	
 	
 	// Technologies (Modern Era)
@@ -1604,17 +1653,64 @@
 		German:"Zukünftige Technologien"
 	}
 	
-	"Who knows what the future holds?":{}
+	"Who knows what the future holds?":{
+		Italian:"Chi sa cosa riserva il futuro?"
+		Russian:"Кто знает, что ждет в будущем?"
+		French:"Qui sait ce que l'avenir réserve?"
+		Romanian:"Chi sa cosa riserva il futuro?"
+	}
 	
 	// Tech Eras
-	"Ancient":{}
-	"Classical":{}
-	"Medieval":{}
-	"Renaissance":{}
-	"Industrial":{}
-	"Modern":{}
-	"Information":{}
-	"Future":{}
+	// In case of foreign languages it becomes gender sensitive words
+	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
+	"Ancient":{
+		Italian:"Antica"
+		Russian:"Древняя"
+		French:"Ancien"
+		Romanian:"Antica"
+	}
+	"Classical":{
+		Italian:"Classica"
+		Russian:"Классическая"
+		French:"Classique"
+		Romanian:"Clasica"
+	}
+	"Medieval":{
+		Italian:"Medievale"
+		Russian:"Средневековье"
+		French:"Médiéval"
+		Romanian:"Medievala"
+	}
+	"Renaissance":{
+		Italian:"Rinascimento"
+		Russian:"Ренессанс"
+		French:"Renaissance"
+		Romanian:"Renaşterei"
+	}
+	"Industrial":{
+		Italian:"Industriale"
+		Russian:"Современная"
+		French:"Industriel"
+		Romanian:"Industriala"
+	}
+	"Modern":{
+		Italian:"Moderno"
+		Russian:"Современное"
+		French:"Moderne"
+		Romanian:"Moderna"
+	}
+	"Information":{
+		Italian:"Informatica"
+		Russian:"Информатическая"
+		French:"Information"
+		Romanian:"Informației"
+	}
+	"Future":{
+		Italian:"Futuro"
+		Russian:"Будущее"
+		French:"Avenir"
+		Romanian:"Viitor"
+	}
 	
 	// Building unique abilities
 	
@@ -1905,7 +2001,17 @@
 	}
 	
 	// Policy picker screen
-	"You have entered the [newEra] era!":{}
-	"[policyBranch] policy branch unlocked!":{} // EG Rationalism policy branch unlocked!
+	"You have entered the [newEra] era!":{
+		Italian:"Sei entrato nell'era [newEra]!"
+		Russian:"Вы вошли в эпоху [newEra]!"
+		French:"Vous êtes entré dans l'ère [newEra]!"
+		Romanian:"Ați intrat în epoca [newEra]!"
+	}
+	"[policyBranch] policy branch unlocked!":{
+		Italian:"[policyBranch] ramo della politica sbloccato!"
+		Russian:"[policyBranch] ветвь политики разблокирована!"
+		French:"[policyBranch] branche de la politique déverrouillée!"
+		Romanian:"[policyBranch] ramură de politică deblocată!"
+	} // EG Rationalism policy branch unlocked!
 	
 }
