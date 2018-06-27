@@ -35,6 +35,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Conduct Trade Mission" -> return ImageGetter.getUnitIcon("Great Merchant")
             "Construct Customs House" -> return ImageGetter.getImprovementIcon("Customs house")
             "Set up" -> return ImageGetter.getUnitIcon("Catapult")
+            "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit.png")
             else -> return ImageGetter.getImage("OtherIcons/Star.png")
         }
     }

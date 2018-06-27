@@ -10,7 +10,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
 
-class WorldScreenDisplayOptionsTable() : OptionsTable(){
+class WorldScreenDisplayOptionsTable() : PopupTable(){
     init {
         update()
     }

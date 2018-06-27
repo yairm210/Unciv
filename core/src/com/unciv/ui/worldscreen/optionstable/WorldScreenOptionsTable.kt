@@ -6,7 +6,7 @@ import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.tr
 
-class WorldScreenOptionsTable internal constructor() : OptionsTable() {
+class WorldScreenOptionsTable internal constructor() : PopupTable() {
 
     init {
         addButton("Civilopedia".tr()){

@@ -142,6 +142,13 @@
 		Romanian:"Sanatate"
 		German:"Gesundheit"
 	}
+	
+	"Disband unit":{}
+	
+	"Do you really want to disband this unit?":{}
+	"Yes":{}
+	"No":{}
+	
 
 	// Stats
 	"Gold":{

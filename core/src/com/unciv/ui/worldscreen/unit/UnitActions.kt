@@ -10,6 +10,7 @@ import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
 import kotlin.math.max
 
@@ -36,6 +37,7 @@ class UnitActions {
                 unitTable.currentlyExecutingAction = "moveTo"
             }, unit.currentMovement != 0f )
         }
+
         else {
             actionList +=
                     UnitAction("Stop movement", {
@@ -161,6 +163,12 @@ class UnitActions {
                     constructImprovementAndDestroyUnit(unit, "Customs house"),
                     unit.currentMovement != 0f)
         }
+
+        actionList += UnitAction("Disband unit",
+                {
+                    YesNoPopupTable("Do you really want to disband this unit?",
+                            {unit.removeFromTile(); worldScreen.update()} )
+                },unit.currentMovement != 0f)
 
         return actionList
     }

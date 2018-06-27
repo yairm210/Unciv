@@ -33,6 +33,7 @@ class CivilizationInfo {
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
+    @Transient var diplomacy = HashMap<String,DiplomacyManager>()
 
     var cities = ArrayList<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
@@ -65,12 +66,10 @@ class CivilizationInfo {
         statMap.put("Transportation upkeep",Stats().apply { gold=- getTransportationUpkeep().toFloat()})
         statMap.put("Unit upkeep",Stats().apply { gold=- getUnitUpkeep().toFloat()})
 
-        if (policies.isAdopted("Mandate Of Heaven"))
-
-            if (!statMap.containsKey("Policies")) {
-                statMap["Policies"] = Stats()
-                statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum() / 2
-            }
+        if (policies.isAdopted("Mandate Of Heaven")) {
+            if (!statMap.containsKey("Policies")) statMap["Policies"] = Stats()
+            statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum() / 2
+        }
 
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
@@ -244,12 +243,19 @@ class CivilizationInfo {
     }
 }
 
-//enum class DiplomaticStatus{
-//    Peace,
-//    War
-//}
-//
-//class DiplomacyManager {
-//    lateinit var otherCivName:String
-//    var status:DiplomaticStatus = DiplomaticStatus.Peace
-//}
+enum class DiplomaticStatus{
+    Peace,
+    War
+}
+
+class DiplomacyManager {
+    @Transient lateinit var civInfo:CivilizationInfo
+    lateinit var otherCivName:String
+    var status:DiplomaticStatus = DiplomaticStatus.Peace
+
+    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
+    fun declareWar(){
+        status = DiplomaticStatus.War
+        otherCiv().diplomacy[civInfo.civName]!!.status = DiplomaticStatus.War
+    }
+}
