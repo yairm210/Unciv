@@ -143,11 +143,31 @@
 		German:"Gesundheit"
 	}
 	
-	"Disband unit":{}
+	"Disband unit":{
+		Italian:"Disbandare"
+		Russian:"Расформировать"
+		French:"Dissoudre unité"
+		Romanian:"Desfaceți unitatea"
+	}
 	
-	"Do you really want to disband this unit?":{}
-	"Yes":{}
-	"No":{}
+	"Do you really want to disband this unit?":{
+		Italian:"Vuoi veramente sciogliere questa unità?"
+		Russian:"Вы действительно хотите распустить этот блок?"
+		French:"Voulez-vous vraiment dissoudre cette unité?"
+		Romanian:""
+	}
+	"Yes":{
+		Italian:"Si"
+		Russian:"Да"
+		French:"Oui"
+		Romanian:"Da"
+	}
+	"No":{
+		Italian:"No"
+		Russian:"Нет"
+		French:"Non"
+		Romanian:"Nu"
+	}
 	
 
 	// Stats
@@ -1684,14 +1704,14 @@
 	}
 	"Medieval":{
 		Italian:"Medievale"
-		Russian:"Средневековье"
+		Russian:"Средневековье" //one word translation
 		French:"Médiéval"
 		Romanian:"Medievala"
 	}
 	"Renaissance":{
-		Italian:"Rinascimento"
-		Russian:"Ренессанс"
-		French:"Renaissance"
+		Italian:"Rinascimento" //one word translation
+		Russian:"Ренессанс" //one word translation
+		French:"Renaissance" //one word translation
 		Romanian:"Renaşterei"
 	}
 	"Industrial":{
@@ -1701,21 +1721,21 @@
 		Romanian:"Industriala"
 	}
 	"Modern":{
-		Italian:"Moderno"
+		Italian:"Moderna"
 		Russian:"Современное"
 		French:"Moderne"
 		Romanian:"Moderna"
 	}
 	"Information":{
-		Italian:"Informatica"
-		Russian:"Информатическая"
+		Italian:"Informatica"     //[newEra] +translation
+		Russian:"Информатическая" //translation+ [newEra]
 		French:"Information"
 		Romanian:"Informației"
 	}
 	"Future":{
 		Italian:"Futuro"
-		Russian:"Будущее"
-		French:"Avenir"
+		Russian:"Будущее" //all one word translation
+		French:"Avenir" 
 		Romanian:"Viitor"
 	}
 	
