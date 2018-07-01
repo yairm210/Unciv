@@ -20,14 +20,13 @@ class LoadScreen : PickerScreen() {
     init {
         val saveTable = Table()
 
-
         val deleteSaveButton = TextButton("Delete save".tr(), CameraStageBaseScreen.skin)
         deleteSaveButton .addClickListener {
             GameSaver().deleteSave(selectedSave)
             UnCivGame.Current.screen = LoadScreen()
         }
         deleteSaveButton.disable()
-        rightSideGroup.addActor(deleteSaveButton)
+
 
         topTable.add(saveTable)
         val saves = GameSaver().getSaves()
@@ -56,7 +55,7 @@ class LoadScreen : PickerScreen() {
             saveTable.add(textButton).pad(5f).row()
         }
 
-        val loadFromClipboardTable = Table()
+        val rightSideTable = Table()
         val loadFromClipboardButton = TextButton("Load copied data".tr(),skin)
         val errorLabel = Label("",skin).setFontColor(Color.RED)
         loadFromClipboardButton.addClickListener {
@@ -70,17 +69,16 @@ class LoadScreen : PickerScreen() {
             }
         }
 
-        loadFromClipboardTable.add(loadFromClipboardButton).row()
-        loadFromClipboardTable.add(errorLabel)
-        topTable.add(loadFromClipboardTable)
+        rightSideTable.add(loadFromClipboardButton).row()
+        rightSideTable.add(errorLabel).row()
+        rightSideTable.add(deleteSaveButton)
+        topTable.add(rightSideTable)
 
         rightSideButton.addClickListener {
             UnCivGame.Current.loadGame(selectedSave)
         }
 
 
-
     }
 
 }
-
