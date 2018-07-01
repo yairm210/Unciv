@@ -134,6 +134,8 @@
 		Dutch:"Opstellen"
 	}
 	
+	"Upgrade to [unitType] ([goldCost] gold)":{} // EG Upgrade to Cannon (140 gold)
+	
 	"Found city":{
 		Italian:"Crea città"
 		Russian:"Создать город"

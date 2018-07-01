@@ -30,8 +30,8 @@ class YesNoPopupTable(question:String, action:()->Unit,
         val skin = CameraStageBaseScreen.skin
         add(Label(question,skin)).colspan(2).row()
 
-        add(TextButton("No",skin).apply { addClickListener { this@YesNoPopupTable.remove() } })
-        add(TextButton("Yes",skin).apply { addClickListener { this@YesNoPopupTable.remove(); action() } })
+        add(TextButton("No".tr(),skin).apply { addClickListener { this@YesNoPopupTable.remove() } })
+        add(TextButton("Yes".tr(),skin).apply { addClickListener { this@YesNoPopupTable.remove(); action() } })
         pack()
         center(screen.stage)
         screen.stage.addActor(this)

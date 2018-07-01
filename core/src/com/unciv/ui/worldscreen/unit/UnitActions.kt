@@ -9,6 +9,7 @@ import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
@@ -61,7 +62,7 @@ class UnitActions {
             val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
-                actionList += UnitAction("Upgrade to ${upgradedUnit.name} ($goldCostOfUpgrade gold)",
+                actionList += UnitAction("Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                         {
                             unit.civInfo.gold -= goldCostOfUpgrade
                             val unitTile = unit.getTile()
@@ -166,7 +167,7 @@ class UnitActions {
 
         actionList += UnitAction("Disband unit",
                 {
-                    YesNoPopupTable("Do you really want to disband this unit?",
+                    YesNoPopupTable("Do you really want to disband this unit?".tr(),
                             {unit.removeFromTile(); worldScreen.update()} )
                 },unit.currentMovement != 0f)
 

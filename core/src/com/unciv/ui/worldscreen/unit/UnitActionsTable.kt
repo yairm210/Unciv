@@ -14,7 +14,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
     fun getIconForUnitAction(unitAction:String): Image {
         if(unitAction.startsWith("Upgrade to")){
-            val unitToUpgradeTo = Regex("""Upgrade to (\S*)""").find(unitAction)!!.groups[1]!!.value
+            val unitToUpgradeTo = Regex("""Upgrade to \[(\S*)\]""").find(unitAction)!!.groups[1]!!.value
             return ImageGetter.getUnitIcon(unitToUpgradeTo)
         }
         when(unitAction){
