@@ -1,9 +1,6 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
@@ -61,7 +58,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     }
 
     private fun getCityInfoTable(civInfo: CivilizationInfo): Table {
-        val iconSize = 25f//if you set this too low, there is a chance that the tables will be misaligned
+        val iconSize = 20f//if you set this too low, there is a chance that the tables will be misaligned
         val padding = 5f
 
         val cityInfoTableIcons = Table(skin)
@@ -79,39 +76,18 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         cityInfoTableIcons.pack()
 
         val cityInfoTableDetails = Table(skin)
-        cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
+        cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
 
         for (city in civInfo.cities) {
             cityInfoTableDetails.add(city.name)
-
-            val population = Label(city.population.population.toString(), skin)
-            population.setAlignment(Align.center)
-            cityInfoTableDetails.add(population)
-
-            val food = Label(city.cityStats.currentCityStats.food.roundToInt().toString(), skin)
-            food.setAlignment(Align.center)
-            cityInfoTableDetails.add(food)
-
-            val gold = Label(city.cityStats.currentCityStats.gold.roundToInt().toString(), skin)
-            gold.setAlignment(Align.center)
-            cityInfoTableDetails.add(gold)
-
-            val science = Label(city.cityStats.currentCityStats.science.roundToInt().toString(), skin)
-            science.setAlignment(Align.center)
-            cityInfoTableDetails.add(science)
-
-            val production = Label(city.cityStats.currentCityStats.production.roundToInt().toString(), skin)
-            production.setAlignment(Align.center)
-            cityInfoTableDetails.add(production)
-
-            val culture = Label(city.cityStats.currentCityStats.culture.roundToInt().toString(), skin)
-            culture.setAlignment(Align.center)
-            cityInfoTableDetails.add(culture)
-
-            val happiness = Label(city.cityStats.currentCityStats.happiness.roundToInt().toString(), skin)
-            happiness.setAlignment(Align.center)
-            cityInfoTableDetails.add(happiness)
-
+            cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
+            cityInfoTableDetails.add(city.population.population.toString()).actor!!.setAlignment(Align.center)
+            cityInfoTableDetails.add(city.cityStats.currentCityStats.food.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            cityInfoTableDetails.add(city.cityStats.currentCityStats.gold.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            cityInfoTableDetails.add(city.cityStats.currentCityStats.science.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            cityInfoTableDetails.add(city.cityStats.currentCityStats.production.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            cityInfoTableDetails.add(city.cityStats.currentCityStats.culture.roundToInt().toString()).actor!!.setAlignment(Align.center)
+            cityInfoTableDetails.add(city.cityStats.currentCityStats.happiness.roundToInt().toString()).actor!!.setAlignment(Align.center)
             cityInfoTableDetails.row()
         }
         cityInfoTableDetails.pack()
@@ -124,30 +100,13 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         cityInfoTableTotal.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
 
         cityInfoTableTotal.add("Total")
-
-        val population = Label(civInfo.cities.sumBy { it.population.population }.toString(), skin)
-        population.setAlignment(Align.center)
-        cityInfoTableTotal.add(population)
-
+        cityInfoTableTotal.add(civInfo.cities.sumBy { it.population.population }.toString()).actor!!.setAlignment(Align.center)
         cityInfoTableTotal.add()//an intended empty space
-
-        val gold = Label(civInfo.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toString(), skin)
-        gold.setAlignment(Align.center)
-        cityInfoTableTotal.add(gold)
-
-        val science = Label(civInfo.cities.sumBy { it.cityStats.currentCityStats.science.toInt() }.toString(), skin)
-        science.setAlignment(Align.center)
-        cityInfoTableTotal.add(science)
-
+        cityInfoTableTotal.add(civInfo.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(civInfo.cities.sumBy { it.cityStats.currentCityStats.science.toInt() }.toString()).actor!!.setAlignment(Align.center)
         cityInfoTableTotal.add()//an intended empty space
-
-        val culture = Label(civInfo.cities.sumBy { it.cityStats.currentCityStats.culture.toInt() }.toString(), skin)
-        culture.setAlignment(Align.center)
-        cityInfoTableTotal.add(culture)
-
-        val happiness = Label(civInfo.cities.sumBy {  it.cityStats.currentCityStats.happiness.toInt() }.toString(), skin)
-        happiness.setAlignment(Align.center)
-        cityInfoTableTotal.add(happiness)
+        cityInfoTableTotal.add(civInfo.cities.sumBy { it.cityStats.currentCityStats.culture.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(civInfo.cities.sumBy {  it.cityStats.currentCityStats.happiness.toInt() }.toString()).actor!!.setAlignment(Align.center)
 
         cityInfoTableTotal.pack()
 
