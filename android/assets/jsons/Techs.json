@@ -190,7 +190,7 @@
 				name:"Education",
 				row:3,
 				prerequisites:["Theology","Civil Service"],
-				baseDescription:"Allows cities to convert production to science,"
+				baseDescription:"Enables conversion of city production to science"
 			},
 			{
 				name:"Chivalry",
@@ -201,7 +201,7 @@
 				name:"Machinery",
 				row:8,
 				prerequisites:["Guilds","Engineering"],
-				baseDescription:"Speeds movement speed on roads"
+				baseDescription:"Improves movement speed on roads"
 			},
 			{
 				name:"Physics",

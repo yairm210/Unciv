@@ -160,12 +160,13 @@
 		German:"Gesundheit"
 		Dutch:"Gezondheid"
 	}
-	
+
 	"Disband unit":{
 		Italian:"Disbandare"
 		Russian:"Расформировать"
 		French:"Dissoudre unité"
 		Romanian:"Desfaceți unitatea"
+		Dutch:"Eenheid opheffen"
 	}
 	
 	"Do you really want to disband this unit?":{
@@ -173,18 +174,21 @@
 		Russian:"Вы действительно хотите распустить этот блок?"
 		French:"Voulez-vous vraiment dissoudre cette unité?"
 		Romanian:""
+		Dutch:"Wil je echt deze eenheid opheffen"
 	}
 	"Yes":{
 		Italian:"Si"
 		Russian:"Да"
 		French:"Oui"
 		Romanian:"Da"
+		Dutch:"Ja"
 	}
 	"No":{
 		Italian:"No"
 		Russian:"Нет"
 		French:"Non"
 		Romanian:"Nu"
+		Dutch:"Nee"
 	}
 	
 
@@ -461,7 +465,7 @@
 		French:"Choisissez une technologie"
 		Romanian:"Alege o tehnologie"
 		German:"Technologie auswählen"
-		DUtch:"Technologie kiezen"
+		Dutch:"Technologie kiezen"
 	}
 	
 	"Pick a free tech":{
@@ -487,7 +491,7 @@
 		Russian:"Выберите [technology] как бесплатную технику"
 		French:"Choisissez [technology] comme technologie libre"
 		Romanian:"Alegeți [tehnology] ca tehnologie gratuită"
-		DUtch:"[technologie] kiezen als gratis technologie"
+		Dutch:"[technologie] kiezen als gratis technologie"
 	}
 
 	"Units enabled":{
@@ -1898,6 +1902,10 @@
 		Romanian:"Chi sa cosa riserva il futuro?"
 		Dutch:"Wie weet wat de toekomst inhoud?"
 	}
+	
+	"Improves movement speed on roads":{}
+	"Enables conversion of city production to science":{}
+	"Enables conversion of city production to gold":{}
 	
 	// Tech Eras
 	// In case of foreign languages it becomes gender sensitive words

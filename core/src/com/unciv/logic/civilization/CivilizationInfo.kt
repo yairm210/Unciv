@@ -33,7 +33,7 @@ class CivilizationInfo {
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
-    @Transient var diplomacy = HashMap<String,DiplomacyManager>()
+    //@Transient var diplomacy = HashMap<String,DiplomacyManager>()
 
     var cities = ArrayList<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
@@ -63,8 +63,8 @@ class CivilizationInfo {
             statMap[entry.key]!!.happiness += entry.value
         }
 
-        statMap.put("Transportation upkeep",Stats().apply { gold=- getTransportationUpkeep().toFloat()})
-        statMap.put("Unit upkeep",Stats().apply { gold=- getUnitUpkeep().toFloat()})
+        statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
+        statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
 
         if (policies.isAdopted("Mandate Of Heaven")) {
             if (!statMap.containsKey("Policies")) statMap["Policies"] = Stats()
@@ -243,19 +243,19 @@ class CivilizationInfo {
     }
 }
 
-enum class DiplomaticStatus{
-    Peace,
-    War
-}
-
-class DiplomacyManager {
-    @Transient lateinit var civInfo:CivilizationInfo
-    lateinit var otherCivName:String
-    var status:DiplomaticStatus = DiplomaticStatus.Peace
-
-    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
-    fun declareWar(){
-        status = DiplomaticStatus.War
-        otherCiv().diplomacy[civInfo.civName]!!.status = DiplomaticStatus.War
-    }
-}
+//enum class DiplomaticStatus{
+//    Peace,
+//    War
+//}
+//
+//class DiplomacyManager {
+//    @Transient lateinit var civInfo:CivilizationInfo
+//    lateinit var otherCivName:String
+//    var status:DiplomaticStatus = DiplomaticStatus.Peace
+//
+//    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
+//    fun declareWar(){
+//        status = DiplomaticStatus.War
+//        otherCiv().diplomacy[civInfo.civName]!!.status = DiplomaticStatus.War
+//    }
+//}
