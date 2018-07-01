@@ -42,7 +42,10 @@ class MapUnit {
 
         val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
                 .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=civInfo }
-        if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
+        if(enemyUnitsInWalkingDistance.isNotEmpty()) {
+            if (action != null && action!!.startsWith("moveTo")) action=null
+            return  // Don't you dare move.
+        }
 
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
