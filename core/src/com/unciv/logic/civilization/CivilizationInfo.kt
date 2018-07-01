@@ -237,9 +237,12 @@ class CivilizationInfo {
 
     fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
     fun getEra(): TechEra {
-        return tech.techsResearched.map { GameBasics.Technologies[it]!! }
+
+        val maxEraOfTech =  tech.techsResearched.map { GameBasics.Technologies[it]!! }
                 .map { it.era() }
-                .max()!!
+                .max()
+        if(maxEraOfTech!=null) return maxEraOfTech
+        else return TechEra.Ancient
     }
 }
 
