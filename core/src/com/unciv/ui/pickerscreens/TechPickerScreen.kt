@@ -24,7 +24,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = GameBasics.Technologies.keys
             .filter { civTech.canBeResearched(it) }.toHashSet()
-    private val LightBlue = Color.BLUE.cpy().lerp(Color.WHITE, 0.3f)
+    private val lightBlue = Color.BLUE.cpy().lerp(Color.WHITE, 0.3f)
     private val turnsToTech = GameBasics.Technologies.values.associateBy ({ it.name },{civTech.turnsToTech(it.name)})
 
     constructor(freeTechPick: Boolean, civInfo: CivilizationInfo) : this(civInfo) {
@@ -88,17 +88,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         for (techName in techNameToButton.keys) {
             val TB = techNameToButton[techName]!!
             when {
-                civTech.isResearched(techName) -> TB.color = Color.GREEN
-                techsToResearch.contains(techName) -> TB.color = LightBlue
+                civTech.isResearched(techName) && techName!="Future Tech" -> TB.color = Color.GREEN
+                techsToResearch.contains(techName) -> TB.color = lightBlue
                 researchableTechs.contains(techName) -> TB.color = Color.WHITE
                 else -> TB.color = Color.BLACK
             }
 
-            TB.isChecked = false
             var text = techName.tr()
 
             if (techName == selectedTech?.name) {
-                TB.isChecked = true
                 TB.color = TB.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
             }
 
@@ -106,7 +104,9 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 text += " (" + techsToResearch.indexOf(techName) + ")"
             }
 
-            if (!civTech.isResearched(techName)) text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
+            if (!civTech.isResearched(techName) || techName=="Future Tech")
+                text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
+
             TB.setText(text)
         }
     }
@@ -119,7 +119,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             return
         }
 
-        if (civTech.isResearched(tech.name)) {
+        if (civTech.isResearched(tech.name) && tech.name!="Future Tech") {
             rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()

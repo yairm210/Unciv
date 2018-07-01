@@ -11,6 +11,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.WorldScreen
 
 class NewGameScreen: PickerScreen(){
@@ -18,7 +19,7 @@ class NewGameScreen: PickerScreen(){
         val table = Table()
         table.skin= skin
 
-        table.add("Civilization: ")
+        table.add("Civilization:".tr())
         val civSelectBox = SelectBox<String>(skin)
         val civArray = Array<String>()
         GameBasics.Civilizations.keys.filterNot { it=="Barbarians" }.forEach{civArray.add(it)}
@@ -26,7 +27,7 @@ class NewGameScreen: PickerScreen(){
         civSelectBox.selected = civSelectBox.items.first()
         table.add(civSelectBox).pad(10f).row()
 
-        table.add("World size: ")
+        table.add("World size:".tr())
         val worldSizeToRadius=LinkedHashMap<String,Int>()
         worldSizeToRadius["Small"] = 10
         worldSizeToRadius["Medium"] = 20
@@ -39,7 +40,7 @@ class NewGameScreen: PickerScreen(){
         table.add(worldSizeSelectBox).pad(10f).row()
 
 
-        table.add("Number of enemies: ")
+        table.add("Number of enemies:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray=Array<Int>()
         (1..5).forEach { enemiesArray.add(it) }
@@ -48,11 +49,11 @@ class NewGameScreen: PickerScreen(){
         table.add(enemiesSelectBox).pad(10f).row()
 
         rightSideButton.enable()
-        rightSideButton.setText("Start game!")
+        rightSideButton.setText("Start game!".tr())
         rightSideButton.addClickListener {
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             rightSideButton.disable()
-            rightSideButton.setText("Working...")
+            rightSideButton.setText("Working...".tr())
 
             kotlin.concurrent.thread { // Creating a new game can tke a while and we don't want ANRs
                 newGame = GameStarter().startNewGame(

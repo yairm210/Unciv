@@ -57,7 +57,8 @@ class TechManager {
 
         // We finished it!
         techsInProgress.remove(currentTechnology)
-        techsToResearch.remove(currentTechnology)
+        if(currentTechnology!="Future Tech")
+            techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
         civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
 

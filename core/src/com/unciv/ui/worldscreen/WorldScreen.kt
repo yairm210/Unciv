@@ -122,7 +122,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             nextTurnButton.disable()
-            nextTurnButton.setText("Working...")
+            nextTurnButton.setText("Working...".tr())
 
             kotlin.concurrent.thread {
                 game.gameInfo.nextTurn()

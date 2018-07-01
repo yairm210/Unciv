@@ -294,6 +294,14 @@
 		German:"Aus ZWischenablage laden"
 		Dutch:"Gekopieerde data laden"
 	}
+	
+	// New game screen
+	
+	"Start game!":{}
+	"Civilization:":{}
+	"World size:":{}
+	"Number of enemies:":{}
+	
 
 	"Victory status":{
 		Italian:"Stato di vittoria"
