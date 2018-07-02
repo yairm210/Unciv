@@ -134,7 +134,12 @@
 		Dutch:"Opstellen"
 	}
 	
-	"Upgrade to [unitType] ([goldCost] gold)":{} // EG Upgrade to Cannon (140 gold)
+	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
+		Italian:"Esegui l'upgrade a [unitType] (oro [goldCost])"
+		Russian:"Обновите до [unitType] (золото [goldCost])"
+		French:"Mise à niveau vers [unitType] (goldCost) gold)"
+		Romanian:"Treceți la [unitType] (aurul [goldCost])"
+	}
 	
 	"Found city":{
 		Italian:"Crea città"
@@ -299,10 +304,30 @@
 	
 	// New game screen
 	
-	"Start game!":{}
-	"Civilization:":{}
-	"World size:":{}
-	"Number of enemies:":{}
+	"Start game!":{
+		Italian:"Inizia il gioco!"
+		Russian:"Начать игру!"
+		French:"Démarrer jeu!"
+		Romanian:"Incepe jocul!"
+	}
+	"Civilization:":{
+		Italian:"Civiltà:"
+		Russian:"Цивилизация:"
+		French:"Civilisation:"
+		Romanian:"Civilizaţie:"
+	}
+	"World size:":{
+		Italian:"Dimensione del mondo:"
+		Russian:"Размер мира"
+		French:"La taille du monde:"
+		Romanian:"Mărimea pamintului:"
+	}
+	"Number of enemies:":{
+		Italian:"Numero di nemici:"
+		Russian:"Количество врагов:"
+		French:"Nombre d'ennemis:"
+		Romanian:"Numărul de dușmani:"
+	}
 	
 
 	"Victory status":{
@@ -1913,9 +1938,24 @@
 		Dutch:"Wie weet wat de toekomst inhoud?"
 	}
 	
-	"Improves movement speed on roads":{}
-	"Enables conversion of city production to science":{}
-	"Enables conversion of city production to gold":{}
+	"Improves movement speed on roads":{
+		Italian:"Migliora la velocità di movimento sulle strade"
+		Russian:"Улучшает скорость передвижения по дорогам"
+		French:"Améliore la vitesse de déplacement sur les routes"
+		Romanian:"Îmbunătățește viteza de mișcare pe drumuri"
+	}
+	"Enables conversion of city production to science":{
+		Italian:"Consente la conversione della produzione di città in scienza"
+		Russian:"Обеспечивает преобразование городского производства в науку"
+		French:"Permet la conversion de la production de la ville en science"
+		Romanian:"Permite conversia producției în oraș la știință"
+	}
+	"Enables conversion of city production to gold":{
+		Italian:"Consente la conversione della produzione di città in oro"
+		Russian:"Позволяет конвертировать городское производство в золото"
+		French:"Permet la conversion de la production de la ville en or"
+		Romanian:"Permite conversia producției în oraș la aur"
+	}
 	
 	// Tech Eras
 	// In case of foreign languages it becomes gender sensitive words
