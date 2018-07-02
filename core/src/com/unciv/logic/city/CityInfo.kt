@@ -6,10 +6,10 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.Counter
 import com.unciv.models.stats.Stats
 import kotlin.math.min
 
@@ -43,6 +43,7 @@ class CityInfo {
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.tileResource
+            if(resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()){
                 if(resource.resourceType == ResourceType.Strategic) cityResources.add(resource, 2)
                 else cityResources.add(resource, 1)

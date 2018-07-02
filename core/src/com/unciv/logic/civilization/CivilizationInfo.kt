@@ -33,7 +33,7 @@ class CivilizationInfo {
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
-    //@Transient var diplomacy = HashMap<String,DiplomacyManager>()
+//    @Transient var diplomacy = HashMap<String,DiplomacyManager>()
 
     var cities = ArrayList<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
@@ -246,11 +246,11 @@ class CivilizationInfo {
     }
 }
 
-//enum class DiplomaticStatus{
-//    Peace,
-//    War
-//}
-//
+enum class DiplomaticStatus{
+    Peace,
+    War
+}
+
 //class DiplomacyManager {
 //    @Transient lateinit var civInfo:CivilizationInfo
 //    lateinit var otherCivName:String

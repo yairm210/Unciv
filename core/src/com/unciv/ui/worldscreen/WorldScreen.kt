@@ -2,9 +2,12 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.ui.TradeScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -25,6 +28,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val unitActionsTable = UnitActionsTable(this)
 
     private val techButton = TextButton("", CameraStageBaseScreen.skin)
+    val tradeButtons = Table()
     private val nextTurnButton = createNextTurnButton()
 
     private val notificationsScroll: NotificationsScroll
@@ -52,6 +56,16 @@ class WorldScreen : CameraStageBaseScreen() {
         stage.addActor(nextTurnButton)
         stage.addActor(techButton)
         stage.addActor(notificationsScroll)
+
+
+        tradeButtons.defaults().pad(5f)
+        for(civ in gameInfo.civilizations.filterNot { it.isPlayerCivilization()||it.isBarbarianCivilization() }){
+            val tb = TextButton(civ.civName,skin)
+            tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
+            tradeButtons.add(tb)
+        }
+        tradeButtons.pack()
+        stage.addActor(tradeButtons)
 
         bottomBar.width = stage.width
         stage.addActor(bottomBar)
@@ -100,6 +114,8 @@ class WorldScreen : CameraStageBaseScreen() {
 
         techButton.setSize(techButton.prefWidth, techButton.prefHeight)
         techButton.setPosition(10f, topBar.y - techButton.height - 5f)
+
+        tradeButtons.y = techButton.y - tradeButtons.height
     }
 
     private fun createNextTurnButton(): TextButton {

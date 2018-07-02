@@ -110,7 +110,11 @@ class Automation {
             val cities = cityInfo.civInfo.cities.size
 
             when {
-                !buildableNotWonders.isEmpty() -> currentConstruction = buildableNotWonders.first().name
+                buildableNotWonders.isNotEmpty() // if the civ is in the gold red-zone, build markets or somesuch
+                        && cityInfo.civInfo.getStatsForNextTurn().values.map { it.gold }.sum()<0
+                        && buildableNotWonders.any { it.gold>0 }
+                        -> currentConstruction = buildableNotWonders.first { it.gold>0 }.name
+                buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.first().name
                 militaryUnits==0 -> trainCombatUnit(cityInfo)
                 workers==0 -> currentConstruction = CityConstructions.Worker
                 militaryUnits<cities -> trainCombatUnit(cityInfo)
@@ -119,8 +123,7 @@ class Automation {
                 else -> trainCombatUnit(cityInfo)
             }
 
-            if (cityInfo.civInfo == cityInfo.civInfo.gameInfo.getPlayerCivilization())
-                cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
+            cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
         }
     }
 
