@@ -72,7 +72,7 @@ class UnitAutomation{
         }
 
         if (unit.name == "Worker") {
-            WorkerAutomation().automateWorkerAction(unit)
+            WorkerAutomation(unit).automateWorkerAction()
             return
         }
 

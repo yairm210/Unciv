@@ -60,7 +60,7 @@ class MapUnit {
             return
         }
 
-        if (action == "automation") WorkerAutomation().automateWorkerAction(this)
+        if (action == "automation") WorkerAutomation(this).automateWorkerAction()
     }
 
     private fun doPostTurnAction() {

@@ -110,7 +110,7 @@ class UnitActions {
                 actionList += UnitAction("Automate",
                         {
                             unit.action = "automation"
-                            WorkerAutomation().automateWorkerAction(unit)
+                            WorkerAutomation(unit).automateWorkerAction()
                         },unit.currentMovement != 0f
                 )
             }

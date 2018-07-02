@@ -1,10 +1,12 @@
 package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.Unit
@@ -41,6 +43,15 @@ class Automation {
             val policyToAdopt = adoptablePolicies.getRandom()
             civInfo.policies.adopt(policyToAdopt)
         }
+
+        // Order roads between cities if you can
+//        for(city in civInfo.cities.filter { it.population.population>3 && !it.isCapital()
+//                &&  !it.cityStats.isConnectedToCapital(RoadStatus.Road) }){
+//            val closestConnectedCity = civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(RoadStatus.Road) }
+//                    .minBy { HexMath().getDistance(city.location,it.location) }!!
+//            val pathToClosestCity = civInfo.gameInfo.tileMap.getShortestPathBetweenTwoTiles(city.getCenterTile(),closestConnectedCity.getCenterTile())
+//        }
+
 
         val rangedUnits = mutableListOf<MapUnit>()
         val meleeUnits = mutableListOf<MapUnit>()

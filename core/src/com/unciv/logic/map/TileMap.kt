@@ -5,6 +5,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
+import kotlin.math.abs
 
 class TileMap {
 
@@ -72,6 +73,17 @@ class TileMap {
                 tileInfo.unit=null
             }
         }
+    }
+
+    fun getShortestPathBetweenTwoTiles(from:TileInfo, to:TileInfo): ArrayList<TileInfo> {
+        val path = ArrayList<TileInfo>()
+        var currentTile = from
+        while(currentTile!=to){
+            path += currentTile
+            currentTile = currentTile.neighbors.minBy { abs(it.position.x-to.position.x)+abs(it.position.y-to.position.y) }!!
+        }
+        path+=to
+        return path
     }
 
 }
