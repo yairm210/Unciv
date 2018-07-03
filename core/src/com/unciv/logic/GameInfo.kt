@@ -38,7 +38,7 @@ class GameInfo {
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
-        for (civInfo in civilizations.filterNot { it==player }){
+        for (civInfo in civilizations.filterNot { it==player || it.isDefeated() }){
             civInfo.startTurn()
             Automation().automateCivMoves(civInfo)
         }

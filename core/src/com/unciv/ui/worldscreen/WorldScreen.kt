@@ -59,13 +59,14 @@ class WorldScreen : CameraStageBaseScreen() {
 
 
         tradeButtons.defaults().pad(5f)
-        for(civ in gameInfo.civilizations.filterNot { it.isPlayerCivilization()||it.isBarbarianCivilization() }){
+        for(civ in gameInfo.civilizations.filterNot { it.isPlayerCivilization() || it.isBarbarianCivilization() }){
             val tb = TextButton(civ.civName,skin)
             tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
             tradeButtons.add(tb)
         }
         tradeButtons.pack()
         stage.addActor(tradeButtons)
+        tradeButtons.isVisible=false
 
         bottomBar.width = stage.width
         stage.addActor(bottomBar)

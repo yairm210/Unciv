@@ -118,9 +118,10 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
 
         if(city.cityConstructions.isBuilt("Palace")){
             city.cityConstructions.builtBuildings.remove("Palace")
-            if(enemyCiv.cities.isEmpty()) {
+            if(enemyCiv.isDefeated()) {
                 gameInfo.getPlayerCivilization()
                         .addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
+                enemyCiv.getCivUnits().forEach { it.removeFromTile() }
             }
             else{
                 enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace

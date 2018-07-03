@@ -45,6 +45,7 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
 
     val table = Table(skin)
     val tradeText = Label("What do you have in mind?",skin)
+    val offerButton = TextButton("Offer trade",skin)
 
     init {
         val closeButton = TextButton("Close".tr(), skin)
@@ -55,12 +56,18 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
 
         val lowerTable = Table().apply { defaults().pad(10f) }
 
-        lowerTable.add(tradeText).row()
-        val offerButton = TextButton("Offer trade",skin)
+        lowerTable.add(tradeText).colspan(2).row()
+
         offerButton.addClickListener {
-            if(isTradeAcceptable(currentTrade)) tradeText.setText("That is acceptable.")
-            else tradeText.setText("I think not.")
+            if(offerButton.text.toString() == "Offer trade") {
+                if (isTradeAcceptable(currentTrade)){
+                    tradeText.setText("That is acceptable.")
+                    offerButton.setText("Accept")
+                }
+                else tradeText.setText("I think not.")
+            }
         }
+
         lowerTable.add(offerButton)
 
         lowerTable.pack()
@@ -97,14 +104,16 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
             val amountPerClick =
                     if(offer.key.type==TradeType.Gold) 50
                     else 1
-            if(offer.value>0) // for instance we have negative gold
+            if(offer.value>0)
                 tb.addClickListener {
                     val amountTransfered = min(amountPerClick, offer.value)
                     offers.add(offer.key,-amountTransfered)
                     correspondingOffers.add(offer.key,amountTransfered)
+                    offerButton.setText("Offer trade")
+                    tradeText.setText("What do you have in mind?")
                     update()
                 }
-            else tb.disable()
+            else tb.disable()  // for instance we have negative gold
             table.add(tb).row()
         }
         return table
