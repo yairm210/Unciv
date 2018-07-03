@@ -13,6 +13,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import kotlin.math.max
@@ -177,6 +178,19 @@ class CivilizationInfo {
         for(stat in getStatsForNextTurn().values) nextTurnStats.add(stat)
 
         policies.endTurn(nextTurnStats.culture.toInt())
+
+        if(gold < -100){
+            // disband units until there are none left OR the gold values are normal
+            val unitUpkeepBeforeDisbands = getUnitUpkeep()
+            var civMilitaryUnits = getCivUnits().filter { it.getBaseUnit().unitType!=UnitType.Civilian }
+            while(nextTurnStats.gold.toInt() - unitUpkeepBeforeDisbands + getUnitUpkeep() < 0
+                && civMilitaryUnits.isNotEmpty()){
+                val unitToDisband = civMilitaryUnits.first()
+                unitToDisband.removeFromTile()
+                civMilitaryUnits -= unitToDisband
+            }
+        }
+
         gold += nextTurnStats.gold.toInt()
 
         if (cities.size > 0) tech.nextTurn(nextTurnStats.science.toInt())
