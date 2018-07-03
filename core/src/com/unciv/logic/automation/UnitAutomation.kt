@@ -8,6 +8,7 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -79,6 +80,19 @@ class UnitAutomation{
 
         if(unit.name.startsWith("Great")) return // I don't know what to do with you yet.
 
+        val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
+
+        if(unit.getBaseUnit().upgradesTo!=null) {
+            val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
+            if (upgradedUnit.isBuildable(unit.civInfo)) {
+                val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
+                val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
+                if (upgradeAction != null && unit.civInfo.gold > goldCostOfUpgrade) {
+                    upgradeAction.action()
+                    return
+                }
+            }
+        }
 
         // Accompany settlers
         val closeTileWithSettler = unit.getDistanceToTiles().keys.firstOrNull{
