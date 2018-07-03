@@ -1,6 +1,7 @@
 package com.unciv.logic.automation
 
 import com.unciv.UnCivGame
+import com.unciv.logic.HexMath
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
@@ -145,6 +146,22 @@ class UnitAutomation{
             healUnit(unit)
             return
         }
+
+        // Focus all units without a specific target on the enemy city closest to one of our cities
+        val enemyCities = unit.civInfo.exploredTiles.map { unit.civInfo.gameInfo.tileMap[it] }
+                .filter { it.isCityCenter() && it.getOwner()!=unit.civInfo }
+        if(enemyCities.isNotEmpty() && unit.civInfo.cities.isNotEmpty()) {
+            val closestReachableEnemyCity = enemyCities
+                    .filter { unit.movementAlgs().canReach(it) }
+                    .minBy { city ->
+                        unit.civInfo.cities.map { HexMath().getDistance(city.position, it.getCenterTile().position) }.min()!!
+                    }
+            if (closestReachableEnemyCity != null) {
+                unit.movementAlgs().headTowards(closestReachableEnemyCity)
+                return
+            }
+        }
+
 
         // else, go to a random space
         randomWalk(unit)
