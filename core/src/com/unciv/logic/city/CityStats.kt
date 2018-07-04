@@ -257,10 +257,12 @@ class CityStats {
         baseStatList["Policies"]!!.food += getGrowthBonusFromPolicies() * excessFood
 
         val buildingsMaintainance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        baseStatList["Maintainance"] = Stats().apply { gold = -buildingsMaintainance }
+        baseStatList["Maintenance"] = Stats().apply { gold = -buildingsMaintainance }
 
         currentCityStats = Stats()
         for (stat in baseStatList.values) currentCityStats.add(stat)
+
+        if(currentCityStats.production<1) currentCityStats.production=1
     }
 
 

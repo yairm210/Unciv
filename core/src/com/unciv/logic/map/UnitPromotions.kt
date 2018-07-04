@@ -21,6 +21,6 @@ class UnitPromotions{
     fun getAvailablePromotions(): List<Promotion> {
         return GameBasics.UnitPromotions.values
                 .filter { unit.getBaseUnit().unitType.toString() in it.unitTypes && it.name !in promotions }
-                .filter { it.prerequisites.isEmpty() || it.prerequisites.all { p->p in promotions } }
+                .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
     }
 }
