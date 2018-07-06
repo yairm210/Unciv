@@ -193,6 +193,7 @@ class CivilizationInfo {
                 val unitToDisband = civMilitaryUnits.first()
                 unitToDisband.removeFromTile()
                 civMilitaryUnits -= unitToDisband
+                addNotification("Cannot provide unit upkeep for "+unitToDisband.name+" - unit has been disbanded!".tr(),null, Color.RED)
             }
         }
 
