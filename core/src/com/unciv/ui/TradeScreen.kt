@@ -6,7 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.models.Counter
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.utils.*
 import kotlin.math.min
@@ -20,7 +19,10 @@ enum class TradeType{
     City
 }
 
-data class TradeOffer(val name:String, val type:TradeType, val duration:Int) {
+data class TradeOffer(var name:String, var type:TradeType, var duration:Int, var amount:Int) {
+
+    constructor() : this("",TradeType.Gold,0,0) // so that the json deserializer can work
+
     fun getText(): String {
         var text = "{$name}"
         if(duration>0) text += " ($duration {turns})"
@@ -28,9 +30,27 @@ data class TradeOffer(val name:String, val type:TradeType, val duration:Int) {
     }
 }
 
-class TradeOffersList():Counter<TradeOffer>(){}
+class TradeOffersList:ArrayList<TradeOffer>(){
+    override fun add(element: TradeOffer): Boolean {
+        val equivalentOffer = firstOrNull { it.name==element.name&&it.type==element.type }
+        if(equivalentOffer==null){
+            super.add(element)
+            return true
+        }
+        equivalentOffer.amount += element.amount
+        if(equivalentOffer.amount==0) remove(equivalentOffer)
+        return true
+    }
+}
 
-class Trade(){
+class Trade{
+    fun reverse(): Trade {
+        val newTrade = Trade()
+        newTrade.theirOffers+=ourOffers.map { it.copy() }
+        newTrade.ourOffers+=theirOffers.map { it.copy() }
+        return newTrade
+    }
+
     val theirOffers = TradeOffersList()
     val ourOffers = TradeOffersList()
 }
@@ -66,6 +86,13 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
                 }
                 else tradeText.setText("I think not.")
             }
+            else if(offerButton.text.toString() == "Accept"){
+                civInfo.diplomacy[otherCivilization.civName]!!.trades.add(currentTrade)
+                otherCivilization.diplomacy[civInfo.civName]!!.trades.add(currentTrade.reverse())
+                val newTradeScreen = TradeScreen(otherCivilization)
+                UnCivGame.Current.screen = newTradeScreen
+                newTradeScreen.tradeText.setText("Pleasure doing business with you!")
+            }
         }
 
         lowerTable.add(offerButton)
@@ -81,34 +108,34 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
 
     fun update(){
         table.clear()
-        val ourAvailableOffersTable = ScrollPane(getTableOfOffers(ourAvailableOffers, currentTrade.ourOffers))
-        val ourOffersTable = ScrollPane(getTableOfOffers(currentTrade.ourOffers, ourAvailableOffers))
-        val theirOffersTable = ScrollPane(getTableOfOffers(currentTrade.theirOffers, theirAvailableOffers))
-        val theirAvailableOffersTable = ScrollPane(getTableOfOffers(theirAvailableOffers, currentTrade.theirOffers))
+        val ourAvailableOffersTable = getTableOfOffers(ourAvailableOffers, currentTrade.ourOffers)
+        val ourOffersTable = getTableOfOffers(currentTrade.ourOffers, ourAvailableOffers)
+        val theirOffersTable = getTableOfOffers(currentTrade.theirOffers, theirAvailableOffers)
+        val theirAvailableOffersTable = getTableOfOffers(theirAvailableOffers, currentTrade.theirOffers)
         table.add("Our items")
         table.add("Our trade offer")
         table.add(otherCivilization.civName+"'s trade offer")
         table.add(otherCivilization.civName+"'s items").row()
-        table.add(ourAvailableOffersTable).width(stage.width/4)
-        table.add(ourOffersTable).width(stage.width/4)
-        table.add(theirOffersTable).width(stage.width/4)
-        table.add(theirAvailableOffersTable).width(stage.width/4)
+        table.add(ourAvailableOffersTable).size(stage.width/4,stage.width/2)
+        table.add(ourOffersTable).size(stage.width/4,stage.width/2)
+        table.add(theirOffersTable).size(stage.width/4,stage.width/2)
+        table.add(theirAvailableOffersTable).size(stage.width/4,stage.width/2)
         table.pack()
         table.center(stage)
     }
 
-    fun getTableOfOffers(offers: TradeOffersList, correspondingOffers: TradeOffersList): Table {
+    fun getTableOfOffers(offers: TradeOffersList, correspondingOffers: TradeOffersList): ScrollPane {
         val table= Table(skin).apply { defaults().pad(5f) }
         for(offer in offers) {
-            val tb = TextButton(offer.key.name+" ("+offer.value+")",skin)
+            val tb = TextButton(offer.name+" ("+offer.amount+")",skin)
             val amountPerClick =
-                    if(offer.key.type==TradeType.Gold) 50
+                    if(offer.type==TradeType.Gold) 50
                     else 1
-            if(offer.value>0)
+            if(offer.amount>0)
                 tb.addClickListener {
-                    val amountTransfered = min(amountPerClick, offer.value)
-                    offers.add(offer.key,-amountTransfered)
-                    correspondingOffers.add(offer.key,amountTransfered)
+                    val amountTransferred = min(amountPerClick, offer.amount)
+                    offers += offer.copy(amount = -amountTransferred)
+                    correspondingOffers += offer.copy(amount = amountTransferred)
                     offerButton.setText("Offer trade")
                     tradeText.setText("What do you have in mind?")
                     update()
@@ -116,7 +143,7 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
             else tb.disable()  // for instance we have negative gold
             table.add(tb).row()
         }
-        return table
+        return ScrollPane(table)
     }
 
     fun getAvailableOffers(civInfo: CivilizationInfo): TradeOffersList {
@@ -124,28 +151,30 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
         for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
             val resourceTradeType = if(entry.key.resourceType==ResourceType.Luxury) TradeType.Luxury_Resource
                 else TradeType.Strategic_Resource
-            offers.add(TradeOffer(entry.key.name, resourceTradeType, 30), entry.value)
+            offers.add(TradeOffer(entry.key.name, resourceTradeType, 30, entry.value))
         }
-        offers.add(TradeOffer("Gold",TradeType.Gold,0),civInfo.gold)
+        offers.add(TradeOffer("Gold",TradeType.Gold,0,civInfo.gold))
         return offers
     }
 
     fun isTradeAcceptable(trade:Trade): Boolean {
-        val sumOfTheirOffers = trade.theirOffers.map { evaluateOffer(it.key,false)*it.value }.sum()
-        val sumOfOurOffers = trade.ourOffers.map { evaluateOffer(it.key,true)*it.value }.sum()
+        val sumOfTheirOffers = trade.theirOffers.map { evaluateOffer(it,false) }.sum()
+        val sumOfOurOffers = trade.ourOffers.map { evaluateOffer(it,true)}.sum()
         return sumOfOurOffers >= sumOfTheirOffers
     }
 
     fun evaluateOffer(offer:TradeOffer, otherCivIsRecieving:Boolean): Int {
         if(offer.type==TradeType.Gold) return 1
         if(offer.type == TradeType.Luxury_Resource){
-            if(!theirAvailableOffers.containsKey(offer)) // We want to take away their last luxury or give them one they don't have
-                return 250
-            if(!otherCivIsRecieving && !ourAvailableOffers.containsKey(offer)) return 250 // they're giving us a luxury we don't have yet
-            return 100 // this is useful only as a barter trade to other civs
+            var value = 100*offer.amount
+            if(!theirAvailableOffers.any { it.name==offer.name }) // We want to take away their last luxury or give them one they don't have
+                value += 250
+            else if(!otherCivIsRecieving && !ourAvailableOffers.any { it.name==offer.name })
+                value += 250 // they're giving us a luxury we don't have yet
+            return value // this is useful only as a barter trade to other civs
         }
         if(offer.type == TradeType.Strategic_Resource){
-            return 50
+            return 50 * offer.amount
         }
         return 1000 // Dunno what this is?
     }

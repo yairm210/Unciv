@@ -262,7 +262,7 @@ class CityStats {
         currentCityStats = Stats()
         for (stat in baseStatList.values) currentCityStats.add(stat)
 
-        if(currentCityStats.production<1) currentCityStats.production=1
+        if(currentCityStats.production<1) currentCityStats.production=1f
     }
 
 

@@ -15,7 +15,10 @@ import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stats
+import com.unciv.ui.Trade
+import com.unciv.ui.TradeType
 import com.unciv.ui.utils.getRandom
+import com.unciv.ui.utils.tr
 import kotlin.math.max
 import kotlin.math.pow
 
@@ -34,7 +37,7 @@ class CivilizationInfo {
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
-//    @Transient var diplomacy = HashMap<String,DiplomacyManager>()
+    var diplomacy = HashMap<String,DiplomacyManager>()
 
     var cities = ArrayList<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
@@ -134,6 +137,7 @@ class CivilizationInfo {
     fun getCivResources(): Counter<TileResource> {
         val civResources = Counter<TileResource>()
         for (city in cities) civResources.add(city.getCityResources())
+        for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
         return civResources
     }
 
@@ -155,6 +159,7 @@ class CivilizationInfo {
         goldenAges.civInfo = this
         policies.civInfo = this
         tech.civInfo = this
+        diplomacy.values.forEach { it.civInfo=this}
 
         for (unit in getCivUnits()) {
             unit.civInfo=this
@@ -207,6 +212,7 @@ class CivilizationInfo {
 
         goldenAges.endTurn(happiness)
         getCivUnits().forEach { it.endTurn() }
+        diplomacy.values.forEach{it.nextTurn()}
         gameInfo.updateTilesToCities()
     }
 
@@ -239,6 +245,18 @@ class CivilizationInfo {
         viewablePositions += getCivUnits()
                 .flatMap { it.getViewableTiles()} // Tiles within 2 tiles of units
         viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
+
+        val viewedCivs = viewablePositions
+                .flatMap { it.getUnits().map { u->u.civInfo }.union(listOf(it.getOwner())) }
+                .filterNotNull().filterNot { it==this }
+
+        for(otherCiv in viewedCivs)
+            if(!diplomacy.containsKey(otherCiv.civName)){
+                diplomacy[otherCiv.civName] = DiplomacyManager().apply { otherCivName=otherCiv.civName }
+                otherCiv.diplomacy[civName] = DiplomacyManager().apply { otherCivName=civName }
+                addNotification("We have encountered ["+otherCiv.civName+"]!".tr(),null, Color.GOLD)
+            }
+
         return viewablePositions.distinct()
     }
 
@@ -265,14 +283,40 @@ enum class DiplomaticStatus{
     War
 }
 
-//class DiplomacyManager {
-//    @Transient lateinit var civInfo:CivilizationInfo
-//    lateinit var otherCivName:String
-//    var status:DiplomaticStatus = DiplomaticStatus.Peace
-//
-//    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
+class DiplomacyManager {
+    @Transient lateinit var civInfo:CivilizationInfo
+    lateinit var otherCivName:String
+//    var status:DiplomaticStatus = DiplomaticStatus.War
+    var trades = ArrayList<Trade>()
+
+    fun resourcesFromTrade(): Counter<TileResource> {
+        val counter = Counter<TileResource>()
+        for(trade in trades){
+            for(offer in trade.ourOffers)
+                if(offer.type==TradeType.Strategic_Resource || offer.type==TradeType.Luxury_Resource)
+                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount)
+            for(offer in trade.theirOffers)
+                if(offer.type==TradeType.Strategic_Resource || offer.type==TradeType.Luxury_Resource)
+                    counter.add(GameBasics.TileResources[offer.name]!!,offer.amount)
+        }
+        return counter
+    }
+
+    fun nextTurn(){
+        for(trade in trades.toList()){ // Each civ lowers their own offers by 1. If we were to lower the enemies as well, the offers would date twice as fast!
+            for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 })
+                offer.duration--
+
+            if(trade.ourOffers.all { it.duration<=0 } && trade.theirOffers.all { it.duration<=0 }) {
+                trades.remove(trade)
+                civInfo.addNotification("One of our trades with [$otherCivName] has ended!".tr(),null, Color.YELLOW)
+            }
+        }
+    }
+
+    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
 //    fun declareWar(){
 //        status = DiplomaticStatus.War
 //        otherCiv().diplomacy[civInfo.civName]!!.status = DiplomaticStatus.War
 //    }
-//}
+}

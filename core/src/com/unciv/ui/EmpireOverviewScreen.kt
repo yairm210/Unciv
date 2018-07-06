@@ -1,32 +1,94 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.ui.utils.*
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 class EmpireOverviewScreen : CameraStageBaseScreen(){
-    init {
-        val civInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
-        val closeButton = TextButton("Close".tr(), skin)
 
+    val civInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
+    init {
+        val topTable = Table().apply { defaults().pad(10f) }
+        val centerTable=Table().apply {  defaults().pad(20f) }
+
+        val closeButton = TextButton("Close".tr(), skin)
         closeButton.addClickListener { UnCivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
-        stage.addActor(closeButton)
+        topTable.add(closeButton)
 
-        val table=Table()
-        table.defaults().pad(20f)
+        val setCityInfoButton = TextButton("Cities",skin)
+        val setCities = {
+            centerTable.clear()
+            centerTable.add(getCityInfoTable())
+            centerTable.pack()
+            centerTable.center(stage)
+        }
+        setCities()
+        setCityInfoButton.addClickListener(setCities)
+        topTable.add(setCityInfoButton)
 
-        table.add(getCityInfoTable(civInfo))
-        table.add(getHappinessTable(civInfo))
-        table.add(getGoldTable(civInfo))
-        table.center(stage)
-        stage.addActor(table)
+        val setStatsInfoButton = TextButton("Stats",skin)
+        setStatsInfoButton.addClickListener {
+            centerTable.clear()
+            centerTable.add(getHappinessTable())
+            centerTable.add(getGoldTable())
+            centerTable.pack()
+            centerTable.center(stage)
+        }
+        topTable.add(setStatsInfoButton)
+
+        val setCurrentTradesButton = TextButton("Trades",skin)
+        setCurrentTradesButton.addClickListener {
+            centerTable.clear()
+            centerTable.add(getTradesTable())
+            centerTable.pack()
+            centerTable.center(stage)
+        }
+        topTable.add(setCurrentTradesButton)
+
+        topTable.pack()
+        topTable.width = stage.width
+        topTable.y = stage.height-topTable.height
+
+        stage.addActor(topTable)
+        stage.addActor(centerTable)
     }
 
-    private fun getHappinessTable(civInfo: CivilizationInfo): Table {
+    private fun getTradesTable(): Table {
+        val tradesTable = Table()
+        for(diplomacy in civInfo.diplomacy.values)
+            for(trade in diplomacy.trades)
+                tradesTable.add(createTradeTable(trade,diplomacy.otherCivName)).row()
+
+        return tradesTable
+    }
+
+    private fun createTradeTable(trade:Trade, civName:String): Table {
+        val table = Table(skin)
+        table.defaults().pad(10f)
+        table.add(civInfo.civName)
+        table.add(civName).row()
+        val ourOffersStrings = trade.ourOffers.map { it.amount.toString()+" "+it.name +
+                (if (it.duration==0) "" else " ("+it.duration+" turns)") }
+        val theirOffersStrings = trade.theirOffers.map { it.amount.toString()+" "+it.name +
+                (if (it.duration==0) "" else " ("+it.duration+" turns)") }
+        for(i in 0 until max(trade.ourOffers.size,trade.theirOffers.size)){
+            if(ourOffersStrings.size>i) table.add(ourOffersStrings[i])
+            else table.add()
+            if(theirOffersStrings.size>i) table.add(theirOffersStrings[i])
+            else table.add()
+            table.row()
+        }
+        return table
+    }
+
+    private fun getHappinessTable(): Table {
         val happinessTable = Table(skin)
         happinessTable.defaults().pad(5f)
         happinessTable.add(Label("Happiness", skin).setFont(24)).colspan(2).row()
@@ -40,7 +102,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         return happinessTable
     }
 
-    private fun getGoldTable(civInfo: CivilizationInfo): Table {
+    private fun getGoldTable(): Table {
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
         goldTable.add(Label("Gold", skin).setFont(24)).colspan(2).row()
@@ -57,7 +119,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         return goldTable
     }
 
-    private fun getCityInfoTable(civInfo: CivilizationInfo): Table {
+    private fun getCityInfoTable(): Table {
         val iconSize = 20f//if you set this too low, there is a chance that the tables will be misaligned
         val padding = 5f
 

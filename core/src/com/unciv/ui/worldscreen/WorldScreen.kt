@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -27,7 +28,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val bottomBar = WorldScreenBottomBar(this)
     val unitActionsTable = UnitActionsTable(this)
 
-    private val techButton = TextButton("", CameraStageBaseScreen.skin)
+    private val techButton = TextButton("", CameraStageBaseScreen.skin).apply { color= Color.BLUE }
     val tradeButtons = Table()
     private val nextTurnButton = createNextTurnButton()
 
@@ -59,14 +60,8 @@ class WorldScreen : CameraStageBaseScreen() {
 
 
         tradeButtons.defaults().pad(5f)
-        for(civ in gameInfo.civilizations.filterNot { it.isPlayerCivilization() || it.isBarbarianCivilization() }){
-            val tb = TextButton(civ.civName,skin)
-            tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
-            tradeButtons.add(tb)
-        }
-        tradeButtons.pack()
         stage.addActor(tradeButtons)
-        tradeButtons.isVisible=false
+//        tradeButtons.isVisible=false
 
         bottomBar.width = stage.width
         stage.addActor(bottomBar)
@@ -86,6 +81,8 @@ class WorldScreen : CameraStageBaseScreen() {
         }
 
         updateTechButton()
+        updateTradeButtons()
+
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         minimap.update()
         minimap.y = bottomBar.height
@@ -104,6 +101,19 @@ class WorldScreen : CameraStageBaseScreen() {
         else if(civInfo.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
     }
 
+    private fun updateTradeButtons() {
+        tradeButtons.clear()
+        for(civ in gameInfo.civilizations.filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }){
+            if(!civInfo.diplomacy.containsKey(civ.civName)) continue
+            val tb = TextButton("Trade with [${civ.civName}]".tr(),skin)
+            tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
+            tradeButtons.add(tb).row()
+        }
+
+        tradeButtons.pack()
+        tradeButtons.y = techButton.y -20 - tradeButtons.height
+    }
+
     private fun updateTechButton() {
         techButton.isVisible = civInfo.cities.isNotEmpty()
 
@@ -115,8 +125,6 @@ class WorldScreen : CameraStageBaseScreen() {
 
         techButton.setSize(techButton.prefWidth, techButton.prefHeight)
         techButton.setPosition(10f, topBar.y - techButton.height - 5f)
-
-        tradeButtons.y = techButton.y - tradeButtons.height
     }
 
     private fun createNextTurnButton(): TextButton {
