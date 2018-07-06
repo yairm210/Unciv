@@ -89,6 +89,21 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
             else if(offerButton.text.toString() == "Accept"){
                 civInfo.diplomacy[otherCivilization.civName]!!.trades.add(currentTrade)
                 otherCivilization.diplomacy[civInfo.civName]!!.trades.add(currentTrade.reverse())
+
+                // instant transfers
+                for(offer in currentTrade.theirOffers){
+                    if(offer.type==TradeType.Gold){
+                        civInfo.gold += offer.amount
+                        otherCivilization.gold -= offer.amount
+                    }
+                }
+                for(offer in currentTrade.ourOffers){
+                    if(offer.type==TradeType.Gold){
+                        civInfo.gold -= offer.amount
+                        otherCivilization.gold += offer.amount
+                    }
+                }
+
                 val newTradeScreen = TradeScreen(otherCivilization)
                 UnCivGame.Current.screen = newTradeScreen
                 newTradeScreen.tradeText.setText("Pleasure doing business with you!")
@@ -164,7 +179,7 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
     }
 
     fun evaluateOffer(offer:TradeOffer, otherCivIsRecieving:Boolean): Int {
-        if(offer.type==TradeType.Gold) return 1
+        if(offer.type==TradeType.Gold) return offer.amount
         if(offer.type == TradeType.Luxury_Resource){
             var value = 100*offer.amount
             if(!theirAvailableOffers.any { it.name==offer.name }) // We want to take away their last luxury or give them one they don't have
