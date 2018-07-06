@@ -60,8 +60,10 @@ class WorkerAutomation(val unit: MapUnit) {
             return true
         }
 
-        val closestTileInPathWithNoRoad = pathToClosestCity.filter { unit.canMoveTo(it)}
-                .minBy { HexMath().getDistance(unit.getTile().position, it.position) }
+        val closestTileInPathWithNoRoad = pathToClosestCity
+                .filter { unit.canMoveTo(it)}
+                .sortedByDescending { HexMath().getDistance(unit.getTile().position, it.position) }
+                .firstOrNull { unit.movementAlgs().canReach(it) }
 
         if(closestTileInPathWithNoRoad==null) return false
         unit.movementAlgs().headTowards(closestTileInPathWithNoRoad)
