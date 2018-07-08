@@ -253,8 +253,8 @@ class CivilizationInfo {
 
         for(otherCiv in viewedCivs)
             if(!diplomacy.containsKey(otherCiv.civName)){
-                diplomacy[otherCiv.civName] = DiplomacyManager().apply { otherCivName=otherCiv.civName }
-                otherCiv.diplomacy[civName] = DiplomacyManager().apply { otherCivName=civName }
+                diplomacy[otherCiv.civName] = DiplomacyManager(this@CivilizationInfo,otherCiv.civName)
+                otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv,civName)
                 addNotification("We have encountered ["+otherCiv.civName+"]!".tr(),null, Color.GOLD)
             }
 
@@ -270,7 +270,6 @@ class CivilizationInfo {
 
     fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
     fun getEra(): TechEra {
-
         val maxEraOfTech =  tech.techsResearched.map { GameBasics.Technologies[it]!! }
                 .map { it.era() }
                 .max()
@@ -284,9 +283,14 @@ enum class DiplomaticStatus{
     War
 }
 
-class DiplomacyManager {
+class DiplomacyManager() {
     @Transient lateinit var civInfo:CivilizationInfo
     lateinit var otherCivName:String
+
+    constructor(civilizationInfo: CivilizationInfo, OtherCivName:String) : this() {
+        civInfo=civilizationInfo
+        otherCivName=OtherCivName
+    }
 //    var status:DiplomaticStatus = DiplomaticStatus.War
     var trades = ArrayList<Trade>()
 
@@ -315,7 +319,7 @@ class DiplomacyManager {
         }
     }
 
-    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
+    //fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
 //    fun declareWar(){
 //        status = DiplomaticStatus.War
 //        otherCiv().diplomacy[civInfo.civName]!!.status = DiplomaticStatus.War
