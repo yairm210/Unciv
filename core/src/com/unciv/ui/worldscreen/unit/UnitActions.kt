@@ -125,7 +125,8 @@ class UnitActions {
 
                     },unit.currentMovement != 0f)
             actionList += UnitAction("Construct Academy",
-                    constructImprovementAndDestroyUnit(unit, "Academy"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Academy"),
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
         if (unit.name == "Great Artist") {
@@ -136,7 +137,8 @@ class UnitActions {
                     },unit.currentMovement != 0f
             )
             actionList += UnitAction("Construct Landmark",
-                    constructImprovementAndDestroyUnit(unit, "Landmark"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Landmark"),
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
         if (unit.name == "Great Engineer") {
@@ -151,7 +153,8 @@ class UnitActions {
                     (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder)
 
             actionList += UnitAction("Construct Manufactory",
-                    constructImprovementAndDestroyUnit(unit, "Manufactory"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Manufactory"),
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
         if (unit.name == "Great Merchant") {
@@ -162,7 +165,7 @@ class UnitActions {
                     },unit.currentMovement != 0f)
             actionList += UnitAction( "Construct Customs House",
                     constructImprovementAndDestroyUnit(unit, "Customs house"),
-                    unit.currentMovement != 0f)
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
         actionList += UnitAction("Disband unit",
