@@ -215,4 +215,24 @@
 		]
 	]
 	
+	LuxuryResource:  [
+		[
+			"You have gained your first luxury resource!",
+			"Each unique Luxury resource you have adds 5 happiness to your civilization,",
+			"  but extra resources of the same type don't add anything, ",
+			"  so use them for trading with other civilizations!"
+		]
+	]
+	
+	StrategicResource:  [
+		[
+			"You have gained your first strategic resource!",
+			"Strategic resources allow you to train units and construct buildings that",
+			"  require those specific resources, for example the Horseman requires Horses."
+			"Each unit 'consumes' a copy of that resource, but if the unit is killed you can ",
+			"  construct a new unit wth your now-unused resource.",
+			"The top bar keeps count of how many unused strategic resources you own."
+		]
+	]
+	
 }

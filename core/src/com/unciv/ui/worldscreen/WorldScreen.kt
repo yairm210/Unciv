@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.TradeScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -184,19 +185,13 @@ class WorldScreen : CameraStageBaseScreen() {
             update()
 
             displayTutorials("NextTurn")
-
-            if(civInfo.cities.size > 2)
-                displayTutorials("SecondCity")
-
-            if(civInfo.happiness<0)
-                displayTutorials("Unhappiness")
-
-            if(civInfo.goldenAges.isGoldenAge())
-                displayTutorials("GoldenAge")
-
-            if(gameInfo.turns>=100)
-                displayTutorials("ContactMe")
-
+            if(civInfo.cities.size > 2) displayTutorials("SecondCity")
+            if(civInfo.happiness<0) displayTutorials("Unhappiness")
+            if(civInfo.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
+            if(gameInfo.turns>=100) displayTutorials("ContactMe")
+            val resources = civInfo.getCivResources()
+            if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
+            if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
             if(civInfo.exploredTiles.map { gameInfo.tileMap[it] }.any { it.isCityCenter() && it.getOwner()!=civInfo })
                 displayTutorials("EnemyCity")
 
