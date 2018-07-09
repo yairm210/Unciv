@@ -27,13 +27,25 @@ open class PopupTable: Table(){
 class YesNoPopupTable(question:String, action:()->Unit,
                       screen: CameraStageBaseScreen = UnCivGame.Current.worldScreen) : PopupTable(){
     init{
-        val skin = CameraStageBaseScreen.skin
-        add(Label(question,skin)).colspan(2).row()
+        if(!isOpen) {
+            isOpen=true
+            val skin = CameraStageBaseScreen.skin
+            add(Label(question, skin)).colspan(2).row()
 
-        add(TextButton("No".tr(),skin).apply { addClickListener { this@YesNoPopupTable.remove() } })
-        add(TextButton("Yes".tr(),skin).apply { addClickListener { this@YesNoPopupTable.remove(); action() } })
-        pack()
-        center(screen.stage)
-        screen.stage.addActor(this)
+            add(TextButton("No".tr(), skin).apply { addClickListener { close() } })
+            add(TextButton("Yes".tr(), skin).apply { addClickListener { close(); action() } })
+            pack()
+            center(screen.stage)
+            screen.stage.addActor(this)
+        }
+    }
+
+    fun close(){
+        remove()
+        isOpen=false
+    }
+
+    companion object {
+        var isOpen=false
     }
 }
