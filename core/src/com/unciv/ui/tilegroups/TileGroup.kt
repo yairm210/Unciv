@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -105,19 +106,21 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         fogImage.isVisible=!(isViewable || UnCivGame.Current.viewEntireMapForDebug)
     }
 
+    var previousTileOwner:CivilizationInfo?=null
     private fun updateBorderImages() {
         // This is longer than it could be, because of performance -
         // before fixing, about half (!) the time of update() was wasted on
         // removing all the border images and putting them back again!
         val tileOwner = tileInfo.getOwner()
-        if (tileOwner == null){
+        if (previousTileOwner!=tileOwner){
             for(images in borderImages.values)
                 for(image in images)
                     image.remove()
 
             borderImages.clear()
-            return
         }
+        previousTileOwner=tileOwner
+        if(tileOwner==null) return
 
         val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
         for (neighbor in tileInfo.neighbors) {
