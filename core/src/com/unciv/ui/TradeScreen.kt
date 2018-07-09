@@ -22,12 +22,6 @@ enum class TradeType{
 data class TradeOffer(var name:String, var type:TradeType, var duration:Int, var amount:Int) {
 
     constructor() : this("",TradeType.Gold,0,0) // so that the json deserializer can work
-
-    fun getText(): String {
-        var text = "{$name}"
-        if(duration>0) text += " ($duration {turns})"
-        return text.tr()
-    }
 }
 
 class TradeOffersList:ArrayList<TradeOffer>(){
@@ -64,8 +58,8 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
     val currentTrade = Trade()
 
     val table = Table(skin)
-    val tradeText = Label("What do you have in mind?",skin)
-    val offerButton = TextButton("Offer trade",skin)
+    val tradeText = Label("What do you have in mind?".tr(),skin)
+    val offerButton = TextButton("Offer trade".tr(),skin)
 
     init {
         val closeButton = TextButton("Close".tr(), skin)
@@ -79,14 +73,14 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
         lowerTable.add(tradeText).colspan(2).row()
 
         offerButton.addClickListener {
-            if(offerButton.text.toString() == "Offer trade") {
+            if(offerButton.text.toString() == "Offer trade".tr()) {
                 if (isTradeAcceptable(currentTrade)){
-                    tradeText.setText("That is acceptable.")
-                    offerButton.setText("Accept")
+                    tradeText.setText("That is acceptable.".tr())
+                    offerButton.setText("Accept".tr())
                 }
-                else tradeText.setText("I think not.")
+                else tradeText.setText("I think not.".tr())
             }
-            else if(offerButton.text.toString() == "Accept"){
+            else if(offerButton.text.toString() == "Accept".tr()){
                 civInfo.diplomacy[otherCivilization.civName]!!.trades.add(currentTrade)
                 otherCivilization.diplomacy[civInfo.civName]!!.trades.add(currentTrade.reverse())
 
@@ -106,7 +100,7 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
 
                 val newTradeScreen = TradeScreen(otherCivilization)
                 UnCivGame.Current.screen = newTradeScreen
-                newTradeScreen.tradeText.setText("Pleasure doing business with you!")
+                newTradeScreen.tradeText.setText("Pleasure doing business with you!".tr())
             }
         }
 
@@ -127,10 +121,10 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
         val ourOffersTable = getTableOfOffers(currentTrade.ourOffers, ourAvailableOffers)
         val theirOffersTable = getTableOfOffers(currentTrade.theirOffers, theirAvailableOffers)
         val theirAvailableOffersTable = getTableOfOffers(theirAvailableOffers, currentTrade.theirOffers)
-        table.add("Our items")
-        table.add("Our trade offer")
-        table.add(otherCivilization.civName+"'s trade offer")
-        table.add(otherCivilization.civName+"'s items").row()
+        table.add("Our items".tr())
+        table.add("Our trade offer".tr())
+        table.add("[${otherCivilization.civName}]'s trade offer".tr())
+        table.add("[${otherCivilization.civName}]'s items".tr()).row()
         table.add(ourAvailableOffersTable).size(stage.width/4,stage.width/2)
         table.add(ourOffersTable).size(stage.width/4,stage.width/2)
         table.add(theirOffersTable).size(stage.width/4,stage.width/2)
@@ -142,7 +136,9 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
     fun getTableOfOffers(offers: TradeOffersList, correspondingOffers: TradeOffersList): ScrollPane {
         val table= Table(skin).apply { defaults().pad(5f) }
         for(offer in offers) {
-            val tb = TextButton(offer.name+" ("+offer.amount+")",skin)
+            var buttonText = offer.name+" ("+offer.amount+")"
+            if(offer.duration>1) buttonText+="\n"+offer.duration+" {turns}".tr()
+            val tb = TextButton(buttonText,skin)
             val amountPerClick =
                     if(offer.type==TradeType.Gold) 50
                     else 1
@@ -151,8 +147,8 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
                     val amountTransferred = min(amountPerClick, offer.amount)
                     offers += offer.copy(amount = -amountTransferred)
                     correspondingOffers += offer.copy(amount = amountTransferred)
-                    offerButton.setText("Offer trade")
-                    tradeText.setText("What do you have in mind?")
+                    offerButton.setText("Offer trade".tr())
+                    tradeText.setText("What do you have in mind?".tr())
                     update()
                 }
             else tb.disable()  // for instance we have negative gold
@@ -168,7 +164,7 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
                 else TradeType.Strategic_Resource
             offers.add(TradeOffer(entry.key.name, resourceTradeType, 30, entry.value))
         }
-        offers.add(TradeOffer("Gold",TradeType.Gold,0,civInfo.gold))
+        offers.add(TradeOffer("Gold".tr(),TradeType.Gold,0,civInfo.gold))
         return offers
     }
 

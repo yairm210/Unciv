@@ -2361,4 +2361,17 @@
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
 	} // EG Rationalism policy branch unlocked!
 	
+	// Trade
+	"Trade with [otherCiv]":{}
+	"Offer trade":{}
+	"What do you have in mind?":{}
+	"Our items":{}
+	"Our trade offer":{}
+	"[otherCiv]'s trade offer":{}
+	"[otherCiv]'s items":{}
+	"Pleasure doing business with you!":{}
+	"I think not.":{}
+	"That is acceptable.":{}
+	"Accept":{}
+	
 }
