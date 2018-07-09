@@ -118,7 +118,7 @@
 			{
 				name:"Free Religion",
 				description:"+1 culture for each monument, temple and monastery. Gain a free policy.",
-				requires:["Mandate of Heaven","Reformation"]
+				requires:["Mandate Of Heaven","Reformation"]
 				row:3,
 				column:4
 			},
