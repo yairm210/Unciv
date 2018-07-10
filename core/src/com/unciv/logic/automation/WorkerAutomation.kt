@@ -113,12 +113,13 @@ class WorkerAutomation(val unit: MapUnit) {
     private fun chooseImprovement(tile: TileInfo): TileImprovement {
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress
-            tile.terrainFeature == "Forest" -> "Lumber mill"
             tile.terrainFeature == "Jungle" -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
-            tile.resource != null -> tile.tileResource.improvement
+            tile.terrainFeature == "Forest" &&
+                    (tile.resource == null || tile.getTileResource().improvement!="Camp") -> "Lumber mill"
+            tile.resource != null -> tile.getTileResource().improvement
             tile.baseTerrain == "Hill" -> "Mine"
-            tile.baseTerrain == "Grassland" || tile.baseTerrain == "Desert" || tile.baseTerrain == "Plains" -> "Farm"
+            tile.baseTerrain in listOf("Grassland","Desert","Plains") -> "Farm"
             tile.baseTerrain == "Tundra" -> "Trading post"
             else -> null
         }

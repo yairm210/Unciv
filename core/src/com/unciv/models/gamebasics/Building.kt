@@ -179,7 +179,7 @@ class Building : NamedStats(), IConstruction{
                     .any {
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                                && it.tileResource.improvement == it.improvement
+                                && it.getTileResource().improvement == it.improvement
                                 && it.getOwner() == civInfo
                     }
             if (!containsResourceWithImprovement) return false

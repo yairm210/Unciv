@@ -42,7 +42,7 @@ class CityInfo {
         val cityResources = Counter<TileResource>()
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
-            val resource = tileInfo.tileResource
+            val resource = tileInfo.getTileResource()
             if(resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()){
                 if(resource.resourceType == ResourceType.Strategic) cityResources.add(resource, 2)
