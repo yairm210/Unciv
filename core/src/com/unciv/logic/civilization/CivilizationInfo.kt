@@ -158,6 +158,9 @@ class CivilizationInfo {
     fun setTransients() {
         goldenAges.civInfo = this
         policies.civInfo = this
+        if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
+            policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
+
         tech.civInfo = this
         diplomacy.values.forEach { it.civInfo=this}
 

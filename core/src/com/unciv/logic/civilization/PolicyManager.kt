@@ -13,13 +13,13 @@ class PolicyManager {
     var freePolicies = 0
     var storedCulture = 0
     internal val adoptedPolicies = HashSet<String>()
+    var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5
     fun getCultureNeededForNextPolicy(): Int {
-        val basicPolicies = adoptedPolicies.count { !it.endsWith("Complete") }
-        var baseCost = 25 + Math.pow((basicPolicies * 6).toDouble(), 1.7)
+        var baseCost = 25 + Math.pow((numberOfAdoptedPolicies * 6).toDouble(), 1.7)
         var cityModifier = 0.3 * (civInfo.cities.size - 1)
         if (isAdopted("Representation")) cityModifier *= (2 / 3f).toDouble()
         if (isAdopted("Piety Complete")) baseCost *= 0.9
@@ -43,7 +43,10 @@ class PolicyManager {
 
         if(!branchCompletion) {
             if (freePolicies > 0) freePolicies--
-            else  storedCulture -= getCultureNeededForNextPolicy()
+            else  {
+                storedCulture -= getCultureNeededForNextPolicy()
+                numberOfAdoptedPolicies++
+            }
         }
 
         adoptedPolicies.add(policy.name)
