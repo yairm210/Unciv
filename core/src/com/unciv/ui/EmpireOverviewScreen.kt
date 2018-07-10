@@ -1,5 +1,6 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -61,7 +62,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     }
 
     private fun getTradesTable(): Table {
-        val tradesTable = Table()
+        val tradesTable = Table().apply { defaults().pad(10f) }
         for(diplomacy in civInfo.diplomacy.values)
             for(trade in diplomacy.trades)
                 tradesTable.add(createTradeTable(trade,diplomacy.otherCivName)).row()
@@ -71,6 +72,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun createTradeTable(trade:Trade, civName:String): Table {
         val table = Table(skin)
+        table.background = ImageGetter.getDrawable(ImageGetter.WhiteDot).tint(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         table.defaults().pad(10f)
         table.add(civInfo.civName)
         table.add(civName).row()
