@@ -95,6 +95,9 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             if(attacker is MapUnitCombatant) attacker.unit.promotions.XP += 2
             if(defender is MapUnitCombatant) defender.unit.promotions.XP += 2
         }
+
+        if(attacker is MapUnitCombatant && attacker.unit.action!=null && attacker.unit.action!!.startsWith("moveTo"))
+            attacker.unit.action=null
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
