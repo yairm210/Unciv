@@ -1,12 +1,10 @@
 package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.Unit
@@ -122,7 +120,7 @@ class Automation {
 
             when {
                 buildableNotWonders.isNotEmpty() // if the civ is in the gold red-zone, build markets or somesuch
-                        && cityInfo.civInfo.getStatsForNextTurn().values.map { it.gold }.sum()<0
+                        && cityInfo.civInfo.getStatsForNextTurn().gold <0
                         && buildableNotWonders.any { it.gold>0 }
                         -> currentConstruction = buildableNotWonders.first { it.gold>0 }.name
                 buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.first().name

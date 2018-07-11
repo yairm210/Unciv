@@ -109,7 +109,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         goldTable.defaults().pad(5f)
         goldTable.add(Label("Gold", skin).setFont(24)).colspan(2).row()
         var total=0f
-        for (entry in civInfo.getStatsForNextTurn()) {
+        for (entry in civInfo.getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key)
             goldTable.add(entry.value.gold.toString()).row()

@@ -61,6 +61,18 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
     val tradeText = Label("What do you have in mind?".tr(),skin)
     val offerButton = TextButton("Offer trade".tr(),skin)
 
+
+    val onChange = {
+        update()
+        offerButton.setText("Offer trade".tr())
+        tradeText.setText("What do you have in mind?".tr())
+    }
+
+    val ourAvailableOffersTable = OffersList(ourAvailableOffers, currentTrade.ourOffers) {onChange()}
+    val ourOffersTable = OffersList(currentTrade.ourOffers, ourAvailableOffers) {onChange()}
+    val theirOffersTable = OffersList(currentTrade.theirOffers, theirAvailableOffers) {onChange()}
+    val theirAvailableOffersTable = OffersList(theirAvailableOffers, currentTrade.theirOffers) {onChange()}
+
     init {
         val closeButton = TextButton("Close".tr(), skin)
         closeButton.addClickListener { UnCivGame.Current.setWorldScreen() }
@@ -98,9 +110,8 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
                     }
                 }
 
-                val newTradeScreen = TradeScreen(otherCivilization)
-                UnCivGame.Current.screen = newTradeScreen
-                newTradeScreen.tradeText.setText("Pleasure doing business with you!".tr())
+                update()
+                tradeText.setText("Pleasure doing business with you!".tr())
             }
         }
 
@@ -112,15 +123,6 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
         stage.addActor(lowerTable)
 
 
-        update()
-    }
-
-    fun update(){
-        table.clear()
-        val ourAvailableOffersTable = getTableOfOffers(ourAvailableOffers, currentTrade.ourOffers)
-        val ourOffersTable = getTableOfOffers(currentTrade.ourOffers, ourAvailableOffers)
-        val theirOffersTable = getTableOfOffers(currentTrade.theirOffers, theirAvailableOffers)
-        val theirAvailableOffersTable = getTableOfOffers(theirAvailableOffers, currentTrade.theirOffers)
         table.add("Our items".tr())
         table.add("Our trade offer".tr())
         table.add("[${otherCivilization.civName}]'s trade offer".tr())
@@ -131,30 +133,15 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
         table.add(theirAvailableOffersTable).size(stage.width/4,stage.width/2)
         table.pack()
         table.center(stage)
+
+        update()
     }
 
-    fun getTableOfOffers(offers: TradeOffersList, correspondingOffers: TradeOffersList): ScrollPane {
-        val table= Table(skin).apply { defaults().pad(5f) }
-        for(offer in offers) {
-            var buttonText = offer.name+" ("+offer.amount+")"
-            if(offer.duration>1) buttonText+="\n"+offer.duration+" {turns}".tr()
-            val tb = TextButton(buttonText,skin)
-            val amountPerClick =
-                    if(offer.type==TradeType.Gold) 50
-                    else 1
-            if(offer.amount>0)
-                tb.addClickListener {
-                    val amountTransferred = min(amountPerClick, offer.amount)
-                    offers += offer.copy(amount = -amountTransferred)
-                    correspondingOffers += offer.copy(amount = amountTransferred)
-                    offerButton.setText("Offer trade".tr())
-                    tradeText.setText("What do you have in mind?".tr())
-                    update()
-                }
-            else tb.disable()  // for instance we have negative gold
-            table.add(tb).row()
-        }
-        return ScrollPane(table)
+    fun update(){
+        ourAvailableOffersTable.update()
+        ourOffersTable.update()
+        theirAvailableOffersTable.update()
+        theirOffersTable.update()
     }
 
     fun getAvailableOffers(civInfo: CivilizationInfo): TradeOffersList {
@@ -165,6 +152,7 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
             offers.add(TradeOffer(entry.key.name, resourceTradeType, 30, entry.value))
         }
         offers.add(TradeOffer("Gold".tr(),TradeType.Gold,0,civInfo.gold))
+        offers.add(TradeOffer("Gold per turn".tr(),TradeType.Gold_Per_Turn,30,civInfo.getStatsForNextTurn().gold.toInt()))
         return offers
     }
 
@@ -175,18 +163,54 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
     }
 
     fun evaluateOffer(offer:TradeOffer, otherCivIsRecieving:Boolean): Int {
-        if(offer.type==TradeType.Gold) return offer.amount
-        if(offer.type == TradeType.Luxury_Resource){
-            var value = 100*offer.amount
-            if(!theirAvailableOffers.any { it.name==offer.name }) // We want to take away their last luxury or give them one they don't have
-                value += 250
-            else if(!otherCivIsRecieving && !ourAvailableOffers.any { it.name==offer.name })
-                value += 250 // they're giving us a luxury we don't have yet
-            return value // this is useful only as a barter trade to other civs
+        when(offer.type) {
+            TradeType.Gold -> return offer.amount
+            TradeType.Gold_Per_Turn -> return offer.amount*offer.duration
+            TradeType.Luxury_Resource -> {
+                var value = 100*offer.amount
+                if(!theirAvailableOffers.any { it.name==offer.name }) // We want to take away their last luxury or give them one they don't have
+                    value += 250
+                else if(!otherCivIsRecieving && !ourAvailableOffers.any { it.name==offer.name })
+                    value += 250 // they're giving us a luxury we don't have yet
+                return value // this is useful only as a barter trade to other civs
+            }
+            TradeType.Strategic_Resource -> return 50 * offer.amount
+        // Dunno what this is?
+            else -> return 1000
         }
-        if(offer.type == TradeType.Strategic_Resource){
-            return 50 * offer.amount
-        }
-        return 1000 // Dunno what this is?
+
     }
+}
+
+class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffersList,
+                 val onChange: () -> Unit) : ScrollPane(null) {
+    val table= Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
+    init {
+        update()
+    }
+
+
+    fun update() {
+        table.clear()
+        for(offer in offers.sortedBy { it.type }) {
+            var buttonText = offer.name+" ("+offer.amount+")"
+            if(offer.duration>1) buttonText+="\n"+offer.duration+" {turns}".tr()
+            val tb = TextButton(buttonText, CameraStageBaseScreen.skin)
+            val amountPerClick =
+                    if(offer.type==TradeType.Gold) 50
+                    else 1
+            if(offer.amount>0)
+                tb.addClickListener {
+                    val amountTransferred = min(amountPerClick, offer.amount)
+                    offers += offer.copy(amount = -amountTransferred)
+                    correspondingOffers += offer.copy(amount = amountTransferred)
+                    onChange()
+                    update()
+                }
+            else tb.disable()  // for instance we have negative gold
+            table.add(tb).row()
+        }
+        widget = table
+    }
+
 }

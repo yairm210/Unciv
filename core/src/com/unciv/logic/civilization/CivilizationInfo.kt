@@ -49,9 +49,11 @@ class CivilizationInfo {
     fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
 
+    fun getStatsForNextTurn():Stats{
+        return getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
+    }
 
-    // negative gold hurts science
-    fun getStatsForNextTurn(): HashMap<String, Stats> {
+    fun getStatMapForNextTurn(): HashMap<String, Stats> {
         val statMap = HashMap<String,Stats>()
         for (city in cities){
             for(entry in city.cityStats.baseStatList){
@@ -75,6 +77,7 @@ class CivilizationInfo {
             statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum() / 2
         }
 
+        // negative gold hurts science
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
         if (statMap.values.map { it.gold }.sum() < 0) {
@@ -82,6 +85,9 @@ class CivilizationInfo {
                     1 - statMap.values.map { it.science }.sum())// Leave at least 1
             statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
         }
+        val goldDifferenceFromTrade = diplomacy.values.sumBy { it.goldPerTurn() }
+        if(goldDifferenceFromTrade!=0)
+            statMap["Trade"] = Stats().apply { gold= goldDifferenceFromTrade.toFloat() }
 
         return statMap
     }
@@ -182,8 +188,7 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
-        val nextTurnStats = Stats()
-        for(stat in getStatsForNextTurn().values) nextTurnStats.add(stat)
+        val nextTurnStats = getStatsForNextTurn()
 
         policies.endTurn(nextTurnStats.culture.toInt())
 
@@ -296,6 +301,17 @@ class DiplomacyManager() {
     }
 //    var status:DiplomaticStatus = DiplomaticStatus.War
     var trades = ArrayList<Trade>()
+
+    fun goldPerTurn():Int{
+        var goldPerTurnForUs = 0
+        for(trade in trades) {
+            for (offer in trade.ourOffers.filter { it.type == TradeType.Gold_Per_Turn })
+                goldPerTurnForUs -= offer.amount
+            for (offer in trade.theirOffers.filter { it.type == TradeType.Gold_Per_Turn })
+                goldPerTurnForUs += offer.amount
+        }
+        return goldPerTurnForUs
+    }
 
     fun resourcesFromTrade(): Counter<TileResource> {
         val counter = Counter<TileResource>()
