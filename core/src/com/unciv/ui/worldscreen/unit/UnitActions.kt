@@ -69,6 +69,7 @@ class UnitActions {
                             unit.removeFromTile()
                             val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
                             newunit.health = unit.health
+                            newunit.promotions = unit.promotions
                             newunit.currentMovement=0f
                         },
                         unit.civInfo.gold >= goldCostOfUpgrade
