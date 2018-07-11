@@ -135,6 +135,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         goldLabel.setText("" + Math.round(civInfo.gold.toFloat()) + goldPerTurn)
 
         scienceLabel.setText("+" + Math.round(nextTurnStats.science))
+
         happinessLabel.setText(getHappinessText(civInfo))
 
         if (civInfo.happiness < 0) {
@@ -159,7 +160,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     }
 
     private fun getHappinessText(civInfo: CivilizationInfo): String {
-        var happinessText = civInfo.happiness.toString()
+        var happinessText = civInfo.getHappinessForNextTurn().values.sum().toString()
         if (civInfo.goldenAges.isGoldenAge())
             happinessText += " GOLDEN AGE (${civInfo.goldenAges.turnsLeftForCurrentGoldenAge})"
         else

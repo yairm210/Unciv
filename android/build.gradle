@@ -22,7 +22,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 98
-        versionName "2.6.1"
+        versionName "2.6.2"
     }
     buildTypes {
         release {
