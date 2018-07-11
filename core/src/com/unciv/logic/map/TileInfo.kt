@@ -157,18 +157,23 @@ open class TileInfo {
 
     override fun toString(): String {
         val SB = StringBuilder()
+        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
+                || UnCivGame.Current.viewEntireMapForDebug
+
         if (isCityCenter()) {
             val city = getCity()!!
-            SB.appendln(city.name+ " ("+city.health+"),\r\n" + city.cityConstructions.getProductionForTileInfo())
+            var cityString = city.name
+            if(isViewableToPlayer) cityString += " ("+city.health+")"
+            SB.appendln(cityString)
+            if(city.civInfo.isPlayerCivilization() || UnCivGame.Current.viewEntireMapForDebug)
+                SB.appendln(city.cityConstructions.getProductionForTileInfo())
         }
         SB.appendln(this.baseTerrain.tr())
         if (terrainFeature != null) SB.appendln(terrainFeature!!.tr())
         if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!.tr())
         if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus.toString().tr())
         if (improvement != null) SB.appendln(improvement!!.tr())
-        if (improvementInProgress != null) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
-        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
-            || UnCivGame.Current.viewEntireMapForDebug
+        if (improvementInProgress != null && isViewableToPlayer) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
         if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name)
         if(militaryUnit!=null && isViewableToPlayer){
             var milUnitString = militaryUnit!!.name
