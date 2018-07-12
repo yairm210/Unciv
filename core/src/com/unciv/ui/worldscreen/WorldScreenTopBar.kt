@@ -160,7 +160,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     }
 
     private fun getHappinessText(civInfo: CivilizationInfo): String {
-        var happinessText = civInfo.getHappinessForNextTurn().values.sum().toString()
+        var happinessText = civInfo.happiness.toString()
         if (civInfo.goldenAges.isGoldenAge())
             happinessText += " GOLDEN AGE (${civInfo.goldenAges.turnsLeftForCurrentGoldenAge})"
         else
