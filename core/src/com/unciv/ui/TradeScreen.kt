@@ -110,8 +110,10 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
                     }
                 }
 
-                update()
-                tradeText.setText("Pleasure doing business with you!".tr())
+                val newTradeScreen = TradeScreen(otherCivilization)
+                newTradeScreen.tradeText.setText("Pleasure doing business with you!".tr())
+                UnCivGame.Current.screen = newTradeScreen
+
             }
         }
 
