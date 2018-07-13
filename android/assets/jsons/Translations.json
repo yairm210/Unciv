@@ -812,6 +812,8 @@
 		German:"Die Zivilisation [civName] wurde vernichtet!"
 		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
 	}
+	
+	"A [greatPerson] has been born!":{}
 
 	
 	// Save and load game

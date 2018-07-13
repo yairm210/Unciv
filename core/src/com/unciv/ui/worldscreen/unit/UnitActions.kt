@@ -58,7 +58,7 @@ class UnitActions {
                         unit.currentMovement != 0f)
         }
 
-        if(unit.getBaseUnit().upgradesTo!=null) {
+        if(unit.getBaseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
             val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
