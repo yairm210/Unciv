@@ -326,8 +326,24 @@ class DiplomacyManager() {
         return counter
     }
 
+    fun removeUntenebleTrades(){
+        val negativeCivResources = civInfo.getCivResources().filter { it.value<0 }.map { it.key.name }
+        for(trade in trades.toList()) {
+            for (offer in trade.ourOffers) {
+                if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
+                    && offer.name in negativeCivResources){
+                    trades.remove(trade)
+                    val otherCivTrades = otherCiv().diplomacy[civInfo.civName]!!.trades
+                    otherCivTrades.removeAll{ it.equals(trade.reverse()) }
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short!".tr(),null, Color.GOLD)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short!".tr(),null, Color.GOLD)
+                }
+            }
+        }
+    }
+
     fun nextTurn(){
-        for(trade in trades.toList()){ // Each civ lowers their own offers by 1. If we were to lower the enemies as well, the offers would date twice as fast!
+        for(trade in trades.toList()){
             for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 })
                 offer.duration--
 
@@ -336,9 +352,10 @@ class DiplomacyManager() {
                 civInfo.addNotification("One of our trades with [$otherCivName] has ended!".tr(),null, Color.YELLOW)
             }
         }
+        removeUntenebleTrades()
     }
 
-    //fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
+    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
 //    fun declareWar(){
 //        status = DiplomaticStatus.War
 //        otherCiv().diplomacy[civInfo.civName]!!.status = DiplomaticStatus.War

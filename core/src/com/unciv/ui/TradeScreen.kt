@@ -8,6 +8,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.utils.*
+import java.util.*
 import kotlin.math.min
 
 
@@ -22,6 +23,12 @@ enum class TradeType{
 data class TradeOffer(var name:String, var type:TradeType, var duration:Int, var amount:Int) {
 
     constructor() : this("",TradeType.Gold,0,0) // so that the json deserializer can work
+
+    fun equals(offer:TradeOffer): Boolean {
+        return offer.name==name
+                && offer.type==type
+                && offer.amount==amount
+    }
 }
 
 class TradeOffersList:ArrayList<TradeOffer>(){
@@ -47,6 +54,19 @@ class Trade{
 
     val theirOffers = TradeOffersList()
     val ourOffers = TradeOffersList()
+
+    fun equals(trade:Trade):Boolean{
+       if(trade.ourOffers.size!=ourOffers.size
+           || trade.theirOffers.size!=theirOffers.size) return false
+
+        for(offer in trade.ourOffers)
+            if(ourOffers.none { it.equals(offer)})
+                return false
+        for(offer in trade.theirOffers)
+            if(theirOffers.none { it.equals(offer)})
+                return false
+        return true
+    }
 }
 
 
