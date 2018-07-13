@@ -192,7 +192,7 @@ class CivilizationInfo {
 
         policies.endTurn(nextTurnStats.culture.toInt())
 
-        if(gold < -100){
+        if(!isBarbarianCivilization() && gold < -100){
             // disband units until there are none left OR the gold values are normal
             val unitUpkeepBeforeDisbands = getUnitUpkeep()
             var civMilitaryUnits = getCivUnits().filter { it.getBaseUnit().unitType!=UnitType.Civilian }
