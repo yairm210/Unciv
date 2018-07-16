@@ -77,7 +77,16 @@ class MapUnit {
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
         when {
-            tile.improvementInProgress!!.startsWith("Remove") -> tile.terrainFeature = null
+            tile.improvementInProgress!!.startsWith("Remove") -> {
+                val tileImprovement = tile.tileImprovement
+                if(tileImprovement!=null
+                        && tileImprovement.terrainsCanBeBuiltOn.contains(tile.terrainFeature)
+                        && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
+                    tile.improvement = null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
+                }
+
+                tile.terrainFeature = null
+            }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
             else -> tile.improvement = tile.improvementInProgress
