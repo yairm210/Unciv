@@ -106,11 +106,16 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
 
         offerButton.addClickListener {
             if(offerButton.text.toString() == "Offer trade".tr()) {
-                if (isTradeAcceptable(currentTrade)){
+                if(currentTrade.theirOffers.size==0 && currentTrade.ourOffers.size==0){
+                    tradeText.setText("There's nothing on the table.".tr())
+                }
+                else if (isTradeAcceptable(currentTrade)){
                     tradeText.setText("That is acceptable.".tr())
                     offerButton.setText("Accept".tr())
                 }
-                else tradeText.setText("I think not.".tr())
+                else{
+                    tradeText.setText("I think not.".tr())
+                }
             }
             else if(offerButton.text.toString() == "Accept".tr()){
                 civInfo.diplomacy[otherCivilization.civName]!!.trades.add(currentTrade)
