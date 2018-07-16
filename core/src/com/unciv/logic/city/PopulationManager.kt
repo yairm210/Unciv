@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
+import kotlin.math.roundToInt
 
 class PopulationManager {
 
@@ -41,13 +42,17 @@ class PopulationManager {
 
 
     fun nextTurn(food: Float) {
-        foodStored += food.toInt()
+        foodStored += food.roundToInt()
+        if(food.roundToInt() < 0)
+            cityInfo.civInfo.addNotification(cityInfo.name + " {is starving}!", cityInfo.location, Color.RED)
         if (foodStored < 0)
         // starvation!
         {
-            population--
+            if(population>1){
+                population--
+
+            }
             foodStored = 0
-            cityInfo.civInfo.addNotification(cityInfo.name + " {is starving}!", cityInfo.location, Color.RED)
         }
         if (foodStored >= getFoodToNextPopulation())
         // growth!
