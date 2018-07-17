@@ -18,7 +18,7 @@ class Automation {
         val stats = tile.getTileStats(null, civInfo)
         var rank = 0.0f
         if (stats.food <= 2) rank += stats.food
-        else rank += (2 + (stats.food - 2) / 2f) // 1 point for each food up to 2, from there on half a point
+        else rank += (2 + (stats.food - 2) / 2) // 1 point for each food up to 2, from there on half a point
         if(civInfo.gold>0 && civInfo.getStatsForNextTurn().gold>0) rank += stats.gold / 2
         else rank += stats.gold
         rank += stats.production
@@ -73,6 +73,17 @@ class Automation {
         for (unit in rangedUnits) UnitAutomation().automateUnitMoves(unit)
         for (unit in meleeUnits) UnitAutomation().automateUnitMoves(unit)
 
+
+        for (city in civInfo.cities) {
+            // reassign everyone from scratch
+            city.workedTiles.clear()
+            (0..city.population.population).forEach { city.population.autoAssignPopulation()}
+            chooseNextConstruction(city.cityConstructions)
+            if (city.health < city.getMaxHealth())
+                trainCombatUnit(city) // override previous decision if city is under attack
+        }
+
+
         // train settler?
         if (civInfo.cities.any()
                 && civInfo.happiness > civInfo.cities.size +5
@@ -82,13 +93,6 @@ class Automation {
             val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
             if(bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwisse focus on self first
                 bestCity.cityConstructions.currentConstruction = "Settler"
-        }
-
-        for (city in civInfo.cities) {
-            if (city.health < city.getMaxHealth()) trainCombatUnit(city)
-            // reassign everyone from scratch
-            city.workedTiles.clear()
-            (0..city.population.population).forEach { city.population.autoAssignPopulation()}
         }
 
     }
@@ -111,6 +115,9 @@ class Automation {
 
     fun chooseNextConstruction(cityConstructions: CityConstructions) {
         cityConstructions.run {
+            currentConstruction="" // This is so that if we're currently in the middle of building a wonder,
+            // buildableWonders will still contain it
+
             val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder }
             val buildableWonders = getBuildableBuildings().filter { it.isWonder }
 
