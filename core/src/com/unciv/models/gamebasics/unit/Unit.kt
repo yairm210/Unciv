@@ -49,14 +49,18 @@ class Unit : INamed, IConstruction, ICivilopedia {
         if(baseDescription!=null) sb.appendln(baseDescription!!.tr())
         if(!forPickerScreen) {
             if (unbuildable) sb.appendln("Unbuildable")
+            if(uniqueTo!=null) sb.appendln("Unique to $uniqueTo, replaces $replaces")
             else sb.appendln("Cost: $cost")
             if(requiredResource!=null) sb.appendln("Required resource: {$requiredResource}".tr())
             if(requiredTech!=null) sb.appendln("Required tech: {$requiredTech}".tr())
+            if(upgradesTo!=null) sb.appendln("Upgrades to $upgradesTo")
+            if(obsoleteTech!=null) sb.appendln("Obsolete with $obsoleteTech")
         }
         if(strength!=0){
             sb.append("{Strength} $strength".tr())
             if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
             sb.appendln()
+            if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
         }
 
         if(uniques!=null){
