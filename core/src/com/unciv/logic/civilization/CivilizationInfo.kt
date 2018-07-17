@@ -191,14 +191,15 @@ class CivilizationInfo {
         policies.endTurn(nextTurnStats.culture.toInt())
 
         // disband units until there are none left OR the gold values are normal
-        if(!isBarbarianCivilization() && gold < -100){
-            var civMilitaryUnits = getCivUnits().filter { it.getBaseUnit().unitType!=UnitType.Civilian }
-            if(nextTurnStats.gold.toInt() < 0
-                && civMilitaryUnits.isNotEmpty()){
-                val unitToDisband = civMilitaryUnits.first()
-                unitToDisband.removeFromTile()
-                civMilitaryUnits -= unitToDisband
-                addNotification("Cannot provide unit upkeep for "+unitToDisband.name+" - unit has been disbanded!".tr(),null, Color.RED)
+        if(!isBarbarianCivilization() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
+            for (i in 1 until (gold / -100)) {
+                var civMilitaryUnits = getCivUnits().filter { it.getBaseUnit().unitType != UnitType.Civilian }
+                if (civMilitaryUnits.isNotEmpty()) {
+                    val unitToDisband = civMilitaryUnits.first()
+                    unitToDisband.removeFromTile()
+                    civMilitaryUnits -= unitToDisband
+                    addNotification("Cannot provide unit upkeep for " + unitToDisband.name + " - unit has been disbanded!".tr(), null, Color.RED)
+                }
             }
         }
 
