@@ -118,17 +118,25 @@ class Automation {
             val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
             val cities = cityInfo.civInfo.cities.size
 
+            val goldBuildings = buildableNotWonders.filter { it.gold>0 }
+            val zeroMaintainanceBuildings = buildableNotWonders.filter { it.maintenance == 0 }
+
             when {
                 buildableNotWonders.isNotEmpty() // if the civ is in the gold red-zone, build markets or somesuch
                         && cityInfo.civInfo.getStatsForNextTurn().gold <0
-                        && buildableNotWonders.any { it.gold>0 }
-                        -> currentConstruction = buildableNotWonders.first { it.gold>0 }.name
-                buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.first().name
+                        && goldBuildings.isNotEmpty()
+                        -> currentConstruction = goldBuildings.first().name
+                buildableNotWonders.any { it.name=="Monument"} -> currentConstruction = "Monument"
+                buildableNotWonders.any { it.name=="Granary"} -> currentConstruction = "Granary"
+                buildableNotWonders.any { it.name=="Library"} -> currentConstruction = "Library"
+                buildableNotWonders.any { it.name=="Market"} -> currentConstruction = "Market"
                 militaryUnits==0 -> trainCombatUnit(cityInfo)
                 workers==0 -> currentConstruction = CityConstructions.Worker
-                militaryUnits<cities -> trainCombatUnit(cityInfo)
-                workers<cities -> currentConstruction = CityConstructions.Worker
+                zeroMaintainanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintainanceBuildings.getRandom().name
                 buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.getRandom().name
+                buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.minBy { it.maintenance }!!.name
+                militaryUnits<cities -> trainCombatUnit(cityInfo)
+                workers<cities/2 -> currentConstruction = CityConstructions.Worker
                 else -> trainCombatUnit(cityInfo)
             }
 
