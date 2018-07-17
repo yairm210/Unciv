@@ -19,7 +19,8 @@ class Automation {
         var rank = 0.0f
         if (stats.food <= 2) rank += stats.food
         else rank += (2 + (stats.food - 2) / 2f) // 1 point for each food up to 2, from there on half a point
-        rank += stats.gold / 2
+        if(civInfo.gold>0 && civInfo.getStatsForNextTurn().gold>0) rank += stats.gold / 2
+        else rank += stats.gold
         rank += stats.production
         rank += stats.science
         rank += stats.culture
