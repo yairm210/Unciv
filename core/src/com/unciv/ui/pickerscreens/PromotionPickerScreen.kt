@@ -17,7 +17,8 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
         rightSideButton.setText("Pick promotion")
         rightSideButton.addClickListener {
             mapUnit.promotions.addPromotion(selectedPromotion!!.name)
-            game.setWorldScreen()
+            if(mapUnit.promotions.canBePromoted()) game.screen = PromotionPickerScreen(mapUnit)
+            else game.setWorldScreen()
             dispose()
         }
 
