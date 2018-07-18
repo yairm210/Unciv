@@ -1,6 +1,5 @@
 package com.unciv
 
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileMap
@@ -13,10 +12,13 @@ class GameStarter(){
 
         gameInfo.tileMap = TileMap(mapRadius)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-        gameInfo.civilizations.add(CivilizationInfo(civilization, Vector2.Zero, gameInfo)) // first one is player civ
+
 
         val freeTiles = gameInfo.tileMap.values.toMutableList()
-        freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(Vector2.Zero,6))
+        val playerPosition = freeTiles.toList().getRandom().position
+        gameInfo.civilizations.add(CivilizationInfo(civilization, playerPosition, gameInfo)) // first one is player civ
+
+        freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(playerPosition,6))
 
         val barbarianCivilization = CivilizationInfo()
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
