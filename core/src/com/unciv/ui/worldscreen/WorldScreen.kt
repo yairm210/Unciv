@@ -70,7 +70,13 @@ class WorldScreen : CameraStageBaseScreen() {
 
         update()
 
-        tileMapHolder.setCenterPosition(Vector2.Zero)
+        val tileToCenterOn: Vector2 =
+                when {
+                    civInfo.cities.isNotEmpty() -> civInfo.getCapital().location
+                    civInfo.getCivUnits().isNotEmpty() -> civInfo.getCivUnits().first().getTile().position
+                    else -> Vector2.Zero
+                }
+        tileMapHolder.setCenterPosition(tileToCenterOn)
         createNextTurnButton() // needs civ table to be positioned
         displayTutorials("NewGame")
     }
