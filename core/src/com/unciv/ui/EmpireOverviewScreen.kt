@@ -53,6 +53,15 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         }
         topTable.add(setCurrentTradesButton)
 
+        val setUnitsButton = TextButton("Units",skin)
+        setUnitsButton .addClickListener {
+            centerTable.clear()
+            centerTable.add(getUnitTable())
+            centerTable.pack()
+            centerTable.center(stage)
+        }
+        topTable.add(setUnitsButton )
+
         topTable.pack()
         topTable.width = stage.width
         topTable.y = stage.height-topTable.height
@@ -186,6 +195,28 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add(cityInfoTableTotal)
         table.pack()
 
+        return table
+    }
+
+    fun getUnitTable(): Table {
+        val table=Table(skin).apply { defaults().pad(5f) }
+        table.add("Name")
+        table.add("Combat strength")
+        table.add("Ranged strength")
+        table.add("Movement")
+        table.add("Closest city")
+        table.row()
+        for(unit in civInfo.getCivUnits()){
+            val baseUnit = unit.getBaseUnit()
+            table.add(unit.name)
+            if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
+            if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
+            table.add(unit.currentMovement.toString()+"/"+unit.maxMovement)
+            val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
+            if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
+            table.row()
+        }
+        table.pack()
         return table
     }
 }

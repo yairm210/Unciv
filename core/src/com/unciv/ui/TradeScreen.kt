@@ -194,18 +194,15 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount*offer.duration
             TradeType.Luxury_Resource -> {
-                var value = 100*offer.amount
-                if(!theirAvailableOffers.any { it.name==offer.name }) // We want to take away their last luxury or give them one they don't have
-                    value += 250
-                else if(!otherCivIsRecieving && !ourAvailableOffers.any { it.name==offer.name })
-                    value += 250 // they're giving us a luxury we don't have yet
-                return value // this is useful only as a barter trade to other civs
+                var value = 350*offer.amount
+                if(!theirAvailableOffers.any { it.name==offer.name } && otherCivIsRecieving) // We want to take away their last luxury or give them one they don't have
+                    value += 400
+                return value
             }
             TradeType.Strategic_Resource -> return 50 * offer.amount
         // Dunno what this is?
             else -> return 1000
         }
-
     }
 }
 
