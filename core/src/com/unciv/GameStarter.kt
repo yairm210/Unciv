@@ -1,5 +1,6 @@
 package com.unciv
 
+import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileMap
@@ -14,8 +15,15 @@ class GameStarter(){
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
 
 
-        val freeTiles = gameInfo.tileMap.values.toMutableList()
-        val playerPosition = freeTiles.toList().getRandom().position
+        fun vectorIsWithinNTilesOfEdge(vector: Vector2,n:Int): Boolean {
+            return vector.x < mapRadius-n
+            && vector.x > n-mapRadius
+            && vector.y < mapRadius-n
+            && vector.y > n-mapRadius
+        }
+
+        val freeTiles = gameInfo.tileMap.values.toMutableList().filter { vectorIsWithinNTilesOfEdge(it.position,3)}.toMutableList()
+        val playerPosition = freeTiles.getRandom().position
         gameInfo.civilizations.add(CivilizationInfo(civilization, playerPosition, gameInfo)) // first one is player civ
 
         freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(playerPosition,6))
