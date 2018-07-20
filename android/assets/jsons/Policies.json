@@ -25,14 +25,14 @@
 			{
 				name:"Landed Elite",
 				description:"+10% food growth and +2 food in capital",
-				requires:["Legalism"]
+				requires:["Legalism"],
 				row:2,
 				column:2
 			},
 			{
 				name:"Monarchy",
 				description:"+1 gold and -1 unhappiness for every 2 citizens in capital",
-				requires:["Legalism"]
+				requires:["Legalism"],
 				row:2,
 				column:4
 			},
@@ -68,14 +68,14 @@
 			{
 				name:"Representation",
 				description:"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.",
-				requires:["Citizenship"]
+				requires:["Citizenship"],
 				row:2,
 				column:3
 			},
 			{
 				name:"Meritocracy",
 				description:"+1 happiness for every city connected to capital, -5% unhappiness from citizens",
-				requires:["Citizenship"]
+				requires:["Citizenship"],
 				row:2,
 				column:5
 			},
@@ -111,14 +111,14 @@
 			{
 				name:"Reformation",
 				description:"+33% culture in all cities with a world wonder, immediately enter a golden age",
-				requires:["Organized Religion"]
+				requires:["Organized Religion"],
 				row:2,
 				column:3
 			},
 			{
 				name:"Free Religion",
 				description:"+1 culture for each monument, temple and monastery. Gain a free policy.",
-				requires:["Mandate Of Heaven","Reformation"]
+				requires:["Mandate Of Heaven","Reformation"],
 				row:3,
 				column:4
 			},
