@@ -7,7 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
 
@@ -99,7 +99,7 @@ class Automation {
 
     private fun trainCombatUnit(city: CityInfo) {
         val combatUnits = city.cityConstructions.getConstructableUnits().filter { it.unitType != UnitType.Civilian }
-        val chosenUnit: Unit
+        val chosenUnit: BaseUnit
         if(city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
                 && combatUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
             chosenUnit = combatUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!

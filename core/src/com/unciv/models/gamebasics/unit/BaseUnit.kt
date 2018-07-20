@@ -9,7 +9,8 @@ import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.tr
 
-class Unit : INamed, IConstruction, ICivilopedia {
+// This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
+class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override lateinit var name: String
     var baseDescription: String? = null
@@ -103,6 +104,13 @@ class Unit : INamed, IConstruction, ICivilopedia {
     override fun postBuildEvent(construction: CityConstructions) {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+    }
+
+    fun getUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
+        val uniqueUnitReplacesUpgrade: BaseUnit? = GameBasics.Units.values
+                .firstOrNull{it.uniqueTo==civInfo.civName && it.replaces == upgradesTo}
+        if(uniqueUnitReplacesUpgrade!=null) return uniqueUnitReplacesUpgrade
+        return GameBasics.Units[upgradesTo!!]!!
     }
 
     override fun toString(): String = name

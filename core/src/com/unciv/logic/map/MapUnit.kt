@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import java.text.DecimalFormat
 
@@ -25,7 +25,7 @@ class MapUnit {
         promotions.unit=this
     }
 
-    fun getBaseUnit(): Unit = GameBasics.Units[name]!!
+    fun getBaseUnit(): BaseUnit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
     fun getTile(): TileInfo {
         return civInfo.gameInfo.tileMap.values.first{it.militaryUnit==this || it.civilianUnit==this}

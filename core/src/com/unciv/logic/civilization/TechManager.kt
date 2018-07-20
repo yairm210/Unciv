@@ -4,7 +4,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
-import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.tr
 import java.util.*
 
@@ -89,7 +89,7 @@ class TechManager {
         val obsoleteUnits = GameBasics.Units.values.filter { it.obsoleteTech==currentTechnology }
         for(city in civInfo.cities)
             if(city.cityConstructions.getCurrentConstruction() in obsoleteUnits){
-                val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as Unit
+                val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
     }
