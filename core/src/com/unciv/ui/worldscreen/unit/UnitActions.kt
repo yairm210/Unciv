@@ -59,11 +59,11 @@ class UnitActions {
         }
 
         if(unit.getBaseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
-            var upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
+            var upgradedUnit = unit.getBaseUnit().getUpgradeUnit(unit.civInfo)
 
             // Go up the upgrade tree until you find the first one which isn't obsolete
             while (upgradedUnit.obsoleteTech!=null && unit.civInfo.tech.isResearched(upgradedUnit.obsoleteTech!!))
-                upgradedUnit = GameBasics.Units[upgradedUnit.upgradesTo!!]!!
+                upgradedUnit = upgradedUnit.getUpgradeUnit(unit.civInfo)
 
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
