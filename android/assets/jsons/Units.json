@@ -44,7 +44,7 @@
 		strength:5,
 		rangedStrength:7,
 		cost: 40,
-		hurryCostModifier:20
+		hurryCostModifier:20,
 		requiredTech:"Archery",
 		obsoleteTech:"Machinery",
 		upgradesTo:"Crossbowman"
@@ -56,11 +56,11 @@
 		strength:7,
 		rangedStrength:9,
 		cost: 40,
-		hurryCostModifier:20
+		hurryCostModifier:20,
 		requiredTech:"Archery",
 		obsoleteTech:"Machinery",
 		replaces:"Archer",
-		uniqueTo:"Babylon"
+		uniqueTo:"Babylon",
 		upgradesTo:"Crossbowman"
 	},
 	{
@@ -243,7 +243,7 @@
 		cost: 185,
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
-		hurryCostModifier:20
+		hurryCostModifier:20,
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%" ],
 	},
 	
