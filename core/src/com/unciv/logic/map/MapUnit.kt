@@ -159,7 +159,9 @@ class MapUnit {
         var visibilityRange = 2
         visibilityRange += getSpecialAbilities().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
-        return getTile().getViewableTiles(visibilityRange)
+        val tile = getTile()
+        if (tile.baseTerrain == "Hill") visibilityRange += 1
+        return tile.getViewableTiles(visibilityRange)
     }
 
     fun isFortified(): Boolean {
