@@ -22,13 +22,18 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var resourceImage: Image? = null
     protected var improvementImage: Image? =null
     var populationImage: Image? = null
-    private val roadImages = HashMap<TileInfo, Image>()
+    private val roadImages = HashMap<TileInfo, RoadImage>()
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neiboring tile to border images
     protected var civilianUnitImage: Group? = null
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
     var yieldGroup = YieldGroup()
+
+    class RoadImage{
+        var roadStatus:RoadStatus = RoadStatus.None
+        var image:Image? = null
+    }
 
     init {
         val groupSize = 54f
@@ -164,34 +169,45 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateRoadImages() {
-        if (tileInfo.roadStatus !== RoadStatus.None) {
-            for (neighbor in tileInfo.neighbors) {
-                if (neighbor.roadStatus === RoadStatus.None) continue
-                if (!roadImages.containsKey(neighbor)) {
-                    val image = ImageGetter.getImage(ImageGetter.WhiteDot)
-                    roadImages[neighbor] = image
+        for (neighbor in tileInfo.neighbors) {
+            if (!roadImages.containsKey(neighbor)) roadImages[neighbor] = RoadImage()
+            val roadImage = roadImages[neighbor]!!
 
-                    val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
-                    val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
-
-                    // This is some crazy voodoo magic so I'll explain.
-                    image.moveBy(25f, 25f) // Move road to center of tile
-                    // in addTiles, we set   the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
-                    // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
-                    image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
-                    image.setSize(10f, 2f)
-
-                    image.setOrigin(0f, 1f) // This is so that the rotation is calculated from the middle of the road and not the edge
-                    image.rotation = (180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
-                    addActor(image)
-                }
-
-                if (tileInfo.roadStatus === RoadStatus.Railroad && neighbor.roadStatus === RoadStatus.Railroad)
-                    roadImages[neighbor]!!.color = Color.GRAY // railroad
-                else
-                    roadImages[neighbor]!!.color = Color.BROWN // road
+            val roadStatus = when{
+                tileInfo.roadStatus==RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
+                tileInfo.roadStatus==RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
+                else -> RoadStatus.Railroad
             }
+            if (roadImage.roadStatus == roadStatus ) continue // the image is correct
+
+            roadImage.roadStatus = roadStatus
+
+            if(roadImage.image!=null) {
+                roadImage.image!!.remove()
+                roadImage.image = null
+            }
+            if(roadStatus==RoadStatus.None) continue // no road image
+
+            val image = if(roadStatus==RoadStatus.Road) ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= Color.BROWN }
+            else ImageGetter.getImage("OtherIcons/Railroad.png")
+            roadImage.image=image
+
+            val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
+            val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
+
+            // This is some crazy voodoo magic so I'll explain.
+            image.moveBy(25f, 25f) // Move road to center of tile
+            // in addTiles, we set   the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
+            // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
+            image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
+
+            image.setSize(10f, 2f)
+            image.setOrigin(0f, 1f) // This is so that the rotation is calculated from the middle of the road and not the edge
+
+            image.rotation = (180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
+            addActor(image)
         }
+
     }
 
     private fun updateTileColor(isViewable: Boolean) {

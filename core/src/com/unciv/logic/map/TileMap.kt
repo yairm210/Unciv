@@ -54,7 +54,6 @@ class TileMap {
     }
 
     fun getViewableTiles(position: Vector2, sightDistance: Int): MutableList<TileInfo> {
-        var sightDistance = sightDistance
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
         for (i in 1..sightDistance) { // in each layer,
             getTilesAtDistance(position, i).filterTo(viewableTiles) // take only tiles which have a visible neighbor, which is lower than the tile
