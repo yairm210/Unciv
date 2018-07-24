@@ -104,7 +104,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                     val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY}
                     add(starImage).size(20f).padLeft(5f)
                 }
-                else if (city.cityStats.isConnectedToCapital(RoadStatus.Road)){
+                else if (city.civInfo.isPlayerCivilization() && city.cityStats.isConnectedToCapital(RoadStatus.Road)){
                     val connectionImage = ImageGetter.getStatIcon("CityConnection")
                     add(connectionImage).size(20f).padLeft(5f)
                 }
