@@ -129,7 +129,7 @@ class CityInfo {
             stats.food = 0f
         }
 
-        population.nextTurn(stats.food)
+
         cityConstructions.nextTurn(stats)
         expansion.nextTurn(stats.culture)
         if(isBeingRazed){
@@ -141,6 +141,7 @@ class CityInfo {
                     civInfo.cities.first().cityConstructions.builtBuildings.add("Palace")
             }
         }
+        else population.nextTurn(stats.food)
 
         health = min(health+20, getMaxHealth())
         population.unassignExtraPopulation()
