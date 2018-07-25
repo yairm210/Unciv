@@ -20,10 +20,9 @@ class TechManager {
 
     private fun getCurrentTechnology(): Technology = GameBasics.Technologies[currentTechnology()]!!
 
-    fun getAmountResearchedText(): String =
-            if (currentTechnology() == null) ""
-            else "(" + researchOfTech(currentTechnology()!!) + "/" + getCurrentTechnology().cost + ")"
-
+    fun costOfTech(techName: String): Int {
+        return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
+    }
 
     fun currentTechnology(): String? {
         if (techsToResearch.isEmpty()) return null
@@ -35,8 +34,8 @@ class TechManager {
         else return 0
     }
 
-    fun turnsToTech(TechName: String): Int {
-        val remainingScience =GameBasics.Technologies[TechName]!!.cost - researchOfTech(TechName)
+    fun turnsToTech(techName: String): Int {
+        val remainingScience = costOfTech(techName) - researchOfTech(techName)
         return Math.ceil( remainingScience.toDouble()
                 / civInfo.getStatsForNextTurn().science).toInt()
     }
@@ -51,7 +50,7 @@ class TechManager {
         val currentTechnology = currentTechnology()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
-        if (techsInProgress[currentTechnology]!! < getCurrentTechnology().cost)
+        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
 
         val previousEra = civInfo.getEra()

@@ -21,6 +21,7 @@ class DiplomacyManager() {
         civInfo=civilizationInfo
         otherCivName=OtherCivName
     }
+
 //    var status:DiplomaticStatus = DiplomaticStatus.War
     var trades = ArrayList<Trade>()
 

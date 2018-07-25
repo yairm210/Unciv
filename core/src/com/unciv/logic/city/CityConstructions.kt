@@ -102,6 +102,9 @@ class CityConstructions {
         } else
             currentConstruction = saveCurrentConstruction
 
+        var productionToAdd = cityStats.production
+        if(!cityInfo.civInfo.isPlayerCivilization())
+            productionToAdd *= cityInfo.civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiConstructionModifier
         addConstruction(Math.round(cityStats.production))
         val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {

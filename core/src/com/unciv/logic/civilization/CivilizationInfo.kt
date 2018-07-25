@@ -8,7 +8,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
-import com.unciv.models.gamebasics.Civilization
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -19,6 +18,7 @@ import com.unciv.ui.utils.getRandom
 import com.unciv.ui.utils.tr
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 
 class CivilizationInfo {
@@ -28,6 +28,7 @@ class CivilizationInfo {
 
     var gold = 0
     var happiness = 15
+    var difficulty = "Chieftain"
     var civName = "Babylon"
 
     var tech = TechManager()
@@ -40,7 +41,8 @@ class CivilizationInfo {
     var cities = ArrayList<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
 
-    fun getCivilization(): Civilization {return GameBasics.Civilizations[civName]!!}
+    fun getDifficulty() =  GameBasics.Difficulties[difficulty]!!
+    fun getCivilization() = GameBasics.Civilizations[civName]!!
 
     fun getCapital()=cities.first { it.isCapital() }
 
@@ -97,9 +99,11 @@ class CivilizationInfo {
         if(policies.isAdopted("Oligarchy")) unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
         val totalPaidUnits = max(0,unitsToPayFor.count()-freeUnits)
         val gameProgress = gameInfo.turns/400f // as game progresses maintainance cost rises
-        val cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
-        val finalCost = cost.pow(1+gameProgress/3) // Why 3? No reason.
-        return finalCost.toInt()
+        var cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
+        cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
+        if(!isPlayerCivilization())
+            cost *= gameInfo.getPlayerCivilization().getDifficulty().aiUnitMaintainanceModifier
+        return cost.toInt()
     }
 
     private fun getTransportationUpkeep(): Int {
@@ -115,11 +119,11 @@ class CivilizationInfo {
     }
 
     // base happiness
-    fun getHappinessForNextTurn(): HashMap<String, Int> {
-        val statMap = HashMap<String,Int>()
-        statMap["Base happiness"] = 15
+    fun getHappinessForNextTurn(): HashMap<String, Float> {
+        val statMap = HashMap<String,Float>()
+        statMap["Base happiness"] = getDifficulty().baseHappiness.toFloat()
 
-        var happinessPerUniqueLuxury = 5
+        var happinessPerUniqueLuxury = 5f
         if (policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
         statMap["Luxury resources"]= getCivResources().keys
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
@@ -127,13 +131,13 @@ class CivilizationInfo {
         for(city in cities){
             for(keyvalue in city.cityStats.getCityHappiness()){
                 if(statMap.containsKey(keyvalue.key))
-                    statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value.toInt()
-                else statMap[keyvalue.key] = keyvalue.value.toInt()
+                    statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value
+                else statMap[keyvalue.key] = keyvalue.value
             }
         }
 
         if (buildingUniques.contains("Provides 1 happiness per social policy"))
-            statMap["Policies"] = policies.getAdoptedPolicies().count { !it.endsWith("Complete") }
+            statMap["Policies"] = policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
 
         return statMap
     }
@@ -227,7 +231,7 @@ class CivilizationInfo {
         getViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         for (city in cities)
             city.cityStats.update()
-        happiness = getHappinessForNextTurn().values.sum()
+        happiness = getHappinessForNextTurn().values.sum().roundToInt()
         getCivUnits().forEach { it.startTurn() }
     }
 

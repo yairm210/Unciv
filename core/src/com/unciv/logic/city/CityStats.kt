@@ -99,8 +99,11 @@ class CityStats {
     // in order to determine how much food is produced in a city!
     // -3 happiness per city
     fun getCityHappiness(): LinkedHashMap<String, Float> {
-        happinessList["Cities"] = -3f
         val civInfo = cityInfo.civInfo
+        var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
+
+        happinessList["Cities"] = -3f * unhappinessModifier
+
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
@@ -109,7 +112,7 @@ class CityStats {
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
 
-        happinessList["Population"] = -unhappinessFromCitizens
+        happinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
         if (civInfo.policies.isAdopted("Aristocracy"))

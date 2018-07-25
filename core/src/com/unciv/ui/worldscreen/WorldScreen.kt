@@ -83,7 +83,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
 
     fun update() {
-        kotlin.concurrent.thread { civInfo.happiness = civInfo.getHappinessForNextTurn().values.sum() }
+        kotlin.concurrent.thread { civInfo.happiness = civInfo.getHappinessForNextTurn().values.sum().toInt() }
 
         if (game.gameInfo.tutorial.contains("CityEntered")) {
             displayTutorials("AfterCityEntered")

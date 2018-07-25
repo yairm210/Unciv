@@ -19,6 +19,7 @@ class NewGameScreen: PickerScreen(){
         val table = Table()
         table.skin= skin
 
+
         table.add("Civilization:".tr())
         val civSelectBox = SelectBox<String>(skin)
         val civArray = Array<String>()
@@ -48,6 +49,16 @@ class NewGameScreen: PickerScreen(){
         enemiesSelectBox.selected=3
         table.add(enemiesSelectBox).pad(10f).row()
 
+
+        table.add("Difficulty:".tr())
+        val difficultySelectBox = SelectBox<String>(skin)
+        val difficultyArray = Array<String>()
+        GameBasics.Difficulties.keys.forEach{difficultyArray.add(it)}
+        difficultySelectBox.items = difficultyArray
+        difficultySelectBox.selected = "Chieftain"
+        table.add(difficultySelectBox).pad(10f).row()
+
+
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.addClickListener {
@@ -57,7 +68,8 @@ class NewGameScreen: PickerScreen(){
 
             kotlin.concurrent.thread { // Creating a new game can tke a while and we don't want ANRs
                 newGame = GameStarter().startNewGame(
-                        worldSizeToRadius[worldSizeSelectBox.selected]!!, enemiesSelectBox.selected, civSelectBox.selected )
+                        worldSizeToRadius[worldSizeSelectBox.selected]!!, enemiesSelectBox.selected,
+                        civSelectBox.selected, difficultySelectBox.selected )
                         .apply { tutorial=game.gameInfo.tutorial }
             }
         }

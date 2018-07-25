@@ -45,7 +45,7 @@ class UnCivGame : Game() {
     }
 
     fun startNewGame(saveTutorialState:Boolean = false) {
-        val newGame = GameStarter().startNewGame(20, 3, "Babylon")
+        val newGame = GameStarter().startNewGame(20, 3, "Babylon","Chieftain")
         if(saveTutorialState) {
             newGame.tutorial = gameInfo.tutorial
         }

@@ -23,6 +23,7 @@ object GameBasics {
     val UnitPromotions = LinkedHashMap<String, Promotion>()
     val Civilizations = LinkedHashMap<String, Civilization>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
+    val Difficulties = LinkedHashMap<String, Difficulty>()
     val Tutorials = LinkedHashMap<String, List<String>>()
     val Translations = Translations(Gdx.files.internal("jsons/Translations.json").readString())
 
@@ -48,6 +49,7 @@ object GameBasics {
             UnitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "UnitPromotions"))
             PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
             Civilizations += createHashmap(getFromJson(Array<Civilization>::class.java, "Civilizations"))
+            Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
 
             // ...Yes. Total Voodoo. I wish I didn't have to do this.
             val x = LinkedHashMap<String,com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>>()

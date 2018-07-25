@@ -36,8 +36,11 @@ class PopulationManager {
 
 
     fun getFoodToNextPopulation(): Int {
-        // civ v math,civilization.wikia
-        return 15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8)).toInt()
+        // civ v math, civilization.wikia
+        var foodRequired =  15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8))
+        if(!cityInfo.civInfo.isPlayerCivilization())
+            foodRequired *= cityInfo.civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiCityGrowthModifier
+        return foodRequired.toInt()
     }
 
 

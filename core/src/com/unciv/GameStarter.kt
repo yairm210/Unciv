@@ -8,7 +8,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 
 class GameStarter(){
-    fun startNewGame(mapRadius: Int, numberOfCivs: Int, civilization: String): GameInfo {
+    fun startNewGame(mapRadius: Int, numberOfCivs: Int, civilization: String, difficulty:String): GameInfo {
         val gameInfo = GameInfo()
 
         gameInfo.tileMap = TileMap(mapRadius)
@@ -24,7 +24,9 @@ class GameStarter(){
 
         val freeTiles = gameInfo.tileMap.values.toMutableList().filter { vectorIsWithinNTilesOfEdge(it.position,3)}.toMutableList()
         val playerPosition = freeTiles.getRandom().position
-        gameInfo.civilizations.add(CivilizationInfo(civilization, playerPosition, gameInfo)) // first one is player civ
+        val playerCiv = CivilizationInfo(civilization, playerPosition, gameInfo)
+        playerCiv.difficulty=difficulty
+        gameInfo.civilizations.add(playerCiv) // first one is player civ
 
         freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(playerPosition,6))
 
@@ -33,7 +35,9 @@ class GameStarter(){
 
         for (civname in GameBasics.Civilizations.keys.filterNot { it=="Barbarians" || it==civilization }.take(numberOfCivs)) {
             val startingLocation = freeTiles.toList().getRandom().position
-            gameInfo.civilizations.add(CivilizationInfo(civname, startingLocation, gameInfo))
+            val civ = CivilizationInfo(civname, startingLocation, gameInfo)
+            civ.tech.techsResearched.addAll(playerCiv.getDifficulty().aiFreeTechs)
+            gameInfo.civilizations.add(civ)
             freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, 6))
         }
 
