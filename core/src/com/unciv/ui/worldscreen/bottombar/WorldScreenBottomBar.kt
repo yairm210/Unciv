@@ -18,8 +18,7 @@ class WorldScreenBottomBar(val worldScreen: WorldScreen) : Table(){
         add(battleTable).width(worldScreen.stage.width/3).fill() // so that background fills entire middle third
         add(tileInfoTable).width(worldScreen.stage.width/3).fill()
 
-        val tileTableBackground = ImageGetter.getDrawable(ImageGetter.WhiteDot)
-                .tint(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        val tileTableBackground = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         tileTableBackground.minHeight = 0f
         tileTableBackground.minWidth = 0f
         background = tileTableBackground

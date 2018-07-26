@@ -19,8 +19,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     private val battle = Battle(worldScreen.civInfo.gameInfo)
     init{
         skin = CameraStageBaseScreen.skin
-        background = ImageGetter.getDrawable(ImageGetter.WhiteDot)
-                .tint(ImageGetter.getBlue())
+        background = ImageGetter.getBackground(ImageGetter.getBlue())
         pad(5f)
     }
 

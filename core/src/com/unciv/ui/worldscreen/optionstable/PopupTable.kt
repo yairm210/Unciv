@@ -9,8 +9,7 @@ import com.unciv.ui.utils.*
 
 open class PopupTable: Table(){
     init {
-        val tileTableBackground = ImageGetter.getDrawable("skin/whiteDot.png")
-                .tint(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        val tileTableBackground = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         background = tileTableBackground
 
         this.pad(20f)

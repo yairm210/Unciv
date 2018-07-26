@@ -81,7 +81,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun createTradeTable(trade:Trade, civName:String): Table {
         val table = Table(skin)
-        table.background = ImageGetter.getDrawable(ImageGetter.WhiteDot).tint(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+        table.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         table.defaults().pad(10f)
         table.add(civInfo.civName)
         table.add(civName).row()

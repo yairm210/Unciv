@@ -70,8 +70,7 @@ open class CameraStageBaseScreen : Screen {
     private fun displayTutorial() {
         isTutorialShowing = true
         val tutorialTable = Table().pad(10f)
-        tutorialTable.background(ImageGetter.getDrawable(ImageGetter.WhiteDot)
-                .tint(Color(0x101050cf)))
+        tutorialTable.background = ImageGetter.getBackground(Color(0x101050cf))
         val label = Label(tutorialTexts[0], skin)
         label.setAlignment(Align.center)
         tutorialTexts.removeAt(0)

@@ -35,7 +35,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     val happinessDrawable = ImageGetter.getStatIcon("Happiness").drawable
 
     init {
-        background = ImageGetter.getDrawable("skin/whiteDot.png").tint(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
         add(getStatsTable()).row()
         add(getResourceTable())
