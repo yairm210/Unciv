@@ -2,6 +2,7 @@ package com.unciv
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.Json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
@@ -10,6 +11,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 class UnCivGame : Game() {
     var gameInfo: GameInfo = GameInfo()
     lateinit var settings : GameSettings
+    val json = Json().apply { setIgnoreDeprecated(true); setIgnoreUnknownFields(true) }
 
     /**
      * This exists so that when debugging we can see the entire map.
@@ -21,9 +23,9 @@ class UnCivGame : Game() {
     lateinit var worldScreen: WorldScreen
 
     override fun create() {
+        Current = this
         GameBasics.run {  } // just to initialize
         settings = GameSaver().getGeneralSettings()
-        Current = this
         if (GameSaver().getSave("Autosave").exists()) {
             try {
                 loadGame("Autosave")
@@ -36,6 +38,9 @@ class UnCivGame : Game() {
 
     fun loadGame(gameInfo:GameInfo){
         this.gameInfo = gameInfo
+        if(settings.tutorialsShown.isEmpty()  && this.gameInfo.tutorial.isNotEmpty())
+            settings.tutorialsShown.addAll(this.gameInfo.tutorial)
+
         worldScreen = WorldScreen()
         setWorldScreen()
     }
@@ -44,11 +49,8 @@ class UnCivGame : Game() {
         loadGame(GameSaver().loadGame( gameName))
     }
 
-    fun startNewGame(saveTutorialState:Boolean = false) {
+    fun startNewGame() {
         val newGame = GameStarter().startNewGame(20, 3, "Babylon","Chieftain")
-        if(saveTutorialState) {
-            newGame.tutorial = gameInfo.tutorial
-        }
         gameInfo = newGame
 
         worldScreen = WorldScreen()

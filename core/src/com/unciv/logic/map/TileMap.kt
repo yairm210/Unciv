@@ -66,10 +66,6 @@ class TileMap {
     fun setTransients() {
         for (tileInfo in values){
             tileInfo.tileMap = this
-            if(tileInfo.unit!=null){ // thi is for the old "unit" field which has been replaced.
-                tileInfo.unit!!.putInTile(tileInfo)
-                tileInfo.unit=null
-            }
         }
     }
 

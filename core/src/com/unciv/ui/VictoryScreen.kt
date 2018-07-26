@@ -52,7 +52,7 @@ class VictoryScreen : PickerScreen() {
         rightSideButton.isVisible=true
         closeButton.isVisible=false
         rightSideButton.enable()
-        rightSideButton.addClickListener { UnCivGame.Current.startNewGame(true) }
+        rightSideButton.addClickListener { UnCivGame.Current.startNewGame() }
     }
 
     fun scienceVictoryColumn():Table{

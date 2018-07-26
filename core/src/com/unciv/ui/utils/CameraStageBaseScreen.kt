@@ -60,8 +60,8 @@ open class CameraStageBaseScreen : Screen {
     override fun dispose() {}
 
     fun displayTutorials(name: String) {
-        if (game.gameInfo.tutorial.contains(name)) return
-        game.gameInfo.tutorial.add(name)
+        if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
+        UnCivGame.Current.settings.tutorialsShown.add(name)
         val texts = GameBasics.Tutorials[name]!!
         tutorialTexts.addAll(texts)
         if (!isTutorialShowing) displayTutorial()

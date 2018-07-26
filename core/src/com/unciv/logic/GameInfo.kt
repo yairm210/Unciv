@@ -12,7 +12,7 @@ import com.unciv.ui.utils.getRandom
 
 class GameInfo {
     var notifications = mutableListOf<Notification>()
-    var tutorial = mutableListOf<String>()
+    @Deprecated("As of 2.6.9") var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
     var turns = 0

@@ -14,7 +14,6 @@ import com.unciv.ui.utils.tr
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
 
-    var unit:MapUnit?=null
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
     fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()

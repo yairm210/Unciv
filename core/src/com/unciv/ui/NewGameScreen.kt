@@ -70,7 +70,6 @@ class NewGameScreen: PickerScreen(){
                 newGame = GameStarter().startNewGame(
                         worldSizeToRadius[worldSizeSelectBox.selected]!!, enemiesSelectBox.selected,
                         civSelectBox.selected, difficultySelectBox.selected )
-                        .apply { tutorial=game.gameInfo.tutorial }
             }
         }
 
