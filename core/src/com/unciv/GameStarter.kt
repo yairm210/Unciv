@@ -22,13 +22,14 @@ class GameStarter(){
             && vector.y > n-mapRadius
         }
 
+        val distanceAroundStartingPointNoOneElseWillStartIn = 5
         val freeTiles = gameInfo.tileMap.values.toMutableList().filter { vectorIsWithinNTilesOfEdge(it.position,3)}.toMutableList()
         val playerPosition = freeTiles.getRandom().position
         val playerCiv = CivilizationInfo(civilization, playerPosition, gameInfo)
         playerCiv.difficulty=difficulty
         gameInfo.civilizations.add(playerCiv) // first one is player civ
 
-        freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(playerPosition,6))
+        freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(playerPosition,distanceAroundStartingPointNoOneElseWillStartIn ))
 
         val barbarianCivilization = CivilizationInfo()
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
@@ -38,7 +39,7 @@ class GameStarter(){
             val civ = CivilizationInfo(civname, startingLocation, gameInfo)
             civ.tech.techsResearched.addAll(playerCiv.getDifficulty().aiFreeTechs)
             gameInfo.civilizations.add(civ)
-            freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, 6))
+            freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, distanceAroundStartingPointNoOneElseWillStartIn ))
         }
 
         barbarianCivilization.civName = "Barbarians"
