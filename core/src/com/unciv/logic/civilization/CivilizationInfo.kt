@@ -261,7 +261,7 @@ class CivilizationInfo {
 
         val viewedCivs = viewablePositions
                 .flatMap { it.getUnits().map { u->u.civInfo }.union(listOf(it.getOwner())) }
-                .filterNotNull().filterNot { it==this }
+                .filterNotNull().filterNot { it==this || it.isBarbarianCivilization() }
 
         for(otherCiv in viewedCivs)
             if(!diplomacy.containsKey(otherCiv.civName)){

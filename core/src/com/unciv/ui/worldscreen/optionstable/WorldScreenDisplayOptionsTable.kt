@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.UnCivGame
-import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.center
@@ -16,9 +15,11 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
     }
 
     fun update() {
+        val settings = UnCivGame.Current.settings
+        settings.save()
         clear()
         val tileMapHolder = UnCivGame.Current.worldScreen.tileMapHolder
-        val settings = UnCivGame.Current.settings
+
         if (settings.showWorkedTiles) addButton("{Hide} {worked tiles}") { settings.showWorkedTiles = false; update() }
         else addButton("{Show} {worked tiles}") { settings.showWorkedTiles = true; update() }
 
@@ -35,7 +36,7 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.language = languageSelectBox.selected;
-                GameSaver().setGeneralSettings(UnCivGame.Current.settings)
+                UnCivGame.Current.settings.save()
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()
                 UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())
@@ -52,7 +53,7 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
         resolutionSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.resolution = resolutionSelectBox.selected
-                GameSaver().setGeneralSettings(UnCivGame.Current.settings)
+                UnCivGame.Current.settings.save()
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()
                 UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())

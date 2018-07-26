@@ -62,6 +62,7 @@ open class CameraStageBaseScreen : Screen {
     fun displayTutorials(name: String) {
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
         UnCivGame.Current.settings.tutorialsShown.add(name)
+        UnCivGame.Current.settings.save()
         val texts = GameBasics.Tutorials[name]!!
         tutorialTexts.addAll(texts)
         if (!isTutorialShowing) displayTutorial()

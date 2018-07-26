@@ -54,7 +54,7 @@ class LanguagePickerScreen: PickerScreen(){
         rightSideButton.setText("Pick language".tr())
         rightSideButton.addClickListener {
             UnCivGame.Current.settings.language = chosenLanguage
-            GameSaver().setGeneralSettings(UnCivGame.Current.settings)
+            UnCivGame.Current.settings.save()
             UnCivGame.Current.startNewGame()
             dispose()
         }
