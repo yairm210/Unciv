@@ -144,8 +144,10 @@ class CivilizationInfo {
 
     fun getCivResources(): Counter<TileResource> {
         val civResources = Counter<TileResource>()
-        for (city in cities) civResources.add(city.getCityResources())
-        for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
+        // ToLists are so that when we update happiness on a different thread and we call this function,
+        // we don't modify the iterator as we're using it
+        for (city in cities.toList()) civResources.add(city.getCityResources())
+        for (dip in diplomacy.values.toList()) civResources.add(dip.resourcesFromTrade())
         return civResources
     }
 
