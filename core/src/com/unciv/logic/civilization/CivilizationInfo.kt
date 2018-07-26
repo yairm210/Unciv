@@ -128,7 +128,7 @@ class CivilizationInfo {
         statMap["Luxury resources"]= getCivResources().keys
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
-        for(city in cities){
+        for(city in cities.toList()){
             for(keyvalue in city.cityStats.getCityHappiness()){
                 if(statMap.containsKey(keyvalue.key))
                     statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value
