@@ -7,7 +7,8 @@
 		aiCityGrowthModifier:1.6, // that is to say it'll take them 1.6 times as long to grow the city
 		aiUnitMaintainanceModifier:1,
 		aiConstructionModifier:0.6, // Replaces "Construction rate" and "Create rate" in original config
-		aiFreeTechs:[]
+		aiFreeTechs:[],
+		aiUnhappinessModifier:1
 	},
 	{
 		name:"Chieftain",
@@ -17,7 +18,8 @@
 		aiCityGrowthModifier:1.3,
 		aiUnitMaintainanceModifier:1,
 		aiConstructionModifier:0.75,
-		aiFreeTechs:[]
+		aiFreeTechs:[],
+		aiUnhappinessModifier:1
 	},
 	{
 		name:"Warlord",
@@ -27,7 +29,8 @@
 		aiCityGrowthModifier:1.1,
 		aiUnitMaintainanceModifier:1,
 		aiConstructionModifier:0.9,
-		aiFreeTechs:[]
+		aiFreeTechs:[],
+		aiUnhappinessModifier:1
 	},
 	{
 		name:"Prince",
@@ -37,7 +40,8 @@
 		aiCityGrowthModifier:1,
 		aiUnitMaintainanceModifier:0.85,
 		aiConstructionModifier:1,
-		aiFreeTechs:[]
+		aiFreeTechs:[],
+		aiUnhappinessModifier:1
 	},
 	{
 		name:"King",
@@ -47,7 +51,8 @@
 		aiCityGrowthModifier:0.9,
 		aiUnitMaintainanceModifier:0.8,
 		aiConstructionModifier:1.15,
-		aiFreeTechs:["Pottery"]
+		aiFreeTechs:["Pottery"],
+		aiUnhappinessModifier:0.9
 	},
 	{
 		name:"Emperor",
@@ -57,7 +62,8 @@
 		aiCityGrowthModifier:0.85,
 		aiUnitMaintainanceModifier:0.75,
 		aiConstructionModifier:1.25,
-		aiFreeTechs:["Pottery","Animal Husbandry"]
+		aiFreeTechs:["Pottery","Animal Husbandry"],
+		aiUnhappinessModifier:0.85
 	},
 	{
 		name:"Immortal",
@@ -67,7 +73,8 @@
 		aiCityGrowthModifier:0.75,
 		aiUnitMaintainanceModifier:0.65,
 		aiConstructionModifier:1.5,
-		aiFreeTechs:["Pottery","Animal Husbandry","Mining"]
+		aiFreeTechs:["Pottery","Animal Husbandry","Mining"],
+		aiUnhappinessModifier:0.75
 	},
 	{
 		name:"Deity",
@@ -77,6 +84,7 @@
 		aiCityGrowthModifier:0.6,
 		aiUnitMaintainanceModifier:0.5,
 		aiConstructionModifier:2,
-		aiFreeTechs:["Pottery","Animal Husbandry","Mining","The Wheel"]
+		aiFreeTechs:["Pottery","Animal Husbandry","Mining","The Wheel"],
+		aiUnhappinessModifier:0.6
 	}
 ]

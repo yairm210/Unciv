@@ -12,4 +12,5 @@ class Difficulty: INamed {
     var aiUnitMaintainanceModifier = 1f
     var aiConstructionModifier = 1f
     var aiFreeTechs = ArrayList<String>()
+    var aiUnhappinessModifier = 1f
 }

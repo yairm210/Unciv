@@ -29,12 +29,13 @@ class GameStarter(){
         playerCiv.difficulty=difficulty
         gameInfo.civilizations.add(playerCiv) // first one is player civ
 
-        freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(playerPosition,distanceAroundStartingPointNoOneElseWillStartIn ))
+        freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(playerPosition, distanceAroundStartingPointNoOneElseWillStartIn ))
 
         val barbarianCivilization = CivilizationInfo()
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
         for (civname in GameBasics.Civilizations.keys.filterNot { it=="Barbarians" || it==civilization }.take(numberOfCivs)) {
+            if(freeTiles.isEmpty()) break // we can't add any more civs.
             val startingLocation = freeTiles.toList().getRandom().position
             val civ = CivilizationInfo(civname, startingLocation, gameInfo)
             civ.tech.techsResearched.addAll(playerCiv.getDifficulty().aiFreeTechs)

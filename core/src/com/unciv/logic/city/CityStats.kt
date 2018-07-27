@@ -101,6 +101,8 @@ class CityStats {
     fun getCityHappiness(): LinkedHashMap<String, Float> {
         val civInfo = cityInfo.civInfo
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
+        if(!civInfo.isPlayerCivilization())
+            unhappinessModifier *= civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiUnhappinessModifier
 
         happinessList["Cities"] = -3f * unhappinessModifier
 
