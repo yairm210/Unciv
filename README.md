@@ -18,13 +18,14 @@ Made with LibGDX on Android Studio
   * Population and Specialists
 * Policies and Golden Ages
 * Combat and barbarians
-* Other civilizations (No diplomacy)
+   * Promotions and combat modifiers
+* Other civilizations (trade but no peace)
 
 # What's next?
 
-* Expanding combat - available units, combat modifiers, and promotions
 * UI+UX improvements
-* Diplomacy options
+* Peace/War Diplomacy options
+* Water tiles!
 
 ## So, does it work?
 
