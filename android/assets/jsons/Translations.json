@@ -377,7 +377,7 @@
 	
 	"worked tiles":{
 		Italian:"celle lavorate"
-		Russian:"работачие плитки"
+		Russian:"обработанные плитки"
 		French:"carreaux travaillés"
 		Romanian:"plăci lucrate"
 		German:"bearbeitete Felder"
@@ -813,7 +813,12 @@
 		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
 	}
 	
-	"A [greatPerson] has been born!":{}
+	"A [greatPerson] has been born!":{	
+		Italian:"È nato un [greatPerson]!"
+		Russian:"[greatPerson] родился!!"
+		French:"Un [greatPerson] est né!"
+		Romanian:"Sa născut un [greatPerson]!"
+	}
 
 	
 	// Save and load game
@@ -2364,16 +2369,182 @@
 	} // EG Rationalism policy branch unlocked!
 	
 	// Trade
-	"Trade with [otherCiv]":{}
-	"Offer trade":{}
-	"What do you have in mind?":{}
-	"Our items":{}
-	"Our trade offer":{}
-	"[otherCiv]'s trade offer":{}
-	"[otherCiv]'s items":{}
-	"Pleasure doing business with you!":{}
-	"I think not.":{}
-	"That is acceptable.":{}
-	"Accept":{}
-	
+	"Trade with [otherCiv]":{	
+		Italian:"Scambia con [otherCiv]"
+		Russian:"Торговля с [otherCiv]"
+		French:"Échanger avec [otherCiv]"
+		Romanian:"Comerțul cu [otherCiv]"
+	}
+	"Offer trade":{	
+		Italian:"Offerta commerciale"
+		Russian:"Предложение торговли"
+		French:"Offre d'échange"
+		Romanian:"Oferta comerciala"
+	}
+	"What do you have in mind?":{	
+		Italian:"Cos'hai in mente?"
+		Russian:"Что у тебя на уме?"
+		French:"À quoi penses-tu?"
+		Romanian:"La ce te gandesti?"
+	}
+	"Our items":{	
+		Italian:"I nostri articoli"
+		Russian:"Наши товары"
+		French:"Nos articles"
+		Romanian:"Articolele noastre"
+	}
+	"Our trade offer":{	
+		Italian:"La nostra offerta commerciale"
+		Russian:"Наше торговое предложение"
+		French:"Notre offre commerciale"
+		Romanian:"Oferta noastră comercială"
+	}
+	"[otherCiv]'s trade offer":{
+		Italian:"L'offerta commerciale di [otherCiv]"
+		Russian:"Коммерческое предложение [otherCiv]"
+		French:"L'offre commerciale de [otherCiv]"
+		Romanian:"ofertă de schimb a [otherCiv]"
+	}
+	"[otherCiv]'s items":{	
+		Italian:"Gli articoli di [otherCiv]"
+		Russian:"Предметы [otherCiv]"
+		French:"Les articles de [otherCiv]"
+		Romanian:"Articolele la [otherCiv]"
+	}
+	"Pleasure doing business with you!":{
+		Italian:"È un piacere fare affari con lei!"
+		Russian:"Удовольствие работать с тобой!"
+		French:"Plaisir de faire des affaires avec vous!"
+		Romanian:"Plăcerea face afaceri cu dumneavoastra!"
+	}
+	"I think not.":{	
+		Italian:"Non penso proprio!"
+		Russian:"Думаю, нет."
+		French:"Je crois pas."
+		Romanian:"Asa nu!"
+	}
+	"That is acceptable.":{	
+		Italian:"E accetttabile."
+		Russian:"Это приемлемо."
+		French:"C'est acceptable."
+		Romanian:"E acceptabil."
+	}
+	"Accept":{	
+		Italian:"Accetta"
+		Russian:"Принять"
+		French:"Accept"
+		Romanian:"Accepta"
+	}
+
+
+	//civilisations
+	"Babylon":{	
+		Italian:"Babilonia"
+		Russian:"Вавилон"
+		French:"Babylone"
+		Romanian:"Babilonia"
+	}
+	"Greece":{	
+		Italian:"Grecia"
+		Russian:"Греция"
+		French:"Grèce"
+		Romanian:"Grecia"
+	}
+	"China":{	
+		Italian:"Cina"
+		Russian:"Китай"
+		French:"Chine"
+		Romanian:"Cina"
+	}
+	"Egypt":{	
+		Italian:"Egitto"
+		Russian:"Египет"
+		French:"Egypte"
+		Romanian:"Egipt"
+	}
+	"England":{	
+		Italian:"Inghilterra"
+		Russian:"Англия"
+		French:"Angleterre"
+		Romanian:"Anglia"
+	}
+	"France":{	
+		Italian:"Francia"
+		Russian:"Франция"
+		French:"France"
+		Romanian:"Franta"
+	}
+
+	//Difficulty
+	"Settler":{	
+		Italian:"Colonizzatore"
+		Russian:"Поселенец"
+		French:"colonisateur"
+		Romanian:"Colonist"
+	}
+	"Chieftain":{	
+		Italian:"Capo"
+		Russian:"Вождь"
+		French:"Chef de clan"
+		Romanian:"șef de trib"
+	}
+	"Warlord":{	
+		Italian:"Condottiere"
+		Russian:"Военачальник"
+		French:"Chef militaire"
+		Romanian:"General"
+	}
+	"Prince":{	
+		Italian:"Principe"
+		Russian:"Принц"
+		French:"Prince"
+		Romanian:"Prinţ"
+	}
+	"King":{	
+		Italian:"RE"
+		Russian:"Король"
+		French:"Roi"
+		Romanian:"Rege"
+	}
+	"Emperor":{	
+		Italian:"Imperatore"
+		Russian:"Император"
+		French:"Empereur"
+		Romanian:"Împărat"
+	}
+	"Immortal":{	
+		Italian:"Immortale"
+		Russian:"Бессмертный"
+		French:"Immortel"
+		Romanian:"Nemuritor"
+	}
+	"Deity":{	
+		Italian:"Divinità"
+		Russian:"Божество"
+		French:"Déité"
+		Romanian:"Zeitate"
+	}
+
+	//world size
+	"Small":{	
+		Italian:"Piccolo"
+		Russian:"Маленький"
+		French:"Petit"
+		Romanian:"Mic"
+	}
+	"Medium":{	
+		Italian:"Medio"
+		Russian:"Средний"
+		French:"Moyen"
+		Romanian:"Mediu"
+	}
+	"Large":{	
+		Italian:"Grande"
+		Russian:"Большой"
+		French:"Grand"
+		Romanian:"Mare"
+	}
+
+
+
 }
