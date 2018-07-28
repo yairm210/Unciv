@@ -1,4 +1,4 @@
-{
+﻿{
 	"Next turn":{
 		Italian:"Turno successivo"
 		Russian:"Следующий ход"
@@ -2358,7 +2358,8 @@
 		Russian:"Вы вошли в эпоху [newEra]!"
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ați intrat în epoca [newEra]!"
-		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is 
+		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is
+		German:"Sie sind die [newEra] Ära eingetreten!"
 	}
 	"[policyBranch] policy branch unlocked!":{
 		Italian:"[policyBranch] ramo della politica sbloccato!"
@@ -2366,6 +2367,7 @@
 		French:"[policyBranch] branche de la politique déverrouillée!"
 		Romanian:"[policyBranch] ramură de politică deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
+		German:"[policyBranch] Politikzweig freigeschaltet!"
 	} // EG Rationalism policy branch unlocked!
 	
 	// Trade
