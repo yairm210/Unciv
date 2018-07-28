@@ -20,14 +20,13 @@ class LoadScreen : PickerScreen() {
     init {
         val saveTable = Table()
 
-
         val deleteSaveButton = TextButton("Delete save".tr(), CameraStageBaseScreen.skin)
         deleteSaveButton .addClickListener {
             GameSaver().deleteSave(selectedSave)
             UnCivGame.Current.screen = LoadScreen()
         }
         deleteSaveButton.disable()
-        rightSideGroup.addActor(deleteSaveButton)
+
 
         topTable.add(saveTable)
         val saves = GameSaver().getSaves()
@@ -48,7 +47,7 @@ class LoadScreen : PickerScreen() {
                     textToSet+="\n{Could not load game}!".tr()
                 }
                 descriptionLabel.setText(textToSet)
-                rightSideButton.setText("Load\r\n$it")
+                rightSideButton.setText("Load [$it]".tr())
                 rightSideButton.enable()
                 deleteSaveButton.enable()
                 deleteSaveButton.color= Color.RED
@@ -56,13 +55,14 @@ class LoadScreen : PickerScreen() {
             saveTable.add(textButton).pad(5f).row()
         }
 
-        val loadFromClipboardTable = Table()
+        val rightSideTable = Table()
         val loadFromClipboardButton = TextButton("Load copied data".tr(),skin)
         val errorLabel = Label("",skin).setFontColor(Color.RED)
         loadFromClipboardButton.addClickListener {
             try{
                 val clipboardContentsString = Gdx.app.clipboard.contents
-                val loadedGame = Json().fromJson(GameInfo::class.java, clipboardContentsString)
+                val decoded = Gzip.decompress(Gzip.decoder(clipboardContentsString))
+                val loadedGame = Json().fromJson(GameInfo::class.java, decoded)
                 loadedGame.setTransients()
                 UnCivGame.Current.loadGame(loadedGame)
             }catch (ex:Exception){
@@ -70,14 +70,14 @@ class LoadScreen : PickerScreen() {
             }
         }
 
-        loadFromClipboardTable.add(loadFromClipboardButton).row()
-        loadFromClipboardTable.add(errorLabel)
-        topTable.add(loadFromClipboardTable)
+        rightSideTable.add(loadFromClipboardButton).row()
+        rightSideTable.add(errorLabel).row()
+        rightSideTable.add(deleteSaveButton)
+        topTable.add(rightSideTable)
 
         rightSideButton.addClickListener {
             UnCivGame.Current.loadGame(selectedSave)
         }
-
 
 
     }

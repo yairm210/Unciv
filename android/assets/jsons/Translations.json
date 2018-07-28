@@ -4,9 +4,16 @@
 		Russian:"Следующий ход"
 		French:"Tour prochain"
 		Romanian:"Runda urmatoare"
+		German:"Nächste Runde"
+		Dutch:"Volgende beurt"
 	}
 	
-	"Waiting":{ // Displayed when next turn is being...turned
+	"Working...":{ // Displayed when next turn is being...turned
+		Italian:"Lavoro..."
+		Russian:"Работает..."
+		French:"Travail..."
+		Romanian:"Lucru..."
+		Dutch:"Verwerken..."
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -14,6 +21,8 @@
 		Russian:"Ход"
 		French:"Tour"
 		Romanian:"Runda"
+		German:"Runde"
+		Dutch:"Beurt"
 	}
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -21,7 +30,8 @@
 		Russian:"в"
 		French:"dans"
 		Romanian:"în"
-		
+		German:"in"
+		Dutch:"in"
 	}
 	
 	"turns":{ // for e.g. turns to technology
@@ -29,6 +39,8 @@
 		Russian:"Ходов"
 		French:"Tours"
 		Romanian:"Runde"
+		German:"Runden"
+		Dutch:"Beurten"
 	}
 
 	// Unit
@@ -37,6 +49,8 @@
 		Russian:"Переместить"
 		French:"Deplacer"
 		Romanian:"Mișcare"
+		German:"Bewegungen"
+		Dutch:"Mobieliteit"
 	}
 
 	"Strength":{
@@ -44,6 +58,8 @@
 		Russian:"Сила"
 		French:"Force"
 		Romanian:"Putere"
+		German:"Stärke"
+		Dutch:"Kracht"
 	}
 
 	"Ranged strength":{
@@ -51,6 +67,8 @@
 		Russian:"Дальний бой"
 		French:"Force à distance"
 		Romanian:"Puterea la distanta"
+		German:"Fernkampf Stärkte"
+		Dutch:"Kracht op afstand"
 	}
 
 	"Move unit":{
@@ -58,6 +76,8 @@
 		Russian:"Переместить юнит"
 		French:"Dèplacer unité"
 		Romanian:"Mutați unitatea"
+		German:"Einheit bewegen"
+		Dutch:"Eenheid verplaatsen"
 	}
 
 	"Stop movement":{
@@ -65,6 +85,8 @@
 		Russian:"Отмена деиствья"
 		French:"Arrêter le mouvement"
 		Romanian:"Opriți mișcarea"
+		German:"Bewgen abbrechen"
+		Dutch:"Verplaatsen stoppen"
 	}
 
 	"Construct improvement":{
@@ -72,6 +94,8 @@
 		Russian:"Улучшыть строение"
 		French:"Amèlioré construcion"
 		Romanian:"îmbunătățirea construcției"
+		German:"Verbesserung bauen"
+		Dutch:"Verbetering bouwen"
 	}
 
 	"Automate":{
@@ -79,6 +103,8 @@
 		Russian:"Автоматизацыя"
 		French:"Automacion"
 		Romanian:"Automatizare"
+		German:"Automatisieren"
+		Dutch:"Autoatiseren"
 	}
 
 	"Fortify":{
@@ -86,6 +112,8 @@
 		Russian:"Укрепить"
 		French:"Fortifier"
 		Romanian:"Fortifica"
+		German:"Befestigen"
+		Dutch:"Versterken"
 	}
 	
 	"Fortification":{ // as in "+40% Fortification"
@@ -93,6 +121,8 @@
 		Russian:"Фортификация"
 		French:"Fortification"
 		Romanian:"Fortificație"
+		German:"Befestigung"
+		Dutch:"Versterking"
 	}
 
 	"Set up":{ // For siege units
@@ -100,12 +130,33 @@
 		Russian:"Приказ"
 		French:"Implanter"
 		Romanian:"Dispune"
+		German:"Aufstellen"
+		Dutch:"Opstellen"
+	}
+	
+	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
+		Italian:"Esegui l'upgrade a [unitType] (oro [goldCost])"
+		Russian:"Обновите до [unitType] (золото [goldCost])"
+		French:"Mise à niveau vers [unitType] (goldCost) gold)"
+		Romanian:"Treceți la [unitType] (aurul [goldCost])"
 	}
 	
 	"Found city":{
+		Italian:"Crea città"
+		Russian:"Создать город"
+		French:"Créer une ville"
+		Romanian:"Creați oraș"
+		German:"Stadt gründen"
+		Dutch:"Stad stichten"
 	}
 	
 	"Promote":{
+		Italian:"Promuovere"
+		Russian:"Продвигать"
+		French:"Promouvoir"
+		Romanian:"Promova"
+		German:"Befördern"
+		Dutch:"Promoveren"
 	}
 
 	"Health":{
@@ -113,7 +164,40 @@
 		Russian:"Здоровье"
 		French:"Santé"
 		Romanian:"Sanatate"
+		German:"Gesundheit"
+		Dutch:"Gezondheid"
 	}
+
+	"Disband unit":{
+		Italian:"Disbandare"
+		Russian:"Расформировать"
+		French:"Dissoudre unité"
+		Romanian:"Desfaceți unitatea"
+		Dutch:"Eenheid opheffen"
+	}
+	
+	"Do you really want to disband this unit?":{
+		Italian:"Vuoi veramente sciogliere questa unità?"
+		Russian:"Вы действительно хотите распустить этот блок?"
+		French:"Voulez-vous vraiment dissoudre cette unité?"
+		Romanian:""
+		Dutch:"Wil je echt deze eenheid opheffen"
+	}
+	"Yes":{
+		Italian:"Si"
+		Russian:"Да"
+		French:"Oui"
+		Romanian:"Da"
+		Dutch:"Ja"
+	}
+	"No":{
+		Italian:"No"
+		Russian:"Нет"
+		French:"Non"
+		Romanian:"Nu"
+		Dutch:"Nee"
+	}
+	
 
 	// Stats
 	"Gold":{
@@ -121,35 +205,62 @@
 		Russian:"Золото"
 		French:"Or"
 		Romanian:"Aur"
+		German:"Gold"
+		Dutch:"Goud"
 	}
+
 	"Science":{
 		Italian:"Scienza"
 		Russian:"Наука"
 		French:"Science"
 		Romanian:"Ştiinţă"
+		German:"Erforschung"
+		Dutch:"Wetenschap"
 	}
+
 	"Happiness":{
 		Italian:"Felicità"
 		Russian:"Счастье"
 		French:"Bonheur"
 		Romanian:"Fericire"
+		German:"Zufriedenheit"
+		Dutch:"Tevredenheid"
 	}
+
 	"Production":{
+		Italian:"Produzione"
+		Russian:"Производство"
+		French:"Production"
+		Romanian:"Producere"
+		German:"Produktion"
+		Dutch:"Productie"
 	}
+
 	"Culture":{
 		Italian:"Cultura"
 		Russian:"Культура"
 		French:"Culture"
 		Romanian:"Cultură"
+		German:"Kultur"
+		Dutch:"Cultuur"
 	}
+
 	"Food":{
 		Italian:"Cibo"
 		Russian:"ИДА"
 		French:"Nourriture"
 		Romanian:"Hrană"
+		German:"Speise"
+		Dutch:"Eten"
 	}
 	
 	"GOLDEN AGE":{
+		Italian:"L'ETÀ D'ORO"
+		Russian:"ЗОЛОТОЙ ВЕК"
+		French:"ÂGE D'OR"
+		Romanian:"EPOCA DE AUR"
+		German:"GOLDENES ZEITALTER"
+		Dutch:"GOUDEN EEUW"
 	}
 
 	
@@ -160,6 +271,8 @@
 		Russian:"Новая игра"
 		French:"Nouveau jeu"
 		Romanian:"Joc nou"
+		German:"Neues Spiel"
+		Dutch:"Nieuw spel"
 	}
 	
 	"Save game":{
@@ -167,6 +280,8 @@
 		Russian:"Сохранить игру"
 		French:"Sauvegarder la partie"
 		Romanian:"Salveaza jocul"
+		German:"Speichern"
+		Dutch:"Spel opslaan"
 	}
 	
 	"Load game":{
@@ -174,16 +289,54 @@
 		Russian:"Загрузить игру"
 		French:"Chargement du jeu"
 		Romanian:"Incarca jocul"
+		German:"Spiel laden"
+		Dutch:"Spel laden"
 	}
 	
 	"Load copied data":{
+		Italian:"Carica i dati copiati"
+		Russian:"Загрузка скопированных данных"
+		French:"Charger des données copiées"
+		Romanian:"Încărcați datele copiate"
+		German:"Aus ZWischenablage laden"
+		Dutch:"Gekopieerde data laden"
 	}
+	
+	// New game screen
+	
+	"Start game!":{
+		Italian:"Inizia il gioco!"
+		Russian:"Начать игру!"
+		French:"Démarrer jeu!"
+		Romanian:"Incepe jocul!"
+	}
+	"Civilization:":{
+		Italian:"Civiltà:"
+		Russian:"Цивилизация:"
+		French:"Civilisation:"
+		Romanian:"Civilizaţie:"
+	}
+	"World size:":{
+		Italian:"Dimensione del mondo:"
+		Russian:"Размер мира"
+		French:"La taille du monde:"
+		Romanian:"Mărimea pamintului:"
+	}
+	"Number of enemies:":{
+		Italian:"Numero di nemici:"
+		Russian:"Количество врагов:"
+		French:"Nombre d'ennemis:"
+		Romanian:"Numărul de dușmani:"
+	}
+	
 
 	"Victory status":{
 		Italian:"Stato di vittoria"
 		Russian:"Статус победы"
 		French:"Statut de la victoire"
 		Romanian:"Statutul victoriei"
+		German:"Siegesstatus"
+		Dutch:"Overwinning Status"
 	}
 
 	"Social policies":{
@@ -191,6 +344,8 @@
 		Russian:"Социальная политика"
 		French:"Politiques sociales"
 		Romanian:"Politici sociale"
+		German:"Sozialpolitiken"
+		Dutch:"Sociaal beleid"
 	}
 
 	"Display options":{
@@ -198,16 +353,44 @@
 		Russian:"Параметры экрана"
 		French:"Option d'affichage"
 		Romanian:"Opțiuni ecran"
+		German:"Anzeigeeinstellungen"
+		Dutch:"Weergaveopties"
 	}
 	
 	"Show":{
+		Italian:"Mostrare"
+		Russian:"Показать"
+		French:"Montrer"
+		Romanian:"Indica"
+		German:"Zeigen"
+		Dutch:"Toon"
 	}
+
 	"Hide":{
+		Italian:"Nascondere"
+		Russian:"Спрятать"
+		French:"Cacher"
+		Romanian:"Ascunde"
+		German:"Verstecken"
+		Dutch:"Verberg"
 	}
 	
 	"worked tiles":{
+		Italian:"celle lavorate"
+		Russian:"обработанные плитки"
+		French:"carreaux travaillés"
+		Romanian:"plăci lucrate"
+		German:"bearbeitete Felder"
+		Dutch:"Bewerkte velden"
 	}
+
 	"resources and improvements":{
+		Italian:"risorse e miglioramenti"
+		Russian:"ресурсы и улучшений"
+		French:"ressources et améliorations"
+		Romanian:"resurse și îmbunătățiri"
+		German:"Ressourcen und Verbesserungen"
+		Dutch:"Grondstoffen en Verbeteringen"
 	}
 
 	"Close":{
@@ -215,6 +398,8 @@
 		Russian:"Закрыть"
 		French:"Fermer"
 		Romanian:"Inchide"
+		German:"Schliessen"
+		Dutch:"Sluiten"
 	}
 
 	// City screen
@@ -223,6 +408,8 @@
 		Russian:"Выход из города"
 		French:"Quitter la ville"
 		Romanian:"Ieșiți din oraș"
+		German:"Stadt schliessen"
+		Dutch:"Stadscherm sluiten"
 	}
 
 	"Raze city":{
@@ -230,6 +417,8 @@
 		Russian:"Разрущение города"
 		French:"Demolition de la ville"
 		Romanian:"Demolarea orașului"
+		German:"Stadt zerstören"
+		Dutch:"Stad vernietigen"
 	}
 
 	"Stop razing city":{
@@ -237,13 +426,17 @@
 		Russian:"Отменить разрущение города"
 		French:"Anuller demolition de la ville"
 		Romanian:"Anuleaza demolarea orașului"
+		German:"Zerstörung aufheben"
+		Dutch:"Stad vernieteging stoppen"
 	}
 
-	"Buy for":{ // as in "Buy for X gold"
-		Italian:"Compra con"
-		Russian:"Купить с"
-		French:"Acheter avec"
-		Romanian:"Cumpara cu"
+	"Buy for [amount] gold":{
+		Italian:"Compra con [amount] gold"
+		Russian:"Купить с [amount] gold"
+		French:"Acheter avec [amount] gold"
+		Romanian:"Cumpara cu [amount] gold"
+		German:"Für [amount] gold kaufen"
+		Dutch:"Voor [amount] gold kopen"
 	}
 
 	"Maintenance cost":{
@@ -251,82 +444,169 @@
 		Russian:"Стоимость обслуживания"
 		French:"Coût de maintenance"
 		Romanian:"Costuri de întreținere"
+		German:"Wartungskosten"
+		Dutch:"Onderhouskosten"
 	}
-	
 	
 	"Pick construction":{
 		Italian:"Scegli la costruzione"
 		Russian:"Выбор здания"
 		French:"Choisissez la construction"
 		Romanian:"Alegeți construcția"
+		German:"Bauwerk auswählen"
+		Dutch:"Bouwwerk kiezen"
 	}
 	
-	"Build":{ // eg Build Granary
-		Italian:"Costruire"
-		Russian:"Строить"
-		French:"Construire"
-		Romanian:"Construiste"
+	"Build [building]":{ // eg Build Granary
+		Italian:"Costruire [building]"
+		Russian:"Строить [building]"
+		French:"Construire [building]"
+		Romanian:"Construiste [building]"
+		German:"[building] bauen"
+		Dutch:"[building] bouwen"
 	}
 	
-	"Train":{ // eg Train Scout
-		Italian:"Adestrare"
-		Russian:"Обучать"
-		French:"Former"
-		Romanian:"Instrui"
+	"Train [unit]":{ // eg Train Scout
+		Italian:"Adestrare [unit]"
+		Russian:"Обучать [unit]"
+		French:"Former [unit]"
+		Romanian:"Instrui [unit]"
+		German:"[unit] rekrutieren"
+		Dutch:"[unit] rekruteren"
 	}
 	
-	"Produce":{} // eg Produce gold
+	"Produce [thingToProduce]":{ // eg Produce gold
+		Italian:"Produrre [thingToProduce]"
+		Russian:"Производить [thingToProduce]"
+		French:"Produire [thingToProduce]"
+		Romanian:"Produce [thingToProduce]"
+		German:"[thingToProduce] Herstellen"
+		Dutch:"[thingToProduce] produceren"
+	} 
 	
-	"Nothing":{} // A city can choose to "idle and produce nothing
+	"Nothing":{ // A city can choose to "idle" and produce nothing
+		Italian:"Niente"
+		Russian:"Ничего"
+		French:"Rien"
+		Romanian:"Nimic"
+		German:"Faul dasitzen"
+		Dutch:"Niks"
+	} 
 	
 	// Tech picker
-	"Pick a tech":{ // eg "Research Pottery"
+	"Pick a tech":{
 		Italian:"Scegli una tecnologia"
 		Russian:"Выберите технологию"
 		French:"Choisissez une technologie"
 		Romanian:"Alege o tehnologie"
+		German:"Technologie auswählen"
+		Dutch:"Technologie kiezen"
 	}
-	"Research":{ // eg "Research Pottery"
-		Italian:"Ricerca"
-		Russian:"Исследование"
-		French:"Recherche"
-		Romanian:"Exploreaza"
+	
+	"Pick a free tech":{
+		Italian:"Scegli una tecnologia gratuita"
+		Russian:"Выберите бесплатную технику"
+		French:"Choisissez une technologie gratuite"
+		Romanian:"Alege o tehnologie gratuită"
+		Dutch:"Gratis technologie kiezen"
 	}
+
+	"Research [technology]":{ // eg "Research Pottery"
+		Italian:"Ricerca [technology]"
+		Russian:"Исследование [technology]"
+		French:"Recherche [technology]"
+		Romanian:"Exploreaza [technology]"
+		German:"[technology] Erforschen"
+		Dutch:"[technologie] onderzoeken"
+	}
+	
+	
+	"Pick [technology] as free tech":{
+		Italian:"Scegli [tecnology] come tecnologia libera"
+		Russian:"Выберите [technology] как бесплатную технику"
+		French:"Choisissez [technology] comme technologie libre"
+		Romanian:"Alegeți [tehnology] ca tehnologie gratuită"
+		Dutch:"[technologie] kiezen als gratis technologie"
+	}
+
 	"Units enabled":{
 		Italian:"Unità abilitate"
 		Russian:"Активные юниты"
 		French:"Unités activées"
 		Romanian:"Unități activate"
+		German:"Freigeschaltete Einheiten"
+		Dutch:"Eenheden vrijgespeeld"
 	}
+
 	"Buildings enabled":{
 		Italian:"Edifici abilitati"
 		Russian:"Активные здания"
 		French:"Bâtiments activés"
 		Romanian:"Clădirile active"
+		German:"Freigeschaltete Bauwerke"
+		Dutch:"Gebouwen vreijgespeeld"
 	}
 	
-	"Wonder":{}
+	"Wonder":{
+		Italian:"Meraviglia"
+		Russian:"Чудо"
+		French:"Merveille"
+		Romanian:"Minune"
+		German:"Wunder"
+		Dutch:"Wonder"
+	}
 	
 	"Wonders enabled":{
 		Italian:"Meraviglie abilitate"
 		Russian:"Активные чудеса"
 		French:"Merveilles activées"
 		Romanian:"Minuni active"
+		German:"Freigschaltete Wunder"
+		Dutch:"Wonders vrijgespeeld"
 	}
+
 	"Tile improvements enabled":{
 		Italian:"Miglioramenti delle celle abilitati"
 		Russian:"Улучшены улучшения плит"
 		French:"Améliorations apportées aux carreaux"
 		Romanian:"Ameliorare activa a plăcilor"
+		German:"Freigschaltete Feldverbesserungen"
+		Dutch:"Verbeteringen vrijgespeeld"
 	}
-	"Reveals":{ // As in "Reveals Coal on the map"
+
+	"Reveals [resource] on the map":{ // As in "Reveals Coal on the map"
+		Italian:"Mostra [resource] sulla mappa"
+		Russian:"Показывает [resource] на карте"
+		French:"Révèle [resource] sur la carte"
+		Romanian:"Descoperă [resource] pe hartă"
+		German:"Zeigt [resource] auf der Karte"
+		Dutch:"Onthuld [recource] op de kaart"
 	}
-	"on the map":{
+	
+	"XP for new units":{
+		Italian:"XP per nuove unità"
+		Russian:"XP для новых юнитов"
+		French:"XP pour les nouvelles unités"
+		Romanian:"XP pentru unități noi"
+		Dutch:"XP voor nieuwe eenheden"
 	}
 	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
+		Italian:"fornisce"
+		Russian:"даёт"
+		French:"fournir"
+		Romanian:"Asigura"
+		German:"generieren"
+		Dutch:"genereren"
 	}
+
 	"provides":{ // as in "Camp provides +1 Gold" (singular of above)
+		Italian:"fornisce"
+		Russian:"обеспечивает"
+		French:"fournit"
+		Romanian:"prevede"
+		German:"generiert"
+		Dutch:"genereert"
 	}
 	
 
@@ -340,6 +620,8 @@
 		Russian:"вырос"
 		French:"a grandi"
 		Romanian:"a crescut"
+		German:"ist gewachsen"
+		Dutch:"is gegroeid"
 	}
 	
 	"has been founded":{
@@ -347,6 +629,8 @@
 		Russian:"была создана"
 		French:"a été fondé"
 		Romanian:"a fost fondat"
+		German:"wurde gegründet"
+		Dutch:"is gesticht"
 	}
 	
 	"has been razed to the ground":{
@@ -354,30 +638,35 @@
 		Russian:"был снесен на землю"
 		French:"a été rasé à terre"
 		Romanian:"a fost distrus la pământ"
+		German:"wurde dem Erdboden gleichgemacht"
+		Dutch:"Is totaal verwoest"
 	}
 	
-	"We have conquered the city of":{
-		Italian:"Abbiamo conquistato la città di"
-		Russian:"Мы завоевали город"
-		French:"Nous avons conquis la ville de"
-		Romanian:"Am cucerit orașul"
+	"We have conquered the city of [cityname]!":{
+		Italian:"Abbiamo conquistato la città di [cityname]!"
+		Russian:"Мы завоевали город [cityname]!"
+		French:"Nous avons conquis la ville de [cityname]!"
+		Romanian:"Am cucerit orașul [cityname]!"
+		German:"Wir haben die Stadt [cityname] eingenommen!"
+		Dutch:"We hebben de stad [cityname] ingenomen!"
 	}
 	
-	"Research of":{ // For technology notifications EG Research of Writing has completed
-		Italian:"Ricerca di"
-		Russian:"Исследование"
-		French:"Recherche de"
-		Romanian:"Cercetarea"
-	}
-	
-	"has completed":{
-		Italian:"ha completato"
-		Russian:"завершилось"
-		French:"a completé"
-		Romanian:"a finalizat"
+	"Research of [tehnologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
+		Italian:"Ricerca di [tehnologyName] ha completato!"
+		Russian:"Исследование [tehnologyName] завершилось!"
+		French:"Recherche de [tehnologyName] a completé!"
+		Romanian:"Cercetarea [tehnologyName] a finalizat!"
+		German:"[tehnologyName] wurde erforscht!"
+		Dutch:"[tehnologyName] is onderzocht!"
 	}
 	
 	"You have entered a golden age":{
+		Italian:"Sei entrato in un'età dell'oro"
+		Russian:"Вы вошли в золотой век"
+		French:"Vous êtes entré dans un âge d'or"
+		Romanian:"Ați intrat într-o epocă de aur"
+		German:"Ein goldenes Zeitalter ist eingetreten"
+		Dutch:"Een gouden eeuw is geariveerd"
 	}
 
 	"is starving":{
@@ -385,6 +674,8 @@
 		Russian:"голодает"
 		French:"est affamé"
 		Romanian:"suferă de foame"
+		German:"verhungert"
+		Dutch:"verhongerd"
 	}
 	
 	"has been built in":{
@@ -392,20 +683,26 @@
 		Russian:"была построена в"
 		French:"a été construit en"
 		Romanian:"a fost construit in"
+		German:"wurde erbaut in"
+		Dutch:"is gebouwd in"
 	}
 	
-	"Work has started on":{
-		Italian:"Il lavoro è iniziato per"
-		Russian:"Началась работа над"
-		French:"Le travail a commencé sur le"
-		Romanian:"Munca a început pentru"
+	"Work has started on [construction]":{
+		Italian:"Il lavoro è iniziato per [construction]"
+		Russian:"Началась работа над [construction]"
+		French:"Le travail a commencé sur le [construction]"
+		Romanian:"Munca a început pentru [construction]"
+		German:"Arbeit an [construction] hat begonnen"
+		Dutch:"Werk is begonen aan [construction]"
 	}
 	
-	"Cannot continue work on":{
-		Italian:"Non posso continuare a lavorare su"
-		Russian:"Не удается продолжить работу над"
-		French:"Impossible de continuer à travailler sur"
-		Romanian:"Nu pot continua munca pentru"
+	"Cannot continue work on [construction]":{
+		Italian:"Non posso continuare a lavorare su [construction]"
+		Russian:"Не удается продолжить работу над [construction]"
+		French:"Impossible de continuer à travailler sur [construction]"
+		Romanian:"Nu pot continua munca pentru [construction]"
+		German:"Arbeit an [construction] konnte nicht fortgeführt werden"
+		Dutch:"Er kan niet meer veder gewerkt worden aan [construction]"
 	}
 
 	"has expanded its borders":{
@@ -413,47 +710,88 @@
 		Russian:"расширил границы"
 		French:"a élargi ses frontières"
 		Romanian:"și-a extins frontierele"
+		German:"hat seine Grenzen erweitert"
+		Dutch:"heeft zijn grenzen uitgebreid"
 	}
 
-	"An enemy":{
-		Italian:"Un nemico"
-		Russian:"Враг"
-		French:"Un ennemi"
-		Romanian:"Un dusman"
+	"An enemy [unit] has attacked [cityname]":{
+		Italian:"Un nemico [unit] ha attaccato [cityname]"
+		Russian:"Враг [unit] атаковал [cityname]"
+		French:"Un ennemi [unit] a attaqué [cityname]"
+		Romanian:"Un dusman [unit] a atacat [cityname]"
+		German:"Ein(e) feindliche(r) [unit] hat [cityname] angegriffen" // Gender sensitive
+		Dutch:"Een vijandelijke [unit] heeft [cityname] aangevallen"
+	}
+	
+	"An enemy [unit] has attacked our [ourUnit]":{
+		Italian:"Un nemico [unit] ha attaccato [ourUnit]"
+		Russian:"Враг [unit] атаковал [ourUnit]"
+		French:"Un ennemi [unit] a attaqué [ourUnit]"
+		Romanian:"Un dusman [unit] a atacat [ourUnit]"
+		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] agegriffen" // Gender sensitive
+		Dutch:"Een vijandige [unit] heeft onze [ourUnit] aangevallen"
+	}
+	"An enemy [unit] has captured [cityname]":{
+		Italian:"Un nemico [unit] ha catturato [cityname]"
+		Russian:"Враг [unit] захватил [cityname]"
+		French:"Un ennemi [unit] a capturé [cityname]"
+		Romanian:"Un dusman [unit] a capturat [cityname]"
+		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen"
+		Dutch:"Een vijandige [unit] heeft [cityname] ingenomen"
+	}
+	
+	"An enemy [unit] has captured our [ourUnit]":{
+		Italian:"Un nemico [unit] ha catturato [ourUnit]"
+		Russian:"Враг [unit] захватил [ourUnit]"
+		French:"Un ennemi [unit] a capturé [ourUnit]"
+		Romanian:"Un dusman [unit] a capturat [ourUnit]"
+		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] gefangen"
+		Dutch:"Een vijandige [unit] heeft [ourUnit] gevangen genomen"
 	}
 
-	"has attacked":{
-		Italian:"ha attaccato"
-		Russian:"атаковал"
-		French:"a attaqué"
-		Romanian:"a atacat"
-	}
-
-	"has destroyed":{
-		Italian:"ha distrutto"
-		Russian:"уничтожил"
-		French:"a détruit"
-		Romanian:"a distrus"
+	"An enemy [unit] has destroyed our [ourUnit]":{
+		Italian:"Un nemico [unit] ha distrutto [ourUnit]"
+		Russian:"Враг [unit] уничтожил [ourUnit]"
+		French:"Un ennemi [unit] a détruit [ourUnit]"
+		Romanian:"Un dusman [unit] a distrus [ourUnit]"
+		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] zerstört"
+		Dutch:"Een vijandige [unit] heeft onze [ourUnit] gedood"
 	}
 	
-	"has captured":{
-		Italian:"ha catturato"
-		Russian:"захватил"
-		French:"a capturé"
-		Romanian:"a capturat"
+	"An enemy [unit] was destroyed while attacking [cityname]":{
+		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava [cityname]"
+		Russian:"Враг [unit] был уничтожен при атаке [cityname]"
+		French:"Un ennemi [unit] a été détruit en attaquant [cityname]"
+		Romanian:"Un inamic [unit] a fost distrus în timp ce ataca [cityname]"
+		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf [cityname]" // Gender sensitive
+		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op [cityname]"
 	}
 	
-	"spotted near our territory":{
+	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
+		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava il nostro [ourUnit]"
+		Russian:"Враг [unit] был уничтожен, атакуя наш [ourUnit]"
+		French:"Un ennemi [unit] a été détruit en attaquant notre [ourUnit]"
+		Romanian:"Un inamic [unit] a fost distrus în timp ce atacă [ourUnit]"
+		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf unsere(n) [ourUnit]" // Gender sensitive
+		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op onze [unit]"
 	}
 	
-	"spotted in our territory":{
+	"An enemy [unit] was spotted near our territory":{
+		Italian:"Un'unità [unit] avvistato vicino al nostro territorio"
+		Russian:"Враг [unit] пятнистый у нашей территории"
+		French:"Un ennemi [unit] repéré près de notre territoire"
+		Romanian:"Un inamic [unit] reperat în apropierea teritoriului nostru"
+		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt"
+		Dutch:"Een vijandige [unit] is gezien buiten onze grenzen"
 	}
 	
-	
-	"was destroyed while attacking":{
-	}
-	
-	"our":{
+	"An enemy [unit] was spotted in our territory":{
+		Italian:"Un'unità [unit] avvistato nel nostro territorio"
+		Russian:"Враг [unit] пятнистый на нашей территории"
+		French:"Un ennemi [unit] repéré sur notre territoire"
+		Romanian:"Un inamic [unit] reperat pe teritoriul nostru"
+		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt"
+		Dutch:"Een vijandige [unit] is binnen onze grenzen gezien"
 	}
 	
 	
@@ -462,22 +800,26 @@
 		Russian:"выявлено вблизи "
 		French:"a capturé"
 		Romanian:"dezvăluit aproape"
+		German:"gefunden in der Nähe von"
+		Dutch:"Ontdekt: in de buurt van"
 	}
 	
-	
-	
-	"The civilization of":{
-		Italian:"La civiltà di"
-		Russian:"Цивилизация"
-		French:"La civilisation de"
-		Romanian:"Civilizația"
+	"The civilization of [civName] has been destroyed!":{
+		Italian:"La civiltà di [civName] è stata distrutta!"
+		Russian:"Цивилизация [civName] был уничтожен!"
+		French:"La civilisation de [civName] a été détruit!"
+		Romanian:"Civilizația [civName] a fost distrus!"
+		German:"Die Zivilisation [civName] wurde vernichtet!"
+		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
 	}
-	"has been destroyed":{
-		Italian:"è stata distrutta"
-		Russian:"был уничтожен"
-		French:"a été détruit"
-		Romanian:"a fost distrus"
+	
+	"A [greatPerson] has been born!":{	
+		Italian:"È nato un [greatPerson]!"
+		Russian:"[greatPerson] родился!!"
+		French:"Un [greatPerson] est né!"
+		Romanian:"Sa născut un [greatPerson]!"
 	}
+
 	
 	// Save and load game
 	
@@ -486,55 +828,101 @@
 		Russian:"Текущие сейвы"
 		French:"Текущие сейвы"
 		Romanian:"Salvatajul curent"
+		German:"Gespeicherte Spiele"
+		Dutch:"Huidige spellen"
 	}
+
 	"Saved game name":{
 		Italian:"Nome del gioco salvato"
 		Russian:"Сохраненное название игры"
 		French:"Nom du jeu sauvegardé"
 		Romanian:"Numele jocului salvat"
+		German:"Name des gespeicherten Spiels"
+		Dutch:"Naam van opgeslagen spellen"
 	}
+
 	"Copy game info":{
 		Italian:"Copia le informazioni sul gioco"
 		Russian:"Копировать информацию об игре"
 		French:"Copier les informations du jeu"
 		Romanian:"Copiați informațiile jocului"
+		German:"Spielinfo kopieren"
+		Dutch:"Spelinformatie kopiëren"
 	}
+
 	"Could not load game":{
 		Italian:"Impossibile caricare il gioco"
 		Russian:"Не удалось загрузить игру"
 		French:"Impossible de charger le jeu"
 		Romanian:"Nu s-a putut încărca jocul"
+		German:"Spiel konnte nicht geladen werden"
+		Dutch:"Spel kon niet geladen worden"
 	}
-	"Load":{ // as in "Load SaveFile2"
-		Italian:"Caricare"
-		Russian:"загрузить"
-		French:"Charger"
-		Romanian:"încărca"
+
+	"Load [saveFileName]":{ // as in "Load SaveFile2"
+		Italian:"Caricare [saveFileName]"
+		Russian:"загрузить [saveFileName]"
+		French:"Charger [saveFileName]"
+		Romanian:"încărca [saveFileName]"
+		German:"[saveFileName] laden"
+		Dutch:"[saveFileName] laden"
 	}
+
 	"Delete save":{
 		Italian:"Elimina Salvataggio"
 		Russian:"Удалить сохранение"
 		French:"Supprimer enregistrer"
 		Romanian:"Ștergeți salvatajul"
+		German:"Spiel löschen"
+		Dutch:"Spel verwijderen"
 	}
+
 	"Saved at":{
 		Italian:"Salvato a"
 		Russian:"Сохранено в"
 		French:"Enregistré à"
 		Romanian:"Salvat la"
+		German:"Gespeichert in"
+		Dutch:"Opgeslagen in"
 	}
 	
 	
 	// Battle table
 	
-	"City strength":{}
+	"City strength":{
+		Italian:"Forza della città"
+		Russian:"Сила города"
+		French:"Force de la ville"
+		Romanian:"Puterea orașului"
+		German:"Stärke der Stadt"
+		Dutch:"Kracht van de stad"
+	}
 	
-	"City health":{}
+	"City health":{
+		Italian:"Salute della città"
+		Russian:"Городское здоровье"
+		French:"Santé de la ville"
+		Romanian:"Sănătatea orașului"
+		German:"Gesundheit der Stadt"
+		Dutch:"Gezondheid van de stad"
+	}
 	
 	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
+		Italian:"Catturato"
+		Russian:"Захваченный"
+		French:"Capturé"
+		Romanian:"Capturat"
+		German:"Gefangen"
+		Dutch:"Gevangen"
 	}
 	
 	"Attack":{
+		Italian:"Attacco"
+		Russian:"Атака"
+		French:"Attaque"
+		Romanian:"Atac"
+		German:"Angreiffen"
+		Dutch:"Aanvallen"
 	}
 	
 	// Terrains
@@ -544,66 +932,97 @@
 		Russian:"Луг"
 		French:"Herbage"
 		Romanian:"Fâneață"
+		German:"Wiese"
+		Dutch:"Grasland"
 	}
+
 	"Plains":{
 		Italian:"Pianura"
 		Russian:"Pавнины"
 		French:"Plaines"
 		Romanian:"Inalzat"
+		German:"Flachland"
+		Dutch:"Vlakte"
 	}
+
 	"Tundra":{
 		Italian:"Tundra"
 		Russian:"Tундра"
 		French:"Toundra"
 		Romanian:"Tundră"
+		German:"Tundra"
+		Dutch:"Toendra"
 	}
+
 	"Desert":{
 		Italian:"Deserto"
-		Russian:"Пустынный"
+		Russian:"Пустыня"
 		French:"Désert"
 		Romanian:"Deşert"
+		German:"Wüste"
+		Dutch:"Woestijn"
 	}
+
 	"Lakes":{
 		Italian:"Laghi"
 		Russian:"Озера"
 		French:"Lacs"
 		Romanian:"Lacurile"
+		German:"Seen"
+		Dutch:"Meren"
 	}
+
 	"Hill":{
 		Italian:"Collina"
-		Russian:"Bозвышенность"
-		French:""
-		Romanian:""
+		Russian:"Холм"
+		French:"Colline"
+		German:"Hügel"
+		Dutch:"Heuvel"
 	}
+
 	"Forest":{
 		Italian:"Foresta"
 		Russian:"Лес"
 		French:"Forêt"
 		Romanian:"Pădure"
+		German:"Wald"
+		Dutch:"Woud"
 	}
+
 	"Jungle":{
 		Italian:"Giungla"
 		Russian:"Джунгли"
 		French:"Jungle"
 		Romanian:"Junglă"
+		German:"Dschungel"
+		Dutch:"Oerwoud"
 	}
+
 	"Marsh":{
 		Italian:"Palude"
 		Russian:"Болотный"
 		French:"Marais"
 		Romanian:"Mlaştină"
+		German:"Sumpf"
+		Dutch:"Moeras"
 	}
+
 	"Oasis":{
 		Italian:"Oasi"
 		Russian:"Оазис"
 		French:"Oasis"
 		Romanian:"Oază"
+		German:"Oase"
+		Dutch:"Oase"
 	}
+
 	"Food plains":{
 		Italian:"Pianure alimentari"
 		Russian:"Пищевые равнины"
 		French:"Plaines alimentaires"
 		Romanian:"Câmpiile alimentare"
+		// German translation not sure
+		Dutch:"Riviervlakte"
 	}
 	
 	// Bonus Resources
@@ -612,36 +1031,53 @@
 		Russian:"Скот"
 		French:"Bétail"
 		Romanian:"Bovine"
+		German:"Rind"
+		Dutch:"Rundvee"
 	}
+
 	"Sheep":{
 		Italian:"Pecora"
 		Russian:"Овца"
 		French:"Mouton"
 		Romanian:"Oaie"
+		German:"Schaf"
+		Dutch:"Schaap"
 	}
+
 	"Deer":{
 		Italian:"Cervo"
 		Russian:"Oлень"
 		French:"Cerf"
 		Romanian:"Cerb"
+		German:"Hirsch"
+		Dutch:"Hert"
 	}
+
 	"Bananas":{
 		Italian:"Banane"
 		Russian:"Бананы"
 		French:"Bananes"
 		Romanian:"Banane"
+		German:"Bananen"
+		Dutch:"Bananen"
 	}
+
 	"Wheat":{
 		Italian:"Grano"
 		Russian:"Пшеница"
 		French:"Blé"
 		Romanian:"Grâu"
+		German:"Weizen"
+		Dutch:"Tarwe"
 	}
+
 	"Stone":{
 		Italian:"Pietra"
 		Russian:"Камень"
 		French:"Pierre"
 		Romanian:"Piatră"
+		German:"Stein"
+		Dutch:"Steen"
 	}
 	
 	// Strategic Resources
@@ -650,36 +1086,53 @@
 		Russian:"Лошади"
 		French:"Chevaux"
 		Romanian:"Cai"
+		German:"Pferde"
+		Dutch:"Paarden"
 	}
+
 	"Iron":{
 		Italian:"Ferro"
 		Russian:"Железо"
 		French:"Fer"
 		Romanian:"Fier"
+		German:"Eisen"
+		Dutch:"Ijzer"
 	}
+
 	"Coal":{
 		Italian:"Carbone"
 		Russian:"Уголь"
 		French:"Charbon"
 		Romanian:"Cărbune"
+		German:"Kohle"
+		Dutch:"Kool"
 	}
+
 	"Oil":{
 		Italian:"Petrolio"
 		Russian:"Нефть"
 		French:"Pétrole"
 		Romanian:"Petrol"
+		German:"Erdöl"
+		Dutch:"Olie"
 	}
+
 	"Aluminum":{
 		Italian:"Aluminio"
 		Russian:"Aлюминий"
 		French:"Aluminium"
 		Romanian:"Aluminiu"
+		German:"Aluminium"
+		Dutch:"Aluminium"
 	}
+
 	"Uranium":{
 		Italian:"Uranio"
 		Russian:"Уран"
 		French:"Uranium"
 		Romanian:"Uraniu"
+		German:"Uran"
+		Dutch:"Uranium"
 	}
 	
 	// Luxury Resources
@@ -688,78 +1141,116 @@
 		Russian:"Меха"
 		French:"Fourrures"
 		Romanian:"Blănărie"
+		German:"Felle"
+		Dutch:"Bonten"
 	}
+
 	"Cotton":{
 		Italian:"Cotone"
 		Russian:"Хлопок"
 		French:"Coton"
 		Romanian:"Bumbac"
+		German:"Baumwolle"
+		Dutch:"Katoen"
 	}
+
 	"Dyes":{
 		Italian:"Coloranti"
 		Russian:"Красители"
 		French:"Colorants"
 		Romanian:"Coloranți"
+		German:"Farbstoffe"
+		Dutch:"Verfstoffen"
 	}
+
 	"Gems":{
 		Italian:"Pietre preziose"
 		Russian:"Драгоценные камни"
 		French:"Gems"
 		Romanian:"Pietre pretioase"
+		German:"Edelsteine"
+		Dutch:"Edelstenen"
 	}
+
 	"Silver":{
 		Italian:"Argento"
 		Russian:"Серебро"
 		French:"Argent"
 		Romanian:"Argint"
+		German:"Silber"
+		Dutch:"Zilver"
 	}
+
 	"Incense":{
 		Italian:"Incenso"
 		Russian:"Паофюмы"
 		French:"Encens"
 		Romanian:"Parfume"
+		German:"Weihrauch"
+		Dutch:"Wierook"
 	}
+
 	"Silk":{
 		Italian:"Seta"
 		Russian:"Шелк"
 		French:"Soie"
 		Romanian:"Mătase"
+		German:"Seide"
+		Dutch:"Zijde"
 	}
+
 	"Spices":{
 		Italian:"Spezie"
 		Russian:"Cпеции"
 		French:"Épices"
 		Romanian:"Aromate"
+		German:"Gewürze"
+		Dutch:"Kruiden"
 	}
+
 	"Wine":{
 		Italian:"Vino"
 		Russian:"Вино"
 		French:"Vin"
 		Romanian:"Vin"
+		German:"Wein"
+		Dutch:"Wijn"
 	}
+
 	"Sugar":{
 		Italian:"Zucchero"
 		Russian:"Сахар"
 		French:"Sucre"
 		Romanian:"Zahar"
+		German:"Zucker"
+		Dutch:"Suiker"
 	}
+
 	"Marble":{
 		Italian:"Marmo"
 		Russian:"Мрамор"
 		French:"Marbre"
 		Romanian:"Marmură"
+		German:"Marmor"
+		Dutch:"Marmer"
 	}
+
 	"Pearls":{
-		Italian:""
-		Russian:""
-		French:""
-		Romanian:""
-	}
-	"Whales":{
 		Italian:"Perle"
 		Russian:"Жемчуг"
 		French:"Perles"
 		Romanian:"Perle"
+		German:"Perlen"
+		Dutch:"Parels"
+	}
+
+	"Whales":{
+		Italian:"Balene"
+		Russian:"Киты"
+		French:"Baleines"
+		Romanian:"Balene"
+		German:"Wale"
+		Dutch:"Walvissen"
 	}
 	
 	// Tile improvements
@@ -769,166 +1260,228 @@
 		Russian:"Ферма"
 		French:"Ferme"
 		Romanian:"Fermă"
+		German:"Farm"
+		Dutch:"Boerderij"
 	}
 	"Lumber mill":{
 		Italian:"Segheria"
 		Russian:"Лесопилка"
 		French:"Scierie"
 		Romanian:"Cherestea"
+		German:"Sägewerk"
+		Dutch:"Houtzagerij"
 	}
 	"Mine":{
 		Italian:"Miniera"
 		Russian:"Мина"
 		French:"Mine"
 		Romanian:"Mina"
+		German:"Mine"
+		Dutch:"Mijn"
 	}
 	"Trading post":{
 		Italian:"Base commerciale"
 		Russian:"Торговая точка"
 		French:"Comptoir commercial"
 		Romanian:"Post de vinzare"
+		German:"Handelsposten"
+		Dutch:"Handelspost"
 	}
 	"Camp":{
 		Italian:"Accampamento"
 		Russian:"Лагерь"
 		French:"Campement"
 		Romanian:"Tabără"
+		German:"Lager"
+		Dutch:"Kamp"
 	}
 	"Oil well":{
 		Italian:"Pozzo di petrolio"
 		Russian:"Нефтяная скважина"
 		French:"Puits de pétrole"
 		Romanian:"Sondă de nafta"
+		German:"Ölbrunnen"
+		Dutch:"Oliebron"
 	}
 	"Pasture":{
 		Italian:"Pascolo"
 		Russian:"Выгон"
 		French:"Pâturage"
 		Romanian:"Păşune"
+		German:"Weide"
+		Dutch:"Weide"
 	}
 	"Plantation":{
 		Italian:"Piantagione"
 		Russian:"Плантация"
 		French:"Plantation"
 		Romanian:"Plantaţie"
+		German:"Plantage"
+		Dutch:"Plantage"
 	}
 	"Quarry":{
 		Italian:"Cava"
 		Russian:"Карьер"
 		French:"Carrière"
 		Romanian:"Carieră"
+		German:"Steinbruch"
+		Dutch:"Steengroeve"
 	}
 	"Road":{
 		Italian:"Strada"
 		Russian:"Дорога"
 		French:"Route"
 		Romanian:"Drum"
+		German:"Strasse"
+		Dutch:"Weg"
 	}
 	"Railroad":{
 		Italian:"Ferrovia"
 		Russian:"Железная дорога"
 		French:"Chemin de fer"
 		Romanian:"Cale ferată"
+		German:"Gleis"
+		Dutch:"Spoorweg"
 	}
 	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
 		Italian:"Rimuovi"
 		Russian:"Удалить"
 		French:"Suprimer"
 		Romanian:"Elimina"
+		German:"Entfernen:" // verb behind object again
+		Dutch:"Verwijderen" // verb behind object
 	}
 	"Academy":{
 		Italian:"Accademia"
 		Russian:"Академия"
 		French:"Académie"
 		Romanian:"Academie"
+		German:"Akademie"
+		Dutch:"Academie"
 	}
 	"Landmark":{
 		Italian:"Punto di riferimento"
 		Russian:"Ориентир"
 		French:"Point de repère"
 		Romanian:"Reper"
+		// German translation not sure
+		// Dutch translation not sure
 	}
 	"Manufactory":{
 		Italian:"Fabbrica"
 		Russian:"Мануфактура"
 		French:"Manufacture"
 		Romanian:"Fabrică"
+		German:"Fabrik"
+		Dutch:"Fabriek"
 	}
 	"Customs house":{
 		Italian:"Dogana"
 		Russian:"Таможня"
 		French:"Maison des douanes"
 		Romanian:"Casa vamală"
+		German:"Zollamt"
+		Dutch:"Douanekantoor"
 	}
 	
 	
 	// Technologies (Ancient Era)
+	
+	"Agriculture":{
+		Italian:"Agricoltura"
+		Russian:"Земледелие"
+		French:"Agriculture"
+		Romanian:"Agricultură"
+		Dutch:"Agricultuur"
+	}
 	
 	"Pottery":{
 		Italian:"Ceramica"
 		Russian:"Керамика"
 		French:"Poterie"
 		Romanian:"Ceramică"
+		German:"Töpferkunst"
+		Dutch:"Aardwerk"
 	}
 	"Animal Husbandry":{
 		Italian:"Allevamento di animali"
 		Russian:"Животноводство"
 		French:"Élevage"
 		Romanian:"Creșterea animalelor"
+		German:"Tierhalutung"
+		Dutch:"Veeteelt"
 	}
 	"Archery":{
 		Italian:"Tiro con l'arco"
 		Russian:"Стрельба из лука"
 		French:"Tir à l'arc"
 		Romanian:"TIR cu arcul"
+		German:"Bogenschiessen"
+		Dutch:"Boogschieten"
 	}
 	"Mining":{
 		Italian:"Estrazione minerarie"
 		Russian:"Добыча руды"
 		French:"Exploitation minière"
 		Romanian:"Exploatare minieră"
+		German:"Bergbau"
+		Dutch:"Mijnbouw"
 	}
 	"Sailing":{
 		Italian:"Andare in barca"
 		Russian:"Мореплаванье"
 		French:"Navigation à voile"
 		Romanian:"Navigație"
+		German:"Segeln"
+		Dutch:"Zeilen"
 	}
 	"Calendar":{
 		Italian:"Calendario"
 		Russian:"Календарь"
 		French:"Calendrier"
 		Romanian:"Calendar"
+		German:"Kalender"
+		Dutch:"Kalender"
 	}
 	"Writing":{
 		Italian:"Scrittura"
 		Russian:"Письменность"
 		French:"L'écriture"
 		Romanian:"Scriere"
+		German:"Schrift"
+		Dutch:"Schrift"
 	}
 	"Trapping":{
 		Italian:"Caccia"
 		Russian:"Охота"
 		French:"Chasse"
 		Romanian:"Vânătoare"
+		German:"Fallen"
+		Dutch:"Valstrikken"
 	}
 	"The Wheel":{
 		Italian:"La ruota"
 		Russian:"Колесо"
 		French:"La roue"
 		Romanian:"Roata"
+		German:"Das Rad"
+		Dutch:"Het Wiel"
 	}
 	"Masonry":{
 		Italian:"Opere murarie"
 		Russian:"Каменная кладка"
 		French:"Maçonnerie"
 		Romanian:"Zidărie"
+		German:"Maurerei"
+		Dutch:"Metselkunst"
 	}
 	"Bronze Working":{
 		Italian:"Lavorazione bronzo"
 		Russian:"Обработка бронза"
 		French:"Traitement de bronze"
 		Romanian:"Prelucrarea bronzului"
+		German:"Bronze Bearbeitung"
+		Dutch:"Brons Bewerking"
 	}
 	
 	
@@ -939,48 +1492,64 @@
 		Russian:"Оптика"
 		French:"Optique"
 		Romanian:"Optica"
+		German:"Optik"
+		Dutch:"Optica"
 	}
 	"Horseback Riding":{
 		Italian:"Equitazione"
 		Russian:"Верховая езда"
 		French:"Monter à cheval"
 		Romanian:"Călărie"
+		German:"Reiten"
+		Dutch:"Paardrijden"
 	}
 	"Mathematics":{
 		Italian:"Matematica"
 		Russian:"Математика"
 		French:"Mathématiques"
 		Romanian:"Matematică"
+		German:"Mathematik"
+		Dutch:"Wiskunde"
 	}
 	"Construction":{
 		Italian:"Costruzione"
 		Russian:"Строительство"
 		French:"Bâtiment"
 		Romanian:"Clădire"
+		German:"Baukunst"
+		Dutch:"Bouwkunde"
 	}
 	"Philosophy":{
 		Italian:"Filosofia"
 		Russian:"Философия"
 		French:"Philosophie"
 		Romanian:"Filozofie"
+		German:"Philosophie"
+		Dutch:"Filosofie"
 	}
 	"Currency":{
 		Italian:"Moneta"
 		Russian:"Деньги"
 		French:"Monnaie"
 		Romanian:"Valută"
+		German:"Geld"
+		Dutch:"Geld"
 	}
 	"Engineering":{
 		Italian:"Ingegneria"
 		Russian:"Инженерия"
 		French:"Ingénierie"
 		Romanian:"Inginerie"
+		German:"Ingenieurwesen"
+		Dutch:"Ingenieurswezen"
 	}
 	"Iron Working":{
 		Italian:"Lavorazione del ferro"
 		Russian:"Обработка железа"
 		French:"Traitement du fer"
 		Romanian:"Prelucrarea fierului"
+		German:"Eisen Bearbeitung"
+		Dutch:"Ijzer Bewerking"
 	}
 	
 	
@@ -991,48 +1560,78 @@
 		Russian:"Теология"
 		French:"Théologie"
 		Romanian:"Teologie"
+		German:"Theologie"
+		Dutch:"Theologie"
 	}
 	"Civil Service":{
 		Italian:"Servizio civile"
 		Russian:"Гражданская служба"
 		French:"Service civil"
 		Romanian:"Serviciu civil"
+		German:"Zivildienst"
+		Dutch:"Overheidsdienst"
+	}
+	"Guilds":{
+		Italian:"Gilde"
+		Russian:"Гильдий"
+		French:"Guildes"
+		Romanian:"Bresle"
+		Dutch:"Gildes"
 	}
 	"Physics":{
 		Italian:"Fisica"
 		Russian:"Физика"
 		French:"La physique"
 		Romanian:"Fizică"
+		German:"Physik"
+		Dutch:"Fysica"
+	}
+	"Steel":{
+		Italian:"Acciaio"
+		Russian:"Сталь"
+		French:"Acier"
+		Romanian:"Oţel"
+		Dutch:"Staal"
 	}
 	"Metal Casting":{
 		Italian:"colata di metallo"
 		Russian:"Литье"
 		French:"Coulée de métal"
 		Romanian:"Turnarea metalului"
+		German:"Metallurgie"
+		Dutch:"Metaal gieten"
 	}
 	"Compass":{
 		Italian:"Bussola"
 		Russian:"Компас"
 		French:"Boussole"
 		Romanian:"Busolă"
+		German:"Kompass"
+		Dutch:"Kompas"
 	}
 	"Education":{
 		Italian:"Istruzione"
 		Russian:"Образование"
 		French:"Éducation"
 		Romanian:"Educaţie"
+		German:"Bildung"
+		Dutch:"Educatie"
 	}
 	"Chivalry":{
 		Italian:"Cavalleria"
 		Russian:"Рыцарство"
 		French:"Chevalerie"
 		Romanian:"Cavalerime"
+		German:"Kavallerie"
+		Dutch:"Ridderlijkheid"
 	}
 	"Machinery":{
 		Italian:"Macchinari"
 		Russian:"Машыни"
 		French:"Machinerie"
 		Romanian:"Mașini"
+		German:"Maschienenbau"
+		Dutch:"Machinebouw"
 	}
 	
 	
@@ -1043,48 +1642,80 @@
 		Russian:"Астрономия"
 		French:"Astronomie"
 		Romanian:"Astronomie"
+		German:"Astronomie"
+		Dutch:"Astronomie"
 	}
 	"Acoustics":{
 		Italian:"Acustica"
 		Russian:"Акустика"
 		French:"Acoustique"
 		Romanian:"Acustică"
+		German:"Akustik"
+		Dutch:"Akoestiek"
 	}
 	"Banking":{
 		Italian:"Bancario"
 		Russian:"Банковское дело"
 		French:"Bancaire"
 		Romanian:"Banca"
+		German:"Bank"
+		Dutch:"Bank"
 	}
 	"Printing Press":{
 		Italian:"Macchina da stampa"
 		Russian:"Печатный пресс"
 		French:"Presse d'imprimerie"
 		Romanian:"Presă de tipar"
+		German:"Druckpresse"
+		Dutch:"Drukpers"
+	}
+	"Gunpowder":{
+		Italian:"Polvere da sparo"
+		Russian:"Порох"
+		French:"Poudre à canon"
+		Romanian:"Praf de puşcă"
+		Dutch:"Buskruid"
 	}
 	"Navigation":{
 		Italian:"Navigazione"
 		Russian:"Навигация"
 		French:"La navigation"
 		Romanian:"Navigare"
+		German:"Navigation"
+		Dutch:"Navigatie"
 	}
 	"Archaeology":{
 		Italian:"Archeologia"
 		Russian:"Aрхеология"
 		French:"Archéologie"
 		Romanian:"Arheologie"
+		German:"Archeologie"
+		Dutch:"Archeologie"
 	}
 	"Economics":{
 		Italian:"Economia"
 		Russian:"Экономика"
 		French:"Économie"
 		Romanian:"Economie"
+		German:"Ökonomie"
+		Dutch:"Economie"
 	}
+	
+	"Metallurgy":{
+		Italian:"Metallurgia"
+		Russian:"Металлургия"
+		French:"Métallurgie"
+		Romanian:"Metalurgie"
+		Dutch:"Metaalkunde"
+	}
+	
 	"Chemistry":{
 		Italian:"Chimica"
 		Russian:"Химия"
 		French:"Chimie"
 		Romanian:"Chimie"
+		German:"Chemie"
+		Dutch:"Chemie"
 	}
 	
 	// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
@@ -1094,30 +1725,71 @@
 		Russian:"Научная теория"
 		French:"Théorie scientifique"
 		Romanian:"Teoria științifică"
+		German:"Wissenschaftliche Thorie"
+		Dutch:"Wetenschappelijke Theorie"
 	}
+	
+	"Industrialization":{
+		Italian:"Industrializzazione"
+		Russian:"Индустриализация"
+		French:"Industrialisation"
+		Romanian:"Industrializare"
+		Dutch:"Industrialisatie"
+	}
+	"Rifling":{
+		Italian:"Rigatura"
+		Russian:"Нарезка"
+		French:"Rayeur"
+		Romanian:"Ghintuire"
+		Dutch:"Gedraaide loop"
+	}
+	"Military Science":{
+		Italian:""
+		Russian:""
+		French:""
+		Romanian:""
+		Dutch:"Militaire Wetenschap"
+	}
+	
 	"Fertilizer":{
 		Italian:"Fertilizzante"
 		Russian:"Yдобрение"
 		French:"Engrais"
 		Romanian:"Îngrăşământ"
+		German:"Dünger"
+		Dutch:"Mest"
 	}
 	"Biology":{
 		Italian:"Biologia"
 		Russian:"Биология"
 		French:"La biologie"
 		Romanian:"Biologie"
+		German:"Biologie"
+		Dutch:"Biologie"
 	}
 	"Electricity":{
 		Italian:"Electricità"
 		Russian:"Электричество"
 		French:"Électricité"
 		Romanian:"Electricitate"
+		German:"Elektrizität"
+		Dutch:"Elektriciteit"
 	}
 	"Steam Power":{
 		Italian:"Forza vapore"
 		Russian:"Сила пара"
 		French:"Puissance de la vapeur"
 		Romanian:"Puterea aburului"
+		German:"Dampfkraft"
+		Dutch:"Stoomkracht"
+	}
+	
+	"Dynamite":{
+		Italian:"Dinamite"
+		Russian:"Динамит"
+		French:"Dynamiter"
+		Romanian:"Dinamită"
+		Dutch:"Dynamiet"
 	}
 	
 	
@@ -1128,38 +1800,56 @@
 		Russian:"Oхлаждение"
 		French:"Réfrigération"
 		Romanian:"Refrigeraţie"
+		German:"Kühlung"
+		Dutch:"Koeling"
 	}
 	"Radio":{
 		Italian:"Radio"
 		Russian:"Радио"
 		French:"Radio"
 		Romanian:"Radio"
+		German:"Radio"
+		Dutch:"Radio"
 	}
 	"Combustion":{
 		Italian:"Combustione"
 		Russian:"Горение"
 		French:"La combustion"
 		Romanian:"Combustie"
+		German:"Verbrennung"
+		Dutch:"Verbranding"
 	}
 	"Plastics":{
 		Italian:"Plastica"
 		Russian:"Пластики"
 		French:"Plastiques"
 		Romanian:"Materiale plastice"
+		German:"Plastik"
+		Dutch:"Plastic"
 	}
 	"Electronics":{
 		Italian:"Elettronica"
 		Russian:"Электроника"
 		French:"Électronique"
 		Romanian:"Electronică"
+		German:"Elektronik"
+		Dutch:"Elektronica"
 	}
 	"Mass Media":{
 		Italian:"Mass media"
 		Russian:"СМИ"
 		French:"Médias de masse"
 		Romanian:"Mass media"
+		German:"Massenmedien"
+		Dutch:"Massa Media"
 	}
 	"Flight":{
+		Italian:"Volo"
+		Russian:"Полет"
+		French:"Vol"
+		Romanian:"Zbor"
+		German:"Flug"
+		Dutch:"Vlucht"
 	}
 	
 	// Technologies (Information Era)
@@ -1169,36 +1859,48 @@
 		Russian:"Фармацевтические препараты"
 		French:"Médicaments"
 		Romanian:"Produse farmaceutice"
+		German:"Pharmazeut"
+		Dutch:"Farmaceutica"
 	}
 	"Computers":{
 		Italian:"Computers"
 		Russian:"Kомпьютеры"
 		French:"Ordinateurs"
 		Romanian:"Calculatoare"
+		German:"Computer"
+		Dutch:"Computers"
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
 		Russian:"Ядерное деление"
 		French:"Fission nucléaire"
 		Romanian:"Fisiune nucleara"
+		German:"Kernspaltung"
+		Dutch:"Kernsplijting"
 	}
 	"Ecology":{
 		Italian:"Ecologia"
 		Russian:"Экология"
 		French:"Écologie"
 		Romanian:"Ecologie"
+		German:"Ökologie"
+		Dutch:"Ecologie"
 	}
 	"Robotics":{
 		Italian:"Robotica"
 		Russian:"Робототехника"
 		French:"Robotique"
 		Romanian:"Robotică"
+		German:"Robotik"
+		Dutch:"Robotica"
 	}
 	"Rocketry":{
 		Italian:"Missilistica"
 		Russian:"Ракетная техника"
 		French:"Rocketry"
 		Romanian:"Rachete"
+		German:"Raketentechnik"
+		Dutch:"Rakettechniek"
 	}
 	
 	// Technologies (Future Era)
@@ -1207,46 +1909,642 @@
 		Russian:"Нанотехнологии"
 		French:"Nanotechnologie"
 		Romanian:"Nanotehnologie"
+		German:"Nanotechnologie"
+		Dutch:"Nanotechnologie"
 	}
 	"Satellites":{
 		Italian:"Satelliti"
 		Russian:"Спутники"
 		French:"Satellites"
 		Romanian:"Sateliții"
+		German:"Satelitten"
+		Dutch:"Satellieten"
 	}
 	"Particle Physics":{
 		Italian:"Fisica delle particelle"
 		Russian:"Физика частиц"
 		French:"La physique des particules"
 		Romanian:"Fizica particulelor"
+		German:"Teilchenphysik"
+		Dutch:"Deeltjesfysica"
 	}
 	"Future Tech":{
 		Italian:"Tecnologia del futuro"
 		Russian:"Технология будущчего"
 		French:"Technologie future"
 		Romanian:"Tehnologia viitoare"
+		German:"Zukünftige Technologien"
+		Dutch:"Toekomst Technologie"
+	}
+	
+	"Who knows what the future holds?":{
+		Italian:"Chi sa cosa riserva il futuro?"
+		Russian:"Кто знает, что ждет в будущем?"
+		French:"Qui sait ce que l'avenir réserve?"
+		Romanian:"Chi sa cosa riserva il futuro?"
+		Dutch:"Wie weet wat de toekomst inhoud?"
+	}
+	
+	"Improves movement speed on roads":{
+		Italian:"Migliora la velocità di movimento sulle strade"
+		Russian:"Улучшает скорость передвижения по дорогам"
+		French:"Améliore la vitesse de déplacement sur les routes"
+		Romanian:"Îmbunătățește viteza de mișcare pe drumuri"
+	}
+	"Enables conversion of city production to science":{
+		Italian:"Consente la conversione della produzione di città in scienza"
+		Russian:"Обеспечивает преобразование городского производства в науку"
+		French:"Permet la conversion de la production de la ville en science"
+		Romanian:"Permite conversia producției în oraș la știință"
+	}
+	"Enables conversion of city production to gold":{
+		Italian:"Consente la conversione della produzione di città in oro"
+		Russian:"Позволяет конвертировать городское производство в золото"
+		French:"Permet la conversion de la production de la ville en or"
+		Romanian:"Permite conversia producției în oraș la aur"
+	}
+	
+	// Tech Eras
+	// In case of foreign languages it becomes gender sensitive words
+	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
+	"Ancient":{
+		Italian:"Antica"
+		Russian:"Древняя"
+		French:"Ancien"
+		Romanian:"Antica"
+		Dutch:"Oude"
+	}
+	"Classical":{
+		Italian:"Classica"
+		Russian:"Классическая"
+		French:"Classique"
+		Romanian:"Clasica"
+		Dutch:"Klasieke"
+	}
+	"Medieval":{
+		Italian:"Medievale"
+		Russian:"Средневековье" //one word translation
+		French:"Médiéval"
+		Romanian:"Medievala"
+		Dutch:"Middeleeuwse"
+	}
+	"Renaissance":{
+		Italian:"Rinascimento" //one word translation
+		Russian:"Ренессанс" //one word translation
+		French:"Renaissance" //one word translation
+		Romanian:"Renaşterei"
+		Dutch:"Renaissance"
+	}
+	"Industrial":{
+		Italian:"Industriale"
+		Russian:"Современная"
+		French:"Industriel"
+		Romanian:"Industriala"
+		Dutch:"Industrieele"
+	}
+	"Modern":{
+		Italian:"Moderna"
+		Russian:"Современное"
+		French:"Moderne"
+		Romanian:"Moderna"
+		Dutch:"Moderne"
+	}
+	"Information":{
+		Italian:"Informatica"     //[newEra] +translation
+		Russian:"Информатическая" //translation+ [newEra]
+		French:"Information"
+		Romanian:"Informației"
+		Dutch:"Informatie"
+	}
+	"Future":{
+		Italian:"Futuro"
+		Russian:"Будущее" //all one word translation
+		French:"Avenir" 
+		Romanian:"Viitor"
+		Dutch:"Toekomst"
 	}
 	
 	// Building unique abilities
 	
-	"+1 Science Per 2 Population":{}
-	"Worker construction increased 25%, provides 2 free workers":{}
-	"Free Social Policy":{}
-	"Golden Age length increases +50%":{}
-	"+33% great person generation in all cities":{}
-	"Gold from all trade routes +25%":{}
-	"40% of food is carried over after a new citizen is born":{}
-	"Jungles provide +2 science":{}
-	"Cost of acquiring new tiles reduced by 25%":{}
-	"Culture in all cities increased by 25%":{}
-	"Unhappiness from population decreased by 10%":{}
-	"Empire enters golden age":{}
-	"Free Great Artist Appears":{}
-	"Culture cost of adopting new Policies reduced by 10%":{}
-	"Provides 1 happiness per social policy":{}
-	"Must be next to desert":{}
-	"Enables construction of Spaceship parts":{}
-	"Increases production of spaceship parts by 50%":{}
-	"Spaceship part":{}
+	"+1 Science Per 2 Population":{
+		Italian:"+1 Scienza per 2 popolazione"
+		Russian:"+1 Наука за 2 населения"
+		French:"+1 Science par 2 Population"
+		Romanian:"+1 știință pe 2 persoane"
+		German:"+1 Erforschung pro 2 Bewohner"
+		Dutch:"+1 Wetenschap per 2 Populatie"
+	}
+	"Worker construction increased 25%, provides 2 free workers":{
+		Italian:"La costruzione dei lavoratori è aumentata del 25%, offre 2 lavoratori liberi"
+		Russian:"Строительство рабочих увеличилось на 25%, предоставлено 2 свободных рабочих"
+		French:"La construction des travailleurs a augmenté de 25%, fournit 2 travailleurs libres"
+		Romanian:"Lucrările de construcție a crescut cu 25%, oferă 2 lucrători liberi"
+		German:"Arbeiterproduktion um 25% erhöht, gibt 2 freie Arbeiter"
+		Dutch:"Werkerproducktie met 25% vehoogt, geeft 2 gratis werkers"
+	}
+	"Free Social Policy":{
+		Italian:"Politica sociale gratuita"
+		Russian:"Бесплатная социальная политика"
+		French:"Politique sociale gratuite"
+		Romanian:"Politica socială gratuită"
+		German:"Freie Sozialpolitik"
+		Dutch:"Gratis sociaalbeleid"
+	}
+	"Golden Age length increases +50%":{
+		Italian:"La lunghezza dell'età dell'oro aumenta + 50%"
+		Russian:"Длина золотого века + 50%"
+		French:"La longueur de l'âge d'or augmente de 50%"
+		Romanian:"Vârsta de aur crește + 50%"
+		German:"Länge eines Goldenen Zeitalters um 50% erhöht"
+		Dutch:"Gouden eeuw lengte neem toe met +50%"
+	}
+	"+33% great person generation in all cities":{
+		Italian:"+ 33% di generazione di grandi persone in tutte le città"
+		Russian:"+ 33% отличное поколение людей во всех городах"
+		French:"+ 33% de génération géniale dans toutes les villes"
+		Romanian:"+ 33% generație mare de persoane în toate orașele"
+		// German translation not sure
+		Dutch:"+33% Geweldig persoon generatie in alle steden"
+	}
+	"Gold from all trade routes +25%":{
+		Italian:"Oro da tutte le rotte commerciali + 25%"
+		Russian:"Золото со всех торговых путей + 25%"
+		French:"Or de toutes les routes commerciales + 25%"
+		Romanian:"Aur din toate rutele comerciale + 25%"
+		German:"Gold von allen Handelsrouten um 25% erhöht"
+		Dutch:"Van alle handelroutes +25% goud"
+	}
+	"40% of food is carried over after a new citizen is born":{
+		Italian:"Il 40% del cibo viene mantenuto dopo la nascita di un nuovo cittadino"
+		Russian:"40% продовольствия переносится после рождения нового гражданина"
+		French:"40% de la nourriture est reportée après la naissance d'un nouveau citoyen"
+		Romanian:"40% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
+		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
+		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
+	}
+	"Jungles provide +2 science":{
+		Italian:"Giungle forniscono +2 scienza"
+		Russian:"Джунгли обеспечивают +2 науку"
+		French:"Jungles fournissent +2 science"
+		Romanian:"Junglele oferă știință +2"
+		German:"Dschungel produziert 2 Erforschung"
+		Dutch:"Oerwouden leveren +2 Wetenschap"
+	}
+	"Cost of acquiring new tiles reduced by 25%":{
+		Italian:"Costo di acquisto di nuove celle ridotto del 25%"
+		Russian:"Стоимость приобретения новых плиток сократилась на 25%"
+		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
+		Romanian:"Costul de achiziționare a plăcilor noi a scăzut cu 25%"
+		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
+		Dutch:"Kosten voor het kopen van nieuwe velden verlaagt met 25%"
+	}
+	"Culture in all cities increased by 25%":{
+		Italian:"La cultura in tutte le città è aumentata del 25%"
+		Russian:"Культура во всех городах увеличилась на 25%"
+		French:"La culture dans toutes les villes a augmenté de 25%"
+		Romanian:"Cultura în toate orașele a crescut cu 25%"
+		German:"Kultur wird in allen Städten um 25% erhöht"
+		Dutch:"Cultuur word in alle steden verhoogd met 25%"
+	}
+	"Unhappiness from population decreased by 10%":{
+		Italian:"L'infelicità della popolazione è diminuita del 10%"
+		Russian:"Неспособность населения снизилась на 10%"
+		French:"Le mécontentement de la population a diminué de 10%"
+		Romanian:"Nefericirea de la populație a scăzut cu 10%"
+		German:"Unzufriedenheit vom Volk um 10% verringert"
+		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
+	}
+	"Empire enters golden age":{
+		Italian:"L'impero entra nell'età dell'oro"
+		Russian:"Империя вступает в золотой век"
+		French:"L'Empire entre dans l'âge d'or"
+		Romanian:"Imperiul intră în epoca de aur"
+		German:"Das Reich tritt ein goldenes Zeitalter an"
+		Dutch:"Het rijk betreed een gouden eeuw"
+	}
+	"Free Great Artist Appears":{
+		Italian:"Il grande artista gratuito appare"
+		Russian:"Появляется бесплатный великий артист"
+		French:"Grand artiste libre apparaît"
+		Romanian:"Artistul Mare apare gratuit"
+		// German translation not sure
+		Dutch:"Een gratis geweldige artiest verschijnt"
+	}
+	"Culture cost of adopting new Policies reduced by 10%":{
+		Italian:"Costo della cultura dell'adozione di nuove politiche ridotto del 10%"
+		Russian:"Стоимость культуры принятия новой политики сократилась на 10%"
+		French:"Coût culturel de l'adoption de nouvelles polices réduit de 10%"
+		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
+		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
+		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
+	}
+	"Provides 1 happiness per social policy":{
+		Italian:"Fornisce 1 felicità per politica sociale"
+		Russian:"Обеспечивает 1 счастье за социальную политику"
+		French:"Fournit 1 bonheur par politique sociale"
+		Romanian:"Oferă 1 fericire pe politică socială"
+		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
+		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
+	}
+	"Must be next to desert":{
+		Italian:"Deve essere vicino al deserto"
+		Russian:"Должно быть рядом с пустыней"
+		French:"Doit être à côté du désert"
+		Romanian:"Trebuie să fie lângă deșert"
+		German:"Muss an eine Wüste grenzen"
+		Dutch:"Moet aan een woestijn grenzen"
+	}
+	"Enables construction of Spaceship parts":{
+		Italian:"Consente la costruzione di parti di navi spaziali"
+		Russian:"Разрешает строительство частей космического корабля"
+		French:"Permet la construction de pièces de vaisseau spatial"
+		Romanian:"Permite construcția de părți ale navelor spațiale"
+		German:"Schaltet Arbeit an Raumschiffteilen frei"
+		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
+	}
+	"Increases production of spaceship parts by 50%":{
+		Italian:"Aumenta la produzione di parti di navi spaziali del 50%"
+		Russian:"Увеличивает выпуск космических кораблей на 50%"
+		French:"Augmente la production de pièces de vaisseaux spatiaux de 50%"
+		Romanian:"Crește producția de piese de navă spațială cu 50%"
+		German:"Erhöht Produktion an Raumschiffteilen um 50%"
+		Dutch:"Verhoogd de productiesnelheid van ruimteschips onderdelen met 50%"
+	}
+	"Spaceship part":{
+		Italian:"Parte della nave spaziale"
+		Russian:"Часть космического корабля"
+		French:"Pièce de navire spatial"
+		Romanian:"Partea spațială a navei"
+		German:"Raumschiffteil"
+		Dutch:"Ruimteschip onderdeel"
+	}
 	
+	// Unit types
+	"Civilian":{
+		Italian:"Civile"
+		Russian:"Цивильный"
+		French:"Civil"
+		Romanian:"Civil"
+		German:"Zivilist"
+		Dutch:"Burger"
+	}
+	"Melee":{
+		Italian:"Mischia"
+		Russian:"Рукопашная"
+		French:"Mêlée"
+		Romanian:"Incăierare"
+		German:"Nahkämpfer"
+		Dutch:"Melee"
+	}
+	"Ranged":{
+		Italian:"a Distanza"
+		Russian:"Дальний бой"
+		French:"À distance"
+		Romanian:"ranged"
+		German:"Fernkämpfer"
+		Dutch:"Afstands"
+	}
+	"Siege":{
+		Italian:"Assedio"
+		Russian:"Осада"
+		French:"Siège"
+		Romanian:"Asediu"
+		German:"Belagerungsmaschiene"
+		Dutch:"Belegering"
+	}
+	"Mounted":{
+		Italian:"Cavaliere"
+		Russian:"Конный"
+		French:"Monté"
+		Romanian:"Montat"
+		German:"Kavallerie"
+		Dutch:"Bereden"
+	}
+	"Scout":{
+		Italian:"Esploratore"
+		Russian:"Разведчик"
+		French:"Scout"
+		Romanian:"Cercetaș"
+		German:"Kundschafter"
+		Dutch:"Verkening"
+	}
+	"City":{
+		Italian:"Città"
+		Russian:"Город"
+		French:"Ville"
+		Romanian:"Oraș"
+		German:"Stadt"
+		Dutch:"Stad"
+	}
+	
+	
+	// Unit uniques
+	"Can build improvements on tiles":{
+		Italian:"Può migliorare le celle"
+		Russian:"Может создавать улучшения на клетках"
+		French:"Peut construire des améliorations sur les carreaux"
+		Romanian:"Poate construi îmbunătățiri pe plăci"
+		German:"Kan Verbesserungen auf Feldern bauen"
+		Dutch:"Kan verbeteringen op velden bouwen"
+	}
+	"Founds a new city":{
+		Italian:"Fonda una nuova città"
+		Russian:"Нашел новый город"
+		French:"Trouve une nouvelle ville"
+		Romanian:"Creează un oraș nou"
+		German:"Gründet eine neue Stadt"
+		Dutch:"Sticht een nieuwe stad"
+	}
+	"Ignores terrain cost":{
+		Italian:"Ignora il costo del terreno"
+		Russian:"Игнорирует стоимость местности"
+		French:"Ignore le coût du terrain"
+		Romanian:"Ignoră costul terenului"
+		// German translation not sure
+		Dutch:"Negeert terreinskosten"
+	}
+	"No defensive terrain bonus":{
+		Italian:"Nessun bonus sul terreno difensivo"
+		Russian:"Отсутствие бонуса за боеголовок"
+		French:"Aucun bonus de terrain défensif"
+		Romanian:"Niciun bonus de teren defensiv"
+		German:"Keinen Geländeabhängigen Verteidigunsbonus"
+		Dutch:"Geen defensiefe terreinsbonussen"
+	}
+	"Rough terrain penalty":{
+		Italian:"Penalità di terreno grezzo"
+		Russian:"Штраф грубой местности"
+		French:"Pénalité de terrain rugueux"
+		Romanian:"Зenalizare pentru teren accidentat"
+		German:"Nachteil bei rauem Gelände"
+		Dutch:"Nadeel in ruig terrein"
+	}
+	"Bonus vs [unitType]":{
+		Italian:"Bonus vs [unitType]"
+		Russian:"Бонус против [unitType]"
+		French:"Bonus vs [unitType]"
+		Romanian:"Bonus vs [unitType]"
+		German:"Vorteil gegen eine(n) [unitType]" // Gender sensitive
+		Dutch:"Voordeel tegen [unitType]"
+	}
+	"Penalty vs [unitType]":{
+		Italian:"Penalità vs [unitType]"
+		Russian:"Штраф vs [unitType]"
+		French:"Pénalité vs [unitType]"
+		Romanian:"Penalitate vs [unitType]"
+		German:"Nachteil gegen eine(n) [unitType]" // Gender sensitive
+		Dutch:"Nadeel tegen [unitType]"
+	}
+	"Must set up to ranged attack":{
+		Italian:"Deve impostare un attacco a distanza"
+		Russian:"Необходимо настроить атаку дальнего боя"
+		French:"Doit être configuré pour une attaque à distance"
+		Romanian:"Trebuie să fie pregătit să atace"
+		German:"Muss aufstellen um Fernattacken auszuführen"
+		Dutch:"Moet opstellen voordat er een aanval op afstand kan worden gemaakt"
+	}
+	"Can move after attacking":{
+		Italian:"Può muoversi dopo aver attaccato"
+		Russian:"Может двигаться после атаки"
+		French:"Peut se déplacer après avoir attaqué"
+		Romanian:"Poate să se miște după ce a atacat"
+		German:"Kann sich nach dem Angriff bewegen"
+		Dutch:"Kan zich verplaatsen na het aanvallen"
+	}
+	"Limited Visibility":{
+		Italian:"Visibilità limitata"
+		Russian:"Ограниченная видимость"
+		French:"Visibilité limitée"
+		Romanian:"Vizibilitate redusă"
+		German:"Begrenzte Sichtweite"
+		Dutch:"Gelimiteerd zicht"
+	}
+	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
+		Italian:"Può iniziare un'età dell'oro a 8 turni o costruire un monument (+6 cultura)"
+		Russian:"Может начать 8-ти золотистый век или построить памятник (+6 культура)"
+		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 culture)"
+		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (cultura + 6)"
+		// German translation not sure
+		// Dutch translation not sure
+	}
+	"Can discover a technology, or construct an Academy (+4 science)" :{
+		Italian:"Può scoprire una tecnologia o costruire un'accademia (+4 scienza)"
+		Russian:"Может открыть технологию или построить Академию (+4 наука)"
+		French:"Peut découvrir une technologie, ou construire une Académie (+4 science)"
+		Romanian:"Poate să descopere o tehnologie sau să construiască o Academie (știință +4)"
+		German:"Kann eine Technologie entdecken, oder eine Akademie (+4 Erforschung) bauen"
+		Dutch:"Kan een technologie ontdekken, of een Academie (+4wetenschap) bouwen"
+	}
+	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)":{
+		Italian:"Può intraprendere una missione commerciale, dare una grande somma di oro, o costruire una dogana (+4 oro)"
+		Russian:"Может предпринять торговую миссию, дать большую сумму золота или построить Таможенную палату (+4 золота)"
+		French:"Peut entreprendre une mission commerciale, donner une grosse somme d'or, ou construire une maison de douane (+4 pièces d'or)"
+		Romanian:"Poate să întreprindă o misiune comercială, să dea o sumă mare de aur sau să construiască o casă vamală (+4 de aur)"
+		German:"Kann eine Handelsmission unternehmen, viel Gold geben oder ein Zollamt (+4 Gold) bauen"
+		Dutch:"Kan een handelsmissie ondergaan, levert veel goud op, of bouwt een Douanekantoor (+4 goud) bouwen"
+	}
+	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{
+		Italian:"Può velocizzare la costruzione di una meraviglia, o costruire una manifattura (+4 produzione)"
+		Russian:"Может ускорить строительство чуда или построить мануфактуру (+4 производства)"
+		French:"Peut accélérer la construction d'une merveille, ou construire une manufacture (+4 production)"
+		Romanian:"Poate accelera construcția unei minune sau poate construi o fabrică (+4 producție)"
+		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
+		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
+	}
+	
+	// Policy picker screen
+	"You have entered the [newEra] era!":{
+		Italian:"Sei entrato nell'era [newEra]!"
+		Russian:"Вы вошли в эпоху [newEra]!"
+		French:"Vous êtes entré dans l'ère [newEra]!"
+		Romanian:"Ați intrat în epoca [newEra]!"
+		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is 
+	}
+	"[policyBranch] policy branch unlocked!":{
+		Italian:"[policyBranch] ramo della politica sbloccato!"
+		Russian:"[policyBranch] ветвь политики разблокирована!"
+		French:"[policyBranch] branche de la politique déverrouillée!"
+		Romanian:"[policyBranch] ramură de politică deblocată!"
+		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
+	} // EG Rationalism policy branch unlocked!
+	
+	// Trade
+	"Trade with [otherCiv]":{	
+		Italian:"Scambia con [otherCiv]"
+		Russian:"Торговля с [otherCiv]"
+		French:"Échanger avec [otherCiv]"
+		Romanian:"Comerțul cu [otherCiv]"
+	}
+	"Offer trade":{	
+		Italian:"Offerta commerciale"
+		Russian:"Предложение торговли"
+		French:"Offre d'échange"
+		Romanian:"Oferta comerciala"
+	}
+	"What do you have in mind?":{	
+		Italian:"Cos'hai in mente?"
+		Russian:"Что у тебя на уме?"
+		French:"À quoi penses-tu?"
+		Romanian:"La ce te gandesti?"
+	}
+	"Our items":{	
+		Italian:"I nostri articoli"
+		Russian:"Наши товары"
+		French:"Nos articles"
+		Romanian:"Articolele noastre"
+	}
+	"Our trade offer":{	
+		Italian:"La nostra offerta commerciale"
+		Russian:"Наше торговое предложение"
+		French:"Notre offre commerciale"
+		Romanian:"Oferta noastră comercială"
+	}
+	"[otherCiv]'s trade offer":{
+		Italian:"L'offerta commerciale di [otherCiv]"
+		Russian:"Коммерческое предложение [otherCiv]"
+		French:"L'offre commerciale de [otherCiv]"
+		Romanian:"ofertă de schimb a [otherCiv]"
+	}
+	"[otherCiv]'s items":{	
+		Italian:"Gli articoli di [otherCiv]"
+		Russian:"Предметы [otherCiv]"
+		French:"Les articles de [otherCiv]"
+		Romanian:"Articolele la [otherCiv]"
+	}
+	"Pleasure doing business with you!":{
+		Italian:"È un piacere fare affari con lei!"
+		Russian:"Удовольствие работать с тобой!"
+		French:"Plaisir de faire des affaires avec vous!"
+		Romanian:"Plăcerea face afaceri cu dumneavoastra!"
+	}
+	"I think not.":{	
+		Italian:"Non penso proprio!"
+		Russian:"Думаю, нет."
+		French:"Je crois pas."
+		Romanian:"Asa nu!"
+	}
+	"That is acceptable.":{	
+		Italian:"E accetttabile."
+		Russian:"Это приемлемо."
+		French:"C'est acceptable."
+		Romanian:"E acceptabil."
+	}
+	"Accept":{	
+		Italian:"Accetta"
+		Russian:"Принять"
+		French:"Accept"
+		Romanian:"Accepta"
+	}
+
+
+	//civilisations
+	"Babylon":{	
+		Italian:"Babilonia"
+		Russian:"Вавилон"
+		French:"Babylone"
+		Romanian:"Babilonia"
+	}
+	"Greece":{	
+		Italian:"Grecia"
+		Russian:"Греция"
+		French:"Grèce"
+		Romanian:"Grecia"
+	}
+	"China":{	
+		Italian:"Cina"
+		Russian:"Китай"
+		French:"Chine"
+		Romanian:"Cina"
+	}
+	"Egypt":{	
+		Italian:"Egitto"
+		Russian:"Египет"
+		French:"Egypte"
+		Romanian:"Egipt"
+	}
+	"England":{	
+		Italian:"Inghilterra"
+		Russian:"Англия"
+		French:"Angleterre"
+		Romanian:"Anglia"
+	}
+	"France":{	
+		Italian:"Francia"
+		Russian:"Франция"
+		French:"France"
+		Romanian:"Franta"
+	}
+
+	//Difficulty
+	"Settler":{	
+		Italian:"Colonizzatore"
+		Russian:"Поселенец"
+		French:"colonisateur"
+		Romanian:"Colonist"
+	}
+	"Chieftain":{	
+		Italian:"Capo"
+		Russian:"Вождь"
+		French:"Chef de clan"
+		Romanian:"șef de trib"
+	}
+	"Warlord":{	
+		Italian:"Condottiere"
+		Russian:"Военачальник"
+		French:"Chef militaire"
+		Romanian:"General"
+	}
+	"Prince":{	
+		Italian:"Principe"
+		Russian:"Принц"
+		French:"Prince"
+		Romanian:"Prinţ"
+	}
+	"King":{	
+		Italian:"RE"
+		Russian:"Король"
+		French:"Roi"
+		Romanian:"Rege"
+	}
+	"Emperor":{	
+		Italian:"Imperatore"
+		Russian:"Император"
+		French:"Empereur"
+		Romanian:"Împărat"
+	}
+	"Immortal":{	
+		Italian:"Immortale"
+		Russian:"Бессмертный"
+		French:"Immortel"
+		Romanian:"Nemuritor"
+	}
+	"Deity":{	
+		Italian:"Divinità"
+		Russian:"Божество"
+		French:"Déité"
+		Romanian:"Zeitate"
+	}
+
+	//world size
+	"Small":{	
+		Italian:"Piccolo"
+		Russian:"Маленький"
+		French:"Petit"
+		Romanian:"Mic"
+	}
+	"Medium":{	
+		Italian:"Medio"
+		Russian:"Средний"
+		French:"Moyen"
+		Romanian:"Mediu"
+	}
+	"Large":{	
+		Italian:"Grande"
+		Russian:"Большой"
+		French:"Grand"
+		Romanian:"Mare"
+	}
+
+
+
 }

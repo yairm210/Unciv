@@ -1,11 +1,12 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Technology
+import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
@@ -23,7 +24,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = GameBasics.Technologies.keys
             .filter { civTech.canBeResearched(it) }.toHashSet()
-    private val LightBlue = Color.BLUE.cpy().lerp(Color.WHITE, 0.3f)
+    private val lightBlue = Color.BLUE.cpy().lerp(Color.WHITE, 0.3f)
     private val turnsToTech = GameBasics.Technologies.values.associateBy ({ it.name },{civTech.turnsToTech(it.name)})
 
     constructor(freeTechPick: Boolean, civInfo: CivilizationInfo) : this(civInfo) {
@@ -33,11 +34,16 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     init {
         techsToResearch = ArrayList(civTech.techsToResearch)
 
-        val techMatrix = Array<Array<Technology?>>(17) { arrayOfNulls(10) } // Divided into columns, then rows
+        val columns = 17
+        val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
 
         for (technology in GameBasics.Technologies.values) {
-            techMatrix[technology.column!!.columnNumber - 1][technology.row - 1] = technology
+            techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
+
+        val eras = ArrayList<Label>()
+        for(i in techMatrix.indices) eras.add(Label("",CameraStageBaseScreen.skin))
+        eras.forEach { topTable.add(it) }
 
         for (i in 0..9) {
             topTable.row().pad(5f)
@@ -46,13 +52,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 val tech = techMatrix[j][i]
                 if (tech == null)
                     topTable.add() // empty cell
+
                 else {
                     val TB = TextButton("", CameraStageBaseScreen.skin)
                     techNameToButton[tech.name] = TB
                     TB.addClickListener {
                         selectTechnology(tech)
                     }
-                    topTable.add<TextButton>(TB)
+                    topTable.add(TB)
+                    if(eras[j].text.toString()=="") eras[j].setText(tech.era().toString().tr())
                 }
             }
         }
@@ -80,17 +88,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         for (techName in techNameToButton.keys) {
             val TB = techNameToButton[techName]!!
             when {
-                civTech.isResearched(techName) -> TB.color = Color.GREEN
-                techsToResearch.contains(techName) -> TB.color = LightBlue
+                civTech.isResearched(techName) && techName!="Future Tech" -> TB.color = Color.GREEN
+                techsToResearch.contains(techName) -> TB.color = lightBlue
                 researchableTechs.contains(techName) -> TB.color = Color.WHITE
                 else -> TB.color = Color.BLACK
             }
 
-            TB.isChecked = false
             var text = techName.tr()
 
             if (techName == selectedTech?.name) {
-                TB.isChecked = true
                 TB.color = TB.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
             }
 
@@ -98,7 +104,9 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 text += " (" + techsToResearch.indexOf(techName) + ")"
             }
 
-            if (!civTech.isResearched(techName)) text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
+            if (!civTech.isResearched(techName) || techName=="Future Tech")
+                text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
+
             TB.setText(text)
         }
     }
@@ -111,8 +119,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             return
         }
 
-        if (civTech.isResearched(tech.name)) {
-            rightSideButton.setText("Research".tr())
+        if (civTech.isResearched(tech.name) && tech.name!="Future Tech") {
+            rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()
             return
@@ -138,15 +146,15 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             while (!prerequisites.isEmpty()) techsToResearch.add(prerequisites.pop())
         }
 
-        pick("{Research} \r\n".tr() + techsToResearch[0].tr())
+        pick("Research [${techsToResearch[0]}]".tr())
         setButtonsInfo()
     }
 
     private fun selectTechnologyForFreeTech(tech: Technology) {
         if (researchableTechs.contains(tech.name)) {
-            pick("Pick " + selectedTech!!.name.tr() + "\r\n as free tech!")
+            pick("Pick [${selectedTech!!.name}] as free tech".tr())
         } else {
-            rightSideButton.setText("Pick a free tech")
+            rightSideButton.setText("Pick a free tech".tr())
             rightSideButton.disable()
         }
     }

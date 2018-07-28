@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import java.util.*
 
@@ -55,4 +56,8 @@ object ImageGetter {
     }
 
     fun getBlue() = Color(0x004085bf)
+
+    fun getBackground(color:Color): Drawable {
+        return getDrawable(WhiteDot).tint(color)
+    }
 }

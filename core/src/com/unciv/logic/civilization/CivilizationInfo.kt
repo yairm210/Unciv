@@ -7,15 +7,18 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.Civilization
+import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.linq.Counter
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
+import com.unciv.ui.utils.tr
 import kotlin.math.max
 import kotlin.math.pow
+import kotlin.math.roundToInt
 
 
 class CivilizationInfo {
@@ -25,6 +28,7 @@ class CivilizationInfo {
 
     var gold = 0
     var happiness = 15
+    var difficulty = "Chieftain"
     var civName = "Babylon"
 
     var tech = TechManager()
@@ -32,50 +36,74 @@ class CivilizationInfo {
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
+    var diplomacy = HashMap<String,DiplomacyManager>()
 
     var cities = ArrayList<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
 
-    fun getCivilization(): Civilization {return GameBasics.Civilizations[civName]!!}
+    fun getDifficulty() =  GameBasics.Difficulties[difficulty]!!
+    fun getCivilization() = GameBasics.Civilizations[civName]!!
 
     fun getCapital()=cities.first { it.isCapital() }
 
     fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
 
+    fun getStatsForNextTurn():Stats{
+        return getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
+    }
 
-    // negative gold hurts science
-    fun getStatsForNextTurn(): Stats {
-        val statsForTurn = Stats()
-        for (city in cities) statsForTurn.add(city.cityStats.currentCityStats)
-        statsForTurn.happiness = getHappinessForNextTurn().toFloat()
+    fun getStatMapForNextTurn(): HashMap<String, Stats> {
+        val statMap = HashMap<String,Stats>()
+        for (city in cities){
+            for(entry in city.cityStats.baseStatList){
+                if(statMap.containsKey(entry.key))
+                    statMap[entry.key] = statMap[entry.key]!! + entry.value
+                else statMap[entry.key] = entry.value
+            }
+        }
 
-        val transportationUpkeep = getTransportationUpkeep()
-        statsForTurn.gold -= transportationUpkeep
+        for (entry in getHappinessForNextTurn()) {
+            if (!statMap.containsKey(entry.key))
+                statMap[entry.key] = Stats()
+            statMap[entry.key]!!.happiness += entry.value
+        }
 
-        val unitUpkeep = getUnitUpkeep()
-        statsForTurn.gold -= unitUpkeep
+        statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
+        statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
 
-        if (policies.isAdopted("Mandate Of Heaven"))
-            statsForTurn.culture += statsForTurn.happiness / 2
+        if (policies.isAdopted("Mandate Of Heaven")) {
+            if (!statMap.containsKey("Policies")) statMap["Policies"] = Stats()
+            statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum() / 2
+        }
 
-        if (statsForTurn.gold < 0) statsForTurn.science += statsForTurn.gold
-
+        // negative gold hurts science
         // if we have - or 0, then the techs will never be complete and the tech button
         // will show a negative number of turns and int.max, respectively
-        if(statsForTurn.science<1) statsForTurn.science=1f
+        if (statMap.values.map { it.gold }.sum() < 0) {
+            val scienceDeficit = max(statMap.values.map { it.gold }.sum(),
+                    1 - statMap.values.map { it.science }.sum())// Leave at least 1
+            statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
+        }
+        val goldDifferenceFromTrade = diplomacy.values.sumBy { it.goldPerTurn() }
+        if(goldDifferenceFromTrade!=0)
+            statMap["Trade"] = Stats().apply { gold= goldDifferenceFromTrade.toFloat() }
 
-        return statsForTurn
+        return statMap
     }
 
     private fun getUnitUpkeep(): Int {
         val baseUnitCost = 0.5f
         val freeUnits = 3
-        val totalPaidUnits = max(0,getCivUnits().count()-freeUnits)
+        var unitsToPayFor = getCivUnits()
+        if(policies.isAdopted("Oligarchy")) unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
+        val totalPaidUnits = max(0,unitsToPayFor.count()-freeUnits)
         val gameProgress = gameInfo.turns/400f // as game progresses maintainance cost rises
-        val cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
-        val finalCost = cost.pow(1+gameProgress/3) // Why 3? No reason.
-        return finalCost.toInt()
+        var cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
+        cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
+        if(!isPlayerCivilization())
+            cost *= gameInfo.getPlayerCivilization().getDifficulty().aiUnitMaintainanceModifier
+        return cost.toInt()
     }
 
     private fun getTransportationUpkeep(): Int {
@@ -91,21 +119,35 @@ class CivilizationInfo {
     }
 
     // base happiness
-    fun getHappinessForNextTurn(): Int {
-        var happiness = 15
-        var happinessPerUniqueLuxury = 5
+    fun getHappinessForNextTurn(): HashMap<String, Float> {
+        val statMap = HashMap<String,Float>()
+        statMap["Base happiness"] = getDifficulty().baseHappiness.toFloat()
+
+        var happinessPerUniqueLuxury = 5f
         if (policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
-        happiness += getCivResources().keys
+        statMap["Luxury resources"]= getCivResources().keys
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
-        happiness += cities.sumBy { it.cityStats.getCityHappiness().toInt() }
+
+        for(city in cities.toList()){
+            for(keyvalue in city.cityStats.getCityHappiness()){
+                if(statMap.containsKey(keyvalue.key))
+                    statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value
+                else statMap[keyvalue.key] = keyvalue.value
+            }
+        }
+
         if (buildingUniques.contains("Provides 1 happiness per social policy"))
-            happiness += policies.getAdoptedPolicies().count { !it.endsWith("Complete") }
-        return happiness
+            statMap["Policies"] = policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
+
+        return statMap
     }
 
     fun getCivResources(): Counter<TileResource> {
         val civResources = Counter<TileResource>()
-        for (city in cities) civResources.add(city.getCityResources())
+        // ToLists are so that when we update happiness on a different thread and we call this function,
+        // we don't modify the iterator as we're using it
+        for (city in cities.toList()) civResources.add(city.getCityResources())
+        for (dip in diplomacy.values.toList()) civResources.add(dip.resourcesFromTrade())
         return civResources
     }
 
@@ -118,6 +160,7 @@ class CivilizationInfo {
     constructor(civName: String, startingLocation: Vector2, gameInfo: GameInfo) {
         this.civName = civName
         this.gameInfo = gameInfo
+        tech.techsResearched.add("Agriculture")
         this.placeUnitNearTile(startingLocation, "Settler")
         this.placeUnitNearTile(startingLocation, "Scout")
     }
@@ -125,14 +168,23 @@ class CivilizationInfo {
     fun setTransients() {
         goldenAges.civInfo = this
         policies.civInfo = this
+        if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
+            policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
+
         tech.civInfo = this
+        diplomacy.values.forEach { it.civInfo=this}
+
+        for (unit in getCivUnits()) {
+            unit.civInfo=this
+            unit.setTransients()
+        }
+
 
         for (cityInfo in cities) {
             cityInfo.setTransients()
             cityInfo.civInfo = this
         }
     }
-
 
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
@@ -141,7 +193,22 @@ class CivilizationInfo {
 
     fun endTurn() {
         val nextTurnStats = getStatsForNextTurn()
+
         policies.endTurn(nextTurnStats.culture.toInt())
+
+        // disband units until there are none left OR the gold values are normal
+        if(!isBarbarianCivilization() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
+            for (i in 1 until (gold / -100)) {
+                var civMilitaryUnits = getCivUnits().filter { it.getBaseUnit().unitType != UnitType.Civilian }
+                if (civMilitaryUnits.isNotEmpty()) {
+                    val unitToDisband = civMilitaryUnits.first()
+                    unitToDisband.removeFromTile()
+                    civMilitaryUnits -= unitToDisband
+                    addNotification("Cannot provide unit upkeep for " + unitToDisband.name + " - unit has been disbanded!".tr(), null, Color.RED)
+                }
+            }
+        }
+
         gold += nextTurnStats.gold.toInt()
 
         if (cities.size > 0) tech.nextTurn(nextTurnStats.science.toInt())
@@ -158,6 +225,7 @@ class CivilizationInfo {
 
         goldenAges.endTurn(happiness)
         getCivUnits().forEach { it.endTurn() }
+        diplomacy.values.forEach{it.nextTurn()}
         gameInfo.updateTilesToCities()
     }
 
@@ -165,14 +233,14 @@ class CivilizationInfo {
         getViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         for (city in cities)
             city.cityStats.update()
-        happiness = getHappinessForNextTurn()
+        happiness = getHappinessForNextTurn().values.sum().roundToInt()
         getCivUnits().forEach { it.startTurn() }
     }
 
     fun addGreatPerson(greatPerson: String) {
         val randomCity = cities.getRandom()
         placeUnitNearTile(cities.getRandom().location, greatPerson)
-        addNotification("A $greatPerson has been born!", randomCity.location, Color.GOLD)
+        addNotification("A [$greatPerson] has been born!".tr(), randomCity.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit {
@@ -180,7 +248,7 @@ class CivilizationInfo {
     }
 
     fun getCivUnits(): List<MapUnit> {
-        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.civInfo==this }
+        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.owner==civName }
     }
 
     fun getViewableTiles(): List<TileInfo> {
@@ -190,6 +258,18 @@ class CivilizationInfo {
         viewablePositions += getCivUnits()
                 .flatMap { it.getViewableTiles()} // Tiles within 2 tiles of units
         viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
+
+        val viewedCivs = viewablePositions
+                .flatMap { it.getUnits().map { u->u.civInfo }.union(listOf(it.getOwner())) }
+                .filterNotNull().filterNot { it==this || it.isBarbarianCivilization() }
+
+        for(otherCiv in viewedCivs)
+            if(!diplomacy.containsKey(otherCiv.civName)){
+                diplomacy[otherCiv.civName] = DiplomacyManager(this@CivilizationInfo,otherCiv.civName)
+                otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv,civName)
+                addNotification("We have encountered ["+otherCiv.civName+"]!".tr(),null, Color.GOLD)
+            }
+
         return viewablePositions.distinct()
     }
 
@@ -201,4 +281,13 @@ class CivilizationInfo {
     override fun toString(): String {return civName} // for debug
 
     fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
+    fun getEra(): TechEra {
+        val maxEraOfTech =  tech.techsResearched.map { GameBasics.Technologies[it]!! }
+                .map { it.era() }
+                .max()
+        if(maxEraOfTech!=null) return maxEraOfTech
+        else return TechEra.Ancient
+    }
 }
+
+

@@ -26,3 +26,7 @@ All from [the Noun Project](https://thenounproject.com) licenced under Creative 
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain
 * [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo
+* [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design
+* [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito
+* [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
+* [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin

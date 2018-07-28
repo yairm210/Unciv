@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
@@ -74,7 +75,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
         for(tileInfo in tileMapHolder.tileMap.values) {
             val RGB = tileInfo.getBaseTerrain().RGB!!
             val hex = tileImages[tileInfo]!!
-            if (!exploredTiles.contains(tileInfo.position)) hex.color = Color.BLACK
+            if (!(exploredTiles.contains(tileInfo.position) || UnCivGame.Current.viewEntireMapForDebug)) hex.color = Color.BLACK
             else if (tileInfo.isCityCenter()) hex.color = Color.WHITE
             else if (tileInfo.getCity() != null) hex.color = tileInfo.getOwner()!!.getCivilization().getColor()
             else hex.color = colorFromRGB(RGB[0], RGB[1], RGB[2]).lerp(Color.GRAY, 0.5f) // Todo add to baseterrain as function

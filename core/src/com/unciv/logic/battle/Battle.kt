@@ -49,11 +49,11 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         if(attacker.getCivilization()!=defender.getCivilization()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
             val whatHappenedString =
                     if (attacker.isDefeated()) " {was destroyed while attacking}"
-                    else " {has " + (if (defender.isDefeated()) "destroyed" else "attacked")+"}"
+                    else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
             val defenderString =
-                    if (defender.getUnitType() == UnitType.City) " " + defender.getName()
-                    else " {our} " + defender.getName()
-            val notificationString = "{An enemy} " + attacker.getName() + whatHappenedString + defenderString
+                    if (defender.getUnitType() == UnitType.City) " [" + defender.getName()+"]"
+                    else " our [" + defender.getName()+"]"
+            val notificationString = "An enemy [" + attacker.getName()+"]" + whatHappenedString + defenderString
             defender.getCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
@@ -95,11 +95,14 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             if(attacker is MapUnitCombatant) attacker.unit.promotions.XP += 2
             if(defender is MapUnitCombatant) defender.unit.promotions.XP += 2
         }
+
+        if(attacker is MapUnitCombatant && attacker.unit.action!=null && attacker.unit.action!!.startsWith("moveTo"))
+            attacker.unit.action=null
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
-        attacker.getCivilization().addNotification("{We have conquered the city of} ${city.name}!",city.location, Color.RED)
+        attacker.getCivilization().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
         enemyCiv.cities.remove(city)
         attacker.getCivilization().cities.add(city)
         city.civInfo = attacker.getCivilization()
@@ -118,11 +121,12 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
 
         if(city.cityConstructions.isBuilt("Palace")){
             city.cityConstructions.builtBuildings.remove("Palace")
-            if(enemyCiv.cities.isEmpty()) {
+            if(enemyCiv.isDefeated()) {
                 gameInfo.getPlayerCivilization()
-                        .addNotification("{The civilization of} ${enemyCiv.civName} {has been destroyed}!", null, Color.RED)
+                        .addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
+                enemyCiv.getCivUnits().forEach { it.removeFromTile() }
             }
-            else{
+            else if(enemyCiv.cities.isNotEmpty()){
                 enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace
             }
         }
@@ -148,10 +152,9 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             return
         } // barbarians don't capture civilians!
         val capturedUnit = (defender as MapUnitCombatant).unit
-        capturedUnit.civInfo.addNotification("{An enemy} {"+attacker.getName()+"} {has captured} {our} {"+defender.getName()+"}!",
+        capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
         capturedUnit.civInfo = attacker.getCivilization()
         capturedUnit.owner = capturedUnit.civInfo.civName
     }
 }
-

@@ -1,12 +1,14 @@
 package com.unciv.logic.automation
 
 import com.unciv.UnCivGame
+import com.unciv.logic.HexMath
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -39,29 +41,31 @@ class UnitAutomation{
         return tileCombatant.getCivilization()!=civInfo
     }
 
-    fun getAttackableEnemies(unit: MapUnit): List<TileInfo> {
-        val attackableTiles = unit.civInfo.getViewableTiles()
+    class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
+
+    fun getAttackableEnemies(unit: MapUnit): ArrayList<AttackableTile> {
+        val tilesWithEnemies = unit.civInfo.getViewableTiles()
                 .filter { containsAttackableEnemy(it,unit.civInfo) }
 
-        if(MapUnitCombatant(unit).isMelee()) {
-            val distanceToTiles = unit.getDistanceToTiles()
-            // If we're conducting a melee attack,
-            // then there needs to be a tile adjacent to the enemy that we can get to,
-            // AND STILL HAVE MOVEMENT POINTS REMAINING,
-            return attackableTiles.filter {
-                it.neighbors.any {
-                    unit.getTile()==it || // We're already right nearby
-                        unit.canMoveTo(it)
-                            && distanceToTiles.containsKey(it)
-                            && distanceToTiles[it]!! < unit.currentMovement  // We can get there
-                }
-            }
-        }
+        val distanceToTiles = unit.getDistanceToTiles()
+        val rangeOfAttack = if(MapUnitCombatant(unit).isMelee()) 1 else unit.getBaseUnit().range
 
-        else { // Range attack, so enemy needs to be in range
-            return attackableTiles.filter { unit.getTile().getTilesInDistance(unit.getBaseUnit().range).contains(it) }
+        val attackableTiles = ArrayList<AttackableTile>()
+        // The >0.1 (instead of >0) solves a bug where you've moved 2/3 road tiles,
+        // you come to move a third (distance is less that remaining movements),
+        // and then later we round it off to a whole.
+        // So the poor unit thought it could attack from the tile, but when it comes to do so it has no moveement points!
+        // Silly floats, basically
+        val tilesToAttackFrom = distanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
+                .map { it.key }
+                .filter { unit.canMoveTo(it) || it==unit.getTile() }
+        for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
+            val tilesInAttackRange = if (unit.hasUnique("Indirect fire")) reachableTile.getTilesInDistance(rangeOfAttack)
+                else reachableTile.getViewableTiles(rangeOfAttack)
+            attackableTiles += tilesInAttackRange.filter { it in tilesWithEnemies }
+                    .map { AttackableTile(reachableTile,it) }
         }
-
+        return attackableTiles
     }
 
     fun automateUnitMoves(unit: MapUnit) {
@@ -72,11 +76,33 @@ class UnitAutomation{
         }
 
         if (unit.name == "Worker") {
-            WorkerAutomation().automateWorkerAction(unit)
+            WorkerAutomation(unit).automateWorkerAction()
             return
         }
 
-        if(unit.name.startsWith("Great")) return // DON'T MOVE A MUSCLE
+        if(unit.name.startsWith("Great")) return // I don't know what to do with you yet.
+
+        val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
+
+        if(unit.getBaseUnit().upgradesTo!=null) {
+            val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
+            if (upgradedUnit.isBuildable(unit.civInfo)) {
+                val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
+                val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
+                if (upgradeAction != null && unit.civInfo.gold > goldCostOfUpgrade) {
+                    upgradeAction.action()
+                    return
+                }
+            }
+        }
+
+        // Accompany settlers
+        val closeTileWithSettler = unit.getDistanceToTiles().keys.firstOrNull{
+            it.civilianUnit!=null && it.civilianUnit!!.name=="Settler"}
+        if(closeTileWithSettler != null && unit.canMoveTo(closeTileWithSettler)){
+            unit.movementAlgs().headTowards(closeTileWithSettler)
+            return
+        }
 
         if (unit.health < 50) {
             healUnit(unit)
@@ -84,21 +110,21 @@ class UnitAutomation{
         } // do nothing but heal
 
         // if there is an attackable unit in the vicinity, attack!
-        val enemyTileToAttack = getAttackableEnemies(unit).firstOrNull()
+        val enemyTileToAttack = getAttackableEnemies(unit)
+                // Only take enemies we can fight without dying
+                .filter { BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                        Battle().getMapCombatantOfTile(it.tileToAttack)!!) < unit.health }
+                .firstOrNull()
 
         if (enemyTileToAttack != null) {
-            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen!!).firstOrNull{ it.name == "Set up" }
+            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
+            unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
+            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                    .firstOrNull{ it.name == "Set up" }
             if(setupAction!=null) setupAction.action()
-
-            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack)!!
-            val damageToAttacker = BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit), enemy)
-
-            if (damageToAttacker < unit.health) { // don't attack if we'll die from the attack
-                if(MapUnitCombatant(unit).isMelee())
-                    unit.movementAlgs().headTowards(enemyTileToAttack)
+            if(unit.currentMovement>0) // This can be 0, if the set up action took away what action points we had left...
                 Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
-                return
-            }
+            return
         }
 
         if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center, so if you havn't found annyonw aroud to attack, forget it.
@@ -137,6 +163,22 @@ class UnitAutomation{
             return
         }
 
+        // Focus all units without a specific target on the enemy city closest to one of our cities
+        val enemyCities = unit.civInfo.exploredTiles.map { unit.civInfo.gameInfo.tileMap[it] }
+                .filter { it.isCityCenter() && it.getOwner()!=unit.civInfo }
+        if(enemyCities.isNotEmpty() && unit.civInfo.cities.isNotEmpty()) {
+            val closestReachableEnemyCity = enemyCities
+                    .filter { unit.movementAlgs().canReach(it) }
+                    .minBy { city ->
+                        unit.civInfo.cities.map { HexMath().getDistance(city.position, it.getCenterTile().position) }.min()!!
+                    }
+            if (closestReachableEnemyCity != null) {
+                unit.movementAlgs().headTowards(closestReachableEnemyCity)
+                return
+            }
+        }
+
+
         // else, go to a random space
         randomWalk(unit)
         // if both failed, then... there aren't any reachable tiles. Which is possible.
@@ -160,6 +202,8 @@ class UnitAutomation{
     }
 
     private fun automateSettlerActions(unit: MapUnit) {
+        if(unit.getTile().militaryUnit==null) return // Don;t move until you're accompanied by a military unit
+
         // find best city location within 5 tiles
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
                 .flatMap { it.getCenterTile().getTilesInDistance(2) }

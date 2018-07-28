@@ -5,6 +5,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
+import kotlin.math.abs
 
 class TileMap {
 
@@ -53,9 +54,7 @@ class TileMap {
     }
 
     fun getViewableTiles(position: Vector2, sightDistance: Int): MutableList<TileInfo> {
-        var sightDistance = sightDistance
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
-        if (get(position).baseTerrain == "Hill") sightDistance += 1
         for (i in 1..sightDistance) { // in each layer,
             getTilesAtDistance(position, i).filterTo(viewableTiles) // take only tiles which have a visible neighbor, which is lower than the tile
                 { tile -> tile.neighbors.any{viewableTiles.contains(it) && (it.height==0 || it.height < tile.height)}  }
@@ -67,11 +66,18 @@ class TileMap {
     fun setTransients() {
         for (tileInfo in values){
             tileInfo.tileMap = this
-            if(tileInfo.unit!=null){
-                tileInfo.unit!!.putInTile(tileInfo)
-                tileInfo.unit=null
-            }
         }
+    }
+
+    fun getShortestPathBetweenTwoTiles(from:TileInfo, to:TileInfo): ArrayList<TileInfo> {
+        val path = ArrayList<TileInfo>()
+        var currentTile = from
+        while(currentTile!=to){
+            path += currentTile
+            currentTile = currentTile.neighbors.minBy { abs(it.position.x-to.position.x)+abs(it.position.y-to.position.y) }!!
+        }
+        path+=to
+        return path
     }
 
 }

@@ -23,7 +23,7 @@ open class SpecialConstruction(override var name: String, override val descripti
             }
             val gold =  object:SpecialConstruction("Gold", "Convert production to gold at a rate of 4 to 1"){
                 override fun isBuildable(construction: CityConstructions): Boolean {
-                    return construction.cityInfo.civInfo.tech.isResearched("Currency")
+                    return construction.cityInfo.civInfo.tech.isResearched("Guilds")
                 }
             }
             val idle =  object:SpecialConstruction("Nothing", "The city will not produce anything."){

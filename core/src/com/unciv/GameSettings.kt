@@ -1,6 +1,30 @@
-package com.unciv.ui
+package com.unciv
 
-class GameSettings : LinkedHashMap<String, String>() {
+import com.unciv.logic.GameSaver
+
+class GameSettings {
+    var showWorkedTiles: Boolean = true
+    var showResourcesAndImprovements: Boolean = true
+    var language: String = "English"
+    var resolution: String = "1050x700"
+    var tutorialsShown = ArrayList<String>()
+
+    fun save(){
+        GameSaver().setGeneralSettings(this)
+    }
+}
+
+
+@Deprecated("as of 2.6.9")
+class OldGameSettings : LinkedHashMap<String, String>() {
+    fun toGameSettings(): GameSettings {
+        val newSettings = GameSettings()
+        newSettings.showResourcesAndImprovements = showResourcesAndImprovements
+        newSettings.showWorkedTiles = showWorkedTiles
+        newSettings.language = language
+        newSettings.resolution = resolution
+        return newSettings
+    }
 
     var showWorkedTiles:Boolean
         get() {
@@ -38,3 +62,5 @@ class GameSettings : LinkedHashMap<String, String>() {
             this["Resolution"]=value
         }
 }
+
+

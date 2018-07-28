@@ -2,6 +2,7 @@ package com.unciv.models.gamebasics
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
+import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.tr
@@ -30,6 +31,7 @@ class Building : NamedStats(), IConstruction{
     var cannotBeBuiltWith: String? = null
     var cityStrength=0
     var cityHealth=0
+    var xpForNewUnits=0
 
     // Uniques
     var providesFreeBuilding: String? = null
@@ -53,9 +55,10 @@ class Building : NamedStats(), IConstruction{
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
         }
-        if(unique!=null) infoList += unique!!
+        if(unique!=null) infoList += unique!!.tr()
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
+        if(xpForNewUnits!=0) infoList+= "+$xpForNewUnits {XP for new units}".tr()
         return infoList.joinToString()
     }
 
@@ -106,7 +109,7 @@ class Building : NamedStats(), IConstruction{
             stringBuilder.appendln("Requires a $requiredBuildingInAllCities to be built in all cities")
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free $providesFreeBuilding in this city")
-        if(baseDescription!=null) stringBuilder.appendln(baseDescription)
+        if(unique!=null) stringBuilder.appendln(unique!!.tr())
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
         if (this.percentStatBonus != null) {
@@ -125,7 +128,7 @@ class Building : NamedStats(), IConstruction{
         }
         if (resourceBonusStats != null) {
             val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
-            stringBuilder.appendln("$resources {provide} $resourceBonusStats")
+            stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
         }
 
         if(cityStrength!=0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)
@@ -176,14 +179,14 @@ class Building : NamedStats(), IConstruction{
                     .any {
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)
-                                && it.tileResource.improvement == it.improvement
+                                && it.getTileResource().improvement == it.improvement
                                 && it.getOwner() == civInfo
                     }
             if (!containsResourceWithImprovement) return false
         }
 
         if ("Spaceship part" == unique) {
-            if (!civInfo.buildingUniques.contains("Allows the building of spaceship parts")) return false
+            if (!civInfo.buildingUniques.contains("Enables construction of Spaceship parts")) return false
             if (civInfo.scienceVictory.unconstructedParts()[name] == 0) return false // Don't need to build any more of these!
         }
         return true

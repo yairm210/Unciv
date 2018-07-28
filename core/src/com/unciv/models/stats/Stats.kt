@@ -16,11 +16,15 @@ open class Stats() {
     }
 
     fun add(other: Stats) {
-        val hashMap = toHashMap()
-        for (stat in Stat.values())
-            hashMap[stat] = hashMap[stat]!! + other.toHashMap()[stat]!!
-        setStats(hashMap)
+        // Doing this through the hashmap is nicer code but is SUPER INEFFICIENT!
+        production += other.production
+        food += other.food
+        gold += other.gold
+        science += other.science
+        culture += other.culture
+        happiness += other.happiness
     }
+
 
     fun add(stat:Stat, value:Float): Stats {
         val hashMap = toHashMap()
@@ -29,16 +33,16 @@ open class Stats() {
         return this
     }
 
+    operator fun plus(stat: Stats): Stats {
+        val clone = clone()
+        clone.add(stat)
+        return clone
+    }
+
     fun clone(): Stats {
         val stats = Stats()
         stats.add(this)
         return stats
-    }
-
-    operator fun unaryMinus(): Stats {
-        val hashMap = toHashMap()
-        for(stat in Stat.values()) hashMap[stat]= -hashMap[stat]!!
-        return Stats(hashMap)
     }
 
     operator fun times(number: Float): Stats {

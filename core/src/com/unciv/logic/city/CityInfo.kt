@@ -6,16 +6,15 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.linq.Counter
 import com.unciv.models.stats.Stats
 import kotlin.math.min
 
 class CityInfo {
-    @Transient
-    lateinit var civInfo: CivilizationInfo
+    @Transient lateinit var civInfo: CivilizationInfo
     var location: Vector2 = Vector2.Zero
     var name: String = ""
     var health = 200
@@ -43,7 +42,8 @@ class CityInfo {
         val cityResources = Counter<TileResource>()
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
-            val resource = tileInfo.tileResource
+            val resource = tileInfo.getTileResource()
+            if(resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()){
                 if(resource.resourceType == ResourceType.Strategic) cityResources.add(resource, 2)
                 else cityResources.add(resource, 1)
@@ -129,7 +129,7 @@ class CityInfo {
             stats.food = 0f
         }
 
-        population.nextTurn(stats.food)
+
         cityConstructions.nextTurn(stats)
         expansion.nextTurn(stats.culture)
         if(isBeingRazed){
@@ -141,6 +141,7 @@ class CityInfo {
                     civInfo.cities.first().cityConstructions.builtBuildings.add("Palace")
             }
         }
+        else population.nextTurn(stats.food)
 
         health = min(health+20, getMaxHealth())
         population.unassignExtraPopulation()

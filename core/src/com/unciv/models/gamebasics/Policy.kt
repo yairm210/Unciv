@@ -9,5 +9,9 @@ open class Policy : INamed {
     var row: Int = 0
     var column: Int = 0
     var requires: ArrayList<String>? = null
+
+    fun getBranch():PolicyBranch{
+        return GameBasics.PolicyBranches[branch]!!
+    }
 }
 

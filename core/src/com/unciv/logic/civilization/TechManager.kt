@@ -3,8 +3,9 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Technology
-import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.tech.Technology
+import com.unciv.models.gamebasics.unit.BaseUnit
+import com.unciv.ui.utils.tr
 import java.util.*
 
 class TechManager {
@@ -19,10 +20,9 @@ class TechManager {
 
     private fun getCurrentTechnology(): Technology = GameBasics.Technologies[currentTechnology()]!!
 
-    fun getAmountResearchedText(): String =
-            if (currentTechnology() == null) ""
-            else "(" + researchOfTech(currentTechnology()!!) + "/" + getCurrentTechnology().cost + ")"
-
+    fun costOfTech(techName: String): Int {
+        return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
+    }
 
     fun currentTechnology(): String? {
         if (techsToResearch.isEmpty()) return null
@@ -34,9 +34,10 @@ class TechManager {
         else return 0
     }
 
-    fun turnsToTech(TechName: String): Int {
-        return Math.ceil(((GameBasics.Technologies[TechName]!!.cost - researchOfTech(TechName))
-                / civInfo.getStatsForNextTurn().science).toDouble()).toInt()
+    fun turnsToTech(techName: String): Int {
+        val remainingScience = costOfTech(techName) - researchOfTech(techName)
+        return Math.ceil( remainingScience.toDouble()
+                / civInfo.getStatsForNextTurn().science).toInt()
     }
 
     fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)
@@ -49,14 +50,24 @@ class TechManager {
         val currentTechnology = currentTechnology()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
-        if (techsInProgress[currentTechnology]!! < getCurrentTechnology().cost)
+        if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
+
+        val previousEra = civInfo.getEra()
 
         // We finished it!
         techsInProgress.remove(currentTechnology)
-        techsToResearch.remove(currentTechnology)
+        if(currentTechnology!="Future Tech")
+            techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
-        civInfo.addNotification("{Research of} {$currentTechnology} {has completed}!", null, Color.BLUE)
+        civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
+
+        val currentEra = civInfo.getEra()
+        if(previousEra < currentEra){
+            civInfo.addNotification("You have entered the [$currentEra] era!".tr(),null,Color.GOLD)
+            GameBasics.PolicyBranches.values.filter { it.era==currentEra }
+                .forEach{civInfo.addNotification("["+it.name+"] policy branch unlocked!".tr(),null,Color.PURPLE)}
+        }
 
         val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
 
@@ -77,7 +88,7 @@ class TechManager {
         val obsoleteUnits = GameBasics.Units.values.filter { it.obsoleteTech==currentTechnology }
         for(city in civInfo.cities)
             if(city.cityConstructions.getCurrentConstruction() in obsoleteUnits){
-                val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as Unit
+                val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
     }

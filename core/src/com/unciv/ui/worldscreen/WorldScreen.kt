@@ -1,10 +1,15 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.ui.TradeScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
@@ -24,7 +29,8 @@ class WorldScreen : CameraStageBaseScreen() {
     val bottomBar = WorldScreenBottomBar(this)
     val unitActionsTable = UnitActionsTable(this)
 
-    private val techButton = TextButton("", CameraStageBaseScreen.skin)
+    private val techButton = TextButton("", CameraStageBaseScreen.skin).apply { color= Color.BLUE }
+    val tradeButtons = Table()
     private val nextTurnButton = createNextTurnButton()
 
     private val notificationsScroll: NotificationsScroll
@@ -42,6 +48,10 @@ class WorldScreen : CameraStageBaseScreen() {
 
         tileMapHolder.addTiles()
 
+        techButton.addClickListener {
+            game.screen = TechPickerScreen(civInfo)
+        }
+
         stage.addActor(tileMapHolder)
         stage.addActor(minimap)
         stage.addActor(topBar)
@@ -49,24 +59,39 @@ class WorldScreen : CameraStageBaseScreen() {
         stage.addActor(techButton)
         stage.addActor(notificationsScroll)
 
+
+        tradeButtons.defaults().pad(5f)
+        stage.addActor(tradeButtons)
+//        tradeButtons.isVisible=false
+
         bottomBar.width = stage.width
         stage.addActor(bottomBar)
         stage.addActor(unitActionsTable)
 
         update()
 
-        tileMapHolder.setCenterPosition(Vector2.Zero)
+        val tileToCenterOn: Vector2 =
+                when {
+                    civInfo.cities.isNotEmpty() -> civInfo.getCapital().location
+                    civInfo.getCivUnits().isNotEmpty() -> civInfo.getCivUnits().first().getTile().position
+                    else -> Vector2.Zero
+                }
+        tileMapHolder.setCenterPosition(tileToCenterOn)
         createNextTurnButton() // needs civ table to be positioned
         displayTutorials("NewGame")
     }
 
 
     fun update() {
-        if (game.gameInfo.tutorial.contains("CityEntered")) {
+        kotlin.concurrent.thread { civInfo.happiness = civInfo.getHappinessForNextTurn().values.sum().toInt() }
+
+        if (UnCivGame.Current.settings.tutorialsShown.contains("CityEntered")) {
             displayTutorials("AfterCityEntered")
         }
 
         updateTechButton()
+        updateTradeButtons()
+
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         minimap.update()
         minimap.y = bottomBar.height
@@ -85,12 +110,21 @@ class WorldScreen : CameraStageBaseScreen() {
         else if(civInfo.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
     }
 
+    private fun updateTradeButtons() {
+        tradeButtons.clear()
+        for(civ in gameInfo.civilizations.filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }){
+            if(!civInfo.diplomacy.containsKey(civ.civName)) continue
+            val tb = TextButton("Trade with [${civ.civName}]".tr(),skin)
+            tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
+            tradeButtons.add(tb).row()
+        }
+
+        tradeButtons.pack()
+        tradeButtons.y = techButton.y -20 - tradeButtons.height
+    }
+
     private fun updateTechButton() {
         techButton.isVisible = civInfo.cities.isNotEmpty()
-        techButton.clearListeners()
-        techButton.addClickListener {
-            game.screen = TechPickerScreen(civInfo)
-        }
 
         if (civInfo.tech.currentTechnology() == null)
             techButton.setText("{Pick a tech}!".tr())
@@ -122,7 +156,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             nextTurnButton.disable()
-            nextTurnButton.setText("Working...")
+            nextTurnButton.setText("Working...".tr())
 
             kotlin.concurrent.thread {
                 game.gameInfo.nextTurn()
@@ -159,19 +193,23 @@ class WorldScreen : CameraStageBaseScreen() {
             update()
 
             displayTutorials("NextTurn")
-
-            if(civInfo.happiness<0)
-                displayTutorials("Unhappiness")
-
-            if(civInfo.goldenAges.isGoldenAge())
-                displayTutorials("GoldenAge")
-
-            if(gameInfo.turns>=100)
-                displayTutorials("ContactMe")
+            if(civInfo.cities.size > 2) displayTutorials("SecondCity")
+            if(civInfo.happiness<0) displayTutorials("Unhappiness")
+            if(civInfo.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
+            if(gameInfo.turns>=100) displayTutorials("ContactMe")
+            val resources = civInfo.getCivResources()
+            if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
+            if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
+            if(civInfo.exploredTiles.map { gameInfo.tileMap[it] }.any { it.isCityCenter() && it.getOwner()!=civInfo })
+                displayTutorials("EnemyCity")
 
             shouldUpdate=false
         }
         super.render(delta)
     }
+
+//    override fun resume() {
+//        resize(Gdx.graphics.width,Gdx.graphics.height)
+//    }
 }
 

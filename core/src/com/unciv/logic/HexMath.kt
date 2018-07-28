@@ -2,6 +2,8 @@ package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.max
 
 class HexMath {
 
@@ -72,13 +74,8 @@ class HexMath {
         return hexesToReturn
     }
 
-    fun GetDistance(origin: Vector2, destination: Vector2): Int { // Yes, this is a dumb implementation. But I can't be arsed to think of a better one right now, other stuff to do.
-        var distance = 0
-
-        while (true) {
-            if (GetVectorsAtDistance(origin, distance).contains(destination)) return distance
-            distance++
-        }
+    fun getDistance(origin: Vector2, destination: Vector2): Int { // Yes, this is a dumb implementation. But I can't be arsed to think of a better one right now, other stuff to do.
+        return max(abs(origin.x-destination.x),abs(origin.y-destination.y) ).toInt()
     }
 
 }

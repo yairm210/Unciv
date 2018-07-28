@@ -14,7 +14,6 @@ import com.unciv.ui.utils.tr
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
 
-    var unit:MapUnit?=null
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
     fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()
@@ -37,16 +36,25 @@ open class TileInfo {
     val lastTerrain: Terrain
         get() = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!
 
-    val tileResource: TileResource
-        get() = if (resource == null) throw Exception("No resource exists for this tile!") else GameBasics.TileResources[resource!!]!!
+    fun getTileResource(): TileResource =
+            if (resource == null) throw Exception("No resource exists for this tile!")
+            else GameBasics.TileResources[resource!!]!!
 
     fun isCityCenter(): Boolean = getCity()?.location == position
 
     val tileImprovement: TileImprovement?
         get() = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
 
+
+    // This is for performance - since we access the neighbors of a tile ALL THE TIME,
+    // and the neighbors of a tile never change, it's much more CPU efficient to save the list once and for all!
+    @Transient private var internalNeighbors : List<TileInfo>?=null
     val neighbors: List<TileInfo>
-        get() = tileMap.getTilesAtDistance(position, 1)
+        get(){
+            if(internalNeighbors==null)
+                internalNeighbors = tileMap.getTilesAtDistance(position, 1)
+            return internalNeighbors!!
+        }
 
     val height: Int
         get() {
@@ -87,8 +95,8 @@ open class TileInfo {
         }
 
         if (hasViewableResource(observingCiv)) {
-            val resource = tileResource
-            stats.add(tileResource) // resource base
+            val resource = getTileResource()
+            stats.add(getTileResource()) // resource base
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
                 stats.add(resource.getBuilding()!!.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
@@ -96,15 +104,15 @@ open class TileInfo {
 
         val improvement = tileImprovement
         if (improvement != null) {
-            if (resource != null && tileResource.improvement == improvement.name)
-                stats.add(tileResource.improvementStats!!) // resource-specifc improvement
+            if (resource != null && getTileResource().improvement == improvement.name)
+                stats.add(getTileResource().improvementStats!!) // resource-specifc improvement
             else
                 stats.add(improvement) // basic improvement
 
             if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
             if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
                 stats.science += 1f
-            if (listOf("Academy", "Landmark", "Manufactory", "Customs House").contains(improvement.name) && observingCiv.policies.isAdopted("Freedom Complete"))
+            if (improvement.name in listOf("Academy", "Landmark", "Manufactory", "Customs house") && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement) // again, for the double effect
         }
 
@@ -131,8 +139,8 @@ open class TileInfo {
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain!!.name)) return true
         if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
         if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
-        if (topTerrain.unbuildable) return false
-        return hasViewableResource(civInfo) && tileResource.improvement == improvement.name
+        if (topTerrain.unbuildable && !(topTerrain.name=="Forest" && improvement.name=="Camp")) return false
+        return hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
 
     }
 
@@ -148,17 +156,23 @@ open class TileInfo {
 
     override fun toString(): String {
         val SB = StringBuilder()
+        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
+                || UnCivGame.Current.viewEntireMapForDebug
+
         if (isCityCenter()) {
             val city = getCity()!!
-            SB.appendln(city.name+ " ("+city.health+"),\r\n" + city.cityConstructions.getProductionForTileInfo())
+            var cityString = city.name
+            if(isViewableToPlayer) cityString += " ("+city.health+")"
+            SB.appendln(cityString)
+            if(city.civInfo.isPlayerCivilization() || UnCivGame.Current.viewEntireMapForDebug)
+                SB.appendln(city.cityConstructions.getProductionForTileInfo())
         }
         SB.appendln(this.baseTerrain.tr())
         if (terrainFeature != null) SB.appendln(terrainFeature!!.tr())
         if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!.tr())
         if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus.toString().tr())
         if (improvement != null) SB.appendln(improvement!!.tr())
-        if (improvementInProgress != null) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
-        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
+        if (improvementInProgress != null && isViewableToPlayer) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
         if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name)
         if(militaryUnit!=null && isViewableToPlayer){
             var milUnitString = militaryUnit!!.name
@@ -169,7 +183,7 @@ open class TileInfo {
     }
 
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
-        return resource != null && (tileResource.revealedBy == null || civInfo.tech.isResearched(tileResource.revealedBy!!))
+        return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
     }
 
     fun hasIdleUnit(): Boolean {

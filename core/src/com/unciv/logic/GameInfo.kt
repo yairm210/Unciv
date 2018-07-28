@@ -12,7 +12,7 @@ import com.unciv.ui.utils.getRandom
 
 class GameInfo {
     var notifications = mutableListOf<Notification>()
-    var tutorial = mutableListOf<String>()
+    @Deprecated("As of 2.6.9") var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
     var turns = 0
@@ -38,7 +38,7 @@ class GameInfo {
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
-        for (civInfo in civilizations.filterNot { it==player }){
+        for (civInfo in civilizations.filterNot { it==player || (it.isDefeated() && !it.isBarbarianCivilization()) }){
             civInfo.startTurn()
             Automation().automateCivMoves(civInfo)
         }
@@ -55,7 +55,7 @@ class GameInfo {
                 && (it.getOwner()==player || it.neighbors.any { neighbor -> neighbor.getOwner()==player }) }
         for(enemyUnitTile in enemyUnitsCloseToTerritory) {
             val inOrNear = if(enemyUnitTile.getOwner()==player) "in" else "near"
-            player.addNotification("Enemy spotted $inOrNear our territory!", enemyUnitTile.position, Color.RED)
+            player.addNotification("An enemy [${enemyUnitTile.militaryUnit!!.name}] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
         }
 
         turns++
@@ -64,8 +64,10 @@ class GameInfo {
     fun placeBarbarianUnit(tileToPlace: TileInfo?) {
         var tile = tileToPlace
         if(tileToPlace==null) {
-            val playerViewableTiles = getPlayerCivilization().getViewableTiles().toHashSet()
-            val viableTiles = tileMap.values.filterNot { playerViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit!=null}
+            // Barbarians will only spawn in places that no one can see
+            val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
+                    .flatMap { it.getViewableTiles() }.toHashSet()
+            val viableTiles = tileMap.values.filterNot { allViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit!=null}
             if(viableTiles.isEmpty()) return // no place for more barbs =(
             tile=viableTiles.getRandom()
         }
@@ -80,14 +82,6 @@ class GameInfo {
             civInfo.gameInfo = this
             civInfo.setTransients()
         }
-
-        val civNameToCiv = civilizations.associateBy ({ it.civName},{it})
-
-        for (tile in tileMap.values) {
-            if (tile.militaryUnit != null) tile.militaryUnit!!.civInfo = civNameToCiv[tile.militaryUnit!!.owner]!!
-            if (tile.civilianUnit!= null) tile.civilianUnit!!.civInfo = civNameToCiv[tile.civilianUnit!!.owner]!!
-        }
-
 
         for (civInfo in civilizations)
             for (cityInfo in civInfo.cities)

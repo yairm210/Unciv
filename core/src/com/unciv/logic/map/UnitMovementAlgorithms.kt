@@ -25,7 +25,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): HashMap<TileInfo, Float> {
         if(unitMovement==0f) return hashMapOf()
-        val distanceToTiles = HashMap<TileInfo, Float>()
+        val distanceToTiles = LinkedHashMap<TileInfo, Float>()
         val unitTile = tileMap[origin]
         distanceToTiles[unitTile] = 0f
         var tilesToCheck = listOf(unitTile)
@@ -34,10 +34,9 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             val updatedTiles = ArrayList<TileInfo>()
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
-
                     var totalDistanceToTile:Float
                     if ((neighbor.getOwner() != unit.civInfo && neighbor.isCityCenter())// Enemy city,
-                    || neighbor.getUnits().isNotEmpty() && neighbor.getUnits().first().civInfo!=unit.civInfo) // Enemy unit
+                            || neighbor.getUnits().isNotEmpty() && neighbor.getUnits().first().civInfo!=unit.civInfo) // Enemy unit
                         totalDistanceToTile = unitMovement // can't move through it - we'll be "stuck" there
 
                     else {
@@ -147,6 +146,25 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun canReach(destination: TileInfo): Boolean {
         return getShortestPath(destination).isNotEmpty()
+    }
+
+    fun getFullPathToCloseTile(destination: TileInfo): List<TileInfo> {
+        val currentUnitTile = unit.getTile()
+        val distanceToTiles = unit.getDistanceToTiles()
+        val reversedList = ArrayList<TileInfo>()
+        var currentTile = destination
+        while(currentTile != currentUnitTile){
+            reversedList.add(currentTile)
+            val distanceToCurrentTile = distanceToTiles[currentTile]!!
+            if(currentUnitTile in currentTile.neighbors
+                    && getMovementCostBetweenAdjacentTiles(currentUnitTile,currentTile) == distanceToCurrentTile)
+                return reversedList.reversed()
+
+            for(tile in currentTile.neighbors)
+                currentTile = currentTile.neighbors.first{it in distanceToTiles
+                    && getMovementCostBetweenAdjacentTiles(it,currentTile) == distanceToCurrentTile - distanceToTiles[it]!!}
+        }
+        throw Exception("We couldn't get the path between the two tiles")
     }
 
 }

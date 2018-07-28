@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -15,26 +16,24 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.colorFromRGB
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
-    /**
-     * This exists so that when debugging we can see the entire map.
-     * Remember to turn this to false before commit and upload!
-     */
-    protected val viewEntireMapForDebug = false
-
-
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
     protected var terrainFeatureImage:Image?=null
 
     protected var resourceImage: Image? = null
     protected var improvementImage: Image? =null
     var populationImage: Image? = null
-    private val roadImages = HashMap<String, Image>()
-    private val borderImages = ArrayList<Image>()
+    private val roadImages = HashMap<TileInfo, RoadImage>()
+    private val borderImages = HashMap<TileInfo, List<Image>>() // map of neiboring tile to border images
     protected var civilianUnitImage: Group? = null
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
     var yieldGroup = YieldGroup()
+
+    class RoadImage{
+        var roadStatus:RoadStatus = RoadStatus.None
+        var image:Image? = null
+    }
 
     init {
         val groupSize = 54f
@@ -90,7 +89,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     open fun update(isViewable: Boolean) {
         hideCircle()
         if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
-            && !viewEntireMapForDebug) {
+            && !UnCivGame.Current.viewEntireMapForDebug) {
             hexagon.color = Color.BLACK
             return
         }
@@ -109,22 +108,42 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         updateBorderImages()
 
         fogImage.toFront()
-        fogImage.isVisible=!isViewable
+        fogImage.isVisible=!(isViewable || UnCivGame.Current.viewEntireMapForDebug)
     }
 
+    var previousTileOwner:CivilizationInfo?=null
     private fun updateBorderImages() {
-        for (border in borderImages) border.remove() //clear
-        borderImages.clear()
+        // This is longer than it could be, because of performance -
+        // before fixing, about half (!) the time of update() was wasted on
+        // removing all the border images and putting them back again!
+        val tileOwner = tileInfo.getOwner()
+        if (previousTileOwner!=tileOwner){
+            for(images in borderImages.values)
+                for(image in images)
+                    image.remove()
 
-        if (tileInfo.getOwner() != null) {
-            val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
-            for (neighbor in tileInfo.neighbors.filter { it.getOwner() != tileInfo.getOwner() }) {
+            borderImages.clear()
+        }
+        previousTileOwner=tileOwner
+        if(tileOwner==null) return
+
+        val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
+        for (neighbor in tileInfo.neighbors) {
+            val neigborOwner = neighbor.getOwner()
+            if(neigborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
+            {
+                for(image in borderImages[neighbor]!!)
+                    image.remove()
+                borderImages.remove(neighbor)
+            }
+            if(neigborOwner!=tileOwner && !borderImages.containsKey(neighbor)){ // there should be a border here but there isn't
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
                 val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
 
                 // This is some crazy voodoo magic so I'll explain.
-
+                val images = mutableListOf<Image>()
+                borderImages.put(neighbor,images)
                 for(i in -2..2) {
                     val image = ImageGetter.getImage("OtherIcons/Circle.png")
                     image.setSize(5f, 5f)
@@ -143,43 +162,52 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
                     image.color = civColor
                     addActor(image)
-                    borderImages.add(image)
+                    images.add(image)
                 }
-
             }
-
         }
     }
 
     private fun updateRoadImages() {
-        if (tileInfo.roadStatus !== RoadStatus.None) {
-            for (neighbor in tileInfo.neighbors) {
-                if (neighbor.roadStatus === RoadStatus.None) continue
-                if (!roadImages.containsKey(neighbor.position.toString())) {
-                    val image = ImageGetter.getImage(ImageGetter.WhiteDot)
-                    roadImages[neighbor.position.toString()] = image
+        for (neighbor in tileInfo.neighbors) {
+            if (!roadImages.containsKey(neighbor)) roadImages[neighbor] = RoadImage()
+            val roadImage = roadImages[neighbor]!!
 
-                    val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
-                    val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
-
-                    // This is some crazy voodoo magic so I'll explain.
-                    image.moveBy(25f, 25f) // Move road to center of tile
-                    // in addTiles, we set   the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
-                    // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
-                    image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
-                    image.setSize(10f, 2f)
-
-                    image.setOrigin(0f, 1f) // This is so that the rotation is calculated from the middle of the road and not the edge
-                    image.rotation = (180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
-                    addActor(image)
-                }
-
-                if (tileInfo.roadStatus === RoadStatus.Railroad && neighbor.roadStatus === RoadStatus.Railroad)
-                    roadImages[neighbor.position.toString()]!!.color = Color.GRAY // railroad
-                else
-                    roadImages[neighbor.position.toString()]!!.color = Color.BROWN // road
+            val roadStatus = when{
+                tileInfo.roadStatus==RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
+                tileInfo.roadStatus==RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
+                else -> RoadStatus.Railroad
             }
+            if (roadImage.roadStatus == roadStatus ) continue // the image is correct
+
+            roadImage.roadStatus = roadStatus
+
+            if(roadImage.image!=null) {
+                roadImage.image!!.remove()
+                roadImage.image = null
+            }
+            if(roadStatus==RoadStatus.None) continue // no road image
+
+            val image = if(roadStatus==RoadStatus.Road) ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= Color.BROWN }
+            else ImageGetter.getImage("OtherIcons/Railroad.png")
+            roadImage.image=image
+
+            val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
+            val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
+
+            // This is some crazy voodoo magic so I'll explain.
+            image.moveBy(25f, 25f) // Move road to center of tile
+            // in addTiles, we set   the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
+            // Here, we want to have the roads start HALFWAY THERE and extend towards the tiles, so we give them a position of 0.8*25.
+            image.moveBy(-relativeWorldPosition.x * 0.8f * 25f, -relativeWorldPosition.y * 0.8f * 25f)
+
+            image.setSize(10f, 2f)
+            image.setOrigin(0f, 1f) // This is so that the rotation is calculated from the middle of the road and not the edge
+
+            image.rotation = (180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
+            addActor(image)
         }
+
     }
 
     private fun updateTileColor(isViewable: Boolean) {
@@ -222,19 +250,20 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             }
         }
         if(improvementImage!=null){
-            if(viewable) improvementImage!!.color= Color.WHITE
-            else improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
+            if(!viewable) improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
         }
     }
 
     private fun updateResourceImage(viewable: Boolean) {
-        if(resourceImage!=null){
+        val shouldDisplayResource = UnCivGame.Current.settings.showResourcesAndImprovements
+                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())
+
+        if(resourceImage!=null && !shouldDisplayResource){
             resourceImage!!.remove()
             resourceImage=null
         }
 
-        if(UnCivGame.Current.settings.showResourcesAndImprovements
-                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())) { // Need to add the resource image!
+        if(resourceImage==null && shouldDisplayResource) { // Need to add the resource image!
             val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
                 resourceImage = ImageGetter.getImage(fileName)
                 resourceImage!!.setSize(20f, 20f)
@@ -256,7 +285,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             currentImage.remove()
         }
 
-        if (unit != null && (isViewable || viewEntireMapForDebug)) { // Tile is visible
+        if (unit != null && isViewable) { // Tile is visible
             newImage = getUnitImage(unit, unit.civInfo.getCivilization().getColor(), 25f)
             addActor(newImage)
             newImage.center(this)

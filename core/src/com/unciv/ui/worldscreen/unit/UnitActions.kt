@@ -9,7 +9,9 @@ import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.utils.tr
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
 import kotlin.math.max
 
@@ -36,6 +38,7 @@ class UnitActions {
                 unitTable.currentlyExecutingAction = "moveTo"
             }, unit.currentMovement != 0f )
         }
+
         else {
             actionList +=
                     UnitAction("Stop movement", {
@@ -49,23 +52,29 @@ class UnitActions {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }
 
-        if(unit.promotions.canBePromoted()){
+        if(unit.getBaseUnit().unitType!= UnitType.Civilian && unit.promotions.canBePromoted()){
                 actionList += UnitAction("Promote",
                         {UnCivGame.Current.screen = PromotionPickerScreen(unit)},
                         unit.currentMovement != 0f)
         }
 
-        if(unit.getBaseUnit().upgradesTo!=null) {
-            val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
+        if(unit.getBaseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
+            var upgradedUnit = unit.getBaseUnit().getUpgradeUnit(unit.civInfo)
+
+            // Go up the upgrade tree until you find the first one which isn't obsolete
+            while (upgradedUnit.obsoleteTech!=null && unit.civInfo.tech.isResearched(upgradedUnit.obsoleteTech!!))
+                upgradedUnit = upgradedUnit.getUpgradeUnit(unit.civInfo)
+
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
-                actionList += UnitAction("Upgrade to ${upgradedUnit.name} ($goldCostOfUpgrade gold)",
+                actionList += UnitAction("Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                         {
                             unit.civInfo.gold -= goldCostOfUpgrade
                             val unitTile = unit.getTile()
                             unit.removeFromTile()
                             val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
                             newunit.health = unit.health
+                            newunit.promotions = unit.promotions
                             newunit.currentMovement=0f
                         },
                         unit.civInfo.gold >= goldCostOfUpgrade
@@ -107,7 +116,7 @@ class UnitActions {
                 actionList += UnitAction("Automate",
                         {
                             unit.action = "automation"
-                            WorkerAutomation().automateWorkerAction(unit)
+                            WorkerAutomation(unit).automateWorkerAction()
                         },unit.currentMovement != 0f
                 )
             }
@@ -122,7 +131,8 @@ class UnitActions {
 
                     },unit.currentMovement != 0f)
             actionList += UnitAction("Construct Academy",
-                    constructImprovementAndDestroyUnit(unit, "Academy"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Academy"),
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
         if (unit.name == "Great Artist") {
@@ -133,7 +143,8 @@ class UnitActions {
                     },unit.currentMovement != 0f
             )
             actionList += UnitAction("Construct Landmark",
-                    constructImprovementAndDestroyUnit(unit, "Landmark"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Landmark"),
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
         if (unit.name == "Great Engineer") {
@@ -148,7 +159,8 @@ class UnitActions {
                     (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder)
 
             actionList += UnitAction("Construct Manufactory",
-                    constructImprovementAndDestroyUnit(unit, "Manufactory"),unit.currentMovement != 0f)
+                    constructImprovementAndDestroyUnit(unit, "Manufactory"),
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
         if (unit.name == "Great Merchant") {
@@ -159,8 +171,14 @@ class UnitActions {
                     },unit.currentMovement != 0f)
             actionList += UnitAction( "Construct Customs House",
                     constructImprovementAndDestroyUnit(unit, "Customs house"),
-                    unit.currentMovement != 0f)
+                    unit.currentMovement != 0f && !tile.isCityCenter())
         }
+
+        actionList += UnitAction("Disband unit",
+                {
+                    YesNoPopupTable("Do you really want to disband this unit?".tr(),
+                            {unit.removeFromTile(); worldScreen.update()} )
+                },unit.currentMovement != 0f)
 
         return actionList
     }

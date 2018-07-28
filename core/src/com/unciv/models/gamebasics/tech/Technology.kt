@@ -1,6 +1,8 @@
-package com.unciv.models.gamebasics
+package com.unciv.models.gamebasics.tech
 
 import com.unciv.UnCivGame
+import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.ui.utils.tr
 import java.util.*
 
@@ -30,7 +32,7 @@ class Technology : ICivilopedia {
             if(wonders.isNotEmpty()) SB.appendln("{Wonders enabled}: "+wonders.map { "\n * "+it.name+ " ("+it.getShortDescription()+")" }.joinToString())
 
             val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy==name }.map { it.name }.firstOrNull() // can only be one
-            if(revealedResource!=null) SB.appendln("Reveals $revealedResource on map")
+            if(revealedResource!=null) SB.appendln("Reveals [$revealedResource] on the map".tr())
 
             val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired==name }
             if(tileImprovements.isNotEmpty()) SB.appendln("{Tile improvements enabled}: "+tileImprovements.map { it.name }.joinToString())
@@ -49,4 +51,6 @@ class Technology : ICivilopedia {
     override fun toString(): String {
         return name
     }
+
+    fun era() = column!!.era
 }

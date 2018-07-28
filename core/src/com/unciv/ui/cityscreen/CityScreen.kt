@@ -197,10 +197,14 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     update()
                 }
 
-            if (tileInfo.getCity()!=city) {
+            val tilesInRange = city.getTilesInRange()
+            if (tileInfo.getCity()!=city) { // outside of city
                 group.setColor(0f, 0f, 0f, 0.3f)
                 group.yieldGroup.isVisible = false
-            } else if (!tileInfo.isCityCenter()) {
+            } else if(tileInfo !in tilesInRange){ // within city but not close enough to be workable
+                group.yieldGroup.isVisible = false
+            }
+            else if (!tileInfo.isCityCenter()) { // workable
                 group.addPopulationIcon()
                 group.populationImage!!.addClickListener {
                         if (!tileInfo.isWorked() && cityInfo.population.getFreePopulation() > 0)

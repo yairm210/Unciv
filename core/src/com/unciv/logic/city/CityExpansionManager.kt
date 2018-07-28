@@ -11,7 +11,8 @@ class CityExpansionManager {
     var cultureStored: Int = 0
 
     fun reset() {
-        cityInfo.tiles = cityInfo.getCenterTile().getTilesInDistance(1).map { it.position }.toHashSet()
+        cityInfo.tiles.clear()
+        cityInfo.getCenterTile().getTilesInDistance(1).forEach { takeOwnership(it) }
     }
 
     // This one has conflicting sources -
@@ -32,12 +33,24 @@ class CityExpansionManager {
         cultureStored -= getCultureToNextTile()
 
         val chosenTile = getNewTile()
-        if(chosenTile!=null) cityInfo.tiles.add(chosenTile!!.position)
+        if(chosenTile!=null){
+            takeOwnership(chosenTile)
+        }
+    }
+
+    fun takeOwnership(tileInfo: TileInfo){
+        for(city in cityInfo.civInfo.gameInfo.civilizations.flatMap { it.cities }) // Remove this tile from any other cities - should stop SO many problems!
+            cityInfo.tiles.remove(tileInfo.position)
+
+        cityInfo.tiles.add(tileInfo.position)
     }
 
     fun getNewTile(): TileInfo? {
         for (i in 2..5) {
-            val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter { it.getOwner() == null }
+            val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter {
+                it.getOwner() != cityInfo.civInfo
+                && it.getTilesInDistance(1).none { tile->tile.isCityCenter() } // This SHOULD stop cities from grabbing tiles surrounding a city
+            }
             if (tiles.isEmpty()) continue
             val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
             return chosenTile

@@ -9,7 +9,8 @@ import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.tr
 
-class Unit : INamed, IConstruction, ICivilopedia {
+// This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
+class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override lateinit var name: String
     var baseDescription: String? = null
@@ -46,22 +47,27 @@ class Unit : INamed, IConstruction, ICivilopedia {
 
     fun getDescription(forPickerScreen:Boolean): String {
         val sb = StringBuilder()
-        if(baseDescription!=null) sb.appendln(baseDescription)
+        if(baseDescription!=null) sb.appendln(baseDescription!!.tr())
         if(!forPickerScreen) {
             if (unbuildable) sb.appendln("Unbuildable")
+            if(uniqueTo!=null) sb.appendln("Unique to $uniqueTo, replaces $replaces")
             else sb.appendln("Cost: $cost")
             if(requiredResource!=null) sb.appendln("Required resource: {$requiredResource}".tr())
             if(requiredTech!=null) sb.appendln("Required tech: {$requiredTech}".tr())
+            if(upgradesTo!=null) sb.appendln("Upgrades to $upgradesTo")
+            if(obsoleteTech!=null) sb.appendln("Obsolete with $obsoleteTech")
         }
         if(strength!=0){
             sb.append("{Strength} $strength".tr())
             if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
             sb.appendln()
+            if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
         }
 
         if(uniques!=null){
-            for(unique in uniques!!)
-                sb.appendln(unique)
+            for(unique in uniques!!) {
+                sb.appendln(unique.tr())
+            }
         }
         sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
@@ -85,8 +91,8 @@ class Unit : INamed, IConstruction, ICivilopedia {
         if (unbuildable) return false
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
-        if(uniqueTo!=null && uniqueTo!=civInfo.civName) return false
-        if(GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
+        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
+        if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
         if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
         return true
     }
@@ -96,8 +102,16 @@ class Unit : INamed, IConstruction, ICivilopedia {
     }
 
     override fun postBuildEvent(construction: CityConstructions) {
-        construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+    }
+
+    fun getUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
+        val uniqueUnitReplacesUpgrade: BaseUnit? = GameBasics.Units.values
+                .firstOrNull{it.uniqueTo==civInfo.civName && it.replaces == upgradesTo}
+        if(uniqueUnitReplacesUpgrade!=null) return uniqueUnitReplacesUpgrade
+        return GameBasics.Units[upgradesTo!!]!!
     }
 
     override fun toString(): String = name
-}  // for json parsing, we need to have a default constructor
+}

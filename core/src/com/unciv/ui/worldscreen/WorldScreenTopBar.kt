@@ -4,10 +4,13 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stats
+import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.WorldScreenOptionsTable
 import kotlin.math.abs
@@ -25,9 +28,14 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Image>()
     private val happinessImage = ImageGetter.getStatIcon("Happiness")
+    // These are all to improve performance IE recude update time (was 150 ms on my phone, which is a lot!)
+    private val malcontentColor = Color.valueOf("ef5350")
+    val happinessColor = colorFromRGB(92, 194, 77)
+    val malcontentDrawable = ImageGetter.getStatIcon("Malcontent").drawable
+    val happinessDrawable = ImageGetter.getStatIcon("Happiness").drawable
 
     init {
-        background = ImageGetter.getDrawable("skin/whiteDot.png").tint(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
+        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
         add(getStatsTable()).row()
         add(getResourceTable())
@@ -35,6 +43,12 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         pad(5f)
         pack()
         addActor(getMenuButton()) // needs to be after pack
+
+        val button = TextButton("Overview",CameraStageBaseScreen.skin)
+        button.addClickListener { UnCivGame.Current.screen = EmpireOverviewScreen() }
+        button.center(this)
+        button.x = screen.stage.width-button.width-10
+        addActor(button)
     }
 
     private fun getResourceTable(): Table {
@@ -79,7 +93,8 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.addClickListener {
-            screen.stage.addActor(WorldScreenOptionsTable())
+            if(screen.stage.actors.none { it is WorldScreenOptionsTable })
+                screen.stage.addActor(WorldScreenOptionsTable())
         }
         menuButton.centerY(this)
         menuButton.x = menuButton.y
@@ -120,14 +135,15 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         goldLabel.setText("" + Math.round(civInfo.gold.toFloat()) + goldPerTurn)
 
         scienceLabel.setText("+" + Math.round(nextTurnStats.science))
+
         happinessLabel.setText(getHappinessText(civInfo))
 
         if (civInfo.happiness < 0) {
-            happinessLabel.setFontColor(Color.valueOf("ef5350"))
-            happinessImage.drawable = ImageGetter.getStatIcon("Malcontent").drawable
+            happinessLabel.setFontColor(malcontentColor)
+            happinessImage.drawable = malcontentDrawable
         } else {
-            happinessLabel.setFontColor(colorFromRGB(92, 194, 77))
-            happinessImage.drawable = ImageGetter.getStatIcon("Happiness").drawable
+            happinessLabel.setFontColor(happinessColor)
+            happinessImage.drawable = happinessDrawable
         }
 
         cultureLabel.setText(getCultureText(civInfo, nextTurnStats))

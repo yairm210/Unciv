@@ -56,7 +56,6 @@
 	},
 	{
 		name:"Library",
-		baseDescription: "Adds 1 science for each 2 population in the city.", 
 		hurryCostModifier:25,
 		maintenance:1,
 		unique:"+1 Science Per 2 Population",
@@ -84,6 +83,13 @@
 		isWonder:true,
 		unique:"Worker construction increased 25%, provides 2 free workers",
 		requiredTech:"Mathematics"
+	},
+	{
+		name:"Barracks",
+		xpForNewUnits:15,
+		hurryCostModifier:25,
+		maintenance:1,
+		requiredTech:"Bronze Working"
 	},
 	{
 		name:"Temple",
@@ -173,7 +179,7 @@
 		happiness:10,
 		greatPersonPoints:{gold:1},
 		isWonder:true,
-		requiredTech:"Metal Casting"
+		requiredTech:"Physics"
 	},
 	{
 		name:"Hagia Sophia",
@@ -200,7 +206,7 @@
 		culture:1,
 		isWonder:true,
 		unique:"Gold from all trade routes +25%",
-		requiredTech:"Currency"
+		requiredTech:"Guilds"
 	},
 	{
 		name:"Aqueduct",
@@ -272,7 +278,7 @@
 		greatPersonPoints:{science:2},
 		isWonder:true,
 		unique:"ScienceConversionIncrease",
-		requiredTech:"Physics"
+		requiredTech:"Architecture"
 	},
 	{
 		name:"Ironworks",
@@ -281,6 +287,14 @@
 		isWonder:true,
 		requiredBuildingInAllCities:"Workshop",
 		requiredTech:"Machinery"
+	},
+	{
+		name:"Armory",
+		xpForNewUnits:15,
+		hurryCostModifier:25,
+		maintenance:1,
+		requiredBuilding:"Barracks",
+		requiredTech:"Steel"
 	},
 	{
 		name:"Observatory",
@@ -338,7 +352,7 @@
 		happiness:4,
 		isWonder:true,
 		unique:"Empire enters golden age",
-		requiredTech:"Acoustics"
+		requiredTech:"Architecture"
 	},
 	{
 		name:"Windmill",
@@ -403,7 +417,7 @@
 		maintenance:3,
 		hurryCostModifier:0,
 		requiredResource:"Coal",
-		requiredTech:"Steam Power"
+		requiredTech:"Industrialization"
 	},
 	{
 		name:"Stock Exchange",
@@ -421,6 +435,14 @@
 		isWonder:true,
 		unique:"Culture cost of adopting new Policies reduced by 10%",
 		requiredTech:"Flight"
+	},
+	{
+		name:"Military Academy",
+		xpForNewUnits:15,
+		hurryCostModifier:25,
+		maintenance:1,
+		requiredBuilding:"Armory",
+		requiredTech:"Military Science"
 	},
 	{
 		name:"Broadcast Tower",

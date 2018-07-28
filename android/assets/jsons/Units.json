@@ -44,7 +44,7 @@
 		strength:5,
 		rangedStrength:7,
 		cost: 40,
-		hurryCostModifier:20
+		hurryCostModifier:20,
 		requiredTech:"Archery",
 		obsoleteTech:"Machinery",
 		upgradesTo:"Crossbowman"
@@ -56,11 +56,11 @@
 		strength:7,
 		rangedStrength:9,
 		cost: 40,
-		hurryCostModifier:20
+		hurryCostModifier:20,
 		requiredTech:"Archery",
 		obsoleteTech:"Machinery",
 		replaces:"Archer",
-		uniqueTo:"Babylon"
+		uniqueTo:"Babylon",
 		upgradesTo:"Crossbowman"
 	},
 	{
@@ -72,6 +72,7 @@
 		cost: 56,
 		requiredTech:"The Wheel",
 		requiredResource:"Horses",
+		upgradesTo:"Knight",
 		uniques:["No defensive terrain bonus","Rough terrain penalty"],
 		hurryCostModifier:20
 	},
@@ -110,6 +111,8 @@
 		strength:14,
 		cost: 75,
 		requiredTech:"Iron Working",
+		upgradesTo:"Longswordsman",
+		obsoleteTech:"Steel",
 		requiredResource:"Iron",
 		hurryCostModifier:20
 	},
@@ -170,8 +173,8 @@
 		rangedStrength:14,
 		cost: 120,
 		requiredTech:"Physics",
-		/*obsoleteTech:"Chemistry",
-		upgradesTo:"Cannon",*/
+		obsoleteTech:"Chemistry",
+		upgradesTo:"Cannon",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
 		hurryCostModifier:20
 	},
@@ -193,6 +196,8 @@
 		cost: 90,
 		requiredTech:"Civil Service",
 		uniques:["Bonus vs Mounted 50%"],
+		upgradesTo:"Musketman",
+		obsoleteTech:"Gunpowder",
 		hurryCostModifier:20
 	},
 	{
@@ -209,7 +214,7 @@
 	
 	// Rennaisance Era
 
-/*	
+
 	{
 		name:"Cannon",
 		unitType:"Siege",
@@ -230,7 +235,52 @@
 		requiredTech:"Gunpowder",
 		hurryCostModifier:20
 	},
-	*/
+	{
+		name:"Lancer",
+		unitType:"Mounted",
+		movement:4,
+		strength:25,
+		cost: 185,
+		requiredTech:"Metallurgy",
+		requiredResource:"Horses",
+		hurryCostModifier:20,
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%" ],
+	},
+	
+	// Industrial Era
+	
+	{
+		name:"Rifleman",
+		unitType:"Melee",
+		movement:2,
+		strength:34,
+		cost: 225,
+		requiredTech:"Rifling",
+		hurryCostModifier:20
+	},
+	{
+		name:"Cavalry",
+		unitType:"Mounted",
+		movement:4,
+		strength:34,
+		cost: 225,
+		requiredTech:"Military Science",
+		requiredResource:"Horses",
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
+		hurryCostModifier:20
+	},
+	{
+		name:"Artillery",
+		unitType:"Siege",
+		movement:2,
+		strength:21,
+		rangedStrength:28,
+		range:3,
+		cost: 320,
+		requiredTech:"Dynamite",
+		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		hurryCostModifier:20
+	},
 	
 	/* Great people */
 	

@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen.bottombar
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -18,7 +19,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
         val civInfo = worldScreen.civInfo
         columnDefaults(0).padRight(10f)
 
-        if (civInfo.exploredTiles.contains(tile.position)) {
+        if (civInfo.exploredTiles.contains(tile.position) || UnCivGame.Current.viewEntireMapForDebug) {
             add(getStatsTable(tile)).pad(10f)
             add(Label(tile.toString(), skin)).colspan(2)
         }

@@ -79,7 +79,7 @@
 	{
 		name:"Coal",
 		resourceType:"Strategic",
-		revealedBy:"Scientific Theory",
+		revealedBy:"Industrialization",
 		terrainsCanBeFoundOn:["Grassland","Plains","Hill"],
 		production:1,
 		improvement:"Mine",

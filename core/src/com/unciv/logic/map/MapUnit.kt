@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.unit.Unit
+import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import java.text.DecimalFormat
 
@@ -21,7 +21,11 @@ class MapUnit {
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
 
-    fun getBaseUnit(): Unit = GameBasics.Units[name]!!
+    init{
+        promotions.unit=this
+    }
+
+    fun getBaseUnit(): BaseUnit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
     fun getTile(): TileInfo {
         return civInfo.gameInfo.tileMap.values.first{it.militaryUnit==this || it.civilianUnit==this}
@@ -38,7 +42,10 @@ class MapUnit {
 
         val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
                 .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=civInfo }
-        if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
+        if(enemyUnitsInWalkingDistance.isNotEmpty()) {
+            if (action != null && action!!.startsWith("moveTo")) action=null
+            return  // Don't you dare move.
+        }
 
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -53,7 +60,7 @@ class MapUnit {
             return
         }
 
-        if (action == "automation") WorkerAutomation().automateWorkerAction(this)
+        if (action == "automation") WorkerAutomation(this).automateWorkerAction()
     }
 
     private fun doPostTurnAction() {
@@ -70,7 +77,16 @@ class MapUnit {
         tile.turnsToImprovement -= 1
         if (tile.turnsToImprovement != 0) return
         when {
-            tile.improvementInProgress!!.startsWith("Remove") -> tile.terrainFeature = null
+            tile.improvementInProgress!!.startsWith("Remove") -> {
+                val tileImprovement = tile.tileImprovement
+                if(tileImprovement!=null
+                        && tileImprovement.terrainsCanBeBuiltOn.contains(tile.terrainFeature)
+                        && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
+                    tile.improvement = null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
+                }
+
+                tile.terrainFeature = null
+            }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
             else -> tile.improvement = tile.improvementInProgress
@@ -143,7 +159,9 @@ class MapUnit {
         var visibilityRange = 2
         visibilityRange += getSpecialAbilities().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
-        return getTile().getViewableTiles(visibilityRange)
+        val tile = getTile()
+        if (tile.baseTerrain == "Hill") visibilityRange += 1
+        return tile.getViewableTiles(visibilityRange)
     }
 
     fun isFortified(): Boolean {
@@ -189,5 +207,9 @@ class MapUnit {
         if(attacksThisTurn>0) return false
         if(hasUnique("Must set up to ranged attack") && action != "Set Up") return false
         return true
+    }
+
+    fun setTransients(){
+        promotions.unit=this
     }
 }

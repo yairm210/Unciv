@@ -96,12 +96,15 @@ class CityConstructions {
         currentConstruction = "lie"
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            cityInfo.civInfo.addNotification("{Cannot continue work on} {$saveCurrentConstruction}", cityInfo.location, Color.BROWN)
+            cityInfo.civInfo.addNotification("Cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
             Automation().chooseNextConstruction(this)
             construction = getConstruction(currentConstruction)
         } else
             currentConstruction = saveCurrentConstruction
 
+        var productionToAdd = cityStats.production
+        if(!cityInfo.civInfo.isPlayerCivilization())
+            productionToAdd *= cityInfo.civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiConstructionModifier
         addConstruction(Math.round(cityStats.production))
         val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
+import kotlin.math.roundToInt
 
 class PopulationManager {
 
@@ -35,19 +36,26 @@ class PopulationManager {
 
 
     fun getFoodToNextPopulation(): Int {
-        // civ v math,civilization.wikia
-        return 15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8)).toInt()
+        // civ v math, civilization.wikia
+        var foodRequired =  15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8))
+        if(!cityInfo.civInfo.isPlayerCivilization())
+            foodRequired *= cityInfo.civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiCityGrowthModifier
+        return foodRequired.toInt()
     }
 
 
     fun nextTurn(food: Float) {
-        foodStored += food.toInt()
+        foodStored += food.roundToInt()
+        if(food.roundToInt() < 0)
+            cityInfo.civInfo.addNotification(cityInfo.name + " {is starving}!", cityInfo.location, Color.RED)
         if (foodStored < 0)
         // starvation!
         {
-            population--
+            if(population>1){
+                population--
+
+            }
             foodStored = 0
-            cityInfo.civInfo.addNotification(cityInfo.name + " {is starving}!", cityInfo.location, Color.RED)
         }
         if (foodStored >= getFoodToNextPopulation())
         // growth!
@@ -69,6 +77,10 @@ class PopulationManager {
     }
 
     fun unassignExtraPopulation() {
+        for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] })
+            if(tile.getOwner()!=cityInfo.civInfo)
+                cityInfo.workedTiles.remove(tile.position)
+
         while (cityInfo.workedTiles.size > population) {
             val lowestRankedWorkedTile = cityInfo.workedTiles
                     .map { cityInfo.tileMap[it] }
