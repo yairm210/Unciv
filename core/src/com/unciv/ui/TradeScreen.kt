@@ -12,6 +12,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.utils.*
+import kotlin.math.sqrt
 
 
 data class TradeOffer(var name:String, var type: TradeType, var duration:Int, var amount:Int) {
@@ -78,24 +79,26 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
                 otherCivilization.diplomacy[civInfo.civName]!!.trades.add(currentTrade.reverse())
 
                 // instant transfers
-                for(offer in currentTrade.theirOffers){
-                    if(offer.type== TradeType.Gold){
-                        civInfo.gold += offer.amount
-                        otherCivilization.gold -= offer.amount
-                    }
-                    if(offer.type== TradeType.Technology){
-                        civInfo.tech.techsResearched.add(offer.name)
+                fun transfer(us: CivilizationInfo,them:CivilizationInfo, trade: Trade) {
+                    for (offer in trade.theirOffers) {
+                        if (offer.type == TradeType.Gold) {
+                            us.gold += offer.amount
+                            them.gold -= offer.amount
+                        }
+                        if (offer.type == TradeType.Technology) {
+                            us.tech.techsResearched.add(offer.name)
+                        }
+                        if(offer.type==TradeType.City){
+                            val city = them.cities.first { it.name==offer.name }
+                            us.cities.add(city)
+                            them.cities.remove(city)
+
+                        }
                     }
                 }
-                for(offer in currentTrade.ourOffers){
-                    if(offer.type== TradeType.Gold){
-                        civInfo.gold -= offer.amount
-                        otherCivilization.gold += offer.amount
-                    }
-                    if(offer.type== TradeType.Technology){
-                        otherCivilization.tech.techsResearched.add(offer.name)
-                    }
-                }
+
+                transfer(civInfo,otherCivilization,currentTrade)
+                transfer(otherCivilization,civInfo,currentTrade.reverse())
 
                 val newTradeScreen = TradeScreen(otherCivilization)
                 newTradeScreen.tradeText.setText("Pleasure doing business with you!".tr())
@@ -147,6 +150,8 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
         }
         offers.add(TradeOffer("Gold".tr(), TradeType.Gold,0,civInfo.gold))
         offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn,30,civInfo.getStatsForNextTurn().gold.toInt()))
+//        for(city in civInfo.cities.filterNot { it.isCapital() })
+//            offers.add(TradeOffer(city.name,TradeType.City,0,1))
         return offers
     }
 
@@ -161,14 +166,30 @@ class TradeScreen(val otherCivilization: CivilizationInfo) : CameraStageBaseScre
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount*offer.duration
             TradeType.Luxury_Resource -> {
-                var value = 350*offer.amount
-                if(!theirAvailableOffers.any { it.name==offer.name } && otherCivIsRecieving) // We want to take away their last luxury or give them one they don't have
-                    value += 400
-                return value
+                if(!otherCivIsRecieving){ // they're giving us
+                    var value = 300*offer.amount
+                    if(!theirAvailableOffers.any { it.name==offer.name }) // We want to take away their last luxury or give them one they don't have
+                        value += 400
+                    return value
+                }
+                else{
+                    var value = 50*offer.amount // they'll buy at 50 each only, and that's so they can trade it away
+                    if(!theirAvailableOffers.any { it.name==offer.name })
+                        value+=250 // only if they're lacking will they buy the first one at 300
+                    return value
+                }
+
             }
-            TradeType.Technology -> return GameBasics.Technologies[offer.name]!!.cost // gold cost is science cost
+            TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*10 // gold cost is science cost
             TradeType.Strategic_Resource -> return 50 * offer.amount
-        // Dunno what this is?
+            TradeType.City -> {
+                val civ = if(otherCivIsRecieving) civInfo else otherCivilization
+                val city = civ.cities.first { it.name==offer.name }
+                val stats = city.cityStats.currentCityStats
+                val sumOfStats = stats.culture+stats.gold+stats.science+stats.production+stats.happiness+stats.food
+                return sumOfStats.toInt() * 10
+            }
+            // Dunno what this is?
             else -> return 1000
         }
     }

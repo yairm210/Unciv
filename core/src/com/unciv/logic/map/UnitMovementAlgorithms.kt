@@ -167,4 +167,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         throw Exception("We couldn't get the path between the two tiles")
     }
 
+//    fun moveToClosestMoveableTile(){
+//        val unitCurrentTile = unit.getTile()
+//        var allowedTile:TileInfo? = null
+//        var distance=0
+//        while(allowedTile==null){
+//            distance++
+//            allowedTile = tileMap.tilesat
+//        }
+//    }
+
 }
