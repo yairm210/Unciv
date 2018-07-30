@@ -38,7 +38,7 @@ class UnitAutomation{
     fun containsAttackableEnemy(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
         val tileCombatant = Battle().getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
-        return tileCombatant.getCivilization()!=civInfo
+        return tileCombatant.getCivilization()!=civInfo// && civInfo.isAtWarWith(tileCombatant.getCivilization())
     }
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)

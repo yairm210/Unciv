@@ -288,6 +288,13 @@ class CivilizationInfo {
         if(maxEraOfTech!=null) return maxEraOfTech
         else return TechEra.Ancient
     }
+
+//    fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
+//        if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
+//        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
+//            return false
+//        return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
+//    }
 }
 
 

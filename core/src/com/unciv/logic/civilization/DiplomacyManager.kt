@@ -1,11 +1,11 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.ui.Trade
-import com.unciv.ui.TradeType
 import com.unciv.ui.utils.tr
 
 enum class DiplomaticStatus{
@@ -79,8 +79,10 @@ class DiplomacyManager() {
     }
 
     fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
+
+    //var diplomaticStatus = DiplomaticStatus.War
 //    fun declareWar(){
-//        status = DiplomaticStatus.War
-//        otherCiv().diplomacy[civInfo.civName]!!.status = DiplomaticStatus.War
+//        diplomaticStatus = DiplomaticStatus.War
+//        otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
 //    }
 }

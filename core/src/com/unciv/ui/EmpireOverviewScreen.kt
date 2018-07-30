@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
+import com.unciv.logic.trade.Trade
 import com.unciv.ui.utils.*
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -79,7 +80,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         return tradesTable
     }
 
-    private fun createTradeTable(trade:Trade, civName:String): Table {
+    private fun createTradeTable(trade: Trade, civName:String): Table {
         val table = Table(skin)
         table.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         table.defaults().pad(10f)
