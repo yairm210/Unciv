@@ -22,7 +22,6 @@ class DiplomacyManager() {
         otherCivName=OtherCivName
     }
 
-//    var status:DiplomaticStatus = DiplomaticStatus.War
     var trades = ArrayList<Trade>()
 
     fun goldPerTurn():Int{
@@ -80,9 +79,9 @@ class DiplomacyManager() {
 
     fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
 
-    //var diplomaticStatus = DiplomaticStatus.War
-//    fun declareWar(){
-//        diplomaticStatus = DiplomaticStatus.War
-//        otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
-//    }
+    var diplomaticStatus = DiplomaticStatus.War
+    fun declareWar(){
+        diplomaticStatus = DiplomaticStatus.War
+        otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
+    }
 }

@@ -103,21 +103,12 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
         attacker.getCivilization().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
-        enemyCiv.cities.remove(city)
-        attacker.getCivilization().cities.add(city)
-        city.civInfo = attacker.getCivilization()
+        city.moveToCiv(attacker.getCivilization())
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.getCenterTile().apply {
             militaryUnit = null
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
         }
-
-        city.expansion.cultureStored = 0
-        city.expansion.reset()
-
-        // now that the tiles have changed, we need to reassign population
-        city.workedTiles.filterNot { city.tiles.contains(it) }
-                .forEach { city.workedTiles.remove(it); city.population.autoAssignPopulation() }
 
         if(city.cityConstructions.isBuilt("Palace")){
             city.cityConstructions.builtBuildings.remove("Palace")
@@ -131,12 +122,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             }
         }
 
-        // Remove all national wonders when conquering a city
-        for(building in city.cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
-            city.cityConstructions.builtBuildings.remove(building.name)
-
         (attacker as MapUnitCombatant).unit.moveToTile(city.getCenterTile())
-        city.civInfo.gameInfo.updateTilesToCities()
     }
 
     fun getMapCombatantOfTile(tile:TileInfo): ICombatant? {

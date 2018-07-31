@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.models.gamebasics.unit.UnitType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
     val tileMap = unit.getTile().tileMap
@@ -167,14 +168,19 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         throw Exception("We couldn't get the path between the two tiles")
     }
 
-//    fun moveToClosestMoveableTile(){
-//        val unitCurrentTile = unit.getTile()
-//        var allowedTile:TileInfo? = null
-//        var distance=0
-//        while(allowedTile==null){
-//            distance++
-//            allowedTile = tileMap.tilesat
-//        }
-//    }
+    fun teleportToClosestMoveableTile(){
+        val unitCurrentTilePosition = unit.getTile().position
+        var allowedTile:TileInfo? = null
+        var distance=0
+        while(allowedTile==null){
+            distance++
+            allowedTile = tileMap.getTilesAtDistance(unitCurrentTilePosition,distance)
+                    .firstOrNull{unit.canMoveTo(it)}
+        }
+        unit.removeFromTile() // we "teleport" them away
+        if(unit.getBaseUnit().unitType==UnitType.Civilian)
+            allowedTile.civilianUnit=unit
+        else allowedTile.militaryUnit=unit
+    }
 
 }

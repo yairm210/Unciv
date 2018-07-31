@@ -10,6 +10,7 @@ import com.unciv.ui.utils.tr
 import kotlin.math.min
 
 class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffersList,
+                 val otherCivOffers: TradeOffersList, val otherCivCorrespondingOffers:TradeOffersList,
                  val onChange: () -> Unit) : ScrollPane(null) {
     val table= Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
     init {
@@ -32,6 +33,11 @@ class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffe
                     val amountTransferred = min(amountPerClick, offer.amount)
                     offers += offer.copy(amount = -amountTransferred)
                     correspondingOffers += offer.copy(amount = amountTransferred)
+                    if(offer.type==TradeType.Treaty) { // this goes both ways, so it doesn't matter which side you click
+                        otherCivOffers += offer.copy(amount = -amountTransferred)
+                        otherCivCorrespondingOffers += offer.copy(amount = amountTransferred)
+                    }
+
                     onChange()
                     update()
                 }

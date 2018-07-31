@@ -149,6 +149,25 @@ class CityInfo {
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
 
+    fun moveToCiv(newCivInfo: CivilizationInfo){
+        civInfo.cities.remove(this)
+        newCivInfo.cities.add(this)
+        civInfo = newCivInfo
+
+        expansion.cultureStored = 0
+        expansion.reset()
+
+        // now that the tiles have changed, we need to reassign population
+        workedTiles.filterNot { tiles.contains(it) }
+                .forEach { workedTiles.remove(it); population.autoAssignPopulation() }
+
+        // Remove all national wonders
+        for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
+            cityConstructions.builtBuildings.remove(building.name)
+
+        civInfo.gameInfo.updateTilesToCities()
+    }
+
     internal fun getMaxHealth(): Int {
         return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
     }

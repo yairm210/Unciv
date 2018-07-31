@@ -189,7 +189,10 @@ class MapUnit {
      * Designates whether we can walk to the tile - without attacking
      */
     fun canMoveTo(tile: TileInfo): Boolean {
-        if(tile.isCityCenter() && tile.getOwner()!!.civName!=owner) return false
+        val tileOwner = tile.getOwner()
+        if(tileOwner!=null && tileOwner.civName!=owner) {
+            if (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner)) return false
+        }
         if (getBaseUnit().unitType== UnitType.Civilian)
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)
        else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==owner)

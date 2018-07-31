@@ -25,7 +25,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
         return getCityStrength()
     }
 
-    private fun getCityStrength(): Int { // Civ fanatics forum, from a modder who went through the original code
+    fun getCityStrength(): Int { // Civ fanatics forum, from a modder who went through the original code
         var strength = 8f
         if(city.isCapital()) strength+=2.5f
         strength += (city.population.population/5) * 2 // Each 5 pop gives 2 defence

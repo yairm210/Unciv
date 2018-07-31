@@ -289,12 +289,17 @@ class CivilizationInfo {
         else return TechEra.Ancient
     }
 
-//    fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
-//        if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
-//        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
-//            return false
-//        return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
-//    }
+    fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
+        if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
+        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
+            return false
+        return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
+    }
+
+    fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
+        if(isAtWarWith(otherCiv)) return true
+        return false
+    }
 }
 
 
