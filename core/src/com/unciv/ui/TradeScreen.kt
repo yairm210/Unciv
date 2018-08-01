@@ -1,5 +1,6 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -13,46 +14,32 @@ import com.unciv.ui.utils.tr
 
 class TradeScreen(otherCivilization: CivilizationInfo) : CameraStageBaseScreen(){
 
-    val tradeLogic = TradeLogic(otherCivilization)
-    val tradeTable = Table(skin)
-    val tradeText = Label("What do you have in mind?".tr(),skin)
-    val offerButton = TextButton("Offer trade".tr(),skin)
-
-
-    val onChange = {
-        update()
-        offerButton.setText("Offer trade".tr())
-        tradeText.setText("What do you have in mind?".tr())
-    }
-
-    val ourAvailableOffersTable = OffersList(tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers,
-            tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers) { onChange() }
-    val ourOffersTable = OffersList(tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers,
-            tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers) { onChange() }
-    val theirOffersTable = OffersList(tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers,
-            tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers) { onChange() }
-    val theirAvailableOffersTable = OffersList(tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers,
-            tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers) { onChange() }
-
     init {
-        val generalTable = Table()
         val closeButton = TextButton("Close".tr(), skin)
         closeButton.addClickListener { UnCivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         stage.addActor(closeButton)
 
 
-        tradeTable.add("Our items".tr())
-        tradeTable.add("Our trade offer".tr())
-        tradeTable.add("[${otherCivilization.civName}]'s trade offer".tr())
-        tradeTable.add("[${otherCivilization.civName}]'s items".tr()).row()
-        tradeTable.add(ourAvailableOffersTable).size(stage.width/5,stage.height*0.8f)
-        tradeTable.add(ourOffersTable).size(stage.width/5,stage.height*0.8f)
-        tradeTable.add(theirOffersTable).size(stage.width/5,stage.height*0.8f)
-        tradeTable.add(theirAvailableOffersTable).size(stage.width/5,stage.height*0.8f)
-        tradeTable.pack()
+        val generalTable = TradeTable(otherCivilization,stage)
+        generalTable.center(stage)
 
-        generalTable.add(tradeTable).row()
+        stage.addActor(generalTable)
+    }
+
+}
+
+class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage):Table(CameraStageBaseScreen.skin){
+    var tradeLogic = TradeLogic(otherCivilization)
+    var offerColumnsTable = OfferColumnsTable(tradeLogic,stage) {onChange()}
+    var offerColumnsTableWrapper = Table() // This is so that after a trade has been traded, we can switch out the offers to start anew - this is the easiest way
+    val tradeText = Label("What do you have in mind?".tr(), CameraStageBaseScreen.skin)
+    val offerButton = TextButton("Offer trade".tr(), CameraStageBaseScreen.skin)
+
+
+    init{
+        offerColumnsTableWrapper.add(offerColumnsTable)
+        add(offerColumnsTableWrapper).row()
 
         val lowerTable = Table().apply { defaults().pad(10f) }
 
@@ -73,10 +60,11 @@ class TradeScreen(otherCivilization: CivilizationInfo) : CameraStageBaseScreen()
             }
             else if(offerButton.text.toString() == "Accept".tr()){
                 tradeLogic.acceptTrade()
-                val newTradeScreen = TradeScreen(otherCivilization)
-                newTradeScreen.tradeText.setText("Pleasure doing business with you!".tr())
-                UnCivGame.Current.screen = newTradeScreen
-
+                tradeLogic = TradeLogic(otherCivilization)
+                offerColumnsTable = OfferColumnsTable(tradeLogic,stage){onChange()}
+                offerColumnsTableWrapper.clear()
+                offerColumnsTableWrapper.add(offerColumnsTable)
+                tradeText.setText("Pleasure doing business with you!".tr())
             }
         }
 
@@ -84,21 +72,49 @@ class TradeScreen(otherCivilization: CivilizationInfo) : CameraStageBaseScreen()
 
         lowerTable.pack()
         lowerTable.y = 10f
-        generalTable.add(lowerTable)
-        generalTable.pack()
-        generalTable.center(stage)
-        stage.addActor(generalTable)
-
-
-        update()
+        add(lowerTable)
+        pack()
     }
 
-    fun update(){
-        ourAvailableOffersTable.update()
-        ourOffersTable.update()
-        theirAvailableOffersTable.update()
-        theirOffersTable.update()
+    private fun onChange(){
+        offerColumnsTable.update()
+        offerButton.setText("Offer trade".tr())
+        tradeText.setText("What do you have in mind?".tr())
     }
 
 }
 
+
+class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit):Table(CameraStageBaseScreen.skin) {
+
+    val ourAvailableOffersTable = OffersList(tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers,
+            tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers) { onChange() }
+    val ourOffersTable = OffersList(tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers,
+            tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers) { onChange() }
+    val theirOffersTable = OffersList(tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers,
+            tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers) { onChange() }
+    val theirAvailableOffersTable = OffersList(tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers,
+            tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers) { onChange() }
+
+    init {
+        add("Our items".tr())
+        add("Our trade offer".tr())
+        add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr())
+        add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).row()
+        val columnWidth = stage.width / 5f
+        val columnHeight = stage.height * 0.8f
+        add(ourAvailableOffersTable).size(columnWidth,columnHeight)
+        add(ourOffersTable).size(columnWidth,columnHeight)
+        add(theirOffersTable).size(columnWidth,columnHeight)
+        add(theirAvailableOffersTable).size(columnWidth,columnHeight)
+        pack()
+    }
+
+    fun update() {
+        ourAvailableOffersTable.update()
+        ourOffersTable.update()
+        theirAvailableOffersTable.update()
+        theirOffersTable.update()
+
+    }
+}
