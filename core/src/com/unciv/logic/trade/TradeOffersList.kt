@@ -1,6 +1,5 @@
 package com.unciv.logic.trade
 
-import com.unciv.ui.TradeOffer
 import java.util.*
 
 class TradeOffersList: ArrayList<TradeOffer>(){

@@ -1,8 +1,10 @@
-package com.unciv.logic.trade
+package com.unciv.ui
 
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.logic.trade.TradeOffersList
+import com.unciv.logic.trade.TradeType
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.disable
@@ -10,7 +12,7 @@ import com.unciv.ui.utils.tr
 import kotlin.math.min
 
 class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffersList,
-                 val otherCivOffers: TradeOffersList, val otherCivCorrespondingOffers:TradeOffersList,
+                 val otherCivOffers: TradeOffersList, val otherCivCorrespondingOffers: TradeOffersList,
                  val onChange: () -> Unit) : ScrollPane(null) {
     val table= Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
     init {
@@ -33,7 +35,7 @@ class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffe
                     val amountTransferred = min(amountPerClick, offer.amount)
                     offers += offer.copy(amount = -amountTransferred)
                     correspondingOffers += offer.copy(amount = amountTransferred)
-                    if(offer.type==TradeType.Treaty) { // this goes both ways, so it doesn't matter which side you click
+                    if(offer.type== TradeType.Treaty) { // this goes both ways, so it doesn't matter which side you click
                         otherCivOffers += offer.copy(amount = -amountTransferred)
                         otherCivCorrespondingOffers += offer.copy(amount = amountTransferred)
                     }
