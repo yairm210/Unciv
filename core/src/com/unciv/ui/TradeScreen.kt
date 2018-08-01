@@ -6,12 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.tr
 
 class TradeScreen(otherCivilization: CivilizationInfo) : CameraStageBaseScreen(){
 
     val tradeLogic = TradeLogic(otherCivilization)
-    val table = Table(skin)
+    val tradeTable = Table(skin)
     val tradeText = Label("What do you have in mind?".tr(),skin)
     val offerButton = TextButton("Offer trade".tr(),skin)
 
@@ -32,11 +35,24 @@ class TradeScreen(otherCivilization: CivilizationInfo) : CameraStageBaseScreen()
             tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers) { onChange() }
 
     init {
+        val generalTable = Table()
         val closeButton = TextButton("Close".tr(), skin)
         closeButton.addClickListener { UnCivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         stage.addActor(closeButton)
-        stage.addActor(table)
+
+
+        tradeTable.add("Our items".tr())
+        tradeTable.add("Our trade offer".tr())
+        tradeTable.add("[${otherCivilization.civName}]'s trade offer".tr())
+        tradeTable.add("[${otherCivilization.civName}]'s items".tr()).row()
+        tradeTable.add(ourAvailableOffersTable).size(stage.width/5,stage.height*0.8f)
+        tradeTable.add(ourOffersTable).size(stage.width/5,stage.height*0.8f)
+        tradeTable.add(theirOffersTable).size(stage.width/5,stage.height*0.8f)
+        tradeTable.add(theirAvailableOffersTable).size(stage.width/5,stage.height*0.8f)
+        tradeTable.pack()
+
+        generalTable.add(tradeTable).row()
 
         val lowerTable = Table().apply { defaults().pad(10f) }
 
@@ -67,21 +83,12 @@ class TradeScreen(otherCivilization: CivilizationInfo) : CameraStageBaseScreen()
         lowerTable.add(offerButton)
 
         lowerTable.pack()
-        lowerTable.centerX(stage)
         lowerTable.y = 10f
-        stage.addActor(lowerTable)
+        generalTable.add(lowerTable)
+        generalTable.pack()
+        generalTable.center(stage)
+        stage.addActor(generalTable)
 
-
-        table.add("Our items".tr())
-        table.add("Our trade offer".tr())
-        table.add("[${otherCivilization.civName}]'s trade offer".tr())
-        table.add("[${otherCivilization.civName}]'s items".tr()).row()
-        table.add(ourAvailableOffersTable).size(stage.width/4,stage.width/2)
-        table.add(ourOffersTable).size(stage.width/4,stage.width/2)
-        table.add(theirOffersTable).size(stage.width/4,stage.width/2)
-        table.add(theirAvailableOffersTable).size(stage.width/4,stage.width/2)
-        table.pack()
-        table.center(stage)
 
         update()
     }
