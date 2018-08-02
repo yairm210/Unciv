@@ -9,10 +9,10 @@ import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.ui.TradeScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
@@ -112,12 +112,15 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private fun updateTradeButtons() {
         tradeButtons.clear()
-        for(civ in gameInfo.civilizations.filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }){
-            if(!civInfo.diplomacy.containsKey(civ.civName)) continue
-            val tb = TextButton("Trade with [${civ.civName}]".tr(),skin)
-            tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
-            tradeButtons.add(tb).row()
-        }
+        val btn = TextButton("Diplomacy",skin)
+        btn.addClickListener { UnCivGame.Current.screen = DiplomacyScreen() }
+//        for(civ in gameInfo.civilizations.filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }){
+//            if(!civInfo.diplomacy.containsKey(civ.civName)) continue
+//            val tb = TextButton("Trade with [${civ.civName}]".tr(),skin)
+//            tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
+//            tradeButtons.add(tb).row()
+//        }
+        tradeButtons.add(btn)
 
         tradeButtons.pack()
         tradeButtons.y = techButton.y -20 - tradeButtons.height

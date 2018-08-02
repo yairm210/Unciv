@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.bottombar
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -116,7 +117,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         row().pad(5f)
-        val attackButton = TextButton("Attack", skin)
+        val attackButton = TextButton("Attack".tr(), skin).apply { color= Color.RED }
 
         attacker.unit.getDistanceToTiles()
 

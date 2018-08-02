@@ -19,8 +19,8 @@ class TradeLogic(val otherCivilization: CivilizationInfo){
 
     fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
         val offers = TradeOffersList()
-        if(civInfo.isAtWarWith(otherCivilization))
-            offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20, 1))
+//        if(civInfo.isAtWarWith(otherCivilization))
+//            offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20, 1))
         for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
             val resourceTradeType = if(entry.key.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
