@@ -10,7 +10,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addClickListener
 import com.unciv.ui.utils.tr
 
-class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage): Table(CameraStageBaseScreen.skin){
+class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeComplete: () -> Unit): Table(CameraStageBaseScreen.skin){
     var tradeLogic = TradeLogic(otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
     var offerColumnsTableWrapper = Table() // This is so that after a trade has been traded, we can switch out the offers to start anew - this is the easiest way
@@ -46,6 +46,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage): Table(C
                 offerColumnsTableWrapper.clear()
                 offerColumnsTableWrapper.add(offerColumnsTable)
                 tradeText.setText("Pleasure doing business with you!".tr())
+                onTradeComplete()
             }
         }
 

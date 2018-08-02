@@ -84,4 +84,11 @@ class DiplomacyManager() {
         diplomaticStatus = DiplomaticStatus.War
         otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
     }
+
+    fun turnsToPeaceTreaty(): Int {
+        for(trade in trades)
+            for(offer in trade.ourOffers)
+                if(offer.name=="Peace Treaty") return offer.duration
+        return 0
+    }
 }

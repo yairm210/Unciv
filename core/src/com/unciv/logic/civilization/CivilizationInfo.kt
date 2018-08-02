@@ -266,7 +266,9 @@ class CivilizationInfo {
         for(otherCiv in viewedCivs)
             if(!diplomacy.containsKey(otherCiv.civName)){
                 diplomacy[otherCiv.civName] = DiplomacyManager(this@CivilizationInfo,otherCiv.civName)
+                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
                 otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv,civName)
+                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
                 addNotification("We have encountered ["+otherCiv.civName+"]!".tr(),null, Color.GOLD)
             }
 
