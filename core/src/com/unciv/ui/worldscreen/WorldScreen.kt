@@ -30,7 +30,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val unitActionsTable = UnitActionsTable(this)
 
     private val techButton = TextButton("", CameraStageBaseScreen.skin).apply { color= Color.BLUE }
-    val tradeButtons = Table()
+    val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
 
     private val notificationsScroll: NotificationsScroll
@@ -60,9 +60,8 @@ class WorldScreen : CameraStageBaseScreen() {
         stage.addActor(notificationsScroll)
 
 
-        tradeButtons.defaults().pad(5f)
-        stage.addActor(tradeButtons)
-//        tradeButtons.isVisible=false
+        diplomacyButtonWrapper.defaults().pad(5f)
+        stage.addActor(diplomacyButtonWrapper)
 
         bottomBar.width = stage.width
         stage.addActor(bottomBar)
@@ -90,7 +89,7 @@ class WorldScreen : CameraStageBaseScreen() {
         }
 
         updateTechButton()
-        updateTradeButtons()
+        updateDiplomacyButton()
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         minimap.update()
@@ -110,20 +109,17 @@ class WorldScreen : CameraStageBaseScreen() {
         else if(civInfo.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
     }
 
-    private fun updateTradeButtons() {
-        tradeButtons.clear()
-        val btn = TextButton("Diplomacy",skin)
-        btn.addClickListener { UnCivGame.Current.screen = DiplomacyScreen() }
-//        for(civ in gameInfo.civilizations.filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }){
-//            if(!civInfo.diplomacy.containsKey(civ.civName)) continue
-//            val tb = TextButton("Trade with [${civ.civName}]".tr(),skin)
-//            tb.addClickListener { UnCivGame.Current.screen = TradeScreen(civ) }
-//            tradeButtons.add(tb).row()
-//        }
-        tradeButtons.add(btn)
-
-        tradeButtons.pack()
-        tradeButtons.y = techButton.y -20 - tradeButtons.height
+    private fun updateDiplomacyButton() {
+        diplomacyButtonWrapper.clear()
+        if(civInfo.diplomacy.values.map { it.otherCiv() }
+                        .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
+                        .any()) {
+            val btn = TextButton("Diplomacy", skin)
+            btn.addClickListener { UnCivGame.Current.screen = DiplomacyScreen() }
+            diplomacyButtonWrapper.add(btn)
+        }
+        diplomacyButtonWrapper.pack()
+        diplomacyButtonWrapper.y = techButton.y -20 - diplomacyButtonWrapper.height
     }
 
     private fun updateTechButton() {

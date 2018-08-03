@@ -269,7 +269,7 @@ class CivilizationInfo {
                         .apply { diplomaticStatus = DiplomaticStatus.Peace }
                 otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv,civName)
                         .apply { diplomaticStatus = DiplomaticStatus.Peace }
-                addNotification("We have encountered ["+otherCiv.civName+"]!".tr(),null, Color.GOLD)
+                addNotification("We have encountered [${otherCiv.civName}]!".tr(),null, Color.GOLD)
             }
 
         return viewablePositions.distinct()
@@ -299,6 +299,7 @@ class CivilizationInfo {
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
+        if(otherCiv==this) return true
         if(isAtWarWith(otherCiv)) return true
         return false
     }
