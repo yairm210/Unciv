@@ -1,6 +1,5 @@
 package com.unciv.logic.trade
 
-import com.unciv.UnCivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
@@ -10,11 +9,10 @@ import com.unciv.ui.utils.tr
 import kotlin.math.max
 import kotlin.math.sqrt
 
-class TradeLogic(val otherCivilization: CivilizationInfo){
-    val civInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
+class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo){
 
-    val ourAvailableOffers = getAvailableOffers(civInfo,otherCivilization)
-    val theirAvailableOffers = getAvailableOffers(otherCivilization,civInfo)
+    val ourAvailableOffers = getAvailableOffers(ourCivilization,otherCivilization)
+    val theirAvailableOffers = getAvailableOffers(otherCivilization,ourCivilization)
     val currentTrade = Trade()
 
     fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
@@ -68,7 +66,7 @@ class TradeLogic(val otherCivilization: CivilizationInfo){
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*10
             TradeType.Strategic_Resource -> return 50 * offer.amount
             TradeType.City -> {
-                val civ = if(otherCivIsRecieving) civInfo else otherCivilization
+                val civ = if(otherCivIsRecieving) ourCivilization else otherCivilization
                 val city = civ.cities.first { it.name==offer.name }
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats = stats.culture+stats.gold+stats.science+stats.production+stats.happiness+stats.food
@@ -93,7 +91,7 @@ class TradeLogic(val otherCivilization: CivilizationInfo){
     }
 
     fun evaluatePeaceCostForThem(): Int {
-        val ourCombatStrength = evaluteCombatStrength(civInfo)
+        val ourCombatStrength = evaluteCombatStrength(ourCivilization)
         val theirCombatStrength = evaluteCombatStrength(otherCivilization)
         if(ourCombatStrength==theirCombatStrength) return 0
         if(ourCombatStrength==0) return 1000
@@ -112,8 +110,8 @@ class TradeLogic(val otherCivilization: CivilizationInfo){
 
     fun acceptTrade() {
 
-        civInfo.diplomacy[otherCivilization.civName]!!.trades.add(currentTrade)
-        otherCivilization.diplomacy[civInfo.civName]!!.trades.add(currentTrade.reverse())
+        ourCivilization.diplomacy[otherCivilization.civName]!!.trades.add(currentTrade)
+        otherCivilization.diplomacy[ourCivilization.civName]!!.trades.add(currentTrade.reverse())
 
         // instant transfers
         fun transfer(us: CivilizationInfo, them: CivilizationInfo, trade: Trade) {
@@ -140,7 +138,7 @@ class TradeLogic(val otherCivilization: CivilizationInfo){
             }
         }
 
-        transfer(civInfo,otherCivilization,currentTrade)
-        transfer(otherCivilization,civInfo,currentTrade.reverse())
+        transfer(ourCivilization,otherCivilization,currentTrade)
+        transfer(otherCivilization,ourCivilization,currentTrade.reverse())
     }
 }

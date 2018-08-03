@@ -6,10 +6,13 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
+import kotlin.math.min
 
 class Automation {
 
@@ -32,8 +35,8 @@ class Automation {
     fun automateCivMoves(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
             val researchableTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name) }
-            val techToResearch = researchableTechs.minBy { it.cost }
-            civInfo.tech.techsResearched.add(techToResearch!!.name)
+            val techToResearch = researchableTechs.groupBy { it.cost }.minBy { it.key }!!.value.getRandom()
+            civInfo.tech.techsResearched.add(techToResearch.name)
         }
 
         while(civInfo.policies.canAdoptPolicy()){
@@ -43,14 +46,26 @@ class Automation {
             civInfo.policies.adopt(policyToAdopt)
         }
 
-        // Order roads between cities if you can
-//        for(city in civInfo.cities.filter { it.population.population>3 && !it.isCapital()
-//                &&  !it.cityStats.isConnectedToCapital(RoadStatus.Road) }){
-//            val closestConnectedCity = civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(RoadStatus.Road) }
-//                    .minBy { HexMath().getDistance(city.location,it.location) }!!
-//            val pathToClosestCity = civInfo.gameInfo.tileMap.getShortestPathBetweenTwoTiles(city.getCenterTile(),closestConnectedCity.getCenterTile())
-//        }
-
+        // trade luxuries for luxuries if you can
+        for(otherCiv in civInfo.diplomacy.values.map { it.otherCiv() }.filterNot { it.isPlayerCivilization() }){
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            val ourTradableLuxuryResources = tradeLogic.ourAvailableOffers
+                    .filter {  it.type==TradeType.Luxury_Resource && it.amount>1 }
+            val theirTradableLuxuryResources  = tradeLogic.theirAvailableOffers
+                    .filter {  it.type==TradeType.Luxury_Resource && it.amount>1 }
+            val weHaveTheyDont = ourTradableLuxuryResources
+                    .filter { resource -> tradeLogic.theirAvailableOffers
+                            .none { it.name==resource.name && it.type==TradeType.Luxury_Resource } }
+            val theyHaveWeDont = theirTradableLuxuryResources
+                    .filter { resource -> tradeLogic.ourAvailableOffers
+                            .none { it.name==resource.name && it.type==TradeType.Luxury_Resource  } }
+            val numberOfTrades = min(weHaveTheyDont.size,theyHaveWeDont.size)
+            if(numberOfTrades>0){
+                tradeLogic.currentTrade.ourOffers.addAll(weHaveTheyDont.take(numberOfTrades).map { it.copy(amount = 1) })
+                tradeLogic.currentTrade.theirOffers.addAll(theyHaveWeDont.take(numberOfTrades).map { it.copy(amount = 1) })
+                tradeLogic.acceptTrade()
+            }
+        }
 
         val rangedUnits = mutableListOf<MapUnit>()
         val meleeUnits = mutableListOf<MapUnit>()
