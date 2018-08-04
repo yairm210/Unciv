@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import java.util.*
+import kotlin.collections.HashMap
 
 open class CameraStageBaseScreen : Screen {
 
@@ -59,11 +60,34 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
+    fun getTutorialsOfLanguage(language: String): HashMap<String, List<String>> {
+        if(!Gdx.files.internal("jsons/Tutorials_$language.json").exists()) return hashMapOf()
+
+        // ...Yes. Disgusting. I wish I didn't have to do this.
+        val x = LinkedHashMap<String,com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>>()
+        val tutorials: LinkedHashMap<String, com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>> =
+                GameBasics.getFromJson(x.javaClass, "Tutorials_$language")
+        val tutorialMap = HashMap<String,List<String>>()
+        for (tut in tutorials){
+            val list = mutableListOf<String>()
+            for(paragraph in tut.value)
+                list += paragraph.joinToString("\n")
+            tutorialMap[tut.key] = list
+        }
+        return tutorialMap
+    }
+
+    fun getTutorials(name:String, language:String):List<String>{
+        val tutorialsOfLanguage = getTutorialsOfLanguage(language)
+        if(tutorialsOfLanguage.containsKey(name)) return tutorialsOfLanguage[name]!!
+        return getTutorialsOfLanguage("English")[name]!!
+    }
+
     fun displayTutorials(name: String) {
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
         UnCivGame.Current.settings.tutorialsShown.add(name)
         UnCivGame.Current.settings.save()
-        val texts = GameBasics.Tutorials[name]!!
+        val texts = getTutorials(name,UnCivGame.Current.settings.language)
         tutorialTexts.addAll(texts)
         if (!isTutorialShowing) displayTutorial()
     }

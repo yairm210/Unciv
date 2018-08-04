@@ -1,12 +1,12 @@
-
-{
-	PolicyPickerScreen: [
-		[
+{ // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
+	// so for example:
+	PolicyPickerScreen: [ // Activated when entering policy picker screen
+		[ // This is simply a more comfortable format than "all in one line with \n".
 			"Each turn, the culture you gain from all your ",
 			"  cities is added to your Civilization's culture.",
 			"When you have enough culture, you may pick a ",
 			"  Social Policy, each one giving you a certain bonus."
-		],
+		],  // this will be displayed as 4 lines of text in-game as well
 		[
 			"The policies are organized into branches, with each",
 			"  branch providing a bonus ability when all policies ",
