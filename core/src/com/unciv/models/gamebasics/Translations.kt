@@ -36,8 +36,12 @@ class Translations() : HashMap<String, HashMap<String, String>>(){
     }
 
     fun get(text:String,language:String): String {
-        if(!containsKey(text) || !get(text)!!.containsKey(language)) return text
+        if(!hasTranslation(text,language)) return text
         return get(text)!![language]!!
+    }
+
+    fun hasTranslation(text:String,language:String): Boolean {
+        return containsKey(text) && get(text)!!.containsKey(language)
     }
 
     fun getLanguages(): List<String> {
