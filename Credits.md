@@ -1,5 +1,9 @@
 # Icon Credits
-All from [the Noun Project](https://thenounproject.com) licenced under Creative Commons
+
+Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) 
+ and licensed by Creative Commons 3.0
+
+All the following are from [the Noun Project](https://thenounproject.com) licenced under Creative Commons
 
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1432662) By uzeir syarief
