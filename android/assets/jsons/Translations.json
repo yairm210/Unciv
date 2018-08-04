@@ -2545,6 +2545,35 @@
 		Romanian:"Mare"
 	}
 
-
+	// New game screen
+	
+	"Civilization":{}
+	"World size":{}
+	"Number of enemies":{}
+	"Difficulty":{}
+	
+	"Diplomacy":{}
+	
+	// Overview screen
+	"Overview":{}
+	"Cities":{}
+	"Total":{}
+	"Stats":{}
+	"Policies":{}
+	"Base happiness":{}
+	"Buildings":{}
+	"Population":{}
+	"Luxury resources":{}
+	"Tile yields":{}
+	"Trade routes":{}
+	"Maintenance":[}
+	"Transportation upkeep":{}
+	"Unit upkeep":{}
+	
+	"Trades":{}
+	"Units":{}
+	"Name":{}
+	"Closest city":{}
+	
 
 }

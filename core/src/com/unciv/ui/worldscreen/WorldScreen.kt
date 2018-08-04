@@ -114,7 +114,7 @@ class WorldScreen : CameraStageBaseScreen() {
         if(civInfo.diplomacy.values.map { it.otherCiv() }
                         .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
                         .any()) {
-            val btn = TextButton("Diplomacy", skin)
+            val btn = TextButton("Diplomacy".tr(), skin)
             btn.addClickListener { UnCivGame.Current.screen = DiplomacyScreen() }
             diplomacyButtonWrapper.add(btn)
         }

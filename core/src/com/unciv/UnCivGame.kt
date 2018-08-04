@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnCivGame : Game() {
@@ -33,7 +34,7 @@ class UnCivGame : Game() {
                 startNewGame()
             }
         }
-        else startNewGame()
+        else screen=LanguagePickerScreen()  //startNewGame()
     }
 
     fun loadGame(gameInfo:GameInfo){

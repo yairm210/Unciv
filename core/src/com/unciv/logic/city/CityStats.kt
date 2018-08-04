@@ -216,7 +216,7 @@ class CityStats {
                 .add(Stat.Production, cityInfo.population.getFreePopulation().toFloat())
         baseStatList["Tile yields"] = getStatsFromTiles()
         baseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getSpecialists(), civInfo.policies.adoptedPolicies)
-        baseStatList["Trade route"] = getStatsFromTradeRoute()
+        baseStatList["Trade routes"] = getStatsFromTradeRoute()
         baseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         baseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
 

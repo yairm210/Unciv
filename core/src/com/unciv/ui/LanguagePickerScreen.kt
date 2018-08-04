@@ -1,10 +1,10 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
-import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
@@ -20,13 +20,17 @@ class LanguageTable(val language:String,skin: Skin):Table(skin){
     init{
         pad(10f)
         defaults().pad(10f)
-        add(ImageGetter.getImage("Flags/$language.png"))
+        add(ImageGetter.getImage("FlagIcons/$language.png")).size(40f)
         add(language)
+        update("")
+        touchable = Touchable.enabled // so click listener is activated when any part is clicked, not only children
         pack()
     }
+
     fun update(chosenLanguage:String){
         background = ImageGetter.getBackground( if(chosenLanguage==language) blue else darkBlue)
     }
+
 }
 
 class LanguagePickerScreen: PickerScreen(){
@@ -47,7 +51,7 @@ class LanguagePickerScreen: PickerScreen(){
                 rightSideButton.enable()
                 update()
             }
-            topTable.add(languageTable).row()
+            topTable.add(languageTable).pad(10f).row()
             languageTables.add(languageTable)
         }
 

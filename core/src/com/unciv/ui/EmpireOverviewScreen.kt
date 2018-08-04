@@ -24,7 +24,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
 
-        val setCityInfoButton = TextButton("Cities",skin)
+        val setCityInfoButton = TextButton("Cities".tr(),skin)
         val setCities = {
             centerTable.clear()
             centerTable.add(getCityInfoTable())
@@ -35,7 +35,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         setCityInfoButton.addClickListener(setCities)
         topTable.add(setCityInfoButton)
 
-        val setStatsInfoButton = TextButton("Stats",skin)
+        val setStatsInfoButton = TextButton("Stats".tr(),skin)
         setStatsInfoButton.addClickListener {
             centerTable.clear()
             centerTable.add(getHappinessTable())
@@ -45,7 +45,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         }
         topTable.add(setStatsInfoButton)
 
-        val setCurrentTradesButton = TextButton("Trades",skin)
+        val setCurrentTradesButton = TextButton("Trades".tr(),skin)
         setCurrentTradesButton.addClickListener {
             centerTable.clear()
             centerTable.add(getTradesTable())
@@ -54,7 +54,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         }
         topTable.add(setCurrentTradesButton)
 
-        val setUnitsButton = TextButton("Units",skin)
+        val setUnitsButton = TextButton("Units".tr(),skin)
         setUnitsButton .addClickListener {
             centerTable.clear()
             centerTable.add(getUnitTable())
@@ -86,10 +86,10 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.defaults().pad(10f)
         table.add(civInfo.civName)
         table.add(civName).row()
-        val ourOffersStrings = trade.ourOffers.map { it.amount.toString()+" "+it.name +
-                (if (it.duration==0) "" else " ("+it.duration+" turns)") }
-        val theirOffersStrings = trade.theirOffers.map { it.amount.toString()+" "+it.name +
-                (if (it.duration==0) "" else " ("+it.duration+" turns)") }
+        val ourOffersStrings = trade.ourOffers.map { it.amount.toString()+" "+it.name.tr() +
+                (if (it.duration==0) "" else " ("+it.duration+" {turns})".tr()) }
+        val theirOffersStrings = trade.theirOffers.map { it.amount.toString()+" "+it.name.tr() +
+                (if (it.duration==0) "" else " ("+it.duration+" {turns})".tr()) }
         for(i in 0 until max(trade.ourOffers.size,trade.theirOffers.size)){
             if(ourOffersStrings.size>i) table.add(ourOffersStrings[i])
             else table.add()
@@ -103,12 +103,12 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getHappinessTable(): Table {
         val happinessTable = Table(skin)
         happinessTable.defaults().pad(5f)
-        happinessTable.add(Label("Happiness", skin).setFont(24)).colspan(2).row()
+        happinessTable.add(Label("Happiness".tr(), skin).setFont(24)).colspan(2).row()
         for (entry in civInfo.getHappinessForNextTurn()) {
-            happinessTable.add(entry.key)
+            happinessTable.add(entry.key.tr())
             happinessTable.add(entry.value.toString()).row()
         }
-        happinessTable.add("Total")
+        happinessTable.add("Total".tr())
         happinessTable.add(civInfo.getHappinessForNextTurn().values.sum().toString())
         happinessTable.pack()
         return happinessTable
@@ -117,15 +117,15 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getGoldTable(): Table {
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
-        goldTable.add(Label("Gold", skin).setFont(24)).colspan(2).row()
+        goldTable.add(Label("Gold".tr(), skin).setFont(24)).colspan(2).row()
         var total=0f
         for (entry in civInfo.getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
-            goldTable.add(entry.key)
+            goldTable.add(entry.key.tr())
             goldTable.add(entry.value.gold.toString()).row()
             total += entry.value.gold
         }
-        goldTable.add("Total")
+        goldTable.add("Total".tr())
         goldTable.add(total.toString())
         goldTable.pack()
         return goldTable
@@ -138,7 +138,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableIcons = Table(skin)
         cityInfoTableIcons.defaults().pad(padding).align(Align.center)
 
-        cityInfoTableIcons.add(Label("Cities", skin).setFont(24)).colspan(8).align(Align.center).row()
+        cityInfoTableIcons.add(Label("Cities".tr(), skin).setFont(24)).colspan(8).align(Align.center).row()
         cityInfoTableIcons.add()
         cityInfoTableIcons.add(ImageGetter.getStatIcon("Population")).size(iconSize)
         cityInfoTableIcons.add(ImageGetter.getStatIcon("Food")).size(iconSize)
@@ -173,7 +173,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableTotal = Table(skin)
         cityInfoTableTotal.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
 
-        cityInfoTableTotal.add("Total")
+        cityInfoTableTotal.add("Total".tr())
         cityInfoTableTotal.add(civInfo.cities.sumBy { it.population.population }.toString()).actor!!.setAlignment(Align.center)
         cityInfoTableTotal.add()//an intended empty space
         cityInfoTableTotal.add(civInfo.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toString()).actor!!.setAlignment(Align.center)
@@ -201,11 +201,11 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     fun getUnitTable(): Table {
         val table=Table(skin).apply { defaults().pad(5f) }
-        table.add("Name")
-        table.add("Combat strength")
-        table.add("Ranged strength")
-        table.add("Movement")
-        table.add("Closest city")
+        table.add("Name".tr())
+        table.add("Strength".tr())
+        table.add("Ranged strength".tr())
+        table.add("Movement".tr())
+        table.add("Closest city".tr())
         table.row()
         for(unit in civInfo.getCivUnits()){
             val baseUnit = unit.getBaseUnit()

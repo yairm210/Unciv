@@ -2,6 +2,7 @@ package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.GameStarter
@@ -20,28 +21,21 @@ class NewGameScreen: PickerScreen(){
         table.skin= skin
 
 
-        table.add("Civilization:".tr())
-        val civSelectBox = SelectBox<String>(skin)
-        val civArray = Array<String>()
-        GameBasics.Civilizations.keys.filterNot { it=="Barbarians" }.forEach{civArray.add(it)}
-        civSelectBox.setItems(civArray)
-        civSelectBox.selected = civSelectBox.items.first()
+        table.add("{Civilization}:".tr())
+        val civSelectBox = TranslatedSelectBox(GameBasics.Civilizations.keys.filterNot { it=="Barbarians" },
+                "Babylon",skin)
         table.add(civSelectBox).pad(10f).row()
 
-        table.add("World size:".tr())
+        table.add("{World size}:".tr())
         val worldSizeToRadius=LinkedHashMap<String,Int>()
         worldSizeToRadius["Small"] = 10
         worldSizeToRadius["Medium"] = 20
         worldSizeToRadius["Large"] = 30
-        val worldSizeSelectBox = SelectBox<String>(skin)
-        val worldSizeArray = Array<String>()
-        worldSizeToRadius.keys.forEach{worldSizeArray.add(it)}
-        worldSizeSelectBox.items = worldSizeArray
-        worldSizeSelectBox.selected = "Medium"
+        val worldSizeSelectBox = TranslatedSelectBox(worldSizeToRadius.keys,"Medium",skin)
         table.add(worldSizeSelectBox).pad(10f).row()
 
 
-        table.add("Number of enemies:".tr())
+        table.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray=Array<Int>()
         (1..5).forEach { enemiesArray.add(it) }
@@ -50,12 +44,8 @@ class NewGameScreen: PickerScreen(){
         table.add(enemiesSelectBox).pad(10f).row()
 
 
-        table.add("Difficulty:".tr())
-        val difficultySelectBox = SelectBox<String>(skin)
-        val difficultyArray = Array<String>()
-        GameBasics.Difficulties.keys.forEach{difficultyArray.add(it)}
-        difficultySelectBox.items = difficultyArray
-        difficultySelectBox.selected = "Chieftain"
+        table.add("{Difficulty}:".tr())
+        val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, "Chieftain", skin)
         table.add(difficultySelectBox).pad(10f).row()
 
 
@@ -68,8 +58,8 @@ class NewGameScreen: PickerScreen(){
 
             kotlin.concurrent.thread { // Creating a new game can tke a while and we don't want ANRs
                 newGame = GameStarter().startNewGame(
-                        worldSizeToRadius[worldSizeSelectBox.selected]!!, enemiesSelectBox.selected,
-                        civSelectBox.selected, difficultySelectBox.selected )
+                        worldSizeToRadius[worldSizeSelectBox.selected.value]!!, enemiesSelectBox.selected,
+                        civSelectBox.selected.value, difficultySelectBox.selected.value )
             }
         }
 
@@ -86,5 +76,18 @@ class NewGameScreen: PickerScreen(){
             game.setWorldScreen()
         }
         super.render(delta)
+    }
+}
+
+class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin){
+    class TranslatedString(val value: String){
+        val translation = value.tr()
+        override fun toString()=translation
+    }
+    init {
+        val array = Array<TranslatedString>()
+        values.forEach{array.add(TranslatedString(it))}
+        items = array
+        selected = array.first { it.value==default }
     }
 }
