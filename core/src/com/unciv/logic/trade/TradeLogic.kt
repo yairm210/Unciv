@@ -1,12 +1,11 @@
 package com.unciv.logic.trade
 
-import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.automation.Automation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.utils.tr
-import kotlin.math.max
 import kotlin.math.sqrt
 
 class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo){
@@ -82,17 +81,10 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
     }
 
-    fun evaluteCombatStrength(civInfo: CivilizationInfo): Int {
-        // Since units become exponentially stronger per combat strength increase, we square em all
-        fun square(x:Int) = x*x
-        val unitStrength =  civInfo.getCivUnits().map { square(max(it.getBaseUnit().strength, it.getBaseUnit().rangedStrength)) }.sum()
-        val cityStrength = civInfo.cities.map { square(CityCombatant(it).getCityStrength()) }.sum()
-        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt()
-    }
 
     fun evaluatePeaceCostForThem(): Int {
-        val ourCombatStrength = evaluteCombatStrength(ourCivilization)
-        val theirCombatStrength = evaluteCombatStrength(otherCivilization)
+        val ourCombatStrength = Automation().evaluteCombatStrength(ourCivilization)
+        val theirCombatStrength = Automation().evaluteCombatStrength(otherCivilization)
         if(ourCombatStrength==theirCombatStrength) return 0
         if(ourCombatStrength==0) return 1000
         if(theirCombatStrength==0) return -1000 // Chumps got no cities or units

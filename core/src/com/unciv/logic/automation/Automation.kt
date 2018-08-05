@@ -1,9 +1,11 @@
 package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeLogic
@@ -12,7 +14,9 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
+import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sqrt
 
 class Automation {
 
@@ -64,6 +68,29 @@ class Automation {
                 tradeLogic.currentTrade.ourOffers.addAll(weHaveTheyDont.take(numberOfTrades).map { it.copy(amount = 1) })
                 tradeLogic.currentTrade.theirOffers.addAll(theyHaveWeDont.take(numberOfTrades).map { it.copy(amount = 1) })
                 tradeLogic.acceptTrade()
+            }
+        }
+
+        fun getMinDistanceBetweenCities(civ1:CivilizationInfo,civ2:CivilizationInfo): Float {
+            return civ1.cities.map { city -> civ2.cities.map { it.getCenterTile().arialDistanceTo(city.getCenterTile()) }.min()!! }.min()!!
+        }
+
+        // Declare war?
+        if(civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()
+                && civInfo.diplomacy.values.none { it.diplomaticStatus==DiplomaticStatus.War }) {
+
+            val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
+                    .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
+                    .groupBy { getMinDistanceBetweenCities(civInfo,it) }
+            val ourCombatStrength = evaluteCombatStrength(civInfo)
+            for (group in enemyCivsByDistanceToOurs){
+                if(group.key>7) break
+                for(otherCiv in group.value){
+                    if(evaluteCombatStrength(otherCiv)*1.5<ourCombatStrength){
+                        civInfo.diplomacy[otherCiv.civName]!!.declareWar()
+                        break
+                    }
+                }
             }
         }
 
@@ -165,6 +192,15 @@ class Automation {
 
             cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
         }
+    }
+
+
+    fun evaluteCombatStrength(civInfo: CivilizationInfo): Int {
+        // Since units become exponentially stronger per combat strength increase, we square em all
+        fun square(x:Int) = x*x
+        val unitStrength =  civInfo.getCivUnits().map { square(max(it.getBaseUnit().strength, it.getBaseUnit().rangedStrength)) }.sum()
+        val cityStrength = civInfo.cities.map { square(CityCombatant(it).getCityStrength()) }.sum()
+        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt()
     }
 
 }

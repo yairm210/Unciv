@@ -265,6 +265,8 @@
 
 	
 	// Menu table
+	
+	"Civilopedia":{}
 
 	"Start new game":{
 		Italian:"Nuova partita"
@@ -2576,4 +2578,102 @@
 	"Closest city":{}
 	
 
+	// Buildings!
+	"Palace":{}
+	"Monument":{}
+	"Granary":{}
+	"Stone Works":{}
+	"Stonehenge":{}
+	"Library":{}
+	"The Great Library":{}
+	"Circus":{}
+	"Walls":{}
+	"The Pyramids":{}
+	"Barracks":{}
+	"Temple":{}
+	"The Oracle":{}
+	"National College":{}
+	"Chichen Itza":{}
+	"Stable":{}
+	"Circus Maximus":{}
+	"Hanging Gardens":{}
+	"Colloseum":{}
+	"Market":{}
+	"Monastery":{}
+	"Notre Dame":{}
+	"Hagia Sophia":{}
+	"Mint":{}
+	"Machu Pichu":{}
+	"Aqueduct":{}
+	"Workshop":{}
+	"Forge":{}
+	"University":{}
+	"Oxford University":{}
+	"Castle":{}
+	"Angkor Wat":{}
+	"Porcelain Tower":{}
+	"Ironworks":{}
+	"Armory":{}
+	"Observatory":{}
+	"Opera House":{}
+	"Sistine Chapel":{}
+	"Bank":{}
+	"Forbidden Palace":{}
+	"Theatre":{}
+	"Taj Mahal":{}
+	"Windmill":{}
+	"Museum":{}
+	"Hermitage":{}
+	"The Louvre":{}
+	"Public School":{}
+	"Hospital":{}
+	"Factory":{}
+	"Stock Exchange":{}
+	"Cristo Redentor":{}
+	"Military Academy":{}
+	"Broadcast Tower":{}
+	"Eiffel Tower":{}
+	"Medical Lab":{}
+	"Research Lab":{}
+	"Hydro Plant":{}
+	"Stadium":{}
+	"Solar Plant":{}
+	"Apollo Program":{}
+	"Nuclear Plant":{}
+	"Spaceship Factory":{}
+	"SS Booster":{}
+	"SS Cockpit":{}
+	"SS Engine":{}
+	"SS Statis Chamber":{}
+	
+	
+	// And finally, units!
+	"Worker":{}
+	"Scout":{}
+	"Warrior":{}
+	"Archer":{}
+	"Bowman":{}
+	"Chariot Archer":{}
+	"Spearman":{}
+	"Catapult":{}
+	"Swordsman":{}
+	"Horseman":{}
+	"Companion Cavalry":{}
+	"Crossbowman":{}
+	"Longbowman":{}
+	"Trebuchet":{}
+	"Longswordsman":{}
+	"Pikeman":{}
+	"Knight":{}
+	"Cannon":{}
+	"Musketman":{}
+	"Lancer":{}
+	"Rifleman":{}
+	"Cavalry":{}
+	"Artillery":{}
+	"Great Artist":{}
+	"Great Scientist":{}
+	"Great Merchant":{}
+	"Great Engineer":{}
+	
 }

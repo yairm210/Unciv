@@ -91,4 +91,6 @@ class DiplomacyManager() {
                 if(offer.name=="Peace Treaty") return offer.duration
         return 0
     }
+
+    fun canDeclareWar() = turnsToPeaceTreaty()==0
 }

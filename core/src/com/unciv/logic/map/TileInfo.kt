@@ -10,6 +10,7 @@ import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.tr
+import kotlin.math.abs
 
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
@@ -208,4 +209,6 @@ open class TileInfo {
         val city = getCity()
         return city!=null && city.workedTiles.contains(position)
     }
+
+    fun arialDistanceTo(otherTile:TileInfo) = abs(position.x-otherTile.position.x) + abs(position.y-otherTile.position.y)
 }
