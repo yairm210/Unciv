@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnCivGame : Game() {
@@ -18,7 +17,7 @@ class UnCivGame : Game() {
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
      */
-    val viewEntireMapForDebug = false
+    val viewEntireMapForDebug = true
 
 
     lateinit var worldScreen: WorldScreen
@@ -34,7 +33,7 @@ class UnCivGame : Game() {
                 startNewGame()
             }
         }
-        else screen=LanguagePickerScreen()  //startNewGame()
+        else startNewGame() // screen=LanguagePickerScreen() disabled because of people's negative reviews =(
     }
 
     fun loadGame(gameInfo:GameInfo){

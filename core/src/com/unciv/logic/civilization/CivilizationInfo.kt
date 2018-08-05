@@ -298,6 +298,8 @@ class CivilizationInfo {
         return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
     }
 
+    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus==DiplomaticStatus.War }
+
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
         if(otherCiv==this) return true
         if(isAtWarWith(otherCiv)) return true

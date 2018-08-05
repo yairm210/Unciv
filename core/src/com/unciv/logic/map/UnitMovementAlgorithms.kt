@@ -42,7 +42,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                             || (neighbor.getUnits().isNotEmpty() && neighbor.getUnits().first().civInfo!=unit.civInfo) // Enemy unit
                         || (isOwnedByEnemy && !unit.civInfo.canEnterTiles(neighborOwner!!))
                     )
-                        continue // Can't go here!
+                        totalDistanceToTile = unitMovement // Can't go here.
+                    // The reason that we don't just "return" is so that when calculating how to reach an enemy,
+                    // You need to assume his tile is reachable, otherwise all movement algs on reaching enemy
+                    // cities and units goes kaput.
 
                     else {
                         val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor)

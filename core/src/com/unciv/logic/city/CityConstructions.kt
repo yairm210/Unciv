@@ -96,6 +96,7 @@ class CityConstructions {
         currentConstruction = "lie"
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
+            currentConstruction=""
             cityInfo.civInfo.addNotification("Cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
             Automation().chooseNextConstruction(this)
             construction = getConstruction(currentConstruction)
@@ -119,6 +120,7 @@ class CityConstructions {
             else
                 cityInfo.civInfo.addNotification("{$currentConstruction} {has been built in} "  + cityInfo.name, cityInfo.location, Color.BROWN)
 
+            currentConstruction=""
             Automation().chooseNextConstruction(this)
         }
 

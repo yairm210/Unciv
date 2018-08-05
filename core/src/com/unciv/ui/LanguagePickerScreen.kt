@@ -53,6 +53,7 @@ class LanguagePickerScreen: PickerScreen(){
         topTable.add(Label(
                 "Please note that translations are a " +
                     "community-based work in progress and are INCOMPLETE! \n" +
+                    "The percentage shown is how much of the language is translated in-game.\n" +
                     "If you want to help translating the game " +
                     "into your language, contact me!",skin)).pad(10f).row()
 

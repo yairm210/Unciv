@@ -5,7 +5,6 @@ import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.TradeLogic
@@ -77,7 +76,7 @@ class Automation {
 
         // Declare war?
         if(civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()
-                && civInfo.diplomacy.values.none { it.diplomaticStatus==DiplomaticStatus.War }) {
+                && !civInfo.isAtWar()) {
 
             val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
                     .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
@@ -93,6 +92,7 @@ class Automation {
                 }
             }
         }
+
 
         val rangedUnits = mutableListOf<MapUnit>()
         val meleeUnits = mutableListOf<MapUnit>()
@@ -142,11 +142,11 @@ class Automation {
     private fun trainCombatUnit(city: CityInfo) {
         val combatUnits = city.cityConstructions.getConstructableUnits().filter { it.unitType != UnitType.Civilian }
         val chosenUnit: BaseUnit
-        if(city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
+        if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
                 && combatUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
             chosenUnit = combatUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
 
-        else{ // randomize type of unit and takee the most expensive of its kind
+        else{ // randomize type of unit and take the most expensive of its kind
             val chosenUnitType = combatUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.getRandom()
             chosenUnit = combatUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
         }
@@ -157,7 +157,7 @@ class Automation {
 
     fun chooseNextConstruction(cityConstructions: CityConstructions) {
         cityConstructions.run {
-            currentConstruction="" // This is so that if we're currently in the middle of building a wonder,
+            //currentConstruction="" // This is so that if we're currently in the middle of building a wonder,
             // buildableWonders will still contain it
 
             val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder }
@@ -169,13 +169,16 @@ class Automation {
             val cities = cityInfo.civInfo.cities.size
 
             val goldBuildings = buildableNotWonders.filter { it.gold>0 }
-            val zeroMaintainanceBuildings = buildableNotWonders.filter { it.maintenance == 0 }
+            val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }.sortedBy { it.maintenance }
+            val zeroMaintainanceBuildings = buildableNotWonders.filter { it.maintenance == 0 && it !in wartimeBuildings }
+            val isAtWar = cityInfo.civInfo.isAtWar()
 
             when {
                 buildableNotWonders.isNotEmpty() // if the civ is in the gold red-zone, build markets or somesuch
                         && cityInfo.civInfo.getStatsForNextTurn().gold <0
                         && goldBuildings.isNotEmpty()
                         -> currentConstruction = goldBuildings.first().name
+                currentConstruction!="" -> return
                 buildableNotWonders.any { it.name=="Monument"} -> currentConstruction = "Monument"
                 buildableNotWonders.any { it.name=="Granary"} -> currentConstruction = "Granary"
                 buildableNotWonders.any { it.name=="Library"} -> currentConstruction = "Library"
@@ -183,10 +186,12 @@ class Automation {
                 militaryUnits==0 -> trainCombatUnit(cityInfo)
                 workers==0 -> currentConstruction = CityConstructions.Worker
                 zeroMaintainanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintainanceBuildings.getRandom().name
-                buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.getRandom().name
-                buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.minBy { it.maintenance }!!.name
-                militaryUnits<cities -> trainCombatUnit(cityInfo)
+                isAtWar && militaryUnits<cities -> trainCombatUnit(cityInfo)
+                isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.getRandom().name
                 workers<cities/2 -> currentConstruction = CityConstructions.Worker
+                militaryUnits<cities -> trainCombatUnit(cityInfo)
+                buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.minBy { it.maintenance }!!.name
+                buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.getRandom().name
                 else -> trainCombatUnit(cityInfo)
             }
 
