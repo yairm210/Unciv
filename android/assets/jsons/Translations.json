@@ -82,7 +82,7 @@
 
 	"Stop movement":{
 		Italian:"Ferma movimento"
-		Russian:"Отмена деиствья"
+		Russian:"Отменить действие"
 		French:"Arrêter le mouvement"
 		Romanian:"Opriți mișcarea"
 		German:"Bewgen abbrechen"
@@ -91,7 +91,7 @@
 
 	"Construct improvement":{
 		Italian:"Migliora costruzione"
-		Russian:"Улучшыть строение"
+		Russian:"Улучшить строение"
 		French:"Amèlioré construcion"
 		Romanian:"îmbunătățirea construcției"
 		German:"Verbesserung bauen"
@@ -100,7 +100,7 @@
 
 	"Automate":{
 		Italian:"Automatizza"
-		Russian:"Автоматизацыя"
+		Russian:"Автоматизация"
 		French:"Automacion"
 		Romanian:"Automatizare"
 		German:"Automatisieren"
@@ -136,14 +136,14 @@
 	
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
 		Italian:"Aggiorna a [unitType] ([goldCost] oro)"
-		Russian:"Обновите до [unitType] (золото [goldCost])"
+		Russian:"Обновите до [unitType] ([goldCost] золота)"
 		French:"Mise à niveau vers [unitType] (goldCost) gold)"
 		Romanian:"Treceți la [unitType] (aurul [goldCost])"
 	}
 	
 	"Found city":{
 		Italian:"Fonda città"
-		Russian:"Создать город"
+		Russian:"Основать город"
 		French:"Créer une ville"
 		Romanian:"Creați oraș"
 		German:"Stadt gründen"
@@ -170,7 +170,7 @@
 
 	"Disband unit":{
 		Italian:"Sciogli"
-		Russian:"Расформировать"
+		Russian:"Распустить юнит"
 		French:"Dissoudre unité"
 		Romanian:"Desfaceți unitatea"
 		Dutch:"Eenheid opheffen"
@@ -178,7 +178,7 @@
 	
 	"Do you really want to disband this unit?":{
 		Italian:"Vuoi davvero sciogliere questa unità?"
-		Russian:"Вы действительно хотите распустить этот блок?"
+		Russian:"Вы действительно хотите распустить этот юнит?"
 		French:"Voulez-vous vraiment dissoudre cette unité?"
 		Romanian:""
 		Dutch:"Wil je echt deze eenheid opheffen"
@@ -247,7 +247,7 @@
 
 	"Food":{
 		Italian:"Cibo"
-		Russian:"ИДА"
+		Russian:"Еда"
 		French:"Nourriture"
 		Romanian:"Hrană"
 		German:"Speise"
@@ -297,7 +297,7 @@
 	
 	"Load copied data":{
 		Italian:"Carica i dati copiati"
-		Russian:"Загрузка скопированных данных"
+		Russian:"Загрузить скопированные данные"
 		French:"Charger des données copiées"
 		Romanian:"Încărcați datele copiate"
 		German:"Aus ZWischenablage laden"
@@ -379,7 +379,7 @@
 	
 	"worked tiles":{
 		Italian:"celle lavorate"
-		Russian:"обработанные плитки"
+		Russian:"обработанные клетки"
 		French:"carreaux travaillés"
 		Romanian:"plăci lucrate"
 		German:"bearbeitete Felder"
@@ -388,7 +388,7 @@
 
 	"resources and improvements":{
 		Italian:"risorse e miglioramenti"
-		Russian:"ресурсы и улучшений"
+		Russian:"ресурсы и улучшения"
 		French:"ressources et améliorations"
 		Romanian:"resurse și îmbunătățiri"
 		German:"Ressourcen und Verbesserungen"
@@ -416,7 +416,7 @@
 
 	"Raze city":{
 		Italian:"Demolizione città"
-		Russian:"Разрущение города"
+		Russian:"Разрушить город"
 		French:"Demolition de la ville"
 		Romanian:"Demolarea orașului"
 		German:"Stadt zerstören"
@@ -425,7 +425,7 @@
 
 	"Stop razing city":{
 		Italian:"Anulla demolizione città"
-		Russian:"Отменить разрущение города"
+		Russian:"Отменить разрушение города"
 		French:"Anuller demolition de la ville"
 		Romanian:"Anuleaza demolarea orașului"
 		German:"Zerstörung aufheben"
@@ -434,7 +434,7 @@
 
 	"Buy for [amount] gold":{
 		Italian:"Acquista con [amount] oro"
-		Russian:"Купить с [amount] gold"
+		Russian:"Купить за [amount] золота"
 		French:"Acheter avec [amount] gold"
 		Romanian:"Cumpara cu [amount] gold"
 		German:"Für [amount] gold kaufen"
@@ -470,7 +470,7 @@
 	
 	"Train [unit]":{ // eg Train Scout
 		Italian:"Adestra [unit]"
-		Russian:"Обучать [unit]"
+		Russian:"Обучить [unit]"
 		French:"Former [unit]"
 		Romanian:"Instrui [unit]"
 		German:"[unit] rekrutieren"
@@ -507,7 +507,7 @@
 	
 	"Pick a free tech":{
 		Italian:"Scegli una tecnologia gratuita"
-		Russian:"Выберите бесплатную технику"
+		Russian:"Выберите бесплатную технологию"
 		French:"Choisissez une technologie gratuite"
 		Romanian:"Alege o tehnologie gratuită"
 		Dutch:"Gratis technologie kiezen"
@@ -525,7 +525,7 @@
 	
 	"Pick [technology] as free tech":{
 		Italian:"Scegli [tecnology] come tecnologia libera"
-		Russian:"Выберите [technology] как бесплатную технику"
+		Russian:"Выбрать [technology] как бесплатную технологию"
 		French:"Choisissez [technology] comme technologie libre"
 		Romanian:"Alegeți [tehnology] ca tehnologie gratuită"
 		Dutch:"[technologie] kiezen als gratis technologie"
@@ -569,7 +569,7 @@
 
 	"Tile improvements enabled":{
 		Italian:"Miglioramenti delle celle sbloccati"
-		Russian:"Улучшены улучшения плит"
+		Russian:"Улучшения клеток включены"
 		French:"Améliorations apportées aux carreaux"
 		Romanian:"Ameliorare activa a plăcilor"
 		German:"Freigschaltete Feldverbesserungen"
@@ -628,7 +628,7 @@
 	
 	"has been founded":{
 		Italian:"è stata fondata"
-		Russian:"была создана"
+		Russian:"был основан" 
 		French:"a été fondé"
 		Romanian:"a fost fondat"
 		German:"wurde gegründet"
@@ -637,7 +637,7 @@
 	
 	"has been razed to the ground":{
 		Italian:"è stata rasa al suolo"
-		Russian:"был снесен на землю"
+		Russian:"был разрушен до основания"
 		French:"a été rasé à terre"
 		Romanian:"a fost distrus la pământ"
 		German:"wurde dem Erdboden gleichgemacht"
@@ -655,7 +655,7 @@
 	
 	"Research of [tehnologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
 		Italian:"Ricerca di [tehnologyName] completata!"
-		Russian:"Исследование [tehnologyName] завершилось!"
+		Russian:"Исследование [tehnologyName] завершено!"
 		French:"Recherche de [tehnologyName] a completé!"
 		Romanian:"Cercetarea [tehnologyName] a finalizat!"
 		German:"[tehnologyName] wurde erforscht!"
@@ -709,16 +709,16 @@
 
 	"has expanded its borders":{
 		Italian:"ha espanso i suoi confini"
-		Russian:"расширил границы"
+		Russian:"расширил свои границы"
 		French:"a élargi ses frontières"
 		Romanian:"și-a extins frontierele"
 		German:"hat seine Grenzen erweitert"
 		Dutch:"heeft zijn grenzen uitgebreid"
 	}
-
+//Just leaving a bookmark !!!!!
 	"An enemy [unit] has attacked [cityname]":{
 		Italian:"Un [unit] nemico ha attaccato [cityname]"
-		Russian:"Враг [unit] атаковал [cityname]"
+		Russian:"Вражеский [unit] атаковал [cityname]"
 		French:"Un ennemi [unit] a attaqué [cityname]"
 		Romanian:"Un dusman [unit] a atacat [cityname]"
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] angegriffen" // Gender sensitive
@@ -727,7 +727,7 @@
 	
 	"An enemy [unit] has attacked our [ourUnit]":{
 		Italian:"Un [unit] nemico ha attaccato [ourUnit]"
-		Russian:"Враг [unit] атаковал [ourUnit]"
+		Russian:"Вражеский [unit] атаковал наших [ourUnit]"
 		French:"Un ennemi [unit] a attaqué [ourUnit]"
 		Romanian:"Un dusman [unit] a atacat [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] agegriffen" // Gender sensitive
