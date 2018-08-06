@@ -118,7 +118,7 @@
 	
 	"Fortification":{ // as in "+40% Fortification"
 		Italian:"Fortificazione"
-		Russian:"Фортификация"
+		Russian:"Укрепления"
 		French:"Fortification"
 		Romanian:"Fortificație"
 		German:"Befestigung"
@@ -136,7 +136,7 @@
 	
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
 		Italian:"Aggiorna a [unitType] ([goldCost] oro)"
-		Russian:"Обновите до [unitType] ([goldCost] золота)"
+		Russian:"Улучшить до [unitType] ([goldCost] золота)"
 		French:"Mise à niveau vers [unitType] (goldCost) gold)"
 		Romanian:"Treceți la [unitType] (aurul [goldCost])"
 	}
@@ -152,7 +152,7 @@
 	
 	"Promote":{
 		Italian:"Promuovi"
-		Russian:"Продвигать"
+		Russian:"Повысить"
 		French:"Promouvoir"
 		Romanian:"Promova"
 		German:"Befördern"
@@ -727,7 +727,7 @@
 	
 	"An enemy [unit] has attacked our [ourUnit]":{
 		Italian:"Un [unit] nemico ha attaccato [ourUnit]"
-		Russian:"Вражеский [unit] атаковал наших [ourUnit]"
+		Russian:"Вражеский [unit] атаковал нашего [ourUnit]"
 		French:"Un ennemi [unit] a attaqué [ourUnit]"
 		Romanian:"Un dusman [unit] a atacat [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] agegriffen" // Gender sensitive
@@ -735,7 +735,7 @@
 	}
 	"An enemy [unit] has captured [cityname]":{
 		Italian:"Un [unit] nemico ha catturato [cityname]"
-		Russian:"Враг [unit] захватил [cityname]"
+		Russian:"Вражеский [unit] захватил [cityname]"
 		French:"Un ennemi [unit] a capturé [cityname]"
 		Romanian:"Un dusman [unit] a capturat [cityname]"
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen"
@@ -744,7 +744,7 @@
 	
 	"An enemy [unit] has captured our [ourUnit]":{
 		Italian:"Un [unit] nemico ha catturato [ourUnit]"
-		Russian:"Враг [unit] захватил [ourUnit]"
+		Russian:"Вражеский [unit] захватил нашего [ourUnit]"
 		French:"Un ennemi [unit] a capturé [ourUnit]"
 		Romanian:"Un dusman [unit] a capturat [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] gefangen"
@@ -753,7 +753,7 @@
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
 		Italian:"Un [unit] nemico ha distrutto [ourUnit]"
-		Russian:"Враг [unit] уничтожил [ourUnit]"
+		Russian:"Вражеский [unit] уничтожил нашего [ourUnit]"
 		French:"Un ennemi [unit] a détruit [ourUnit]"
 		Romanian:"Un dusman [unit] a distrus [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] zerstört"
@@ -762,7 +762,7 @@
 	
 	"An enemy [unit] was destroyed while attacking [cityname]":{
 		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava [cityname]"
-		Russian:"Враг [unit] был уничтожен при атаке [cityname]"
+		Russian:"Вражеский [unit] был уничтожен при атаке [cityname]"
 		French:"Un ennemi [unit] a été détruit en attaquant [cityname]"
 		Romanian:"Un inamic [unit] a fost distrus în timp ce ataca [cityname]"
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf [cityname]" // Gender sensitive
@@ -771,7 +771,7 @@
 	
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
 		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava il nostro [ourUnit]"
-		Russian:"Враг [unit] был уничтожен, атакуя наш [ourUnit]"
+		Russian:"Вражеский [unit] был уничтожен, атакуя нашего [ourUnit]"
 		French:"Un ennemi [unit] a été détruit en attaquant notre [ourUnit]"
 		Romanian:"Un inamic [unit] a fost distrus în timp ce atacă [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf unsere(n) [ourUnit]" // Gender sensitive
@@ -780,7 +780,7 @@
 	
 	"An enemy [unit] was spotted near our territory":{
 		Italian:"Un'unità nemica [unit] avvistato vicino al nostro territorio"
-		Russian:"Враг [unit] пятнистый у нашей территории"
+		Russian:"Вражеский [unit] был замечен у нашей территории"
 		French:"Un ennemi [unit] repéré près de notre territoire"
 		Romanian:"Un inamic [unit] reperat în apropierea teritoriului nostru"
 		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt"
@@ -789,7 +789,7 @@
 	
 	"An enemy [unit] was spotted in our territory":{
 		Italian:"Un'unità nemica [unit] avvistato nel nostro territorio"
-		Russian:"Враг [unit] пятнистый на нашей территории"
+		Russian:"Вражеский [unit] был замечен на нашей территории"
 		French:"Un ennemi [unit] repéré sur notre territoire"
 		Romanian:"Un inamic [unit] reperat pe teritoriul nostru"
 		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt"
@@ -799,7 +799,7 @@
 	
 	"revealed near":{ // As in "Coal revealed near London"
 		Italian:"rivelato vicino a"
-		Russian:"выявлено вблизи "
+		Russian:"обнаружен вблизи "
 		French:"a capturé"
 		Romanian:"dezvăluit aproape"
 		German:"gefunden in der Nähe von"
@@ -808,7 +808,7 @@
 	
 	"The civilization of [civName] has been destroyed!":{
 		Italian:"La civiltà di [civName] è stata distrutta!"
-		Russian:"Цивилизация [civName] был уничтожен!"
+		Russian:"Цивилизация [civName] была уничтожена!"
 		French:"La civilisation de [civName] a été détruit!"
 		Romanian:"Civilizația [civName] a fost distrus!"
 		German:"Die Zivilisation [civName] wurde vernichtet!"
@@ -827,8 +827,8 @@
 	
 	"Current saves":{
 		Italian:"Salvataggio attuale"
-		Russian:"Текущие сейвы"
-		French:"Текущие сейвы"
+		Russian:"Текущие сохранения"
+		French:"épargne courante"
 		Romanian:"Salvatajul curent"
 		German:"Gespeicherte Spiele"
 		Dutch:"Huidige spellen"
@@ -836,7 +836,7 @@
 
 	"Saved game name":{
 		Italian:"Nome del salvataggio"
-		Russian:"Сохраненное название игры"
+		Russian:"Название сохранённой игры"
 		French:"Nom du jeu sauvegardé"
 		Romanian:"Numele jocului salvat"
 		German:"Name des gespeicherten Spiels"
@@ -863,7 +863,7 @@
 
 	"Load [saveFileName]":{ // as in "Load SaveFile2"
 		Italian:"Carica [saveFileName]"
-		Russian:"загрузить [saveFileName]"
+		Russian:"Загрузить [saveFileName]"
 		French:"Charger [saveFileName]"
 		Romanian:"încărca [saveFileName]"
 		German:"[saveFileName] laden"
@@ -902,7 +902,7 @@
 	
 	"City health":{
 		Italian:"Salute della città"
-		Russian:"Городское здоровье"
+		Russian:"Здоровье города"
 		French:"Santé de la ville"
 		Romanian:"Sănătatea orașului"
 		German:"Gesundheit der Stadt"
@@ -911,7 +911,7 @@
 	
 	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
 		Italian:"Catturato"
-		Russian:"Захваченный"
+		Russian:"Захвачен"
 		French:"Capturé"
 		Romanian:"Capturat"
 		German:"Gefangen"
@@ -931,7 +931,7 @@
 	
 	"Grassland":{
 		Italian:"Prateria"
-		Russian:"Луг"
+		Russian:"Луга"
 		French:"Herbage"
 		Romanian:"Fâneață"
 		German:"Wiese"
@@ -1002,7 +1002,7 @@
 
 	"Marsh":{
 		Italian:"Palude"
-		Russian:"Болотный"
+		Russian:"Болото"
 		French:"Marais"
 		Romanian:"Mlaştină"
 		German:"Sumpf"
@@ -1039,7 +1039,7 @@
 
 	"Sheep":{
 		Italian:"Pecora"
-		Russian:"Овца"
+		Russian:"Овцы"
 		French:"Mouton"
 		Romanian:"Oaie"
 		German:"Schaf"
@@ -1048,7 +1048,7 @@
 
 	"Deer":{
 		Italian:"Cervo"
-		Russian:"Oлень"
+		Russian:"Oлени"
 		French:"Cerf"
 		Romanian:"Cerb"
 		German:"Hirsch"
@@ -1185,7 +1185,7 @@
 
 	"Incense":{
 		Italian:"Incenso"
-		Russian:"Паофюмы"
+		Russian:"Благовония"
 		French:"Encens"
 		Romanian:"Parfume"
 		German:"Weihrauch"
@@ -1194,7 +1194,7 @@
 
 	"Silk":{
 		Italian:"Seta"
-		Russian:"Шелк"
+		Russian:"Шёлк"
 		French:"Soie"
 		Romanian:"Mătase"
 		German:"Seide"
@@ -1275,7 +1275,7 @@
 	}
 	"Mine":{
 		Italian:"Miniera"
-		Russian:"Мина"
+		Russian:"Шахта"
 		French:"Mine"
 		Romanian:"Mina"
 		German:"Mine"
@@ -1283,7 +1283,7 @@
 	}
 	"Trading post":{
 		Italian:"Base commerciale"
-		Russian:"Торговая точка"
+		Russian:"Торговый пост"
 		French:"Comptoir commercial"
 		Romanian:"Post de vinzare"
 		German:"Handelsposten"
@@ -1347,7 +1347,7 @@
 	}
 	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
 		Italian:"Rimuovi"
-		Russian:"Удалить"
+		Russian:"Убрать"
 		French:"Suprimer"
 		Romanian:"Elimina"
 		German:"Entfernen:" // verb behind object again
@@ -1363,7 +1363,7 @@
 	}
 	"Landmark":{
 		Italian:"Punto di riferimento"
-		Russian:"Ориентир"
+		Russian:"Достопримечательность"
 		French:"Point de repère"
 		Romanian:"Reper"
 		// German translation not sure
@@ -1371,7 +1371,7 @@
 	}
 	"Manufactory":{
 		Italian:"Fabbrica"
-		Russian:"Мануфактура"
+		Russian:"Завод"
 		French:"Manufacture"
 		Romanian:"Fabrică"
 		German:"Fabrik"
@@ -1399,7 +1399,7 @@
 	
 	"Pottery":{
 		Italian:"Ceramica"
-		Russian:"Керамика"
+		Russian:"Гончарное дело"
 		French:"Poterie"
 		Romanian:"Ceramică"
 		German:"Töpferkunst"
@@ -1431,7 +1431,7 @@
 	}
 	"Sailing":{
 		Italian:"Vela"
-		Russian:"Мореплаванье"
+		Russian:"Мореходство"
 		French:"Navigation à voile"
 		Romanian:"Navigație"
 		German:"Segeln"
@@ -1479,7 +1479,7 @@
 	}
 	"Bronze Working":{
 		Italian:"Lavorazione del bronzo"
-		Russian:"Обработка бронза"
+		Russian:"Обработка бронзы"
 		French:"Traitement de bronze"
 		Romanian:"Prelucrarea bronzului"
 		German:"Bronze Bearbeitung"
@@ -1515,7 +1515,7 @@
 	}
 	"Construction":{
 		Italian:"Costruzione"
-		Russian:"Строительство"
+		Russian:"Металлоконструкции"
 		French:"Bâtiment"
 		Romanian:"Clădire"
 		German:"Baukunst"
@@ -1539,7 +1539,7 @@
 	}
 	"Engineering":{
 		Italian:"Ingegneria"
-		Russian:"Инженерия"
+		Russian:"Инженерное дело"
 		French:"Ingénierie"
 		Romanian:"Inginerie"
 		German:"Ingenieurwesen"
@@ -1559,7 +1559,7 @@
 	
 	"Theology":{
 		Italian:"Teologia"
-		Russian:"Теология"
+		Russian:"Богословие"
 		French:"Théologie"
 		Romanian:"Teologie"
 		German:"Theologie"
@@ -1567,7 +1567,7 @@
 	}
 	"Civil Service":{
 		Italian:"Servizio civile"
-		Russian:"Гражданская служба"
+		Russian:"Госслужба"
 		French:"Service civil"
 		Romanian:"Serviciu civil"
 		German:"Zivildienst"
@@ -1575,7 +1575,7 @@
 	}
 	"Guilds":{
 		Italian:"Gilde"
-		Russian:"Гильдий"
+		Russian:"Гильдии"
 		French:"Guildes"
 		Romanian:"Bresle"
 		Dutch:"Gildes"
@@ -1588,13 +1588,6 @@
 		German:"Physik"
 		Dutch:"Fysica"
 	}
-	"Steel":{
-		Italian:"Acciaio"
-		Russian:"Сталь"
-		French:"Acier"
-		Romanian:"Oţel"
-		Dutch:"Staal"
-	}
 	"Metal Casting":{
 		Italian:"Colata di metallo"
 		Russian:"Литье"
@@ -1602,6 +1595,13 @@
 		Romanian:"Turnarea metalului"
 		German:"Metallurgie"
 		Dutch:"Metaal gieten"
+	}
+	"Steel":{
+		Italian:"Acciaio"
+		Russian:"Сталеварение"
+		French:"Acier"
+		Romanian:"Oţel"
+		Dutch:"Staal"
 	}
 	"Compass":{
 		Italian:"Bussola"
@@ -1629,7 +1629,7 @@
 	}
 	"Machinery":{
 		Italian:"Meccanica"
-		Russian:"Машыни"
+		Russian:"Машиностроение"
 		French:"Machinerie"
 		Romanian:"Mașini"
 		German:"Maschienenbau"
@@ -1740,7 +1740,7 @@
 	}
 	"Rifling":{
 		Italian:"Rigatura"
-		Russian:"Нарезка"
+		Russian:"Нарезные стволы"
 		French:"Rayeur"
 		Romanian:"Ghintuire"
 		Dutch:"Gedraaide loop"
@@ -1755,7 +1755,7 @@
 	
 	"Fertilizer":{
 		Italian:"Fertilizzanti"
-		Russian:"Yдобрение"
+		Russian:"Yдобрения"
 		French:"Engrais"
 		Romanian:"Îngrăşământ"
 		German:"Dünger"
@@ -1779,7 +1779,7 @@
 	}
 	"Steam Power":{
 		Italian:"Energia a vapore"
-		Russian:"Сила пара"
+		Russian:"Паровой двигатель"
 		French:"Puissance de la vapeur"
 		Romanian:"Puterea aburului"
 		German:"Dampfkraft"
@@ -1799,7 +1799,7 @@
 	
 	"Refrigeration":{
 		Italian:"Refrigerazione"
-		Russian:"Oхлаждение"
+		Russian:"Криогеника"
 		French:"Réfrigération"
 		Romanian:"Refrigeraţie"
 		German:"Kühlung"
@@ -1815,7 +1815,7 @@
 	}
 	"Combustion":{
 		Italian:"Combustione"
-		Russian:"Горение"
+		Russian:"Двигатель ВС"
 		French:"La combustion"
 		Romanian:"Combustie"
 		German:"Verbrennung"
@@ -1823,7 +1823,7 @@
 	}
 	"Plastics":{
 		Italian:"Plastica"
-		Russian:"Пластики"
+		Russian:"Пластмассы"
 		French:"Plastiques"
 		Romanian:"Materiale plastice"
 		German:"Plastik"
@@ -1847,7 +1847,7 @@
 	}
 	"Flight":{
 		Italian:"Volo"
-		Russian:"Полет"
+		Russian:"Авиация"
 		French:"Vol"
 		Romanian:"Zbor"
 		German:"Flug"
@@ -1858,7 +1858,7 @@
 	
 	"Pharmaceuticals":{
 		Italian:"Farmaceutica"
-		Russian:"Фармацевтические препараты"
+		Russian:"Пенициллин"
 		French:"Médicaments"
 		Romanian:"Produse farmaceutice"
 		German:"Pharmazeut"
@@ -1874,7 +1874,7 @@
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
-		Russian:"Ядерное деление"
+		Russian:"Расщепление ядра"
 		French:"Fission nucléaire"
 		Romanian:"Fisiune nucleara"
 		German:"Kernspaltung"
@@ -1898,7 +1898,7 @@
 	}
 	"Rocketry":{
 		Italian:"Missilistica"
-		Russian:"Ракетная техника"
+		Russian:"Ракетостроение"
 		French:"Rocketry"
 		Romanian:"Rachete"
 		German:"Raketentechnik"
@@ -1924,7 +1924,7 @@
 	}
 	"Particle Physics":{
 		Italian:"Fisica delle particelle"
-		Russian:"Физика частиц"
+		Russian:"Физика элементарных частиц"
 		French:"La physique des particules"
 		Romanian:"Fizica particulelor"
 		German:"Teilchenphysik"
@@ -1955,13 +1955,13 @@
 	}
 	"Enables conversion of city production to science":{
 		Italian:"Consente la conversione della produzione di città in scienza"
-		Russian:"Обеспечивает преобразование городского производства в науку"
+		Russian:"Позволяет конверсию производства в науку"
 		French:"Permet la conversion de la production de la ville en science"
 		Romanian:"Permite conversia producției în oraș la știință"
 	}
 	"Enables conversion of city production to gold":{
 		Italian:"Consente la conversione della produzione di città in oro"
-		Russian:"Позволяет конвертировать городское производство в золото"
+		Russian:"Позволяет конверсию производства в золото"
 		French:"Permet la conversion de la production de la ville en or"
 		Romanian:"Permite conversia producției în oraș la aur"
 	}
@@ -1971,14 +1971,14 @@
 	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
 	"Ancient":{
 		Italian:"Antichità" //one word translation
-		Russian:"Древняя"
+		Russian:"Древнейший мир"
 		French:"Ancien"
 		Romanian:"Antica"
 		Dutch:"Oude"
 	}
 	"Classical":{
 		Italian:"Classica"
-		Russian:"Классическая"
+		Russian:"Античность"
 		French:"Classique"
 		Romanian:"Clasica"
 		Dutch:"Klasieke"
@@ -1992,21 +1992,21 @@
 	}
 	"Renaissance":{
 		Italian:"Rinascimento" //one word translation
-		Russian:"Ренессанс" //one word translation
+		Russian:"Новое время" //one word translation
 		French:"Renaissance" //one word translation
 		Romanian:"Renaşterei"
 		Dutch:"Renaissance"
 	}
 	"Industrial":{
 		Italian:"Industriale"
-		Russian:"Современная"
+		Russian:"Новейшее время"
 		French:"Industriel"
 		Romanian:"Industriala"
 		Dutch:"Industrieele"
 	}
 	"Modern":{
 		Italian:"Moderna"
-		Russian:"Современное"
+		Russian:"Современность"
 		French:"Moderne"
 		Romanian:"Moderna"
 		Dutch:"Moderne"
