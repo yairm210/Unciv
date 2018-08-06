@@ -209,7 +209,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.row()
         for(unit in civInfo.getCivUnits()){
             val baseUnit = unit.getBaseUnit()
-            table.add(unit.name)
+            table.add(unit.name.tr())
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
             table.add(unit.currentMovement.toString()+"/"+unit.maxMovement)

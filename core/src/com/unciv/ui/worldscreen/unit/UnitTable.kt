@@ -63,7 +63,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because movement points and health change
             val unit = selectedUnit!!
-            var nameLabelText = unit.name
+            var nameLabelText = unit.name.tr()
             if(unit.health<100) nameLabelText+=" ("+unit.health+")"
             unitNameLabel.setText(nameLabelText)
 

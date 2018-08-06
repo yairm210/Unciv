@@ -5,7 +5,9 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -110,34 +112,11 @@ class UnitAutomation{
         } // do nothing but heal
 
         // if there is an attackable unit in the vicinity, attack!
-        val enemyTileToAttack = getAttackableEnemies(unit)
-                // Only take enemies we can fight without dying
-                .filter { BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
-                        Battle().getMapCombatantOfTile(it.tileToAttack)!!) < unit.health }
-                .firstOrNull()
+        if (tryAttackNearbyEnemy(unit)) return
 
-        if (enemyTileToAttack != null) {
-            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
-            unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
-            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
-                    .firstOrNull{ it.name == "Set up" }
-            if(setupAction!=null) setupAction.action()
-            if(unit.currentMovement>0) // This can be 0, if the set up action took away what action points we had left...
-                Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
-            return
-        }
+        if (tryGarrisoningUnit(unit)) return
 
-        if(unit.getTile().isCityCenter()) return // It's always good to have a unit in the city center, so if you havn't found annyonw aroud to attack, forget it.
 
-        val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
-            unit.canMoveTo(it.getCenterTile())
-                && unit.movementAlgs().canReach(it.getCenterTile())  }
-        if(reachableCitiesWithoutUnits.isNotEmpty()){
-            val closestCityWithoutUnit = reachableCitiesWithoutUnits
-                    .minBy { unit.movementAlgs().getShortestPath(it.getCenterTile()).size }!!
-            unit.movementAlgs().headTowards(closestCityWithoutUnit.getCenterTile())
-            return
-        }
 
         if (unit.health < 80) {
             healUnit(unit)
@@ -145,11 +124,7 @@ class UnitAutomation{
         } // do nothing but heal until 80 health
 
 
-        // else, if there is a reachable spot from which we can attack this turn
-        // (say we're an archer and there's a unit 3 tiles away), go there and attack
-        // todo
-
-        // else, find the closest enemy unit that we know of within 5 spaces and advance towards it
+        // find the closest enemy unit that we know of within 5 spaces and advance towards it
         val closestEnemy = unit.getTile().getTilesInDistance(5)
                 .firstOrNull { containsAttackableEnemy(it,unit.civInfo) && unit.movementAlgs().canReach(it) }
 
@@ -178,10 +153,79 @@ class UnitAutomation{
             }
         }
 
-
         // else, go to a random space
         randomWalk(unit)
         // if both failed, then... there aren't any reachable tiles. Which is possible.
+    }
+
+    private fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
+        val attackableEnemies = getAttackableEnemies(unit)
+                // Only take enemies we can fight without dying
+                .filter {
+                    BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                            Battle().getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                }
+
+        val cityTilesToAttack = attackableEnemies.filter { it.tileToAttack.isCityCenter() }
+        val nonCityTilesToAttack = attackableEnemies.filter { !it.tileToAttack.isCityCenter() }
+
+        var enemyTileToAttack: AttackableTile? = null
+        val capturableCity = cityTilesToAttack.firstOrNull{it.tileToAttack.getCity()!!.health == 1}
+        val cityWithHealthLeft = cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
+                .minBy { it.tileToAttack.getCity()!!.health  }
+
+        if (unit.getBaseUnit().unitType.isMelee() && capturableCity!=null)
+            enemyTileToAttack = capturableCity // enter it quickly, top priority!
+
+
+        else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
+            enemyTileToAttack = nonCityTilesToAttack.minBy { Battle().getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
+        else if (cityWithHealthLeft!=null) enemyTileToAttack = cityWithHealthLeft// third priority, city
+
+        if (enemyTileToAttack != null) {
+            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
+            unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
+            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                    .firstOrNull { it.name == "Set up" }
+            if (setupAction != null) setupAction.action()
+            if (unit.currentMovement > 0) // This can be 0, if the set up action took away what action points we had left...
+                Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
+            return true
+        }
+        return false
+    }
+
+    private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
+        val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
+            val centerTile = it.getCenterTile()
+            unit.canMoveTo(centerTile)
+                    && unit.movementAlgs().canReach(centerTile)
+        }
+
+        fun cityThatNeedsDefendingInWartime(city: CityInfo): Boolean {
+            if (city.health < city.getMaxHealth()) return true // this city is under attack!
+            for (enemyCivCity in unit.civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .map { it.otherCiv() }.flatMap { it.cities })
+                if (city.getCenterTile().arialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true// this is an edge city that needs defending
+            return false
+        }
+
+        if (!unit.civInfo.isAtWar()) {
+            if (unit.getTile().isCityCenter()) return true // It's always good to have a unit in the city center, so if you haven't found anyone around to attack, forget it.
+            if (reachableCitiesWithoutUnits.isNotEmpty()) {
+            }
+        } else {
+            if (unit.getTile().isCityCenter() &&
+                    cityThatNeedsDefendingInWartime(unit.getTile().getCity()!!)) return true
+            val citiesThatCanBeDefended = reachableCitiesWithoutUnits.filter { cityThatNeedsDefendingInWartime(it) }
+            if (citiesThatCanBeDefended.isNotEmpty()) {
+                val closestCityWithoutUnit = citiesThatCanBeDefended
+                        .minBy { unit.movementAlgs().getShortestPath(it.getCenterTile()).size }!!
+                unit.movementAlgs().headTowards(closestCityWithoutUnit.getCenterTile())
+                return true
+            }
+        }
+        return false
     }
 
     private fun randomWalk(unit: MapUnit) {

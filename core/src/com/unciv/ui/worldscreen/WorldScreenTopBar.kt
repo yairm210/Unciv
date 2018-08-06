@@ -44,7 +44,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         pack()
         addActor(getMenuButton()) // needs to be after pack
 
-        val button = TextButton("Overview",CameraStageBaseScreen.skin)
+        val button = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
         button.addClickListener { UnCivGame.Current.screen = EmpireOverviewScreen() }
         button.center(this)
         button.x = screen.stage.width-button.width-10

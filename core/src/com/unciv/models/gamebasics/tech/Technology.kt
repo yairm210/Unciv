@@ -22,20 +22,20 @@ class Technology : ICivilopedia {
             var enabledUnits = GameBasics.Units.values.filter { it.requiredTech==name && (it.uniqueTo==null || it.uniqueTo==UnCivGame.Current.gameInfo.getPlayerCivilization().civName) }
             val replacedUnits = enabledUnits.map { it.replaces }.filterNotNull()
             enabledUnits = enabledUnits.filter { it.name !in replacedUnits}
-            if(enabledUnits.isNotEmpty()) SB.appendln("{Units enabled}: "+enabledUnits.map { it.name + " ("+it.getShortDescription()+")" }.joinToString())
+            if(enabledUnits.isNotEmpty()) SB.appendln("{Units enabled}: "+enabledUnits.map { it.name.tr() + " ("+it.getShortDescription()+")" }.joinToString())
 
             val enabledBuildings = GameBasics.Buildings.values.filter { it.requiredTech==name }
             val regularBuildings = enabledBuildings.filter { !it.isWonder }
             if(regularBuildings.isNotEmpty())
-                SB.appendln("{Buildings enabled}: "+regularBuildings.map { "\n * "+it.name + " ("+it.getShortDescription()+")" }.joinToString())
+                SB.appendln("{Buildings enabled}: "+regularBuildings.map { "\n * "+it.name.tr() + " ("+it.getShortDescription()+")" }.joinToString())
             val wonders = enabledBuildings.filter { it.isWonder }
-            if(wonders.isNotEmpty()) SB.appendln("{Wonders enabled}: "+wonders.map { "\n * "+it.name+ " ("+it.getShortDescription()+")" }.joinToString())
+            if(wonders.isNotEmpty()) SB.appendln("{Wonders enabled}: "+wonders.map { "\n * "+it.name.tr()+ " ("+it.getShortDescription()+")" }.joinToString())
 
             val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy==name }.map { it.name }.firstOrNull() // can only be one
             if(revealedResource!=null) SB.appendln("Reveals [$revealedResource] on the map".tr())
 
             val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired==name }
-            if(tileImprovements.isNotEmpty()) SB.appendln("{Tile improvements enabled}: "+tileImprovements.map { it.name }.joinToString())
+            if(tileImprovements.isNotEmpty()) SB.appendln("{Tile improvements enabled}: "+tileImprovements.map { it.name.tr() }.joinToString())
 
             return SB.toString().trim().tr()
         }
