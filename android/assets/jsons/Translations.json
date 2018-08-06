@@ -2549,131 +2549,679 @@
 
 	// New game screen
 	
-	"Civilization":{}
-	"World size":{}
-	"Number of enemies":{}
-	"Difficulty":{}
+	"Civilization":{	
+		Italian:"Civiltà"
+		Russian:"Цивилизация"
+		French:"Civilisation"
+		Romanian:"Civilizaţie"
+	}
+	"World size":{	
+		Italian:"Dimensione del mondo"
+		Russian:"Мировой размер"
+		French:"La taille du monde"
+		Romanian:"Mărime universală"
+	}
+	"Number of enemies":{	
+		Italian:"Numero di nemici"
+		Russian:"Количество врагов"
+		French:"Nombre d'ennemis"
+		Romanian:"Numărul de dușmani"
+	}
+	"Difficulty":{	
+		Italian:"Difficoltà"
+		Russian:"Трудность"
+		French:"Difficulté"
+		Romanian:"Dificultate"
+	}
 	
-	"Diplomacy":{}
+	"Diplomacy":{	
+		Italian:"Diplomazia"
+		Russian:"Дипломатия"
+		French:"Diplomatie"
+		Romanian:"Diplomaţie"
+	}
 	
 	// Overview screen
-	"Overview":{}
-	"Cities":{}
-	"Total":{}
-	"Stats":{}
-	"Policies":{}
-	"Base happiness":{}
-	"Buildings":{}
-	"Population":{}
-	"Luxury resources":{}
-	"Tile yields":{}
-	"Trade routes":{}
-	"Maintenance":{}
-	"Transportation upkeep":{}
-	"Unit upkeep":{}
+	"Overview":{	
+		Italian:"Panoramica"
+		Russian:"Обзор"
+		French:"Vue d'ensemble"
+		Romanian:"Prezentare generală"
+	}
+	"Cities":{	
+		Italian:"Città"
+		Russian:"Города"
+		French:"Villes"
+		Romanian:"Orase"
+	}
+	"Total":{	
+		Italian:"Totale"
+		Russian:"Всего"
+		French:"Total"
+		Romanian:"Total"
+	}
+	"Stats":{	
+		Italian:"Statistiche"
+		Russian:"Статистика"
+		French:"Statistiques"
+		Romanian:"Statistici"
+	}
+	"Policies":{	
+		Italian:"Politiche"
+		Russian:"Полисы"
+		French:"Les politiques"
+		Romanian:"Politici"
+	}
+	"Base happiness":{	
+		Italian:"Felicità di base"
+		Russian:"Базовое счастье"
+		French:"Bonheur de base"
+		Romanian:"Fericirea de bază"
+	}
+	"Buildings":{	
+		Italian:"Edifici"
+		Russian:"Здания"
+		French:"Bâtiments"
+		Romanian:"Clădiri"
+	}
+	"Population":{	
+		Italian:"Popolazione"
+		Russian:"Население"
+		French:"Population"
+		Romanian:"Populație"
+	}
+	"Luxury resources":{	
+		Italian:"Risorse di lusso"
+		Russian:"Роскошные ресурсы"
+		French:"Ressources de luxe"
+		Romanian:"Resurse de lux"
+	}
+	"Tile yields":{	
+		Italian:"Reso delle celle"
+		Russian:"Плитка дает"
+		French:"Rendement des carreaux"
+		Romanian:"Randamentele plăcilor"
+	}
+	"Trade routes":{	
+		Italian:"Rotte commerciali"
+		Russian:"Торговые маршруты"
+		French:"Routes commerciales"
+		Romanian:"Rotte commerciali"
+	}
+	"Maintenance":{	
+		Italian:"Manutenzione"
+		Russian:"Обслуживание"
+		French:"Entretien"
+		Romanian:"întreținere"
+	}
+	"Transportation upkeep":{	
+		Italian:"Manutenzione dei trasporti"
+		Russian:"Транспортировка"
+		French:"Entretien du transport"
+		Romanian:"întreținerea trasportului"
+	}
+	"Unit upkeep":{	
+		Italian:"Manutenzione dell'unità"
+		Russian:"Поддержание содержания"
+		French:"Unité d'entretien"
+		Romanian:"Întreținerea unității"
+	}
 	
-	"Trades":{}
-	"Units":{}
-	"Name":{}
-	"Closest city":{}
+	"Trades":{	
+		Italian:"Trades"
+		Russian:"Торги"
+		French:"Métiers"
+		Romanian:"Tranzacții"
+	}
+	"Units":{	
+		Italian:"Unità"
+		Russian:"Единицы"
+		French:"Unités"
+		Romanian:"Unități"
+	}
+	"Name":{	
+		Italian:"Nome"
+		Russian:"имя"
+		French:"Prénom"
+		Romanian:"Nume"
+	}
+	"Closest city":{	
+		Italian:"La città più vicina"
+		Russian:"Ближайший город"
+		French:"La ville la plus proche"
+		Romanian:"Cel mai apropiat oras"
+	}
 	
 
 	// Buildings!
-	"Palace":{}
-	"Monument":{}
-	"Granary":{}
-	"Stone Works":{}
-	"Stonehenge":{}
-	"Library":{}
-	"The Great Library":{}
-	"Circus":{}
-	"Walls":{}
-	"The Pyramids":{}
-	"Barracks":{}
-	"Temple":{}
-	"The Oracle":{}
-	"National College":{}
-	"Chichen Itza":{}
-	"Stable":{}
-	"Circus Maximus":{}
-	"Hanging Gardens":{}
-	"Colloseum":{}
-	"Market":{}
-	"Monastery":{}
-	"Notre Dame":{}
-	"Hagia Sophia":{}
-	"Mint":{}
-	"Machu Pichu":{}
-	"Aqueduct":{}
-	"Workshop":{}
-	"Forge":{}
-	"University":{}
-	"Oxford University":{}
-	"Castle":{}
-	"Angkor Wat":{}
-	"Porcelain Tower":{}
-	"Ironworks":{}
-	"Armory":{}
-	"Observatory":{}
-	"Opera House":{}
-	"Sistine Chapel":{}
-	"Bank":{}
-	"Forbidden Palace":{}
-	"Theatre":{}
-	"Taj Mahal":{}
-	"Windmill":{}
-	"Museum":{}
-	"Hermitage":{}
-	"The Louvre":{}
-	"Public School":{}
-	"Hospital":{}
-	"Factory":{}
-	"Stock Exchange":{}
-	"Cristo Redentor":{}
-	"Military Academy":{}
-	"Broadcast Tower":{}
-	"Eiffel Tower":{}
-	"Medical Lab":{}
-	"Research Lab":{}
-	"Hydro Plant":{}
-	"Stadium":{}
-	"Solar Plant":{}
-	"Apollo Program":{}
-	"Nuclear Plant":{}
-	"Spaceship Factory":{}
-	"SS Booster":{}
-	"SS Cockpit":{}
-	"SS Engine":{}
-	"SS Statis Chamber":{}
+	"Palace":{	
+		Italian:"Palazzo"
+		Russian:"Дворец"
+		French:"Palais"
+		Romanian:"Palat"
+	}
+	"Monument":{	
+		Italian:"Monumento"
+		Russian:"Памятник"
+		French:"Monument"
+		Romanian:"Monument"
+	}
+	"Granary":{	
+		Italian:"Granaio"
+		Russian:"Зернохранилище"
+		French:"Grenier"
+		Romanian:"Grânar"
+	}
+	"Stone Works":{	
+		Italian:"Opere di pietra"
+		Russian:"Каменные работы"
+		French:"Travaux de pierre"
+		Romanian:"Lucrări de piatră"
+	}
+	"Stonehenge":{	
+		Italian:"Stonehenge"
+		Russian:"Стоунхендж"
+		French:"Stonehenge"
+		Romanian:"Stonehenge"
+	}
+	"Library":{	
+		Italian:"Biblioteca"
+		Russian:"Библиотека"
+		French:"Bibliothèque"
+		Romanian:"Bibliotecă"
+	}
+	"The Great Library":{	
+		Italian:"La Grande Biblioteca"
+		Russian:"Великая Библиотека"
+		French:"La Grande Bibliothèque"
+		Romanian:"Marea Bibliotecă"
+	}
+	"Circus":{	
+		Italian:"Circo"
+		Russian:"Цирк"
+		French:"Cirque"
+		Romanian:"Circ"
+	}
+	"Walls":{	
+		Italian:"Muri"
+		Russian:"Стены"
+		French:"Murs"
+		Romanian:"Pereţi"
+	}
+	"The Pyramids":{	
+		Italian:"Le piramidi"
+		Russian:""
+		French:"Les pyramides"
+		Romanian:"Piramidele"
+	}
+	"Barracks":{	
+		Italian:"Caserma"
+		Russian:"Казарма"
+		French:"Caserne"
+		Romanian:"Cazarma"
+	}
+	"Temple":{	
+		Italian:"Tempio"
+		Russian:"Храм"
+		French:"Temple"
+		Romanian:"Templu"
+	}
+	"The Oracle":{	
+		Italian:"L'oracolo"
+		Russian:"Оракул"
+		French:"L'oracle"
+		Romanian:"Oracolul"
+	}
+	"National College":{	
+		Italian:"Colleggio Nazionale"
+		Russian:"Национальный колледж"
+		French:"Collège National"
+		Romanian:"Colegiul National"
+	}
+	"Chichen Itza":{	
+		Italian:"Chichen Itza"
+		Russian:"Чичен-Ица"
+		French:"Chichen Itza"
+		Romanian:"Chichen Itza"
+	}
+	"Stable":{	
+		Italian:"Scuderia"
+		Russian:"Конюшня"
+		French:"Ecurie de cheval"
+		Romanian:"Grajd"
+	}
+	"Circus Maximus":{	
+		Italian:"Circo Maximus"
+		Russian:"Цирк Максимус"
+		French:"Circus Maximus"
+		Romanian:"Circus Maximus"
+	}
+	"Hanging Gardens":{	
+		Italian:"Giardini sospesi"
+		Russian:"Висячие сады"
+		French:"Jardins suspendus"
+		Romanian:"Grădini suspendate"
+	}
+	"Colloseum":{	
+		Italian:"Colosseo"
+		Russian:"Колизеи"
+		French:"Colloseum"
+		Romanian:"Colloseum"
+	}
+	"Market":{	
+		Italian:"Mercato"
+		Russian:"Рынок"
+		French:"Marché"
+		Romanian:"Piaţă"
+	}
+	"Monastery":{	
+		Italian:"Monastero"
+		Russian:"Монастырь"
+		French:"Monastère"
+		Romanian:"Mănăstire"
+	}
+	"Notre Dame":{	
+		Italian:"Notre Dame"
+		Russian:"Нотр-Дам"
+		French:"Notre Dame"
+		Romanian:"Notre Dame"
+	}
+	"Hagia Sophia":{	
+		Italian:"Hagia Sophia"
+		Russian:"Собор Святой Софии"
+		French:"Hagia Sophia"
+		Romanian:"Sfânta Sofia"
+	}
+	"Mint":{ 
+		//don't know what this mint
+	}
+	"Machu Pichu":{	
+		Italian:"Machu Pichu"
+		Russian:"Мачу-Пикчу"
+		French:"Machu Pichu"
+		Romanian:"Machu Pichu"
+	}
+	"Aqueduct":{	
+		Italian:"Acquedotto"
+		Russian:"Акведук"
+		French:"Aqueduc"
+		Romanian:"Apeduct"
+	}
+	"Workshop":{	
+		Italian:"Laboratorio"
+		Russian:"мастерская"
+		French:"Atelier"
+		Romanian:"Atelier"
+	}
+	"Forge":{	
+		Italian:"Fucina"
+		Russian:"Ковальня"
+		French:"Forger"
+		Romanian:"Forja"
+	}
+	"University":{	
+		Italian:"Università"
+		Russian:"Университет"
+		French:"Université"
+		Romanian:"Universitate"
+	}
+	"Oxford University":{	
+		Italian:"Università di Oxford"
+		Russian:"Оксфордский университет"
+		French:"L'université d'Oxford"
+		Romanian:"Universitatea Oxford"
+	}
+	"Castle":{	
+		Italian:"Castello"
+		Russian:"Замок"
+		French:"Château"
+		Romanian:"Castel"
+	}
+	"Angkor Wat":{	
+		Italian:"Angkor Wat"
+		Russian:"Ангкор-Ват"
+		French:"Angkor Wat"
+		Romanian:"Angkor Wat"
+	}
+	"Porcelain Tower":{	
+		Italian:"Torre di Porcellana"
+		Russian:"Фарфоровая башня"
+		French:"Tour de Porcelaine"
+		Romanian:"Turnul de Porțelan"
+	}
+	"Ironworks":{	
+		Italian:"Lavori in ferro"
+		Russian:"Металлургический завод"
+		French:"Ferronnerie"
+		Romanian:"Fierarie"
+	}
+	"Armory":{	
+		Italian:"Armeria"
+		Russian:"Оружейная"
+		French:"Arsenal"
+		Romanian:"Depozit de arme"
+	}
+	"Observatory":{	
+		Italian:"Osservatorio"
+		Russian:"Обсерватория"
+		French:"Observatoire"
+		Romanian:"Observator"
+	}
+	"Opera House":{	
+		Italian:"Teatro dell'opera"
+		Russian:"Оперный театр"
+		French:"Opéra"
+		Romanian:"Operă"
+	}
+	"Sistine Chapel":{	
+		Italian:"Cappella Sistina"
+		Russian:"Сикстинская капелла"
+		French:"Chapelle Sixtine"
+		Romanian:"Capela Sixtină"
+	}
+	"Bank":{	
+		Italian:"Banca"
+		Russian:"Банк"
+		French:"Banque"
+		Romanian:"Bancă"
+	}
+	"Forbidden Palace":{	
+		Italian:"Palazzo Proibito"
+		Russian:"Запретный дворец"
+		French:"Palais interdit"
+		Romanian:"Palatul interzis"
+	}
+	"Theatre":{	
+		Italian:"Teatro"
+		Russian:"Tеатр"
+		French:"Théâtre"
+		Romanian:"Teatru"
+	}
+	"Taj Mahal":{	
+		Italian:"Taj Mahal"
+		Russian:"Тадж-Махал"
+		French:"Taj Mahal"
+		Romanian:"Taj Mahal"
+	}
+	"Windmill":{	
+		Italian:"Mulino a vento"
+		Russian:"Ветряная мельница"
+		French:"Moulin à vent"
+		Romanian:"Moara de vant"
+	}
+	"Museum":{	
+		Italian:"Museo"
+		Russian:"Музей"
+		French:"Musée"
+		Romanian:"Muzeu"
+	}
+	"Hermitage":{	
+		Italian:"Eremo"
+		Russian:"Эрмитаж"
+		French:"Ermitage"
+		Romanian:"Schit"
+	}
+	"The Louvre":{	
+		Italian:"Il Louvre"
+		Russian:"Лувр"
+		French:"Le Louvre"
+		Romanian:"Luvru"
+	}
+	"Public School":{	
+		Italian:"Scuola pubblica"
+		Russian:"Общеобразовательная школа"
+		French:"École publique"
+		Romanian:"Școală publică"
+	}
+	"Hospital":{	
+		Italian:"Ospedale"
+		Russian:"Больница"
+		French:"Hôpital"
+		Romanian:"Spital"
+	}
+	"Factory":{	
+		Italian:"Fabbrica"
+		Russian:"Завод"
+		French:"Usine"
+		Romanian:"Fabrică"
+	}
+	"Stock Exchange":{	
+		Italian:"Borsa valori"
+		Russian:"Фондовая биржа"
+		French:"Bourse"
+		Romanian:"Bursa de Valori"
+	}
+	"Cristo Redentor":{	
+		Italian:"Cristo Redentor"
+		Russian:"Кристо Редентор"
+		French:"Cristo Redentor"
+		Romanian:"Cristo Redentor"
+	}
+	"Military Academy":{	
+		Italian:"Accademia Militare"
+		Russian:"Военная академия"
+		French:"Académie militaire"
+		Romanian:"Academie militara"
+	}
+	"Broadcast Tower":{	
+		Italian:"Torre di trasmissione"
+		Russian:"Широковещательная башня"
+		French:"Tour de diffusion"
+		Romanian:"Turnul de difuzare"
+	}
+	"Eiffel Tower":{	
+		Italian:"Torre Eiffel"
+		Russian:"Эйфелева башня"
+		French:"Le Tour Eiffel"
+		Romanian:"Turnul Eiffel"
+	}
+	"Medical Lab":{	
+		Italian:"Laboratorio medico"
+		Russian:"Медицинская лаборатория"
+		French:"Laboratoire médical"
+		Romanian:"Laboratoriu medic"
+	}
+	"Research Lab":{	
+		Italian:"Laboratorio di ricerca"
+		Russian:"Исследовательская лаборатория"
+		French:"Laboratoire de recherche"
+		Romanian:"Laborator de cercetare"
+	}
+	"Hydro Plant":{	
+		Italian:"Impianto Idroelettrico"
+		Russian:"Гидроузел"
+		French:"Centrale hydroélectrique"
+		Romanian:"Centrala hidroelectrica"
+	}
+	"Stadium":{	
+		Italian:"Stadio"
+		Russian:"Стадион"
+		French:"Stade"
+		Romanian:"Stadiu"
+	}
+	"Solar Plant":{	
+		Italian:"Impianto solare"
+		Russian:"Солнечный завод"
+		French:"Centrale solaire"
+		Romanian:"Implant Solar"
+	}
+	"Apollo Program":{	
+		Italian:"Programma Apollo"
+		Russian:"Программа Apollo"
+		French:"Programme Apollo"
+		Romanian:"Programul Apollo"
+	}
+	"Nuclear Plant":{	
+		Italian:"Centrale nucleare"
+		Russian:"АЭС"
+		French:"Centrale nucléaire"
+		Romanian:"Centrale nucleare"
+	}
+	"Spaceship Factory":{	
+		Italian:"Fabbrica di astronave"
+		Russian:"Космический завод"
+		French:"Usine du vaisseau spatial"
+		Romanian:"Fabbrica di astronave"
+	}
+	"SS Booster":{	//no traslation that i know of
+	}
+	"SS Cockpit":{	//no traslation that i know of
+	}
+	"SS Engine":{	//no traslation that i know of
+	}
+	"SS Statis Chamber":{ //no traslation that i know of
+	}
 	
 	
 	// And finally, units!
-	"Worker":{}
-	"Scout":{}
-	"Warrior":{}
-	"Archer":{}
-	"Bowman":{}
-	"Chariot Archer":{}
-	"Spearman":{}
-	"Catapult":{}
-	"Swordsman":{}
-	"Horseman":{}
-	"Companion Cavalry":{}
-	"Crossbowman":{}
-	"Longbowman":{}
-	"Trebuchet":{}
-	"Longswordsman":{}
-	"Pikeman":{}
-	"Knight":{}
-	"Cannon":{}
-	"Musketman":{}
-	"Lancer":{}
-	"Rifleman":{}
-	"Cavalry":{}
-	"Artillery":{}
-	"Great Artist":{}
-	"Great Scientist":{}
-	"Great Merchant":{}
-	"Great Engineer":{}
+	"Worker":{	
+		Italian:"Operaio"
+		Russian:"Рабочий"
+		French:"Travailleur"
+		Romanian:"Lucrător"
+	}
+	"Scout":{	
+		Italian:"Esploratore"
+		Russian:"Разведчик"
+		French:"Eclaireur"
+		Romanian:"Explorator"
+	}
+	"Warrior":{	
+		Italian:"Guerriero"
+		Russian:"Воин"
+		French:"Guerrier"
+		Romanian:"Războinic"
+	}
+	"Archer":{	
+		Italian:"Arciere"
+		Russian:"Лучник"
+		French:"Archer"
+		Romanian:"Arcaş"
+	}
+	"Bowman":{	
+		//IS THIS SAME AS ARCHER IN OTHER LANGUAGES=??
+	}
+	"Chariot Archer":{	
+		Italian:"Arciere in carriola"
+		Russian:"Колесница"
+		French:"Charrette archer"
+		Romanian:"Arcer in caruta"
+	}
+	"Spearman":{	
+		Italian:"Lanciere"
+		Russian:"Копьеносец"
+		French:"Lancier"
+		Romanian:"Lancer"
+	}
+	"Catapult":{	
+		Italian:"Catapulta"
+		Russian:"Катапульта"
+		French:"Catapulte"
+		Romanian:"Catapulta"
+	}
+	"Swordsman":{	
+		Italian:"Spadaccino"
+		Russian:"Фехтовальщик"
+		French:"Épéiste"
+		Romanian:"Spadasin"
+	}
+	"Horseman":{	
+		Italian:"Cavaliere"
+		Russian:"Всадник"
+		French:"Cavalier"
+		Romanian:"Călăreţ"
+	}
+	"Companion Cavalry":{	
+		Italian:"Compania dei cavalieri"
+		Russian:"Сопутствующая кавалерия"
+		French:"Compagnon cavalerie"
+		Romanian:"Compania cavalerilor"
+	}
+	"Crossbowman":{	
+		Italian:"Balestriere"
+		Russian:"Арбалетчик"
+		French:"Arbalétrier"
+		Romanian:"Arbaletar"
+	}
+	"Longbowman":{	
+		Italian:"Arciere con arco lungo"
+	}
+	"Trebuchet":{	
+		Italian:"Trebuchet"
+		Russian:"Требушет"
+		French:"Trébuchet"
+		Romanian:"Trebuchet"
+	}
+	"Longswordsman":{	
+	}
+	"Pikeman":{	
+		Italian:"Picchiere"
+		Russian:"Копейщик"
+		Romanian:"Suliţaş"
+	}
+	"Knight":{	
+		Italian:"Cavaliere"
+		Russian:"Рыцарь"
+		French:"Chevalier"
+		Romanian:"Cavaler"
+	}
+	"Cannon":{	
+		Italian:"Cannone"
+		Russian:"Пушка"
+		French:"Canon"
+		Romanian:"Tun"
+	}
+	"Musketman":{	
+		Italian:"Soldato con moschetto"
+		French:"Mousquetaire"
+	}
+	"Lancer":{	
+		Italian:"lanciere"
+		Russian:"Улан"
+		French:"Lancier"
+		Romanian:"Lăncier"
+	}
+	"Rifleman":{	
+		Italian:"Fuciliere"
+		Russian:"Стрелок"
+		French:"Fusilier"
+		Romanian:"Carabinieri"
+	}
+	"Cavalry":{	
+		Italian:"Cavalleria"
+		Russian:"Кавалерия"
+		French:"Cavalerie"
+		Romanian:"Cavalerie"
+	}
+	"Artillery":{	
+		Italian:"Artiglieria"
+		Russian:"Артиллерия"
+		French:"Artillerie"
+		Romanian:"Artilerie"
+	}
+	"Great Artist":{	
+		Italian:"Grande artista"
+		Russian:"Великий художник"
+		French:"Grand artiste"
+		Romanian:"Mare Artist"
+	}
+	"Great Scientist":{	
+		Italian:"Grande scienziato"
+		Russian:"Великий ученый"
+		French:"Grand scientifique"
+		Romanian:"Mare Scientist"
+	}
+	"Great Merchant":{	
+		Italian:"Grande mercante"
+		Russian:"Великий торговец"
+		French:"Marele comerciant"
+		Romanian:"Grand marchand"
+	}
+	"Great Engineer":{	
+		Italian:"Grande Ingegnere"
+		Russian:"Великий инженер"
+		French:"Grand ingénieur"
+		Romanian:"Mare Inginer"
+	}
 	
 }
