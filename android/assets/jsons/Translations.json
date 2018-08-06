@@ -2013,7 +2013,7 @@
 	}
 	"Information":{
 		Italian:"Informatica"     //[newEra] +translation
-		Russian:"Информатическая" //translation+ [newEra]
+		Russian:"Информационная эра" //translation+ [newEra]
 		French:"Information"
 		Romanian:"Informației"
 		Dutch:"Informatie"
@@ -2038,7 +2038,7 @@
 	}
 	"Worker construction increased 25%, provides 2 free workers":{
 		Italian:"+25% velocità costruzione lavoratori, offre 2 lavoratori liberi"
-		Russian:"Строительство рабочих увеличилось на 25%, предоставлено 2 свободных рабочих"
+		Russian:"Увеличивает на 25% скорость создания улучшений на клетках , предоставляет 2 бесплатных рабочих"
 		French:"La construction des travailleurs a augmenté de 25%, fournit 2 travailleurs libres"
 		Romanian:"Lucrările de construcție a crescut cu 25%, oferă 2 lucrători liberi"
 		German:"Arbeiterproduktion um 25% erhöht, gibt 2 freie Arbeiter"
@@ -2054,7 +2054,7 @@
 	}
 	"Golden Age length increases +50%":{
 		Italian:"+50% durata dell'Età dell'Oro"
-		Russian:"Длина золотого века + 50%"
+		Russian:"Длина золотого века +50%"
 		French:"La longueur de l'âge d'or augmente de 50%"
 		Romanian:"Vârsta de aur crește + 50%"
 		German:"Länge eines Goldenen Zeitalters um 50% erhöht"
@@ -2062,7 +2062,7 @@
 	}
 	"+33% great person generation in all cities":{
 		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
-		Russian:"+ 33% отличное поколение людей во всех городах"
+		Russian:"+ 33% к созданию великих людей во всех городах"
 		French:"+ 33% de génération géniale dans toutes les villes"
 		Romanian:"+ 33% generație mare de persoane în toate orașele"
 		// German translation not sure
@@ -2078,7 +2078,7 @@
 	}
 	"40% of food is carried over after a new citizen is born":{
 		Italian:"Il 40% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
-		Russian:"40% продовольствия переносится после рождения нового гражданина"
+		Russian:"40% продовольствия сохраняется после рождения нового гражданина"
 		French:"40% de la nourriture est reportée après la naissance d'un nouveau citoyen"
 		Romanian:"40% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
 		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
@@ -2086,7 +2086,7 @@
 	}
 	"Jungles provide +2 science":{
 		Italian:"+2 scienzada giungle"
-		Russian:"Джунгли обеспечивают +2 науку"
+		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă știință +2"
 		German:"Dschungel produziert 2 Erforschung"
@@ -2094,7 +2094,7 @@
 	}
 	"Cost of acquiring new tiles reduced by 25%":{
 		Italian:"-25% costo di acquisto di nuove celle"
-		Russian:"Стоимость приобретения новых плиток сократилась на 25%"
+		Russian:"Сокращает стоимость приобретения новых клеток на 25%"
 		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
 		Romanian:"Costul de achiziționare a plăcilor noi a scăzut cu 25%"
 		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
@@ -2102,7 +2102,7 @@
 	}
 	"Culture in all cities increased by 25%":{
 		Italian:"+25% cultura in ogni città"
-		Russian:"Культура во всех городах увеличилась на 25%"
+		Russian:"Увеличивает прирост культуры на 25% во всех городах"
 		French:"La culture dans toutes les villes a augmenté de 25%"
 		Romanian:"Cultura în toate orașele a crescut cu 25%"
 		German:"Kultur wird in allen Städten um 25% erhöht"
@@ -2110,7 +2110,7 @@
 	}
 	"Unhappiness from population decreased by 10%":{
 		Italian:"-10% infelicità della popolazione"
-		Russian:"Неспособность населения снизилась на 10%"
+		Russian:"Снижает недовольство от населения на 10%"
 		French:"Le mécontentement de la population a diminué de 10%"
 		Romanian:"Nefericirea de la populație a scăzut cu 10%"
 		German:"Unzufriedenheit vom Volk um 10% verringert"
@@ -2126,7 +2126,7 @@
 	}
 	"Free Great Artist Appears":{
 		Italian:"Appare un Grande Artista gratuito"
-		Russian:"Появляется бесплатный великий артист"
+		Russian:"Появляется бесплатный великий художник"
 		French:"Grand artiste libre apparaît"
 		Romanian:"Artistul Mare apare gratuit"
 		// German translation not sure
@@ -2134,7 +2134,7 @@
 	}
 	"Culture cost of adopting new Policies reduced by 10%":{
 		Italian:"-10% costo in cultura per nuove politiche"
-		Russian:"Стоимость культуры принятия новой политики сократилась на 10%"
+		Russian:"Сокращает колличество культуры для принятия новой политики на 10%"
 		French:"Coût culturel de l'adoption de nouvelles polices réduit de 10%"
 		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
 		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
@@ -2142,7 +2142,7 @@
 	}
 	"Provides 1 happiness per social policy":{
 		Italian:"Fornisce 1 felicità per politica sociale"
-		Russian:"Обеспечивает 1 счастье за социальную политику"
+		Russian:"Обеспечивает 1 счастье за каждую социальную политику"
 		French:"Fournit 1 bonheur par politique sociale"
 		Romanian:"Oferă 1 fericire pe politică socială"
 		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
@@ -2166,7 +2166,7 @@
 	}
 	"Increases production of spaceship parts by 50%":{
 		Italian:"+50% produzione di parti di navi spaziali"
-		Russian:"Увеличивает выпуск космических кораблей на 50%"
+		Russian:"Увеличивает производство частей космического корабля на 50%"
 		French:"Augmente la production de pièces de vaisseaux spatiaux de 50%"
 		Romanian:"Crește producția de piese de navă spațială cu 50%"
 		German:"Erhöht Produktion an Raumschiffteilen um 50%"
@@ -2184,7 +2184,7 @@
 	// Unit types
 	"Civilian":{
 		Italian:"Civile"
-		Russian:"Цивильный"
+		Russian:"Мирный житель"
 		French:"Civil"
 		Romanian:"Civil"
 		German:"Zivilist"
@@ -2192,7 +2192,7 @@
 	}
 	"Melee":{
 		Italian:"Da mischia"
-		Russian:"Рукопашная"
+		Russian:"Ближний бой"
 		French:"Mêlée"
 		Romanian:"Incăierare"
 		German:"Nahkämpfer"
@@ -2251,7 +2251,7 @@
 	}
 	"Founds a new city":{
 		Italian:"Fonda una nuova città"
-		Russian:"Нашел новый город"
+		Russian:"Основовыает новый город"
 		French:"Trouve une nouvelle ville"
 		Romanian:"Creează un oraș nou"
 		German:"Gründet eine neue Stadt"
@@ -2267,7 +2267,7 @@
 	}
 	"No defensive terrain bonus":{
 		Italian:"Nessun bonus sul terreno difensivo"
-		Russian:"Отсутствие бонуса за боеголовок"
+		Russian:"Нет бонуса защиты от ландшафта"
 		French:"Aucun bonus de terrain défensif"
 		Romanian:"Niciun bonus de teren defensiv"
 		German:"Keinen Geländeabhängigen Verteidigunsbonus"
@@ -2299,7 +2299,7 @@
 	}
 	"Must set up to ranged attack":{
 		Italian:"Deve impostare un attacco a distanza"
-		Russian:"Необходимо настроить атаку дальнего боя"
+		Russian:"Необходимо подготовится к дальнобойной атаке"
 		French:"Doit être configuré pour une attaque à distance"
 		Romanian:"Trebuie să fie pregătit să atace"
 		German:"Muss aufstellen um Fernattacken auszuführen"
@@ -2323,7 +2323,7 @@
 	}
 	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
 		Italian:"Può iniziare un'Età dell'Oro da 8 turni o costruire un Gran Monunento (+6 cultura)"
-		Russian:"Может начать 8-ти золотистый век или построить памятник (+6 культура)"
+		Russian:"Может начать золотистый век на 8 ходов или построить памятник (+6 культура)"
 		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 culture)"
 		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (cultura + 6)"
 		// German translation not sure
@@ -2347,7 +2347,7 @@
 	}
 	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{
 		Italian:"Può velocizzare la costruzione di una meraviglia, o costruire una Manifattura (+4 produzione)"
-		Russian:"Может ускорить строительство чуда или построить мануфактуру (+4 производства)"
+		Russian:"Может ускорить строительство чуда или построить Завод (+4 производства)"
 		French:"Peut accélérer la construction d'une merveille, ou construire une manufacture (+4 production)"
 		Romanian:"Poate accelera construcția unei minune sau poate construi o fabrică (+4 producție)"
 		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
@@ -2364,7 +2364,7 @@
 	}
 	"[policyBranch] policy branch unlocked!":{
 		Italian:"Ramo sociale [policyBranch] sbloccato!"
-		Russian:"[policyBranch] ветвь политики разблокирована!"
+		Russian:"Ветвь политики [policyBranch] разблокирована!"
 		French:"[policyBranch] branche de la politique déverrouillée!"
 		Romanian:"[policyBranch] ramură de politică deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
@@ -2373,19 +2373,19 @@
 	// Trade
 	"Trade with [otherCiv]":{	
 		Italian:"Scambia con [otherCiv]"
-		Russian:"Торговля с [otherCiv]"
+		Russian:"Торговать с [otherCiv]"
 		French:"Échanger avec [otherCiv]"
 		Romanian:"Comerțul cu [otherCiv]"
 	}
 	"Offer trade":{	
 		Italian:"Offerta commerciale"
-		Russian:"Предложение торговли"
+		Russian:"Предложить обмен"
 		French:"Offre d'échange"
 		Romanian:"Oferta comerciala"
 	}
 	"What do you have in mind?":{	
 		Italian:"Cos'hai in mente?"
-		Russian:"Что у тебя на уме?"
+		Russian:"Что вы об этом думаете?"
 		French:"À quoi penses-tu?"
 		Romanian:"La ce te gandesti?"
 	}
@@ -2397,25 +2397,25 @@
 	}
 	"Our trade offer":{	
 		Italian:"La nostra offerta commerciale"
-		Russian:"Наше торговое предложение"
+		Russian:"Наше предложение обмена"
 		French:"Notre offre commerciale"
 		Romanian:"Oferta noastră comercială"
 	}
 	"[otherCiv]'s trade offer":{
 		Italian:"Offerta commerciale di [otherCiv]"
-		Russian:"Коммерческое предложение [otherCiv]"
+		Russian:"Предложение обмена цивилизации [otherCiv]"
 		French:"L'offre commerciale de [otherCiv]"
 		Romanian:"ofertă de schimb a [otherCiv]"
 	}
 	"[otherCiv]'s items":{	
 		Italian:"Gli articoli di [otherCiv]"
-		Russian:"Предметы [otherCiv]"
+		Russian:"Предметы цивилизации [otherCiv]"
 		French:"Les articles de [otherCiv]"
 		Romanian:"Articolele la [otherCiv]"
 	}
 	"Pleasure doing business with you!":{
 		Italian:"È un piacere fare affari con voi!"
-		Russian:"Удовольствие работать с тобой!"
+		Russian:"С вами приятно иметь дело!"
 		French:"Plaisir de faire des affaires avec vous!"
 		Romanian:"Plăcerea face afaceri cu dumneavoastra!"
 	}
