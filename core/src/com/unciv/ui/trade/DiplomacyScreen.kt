@@ -1,10 +1,7 @@
 package com.unciv.ui.trade
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UnCivGame
 import com.unciv.ui.utils.*
 
@@ -14,7 +11,7 @@ class DiplomacyScreen():CameraStageBaseScreen(){
     val rightSideTable = Table()
 
     init{
-        val splitPane = SplitPane(leftSideTable,rightSideTable,false, skin)
+        val splitPane = SplitPane(ScrollPane(leftSideTable),rightSideTable,false, skin)
         splitPane.setSplitAmount(0.2f)
 
         updateLeftSideTable()
@@ -64,7 +61,6 @@ class DiplomacyScreen():CameraStageBaseScreen(){
                 }
                 civTable.add(declareWarButton).row()
             }
-
             leftSideTable.add(civTable).row()
         }
     }

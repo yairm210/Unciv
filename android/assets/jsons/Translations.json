@@ -822,6 +822,8 @@
 		French:"Un [greatPerson] est né!"
 		Romanian:"Sa născut un [greatPerson]!"
 	}
+	
+	"We have encountered [civName]!":{}
 
 	
 	// Save and load game
@@ -2387,11 +2389,12 @@
 	} // EG Rationalism policy branch unlocked!
 	
 	// Trade
-	"Trade with [otherCiv]":{	
-		Italian:"Scambia con [otherCiv]"
-		Russian:"Торговля с [otherCiv]"
-		French:"Échanger avec [otherCiv]"
-		Romanian:"Comerțul cu [otherCiv]"
+	
+	"Trade":{	
+		Italian:"Scambia"
+		Russian:"Торговля"
+		French:"Échanger"
+		Romanian:"Comerțul"
 	}
 	"Offer trade":{	
 		Italian:"Offerta commerciale"
@@ -2412,16 +2415,16 @@
 		Romanian:"Articolele noastre"
 	}
 	"Our trade offer":{	
-		Italian:"La nostra offerta commerciale"
-		Russian:"Наше торговое предложение"
-		French:"Notre offre commerciale"
-		Romanian:"Oferta noastră comercială"
+		Italian:"La nostra \n offerta commerciale"
+		Russian:"Наше торговое\n  предложение"
+		French:"Notre offre \n commerciale"
+		Romanian:"Oferta noastră \n comercială"
 	}
 	"[otherCiv]'s trade offer":{
-		Italian:"Offerta commerciale di [otherCiv]"
-		Russian:"Коммерческое предложение [otherCiv]"
-		French:"L'offre commerciale de [otherCiv]"
-		Romanian:"ofertă de schimb a [otherCiv]"
+		Italian:"Offerta commerciale \n di [otherCiv]"
+		Russian:"Коммерческое \n предложение [otherCiv]"
+		French:"L'offre commerciale \n de [otherCiv]"
+		Romanian:"ofertă de \n schimb a [otherCiv]"
 	}
 	"[otherCiv]'s items":{	
 		Italian:"Gli articoli di [otherCiv]"
@@ -2453,6 +2456,11 @@
 		French:"Accept"
 		Romanian:"Accepta"
 	}
+	"There's nothing on the table":{}
+
+	
+	"Peace treaty":{}
+	"Gold per turn":{}
 
 
 	//civilisations
@@ -2596,6 +2604,11 @@
 		French:"Diplomatie"
 		Romanian:"Diplomaţie"
 	}
+	
+	"War":{}
+	"Peace":{}
+	
+	"Declare war":{}
 	
 	// Overview screen
 	"Overview":{	
