@@ -12,13 +12,64 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
+import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
 class UnitAutomation{
 
+    fun automateUnitMoves(unit: MapUnit) {
+
+        if (unit.name == "Settler") {
+            automateSettlerActions(unit)
+            return
+        }
+
+        if (unit.name == "Worker") {
+            WorkerAutomation(unit).automateWorkerAction()
+            return
+        }
+
+        if(unit.name.startsWith("Great")) return // I don't know what to do with you yet.
+
+        val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
+
+        if (tryUpgradeUnit(unit, unitActions)) return
+
+        // Accompany settlers
+        if (tryAccompanySettler(unit)) return
+
+        if (unit.health < 50) {
+            healUnit(unit)
+            return
+        } // do nothing but heal
+
+        // if there is an attackable unit in the vicinity, attack!
+        if (tryAttackNearbyEnemy(unit)) return
+
+        if (tryGarrisoningUnit(unit)) return
+
+        if (unit.health < 80) {
+            healUnit(unit)
+            return
+        } // do nothing but heal until 80 health
+
+        // find the closest enemy unit that we know of within 5 spaces and advance towards it
+        if (tryAdvanceTowardsCloseEnemy(unit)) return
+
+        if (unit.health < 100) {
+            healUnit(unit)
+            return
+        }
+
+        // Focus all units without a specific target on the enemy city closest to one of our cities
+        if (tryHeadTowardsEnemyCity(unit)) return
+
+        // else, go to a random space
+        randomWalk(unit)
+        // if both failed, then... there aren't any reachable tiles. Which is possible.
+    }
+
     fun healUnit(unit:MapUnit) {
-        // If we're low on health then heal
-        // todo: go to a more defensible place if there is one
         val tilesInDistance = unit.getDistanceToTiles().keys
         val unitTile = unit.getTile()
 
@@ -70,78 +121,53 @@ class UnitAutomation{
         return attackableTiles
     }
 
-    fun automateUnitMoves(unit: MapUnit) {
+    private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
+        var closeEnemies = unit.getTile().getTilesInDistance(5)
+                .filter{ containsAttackableEnemy(it, unit.civInfo) && unit.movementAlgs().canReach(it)}
+        if(unit.getBaseUnit().unitType.isRanged())
+            closeEnemies = closeEnemies.filterNot { it.isCityCenter() && it.getCity()!!.health==1 }
 
-        if (unit.name == "Settler") {
-            automateSettlerActions(unit)
-            return
+        val closestEnemy = closeEnemies.minBy { it.arialDistanceTo(unit.getTile()) }
+
+        if (closestEnemy != null) {
+            unit.movementAlgs().headTowards(closestEnemy)
+            return true
         }
+        return false
+    }
 
-        if (unit.name == "Worker") {
-            WorkerAutomation(unit).automateWorkerAction()
-            return
+    private fun tryAccompanySettler(unit: MapUnit): Boolean {
+        val closeTileWithSettler = unit.getDistanceToTiles().keys.firstOrNull {
+            it.civilianUnit != null && it.civilianUnit!!.name == "Settler"
         }
+        if (closeTileWithSettler != null && unit.canMoveTo(closeTileWithSettler)) {
+            unit.movementAlgs().headTowards(closeTileWithSettler)
+            return true
+        }
+        return false
+    }
 
-        if(unit.name.startsWith("Great")) return // I don't know what to do with you yet.
-
-        val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
-
-        if(unit.getBaseUnit().upgradesTo!=null) {
+    private fun tryUpgradeUnit(unit: MapUnit, unitActions: List<UnitAction>): Boolean {
+        if (unit.getBaseUnit().upgradesTo != null) {
             val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
                 val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
                 val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
                 if (upgradeAction != null && unit.civInfo.gold > goldCostOfUpgrade) {
                     upgradeAction.action()
-                    return
+                    return true
                 }
             }
         }
+        return false
+    }
 
-        // Accompany settlers
-        val closeTileWithSettler = unit.getDistanceToTiles().keys.firstOrNull{
-            it.civilianUnit!=null && it.civilianUnit!!.name=="Settler"}
-        if(closeTileWithSettler != null && unit.canMoveTo(closeTileWithSettler)){
-            unit.movementAlgs().headTowards(closeTileWithSettler)
-            return
-        }
-
-        if (unit.health < 50) {
-            healUnit(unit)
-            return
-        } // do nothing but heal
-
-        // if there is an attackable unit in the vicinity, attack!
-        if (tryAttackNearbyEnemy(unit)) return
-
-        if (tryGarrisoningUnit(unit)) return
-
-
-
-        if (unit.health < 80) {
-            healUnit(unit)
-            return
-        } // do nothing but heal until 80 health
-
-
-        // find the closest enemy unit that we know of within 5 spaces and advance towards it
-        val closestEnemy = unit.getTile().getTilesInDistance(5)
-                .firstOrNull { containsAttackableEnemy(it,unit.civInfo) && unit.movementAlgs().canReach(it) }
-
-        if (closestEnemy != null) {
-            unit.movementAlgs().headTowards(closestEnemy)
-            return
-        }
-
-        if (unit.health < 100) {
-            healUnit(unit)
-            return
-        }
-
-        // Focus all units without a specific target on the enemy city closest to one of our cities
-        val enemyCities = unit.civInfo.exploredTiles.map { unit.civInfo.gameInfo.tileMap[it] }
-                .filter { it.isCityCenter() && it.getOwner()!=unit.civInfo }
-        if(enemyCities.isNotEmpty() && unit.civInfo.cities.isNotEmpty()) {
+    private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
+        var enemyCities = unit.civInfo.exploredTiles.map { unit.civInfo.gameInfo.tileMap[it] }
+                .filter { it.isCityCenter() && it.getOwner() != unit.civInfo }
+        if(unit.getBaseUnit().unitType.isRanged())
+            enemyCities = enemyCities.filterNot { it.getCity()!!.health==1 }
+        if (enemyCities.isNotEmpty() && unit.civInfo.cities.isNotEmpty()) {
             val closestReachableEnemyCity = enemyCities
                     .filter { unit.movementAlgs().canReach(it) }
                     .minBy { city ->
@@ -149,13 +175,10 @@ class UnitAutomation{
                     }
             if (closestReachableEnemyCity != null) {
                 unit.movementAlgs().headTowards(closestReachableEnemyCity)
-                return
+                return true
             }
         }
-
-        // else, go to a random space
-        randomWalk(unit)
-        // if both failed, then... there aren't any reachable tiles. Which is possible.
+        return false
     }
 
     private fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
@@ -176,7 +199,6 @@ class UnitAutomation{
 
         if (unit.getBaseUnit().unitType.isMelee() && capturableCity!=null)
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
-
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
             enemyTileToAttack = nonCityTilesToAttack.minBy { Battle().getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
