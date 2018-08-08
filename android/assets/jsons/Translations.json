@@ -267,6 +267,7 @@
 	// Menu table
 	
 	"Civilopedia":{
+		Russian:"Цивилопедия"
 	}
 
 	"Start new game":{
@@ -716,7 +717,6 @@
 		German:"hat seine Grenzen erweitert"
 		Dutch:"heeft zijn grenzen uitgebreid"
 	}
-//Just leaving a bookmark !!!!!
 	"An enemy [unit] has attacked [cityname]":{
 		Italian:"Un [unit] nemico ha attaccato [cityname]"
 		Russian:"Вражеский [unit] атаковал [cityname]"
@@ -1357,10 +1357,13 @@
 	}
 	*/
 	"Remove Forest":{
+		Russian:"Вырубить лес"
 	}
 	"Remove Jungle":{
+		Russian:"Вырубить джунгли"
 	}
 	"Remove Marsh":{
+		Russian:"Осушить болото"
 	}
 	
 	"Academy":{
@@ -1949,10 +1952,19 @@
 		Dutch:"Toekomst Technologie"
 	}
 	
-	"Enables conversion of city production to gold":{}
-	"Enables conversion of city production to science":{}
-	"Improves movement speed on roads":{}
-	"+10% science and production in all cities":{}
+	//Why do we have duplicates? Anyway i have translated it
+	"Enables conversion of city production to gold":{
+		Russian:"Разрешает конверсию производства в золото"
+	}
+	"Enables conversion of city production to science":{
+		Russian:"Разрешает конверсию производства в науку"
+	}
+	"Improves movement speed on roads":{
+		Russian:"Ускоряет скорость передвижения по дорогам"
+	}
+	"+10% science and production in all cities":{
+		Russian:"+10% науки и производства во всех городах"
+	}
 	
 	
 	"Who knows what the future holds?":{
@@ -1971,13 +1983,13 @@
 	}
 	"Enables conversion of city production to science":{
 		Italian:"Consente la conversione della produzione di città in scienza"
-		Russian:"Позволяет конверсию производства в науку"
+		Russian:"Разрешает конверсию производства в науку"
 		French:"Permet la conversion de la production de la ville en science"
 		Romanian:"Permite conversia producției în oraș la știință"
 	}
 	"Enables conversion of city production to gold":{
 		Italian:"Consente la conversione della produzione di città in oro"
-		Russian:"Позволяет конверсию производства в золото"
+		Russian:"Разрешает конверсию производства в золото"
 		French:"Permet la conversion de la production de la ville en or"
 		Romanian:"Permite conversia producției în oraș la aur"
 	}
@@ -1994,7 +2006,7 @@
 	}
 	"Classical era":{
 		Italian:"Classica"
-		Russian:"Античность"
+		Russian:"Античность" //one word translation
 		French:"Classique"
 		Romanian:"Clasica"
 		Dutch:"Klasieke"
@@ -2022,7 +2034,7 @@
 	}
 	"Modern era":{
 		Italian:"Moderna"
-		Russian:"Современность"
+		Russian:"Современность" //one word translation
 		French:"Moderne"
 		Romanian:"Moderna"
 		Dutch:"Moderne"
@@ -2849,6 +2861,7 @@
 		Romanian:"Sfânta Sofia"
 	}
 	"Mint":{ 
+		Russian:"Монетный двор"
 		//don't know what this mint
 	}
 	"Machu Pichu":{	
@@ -3115,6 +3128,7 @@
 		Romanian:"Arcaş"
 	}
 	"Bowman":{	
+		Russian:"Меткий лучник"
 		//IS THIS SAME AS ARCHER IN OTHER LANGUAGES=?? 
 		//In official Russian localization it's accurate archer :)
 	}
@@ -3169,7 +3183,8 @@
 		French:"Trébuchet"
 		Romanian:"Trebuchet"
 	}
-	"Longswordsman":{	
+	"Longswordsman":{
+		Russian:"Мечник (длинный меч)"
 	}
 	"Pikeman":{	
 		Italian:"Picchiere"
@@ -3241,24 +3256,58 @@
 		Romanian:"Mare Inginer"
 	}
 	
-	"Requires":{}
-	"Adopt policy":{}
-	"Unlocked at":{}
+	"Requires":{
+		Russian:"Требует"
+	}
+	"Adopt policy":{
+		Russian:"Принять общественный институт"
+	}
+	"Unlocked at":{
+		Russian:"Разблокируется в"
+	}
 	
-	"Tradition":{}
-	"+3 culture in capital and increased rate of border expansion":{}
-	"Aristocracy":{}
-	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{}
-	"Legalism":{}
-	"Free culture building in your first 4 cities":{}
-	"Oligarchy":{}
-	"Units in cities cost no maintainance":{}
-	"Landed Elite":{}
-	"+10% food growth and +2 food in capital":{}
-	"Monarchy":{}
-	"+1 gold and -1 unhappiness for every 2 citizens in capital":{}
-	"Tradition Complete":{}
-	"+15% growth and +2 food in all cities":{}
+	"Tradition":{
+		Russian:"Традиция"
+	}
+	"+3 culture in capital and increased rate of border expansion":{
+		Russian:"+3 культуры в столице и увеличивается скорость расширения границ"
+	}
+	"Aristocracy":{
+		Russian:"Аристократия"
+	}
+	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
+		Russian:"+15% производства при создании чудес, +1 счастье за каждые 10 жителей в городе"
+	}
+	"Legalism":{
+		Russian:"Легализм"
+	}
+	"Free culture building in your first 4 cities":{
+		Russian:"Бесплатное культурное здание в первых 4 городах"
+	}
+	"Oligarchy":{
+		Russian:"Олигархия"
+	}
+	"Units in cities cost no maintainance":{
+		Russian:"Юниты в городах содержаться бесплатно"
+	}
+	"Landed Elite":{
+		Russian:"Землевладельческая Элита"
+	}
+	"+10% food growth and +2 food in capital":{
+		Russian:"+10% прироста еды и +2 еды в столице"
+	}
+	"Monarchy":{
+		Russian:"Монархия"
+	}
+	"+1 gold and -1 unhappiness for every 2 citizens in capital":{
+		Russian:"+1 золто и -1 недовольство за каждых двух жителей в столице"
+	}
+	"Tradition Complete":{
+		Russian:"Традиция Завершена"
+	}
+	"+15% growth and +2 food in all cities":{
+		Russian:"+15% роста и +2 еды во всех городах"
+	}
 	// And so on for all the policies. I can't be bothered to add them all now...
 	
 }
