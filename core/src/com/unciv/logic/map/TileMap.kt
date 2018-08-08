@@ -65,6 +65,8 @@ class TileMap {
     fun setTransients() {
         for (tileInfo in values){
             tileInfo.tileMap = this
+            if(tileInfo.militaryUnit!=null) tileInfo.militaryUnit!!.currentTile = tileInfo
+            if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.currentTile = tileInfo
         }
     }
 

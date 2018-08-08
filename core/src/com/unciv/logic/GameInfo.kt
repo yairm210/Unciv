@@ -51,7 +51,9 @@ class GameInfo {
 
         player.startTurn()
 
-        val enemyUnitsCloseToTerritory = player.getViewableTiles().filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=player
+        val enemyUnitsCloseToTerritory = player.getViewableTiles()
+                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=player
+                        && player.isAtWarWith(it.militaryUnit!!.civInfo)
                 && (it.getOwner()==player || it.neighbors.any { neighbor -> neighbor.getOwner()==player }) }
         for(enemyUnitTile in enemyUnitsCloseToTerritory) {
             val inOrNear = if(enemyUnitTile.getOwner()==player) "in" else "near"

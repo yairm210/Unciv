@@ -27,9 +27,10 @@ class MapUnit {
 
     fun getBaseUnit(): BaseUnit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
-    fun getTile(): TileInfo {
-        return civInfo.gameInfo.tileMap.values.first{it.militaryUnit==this || it.civilianUnit==this}
-    }
+
+    @Transient
+    internal lateinit var currentTile :TileInfo
+    fun getTile(): TileInfo =  currentTile
 
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
         val tile = getTile()
@@ -187,6 +188,7 @@ class MapUnit {
         if(getBaseUnit().unitType== UnitType.Civilian)
             tile.civilianUnit=this
         else tile.militaryUnit=this
+        currentTile = tile
     }
 
     /**
