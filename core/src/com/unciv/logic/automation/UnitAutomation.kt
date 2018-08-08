@@ -218,6 +218,7 @@ class UnitAutomation{
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
+        if(unit.getBaseUnit().unitType.isMelee()) return false // don't garrison melee units, they're not that good at it
         val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
             val centerTile = it.getCenterTile()
             unit.canMoveTo(centerTile)

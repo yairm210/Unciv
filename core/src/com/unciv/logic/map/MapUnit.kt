@@ -28,7 +28,8 @@ class MapUnit {
     fun getBaseUnit(): BaseUnit = GameBasics.Units[name]!!
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
 
-    @Transient private lateinit var currentTile :TileInfo
+    @Transient
+    internal lateinit var currentTile :TileInfo
     fun getTile(): TileInfo =  currentTile
 
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
