@@ -12,7 +12,8 @@ class WorkerAutomation(val unit: MapUnit) {
 
     fun automateWorkerAction() {
         val enemyUnitsInWalkingDistance = unit.getDistanceToTiles().keys
-                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=unit.civInfo }
+                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=unit.civInfo
+                        && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
 
         if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
 

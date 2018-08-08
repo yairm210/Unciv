@@ -108,7 +108,7 @@ class CivilizationInfo {
 
     private fun getTransportationUpkeep(): Int {
         var transportationUpkeep = 0
-        for (it in gameInfo.tileMap.values.filterNot { it.isCityCenter() }) {
+        for (it in gameInfo.tileMap.values.filter { it.getOwner()==this }.filterNot { it.isCityCenter() }) {
             when(it.roadStatus) {
                 RoadStatus.Road -> transportationUpkeep += 1
                 RoadStatus.Railroad -> transportationUpkeep += 2
@@ -298,7 +298,7 @@ class CivilizationInfo {
         return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
     }
 
-    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus==DiplomaticStatus.War }
+    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus==DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
         if(otherCiv==this) return true

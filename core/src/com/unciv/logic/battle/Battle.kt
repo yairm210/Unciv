@@ -65,11 +65,14 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         }
 
         // we're a melee unit and we destroyed\captured an enemy unit
-        else if (attacker.isMelee() && (defender.isDefeated() || defender.getCivilization()==attacker.getCivilization() )) {
+        else if (attacker.isMelee()
+                && (defender.isDefeated() || defender.getCivilization()==attacker.getCivilization() )
+                // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
+                && (attacker as MapUnitCombatant).unit.canMoveTo(attackedTile)) {
             // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
             if(attackedTile.civilianUnit!=null && attackedTile.civilianUnit!!.civInfo != attacker.getCivilization())
                 captureCivilianUnit(attacker,MapUnitCombatant(attackedTile.civilianUnit!!))
-            (attacker as MapUnitCombatant).unit.moveToTile(attackedTile)
+            attacker.unit.moveToTile(attackedTile)
         }
 
         if(attacker is MapUnitCombatant) {

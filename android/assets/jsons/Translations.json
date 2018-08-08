@@ -137,7 +137,7 @@
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
 		Italian:"Aggiorna a [unitType] ([goldCost] oro)"
 		Russian:"Улучшить до [unitType] ([goldCost] золота)"
-		French:"Mise à niveau vers [unitType] (goldCost) gold)"
+		French:"Mise à niveau vers [unitType] ([goldCost] or)"
 		Romanian:"Treceți la [unitType] (aurul [goldCost])"
 	}
 	
@@ -266,7 +266,8 @@
 	
 	// Menu table
 	
-	"Civilopedia":{}
+	"Civilopedia":{
+	}
 
 	"Start new game":{
 		Italian:"Nuova partita"
@@ -1345,6 +1346,7 @@
 		German:"Gleis"
 		Dutch:"Spoorweg"
 	}
+	/*
 	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
 		Italian:"Rimuovi"
 		Russian:"Убрать"
@@ -1353,6 +1355,14 @@
 		German:"Entfernen:" // verb behind object again
 		Dutch:"Verwijderen" // verb behind object
 	}
+	*/
+	"Remove Forest":{
+	}
+	"Remove Jungle":{
+	}
+	"Remove Marsh":{
+	}
+	
 	"Academy":{
 		Italian:"Accademia"
 		Russian:"Академия"
@@ -1939,6 +1949,12 @@
 		Dutch:"Toekomst Technologie"
 	}
 	
+	"Enables conversion of city production to gold":{}
+	"Enables conversion of city production to science":{}
+	"Improves movement speed on roads":{}
+	"+10% science and production in all cities":{}
+	
+	
 	"Who knows what the future holds?":{
 		Italian:"Chi sa cosa riserva il futuro?"
 		Russian:"Кто знает, что ждет в будущем?"
@@ -1969,56 +1985,56 @@
 	// Tech Eras
 	// In case of foreign languages it becomes gender sensitive words
 	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
-	"Ancient":{
+	"Ancient era":{
 		Italian:"Antichità" //one word translation
 		Russian:"Древнейший мир"
 		French:"Ancien"
 		Romanian:"Antica"
 		Dutch:"Oude"
 	}
-	"Classical":{
+	"Classical era":{
 		Italian:"Classica"
 		Russian:"Античность"
 		French:"Classique"
 		Romanian:"Clasica"
 		Dutch:"Klasieke"
 	}
-	"Medieval":{
+	"Medieval era":{
 		Italian:"Medioevo" //one word translation
 		Russian:"Средневековье" //one word translation
 		French:"Médiéval"
 		Romanian:"Medievala"
 		Dutch:"Middeleeuwse"
 	}
-	"Renaissance":{
+	"Renaissance era":{
 		Italian:"Rinascimento" //one word translation
 		Russian:"Новое время" //one word translation
 		French:"Renaissance" //one word translation
 		Romanian:"Renaşterei"
 		Dutch:"Renaissance"
 	}
-	"Industrial":{
+	"Industrial era":{
 		Italian:"Industriale"
 		Russian:"Новейшее время"
 		French:"Industriel"
 		Romanian:"Industriala"
 		Dutch:"Industrieele"
 	}
-	"Modern":{
+	"Modern era":{
 		Italian:"Moderna"
 		Russian:"Современность"
 		French:"Moderne"
 		Romanian:"Moderna"
 		Dutch:"Moderne"
 	}
-	"Information":{
+	"Information era":{
 		Italian:"Informatica"     //[newEra] +translation
 		Russian:"Информационная эра" //translation+ [newEra]
 		French:"Information"
 		Romanian:"Informației"
 		Dutch:"Informatie"
 	}
-	"Future":{
+	"Future era":{
 		Italian:"Futura"
 		Russian:"Будущее" //all one word translation
 		French:"Avenir" 
@@ -3224,5 +3240,25 @@
 		French:"Grand ingénieur"
 		Romanian:"Mare Inginer"
 	}
+	
+	"Requires":{}
+	"Adopt policy":{}
+	"Unlocked at":{}
+	
+	"Tradition":{}
+	"+3 culture in capital and increased rate of border expansion":{}
+	"Aristocracy":{}
+	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{}
+	"Legalism":{}
+	"Free culture building in your first 4 cities":{}
+	"Oligarchy":{}
+	"Units in cities cost no maintainance":{}
+	"Landed Elite":{}
+	"+10% food growth and +2 food in capital":{}
+	"Monarchy":{}
+	"+1 gold and -1 unhappiness for every 2 citizens in capital":{}
+	"Tradition Complete":{}
+	"+15% growth and +2 food in all cities":{}
+	// And so on for all the policies. I can't be bothered to add them all now...
 	
 }
