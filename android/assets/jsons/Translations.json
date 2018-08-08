@@ -824,6 +824,8 @@
 	}
 	
 	"We have encountered [civName]!":{}
+	
+	"Cannot provide upkeep for [unitName] - unit has been disbanded!":{}
 
 	
 	// Save and load game

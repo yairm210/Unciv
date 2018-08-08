@@ -81,6 +81,7 @@ class Automation {
             val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
                     .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
                     .groupBy { getMinDistanceBetweenCities(civInfo,it) }
+                    .toSortedMap()
             val ourCombatStrength = evaluteCombatStrength(civInfo)
             for (group in enemyCivsByDistanceToOurs){
                 if(group.key>7) break
