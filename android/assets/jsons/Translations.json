@@ -27,7 +27,7 @@
 
 	"in":{ // As in "Opera House in 3 turns"
 		Italian:"tra"
-		Russian:"в"
+		Russian:"через"
 		French:"dans"
 		Romanian:"în"
 		German:"in"
@@ -46,7 +46,7 @@
 	// Unit
 	"Movement":{
 		Italian:"Movimento"
-		Russian:"Переместить"
+		Russian:"Передвижение"
 		French:"Deplacer"
 		Romanian:"Mișcare"
 		German:"Bewegungen"
@@ -64,7 +64,7 @@
 
 	"Ranged strength":{
 		Italian:"Forza a distanza"
-		Russian:"Дальний бой"
+		Russian:"Сила в дальнем бою"
 		French:"Force à distance"
 		Romanian:"Puterea la distanta"
 		German:"Fernkampf Stärkte"
@@ -91,7 +91,7 @@
 
 	"Construct improvement":{
 		Italian:"Migliora costruzione"
-		Russian:"Улучшить строение"
+		Russian:"Построить улучшение"
 		French:"Amèlioré construcion"
 		Romanian:"îmbunătățirea construcției"
 		German:"Verbesserung bauen"
@@ -118,7 +118,7 @@
 	
 	"Fortification":{ // as in "+40% Fortification"
 		Italian:"Fortificazione"
-		Russian:"Укрепления"
+		Russian:"от укрепления"
 		French:"Fortification"
 		Romanian:"Fortificație"
 		German:"Befestigung"
@@ -127,7 +127,7 @@
 
 	"Set up":{ // For siege units
 		Italian:"Monta"
-		Russian:"Приказ"
+		Russian:"Подготовится"
 		French:"Implanter"
 		Romanian:"Dispune"
 		German:"Aufstellen"
@@ -320,7 +320,7 @@
 	}
 	"World size:":{
 		Italian:"Dimensione mappa:"
-		Russian:"Размер мира"
+		Russian:"Размер мира:"
 		French:"La taille du monde:"
 		Romanian:"Mărimea pamintului:"
 	}
@@ -343,7 +343,7 @@
 
 	"Social policies":{
 		Italian:"Politiche sociali"
-		Russian:"Социальная политика"
+		Russian:"Общественные институты"
 		French:"Politiques sociales"
 		Romanian:"Politici sociale"
 		German:"Sozialpolitiken"
@@ -2046,7 +2046,7 @@
 	}
 	"Free Social Policy":{
 		Italian:"Politica sociale gratuita"
-		Russian:"Бесплатная социальная политика"
+		Russian:"Бесплатный общественный институт"
 		French:"Politique sociale gratuite"
 		Romanian:"Politica socială gratuită"
 		German:"Freie Sozialpolitik"
@@ -2134,7 +2134,7 @@
 	}
 	"Culture cost of adopting new Policies reduced by 10%":{
 		Italian:"-10% costo in cultura per nuove politiche"
-		Russian:"Сокращает колличество культуры для принятия новой политики на 10%"
+		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
 		French:"Coût culturel de l'adoption de nouvelles polices réduit de 10%"
 		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
 		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
@@ -2142,7 +2142,7 @@
 	}
 	"Provides 1 happiness per social policy":{
 		Italian:"Fornisce 1 felicità per politica sociale"
-		Russian:"Обеспечивает 1 счастье за каждую социальную политику"
+		Russian:"Обеспечивает 1 счастье за каждый общественный институт"
 		French:"Fournit 1 bonheur par politique sociale"
 		Romanian:"Oferă 1 fericire pe politică socială"
 		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
@@ -2166,7 +2166,7 @@
 	}
 	"Increases production of spaceship parts by 50%":{
 		Italian:"+50% produzione di parti di navi spaziali"
-		Russian:"Увеличивает производство частей космического корабля на 50%"
+		Russian:"Ускоряет производство частей космического корабля на 50%"
 		French:"Augmente la production de pièces de vaisseaux spatiaux de 50%"
 		Romanian:"Crește producția de piese de navă spațială cu 50%"
 		German:"Erhöht Produktion an Raumschiffteilen um 50%"
@@ -2184,7 +2184,7 @@
 	// Unit types
 	"Civilian":{
 		Italian:"Civile"
-		Russian:"Мирный житель"
+		Russian:"Мирный"
 		French:"Civil"
 		Romanian:"Civil"
 		German:"Zivilist"
@@ -2208,7 +2208,7 @@
 	}
 	"Siege":{
 		Italian:"D'assedio"
-		Russian:"Осада"
+		Russian:"Осадный"
 		French:"Siège"
 		Romanian:"Asediu"
 		German:"Belagerungsmaschiene"
@@ -2251,7 +2251,7 @@
 	}
 	"Founds a new city":{
 		Italian:"Fonda una nuova città"
-		Russian:"Основовыает новый город"
+		Russian:"Основывает новый город"
 		French:"Trouve une nouvelle ville"
 		Romanian:"Creează un oraș nou"
 		German:"Gründet eine neue Stadt"
@@ -2291,7 +2291,7 @@
 	}
 	"Penalty vs [unitType]":{
 		Italian:"Penalità contro [unitType]"
-		Russian:"Штраф vs [unitType]"
+		Russian:"Штраф против [unitType]"
 		French:"Pénalité vs [unitType]"
 		Romanian:"Penalitate vs [unitType]"
 		German:"Nachteil gegen eine(n) [unitType]" // Gender sensitive
@@ -2323,7 +2323,7 @@
 	}
 	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
 		Italian:"Può iniziare un'Età dell'Oro da 8 turni o costruire un Gran Monunento (+6 cultura)"
-		Russian:"Может начать золотистый век на 8 ходов или построить памятник (+6 культура)"
+		Russian:"Может начать золотой век на 8 ходов или построить памятник (+6 культура)"
 		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 culture)"
 		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (cultura + 6)"
 		// German translation not sure
@@ -2364,7 +2364,7 @@
 	}
 	"[policyBranch] policy branch unlocked!":{
 		Italian:"Ramo sociale [policyBranch] sbloccato!"
-		Russian:"Ветвь политики [policyBranch] разблокирована!"
+		Russian:"Ветвь общественных институтов [policyBranch] разблокирована!"
 		French:"[policyBranch] branche de la politique déverrouillée!"
 		Romanian:"[policyBranch] ramură de politică deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
@@ -2409,7 +2409,7 @@
 	}
 	"[otherCiv]'s items":{	
 		Italian:"Gli articoli di [otherCiv]"
-		Russian:"Предметы цивилизации [otherCiv]"
+		Russian:"Товары цивилизации [otherCiv]"
 		French:"Les articles de [otherCiv]"
 		Romanian:"Articolele la [otherCiv]"
 	}
@@ -2557,7 +2557,7 @@
 	}
 	"World size":{	
 		Italian:"Dimensione del mondo"
-		Russian:"Мировой размер"
+		Russian:"Размер мира"
 		French:"La taille du monde"
 		Romanian:"Mărime universală"
 	}
@@ -2569,7 +2569,7 @@
 	}
 	"Difficulty":{	
 		Italian:"Difficoltà"
-		Russian:"Трудность"
+		Russian:"Сложность"
 		French:"Difficulté"
 		Romanian:"Dificultate"
 	}
@@ -2608,7 +2608,7 @@
 	}
 	"Policies":{	
 		Italian:"Politiche"
-		Russian:"Полисы"
+		Russian:"Общественные институты"
 		French:"Les politiques"
 		Romanian:"Politici"
 	}
@@ -2632,13 +2632,13 @@
 	}
 	"Luxury resources":{	
 		Italian:"Risorse di lusso"
-		Russian:"Роскошные ресурсы"
+		Russian:"Редкие ресурсы"
 		French:"Ressources de luxe"
 		Romanian:"Resurse de lux"
 	}
 	"Tile yields":{	
 		Italian:"Reso delle celle"
-		Russian:"Плитка дает"
+		Russian:"Клетка дает"
 		French:"Rendement des carreaux"
 		Romanian:"Randamentele plăcilor"
 	}
@@ -2669,19 +2669,19 @@
 	
 	"Trades":{	
 		Italian:"Trades"
-		Russian:"Торги"
+		Russian:"Соглашения"
 		French:"Métiers"
 		Romanian:"Tranzacții"
 	}
 	"Units":{	
 		Italian:"Unità"
-		Russian:"Единицы"
+		Russian:"Юниты"
 		French:"Unités"
 		Romanian:"Unități"
 	}
 	"Name":{	
 		Italian:"Nome"
-		Russian:"имя"
+		Russian:"Имя"
 		French:"Prénom"
 		Romanian:"Nume"
 	}
@@ -2702,13 +2702,13 @@
 	}
 	"Monument":{	
 		Italian:"Monumento"
-		Russian:"Памятник"
+		Russian:"Монумент"
 		French:"Monument"
 		Romanian:"Monument"
 	}
 	"Granary":{	
 		Italian:"Granaio"
-		Russian:"Зернохранилище"
+		Russian:"Амбар"
 		French:"Grenier"
 		Romanian:"Grânar"
 	}
@@ -2750,13 +2750,13 @@
 	}
 	"The Pyramids":{	
 		Italian:"Le piramidi"
-		Russian:""
+		Russian:"Пирамиды"
 		French:"Les pyramides"
 		Romanian:"Piramidele"
 	}
 	"Barracks":{	
 		Italian:"Caserma"
-		Russian:"Казарма"
+		Russian:"Казармы"
 		French:"Caserne"
 		Romanian:"Cazarma"
 	}
@@ -2804,7 +2804,7 @@
 	}
 	"Colloseum":{	
 		Italian:"Colosseo"
-		Russian:"Колизеи"
+		Russian:"Колизей"
 		French:"Colloseum"
 		Romanian:"Colloseum"
 	}
@@ -2849,13 +2849,13 @@
 	}
 	"Workshop":{	
 		Italian:"Laboratorio"
-		Russian:"мастерская"
+		Russian:"Мастерская"
 		French:"Atelier"
 		Romanian:"Atelier"
 	}
 	"Forge":{	
 		Italian:"Fucina"
-		Russian:"Ковальня"
+		Russian:"Кузница"
 		French:"Forger"
 		Romanian:"Forja"
 	}
@@ -2969,7 +2969,7 @@
 	}
 	"Public School":{	
 		Italian:"Scuola pubblica"
-		Russian:"Общеобразовательная школа"
+		Russian:"Школа"
 		French:"École publique"
 		Romanian:"Școală publică"
 	}
@@ -2991,7 +2991,7 @@
 		French:"Bourse"
 		Romanian:"Bursa de Valori"
 	}
-	"Cristo Redentor":{	
+	"Cristo Redentor":{	//?
 		Italian:"Cristo Redentor"
 		Russian:"Кристо Редентор"
 		French:"Cristo Redentor"
@@ -3029,7 +3029,7 @@
 	}
 	"Hydro Plant":{	
 		Italian:"Impianto Idroelettrico"
-		Russian:"Гидроузел"
+		Russian:"ГЭС"
 		French:"Centrale hydroélectrique"
 		Romanian:"Centrala hidroelectrica"
 	}
@@ -3047,7 +3047,7 @@
 	}
 	"Apollo Program":{	
 		Italian:"Programma Apollo"
-		Russian:"Программа Apollo"
+		Russian:"Программа Аполлон"
 		French:"Programme Apollo"
 		Romanian:"Programul Apollo"
 	}
@@ -3059,7 +3059,7 @@
 	}
 	"Spaceship Factory":{	
 		Italian:"Fabbrica di astronave"
-		Russian:"Космический завод"
+		Russian:"Завод космических кораблей"
 		French:"Usine du vaisseau spatial"
 		Romanian:"Fabbrica di astronave"
 	}
@@ -3099,17 +3099,18 @@
 		Romanian:"Arcaş"
 	}
 	"Bowman":{	
-		//IS THIS SAME AS ARCHER IN OTHER LANGUAGES=??
+		//IS THIS SAME AS ARCHER IN OTHER LANGUAGES=?? 
+		//In official Russian localization it's accurate archer :)
 	}
 	"Chariot Archer":{	
 		Italian:"Arciere in carriola"
-		Russian:"Колесница"
+		Russian:"Лучник на колеснице"
 		French:"Charrette archer"
 		Romanian:"Arcer in caruta"
 	}
 	"Spearman":{	
 		Italian:"Lanciere"
-		Russian:"Копьеносец"
+		Russian:"Копейщик"
 		French:"Lancier"
 		Romanian:"Lancer"
 	}
@@ -3121,7 +3122,7 @@
 	}
 	"Swordsman":{	
 		Italian:"Spadaccino"
-		Russian:"Фехтовальщик"
+		Russian:"Мечник"
 		French:"Épéiste"
 		Romanian:"Spadasin"
 	}
@@ -3156,7 +3157,7 @@
 	}
 	"Pikeman":{	
 		Italian:"Picchiere"
-		Russian:"Копейщик"
+		Russian:"Пикинер"
 		Romanian:"Suliţaş"
 	}
 	"Knight":{	
