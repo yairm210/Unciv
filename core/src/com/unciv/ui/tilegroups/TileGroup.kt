@@ -27,6 +27,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var civilianUnitImage: Group? = null
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
+    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for blue and red circles on the tile
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
     var yieldGroup = YieldGroup()
 
@@ -41,6 +42,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         addHexagon(groupSize)
         addCircleImage()
         addFogImage()
+        addCrosshairImage()
     }
 
     private fun addCircleImage() {
@@ -57,6 +59,19 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         fogImage.center(this)
         fogImage.color= Color.WHITE.cpy().apply { a=0.5f }
         addActor(fogImage)
+    }
+
+    private fun addCrosshairImage(){
+        crosshairImage.width=70f
+        crosshairImage.height=70f
+        crosshairImage.center(this)
+        crosshairImage.isVisible=false
+        crosshairImage.color= Color.WHITE.cpy().apply { a=0.5f }
+        addActor(crosshairImage)
+    }
+
+    fun showCrosshair(){
+        crosshairImage.isVisible=true
     }
 
     private fun addHexagon(groupSize: Float) {
@@ -106,6 +121,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         updateRoadImages()
         updateBorderImages()
+
+        crosshairImage.toFront()
+        crosshairImage.isVisible=false
 
         fogImage.toFront()
         fogImage.isVisible=!(isViewable || UnCivGame.Current.viewEntireMapForDebug)
