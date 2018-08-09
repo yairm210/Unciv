@@ -2612,6 +2612,8 @@
 	
 	"Declare war":{}
 	
+	"[civName] has declared war on us!":{}
+	
 	// Overview screen
 	"Overview":{	
 		Italian:"Panoramica"
