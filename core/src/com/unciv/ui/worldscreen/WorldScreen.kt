@@ -124,6 +124,7 @@ class WorldScreen : CameraStageBaseScreen() {
         if(civInfo.diplomacy.values.map { it.otherCiv() }
                         .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
                         .any()) {
+            displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
             btn.addClickListener { UnCivGame.Current.screen = DiplomacyScreen() }
             diplomacyButtonWrapper.add(btn)
@@ -201,7 +202,11 @@ class WorldScreen : CameraStageBaseScreen() {
             // otherwise images will not load properly!
             update()
 
+
             displayTutorials("NextTurn")
+            if("BarbarianEncountered" !in UnCivGame.Current.settings.tutorialsShown
+                    && civInfo.getViewableTiles().any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
+                displayTutorials("BarbarianEncountered")
             if(civInfo.cities.size > 2) displayTutorials("SecondCity")
             if(civInfo.happiness<0) displayTutorials("Unhappiness")
             if(civInfo.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
