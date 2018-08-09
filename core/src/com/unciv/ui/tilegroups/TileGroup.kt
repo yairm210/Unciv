@@ -18,6 +18,7 @@ import com.unciv.ui.utils.colorFromRGB
 open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
     protected var terrainFeatureImage:Image?=null
+    protected var cityImage:Image?=null
 
     protected var resourceImage: Image? = null
     protected var improvementImage: Image? =null
@@ -110,6 +111,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         updateTerrainFeatureImage()
+        updateCityImage()
         updateTileColor(isViewable)
 
         updateResourceImage(isViewable)
@@ -127,6 +129,21 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         fogImage.toFront()
         fogImage.isVisible=!(isViewable || UnCivGame.Current.viewEntireMapForDebug)
+    }
+
+    private fun updateCityImage() {
+        if(cityImage==null && tileInfo.isCityCenter()){
+            cityImage = ImageGetter.getImage("OtherIcons/City.png")
+            addActor(cityImage)
+            cityImage!!.run {
+                setSize(60f, 60f)
+                center(this@TileGroup)
+            }
+        }
+        if(cityImage!=null && !tileInfo.isCityCenter()){
+            cityImage!!.remove()
+            cityImage = null
+        }
     }
 
     var previousTileOwner:CivilizationInfo?=null
