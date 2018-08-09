@@ -235,4 +235,13 @@
 		]
 	]
 	
+	EnemyCityNeedsConqueringWithMeleeUnit:  [
+		[
+			"The city can no longer put up any resistance!",
+			"However, to conquer it, you must enter the city with a melee unit"
+		]
+	]
+	
+	
+	
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -86,6 +87,15 @@ class WorldScreen : CameraStageBaseScreen() {
 
         if (UnCivGame.Current.settings.tutorialsShown.contains("CityEntered")) {
             displayTutorials("AfterCityEntered")
+        }
+
+        if(!UnCivGame.Current.settings.tutorialsShown.contains("EnemyCityNeedsConqueringWithMeleeUnit")) {
+            for (enemyCity in civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .map { it.otherCiv() }.flatMap { it.cities }) {
+                if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
+                                .any { it.getUnits().any { unit -> unit.civInfo == civInfo } })
+                    displayTutorials("EnemyCityNeedsConqueringWithMeleeUnit")
+            }
         }
 
         updateTechButton()
