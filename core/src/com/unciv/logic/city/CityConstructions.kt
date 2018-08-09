@@ -146,7 +146,10 @@ class CityConstructions {
     fun purchaseBuilding(buildingName: String) {
         cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo.policies.adoptedPolicies)
         getConstruction(buildingName).postBuildEvent(this)
-        if (currentConstruction == buildingName) Automation().chooseNextConstruction(this)
+        if (currentConstruction == buildingName) {
+            currentConstruction=""
+            Automation().chooseNextConstruction(this)
+        }
         cityInfo.cityStats.update()
     }
 
