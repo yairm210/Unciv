@@ -42,7 +42,7 @@ class CivilizationInfo {
     var exploredTiles = HashSet<Vector2>()
 
     fun getDifficulty() =  GameBasics.Difficulties[difficulty]!!
-    fun getCivilization() = GameBasics.Civilizations[civName]!!
+    fun getNation() = GameBasics.Nations[civName]!!
 
     fun getCapital()=cities.first { it.isCapital() }
 

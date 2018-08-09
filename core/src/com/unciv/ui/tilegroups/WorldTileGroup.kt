@@ -72,7 +72,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             val cityButtonText = city.name + " (" + city.population.population + ")"
             val label = Label(cityButtonText, CameraStageBaseScreen.skin)
-            label.setFontColor(city.civInfo.getCivilization().getColor())
+            label.setFontColor(city.civInfo.getNation().getColor())
             if (city.civInfo.isPlayerCivilization())
                 label.addClickListener {
                     UnCivGame.Current.screen = CityScreen(city)

@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
-class Civilization : INamed {
+class Nation : INamed {
     override lateinit var name: String
     lateinit var RGB: List<Int>
     fun getColor(): Color {

@@ -127,7 +127,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         previousTileOwner=tileOwner
         if(tileOwner==null) return
 
-        val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
+        val civColor = tileInfo.getOwner()!!.getNation().getColor()
         for (neighbor in tileInfo.neighbors) {
             val neigborOwner = neighbor.getOwner()
             if(neigborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
@@ -286,7 +286,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         if (unit != null && isViewable) { // Tile is visible
-            newImage = getUnitImage(unit, unit.civInfo.getCivilization().getColor(), 25f)
+            newImage = getUnitImage(unit, unit.civInfo.getNation().getColor(), 25f)
             addActor(newImage)
             newImage.center(this)
             newImage.y+=yFromCenter

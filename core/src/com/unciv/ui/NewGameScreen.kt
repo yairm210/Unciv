@@ -22,7 +22,7 @@ class NewGameScreen: PickerScreen(){
 
 
         table.add("{Civilization}:".tr())
-        val civSelectBox = TranslatedSelectBox(GameBasics.Civilizations.keys.filterNot { it=="Barbarians" },
+        val civSelectBox = TranslatedSelectBox(GameBasics.Nations.keys.filterNot { it=="Barbarians" },
                 "Babylon",skin)
         table.add(civSelectBox).pad(10f).row()
 

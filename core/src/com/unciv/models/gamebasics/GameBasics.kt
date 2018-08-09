@@ -21,7 +21,7 @@ object GameBasics {
     val Helps = LinkedHashMap<String, BasicHelp>()
     val Units = LinkedHashMap<String, BaseUnit>()
     val UnitPromotions = LinkedHashMap<String, Promotion>()
-    val Civilizations = LinkedHashMap<String, Civilization>()
+    val Nations = LinkedHashMap<String, Nation>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
     val Difficulties = LinkedHashMap<String, Difficulty>()
     val Translations = Translations(Gdx.files.internal("jsons/Translations.json").readString())
@@ -47,7 +47,7 @@ object GameBasics {
             Units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "Units"))
             UnitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "UnitPromotions"))
             PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
-            Civilizations += createHashmap(getFromJson(Array<Civilization>::class.java, "Civilizations"))
+            Nations += createHashmap(getFromJson(Array<Nation>::class.java, "Nations"))
             Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
 
             val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
