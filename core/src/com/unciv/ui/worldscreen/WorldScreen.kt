@@ -85,6 +85,13 @@ class WorldScreen : CameraStageBaseScreen() {
     fun update() {
         kotlin.concurrent.thread { civInfo.happiness = civInfo.getHappinessForNextTurn().values.sum().toInt() }
 
+        if(UnCivGame.Current.settings.hasCrashedRecently){
+            displayTutorials("GameCrashed")
+            UnCivGame.Current.settings.tutorialsShown.remove("GameCrashed")
+            UnCivGame.Current.settings.hasCrashedRecently=false
+            UnCivGame.Current.settings.save()
+        }
+
         if (UnCivGame.Current.settings.tutorialsShown.contains("CityEntered")) {
             displayTutorials("AfterCityEntered")
         }
@@ -169,8 +176,14 @@ class WorldScreen : CameraStageBaseScreen() {
             nextTurnButton.setText("Working...".tr())
 
             kotlin.concurrent.thread {
-                game.gameInfo.nextTurn()
-                GameSaver().saveGame(game.gameInfo, "Autosave")
+                try {
+                    game.gameInfo.nextTurn()
+                    GameSaver().saveGame(game.gameInfo, "Autosave")
+                }
+                catch (ex:Exception){
+                    UnCivGame.Current.settings.hasCrashedRecently=true
+                    UnCivGame.Current.settings.save()
+                }
 
                 // If we put this BEFORE the save game, then we try to save the game...
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
@@ -201,7 +214,6 @@ class WorldScreen : CameraStageBaseScreen() {
         if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
             // otherwise images will not load properly!
             update()
-
 
             displayTutorials("NextTurn")
             if("BarbarianEncountered" !in UnCivGame.Current.settings.tutorialsShown
