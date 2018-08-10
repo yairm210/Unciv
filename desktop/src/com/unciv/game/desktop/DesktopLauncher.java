@@ -2,6 +2,7 @@ package com.unciv.game.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.tools.texturepacker.TexturePacker;
 import com.unciv.UnCivGame;
 
@@ -12,6 +13,10 @@ class DesktopLauncher {
 		settings.maxWidth = 2048;
 		settings.maxHeight = 2048;
 		settings.combineSubdirectories=true;
+
+		// This is so they don't look all pixelated
+		settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
+		settings.filterMin =  Texture.TextureFilter.MipMapLinearLinear;
 		TexturePacker.process(settings, "images", "images", "game");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
