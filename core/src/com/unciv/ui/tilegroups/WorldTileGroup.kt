@@ -35,7 +35,6 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
 
     override fun update(isViewable: Boolean) {
-
         val city = tileInfo.getCity()
 
         removePopulationIcon()
@@ -52,6 +51,16 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
         if(yieldGroup.isVisible)
             yieldGroup.setStats(tileInfo.getTileStats(UnCivGame.Current.gameInfo.getPlayerCivilization()))
+
+        // order by z index!
+        cityImage?.toFront()
+        terrainFeatureImage?.toFront()
+        yieldGroup.toFront()
+        improvementImage?.toFront()
+        resourceImage?.toFront()
+        cityButton?.toFront()
+        civilianUnitImage?.toFront()
+        militaryUnitImage?.toFront()
     }
 
     private fun updateCityButton(city: CityInfo?, viewable: Boolean) {
@@ -63,7 +72,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = Table()
-                cityButton!!.background = ImageGetter.getDrawable("skin/civTableBackground.png")
+                cityButton!!.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
                 cityButton!!.isTransform = true
 
                 addActor(cityButton)
@@ -72,7 +81,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             val cityButtonText = city.name + " (" + city.population.population + ")"
             val label = Label(cityButtonText, CameraStageBaseScreen.skin)
-            label.setFontColor(city.civInfo.getCivilization().getColor())
+            label.setFontColor(city.civInfo.getNation().getColor())
             if (city.civInfo.isPlayerCivilization())
                 label.addClickListener {
                     UnCivGame.Current.screen = CityScreen(city)

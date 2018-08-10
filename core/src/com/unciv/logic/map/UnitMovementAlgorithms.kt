@@ -40,7 +40,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     val isOwnedByEnemy = neighborOwner!=null && neighborOwner!=unit.civInfo
                     if ((isOwnedByEnemy && neighbor.isCityCenter())// Enemy city,
                             || (neighbor.getUnits().isNotEmpty() && neighbor.getUnits().first().civInfo!=unit.civInfo) // Enemy unit
-                        || (isOwnedByEnemy && !unit.civInfo.canEnterTiles(neighborOwner!!))
+                        || (isOwnedByEnemy && !unit.civInfo.canEnterTiles(neighborOwner!!)) // enemyTile
                     )
                         totalDistanceToTile = unitMovement // Can't go here.
                     // The reason that we don't just "return" is so that when calculating how to reach an enemy,

@@ -18,6 +18,7 @@ import com.unciv.ui.utils.colorFromRGB
 open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
     protected var terrainFeatureImage:Image?=null
+    protected var cityImage:Image?=null
 
     protected var resourceImage: Image? = null
     protected var improvementImage: Image? =null
@@ -27,6 +28,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var civilianUnitImage: Group? = null
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
+    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for blue and red circles on the tile
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
     var yieldGroup = YieldGroup()
 
@@ -41,6 +43,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         addHexagon(groupSize)
         addCircleImage()
         addFogImage()
+        addCrosshairImage()
+        isTransform=false
     }
 
     private fun addCircleImage() {
@@ -57,6 +61,19 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         fogImage.center(this)
         fogImage.color= Color.WHITE.cpy().apply { a=0.5f }
         addActor(fogImage)
+    }
+
+    private fun addCrosshairImage(){
+        crosshairImage.width=70f
+        crosshairImage.height=70f
+        crosshairImage.center(this)
+        crosshairImage.isVisible=false
+        crosshairImage.color= Color.WHITE.cpy().apply { a=0.5f }
+        addActor(crosshairImage)
+    }
+
+    fun showCrosshair(){
+        crosshairImage.isVisible=true
     }
 
     private fun addHexagon(groupSize: Float) {
@@ -95,6 +112,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         updateTerrainFeatureImage()
+        updateCityImage()
         updateTileColor(isViewable)
 
         updateResourceImage(isViewable)
@@ -107,8 +125,26 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         updateRoadImages()
         updateBorderImages()
 
+        crosshairImage.toFront()
+        crosshairImage.isVisible=false
+
         fogImage.toFront()
         fogImage.isVisible=!(isViewable || UnCivGame.Current.viewEntireMapForDebug)
+    }
+
+    private fun updateCityImage() {
+        if(cityImage==null && tileInfo.isCityCenter()){
+            cityImage = ImageGetter.getImage("OtherIcons/City.png")
+            addActor(cityImage)
+            cityImage!!.run {
+                setSize(60f, 60f)
+                center(this@TileGroup)
+            }
+        }
+        if(cityImage!=null && !tileInfo.isCityCenter()){
+            cityImage!!.remove()
+            cityImage = null
+        }
     }
 
     var previousTileOwner:CivilizationInfo?=null
@@ -127,7 +163,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         previousTileOwner=tileOwner
         if(tileOwner==null) return
 
-        val civColor = tileInfo.getOwner()!!.getCivilization().getColor()
+        val civColor = tileInfo.getOwner()!!.getNation().getColor()
         for (neighbor in tileInfo.neighbors) {
             val neigborOwner = neighbor.getOwner()
             if(neigborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
@@ -286,7 +322,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         if (unit != null && isViewable) { // Tile is visible
-            newImage = getUnitImage(unit, unit.civInfo.getCivilization().getColor(), 25f)
+            newImage = getUnitImage(unit, unit.civInfo.getNation().getColor(), 25f)
             addActor(newImage)
             newImage.center(this)
             newImage.y+=yFromCenter

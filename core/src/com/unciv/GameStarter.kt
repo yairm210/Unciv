@@ -34,7 +34,7 @@ class GameStarter(){
         val barbarianCivilization = CivilizationInfo()
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
-        for (civname in GameBasics.Civilizations.keys.filterNot { it=="Barbarians" || it==civilization }.take(numberOfCivs)) {
+        for (civname in GameBasics.Nations.keys.filterNot { it=="Barbarians" || it==civilization }.take(numberOfCivs)) {
             if(freeTiles.isEmpty()) break // we can't add any more civs.
             val startingLocation = freeTiles.toList().getRandom().position
             val civ = CivilizationInfo(civname, startingLocation, gameInfo)

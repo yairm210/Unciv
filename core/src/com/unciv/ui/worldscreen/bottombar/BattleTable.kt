@@ -55,11 +55,11 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         clear()
         row().pad(5f)
         val attackerLabel = Label(attacker.getName(), skin)
-                .setFontColor(attacker.getCivilization().getCivilization().getColor())
+                .setFontColor(attacker.getCivilization().getNation().getColor())
         add(attackerLabel)
 
         val defenderLabel = Label(defender.getName(), skin)
-                .setFontColor(defender.getCivilization().getCivilization().getColor())
+                .setFontColor(defender.getCivilization().getNation().getColor())
         add(defenderLabel)
 
         row().pad(5f)

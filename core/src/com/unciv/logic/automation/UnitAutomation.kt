@@ -107,11 +107,12 @@ class UnitAutomation{
         // The >0.1 (instead of >0) solves a bug where you've moved 2/3 road tiles,
         // you come to move a third (distance is less that remaining movements),
         // and then later we round it off to a whole.
-        // So the poor unit thought it could attack from the tile, but when it comes to do so it has no moveement points!
+        // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
         val tilesToAttackFrom = distanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
+
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
             val tilesInAttackRange = if (unit.hasUnique("Indirect fire")) reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTiles(rangeOfAttack)

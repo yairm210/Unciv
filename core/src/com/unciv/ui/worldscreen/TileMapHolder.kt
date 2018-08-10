@@ -96,7 +96,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             if((playerViewableTiles.contains(WG.tileInfo) || UnCivGame.Current.viewEntireMapForDebug)
                     && unitsInTile.isNotEmpty() && unitsInTile.first().civInfo!=civInfo)
                 WG.showCircle(Color.RED)
-        } // Display ALL viewable enemies ewith a red circle so that users don't need to go "hunting" for enemy units
+        } // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
@@ -118,7 +118,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                         && it.getUnits().first().owner != unit.owner
                         && (playerViewableTiles.contains(it) || UnCivGame.Current.viewEntireMapForDebug)}) {
                 if(unit.getBaseUnit().unitType== UnitType.Civilian) tileGroups[tile]!!.hideCircle()
-                else tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
+                else {
+                    tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
+                    tileGroups[tile]!!.showCrosshair()
+                }
             }
         }
 

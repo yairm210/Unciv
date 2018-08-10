@@ -8,6 +8,7 @@ class GameSettings {
     var language: String = "English"
     var resolution: String = "1050x700"
     var tutorialsShown = ArrayList<String>()
+    var hasCrashedRecently = false
 
     fun save(){
         GameSaver().setGeneralSettings(this)

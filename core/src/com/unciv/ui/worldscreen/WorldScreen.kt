@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
@@ -84,8 +85,24 @@ class WorldScreen : CameraStageBaseScreen() {
     fun update() {
         kotlin.concurrent.thread { civInfo.happiness = civInfo.getHappinessForNextTurn().values.sum().toInt() }
 
+        if(UnCivGame.Current.settings.hasCrashedRecently){
+            displayTutorials("GameCrashed")
+            UnCivGame.Current.settings.tutorialsShown.remove("GameCrashed")
+            UnCivGame.Current.settings.hasCrashedRecently=false
+            UnCivGame.Current.settings.save()
+        }
+
         if (UnCivGame.Current.settings.tutorialsShown.contains("CityEntered")) {
             displayTutorials("AfterCityEntered")
+        }
+
+        if(!UnCivGame.Current.settings.tutorialsShown.contains("EnemyCityNeedsConqueringWithMeleeUnit")) {
+            for (enemyCity in civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .map { it.otherCiv() }.flatMap { it.cities }) {
+                if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
+                                .any { it.getUnits().any { unit -> unit.civInfo == civInfo } })
+                    displayTutorials("EnemyCityNeedsConqueringWithMeleeUnit")
+            }
         }
 
         updateTechButton()
@@ -114,6 +131,7 @@ class WorldScreen : CameraStageBaseScreen() {
         if(civInfo.diplomacy.values.map { it.otherCiv() }
                         .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
                         .any()) {
+            displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
             btn.addClickListener { UnCivGame.Current.screen = DiplomacyScreen() }
             diplomacyButtonWrapper.add(btn)
@@ -158,8 +176,14 @@ class WorldScreen : CameraStageBaseScreen() {
             nextTurnButton.setText("Working...".tr())
 
             kotlin.concurrent.thread {
-                game.gameInfo.nextTurn()
-                GameSaver().saveGame(game.gameInfo, "Autosave")
+                try {
+                    game.gameInfo.nextTurn()
+                    GameSaver().saveGame(game.gameInfo, "Autosave")
+                }
+                catch (ex:Exception){
+                    UnCivGame.Current.settings.hasCrashedRecently=true
+                    UnCivGame.Current.settings.save()
+                }
 
                 // If we put this BEFORE the save game, then we try to save the game...
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
@@ -192,6 +216,9 @@ class WorldScreen : CameraStageBaseScreen() {
             update()
 
             displayTutorials("NextTurn")
+            if("BarbarianEncountered" !in UnCivGame.Current.settings.tutorialsShown
+                    && civInfo.getViewableTiles().any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
+                displayTutorials("BarbarianEncountered")
             if(civInfo.cities.size > 2) displayTutorials("SecondCity")
             if(civInfo.happiness<0) displayTutorials("Unhappiness")
             if(civInfo.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")

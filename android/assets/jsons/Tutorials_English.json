@@ -235,4 +235,39 @@
 		]
 	]
 	
+	EnemyCityNeedsConqueringWithMeleeUnit:  [
+		[
+			"The city can no longer put up any resistance!",
+			"However, to conquer it, you must enter the city with a melee unit"
+		]
+	]
+	
+	BarbarianEncountered:  [
+		[
+			"You have encountered a barbarian unit!",
+			"Barbarians attack everyone indiscriminately, so don't let your ",
+			"  civilian units go near them, and be careful of your scout!"
+		]
+	]
+	
+	OtherCivEncountered:  [
+		[
+			"You have encountered another civilization!",
+			"Other civilizations start out peaceful, and you can trade with them,",
+			"  but they may choose to declare war on you later on"
+		]
+	]
+	
+	GameCrashed:  [
+		[
+			"Oh no! It looks like something went DISASTROUSLY wrong!",
+			"This is ABSOLUTELY not supposed to happen!",
+			"Please send me (yairm210@hotmail.com) an email with the game information",
+			"   (menu -> save game -> copy game info -> paste into email)",
+			"   and I'll try to fix it as fast as I can!"
+		]
+	]
+	
+	
+	
 }
