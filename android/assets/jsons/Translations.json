@@ -823,9 +823,13 @@
 		Romanian:"Sa născut un [greatPerson]!"
 	}
 	
-	"We have encountered [civName]!":{}
+	"We have encountered [civName]!":{
+		Russian:"Мы встретились с цивилизацией [civName]!"
+	}
 	
-	"Cannot provide upkeep for [unitName] - unit has been disbanded!":{}
+	"Cannot provide upkeep for [unitName] - unit has been disbanded!":{
+		Russian:"Невоможно предоставить содержание для [unitName] - юнит распущен!"
+	}
 
 	
 	// Save and load game
@@ -2469,11 +2473,17 @@
 		French:"Accept"
 		Romanian:"Accepta"
 	}
-	"There's nothing on the table":{}
+	"There's nothing on the table":{
+		Russian:"Вы ничего не предложили" //Don't know how to properly translate this one, but i think this will do okay
+	}
 
 	
-	"Peace treaty":{}
-	"Gold per turn":{}
+	"Peace treaty":{
+		Russian:"Мирный договор"
+	}
+	"Gold per turn":{
+		Russian:"Золота за ход"
+	}
 
 
 	//civilisations
@@ -2618,12 +2628,20 @@
 		Romanian:"Diplomaţie"
 	}
 	
-	"War":{}
-	"Peace":{}
+	"War":{
+		Russian:"Война"
+	}
+	"Peace":{
+		Russian:"Мир"
+	}
 	
-	"Declare war":{}
+	"Declare war":{
+		Russian:"Объявить войну"
+	}
 	
-	"[civName] has declared war on us!":{}
+	"[civName] has declared war on us!":{
+		Russian:"Цивилизация [civName]  объявила нам войну!"
+	}
 	
 	// Overview screen
 	"Overview":{	
