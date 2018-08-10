@@ -72,7 +72,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = Table()
-                cityButton!!.background = ImageGetter.getDrawable("skin/civTableBackground.png")
+                cityButton!!.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
                 cityButton!!.isTransform = true
 
                 addActor(cityButton)

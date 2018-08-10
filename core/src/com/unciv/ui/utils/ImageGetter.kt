@@ -1,8 +1,7 @@
 package com.unciv.ui.utils
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
@@ -11,7 +10,17 @@ import java.util.*
 
 object ImageGetter {
     private var textureRegionByFileName = HashMap<String, TextureRegion>()
-    const val WhiteDot = "skin/whiteDot.png"
+    const val WhiteDot = "OtherIcons/whiteDot.png"
+
+    // When we used to load images directly from different files, without using a texture atlas,
+    // The draw() phase of the main screen would take a really long time because the BatchRenderer would
+    // always have to switch between like 170 different textures.
+    // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
+    // and the atlas is what tells us what was packed where.
+    val atlas = TextureAtlas("Images/game.atlas")
+
+    init{
+    }
 
     fun getImage(fileName: String): Image {
         return Image(getTextureRegion(fileName))
@@ -26,11 +35,11 @@ object ImageGetter {
 
     private fun getTextureRegion(fileName: String): TextureRegion {
         try {
-            if (!textureRegionByFileName.containsKey(fileName)) {
-                val texture = Texture(Gdx.files.internal(fileName),true)
-                texture.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.MipMapLinearLinear)
-                textureRegionByFileName[fileName] = TextureRegion(texture)
-            }
+            val region = atlas.findRegion(fileName.replace(".png",""))
+
+            if(region==null)
+                throw Exception("Could not find $fileName")
+            return region
         } catch (ex: Exception) {
             return getTextureRegion(WhiteDot)
             throw Exception("File $fileName not found!",ex)

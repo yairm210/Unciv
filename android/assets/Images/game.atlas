@@ -1,0 +1,1161 @@
+
+game.png
+size: 2048,2048
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+FlagIcons/Dutch
+  rotate: false
+  xy: 1880, 1567
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/English
+  rotate: false
+  xy: 746, 122
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/French
+  rotate: false
+  xy: 1012, 1456
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/German
+  rotate: false
+  xy: 1142, 1508
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Italian
+  rotate: false
+  xy: 1272, 1508
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Romanian
+  rotate: false
+  xy: 1532, 1508
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Russian
+  rotate: false
+  xy: 1662, 1508
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+FlagIcons/Spanish
+  rotate: false
+  xy: 1012, 1326
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Academy_(Civ5)
+  rotate: false
+  xy: 1142, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Camp_(Civ5)
+  rotate: false
+  xy: 2, 8
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Customs_house_(Civ5)
+  rotate: false
+  xy: 1792, 1546
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Farm_(Civ5)
+  rotate: false
+  xy: 1142, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Landmark_(Civ5)
+  rotate: false
+  xy: 187, 57
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Lumber_mill_(Civ5)
+  rotate: false
+  xy: 1234, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Manufactory_(Civ5)
+  rotate: false
+  xy: 1280, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Mine_(Civ5)
+  rotate: false
+  xy: 233, 57
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Oil_well_(Civ5)
+  rotate: false
+  xy: 1326, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Pasture_(Civ5)
+  rotate: false
+  xy: 1372, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Plantation_(Civ5)
+  rotate: false
+  xy: 279, 57
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Quarry_(Civ5)
+  rotate: false
+  xy: 1326, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Railroad_(Civ5)
+  rotate: false
+  xy: 1372, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Road_(Civ5)
+  rotate: false
+  xy: 1418, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Trading_post_(Civ5)
+  rotate: false
+  xy: 1510, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+OtherIcons/Circle
+  rotate: false
+  xy: 548, 1820
+  size: 220, 220
+  orig: 220, 220
+  offset: 0, 0
+  index: -1
+OtherIcons/City
+  rotate: false
+  xy: 2, 709
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/Crosshair
+  rotate: false
+  xy: 1578, 1840
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/DisbandUnit
+  rotate: false
+  xy: 2, 305
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/Fire
+  rotate: false
+  xy: 1780, 1840
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/MenuIcon
+  rotate: false
+  xy: 1402, 1508
+  size: 128, 128
+  orig: 128, 128
+  offset: 0, 0
+  index: -1
+OtherIcons/Railroad
+  rotate: false
+  xy: 406, 1194
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/Shield
+  rotate: false
+  xy: 406, 386
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/Star
+  rotate: false
+  xy: 1880, 1697
+  size: 150, 141
+  orig: 150, 141
+  offset: 0, 0
+  index: -1
+OtherIcons/Stop
+  rotate: false
+  xy: 673, 1586
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/civTableBackground
+  rotate: false
+  xy: 770, 1788
+  size: 300, 50
+  orig: 300, 50
+  offset: 0, 0
+  index: -1
+OtherIcons/tileTableBackground
+  rotate: false
+  xy: 875, 1586
+  size: 180, 200
+  orig: 180, 200
+  offset: 0, 0
+  index: -1
+OtherIcons/whiteDot
+  rotate: false
+  xy: 260, 1772
+  size: 1, 1
+  orig: 1, 1
+  offset: 0, 0
+  index: -1
+PolicyIcons/Aristocracy_(Civ5)
+  rotate: false
+  xy: 900, 987
+  size: 28, 27
+  orig: 28, 27
+  offset: 0, 0
+  index: -1
+PolicyIcons/Citizenship_(Civ5)
+  rotate: false
+  xy: 810, 981
+  size: 28, 33
+  orig: 28, 33
+  offset: 0, 0
+  index: -1
+PolicyIcons/Civil_Society_(Civ5)
+  rotate: false
+  xy: 1838, 1555
+  size: 28, 31
+  orig: 28, 31
+  offset: 0, 0
+  index: -1
+PolicyIcons/Collective_Rule_(Civ5)
+  rotate: false
+  xy: 1172, 1337
+  size: 28, 31
+  orig: 28, 31
+  offset: 0, 0
+  index: -1
+PolicyIcons/Constitution_(Civ5)
+  rotate: false
+  xy: 1692, 1479
+  size: 28, 27
+  orig: 28, 27
+  offset: 0, 0
+  index: -1
+PolicyIcons/Democracy_(Civ5)
+  rotate: false
+  xy: 673, 1788
+  size: 28, 30
+  orig: 28, 30
+  offset: 0, 0
+  index: -1
+PolicyIcons/Entrepreneurship_(Civ5)
+  rotate: false
+  xy: 2, 54
+  size: 45, 47
+  orig: 45, 47
+  offset: 0, 0
+  index: -1
+PolicyIcons/Free_Religion_(Civ5)
+  rotate: false
+  xy: 703, 1789
+  size: 28, 29
+  orig: 28, 29
+  offset: 0, 0
+  index: -1
+PolicyIcons/Free_Speech_(Civ5)
+  rotate: false
+  xy: 1792, 1508
+  size: 28, 36
+  orig: 28, 36
+  offset: 0, 0
+  index: -1
+PolicyIcons/Free_Thought_(Civ5)
+  rotate: false
+  xy: 870, 986
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+PolicyIcons/Humanism_(Civ5)
+  rotate: false
+  xy: 1262, 1341
+  size: 28, 27
+  orig: 28, 27
+  offset: 0, 0
+  index: -1
+PolicyIcons/Landed_Elite_(Civ5)
+  rotate: false
+  xy: 840, 983
+  size: 28, 31
+  orig: 28, 31
+  offset: 0, 0
+  index: -1
+PolicyIcons/Legalism_(Civ5)
+  rotate: false
+  xy: 1662, 1478
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+PolicyIcons/Mandate_Of_Heaven_(Civ5)
+  rotate: false
+  xy: 1556, 1425
+  size: 28, 35
+  orig: 28, 35
+  offset: 0, 0
+  index: -1
+PolicyIcons/Mercantilism_(Civ5)
+  rotate: false
+  xy: 1142, 1331
+  size: 28, 37
+  orig: 28, 37
+  offset: 0, 0
+  index: -1
+PolicyIcons/Meritocracy_(Civ5)
+  rotate: false
+  xy: 930, 987
+  size: 28, 27
+  orig: 28, 27
+  offset: 0, 0
+  index: -1
+PolicyIcons/Monarchy_(Civ5)
+  rotate: false
+  xy: 1510, 1378
+  size: 28, 36
+  orig: 28, 36
+  offset: 0, 0
+  index: -1
+PolicyIcons/Oligarchy_(Civ5)
+  rotate: false
+  xy: 1602, 1474
+  size: 28, 32
+  orig: 28, 32
+  offset: 0, 0
+  index: -1
+PolicyIcons/Organized_Religion_(Civ5)
+  rotate: false
+  xy: 1322, 1344
+  size: 28, 24
+  orig: 28, 24
+  offset: 0, 0
+  index: -1
+PolicyIcons/Patronage_(Civ5)
+  rotate: false
+  xy: 1982, 1994
+  size: 50, 46
+  orig: 50, 46
+  offset: 0, 0
+  index: -1
+PolicyIcons/Protectionism_(Civ5)
+  rotate: false
+  xy: 1722, 1480
+  size: 28, 26
+  orig: 28, 26
+  offset: 0, 0
+  index: -1
+PolicyIcons/Reformation_(Civ5)
+  rotate: false
+  xy: 733, 1790
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+PolicyIcons/Representation_(Civ5)
+  rotate: false
+  xy: 1632, 1475
+  size: 28, 31
+  orig: 28, 31
+  offset: 0, 0
+  index: -1
+PolicyIcons/Republic_(Civ5)
+  rotate: false
+  xy: 1292, 1342
+  size: 28, 26
+  orig: 28, 26
+  offset: 0, 0
+  index: -1
+PolicyIcons/Scientific_Revolution_(Civ5)
+  rotate: false
+  xy: 960, 988
+  size: 28, 26
+  orig: 28, 26
+  offset: 0, 0
+  index: -1
+PolicyIcons/Secularism_(Civ5)
+  rotate: false
+  xy: 1202, 1339
+  size: 28, 29
+  orig: 28, 29
+  offset: 0, 0
+  index: -1
+PolicyIcons/Sovereignty_(Civ5)
+  rotate: false
+  xy: 1752, 1481
+  size: 28, 25
+  orig: 28, 25
+  offset: 0, 0
+  index: -1
+PolicyIcons/Theocracy_(Civ5)
+  rotate: false
+  xy: 371, 64
+  size: 28, 37
+  orig: 28, 37
+  offset: 0, 0
+  index: -1
+PolicyIcons/Trade_Unions_(Civ5)
+  rotate: false
+  xy: 1232, 1340
+  size: 28, 28
+  orig: 28, 28
+  offset: 0, 0
+  index: -1
+PolicyIcons/Universal_Suffrage_(Civ5)
+  rotate: false
+  xy: 1838, 1588
+  size: 28, 48
+  orig: 28, 48
+  offset: 0, 0
+  index: -1
+ResourceIcons/Aluminum_(Civ5)
+  rotate: false
+  xy: 1792, 1592
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Bananas_(Civ5)
+  rotate: false
+  xy: 1982, 1948
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Cattle_(Civ5)
+  rotate: false
+  xy: 49, 57
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Coal_(Civ5)
+  rotate: false
+  xy: 1142, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Cotton_(Civ5)
+  rotate: false
+  xy: 1188, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Deer_(Civ5)
+  rotate: false
+  xy: 1982, 1902
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Dyes_(Civ5)
+  rotate: false
+  xy: 95, 57
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Furs_(Civ5)
+  rotate: false
+  xy: 1188, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Gems_(Civ5)
+  rotate: false
+  xy: 1234, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Gold_(Civ5)
+  rotate: false
+  xy: 1982, 1856
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Horses_(Civ5)
+  rotate: false
+  xy: 141, 57
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Incense_(Civ5)
+  rotate: false
+  xy: 1188, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Iron_(Civ5)
+  rotate: false
+  xy: 1234, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Ivory_(Civ5)
+  rotate: false
+  xy: 1280, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Marble_(Civ5)
+  rotate: false
+  xy: 1326, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Oil_(Civ5)
+  rotate: false
+  xy: 1280, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Sheep_(Civ5)
+  rotate: false
+  xy: 325, 57
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Silk_(Civ5)
+  rotate: false
+  xy: 1372, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Silver_(Civ5)
+  rotate: false
+  xy: 1418, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Spices_(Civ5)
+  rotate: false
+  xy: 1464, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Stone_(Civ5)
+  rotate: false
+  xy: 1418, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Sugar_(Civ5)
+  rotate: false
+  xy: 1464, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Uranium_(Civ5)
+  rotate: false
+  xy: 1464, 1370
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Wheat_(Civ5)
+  rotate: false
+  xy: 1510, 1416
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+ResourceIcons/Wine_(Civ5)
+  rotate: false
+  xy: 1556, 1462
+  size: 44, 44
+  orig: 44, 44
+  offset: 0, 0
+  index: -1
+StatIcons/20xCityConnection5
+  rotate: false
+  xy: 2010, 1675
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xCulture5
+  rotate: false
+  xy: 1782, 1486
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xFood5
+  rotate: false
+  xy: 1352, 1348
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xGold5
+  rotate: false
+  xy: 2010, 1653
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xHappiness5
+  rotate: false
+  xy: 1374, 1348
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xMalcontent5
+  rotate: false
+  xy: 2010, 1631
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xMovement5
+  rotate: false
+  xy: 1396, 1348
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xPopulation5
+  rotate: false
+  xy: 2010, 1609
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xProduction5
+  rotate: false
+  xy: 1418, 1348
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xRangedStrength5
+  rotate: false
+  xy: 2010, 1587
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xScience5
+  rotate: false
+  xy: 1440, 1348
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/20xStrength5
+  rotate: false
+  xy: 1462, 1348
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+StatIcons/City_Center_(Civ6)
+  rotate: false
+  xy: 2, 1775
+  size: 265, 265
+  orig: 265, 265
+  offset: 0, 0
+  index: -1
+StatIcons/CultureSpecialist
+  rotate: false
+  xy: 608, 798
+  size: 182, 180
+  orig: 182, 180
+  offset: 0, 0
+  index: -1
+StatIcons/GoldSpecialist
+  rotate: false
+  xy: 810, 1016
+  size: 182, 180
+  orig: 182, 180
+  offset: 0, 0
+  index: -1
+StatIcons/ProductionSpecialist
+  rotate: false
+  xy: 608, 616
+  size: 182, 180
+  orig: 182, 180
+  offset: 0, 0
+  index: -1
+StatIcons/ScienceSpecialist
+  rotate: false
+  xy: 608, 434
+  size: 182, 180
+  orig: 182, 180
+  offset: 0, 0
+  index: -1
+StatIcons/populationGray
+  rotate: false
+  xy: 608, 252
+  size: 182, 180
+  orig: 182, 180
+  offset: 0, 0
+  index: -1
+StatIcons/populationGreen
+  rotate: false
+  xy: 406, 2
+  size: 182, 180
+  orig: 182, 180
+  offset: 0, 0
+  index: -1
+TerrainIcons/Flood plains
+  rotate: false
+  xy: 2, 103
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+TerrainIcons/Fog
+  rotate: false
+  xy: 2, 1517
+  size: 256, 256
+  orig: 256, 256
+  offset: 0, 0
+  index: -1
+TerrainIcons/Forest
+  rotate: false
+  xy: 204, 1315
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+TerrainIcons/Hexagon
+  rotate: false
+  xy: 269, 1800
+  size: 277, 240
+  orig: 277, 240
+  offset: 0, 0
+  index: -1
+TerrainIcons/Jungle
+  rotate: false
+  xy: 204, 103
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+TerrainIcons/Marsh
+  rotate: false
+  xy: 269, 1598
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+TerrainIcons/Oasis
+  rotate: false
+  xy: 471, 1598
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+TerrainIcons/road
+  rotate: false
+  xy: 548, 1807
+  size: 61, 11
+  orig: 61, 11
+  offset: 0, 0
+  index: -1
+UnitIcons/Archer
+  rotate: false
+  xy: 2, 1315
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Artillery
+  rotate: false
+  xy: 770, 1840
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Bowman
+  rotate: false
+  xy: 2, 1113
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Cannon
+  rotate: false
+  xy: 972, 1840
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Catapult
+  rotate: false
+  xy: 2, 911
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Cavalry
+  rotate: false
+  xy: 1174, 1840
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Chariot Archer
+  rotate: false
+  xy: 608, 114
+  size: 136, 136
+  orig: 136, 136
+  offset: 0, 0
+  index: -1
+UnitIcons/Companion Cavalry
+  rotate: false
+  xy: 1376, 1840
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Crossbowman
+  rotate: false
+  xy: 2, 507
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Great Artist
+  rotate: false
+  xy: 204, 1113
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Great Engineer
+  rotate: false
+  xy: 204, 911
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Great Merchant
+  rotate: false
+  xy: 204, 709
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Great Scientist
+  rotate: false
+  xy: 204, 507
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Horseman
+  rotate: false
+  xy: 204, 305
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Knight
+  rotate: false
+  xy: 1072, 1638
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Lancer
+  rotate: false
+  xy: 1274, 1638
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Longbowman
+  rotate: false
+  xy: 1476, 1638
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Longswordsman
+  rotate: false
+  xy: 1678, 1638
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Musketman
+  rotate: false
+  xy: 810, 1198
+  size: 185, 184
+  orig: 185, 184
+  offset: 0, 0
+  index: -1
+UnitIcons/Pikeman
+  rotate: false
+  xy: 406, 1396
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Rifleman
+  rotate: false
+  xy: 406, 992
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Scout
+  rotate: false
+  xy: 406, 790
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Settler
+  rotate: false
+  xy: 406, 588
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Spearman
+  rotate: false
+  xy: 406, 184
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Swordsman
+  rotate: false
+  xy: 608, 1384
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Trebuchet
+  rotate: false
+  xy: 608, 1182
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Warrior
+  rotate: false
+  xy: 810, 1384
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitIcons/Worker
+  rotate: false
+  xy: 608, 980
+  size: 200, 200
+  orig: 200, 200
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Accuracy_III_(Civ5)
+  rotate: false
+  xy: 1484, 1348
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Accuracy_II_(Civ5)
+  rotate: false
+  xy: 2010, 1565
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Accuracy_I_(Civ5)
+  rotate: false
+  xy: 792, 958
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Barrage_III_(Civ5)
+  rotate: false
+  xy: 792, 936
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Barrage_II_(Civ5)
+  rotate: false
+  xy: 792, 914
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Barrage_I_(Civ5)
+  rotate: false
+  xy: 792, 892
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Charge_(Civ5)
+  rotate: false
+  xy: 792, 870
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Cover_II_(Civ5)
+  rotate: false
+  xy: 792, 848
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Cover_I_(Civ5)
+  rotate: false
+  xy: 792, 826
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Drill_III_(Civ5)
+  rotate: false
+  xy: 792, 804
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Drill_II_(Civ5)
+  rotate: false
+  xy: 792, 782
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Drill_I_(Civ5)
+  rotate: false
+  xy: 792, 760
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/March_(Civ5)
+  rotate: false
+  xy: 792, 738
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting_III_(Civ5)
+  rotate: false
+  xy: 792, 716
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting_II_(Civ5)
+  rotate: false
+  xy: 792, 694
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting_I_(Civ5)
+  rotate: false
+  xy: 792, 672
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_III_(Civ5)
+  rotate: false
+  xy: 792, 650
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_II_(Civ5)
+  rotate: false
+  xy: 792, 628
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_I_(Civ5)
+  rotate: false
+  xy: 792, 606
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1

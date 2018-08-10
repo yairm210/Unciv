@@ -28,15 +28,13 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         addTiles()
         stage.addActor(tileTable)
 
-        val tileTableBackground = com.unciv.ui.utils.ImageGetter.getDrawable("skin/tileTableBackground.png")
-                .tint(Color(0x0040804f))
-        tileTableBackground.minHeight = 0f
-        tileTableBackground.minWidth = 0f
-        tileTable.background = tileTableBackground
+
+        val tableBackgroundColor = ImageGetter.getBlue().lerp(Color.BLACK,0.5f)
+        tileTable.background = ImageGetter.getBackground(tableBackgroundColor)
 
         val buildingsTableContainer = Table()
         buildingsTableContainer.pad(20f)
-        buildingsTableContainer.background = tileTableBackground
+        buildingsTableContainer.background = ImageGetter.getBackground(tableBackgroundColor)
         buildingsTable.update()
         val buildingsScroll = ScrollPane(buildingsTable)
         buildingsTableContainer.add(buildingsScroll).height(stage.height / 2)
@@ -45,7 +43,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width,
                 stage.height - buildingsTableContainer.height)
 
-        cityStatsTable.background = tileTableBackground
+        cityStatsTable.background = ImageGetter.getBackground(tableBackgroundColor)
         stage.addActor(cityStatsTable)
         stage.addActor(goToWorldButton)
         stage.addActor(cityPickerTable)

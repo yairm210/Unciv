@@ -44,6 +44,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         addCircleImage()
         addFogImage()
         addCrosshairImage()
+        isTransform=false
     }
 
     private fun addCircleImage() {
