@@ -2639,7 +2639,9 @@
 		Russian:"Объявить войну"
 	}
 	
-	"[civName] has declared war on us!":{}
+	"[civName] has declared war on us!":{
+		Russian:"Цивилизация [civName]  объявила нам войну!"
+	}
 	
 	// Overview screen
 	"Overview":{	
