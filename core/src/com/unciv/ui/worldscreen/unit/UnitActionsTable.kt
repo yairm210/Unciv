@@ -18,8 +18,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             return ImageGetter.getUnitIcon(unitToUpgradeTo)
         }
         when(unitAction){
-            "Move unit" -> return ImageGetter.getStatIcon("Movement")
-            "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
+            "Move unit" -> return ImageGetter.getImage("StatIcons/20xMovement5")
+            "Stop movement"-> return ImageGetter.getImage("StatIcons/20xMovement5").apply { color= Color.RED }
             "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield.png").apply { color= Color.BLACK }
             "Promote" -> return ImageGetter.getImage("OtherIcons/Star.png").apply { color= Color.GOLD }
             "Construct improvement" -> return ImageGetter.getUnitIcon("Worker")

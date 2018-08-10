@@ -38,7 +38,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         cityStatsValues["Happiness"] = city.cityStats.getCityHappiness().values.sum().toInt().toString()
 
         for (key in cityStatsValues.keys) {
-            add(ImageGetter.getStatIcon(key)).align(Align.right)
+            add(ImageGetter.getStatIcon(key)).size(20f).align(Align.right)
             add(Label(cityStatsValues[key], CameraStageBaseScreen.skin)).align(Align.left)
             row()
         }

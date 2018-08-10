@@ -3,13 +3,12 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
-import java.util.*
 
 object ImageGetter {
-    private var textureRegionByFileName = HashMap<String, TextureRegion>()
     const val WhiteDot = "OtherIcons/whiteDot.png"
 
     // When we used to load images directly from different files, without using a texture atlas,
@@ -42,15 +41,28 @@ object ImageGetter {
             return region
         } catch (ex: Exception) {
             return getTextureRegion(WhiteDot)
-            throw Exception("File $fileName not found!",ex)
         }
-
-        return textureRegionByFileName[fileName]!!
+    }
+    class IconGroup(statName:String): Group() {
+        init{
+            val circleSize = 20f
+            val statSize = 17f
+            setSize(circleSize ,circleSize)
+//            addActor(ImageGetter.getImage("OtherIcons/Circle")
+//                    .apply { setSize(circleSize,circleSize )} )
+            val iconImage = ImageGetter.getImage("StatIcons/20x" + statName + "5.png")
+                    .apply { setSize(statSize,statSize); center(this@IconGroup)}
+            if(statName=="Population") iconImage.color= Color.GREEN.cpy().lerp(Color.BLACK,0.5f)
+            addActor(iconImage)
+        }
     }
 
-    fun getStatIcon(name: String): Image {
-        return getImage("StatIcons/20x" + name + "5.png")
+    fun getStatIcon(statName: String): Image {
+        return ImageGetter.getImage("StatIcons/20x" + statName + "5.png")
+                .apply { setSize(20f,20f)}
+//        return IconGroup(name)
     }
+
 
     fun getUnitIcon(unitName:String):Image{
         return getImage("UnitIcons/$unitName.png")

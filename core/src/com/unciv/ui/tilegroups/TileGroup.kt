@@ -86,8 +86,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     fun addPopulationIcon() {
-        populationImage = ImageGetter.getImage("StatIcons/populationGreen.png")
+        populationImage = ImageGetter.getImage("StatIcons/20xPopulation5")
         populationImage!!.run {
+            color= Color.GREEN.cpy().lerp(Color.BLACK,0.5f)
             setSize(20f, 20f)
             center(this@TileGroup)
             x += 20 // right
