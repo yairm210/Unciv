@@ -43,6 +43,9 @@ class CityExpansionManager {
             cityInfo.tiles.remove(tileInfo.position)
 
         cityInfo.tiles.add(tileInfo.position)
+        for(unit in tileInfo.getUnits())
+            if(!unit.civInfo.canEnterTiles(cityInfo.civInfo))
+                unit.movementAlgs().teleportToClosestMoveableTile()
     }
 
     fun getNewTile(): TileInfo? {
