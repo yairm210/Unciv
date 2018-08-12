@@ -69,6 +69,16 @@ class UnitAutomation{
         // if both failed, then... there aren't any reachable tiles. Which is possible.
     }
 
+    fun rankTileForHealing(tileInfo: TileInfo, unit: MapUnit): Int {
+        val tileOwner = tileInfo.getOwner()
+        when{
+            tileInfo.isCityCenter() -> return 3
+            tileOwner!=null && !unit.civInfo.isAtWarWith(tileOwner)-> return 2
+            tileOwner==null -> return 1
+            else -> return 0
+        }
+    }
+
     fun healUnit(unit:MapUnit) {
         val tilesInDistance = unit.getDistanceToTiles().keys
         val unitTile = unit.getTile()
@@ -112,7 +122,6 @@ class UnitAutomation{
         val tilesToAttackFrom = distanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
-
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
             val tilesInAttackRange = if (unit.hasUnique("Indirect fire")) reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTiles(rangeOfAttack)

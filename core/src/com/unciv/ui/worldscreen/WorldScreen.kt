@@ -183,6 +183,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 catch (ex:Exception){
                     UnCivGame.Current.settings.hasCrashedRecently=true
                     UnCivGame.Current.settings.save()
+                    throw ex
                 }
 
                 // If we put this BEFORE the save game, then we try to save the game...

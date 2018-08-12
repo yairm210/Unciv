@@ -44,14 +44,14 @@ class CityConstructions {
 
     fun getCityProductionTextForCityButton(): String {
         var result = currentConstruction.tr()
-        if (SpecialConstruction.getSpecialConstructions().none { it.name==result })
+        if (SpecialConstruction.getSpecialConstructions().none { it.name==currentConstruction })
             result += "\r\n" + turnsToConstruction(currentConstruction) + " {turns}".tr()
         return result
     }
 
     fun getProductionForTileInfo(): String {
         var result = currentConstruction.tr()
-        if (SpecialConstruction.getSpecialConstructions().none { it.name==result })
+        if (SpecialConstruction.getSpecialConstructions().none { it.name==currentConstruction })
             result += "\r\n{in} ".tr() + turnsToConstruction(currentConstruction) + " {turns}".tr()
         return result
     }
