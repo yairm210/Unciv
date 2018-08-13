@@ -16,7 +16,7 @@ object ImageGetter {
     // always have to switch between like 170 different textures.
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
-    val atlas = TextureAtlas("Images/game.atlas")
+    val atlas = TextureAtlas("game.atlas")
 
     init{
     }
