@@ -80,21 +80,18 @@ class UnitAutomation{
     }
 
     fun healUnit(unit:MapUnit) {
-        val tilesInDistance = unit.getDistanceToTiles().keys
+        val tilesInDistance = unit.getDistanceToTiles().keys.filter { unit.canMoveTo(it) }
         val unitTile = unit.getTile()
 
-        // Go to friendly tile if within distance - better healing!
-        val friendlyTile = tilesInDistance.firstOrNull { it.getOwner()?.civName == unit.owner && unit.canMoveTo(it) }
-        if (unitTile.getOwner()?.civName != unit.owner && friendlyTile != null) {
-            unit.moveToTile(friendlyTile)
-            return
-        }
-
-        // Or at least get out of enemy territory yaknow
-        val neutralTile = tilesInDistance.firstOrNull { it.getOwner() == null && unit.canMoveTo(it)}
-        if (unitTile.getOwner()?.civName != unit.owner && unitTile.getOwner() != null && neutralTile != null) {
-            unit.moveToTile(neutralTile)
-            return
+        val tilesByHealingRate = tilesInDistance.groupBy { rankTileForHealing(it,unit) }
+        if(tilesByHealingRate.isEmpty()) return
+        val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
+        // within the tiles with best healing rate, we'll prefer one which has defensive bonuses
+        val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
+        if(unitTile!=bestTileForHealing && rankTileForHealing(bestTileForHealing,unit)>rankTileForHealing(unitTile,unit))
+            unit.moveToTile(bestTileForHealing)
+        if(unit.currentMovement>0 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified() ){
+            unit.action="Fortify 0"
         }
     }
 
