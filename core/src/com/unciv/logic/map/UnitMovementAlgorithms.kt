@@ -1,7 +1,6 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.gamebasics.unit.UnitType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
     val tileMap = unit.getTile().tileMap
@@ -185,9 +184,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     .firstOrNull{unit.canMoveTo(it)}
         }
         unit.removeFromTile() // we "teleport" them away
-        if(unit.getBaseUnit().unitType==UnitType.Civilian)
-            allowedTile.civilianUnit=unit
-        else allowedTile.militaryUnit=unit
+        unit.putInTile(allowedTile)
     }
 
 }

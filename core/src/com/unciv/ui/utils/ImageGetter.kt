@@ -3,7 +3,6 @@ package com.unciv.ui.utils
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
@@ -16,7 +15,7 @@ object ImageGetter {
     // always have to switch between like 170 different textures.
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
-    val atlas = TextureAtlas("Images/game.atlas")
+    var atlas = TextureAtlas("game.atlas")
 
     init{
     }
@@ -43,26 +42,11 @@ object ImageGetter {
             return getTextureRegion(WhiteDot)
         }
     }
-    class IconGroup(statName:String): Group() {
-        init{
-            val circleSize = 20f
-            val statSize = 17f
-            setSize(circleSize ,circleSize)
-//            addActor(ImageGetter.getImage("OtherIcons/Circle")
-//                    .apply { setSize(circleSize,circleSize )} )
-            val iconImage = ImageGetter.getImage("StatIcons/20x" + statName + "5.png")
-                    .apply { setSize(statSize,statSize); center(this@IconGroup)}
-            if(statName=="Population") iconImage.color= Color.GREEN.cpy().lerp(Color.BLACK,0.5f)
-            addActor(iconImage)
-        }
-    }
 
     fun getStatIcon(statName: String): Image {
         return ImageGetter.getImage("StatIcons/20x" + statName + "5.png")
                 .apply { setSize(20f,20f)}
-//        return IconGroup(name)
     }
-
 
     fun getUnitIcon(unitName:String):Image{
         return getImage("UnitIcons/$unitName.png")
@@ -80,5 +64,9 @@ object ImageGetter {
 
     fun getBackground(color:Color): Drawable {
         return getDrawable(WhiteDot).tint(color)
+    }
+
+    fun refreshAltas() {
+        atlas = TextureAtlas("game.atlas")
     }
 }

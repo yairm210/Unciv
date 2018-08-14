@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
@@ -32,6 +33,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     }
 
     init {
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
+
         techsToResearch = ArrayList(civTech.techsToResearch)
 
         val columns = 17

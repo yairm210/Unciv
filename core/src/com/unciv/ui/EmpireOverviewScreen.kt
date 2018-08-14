@@ -16,6 +16,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     val civInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
     init {
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         val topTable = Table().apply { defaults().pad(10f) }
         val centerTable=Table().apply {  defaults().pad(20f) }
 

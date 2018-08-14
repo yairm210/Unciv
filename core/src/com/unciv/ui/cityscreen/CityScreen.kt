@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
@@ -25,6 +26,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         addTiles()
         stage.addActor(tileTable)
 

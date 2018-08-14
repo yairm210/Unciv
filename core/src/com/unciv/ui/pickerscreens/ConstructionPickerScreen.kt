@@ -33,6 +33,10 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
             game.screen = CityScreen(this@ConstructionPickerScreen.city)
             dispose()
         }
+        onBackButtonClicked {
+            game.screen = CityScreen(this@ConstructionPickerScreen.city)
+            dispose()
+        }
 
         rightSideButton.setText("Pick construction".tr())
         rightSideButton.addClickListener {

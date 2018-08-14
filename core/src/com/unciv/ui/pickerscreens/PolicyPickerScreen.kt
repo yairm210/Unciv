@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
@@ -15,16 +16,6 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
     private var pickedPolicy: Policy? = null
 
     init {
-
-
-        // Proof-of-concept for font generation
-//        val generator = FreeTypeFontGenerator(Gdx.files.internal("skin/Esteban-Regular.ttf"))
-//        val parameter = FreeTypeFontParameter()
-//        parameter.size = 25
-//        val font12 = generator.generateFont(parameter) // font size 12 pixels
-//        generator.dispose() // don't forget to dispose to avoid memory leaks!
-//        rightSideButton.style.font = font12
-
         val policies = civInfo.policies
         displayTutorials("PolicyPickerScreen")
 
@@ -34,6 +25,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             rightSideButton.setText("Adopt free policy")
             closeButton.disable()
         }
+        else onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
 
         rightSideButton.addClickListener {
             civInfo.policies.adopt(pickedPolicy!!)
