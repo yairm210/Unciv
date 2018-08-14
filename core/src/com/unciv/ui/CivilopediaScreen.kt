@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.ui.List
 import com.badlogic.gdx.utils.Array
+import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -12,6 +13,7 @@ import java.util.*
 
 class CivilopediaScreen : CameraStageBaseScreen() {
     init {
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         val buttonTable = Table()
         buttonTable.pad(15f)
         val entryTable = Table()

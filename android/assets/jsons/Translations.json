@@ -3343,5 +3343,83 @@
 		Russian:"+15% роста и +2 еды во всех городах"
 	}
 	// And so on for all the policies. I can't be bothered to add them all now...
+	"Liberty":{}
+	"+1 culture in evey city":{}
+	"Collective Rule":{}
+	"Training of settlers increaed +50% in capital, recieve a new settler near capital":{}
+	"Citizenship":{}
+	"+25% construction rate of workers, recieve free worker near the capital":{}
+	"Republic":{}
+	"+1 construction in every city, +5% construction when constructing buildings":{}
+	"Representation":{}
+	"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.":{}
+	"Meritocracy":{}
+	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{}
+	"Liberty Complete":{}
+	"Free Great Person of choice near capital":{}
+	
+	// Piety branch
+	"Piety":{}
+	"Building time of culture buildings reduced by 15%":{}
+	"Organized Religion":{}
+	"+1 happiness for each monument, temple and monastery":{}
+	"Mandate Of Heaven":{}
+	"50% of excess happiness added to culture towards policies":{}
+	"Theocracy":{}
+	"Temples give +10% gold":{}
+	"Reformation":{}
+	"+33% culture in all cities with a world wonder, immediately enter a golden age":{}
+	"Free Religion":{}
+	"+1 culture for each monument, temple and monastery. Gain a free policy.":{}
+	"Piety Complete":{}
+	"Reduce culture cost of future policies by 10%":{}
+	
+	// Commerce branch
+	"Commerce":{}
+	"+25% gold in capital":{}
+	"Trade Unions":{}
+	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{}
+	"Mercantilism":{}
+	"-25% to purchasing items in cities":{}
+	"Entrepreneurship":{}
+	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{}
+	"Patronage":{}
+	"Cost of purchasing culture buildings reduced by 50%":{}
+	"Protectionism":{}
+	"+1 happiness from each luxury resource":{}
+	"Commerce Complete":{}
+	"+1 gold from each specialist":{}
+	
+	//Rationalism branch
+	"Rationalism":{}
+	"Production to science conversion in cities increased by 33%":{}
+	"Secularism":{}
+	"+2 science from every specialist":{}
+	"Humanism":{}
+	"+1 happiness from every university, observatory and public school":{}
+	"Free Thought":{}
+	"+1 science from every trading post, +17% science from universities":{}
+	"Sovereignty":{}
+	"+15% science while empire is happy":{}
+	"Scientific Revolution":{}
+	"Gain 2 free technologies":{}
+	"Rationalism Complete":{}
+	"+1 gold from all science buildings":{}
+	
+	// Freedom branch
+	"Freedom":{}
+	"+25% great people rate":{}
+	"Constitution":{}
+	"+2 culture from each wonder":{}
+	"Universal Suffrage":{}
+	"+1 production per 5 population":{}
+	"Civil Society":{}
+	"-50% food consumption by specialists":{}
+	"Free Speech":{}
+	"+1 culture for every 2 citizens":{}
+	"Democracy":{}
+	"Specialists produce half normal unhappiness":{}
+	"Freedom Complete":{}
+	"Tile yield from great improvement +100%, golden ages increase by 50%":{}
 	
 }
