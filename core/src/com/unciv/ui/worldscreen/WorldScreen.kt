@@ -235,8 +235,5 @@ class WorldScreen : CameraStageBaseScreen() {
         super.render(delta)
     }
 
-//    override fun resume() {
-//        resize(Gdx.graphics.width,Gdx.graphics.height)
-//    }
 }
 

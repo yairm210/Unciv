@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnCivGame : Game() {
@@ -24,6 +25,7 @@ class UnCivGame : Game() {
 
     override fun create() {
         Current = this
+        Gdx.input.isCatchBackKey=true
         GameBasics.run {  } // just to initialize
         settings = GameSaver().getGeneralSettings()
         if (GameSaver().getSave("Autosave").exists()) {
@@ -62,6 +64,12 @@ class UnCivGame : Game() {
         setScreen(worldScreen)
         worldScreen.update()
         Gdx.input.inputProcessor = worldScreen.stage
+    }
+
+    override fun resume() {
+        ImageGetter.refreshAltas()
+        worldScreen = WorldScreen()
+        setWorldScreen()
     }
 
 

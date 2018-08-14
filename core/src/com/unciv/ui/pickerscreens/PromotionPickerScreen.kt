@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.Promotion
@@ -14,6 +15,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
 
     init {
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         rightSideButton.setText("Pick promotion")
         rightSideButton.addClickListener {
             mapUnit.promotions.addPromotion(selectedPromotion!!.name)
