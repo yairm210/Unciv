@@ -18,21 +18,21 @@ class YieldGroup : HorizontalGroup() {
     private fun getStatIconsTable(statName: String, number: Int): Table {
         val table = Table()
         when (number) {
-            1 -> table.add(ImageGetter.getStatIcon(statName))
+            1 -> table.add(ImageGetter.getStatIcon(statName)).size(20f)
             2 -> {
-                table.add(ImageGetter.getStatIcon(statName)).row()
-                table.add(ImageGetter.getStatIcon(statName))
+                table.add(ImageGetter.getStatIcon(statName)).size(20f).row()
+                table.add(ImageGetter.getStatIcon(statName)).size(20f)
             }
             3 -> {
-                table.add(ImageGetter.getStatIcon(statName)).colspan(2).row()
-                table.add(ImageGetter.getStatIcon(statName))
-                table.add(ImageGetter.getStatIcon(statName))
+                table.add(ImageGetter.getStatIcon(statName)).size(20f).colspan(2).row()
+                table.add(ImageGetter.getStatIcon(statName)).size(20f)
+                table.add(ImageGetter.getStatIcon(statName)).size(20f)
             }
             4 -> {
-                table.add(ImageGetter.getStatIcon(statName))
-                table.add(ImageGetter.getStatIcon(statName)).row()
-                table.add(ImageGetter.getStatIcon(statName))
-                table.add(ImageGetter.getStatIcon(statName))
+                table.add(ImageGetter.getStatIcon(statName)).size(20f)
+                table.add(ImageGetter.getStatIcon(statName)).size(20f).row()
+                table.add(ImageGetter.getStatIcon(statName)).size(20f)
+                table.add(ImageGetter.getStatIcon(statName)).size(20f)
             }
             else -> {
                 val largeImage = ImageGetter.getStatIcon(statName)
