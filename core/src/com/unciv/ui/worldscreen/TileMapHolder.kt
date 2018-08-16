@@ -106,10 +106,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 if(unit.canMoveTo(tile))
                     tileGroups[tile]!!.showCircle(colorFromRGB(0, 120, 215))
 
-            val unitType = unit.getBaseUnit().unitType
+            val unitType = unit.baseUnit().unitType
             val attackableTiles: List<TileInfo> = when{
                 unitType==UnitType.Civilian -> unit.getDistanceToTiles().keys.toList()
-                else -> UnitAutomation().getAttackableEnemies(unit).map { it.tileToAttack }
+                else -> UnitAutomation().getAttackableEnemies(unit, unit.getDistanceToTiles()).map { it.tileToAttack }
             }
 
 
@@ -117,7 +117,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 it.getUnits().isNotEmpty()
                         && it.getUnits().first().owner != unit.owner
                         && (playerViewableTiles.contains(it) || UnCivGame.Current.viewEntireMapForDebug)}) {
-                if(unit.getBaseUnit().unitType== UnitType.Civilian) tileGroups[tile]!!.hideCircle()
+                if(unit.baseUnit().unitType== UnitType.Civilian) tileGroups[tile]!!.hideCircle()
                 else {
                     tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
                     tileGroups[tile]!!.showCrosshair()

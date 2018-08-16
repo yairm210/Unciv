@@ -106,7 +106,7 @@ class Automation {
                     unit.promotions.addPromotion(availablePromotions.getRandom().name)
             }
 
-            val unitType = unit.getBaseUnit().unitType
+            val unitType = unit.baseUnit().unitType
             if(unitType.isRanged()) rangedUnits.add(unit)
             else if(unitType.isMelee()) meleeUnits.add(unit)
             else civilianUnits.add(unit)
@@ -165,7 +165,7 @@ class Automation {
             val buildableWonders = getBuildableBuildings().filter { it.isWonder }
 
             val civUnits = cityInfo.civInfo.getCivUnits()
-            val militaryUnits = civUnits.filter { it.getBaseUnit().unitType != UnitType.Civilian }.size
+            val militaryUnits = civUnits.filter { it.baseUnit().unitType != UnitType.Civilian }.size
             val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
             val cities = cityInfo.civInfo.cities.size
 
@@ -204,7 +204,7 @@ class Automation {
     fun evaluteCombatStrength(civInfo: CivilizationInfo): Int {
         // Since units become exponentially stronger per combat strength increase, we square em all
         fun square(x:Int) = x*x
-        val unitStrength =  civInfo.getCivUnits().map { square(max(it.getBaseUnit().strength, it.getBaseUnit().rangedStrength)) }.sum()
+        val unitStrength =  civInfo.getCivUnits().map { square(max(it.baseUnit().strength, it.baseUnit().rangedStrength)) }.sum()
         val cityStrength = civInfo.cities.map { square(CityCombatant(it).getCityStrength()) }.sum()
         return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt()
     }

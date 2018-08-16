@@ -209,7 +209,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add("Closest city".tr())
         table.row()
         for(unit in civInfo.getCivUnits()){
-            val baseUnit = unit.getBaseUnit()
+            val baseUnit = unit.baseUnit()
             table.add(unit.name.tr())
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()

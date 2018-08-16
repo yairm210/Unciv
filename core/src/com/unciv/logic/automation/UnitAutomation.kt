@@ -36,20 +36,21 @@ class UnitAutomation{
         if (tryUpgradeUnit(unit, unitActions)) return
 
         // Accompany settlers
-        if (tryAccompanySettler(unit)) return
+        val unitDistanceToTiles = unit.getDistanceToTiles()
+        if (tryAccompanySettler(unit,unitDistanceToTiles)) return
 
         if (unit.health < 50) {
-            healUnit(unit)
+            healUnit(unit,unitDistanceToTiles)
             return
         } // do nothing but heal
 
         // if there is an attackable unit in the vicinity, attack!
-        if (tryAttackNearbyEnemy(unit)) return
+        if (tryAttackNearbyEnemy(unit,unitDistanceToTiles)) return
 
         if (tryGarrisoningUnit(unit)) return
 
         if (unit.health < 80) {
-            healUnit(unit)
+            healUnit(unit, unitDistanceToTiles)
             return
         } // do nothing but heal until 80 health
 
@@ -57,7 +58,7 @@ class UnitAutomation{
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
         if (unit.health < 100) {
-            healUnit(unit)
+            healUnit(unit, unitDistanceToTiles)
             return
         }
 
@@ -65,7 +66,7 @@ class UnitAutomation{
         if (tryHeadTowardsEnemyCity(unit)) return
 
         // else, go to a random space
-        randomWalk(unit)
+        randomWalk(unit,unitDistanceToTiles)
         // if both failed, then... there aren't any reachable tiles. Which is possible.
     }
 
@@ -79,8 +80,8 @@ class UnitAutomation{
         }
     }
 
-    fun healUnit(unit:MapUnit) {
-        val tilesInDistance = unit.getDistanceToTiles().keys.filter { unit.canMoveTo(it) }
+    fun healUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+        val tilesInDistance = unitDistanceToTiles.keys.filter { unit.canMoveTo(it) }
         val unitTile = unit.getTile()
 
         val tilesByHealingRate = tilesInDistance.groupBy { rankTileForHealing(it,unit) }
@@ -103,11 +104,10 @@ class UnitAutomation{
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
-    fun getAttackableEnemies(unit: MapUnit): ArrayList<AttackableTile> {
+    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): ArrayList<AttackableTile> {
         val tilesWithEnemies = unit.civInfo.getViewableTiles()
                 .filter { containsAttackableEnemy(it,unit.civInfo) }
 
-        val distanceToTiles = unit.getDistanceToTiles()
         val rangeOfAttack = unit.getRange()
 
         val attackableTiles = ArrayList<AttackableTile>()
@@ -116,7 +116,7 @@ class UnitAutomation{
         // and then later we round it off to a whole.
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
-        val tilesToAttackFrom = distanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
+        val tilesToAttackFrom = unitDistanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
@@ -131,7 +131,7 @@ class UnitAutomation{
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         var closeEnemies = unit.getTile().getTilesInDistance(5)
                 .filter{ containsAttackableEnemy(it, unit.civInfo) && unit.movementAlgs().canReach(it)}
-        if(unit.getBaseUnit().unitType.isRanged())
+        if(unit.baseUnit().unitType.isRanged())
             closeEnemies = closeEnemies.filterNot { it.isCityCenter() && it.getCity()!!.health==1 }
 
         val closestEnemy = closeEnemies.minBy { it.arialDistanceTo(unit.getTile()) }
@@ -143,8 +143,8 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryAccompanySettler(unit: MapUnit): Boolean {
-        val closeTileWithSettler = unit.getDistanceToTiles().keys.firstOrNull {
+    private fun tryAccompanySettler(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+        val closeTileWithSettler = unitDistanceToTiles.keys.firstOrNull {
             it.civilianUnit != null && it.civilianUnit!!.name == "Settler"
         }
         if (closeTileWithSettler != null && unit.canMoveTo(closeTileWithSettler)) {
@@ -155,10 +155,10 @@ class UnitAutomation{
     }
 
     private fun tryUpgradeUnit(unit: MapUnit, unitActions: List<UnitAction>): Boolean {
-        if (unit.getBaseUnit().upgradesTo != null) {
-            val upgradedUnit = GameBasics.Units[unit.getBaseUnit().upgradesTo!!]!!
+        if (unit.baseUnit().upgradesTo != null) {
+            val upgradedUnit = GameBasics.Units[unit.baseUnit().upgradesTo!!]!!
             if (upgradedUnit.isBuildable(unit.civInfo)) {
-                val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
+                val goldCostOfUpgrade = (upgradedUnit.cost - unit.baseUnit().cost) * 2 + 10
                 val upgradeAction = unitActions.firstOrNull { it.name.startsWith("Upgrade to") }
                 if (upgradeAction != null && unit.civInfo.gold > goldCostOfUpgrade) {
                     upgradeAction.action()
@@ -173,7 +173,7 @@ class UnitAutomation{
         if(unit.civInfo.cities.isEmpty()) return false
         var enemyCities = unit.civInfo.exploredTiles.map { unit.civInfo.gameInfo.tileMap[it] }
                 .filter { it.isCityCenter() && it.getOwner() != unit.civInfo }
-        if(unit.getBaseUnit().unitType.isRanged())
+        if(unit.baseUnit().unitType.isRanged())
             enemyCities = enemyCities.filterNot { it.getCity()!!.health==1 }
 
         val closestReachableEnemyCity = enemyCities
@@ -188,8 +188,8 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
-        val attackableEnemies = getAttackableEnemies(unit)
+    private fun tryAttackNearbyEnemy(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+        val attackableEnemies = getAttackableEnemies(unit,unitDistanceToTiles)
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
@@ -204,7 +204,7 @@ class UnitAutomation{
         val cityWithHealthLeft = cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
                 .minBy { it.tileToAttack.getCity()!!.health  }
 
-        if (unit.getBaseUnit().unitType.isMelee() && capturableCity!=null)
+        if (unit.baseUnit().unitType.isMelee() && capturableCity!=null)
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
@@ -225,7 +225,7 @@ class UnitAutomation{
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
-        if(unit.getBaseUnit().unitType.isMelee()) return false // don't garrison melee units, they're not that good at it
+        if(unit.baseUnit().unitType.isMelee()) return false // don't garrison melee units, they're not that good at it
         val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
             val centerTile = it.getCenterTile()
             unit.canMoveTo(centerTile)
@@ -258,8 +258,8 @@ class UnitAutomation{
         return false
     }
 
-    private fun randomWalk(unit: MapUnit) {
-        val reachableTiles = unit.getDistanceToTiles()
+    private fun randomWalk(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+        val reachableTiles = unitDistanceToTiles
                 .filter { unit.canMoveTo(it.key) }
         val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
         if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
@@ -295,7 +295,7 @@ class UnitAutomation{
 
         if(bestCityLocation==null) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
         {
-            randomWalk(unit)
+            randomWalk(unit, unit.getDistanceToTiles())
             return
         }
 

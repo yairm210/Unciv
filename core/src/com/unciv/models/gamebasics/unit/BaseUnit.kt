@@ -78,6 +78,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         unit.name = name
         unit.maxMovement = movement
         unit.currentMovement = movement.toFloat()
+        unit.setTransients()
         return unit
     }
 

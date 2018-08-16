@@ -62,13 +62,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitNameLabel.setText(nameLabelText)
 
             var unitLabelText = "Movement".tr()+": " + unit.getMovementString()
-            if (unit.getBaseUnit().unitType != UnitType.Civilian)
-                unitLabelText += "\n"+"Strength".tr()+": " + unit.getBaseUnit().strength
+            if (unit.baseUnit().unitType != UnitType.Civilian)
+                unitLabelText += "\n"+"Strength".tr()+": " + unit.baseUnit().strength
 
-            if (unit.getBaseUnit().rangedStrength!=0)
-                unitLabelText += "\n"+"Ranged strength".tr()+": "+unit.getBaseUnit().rangedStrength
+            if (unit.baseUnit().rangedStrength!=0)
+                unitLabelText += "\n"+"Ranged strength".tr()+": "+unit.baseUnit().rangedStrength
 
-            if (unit.getBaseUnit().unitType != UnitType.Civilian)
+            if (unit.baseUnit().unitType != UnitType.Civilian)
                 unitLabelText += "\n"+"XP".tr()+": "+unit.promotions.XP+"/"+unit.promotions.xpForNextPromotion()
 
             if(unit.isFortified() && unit.getFortificationTurns()>0)

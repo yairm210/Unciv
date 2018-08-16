@@ -18,16 +18,16 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getAttackingStrength(defender: ICombatant): Int { // todo remove defender
-        if (isRanged()) return unit.getBaseUnit().rangedStrength
-        else return unit.getBaseUnit().strength
+        if (isRanged()) return unit.baseUnit().rangedStrength
+        else return unit.baseUnit().strength
     }
 
     override fun getDefendingStrength(attacker: ICombatant): Int {  // todo remove attacker
-        return unit.getBaseUnit().strength
+        return unit.baseUnit().strength
     }
 
     override fun getUnitType(): UnitType {
-        return unit.getBaseUnit().unitType
+        return unit.baseUnit().unitType
     }
 
     override fun toString(): String {

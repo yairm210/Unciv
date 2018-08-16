@@ -43,7 +43,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
 
         // Garrisoned unit gives up to 20% of strength to city, health-dependant
         if(cityTile.militaryUnit!=null)
-            strength += cityTile.militaryUnit!!.getBaseUnit().strength * cityTile.militaryUnit!!.health/100f
+            strength += cityTile.militaryUnit!!.baseUnit().strength * cityTile.militaryUnit!!.health/100f
 
         strength += city.cityConstructions.getBuiltBuildings().sumBy{ it.cityStrength }
 

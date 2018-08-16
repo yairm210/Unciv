@@ -31,7 +31,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     fun update() {
         val unitTable = worldScreen.bottomBar.unitTable
         if (unitTable.selectedUnit == null
-                || unitTable.selectedUnit!!.getBaseUnit().unitType == UnitType.Civilian){
+                || unitTable.selectedUnit!!.baseUnit().unitType == UnitType.Civilian){
             hide()
             return
         } // no attacker
@@ -121,7 +121,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         attacker.unit.getDistanceToTiles()
 
-        val attackableEnemy = UnitAutomation().getAttackableEnemies(attacker.unit)
+        val attackableEnemy = UnitAutomation().getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
                 .firstOrNull{ it.tileToAttack == defender.getTile()}
 
         if(attackableEnemy==null || !attacker.unit.canAttack()) attackButton.disable()

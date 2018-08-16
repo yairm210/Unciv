@@ -21,11 +21,8 @@ class MapUnit {
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
 
-    init{
-        promotions.unit=this
-    }
-
-    fun getBaseUnit(): BaseUnit = GameBasics.Units[name]!!
+    @Transient lateinit var baseUnit: BaseUnit
+    fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
 
     @Transient
@@ -144,7 +141,7 @@ class MapUnit {
 
     fun getSpecialAbilities(): MutableList<String> {
         val abilities = mutableListOf<String>()
-        val baseUnit = getBaseUnit()
+        val baseUnit = baseUnit()
         if(baseUnit.uniques!=null) abilities.addAll(baseUnit.uniques!!)
         abilities.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })
         return abilities
@@ -179,13 +176,13 @@ class MapUnit {
     }
 
     fun removeFromTile(){
-        if (getBaseUnit().unitType== UnitType.Civilian) getTile().civilianUnit=null
+        if (baseUnit().unitType== UnitType.Civilian) getTile().civilianUnit=null
         else getTile().militaryUnit=null
     }
 
     fun putInTile(tile:TileInfo){
         if(!canMoveTo(tile)) throw Exception("I can't go there!")
-        if(getBaseUnit().unitType== UnitType.Civilian)
+        if(baseUnit().unitType== UnitType.Civilian)
             tile.civilianUnit=this
         else tile.militaryUnit=this
         currentTile = tile
@@ -199,7 +196,7 @@ class MapUnit {
         if(tileOwner!=null && tileOwner.civName!=owner
              && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
 
-        if (getBaseUnit().unitType== UnitType.Civilian)
+        if (baseUnit().unitType== UnitType.Civilian)
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)
        else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==owner)
     }
@@ -220,11 +217,12 @@ class MapUnit {
 
     fun setTransients(){
         promotions.unit=this
+        baseUnit=GameBasics.Units[name]!!
     }
 
     fun getRange(): Int {
-        if(getBaseUnit().unitType.isMelee()) return 1
-        var range = getBaseUnit().range
+        if(baseUnit().unitType.isMelee()) return 1
+        var range = baseUnit().range
         if(hasUnique("+1 Range")) range++
         return range
     }

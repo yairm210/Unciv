@@ -47,26 +47,26 @@ class UnitActions {
             },true)
         }
 
-        if(unit.getBaseUnit().unitType!= UnitType.Civilian
+        if(unit.baseUnit().unitType!= UnitType.Civilian
                 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }
 
-        if(unit.getBaseUnit().unitType!= UnitType.Civilian && unit.promotions.canBePromoted()){
+        if(unit.baseUnit().unitType!= UnitType.Civilian && unit.promotions.canBePromoted()){
                 actionList += UnitAction("Promote",
                         {UnCivGame.Current.screen = PromotionPickerScreen(unit)},
                         unit.currentMovement != 0f)
         }
 
-        if(unit.getBaseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
-            var upgradedUnit = unit.getBaseUnit().getUpgradeUnit(unit.civInfo)
+        if(unit.baseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
+            var upgradedUnit = unit.baseUnit().getUpgradeUnit(unit.civInfo)
 
             // Go up the upgrade tree until you find the first one which isn't obsolete
             while (upgradedUnit.obsoleteTech!=null && unit.civInfo.tech.isResearched(upgradedUnit.obsoleteTech!!))
                 upgradedUnit = upgradedUnit.getUpgradeUnit(unit.civInfo)
 
             if (upgradedUnit.isBuildable(unit.civInfo)) {
-                val goldCostOfUpgrade = (upgradedUnit.cost - unit.getBaseUnit().cost) * 2 + 10
+                val goldCostOfUpgrade = (upgradedUnit.cost - unit.baseUnit().cost) * 2 + 10
                 actionList += UnitAction("Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                         {
                             unit.civInfo.gold -= goldCostOfUpgrade
