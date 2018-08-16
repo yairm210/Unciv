@@ -129,6 +129,7 @@ class UnitAutomation{
     }
 
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
+        // this can be sped up if we check each layer separately
         var closeEnemies = unit.getTile().getTilesInDistance(5)
                 .filter{ containsAttackableEnemy(it, unit.civInfo) && unit.movementAlgs().canReach(it)}
         if(unit.baseUnit().unitType.isRanged())
@@ -171,8 +172,8 @@ class UnitAutomation{
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if(unit.civInfo.cities.isEmpty()) return false
-        var enemyCities = unit.civInfo.exploredTiles.map { unit.civInfo.gameInfo.tileMap[it] }
-                .filter { it.isCityCenter() && it.getOwner() != unit.civInfo }
+        var enemyCities = unit.civInfo.gameInfo.civilizations.filter { unit.civInfo.isAtWarWith(it) }
+                .flatMap { it.cities }.filter { it.location in unit.civInfo.exploredTiles }.map { it.getCenterTile() }
         if(unit.baseUnit().unitType.isRanged())
             enemyCities = enemyCities.filterNot { it.getCity()!!.health==1 }
 

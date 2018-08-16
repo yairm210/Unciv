@@ -76,7 +76,6 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     fun getMapUnit(): MapUnit {
         val unit = MapUnit()
         unit.name = name
-        unit.maxMovement = movement
         unit.currentMovement = movement.toFloat()
         unit.setTransients()
         return unit

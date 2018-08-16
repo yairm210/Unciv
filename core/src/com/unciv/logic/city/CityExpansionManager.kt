@@ -24,7 +24,7 @@ class CityExpansionManager {
     fun getCultureToNextTile(): Int {
         val numTilesClaimed = cityInfo.tiles.size - 7
         var cultureToNextTile = 6 * Math.pow(numTilesClaimed + 1.4813, 1.3)
-        if (cityInfo.civInfo.buildingUniques.contains("Cost of acquiring new tiles reduced by 25%")) cultureToNextTile *= 0.75 //Speciality of Angkor Wat
+        if (cityInfo.civInfo.getBuildingUniques().contains("Cost of acquiring new tiles reduced by 25%")) cultureToNextTile *= 0.75 //Speciality of Angkor Wat
         if (cityInfo.civInfo.policies.isAdopted("Tradition")) cultureToNextTile *= 0.75
         return Math.round(cultureToNextTile).toInt()
     }
@@ -67,6 +67,12 @@ class CityExpansionManager {
             addNewTileWithCulture()
             cityInfo.civInfo.addNotification(cityInfo.name + " {has expanded its borders}!", cityInfo.location, Color.PURPLE)
         }
+    }
+
+    fun clone(): CityExpansionManager {
+        val toReturn = CityExpansionManager()
+        toReturn.cultureStored=cultureStored
+        return toReturn
     }
 
 }

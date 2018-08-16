@@ -23,4 +23,12 @@ class UnitPromotions{
                 .filter { unit.baseUnit().unitType.toString() in it.unitTypes && it.name !in promotions }
                 .filter { it.prerequisites.isEmpty() || it.prerequisites.any { p->p in promotions } }
     }
+
+    fun clone(): UnitPromotions {
+        val toReturn = UnitPromotions()
+        toReturn.XP=XP
+        toReturn.promotions.addAll(promotions)
+        toReturn.numberOfPromotions=numberOfPromotions
+        return toReturn
+    }
 }

@@ -92,6 +92,15 @@ class TechManager {
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
     }
+
+    fun clone(): TechManager {
+        val toReturn = TechManager()
+        toReturn.techsResearched.addAll(techsResearched)
+        toReturn.freeTechs=freeTechs
+        toReturn.techsInProgress.putAll(techsInProgress)
+        toReturn.techsToResearch.addAll(techsToResearch)
+        return toReturn
+    }
 }
 
 

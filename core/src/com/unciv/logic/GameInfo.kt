@@ -98,5 +98,14 @@ class GameInfo {
             for (tile in city.getTiles()) tilesToCities.put(tile,city)
         }
     }
+
+    fun clone():GameInfo{
+        val toReturn = GameInfo()
+        toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.tileMap=tileMap.clone()
+        toReturn.notifications.addAll(notifications)
+        toReturn.turns=turns
+        return toReturn
+    }
 }
 

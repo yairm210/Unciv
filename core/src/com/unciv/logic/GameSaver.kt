@@ -23,7 +23,7 @@ class GameSaver {
     }
 
     fun loadGame(GameName: String) : GameInfo {
-        val game = Json().fromJson(GameInfo::class.java, getSave(GameName).readString())
+        val game = UnCivGame.Current.json.fromJson(GameInfo::class.java, getSave(GameName).readString())
         game.setTransients()
         return game
     }

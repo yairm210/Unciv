@@ -29,7 +29,7 @@ class CityConstructions {
         val stats = Stats()
         for (building in getBuiltBuildings())
             stats.add(building.getStats(cityInfo.civInfo.policies.adoptedPolicies))
-        stats.science += (cityInfo.buildingUniques.count({ it == "+1 Science Per 2 Population" }) * cityInfo.population.population / 2).toFloat()
+        stats.science += (cityInfo.getBuildingUniques().count({ it == "+1 Science Per 2 Population" }) * cityInfo.population.population / 2).toFloat()
         return stats
     }
 
@@ -168,6 +168,14 @@ class CityConstructions {
 
     fun chooseNextConstruction() {
         Automation().chooseNextConstruction(this)
+    }
+
+    fun clone(): CityConstructions {
+        val toReturn = CityConstructions()
+        toReturn.currentConstruction=currentConstruction
+        toReturn.builtBuildings.addAll(builtBuildings)
+        toReturn.inProgressConstructions.putAll(inProgressConstructions)
+        return toReturn
     }
 
 } // for json parsing, we need to have a default constructor

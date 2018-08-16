@@ -43,8 +43,7 @@ open class TileInfo {
 
     fun isCityCenter(): Boolean = getCity()?.location == position
 
-    val tileImprovement: TileImprovement?
-        get() = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
+    fun getTileImprovement(): TileImprovement? = if (improvement == null) null else GameBasics.TileImprovements[improvement!!]
 
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
@@ -103,7 +102,7 @@ open class TileInfo {
             }
         }
 
-        val improvement = tileImprovement
+        val improvement = getTileImprovement()
         if (improvement != null) {
             if (resource != null && getTileResource().improvement == improvement.name)
                 stats.add(getTileResource().improvementStats!!) // resource-specifc improvement
@@ -125,7 +124,7 @@ open class TileInfo {
         if (stats.production < 0) stats.production = 0f
 
         if ("Jungle" == terrainFeature && city != null
-                && city.buildingUniques.contains("Jungles provide +2 science"))
+                && city.getBuildingUniques().contains("Jungles provide +2 science"))
             stats.science += 2f
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
@@ -211,4 +210,18 @@ open class TileInfo {
     }
 
     fun arialDistanceTo(otherTile:TileInfo) = abs(position.x-otherTile.position.x) + abs(position.y-otherTile.position.y)
+    fun clone(): TileInfo {
+        val toReturn = TileInfo()
+        if(civilianUnit!=null) toReturn.civilianUnit=civilianUnit!!.clone()
+        if(militaryUnit!=null) toReturn.militaryUnit=militaryUnit!!.clone()
+        toReturn.improvement=improvement
+        toReturn.position=position
+        toReturn.baseTerrain=baseTerrain
+        toReturn.terrainFeature=terrainFeature
+        toReturn.improvementInProgress=improvementInProgress
+        toReturn.resource=resource
+        toReturn.roadStatus=roadStatus
+        toReturn.turnsToImprovement=turnsToImprovement
+        return toReturn
+    }
 }

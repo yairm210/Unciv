@@ -186,7 +186,7 @@ class Building : NamedStats(), IConstruction{
         }
 
         if ("Spaceship part" == unique) {
-            if (!civInfo.buildingUniques.contains("Enables construction of Spaceship parts")) return false
+            if (!civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts")) return false
             if (civInfo.scienceVictory.unconstructedParts()[name] == 0) return false // Don't need to build any more of these!
         }
         return true

@@ -32,7 +32,7 @@ class CityStats {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2.0
-            if (civInfo.buildingUniques.contains("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
+            if (civInfo.getBuildingUniques().contains("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
         }
         return stats
@@ -46,7 +46,7 @@ class CityStats {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
-                if (cityInfo.civInfo.buildingUniques.contains("ScienceConversionIncrease")) scienceProduced *= 1.33f
+                if (cityInfo.civInfo.getBuildingUniques().contains("ScienceConversionIncrease")) scienceProduced *= 1.33f
                 if (cityInfo.civInfo.policies.isAdopted("Rationalism")) scienceProduced *= 1.33f
                 stats.science += scienceProduced
             }
@@ -109,7 +109,7 @@ class CityStats {
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
-        if (civInfo.buildingUniques.contains("Unhappiness from population decreased by 10%"))
+        if (civInfo.getBuildingUniques().contains("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
@@ -181,7 +181,7 @@ class CityStats {
 
     private fun getStatPercentBonusesFromWonders(): Stats {
         val stats = Stats()
-        val civUniques = cityInfo.civInfo.buildingUniques
+        val civUniques = cityInfo.civInfo.getBuildingUniques()
         if (civUniques.contains("Culture in all cities increased by 25%")) stats.culture += 25f
         return stats
     }

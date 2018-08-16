@@ -13,4 +13,5 @@ class TradeOffersList: ArrayList<TradeOffer>(){
         if(equivalentOffer.amount==0) remove(equivalentOffer)
         return true
     }
+
 }

@@ -61,7 +61,7 @@ class PopulationManager {
         // growth!
         {
             foodStored -= getFoodToNextPopulation()
-            if (cityInfo.buildingUniques.contains("40% of food is carried over after a new citizen is born")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
+            if (cityInfo.getBuildingUniques().contains("40% of food is carried over after a new citizen is born")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
             population++
             autoAssignPopulation()
             cityInfo.civInfo.addNotification(cityInfo.name + " {has grown}!", cityInfo.location, Color.GREEN)
@@ -87,6 +87,13 @@ class PopulationManager {
                     .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
             cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
         }
+    }
+
+    fun clone(): PopulationManager {
+        val toReturn = PopulationManager()
+        toReturn.population=population
+        toReturn.foodStored=foodStored
+        return toReturn
     }
 
 }

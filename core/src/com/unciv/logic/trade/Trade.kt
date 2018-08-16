@@ -24,4 +24,11 @@ class Trade{
                 return false
         return true
     }
+
+    fun clone():Trade{
+        val toReturn = Trade()
+        toReturn.theirOffers.addAll(theirOffers)
+        toReturn.ourOffers.addAll(ourOffers)
+        return toReturn
+    }
 }

@@ -136,7 +136,7 @@ class CivilizationInfo {
             }
         }
 
-        if (buildingUniques.contains("Provides 1 happiness per social policy"))
+        if (getBuildingUniques().contains("Provides 1 happiness per social policy"))
             statMap["Policies"] = policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
 
         return statMap
@@ -151,8 +151,7 @@ class CivilizationInfo {
         return civResources
     }
 
-    val buildingUniques: List<String>
-        get() = cities.flatMap{ it.cityConstructions.getBuiltBuildings().map { it.unique }.filterNotNull() }.distinct()
+    fun getBuildingUniques(): List<String> = cities.flatMap { it.cityConstructions.getBuiltBuildings().map { it.unique }.filterNotNull() }.distinct()
 
 
     constructor()
@@ -304,6 +303,22 @@ class CivilizationInfo {
         if(otherCiv==this) return true
         if(isAtWarWith(otherCiv)) return true
         return false
+    }
+
+    fun clone(): CivilizationInfo {
+        val toReturn = CivilizationInfo()
+        toReturn.exploredTiles=exploredTiles.toHashSet()
+        toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
+        toReturn.cities.addAll(cities.map { it.clone() })
+        toReturn.tech = tech.clone()
+        toReturn.difficulty=difficulty
+        toReturn.policies = policies.clone()
+        toReturn.happiness=happiness
+        toReturn.greatPeople=greatPeople.clone()
+        toReturn.gold = gold
+        toReturn.goldenAges = goldenAges.clone()
+        toReturn.civName=civName
+        return toReturn
     }
 }
 

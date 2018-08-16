@@ -78,7 +78,7 @@ class UnitActions {
                             newunit.currentMovement=0f
                         },
                         unit.civInfo.gold >= goldCostOfUpgrade
-                                && unit.currentMovement == unit.maxMovement.toFloat()  )
+                                && unit.currentMovement == unit.getMaxMovement().toFloat()  )
             }
         }
 

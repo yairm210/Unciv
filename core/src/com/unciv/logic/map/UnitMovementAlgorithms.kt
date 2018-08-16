@@ -78,7 +78,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         while (true) {
             val newTilesToCheck = ArrayList<TileInfo>()
             val distanceToDestination = HashMap<TileInfo, Float>()
-            val movementThisTurn = if (distance == 1) unit.currentMovement else unit.maxMovement.toFloat()
+            val movementThisTurn = if (distance == 1) unit.currentMovement else unit.getMaxMovement().toFloat()
             for (tileToCheck in tilesToCheck) {
                 val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn)
                 for (reachableTile in distanceToTilesThisTurn.keys) {

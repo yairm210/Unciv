@@ -94,4 +94,11 @@ class DiplomacyManager() {
     }
 
     fun canDeclareWar() = turnsToPeaceTreaty()==0
+    fun clone(): DiplomacyManager {
+        val toReturn = DiplomacyManager()
+        toReturn.otherCivName=otherCivName
+        toReturn.diplomaticStatus=diplomaticStatus
+        toReturn.trades.addAll(trades.map { it.clone() })
+        return toReturn
+    }
 }

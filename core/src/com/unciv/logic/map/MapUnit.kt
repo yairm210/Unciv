@@ -14,7 +14,6 @@ class MapUnit {
 
     lateinit var owner: String
     lateinit var name: String
-    var maxMovement: Int = 0
     var currentMovement: Float = 0f
     var health:Int = 100
     var action: String? = null // work, automation, fortifying, I dunno what.
@@ -23,11 +22,12 @@ class MapUnit {
 
     @Transient lateinit var baseUnit: BaseUnit
     fun baseUnit(): BaseUnit = baseUnit
-    fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + maxMovement
+    fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
 
     @Transient
     internal lateinit var currentTile :TileInfo
     fun getTile(): TileInfo =  currentTile
+    fun getMaxMovement() = baseUnit.movement
 
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
         val tile = getTile()
@@ -63,7 +63,7 @@ class MapUnit {
 
     private fun doPostTurnAction() {
         if (name == "Worker" && getTile().improvementInProgress != null) workOnImprovement()
-        if(currentMovement==maxMovement.toFloat()
+        if(currentMovement== getMaxMovement().toFloat()
                 && isFortified()){
             val currentTurnsFortified = getFortificationTurns()
             if(currentTurnsFortified<2) action = "Fortify ${currentTurnsFortified+1}"
@@ -76,7 +76,7 @@ class MapUnit {
         if (tile.turnsToImprovement != 0) return
         when {
             tile.improvementInProgress!!.startsWith("Remove") -> {
-                val tileImprovement = tile.tileImprovement
+                val tileImprovement = tile.getTileImprovement()
                 if(tileImprovement!=null
                         && tileImprovement.terrainsCanBeBuiltOn.contains(tile.terrainFeature)
                         && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
@@ -124,14 +124,14 @@ class MapUnit {
 
     fun endTurn() {
         doPostTurnAction()
-        if(currentMovement==maxMovement.toFloat() // didn't move this turn
+        if(currentMovement== getMaxMovement().toFloat() // didn't move this turn
                 || getSpecialAbilities().contains("Unit will heal every turn, even if it performs an action")){
             heal()
         }
     }
 
     fun startTurn(){
-        currentMovement = maxMovement.toFloat()
+        currentMovement = getMaxMovement().toFloat()
         attacksThisTurn=0
         val tileOwner = getTile().getOwner()
         if(tileOwner!=null && !civInfo.canEnterTiles(tileOwner)) // if an enemy city expanded onto this tile while I was in it
@@ -225,5 +225,17 @@ class MapUnit {
         var range = baseUnit().range
         if(hasUnique("+1 Range")) range++
         return range
+    }
+
+    fun clone(): MapUnit {
+        val toReturn = MapUnit()
+        toReturn.action=action
+        toReturn.currentMovement=currentMovement
+        toReturn.name=name
+        toReturn.promotions=promotions.clone()
+        toReturn.health=health
+        toReturn.attacksThisTurn=attacksThisTurn
+        toReturn.owner=owner
+        return toReturn
     }
 }

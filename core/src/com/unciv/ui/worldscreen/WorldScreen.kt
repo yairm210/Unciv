@@ -177,13 +177,21 @@ class WorldScreen : CameraStageBaseScreen() {
 
             kotlin.concurrent.thread {
                 try {
-                    game.gameInfo.nextTurn()
-                    GameSaver().saveGame(game.gameInfo, "Autosave")
+                    gameInfo.nextTurn()
                 }
                 catch (ex:Exception){
-                    UnCivGame.Current.settings.hasCrashedRecently=true
-                    UnCivGame.Current.settings.save()
+                    game.settings.hasCrashedRecently=true
+                    game.settings.save()
                     throw ex
+                }
+
+                val gameInfoClone = gameInfo.clone()
+                kotlin.concurrent.thread {
+                    // the save takes a long time( up to a second!) and we can do it while the player continues his game.
+                    // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
+                    // So what we do is we clone all the game data and serialize the clone.
+                    GameSaver().saveGame(gameInfoClone, "Autosave")
+                    nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
                 }
 
                 // If we put this BEFORE the save game, then we try to save the game...
@@ -193,7 +201,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 shouldUpdate=true
 
                 nextTurnButton.setText("Next turn".tr())
-                nextTurnButton.enable()
                 Gdx.input.inputProcessor = stage
             }
         }

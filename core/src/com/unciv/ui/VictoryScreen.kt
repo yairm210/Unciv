@@ -58,7 +58,7 @@ class VictoryScreen : PickerScreen() {
     fun scienceVictoryColumn():Table{
         val t = Table()
         t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program",civInfo.buildingUniques.contains("Enables construction of Spaceship parts"))).row()
+        t.add(getMilestone("Built Apollo Program",civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts"))).row()
 
         val scienceVictory = civInfo.scienceVictory
 

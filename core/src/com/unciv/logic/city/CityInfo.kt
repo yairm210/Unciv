@@ -58,8 +58,7 @@ class CityInfo {
         return cityResources
     }
 
-    val buildingUniques: List<String?>
-        get() = cityConstructions.getBuiltBuildings().filter { it.unique!=null }.map { it.unique }
+    fun getBuildingUniques(): List<String?> = cityConstructions.getBuiltBuildings().filter { it.unique != null }.map { it.unique }
 
     fun getGreatPersonPoints(): Stats {
         var greatPersonPoints = population.getSpecialists().times(3f)
@@ -68,7 +67,7 @@ class CityInfo {
             if (building.greatPersonPoints != null)
                 greatPersonPoints.add(building.greatPersonPoints!!)
 
-        if (civInfo.buildingUniques.contains("+33% great person generation in all cities"))
+        if (civInfo.getBuildingUniques().contains("+33% great person generation in all cities"))
             greatPersonPoints = greatPersonPoints.times(1.33f)
         if (civInfo.policies.isAdopted("Entrepreneurship"))
             greatPersonPoints.gold *= 1.25f
@@ -173,4 +172,18 @@ class CityInfo {
     }
 
     override fun toString(): String {return name} // for debug
+
+    fun clone(): CityInfo {
+        val toReturn = CityInfo()
+        toReturn.population = population.clone()
+        toReturn.health=health
+        toReturn.name=name
+        toReturn.tiles.addAll(tiles)
+        toReturn.workedTiles.addAll(workedTiles)
+        toReturn.cityConstructions=cityConstructions.clone()
+        toReturn.expansion = expansion.clone()
+        toReturn.isBeingRazed=isBeingRazed
+        toReturn.location=location
+        return toReturn
+    }
 }
