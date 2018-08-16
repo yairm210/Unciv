@@ -108,7 +108,7 @@ class UnitAutomation{
                 .filter { containsAttackableEnemy(it,unit.civInfo) }
 
         val distanceToTiles = unit.getDistanceToTiles()
-        val rangeOfAttack = if(MapUnitCombatant(unit).isMelee()) 1 else unit.getBaseUnit().range
+        val rangeOfAttack = unit.getRange()
 
         val attackableTiles = ArrayList<AttackableTile>()
         // The >0.1 (instead of >0) solves a bug where you've moved 2/3 road tiles,
@@ -170,20 +170,20 @@ class UnitAutomation{
     }
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
+        if(unit.civInfo.cities.isEmpty()) return false
         var enemyCities = unit.civInfo.exploredTiles.map { unit.civInfo.gameInfo.tileMap[it] }
                 .filter { it.isCityCenter() && it.getOwner() != unit.civInfo }
         if(unit.getBaseUnit().unitType.isRanged())
             enemyCities = enemyCities.filterNot { it.getCity()!!.health==1 }
-        if (enemyCities.isNotEmpty() && unit.civInfo.cities.isNotEmpty()) {
-            val closestReachableEnemyCity = enemyCities
-                    .filter { unit.movementAlgs().canReach(it) }
-                    .minBy { city ->
-                        unit.civInfo.cities.map { HexMath().getDistance(city.position, it.getCenterTile().position) }.min()!!
-                    }
-            if (closestReachableEnemyCity != null) {
-                unit.movementAlgs().headTowards(closestReachableEnemyCity)
-                return true
-            }
+
+        val closestReachableEnemyCity = enemyCities
+                .filter { unit.movementAlgs().canReach(it) }
+                .minBy { city ->
+                    unit.civInfo.cities.map { HexMath().getDistance(city.position, it.getCenterTile().position) }.min()!!
+                }
+        if (closestReachableEnemyCity != null) {
+            unit.movementAlgs().headTowards(closestReachableEnemyCity)
+            return true
         }
         return false
     }

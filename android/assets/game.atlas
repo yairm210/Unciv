@@ -1082,51 +1082,79 @@ UnitPromotionIcons/Drill_I_(Civ5)
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/March_(Civ5)
+UnitPromotionIcons/Indirect_Fire_(Civ5)
   rotate: false
   xy: 940, 418
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_III_(Civ5)
+UnitPromotionIcons/March_(Civ5)
   rotate: false
   xy: 825, 1693
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_II_(Civ5)
+UnitPromotionIcons/Range_(Civ5)
   rotate: false
   xy: 472, 97
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_I_(Civ5)
+UnitPromotionIcons/Scouting_III_(Civ5)
   rotate: false
   xy: 994, 845
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_III_(Civ5)
+UnitPromotionIcons/Scouting_II_(Civ5)
   rotate: false
   xy: 1814, 1479
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_II_(Civ5)
+UnitPromotionIcons/Scouting_I_(Civ5)
   rotate: false
   xy: 940, 396
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_I_(Civ5)
+UnitPromotionIcons/Sentry_(Civ5)
   rotate: false
   xy: 825, 1671
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_III_(Civ5)
+  rotate: false
+  xy: 494, 97
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_II_(Civ5)
+  rotate: false
+  xy: 1836, 1479
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_I_(Civ5)
+  rotate: false
+  xy: 940, 374
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Siege_(Civ5)
+  rotate: false
+  xy: 825, 1649
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

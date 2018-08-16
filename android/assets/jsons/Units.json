@@ -278,7 +278,7 @@
 		range:3,
 		cost: 320,
 		requiredTech:"Dynamite",
-		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
+		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility","Indirect Fire"],
 		hurryCostModifier:20
 	},
 	

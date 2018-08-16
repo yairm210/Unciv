@@ -88,7 +88,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
 
         // XP!
         if(attacker.isMelee()){
-            if(defender.getCivilization() != attacker.getCivilization()) // unit was not captured but actually attacked
+            if(defender.getUnitType()!=UnitType.Civilian) // unit was not captured but actually attacked
             {
                 if (attacker is MapUnitCombatant) attacker.unit.promotions.XP += 5
                 if (defender is MapUnitCombatant) defender.unit.promotions.XP += 4

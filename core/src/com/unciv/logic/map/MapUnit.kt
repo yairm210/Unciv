@@ -221,4 +221,11 @@ class MapUnit {
     fun setTransients(){
         promotions.unit=this
     }
+
+    fun getRange(): Int {
+        if(getBaseUnit().unitType.isMelee()) return 1
+        var range = getBaseUnit().range
+        if(hasUnique("+1 Range")) range++
+        return range
+    }
 }

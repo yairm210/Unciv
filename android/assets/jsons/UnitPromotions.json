@@ -108,5 +108,29 @@
 		effect:"Bonus vs wounded units 33%",
 		unitTypes:["Mounted"]
 	}
+	{
+		name:"Siege",
+		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II"],
+		effect:"Bonus vs City 25%",
+		unitTypes:["Melee","Ranged","Siege","Mounted"]
+	}
+	{
+		name:"Sentry",
+		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II"],
+		effect:"+1 Visibility Range",
+		unitTypes:["Melee","Mounted"]
+	}
+	{
+		name:"Range",
+		prerequisites:["Accuracy III","Barrage III"],
+		effect:"+1 Range",
+		unitTypes:["Ranged","Siege"]
+	}
+	{
+		name:"Indirect Fire",
+		prerequisites:["Accuracy III","Barrage III"],
+		effect:"Ranged attacks may be performed over obstacles",
+		unitTypes:["Ranged","Siege"]
+	}
 	
 ]
