@@ -19,10 +19,10 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         val policies = civInfo.policies
         displayTutorials("PolicyPickerScreen")
 
-        rightSideButton.setText("Adopt policy\r\n(" + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
+        rightSideButton.setText("{Adopt policy}\r\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
 
         if (policies.freePolicies > 0) {
-            rightSideButton.setText("Adopt free policy")
+            rightSideButton.setText("Adopt free policy".tr())
             closeButton.disable()
         }
         else onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
@@ -80,12 +80,12 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             rightSideButton.enable()
         }
         pickedPolicy = policy
-        var policyText = policy.name + "\r\n" + policy.description + "\r\n"
+        var policyText = policy.name.tr() + "\r\n" + policy.description.tr() + "\r\n"
         if (!policy.name.endsWith("Complete")){
             if(policy.requires!!.isNotEmpty())
-                policyText += "Requires " + policy.requires!!.joinToString()
+                policyText += "{Requires} ".tr() + policy.requires!!.map { it.tr() }.joinToString()
             else
-                policyText += "Unlocked at "+policy.getBranch().era+" era"
+                policyText += "{Unlocked at} ".tr()+(policy.getBranch().era.toString()+" era").tr()
         }
         descriptionLabel.setText(policyText)
     }
@@ -96,7 +96,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name.replace(" ", "_") + "_(Civ5).png")
             policyButton.add(policyImage).size(30f)
         } else {
-            policyButton = TextButton(policy.name, CameraStageBaseScreen.skin)
+            policyButton = TextButton(policy.name.tr(), CameraStageBaseScreen.skin)
         }
 
         if (civInfo.policies.isAdopted(policy.name)) { // existing
