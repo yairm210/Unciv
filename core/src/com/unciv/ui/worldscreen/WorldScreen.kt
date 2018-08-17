@@ -83,7 +83,11 @@ class WorldScreen : CameraStageBaseScreen() {
 
 
     fun update() {
-        kotlin.concurrent.thread { civInfo.happiness = civInfo.getHappinessForNextTurn().values.sum().toInt() }
+        val gameClone = gameInfo.clone()
+        // so we don't get a concurrent modification exception, we clone the entire game (yes really, it's actually very fast)
+        kotlin.concurrent.thread {
+            civInfo.happiness = gameClone.getPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()
+        }
 
         if(UnCivGame.Current.settings.hasCrashedRecently){
             displayTutorials("GameCrashed")

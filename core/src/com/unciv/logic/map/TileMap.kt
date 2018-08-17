@@ -84,6 +84,7 @@ class TileMap {
     fun clone(): TileMap {
         val toReturn = TileMap()
         toReturn.tiles.putAll(tiles.values.map { it.clone() }.associateBy{it.position.toString()})
+        setTransients()
         return toReturn
     }
 

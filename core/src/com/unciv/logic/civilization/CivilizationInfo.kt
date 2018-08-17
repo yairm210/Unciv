@@ -321,5 +321,3 @@ class CivilizationInfo {
         return toReturn
     }
 }
-
-

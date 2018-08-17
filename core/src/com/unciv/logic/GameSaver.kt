@@ -2,13 +2,14 @@ package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.utils.Json
 import com.unciv.GameSettings
 import com.unciv.OldGameSettings
 import com.unciv.UnCivGame
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
+
+    fun json() = UnCivGame.Current.json
 
     fun getSave(GameName: String): FileHandle {
         return Gdx.files.local("$saveFilesFolder/$GameName")
@@ -19,11 +20,11 @@ class GameSaver {
     }
 
     fun saveGame(game: GameInfo, GameName: String) {
-        getSave(GameName).writeString(Json().toJson(game), false)
+        getSave(GameName).writeString(json().toJson(game), false)
     }
 
     fun loadGame(GameName: String) : GameInfo {
-        val game = UnCivGame.Current.json.fromJson(GameInfo::class.java, getSave(GameName).readString())
+        val game = json().fromJson(GameInfo::class.java, getSave(GameName).readString())
         game.setTransients()
         return game
     }
@@ -40,14 +41,14 @@ class GameSaver {
         val settingsFile = getGeneralSettingsFile()
         if(!settingsFile.exists()) return GameSettings()
         try {
-            return UnCivGame.Current.json.fromJson(GameSettings::class.java, settingsFile)
+            return json().fromJson(GameSettings::class.java, settingsFile)
         }
         catch(ex:Exception) {
-            return UnCivGame.Current.json.fromJson(OldGameSettings::class.java, settingsFile).toGameSettings()
+            return json().fromJson(OldGameSettings::class.java, settingsFile).toGameSettings()
         }
     }
 
     fun setGeneralSettings(gameSettings: GameSettings){
-        getGeneralSettingsFile().writeString(Json().toJson(gameSettings), false)
+        getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
     }
 }

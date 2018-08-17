@@ -105,6 +105,7 @@ class GameInfo {
         toReturn.tileMap=tileMap.clone()
         toReturn.notifications.addAll(notifications)
         toReturn.turns=turns
+        toReturn.setTransients()
         return toReturn
     }
 }
