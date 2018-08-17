@@ -11,16 +11,28 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 
 class GameInfo {
+    @Transient var tilesToCities = HashMap<TileInfo,CityInfo>()
+
     var notifications = mutableListOf<Notification>()
     @Deprecated("As of 2.6.9") var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
     var turns = 0
-    @Transient var tilesToCities = HashMap<TileInfo,CityInfo>()
 
+    //region pure functions
+    fun clone():GameInfo{
+        val toReturn = GameInfo()
+        toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.tileMap=tileMap.clone()
+        toReturn.notifications.addAll(notifications)
+        toReturn.turns=turns
+        toReturn.setTransients()
+        return toReturn
+    }
 
     fun getPlayerCivilization(): CivilizationInfo = civilizations[0]
     fun getBarbarianCivilization(): CivilizationInfo = civilizations[1]
+    //endregion
 
     fun nextTurn() {
         notifications.clear()
@@ -97,16 +109,6 @@ class GameInfo {
         for (city in civilizations.flatMap { it.cities }){
             for (tile in city.getTiles()) tilesToCities.put(tile,city)
         }
-    }
-
-    fun clone():GameInfo{
-        val toReturn = GameInfo()
-        toReturn.civilizations.addAll(civilizations.map { it.clone() })
-        toReturn.tileMap=tileMap.clone()
-        toReturn.notifications.addAll(notifications)
-        toReturn.turns=turns
-        toReturn.setTransients()
-        return toReturn
     }
 }
 

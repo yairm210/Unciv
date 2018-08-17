@@ -16,13 +16,33 @@ enum class DiplomaticStatus{
 class DiplomacyManager() {
     @Transient lateinit var civInfo: CivilizationInfo
     lateinit var otherCivName:String
+    var trades = ArrayList<Trade>()
+    var diplomaticStatus = DiplomaticStatus.War
+
+    fun clone(): DiplomacyManager {
+        val toReturn = DiplomacyManager()
+        toReturn.otherCivName=otherCivName
+        toReturn.diplomaticStatus=diplomaticStatus
+        toReturn.trades.addAll(trades.map { it.clone() })
+        return toReturn
+    }
 
     constructor(civilizationInfo: CivilizationInfo, OtherCivName:String) : this() {
         civInfo=civilizationInfo
         otherCivName=OtherCivName
     }
 
-    var trades = ArrayList<Trade>()
+    //region pure functions
+    fun turnsToPeaceTreaty(): Int {
+        for(trade in trades)
+            for(offer in trade.ourOffers)
+                if(offer.name=="Peace Treaty") return offer.duration
+        return 0
+    }
+
+    fun canDeclareWar() = turnsToPeaceTreaty()==0
+
+    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
 
     fun goldPerTurn():Int{
         var goldPerTurnForUs = 0
@@ -47,7 +67,9 @@ class DiplomacyManager() {
         }
         return counter
     }
+    //endregion
 
+    //region state-changing functions
     fun removeUntenebleTrades(){
         val negativeCivResources = civInfo.getCivResources().filter { it.value<0 }.map { it.key.name }
         for(trade in trades.toList()) {
@@ -77,28 +99,10 @@ class DiplomacyManager() {
         removeUntenebleTrades()
     }
 
-    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
-
-    var diplomaticStatus = DiplomaticStatus.War
     fun declareWar(){
         diplomaticStatus = DiplomaticStatus.War
         otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
         otherCiv().addNotification("[civName] has declared war on us!",null, Color.RED)
     }
-
-    fun turnsToPeaceTreaty(): Int {
-        for(trade in trades)
-            for(offer in trade.ourOffers)
-                if(offer.name=="Peace Treaty") return offer.duration
-        return 0
-    }
-
-    fun canDeclareWar() = turnsToPeaceTreaty()==0
-    fun clone(): DiplomacyManager {
-        val toReturn = DiplomacyManager()
-        toReturn.otherCivName=otherCivName
-        toReturn.diplomaticStatus=diplomaticStatus
-        toReturn.trades.addAll(trades.map { it.clone() })
-        return toReturn
-    }
+    //endregion
 }

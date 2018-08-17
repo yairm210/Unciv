@@ -5,14 +5,15 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 
 class CityExpansionManager {
-
     @Transient
     lateinit var cityInfo: CityInfo
     var cultureStored: Int = 0
 
-    fun reset() {
-        cityInfo.tiles.clear()
-        cityInfo.getCenterTile().getTilesInDistance(1).forEach { takeOwnership(it) }
+
+    fun clone(): CityExpansionManager {
+        val toReturn = CityExpansionManager()
+        toReturn.cultureStored=cultureStored
+        return toReturn
     }
 
     // This one has conflicting sources -
@@ -27,6 +28,26 @@ class CityExpansionManager {
         if (cityInfo.civInfo.getBuildingUniques().contains("Cost of acquiring new tiles reduced by 25%")) cultureToNextTile *= 0.75 //Speciality of Angkor Wat
         if (cityInfo.civInfo.policies.isAdopted("Tradition")) cultureToNextTile *= 0.75
         return Math.round(cultureToNextTile).toInt()
+    }
+
+
+    fun getNewTile(): TileInfo? {
+        for (i in 2..5) {
+            val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter {
+                it.getOwner() != cityInfo.civInfo
+                        && it.getTilesInDistance(1).none { tile->tile.isCityCenter() } // This SHOULD stop cities from grabbing tiles surrounding a city
+            }
+            if (tiles.isEmpty()) continue
+            val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
+            return chosenTile
+        }
+        return null
+    }
+
+    //region state-changing functions
+    fun reset() {
+        cityInfo.tiles.clear()
+        cityInfo.getCenterTile().getTilesInDistance(1).forEach { takeOwnership(it) }
     }
 
     private fun addNewTileWithCulture() {
@@ -48,18 +69,6 @@ class CityExpansionManager {
                 unit.movementAlgs().teleportToClosestMoveableTile()
     }
 
-    fun getNewTile(): TileInfo? {
-        for (i in 2..5) {
-            val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter {
-                it.getOwner() != cityInfo.civInfo
-                && it.getTilesInDistance(1).none { tile->tile.isCityCenter() } // This SHOULD stop cities from grabbing tiles surrounding a city
-            }
-            if (tiles.isEmpty()) continue
-            val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
-            return chosenTile
-        }
-        return null
-    }
 
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
@@ -68,11 +77,5 @@ class CityExpansionManager {
             cityInfo.civInfo.addNotification(cityInfo.name + " {has expanded its borders}!", cityInfo.location, Color.PURPLE)
         }
     }
-
-    fun clone(): CityExpansionManager {
-        val toReturn = CityExpansionManager()
-        toReturn.cultureStored=cultureStored
-        return toReturn
-    }
-
+    //endregion
 }

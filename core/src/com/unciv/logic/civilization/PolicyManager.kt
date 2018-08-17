@@ -28,14 +28,15 @@ class PolicyManager {
         return cost - (cost % 5)
     }
 
-
     fun getAdoptedPolicies(): HashSet<String> = adoptedPolicies
 
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
-    fun isAdoptable(policy: Policy) = !policy.name.endsWith("Complete")
-            && getAdoptedPolicies().containsAll(policy.requires!!)
-            && policy.getBranch().era <= civInfo.getEra()
+    fun isAdoptable(policy: Policy): Boolean {
+        return (!policy.name.endsWith("Complete")
+                && getAdoptedPolicies().containsAll(policy.requires!!)
+                && policy.getBranch().era <= civInfo.getEra())
+    }
 
     fun canAdoptPolicy(): Boolean = freePolicies > 0 || storedCulture >= getCultureNeededForNextPolicy()
 

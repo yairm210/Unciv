@@ -10,6 +10,14 @@ class GoldenAgeManager{
     private var numberOfGoldenAges = 0
     var turnsLeftForCurrentGoldenAge = 0
 
+    fun clone(): GoldenAgeManager {
+        val toReturn = GoldenAgeManager()
+        toReturn.numberOfGoldenAges=numberOfGoldenAges
+        toReturn.storedHappiness=storedHappiness
+        toReturn.turnsLeftForCurrentGoldenAge=turnsLeftForCurrentGoldenAge
+        return toReturn
+    }
+
     fun isGoldenAge(): Boolean = turnsLeftForCurrentGoldenAge > 0
 
     fun happinessRequiredForNextGoldenAge(): Int {
@@ -36,11 +44,4 @@ class GoldenAgeManager{
         }
     }
 
-    fun clone(): GoldenAgeManager {
-        val toReturn = GoldenAgeManager()
-        toReturn.numberOfGoldenAges=numberOfGoldenAges
-        toReturn.storedHappiness=storedHappiness
-        toReturn.turnsLeftForCurrentGoldenAge=turnsLeftForCurrentGoldenAge
-        return toReturn
-    }
 }

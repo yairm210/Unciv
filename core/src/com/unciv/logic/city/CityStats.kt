@@ -19,6 +19,7 @@ class CityStats {
     @Transient
     lateinit var cityInfo: CityInfo
 
+    //region pure fuctions
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
         for (cell in cityInfo.getTilesInRange().filter { cityInfo.workedTiles.contains(it.position) || cityInfo.location == it.position })
@@ -38,7 +39,6 @@ class CityStats {
         return stats
     }
 
-
     private fun getStatsFromProduction(production: Float): Stats {
         val stats = Stats()
 
@@ -53,7 +53,6 @@ class CityStats {
         }
         return stats
     }
-
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
@@ -178,7 +177,6 @@ class CityStats {
         return stats
     }
 
-
     private fun getStatPercentBonusesFromWonders(): Stats {
         val stats = Stats()
         val civUniques = cityInfo.civInfo.getBuildingUniques()
@@ -207,6 +205,28 @@ class CityStats {
 
         return stats
     }
+
+    fun isConnectedToCapital(roadType: RoadStatus): Boolean {
+        if (cityInfo.civInfo.cities.count() < 2) return false// first city!
+        val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
+        val tilesReached = HashSet<TileInfo>()
+        var tilesToCheck: List<TileInfo> = listOf(cityInfo.getCenterTile())
+        while (tilesToCheck.isNotEmpty()) {
+            val newTiles = tilesToCheck
+                    .flatMap { it.neighbors }.distinct()
+                    .filter {
+                        !tilesReached.contains(it) && !tilesToCheck.contains(it)
+                                && (roadType !== RoadStatus.Road || it.roadStatus !== RoadStatus.None)
+                                && (roadType !== RoadStatus.Railroad || it.roadStatus === roadType)
+                    }
+
+            if (newTiles.contains(capitalTile)) return true
+            tilesReached.addAll(tilesToCheck)
+            tilesToCheck = newTiles
+        }
+        return false
+    }
+    //endregion
 
     fun update() {
         baseStatList = LinkedHashMap<String, Stats>()
@@ -270,25 +290,4 @@ class CityStats {
         if(currentCityStats.production<1) currentCityStats.production=1f
     }
 
-
-    fun isConnectedToCapital(roadType: RoadStatus): Boolean {
-        if (cityInfo.civInfo.cities.count() < 2) return false// first city!
-        val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
-        val tilesReached = HashSet<TileInfo>()
-        var tilesToCheck: List<TileInfo> = listOf(cityInfo.getCenterTile())
-        while (tilesToCheck.isNotEmpty()) {
-            val newTiles = tilesToCheck
-                    .flatMap { it.neighbors }.distinct()
-                    .filter {
-                        !tilesReached.contains(it) && !tilesToCheck.contains(it)
-                                && (roadType !== RoadStatus.Road || it.roadStatus !== RoadStatus.None)
-                                && (roadType !== RoadStatus.Railroad || it.roadStatus === roadType)
-                    }
-
-            if (newTiles.contains(capitalTile)) return true
-            tilesReached.addAll(tilesToCheck)
-            tilesToCheck = newTiles
-        }
-        return false
-    }
 }

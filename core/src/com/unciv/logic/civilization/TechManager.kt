@@ -18,6 +18,16 @@ class TechManager {
     var techsToResearch = ArrayList<String>()
     private var techsInProgress = HashMap<String, Int>()
 
+    //region state-changing functions
+    fun clone(): TechManager {
+        val toReturn = TechManager()
+        toReturn.techsResearched.addAll(techsResearched)
+        toReturn.freeTechs=freeTechs
+        toReturn.techsInProgress.putAll(techsInProgress)
+        toReturn.techsToResearch.addAll(techsToResearch)
+        return toReturn
+    }
+
     private fun getCurrentTechnology(): Technology = GameBasics.Technologies[currentTechnology()]!!
 
     fun costOfTech(techName: String): Int {
@@ -45,6 +55,7 @@ class TechManager {
     fun canBeResearched(TechName: String): Boolean {
         return GameBasics.Technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
+    //endregion
 
     fun nextTurn(scienceForNewTurn: Int) {
         val currentTechnology = currentTechnology()
@@ -91,15 +102,6 @@ class TechManager {
                 val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
-    }
-
-    fun clone(): TechManager {
-        val toReturn = TechManager()
-        toReturn.techsResearched.addAll(techsResearched)
-        toReturn.freeTechs=freeTechs
-        toReturn.techsInProgress.putAll(techsInProgress)
-        toReturn.techsToResearch.addAll(techsToResearch)
-        return toReturn
     }
 }
 

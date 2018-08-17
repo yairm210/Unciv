@@ -28,16 +28,63 @@ class CityInfo {
     var workedTiles = HashSet<Vector2>()
     var isBeingRazed = false
 
+
+    constructor()   // for json parsing, we need to have a default constructor
+    constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
+        this.civInfo = civInfo
+        setTransients()
+
+        // Since cities can be captures between civilizations,
+        // we need to check which other cities exist globally and name accordingly
+        val allExistingCityNames = civInfo.gameInfo.civilizations.flatMap { it.cities }.map { it.name }.toHashSet()
+        val probablyName = civInfo.getNation().cities.firstOrNull { !allExistingCityNames.contains(it) }
+        if(probablyName!=null) name=probablyName
+        else name = civInfo.getNation().cities.map { "New $it" }.first { !allExistingCityNames.contains(it) }
+
+        this.location = cityLocation
+        civInfo.cities.add(this)
+        if(civInfo == civInfo.gameInfo.getPlayerCivilization())
+            civInfo.addNotification("$name {has been founded}!", cityLocation, Color.PURPLE)
+        if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
+        if (civInfo.cities.size == 1) {
+            cityConstructions.builtBuildings.add("Palace")
+            cityConstructions.currentConstruction = "Worker" // Default for first city only!
+        }
+
+        expansion.reset()
+        civInfo.gameInfo.updateTilesToCities()
+
+        val tile = getCenterTile()
+        tile.roadStatus = RoadStatus.Railroad
+        if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
+            tile.terrainFeature = null
+
+        population.autoAssignPopulation()
+        cityStats.update()
+    }
+
+    //region pure functions
+    fun clone(): CityInfo {
+        val toReturn = CityInfo()
+        toReturn.population = population.clone()
+        toReturn.health=health
+        toReturn.name=name
+        toReturn.tiles.addAll(tiles)
+        toReturn.workedTiles.addAll(workedTiles)
+        toReturn.cityConstructions=cityConstructions.clone()
+        toReturn.expansion = expansion.clone()
+        toReturn.isBeingRazed=isBeingRazed
+        toReturn.location=location
+        return toReturn
+    }
+
     internal val tileMap: TileMap
         get() = civInfo.gameInfo.tileMap
 
     fun getCenterTile(): TileInfo = tileMap[location]
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
-
     fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
 
-
-    // Remove resources required by buildings
     fun getCityResources(): Counter<TileResource> {
         val cityResources = Counter<TileResource>()
 
@@ -77,49 +124,22 @@ class CityInfo {
         return greatPersonPoints
     }
 
-    constructor()   // for json parsing, we need to have a default constructor
+    fun isCapital() = cityConstructions.isBuilt("Palace")
 
-
-    constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
-        this.civInfo = civInfo
-        setTransients()
-
-        // Since cities can be captures between civilizations,
-        // we need to check which other cities exist globally and name accordingly
-        val allExistingCityNames = civInfo.gameInfo.civilizations.flatMap { it.cities }.map { it.name }.toHashSet()
-        val probablyName = civInfo.getNation().cities.firstOrNull { !allExistingCityNames.contains(it) }
-        if(probablyName!=null) name=probablyName
-        else name = civInfo.getNation().cities.map { "New $it" }.first { !allExistingCityNames.contains(it) }
-
-        this.location = cityLocation
-        civInfo.cities.add(this)
-        if(civInfo == civInfo.gameInfo.getPlayerCivilization())
-            civInfo.addNotification("$name {has been founded}!", cityLocation, Color.PURPLE)
-        if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
-        if (civInfo.cities.size == 1) {
-            cityConstructions.builtBuildings.add("Palace")
-            cityConstructions.currentConstruction = "Worker" // Default for first city only!
-        }
-
-        expansion.reset()
-        civInfo.gameInfo.updateTilesToCities()
-
-        val tile = getCenterTile()
-        tile.roadStatus = RoadStatus.Railroad
-        if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
-            tile.terrainFeature = null
-
-        population.autoAssignPopulation()
-        cityStats.update()
+    internal fun getMaxHealth(): Int {
+        return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
     }
 
+    override fun toString(): String {return name} // for debug
+    //endregion
+
+    //region state-changing functions
     fun setTransients() {
         population.cityInfo = this
         expansion.cityInfo = this
         cityStats.cityInfo = this
         cityConstructions.cityInfo = this
     }
-
 
     fun endTurn() {
         val stats = cityStats.currentCityStats
@@ -146,8 +166,6 @@ class CityInfo {
         population.unassignExtraPopulation()
     }
 
-    fun isCapital() = cityConstructions.isBuilt("Palace")
-
     fun moveToCiv(newCivInfo: CivilizationInfo){
         civInfo.cities.remove(this)
         newCivInfo.cities.add(this)
@@ -166,24 +184,5 @@ class CityInfo {
 
         civInfo.gameInfo.updateTilesToCities()
     }
-
-    internal fun getMaxHealth(): Int {
-        return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
-    }
-
-    override fun toString(): String {return name} // for debug
-
-    fun clone(): CityInfo {
-        val toReturn = CityInfo()
-        toReturn.population = population.clone()
-        toReturn.health=health
-        toReturn.name=name
-        toReturn.tiles.addAll(tiles)
-        toReturn.workedTiles.addAll(workedTiles)
-        toReturn.cityConstructions=cityConstructions.clone()
-        toReturn.expansion = expansion.clone()
-        toReturn.isBeingRazed=isBeingRazed
-        toReturn.location=location
-        return toReturn
-    }
+    //endregion
 }

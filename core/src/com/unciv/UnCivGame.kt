@@ -20,7 +20,6 @@ class UnCivGame : Game() {
      */
     val viewEntireMapForDebug = false
 
-
     lateinit var worldScreen: WorldScreen
 
     override fun create() {
@@ -72,9 +71,7 @@ class UnCivGame : Game() {
         setWorldScreen()
     }
 
-
     companion object {
         lateinit var Current: UnCivGame
     }
-
 }

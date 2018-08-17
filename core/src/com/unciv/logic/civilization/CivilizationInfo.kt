@@ -22,30 +22,51 @@ import kotlin.math.roundToInt
 
 
 class CivilizationInfo {
-
-    @Transient
-    lateinit var gameInfo: GameInfo
+    @Transient lateinit var gameInfo: GameInfo
 
     var gold = 0
     var happiness = 15
     var difficulty = "Chieftain"
     var civName = "Babylon"
-
     var tech = TechManager()
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
     var diplomacy = HashMap<String,DiplomacyManager>()
-
     var cities = ArrayList<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
 
+    constructor()
+
+    constructor(civName: String, startingLocation: Vector2, gameInfo: GameInfo) {
+        this.civName = civName
+        this.gameInfo = gameInfo
+        tech.techsResearched.add("Agriculture")
+        this.placeUnitNearTile(startingLocation, "Settler")
+        this.placeUnitNearTile(startingLocation, "Scout")
+    }
+
+    fun clone(): CivilizationInfo {
+        val toReturn = CivilizationInfo()
+        toReturn.exploredTiles=exploredTiles.toHashSet()
+        toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
+        toReturn.cities.addAll(cities.map { it.clone() })
+        toReturn.tech = tech.clone()
+        toReturn.difficulty=difficulty
+        toReturn.policies = policies.clone()
+        toReturn.happiness=happiness
+        toReturn.greatPeople=greatPeople.clone()
+        toReturn.gold = gold
+        toReturn.goldenAges = goldenAges.clone()
+        toReturn.civName=civName
+        return toReturn
+    }
+
+    //region pure functions
     fun getDifficulty() =  GameBasics.Difficulties[difficulty]!!
     fun getNation() = GameBasics.Nations[civName]!!
-
     fun getCapital()=cities.first { it.isCapital() }
-
     fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
 
@@ -118,7 +139,6 @@ class CivilizationInfo {
         return transportationUpkeep
     }
 
-    // base happiness
     fun getHappinessForNextTurn(): HashMap<String, Float> {
         val statMap = HashMap<String,Float>()
         statMap["Base happiness"] = getDifficulty().baseHappiness.toFloat()
@@ -153,17 +173,56 @@ class CivilizationInfo {
 
     fun getBuildingUniques(): List<String> = cities.flatMap { it.cityConstructions.getBuiltBuildings().map { it.unique }.filterNotNull() }.distinct()
 
-
-    constructor()
-
-    constructor(civName: String, startingLocation: Vector2, gameInfo: GameInfo) {
-        this.civName = civName
-        this.gameInfo = gameInfo
-        tech.techsResearched.add("Agriculture")
-        this.placeUnitNearTile(startingLocation, "Settler")
-        this.placeUnitNearTile(startingLocation, "Scout")
+    fun getCivUnits(): List<MapUnit> {
+        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.owner==civName }
     }
 
+    fun getViewableTiles(): List<TileInfo> {
+        var viewablePositions = emptyList<TileInfo>()
+        viewablePositions += cities.flatMap { it.getTiles() }
+                        .flatMap { it.neighbors } // tiles adjacent to city tiles
+        viewablePositions += getCivUnits()
+                .flatMap { it.getViewableTiles()} // Tiles within 2 tiles of units
+        viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
+
+        val viewedCivs = viewablePositions
+                .flatMap { it.getUnits().map { u->u.civInfo }.union(listOf(it.getOwner())) }
+                .filterNotNull().filterNot { it==this || it.isBarbarianCivilization() }
+
+        for(otherCiv in viewedCivs)
+            if(!diplomacy.containsKey(otherCiv.civName)){
+                diplomacy[otherCiv.civName] = DiplomacyManager(this@CivilizationInfo,otherCiv.civName)
+                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
+                otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv,civName)
+                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
+                addNotification("We have encountered [${otherCiv.civName}]!".tr(),null, Color.GOLD)
+            }
+
+        return viewablePositions.distinct()
+    }
+
+    override fun toString(): String {return civName} // for debug
+
+    fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
+    fun getEra(): TechEra {
+        val maxEraOfTech =  tech.techsResearched.map { GameBasics.Technologies[it]!! }
+                .map { it.era() }
+                .max()
+        if(maxEraOfTech!=null) return maxEraOfTech
+        else return TechEra.Ancient
+    }
+
+    fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
+        if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
+        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
+            return false
+        return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
+    }
+
+    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus==DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+    //endregion
+
+    //region state-changing functions
     fun setTransients() {
         goldenAges.civInfo = this
         policies.civInfo = this
@@ -183,11 +242,6 @@ class CivilizationInfo {
             cityInfo.setTransients()
             cityInfo.civInfo = this
         }
-    }
-
-    fun addCity(location: Vector2) {
-        val newCity = CityInfo(this, location)
-        newCity.cityConstructions.chooseNextConstruction()
     }
 
     fun endTurn() {
@@ -236,6 +290,17 @@ class CivilizationInfo {
         getCivUnits().forEach { it.startTurn() }
     }
 
+    fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
+        if(otherCiv==this) return true
+        if(isAtWarWith(otherCiv)) return true
+        return false
+    }
+
+    fun addNotification(text: String, location: Vector2?,color: Color) {
+        if(isPlayerCivilization())
+            gameInfo.notifications.add(Notification(text, location,color))
+    }
+
     fun addGreatPerson(greatPerson: String) {
         val randomCity = cities.getRandom()
         placeUnitNearTile(cities.getRandom().location, greatPerson)
@@ -246,78 +311,10 @@ class CivilizationInfo {
         return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
     }
 
-    fun getCivUnits(): List<MapUnit> {
-        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.owner==civName }
+    fun addCity(location: Vector2) {
+        val newCity = CityInfo(this, location)
+        newCity.cityConstructions.chooseNextConstruction()
     }
 
-    fun getViewableTiles(): List<TileInfo> {
-        var viewablePositions = emptyList<TileInfo>()
-        viewablePositions += cities.flatMap { it.getTiles() }
-                        .flatMap { it.neighbors } // tiles adjacent to city tiles
-        viewablePositions += getCivUnits()
-                .flatMap { it.getViewableTiles()} // Tiles within 2 tiles of units
-        viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
-
-        val viewedCivs = viewablePositions
-                .flatMap { it.getUnits().map { u->u.civInfo }.union(listOf(it.getOwner())) }
-                .filterNotNull().filterNot { it==this || it.isBarbarianCivilization() }
-
-        for(otherCiv in viewedCivs)
-            if(!diplomacy.containsKey(otherCiv.civName)){
-                diplomacy[otherCiv.civName] = DiplomacyManager(this@CivilizationInfo,otherCiv.civName)
-                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
-                otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv,civName)
-                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
-                addNotification("We have encountered [${otherCiv.civName}]!".tr(),null, Color.GOLD)
-            }
-
-        return viewablePositions.distinct()
-    }
-
-    fun addNotification(text: String, location: Vector2?,color: Color) {
-        if(isPlayerCivilization())
-            gameInfo.notifications.add(Notification(text, location,color))
-    }
-
-    override fun toString(): String {return civName} // for debug
-
-    fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
-    fun getEra(): TechEra {
-        val maxEraOfTech =  tech.techsResearched.map { GameBasics.Technologies[it]!! }
-                .map { it.era() }
-                .max()
-        if(maxEraOfTech!=null) return maxEraOfTech
-        else return TechEra.Ancient
-    }
-
-    fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
-        if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
-        if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
-            return false
-        return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
-    }
-
-    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus==DiplomaticStatus.War && !it.otherCiv().isDefeated() }
-
-    fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
-        if(otherCiv==this) return true
-        if(isAtWarWith(otherCiv)) return true
-        return false
-    }
-
-    fun clone(): CivilizationInfo {
-        val toReturn = CivilizationInfo()
-        toReturn.exploredTiles=exploredTiles.toHashSet()
-        toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
-        toReturn.cities.addAll(cities.map { it.clone() })
-        toReturn.tech = tech.clone()
-        toReturn.difficulty=difficulty
-        toReturn.policies = policies.clone()
-        toReturn.happiness=happiness
-        toReturn.greatPeople=greatPeople.clone()
-        toReturn.gold = gold
-        toReturn.goldenAges = goldenAges.clone()
-        toReturn.civName=civName
-        return toReturn
-    }
+    //endregion
 }

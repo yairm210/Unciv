@@ -17,6 +17,14 @@ class CityConstructions {
     private val inProgressConstructions = HashMap<String, Int>()
     var currentConstruction: String = "Monument" // default starting building!
 
+    //region pure functions
+    fun clone(): CityConstructions {
+        val toReturn = CityConstructions()
+        toReturn.currentConstruction=currentConstruction
+        toReturn.builtBuildings.addAll(builtBuildings)
+        toReturn.inProgressConstructions.putAll(inProgressConstructions)
+        return toReturn
+    }
 
     internal fun getBuildableBuildings(): List<Building> = GameBasics.Buildings.values
             .filter { it.isBuildable(this) }
@@ -24,7 +32,6 @@ class CityConstructions {
     fun getConstructableUnits() = GameBasics.Units.values
             .filter { it.isBuildable(this) }
 
-    // Library and public school unique (not actualy unique, though...hmm)
     fun getStats(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
@@ -58,7 +65,7 @@ class CityConstructions {
 
     fun getAmountConstructedText(): String =
             if (SpecialConstruction.getSpecialConstructions().any { it.name== currentConstruction}) ""
-            else " (" + workDone(currentConstruction) + "/" +
+            else " (" + getWorkDone(currentConstruction) + "/" +
                 getCurrentConstruction().getProductionCost(cityInfo.civInfo.policies.adoptedPolicies) + ")"
 
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstruction)
@@ -82,6 +89,26 @@ class CityConstructions {
 
     internal fun getBuiltBuildings(): List<Building> = builtBuildings.map { GameBasics.Buildings[it]!! }
 
+
+    private fun getWorkDone(constructionName: String): Int {
+        if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
+        else return 0
+    }
+
+    fun turnsToConstruction(constructionName: String): Int {
+        val productionCost = getConstruction(constructionName).getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
+
+        val workLeft = (productionCost - getWorkDone(constructionName)).toFloat() // needs to be float so that we get the cieling properly ;)
+
+        val cityStats = cityInfo.cityStats.currentCityStats
+        var production = Math.round(cityStats.production)
+        if (constructionName == Settler) production += cityStats.food.toInt()
+
+        return Math.ceil((workLeft / production.toDouble())).toInt()
+    }
+    //endregion
+
+    //region state0changing functions
     fun addConstruction(constructionToAdd: Int) {
         if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions[currentConstruction] = 0
         inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + constructionToAdd
@@ -126,23 +153,6 @@ class CityConstructions {
 
     }
 
-    private fun workDone(constructionName: String): Int {
-        if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
-        else return 0
-    }
-
-    fun turnsToConstruction(constructionName: String): Int {
-        val productionCost = getConstruction(constructionName).getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
-
-        val workLeft = (productionCost - workDone(constructionName)).toFloat() // needs to be float so that we get the cieling properly ;)
-
-        val cityStats = cityInfo.cityStats.currentCityStats
-        var production = Math.round(cityStats.production)
-        if (constructionName == Settler) production += cityStats.food.toInt()
-
-        return Math.ceil((workLeft / production.toDouble())).toInt()
-    }
-
     fun purchaseBuilding(buildingName: String) {
         cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo.policies.adoptedPolicies)
         getConstruction(buildingName).postBuildEvent(this)
@@ -161,21 +171,14 @@ class CityConstructions {
             Automation().chooseNextConstruction(this)
     }
 
-    companion object {
-        internal const val Worker = "Worker"
-        internal const val Settler = "Settler"
-    }
-
     fun chooseNextConstruction() {
         Automation().chooseNextConstruction(this)
     }
+    //endregion
 
-    fun clone(): CityConstructions {
-        val toReturn = CityConstructions()
-        toReturn.currentConstruction=currentConstruction
-        toReturn.builtBuildings.addAll(builtBuildings)
-        toReturn.inProgressConstructions.putAll(inProgressConstructions)
-        return toReturn
+    companion object {
+        internal const val Worker = "Worker"
+        internal const val Settler = "Settler"
     }
 
 } // for json parsing, we need to have a default constructor

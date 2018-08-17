@@ -7,13 +7,20 @@ import com.unciv.models.stats.Stats
 import kotlin.math.roundToInt
 
 class PopulationManager {
-
     @Transient
     lateinit var cityInfo: CityInfo
+
     var population = 1
     var foodStored = 0
-
     var buildingsSpecialists = HashMap<String, Stats>()
+
+    //region pure functions
+    fun clone(): PopulationManager {
+        val toReturn = PopulationManager()
+        toReturn.population=population
+        toReturn.foodStored=foodStored
+        return toReturn
+    }
 
     fun getSpecialists(): Stats {
         val allSpecialists = Stats()
@@ -27,13 +34,10 @@ class PopulationManager {
         return (specialists.science + specialists.production + specialists.culture + specialists.gold).toInt()
     }
 
-
-    // 1 is the city center
     fun getFreePopulation(): Int {
         val workingPopulation = cityInfo.workedTiles.size
         return population - workingPopulation - getNumberOfSpecialists()
     }
-
 
     fun getFoodToNextPopulation(): Int {
         // civ v math, civilization.wikia
@@ -43,6 +47,7 @@ class PopulationManager {
         return foodRequired.toInt()
     }
 
+    //endregion
 
     fun nextTurn(food: Float) {
         foodStored += food.roundToInt()
@@ -87,13 +92,6 @@ class PopulationManager {
                     .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
             cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
         }
-    }
-
-    fun clone(): PopulationManager {
-        val toReturn = PopulationManager()
-        toReturn.population=population
-        toReturn.foodStored=foodStored
-        return toReturn
     }
 
 }

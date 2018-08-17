@@ -7,6 +7,14 @@ class GreatPersonManager {
     private var greatPersonPoints = Stats()
     var freeGreatPeople=0
 
+    fun clone(): GreatPersonManager {
+        val toReturn = GreatPersonManager()
+        toReturn.freeGreatPeople=freeGreatPeople
+        toReturn.greatPersonPoints=greatPersonPoints.clone()
+        toReturn.pointsForNextGreatPerson=pointsForNextGreatPerson
+        return toReturn
+    }
+
     fun getNewGreatPerson(): String? {
         var greatPerson: String? = null
         when {
@@ -27,12 +35,5 @@ class GreatPersonManager {
         greatPersonPoints.add(greatPersonPoints)
     }
 
-    fun clone(): GreatPersonManager {
-        val toReturn = GreatPersonManager()
-        toReturn.freeGreatPeople=freeGreatPeople
-        toReturn.greatPersonPoints=greatPersonPoints.clone()
-        toReturn.pointsForNextGreatPerson=pointsForNextGreatPerson
-        return toReturn
-    }
 
 }
