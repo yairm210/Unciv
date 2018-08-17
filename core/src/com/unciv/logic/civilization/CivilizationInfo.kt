@@ -23,6 +23,7 @@ import kotlin.math.roundToInt
 
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
+    @Transient var units=ArrayList<MapUnit>()
 
     var gold = 0
     var happiness = 15
@@ -174,7 +175,7 @@ class CivilizationInfo {
     fun getBuildingUniques(): List<String> = cities.flatMap { it.cityConstructions.getBuiltBuildings().map { it.unique }.filterNotNull() }.distinct()
 
     fun getCivUnits(): List<MapUnit> {
-        return gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.owner==civName }
+        return units
     }
 
     fun getViewableTiles(): List<TileInfo> {
@@ -232,11 +233,10 @@ class CivilizationInfo {
         tech.civInfo = this
         diplomacy.values.forEach { it.civInfo=this}
 
-        for (unit in getCivUnits()) {
-            unit.civInfo=this
+        for (unit in gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.owner==civName }) {
+            unit.assignOwner(this)
             unit.setTransients()
         }
-
 
         for (cityInfo in cities) {
             cityInfo.setTransients()
@@ -255,7 +255,7 @@ class CivilizationInfo {
                 var civMilitaryUnits = getCivUnits().filter { it.baseUnit().unitType != UnitType.Civilian }
                 if (civMilitaryUnits.isNotEmpty()) {
                     val unitToDisband = civMilitaryUnits.first()
-                    unitToDisband.removeFromTile()
+                    unitToDisband.destroy()
                     civMilitaryUnits -= unitToDisband
                     addNotification("Cannot provide unit upkeep for " + unitToDisband.name + " - unit has been disbanded!".tr(), null, Color.RED)
                 }

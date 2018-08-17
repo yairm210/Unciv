@@ -41,11 +41,9 @@ class TileMap {
 
     }
 
-
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
-        unit.owner = civInfo.civName
-        unit.civInfo = civInfo
+        unit.assignOwner(civInfo)
         val tilesInDistance = getTilesInDistance(position, 2)
         val unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
         if(unitToPlaceTile!=null) unit.putInTile(unitToPlaceTile)

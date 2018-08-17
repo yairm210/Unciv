@@ -120,7 +120,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
             if(enemyCiv.isDefeated()) {
                 gameInfo.getPlayerCivilization()
                         .addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
-                enemyCiv.getCivUnits().forEach { it.removeFromTile() }
+                enemyCiv.getCivUnits().forEach { it.destroy() }
             }
             else if(enemyCiv.cities.isNotEmpty()){
                 enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace
@@ -145,7 +145,8 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         val capturedUnit = (defender as MapUnitCombatant).unit
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
-        capturedUnit.civInfo = attacker.getCivilization()
-        capturedUnit.owner = capturedUnit.civInfo.civName
+
+        capturedUnit.civInfo.units.remove(capturedUnit)
+        capturedUnit.assignOwner(attacker.getCivilization())
     }
 }
