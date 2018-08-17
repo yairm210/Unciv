@@ -3343,83 +3343,223 @@
 		Russian:"+15% роста и +2 еды во всех городах"
 	}
 	// And so on for all the policies. I can't be bothered to add them all now...
-	"Liberty":{}
-	"+1 culture in evey city":{}
-	"Collective Rule":{}
-	"Training of settlers increaed +50% in capital, recieve a new settler near capital":{}
-	"Citizenship":{}
-	"+25% construction rate of workers, recieve free worker near the capital":{}
-	"Republic":{}
-	"+1 construction in every city, +5% construction when constructing buildings":{}
-	"Representation":{}
-	"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.":{}
-	"Meritocracy":{}
-	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{}
-	"Liberty Complete":{}
-	"Free Great Person of choice near capital":{}
+	"Liberty":{
+		Russian:"Воля"
+	}
+	"+1 culture in every city":{
+		Russian:"+1 культура во всех городах"
+	}
+	"Collective Rule":{
+		Russian:"Совместное управление"
+	}
+	"Training of settlers increaed +50% in capital, recieve a new settler near capital":{
+		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
+	}
+	"Citizenship":{
+		Russian:"Гражданство"
+	}
+	"+25% construction rate of workers, recieve free worker near the capital":{
+		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
+	}
+	"Republic":{
+		Russian:"Республика"
+	}
+	"+1 construction in every city, +5% construction when constructing buildings":{
+		Russian:"Увеличивает н 1% производство во всех городах и на 5% производство при строительстве зданий"
+	}
+	"Representation":{
+		Russian:"Представительство"
+	}
+	"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.":{
+		Russian:"Каждый основанный город на 33% меньше увеличивает цену общественных институтов. Начинает в державе золотой век."
+	}
+	"Meritocracy":{
+		Russian:"Меритократия"
+	}
+	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{
+		Russian:"Улучшает на 1 настроение каждого города свзяанного со столицей. Уменьшает недовольство от граждан на 5%"
+	}
+	"Liberty Complete":{
+		Russian:"Воля Завершена"
+	}
+	"Free Great Person of choice near capital":{
+		Russian:"Бесплатный Великий Человек по выбору рядом со столицей"
+	}
 	
 	// Piety branch
-	"Piety":{}
-	"Building time of culture buildings reduced by 15%":{}
-	"Organized Religion":{}
-	"+1 happiness for each monument, temple and monastery":{}
-	"Mandate Of Heaven":{}
-	"50% of excess happiness added to culture towards policies":{}
-	"Theocracy":{}
-	"Temples give +10% gold":{}
-	"Reformation":{}
-	"+33% culture in all cities with a world wonder, immediately enter a golden age":{}
-	"Free Religion":{}
-	"+1 culture for each monument, temple and monastery. Gain a free policy.":{}
-	"Piety Complete":{}
-	"Reduce culture cost of future policies by 10%":{}
+	"Piety":{
+		Russian:"Набожность"
+	}
+	"Building time of culture buildings reduced by 15%":{
+		Russian:"Время строительства культурных зданий уменьшена на 15%"
+	}
+	"Organized Religion":{
+		Russian:"Организованная религия"
+	}
+	"+1 happiness for each monument, temple and monastery":{
+		Russian:"+1 счастья за каждый монумент, храм и монастырь"
+	}
+	"Mandate Of Heaven":{
+		Russian:"Небесный мандат"
+	}
+	"50% of excess happiness added to culture towards policies":{
+		Russian:"50% избытка счатья прибавляется к культуре для попкупки общественных институтов"
+	}
+	"Theocracy":{
+		Russian:"Теократия"
+	}
+	"Temples give +10% gold":{
+		Russian:"Храмы увеличивают на 10% приток золота в городах"
+	}
+	"Reformation":{
+		Russian:"Реформация"
+	}
+	"+33% culture in all cities with a world wonder, immediately enter a golden age":{
+		Russian:"+33% культуры во всез городах с чудом света, начинает в державе золотой век"
+	}
+	"Free Religion":{
+		Russian:"Веротерпимость"
+	}
+	"+1 culture for each monument, temple and monastery. Gain a free policy.":{
+		Russian:"+1 культура за каждый монумент, храм и монастырь. Даёт бесплатный общественный институт"
+	}
+	"Piety Complete":{
+		Russian:"Набожность завершена"
+	}
+	"Reduce culture cost of future policies by 10%":{
+		Russian:"Уменьшает цену будущих общественных институтов на 10%"
+	}
 	
 	// Commerce branch
-	"Commerce":{}
-	"+25% gold in capital":{}
-	"Trade Unions":{}
-	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{}
-	"Mercantilism":{}
-	"-25% to purchasing items in cities":{}
-	"Entrepreneurship":{}
-	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{}
-	"Patronage":{}
-	"Cost of purchasing culture buildings reduced by 50%":{}
-	"Protectionism":{}
-	"+1 happiness from each luxury resource":{}
-	"Commerce Complete":{}
-	"+1 gold from each specialist":{}
+	"Commerce":{
+		Russian:"Коммерция"
+	}
+	"+25% gold in capital":{
+		Russian:"+25% золота в столице"
+	}
+	"Trade Unions":{
+		Russian:"Караваны фургонов"
+	}
+	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
+		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
+	}
+	"Mercantilism":{
+		Russian:"Меркантилизм"
+	}
+	"-25% to purchasing items in cities":{
+		Russian:"-25% цены покупок в городах"
+	}
+	"Entrepreneurship":{
+		Russian:"Предпринимательство"
+	}
+	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{
+		Russian:"Великие торговцы появляют на 25% быстрее, +1 наука от каждого Монетного двора, Рынка, Банка и Биржи"
+	}
+	"Patronage":{
+		Russian:"Меценатство"
+	}
+	"Cost of purchasing culture buildings reduced by 50%":{
+		Russian:"Цена покупки культурных строений уменьшена на 50%"
+	}
+	"Protectionism":{
+		Russian:"Протекционизм"
+	}
+	"+1 happiness from each luxury resource":{
+		Russian:"+1 к счастью от каждого редкого ресурса"
+	}
+	"Commerce Complete":{
+		Russian:"Коммерция завершена"
+	}
+	"+1 gold from each specialist":{
+		Russian:"+1 золота от каждого специалиста"
+	}
 	
 	//Rationalism branch
-	"Rationalism":{}
-	"Production to science conversion in cities increased by 33%":{}
-	"Secularism":{}
-	"+2 science from every specialist":{}
-	"Humanism":{}
-	"+1 happiness from every university, observatory and public school":{}
-	"Free Thought":{}
-	"+1 science from every trading post, +17% science from universities":{}
-	"Sovereignty":{}
-	"+15% science while empire is happy":{}
-	"Scientific Revolution":{}
-	"Gain 2 free technologies":{}
-	"Rationalism Complete":{}
-	"+1 gold from all science buildings":{}
+	"Rationalism":{
+		Russian:"Рационализм"
+	}
+	"Production to science conversion in cities increased by 33%":{
+		Russian:"Перевод городского производства в науку увеличен на 33%"
+	}
+	"Secularism":{
+		Russian:"Секуляризм"
+	}
+	"+2 science from every specialist":{
+		Russian:"+2 науки от каждого специалиста"
+	}
+	"Humanism":{
+		Russian:"Гуманизм"
+	}
+	"+1 happiness from every university, observatory and public school":{
+		Russian:"+1 счатье от каждого университета, обсерватории и школы"
+	}
+	"Free Thought":{
+		Russian:"Свободомыслие"
+	}
+	"+1 science from every trading post, +17% science from universities":{
+		Russian:"+1 наука от каждого торгового поста, +17% науки от университетов"
+	}
+	"Sovereignty":{
+		Russian:"Суверинетет"
+	}
+	"+15% science while empire is happy":{
+		Russian:"+15% науки, когда империя счастлива"
+	}
+	"Scientific Revolution":{
+		Russian:"Научная Революция"
+	}
+	"Gain 2 free technologies":{
+		Russian:"Даёт 2 бесплатные технологии"
+	}
+	"Rationalism Complete":{
+		Russian:"Рационализм завершён"
+	}
+	"+1 gold from all science buildings":{
+		Russian:"+1 золото от всех научных зданий"
+	}
 	
 	// Freedom branch
-	"Freedom":{}
-	"+25% great people rate":{}
-	"Constitution":{}
-	"+2 culture from each wonder":{}
-	"Universal Suffrage":{}
-	"+1 production per 5 population":{}
-	"Civil Society":{}
-	"-50% food consumption by specialists":{}
-	"Free Speech":{}
-	"+1 culture for every 2 citizens":{}
-	"Democracy":{}
-	"Specialists produce half normal unhappiness":{}
-	"Freedom Complete":{}
-	"Tile yield from great improvement +100%, golden ages increase by 50%":{}
+	"Freedom":{
+		Russian:"Свобода"
+	}
+	"+25% great people rate":{
+		Russian:"+25% к скорости появления великих людей"
+	}
+	"Constitution":{
+		Russian:"Конституция"
+	}
+	"+2 culture from each wonder":{
+		Russian:"+2 культуры от каждого чуда"
+	}
+	"Universal Suffrage":{
+		Russian:"Всеобщее избирательное право"
+	}
+	"+1 production per 5 population":{
+		Russian:"+1 производство за каждые 5 единиц населения"
+	}
+	"Civil Society":{
+		Russian:"Гражданское общество"
+	}
+	"-50% food consumption by specialists":{
+		Russian:"-50% потребления еды специалистами"
+	}
+	"Free Speech":{
+		Russian:"Свобода слова"
+	}
+	"+1 culture for every 2 citizens":{
+		Russian:"+1 культура за каждых 2 жителей"
+	}
+	"Democracy":{
+		Russian:"Демократия"
+	}
+	"Specialists produce half normal unhappiness":{
+		Russian:"Специалисты производят в половину меньше недовольства"
+	}
+	"Freedom Complete":{
+		Russian:"Свобода завершена"
+	}
+	"Tile yield from great improvement +100%, golden ages increase by 50%":{
+		Russian:"Доход клетки от великих улучшений +100%, золотые века увеличены на 50%"
+	}
 	
 }
