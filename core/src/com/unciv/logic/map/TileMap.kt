@@ -8,28 +8,31 @@ import com.unciv.models.gamebasics.GameBasics
 
 class TileMap {
 
-    @Transient
-    lateinit var gameInfo: GameInfo
+    @Transient lateinit var gameInfo: GameInfo
+    @Transient private var tileMap = HashMap<String, TileInfo>()
 
+    @Deprecated("as of 2.7.10")
     private var tiles = HashMap<String, TileInfo>()
+
+    private var tileList = ArrayList<TileInfo>()
 
     constructor()  // for json parsing, we need to have a default constructor
 
-    val values: MutableCollection<TileInfo>
-        get() = tiles.values
+    val values: Collection<TileInfo>
+        get() = tileList
 
 
     constructor(distance: Int) {
-        tiles = SeedRandomMapGenerator().generateMap(distance)
+        tileList.addAll(SeedRandomMapGenerator().generateMap(distance).values)
         setTransients()
     }
 
     operator fun contains(vector: Vector2): Boolean {
-        return tiles.containsKey(vector.toString())
+        return tileMap.containsKey(vector.toString())
     }
 
     operator fun get(vector: Vector2): TileInfo {
-        return tiles[vector.toString()]!!
+        return tileMap[vector.toString()]!!
     }
 
     fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
@@ -61,6 +64,11 @@ class TileMap {
     }
 
     fun setTransients() {
+        if(tiles.any()) //
+            tileList.addAll(tiles.values)
+
+        tileMap.putAll(tileList.associateBy { it.position.toString() })
+
         for (tileInfo in values){
             tileInfo.tileMap = this
             if(tileInfo.militaryUnit!=null) tileInfo.militaryUnit!!.currentTile = tileInfo
@@ -81,8 +89,7 @@ class TileMap {
 
     fun clone(): TileMap {
         val toReturn = TileMap()
-        toReturn.tiles.putAll(tiles.values.map { it.clone() }.associateBy{it.position.toString()})
-        setTransients()
+        toReturn.tileList.addAll(tileList.map { it.clone() })
         return toReturn
     }
 
