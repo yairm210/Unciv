@@ -2,14 +2,14 @@ package com.unciv.logic
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.utils.Json
 import com.unciv.GameSettings
 import com.unciv.OldGameSettings
-import com.unciv.UnCivGame
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
 
-    fun json() = UnCivGame.Current.json
+    fun json() = Json().apply { setIgnoreDeprecated(true); setIgnoreUnknownFields(true) } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
     fun getSave(GameName: String): FileHandle {
         return Gdx.files.local("$saveFilesFolder/$GameName")

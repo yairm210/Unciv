@@ -2,7 +2,6 @@ package com.unciv
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.Json
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
@@ -12,7 +11,6 @@ import com.unciv.ui.worldscreen.WorldScreen
 class UnCivGame : Game() {
     var gameInfo: GameInfo = GameInfo()
     lateinit var settings : GameSettings
-    val json = Json().apply { setIgnoreDeprecated(true); setIgnoreUnknownFields(true) }
 
     /**
      * This exists so that when debugging we can see the entire map.

@@ -17,7 +17,6 @@ open class TileInfo {
 
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
-    fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
@@ -28,6 +27,25 @@ open class TileInfo {
 
     var roadStatus = RoadStatus.None
     var turnsToImprovement: Int = 0
+
+
+    fun clone(): TileInfo {
+        val toReturn = TileInfo()
+        if(militaryUnit!=null) toReturn.militaryUnit=militaryUnit!!.clone()
+        if(civilianUnit!=null) toReturn.civilianUnit=civilianUnit!!.clone()
+        toReturn.position=position.cpy()
+        toReturn.baseTerrain=baseTerrain
+        toReturn.terrainFeature=terrainFeature
+        toReturn.resource=resource
+        toReturn.improvement=improvement
+        toReturn.improvementInProgress=improvementInProgress
+        toReturn.roadStatus=roadStatus
+        toReturn.turnsToImprovement=turnsToImprovement
+        return toReturn
+    }
+
+
+    fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()
 
     fun getCity(): CityInfo? {
         return tileMap.gameInfo.tilesToCities.get(this)
@@ -210,18 +228,4 @@ open class TileInfo {
     }
 
     fun arialDistanceTo(otherTile:TileInfo) = abs(position.x-otherTile.position.x) + abs(position.y-otherTile.position.y)
-    fun clone(): TileInfo {
-        val toReturn = TileInfo()
-        if(civilianUnit!=null) toReturn.civilianUnit=civilianUnit!!.clone()
-        if(militaryUnit!=null) toReturn.militaryUnit=militaryUnit!!.clone()
-        toReturn.improvement=improvement
-        toReturn.position=position
-        toReturn.baseTerrain=baseTerrain
-        toReturn.terrainFeature=terrainFeature
-        toReturn.improvementInProgress=improvementInProgress
-        toReturn.resource=resource
-        toReturn.roadStatus=roadStatus
-        toReturn.turnsToImprovement=turnsToImprovement
-        return toReturn
-    }
 }

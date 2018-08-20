@@ -24,13 +24,13 @@ class MapUnit {
     //region pure functions
     fun clone(): MapUnit {
         val toReturn = MapUnit()
-        toReturn.action=action
-        toReturn.currentMovement=currentMovement
-        toReturn.name=name
-        toReturn.promotions=promotions.clone()
-        toReturn.health=health
-        toReturn.attacksThisTurn=attacksThisTurn
         toReturn.owner=owner
+        toReturn.name=name
+        toReturn.currentMovement=currentMovement
+        toReturn.health=health
+        toReturn.action=action
+        toReturn.attacksThisTurn=attacksThisTurn
+        toReturn.promotions=promotions.clone()
         return toReturn
     }
 

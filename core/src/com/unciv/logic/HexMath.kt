@@ -55,12 +55,12 @@ class HexMath {
         }
         for (i in 0 until distance) { // 8 to 10
             vectors.add(Current.cpy())
-            vectors.add(origin.cpy().scl(2f).sub(Current)) // Get vector on other side of cloick
+            vectors.add(origin.cpy().scl(2f).sub(Current)) // Get vector on other side of clock
             Current.add(1f, 1f)
         }
         for (i in 0 until distance) { // 10 to 12
             vectors.add(Current.cpy())
-            vectors.add(origin.cpy().scl(2f).sub(Current)) // Get vector on other side of cloick
+            vectors.add(origin.cpy().scl(2f).sub(Current)) // Get vector on other side of clock
             Current.add(0f, 1f)
         }
         return vectors

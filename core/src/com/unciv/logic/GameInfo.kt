@@ -22,8 +22,8 @@ class GameInfo {
     //region pure functions
     fun clone():GameInfo{
         val toReturn = GameInfo()
-        toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.tileMap=tileMap.clone()
+        toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.notifications.addAll(notifications)
         toReturn.turns=turns
         toReturn.setTransients()
