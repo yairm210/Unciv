@@ -97,7 +97,7 @@ class UnitAutomation{
     }
 
     fun containsAttackableEnemy(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        val tileCombatant = Battle().getMapCombatantOfTile(tile)
+        val tileCombatant = Battle(civInfo.gameInfo).getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
         return tileCombatant.getCivilization()!=civInfo && civInfo.isAtWarWith(tileCombatant.getCivilization())
     }
@@ -194,7 +194,7 @@ class UnitAutomation{
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
-                            Battle().getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                            Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
 
         val cityTilesToAttack = attackableEnemies.filter { it.tileToAttack.isCityCenter() }
@@ -209,11 +209,11 @@ class UnitAutomation{
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
-            enemyTileToAttack = nonCityTilesToAttack.minBy { Battle().getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
+            enemyTileToAttack = nonCityTilesToAttack.minBy { Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
         else if (cityWithHealthLeft!=null) enemyTileToAttack = cityWithHealthLeft// third priority, city
 
         if (enemyTileToAttack != null) {
-            val enemy = Battle().getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
+            val enemy = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
             unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
             val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
                     .firstOrNull { it.name == "Set up" }

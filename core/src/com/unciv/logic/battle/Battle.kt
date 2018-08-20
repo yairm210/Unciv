@@ -1,7 +1,6 @@
 package com.unciv.logic.battle
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
@@ -12,7 +11,7 @@ import kotlin.math.max
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
  */
-class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
+class Battle(val gameInfo:GameInfo) {
     fun attack(attacker: ICombatant, defender: ICombatant) {
         val attackedTile = defender.getTile()
 
@@ -111,7 +110,7 @@ class Battle(val gameInfo:GameInfo=UnCivGame.Current.gameInfo) {
         city.moveToCiv(attacker.getCivilization())
         city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
         city.getCenterTile().apply {
-            militaryUnit = null
+            if(militaryUnit!=null) militaryUnit!!.destroy()
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
         }
 

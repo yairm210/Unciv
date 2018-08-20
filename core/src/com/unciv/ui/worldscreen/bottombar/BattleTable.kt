@@ -41,7 +41,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (worldScreen.tileMapHolder.selectedTile == null) return
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!
 
-        val defender: ICombatant? = Battle().getMapCombatantOfTile(selectedTile)
+        val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
         if(defender==null || defender.getCivilization()==worldScreen.civInfo
                 || !(attacker.getCivilization().exploredTiles.contains(selectedTile.position) || UnCivGame.Current.viewEntireMapForDebug)) {

@@ -66,15 +66,15 @@ class CityInfo {
     //region pure functions
     fun clone(): CityInfo {
         val toReturn = CityInfo()
-        toReturn.population = population.clone()
-        toReturn.health=health
+        toReturn.location=location
         toReturn.name=name
-        toReturn.tiles.addAll(tiles)
-        toReturn.workedTiles.addAll(workedTiles)
+        toReturn.health=health
+        toReturn.population = population.clone()
         toReturn.cityConstructions=cityConstructions.clone()
         toReturn.expansion = expansion.clone()
+        toReturn.tiles.addAll(tiles)
+        toReturn.workedTiles.addAll(workedTiles)
         toReturn.isBeingRazed=isBeingRazed
-        toReturn.location=location
         return toReturn
     }
 

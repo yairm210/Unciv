@@ -50,17 +50,18 @@ class CivilizationInfo {
 
     fun clone(): CivilizationInfo {
         val toReturn = CivilizationInfo()
-        toReturn.exploredTiles=exploredTiles.toHashSet()
+        toReturn.gold = gold
+        toReturn.happiness=happiness
+        toReturn.difficulty=difficulty
+        toReturn.civName=civName
+        toReturn.tech = tech.clone()
+        toReturn.policies = policies.clone()
+        toReturn.goldenAges = goldenAges.clone()
+        toReturn.greatPeople=greatPeople.clone()
+        toReturn.scienceVictory = scienceVictory.clone()
         toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
         toReturn.cities.addAll(cities.map { it.clone() })
-        toReturn.tech = tech.clone()
-        toReturn.difficulty=difficulty
-        toReturn.policies = policies.clone()
-        toReturn.happiness=happiness
-        toReturn.greatPeople=greatPeople.clone()
-        toReturn.gold = gold
-        toReturn.goldenAges = goldenAges.clone()
-        toReturn.civName=civName
+        toReturn.exploredTiles.addAll(exploredTiles)
         return toReturn
     }
 

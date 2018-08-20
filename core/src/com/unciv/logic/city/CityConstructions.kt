@@ -20,9 +20,9 @@ class CityConstructions {
     //region pure functions
     fun clone(): CityConstructions {
         val toReturn = CityConstructions()
-        toReturn.currentConstruction=currentConstruction
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
+        toReturn.currentConstruction=currentConstruction
         return toReturn
     }
 

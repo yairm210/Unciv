@@ -13,6 +13,12 @@ class ScienceVictoryManager {
         requiredParts.add("SS Statis Chamber", 1)
     }
 
+    fun clone(): ScienceVictoryManager {
+        val toReturn = ScienceVictoryManager()
+        toReturn.currentParts.putAll(currentParts)
+        return toReturn
+    }
+
     fun unconstructedParts(): Counter<String> {
         val counter = requiredParts.clone()
         counter.remove(currentParts)
