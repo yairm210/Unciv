@@ -81,9 +81,9 @@ class TileMap {
         if(tiles.any()) //
             tileList.addAll(tiles.values)
 
-        var topY=tileList.map { it.position.y.toInt() }.max()!!
+        val topY=tileList.map { it.position.y.toInt() }.max()!!
         bottomY= tileList.map { it.position.y.toInt() }.min()!!
-        var rightX=tileList.map { it.position.x.toInt() }.max()!!
+        val rightX=tileList.map { it.position.x.toInt() }.max()!!
         leftX = tileList.map { it.position.x.toInt() }.min()!!
 
         for(x in leftX..rightX){

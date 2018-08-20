@@ -92,7 +92,10 @@ class CityInfo {
             val resource = tileInfo.getTileResource()
             if(resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()){
-                if(resource.resourceType == ResourceType.Strategic) cityResources.add(resource, 2)
+                if(resource.resourceType == ResourceType.Strategic){
+                    if(civInfo.policies.isAdopted("Facism")) cityResources.add(resource, 4)
+                    else cityResources.add(resource, 2)
+                }
                 else cityResources.add(resource, 1)
             }
 
@@ -102,6 +105,7 @@ class CityInfo {
             val resource = GameBasics.TileResources[building.requiredResource]
             cityResources.add(resource, -1)
         }
+
         return cityResources
     }
 

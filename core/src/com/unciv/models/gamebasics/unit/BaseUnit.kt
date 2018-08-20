@@ -84,7 +84,9 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int = cost
 
     override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
-        return (Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100) / 10).toInt() * 10
+        var cost = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+        if(adoptedPolicies.contains("Militarism")) cost *= 0.66f
+        return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
     fun isBuildable(civInfo:CivilizationInfo): Boolean {
@@ -104,6 +106,8 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     override fun postBuildEvent(construction: CityConstructions) {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
         unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
+        if(construction.cityInfo.civInfo.policies.isAdopted("Total War"))
+            unit.promotions.XP += 15
     }
 
     fun getUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{

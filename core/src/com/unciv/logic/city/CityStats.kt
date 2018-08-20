@@ -4,6 +4,8 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.unit.BaseUnit
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 
@@ -187,10 +189,11 @@ class CityStats {
     private fun getStatPercentBonusesFromPolicies(policies: HashSet<String>, cityConstructions: CityConstructions): Stats {
         val stats = Stats()
 
+        val currentConstruction = cityConstructions.getCurrentConstruction()
         if (policies.contains("Collective Rule") && cityInfo.isCapital()
-                && "Settler" == cityConstructions.currentConstruction)
+                && currentConstruction.name == "Settler")
             stats.production += 50f
-        if (policies.contains("Republic") && cityConstructions.getCurrentConstruction() is Building)
+        if (policies.contains("Republic") && currentConstruction is Building)
             stats.production += 5f
         if (policies.contains("Reformation") && cityConstructions.builtBuildings.any { GameBasics.Buildings[it]!!.isWonder })
             stats.culture += 33f
@@ -198,6 +201,8 @@ class CityStats {
             stats.gold += 25f
         if (policies.contains("Sovereignty") && cityInfo.civInfo.happiness >= 0)
             stats.science += 15f
+        if (policies.contains("Total War") && currentConstruction is BaseUnit && currentConstruction.unitType!=UnitType.Civilian )
+            stats.production += 15f
         if (policies.contains("Aristocracy")
                 && cityConstructions.getCurrentConstruction() is Building
                 && (cityConstructions.getCurrentConstruction() as Building).isWonder)
