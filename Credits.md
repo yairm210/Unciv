@@ -36,3 +36,4 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin
 * [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito 
 * [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
+* [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish
