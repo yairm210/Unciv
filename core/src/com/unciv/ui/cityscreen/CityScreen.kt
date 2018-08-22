@@ -101,7 +101,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
 
     private fun updateTileGroups() {
-        val nextTile = city.expansion.getNewTile()
+        val nextTile = city.expansion.chooseNewTileToOwn()
         for (HG in tileGroups) {
             HG.update()
             if(HG.tileInfo == nextTile){

@@ -25,7 +25,7 @@ class GameStarter(){
         val distanceAroundStartingPointNoOneElseWillStartIn = 5
         val freeTiles = gameInfo.tileMap.values.toMutableList().filter { vectorIsWithinNTilesOfEdge(it.position,3)}.toMutableList()
         val playerPosition = freeTiles.getRandom().position
-        val playerCiv = CivilizationInfo(civilization, playerPosition, gameInfo)
+        val playerCiv = CivilizationInfo(civilization, gameInfo)
         playerCiv.difficulty=difficulty
         gameInfo.civilizations.add(playerCiv) // first one is player civ
 
@@ -35,17 +35,27 @@ class GameStarter(){
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
         for (civname in GameBasics.Nations.keys.filterNot { it=="Barbarians" || it==civilization }.take(numberOfCivs)) {
-            if(freeTiles.isEmpty()) break // we can't add any more civs.
-            val startingLocation = freeTiles.toList().getRandom().position
-            val civ = CivilizationInfo(civname, startingLocation, gameInfo)
+            val civ = CivilizationInfo(civname, gameInfo)
             civ.tech.techsResearched.addAll(playerCiv.getDifficulty().aiFreeTechs)
             gameInfo.civilizations.add(civ)
-            freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, distanceAroundStartingPointNoOneElseWillStartIn ))
         }
+
 
         barbarianCivilization.civName = "Barbarians"
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
+
+        // and only now do we add units for everyone, because otherwise both the gameIngo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
+
+        for (civ in gameInfo.civilizations.toList().filter { !it.isBarbarianCivilization() }) {
+            if(freeTiles.isEmpty()) gameInfo.civilizations.remove(civ) // we can't add any more civs.
+            val startingLocation = freeTiles.toList().getRandom().position
+
+            civ.placeUnitNearTile(startingLocation, "Settler")
+            civ.placeUnitNearTile(startingLocation, "Scout")
+
+            freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, distanceAroundStartingPointNoOneElseWillStartIn ))
+        }
 
         (1..5).forEach {
             val freeTilesList = freeTiles.toList()

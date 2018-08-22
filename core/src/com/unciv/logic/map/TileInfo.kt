@@ -14,6 +14,7 @@ import kotlin.math.abs
 
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
+    @Transient var owningCity:CityInfo?=null
 
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
@@ -48,7 +49,8 @@ open class TileInfo {
     fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()
 
     fun getCity(): CityInfo? {
-        return tileMap.gameInfo.tilesToCities.get(this)
+        return owningCity
+//        return tileMap.gameInfo.tilesToCities.get(this)
         //return tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.tiles.contains(position)}
     }
 

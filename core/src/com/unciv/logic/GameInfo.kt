@@ -2,7 +2,6 @@ package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileInfo
@@ -11,8 +10,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 
 class GameInfo {
-    @Transient var tilesToCities = HashMap<TileInfo,CityInfo>()
-
     var notifications = mutableListOf<Notification>()
     @Deprecated("As of 2.6.9") var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
@@ -100,15 +97,7 @@ class GameInfo {
         for (civInfo in civilizations)
             for (cityInfo in civInfo.cities)
                 cityInfo.cityStats.update()
-
-        updateTilesToCities()
     }
 
-    fun updateTilesToCities(){
-        tilesToCities.clear()
-        for (city in civilizations.flatMap { it.cities }){
-            for (tile in city.getTiles()) tilesToCities.put(tile,city)
-        }
-    }
 }
 

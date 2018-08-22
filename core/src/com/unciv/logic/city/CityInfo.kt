@@ -52,7 +52,6 @@ class CityInfo {
         }
 
         expansion.reset()
-        civInfo.gameInfo.updateTilesToCities()
 
         val tile = getCenterTile()
         tile.roadStatus = RoadStatus.Railroad
@@ -141,6 +140,7 @@ class CityInfo {
     fun setTransients() {
         population.cityInfo = this
         expansion.cityInfo = this
+        expansion.setTransients()
         cityStats.cityInfo = this
         cityConstructions.cityInfo = this
     }
@@ -186,7 +186,6 @@ class CityInfo {
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             cityConstructions.builtBuildings.remove(building.name)
 
-        civInfo.gameInfo.updateTilesToCities()
     }
     //endregion
 }

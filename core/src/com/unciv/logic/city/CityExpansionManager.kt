@@ -31,7 +31,7 @@ class CityExpansionManager {
     }
 
 
-    fun getNewTile(): TileInfo? {
+    fun chooseNewTileToOwn(): TileInfo? {
         for (i in 2..5) {
             val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter {
                 it.getOwner() != cityInfo.civInfo
@@ -46,24 +46,40 @@ class CityExpansionManager {
 
     //region state-changing functions
     fun reset() {
-        cityInfo.tiles.clear()
+        for(tile in cityInfo.tiles.map { cityInfo.tileMap[it] })
+            relinquishOwnership(tile)
+
+//        cityInfo.tiles.clear() // this should be deleted after we change systems
         cityInfo.getCenterTile().getTilesInDistance(1).forEach { takeOwnership(it) }
     }
 
     private fun addNewTileWithCulture() {
         cultureStored -= getCultureToNextTile()
 
-        val chosenTile = getNewTile()
+        val chosenTile = chooseNewTileToOwn()
         if(chosenTile!=null){
             takeOwnership(chosenTile)
         }
     }
 
+    fun relinquishOwnership(tileInfo: TileInfo){
+        cityInfo.tiles.remove(tileInfo.position)
+        if(cityInfo.workedTiles.contains(tileInfo.position))
+            cityInfo.workedTiles.remove(tileInfo.position)
+        tileInfo.owningCity=null
+    }
+
     fun takeOwnership(tileInfo: TileInfo){
-        for(city in cityInfo.civInfo.gameInfo.civilizations.flatMap { it.cities }) // Remove this tile from any other cities - should stop SO many problems!
-            cityInfo.tiles.remove(tileInfo.position)
+        if(tileInfo.getCity()!=null) tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
+
+        // this shuold be deleted ater we move to the new caching system
+//        for(city in cityInfo.civInfo.gameInfo.civilizations.flatMap { it.cities }) // Remove this tile from any other cities - should stop SO many problems!
+//            cityInfo.tiles.remove(tileInfo.position)
 
         cityInfo.tiles.add(tileInfo.position)
+        tileInfo.owningCity = cityInfo
+        cityInfo.population.autoAssignPopulation()
+
         for(unit in tileInfo.getUnits())
             if(!unit.civInfo.canEnterTiles(cityInfo.civInfo))
                 unit.movementAlgs().teleportToClosestMoveableTile()
@@ -76,6 +92,11 @@ class CityExpansionManager {
             addNewTileWithCulture()
             cityInfo.civInfo.addNotification(cityInfo.name + " {has expanded its borders}!", cityInfo.location, Color.PURPLE)
         }
+    }
+
+    fun setTransients(){
+        for(tile in cityInfo.tiles.map { cityInfo.tileMap[it] })
+            tile.owningCity=cityInfo
     }
     //endregion
 }

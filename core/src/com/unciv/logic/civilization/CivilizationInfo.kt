@@ -40,12 +40,10 @@ class CivilizationInfo {
 
     constructor()
 
-    constructor(civName: String, startingLocation: Vector2, gameInfo: GameInfo) {
+    constructor(civName: String, gameInfo: GameInfo) {
         this.civName = civName
-        this.gameInfo = gameInfo
+//        this.gameInfo = gameInfo // already happens in setTransients
         tech.techsResearched.add("Agriculture")
-        this.placeUnitNearTile(startingLocation, "Settler")
-        this.placeUnitNearTile(startingLocation, "Scout")
     }
 
     fun clone(): CivilizationInfo {
@@ -240,8 +238,8 @@ class CivilizationInfo {
         }
 
         for (cityInfo in cities) {
+            cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the civInfo
             cityInfo.setTransients()
-            cityInfo.civInfo = this
         }
     }
 
@@ -280,7 +278,6 @@ class CivilizationInfo {
         goldenAges.endTurn(happiness)
         getCivUnits().forEach { it.endTurn() }
         diplomacy.values.forEach{it.nextTurn()}
-        gameInfo.updateTilesToCities()
     }
 
     fun startTurn(){

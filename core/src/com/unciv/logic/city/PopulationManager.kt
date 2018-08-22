@@ -74,6 +74,7 @@ class PopulationManager {
     }
 
     internal fun autoAssignPopulation() {
+        if(getFreePopulation()==0) return
         val toWork: TileInfo? = cityInfo.getTiles()
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
                 .maxBy { Automation().rankTile(it,cityInfo.civInfo) }
@@ -83,7 +84,7 @@ class PopulationManager {
 
     fun unassignExtraPopulation() {
         for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] })
-            if(tile.getOwner()!=cityInfo.civInfo)
+            if(tile.getCity()!=cityInfo)
                 cityInfo.workedTiles.remove(tile.position)
 
         while (cityInfo.workedTiles.size > population) {
