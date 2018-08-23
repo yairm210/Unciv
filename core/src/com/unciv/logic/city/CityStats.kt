@@ -204,8 +204,8 @@ class CityStats {
         if (policies.contains("Total War") && currentConstruction is BaseUnit && currentConstruction.unitType!=UnitType.Civilian )
             stats.production += 15f
         if (policies.contains("Aristocracy")
-                && cityConstructions.getCurrentConstruction() is Building
-                && (cityConstructions.getCurrentConstruction() as Building).isWonder)
+                && currentConstruction is Building
+                && currentConstruction.isWonder)
             stats.production += 15f
 
         return stats

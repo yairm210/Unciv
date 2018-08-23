@@ -45,7 +45,7 @@ class GameStarter(){
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
-        // and only now do we add units for everyone, because otherwise both the gameIngo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
+        // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
 
         for (civ in gameInfo.civilizations.toList().filter { !it.isBarbarianCivilization() }) {
             if(freeTiles.isEmpty()) gameInfo.civilizations.remove(civ) // we can't add any more civs.

@@ -236,6 +236,17 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Musketeer",
+		unitType:"Melee",
+		replaces:"Musketman",
+		uniqueTo:"France",
+		movement:2,
+		strength:28,
+		cost: 150,
+		requiredTech:"Gunpowder",
+		hurryCostModifier:20
+	},
+	{
 		name:"Lancer",
 		unitType:"Mounted",
 		movement:4,

@@ -1,43 +1,42 @@
 [
 	{
 		name:"Babylon",
-		RGB:[220,20,60],
+		mainColor:[220,20,60],
 		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum"]
 	},
 	{
 		name:"Greece",
-		RGB:[ 101, 153, 255],
+		mainColor:[ 101, 153, 255],
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea"]
 	},
 	{
 		name:"China",
-		RGB:[ 9, 112, 84],
+		mainColor:[ 9, 112, 84],
 		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin"]
 	},
 	{
 		name:"Egypt",
-		RGB:[ 255, 153, 0],
+		mainColor:[ 255, 153, 0],
 		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
 			"Abydos","Asyut","Avaris","Lisht","Buto"]
 	},
 	{
 		name:"England",
-		RGB:[ 100, 100, 201],
+		mainColor:[ 100, 100, 201],
 		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading"]
 	},
 	{
 		name:"France",
-		RGB:[ 20, 160, 220],
+		mainColor:[ 20, 160, 220],
 		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse"]
 	},
 	{
 		name:"Barbarians",
-		RGB:[200,200,200],
-		cities:["Barbar"] // this is to deal with a specific bug where they could capture settlers. They can't anymore and this should be removed by, say, 11.7.18
+		mainColor:[200,200,200]
 	}
 ]

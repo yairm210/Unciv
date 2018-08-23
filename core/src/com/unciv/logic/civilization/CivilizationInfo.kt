@@ -28,7 +28,7 @@ class CivilizationInfo {
     var gold = 0
     var happiness = 15
     var difficulty = "Chieftain"
-    var civName = "Babylon"
+    var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
@@ -166,8 +166,8 @@ class CivilizationInfo {
         val civResources = Counter<TileResource>()
         // ToLists are so that when we update happiness on a different thread and we call this function,
         // we don't modify the iterator as we're using it
-        for (city in cities.toList()) civResources.add(city.getCityResources())
-        for (dip in diplomacy.values.toList()) civResources.add(dip.resourcesFromTrade())
+        for (city in cities) civResources.add(city.getCityResources())
+        for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
         return civResources
     }
 
@@ -224,6 +224,7 @@ class CivilizationInfo {
 
     //region state-changing functions
     fun setTransients() {
+        if(civName=="") civName="Babylon" // this is because it used to be a default but now it isn't so we can change it.
         goldenAges.civInfo = this
         policies.civInfo = this
         if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
