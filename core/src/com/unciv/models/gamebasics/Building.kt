@@ -32,6 +32,8 @@ class Building : NamedStats(), IConstruction{
     var cityStrength=0
     var cityHealth=0
     var xpForNewUnits=0
+    var replaces:String?=null
+    var uniqueTo:String?=null
 
     // Uniques
     var providesFreeBuilding: String? = null
@@ -99,6 +101,7 @@ class Building : NamedStats(), IConstruction{
     fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: HashSet<String>): String {
         val stats = getStats(adoptedPolicies)
         val stringBuilder = StringBuilder()
+        if(uniqueTo!=null) stringBuilder.appendln("Unique to $uniqueTo, replaces $replaces")
         if (!forBuildingPickerScreen) stringBuilder.appendln("{Cost}: $cost".tr())
         if (isWonder) stringBuilder.appendln("Wonder".tr())
         if (!forBuildingPickerScreen && requiredTech != null)
@@ -159,7 +162,10 @@ class Building : NamedStats(), IConstruction{
                             it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
                         })
             return false
-        if (requiredBuilding != null && !construction.isBuilt(requiredBuilding!!)) return false
+        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
+        if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
+        if (requiredBuilding != null && !construction.isBuilt(requiredBuilding!!)
+                && construction.getBuiltBuildings().none{it.replaces==requiredBuilding}) return false
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })
             return false
         if(requiredBuildingInAllCities!=null && civInfo.cities.any {

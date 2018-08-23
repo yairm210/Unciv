@@ -62,6 +62,15 @@
 		requiredTech:"Writing"
 	},
 	{
+		name:"Paper Maker",
+		replaces:"Library",
+		uniqueTo:"China",
+		hurryCostModifier:25,
+		gold:2,
+		unique:"+1 Science Per 2 Population",
+		requiredTech:"Writing"
+	},
+	{
 		name:"Circus", 
 		requiredNearbyImprovedResources:["Ivory","Horses"]
 		happiness:2,
