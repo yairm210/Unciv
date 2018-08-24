@@ -110,6 +110,17 @@
 		requiredTech:"Philosophy"
 	},
 	{
+		name:"Burial Tomb",
+		replaces:"Temple",
+		uniqueTo:"Egypt",
+		culture:3,
+		happiness:1,
+		specialistSlots:{culture:1},
+		requiredBuilding:"Monument",
+		hurryCostModifier:25,
+		requiredTech:"Philosophy"
+	},
+	{
 		name:"The Oracle",
 		baseDescription: "Provides a free social policy",
 		culture:3,

@@ -101,7 +101,7 @@ class NewGameScreen: PickerScreen(){
     private fun getOptionsTable(): Table {
         val table = Table()
         table.skin = skin
-        
+
         table.add("{World size}:".tr())
         val worldSizeToRadius = LinkedHashMap<String, Int>()
         worldSizeToRadius["Small"] = 10
