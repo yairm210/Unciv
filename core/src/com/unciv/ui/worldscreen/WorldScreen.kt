@@ -122,7 +122,11 @@ class WorldScreen : CameraStageBaseScreen() {
         unitActionsTable.update(bottomBar.unitTable.selectedUnit)
         unitActionsTable.y = bottomBar.height
 
-        tileMapHolder.updateTiles(cloneCivilization)
+        // if we use the clone, then when we update viewable tiles
+        // it doesn't update the explored tiles of the civ... need to think about that harder
+        // it causes a bug when we move a unit to an unexplored tile (for instance  cavalry unit which can move far)
+        tileMapHolder.updateTiles(civInfo)
+
         topBar.update(cloneCivilization)
         notificationsScroll.update(gameClone.notifications)
         notificationsScroll.width = stage.width/3
