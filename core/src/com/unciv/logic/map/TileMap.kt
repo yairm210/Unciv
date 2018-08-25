@@ -60,10 +60,15 @@ class TileMap {
 
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
-        unit.assignOwner(civInfo)
+
         val tilesInDistance = getTilesInDistance(position, 2)
+
+        unit.owner=civInfo.civName // needed in order to calculate canMoveTo
         val unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
-        if(unitToPlaceTile!=null) unit.putInTile(unitToPlaceTile)
+        if(unitToPlaceTile!=null) {
+            unit.putInTile(unitToPlaceTile)
+            unit.assignOwner(civInfo) // only once we know the unit can be placed do we add it to the civ's unit list
+        }
         return unit
     }
 
