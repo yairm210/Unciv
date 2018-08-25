@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
@@ -15,11 +16,14 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.center
 import com.unciv.ui.utils.colorFromRGB
 
-class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap, internal val civInfo: CivilizationInfo) : ScrollPane(null) {
+class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
+
+    var overlayActor :Actor?=null
 
     internal fun addTiles() {
         val allTiles = Group()
@@ -35,7 +39,22 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
             group.addClickListener {
                 worldScreen.displayTutorials("TileClicked")
+                if(overlayActor!=null) overlayActor!!.remove()
                 selectedTile = tileInfo
+
+//                val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+//                if(selectedUnit!=null && selectedUnit.getTile()!=tileInfo
+//                        && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
+//                    val size = 40f
+//                    val moveHereGroup = Group().apply { width = size;height = size; }
+//                    moveHereGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
+//                    moveHereGroup.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereGroup) })
+//                    if(selectedUnit.currentMovement>0)
+//                        moveHereGroup.addClickListener { selectedUnit.movementAlgs().headTowards(tileInfo);worldScreen.update() }
+//                    else moveHereGroup.color.a=0.5f
+//                    addAboveGroup(group, moveHereGroup).apply { width = size; height = size }
+//                }
+
                 worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
                 worldScreen.update()
             }
@@ -69,7 +88,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         setSize(worldScreen.stage.width, worldScreen.stage.height)
         addListener(object : ActorGestureListener() {
             var lastScale = 1f
-            internal var lastInitialDistance = 0f
+            var lastInitialDistance = 0f
 
             override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
                 if (lastInitialDistance != initialDistance) {
@@ -87,14 +106,23 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
-    internal fun updateTiles() {
-        val playerViewableTiles = civInfo.getViewableTiles().toHashSet()
+    private fun addAboveGroup(group:Group, actor: Actor) {
+        actor.center(group)
+        actor.x+=group.x
+        actor.y+=group.y+group.height
+        group.parent.addActor(actor)
+        actor.toFront()
+        overlayActor=actor
+    }
+
+    internal fun updateTiles(civInfo: CivilizationInfo) {
+        val playerViewableTilePositions = civInfo.getViewableTiles().map { it.position }.toHashSet()
 
         for (WG in tileGroups.values){
-            WG.update(playerViewableTiles.contains(WG.tileInfo))
+            WG.update(playerViewableTilePositions.contains(WG.tileInfo.position))
             val unitsInTile = WG.tileInfo.getUnits()
-            if((playerViewableTiles.contains(WG.tileInfo) || UnCivGame.Current.viewEntireMapForDebug)
-                    && unitsInTile.isNotEmpty() && unitsInTile.first().civInfo!=civInfo)
+            if((playerViewableTilePositions.contains(WG.tileInfo.position) || UnCivGame.Current.viewEntireMapForDebug)
+                    && unitsInTile.isNotEmpty() && !unitsInTile.first().civInfo.isPlayerCivilization())
                 WG.showCircle(Color.RED)
         } // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
 
@@ -116,7 +144,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             for (tile in attackableTiles.filter {
                 it.getUnits().isNotEmpty()
                         && it.getUnits().first().owner != unit.owner
-                        && (playerViewableTiles.contains(it) || UnCivGame.Current.viewEntireMapForDebug)}) {
+                        && (playerViewableTilePositions.contains(it.position) || UnCivGame.Current.viewEntireMapForDebug)}) {
                 if(unit.baseUnit().unitType== UnitType.Civilian) tileGroups[tile]!!.hideCircle()
                 else {
                     tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))

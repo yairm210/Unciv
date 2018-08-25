@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.addClickListener
@@ -67,11 +68,10 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
                 return true
             }
         })
-        update()
     }
 
-    fun update(){
-        val exploredTiles = tileMapHolder.worldScreen.civInfo.exploredTiles
+    fun update(cloneCivilization: CivilizationInfo) {
+        val exploredTiles = cloneCivilization.exploredTiles
         for(tileInfo in tileMapHolder.tileMap.values) {
             val RGB = tileInfo.getBaseTerrain().RGB!!
             val hex = tileImages[tileInfo]!!

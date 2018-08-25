@@ -8,14 +8,14 @@ import com.unciv.logic.civilization.Notification
 import com.unciv.ui.utils.*
 import kotlin.math.min
 
-class NotificationsScroll(private val notifications: List<Notification>, internal val worldScreen: WorldScreen) : ScrollPane(null) {
+class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(null) {
     private var notificationsTable = Table()
 
     init {
         widget = notificationsTable
     }
 
-    internal fun update() {
+    internal fun update(notifications: MutableList<Notification>) {
         notificationsTable.clearChildren()
         for (notification in notifications) {
             val label = Label(notification.text.tr(), CameraStageBaseScreen.skin).setFontColor(Color.BLACK)

@@ -41,8 +41,8 @@ class NewGameScreen: PickerScreen(){
         private fun getUniqueLabel(nation: Nation): CharSequence? {
             for (building in GameBasics.Buildings.values)
                 if (building.uniqueTo == nation.name) {
-                    var text = building.name + " - {replaces} " + building.replaces + "\n"
-                    val originalBuilding = GameBasics.Buildings[building.replaces]!!
+                    var text = building.name.tr() + " - {replaces} " + building.replaces!!.tr() + "\n"
+                    val originalBuilding = GameBasics.Buildings[building.replaces!!]!!
                     val originalBuildingStatMap = originalBuilding.toHashMap()
                     for (stat in building.toHashMap())
                         if (stat.value != originalBuildingStatMap[stat.key])
@@ -54,8 +54,8 @@ class NewGameScreen: PickerScreen(){
 
             for (unit in GameBasics.Units.values)
                 if (unit.uniqueTo == nation.name) {
-                    var text = unit.name + " - {replaces} " + unit.replaces + "\n"
-                    val originalUnit = GameBasics.Units[unit.replaces]!!
+                    var text = unit.name.tr() + " - {replaces} " + unit.replaces!!.tr() + "\n"
+                    val originalUnit = GameBasics.Units[unit.replaces!!]!!
                     if (unit.strength != originalUnit.strength)
                         text += "{Combat strength} " + unit.strength + " vs " + originalUnit.strength + "\n"
                     if (unit.rangedStrength!= originalUnit.rangedStrength)

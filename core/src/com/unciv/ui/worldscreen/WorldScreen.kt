@@ -22,7 +22,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     internal val civInfo: CivilizationInfo = gameInfo.getPlayerCivilization()
 
-    val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap, civInfo)
+    val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
     val minimap = Minimap(tileMapHolder)
 
     internal var buttonScale = 0.9f
@@ -42,7 +42,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
                 topBar.y - nextTurnButton.height - 10f)
-        notificationsScroll = NotificationsScroll(gameInfo.notifications, this)
+        notificationsScroll = NotificationsScroll(this)
         notificationsScroll.width = stage.width/3
         minimap.setSize(stage.width/5,stage.height/5)
         minimap.x = stage.width - minimap.width
@@ -83,8 +83,11 @@ class WorldScreen : CameraStageBaseScreen() {
 
 
     fun update() {
+        // many of the display functions will be called with the game clone and not the actual game,
+        // because that's guaranteed to stay the exact same and so we won't get any concurrent modification exceptions
+
         val gameClone = gameInfo.clone()
-        // so we don't get a concurrent modification exception, we clone the entire game (yes really, it's actually very fast)
+        val cloneCivilization = gameClone.getPlayerCivilization()
         kotlin.concurrent.thread {
             civInfo.happiness = gameClone.getPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()
         }
@@ -101,27 +104,27 @@ class WorldScreen : CameraStageBaseScreen() {
         }
 
         if(!UnCivGame.Current.settings.tutorialsShown.contains("EnemyCityNeedsConqueringWithMeleeUnit")) {
-            for (enemyCity in civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
+            for (enemyCity in cloneCivilization.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() }.flatMap { it.cities }) {
                 if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
-                                .any { it.getUnits().any { unit -> unit.civInfo == civInfo } })
+                                .any { it.getUnits().any { unit -> unit.civInfo == cloneCivilization } })
                     displayTutorials("EnemyCityNeedsConqueringWithMeleeUnit")
             }
         }
 
-        updateTechButton()
-        updateDiplomacyButton()
+        updateTechButton(cloneCivilization)
+        updateDiplomacyButton(cloneCivilization)
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
-        minimap.update()
+        minimap.update(cloneCivilization)
         minimap.y = bottomBar.height
 
         unitActionsTable.update(bottomBar.unitTable.selectedUnit)
         unitActionsTable.y = bottomBar.height
 
-        tileMapHolder.updateTiles()
-        topBar.update()
-        notificationsScroll.update()
+        tileMapHolder.updateTiles(cloneCivilization)
+        topBar.update(cloneCivilization)
+        notificationsScroll.update(gameClone.notifications)
         notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
@@ -130,7 +133,7 @@ class WorldScreen : CameraStageBaseScreen() {
         else if(civInfo.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
     }
 
-    private fun updateDiplomacyButton() {
+    private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
         if(civInfo.diplomacy.values.map { it.otherCiv() }
                         .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
@@ -144,7 +147,7 @@ class WorldScreen : CameraStageBaseScreen() {
         diplomacyButtonWrapper.y = techButton.y -20 - diplomacyButtonWrapper.height
     }
 
-    private fun updateTechButton() {
+    private fun updateTechButton(civInfo: CivilizationInfo) {
         techButton.isVisible = civInfo.cities.isNotEmpty()
 
         if (civInfo.tech.currentTechnology() == null)

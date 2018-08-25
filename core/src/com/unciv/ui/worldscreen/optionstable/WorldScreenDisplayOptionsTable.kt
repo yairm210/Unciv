@@ -18,7 +18,6 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
         val settings = UnCivGame.Current.settings
         settings.save()
         clear()
-        val tileMapHolder = UnCivGame.Current.worldScreen.tileMapHolder
 
         if (settings.showWorkedTiles) addButton("{Hide} {worked tiles}") { settings.showWorkedTiles = false; update() }
         else addButton("{Show} {worked tiles}") { settings.showWorkedTiles = true; update() }
@@ -64,6 +63,6 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)
-        tileMapHolder.updateTiles()
+        UnCivGame.Current.worldScreen.update()
     }
 }
