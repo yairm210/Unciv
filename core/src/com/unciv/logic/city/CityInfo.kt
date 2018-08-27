@@ -161,7 +161,7 @@ class CityInfo {
         expansion.nextTurn(stats.culture)
         if(isBeingRazed){
             population.population--
-            if(population.population==0){
+            if(population.population<=0){ // there are strange cases where we geet to -1
                 civInfo.addNotification("$name {has been razed to the ground}!",location, Color.RED)
                 destroyCity()
                 if(isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
@@ -170,8 +170,10 @@ class CityInfo {
         }
         else population.nextTurn(stats.food)
 
-        health = min(health+20, getMaxHealth())
-        population.unassignExtraPopulation()
+        if(this in civInfo.cities) { // city was not destroyed
+            health = min(health + 20, getMaxHealth())
+            population.unassignExtraPopulation()
+        }
     }
 
     fun destroyCity() {

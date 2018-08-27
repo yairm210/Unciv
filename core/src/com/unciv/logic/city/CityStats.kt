@@ -131,6 +131,8 @@ class CityStats {
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList ["Buildings"] = happinessFromBuildings
 
+        // we don't want to modify the existing happiness list because that leads
+        // to concurrency problems if we iterate on it while changing
         happinessList=newHappinessList
         return newHappinessList
     }
