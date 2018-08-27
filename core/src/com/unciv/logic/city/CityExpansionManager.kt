@@ -49,7 +49,6 @@ class CityExpansionManager {
         for(tile in cityInfo.tiles.map { cityInfo.tileMap[it] })
             relinquishOwnership(tile)
 
-//        cityInfo.tiles.clear() // this should be deleted after we change systems
         cityInfo.getCenterTile().getTilesInDistance(1).forEach { takeOwnership(it) }
     }
 
@@ -69,12 +68,8 @@ class CityExpansionManager {
         tileInfo.owningCity=null
     }
 
-    fun takeOwnership(tileInfo: TileInfo){
+    private fun takeOwnership(tileInfo: TileInfo){
         if(tileInfo.getCity()!=null) tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
-
-        // this shuold be deleted ater we move to the new caching system
-//        for(city in cityInfo.civInfo.gameInfo.civilizations.flatMap { it.cities }) // Remove this tile from any other cities - should stop SO many problems!
-//            cityInfo.tiles.remove(tileInfo.position)
 
         cityInfo.tiles.add(tileInfo.position)
         tileInfo.owningCity = cityInfo
