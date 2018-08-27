@@ -35,5 +35,29 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin
 * [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito 
-* [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
+* [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal 
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish
+
+
+* [Saffron](https://thenounproject.com/term/saffron/1576606/) By parkjisun
+* [Can](https://thenounproject.com/term/can/708971/) By Nick Bluth
+* [Coal](https://thenounproject.com/term/coal/213892/) By Michael Wohlwend
+* [Anvil](https://thenounproject.com/term/anvil/166414/) By Jason Dilworth
+* [Deer](https://thenounproject.com/term/deer/338013/) By Richard Nixon
+* [Banana](https://thenounproject.com/term/banana/1262865/) By Adrian Coquet
+* [Oil](https://thenounproject.com/term/oil/88649/) By Tiago Maricate
+* [Statue](https://thenounproject.com/term/statue/5221/) By Joris Hoogendoorn
+* [Ribbon](https://thenounproject.com/term/ribbon/418996) By Anton
+* [Stone](https://thenounproject.com/term/stone/1373902/) By AFY Studio
+* [Goblet](https://thenounproject.com/term/goblet/1005208/) By Pedro Santos
+* [Sugar](https://thenounproject.com/term/sugar/1689203/) By ahmad
+* [Spice](https://thenounproject.com/term/spice/1689206/) By ahmad
+* [Radiation symbol](https://thenounproject.com/term/radiation-symbol/211059/) By icon 54
+* [Wine](https://thenounproject.com/term/wine/1290951/) By Adrien Coquet
+* [Wheat](https://thenounproject.com/term/wheat/1048428/) By Juraj Sedlak
+* [Sheep](https://thenounproject.com/term/sheep/8389/) By Unrecognized
+* [Elephant](https://thenounproject.com/term/elephant/1853192/) By Kelsey Armstrong
+* [Cattle](https://thenounproject.com/term/cattle/781342/) By Daniela Baptista
+* [Leather](https://thenounproject.com/term/leather/16499/) By Alen Krummenacher
+* [Gem](https://thenounproject.com/term/gem/948920/) By Lluisa Iborra
+* [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin
