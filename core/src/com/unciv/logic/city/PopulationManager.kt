@@ -58,7 +58,6 @@ class PopulationManager {
         {
             if(population>1){
                 population--
-
             }
             foodStored = 0
         }

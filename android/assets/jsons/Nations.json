@@ -17,7 +17,7 @@
 		name:"China",
 		mainColor:[ 9, 112, 84],
 		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
-			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin"m"Chongqing","Luoyang","Kunming","Taipei","Shenyang",
+			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
 	},
 	{

@@ -163,7 +163,7 @@ class CityInfo {
             population.population--
             if(population.population==0){
                 civInfo.addNotification("$name {has been razed to the ground}!",location, Color.RED)
-                civInfo.cities.remove(this)
+                destroyCity()
                 if(isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
                     civInfo.cities.first().cityConstructions.builtBuildings.add("Palace")
             }
@@ -172,6 +172,11 @@ class CityInfo {
 
         health = min(health+20, getMaxHealth())
         population.unassignExtraPopulation()
+    }
+
+    fun destroyCity() {
+        civInfo.cities.remove(this)
+        getTiles().forEach { expansion.relinquishOwnership(it) }
     }
 
     fun moveToCiv(newCivInfo: CivilizationInfo){

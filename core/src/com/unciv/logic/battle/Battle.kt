@@ -105,13 +105,20 @@ class Battle(val gameInfo:GameInfo) {
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
         attacker.getCivilization().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
-        val currentPopulation = city.population.population
-        if(currentPopulation>1) city.population.population -= 1 + currentPopulation/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
-        city.moveToCiv(attacker.getCivilization())
-        city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
+        }
+
+        if (attacker.getCivilization().isBarbarianCivilization()){
+            city.destroyCity()
+        }
+        else {
+            val currentPopulation = city.population.population
+            if(currentPopulation>1) city.population.population -= 1 + currentPopulation/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+            city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+            city.moveToCiv(attacker.getCivilization())
         }
 
         if(city.cityConstructions.isBuilt("Palace")){
