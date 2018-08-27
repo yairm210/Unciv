@@ -238,16 +238,16 @@ class CityStats {
     //endregion
 
     fun update() {
-        baseStatList = LinkedHashMap<String, Stats>()
+        val newBaseStatList = LinkedHashMap<String, Stats>() // we don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
         val civInfo = cityInfo.civInfo
 
-        baseStatList["Population"] = Stats().add(Stat.Science, cityInfo.population.population.toFloat())
+        newBaseStatList["Population"] = Stats().add(Stat.Science, cityInfo.population.population.toFloat())
                 .add(Stat.Production, cityInfo.population.getFreePopulation().toFloat())
-        baseStatList["Tile yields"] = getStatsFromTiles()
-        baseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getSpecialists(), civInfo.policies.adoptedPolicies)
-        baseStatList["Trade routes"] = getStatsFromTradeRoute()
-        baseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
-        baseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
+        newBaseStatList["Tile yields"] = getStatsFromTiles()
+        newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getSpecialists(), civInfo.policies.adoptedPolicies)
+        newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
+        newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
+        newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
 
         val statPercentBonuses = cityInfo.cityConstructions.getStatPercentBonuses()
         statPercentBonuses.add(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()))
@@ -260,13 +260,13 @@ class CityStats {
 
 
         //val stats = Stats()
-        for (stat in baseStatList.values) stat.production *= 1 + statPercentBonuses.production / 100
+        for (stat in newBaseStatList.values) stat.production *= 1 + statPercentBonuses.production / 100
         //stats.production *= 1 + statPercentBonuses.production / 100  // So they get bonuses for production and gold/science
 
-        val statsFromProduction = getStatsFromProduction(baseStatList.values.map { it.production }.sum())
-        baseStatList["Construction"] = statsFromProduction
+        val statsFromProduction = getStatsFromProduction(newBaseStatList.values.map { it.production }.sum())
+        newBaseStatList["Construction"] = statsFromProduction
 
-        for (stat in baseStatList.values) {
+        for (stat in newBaseStatList.values) {
             stat.gold *= 1 + statPercentBonuses.gold / 100
             stat.science *= 1 + statPercentBonuses.science / 100
             stat.culture *= 1 + statPercentBonuses.culture / 100
@@ -275,28 +275,31 @@ class CityStats {
 
         val isUnhappy = civInfo.happiness < 0
         if (!isUnhappy) // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
-            for (stat in baseStatList.values) stat.food *= 1 + statPercentBonuses.food / 100
+            for (stat in newBaseStatList.values) stat.food *= 1 + statPercentBonuses.food / 100
 
         var foodEaten = (cityInfo.population.population * 2).toFloat()
         if (civInfo.policies.isAdopted("Civil Society"))
             foodEaten -= cityInfo.population.getNumberOfSpecialists()
-        baseStatList["Population"]!!.food -= foodEaten // to display it to the user
+        newBaseStatList["Population"]!!.food -= foodEaten // to display it to the user
 
-        val excessFood = baseStatList.values.sumByDouble { it.food.toDouble() }.toFloat()
+        val excessFood = newBaseStatList.values.sumByDouble { it.food.toDouble() }.toFloat()
 
         if (isUnhappy && excessFood > 0) // Reduce excess food to 1/4 per the same
-            baseStatList["Unhappiness"] = Stats().apply { food = -excessFood * (3 / 4f) }
+            newBaseStatList["Unhappiness"] = Stats().apply { food = -excessFood * (3 / 4f) }
 
-        if (!baseStatList.containsKey("Policies")) baseStatList["Policies"] = Stats()
-        baseStatList["Policies"]!!.food += getGrowthBonusFromPolicies() * excessFood
+        if (!newBaseStatList.containsKey("Policies")) newBaseStatList["Policies"] = Stats()
+        newBaseStatList["Policies"]!!.food += getGrowthBonusFromPolicies() * excessFood
 
         val buildingsMaintainance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        baseStatList["Maintenance"] = Stats().apply { gold = -buildingsMaintainance }
+        newBaseStatList["Maintenance"] = Stats().apply { gold = -buildingsMaintainance }
 
-        currentCityStats = Stats()
-        for (stat in baseStatList.values) currentCityStats.add(stat)
+        baseStatList = newBaseStatList
 
-        if(currentCityStats.production<1) currentCityStats.production=1f
+        val newCurrentCityStats = Stats() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
+        for (stat in baseStatList.values) newCurrentCityStats.add(stat)
+
+        if(newCurrentCityStats.production<1) newCurrentCityStats.production=1f
+        currentCityStats = newCurrentCityStats
     }
 
 }
