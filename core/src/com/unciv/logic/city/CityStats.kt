@@ -101,11 +101,12 @@ class CityStats {
     // -3 happiness per city
     fun getCityHappiness(): LinkedHashMap<String, Float> {
         val civInfo = cityInfo.civInfo
+        val newHappinessList = LinkedHashMap<String,Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
         if(!civInfo.isPlayerCivilization())
             unhappinessModifier *= civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiUnhappinessModifier
 
-        happinessList["Cities"] = -3f * unhappinessModifier
+        newHappinessList ["Cities"] = -3f * unhappinessModifier
 
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
@@ -115,7 +116,7 @@ class CityStats {
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
 
-        happinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
+        newHappinessList ["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
         if (civInfo.policies.isAdopted("Aristocracy"))
@@ -125,12 +126,13 @@ class CityStats {
         if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
             happinessFromPolicies += 1f
 
-        happinessList["Policies"] = happinessFromPolicies
+        newHappinessList ["Policies"] = happinessFromPolicies
 
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
-        happinessList["Buildings"] = happinessFromBuildings
+        newHappinessList ["Buildings"] = happinessFromBuildings
 
-        return happinessList
+        happinessList=newHappinessList
+        return newHappinessList
     }
 
     private fun getStatsFromSpecialists(specialists: Stats, policies: HashSet<String>): Stats {
