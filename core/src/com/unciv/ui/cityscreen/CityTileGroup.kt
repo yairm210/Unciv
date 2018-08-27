@@ -26,6 +26,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (resourceImage != null) resourceImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (cityImage != null) cityImage!!.setColor(1f, 1f, 1f, 0.5f)
+        if (civilianUnitImage != null) civilianUnitImage!!.setColor(1f, 1f, 1f, 0.5f)
+        if (militaryUnitImage!= null) militaryUnitImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (terrainFeatureImage!= null) terrainFeatureImage!!.setColor(1f, 1f, 1f, 0.5f)
         updateYieldGroup()
     }

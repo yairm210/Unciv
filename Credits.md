@@ -61,3 +61,4 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Leather](https://thenounproject.com/term/leather/16499/) By Alen Krummenacher
 * [Gem](https://thenounproject.com/term/gem/948920/) By Lluisa Iborra
 * [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin
+* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery

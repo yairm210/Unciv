@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -27,9 +28,9 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     private val happinessLabel = Label("Happiness:", labelSkin)
     private val cultureLabel = Label("Culture:", labelSkin).setFontColor(colorFromRGB(210, 94, 210) )
     private val resourceLabels = HashMap<String, Label>()
-    private val resourceImages = HashMap<String, Image>()
+    private val resourceImages = HashMap<String, Actor>()
     private val happinessImage = Group()
-    // These are all to improve performance IE recude update time (was 150 ms on my phone, which is a lot!)
+    // These are all to improve performance IE reduce update time (was 150 ms on my phone, which is a lot!)
     private val malcontentColor = Color.valueOf("ef5350")
     val happinessColor = colorFromRGB(92, 194, 77)
     val malcontentGroup = ImageGetter.getStatIcon("Malcontent")
@@ -58,10 +59,9 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         val revealedStrategicResources = GameBasics.TileResources.values
                 .filter { it.resourceType == ResourceType.Strategic } // && civInfo.tech.isResearched(it.revealedBy!!) }
         for (resource in revealedStrategicResources) {
-            val fileName = "ResourceIcons/${resource.name}_(Civ5).png"
-            val resourceImage = ImageGetter.getImage(fileName)
+            val resourceImage = ImageGetter.getResourceImage(resource.name,20f)
             resourceImages.put(resource.name, resourceImage)
-            resourceTable.add(resourceImage).size(20f)
+            resourceTable.add(resourceImage)
             val resourceLabel = Label("0", labelSkin)
             resourceLabels.put(resource.name, resourceLabel)
             resourceTable.add(resourceLabel)

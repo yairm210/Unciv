@@ -73,10 +73,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             if (cityButton == null) {
                 cityButton = Table()
                 cityButton!!.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-                cityButton!!.isTransform = true
+                cityButton!!.isTransform = true // If this is not set then the city button won't scale!
 
                 addActor(cityButton)
-                zIndex = parent.children.size // so this tile is rendered over neighboring tiles
+                toFront() // so this tile is rendered over neighboring tiles
             }
 
             val cityButtonText = city.name + " (" + city.population.population + ")"
@@ -89,7 +89,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             cityButton!!.run {
                 clear()
-                if(viewable) {
+                if(viewable && city.health<city.getMaxHealth().toFloat()) {
                     val healthBarSize = 100f
                     val healthPercent = city.health / city.getMaxHealth().toFloat()
                     val healthBar = Table()
@@ -107,15 +107,15 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
                 if(city.isBeingRazed){
                     val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
-                    add(fireImage).size(20f).padLeft(5f)
+                    add(fireImage).size(20f).pad(2f).padLeft(5f)
                 }
                 if(city.isCapital()){
                     val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY}
-                    add(starImage).size(20f).padLeft(5f)
+                    add(starImage).size(20f).pad(2f).padLeft(5f)
                 }
                 else if (city.civInfo.isPlayerCivilization() && city.cityStats.isConnectedToCapital(RoadStatus.Road)){
                     val connectionImage = ImageGetter.getStatIcon("CityConnection")
-                    add(connectionImage).size(20f).padLeft(5f)
+                    add(connectionImage).size(20f).pad(2f).padLeft(5f)
                 }
 
                 else{add()} // this is so the health bar is always 2 columns wide
@@ -129,6 +129,5 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
         }
     }
-
 
 }

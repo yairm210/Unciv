@@ -1,6 +1,7 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
@@ -20,7 +21,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var terrainFeatureImage:Image?=null
     protected var cityImage:Image?=null
 
-    protected var resourceImage: Image? = null
+    protected var resourceImage: Actor? = null
     protected var improvementImage: Image? =null
     var populationImage: Image? = null
     private val roadImages = HashMap<TileInfo, RoadImage>()
@@ -301,17 +302,14 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         if(resourceImage==null && shouldDisplayResource) { // Need to add the resource image!
-            val fileName = "ResourceIcons/" + tileInfo.resource + "_(Civ5).png"
-                resourceImage = ImageGetter.getImage(fileName)
-                resourceImage!!.setSize(20f, 20f)
+            resourceImage = ImageGetter.getResourceImage(tileInfo.resource!!,20f)
             resourceImage!!.center(this)
-            resourceImage!!.x -= 22 // left
-            resourceImage!!.y += 10 // top
+            resourceImage!!.x = resourceImage!!.x - 22 // left
+            resourceImage!!.y = resourceImage!!.y + 10 // top
             addActor(resourceImage!!)
         }
         if(resourceImage!=null){
-            if(viewable) resourceImage!!.color= Color.WHITE
-            else resourceImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
+            resourceImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
         }
     }
 
