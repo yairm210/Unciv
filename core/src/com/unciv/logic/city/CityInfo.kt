@@ -196,7 +196,7 @@ class CityInfo {
         // Remove all national wonders
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             cityConstructions.builtBuildings.remove(building.name)
-
+        isBeingRazed=false
     }
     //endregion
 }

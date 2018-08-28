@@ -62,3 +62,20 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Gem](https://thenounproject.com/term/gem/948920/) By Lluisa Iborra
 * [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin
 * [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+
+
+* [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell
+* [Woodcutting axe](https://thenounproject.com/term/woodcutting-axe/1060560/) By Chanut is Industries
+* [Monument](https://thenounproject.com/term/monument/1175928/) By Setyo Ari Wibowo
+* [Farm](https://thenounproject.com/term/farm/25362/) By Bonnie Beach
+* [Unhappy](https://thenounproject.com/term/unhappy/116793/) By Daryl Vandermont
+* [Bank](https://thenounproject.com/term/bank/1648569/) By Scott Dunlap
+* [Academy](https://thenounproject.com/term/academy/1689703/) By CJS
+* [Factory](https://thenounproject.com/term/factory/1049531/) By RULI
+* [Mine](https://thenounproject.com/term/mine/543/) By Edward Boatman
+* [Corral](https://thenounproject.com/term/corral/1340751/) By Luis Prado
+* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery

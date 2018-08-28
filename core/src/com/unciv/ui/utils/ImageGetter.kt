@@ -56,8 +56,25 @@ object ImageGetter {
         return getImage("UnitIcons/$unitName.png")
     }
 
-    fun getImprovementIcon(improvementName:String):Image{
-        return getImage("ImprovementIcons/" + improvementName.replace(' ', '_') + "_(Civ5).png")
+    fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
+        val group= Group()
+        val circle = getImage("OtherIcons/Circle").apply { setSize(size,size) }
+
+        val improvement = GameBasics.TileImprovements[improvementName]!!
+        when {
+            improvement.food>0 -> circle.color= Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
+            improvement.production>0 -> circle.color= Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
+            improvement.gold>0 -> circle.color= Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
+            improvement.science>0 -> circle.color= Color.GOLD.cpy().lerp(Color.BLUE,0.5f)
+            improvement.culture>0 -> circle.color= Color.GOLD.cpy().lerp(Color.PURPLE,0.5f)
+        }
+
+
+        group.setSize(size,size)
+        group.addActor(circle)
+        group.addActor(getImage("ImprovementIcons/$improvementName")
+                .apply { setSize(size*0.8f,size*0.8f); center(group) })
+        return group
     }
 
     fun getPromotionIcon(promotionName:String):Image{

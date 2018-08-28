@@ -1,8 +1,8 @@
 package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
@@ -12,7 +12,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
-    fun getIconForUnitAction(unitAction:String): Image {
+    fun getIconForUnitAction(unitAction:String): Actor {
         if(unitAction.startsWith("Upgrade to")){
             val unitToUpgradeTo = Regex("""Upgrade to \[(\S*)\]""").find(unitAction)!!.groups[1]!!.value
             return ImageGetter.getUnitIcon(unitToUpgradeTo)

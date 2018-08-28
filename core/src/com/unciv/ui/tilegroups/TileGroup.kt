@@ -22,10 +22,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var cityImage:Image?=null
 
     protected var resourceImage: Actor? = null
-    protected var improvementImage: Image? =null
+    protected var improvementImage: Actor? =null
     var populationImage: Image? = null
     private val roadImages = HashMap<TileInfo, RoadImage>()
-    private val borderImages = HashMap<TileInfo, List<Image>>() // map of neiboring tile to border images
+    private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
     protected var civilianUnitImage: Group? = null
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
@@ -288,7 +288,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             }
         }
         if(improvementImage!=null){
-            if(!viewable) improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
+            improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
         }
     }
 
