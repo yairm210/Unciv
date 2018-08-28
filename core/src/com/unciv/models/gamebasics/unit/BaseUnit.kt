@@ -60,8 +60,8 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if(strength!=0){
             sb.append("{Strength} $strength".tr())
             if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
-            sb.appendln()
             if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
+            sb.appendln()
         }
 
         if(uniques!=null){

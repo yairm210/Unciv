@@ -48,12 +48,12 @@ object ImageGetter {
     }
 
     fun getStatIcon(statName: String): Image {
-        return ImageGetter.getImage("StatIcons/20x" + statName + "5.png")
+        return ImageGetter.getImage("StatIcons/$statName")
                 .apply { setSize(20f,20f)}
     }
 
     fun getUnitIcon(unitName:String):Image{
-        return getImage("UnitIcons/$unitName.png")
+        return getImage("UnitIcons/$unitName")
     }
 
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
@@ -78,7 +78,7 @@ object ImageGetter {
     }
 
     fun getPromotionIcon(promotionName:String):Image{
-        return getImage("UnitPromotionIcons/" + promotionName.replace(' ', '_') + "_(Civ5).png")
+        return getImage("UnitPromotionIcons/" + promotionName.replace(' ', '_') + "_(Civ5)")
     }
 
     fun getBlue() = Color(0x004085bf)
@@ -107,17 +107,14 @@ object ImageGetter {
             val happiness = getStatIcon("Happiness")
             happiness.setSize(size/2,size/2)
             happiness.x = group.width-happiness.width
-//            happiness.y = group.height-happiness.height
             group.addActor(happiness)
         }
         if(resource.resourceType==ResourceType.Strategic){
             val production = getStatIcon("Production")
             production.setSize(size/2,size/2)
             production.x = group.width-production.width
-//            production.y = group.height-production.height
             group.addActor(production)
         }
         return group
-        return getImage("ResourceIcons/${resourceName}")
     }
 }
