@@ -76,7 +76,7 @@
 	{
 		name:"Scouting II",
 		prerequisites:["Scouting I"],
-		effect:"+1 Visibility Range",
+		effect:"+1 Movement",
 		unitTypes:["Scout"]
 	}
 	{
@@ -110,9 +110,15 @@
 	}
 	{
 		name:"Siege",
-		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II"],
-		effect:"Bonus vs City 25%",
-		unitTypes:["Melee","Ranged","Siege","Mounted"]
+		prerequisites:["Shock II","Drill II"],
+		effect:"Bonus vs City 50%",
+		unitTypes:["Melee"]
+	}
+	{
+		name:"Volley",
+		prerequisites:["Accuracy I","Barrage I"],
+		effect:"Bonus vs City 50%",
+		unitTypes:["Ranged","Siege"]
 	}
 	{
 		name:"Sentry",
@@ -131,6 +137,37 @@
 		prerequisites:["Accuracy III","Barrage III"],
 		effect:"Ranged attacks may be performed over obstacles",
 		unitTypes:["Ranged","Siege"]
+	}
+	
+	{
+		name:"Formation I",
+		prerequisites:["Shock II","Drill II"],
+		effect:"Bonus vs Mounted 33%",
+		unitTypes:["Melee","Mounted"]
+	}
+	{
+		name:"Formation II",
+		prerequisites:["Formation I"],
+		effect:"Bonus vs Mounted 33%",
+		unitTypes:["Melee","Mounted"]
+	}
+	{
+		name:"Blitz",
+		prerequisites:["Shock III","Drill III"],
+		effect:"1 additional attack per turn",
+		unitTypes:["Melee","Mounted"]
+	}
+	{
+		name:"Logistics",
+		prerequisites:["Accuracy III","Barrage III"],
+		effect:"1 additional attack per turn",
+		unitTypes:["Ranged","Siege"]
+	}
+	{
+		name:"Mobility",
+		prerequisites:["Shock III","Drill III"],
+		effect:"+1 Movement",
+		unitTypes:["Mounted"]
 	}
 	
 ]

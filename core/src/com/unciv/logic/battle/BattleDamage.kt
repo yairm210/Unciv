@@ -11,7 +11,7 @@ class BattleDamage{
 
     private fun getBattleDamageModifiersOfUnit(unit:MapUnit): MutableList<BattleDamageModifier> {
         val modifiers = mutableListOf<BattleDamageModifier>()
-        for (ability in unit.getSpecialAbilities()) {
+        for (ability in unit.getUniques()) {
             // This beut allows us to have generic unit uniques: "Bonus vs City 75%", "Penatly vs Mounted 25%" etc.
             val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(ability)
             if (regexResult == null) continue
@@ -87,7 +87,7 @@ class BattleDamage{
         }
 
         if(attacker.isRanged()){
-            val defenceVsRanged = 0.25f * defender.unit.getSpecialAbilities().count{it=="+25% Defence against ranged attacks"}
+            val defenceVsRanged = 0.25f * defender.unit.getUniques().count{it=="+25% Defence against ranged attacks"}
             if(defenceVsRanged>0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 

@@ -37,14 +37,18 @@ class MapUnit {
     fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
     fun getTile(): TileInfo =  currentTile
-    fun getMaxMovement() = baseUnit.movement
+    fun getMaxMovement(): Int {
+        var movement = baseUnit.movement
+        movement += getUniques().count{it=="+1 Movement"}
+        return movement
+    }
 
     fun getDistanceToTiles(): HashMap<TileInfo, Float> {
         val tile = getTile()
         return movementAlgs().getDistanceToTilesWithinTurn(tile.position,currentMovement)
     }
 
-    fun getSpecialAbilities(): MutableList<String> {
+    fun getUniques(): MutableList<String> {
         val abilities = mutableListOf<String>()
         val baseUnit = baseUnit()
         if(baseUnit.uniques!=null) abilities.addAll(baseUnit.uniques!!)
@@ -53,12 +57,12 @@ class MapUnit {
     }
 
     fun hasUnique(unique:String): Boolean {
-        return getSpecialAbilities().contains(unique)
+        return getUniques().contains(unique)
     }
 
     fun getViewableTiles(): MutableList<TileInfo> {
         var visibilityRange = 2
-        visibilityRange += getSpecialAbilities().count{it=="+1 Visibility Range"}
+        visibilityRange += getUniques().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
         val tile = getTile()
         if (tile.baseTerrain == "Hill") visibilityRange += 1
@@ -102,7 +106,8 @@ class MapUnit {
 
     fun canAttack(): Boolean {
         if(currentMovement==0f) return false
-        if(attacksThisTurn>0) return false
+        if(attacksThisTurn>0 && !hasUnique("1 additional attack per turn")) return false
+        if(attacksThisTurn>1) return false
         if(hasUnique("Must set up to ranged attack") && action != "Set Up") return false
         return true
     }
@@ -211,7 +216,7 @@ class MapUnit {
     fun endTurn() {
         doPostTurnAction()
         if(currentMovement== getMaxMovement().toFloat() // didn't move this turn
-                || getSpecialAbilities().contains("Unit will heal every turn, even if it performs an action")){
+                || getUniques().contains("Unit will heal every turn, even if it performs an action")){
             heal()
         }
     }
