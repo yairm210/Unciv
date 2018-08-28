@@ -90,18 +90,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             cityButton!!.run {
                 clear()
                 if(viewable && city.health<city.getMaxHealth().toFloat()) {
-                    val healthBarSize = 100f
-                    val healthPercent = city.health / city.getMaxHealth().toFloat()
-                    val healthBar = Table()
-                    val healthPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot)
-                    healthPartOfBar.color = when {
-                        healthPercent > 2 / 3f -> Color.GREEN
-                        healthPercent > 1 / 3f -> Color.ORANGE
-                        else -> Color.RED
-                    }
-                    val emptyPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BLACK }
-                    healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
-                    healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
+                    val healthBar = getHealthBar(city.health.toFloat(),city.getMaxHealth().toFloat(),100f)
                     add(healthBar).colspan(3).row()
                 }
 

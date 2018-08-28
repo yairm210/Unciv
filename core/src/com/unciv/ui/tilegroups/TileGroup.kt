@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
@@ -18,11 +19,11 @@ import com.unciv.ui.utils.colorFromRGB
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
-    protected var terrainFeatureImage:Image?=null
-    protected var cityImage:Image?=null
+    protected var terrainFeatureImage: Image? = null
+    protected var cityImage: Image? = null
 
     protected var resourceImage: Actor? = null
-    protected var improvementImage: Actor? =null
+    protected var improvementImage: Actor? = null
     var populationImage: Image? = null
     private val roadImages = HashMap<TileInfo, RoadImage>()
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
@@ -33,19 +34,19 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
     var yieldGroup = YieldGroup()
 
-    class RoadImage{
-        var roadStatus:RoadStatus = RoadStatus.None
-        var image:Image? = null
+    class RoadImage {
+        var roadStatus: RoadStatus = RoadStatus.None
+        var image: Image? = null
     }
 
     init {
         val groupSize = 54f
-        this.setSize(groupSize,groupSize)
+        this.setSize(groupSize, groupSize)
         addHexagon(groupSize)
         addCircleImage()
         addFogImage()
         addCrosshairImage()
-        isTransform=false
+        isTransform = false
     }
 
     private fun addCircleImage() {
@@ -56,25 +57,25 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         circleImage.isVisible = false
     }
 
-    private fun addFogImage(){
-        fogImage.width=70f
-        fogImage.height=70f
+    private fun addFogImage() {
+        fogImage.width = 70f
+        fogImage.height = 70f
         fogImage.center(this)
-        fogImage.color= Color.WHITE.cpy().apply { a=0.5f }
+        fogImage.color = Color.WHITE.cpy().apply { a = 0.5f }
         addActor(fogImage)
     }
 
-    private fun addCrosshairImage(){
-        crosshairImage.width=70f
-        crosshairImage.height=70f
+    private fun addCrosshairImage() {
+        crosshairImage.width = 70f
+        crosshairImage.height = 70f
         crosshairImage.center(this)
-        crosshairImage.isVisible=false
-        crosshairImage.color= Color.WHITE.cpy().apply { a=0.5f }
+        crosshairImage.isVisible = false
+        crosshairImage.color = Color.WHITE.cpy().apply { a = 0.5f }
         addActor(crosshairImage)
     }
 
-    fun showCrosshair(){
-        crosshairImage.isVisible=true
+    fun showCrosshair() {
+        crosshairImage.isVisible = true
     }
 
     private fun addHexagon(groupSize: Float) {
@@ -89,7 +90,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     fun addPopulationIcon() {
         populationImage = ImageGetter.getStatIcon("Population")
         populationImage!!.run {
-            color= Color.GREEN.cpy().lerp(Color.BLACK,0.5f)
+            color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
             setSize(20f, 20f)
             center(this@TileGroup)
             x += 20 // right
@@ -98,7 +99,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     protected fun removePopulationIcon() {
-        if(populationImage!=null) {
+        if (populationImage != null) {
             populationImage!!.remove()
             populationImage = null
         }
@@ -108,7 +109,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     open fun update(isViewable: Boolean) {
         hideCircle()
         if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
-            && !UnCivGame.Current.viewEntireMapForDebug) {
+                && !UnCivGame.Current.viewEntireMapForDebug) {
             hexagon.color = Color.BLACK
             return
         }
@@ -121,21 +122,21 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         updateImprovementImage(isViewable)
 
 
-        civilianUnitImage = newUnitImage(tileInfo.civilianUnit,civilianUnitImage,isViewable,-20f)
-        militaryUnitImage = newUnitImage(tileInfo.militaryUnit,militaryUnitImage,isViewable,20f)
+        civilianUnitImage = newUnitImage(tileInfo.civilianUnit, civilianUnitImage, isViewable, -20f)
+        militaryUnitImage = newUnitImage(tileInfo.militaryUnit, militaryUnitImage, isViewable, 20f)
 
         updateRoadImages()
         updateBorderImages()
 
         crosshairImage.toFront()
-        crosshairImage.isVisible=false
+        crosshairImage.isVisible = false
 
         fogImage.toFront()
-        fogImage.isVisible=!(isViewable || UnCivGame.Current.viewEntireMapForDebug)
+        fogImage.isVisible = !(isViewable || UnCivGame.Current.viewEntireMapForDebug)
     }
 
     private fun updateCityImage() {
-        if(cityImage==null && tileInfo.isCityCenter()){
+        if (cityImage == null && tileInfo.isCityCenter()) {
             cityImage = ImageGetter.getImage("OtherIcons/City.png")
             addActor(cityImage)
             cityImage!!.run {
@@ -143,46 +144,46 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 center(this@TileGroup)
             }
         }
-        if(cityImage!=null && !tileInfo.isCityCenter()){
+        if (cityImage != null && !tileInfo.isCityCenter()) {
             cityImage!!.remove()
             cityImage = null
         }
     }
 
-    var previousTileOwner:CivilizationInfo?=null
+    var previousTileOwner: CivilizationInfo? = null
     private fun updateBorderImages() {
         // This is longer than it could be, because of performance -
         // before fixing, about half (!) the time of update() was wasted on
         // removing all the border images and putting them back again!
         val tileOwner = tileInfo.getOwner()
-        if (previousTileOwner!=tileOwner){
-            for(images in borderImages.values)
-                for(image in images)
+        if (previousTileOwner != tileOwner) {
+            for (images in borderImages.values)
+                for (image in images)
                     image.remove()
 
             borderImages.clear()
         }
-        previousTileOwner=tileOwner
-        if(tileOwner==null) return
+        previousTileOwner = tileOwner
+        if (tileOwner == null) return
 
         val civColor = tileInfo.getOwner()!!.getNation().getColor()
         for (neighbor in tileInfo.neighbors) {
             val neigborOwner = neighbor.getOwner()
-            if(neigborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
+            if (neigborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
             {
-                for(image in borderImages[neighbor]!!)
+                for (image in borderImages[neighbor]!!)
                     image.remove()
                 borderImages.remove(neighbor)
             }
-            if(neigborOwner!=tileOwner && !borderImages.containsKey(neighbor)){ // there should be a border here but there isn't
+            if (neigborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
                 val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
 
                 // This is some crazy voodoo magic so I'll explain.
                 val images = mutableListOf<Image>()
-                borderImages.put(neighbor,images)
-                for(i in -2..2) {
+                borderImages.put(neighbor, images)
+                for (i in -2..2) {
                     val image = ImageGetter.getImage("OtherIcons/Circle.png")
                     image.setSize(5f, 5f)
                     image.center(this)
@@ -196,7 +197,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     // Remember, if from the center of the heagon to the middle of the side is an (a,b) vecctor,
                     // Then within the side, which is of course perpendicular to the (a,b) vector,
                     // we can move with multiples of (b,-a) which is perpendicular to (a,b)
-                    image.moveBy(relativeWorldPosition.y*i * 4,  -relativeWorldPosition.x*i * 4)
+                    image.moveBy(relativeWorldPosition.y * i * 4, -relativeWorldPosition.x * i * 4)
 
                     image.color = civColor
                     addActor(image)
@@ -211,24 +212,24 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             if (!roadImages.containsKey(neighbor)) roadImages[neighbor] = RoadImage()
             val roadImage = roadImages[neighbor]!!
 
-            val roadStatus = when{
-                tileInfo.roadStatus==RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
-                tileInfo.roadStatus==RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
+            val roadStatus = when {
+                tileInfo.roadStatus == RoadStatus.None || neighbor.roadStatus === RoadStatus.None -> RoadStatus.None
+                tileInfo.roadStatus == RoadStatus.Road || neighbor.roadStatus === RoadStatus.Road -> RoadStatus.Road
                 else -> RoadStatus.Railroad
             }
-            if (roadImage.roadStatus == roadStatus ) continue // the image is correct
+            if (roadImage.roadStatus == roadStatus) continue // the image is correct
 
             roadImage.roadStatus = roadStatus
 
-            if(roadImage.image!=null) {
+            if (roadImage.image != null) {
                 roadImage.image!!.remove()
                 roadImage.image = null
             }
-            if(roadStatus==RoadStatus.None) continue // no road image
+            if (roadStatus == RoadStatus.None) continue // no road image
 
-            val image = if(roadStatus==RoadStatus.Road) ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= Color.BROWN }
+            val image = if (roadStatus == RoadStatus.Road) ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BROWN }
             else ImageGetter.getImage("OtherIcons/Railroad.png")
-            roadImage.image=image
+            roadImage.image = image
 
             val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
             val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
@@ -272,9 +273,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateImprovementImage(viewable: Boolean) {
-        if(improvementImage!=null){
+        if (improvementImage != null) {
             improvementImage!!.remove()
-            improvementImage=null
+            improvementImage = null
         }
 
         if (tileInfo.improvement != null && UnCivGame.Current.settings.showResourcesAndImprovements) {
@@ -287,8 +288,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 this.y -= 10 // bottom
             }
         }
-        if(improvementImage!=null){
-            improvementImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
+        if (improvementImage != null) {
+            improvementImage!!.color = Color.WHITE.cpy().apply { a = 0.7f }
         }
     }
 
@@ -296,27 +297,27 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         val shouldDisplayResource = UnCivGame.Current.settings.showResourcesAndImprovements
                 && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())
 
-        if(resourceImage!=null && !shouldDisplayResource){
+        if (resourceImage != null && !shouldDisplayResource) {
             resourceImage!!.remove()
-            resourceImage=null
+            resourceImage = null
         }
 
-        if(resourceImage==null && shouldDisplayResource) { // Need to add the resource image!
-            resourceImage = ImageGetter.getResourceImage(tileInfo.resource!!,20f)
+        if (resourceImage == null && shouldDisplayResource) { // Need to add the resource image!
+            resourceImage = ImageGetter.getResourceImage(tileInfo.resource!!, 20f)
             resourceImage!!.center(this)
             resourceImage!!.x = resourceImage!!.x - 22 // left
             resourceImage!!.y = resourceImage!!.y + 10 // top
             addActor(resourceImage!!)
         }
-        if(resourceImage!=null){
-            resourceImage!!.color= Color.WHITE.cpy().apply { a=0.7f }
+        if (resourceImage != null) {
+            resourceImage!!.color = Color.WHITE.cpy().apply { a = 0.7f }
         }
     }
 
 
-    protected fun newUnitImage(unit:MapUnit?, currentImage:Group?, isViewable: Boolean, yFromCenter:Float): Group? {
-        var newImage:Group? = null
-        if (currentImage!= null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+    protected fun newUnitImage(unit: MapUnit?, currentImage: Group?, isViewable: Boolean, yFromCenter: Float): Group? {
+        var newImage: Group? = null
+        if (currentImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
             currentImage.remove()
         }
 
@@ -324,8 +325,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             newImage = getUnitImage(unit, unit.civInfo.getNation().getColor(), 25f)
             addActor(newImage)
             newImage.center(this)
-            newImage.y+=yFromCenter
-            if(!unit.isIdle()) newImage.color = Color(1f, 1f, 1f, 0.5f)
+            newImage.y += yFromCenter
+
+            if (!unit.isIdle()) newImage.color = Color(1f, 1f, 1f, 0.5f)
         }
         return newImage
     }
@@ -333,30 +335,56 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun getUnitImage(unit: MapUnit, color: Color, size: Float): Group {
         val unitBaseImage = ImageGetter.getUnitIcon(unit.name)
-                .apply { setSize(20f,20f) }
+                .apply { setSize(20f, 20f) }
 
-        val background = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
-                else ImageGetter.getImage("OtherIcons/Circle.png")
+        val background = if (unit.isFortified()) ImageGetter.getImage("OtherIcons/Shield.png")
+        else ImageGetter.getImage("OtherIcons/Circle.png")
         background.apply {
             this.color = color
-            setSize(size,size)
+            setSize(size, size)
         }
         val group = Group().apply {
-            setSize(size,size)
+            setSize(size, size)
             addActor(background)
         }
         unitBaseImage.center(group)
         group.addActor(unitBaseImage)
+
+
+        if (unit.health < 100) { // add health bar
+            group.addActor(getHealthBar(unit.health.toFloat(),100f,size))
+        }
+
         return group
     }
 
 
-    fun showCircle(color:Color){
+    fun showCircle(color: Color) {
         circleImage.isVisible = true
         val color = color.cpy()
         color.a = 0.3f
         circleImage.color = color
     }
 
-    fun hideCircle(){circleImage.isVisible=false}
+    fun hideCircle() {
+        circleImage.isVisible = false
+    }
+
+
+    protected fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
+        val healthPercent = currentHealth / maxHealth
+        val healthBar = Table()
+        val healthPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot)
+        healthPartOfBar.color = when {
+            healthPercent > 2 / 3f -> Color.GREEN
+            healthPercent > 1 / 3f -> Color.ORANGE
+            else -> Color.RED
+        }
+        val emptyPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BLACK }
+        healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
+        healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
+        healthBar.pack()
+        return healthBar
+
+    }
 }
