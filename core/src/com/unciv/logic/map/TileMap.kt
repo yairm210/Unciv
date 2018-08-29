@@ -63,12 +63,14 @@ class TileMap {
 
         val tilesInDistance = getTilesInDistance(position, 2)
 
-        unit.owner=civInfo.civName // needed in order to calculate canMoveTo
+        unit.assignOwner(civInfo)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         val unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
         if(unitToPlaceTile!=null) {
+            // only once we know the unit can be placed do we add it to the civ's unit list
             unit.putInTile(unitToPlaceTile)
-            unit.assignOwner(civInfo) // only once we know the unit can be placed do we add it to the civ's unit list
         }
+        else civInfo.units.remove(unit) // since we added it to the civ units in the previous assignOwner
+
         return unit
     }
 

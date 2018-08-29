@@ -74,8 +74,8 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Factory](https://thenounproject.com/term/factory/1049531/) By RULI
 * [Mine](https://thenounproject.com/term/mine/543/) By Edward Boatman
 * [Corral](https://thenounproject.com/term/corral/1340751/) By Luis Prado
-* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
-* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
-* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
-* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
-* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+* [Plants](https://thenounproject.com/term/plants/1760916/) By hendra sudibyo
+* [Pickaxe](https://thenounproject.com/term/pickaxe/175792/) By Creative Stall
+* [Food stall](https://thenounproject.com/term/food-stall/1618358/) By I Putu Kharismayadi
+* [Road](https://thenounproject.com/term/road/1600491/) By REVA
+* [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige

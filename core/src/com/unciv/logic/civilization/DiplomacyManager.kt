@@ -102,7 +102,7 @@ class DiplomacyManager() {
     fun declareWar(){
         diplomaticStatus = DiplomaticStatus.War
         otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
-        otherCiv().addNotification("[civName] has declared war on us!",null, Color.RED)
+        otherCiv().addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
     }
     //endregion
 }
