@@ -77,6 +77,13 @@ object ImageGetter {
         return group
     }
 
+    fun getConstructionImage(construction: String): Image {
+        if(GameBasics.Buildings.containsKey(construction)) return getImage("BuildingIcons/$construction")
+        if(GameBasics.Units.containsKey(construction)) return getUnitIcon(construction)
+        if(construction=="Nothing") return getImage("OtherIcons/Stop")
+        return getStatIcon(construction)
+    }
+
     fun getPromotionIcon(promotionName:String):Image{
         return getImage("UnitPromotionIcons/" + promotionName.replace(' ', '_') + "_(Civ5)")
     }

@@ -1,5 +1,7 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -43,14 +45,18 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
             row()
         }
 
+
+        val buildingPickButton = Button(CameraStageBaseScreen.skin)
         val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
-        val buildingPickButton = TextButton(buildingText, CameraStageBaseScreen.skin)
+        buildingPickButton.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction))
+                .size(40f).padRight(5f)
+        buildingPickButton.add(Label(buildingText , CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
         buildingPickButton.addClickListener {
             UnCivGame.Current.screen = ConstructionPickerScreen(city)
             cityScreen.dispose()
         }
+        buildingPickButton.pack()
 
-        buildingPickButton.label.setFontScale(buttonScale)
         add(buildingPickButton).colspan(2).pad(10f)
                 .size(buildingPickButton.width * buttonScale, buildingPickButton.height * buttonScale)
 
@@ -69,7 +75,6 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
             if (buildingGoldCost > city.civInfo.gold) {
                 buildingBuyButton.disable()
             }
-            buildingBuyButton.label.setFontScale(buttonScale)
             add(buildingBuyButton).colspan(2).pad(10f)
                     .size(buildingBuyButton.width * buttonScale, buildingBuyButton.height * buttonScale)
         }

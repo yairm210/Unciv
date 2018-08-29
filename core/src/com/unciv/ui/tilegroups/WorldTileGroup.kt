@@ -1,11 +1,15 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -109,14 +113,51 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
                 else{add()} // this is so the health bar is always 2 columns wide
                 add(label).pad(10f)
+                if(city.civInfo.isPlayerCivilization()) {
+                    add(getConstructionGroup(city.cityConstructions)).padRight(5f)
+                }
                 pack()
                 setOrigin(Align.center)
                 toFront()
+                touchable = Touchable.enabled
             }
 
             cityButton!!.center(this)
 
         }
+    }
+
+    private fun getConstructionGroup(cityConstructions: CityConstructions):Group{
+        val group= Group()
+        val groupHeight = 25f
+        group.setSize(35f,groupHeight)
+        val image = ImageGetter.getConstructionImage(cityConstructions.currentConstruction)
+        image.setSize(20f,20f)
+        image.centerY(group)
+        image.x = group.width-image.width
+        group.addActor(image)
+
+        if(cityConstructions.getCurrentConstruction() !is SpecialConstruction) {
+            val turnsToConstruction = cityConstructions.turnsToConstruction(cityConstructions.currentConstruction)
+            val label = Label(turnsToConstruction.toString(),CameraStageBaseScreen.skin)
+            label.color = Color.BROWN
+            label.setFont(10)
+            label.pack()
+            group.addActor(label)
+
+            val adoptedPolicies = cityConstructions.cityInfo.civInfo.policies.adoptedPolicies
+            val constructionPercentage = cityConstructions.getWorkDone(cityConstructions.currentConstruction) /
+                    cityConstructions.getCurrentConstruction().getProductionCost(adoptedPolicies).toFloat()
+            val productionBar = Table()
+            val heightOfProductionBar = (constructionPercentage * groupHeight)
+            productionBar.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BLACK}).width(2f).height(groupHeight - heightOfProductionBar).row()
+            productionBar.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)}).width(2f).height(heightOfProductionBar)
+            productionBar.pack()
+            productionBar.x = 10f
+            label.x = productionBar.x - label.width - 3
+            group.addActor(productionBar)
+        }
+        return group
     }
 
 }

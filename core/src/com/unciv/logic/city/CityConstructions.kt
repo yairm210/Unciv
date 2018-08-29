@@ -90,7 +90,7 @@ class CityConstructions {
     internal fun getBuiltBuildings(): List<Building> = builtBuildings.map { GameBasics.Buildings[it]!! }
 
 
-    private fun getWorkDone(constructionName: String): Int {
+    fun getWorkDone(constructionName: String): Int {
         if (inProgressConstructions.containsKey(constructionName)) return inProgressConstructions[constructionName]!!
         else return 0
     }

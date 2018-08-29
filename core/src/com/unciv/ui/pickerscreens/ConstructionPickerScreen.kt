@@ -1,21 +1,26 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.tr
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     private var selectedProduction: String? = null
 
     private fun getProductionButton(production: String, buttonText: String,
-                                    description: String?, rightSideButtonText: String): TextButton {
-        val productionTextButton = TextButton(buttonText, skin)
+                                    description: String?, rightSideButtonText: String): Button {
+        val productionTextButton = Button(skin)
+        productionTextButton.add(ImageGetter.getConstructionImage(production)).size(40f).padRight(5f)
+        productionTextButton.add(Label(buttonText,skin).setFontColor(Color.WHITE))
         productionTextButton.addClickListener {
             selectedProduction = production
             pick(rightSideButtonText)
