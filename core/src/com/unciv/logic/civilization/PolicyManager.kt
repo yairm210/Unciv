@@ -45,7 +45,10 @@ class PolicyManager {
         if(!branchCompletion) {
             if (freePolicies > 0) freePolicies--
             else  {
-                storedCulture -= getCultureNeededForNextPolicy()
+                val cultureNeededForNextPolicy = getCultureNeededForNextPolicy()
+                if(cultureNeededForNextPolicy > storedCulture)
+                    throw Exception("How is this possible??????")
+                storedCulture -= cultureNeededForNextPolicy
                 numberOfAdoptedPolicies++
             }
         }
