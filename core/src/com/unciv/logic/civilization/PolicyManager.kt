@@ -59,9 +59,10 @@ class PolicyManager {
             }
         }
 
+        val hasCapital = civInfo.cities.any{it.isCapital()}
         when (policy.name) {
-            "Collective Rule" -> civInfo.placeUnitNearTile(civInfo.getCapital().location, "Settler")
-            "Citizenship" -> civInfo.placeUnitNearTile(civInfo.getCapital().location, "Worker")
+            "Collective Rule" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, "Settler")
+            "Citizenship" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, "Worker")
             "Representation", "Reformation" -> civInfo.goldenAges.enterGoldenAge()
             "Scientific Revolution" -> civInfo.tech.freeTechs += 2
             "Legalism" ->
