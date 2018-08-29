@@ -33,10 +33,8 @@ class CityExpansionManager {
 
     fun chooseNewTileToOwn(): TileInfo? {
         for (i in 2..5) {
-            val tiles = cityInfo.getCenterTile().getTilesInDistance(i).filter {
-                it.getOwner() != cityInfo.civInfo
-                        && it.getTilesInDistance(1).none { tile->tile.isCityCenter() } // This SHOULD stop cities from grabbing tiles surrounding a city
-            }
+            val tiles = cityInfo.getCenterTile().getTilesInDistance(i)
+                    .filter {it.getOwner() == null && it.neighbors.any { tile->tile.getOwner()==cityInfo.civInfo }}
             if (tiles.isEmpty()) continue
             val chosenTile = tiles.maxBy { Automation().rankTile(it,cityInfo.civInfo) }
             return chosenTile

@@ -94,8 +94,11 @@ class CivilizationInfo {
         statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
 
         if (policies.isAdopted("Mandate Of Heaven")) {
-            if (!statMap.containsKey("Policies")) statMap["Policies"] = Stats()
-            statMap["Policies"]!!.culture += statMap.values.map { it.happiness }.sum() / 2
+            val happiness = statMap.values.map { it.happiness }.sum()
+            if(happiness>0) {
+                if (!statMap.containsKey("Policies")) statMap["Policies"] = Stats()
+                statMap["Policies"]!!.culture += happiness / 2
+            }
         }
 
         // negative gold hurts science
