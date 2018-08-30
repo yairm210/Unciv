@@ -94,11 +94,11 @@ class NewGameScreen: PickerScreen(){
             civPickerTable.add(nationTable).row()
         }
         mainTable.setFillParent(true)
-        mainTable.add(ScrollPane(civPickerTable))
+        mainTable.add(ScrollPane(civPickerTable).apply { setScrollingDisabled(true,false) })
         topTable.addActor(mainTable)
     }
 
-    fun updateNationTables(){
+    private fun updateNationTables(){
         nationTables.forEach { it.update() }
     }
 
