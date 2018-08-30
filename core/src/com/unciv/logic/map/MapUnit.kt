@@ -209,6 +209,7 @@ class MapUnit {
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"
+        if(isFortified() || action=="Set Up") action=null // unfortify/setup after moving
         removeFromTile()
         putInTile(otherTile)
     }

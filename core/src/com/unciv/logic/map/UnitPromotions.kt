@@ -7,7 +7,10 @@ class UnitPromotions{
     @Transient lateinit var unit:MapUnit
     var XP=0
     var promotions = HashSet<String>()
-    var numberOfPromotions = 0 // The number of times this unit has been promoted - some promotions don't come from being promoted but from other things!
+    // The number of times this unit has been promoted
+    // some promotions don't come from being promoted but from other things,
+    // like from being constructed in a specific city etc.
+    var numberOfPromotions = 0
 
     fun xpForNextPromotion() = (numberOfPromotions+1)*10
     fun canBePromoted() = XP >= xpForNextPromotion()
@@ -31,4 +34,11 @@ class UnitPromotions{
         toReturn.numberOfPromotions=numberOfPromotions
         return toReturn
     }
+
+    fun totalXpProduced(): Int {
+        var sum = XP
+        for(i in 1..numberOfPromotions) sum += 10*i
+        return sum
+    }
+
 }

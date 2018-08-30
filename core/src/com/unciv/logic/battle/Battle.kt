@@ -87,16 +87,23 @@ class Battle(val gameInfo:GameInfo) {
         }
 
         // XP!
+        fun addXp(thisCombatant:ICombatant, amount:Int, otherCombatant:ICombatant){
+            if(thisCombatant !is MapUnitCombatant) return
+            if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivilization().isBarbarianCivilization())
+                return
+            thisCombatant.unit.promotions.XP += amount
+        }
+
         if(attacker.isMelee()){
             if(defender.getUnitType()!=UnitType.Civilian) // unit was not captured but actually attacked
             {
-                if (attacker is MapUnitCombatant) attacker.unit.promotions.XP += 5
-                if (defender is MapUnitCombatant) defender.unit.promotions.XP += 4
+                addXp(attacker,5,defender)
+                addXp(defender,4,attacker)
             }
         }
         else{ // ranged attack
-            if(attacker is MapUnitCombatant) attacker.unit.promotions.XP += 2
-            if(defender is MapUnitCombatant) defender.unit.promotions.XP += 2
+            addXp(attacker,2,defender)
+            addXp(defender,2,attacker)
         }
 
         if(attacker is MapUnitCombatant && attacker.unit.action!=null && attacker.unit.action!!.startsWith("moveTo"))
