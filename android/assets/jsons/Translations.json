@@ -2072,13 +2072,21 @@
 		German:"+1 Erforschung pro 2 Bewohner"
 		Dutch:"+1 Wetenschap per 2 Populatie"
 	}
-	"Worker construction increased 25%, provides 2 free workers":{
-		Italian:"+25% velocità costruzione lavoratori, offre 2 lavoratori liberi"
-		Russian:"Увеличивает на 25% скорость создания улучшений на клетках , предоставляет 2 бесплатных рабочих"
-		French:"La construction des travailleurs a augmenté de 25%, fournit 2 travailleurs libres"
-		Romanian:"Lucrările de construcție a crescut cu 25%, oferă 2 lucrători liberi"
-		German:"Arbeiterproduktion um 25% erhöht, gibt 2 freie Arbeiter"
-		Dutch:"Werkerproducktie met 25% vehoogt, geeft 2 gratis werkers"
+	"Worker construction increased 25%":{
+		Italian:"+25% velocità costruzione lavoratori"
+		Russian:"Увеличивает на 25% скорость создания улучшений на клетках"
+		French:"La construction des travailleurs a augmenté de 25%"
+		Romanian:"Lucrările de construcție a crescut cu 25%"
+		German:"Arbeiterproduktion um 25% erhöht"
+		Dutch:"Werkerproducktie met 25% vehoogt"
+	}
+	"Provides 2 free workers":{
+		Italian:"Offre 2 lavoratori liberi"
+		Russian:"предоставляет 2 бесплатных рабочих"
+		French:"Fournit 2 travailleurs libres"
+		Romanian:"Oferă 2 lucrători liberi"
+		German:"Gibt 2 freie Arbeiter"
+		Dutch:"Geeft 2 gratis werkers"
 	}
 	"Free Social Policy":{
 		Italian:"Politica sociale gratuita"

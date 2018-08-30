@@ -5,6 +5,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
@@ -107,11 +108,15 @@ open class TileInfo {
         var stats = getBaseTerrain().clone()
 
         if (terrainFeature != null) {
-            val terrainFeature = getTerrainFeature()
-            if (terrainFeature!!.overrideStats)
-                stats = terrainFeature.clone()
+            val terrainFeatureBase = getTerrainFeature()
+            if (terrainFeatureBase!!.overrideStats)
+                stats = terrainFeatureBase.clone()
             else
-                stats.add(terrainFeature)
+                stats.add(terrainFeatureBase)
+
+            if(terrainFeature=="Oasis" && city!=null
+                    && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
+                stats.gold += 2
         }
 
         if (hasViewableResource(observingCiv)) {
@@ -120,6 +125,12 @@ open class TileInfo {
             if (resource.building != null && city != null && city.cityConstructions.isBuilt(resource.building!!)) {
                 stats.add(resource.getBuilding()!!.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
+            if(resource.resourceType==ResourceType.Strategic
+                    && observingCiv.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
+                stats.production+=1
+            if(resource.name=="Oil" && city!=null
+                    && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
+                stats.gold += 2
         }
 
         val improvement = getTileImprovement()

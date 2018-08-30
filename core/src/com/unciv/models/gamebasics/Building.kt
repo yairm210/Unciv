@@ -38,7 +38,7 @@ class Building : NamedStats(), IConstruction{
     // Uniques
     var providesFreeBuilding: String? = null
     var freeTechs: Int = 0
-    var unique: String? = null // for wonders which have individual functions that are totally unique
+    var uniques = ArrayList<String>()
 
 
     /**
@@ -57,7 +57,7 @@ class Building : NamedStats(), IConstruction{
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
         }
-        if(unique!=null) infoList += unique!!.tr()
+        infoList += uniques.map { it.tr() }.joinToString { "\n" }
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
         if(xpForNewUnits!=0) infoList+= "+$xpForNewUnits {XP for new units}".tr()
@@ -112,7 +112,7 @@ class Building : NamedStats(), IConstruction{
             stringBuilder.appendln("Requires a $requiredBuildingInAllCities to be built in all cities")
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free $providesFreeBuilding in this city")
-        if(unique!=null) stringBuilder.appendln(unique!!.tr())
+        if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.map { it.tr() }.joinToString { "\n" })
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
         if (this.percentStatBonus != null) {
@@ -174,7 +174,8 @@ class Building : NamedStats(), IConstruction{
             return false
 
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
-        if ("Must be next to desert" == unique && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
+        if ("Must be next to desert" in uniques
+                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
             return false
         if (requiredResource != null && !civInfo.getCivResources().containsKey(GameBasics.TileResources[requiredResource!!]))
             return false
@@ -191,7 +192,7 @@ class Building : NamedStats(), IConstruction{
             if (!containsResourceWithImprovement) return false
         }
 
-        if ("Spaceship part" == unique) {
+        if ("Spaceship part" in uniques) {
             if (!civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts")) return false
             if (civInfo.scienceVictory.unconstructedParts()[name] == 0) return false // Don't need to build any more of these!
         }
@@ -201,7 +202,7 @@ class Building : NamedStats(), IConstruction{
     override fun postBuildEvent(construction: CityConstructions) {
         val civInfo = construction.cityInfo.civInfo
 
-        if (unique == "Spaceship part") {
+        if ("Spaceship part" in uniques) {
             civInfo.scienceVictory.currentParts.add(name, 1)
             return
         }
@@ -209,14 +210,15 @@ class Building : NamedStats(), IConstruction{
 
         if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
             construction.builtBuildings.add(providesFreeBuilding!!)
-        when (unique) {
-            "Empire enters golden age" -> civInfo.goldenAges.enterGoldenAge()
-            "Free Great Artist Appears" -> civInfo.addGreatPerson("Great Artist")
-            "Worker construction increased 25%, provides 2 free workers" -> {
+        when {
+            "Empire enters golden age" in uniques-> civInfo.goldenAges.enterGoldenAge()
+            "Free Great Artist Appears" in uniques-> civInfo.addGreatPerson("Great Artist")
+            "Free great scientist appears" in uniques -> civInfo.addGreatPerson("Great Scientist")
+            "Provides 2 free workers" in uniques -> {
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
             }
-            "Free Social Policy" -> {
+            "Free Social Policy" in uniques -> {
                 civInfo.policies.freePolicies++
             }
         }

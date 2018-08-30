@@ -7,6 +7,7 @@ import com.unciv.ui.utils.colorFromRGB
 class Nation : INamed {
     override lateinit var name: String
     lateinit var mainColor: List<Int>
+    var unique:String?=null
     var secondaryColor: List<Int>?=null
     fun getColor(): Color {
         return colorFromRGB(mainColor[0], mainColor[1], mainColor[2])

@@ -24,7 +24,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger
 * [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
-* [Crossbow](https://thenounproject.com/search/?q=Crossbow&i=964657) By Creaticca Creative Agency
+* [Crossbow](https://thenounproject.com/term/crossbow/965389/) By Creaticca Creative Agency
 * [Trebuchet](https://thenounproject.com/search/?q=Trebuchet&i=827987) By Ben Davis
 * [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun
@@ -37,6 +37,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish
+* [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish
 
 ## Resources
 
@@ -143,6 +144,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall
 * [Solar panel](https://thenounproject.com/term/solar-panel/154447/) By Andrew J. Young
 * [Cathedral](https://thenounproject.com/term/cathedral/1325415/) By Dairy Free Design
+* [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
 
 
 ## Others 

@@ -95,11 +95,18 @@ class CityInfo {
             val resource = tileInfo.getTileResource()
             if(resource.revealedBy!=null && !civInfo.tech.isResearched(resource.revealedBy!!)) continue
             if (resource.improvement == tileInfo.improvement || tileInfo.isCityCenter()){
+                var amountToAdd = 1
                 if(resource.resourceType == ResourceType.Strategic){
-                    if(civInfo.policies.isAdopted("Facism")) cityResources.add(resource, 4)
-                    else cityResources.add(resource, 2)
+                    amountToAdd = 2
+                    if(civInfo.policies.isAdopted("Facism")) amountToAdd*=2
+                    if(civInfo.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
+                        && resource.name in listOf("Horses","Iron","Uranium"))
+                        amountToAdd*=2
                 }
-                else cityResources.add(resource, 1)
+                if(resource.resourceType == ResourceType.Luxury
+                        && getBuildingUniques().contains("Provides 1 extra copy of each improved luxury resource near this City"))
+                    amountToAdd*=2
+                cityResources.add(resource, amountToAdd)
             }
 
         }
@@ -112,7 +119,7 @@ class CityInfo {
         return cityResources
     }
 
-    fun getBuildingUniques(): List<String?> = cityConstructions.getBuiltBuildings().filter { it.unique != null }.map { it.unique }
+    fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }
 
     fun getGreatPersonPoints(): Stats {
         var greatPersonPoints = population.getSpecialists().times(3f)

@@ -105,6 +105,21 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Ballista",
+		unitType:"Siege",
+		uniqueTo:"Rome",
+		replaces:"Horseman",
+		movement:2,
+		strength:8,
+		rangedStrength:10,
+		cost: 75,
+		requiredTech:"Mathematics",
+		obsoleteTech:"Physics",
+		upgradesTo: "Trebuchet",
+		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
+		hurryCostModifier:20
+	},
+	{
 		name:"Swordsman",
 		unitType:"Melee",
 		movement:2,
@@ -130,11 +145,11 @@
 	{
 		name:"Companion Cavalry",
 		unitType:"Mounted",
+		uniqueTo:"Greece",
+		replaces:"Horseman",
 		movement:5,
 		strength:14,
 		cost: 75,
-		uniqueTo:"Greece",
-		replaces:"Horseman",
 		requiredTech:"Horseback Riding",
 		requiredResource:"Horses",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],

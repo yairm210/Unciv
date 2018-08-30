@@ -27,12 +27,12 @@ class NewGameScreen: PickerScreen(){
 
     val newGameParameters=NewGameParameters()
 
-    class NationTable(val nation:Nation,val newGameParameters: NewGameParameters, skin:Skin, onClick:()->Unit):Table(skin){
+    class NationTable(val nation:Nation,val newGameParameters: NewGameParameters, skin:Skin, width:Float, onClick:()->Unit):Table(skin){
         init {
             pad(10f)
             background=ImageGetter.getBackground(nation.getColor().apply { a=0.5f })
             add(Label(nation.name, skin).apply { setFontColor(Color.WHITE)}).row()
-            add(Label(getUniqueLabel(nation), skin).apply { setFontColor(Color.WHITE)})
+            add(Label(getUniqueLabel(nation), skin).apply { setWrap(true);setFontColor(Color.WHITE)}).width(width)
             addClickListener { newGameParameters.nation=nation.name; onClick() }
             touchable=Touchable.enabled
             update()
@@ -47,6 +47,8 @@ class NewGameScreen: PickerScreen(){
                     for (stat in building.toHashMap())
                         if (stat.value != originalBuildingStatMap[stat.key])
                             text += stat.value.toInt().toString() + " " + stat.key + " vs " + originalBuildingStatMap[stat.key]!!.toInt() + "\n"
+                    for(unique in building.uniques.filter { it !in originalBuilding.uniques })
+                        text += unique.tr()+"\n"
                     if (building.maintenance != originalBuilding.maintenance)
                         text += "{Maintainance} " + building.maintenance + " vs " + originalBuilding.maintenance + "\n"
                     return text.tr()
@@ -67,6 +69,8 @@ class NewGameScreen: PickerScreen(){
                     return text.tr()
                 }
 
+            if(nation.unique!=null) return nation.unique
+
             return ""
         }
 
@@ -85,9 +89,9 @@ class NewGameScreen: PickerScreen(){
         mainTable.add(getOptionsTable())
         val civPickerTable = Table().apply { defaults().pad(5f) }
         for(nation in GameBasics.Nations.values.filterNot { it.name == "Barbarians" }){
-            val nationTable = NationTable(nation,newGameParameters,skin){updateNationTables()}
+            val nationTable = NationTable(nation,newGameParameters,skin,stage.width/3 ){updateNationTables()}
             nationTables.add(nationTable)
-            civPickerTable.add(nationTable).width(stage.width/3).row()
+            civPickerTable.add(nationTable).row()
         }
         mainTable.setFillParent(true)
         mainTable.add(ScrollPane(civPickerTable))

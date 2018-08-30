@@ -18,7 +18,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
     private val turnsToBuild: Int = 0 // This is the base cost.
     fun getTurnsToBuild(civInfo: CivilizationInfo): Int {
         var realTurnsToBuild = turnsToBuild.toFloat()
-        if (civInfo.getBuildingUniques().contains("Worker construction increased 25%, provides 2 free workers"))
+        if (civInfo.getBuildingUniques().contains("Worker construction increased 25%"))
             realTurnsToBuild *= 0.75f
         if (civInfo.policies.isAdopted("Citizenship"))
             realTurnsToBuild *= 0.75f

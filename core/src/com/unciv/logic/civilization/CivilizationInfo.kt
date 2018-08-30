@@ -174,7 +174,7 @@ class CivilizationInfo {
         return civResources
     }
 
-    fun getBuildingUniques(): List<String> = cities.flatMap { it.cityConstructions.getBuiltBuildings().map { it.unique }.filterNotNull() }.distinct()
+    fun getBuildingUniques(): List<String> = cities.flatMap { it.getBuildingUniques()}.distinct()
 
     fun getCivUnits(): List<MapUnit> {
         return units
