@@ -1,7 +1,6 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
@@ -31,8 +30,8 @@ class NewGameScreen: PickerScreen(){
         init {
             pad(10f)
             background=ImageGetter.getBackground(nation.getColor().apply { a=0.5f })
-            add(Label(nation.name, skin).apply { setFontColor(Color.WHITE)}).row()
-            add(Label(getUniqueLabel(nation), skin).apply { setWrap(true);setFontColor(Color.WHITE)}).width(width)
+            add(Label(nation.name, skin).apply { setFontColor(nation.getSecondaryColor())}).row()
+            add(Label(getUniqueLabel(nation), skin).apply { setWrap(true);setFontColor(nation.getSecondaryColor())}).width(width)
             addClickListener { newGameParameters.nation=nation.name; onClick() }
             touchable=Touchable.enabled
             update()

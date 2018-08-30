@@ -52,8 +52,8 @@ object ImageGetter {
                 .apply { setSize(20f,20f)}
     }
 
-    fun getUnitIcon(unitName:String):Image{
-        return getImage("UnitIcons/$unitName")
+    fun getUnitIcon(unitName:String,color:Color= Color.BLACK):Image{
+        return getImage("UnitIcons/$unitName").apply { this.color=color }
     }
 
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{

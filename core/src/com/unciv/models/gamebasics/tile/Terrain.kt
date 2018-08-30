@@ -1,8 +1,10 @@
 package com.unciv.models.gamebasics.tile
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.NamedStats
+import com.unciv.ui.utils.colorFromRGB
 
 class Terrain : NamedStats(), ICivilopedia {
     override val description: String
@@ -47,8 +49,8 @@ class Terrain : NamedStats(), ICivilopedia {
      * RGB color of base terrain
      */
     var RGB: List<Int>? = null
-
     var movementCost = 1
-
     var defenceBonus:Float = 0f
+
+    fun getColor(): Color = colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
 }

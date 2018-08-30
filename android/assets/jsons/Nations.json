@@ -1,49 +1,56 @@
 [
 	{
 		name:"Babylon",
-		mainColor:[220,20,60],
+		mainColor:[27,53,63],
+		secondaryColor:[213,249,255],
 		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
 			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
 	},
 	{
 		name:"Greece",
-		mainColor:[ 101, 153, 255],
+		mainColor:[181, 232, 232],
+		secondaryColor:[68,142,249],
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
 	},
 	{
 		name:"China",
-		mainColor:[ 9, 112, 84],
+		mainColor:[9, 112, 84],
+		secondaryColor:[255,255,255],
 		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
 	},
 	{
 		name:"Egypt",
-		mainColor:[ 255, 153, 0],
+		mainColor:[ 231, 213, 0],
+		secondaryColor:[98,10,210],
 		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
 			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
 	},
 	{
 		name:"England",
-		mainColor:[ 100, 100, 201],
+		mainColor:[ 114, 0, 0],
+		secondaryColor:[255,255,255],
 		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
 			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
 	},
 	{
 		name:"France",
-		mainColor:[ 20, 160, 220],
+		mainColor:[ 38, 98, 255],
+		secondaryColor:[239,236,148],
 		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]
 	},
 	{
 		name:"Russia",
-		mainColor:[ 255, 215, 0],
+		mainColor:[ 236, 178, 0],
+		secondaryColor:[0,0,0],
 		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
 		cities:["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
@@ -51,20 +58,23 @@
 	},
 	{
 		name:"Rome",
-		mainColor:[ 75,0,130],
+		mainColor:[ 53,0,87],
+		secondaryColor:[238,201,9],
 		cities:["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
 	},
 	{
 		name:"Arabia",
-		mainColor:[ 0,100,0],
+		mainColor:[ 41,83,42],
+		secondaryColor:[146,221,9],
 		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
 	},
 	{
 		name:"Barbarians",
-		mainColor:[200,200,200]
+		mainColor:[200,200,200],
+		secondaryColor:[0,0,0]
 	}
 ]

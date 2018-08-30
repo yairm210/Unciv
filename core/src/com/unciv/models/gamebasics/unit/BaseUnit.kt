@@ -49,8 +49,8 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         val sb = StringBuilder()
         if(baseDescription!=null) sb.appendln(baseDescription!!.tr())
         if(!forPickerScreen) {
-            if (unbuildable) sb.appendln("Unbuildable")
             if(uniqueTo!=null) sb.appendln("Unique to $uniqueTo, replaces $replaces")
+            if (unbuildable) sb.appendln("Unbuildable".tr())
             else sb.appendln("Cost: $cost")
             if(requiredResource!=null) sb.appendln("Required resource: {$requiredResource}".tr())
             if(requiredTech!=null) sb.appendln("Required tech: {$requiredTech}".tr())

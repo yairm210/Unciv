@@ -15,7 +15,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
-import com.unciv.ui.utils.colorFromRGB
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
@@ -250,8 +249,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateTileColor(isViewable: Boolean) {
-        val RGB = tileInfo.getBaseTerrain().RGB!!
-        hexagon.color = colorFromRGB(RGB[0], RGB[1], RGB[2])
+        hexagon.color = tileInfo.getBaseTerrain().getColor()
         if (!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK, 0.6f)
     }
 
@@ -322,25 +320,25 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         if (unit != null && isViewable) { // Tile is visible
-            newImage = getUnitImage(unit, unit.civInfo.getNation().getColor(), 25f)
+            newImage = getUnitImage(unit, 25f)
             addActor(newImage)
             newImage.center(this)
             newImage.y += yFromCenter
 
-            if (!unit.isIdle()) newImage.color = Color(1f, 1f, 1f, 0.5f)
+            if (!unit.isIdle()) newImage.color.a = 0.5f
         }
         return newImage
     }
 
 
-    private fun getUnitImage(unit: MapUnit, color: Color, size: Float): Group {
-        val unitBaseImage = ImageGetter.getUnitIcon(unit.name)
+    private fun getUnitImage(unit: MapUnit, size: Float): Group {
+        val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
                 .apply { setSize(20f, 20f) }
 
         val background = if (unit.isFortified()) ImageGetter.getImage("OtherIcons/Shield.png")
         else ImageGetter.getImage("OtherIcons/Circle.png")
         background.apply {
-            this.color = color
+            this.color = unit.civInfo.getNation().getColor()
             setSize(size, size)
         }
         val group = Group().apply {

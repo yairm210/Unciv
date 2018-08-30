@@ -77,6 +77,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             if (cityButton == null) {
                 cityButton = Table()
                 cityButton!!.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+                        .tint(city.civInfo.getNation().getColor())
                 cityButton!!.isTransform = true // If this is not set then the city button won't scale!
 
                 addActor(cityButton)
@@ -85,7 +86,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
             val cityButtonText = city.name + " (" + city.population.population + ")"
             val label = Label(cityButtonText, CameraStageBaseScreen.skin)
-            label.setFontColor(city.civInfo.getNation().getColor())
+            label.setFontColor(city.civInfo.getNation().getSecondaryColor())
             if (city.civInfo.isPlayerCivilization())
                 label.addClickListener {
                     UnCivGame.Current.screen = CityScreen(city)
@@ -130,17 +131,27 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     private fun getConstructionGroup(cityConstructions: CityConstructions):Group{
         val group= Group()
         val groupHeight = 25f
-        group.setSize(35f,groupHeight)
+        group.setSize(40f,groupHeight)
+
+        val circle = ImageGetter.getImage("OtherIcons/Circle")
+        circle.setSize(25f,25f)
         val image = ImageGetter.getConstructionImage(cityConstructions.currentConstruction)
         image.setSize(20f,20f)
         image.centerY(group)
         image.x = group.width-image.width
+
+        // center the circle on thee production image
+        circle.x = image.x + (image.width-circle.width)/2
+        circle.y = image.y + (image.height-circle.height)/2
+
+        group.addActor(circle)
         group.addActor(image)
 
+        val secondaryColor = cityConstructions.cityInfo.civInfo.getNation().getSecondaryColor()
         if(cityConstructions.getCurrentConstruction() !is SpecialConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityConstructions.currentConstruction)
             val label = Label(turnsToConstruction.toString(),CameraStageBaseScreen.skin)
-            label.color = Color.BROWN
+            label.setFontColor(secondaryColor)
             label.setFont(10)
             label.pack()
             group.addActor(label)
