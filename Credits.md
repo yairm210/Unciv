@@ -5,7 +5,7 @@ Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www
  and licensed by Creative Commons 3.0
 
 
-All the following are from [the Noun Project](https://thenounproject.com) licenced under Creative Commons
+All the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
 ## Units
 
@@ -146,6 +146,37 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Cathedral](https://thenounproject.com/term/cathedral/1325415/) By Dairy Free Design
 * [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
 
+## Social Policies
+
+* [social network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu
+* [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar
+* [Logic](https://thenounproject.com/term/logic/1269994/) By Jenya K
+* [Dialogue](https://thenounproject.com/term/dialogue/1867557/) By ProSymbols
+* [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza
+* [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin
+* [Mic](https://thenounproject.com/term/mic/1666564/) By Aybige
+* [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti
+* [Logic](https://thenounproject.com/term/logic/718608/) By Arthur Shlain
+* [Torch](https://thenounproject.com/term/torch/589999/) By Hea Poh Lin
+* [Painting](https://thenounproject.com/term/painting/387146/) By Mike Rowe
+* [Coins](https://thenounproject.com/term/coins/1915881/) By icon 54
+* [Gem](https://thenounproject.com/term/gem/754533/) By Oksana Latysheva
+* [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet
+* [Science](https://thenounproject.com/term/science/1788338/) By Three Six Five
+* [Graph](https://thenounproject.com/term/graph/1329095/) By Ben Davis
+* [Protestantism](https://thenounproject.com/term/protestantism/1524922/) By Evgeni Moryakov
+* [Pyramid](https://thenounproject.com/term/pyramid/175066/) By Creative Stall
+* [Crown](https://thenounproject.com/term/crown/1567484/) By Alexander Skowalsky
+* [Gavel](https://thenounproject.com/term/gavel/225541/) By Rflor
+* [Apple](https://thenounproject.com/term/apple/1916523/) By EnQiu
+* [Temple](https://thenounproject.com/term/temple/95523/) By N.K.Narasimhan
+* [Religion](https://thenounproject.com/term/religion/1307794/) By Ben Avery
+* [coat of arms](https://thenounproject.com/term/coat-of-arms/366462/) By Martina Krasnayova
+* [People](https://thenounproject.com/term/people/199814/) By Elizabeth Lopez
+* [Assembly](https://thenounproject.com/term/assembly/468455/) By  Noël Rasendrason
+* [People](https://thenounproject.com/term/people/670317/) By Gregor Cresnar
+* [People](https://thenounproject.com/term/people/1355818/) By Wilson Joseph
+* [Flame](https://thenounproject.com/term/flame/633228/) By Ian Shoobridge
 
 ## Others 
 
