@@ -1,15 +1,15 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeOffersList
 import com.unciv.ui.utils.*
-import kotlin.math.max
 import kotlin.math.roundToInt
 
 class EmpireOverviewScreen : CameraStageBaseScreen(){
@@ -49,7 +49,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setCurrentTradesButton = TextButton("Trades".tr(),skin)
         setCurrentTradesButton.addClickListener {
             centerTable.clear()
-            centerTable.add(getTradesTable())
+            centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the naviagation buttons
             centerTable.pack()
             centerTable.center(stage)
         }
@@ -76,30 +76,33 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val tradesTable = Table().apply { defaults().pad(10f) }
         for(diplomacy in civInfo.diplomacy.values)
             for(trade in diplomacy.trades)
-                tradesTable.add(createTradeTable(trade,diplomacy.otherCivName)).row()
+                tradesTable.add(createTradeTable(trade,diplomacy.otherCiv())).row()
 
         return tradesTable
     }
 
-    private fun createTradeTable(trade: Trade, civName:String): Table {
-        val table = Table(skin)
-        table.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+    private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
+        val generalTable = Table(skin)
+        generalTable.add(createOffersTable(civInfo,trade.ourOffers, trade.theirOffers.size))
+        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size))
+        return generalTable
+    }
+    
+    private fun createOffersTable(civ: CivilizationInfo, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
+        val table = Table()
         table.defaults().pad(10f)
-        table.add(civInfo.civName)
-        table.add(civName).row()
-        val ourOffersStrings = trade.ourOffers.map { it.amount.toString()+" "+it.name.tr() +
-                (if (it.duration==0) "" else " ("+it.duration+" {turns})".tr()) }
-        val theirOffersStrings = trade.theirOffers.map { it.amount.toString()+" "+it.name.tr() +
-                (if (it.duration==0) "" else " ("+it.duration+" {turns})".tr()) }
-        for(i in 0 until max(trade.ourOffers.size,trade.theirOffers.size)){
-            if(ourOffersStrings.size>i) table.add(ourOffersStrings[i])
-            else table.add()
-            if(theirOffersStrings.size>i) table.add(theirOffersStrings[i])
-            else table.add()
-            table.row()
+        table.background = ImageGetter.getBackground(civ.getNation().getColor())
+        table.add(Label(civ.civName.tr(),skin).setFontColor(civ.getNation().getSecondaryColor())).row()
+        for(offer in offersList){
+            var offerText = offer.amount.toString()+" "+offer.name.tr()
+            if(offer.duration>0)offerText += " ("+offer.duration+" {turns})".tr()
+            table.add(Label(offerText,skin).setFontColor(civ.getNation().getSecondaryColor())).row()
         }
+        for(i in 1..numberOfOtherSidesOffers - offersList.size)
+            table.add(Label("",skin)).row() // we want both sides of the general table to have the same number of rows
         return table
     }
+
 
     private fun getHappinessTable(): Table {
         val happinessTable = Table(skin)

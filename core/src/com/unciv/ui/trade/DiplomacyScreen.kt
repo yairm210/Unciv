@@ -1,6 +1,5 @@
 package com.unciv.ui.trade
 
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UnCivGame
 import com.unciv.ui.utils.*
@@ -36,11 +35,12 @@ class DiplomacyScreen():CameraStageBaseScreen(){
             if (!playerCiv.diplomacy.containsKey(civ.civName)) continue
             val civDiplomacy = playerCiv.diplomacy[civ.civName]!!
 
-            val civTable = Table().apply { background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f)) }
+            val civTable = Table().apply { background = ImageGetter.getBackground(civ.getNation().getColor()) }
             civTable.pad(10f)
             civTable.defaults().pad(10f)
             val peaceWarStatus = civDiplomacy.diplomaticStatus.toString()
-            civTable.add(Label(civ.civName.tr() + " ({$peaceWarStatus})".tr(), skin).apply { setFont(22); setFontColor(Color.WHITE) }).row()
+            civTable.add(Label(civ.civName.tr() + " ({$peaceWarStatus})".tr(), skin)
+                    .apply { setFont(22); setFontColor(civ.getNation().getSecondaryColor()) }).row()
 
             val tradeButton = TextButton("Trade".tr(), skin)
             tradeButton.addClickListener {

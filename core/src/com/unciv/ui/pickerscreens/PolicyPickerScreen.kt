@@ -93,7 +93,6 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
     private fun getPolicyButton(policy: Policy, image: Boolean): Button {
         var policyButton = Button(CameraStageBaseScreen.skin)
         if (image) {
-//            val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name.replace(" ", "_") + "_(Civ5).png")
             val policyImage = ImageGetter.getImage("PolicyIcons/" + policy.name)
             policyButton.add(policyImage).size(30f)
         } else {
