@@ -57,7 +57,7 @@ class Building : NamedStats(), IConstruction{
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
         }
-        infoList += uniques.map { it.tr() }.joinToString { "\n" }
+        if(uniques.isNotEmpty()) infoList += uniques.map { it.tr() }.joinToString()
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
         if(xpForNewUnits!=0) infoList+= "+$xpForNewUnits {XP for new units}".tr()
