@@ -1,11 +1,13 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -25,6 +27,7 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
         if (settings.showResourcesAndImprovements)
             addButton("{Hide} {resources and improvements}") { settings.showResourcesAndImprovements = false; update() }
         else addButton("{Show} {resources and improvements}") { settings.showResourcesAndImprovements = true; update() }
+
 
         val languageSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
         val languageArray = com.badlogic.gdx.utils.Array<String>()
