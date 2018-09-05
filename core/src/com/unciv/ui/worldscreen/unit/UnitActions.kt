@@ -66,7 +66,8 @@ class UnitActions {
                 upgradedUnit = upgradedUnit.getUpgradeUnit(unit.civInfo)
 
             if (upgradedUnit.isBuildable(unit.civInfo)) {
-                val goldCostOfUpgrade = (upgradedUnit.cost - unit.baseUnit().cost) * 2 + 10
+                var goldCostOfUpgrade = (upgradedUnit.cost - unit.baseUnit().cost) * 2 + 10
+                if(unit.civInfo.policies.isAdopted("Professional Army")) goldCostOfUpgrade = (goldCostOfUpgrade* 0.66f).toInt()
                 actionList += UnitAction("Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                         {
                             unit.civInfo.gold -= goldCostOfUpgrade

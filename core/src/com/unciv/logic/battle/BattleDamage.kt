@@ -37,10 +37,18 @@ class BattleDamage{
             }
             if (combatant.getCivilization().happiness < 0)
                 modifiers["Unhappiness"] = 0.02f * combatant.getCivilization().happiness  //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+
+            if(combatant.getCivilization().policies.isAdopted("Populism"))
+                modifiers["Populism"] = 0.25f
+
+            if(combatant.getCivilization().policies.isAdopted("Dicipline") && combatant.isMelee()
+                && combatant.getTile().neighbors.flatMap { it.getUnits() }
+                            .any { it.civInfo==combatant.getCivilization() && it.baseUnit.unitType!=UnitType.Civilian})
+                modifiers["Dicipline"] = 0.15f
         }
 
-        if (enemy.getCivilization().isBarbarianCivilization())
-            modifiers["vs Barbarians"] = 0.33f
+        if (combatant.getCivilization().policies.isAdopted("Honor") && enemy.getCivilization().isBarbarianCivilization())
+            modifiers["vs Barbarians"] = 0.25f
 
         return modifiers
     }

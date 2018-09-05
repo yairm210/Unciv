@@ -91,7 +91,9 @@ class Battle(val gameInfo:GameInfo) {
             if(thisCombatant !is MapUnitCombatant) return
             if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivilization().isBarbarianCivilization())
                 return
-            thisCombatant.unit.promotions.XP += amount
+            var amountToAdd = amount
+            if(thisCombatant.getCivilization().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
+            thisCombatant.unit.promotions.XP += amountToAdd
         }
 
         if(attacker.isMelee()){
@@ -105,6 +107,10 @@ class Battle(val gameInfo:GameInfo) {
             addXp(attacker,2,defender)
             addXp(defender,2,attacker)
         }
+
+        if(defender.isDefeated() && defender is MapUnitCombatant && defender.getUnitType()!=UnitType.Civilian
+                && attacker.getCivilization().policies.isAdopted("Honor Complete"))
+            attacker.getCivilization().gold += defender.unit.baseUnit.getGoldCost(hashSetOf()) / 10
 
         if(attacker is MapUnitCombatant && attacker.unit.action!=null && attacker.unit.action!!.startsWith("moveTo"))
             attacker.unit.action=null
@@ -126,6 +132,11 @@ class Battle(val gameInfo:GameInfo) {
             val currentPopulation = city.population.population
             if(currentPopulation>1) city.population.population -= 1 + currentPopulation/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+
+            if(!attacker.getCivilization().policies.isAdopted("Police State")) {
+                city.expansion.cultureStored = 0
+                city.expansion.reset()
+            }
             city.moveToCiv(attacker.getCivilization())
         }
 

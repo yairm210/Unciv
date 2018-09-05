@@ -193,9 +193,6 @@ class CityInfo {
         newCivInfo.cities.add(this)
         civInfo = newCivInfo
 
-        expansion.cultureStored = 0
-        expansion.reset()
-
         // now that the tiles have changed, we need to reassign population
         workedTiles.filterNot { tiles.contains(it) }
                 .forEach { workedTiles.remove(it); population.autoAssignPopulation() }

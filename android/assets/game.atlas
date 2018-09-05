@@ -781,170 +781,240 @@ PolicyIcons/Democracy
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Entrepreneurship
+PolicyIcons/Dicipline
   rotate: false
   xy: 418, 2
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Free Religion
+PolicyIcons/Entrepreneurship
   rotate: false
   xy: 470, 2
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Free Speech
+PolicyIcons/Facism
   rotate: false
   xy: 1836, 1588
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Free Thought
+PolicyIcons/Free Religion
   rotate: false
   xy: 1836, 1536
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Humanism
+PolicyIcons/Free Speech
   rotate: false
   xy: 1762, 1486
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Landed Elite
+PolicyIcons/Free Thought
   rotate: false
   xy: 918, 874
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Legalism
+PolicyIcons/Humanism
   rotate: false
   xy: 1020, 976
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Mandate Of Heaven
+PolicyIcons/Landed Elite
   rotate: false
   xy: 1122, 1078
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Mercantilism
+PolicyIcons/Legalism
   rotate: false
   xy: 1224, 1180
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Meritocracy
+PolicyIcons/Mandate Of Heaven
   rotate: false
   xy: 612, 466
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Monarchy
+PolicyIcons/Mercantilism
   rotate: false
   xy: 714, 568
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Oligarchy
+PolicyIcons/Meritocracy
   rotate: false
   xy: 816, 676
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Organized Religion
+PolicyIcons/Militarism
   rotate: false
   xy: 1762, 1434
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Patronage
+PolicyIcons/Military Caste
   rotate: false
   xy: 918, 822
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Protectionism
+PolicyIcons/Military Tradition
   rotate: false
   xy: 1276, 1180
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Reformation
+PolicyIcons/Monarchy
   rotate: false
   xy: 612, 414
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Representation
+PolicyIcons/Oligarchy
   rotate: false
   xy: 816, 624
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Republic
+PolicyIcons/Organized Religion
   rotate: false
   xy: 1762, 1382
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Scientific Revolution
+PolicyIcons/Patronage
   rotate: false
   xy: 918, 770
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Secularism
+PolicyIcons/Police State
   rotate: false
   xy: 1328, 1180
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Sovereignty
+PolicyIcons/Populism
   rotate: false
   xy: 612, 362
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Theocracy
+PolicyIcons/Professional Army
   rotate: false
   xy: 1762, 1330
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Trade Unions
+PolicyIcons/Protectionism
   rotate: false
   xy: 1380, 1180
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-PolicyIcons/Universal Suffrage
+PolicyIcons/Reformation
   rotate: false
   xy: 612, 310
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Representation
+  rotate: false
+  xy: 1762, 1278
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Republic
+  rotate: false
+  xy: 1432, 1180
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Scientific Revolution
+  rotate: false
+  xy: 612, 258
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Secularism
+  rotate: false
+  xy: 1484, 1180
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Sovereignty
+  rotate: false
+  xy: 612, 206
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Theocracy
+  rotate: false
+  xy: 1536, 1180
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Total War
+  rotate: false
+  xy: 1588, 1180
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Trade Unions
+  rotate: false
+  xy: 1640, 1180
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Universal Suffrage
+  rotate: false
+  xy: 1692, 1180
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+PolicyIcons/Warrior Code
+  rotate: false
+  xy: 970, 874
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1483,91 +1553,91 @@ UnitIcons/Worker
   index: -1
 UnitPromotionIcons/Accuracy_III_(Civ5)
   rotate: false
-  xy: 1814, 1516
+  xy: 612, 184
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Accuracy_II_(Civ5)
   rotate: false
-  xy: 2007, 2024
+  xy: 634, 184
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Accuracy_I_(Civ5)
   rotate: false
-  xy: 306, 1200
+  xy: 1814, 1516
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Barrage_III_(Civ5)
   rotate: false
-  xy: 390, 1488
+  xy: 2007, 2024
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Barrage_II_(Civ5)
   rotate: false
-  xy: 256, 180
+  xy: 306, 1200
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Barrage_I_(Civ5)
   rotate: false
-  xy: 1807, 1770
+  xy: 390, 1488
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Blitz_(Civ5)
   rotate: false
-  xy: 522, 32
+  xy: 256, 180
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Charge_(Civ5)
   rotate: false
-  xy: 436, 1182
+  xy: 1807, 1770
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Cover_II_(Civ5)
   rotate: false
-  xy: 510, 162
+  xy: 522, 32
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Cover_I_(Civ5)
   rotate: false
-  xy: 568, 60
+  xy: 436, 1182
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Drill_III_(Civ5)
   rotate: false
-  xy: 538, 1210
+  xy: 510, 162
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Drill_II_(Civ5)
   rotate: false
-  xy: 970, 904
+  xy: 568, 60
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Drill_I_(Civ5)
   rotate: false
-  xy: 1020, 954
+  xy: 538, 1210
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -1637,21 +1707,21 @@ UnitPromotionIcons/Scouting_II_(Civ5)
   index: -1
 UnitPromotionIcons/Scouting_I_(Civ5)
   rotate: false
-  xy: 1762, 1308
+  xy: 1762, 1256
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Sentry_(Civ5)
   rotate: false
-  xy: 1432, 1210
+  xy: 970, 852
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock_III_(Civ5)
   rotate: false
-  xy: 612, 288
+  xy: 1020, 954
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -1665,21 +1735,21 @@ UnitPromotionIcons/Shock_II_(Civ5)
   index: -1
 UnitPromotionIcons/Shock_I_(Civ5)
   rotate: false
-  xy: 1814, 1494
+  xy: 656, 184
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Siege_(Civ5)
   rotate: false
-  xy: 1836, 1514
+  xy: 1814, 1494
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Volley_(Civ5)
   rotate: false
-  xy: 2007, 2002
+  xy: 1836, 1514
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

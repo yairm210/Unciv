@@ -177,6 +177,16 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [People](https://thenounproject.com/term/people/670317/) By Gregor Cresnar
 * [People](https://thenounproject.com/term/people/1355818/) By Wilson Joseph
 * [Flame](https://thenounproject.com/term/flame/633228/) By Ian Shoobridge
+* [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul
+* [War](https://thenounproject.com/term/war/1643541/) By Abdul Karim
+* [Military Grade](https://thenounproject.com/term/military-grade/578687/) By Ben Davis
+* [Military Medal](https://thenounproject.com/term/military-medal/396457/) By iconsphere
+* [Shield](https://thenounproject.com/term/shield/874633/) By Kimmi Studio
+* [Spartan Helmet](https://thenounproject.com/term/spartan-helmet/1732615/) By Joni Ramadhan
+* [Sword](https://thenounproject.com/term/sword/5111/) By dsathiyaraj
+* [Castle](https://thenounproject.com/term/castle/55045/) By Gabriele Malaspina
+* [Roman Armor](https://thenounproject.com/term/roman-armor/440138/) By Parkjisun
+* [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix
 
 ## Others 
 

@@ -79,11 +79,7 @@ class Building : NamedStats(), IConstruction{
             stats.science += 1f
 
         if (adoptedPolicies.contains("Theocracy") && name == "Temple")
-            percentStatBonus = object : Stats() {
-                init {
-                    gold = 10f
-                }
-            }
+            percentStatBonus = Stats().apply { gold=10f }
 
         if (adoptedPolicies.contains("Free Thought") && name == "University")
             percentStatBonus!!.science = 50f
@@ -93,6 +89,9 @@ class Building : NamedStats(), IConstruction{
 
         if (adoptedPolicies.contains("Constitution") && isWonder)
             stats.culture += 2f
+
+        if(adoptedPolicies.contains("Autocracy Complete") && cityStrength>0)
+            stats.happiness+=1
 
         return stats
     }

@@ -57,7 +57,7 @@ class GameStarter(){
             val startingLocation = freeTiles.toList().getRandom().position
 
             civ.placeUnitNearTile(startingLocation, "Settler")
-            civ.placeUnitNearTile(startingLocation, "Scout")
+            civ.placeUnitNearTile(startingLocation, "Warrior")
 
             freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, distanceAroundStartingPointNoOneElseWillStartIn ))
         }

@@ -126,6 +126,8 @@ class CityStats {
             happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
         if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
             happinessFromPolicies += 1f
+        if(civInfo.policies.isAdopted("Military Caste") && cityInfo.getCenterTile().militaryUnit!=null)
+            happinessFromPolicies+=1
 
         newHappinessList ["Policies"] = happinessFromPolicies
 
@@ -167,6 +169,8 @@ class CityStats {
             stats.culture += 1f
         if (adoptedPolicies.contains("Republic"))
             stats.production += 1f
+        if(adoptedPolicies.contains("Military Caste") && cityInfo.getCenterTile().militaryUnit!=null)
+            stats.culture += 2
         if (adoptedPolicies.contains("Universal Suffrage"))
             stats.production += (cityInfo.population.population / 5).toFloat()
         if (adoptedPolicies.contains("Free Speech"))
@@ -200,6 +204,8 @@ class CityStats {
             stats.production += 50f
         if (policies.contains("Republic") && currentConstruction is Building)
             stats.production += 5f
+        if(policies.contains("Warrior Code") && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
+            stats.production += 20
         if (policies.contains("Reformation") && cityConstructions.builtBuildings.any { GameBasics.Buildings[it]!!.isWonder })
             stats.culture += 33f
         if (policies.contains("Commerce") && cityInfo.isCapital())
