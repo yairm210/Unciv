@@ -159,8 +159,10 @@ class CivilizationInfo {
             }
         }
 
-        if (getBuildingUniques().contains("Provides 1 happiness per social policy"))
-            statMap["Policies"] = policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
+        if (getBuildingUniques().contains("Provides 1 happiness per social policy")) {
+            if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
+            statMap["Policies"] = statMap["Policies"]!! + policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
+        }
 
         return statMap
     }

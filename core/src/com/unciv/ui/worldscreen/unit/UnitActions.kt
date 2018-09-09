@@ -99,7 +99,7 @@ class UnitActions {
                         unit.destroy()
                     },
                     unit.currentMovement != 0f &&
-                            !tile.getTilesInDistance(2).any { it.isCityCenter() })
+                            !tile.getTilesInDistance(3).any { it.isCityCenter() })
         }
         
         if (unit.name == "Worker") {
