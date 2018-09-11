@@ -51,6 +51,7 @@ class Terrain : NamedStats(), ICivilopedia {
     var RGB: List<Int>? = null
     var movementCost = 1
     var defenceBonus:Float = 0f
+    var impassible = false
 
     fun getColor(): Color = colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
 }

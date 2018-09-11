@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.models.gamebasics.tile.TerrainType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
     val tileMap = unit.getTile().tileMap
@@ -37,9 +38,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     var totalDistanceToTile:Float
                     val neighborOwner = neighbor.getOwner()
                     val isOwnedByEnemy = neighborOwner!=null && neighborOwner!=unit.civInfo
-                    if ((isOwnedByEnemy && neighbor.isCityCenter())// Enemy city,
+                    if ( (unit.baseUnit.unitType.isLandUnit() && neighbor.getBaseTerrain().type== TerrainType.Water)
+                            || (isOwnedByEnemy && neighbor.isCityCenter())// Enemy city,
                             || (neighbor.getUnits().isNotEmpty() && neighbor.getUnits().first().civInfo!=unit.civInfo) // Enemy unit
-                        || (isOwnedByEnemy && !unit.civInfo.canEnterTiles(neighborOwner!!)) // enemyTile
+                            || (isOwnedByEnemy && !unit.civInfo.canEnterTiles(neighborOwner!!)) // enemyTile
                     )
                         totalDistanceToTile = unitMovement // Can't go here.
                     // The reason that we don't just "return" is so that when calculating how to reach an enemy,

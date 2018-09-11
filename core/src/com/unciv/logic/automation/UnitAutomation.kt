@@ -281,7 +281,7 @@ class UnitAutomation{
 
         // find best city location within 5 tiles
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
-                .flatMap { it.getCenterTile().getTilesInDistance(2) }
+                .flatMap { it.getCenterTile().getTilesInDistance(3) }
 
         // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)

@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import java.text.DecimalFormat
@@ -89,6 +90,8 @@ class MapUnit {
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         val tileOwner = tile.getOwner()
+        if(tile.getBaseTerrain().type==TerrainType.Water && baseUnit.unitType.isLandUnit())
+            return false
         if(tileOwner!=null && tileOwner.civName!=owner
                 && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
 

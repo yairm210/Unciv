@@ -1,6 +1,7 @@
 package com.unciv.models.gamebasics.tile
 
 enum class TerrainType {
-    BaseTerrain,
+    Land,
+    Water,
     TerrainFeature
 }
