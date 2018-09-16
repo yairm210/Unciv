@@ -197,3 +197,4 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito 
 * [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
 * [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys
+* [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 

@@ -52,6 +52,10 @@ class UnitActions {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }
 
+        if(!unit.isFortified() && actionList.none{it.name=="Fortify"} && unit.action!="Sleep") {
+            actionList += UnitAction("Sleep", { unit.action = "Sleep" }, unit.currentMovement != 0f)
+        }
+
         if(unit.baseUnit().unitType!= UnitType.Civilian && unit.promotions.canBePromoted()){
                 actionList += UnitAction("Promote",
                         {UnCivGame.Current.screen = PromotionPickerScreen(unit)},

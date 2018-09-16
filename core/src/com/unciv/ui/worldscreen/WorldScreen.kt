@@ -247,6 +247,8 @@ class WorldScreen : CameraStageBaseScreen() {
             if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
             if(civInfo.exploredTiles.map { gameInfo.tileMap[it] }.any { it.isCityCenter() && it.getOwner()!=civInfo })
                 displayTutorials("EnemyCity")
+            if("Enables construction of Spaceship parts" in civInfo.getBuildingUniques())
+                displayTutorials("ApolloProgram")
 
             shouldUpdate=false
         }

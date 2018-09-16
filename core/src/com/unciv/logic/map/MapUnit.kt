@@ -104,6 +104,7 @@ class MapUnit {
         if (currentMovement == 0f) return false
         if (name == "Worker" && getTile().improvementInProgress != null) return false
         if (isFortified()) return false
+        if (action=="Sleep") return false
         return true
     }
 

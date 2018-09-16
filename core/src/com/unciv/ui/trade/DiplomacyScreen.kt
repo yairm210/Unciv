@@ -1,5 +1,6 @@
 package com.unciv.ui.trade
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UnCivGame
 import com.unciv.ui.utils.*
@@ -51,6 +52,7 @@ class DiplomacyScreen():CameraStageBaseScreen(){
 
             if (!playerCiv.isAtWarWith(civ)) {
                 val declareWarButton = TextButton("Declare war".tr(), skin)
+                declareWarButton.color = Color.RED
                 val turnsToPeaceTreaty = civDiplomacy.turnsToPeaceTreaty()
                 if(turnsToPeaceTreaty>0){
                     declareWarButton.disable()
