@@ -66,7 +66,7 @@ class UnitAutomation{
         if (tryHeadTowardsEnemyCity(unit)) return
 
         // else, go to a random space
-        randomWalk(unit,unitDistanceToTiles)
+        explore(unit,unitDistanceToTiles)
         // if both failed, then... there aren't any reachable tiles. Which is possible.
     }
 
@@ -259,8 +259,15 @@ class UnitAutomation{
         return false
     }
 
-    private fun randomWalk(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
-        val reachableTiles = unitDistanceToTiles
+    private fun explore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+        for(tile in unit.currentTile.getTilesInDistance(5))
+            if(unit.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
+                    &&  unit.movementAlgs().canReach(tile)){
+                unit.movementAlgs().headTowards(tile)
+                return
+            }
+
+        val reachableTiles= unitDistanceToTiles
                 .filter { unit.canMoveTo(it.key) }
         val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
         if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
@@ -296,7 +303,7 @@ class UnitAutomation{
 
         if(bestCityLocation==null) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
         {
-            randomWalk(unit, unit.getDistanceToTiles())
+            explore(unit, unit.getDistanceToTiles())
             return
         }
 

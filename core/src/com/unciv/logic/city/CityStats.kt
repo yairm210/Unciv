@@ -231,7 +231,8 @@ class CityStats {
             val newTiles = tilesToCheck
                     .flatMap { it.neighbors }.distinct()
                     .filter {
-                        !tilesReached.contains(it) && !tilesToCheck.contains(it)
+                        !tilesReached.contains(it)
+                                && !tilesToCheck.contains(it)
                                 && (roadType !== RoadStatus.Road || it.roadStatus !== RoadStatus.None)
                                 && (roadType !== RoadStatus.Railroad || it.roadStatus === roadType)
                     }
