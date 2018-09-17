@@ -17,7 +17,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
     fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
         val offers = TradeOffersList()
         if(civInfo.isAtWarWith(otherCivilization))
-            offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20, 1))
+            offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20, 0))
         for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
             val resourceTradeType = if(entry.key.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
@@ -32,6 +32,13 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, 30, civInfo.getStatsForNextTurn().gold.toInt()))
         for(city in civInfo.cities.filterNot { it.isCapital() })
             offers.add(TradeOffer(city.name, TradeType.City, 0, 1))
+
+        val civsWeKnowAndTheyDont = civInfo.diplomacy.values.map { it.otherCiv() }
+                .filter { !otherCivilization.diplomacy.containsKey(it.civName) && it != otherCivilization }
+        for(thirdCiv in civsWeKnowAndTheyDont){
+            offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0,1))
+        }
+
         return offers
     }
 
@@ -76,6 +83,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     return evaluatePeaceCostForThem() // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                 else return 1000
             }
+            TradeType.Introduction -> return 250
         // Dunno what this is?
             else -> return 1000
         }
@@ -127,6 +135,9 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                             unit.movementAlgs().teleportToClosestMoveableTile()
                     }
                 }
+                if(offer.type==TradeType.Introduction)
+                    us.meetCivilization(us.gameInfo.civilizations
+                            .first { it.civName==offer.name.split(" ")[2] })
             }
         }
 

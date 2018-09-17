@@ -48,6 +48,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
                 offerColumnsTableWrapper.add(offerColumnsTable)
                 tradeText.setText("Pleasure doing business with you!".tr())
                 onTradeComplete()
+                tradeText.setText("Offer trade".tr())
             }
         }
 

@@ -7,5 +7,6 @@ enum class TradeType{
     Luxury_Resource,
     Strategic_Resource,
     Technology,
+    Introduction,
     City
 }

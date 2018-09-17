@@ -196,14 +196,18 @@ class CivilizationInfo {
 
         for(otherCiv in viewedCivs)
             if(!diplomacy.containsKey(otherCiv.civName)){
-                diplomacy[otherCiv.civName] = DiplomacyManager(this@CivilizationInfo,otherCiv.civName)
-                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
-                otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv,civName)
-                        .apply { diplomaticStatus = DiplomaticStatus.Peace }
+                meetCivilization(otherCiv)
                 addNotification("We have encountered [${otherCiv.civName}]!".tr(),null, Color.GOLD)
             }
 
         return viewablePositions.distinct()
+    }
+
+    fun meetCivilization(otherCiv: CivilizationInfo) {
+        diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
+                .apply { diplomaticStatus = DiplomaticStatus.Peace }
+        otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv, civName)
+                .apply { diplomaticStatus = DiplomaticStatus.Peace }
     }
 
     override fun toString(): String {return civName} // for debug

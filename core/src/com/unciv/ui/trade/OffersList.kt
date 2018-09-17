@@ -24,7 +24,7 @@ class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffe
         table.clear()
         for(offer in offers.sortedBy { it.type }) {
             var buttonText = offer.name.tr()
-            if(offer.type !in listOf(TradeType.Technology, TradeType.City)) buttonText+=" ("+offer.amount+")"
+            if(offer.type !in listOf(TradeType.Technology, TradeType.City, TradeType.Introduction)) buttonText+=" ("+offer.amount+")"
             if(offer.duration>1) buttonText+="\n"+offer.duration+" {turns}".tr()
             val tb = TextButton(buttonText, CameraStageBaseScreen.skin)
             val amountPerClick =
