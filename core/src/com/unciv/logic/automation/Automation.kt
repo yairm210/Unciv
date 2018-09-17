@@ -76,7 +76,8 @@ class Automation {
 
         // Declare war?
         if(civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()
-                && !civInfo.isAtWar()) {
+                && !civInfo.isAtWar()
+                && civInfo.getCivUnits().filter { it.baseUnit.unitType != UnitType.Civilian }.size > civInfo.cities.size*2) {
 
             val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
                     .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
@@ -86,7 +87,7 @@ class Automation {
             for (group in enemyCivsByDistanceToOurs){
                 if(group.key>7) break
                 for(otherCiv in group.value){
-                    if(evaluteCombatStrength(otherCiv)*1.5<ourCombatStrength){
+                    if(evaluteCombatStrength(otherCiv)*2<ourCombatStrength){
                         civInfo.diplomacy[otherCiv.civName]!!.declareWar()
                         break
                     }
