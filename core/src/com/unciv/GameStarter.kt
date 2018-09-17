@@ -58,6 +58,7 @@ class GameStarter(){
 
             civ.placeUnitNearTile(startingLocation, "Settler")
             civ.placeUnitNearTile(startingLocation, "Warrior")
+            civ.placeUnitNearTile(startingLocation, "Scout")
 
             freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, distanceAroundStartingPointNoOneElseWillStartIn ))
         }

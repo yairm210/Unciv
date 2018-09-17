@@ -177,12 +177,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     }
 
     fun teleportToClosestMoveableTile(){
-        val unitCurrentTilePosition = unit.getTile().position
         var allowedTile:TileInfo? = null
         var distance=0
         while(allowedTile==null){
             distance++
-            allowedTile = tileMap.getTilesAtDistance(unitCurrentTilePosition,distance)
+            allowedTile = unit.getTile().getTilesAtDistance(distance)
                     .firstOrNull{unit.canMoveTo(it)}
         }
         unit.removeFromTile() // we "teleport" them away

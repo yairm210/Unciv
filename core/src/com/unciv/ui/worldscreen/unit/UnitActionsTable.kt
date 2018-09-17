@@ -37,6 +37,8 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Set up" -> return ImageGetter.getUnitIcon("Catapult")
             "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit.png")
             "Sleep" -> return ImageGetter.getImage("OtherIcons/Sleep.png")
+            "Explore" -> return ImageGetter.getUnitIcon("Scout")
+            "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop.png")
             else -> return ImageGetter.getImage("OtherIcons/Star.png")
         }
     }

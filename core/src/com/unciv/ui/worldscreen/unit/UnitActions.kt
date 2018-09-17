@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
 import com.unciv.UnCivGame
+import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.Building
@@ -54,6 +55,14 @@ class UnitActions {
 
         if(!unit.isFortified() && actionList.none{it.name=="Fortify"} && unit.action!="Sleep") {
             actionList += UnitAction("Sleep", { unit.action = "Sleep" }, unit.currentMovement != 0f)
+        }
+
+        if(unit.baseUnit.unitType == UnitType.Scout){
+            if(unit.action != "explore")
+                actionList += UnitAction("Explore", { UnitAutomation().automatedExplore(unit); unit.action = "explore" },
+                        unit.currentMovement != 0f)
+            else
+                actionList += UnitAction("Stop exploration", { unit.action = null }, true)
         }
 
         if(unit.baseUnit().unitType!= UnitType.Civilian && unit.promotions.canBePromoted()){

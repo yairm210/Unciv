@@ -275,7 +275,7 @@ class UnitAutomation{
     }
 
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
-        val bestTilesFromOuterLayer = tileInfo.tileMap.getTilesAtDistance(tileInfo.position,2)
+        val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
         val top5Tiles = tileInfo.neighbors.union(bestTilesFromOuterLayer)
                 .sortedByDescending { nearbyTileRankings[it] }
@@ -313,6 +313,18 @@ class UnitAutomation{
             unit.movementAlgs().headTowards(bestCityLocation)
             if (unit.currentMovement > 0 && unit.getTile() == bestCityLocation)
                 UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen).first { it.name == "Found city" }.action()
+        }
+    }
+
+    fun automatedExplore(unit:MapUnit){
+        for(i in 1..10){
+            val unexploredTilesAtDistance = unit.getTile().getTilesAtDistance(i)
+                    .filter { unit.canMoveTo(it)  && it.position !in unit.civInfo.exploredTiles
+                            && unit.movementAlgs().canReach(it) }
+            if(unexploredTilesAtDistance.isNotEmpty()){
+                unit.movementAlgs().headTowards(unexploredTilesAtDistance.getRandom())
+                return
+            }
         }
     }
 

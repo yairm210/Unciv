@@ -73,7 +73,7 @@ open class TileInfo {
     val neighbors: List<TileInfo>
         get(){
             if(internalNeighbors==null)
-                internalNeighbors = tileMap.getTilesAtDistance(position, 1)
+                internalNeighbors = getTilesAtDistance(1)
             return internalNeighbors!!
         }
 
@@ -227,6 +227,10 @@ open class TileInfo {
 
     fun getTilesInDistance(distance:Int): List<TileInfo> {
         return tileMap.getTilesInDistance(position,distance)
+    }
+
+    fun getTilesAtDistance(distance:Int): List<TileInfo> {
+        return tileMap.getTilesAtDistance(position,distance)
     }
 
     fun getDefensiveBonus(): Float {

@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -135,7 +136,7 @@ class MapUnit {
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
 
         val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
-                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=civInfo }
+                .filter { it.militaryUnit!=null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo)}
         if(enemyUnitsInWalkingDistance.isNotEmpty()) {
             if (action != null && action!!.startsWith("moveTo")) action=null
             return  // Don't you dare move.
@@ -155,6 +156,8 @@ class MapUnit {
         }
 
         if (action == "automation") WorkerAutomation(this).automateWorkerAction()
+
+        if(action == "explore") UnitAutomation().automatedExplore(this)
     }
 
     private fun doPostTurnAction() {
