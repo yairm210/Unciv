@@ -19,12 +19,12 @@ Made with LibGDX on Android Studio
 * Policies and Golden Ages
 * Combat and barbarians
    * Promotions and combat modifiers
-* Other civilizations (trade but no peace)
+* Other civilizations, diplomacy and trade
 
 # What's next?
 
-* UI+UX improvements
-* Peace/War Diplomacy options
+* UI+UX improvements (suggestions welcome!)
+
 * Water tiles!
 
 ## So, does it work?
