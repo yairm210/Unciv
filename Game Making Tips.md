@@ -20,6 +20,15 @@ Placing them manually of akin to manually positioning html tags, instead of usin
 
 I personally found that table has all the functionality of the above, and more. Each class has a different syntax too, so I found it much simpler to just stick with Table for everything.
 
-## If you're game is getting slow, use the Android profiler in Android Studio
+## If your game is getting slow, use the Android profiler in Android Studio
 
 The top-down CPU chart is the best code profiler I've ever seen, use it to your advantage!
+
+### Cache everything
+
+caching is a trade-off between purer, state-agnostic code and higher performance.
+Coming from a PC background, I automatically assume that anything less than O(n^2) is less than a milisecond and therefore, not a cachinhg candidate.
+This is not so in mobile development.
+
+
+ This becomes especially relevant when you need to save and load game data which has lots of connected parts - you have to avoid circular references, and you want to minimise the save size, but you need to reconstruct the missing links when loading.
