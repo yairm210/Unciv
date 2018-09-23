@@ -65,6 +65,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         cityButton?.toFront()
         civilianUnitImage?.toFront()
         militaryUnitImage?.toFront()
+        fogImage.toFront()
     }
 
     private fun updateCityButton(city: CityInfo?, viewable: Boolean) {

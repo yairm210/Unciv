@@ -30,7 +30,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var militaryUnitImage: Group? = null
     private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for blue and red circles on the tile
-    private val fogImage = ImageGetter.getImage("TerrainIcons/Fog.png")
+    protected val fogImage = ImageGetter.getImage("TerrainIcons/CrosshatchHexagon")
     var yieldGroup = YieldGroup()
 
     class RoadImage {
@@ -43,7 +43,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         this.setSize(groupSize, groupSize)
         addHexagon(groupSize)
         addCircleImage()
-        addFogImage()
+        addFogImage(groupSize)
         addCrosshairImage()
         isTransform = false
     }
@@ -56,11 +56,12 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         circleImage.isVisible = false
     }
 
-    private fun addFogImage() {
-        fogImage.width = 70f
-        fogImage.height = 70f
+    private fun addFogImage(groupSize: Float) {
+        val imageScale = groupSize * 1.5f / fogImage.width
+        fogImage.setScale(imageScale)
+        fogImage.setOrigin(Align.center)
         fogImage.center(this)
-        fogImage.color = Color.WHITE.cpy().apply { a = 0.5f }
+        fogImage.color = Color.WHITE.cpy().apply { a = 0.2f }
         addActor(fogImage)
     }
 
@@ -87,6 +88,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     fun addPopulationIcon() {
+        this.
         populationImage = ImageGetter.getStatIcon("Population")
         populationImage!!.run {
             color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)

@@ -17,7 +17,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
     fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
         val offers = TradeOffersList()
         if(civInfo.isAtWarWith(otherCivilization))
-            offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20, 0))
+            offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
         for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
             val resourceTradeType = if(entry.key.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
@@ -26,18 +26,18 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         for(entry in civInfo.tech.techsResearched
                 .filterNot { otherCivilization.tech.isResearched(it) }
                 .filter { otherCivilization.tech.canBeResearched(it) }){
-            offers.add(TradeOffer(entry, TradeType.Technology, 0, 1))
+            offers.add(TradeOffer(entry, TradeType.Technology, 0))
         }
         offers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, civInfo.gold))
         offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, 30, civInfo.getStatsForNextTurn().gold.toInt()))
         for(city in civInfo.cities.filterNot { it.isCapital() })
-            offers.add(TradeOffer(city.name, TradeType.City, 0, 1))
+            offers.add(TradeOffer(city.name, TradeType.City, 0))
 
         val civsWeKnowAndTheyDont = civInfo.diplomacy.values.map { it.otherCiv() }
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName)
                         && it != otherCivilization && !it.isBarbarianCivilization() }
         for(thirdCiv in civsWeKnowAndTheyDont){
-            offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0,1))
+            offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0))
         }
 
         return offers
