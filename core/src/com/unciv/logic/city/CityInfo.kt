@@ -186,6 +186,7 @@ class CityInfo {
     fun destroyCity() {
         civInfo.cities.remove(this)
         getTiles().forEach { expansion.relinquishOwnership(it) }
+        getCenterTile().improvement="City ruins"
     }
 
     fun moveToCiv(newCivInfo: CivilizationInfo){

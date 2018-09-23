@@ -79,8 +79,11 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Pickaxe](https://thenounproject.com/term/pickaxe/175792/) By Creative Stall
 * [Food stall](https://thenounproject.com/term/food-stall/1618358/) By I Putu Kharismayadi
 * [Road](https://thenounproject.com/term/road/1600491/) By REVA
+* [Ruins](https://thenounproject.com/term/ruins/175277/) By Creative Stall
+* [Ruins](https://thenounproject.com/term/ruins/3849/) By Paulo Volkova
 
 ## Buildings
+
 * [Chinese traditional tower](https://thenounproject.com/term/chinese-traditional-tower/1808410/) By 1516
 * [Factory](https://thenounproject.com/term/factory/545906/) By icon 54
 * [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov

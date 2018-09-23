@@ -126,5 +126,12 @@
 		gold:4,
 		improvingTech:"Economics",
 		improvingTechStats:{gold:1}
+	},
+	
+	{
+		name:"Ancient ruins"
+	},
+	{
+		name:"City ruins"
 	}
 ]
