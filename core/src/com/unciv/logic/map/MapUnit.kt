@@ -1,5 +1,6 @@
 package com.unciv.logic.map
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
@@ -8,7 +9,10 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.ui.utils.getRandom
 import java.text.DecimalFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class MapUnit {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -258,6 +262,47 @@ class MapUnit {
             tile.civilianUnit=this
         else tile.militaryUnit=this
         currentTile = tile
+        if(tile.improvement=="Ancient ruins" && !civInfo.isBarbarianCivilization())
+            getAncientRuinBonus()
+    }
+
+    private fun getAncientRuinBonus() {
+        currentTile.improvement=null
+        val actions: ArrayList<() -> Unit> = ArrayList()
+        if(civInfo.cities.isNotEmpty()) actions.add {
+            val city = civInfo.cities.getRandom()
+            city.population.population++
+            city.population.autoAssignPopulation()
+            civInfo.addNotification("We have found survivors the ruins - population added to ["+city.name+"]",city.location, Color.GREEN)
+        }
+        val researchableAncientEraTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name)}
+        if(researchableAncientEraTechs.isNotEmpty())
+            actions.add {
+                val tech = researchableAncientEraTechs.getRandom().name
+                civInfo.tech.techsResearched.add(tech)
+                if(civInfo.tech.techsToResearch.contains(tech)) civInfo.tech.techsToResearch.remove(tech)
+                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",null, Color.BLUE)
+            }
+
+        actions.add {
+            val chosenUnit = listOf("Settler","Worker","Warrior").getRandom()
+            civInfo.placeUnitNearTile(currentTile.position,chosenUnit)
+            civInfo.addNotification("A [$chosenUnit] has joined us!",null, Color.BLUE)
+        }
+
+        if(baseUnit.unitType!=UnitType.Civilian)
+            actions.add {
+                promotions.XP+=10
+                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!",null, Color.RED)
+            }
+
+        actions.add {
+            val amount = listOf(25,60,100).getRandom()
+            civInfo.gold+=amount
+            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!!",null, Color.RED)
+        }
+
+        (actions.getRandom())()
     }
 
     fun assignOwner(civInfo:CivilizationInfo){

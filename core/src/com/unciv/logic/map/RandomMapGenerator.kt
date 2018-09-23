@@ -7,6 +7,7 @@ import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.ui.utils.getRandom
+import java.util.*
 
 class AlexanderRandomMapGenerator:RandomMapGenerator(){
     fun generateMap(distance: Int, landExpansionChange:Float){
@@ -57,6 +58,7 @@ class Area(var terrain: String) {
         tile.baseTerrain = terrain
         RandomMapGenerator().addRandomTerrainFeature(tile)
         RandomMapGenerator().addRandomResourceToTile(tile)
+        RandomMapGenerator().maybeAddAncientRuins(tile)
         return tile
     }
 }
@@ -214,5 +216,9 @@ open class RandomMapGenerator {
         for (vector in HexMath().GetVectorsInDistance(Vector2.Zero, distance))
             map[vector.toString()] = addRandomTile(vector)
         return map
+    }
+
+    fun maybeAddAncientRuins(tile: TileInfo) {
+        if(Random().nextDouble() < 1f/100) tile.improvement = "Ancient ruins"
     }
 }

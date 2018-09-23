@@ -179,7 +179,7 @@ class CivilizationInfo {
     fun getBuildingUniques(): List<String> = cities.flatMap { it.getBuildingUniques()}.distinct()
 
     fun getCivUnits(): List<MapUnit> {
-        return units
+        return units.toList() // to avoid comodification problems (ie concurrency again...)
     }
 
     fun getViewableTiles(): List<TileInfo> {
@@ -295,7 +295,7 @@ class CivilizationInfo {
         for (city in cities)
             city.cityStats.update()
         happiness = getHappinessForNextTurn().values.sum().roundToInt()
-        getCivUnits().forEach { it.startTurn() }
+        getCivUnits().toList().forEach { it.startTurn() }
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {

@@ -32,11 +32,16 @@ class UnitAutomation{
         if(unit.name.startsWith("Great")) return // I don't know what to do with you yet.
 
         val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
+        var unitDistanceToTiles = unit.getDistanceToTiles()
+
+        if(tryGoToRuin(unit,unitDistanceToTiles)){
+            if(unit.currentMovement==0f) return
+            unitDistanceToTiles = unit.getDistanceToTiles()
+        }
 
         if (tryUpgradeUnit(unit, unitActions)) return
 
         // Accompany settlers
-        val unitDistanceToTiles = unit.getDistanceToTiles()
         if (tryAccompanySettler(unit,unitDistanceToTiles)) return
 
         if (unit.health < 50) {
@@ -259,7 +264,25 @@ class UnitAutomation{
         return false
     }
 
+    fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+        val tileWithRuin = unitDistanceToTiles.keys.firstOrNull{unit.canMoveTo(it) && it.improvement == "Ancient ruins"}
+        if(tileWithRuin==null) return false
+        unit.moveToTile(tileWithRuin)
+        return true
+    }
+
     private fun explore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+        val distanceToTiles:HashMap<TileInfo, Float>
+        if(tryGoToRuin(unit,unitDistanceToTiles))
+        {
+            if(unit.currentMovement==0f) return
+            distanceToTiles = unit.getDistanceToTiles()
+        }
+        else distanceToTiles = unitDistanceToTiles
+
+        val reachableTiles= distanceToTiles
+                .filter { unit.canMoveTo(it.key) }
+
         for(tile in unit.currentTile.getTilesInDistance(5))
             if(unit.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
                     &&  unit.movementAlgs().canReach(tile)){
@@ -267,8 +290,6 @@ class UnitAutomation{
                 return
             }
 
-        val reachableTiles= unitDistanceToTiles
-                .filter { unit.canMoveTo(it.key) }
         val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
         if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
         else if (reachableTiles.any()) unit.moveToTile(reachableTiles.toList().getRandom().first)
@@ -317,6 +338,8 @@ class UnitAutomation{
     }
 
     fun automatedExplore(unit:MapUnit){
+        if(tryGoToRuin(unit,unit.getDistanceToTiles()) && unit.currentMovement==0f) return
+
         for(i in 1..10){
             val unexploredTilesAtDistance = unit.getTile().getTilesAtDistance(i)
                     .filter { unit.canMoveTo(it)  && it.position !in unit.civInfo.exploredTiles
