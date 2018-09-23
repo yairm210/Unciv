@@ -16,7 +16,7 @@ open class PickerScreen : CameraStageBaseScreen() {
     internal var splitPane: SplitPane
 
     init {
-        closeButton.addClickListener {
+        closeButton.onClick {
                 game.setWorldScreen()
                 dispose()
             }

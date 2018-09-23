@@ -30,6 +30,22 @@ class CityExpansionManager {
         return Math.round(cultureToNextTile).toInt()
     }
 
+    fun buyTile(tileInfo: TileInfo){
+        val goldCost = getGoldCostOfTile(tileInfo)
+        class NotEnoughGoldToBuyTileException : Exception()
+        if(cityInfo.civInfo.gold<goldCost) throw NotEnoughGoldToBuyTileException()
+        cityInfo.civInfo.gold -= goldCost
+        takeOwnership(tileInfo)
+    }
+
+    fun getGoldCostOfTile(tileInfo: TileInfo): Int {
+        val baseCost = 50
+        val numTilesClaimed= cityInfo.tiles.size - 7
+        val distanceFromCenter = tileInfo.arialDistanceTo(cityInfo.getCenterTile())
+        val cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5
+        return cost
+    }
+
 
     fun chooseNewTileToOwn(): TileInfo? {
         for (i in 2..5) {

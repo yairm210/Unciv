@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.tr
 
@@ -52,7 +52,7 @@ class VictoryScreen : PickerScreen() {
         rightSideButton.isVisible=true
         closeButton.isVisible=false
         rightSideButton.enable()
-        rightSideButton.addClickListener { UnCivGame.Current.startNewGame() }
+        rightSideButton.onClick { UnCivGame.Current.startNewGame() }
     }
 
     fun scienceVictoryColumn():Table{

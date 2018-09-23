@@ -11,7 +11,7 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 
 class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
     val allTiles = Group()
@@ -37,7 +37,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
                     positionalVector.y * 0.5f * groupSize)
-            hex.addClickListener {
+            hex.onClick {
                 tileMapHolder.setCenterPosition(tileInfo.position)
                 setScrollToTileMapHolder()
             }

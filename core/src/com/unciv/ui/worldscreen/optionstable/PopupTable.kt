@@ -18,7 +18,7 @@ open class PopupTable: Table(){
 
     fun addButton(text:String, action:()->Unit){
         val button = TextButton(text.tr(), CameraStageBaseScreen.skin).apply { color= ImageGetter.getBlue() }
-        button.addClickListener(action)
+        button.onClick(action)
         add(button).row()
     }
 }
@@ -31,8 +31,8 @@ class YesNoPopupTable(question:String, action:()->Unit,
             val skin = CameraStageBaseScreen.skin
             add(Label(question, skin)).colspan(2).row()
 
-            add(TextButton("No".tr(), skin).apply { addClickListener { close() } })
-            add(TextButton("Yes".tr(), skin).apply { addClickListener { close(); action() } })
+            add(TextButton("No".tr(), skin).apply { onClick { close() } })
+            add(TextButton("Yes".tr(), skin).apply { onClick { close(); action() } })
             pack()
             center(screen.stage)
             screen.stage.addActor(this)

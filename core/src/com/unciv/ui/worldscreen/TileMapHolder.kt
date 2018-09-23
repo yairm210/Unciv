@@ -15,7 +15,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.WorldTileGroup
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.colorFromRGB
 
@@ -37,7 +37,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         for (tileInfo in tileMap.values) {
             val group = WorldTileGroup(tileInfo)
 
-            group.addClickListener {
+            group.onClick {
                 worldScreen.displayTutorials("TileClicked")
                 if(overlayActor!=null) overlayActor!!.remove()
                 selectedTile = tileInfo
@@ -50,7 +50,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 //                    moveHereGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
 //                    moveHereGroup.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereGroup) })
 //                    if(selectedUnit.currentMovement>0)
-//                        moveHereGroup.addClickListener { selectedUnit.movementAlgs().headTowards(tileInfo);worldScreen.update() }
+//                        moveHereGroup.onClick { selectedUnit.movementAlgs().headTowards(tileInfo);worldScreen.update() }
 //                    else moveHereGroup.color.a=0.5f
 //                    addAboveGroup(group, moveHereGroup).apply { width = size; height = size }
 //                }

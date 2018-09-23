@@ -3,7 +3,7 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileMapHolder
 
 class IdleUnitButton internal constructor(internal val unitTable: UnitTable,
@@ -13,7 +13,7 @@ class IdleUnitButton internal constructor(internal val unitTable: UnitTable,
     fun getTilesWithIdleUnits() = tileMapHolder.tileMap.values
                     .filter { it.hasIdleUnit() && it.getUnits().first().owner == unitTable.worldScreen.civInfo.civName }
     init {
-        addClickListener {
+        onClick {
             val tilesWithIdleUnits = getTilesWithIdleUnits()
 
             val tileToSelect: TileInfo

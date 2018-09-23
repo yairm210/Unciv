@@ -27,7 +27,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         }
         else onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
 
-        rightSideButton.addClickListener {
+        rightSideButton.onClick {
             civInfo.policies.adopt(pickedPolicy!!)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
@@ -106,7 +106,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         {
             policyButton.color = Color.GRAY
         }
-        policyButton.addClickListener { pickPolicy(policy) }
+        policyButton.onClick { pickPolicy(policy) }
         policyButton.pack()
         return policyButton
     }

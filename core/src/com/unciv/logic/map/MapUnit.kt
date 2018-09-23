@@ -208,10 +208,14 @@ class MapUnit {
     fun moveToTile(otherTile: TileInfo) {
         if(otherTile==getTile()) return // already here!
         val distanceToTiles = getDistanceToTiles()
+
+        class YouCantGetThereFromHereException : Exception()
         if (!distanceToTiles.containsKey(otherTile))
-            throw Exception("You can't get there from here!")
+            throw YouCantGetThereFromHereException()
+
+        class CantEnterThisTileException : Exception()
         if(!canMoveTo(otherTile))
-            throw Exception("Can't enter this tile!")
+            throw CantEnterThisTileException()
         if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo) throw Exception("This is an enemy city, you can't go here!")
 
         currentMovement -= distanceToTiles[otherTile]!!

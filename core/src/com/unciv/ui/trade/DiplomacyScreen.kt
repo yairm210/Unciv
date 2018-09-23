@@ -22,7 +22,7 @@ class DiplomacyScreen():CameraStageBaseScreen(){
 
 
         val closeButton = TextButton("Close".tr(), skin)
-        closeButton.addClickListener { UnCivGame.Current.setWorldScreen() }
+        closeButton.onClick { UnCivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 10
         closeButton.x = 10f
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
@@ -44,7 +44,7 @@ class DiplomacyScreen():CameraStageBaseScreen(){
                     .apply { setFont(22); setFontColor(civ.getNation().getSecondaryColor()) }).row()
 
             val tradeButton = TextButton("Trade".tr(), skin)
-            tradeButton.addClickListener {
+            tradeButton.onClick {
                 rightSideTable.clear()
                 rightSideTable.add(TradeTable(civ, stage){updateLeftSideTable()})
             }
@@ -58,7 +58,7 @@ class DiplomacyScreen():CameraStageBaseScreen(){
                     declareWarButton.disable()
                     declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
                 }
-                declareWarButton.addClickListener {
+                declareWarButton.onClick {
                     civDiplomacy.declareWar()
                     updateLeftSideTable()
                 }

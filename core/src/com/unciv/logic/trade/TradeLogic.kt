@@ -34,7 +34,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             offers.add(TradeOffer(city.name, TradeType.City, 0, 1))
 
         val civsWeKnowAndTheyDont = civInfo.diplomacy.values.map { it.otherCiv() }
-                .filter { !otherCivilization.diplomacy.containsKey(it.civName) && it != otherCivilization }
+                .filter { !otherCivilization.diplomacy.containsKey(it.civName)
+                        && it != otherCivilization && !it.isBarbarianCivilization() }
         for(thirdCiv in civsWeKnowAndTheyDont){
             offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0,1))
         }

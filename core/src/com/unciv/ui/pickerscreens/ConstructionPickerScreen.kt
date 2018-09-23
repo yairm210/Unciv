@@ -9,7 +9,7 @@ import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.tr
 
@@ -21,7 +21,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         val productionTextButton = Button(skin)
         productionTextButton.add(ImageGetter.getConstructionImage(production)).size(40f).padRight(5f)
         productionTextButton.add(Label(buttonText,skin).setFontColor(Color.WHITE))
-        productionTextButton.addClickListener {
+        productionTextButton.onClick {
             selectedProduction = production
             pick(rightSideButtonText)
             descriptionLabel.setText(description)
@@ -34,7 +34,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         val civInfo = game.gameInfo.getPlayerCivilization()
 
         closeButton.clearListeners() // Don't go back to the world screen, unlike the other picker screens!
-        closeButton.addClickListener {
+        closeButton.onClick {
             game.screen = CityScreen(this@ConstructionPickerScreen.city)
             dispose()
         }
@@ -44,7 +44,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         }
 
         rightSideButton.setText("Pick construction".tr())
-        rightSideButton.addClickListener {
+        rightSideButton.onClick {
             city.cityConstructions.currentConstruction = selectedProduction!!
             city.cityStats.update() // Because maybe we set/removed the science or gold production options.
             game.screen = CityScreen(this@ConstructionPickerScreen.city)

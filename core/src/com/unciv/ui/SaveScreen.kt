@@ -10,7 +10,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.utils.tr
@@ -33,7 +33,7 @@ class SaveScreen : PickerScreen() {
         val saves = GameSaver().getSaves()
         saves.forEach {
             val textButton = TextButton(it, skin)
-            textButton.addClickListener {
+            textButton.onClick {
                 textField.text = it
             }
             currentSaves.add(textButton).pad(5f).row()
@@ -55,7 +55,7 @@ class SaveScreen : PickerScreen() {
         newSave.add(textField).width(300f).pad(10f).row()
 
         val copyJsonButton = TextButton("Copy game info".tr(),skin)
-        copyJsonButton.addClickListener {
+        copyJsonButton.onClick {
             val json = Json().toJson(game.gameInfo)
             val base64Gzip = Gzip.encoder(Gzip.compress(json))
             Gdx.app.clipboard.contents =  base64Gzip
@@ -66,7 +66,7 @@ class SaveScreen : PickerScreen() {
         topTable.pack()
 
         rightSideButton.setText("Save game".tr())
-        rightSideButton.addClickListener {
+        rightSideButton.onClick {
             GameSaver().saveGame(UnCivGame.Current.gameInfo, textField.text)
             UnCivGame.Current.setWorldScreen()
         }

@@ -93,7 +93,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 
-            unitDescriptionLabel.addClickListener { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
+            unitDescriptionLabel.onClick { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
         }
 
         pack()

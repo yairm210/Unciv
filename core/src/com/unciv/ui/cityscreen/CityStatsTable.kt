@@ -51,7 +51,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         buildingPickButton.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction))
                 .size(40f).padRight(5f)
         buildingPickButton.add(Label(buildingText , CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
-        buildingPickButton.addClickListener {
+        buildingPickButton.onClick {
             UnCivGame.Current.screen = ConstructionPickerScreen(city)
             cityScreen.dispose()
         }
@@ -68,7 +68,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
             row()
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
             val buildingBuyButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
-            buildingBuyButton.addClickListener {
+            buildingBuyButton.onClick {
                 city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
                 update()
             }

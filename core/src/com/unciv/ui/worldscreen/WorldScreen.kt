@@ -49,7 +49,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         tileMapHolder.addTiles()
 
-        techButton.addClickListener {
+        techButton.onClick {
             game.screen = TechPickerScreen(civInfo)
         }
 
@@ -144,7 +144,7 @@ class WorldScreen : CameraStageBaseScreen() {
                         .any()) {
             displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
-            btn.addClickListener { UnCivGame.Current.screen = DiplomacyScreen() }
+            btn.onClick { UnCivGame.Current.screen = DiplomacyScreen() }
             diplomacyButtonWrapper.add(btn)
         }
         diplomacyButtonWrapper.pack()
@@ -166,18 +166,18 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private fun createNextTurnButton(): TextButton {
         val nextTurnButton = TextButton("Next turn".tr(), CameraStageBaseScreen.skin)
-        nextTurnButton.addClickListener {
+        nextTurnButton.onClick {
             if (civInfo.tech.freeTechs != 0) {
                 game.screen = TechPickerScreen(true, civInfo)
-                return@addClickListener
+                return@onClick
             } else if (civInfo.policies.shouldOpenPolicyPicker) {
                 game.screen = PolicyPickerScreen(civInfo)
                 civInfo.policies.shouldOpenPolicyPicker = false
-                return@addClickListener
+                return@onClick
             }
             else if (civInfo.tech.currentTechnology() == null && civInfo.cities.isNotEmpty()) {
                 game.screen = TechPickerScreen(civInfo)
-                return@addClickListener
+                return@onClick
             }
 
             bottomBar.unitTable.currentlyExecutingAction = null

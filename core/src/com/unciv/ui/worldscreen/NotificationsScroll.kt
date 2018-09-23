@@ -28,7 +28,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             minitable.add(label).pad(3f).padRight(10f)
 
             if (notification.location != null) {
-                minitable.addClickListener {
+                minitable.onClick {
                     worldScreen.tileMapHolder.setCenterPosition(notification.location!!)
                 }
             }

@@ -6,7 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.tr
 import kotlin.math.min
@@ -31,7 +31,7 @@ class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffe
                     if(offer.type== TradeType.Gold) 50
                     else 1
             if(offer.amount>0)
-                tb.addClickListener {
+                tb.onClick {
                     val amountTransferred = min(amountPerClick, offer.amount)
                     offers += offer.copy(amount = -amountTransferred)
                     correspondingOffers += offer.copy(amount = amountTransferred)

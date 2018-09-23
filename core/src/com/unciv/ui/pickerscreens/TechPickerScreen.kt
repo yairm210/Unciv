@@ -9,7 +9,7 @@ import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.tr
 import java.util.*
@@ -59,7 +59,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 else {
                     val TB = TextButton("", CameraStageBaseScreen.skin)
                     techNameToButton[tech.name] = TB
-                    TB.addClickListener {
+                    TB.onClick {
                         selectTechnology(tech)
                     }
                     topTable.add(TB)
@@ -71,7 +71,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         setButtonsInfo()
 
         rightSideButton.setText("Pick a tech".tr())
-        rightSideButton.addClickListener {
+        rightSideButton.onClick {
             if (isFreeTechPick) {
                 civTech.techsResearched.add(selectedTech!!.name)
                 civTech.freeTechs -= 1

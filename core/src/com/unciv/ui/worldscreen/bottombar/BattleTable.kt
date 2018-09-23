@@ -126,7 +126,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if(attackableEnemy==null || !attacker.unit.canAttack()) attackButton.disable()
         else {
-            attackButton.addClickListener {
+            attackButton.onClick {
                 attacker.unit.moveToTile(attackableEnemy.tileToAttackFrom)
                 battle.attack(attacker, defender)
                 worldScreen.update()

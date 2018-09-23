@@ -9,7 +9,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter.getImage
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFont
 
 
@@ -79,11 +79,11 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
         val specialist = getImage(imageName)
         specialist.setSize(50f, 50f)
         if (!isFilled) specialist.color = Color.GRAY
-        specialist.addClickListener( {
+        specialist.onClick( {
             val cityInfo = cityScreen.city
             when {
                 isFilled -> cityInfo.population.buildingsSpecialists[building]!!.add(stat,-1f) //unassign
-                cityInfo.population.getFreePopulation() == 0 -> return@addClickListener
+                cityInfo.population.getFreePopulation() == 0 -> return@onClick
                 else -> {
                     if (!cityInfo.population.buildingsSpecialists.containsKey(building))
                         cityInfo.population.buildingsSpecialists[building] = Stats()

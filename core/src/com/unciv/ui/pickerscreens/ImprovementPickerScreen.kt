@@ -8,7 +8,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.tr
 
@@ -19,7 +19,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
         val civInfo = game.gameInfo.getPlayerCivilization()
 
         rightSideButton.setText("Pick improvement")
-        rightSideButton.addClickListener {
+        rightSideButton.onClick {
                 tileInfo.startWorkingOnImprovement(selectedImprovement!!, civInfo)
                 game.setWorldScreen()
                 dispose()
@@ -39,7 +39,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
             improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(civInfo) + " {turns}".tr(),skin)
                     .setFontColor(Color.WHITE)).pad(10f)
 
-            improvementButton.addClickListener {
+            improvementButton.onClick {
                     selectedImprovement = improvement
                     pick(improvement.name)
                     descriptionLabel.setText(improvement.description)

@@ -32,7 +32,7 @@ class NewGameScreen: PickerScreen(){
             background=ImageGetter.getBackground(nation.getColor().apply { a=0.5f })
             add(Label(nation.name, skin).apply { setFontColor(nation.getSecondaryColor())}).row()
             add(Label(getUniqueLabel(nation), skin).apply { setWrap(true);setFontColor(nation.getSecondaryColor())}).width(width)
-            addClickListener { newGameParameters.nation=nation.name; onClick() }
+            onClick { newGameParameters.nation=nation.name; onClick() }
             touchable=Touchable.enabled
             update()
         }
@@ -142,7 +142,7 @@ class NewGameScreen: PickerScreen(){
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
-        rightSideButton.addClickListener {
+        rightSideButton.onClick {
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())

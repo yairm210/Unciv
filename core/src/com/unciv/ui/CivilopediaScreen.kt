@@ -8,7 +8,7 @@ import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import java.util.*
 
 class CivilopediaScreen : CameraStageBaseScreen() {
@@ -27,7 +27,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         label.setWrap(true)
 
         val goToGameButton = TextButton("Return \r\nto game", CameraStageBaseScreen.skin)
-        goToGameButton.addClickListener {
+        goToGameButton.onClick {
                 game.setWorldScreen()
                 dispose()
             }
@@ -48,7 +48,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val nameListClickListener = {
             if(nameList.selected!=null) label.setText(nameList.selected.description)
         }
-        nameList.addClickListener (nameListClickListener)
+        nameList.onClick (nameListClickListener)
 
         nameList.style = List.ListStyle(nameList.style)
         nameList.style.fontColorSelected = Color.BLACK
@@ -70,7 +70,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
                 for (btn in buttons) btn.isChecked = false
                 button.isChecked = true
             }
-            button.addClickListener(buttonClicked)
+            button.onClick(buttonClicked)
             if (first) {// Fake-click the first button so that the user sees results immediately
                 first = false
                 buttonClicked()

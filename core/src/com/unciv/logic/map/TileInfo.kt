@@ -244,5 +244,5 @@ open class TileInfo {
         return city!=null && city.workedTiles.contains(position)
     }
 
-    fun arialDistanceTo(otherTile:TileInfo) = abs(position.x-otherTile.position.x) + abs(position.y-otherTile.position.y)
+    fun arialDistanceTo(otherTile:TileInfo): Int = (abs(position.x-otherTile.position.x) + abs(position.y-otherTile.position.y)).toInt()
 }

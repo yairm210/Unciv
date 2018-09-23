@@ -21,7 +21,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val centerTable=Table().apply {  defaults().pad(20f) }
 
         val closeButton = TextButton("Close".tr(), skin)
-        closeButton.addClickListener { UnCivGame.Current.setWorldScreen() }
+        closeButton.onClick { UnCivGame.Current.setWorldScreen() }
         closeButton.y = stage.height - closeButton.height - 5
         topTable.add(closeButton)
 
@@ -33,11 +33,11 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.center(stage)
         }
         setCities()
-        setCityInfoButton.addClickListener(setCities)
+        setCityInfoButton.onClick(setCities)
         topTable.add(setCityInfoButton)
 
         val setStatsInfoButton = TextButton("Stats".tr(),skin)
-        setStatsInfoButton.addClickListener {
+        setStatsInfoButton.onClick {
             centerTable.clear()
             centerTable.add(getHappinessTable())
             centerTable.add(getGoldTable())
@@ -47,7 +47,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         topTable.add(setStatsInfoButton)
 
         val setCurrentTradesButton = TextButton("Trades".tr(),skin)
-        setCurrentTradesButton.addClickListener {
+        setCurrentTradesButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the naviagation buttons
             centerTable.pack()
@@ -56,7 +56,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         topTable.add(setCurrentTradesButton)
 
         val setUnitsButton = TextButton("Units".tr(),skin)
-        setUnitsButton .addClickListener {
+        setUnitsButton .onClick {
             centerTable.clear()
             centerTable.add(getUnitTable())
             centerTable.pack()

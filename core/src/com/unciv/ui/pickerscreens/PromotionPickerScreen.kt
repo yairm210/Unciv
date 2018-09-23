@@ -17,7 +17,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         rightSideButton.setText("Pick promotion")
-        rightSideButton.addClickListener {
+        rightSideButton.onClick {
             mapUnit.promotions.addPromotion(selectedPromotion!!.name)
             if(mapUnit.promotions.canBePromoted()) game.screen = PromotionPickerScreen(mapUnit)
             else game.setWorldScreen()
@@ -40,7 +40,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
                     .setFontColor(Color.WHITE)).pad(10f)
             if(unitHasPromotion) promotionButton.color = Color.GREEN
 
-            promotionButton.addClickListener {
+            promotionButton.onClick {
                 selectedPromotion = promotion
                 rightSideButton.setText(promotion.name)
                 if(isPromotionAvailable && !unitHasPromotion) rightSideButton.enable()

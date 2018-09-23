@@ -8,7 +8,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.addClickListener
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.tr
 
 class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeComplete: () -> Unit): Table(CameraStageBaseScreen.skin){
@@ -27,7 +27,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
 
         lowerTable.add(tradeText).colspan(2).row()
 
-        offerButton.addClickListener {
+        offerButton.onClick {
             if(offerButton.text.toString() == "Offer trade".tr()) {
                 if(tradeLogic.currentTrade.theirOffers.size==0 && tradeLogic.currentTrade.ourOffers.size==0){
                     tradeText.setText("There's nothing on the table.".tr())

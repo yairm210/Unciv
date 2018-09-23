@@ -102,11 +102,12 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     private fun updateTileGroups() {
         val nextTile = city.expansion.chooseNewTileToOwn()
-        for (HG in tileGroups) {
-            HG.update()
-            if(HG.tileInfo == nextTile){
-                HG.showCircle(Color.PURPLE)
-                HG.setColor(0f,0f,0f,0.7f)
+        for (tileGroup in tileGroups) {
+
+            tileGroup.update()
+            if(tileGroup.tileInfo == nextTile){
+                tileGroup.showCircle(Color.PURPLE)
+                tileGroup.setColor(0f,0f,0f,0.7f)
             }
         }
 
@@ -119,7 +120,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         val civInfo = city.civInfo
         if (civInfo.cities.size > 1) {
             val prevCityButton = TextButton("<", CameraStageBaseScreen.skin)
-            prevCityButton.addClickListener {
+            prevCityButton.onClick {
                     val indexOfCity = civInfo.cities.indexOf(city)
                     val indexOfNextCity = if (indexOfCity == 0) civInfo.cities.size - 1 else indexOfCity - 1
                     game.screen = CityScreen(civInfo.cities[indexOfNextCity])
@@ -145,7 +146,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         if (civInfo.cities.size > 1) {
             val nextCityButton = TextButton(">", CameraStageBaseScreen.skin)
-            nextCityButton.addClickListener {
+            nextCityButton.onClick {
                     val indexOfCity = civInfo.cities.indexOf(city)
                     val indexOfNextCity = if (indexOfCity == civInfo.cities.size - 1) 0 else indexOfCity + 1
                     game.screen = CityScreen(civInfo.cities[indexOfNextCity])
@@ -157,12 +158,12 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city".tr(), skin)
-            razeCityButton.addClickListener { city.isBeingRazed=true; update() }
+            razeCityButton.onClick { city.isBeingRazed=true; update() }
             cityPickerTable.add(razeCityButton).colspan(cityPickerTable.columns)
         }
         else{
             val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
-            stopRazingCityButton.addClickListener { city.isBeingRazed=false; update() }
+            stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
             cityPickerTable.add(stopRazingCityButton).colspan(cityPickerTable.columns)
         }
 
@@ -173,7 +174,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     private fun updateGoToWorldButton() {
         goToWorldButton.clearListeners()
-        goToWorldButton.addClickListener {
+        goToWorldButton.onClick {
                 game.setWorldScreen()
                 game.worldScreen.tileMapHolder.setCenterPosition(city.location)
                 dispose()
@@ -191,36 +192,38 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         for (tileInfo in cityInfo.getCenterTile().getTilesInDistance(5)) {
             if (!city.civInfo.exploredTiles.contains(tileInfo.position)) continue // Don't even bother to display it.
-            val group = CityTileGroup(cityInfo, tileInfo)
-            group.addClickListener {
+            val tileGroup = CityTileGroup(cityInfo, tileInfo)
+            val tilesInRange = city.getTilesInRange()
+
+            // this needs to happen on pdate, because we can buy tiles, which changes the definition of the bought tiles...
+            if (tileInfo.getCity()!=city) { // outside of city
+                tileGroup.setColor(0f, 0f, 0f, 0.3f)
+                tileGroup.yieldGroup.isVisible = false
+            } else if(tileInfo !in tilesInRange){ // within city but not close enough to be workable
+                tileGroup.yieldGroup.isVisible = false
+            }
+            else if (!tileInfo.isCityCenter() && tileGroup.populationImage==null) { // workable
+                tileGroup.addPopulationIcon()
+                tileGroup.populationImage!!.onClick {
+                    if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
+                        city.workedTiles.add(tileInfo.position)
+                    else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
+                    city.cityStats.update()
+                    update()
+                }
+            }
+            tileGroup.onClick {
                     selectedTile = tileInfo
                     update()
                 }
 
-            val tilesInRange = city.getTilesInRange()
-            if (tileInfo.getCity()!=city) { // outside of city
-                group.setColor(0f, 0f, 0f, 0.3f)
-                group.yieldGroup.isVisible = false
-            } else if(tileInfo !in tilesInRange){ // within city but not close enough to be workable
-                group.yieldGroup.isVisible = false
-            }
-            else if (!tileInfo.isCityCenter()) { // workable
-                group.addPopulationIcon()
-                group.populationImage!!.addClickListener {
-                        if (!tileInfo.isWorked() && cityInfo.population.getFreePopulation() > 0)
-                            cityInfo.workedTiles.add(tileInfo.position)
-                        else if (tileInfo.isWorked()) cityInfo.workedTiles.remove(tileInfo.position)
-                        cityInfo.cityStats.update()
-                        update()
-                    }
-            }
 
             val positionalVector = HexMath().Hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
             val groupSize = 50
-            group.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
+            tileGroup.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
-            tileGroups.add(group)
-            allTiles.addActor(group)
+            tileGroups.add(tileGroup)
+            allTiles.addActor(tileGroup)
         }
 
         val scrollPane = ScrollPane(allTiles)
@@ -251,19 +254,30 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     private fun updateTileTable() {
         if (selectedTile == null) return
+        val tile = selectedTile!!
         tileTable.clearChildren()
 
-        val stats = selectedTile!!.getTileStats(city, city.civInfo)
+        val stats = tile.getTileStats(city, city.civInfo)
         tileTable.pad(20f)
         tileTable.columnDefaults(0).padRight(10f)
 
-        tileTable.add(Label(selectedTile!!.toString(), CameraStageBaseScreen.skin)).colspan(2)
+        tileTable.add(Label(tile.toString(), CameraStageBaseScreen.skin)).colspan(2)
         tileTable.row()
 
+        val statsTable = Table()
         for (entry in stats.toHashMap().filterNot { it.value==0f }) {
-            tileTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f).align(Align.right)
-            tileTable.add(Label(Math.round(entry.value).toString() + "", CameraStageBaseScreen.skin)).align(Align.left)
-            tileTable.row()
+            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f).align(Align.right)
+            statsTable.add(Label(Math.round(entry.value).toString() + "", CameraStageBaseScreen.skin)).align(Align.left)
+            statsTable.row()
+        }
+        tileTable.add(statsTable).row()
+
+        if(tile.getOwner()==null && tile.neighbors.any{it.getCity()==city}){
+            val goldCostOfTile = city.expansion.getGoldCostOfTile(tile)
+            val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(),skin)
+            buyTileButton.onClick { city.expansion.buyTile(tile); game.screen = CityScreen(city); dispose() }
+            if(goldCostOfTile>city.civInfo.gold) buyTileButton.disable()
+            tileTable.add(buyTileButton)
         }
 
         tileTable.pack()

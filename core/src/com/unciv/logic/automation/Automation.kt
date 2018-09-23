@@ -70,7 +70,7 @@ class Automation {
             }
         }
 
-        fun getMinDistanceBetweenCities(civ1:CivilizationInfo,civ2:CivilizationInfo): Float {
+        fun getMinDistanceBetweenCities(civ1:CivilizationInfo,civ2:CivilizationInfo): Int {
             return civ1.cities.map { city -> civ2.cities.map { it.getCenterTile().arialDistanceTo(city.getCenterTile()) }.min()!! }.min()!!
         }
 

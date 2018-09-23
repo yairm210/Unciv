@@ -99,7 +99,7 @@ open class CameraStageBaseScreen : Screen {
         tutorialTexts.removeAt(0)
         tutorialTable.add(label).pad(10f).row()
         val button = TextButton("Close".tr(), skin)
-        button.addClickListener {
+        button.onClick {
                 tutorialTable.remove()
                 if (!tutorialTexts.isEmpty())
                     displayTutorial()
@@ -238,7 +238,7 @@ fun Label.setFont(size:Int): Label {
     return this // for chaining
 }
 
-fun Actor.addClickListener(function: () -> Unit) {
+fun Actor.onClick(function: () -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
             function()
