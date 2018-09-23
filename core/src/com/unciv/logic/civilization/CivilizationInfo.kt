@@ -35,7 +35,11 @@ class CivilizationInfo {
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
     var diplomacy = HashMap<String,DiplomacyManager>()
-    var cities = ArrayList<CityInfo>()
+
+    // if we only use lists, and change the list each time the cities are changed,
+    // we won't get concurrent modification exceptions.
+    // This is basically a way to ensure our lists are immutable.
+    var cities = listOf<CityInfo>()
     var exploredTiles = HashSet<Vector2>()
 
     constructor()
@@ -58,7 +62,7 @@ class CivilizationInfo {
         toReturn.greatPeople=greatPeople.clone()
         toReturn.scienceVictory = scienceVictory.clone()
         toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
-        toReturn.cities.addAll(cities.map { it.clone() })
+        toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
         return toReturn
     }

@@ -46,7 +46,7 @@ class CityInfo {
         }
 
         this.location = cityLocation
-        civInfo.cities.add(this)
+        civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
         if(civInfo == civInfo.gameInfo.getPlayerCivilization())
             civInfo.addNotification("$name {has been founded}!", cityLocation, Color.PURPLE)
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
@@ -184,14 +184,14 @@ class CityInfo {
     }
 
     fun destroyCity() {
-        civInfo.cities.remove(this)
+        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getTiles().forEach { expansion.relinquishOwnership(it) }
         getCenterTile().improvement="City ruins"
     }
 
     fun moveToCiv(newCivInfo: CivilizationInfo){
-        civInfo.cities.remove(this)
-        newCivInfo.cities.add(this)
+        civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
+        newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo = newCivInfo
 
         // now that the tiles have changed, we need to reassign population
