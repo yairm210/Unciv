@@ -33,14 +33,14 @@ class UnitActions {
         val unitTable = worldScreen.bottomBar.unitTable
         val actionList = ArrayList<UnitAction>()
 
-        if (unitTable.currentlyExecutingAction != "moveTo"
-                && (unit.action==null || !unit.action!!.startsWith("moveTo") )){
-            actionList += UnitAction("Move unit", {
-                unitTable.currentlyExecutingAction = "moveTo"
-            }, unit.currentMovement != 0f )
-        }
-
-        else {
+//        if (unitTable.currentlyExecutingAction != "moveTo"
+//                && (unit.action==null || !unit.action!!.startsWith("moveTo") )){
+//            actionList += UnitAction("Move unit", {
+//                unitTable.currentlyExecutingAction = "moveTo"
+//            }, unit.currentMovement != 0f )
+//        }
+//
+        if(unit.action!=null && unit.action!!.startsWith("moveTo")){
             actionList +=
                     UnitAction("Stop movement", {
                 unitTable.currentlyExecutingAction = null

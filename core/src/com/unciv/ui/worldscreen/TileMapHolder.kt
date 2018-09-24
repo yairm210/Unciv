@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
@@ -15,9 +16,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.WorldTileGroup
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.colorFromRGB
+import com.unciv.ui.utils.*
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap) : ScrollPane(null) {
     internal var selectedTile: TileInfo? = null
@@ -42,18 +41,31 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 if(overlayActor!=null) overlayActor!!.remove()
                 selectedTile = tileInfo
 
-//                val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
-//                if(selectedUnit!=null && selectedUnit.getTile()!=tileInfo
-//                        && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
-//                    val size = 40f
-//                    val moveHereGroup = Group().apply { width = size;height = size; }
-//                    moveHereGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
-//                    moveHereGroup.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereGroup) })
-//                    if(selectedUnit.currentMovement>0)
-//                        moveHereGroup.onClick { selectedUnit.movementAlgs().headTowards(tileInfo);worldScreen.update() }
-//                    else moveHereGroup.color.a=0.5f
-//                    addAboveGroup(group, moveHereGroup).apply { width = size; height = size }
-//                }
+                val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+                if(selectedUnit!=null && selectedUnit.getTile()!=tileInfo
+                        && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
+                    val size = 40f
+                    val moveHereGroup = Group().apply { width = size;height = size; }
+                    moveHereGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
+                    moveHereGroup.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereGroup) })
+                    val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
+                    val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size/2; height = size/2;color= Color.BLUE }
+                    moveHereGroup.addActor(numberCircle)
+                    moveHereGroup.addActor(Label(turnsToGetThere.toString(),CameraStageBaseScreen.skin).apply { center(numberCircle) })
+
+                    if(selectedUnit.currentMovement>0)
+                        moveHereGroup.onClick {
+                            selectedUnit.movementAlgs().headTowards(tileInfo)
+                            if(selectedUnit.currentTile != tileInfo)
+                                 selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+
+                            worldScreen.update()
+                            overlayActor!!.remove()
+                            overlayActor=null
+                        }
+                    else moveHereGroup.color.a=0.5f
+                    addAboveGroup(group, moveHereGroup).apply { width = size; height = size }
+                }
 
                 worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
                 worldScreen.update()
