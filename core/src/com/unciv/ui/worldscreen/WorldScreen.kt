@@ -68,6 +68,8 @@ class WorldScreen : CameraStageBaseScreen() {
         stage.addActor(bottomBar)
         stage.addActor(unitActionsTable)
 
+        displayTutorials("NewGame")
+        displayTutorials("TileLayout")
         update()
 
         val tileToCenterOn: Vector2 =
@@ -78,20 +80,12 @@ class WorldScreen : CameraStageBaseScreen() {
                 }
         tileMapHolder.setCenterPosition(tileToCenterOn)
         createNextTurnButton() // needs civ table to be positioned
-        displayTutorials("NewGame")
-        displayTutorials("TileLayout")
     }
 
 
     fun update() {
         // many of the display functions will be called with the game clone and not the actual game,
         // because that's guaranteed to stay the exact same and so we won't get any concurrent modification exceptions
-//        val showImageTable = PopupTable()
-//        showImageTable.add(ImageGetter.getExternalImage("IconTutorial.png")).row()
-//        showImageTable.addButton("Close"){showImageTable.remove()}
-//        showImageTable.pack()
-//        stage.addActor(showImageTable)
-
 
         val gameClone = gameInfo.clone()
         val cloneCivilization = gameClone.getPlayerCivilization()

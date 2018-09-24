@@ -13,24 +13,15 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
-import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-
-class Tutorial(var name: String, var texts: ArrayList<String>) {}
 
 open class CameraStageBaseScreen : Screen {
 
     var game: UnCivGame = UnCivGame.Current
     var stage: Stage
-
-    private val tutorialTexts = mutableListOf<Tutorial>()
-
-    private var isTutorialShowing = false
+    var tutorials = Tutorials()
 
     init {
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
@@ -61,65 +52,10 @@ open class CameraStageBaseScreen : Screen {
 
     override fun dispose() {}
 
-    fun getTutorialsOfLanguage(language: String): HashMap<String, ArrayList<String>> {
-        if(!Gdx.files.internal("jsons/Tutorials_$language.json").exists()) return hashMapOf()
-
-        // ...Yes. Disgusting. I wish I didn't have to do this.
-        val x = LinkedHashMap<String,com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>>()
-        val tutorials: LinkedHashMap<String, com.badlogic.gdx.utils.Array<com.badlogic.gdx.utils.Array<String>>> =
-                GameBasics.getFromJson(x.javaClass, "Tutorials_$language")
-        val tutorialMap = HashMap<String,ArrayList<String>>()
-        for (tut in tutorials){
-            val list = ArrayList<String>()
-            for(paragraph in tut.value)
-                list += paragraph.joinToString("\n")
-            tutorialMap[tut.key] = list
-        }
-        return tutorialMap
-    }
-
-    fun getTutorials(name:String, language:String):ArrayList<String>{
-        val tutorialsOfLanguage = getTutorialsOfLanguage(language)
-        if(tutorialsOfLanguage.containsKey(name)) return tutorialsOfLanguage[name]!!
-        return getTutorialsOfLanguage("English")[name]!!
-    }
-
     fun displayTutorials(name: String) {
-        if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
-        UnCivGame.Current.settings.tutorialsShown.add(name)
-        UnCivGame.Current.settings.save()
-        val texts = getTutorials(name,UnCivGame.Current.settings.language)
-        tutorialTexts.add(Tutorial(name,texts))
-        if (!isTutorialShowing) displayTutorial()
+        tutorials.displayTutorials(name,stage)
     }
 
-    private fun displayTutorial() {
-        isTutorialShowing = true
-        val tutorialTable = Table().pad(10f)
-        tutorialTable.background = ImageGetter.getBackground(Color(0x101050cf))
-        val currentTutorial = tutorialTexts[0]
-        val label = Label(currentTutorial.texts[0], skin)
-        label.setAlignment(Align.center)
-        if(Gdx.files.internal("ExtraImages/"+currentTutorial.name+".png").exists())
-            tutorialTable.add(Table().apply { add(ImageGetter.getExternalImage(currentTutorial.name)) }).row()
-        tutorialTable.add(label).pad(10f).row()
-        val button = TextButton("Close".tr(), skin)
-
-        currentTutorial.texts.removeAt(0)
-        if(currentTutorial.texts.isEmpty()) tutorialTexts.removeAt(0)
-
-        button.onClick {
-                tutorialTable.remove()
-                if (!tutorialTexts.isEmpty())
-                    displayTutorial()
-                else
-                    isTutorialShowing = false
-            }
-        tutorialTable.add(button).pad(10f)
-        tutorialTable.pack()
-        tutorialTable.center(stage)
-        stage.addActor(tutorialTable)
-    }
 
 
 
@@ -254,3 +190,4 @@ fun Actor.onClick(function: () -> Unit) {
         }
     } )
 }
+
