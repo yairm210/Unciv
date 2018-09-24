@@ -79,13 +79,6 @@
 		]
 	],
 	
-	TileClicked : [
-		[
-			"Clicking on a tile selects that tile,",
-			" and displays information on that tile on the bottom-right,",
-			" as well as unit actions, if the tile contains a unit"
-		]
-	],
 	
 	CityFounded : [
 		[
@@ -114,15 +107,36 @@
 			"Before we begin, let's review some basic game concepts."
 		],
 		[
-			"This is the world map, which is made up of multiple tiles.",
-			"Each tile can contain units, as well as resources",
-			"  and improvements, which we'll get to later"
-		],
-		[
 			"You start out with two units -",
 			"  a Settler - who can found a city,",
 			"  and a scout, for exploring the area.",
 			"  Click on a tile to assign orders the unit!"
+		]
+	],
+	
+	TileLayout: [
+		[
+			"This is the world map, which is made up of multiple tiles.",
+			"Each tile can contain units, resources and improvements, which we'll get to later.",
+			"The position of the icon tells you what it signifies.",
+			"For more details, you can click on the tile and see the tile information."
+		]
+	],
+	
+	
+	TileClicked : [
+		[
+			"Clicking on a tile selects that tile,",
+			"  and displays information on that tile on the bottom-right.",
+			"If the tile contains a unit, that will become the selected unit,"
+			"  and its info and actions will be displayed on the bottom left."
+		]
+	],
+	
+	UnitSelected : [
+		[
+			"When a unit is selected, its information will be displayed on the bottom-left corner.",
+			"The available actions of that unit will appear above the tile information."
 		]
 	],
 	

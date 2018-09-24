@@ -1,6 +1,7 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -22,6 +23,10 @@ object ImageGetter {
     var atlas = TextureAtlas("game.atlas")
 
     init{
+    }
+
+    fun getExternalImage(fileName:String): Image {
+        return Image(TextureRegion(Texture("ExtraImages/$fileName.png")))
     }
 
     fun getImage(fileName: String): Image {
