@@ -154,15 +154,16 @@ class Building : NamedStats(), IConstruction{
 
     override fun isBuildable(construction: CityConstructions): Boolean {
         if (construction.isBuilt(name)) return false
+
         val civInfo = construction.cityInfo.civInfo
+        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
+        if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return false
         if (isWonder && requiredBuildingInAllCities==null
                 && civInfo.gameInfo.civilizations.flatMap { it.cities }.any {
                             it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
                         })
             return false
-        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
-        if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
         if (requiredBuilding != null && !construction.isBuilt(requiredBuilding!!)
                 && construction.getBuiltBuildings().none{it.replaces==requiredBuilding}) return false
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })

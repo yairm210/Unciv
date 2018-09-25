@@ -23,7 +23,6 @@ class GameInfo {
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.notifications.addAll(notifications)
         toReturn.turns=turns
-        toReturn.setTransients()
         return toReturn
     }
 

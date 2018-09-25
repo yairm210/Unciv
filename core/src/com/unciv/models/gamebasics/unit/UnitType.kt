@@ -10,13 +10,21 @@ enum class UnitType{
     Siege;
 
     fun isMelee(): Boolean {
-        return this in listOf(Melee, Mounted, Scout)
+        return this == Melee
+                || this == Mounted
+                || this == Scout
     }
     fun isRanged(): Boolean {
-        return this in listOf(Ranged, Siege)
+        return this == Ranged
+                || this == Siege
     }
 
     fun isLandUnit(): Boolean {
-        return this in listOf(Civilian, Melee, Mounted, Scout, Ranged, Siege)
+        return this == Civilian
+                || this == Melee
+                || this == Mounted
+                || this == Scout
+                || this == Ranged
+                || this == Siege
     }
 }

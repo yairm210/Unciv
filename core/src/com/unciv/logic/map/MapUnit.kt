@@ -54,12 +54,18 @@ class MapUnit {
         return movementAlgs().getDistanceToTilesWithinTurn(tile.position,currentMovement)
     }
 
-    fun getUniques(): MutableList<String> {
-        val abilities = mutableListOf<String>()
+    @Transient var tempUniques: List<String> = ArrayList()
+
+    fun getUniques(): List<String> {
+        return tempUniques
+    }
+
+    fun updateUniques(){
+        val uniques = ArrayList<String>()
         val baseUnit = baseUnit()
-        if(baseUnit.uniques!=null) abilities.addAll(baseUnit.uniques!!)
-        abilities.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })
-        return abilities
+        if(baseUnit.uniques!=null) uniques.addAll(baseUnit.uniques!!)
+        uniques.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })
+        tempUniques = uniques
     }
 
     fun hasUnique(unique:String): Boolean {
@@ -134,6 +140,7 @@ class MapUnit {
     fun setTransients(){
         promotions.unit=this
         baseUnit=GameBasics.Units[name]!!
+        updateUniques()
     }
     fun doPreTurnAction() {
         val currentTile = getTile()

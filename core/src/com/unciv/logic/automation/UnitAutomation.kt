@@ -177,6 +177,7 @@ class UnitAutomation{
 
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if(unit.civInfo.cities.isEmpty()) return false
+
         var enemyCities = unit.civInfo.gameInfo.civilizations.filter { unit.civInfo.isAtWarWith(it) }
                 .flatMap { it.cities }.filter { it.location in unit.civInfo.exploredTiles }.map { it.getCenterTile() }
         if(unit.baseUnit().unitType.isRanged())
@@ -234,8 +235,9 @@ class UnitAutomation{
         if(unit.baseUnit().unitType.isMelee()) return false // don't garrison melee units, they're not that good at it
         val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
             val centerTile = it.getCenterTile()
-            unit.canMoveTo(centerTile)
-                    && unit.movementAlgs().canReach(centerTile)
+            centerTile.militaryUnit==null
+                && unit.canMoveTo(centerTile)
+                && unit.movementAlgs().canReach(centerTile)
         }
 
         fun cityThatNeedsDefendingInWartime(city: CityInfo): Boolean {
@@ -249,6 +251,9 @@ class UnitAutomation{
         if (!unit.civInfo.isAtWar()) {
             if (unit.getTile().isCityCenter()) return true // It's always good to have a unit in the city center, so if you haven't found anyone around to attack, forget it.
             if (reachableCitiesWithoutUnits.isNotEmpty()) {
+                val closestCity = reachableCitiesWithoutUnits.minBy { it.getCenterTile().arialDistanceTo(unit.currentTile) }!!
+                unit.movementAlgs().headTowards(closestCity.getCenterTile())
+                return true
             }
         } else {
             if (unit.getTile().isCityCenter() &&
@@ -280,15 +285,16 @@ class UnitAutomation{
         }
         else distanceToTiles = unitDistanceToTiles
 
-        val reachableTiles= distanceToTiles
-                .filter { unit.canMoveTo(it.key) }
-
         for(tile in unit.currentTile.getTilesInDistance(5))
             if(unit.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
                     &&  unit.movementAlgs().canReach(tile)){
                 unit.movementAlgs().headTowards(tile)
                 return
             }
+
+
+        val reachableTiles= distanceToTiles
+                .filter { unit.canMoveTo(it.key) && unit.movementAlgs().canReach(it.key) }
 
         val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
         if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
@@ -305,7 +311,7 @@ class UnitAutomation{
     }
 
     private fun automateSettlerActions(unit: MapUnit) {
-        if(unit.getTile().militaryUnit==null) return // Don;t move until you're accompanied by a military unit
+        if(unit.getTile().militaryUnit==null) return // Don't move until you're accompanied by a military unit
 
         // find best city location within 5 tiles
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }

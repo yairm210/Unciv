@@ -88,6 +88,7 @@ class WorldScreen : CameraStageBaseScreen() {
         // because that's guaranteed to stay the exact same and so we won't get any concurrent modification exceptions
 
         val gameClone = gameInfo.clone()
+        gameClone.setTransients()
         val cloneCivilization = gameClone.getPlayerCivilization()
         kotlin.concurrent.thread {
             civInfo.happiness = gameClone.getPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()

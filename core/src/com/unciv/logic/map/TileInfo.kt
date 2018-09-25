@@ -47,12 +47,16 @@ open class TileInfo {
     }
 
 
-    fun getUnits()= listOf(militaryUnit,civilianUnit).filterNotNull()
+    fun getUnits(): List<MapUnit> {
+        val list = ArrayList<MapUnit>(2)
+        if(militaryUnit!=null) list.add(militaryUnit!!)
+        if(civilianUnit!=null) list.add(civilianUnit!!)
+        return list
+        // this used to be "return listOf(militaryUnit,civilianUnit).filterNotNull()" but profiling revealed that that took considerably longer
+    }
 
     fun getCity(): CityInfo? {
         return owningCity
-//        return tileMap.gameInfo.tilesToCities.get(this)
-        //return tileMap.gameInfo.civilizations.flatMap { it.cities }.firstOrNull{it.tiles.contains(position)}
     }
 
     val lastTerrain: Terrain

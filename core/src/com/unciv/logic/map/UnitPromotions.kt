@@ -19,6 +19,7 @@ class UnitPromotions{
         XP -= xpForNextPromotion()
         promotions.add(promotionName)
         numberOfPromotions++
+        unit.updateUniques()
     }
 
     fun getAvailablePromotions(): List<Promotion> {
