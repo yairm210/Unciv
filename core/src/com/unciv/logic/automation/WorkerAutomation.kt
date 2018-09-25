@@ -25,8 +25,8 @@ class WorkerAutomation(val unit: MapUnit) {
         }
 
         if (tileToWork != tile) {
-            unit.movementAlgs().headTowards(tileToWork)
-            unit.doPreTurnAction()
+            val reachedTile = unit.movementAlgs().headTowards(tileToWork)
+            if(reachedTile!=tile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
         if (tile.improvementInProgress == null) {
