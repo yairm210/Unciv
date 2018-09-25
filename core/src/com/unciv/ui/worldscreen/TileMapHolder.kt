@@ -15,6 +15,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 
@@ -44,14 +45,19 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
                 if(selectedUnit!=null && selectedUnit.getTile()!=tileInfo
                         && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
-                    val size = 40f
+                    val size = 60f
                     val moveHereGroup = Group().apply { width = size;height = size; }
                     moveHereGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
                     moveHereGroup.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereGroup) })
+
                     val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
                     val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size/2; height = size/2;color= Color.BLUE }
                     moveHereGroup.addActor(numberCircle)
-                    moveHereGroup.addActor(Label(turnsToGetThere.toString(),CameraStageBaseScreen.skin).apply { center(numberCircle) })
+                    moveHereGroup.addActor(Label(turnsToGetThere.toString(),CameraStageBaseScreen.skin).apply { center(numberCircle); setFontColor(Color.WHITE) })
+
+                    val unitIcon  = TileGroup(TileInfo()).getUnitImage(selectedUnit,size/3)
+                    unitIcon.y = size-unitIcon.height
+                    moveHereGroup.addActor(unitIcon)
 
                     if(selectedUnit.currentMovement>0)
                         moveHereGroup.onClick {

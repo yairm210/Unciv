@@ -5,12 +5,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,true)
     private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,false)
+    private val unitIconHolder=Table()
     private val unitNameLabel = Label("",CameraStageBaseScreen.skin)
     private val promotionsTable = Table()
     private val unitDescriptionLabel = Label("",CameraStageBaseScreen.skin)
@@ -26,6 +28,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         add(Table().apply {
             add(prevIdleUnitButton)
+            add(unitIconHolder)
             add(unitNameLabel).pad(5f)
             add(nextIdleUnitButton)
         }).colspan(2).row()
@@ -82,14 +85,18 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         else {
             unitNameLabel.setText("")
             unitDescriptionLabel.setText("")
+            unitIconHolder.clear()
         }
 
         if(!selectedUnitHasChanged) return
 
+        unitIconHolder.clear()
         promotionsTable.clear()
         unitDescriptionLabel.clearListeners()
 
         if(selectedUnit!=null) {
+
+            unitIconHolder.add(TileGroup(TileInfo()).getUnitImage(selectedUnit!!,20f)).pad(5f)
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 

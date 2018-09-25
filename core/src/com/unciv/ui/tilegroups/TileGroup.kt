@@ -333,7 +333,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    private fun getUnitImage(unit: MapUnit, size: Float): Group {
+    fun getUnitImage(unit: MapUnit, size: Float): Group {
         val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
                 .apply { setSize(20f, 20f) }
 
