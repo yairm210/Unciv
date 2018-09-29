@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
@@ -30,7 +31,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val bottomBar = WorldScreenBottomBar(this)
     val unitActionsTable = UnitActionsTable(this)
 
-    private val techButton = TextButton("", CameraStageBaseScreen.skin).apply { color= Color.BLUE }
+    private val techButton = Table().apply { background=ImageGetter.getDrawable("OtherIcons/civTableBackground.png").tint(colorFromRGB(7,46,43)); defaults().pad(10f) }
     val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
 
@@ -160,11 +161,17 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun updateTechButton(civInfo: CivilizationInfo) {
         techButton.isVisible = civInfo.cities.isNotEmpty()
 
+        techButton.clearChildren()
         if (civInfo.tech.currentTechnology() == null)
-            techButton.setText("{Pick a tech}!".tr())
-        else
-            techButton.setText(civInfo.tech.currentTechnology()!!.tr() + "\r\n"
-                    + civInfo.tech.turnsToTech(civInfo.tech.currentTechnology()!!) + " {turns}".tr())
+            techButton.add(Label("{Pick a tech}!".tr(),skin).setFontColor(Color.WHITE).setFont(22))
+        else {
+            val tech = civInfo.tech.currentTechnology()!!
+            if(ImageGetter.techIconExists(tech))
+                techButton.add(ImageGetter.getTechIcon(tech)).size(30f)
+            techButton.add(Label(tech.tr() + "\r\n"
+                    + civInfo.tech.turnsToTech(tech) + " {turns}".tr(),skin)
+                    .setFontColor(Color.WHITE).setFont(22))
+        }
 
         techButton.setSize(techButton.prefWidth, techButton.prefHeight)
         techButton.setPosition(10f, topBar.y - techButton.height - 5f)

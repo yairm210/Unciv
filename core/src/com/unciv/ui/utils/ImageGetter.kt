@@ -52,6 +52,14 @@ object ImageGetter {
         }
     }
 
+    fun techIconExists(techName:String): Boolean {
+        return atlas.findRegion("TechIcons/$techName")!=null
+    }
+
+    fun getTechIcon(techName: String): Image {
+        return getImage("TechIcons/$techName")
+    }
+
     fun getStatIcon(statName: String): Image {
         return ImageGetter.getImage("StatIcons/$statName")
                 .apply { setSize(20f,20f)}

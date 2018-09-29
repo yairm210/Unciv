@@ -2,21 +2,18 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.tr
+import com.unciv.ui.utils.*
 import java.util.*
 
 class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
 
-    private var techNameToButton = HashMap<String, TextButton>()
+    private var techNameToButton = HashMap<String, TechButton>()
     private var isFreeTechPick: Boolean = false
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
@@ -25,11 +22,29 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = GameBasics.Technologies.keys
             .filter { civTech.canBeResearched(it) }.toHashSet()
-    private val lightBlue = Color.BLUE.cpy().lerp(Color.WHITE, 0.3f)
+
+    private val currentTechColor = colorFromRGB(7,46,43)
+    private val researchedTechColor = colorFromRGB(133,112,39)
+    private val researchableTechColor = colorFromRGB(28,170,0)
+    private val queuedTechColor = colorFromRGB(39,114,154)
+
+
     private val turnsToTech = GameBasics.Technologies.values.associateBy ({ it.name },{civTech.turnsToTech(it.name)})
 
     constructor(freeTechPick: Boolean, civInfo: CivilizationInfo) : this(civInfo) {
         isFreeTechPick = freeTechPick
+    }
+
+    class TechButton(techName:String) : Table(skin) {
+        val text=Label("",skin).setFontColor(Color.WHITE)
+        init {
+            defaults().pad(10f)
+            background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+            if(ImageGetter.techIconExists(techName))
+                add(ImageGetter.getTechIcon(techName)).size(40f)
+            add(text)
+            pack()
+        }
     }
 
     init {
@@ -57,7 +72,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                     topTable.add() // empty cell
 
                 else {
-                    val TB = TextButton("", CameraStageBaseScreen.skin)
+                    val TB = TechButton(tech.name)
+
                     techNameToButton[tech.name] = TB
                     TB.onClick {
                         selectTechnology(tech)
@@ -91,9 +107,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         for (techName in techNameToButton.keys) {
             val TB = techNameToButton[techName]!!
             when {
-                civTech.isResearched(techName) && techName!="Future Tech" -> TB.color = Color.GREEN
-                techsToResearch.contains(techName) -> TB.color = lightBlue
-                researchableTechs.contains(techName) -> TB.color = Color.WHITE
+                civTech.isResearched(techName) && techName!="Future Tech" -> TB.color = researchedTechColor
+                techsToResearch.isNotEmpty() && techsToResearch.first() == techName -> TB.color = currentTechColor
+                techsToResearch.contains(techName) -> TB.color = queuedTechColor
+                researchableTechs.contains(techName) -> TB.color = researchableTechColor
                 else -> TB.color = Color.BLACK
             }
 
@@ -110,7 +127,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             if (!civTech.isResearched(techName) || techName=="Future Tech")
                 text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
 
-            TB.setText(text)
+            TB.text.setText(text)
         }
     }
 

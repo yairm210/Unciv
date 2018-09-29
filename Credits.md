@@ -201,3 +201,27 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
 * [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys
 * [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
+
+## Technologies
+
+### Ancient
+
+* [Agriculture](https://thenounproject.com/term/agriculture/4221/) By OCHA Visual Information Unit
+* [Jug](https://thenounproject.com/term/jug/869999/) By Vladimir Belochkin
+* [Archery](https://thenounproject.com/term/archery/213836/) By icon 54
+* [Mining](https://thenounproject.com/term/mining/1400713/) By art shop
+* [Sundial](https://thenounproject.com/term/sundial/239627/) By Bonegolem
+* [Cuneiform](https://thenounproject.com/term/cuneiform/86669/) By Michael Wohlwend
+* [Trap](https://thenounproject.com/term/trap/130049/) By Sergey Demushkin
+* [innovative](https://thenounproject.com/term/innovative/30219/) By Matt Brooks
+* [Bricks](https://thenounproject.com/term/bricks/1018659/) By Vaibhav Radhakrishnan
+* [Mallet](https://thenounproject.com/term/mallet/1306669/) By Ben Avery
+
+## Classical
+* [Horse Riding](https://thenounproject.com/term/horse-riding/583093/) By Hea Poh Lin
+* [Abacus](https://thenounproject.com/term/abacus/1943303/) By Yo! Baba
+* [Arch](https://thenounproject.com/term/arch/1174168/) By Andrejs Kirma
+* [Brain](https://thenounproject.com/term/brain/64073/) By Tony Gines
+* [Coins](https://thenounproject.com/term/coins/1806100/) By Adrien Coquet
+* [Engineering Blueprint](https://thenounproject.com/term/engineering-blueprint/1588543/) By Sachin Modgekar
+* [Metalworking](https://thenounproject.com/term/metalworking/1561383/) By Symbolon
