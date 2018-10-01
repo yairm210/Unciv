@@ -80,6 +80,7 @@ class CityConstructions {
         else if (GameBasics.Units.containsKey(constructionName))
             return GameBasics.Units[constructionName]!!
         else{
+            if(constructionName=="") return getConstruction("Nothing")
             val special = SpecialConstruction.getSpecialConstructions().firstOrNull{it.name==constructionName}
             if(special!=null) return special
         }
@@ -120,10 +121,9 @@ class CityConstructions {
 
         // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
         val saveCurrentConstruction = currentConstruction
-        currentConstruction = "lie"
+        currentConstruction = ""
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            currentConstruction=""
             cityInfo.civInfo.addNotification("Cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
             Automation().chooseNextConstruction(this)
             construction = getConstruction(currentConstruction)

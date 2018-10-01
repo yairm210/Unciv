@@ -174,8 +174,9 @@ class WorldScreen : CameraStageBaseScreen() {
             val percentageComplete = civInfo.tech.costOfTech(tech) / civInfo.tech.costOfTech(tech).toFloat()
             // todo
             techButton.add()
+            val turnsToTech = civInfo.tech.turnsToTech(tech)
             techButton.add(Label(tech.tr() + "\r\n"
-                    + civInfo.tech.turnsToTech(tech) + " {turns}".tr(),skin)
+                    + turnsToTech + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()),skin)
                     .setFontColor(Color.WHITE).setFont(22))
         }
 
