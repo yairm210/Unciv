@@ -61,9 +61,11 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
                     if(selectedUnit.currentMovement>0)
                         moveHereGroup.onClick {
-                            selectedUnit.movementAlgs().headTowards(tileInfo)
-                            if(selectedUnit.currentTile != tileInfo)
-                                 selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+                            if(selectedUnit.movementAlgs().canReach(tileInfo)) {
+                                selectedUnit.movementAlgs().headTowards(tileInfo)
+                                if (selectedUnit.currentTile != tileInfo)
+                                    selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+                            }
 
                             worldScreen.update()
                             overlayActor!!.remove()

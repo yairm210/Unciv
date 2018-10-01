@@ -146,6 +146,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             }
         } else { // If the tile is far away, we need to build a path how to get there, and then take the first step
             val path = getShortestPath(destination)
+            class UnreachableDestinationException:Exception()
+            if(path.isEmpty()) throw UnreachableDestinationException()
             destinationTileThisTurn = path.first()
         }
 
