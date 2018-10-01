@@ -44,9 +44,10 @@ class TechManager {
         else return 0
     }
 
+    fun remainingScienceToTech(techName: String) = costOfTech(techName) - researchOfTech(techName)
+
     fun turnsToTech(techName: String): Int {
-        val remainingScience = costOfTech(techName) - researchOfTech(techName)
-        return Math.ceil( remainingScience.toDouble()
+        return Math.ceil( remainingScienceToTech(techName).toDouble()
                 / civInfo.getStatsForNextTurn().science).toInt()
     }
 

@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -166,8 +167,13 @@ class WorldScreen : CameraStageBaseScreen() {
             techButton.add(Label("{Pick a tech}!".tr(),skin).setFontColor(Color.WHITE).setFont(22))
         else {
             val tech = civInfo.tech.currentTechnology()!!
+            val height = 30f
             if(ImageGetter.techIconExists(tech))
-                techButton.add(ImageGetter.getTechIcon(tech)).size(30f)
+                techButton.add(ImageGetter.getTechIcon(tech)).size(height)
+            val advancementGroup = Group()
+            val percentageComplete = civInfo.tech.costOfTech(tech) / civInfo.tech.costOfTech(tech).toFloat()
+            // todo
+            techButton.add()
             techButton.add(Label(tech.tr() + "\r\n"
                     + civInfo.tech.turnsToTech(tech) + " {turns}".tr(),skin)
                     .setFontColor(Color.WHITE).setFont(22))
