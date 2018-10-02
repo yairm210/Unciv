@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -167,13 +166,15 @@ class WorldScreen : CameraStageBaseScreen() {
             techButton.add(Label("{Pick a tech}!".tr(),skin).setFontColor(Color.WHITE).setFont(22))
         else {
             val tech = civInfo.tech.currentTechnology()!!
-            val height = 30f
+            val techHeight = 30f
             if(ImageGetter.techIconExists(tech))
-                techButton.add(ImageGetter.getTechIcon(tech)).size(height)
-            val advancementGroup = Group()
-            val percentageComplete = civInfo.tech.costOfTech(tech) / civInfo.tech.costOfTech(tech).toFloat()
-            // todo
-            techButton.add()
+                techButton.add(ImageGetter.getTechIcon(tech)).size(techHeight)
+            val advancementGroup = Table()
+            val percentIncomplete = civInfo.tech.remainingScienceToTech(tech) / civInfo.tech.costOfTech(tech).toFloat()
+            val incompletionHeight = techHeight * percentIncomplete
+            advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot)).width(2f).height(incompletionHeight).row()
+            advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= Color.BLUE }).width(2f).height(techHeight-incompletionHeight)
+            techButton.add(advancementGroup)
             val turnsToTech = civInfo.tech.turnsToTech(tech)
             techButton.add(Label(tech.tr() + "\r\n"
                     + turnsToTech + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()),skin)
