@@ -225,3 +225,15 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Coins](https://thenounproject.com/term/coins/1806100/) By Adrien Coquet
 * [Engineering Blueprint](https://thenounproject.com/term/engineering-blueprint/1588543/) By Sachin Modgekar
 * [Metalworking](https://thenounproject.com/term/metalworking/1561383/) By Symbolon
+
+## Medieval
+* [Judaism](https://thenounproject.com/term/judaism/324145/) By Ben Davis
+* [Institution](https://thenounproject.com/term/institution/260586/) By Luis Prado
+* [Education](https://thenounproject.com/term/education/1817512/) By Tomas Knopp
+* [Casting](https://thenounproject.com/term/casting/10773/) By Jasmine Rae Friedrich
+* [Bar association](https://thenounproject.com/term/bar-association/217443/) By Miroslav Kurdov
+* [Knight](https://thenounproject.com/term/knight/1026633/) By Robert Bjurshagen
+* [Machinery](https://thenounproject.com/term/machinery/1170931/) By Greenhill
+* [Lever](https://thenounproject.com/term/lever/4927/) By Jakob Ukrop
+* [Sword](https://thenounproject.com/term/sword/1365080/) By Jonathan P Lambert
+* 

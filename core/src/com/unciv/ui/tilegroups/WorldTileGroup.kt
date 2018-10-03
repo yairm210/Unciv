@@ -85,7 +85,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 toFront() // so this tile is rendered over neighboring tiles
             }
 
-            val cityButtonText = city.name + " (" + city.population.population + ")"
+            val cityButtonText = city.population.population.toString() +" | " +city.name
             val label = Label(cityButtonText, CameraStageBaseScreen.skin)
             label.setFontColor(city.civInfo.getNation().getSecondaryColor())
             if (city.civInfo.isPlayerCivilization())

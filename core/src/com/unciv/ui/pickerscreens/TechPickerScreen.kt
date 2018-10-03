@@ -1,6 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
@@ -38,6 +39,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     class TechButton(techName:String) : Table(skin) {
         val text=Label("",skin).setFontColor(Color.WHITE)
         init {
+            touchable = Touchable.enabled
             defaults().pad(10f)
             background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
             if(ImageGetter.techIconExists(techName))
