@@ -56,10 +56,6 @@ object ImageGetter {
         return atlas.findRegion("TechIcons/$techName")!=null
     }
 
-    fun getTechIcon(techName: String): Image {
-        return getImage("TechIcons/$techName")
-    }
-
     fun getStatIcon(statName: String): Image {
         return ImageGetter.getImage("StatIcons/$statName")
                 .apply { setSize(20f,20f)}
@@ -136,5 +132,15 @@ object ImageGetter {
             group.addActor(production)
         }
         return group
+    }
+
+    fun getTechIconGroup(techName: String): Group {
+        val techIconGroup = Group()
+        techIconGroup.setSize(60f,60f)
+        techIconGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { setSize(60f,60f) })
+        val techIcon = getImage("TechIcons/$techName").apply { setSize(40f,40f)}
+        techIcon.center(techIconGroup)
+        techIconGroup.addActor(techIcon)
+        return techIconGroup
     }
 }

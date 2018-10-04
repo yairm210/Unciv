@@ -168,7 +168,7 @@ class WorldScreen : CameraStageBaseScreen() {
             val tech = civInfo.tech.currentTechnology()!!
             val techHeight = 30f
             if(ImageGetter.techIconExists(tech))
-                techButton.add(ImageGetter.getTechIcon(tech)).size(techHeight)
+                techButton.add(ImageGetter.getTechIconGroup(tech))
             val advancementGroup = Table()
             val percentIncomplete = civInfo.tech.remainingScienceToTech(tech) / civInfo.tech.costOfTech(tech).toFloat()
             val incompletionHeight = techHeight * percentIncomplete

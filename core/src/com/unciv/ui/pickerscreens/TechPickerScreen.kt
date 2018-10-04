@@ -42,8 +42,9 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             touchable = Touchable.enabled
             defaults().pad(10f)
             background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-            if(ImageGetter.techIconExists(techName))
-                add(ImageGetter.getTechIcon(techName)).size(40f)
+            if(ImageGetter.techIconExists(techName)) {
+                add(ImageGetter.getTechIconGroup(techName))
+            }
             add(text)
             pack()
         }
@@ -62,7 +63,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         }
 
         val eras = ArrayList<Label>()
-        for(i in techMatrix.indices) eras.add(Label("",CameraStageBaseScreen.skin))
+        for(i in techMatrix.indices) eras.add(Label("",CameraStageBaseScreen.skin).apply { setFontColor(Color.WHITE) })
         eras.forEach { topTable.add(it) }
 
         for (i in 0..9) {
