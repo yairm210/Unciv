@@ -73,6 +73,15 @@
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
 	},
 	{
+		name:"America",
+		mainColor:[ 28,51,119],
+		secondaryColor:[255,255,255],
+		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",
+		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
+			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
+			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+	},
+	{
 		name:"Barbarians",
 		mainColor:[200,200,200],
 		secondaryColor:[0,0,0]

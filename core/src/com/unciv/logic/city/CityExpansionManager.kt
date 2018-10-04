@@ -42,7 +42,9 @@ class CityExpansionManager {
         val baseCost = 50
         val numTilesClaimed= cityInfo.tiles.size - 7
         val distanceFromCenter = tileInfo.arialDistanceTo(cityInfo.getCenterTile())
-        val cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5
+        var cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5
+        if(cityInfo.civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
+            cost /= 2
         return cost
     }
 

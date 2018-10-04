@@ -76,6 +76,8 @@ class MapUnit {
         var visibilityRange = 2
         visibilityRange += getUniques().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
+        if(civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
+            visibilityRange += 1
         val tile = getTile()
         if (tile.baseTerrain == "Hill") visibilityRange += 1
         return tile.getViewableTiles(visibilityRange)
@@ -222,6 +224,7 @@ class MapUnit {
 
         class YouCantGetThereFromHereException : Exception()
         if (!distanceToTiles.containsKey(otherTile))
+
             throw YouCantGetThereFromHereException()
 
         class CantEnterThisTileException : Exception()
