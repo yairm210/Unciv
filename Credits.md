@@ -236,4 +236,47 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Machinery](https://thenounproject.com/term/machinery/1170931/) By Greenhill
 * [Lever](https://thenounproject.com/term/lever/4927/) By Jakob Ukrop
 * [Sword](https://thenounproject.com/term/sword/1365080/) By Jonathan P Lambert
-* 
+
+## Renaissance
+* [Telescope](https://thenounproject.com/term/telescope/1976706/) By ProSymbols
+* [sound waves](https://thenounproject.com/term/sound-waves/792661/) By Makarenko Andrey
+* [Banking](https://thenounproject.com/term/banking/763867/) By Delwar Hossein
+* [Printing Press](https://thenounproject.com/term/printing-press/11880/) By Mike Wirth
+* [Flintlock](https://thenounproject.com/term/flintlock/1122659/) By Madison Apple
+* [Fossil](https://thenounproject.com/term/fossil/168650/) By Raf Verbraeken
+* [Architecture](https://thenounproject.com/term/architecture/795297/) By Andrew Doane
+* [Money Growth](https://thenounproject.com/search/?q=economic%20model&i=136159) By DesignNex
+* [Metal Block](https://thenounproject.com/term/metal-bock/1518464/) By Creaticca Creative Agency
+* [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall
+
+## Industrial
+* [Science](https://thenounproject.com/term/science/1901524/) By Dinosoft Labs
+* [Factory](https://thenounproject.com/term/factory/26212/) By Lil Squid
+* [Rifle](https://thenounproject.com/term/rifle/371894/) By Alexander Skowalsky
+* [Grenade](https://thenounproject.com/term/grenade/1950318/) By Dama Adhikara
+* [Fertilizer](https://thenounproject.com/term/fertilizer/1215597/) By Jae Deasigner
+* [Bacteria](https://thenounproject.com/term/bacteria/706038/) By Maxim Kulikov
+* [Electricity](https://thenounproject.com/term/electricity/816936/) By Ben Davis
+* [Turbines](https://thenounproject.com/term/turbine/86212/) By Leonardo Schneider
+* [Dynamite](https://thenounproject.com/term/dynamite/610652/) By Simon Martin
+
+## Modern
+* [Radio](https://thenounproject.com/term/radio/124575/) By Arthur Shlain
+* [Piston](https://thenounproject.com/term/piston/1224/) By Proletkult Graphik
+* [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
+* [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev
+* [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
+
+## Information
+* [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau
+* [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry
+* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet
+* [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
+* [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert
+* [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov
+
+## Future
+* [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani
+* [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis
+* [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong
+* [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet
