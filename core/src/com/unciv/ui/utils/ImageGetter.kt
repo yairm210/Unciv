@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.unciv.models.gamebasics.GameBasics
@@ -142,5 +143,14 @@ object ImageGetter {
         techIcon.center(techIconGroup)
         techIconGroup.addActor(techIcon)
         return techIconGroup
+    }
+
+    fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {
+        val advancementGroup = Table()
+        val completionHeight = height * percentComplete
+        advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = backgroundColor }).width(width).height(height-completionHeight).row()
+        advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= progressColor}).width(width).height(completionHeight)
+        advancementGroup.pack()
+        return advancementGroup
     }
 }

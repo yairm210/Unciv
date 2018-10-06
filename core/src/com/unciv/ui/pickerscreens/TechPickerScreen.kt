@@ -36,14 +36,20 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         isFreeTechPick = freeTechPick
     }
 
-    class TechButton(techName:String) : Table(skin) {
+    class TechButton(techName:String, val techManager:TechManager) : Table(skin) {
         val text=Label("",skin).setFontColor(Color.WHITE)
         init {
             touchable = Touchable.enabled
             defaults().pad(10f)
             background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-            if(ImageGetter.techIconExists(techName)) {
+            if(ImageGetter.techIconExists(techName))
                 add(ImageGetter.getTechIconGroup(techName))
+
+            val techCost = techManager.costOfTech(techName)
+            val remainingTech = techManager.remainingScienceToTech(techName)
+            if(techCost!=remainingTech){
+                val percentComplete = (techCost-remainingTech)/techCost.toFloat()
+                add(ImageGetter.getProgressBarVertical(2f,30f,percentComplete, Color.BLUE, Color.WHITE))
             }
             add(text)
             pack()
@@ -75,7 +81,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                     topTable.add() // empty cell
 
                 else {
-                    val TB = TechButton(tech.name)
+                    val TB = TechButton(tech.name,civTech)
 
                     techNameToButton[tech.name] = TB
                     TB.onClick {

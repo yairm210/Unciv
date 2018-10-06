@@ -25,8 +25,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         val whiteHalo = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
         else ImageGetter.getImage("OtherIcons/Circle.png")
         whiteHalo.setSize(30f,30f)
-        val unitImage = if(unit.baseUnit().unitType== UnitType.Civilian) civilianUnitImage!!
-                        else militaryUnitImage!!
+        val unitImage = if(unit.baseUnit().unitType== UnitType.Civilian) civilianUnitImage
+                        else militaryUnitImage
+        if(unitImage==null) //Stuff has changed since we requested this, the unit is no longer here...
+            return
         whiteHalo.center(unitImage)
         unitImage.addActor(whiteHalo)
         whiteHalo.toBack()
@@ -160,11 +162,8 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             val adoptedPolicies = cityConstructions.cityInfo.civInfo.policies.adoptedPolicies
             val constructionPercentage = cityConstructions.getWorkDone(cityConstructions.currentConstruction) /
                     cityConstructions.getCurrentConstruction().getProductionCost(adoptedPolicies).toFloat()
-            val productionBar = Table()
-            val heightOfProductionBar = (constructionPercentage * groupHeight)
-            productionBar.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BLACK}).width(2f).height(groupHeight - heightOfProductionBar).row()
-            productionBar.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)}).width(2f).height(heightOfProductionBar)
-            productionBar.pack()
+            val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage
+                    ,Color.BROWN.cpy().lerp(Color.WHITE,0.5f), Color.BLACK )
             productionBar.x = 10f
             label.x = productionBar.x - label.width - 3
             group.addActor(productionBar)

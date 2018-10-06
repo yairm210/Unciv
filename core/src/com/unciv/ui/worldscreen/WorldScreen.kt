@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -50,6 +51,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         tileMapHolder.addTiles()
 
+        techButton.touchable=Touchable.enabled
         techButton.onClick {
             game.screen = TechPickerScreen(civInfo)
         }
@@ -166,15 +168,11 @@ class WorldScreen : CameraStageBaseScreen() {
             techButton.add(Label("{Pick a tech}!".tr(),skin).setFontColor(Color.WHITE).setFont(22))
         else {
             val tech = civInfo.tech.currentTechnology()!!
-            val techHeight = 30f
             if(ImageGetter.techIconExists(tech))
                 techButton.add(ImageGetter.getTechIconGroup(tech))
-            val advancementGroup = Table()
-            val percentIncomplete = civInfo.tech.remainingScienceToTech(tech) / civInfo.tech.costOfTech(tech).toFloat()
-            val incompletionHeight = techHeight * percentIncomplete
-            advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot)).width(2f).height(incompletionHeight).row()
-            advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= Color.BLUE }).width(2f).height(techHeight-incompletionHeight)
-            techButton.add(advancementGroup)
+            val costOfTech = civInfo.tech.costOfTech(tech).toFloat()
+            val percentComplete = (costOfTech-civInfo.tech.remainingScienceToTech(tech)) / costOfTech
+            techButton.add(ImageGetter.getProgressBarVertical(2f,30f,percentComplete, Color.BLUE, Color.WHITE))
             val turnsToTech = civInfo.tech.turnsToTech(tech)
             techButton.add(Label(tech.tr() + "\r\n"
                     + turnsToTech + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()),skin)
