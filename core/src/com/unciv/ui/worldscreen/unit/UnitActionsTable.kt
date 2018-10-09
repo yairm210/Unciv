@@ -47,8 +47,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         clear()
         if (unit == null) return
         for (button in UnitActions().getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
-            add(button).colspan(2).pad(5f)
-                    .size(button.width * worldScreen.buttonScale, button.height * worldScreen.buttonScale).row()
+            add(button).colspan(2).pad(5f).row()
         pack()
     }
 

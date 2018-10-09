@@ -164,9 +164,9 @@ class Building : NamedStats(), IConstruction{
                             it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
                         })
             return false
-        if (requiredBuilding != null && !construction.isBuilt(requiredBuilding!!)
-                && construction.getBuiltBuildings().none{it.replaces==requiredBuilding}) return false
-        if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.isBuilt(requiredBuildingInAllCities!!) })
+
+        if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) return false
+        if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
             return false
         if(requiredBuildingInAllCities!=null && civInfo.cities.any {
                     it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)

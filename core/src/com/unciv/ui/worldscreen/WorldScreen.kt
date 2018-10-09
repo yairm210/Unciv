@@ -27,7 +27,6 @@ class WorldScreen : CameraStageBaseScreen() {
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
     val minimap = Minimap(tileMapHolder)
 
-    internal var buttonScale = 0.9f
     private val topBar = WorldScreenTopBar(this)
     val bottomBar = WorldScreenBottomBar(this)
     val unitActionsTable = UnitActionsTable(this)
