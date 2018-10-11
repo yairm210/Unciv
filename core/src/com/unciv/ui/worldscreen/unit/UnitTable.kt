@@ -4,7 +4,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -65,13 +64,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitNameLabel.setText(nameLabelText)
 
             var unitLabelText = "Movement".tr()+": " + unit.getMovementString()
-            if (unit.baseUnit().unitType != UnitType.Civilian)
+            if (!unit.baseUnit().unitType.isCivilian())
                 unitLabelText += "\n"+"Strength".tr()+": " + unit.baseUnit().strength
 
             if (unit.baseUnit().rangedStrength!=0)
                 unitLabelText += "\n"+"Ranged strength".tr()+": "+unit.baseUnit().rangedStrength
 
-            if (unit.baseUnit().unitType != UnitType.Civilian)
+            if (!unit.baseUnit().unitType.isCivilian())
                 unitLabelText += "\n"+"XP".tr()+": "+unit.promotions.XP+"/"+unit.promotions.xpForNextPromotion()
 
             if(unit.isFortified() && unit.getFortificationTurns()>0)

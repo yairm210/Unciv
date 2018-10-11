@@ -110,7 +110,7 @@ class MapUnit {
         if(tileOwner!=null && tileOwner.civName!=owner
                 && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
 
-        if (baseUnit().unitType== UnitType.Civilian)
+        if (baseUnit().unitType.isCivilian())
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)
         else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==owner)
     }
@@ -264,13 +264,13 @@ class MapUnit {
     }
 
     fun removeFromTile(){
-        if (baseUnit().unitType== UnitType.Civilian) getTile().civilianUnit=null
+        if (baseUnit().unitType.isCivilian()) getTile().civilianUnit=null
         else getTile().militaryUnit=null
     }
 
     fun putInTile(tile:TileInfo){
         if(!canMoveTo(tile)) throw Exception("I can't go there!")
-        if(baseUnit().unitType== UnitType.Civilian)
+        if(baseUnit().unitType.isCivilian())
             tile.civilianUnit=this
         else tile.militaryUnit=this
         currentTile = tile
@@ -302,7 +302,7 @@ class MapUnit {
             civInfo.addNotification("A [$chosenUnit] has joined us!",null, Color.BLUE)
         }
 
-        if(baseUnit.unitType!=UnitType.Civilian)
+        if(!baseUnit.unitType.isCivilian())
             actions.add {
                 promotions.XP+=10
                 civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!",null, Color.RED)

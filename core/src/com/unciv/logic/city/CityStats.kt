@@ -212,7 +212,7 @@ class CityStats {
             stats.gold += 25f
         if (policies.contains("Sovereignty") && cityInfo.civInfo.happiness >= 0)
             stats.science += 15f
-        if (policies.contains("Total War") && currentConstruction is BaseUnit && currentConstruction.unitType!=UnitType.Civilian )
+        if (policies.contains("Total War") && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian() )
             stats.production += 15f
         if (policies.contains("Aristocracy")
                 && currentConstruction is Building

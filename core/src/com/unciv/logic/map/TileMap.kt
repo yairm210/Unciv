@@ -51,11 +51,13 @@ class TileMap {
     }
 
     fun getTilesInDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath().GetVectorsInDistance(origin, distance).filter {contains(it)}.map { get(it) }
+        return HexMath().getVectorsInDistance(origin, distance).asSequence()
+                .filter {contains(it)}.map { get(it) }.toList()
     }
 
     fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
-        return HexMath().GetVectorsAtDistance(origin, distance).filter {contains(it)}.map { get(it) }
+        return HexMath().getVectorsAtDistance(origin, distance).asSequence()
+                .filter {contains(it)}.map { get(it) }.toList()
 
     }
 
@@ -88,10 +90,10 @@ class TileMap {
         if(tiles.any()) //
             tileList.addAll(tiles.values)
 
-        val topY=tileList.map { it.position.y.toInt() }.max()!!
-        bottomY= tileList.map { it.position.y.toInt() }.min()!!
-        val rightX=tileList.map { it.position.x.toInt() }.max()!!
-        leftX = tileList.map { it.position.x.toInt() }.min()!!
+        val topY= tileList.asSequence().map { it.position.y.toInt() }.max()!!
+        bottomY= tileList.asSequence().map { it.position.y.toInt() }.min()!!
+        val rightX= tileList.asSequence().map { it.position.x.toInt() }.max()!!
+        leftX = tileList.asSequence().map { it.position.x.toInt() }.min()!!
 
         for(x in leftX..rightX){
             val row = ArrayList<TileInfo?>()

@@ -5,6 +5,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.ui.NewGameScreen
 import com.unciv.ui.utils.getRandom
 
@@ -24,7 +25,9 @@ class GameStarter(){
         }
 
         val distanceAroundStartingPointNoOneElseWillStartIn = 5
-        val freeTiles = gameInfo.tileMap.values.toMutableList().filter { vectorIsWithinNTilesOfEdge(it.position,3)}.toMutableList()
+        val freeTiles = gameInfo.tileMap.values
+                .filter { it.getBaseTerrain().type==TerrainType.Land && vectorIsWithinNTilesOfEdge(it.position,3)}
+                .toMutableList()
         val playerPosition = freeTiles.getRandom().position
         val playerCiv = CivilizationInfo(newGameParameters.nation, gameInfo)
         playerCiv.difficulty=newGameParameters.difficulty
@@ -61,15 +64,6 @@ class GameStarter(){
             civ.placeUnitNearTile(startingLocation, "Scout")
 
             freeTiles.removeAll(gameInfo.tileMap.getTilesInDistance(startingLocation, distanceAroundStartingPointNoOneElseWillStartIn ))
-        }
-
-        (1..5).forEach {
-            val freeTilesList = freeTiles.toList()
-            if(freeTilesList.isNotEmpty()){
-                val placedTile =  freeTilesList.getRandom()
-                gameInfo.placeBarbarianUnit(placedTile)
-                freeTiles.remove(placedTile)
-            }
         }
 
         return gameInfo

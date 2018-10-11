@@ -31,7 +31,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     fun update() {
         val unitTable = worldScreen.bottomBar.unitTable
         if (unitTable.selectedUnit == null
-                || unitTable.selectedUnit!!.baseUnit().unitType == UnitType.Civilian){
+                || unitTable.selectedUnit!!.baseUnit().unitType.isCivilian()){
             hide()
             return
         } // no attacker
@@ -102,7 +102,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         else if (damageToDefender>defender.getHealth()) damageToDefender=defender.getHealth()
 
 
-        if(attacker.isMelee() && (defender.getUnitType()==UnitType.Civilian
+        if(attacker.isMelee() && (defender.getUnitType().isCivilian()
                         || defender.getUnitType()==UnitType.City && defender.isDefeated())) {
             add("")
             add("{Captured!}".tr())

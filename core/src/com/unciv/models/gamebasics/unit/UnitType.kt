@@ -28,6 +28,12 @@ enum class UnitType{
                 || this == Ranged
                 || this == Siege
     }
+
+    fun isCivilian(): Boolean {
+        return this == Civilian
+            || this == WaterCivilian
+    }
+
     fun isWaterUnit(): Boolean {
         return this == WaterCivilian
     }

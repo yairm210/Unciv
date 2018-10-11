@@ -18,7 +18,7 @@ class Battle(val gameInfo:GameInfo) {
         var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
         var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
-        if(defender.getUnitType() == UnitType.Civilian && attacker.isMelee()){
+        if(defender.getUnitType().isCivilian() && attacker.isMelee()){
             captureCivilianUnit(attacker,defender)
         }
         else if (attacker.isRanged()) {
@@ -98,7 +98,7 @@ class Battle(val gameInfo:GameInfo) {
         }
 
         if(attacker.isMelee()){
-            if(defender.getUnitType()!=UnitType.Civilian) // unit was not captured but actually attacked
+            if(!defender.getUnitType().isCivilian()) // unit was not captured but actually attacked
             {
                 addXp(attacker,5,defender)
                 addXp(defender,4,attacker)
@@ -109,7 +109,7 @@ class Battle(val gameInfo:GameInfo) {
             addXp(defender,2,attacker)
         }
 
-        if(defender.isDefeated() && defender is MapUnitCombatant && defender.getUnitType()!=UnitType.Civilian
+        if(defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
                 && attacker.getCivilization().policies.isAdopted("Honor Complete"))
             attacker.getCivilization().gold += defender.unit.baseUnit.getGoldCost(hashSetOf()) / 10
 

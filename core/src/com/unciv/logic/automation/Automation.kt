@@ -77,7 +77,7 @@ class Automation {
         // Declare war?
         if(civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()
                 && !civInfo.isAtWar()
-                && civInfo.getCivUnits().filter { it.baseUnit.unitType != UnitType.Civilian }.size > civInfo.cities.size*2) {
+                && civInfo.getCivUnits().filter { !it.baseUnit.unitType.isCivilian() }.size > civInfo.cities.size*2) {
 
             val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
                     .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
@@ -142,7 +142,7 @@ class Automation {
     }
 
     private fun trainCombatUnit(city: CityInfo) {
-        val combatUnits = city.cityConstructions.getConstructableUnits().filter { it.unitType != UnitType.Civilian }
+        val combatUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
         val chosenUnit: BaseUnit
         if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
                 && combatUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
@@ -166,7 +166,7 @@ class Automation {
             val buildableWonders = getBuildableBuildings().filter { it.isWonder }
 
             val civUnits = cityInfo.civInfo.getCivUnits()
-            val militaryUnits = civUnits.filter { it.baseUnit().unitType != UnitType.Civilian }.size
+            val militaryUnits = civUnits.filter { !it.baseUnit().unitType.isCivilian()}.size
             val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
             val cities = cityInfo.civInfo.cities.size
 

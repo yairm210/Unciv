@@ -7,12 +7,12 @@ import kotlin.math.max
 
 class HexMath {
 
-    fun GetVectorForAngle(angle: Float): Vector2 {
+    private fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(Math.sin(angle.toDouble()).toFloat(), Math.cos(angle.toDouble()).toFloat())
     }
 
-    fun GetVectorByClockHour(hour: Int): Vector2 {
-        return GetVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
+    private fun getVectorByClockHour(hour: Int): Vector2 {
+        return getVectorForAngle((2 * Math.PI * (hour / 12f)).toFloat())
     }
 
     // HexCoordinates are a (x,y) vector, where x is the vector getting us to the top-left hex (e.g. 10 o'clock)
@@ -22,54 +22,54 @@ class HexMath {
     // For example, to get to the cell above me, I'll use a (1,1) vector.
     // To get to the cell below the cell to my bottom-right, I'll use a (-1,-2) vector.
 
-    fun Hex2WorldCoords(hexCoord: Vector2): Vector2 {
+    fun hex2WorldCoords(hexCoord: Vector2): Vector2 {
         // Distance between cells = 2* normal of triangle = 2* (sqrt(3)/2) = sqrt(3)
-        val xVector = GetVectorByClockHour(10).scl(Math.sqrt(3.0).toFloat())
-        val yVector = GetVectorByClockHour(2).scl(Math.sqrt(3.0).toFloat())
+        val xVector = getVectorByClockHour(10).scl(Math.sqrt(3.0).toFloat())
+        val yVector = getVectorByClockHour(2).scl(Math.sqrt(3.0).toFloat())
         return xVector.scl(hexCoord.x).add(yVector.scl(hexCoord.y))
     }
 
-    fun GetAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
+    fun getAdjacentVectors(origin: Vector2): ArrayList<Vector2> {
         val vectors = ArrayList<Vector2>()
-        vectors.add(Vector2(1f, 0f))
-        vectors.add(Vector2(1f, 1f))
-        vectors.add(Vector2(0f, 1f))
-        vectors.add(Vector2(-1f, 0f))
-        vectors.add(Vector2(-1f, -1f))
-        vectors.add(Vector2(0f, -1f))
+        vectors += Vector2(1f, 0f)
+        vectors += Vector2(1f, 1f)
+        vectors += Vector2(0f, 1f)
+        vectors += Vector2(-1f, 0f)
+        vectors += Vector2(-1f, -1f)
+        vectors += Vector2(0f, -1f)
         for (vector in vectors) vector.add(origin)
         return vectors
     }
 
-    fun GetVectorsAtDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsAtDistance(origin: Vector2, distance: Int): List<Vector2> {
         val vectors = mutableListOf<Vector2>()
         if (distance == 0) {
-            vectors.add(origin.cpy())
+            vectors += origin.cpy()
             return vectors
         }
-        val Current = origin.cpy().sub(distance.toFloat(), distance.toFloat()) // start at 6 o clock
+        val current = origin.cpy().sub(distance.toFloat(), distance.toFloat()) // start at 6 o clock
         for (i in 0 until distance) { // From 6 to 8
-            vectors.add(Current.cpy())
-            vectors.add(origin.cpy().scl(2f).sub(Current)) // Get vector on other side of cloick
-            Current.add(1f, 0f)
+            vectors += current.cpy()
+            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of cloick
+            current.add(1f, 0f)
         }
         for (i in 0 until distance) { // 8 to 10
-            vectors.add(Current.cpy())
-            vectors.add(origin.cpy().scl(2f).sub(Current)) // Get vector on other side of clock
-            Current.add(1f, 1f)
+            vectors += current.cpy()
+            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            current.add(1f, 1f)
         }
         for (i in 0 until distance) { // 10 to 12
-            vectors.add(Current.cpy())
-            vectors.add(origin.cpy().scl(2f).sub(Current)) // Get vector on other side of clock
-            Current.add(0f, 1f)
+            vectors += current.cpy()
+            vectors += origin.cpy().scl(2f).sub(current) // Get vector on other side of clock
+            current.add(0f, 1f)
         }
         return vectors
     }
 
-    fun GetVectorsInDistance(origin: Vector2, distance: Int): List<Vector2> {
+    fun getVectorsInDistance(origin: Vector2, distance: Int): List<Vector2> {
         val hexesToReturn = mutableListOf<Vector2>()
         for (i in 0 .. distance) {
-            hexesToReturn.addAll(GetVectorsAtDistance(origin, i))
+            hexesToReturn += getVectorsAtDistance(origin, i)
         }
         return hexesToReturn
     }

@@ -10,6 +10,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 
@@ -32,7 +33,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
         for (tileInfo in tileMapHolder.tileMap.values) {
             val hex = ImageGetter.getImage("TerrainIcons/Hexagon.png")
 
-            val positionalVector = HexMath().Hex2WorldCoords(tileInfo.position)
+            val positionalVector = HexMath().hex2WorldCoords(tileInfo.position)
             val groupSize = 10f
             hex.setSize(groupSize,groupSize)
             hex.setPosition(positionalVector.x * 0.5f * groupSize,
@@ -73,9 +74,10 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
         val exploredTiles = cloneCivilization.exploredTiles
         for(tileInfo in tileMapHolder.tileMap.values) {
             val hex = tileImages[tileInfo]!!
+            val isWaterTile = tileInfo.getBaseTerrain().type==TerrainType.Water
             if (!(exploredTiles.contains(tileInfo.position) || UnCivGame.Current.viewEntireMapForDebug)) hex.color = Color.BLACK
-            else if (tileInfo.isCityCenter()) hex.color = tileInfo.getOwner()!!.getNation().getSecondaryColor()
-            else if (tileInfo.getCity() != null) hex.color = tileInfo.getOwner()!!.getNation().getColor()
+            else if (tileInfo.isCityCenter() && !isWaterTile) hex.color = tileInfo.getOwner()!!.getNation().getSecondaryColor()
+            else if (tileInfo.getCity() != null && !isWaterTile) hex.color = tileInfo.getOwner()!!.getNation().getColor()
             else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f) // Todo add to baseterrain as function
         }
     }

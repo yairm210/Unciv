@@ -265,7 +265,7 @@ class CivilizationInfo {
         // disband units until there are none left OR the gold values are normal
         if(!isBarbarianCivilization() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (gold / -100)) {
-                var civMilitaryUnits = getCivUnits().filter { it.baseUnit().unitType != UnitType.Civilian }
+                var civMilitaryUnits = getCivUnits().filter { !it.baseUnit().unitType.isCivilian() }
                 if (civMilitaryUnits.isNotEmpty()) {
                     val unitToDisband = civMilitaryUnits.first()
                     unitToDisband.destroy()

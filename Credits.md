@@ -9,60 +9,79 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 ## Units
 
-* [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado
-* [Sword](https://thenounproject.com/search/?q=Sword&i=1432662) By uzeir syarief
-* [Flag](https://thenounproject.com/search/?q=Flag&i=50114) By Melvin Poppelaars
-* [Eagle](https://thenounproject.com/search/?q=Eagle&i=1619932) By anggun
-* [Bow And Arrow](https://thenounproject.com/search/?q=Bow%20and%20Arrow&i=338261) By Viktor Ostrovsky
-* [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane
-* [Pallet](https://thenounproject.com/search/?q=Pallet&i=6862) By James Keuning
-* [Gear](https://thenounproject.com/search/?q=Gear&i=17369) By Melvin Salas
-* [Beaker](https://thenounproject.com/search/?q=Beaker&i=621510) By Delwar Hossain
-* [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio
-* [Axe](https://thenounproject.com/search/?q=Axe&i=1688143) By ehab.abdullah
-* [Hammer](https://thenounproject.com/search/?q=Hammer&i=667666) By Hea Poh Lin
-* [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger
-* [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera
+### Ancient Era
+
+* [Hammer](https://thenounproject.com/search/?q=Hammer&i=667666) By Hea Poh Lin for Worker
+* [Flag](https://thenounproject.com/search/?q=Flag&i=50114) By Melvin Poppelaars for Settler
+* [Eagle](https://thenounproject.com/search/?q=Eagle&i=1619932) By anggun for Scout
+* [Axe](https://thenounproject.com/search/?q=Axe&i=1688143) By ehab.abdullah for Warrior
+* [Bow And Arrow](https://thenounproject.com/search/?q=Bow%20and%20Arrow&i=338261) By Viktor Ostrovsky for Archer
+* [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
+* Work Boats
+* [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
+* [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
+
+### Classical Era
+
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
-* [Crossbow](https://thenounproject.com/term/crossbow/965389/) By Creaticca Creative Agency
+* [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish as Ballista
+* [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado for Swordsman
+* [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
+* [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
+
+### Medieval Era
+
+* [Crossbow](https://thenounproject.com/term/crossbow/965389/) By Creaticca Creative Agency for Crossbowman
+* [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish for Longbowman
 * [Trebuchet](https://thenounproject.com/search/?q=Trebuchet&i=827987) By Ben Davis
+* [Sword](https://thenounproject.com/search/?q=Sword&i=1432662) By uzeir syarief for Longswordsman
+* [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera for Pikeman
 * [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
-* [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun
-* [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski
+
+### Renaissance Era
+
 * [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
-* [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain
-* [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish
-* [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo
-* [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design
-* [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito
+* [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski for Musketman
+* [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
+* [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
+
+### Industrial
+
+* [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
+* [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
-* [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish
-* [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish
+
+### Great People
+
+* [Pallet](https://thenounproject.com/search/?q=Pallet&i=6862) By James Keuning for Great Artist
+* [Gear](https://thenounproject.com/search/?q=Gear&i=17369) By Melvin Salas for Great Engineer
+* [Beaker](https://thenounproject.com/search/?q=Beaker&i=621510) By Delwar Hossain for Great Scientist
+
 
 ## Resources
 
-* [Saffron](https://thenounproject.com/term/saffron/1576606/) By parkjisun
-* [Can](https://thenounproject.com/term/can/708971/) By Nick Bluth
+* [Saffron](https://thenounproject.com/term/saffron/1576606/) By parkjisun for Dye
+* [Can](https://thenounproject.com/term/can/708971/) By Nick Bluth for Aluminum
 * [Coal](https://thenounproject.com/term/coal/213892/) By Michael Wohlwend
-* [Anvil](https://thenounproject.com/term/anvil/166414/) By Jason Dilworth
+* [Anvil](https://thenounproject.com/term/anvil/166414/) By Jason Dilworth for Iron
 * [Deer](https://thenounproject.com/term/deer/338013/) By Richard Nixon
 * [Banana](https://thenounproject.com/term/banana/1262865/) By Adrian Coquet
 * [Oil](https://thenounproject.com/term/oil/88649/) By Tiago Maricate
-* [Statue](https://thenounproject.com/term/statue/5221/) By Joris Hoogendoorn
-* [Ribbon](https://thenounproject.com/term/ribbon/418996) By Anton
+* [Statue](https://thenounproject.com/term/statue/5221/) By Joris Hoogendoorn for Marble
+* [Ribbon](https://thenounproject.com/term/ribbon/418996) By Anton for Silk
 * [Stone](https://thenounproject.com/term/stone/1373902/) By AFY Studio
-* [Goblet](https://thenounproject.com/term/goblet/1005208/) By Pedro Santos
+* [Goblet](https://thenounproject.com/term/goblet/1005208/) By Pedro Santos for Silver
 * [Sugar](https://thenounproject.com/term/sugar/1689203/) By ahmad
 * [Spice](https://thenounproject.com/term/spice/1689206/) By ahmad
-* [Radiation symbol](https://thenounproject.com/term/radiation-symbol/211059/) By icon 54
+* [Radiation symbol](https://thenounproject.com/term/radiation-symbol/211059/) By icon 54 for Uranium
 * [Wine](https://thenounproject.com/term/wine/1290951/) By Adrien Coquet
 * [Wheat](https://thenounproject.com/term/wheat/1048428/) By Juraj Sedlak
 * [Sheep](https://thenounproject.com/term/sheep/8389/) By Unrecognized
-* [Elephant](https://thenounproject.com/term/elephant/1853192/) By Kelsey Armstrong
+* [Elephant](https://thenounproject.com/term/elephant/1853192/) By Kelsey Armstrong for Ivory
 * [Cattle](https://thenounproject.com/term/cattle/781342/) By Daniela Baptista
-* [Leather](https://thenounproject.com/term/leather/16499/) By Alen Krummenacher
+* [Leather](https://thenounproject.com/term/leather/16499/) By Alen Krummenacher for Furs
 * [Gem](https://thenounproject.com/term/gem/948920/) By Lluisa Iborra
-* [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin
+* [Joss Stick](https://thenounproject.com/search/?q=incense&i=583033) By Hea Poh Lin for Incense
 
 ## Improvements 
 
@@ -74,7 +93,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Academy](https://thenounproject.com/term/academy/1689703/) By CJS
 * [Factory](https://thenounproject.com/term/factory/1049531/) By RULI
 * [Mine](https://thenounproject.com/term/mine/543/) By Edward Boatman
-* [Corral](https://thenounproject.com/term/corral/1340751/) By Luis Prado
+* [Corral](https://thenounproject.com/term/corral/1340751/) By Luis Prado for Pasture
 * [Plants](https://thenounproject.com/term/plants/1760916/) By hendra sudibyo
 * [Pickaxe](https://thenounproject.com/term/pickaxe/175792/) By Creative Stall
 * [Food stall](https://thenounproject.com/term/food-stall/1618358/) By I Putu Kharismayadi

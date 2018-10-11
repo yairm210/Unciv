@@ -13,7 +13,6 @@ import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 
@@ -25,7 +24,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         val whiteHalo = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
         else ImageGetter.getImage("OtherIcons/Circle.png")
         whiteHalo.setSize(30f,30f)
-        val unitImage = if(unit.baseUnit().unitType== UnitType.Civilian) civilianUnitImage
+        val unitImage = if(unit.baseUnit().unitType.isCivilian()) civilianUnitImage
                         else militaryUnitImage
         if(unitImage==null) //Stuff has changed since we requested this, the unit is no longer here...
             return

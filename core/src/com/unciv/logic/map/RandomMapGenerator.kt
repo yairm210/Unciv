@@ -15,7 +15,7 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
     override fun generateMap(distance: Int): HashMap<String, TileInfo> {
         val map = HashMap<Vector2, TileInfo>()
         val mapRandomSeed = Random().nextDouble() // without this, all the "random" maps would look the same
-        for (vector in HexMath().GetVectorsInDistance(Vector2.Zero, distance))
+        for (vector in HexMath().getVectorsInDistance(Vector2.Zero, distance))
             map[vector] = generateTile(vector,mapRandomSeed)
 
         divideIntoAreas(6, 0f, map)
@@ -50,7 +50,7 @@ class AlexanderRandomMapGenerator:RandomMapGenerator(){
     fun generateMap(distance: Int, landExpansionChance:Float): HashMap<String, TileInfo> {
         val map = HashMap<Vector2, TileInfo?>()
 
-        for (vector in HexMath().GetVectorsInDistance(Vector2.Zero, distance))
+        for (vector in HexMath().getVectorsInDistance(Vector2.Zero, distance))
             map[vector] = null
 
         val sparkList = ArrayList<Vector2>()
@@ -64,7 +64,7 @@ class AlexanderRandomMapGenerator:RandomMapGenerator(){
 
         while(sparkList.any()){
             val currentSpark = sparkList.getRandom()
-            val emptyTilesAroundSpark = HexMath().GetAdjacentVectors(currentSpark)
+            val emptyTilesAroundSpark = HexMath().getAdjacentVectors(currentSpark)
                     .filter { map.containsKey(it) && map[it]==null }
             if(map[currentSpark]!!.baseTerrain==grassland){
                 for(tile in emptyTilesAroundSpark){
@@ -84,7 +84,7 @@ class AlexanderRandomMapGenerator:RandomMapGenerator(){
         for(entry in map){
             entry.value!!.position = entry.key
             if(entry.value!!.baseTerrain==ocean
-                    && HexMath().GetAdjacentVectors(entry.key).all { !map.containsKey(it) || map[it]!!.baseTerrain==grassland })
+                    && HexMath().getAdjacentVectors(entry.key).all { !map.containsKey(it) || map[it]!!.baseTerrain==grassland })
                 entry.value!!.baseTerrain=grassland
 
             newmap[entry.key.toString()] = entry.value!!
@@ -117,7 +117,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
 
         val map = HashMap<Vector2, TileInfo>()
 
-        for (vector in HexMath().GetVectorsInDistance(Vector2.Zero, distance))
+        for (vector in HexMath().getVectorsInDistance(Vector2.Zero, distance))
             map[vector] = TileInfo().apply { position=vector; baseTerrain="" }
 
 
@@ -182,14 +182,14 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
                 continue
             }
             val availableExpansionVectors = areaToExpand.locations
-                    .flatMap { HexMath().GetAdjacentVectors(it) }.asSequence().distinct()
+                    .flatMap { HexMath().getAdjacentVectors(it) }.asSequence().distinct()
                     .filter { map.containsKey(it) && map[it]!!.baseTerrain=="" }.toList()
             if (availableExpansionVectors.isEmpty()) expandableAreas -= areaToExpand
             else {
                 val expansionVector = availableExpansionVectors.getRandom()
                 areaToExpand.addTile(map[expansionVector]!!)
 
-                val neighbors = HexMath().GetAdjacentVectors(expansionVector)
+                val neighbors = HexMath().getAdjacentVectors(expansionVector)
                 val areasToJoin = areas.filter {
                     it.terrain == areaToExpand.terrain
                             && it != areaToExpand
@@ -261,7 +261,7 @@ open class RandomMapGenerator {
 
     open fun generateMap(distance: Int): HashMap<String, TileInfo> {
         val map = HashMap<String, TileInfo>()
-        for (vector in HexMath().GetVectorsInDistance(Vector2.Zero, distance))
+        for (vector in HexMath().getVectorsInDistance(Vector2.Zero, distance))
             map[vector.toString()] = addRandomTile(vector)
         return map
     }
@@ -278,7 +278,7 @@ open class RandomMapGenerator {
 
     fun setWaterTiles(map: HashMap<String, TileInfo>) {
         for (tile in map.values.filter { it.baseTerrain == "Ocean" }) {
-            if (HexMath().GetVectorsInDistance(tile.position,2).any { hasWaterTile(map,it) })
+            if (HexMath().getVectorsInDistance(tile.position,2).any { hasWaterTile(map,it) })
                 tile.baseTerrain = "Coast"
         }
     }

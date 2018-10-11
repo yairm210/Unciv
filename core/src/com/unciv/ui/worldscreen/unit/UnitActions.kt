@@ -42,7 +42,7 @@ class UnitActions {
             },true)
         }
 
-        if(unit.baseUnit().unitType!= UnitType.Civilian
+        if(!unit.baseUnit().unitType.isCivilian()
                 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }
@@ -59,7 +59,7 @@ class UnitActions {
                 actionList += UnitAction("Stop exploration", { unit.action = null }, true)
         }
 
-        if(unit.baseUnit().unitType!= UnitType.Civilian && unit.promotions.canBePromoted()){
+        if(!unit.baseUnit().unitType.isCivilian() && unit.promotions.canBePromoted()){
                 actionList += UnitAction("Promote",
                         {UnCivGame.Current.screen = PromotionPickerScreen(unit)},
                         unit.currentMovement != 0f)

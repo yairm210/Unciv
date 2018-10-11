@@ -43,7 +43,7 @@ class BattleDamage{
 
             if(combatant.getCivilization().policies.isAdopted("Dicipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                            .any { it.civInfo==combatant.getCivilization() && it.baseUnit.unitType!=UnitType.Civilian})
+                            .any { it.civInfo==combatant.getCivilization() && !it.baseUnit.unitType.isCivilian()})
                 modifiers["Dicipline"] = 0.15f
         }
 
@@ -154,7 +154,7 @@ class BattleDamage{
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
         if(attacker.isRanged()) return 0
-        if(defender.getUnitType()== UnitType.Civilian) return 0
+        if(defender.getUnitType().isCivilian()) return 0
         val ratio = getDefendingStrength(attacker,defender) / getAttackingStrength(attacker,defender)
         return (ratio * 30 * getHealthDependantDamageRatio(defender)).toInt()
     }

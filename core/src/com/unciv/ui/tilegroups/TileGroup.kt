@@ -179,7 +179,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             if (neigborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
-                val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
+                val relativeWorldPosition = HexMath().hex2WorldCoords(relativeHexPosition)
 
                 // This is some crazy voodoo magic so I'll explain.
                 val images = mutableListOf<Image>()
@@ -233,7 +233,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             roadImage.image = image
 
             val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
-            val relativeWorldPosition = HexMath().Hex2WorldCoords(relativeHexPosition)
+            val relativeWorldPosition = HexMath().hex2WorldCoords(relativeHexPosition)
 
             // This is some crazy voodoo magic so I'll explain.
             image.moveBy(25f, 25f) // Move road to center of tile
@@ -327,7 +327,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             newImage.center(this)
             newImage.y += yFromCenter
 
-            if (!unit.isIdle()) newImage.color.a = 0.5f
+            if (!unit.isIdle() && unit.civInfo.isPlayerCivilization()) newImage.color.a = 0.5f
         }
         return newImage
     }
