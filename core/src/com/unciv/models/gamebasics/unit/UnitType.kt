@@ -7,6 +7,7 @@ enum class UnitType{
     Ranged,
     Scout,
     Mounted,
+    WaterCivilian,
     Siege;
 
     fun isMelee(): Boolean {
@@ -26,5 +27,8 @@ enum class UnitType{
                 || this == Scout
                 || this == Ranged
                 || this == Siege
+    }
+    fun isWaterUnit(): Boolean {
+        return this == WaterCivilian
     }
 }

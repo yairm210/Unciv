@@ -68,7 +68,7 @@ class HexMath {
 
     fun GetVectorsInDistance(origin: Vector2, distance: Int): List<Vector2> {
         val hexesToReturn = mutableListOf<Vector2>()
-        for (i in 0 until distance + 1) {
+        for (i in 0 .. distance) {
             hexesToReturn.addAll(GetVectorsAtDistance(origin, i))
         }
         return hexesToReturn

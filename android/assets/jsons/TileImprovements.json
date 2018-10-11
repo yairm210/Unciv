@@ -71,6 +71,13 @@
 		improvingTech:"Chemistry",
 		improvingTechStats:{production:1}
 	},
+	{
+		name:"Fishing Boats",
+		food:1,
+		techRequired:"Sailing",
+		improvingTech:"Compass",
+		improvingTechStats:{gold:1}
+	},
 	
 	// Transportation
 	{

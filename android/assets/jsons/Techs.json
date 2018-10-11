@@ -44,12 +44,12 @@
 		buildingCost:75,
 		wonderCost:185,
 		techs:[
-			/*{
+			{
 				name:"Sailing",
 				row:1,
 				prerequisites:["Pottery"],
 				baseDescription:"Does nothing since we have no sea tiles - In theory, Allows access to sea resources by building work boats"
-			},*/
+			},
 			{
 				name:"Calendar",
 				row:2,

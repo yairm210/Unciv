@@ -64,6 +64,15 @@
 		upgradesTo:"Crossbowman"
 	},
 	{
+		name:"Work Boats",
+		unitType:"WaterCivilian",
+		baseDescription: "May create improvements on water resources", 
+		movement:4,
+		cost: 30,
+		requiredTech:"Sailing",
+		hurryCostModifier:20
+	},
+	{
 		name:"Chariot Archer",
 		unitType:"Ranged",
 		movement:4,

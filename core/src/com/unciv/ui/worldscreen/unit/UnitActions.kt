@@ -6,6 +6,7 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -33,13 +34,6 @@ class UnitActions {
         val unitTable = worldScreen.bottomBar.unitTable
         val actionList = ArrayList<UnitAction>()
 
-//        if (unitTable.currentlyExecutingAction != "moveTo"
-//                && (unit.action==null || !unit.action!!.startsWith("moveTo") )){
-//            actionList += UnitAction("Move unit", {
-//                unitTable.currentlyExecutingAction = "moveTo"
-//            }, unit.currentMovement != 0f )
-//        }
-//
         if(unit.action!=null && unit.action!!.startsWith("moveTo")){
             actionList +=
                     UnitAction("Stop movement", {
@@ -136,13 +130,19 @@ class UnitActions {
             }
         }
 
+        if(unit.name == "Work Boats" &&  tile.improvement==null && tile.resource!=null
+                && tile.getBaseTerrain().type==TerrainType.Water)
+            actionList += UnitAction("Create Fishing Boats",{
+                tile.improvement = "Fishing Boats"
+                unit.destroy()
+            }, unit.currentMovement != 0f)
+
         if (unit.name == "Great Scientist") {
             actionList += UnitAction( "Discover Technology",
                     {
                         unit.civInfo.tech.freeTechs += 1
                         unit.destroy()
                         worldScreen.game.screen = TechPickerScreen(true, unit.civInfo)
-
                     },unit.currentMovement != 0f)
             actionList += UnitAction("Construct Academy",
                     constructImprovementAndDestroyUnit(unit, "Academy"),

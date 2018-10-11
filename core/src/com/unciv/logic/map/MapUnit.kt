@@ -105,6 +105,8 @@ class MapUnit {
         val tileOwner = tile.getOwner()
         if(tile.getBaseTerrain().type==TerrainType.Water && baseUnit.unitType.isLandUnit())
             return false
+        if(tile.getBaseTerrain().type==TerrainType.Land && baseUnit.unitType.isWaterUnit())
+            return false
         if(tileOwner!=null && tileOwner.civName!=owner
                 && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
 

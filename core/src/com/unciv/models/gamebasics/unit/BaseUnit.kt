@@ -89,18 +89,16 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
-    fun isBuildable(civInfo:CivilizationInfo): Boolean {
+    override fun isBuildable(construction: CityConstructions): Boolean {
+        val civInfo = construction.cityInfo.civInfo
         if (unbuildable) return false
         if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
         if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
         if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
+        if(unitType.isWaterUnit() && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
         return true
-    }
-
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        return isBuildable(construction.cityInfo.civInfo)
     }
 
     override fun postBuildEvent(construction: CityConstructions) {

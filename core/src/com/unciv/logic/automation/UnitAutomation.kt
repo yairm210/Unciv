@@ -307,7 +307,9 @@ class UnitAutomation{
         val top5Tiles = tileInfo.neighbors.union(bestTilesFromOuterLayer)
                 .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
-        return top5Tiles.map { nearbyTileRankings[it]!! }.sum()
+        var rank =  top5Tiles.map { nearbyTileRankings[it]!! }.sum()
+        if(tileInfo.neighbors.any{it.baseTerrain == "Coast"}) rank += 5
+        return rank
     }
 
     private fun automateSettlerActions(unit: MapUnit) {
