@@ -53,7 +53,16 @@
 		improvement:"Quarry",
 		improvementStats:{production:1},
 		building:"Stone Works"
-	},	
+	},
+	{
+		name:"Fish",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Coast"],
+		food:1,
+		improvement:"Fishing Boats",
+		improvementStats:{food:1},
+		building:"Lighthouse"
+	},
 	
 	// Strategic resources
 	{
@@ -222,5 +231,24 @@
 		improvement:"Quarry",
 		improvementStats:{gold:1,production:1},
 		building:"Stone Works"
+	},
+	{
+		name:"Whales",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Coast"],
+		food:1,
+		gold:1,
+		improvement:"Fishing Boats",
+		improvementStats:{food:1},
+		building:"Harbor"
+	},
+	{
+		name:"Pearls",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Coast"],
+		gold:2,
+		improvement:"Fishing Boats",
+		improvementStats:{food:1},
+		building:"Harbor"
 	}
 ]

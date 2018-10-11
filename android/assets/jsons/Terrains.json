@@ -3,14 +3,15 @@
 	{
 		name:"Ocean",
 		type:"Water",
-		food:2,
+		food:1,
+		gold:1,
 		movementCost:1,
 		RGB: [100,100,255]
 	},
 	{
 		name:"Coast",
 		type:"Water",
-		food:2,
+		food:1,
 		movementCost:1,
 		RGB: [150,150,255]
 	},

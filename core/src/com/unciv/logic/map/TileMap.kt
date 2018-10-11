@@ -31,7 +31,8 @@ class TileMap {
 
 
     constructor(distance: Int) {
-        tileList.addAll(SeedRandomMapGenerator().generateMap(distance,0f).values)
+//        tileList.addAll(AlexanderRandomMapGenerator().generateMap(distance,0.75f).values)
+        tileList.addAll(PerlinNoiseRandomMapGenerator().generateMap(distance).values)
         setTransients()
     }
 

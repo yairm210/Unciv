@@ -6,6 +6,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileImprovement
 
 class WorkerAutomation(val unit: MapUnit) {
@@ -79,6 +80,7 @@ class WorkerAutomation(val unit: MapUnit) {
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
                             && it.improvement == null
+                            && it.getBaseTerrain().type==TerrainType.Land
                             && it.canBuildImprovement(chooseImprovement(it), unit.civInfo)
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ
                 }.sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()

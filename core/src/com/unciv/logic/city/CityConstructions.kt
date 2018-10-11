@@ -85,7 +85,8 @@ class CityConstructions {
             if(special!=null) return special
         }
 
-        throw Exception("$constructionName is not a building or a unit!")
+        class NotBuildingOrUnitException(message:String):Exception(message)
+        throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
     internal fun getBuiltBuildings(): List<Building> = builtBuildings.map { GameBasics.Buildings[it]!! }
