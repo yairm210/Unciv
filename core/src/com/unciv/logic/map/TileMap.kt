@@ -5,6 +5,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.ui.NewGameScreen
 
 class TileMap {
 
@@ -30,11 +31,20 @@ class TileMap {
         get() = tileList
 
 
-    constructor(distance: Int) {
-//        tileList.addAll(AlexanderRandomMapGenerator().generateMap(distance,0.75f).values)
-        tileList.addAll(PerlinNoiseRandomMapGenerator().generateMap(distance).values)
+    constructor(distance: Int, mapType: NewGameScreen.NewGameParameters.MapType) {
+        val map:HashMap<String,TileInfo>
+
+        if(mapType==NewGameScreen.NewGameParameters.MapType.WithWater)
+            map = PerlinNoiseRandomMapGenerator().generateMap(distance)
+
+        else map = SeedRandomMapGenerator().generateMap(distance,0f)
+
+        tileList.addAll(map.values)
+//        tileList.addAll(AlexanderRandomMapGenerator().generateMap(distance,0.8f).values)
+
         setTransients()
     }
+
 
     operator fun contains(vector: Vector2): Boolean {
         val arrayXIndex = vector.x.toInt()-leftX

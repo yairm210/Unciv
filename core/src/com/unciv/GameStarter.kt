@@ -13,7 +13,7 @@ class GameStarter(){
     fun startNewGame(newGameParameters: NewGameScreen.NewGameParameters): GameInfo {
         val gameInfo = GameInfo()
 
-        gameInfo.tileMap = TileMap(newGameParameters.mapRadius)
+        gameInfo.tileMap = TileMap(newGameParameters.mapRadius, newGameParameters.mapType)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
 
 

@@ -18,10 +18,15 @@ import kotlin.concurrent.thread
 class NewGameScreen: PickerScreen(){
 
     class NewGameParameters{
+        enum class MapType{
+            LandOnly,
+            WithWater
+        }
         var difficulty="Prince"
         var nation="Babylon"
         var mapRadius=20
         var numberOfEnemies=3
+        var mapType=MapType.LandOnly
     }
 
     val newGameParameters=NewGameParameters()
@@ -102,10 +107,10 @@ class NewGameScreen: PickerScreen(){
     }
 
     private fun getOptionsTable(): Table {
-        val table = Table()
-        table.skin = skin
+        val newGameOptionsTable = Table()
+        newGameOptionsTable.skin = skin
 
-        table.add("{World size}:".tr())
+        newGameOptionsTable.add("{World size}:".tr())
         val worldSizeToRadius = LinkedHashMap<String, Int>()
         worldSizeToRadius["Small"] = 10
         worldSizeToRadius["Medium"] = 20
@@ -117,10 +122,10 @@ class NewGameScreen: PickerScreen(){
                 newGameParameters.mapRadius = worldSizeToRadius[worldSizeSelectBox.selected.value]!!
             }
         })
-        table.add(worldSizeSelectBox).pad(10f).row()
+        newGameOptionsTable.add(worldSizeSelectBox).pad(10f).row()
 
 
-        table.add("{Number of enemies}:".tr())
+        newGameOptionsTable.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray = Array<Int>()
         (1..5).forEach { enemiesArray.add(it) }
@@ -132,13 +137,20 @@ class NewGameScreen: PickerScreen(){
                 newGameParameters.numberOfEnemies = enemiesSelectBox.selected
             }
         })
-        table.add(enemiesSelectBox).pad(10f).row()
+        newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
 
 
-        table.add("{Difficulty}:".tr())
+        newGameOptionsTable.add("{Difficulty}:".tr())
         val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, newGameParameters.difficulty, skin)
-        table.add(difficultySelectBox).pad(10f).row()
+        newGameOptionsTable.add(difficultySelectBox).pad(10f).row()
 
+
+        val checkBox = CheckBox("Add water tiles \n(EXPERIMENTAL/WIP)",skin)
+        checkBox.onClick {
+            if(checkBox.isChecked) newGameParameters.mapType = NewGameParameters.MapType.WithWater
+            else newGameParameters.mapType = NewGameParameters.MapType.LandOnly
+        }
+        newGameOptionsTable.add(checkBox).row()
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
@@ -152,8 +164,9 @@ class NewGameScreen: PickerScreen(){
                 newGame = GameStarter().startNewGame(newGameParameters)
             }
         }
-        table.pack()
-        return table
+
+        newGameOptionsTable.pack()
+        return newGameOptionsTable
     }
 
     var newGame:GameInfo?=null
