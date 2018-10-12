@@ -226,76 +226,77 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ### Ancient
 
 * [Agriculture](https://thenounproject.com/term/agriculture/4221/) By OCHA Visual Information Unit
-* [Jug](https://thenounproject.com/term/jug/869999/) By Vladimir Belochkin
+* [Jug](https://thenounproject.com/term/jug/869999/) By Vladimir Belochkin for Pottery
 * [Archery](https://thenounproject.com/term/archery/213836/) By icon 54
 * [Mining](https://thenounproject.com/term/mining/1400713/) By art shop
-* [Sundial](https://thenounproject.com/term/sundial/239627/) By Bonegolem
-* [Cuneiform](https://thenounproject.com/term/cuneiform/86669/) By Michael Wohlwend
-* [Trap](https://thenounproject.com/term/trap/130049/) By Sergey Demushkin
-* [innovative](https://thenounproject.com/term/innovative/30219/) By Matt Brooks
-* [Bricks](https://thenounproject.com/term/bricks/1018659/) By Vaibhav Radhakrishnan
-* [Mallet](https://thenounproject.com/term/mallet/1306669/) By Ben Avery
+* [Sailing](https://thenounproject.com/term/sailing/783193/) By Daniela Baptista
+* [Sundial](https://thenounproject.com/term/sundial/239627/) By Bonegolem for Calendar
+* [Cuneiform](https://thenounproject.com/term/cuneiform/86669/) By Michael Wohlwend for Writing
+* [Trap](https://thenounproject.com/term/trap/130049/) By Sergey Demushkin for Trapping
+* [innovative](https://thenounproject.com/term/innovative/30219/) By Matt Brooks for The Wheel
+* [Bricks](https://thenounproject.com/term/bricks/1018659/) By Vaibhav Radhakrishnan for Construction
+* [Mallet](https://thenounproject.com/term/mallet/1306669/) By Ben Avery for Bronze Working
 
 ## Classical
 * [Horse Riding](https://thenounproject.com/term/horse-riding/583093/) By Hea Poh Lin
-* [Abacus](https://thenounproject.com/term/abacus/1943303/) By Yo! Baba
-* [Arch](https://thenounproject.com/term/arch/1174168/) By Andrejs Kirma
-* [Brain](https://thenounproject.com/term/brain/64073/) By Tony Gines
-* [Coins](https://thenounproject.com/term/coins/1806100/) By Adrien Coquet
-* [Engineering Blueprint](https://thenounproject.com/term/engineering-blueprint/1588543/) By Sachin Modgekar
-* [Metalworking](https://thenounproject.com/term/metalworking/1561383/) By Symbolon
+* [Abacus](https://thenounproject.com/term/abacus/1943303/) By Yo! Baba for Mathematics
+* [Arch](https://thenounproject.com/term/arch/1174168/) By Andrejs Kirma for Construction
+* [Brain](https://thenounproject.com/term/brain/64073/) By Tony Gines for Philosophy
+* [Coins](https://thenounproject.com/term/coins/1806100/) By Adrien Coquet for Currency
+* [Engineering Blueprint](https://thenounproject.com/term/engineering-blueprint/1588543/) By Sachin Modgekar for Engineering
+* [Metalworking](https://thenounproject.com/term/metalworking/1561383/) By Symbolon for Iron Working
 
 ## Medieval
-* [Judaism](https://thenounproject.com/term/judaism/324145/) By Ben Davis
-* [Institution](https://thenounproject.com/term/institution/260586/) By Luis Prado
+* [Judaism](https://thenounproject.com/term/judaism/324145/) By Ben Davis for Theology
+* [Institution](https://thenounproject.com/term/institution/260586/) By Luis Prado for Civil Service
 * [Education](https://thenounproject.com/term/education/1817512/) By Tomas Knopp
 * [Casting](https://thenounproject.com/term/casting/10773/) By Jasmine Rae Friedrich
-* [Bar association](https://thenounproject.com/term/bar-association/217443/) By Miroslav Kurdov
-* [Knight](https://thenounproject.com/term/knight/1026633/) By Robert Bjurshagen
+* [Bar association](https://thenounproject.com/term/bar-association/217443/) By Miroslav Kurdov for Guilds
+* [Knight](https://thenounproject.com/term/knight/1026633/) By Robert Bjurshagen for Chivalry
 * [Machinery](https://thenounproject.com/term/machinery/1170931/) By Greenhill
-* [Lever](https://thenounproject.com/term/lever/4927/) By Jakob Ukrop
-* [Sword](https://thenounproject.com/term/sword/1365080/) By Jonathan P Lambert
+* [Lever](https://thenounproject.com/term/lever/4927/) By Jakob Ukrop for Physics
+* [Sword](https://thenounproject.com/term/sword/1365080/) By Jonathan P Lambert for Steel
 
 ## Renaissance
-* [Telescope](https://thenounproject.com/term/telescope/1976706/) By ProSymbols
-* [sound waves](https://thenounproject.com/term/sound-waves/792661/) By Makarenko Andrey
+* [Telescope](https://thenounproject.com/term/telescope/1976706/) By ProSymbols for Astronomy
+* [Sound waves](https://thenounproject.com/term/sound-waves/792661/) By Makarenko Andrey for Acoustics
 * [Banking](https://thenounproject.com/term/banking/763867/) By Delwar Hossein
 * [Printing Press](https://thenounproject.com/term/printing-press/11880/) By Mike Wirth
-* [Flintlock](https://thenounproject.com/term/flintlock/1122659/) By Madison Apple
-* [Fossil](https://thenounproject.com/term/fossil/168650/) By Raf Verbraeken
+* [Flintlock](https://thenounproject.com/term/flintlock/1122659/) By Madison Apple for Gunpowder 
+* [Fossil](https://thenounproject.com/term/fossil/168650/) By Raf Verbraeken for Archaeology
 * [Architecture](https://thenounproject.com/term/architecture/795297/) By Andrew Doane
-* [Money Growth](https://thenounproject.com/search/?q=economic%20model&i=136159) By DesignNex
-* [Metal Block](https://thenounproject.com/term/metal-bock/1518464/) By Creaticca Creative Agency
+* [Money Growth](https://thenounproject.com/search/?q=economic%20model&i=136159) By DesignNex for Economics 
+* [Metal Block](https://thenounproject.com/term/metal-bock/1518464/) By Creaticca Creative Agency for Metallurgy
 * [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall
 
 ## Industrial
-* [Science](https://thenounproject.com/term/science/1901524/) By Dinosoft Labs
-* [Factory](https://thenounproject.com/term/factory/26212/) By Lil Squid
-* [Rifle](https://thenounproject.com/term/rifle/371894/) By Alexander Skowalsky
-* [Grenade](https://thenounproject.com/term/grenade/1950318/) By Dama Adhikara
+* [Science](https://thenounproject.com/term/science/1901524/) By Dinosoft Labs for Scientific Theory
+* [Factory](https://thenounproject.com/term/factory/26212/) By Lil Squid for Industrialization
+* [Rifle](https://thenounproject.com/term/rifle/371894/) By Alexander Skowalsky for Rifling
+* [Grenade](https://thenounproject.com/term/grenade/1950318/) By Dama Adhikara for Military Science
 * [Fertilizer](https://thenounproject.com/term/fertilizer/1215597/) By Jae Deasigner
-* [Bacteria](https://thenounproject.com/term/bacteria/706038/) By Maxim Kulikov
+* [Bacteria](https://thenounproject.com/term/bacteria/706038/) By Maxim Kulikov for Biology
 * [Electricity](https://thenounproject.com/term/electricity/816936/) By Ben Davis
-* [Turbines](https://thenounproject.com/term/turbine/86212/) By Leonardo Schneider
+* [Turbines](https://thenounproject.com/term/turbine/86212/) By Leonardo Schneider for Steam Power
 * [Dynamite](https://thenounproject.com/term/dynamite/610652/) By Simon Martin
 
 ## Modern
 * [Radio](https://thenounproject.com/term/radio/124575/) By Arthur Shlain
-* [Piston](https://thenounproject.com/term/piston/1224/) By Proletkult Graphik
+* [Piston](https://thenounproject.com/term/piston/1224/) By Proletkult Graphik for Combustion
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
-* [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev
+* [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev for Mass Media
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
 
 ## Information
-* [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau
+* [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
 * [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry
-* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet
+* [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission 
 * [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
-* [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert
-* [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov
+* [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
+* [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
 
 ## Future
-* [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani
-* [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis
-* [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong
-* [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet
+* [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
+* [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
+* [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
+* [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech

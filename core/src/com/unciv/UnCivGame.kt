@@ -24,7 +24,7 @@ class UnCivGame : Game() {
     override fun create() {
         Current = this
         Gdx.input.isCatchBackKey=true
-        GameBasics.run {  } // just to initialize
+        GameBasics.run {  } // just to initialize the GameBasics
         settings = GameSaver().getGeneralSettings()
         if (GameSaver().getSave("Autosave").exists()) {
             try {

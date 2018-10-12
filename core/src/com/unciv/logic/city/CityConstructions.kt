@@ -89,7 +89,7 @@ class CityConstructions {
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
-    internal fun getBuiltBuildings(): List<Building> = builtBuildings.map { GameBasics.Buildings[it]!! }
+    internal fun getBuiltBuildings(): List<Building> = builtBuildings.toList().map { GameBasics.Buildings[it]!! } // toList os to avoid concurrency problems
 
     fun containsBuildingOrEquivalent(building: String): Boolean =
             isBuilt(building) || getBuiltBuildings().any{it.replaces==building}

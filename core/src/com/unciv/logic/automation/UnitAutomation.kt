@@ -203,15 +203,20 @@ class UnitAutomation{
     private fun tryHeadTowardsEnemyCity(unit: MapUnit): Boolean {
         if(unit.civInfo.cities.isEmpty()) return false
 
-        var enemyCities = unit.civInfo.gameInfo.civilizations.filter { unit.civInfo.isAtWarWith(it) }
-                .flatMap { it.cities }.filter { it.location in unit.civInfo.exploredTiles }.map { it.getCenterTile() }
-        if(unit.baseUnit().unitType.isRanged())
+        var enemyCities = unit.civInfo.gameInfo.civilizations
+                .filter { unit.civInfo.isAtWarWith(it) }
+                .flatMap { it.cities }.asSequence()
+                .filter { it.location in unit.civInfo.exploredTiles }
+                .map { it.getCenterTile() }.toList()
+
+        if(unit.baseUnit().unitType.isRanged()) // ranged units don't harm capturable cities, waste of a turn
             enemyCities = enemyCities.filterNot { it.getCity()!!.health==1 }
 
         val closestReachableEnemyCity = enemyCities
+                .asSequence()
                 .filter { unit.movementAlgs().canReach(it) }
                 .minBy { city ->
-                    unit.civInfo.cities.map { HexMath().getDistance(city.position, it.getCenterTile().position) }.min()!!
+                    unit.civInfo.cities.asSequence().map { HexMath().getDistance(city.position, it.getCenterTile().position) }.min()!!
                 }
         if (closestReachableEnemyCity != null) {
             unit.movementAlgs().headTowards(closestReachableEnemyCity)
