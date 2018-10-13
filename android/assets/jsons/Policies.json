@@ -215,7 +215,8 @@
 				description:"+1 gold from each specialist"
 			}
 		]
-	},{
+	},
+	{
 		name:"Rationalism",
 		era:"Renaissance",
 		description:"Production to science conversion in cities increased by 33%",
@@ -258,7 +259,8 @@
 				description:"+1 gold from all science buildings"
 			}
 		]
-	},{
+	},
+	{
 		name:"Freedom",
 		era:"Renaissance",
 		description:"+25% great people rate",
@@ -301,7 +303,8 @@
 				description:"Tile yield from great improvement +100%, golden ages increase by 50%"
 			}
 		]
-	},{
+	},
+	{
 		name:"Autocracy",
 		era:"Industrial",
 		description:"-33% unit upkeep costs", // todo!

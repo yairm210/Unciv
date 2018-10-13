@@ -191,45 +191,70 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 ## Social Policies
 
-* [social network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu
-* [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar
-* [Logic](https://thenounproject.com/term/logic/1269994/) By Jenya K
-* [Dialogue](https://thenounproject.com/term/dialogue/1867557/) By ProSymbols
-* [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza
-* [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin
-* [Mic](https://thenounproject.com/term/mic/1666564/) By Aybige
-* [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti
-* [Logic](https://thenounproject.com/term/logic/718608/) By Arthur Shlain
-* [Torch](https://thenounproject.com/term/torch/589999/) By Hea Poh Lin
-* [Painting](https://thenounproject.com/term/painting/387146/) By Mike Rowe
-* [Coins](https://thenounproject.com/term/coins/1915881/) By icon 54
-* [Gem](https://thenounproject.com/term/gem/754533/) By Oksana Latysheva
-* [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet
-* [Science](https://thenounproject.com/term/science/1788338/) By Three Six Five
-* [Graph](https://thenounproject.com/term/graph/1329095/) By Ben Davis
-* [Protestantism](https://thenounproject.com/term/protestantism/1524922/) By Evgeni Moryakov
-* [Pyramid](https://thenounproject.com/term/pyramid/175066/) By Creative Stall
-* [Crown](https://thenounproject.com/term/crown/1567484/) By Alexander Skowalsky
-* [Gavel](https://thenounproject.com/term/gavel/225541/) By Rflor
-* [Apple](https://thenounproject.com/term/apple/1916523/) By EnQiu
-* [Temple](https://thenounproject.com/term/temple/95523/) By N.K.Narasimhan
-* [Religion](https://thenounproject.com/term/religion/1307794/) By Ben Avery
-* [coat of arms](https://thenounproject.com/term/coat-of-arms/366462/) By Martina Krasnayova
-* [People](https://thenounproject.com/term/people/199814/) By Elizabeth Lopez
-* [Assembly](https://thenounproject.com/term/assembly/468455/) By  Noël Rasendrason
-* [People](https://thenounproject.com/term/people/670317/) By Gregor Cresnar
-* [People](https://thenounproject.com/term/people/1355818/) By Wilson Joseph
-* [Flame](https://thenounproject.com/term/flame/633228/) By Ian Shoobridge
-* [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul
-* [War](https://thenounproject.com/term/war/1643541/) By Abdul Karim
-* [Military Grade](https://thenounproject.com/term/military-grade/578687/) By Ben Davis
-* [Military Medal](https://thenounproject.com/term/military-medal/396457/) By iconsphere
-* [Shield](https://thenounproject.com/term/shield/874633/) By Kimmi Studio
-* [Spartan Helmet](https://thenounproject.com/term/spartan-helmet/1732615/) By Joni Ramadhan
-* [Sword](https://thenounproject.com/term/sword/5111/) By dsathiyaraj
-* [Castle](https://thenounproject.com/term/castle/55045/) By Gabriele Malaspina
-* [Roman Armor](https://thenounproject.com/term/roman-armor/440138/) By Parkjisun
-* [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix
+### Tradition
+
+* [coat of arms](https://thenounproject.com/term/coat-of-arms/366462/) By Martina Krasnayova for Oligarchy
+* [Apple](https://thenounproject.com/term/apple/1916523/) By EnQiu for Landed Elite
+* [Crown](https://thenounproject.com/term/crown/1567484/) By Alexander Skowalsky for Monarchy
+* [Pyramid](https://thenounproject.com/term/pyramid/175066/) By Creative Stall for Aristocracy
+* [Gavel](https://thenounproject.com/term/gavel/225541/) By Rflor for Legalism
+
+
+### Liberty
+
+* [People](https://thenounproject.com/term/people/199814/) By Elizabeth Lopez for Citizenship
+* [Assembly](https://thenounproject.com/term/assembly/468455/) By  Noël Rasendrason for Republic
+* [People](https://thenounproject.com/term/people/670317/) By Gregor Cresnar for Meritocracy
+* [People](https://thenounproject.com/term/people/1355818/) By Wilson Joseph for Representation
+* [Torch](https://thenounproject.com/term/torch/589999/) By Hea Poh Lin for Collective Rule
+
+### Honor
+
+* [Sword](https://thenounproject.com/term/sword/5111/) By dsathiyaraj for Military Tradition
+* [Castle](https://thenounproject.com/term/castle/55045/) By Gabriele Malaspina for Military Caste
+* [Roman Armor](https://thenounproject.com/term/roman-armor/440138/) By Parkjisun for Professional Army
+* [Shield](https://thenounproject.com/term/shield/874633/) By Kimmi Studio for Dicipline
+* [Spartan Helmet](https://thenounproject.com/term/spartan-helmet/1732615/) By Joni Ramadhan for Warrior Code
+
+### Piety
+
+* [Protestantism](https://thenounproject.com/term/protestantism/1524922/) By Evgeni Moryakov for Reformation
+* [Temple](https://thenounproject.com/term/temple/95523/) By N.K.Narasimhan for Theocracy
+* [Religion](https://thenounproject.com/term/religion/1307794/) By Ben Avery for Free Religion
+* [Flame](https://thenounproject.com/term/flame/633228/) By Ian Shoobridge for Mandate Of Heaven
+
+### Commerce
+
+* [Trade](https://thenounproject.com/term/trade/686718/) By Gregor Cresnar for Trade Unions
+* [Pie Chart](https://thenounproject.com/term/pie-chart/1284359/) By Adrien Coquet  for Protectionism
+* [Coins](https://thenounproject.com/term/coins/1915881/) By icon 54 for Mercantilism
+* [Painting](https://thenounproject.com/term/painting/387146/) By Mike Rowe for Patronage
+* [Gem](https://thenounproject.com/term/gem/754533/) By Oksana Latysheva for Entrepreneurship
+
+### Rationalism
+
+* [Science](https://thenounproject.com/term/science/1788338/) By Three Six Five for Scientific Revolution
+* [Graph](https://thenounproject.com/term/graph/1329095/) By Ben Davis for Secularism
+* [Logic](https://thenounproject.com/term/logic/1269994/) By Jenya K for Sovereignty
+* [Dialogue](https://thenounproject.com/term/dialogue/1867557/) By ProSymbols for Free Thought
+* [Logic](https://thenounproject.com/term/logic/718608/) By Arthur Shlain for Humanism
+
+### Freedom
+
+* [social network](https://thenounproject.com/term/social-network/746002/) By Kirby Wu for Civil Society
+* [Gender Equality](https://thenounproject.com/term/gender-equality/577561/) By corpus delicti for Universal Suffrage
+* [Feather](https://thenounproject.com/term/feather/1628/) By Eduardo Souza for Constitution
+* [Voting](https://thenounproject.com/term/voting/981735/) By Nikita Kozin for Democracy
+* [Mic](https://thenounproject.com/term/mic/1666564/) By Aybige for Free Speech
+
+### Autocracy
+
+* [War](https://thenounproject.com/term/war/1643541/) By Abdul Karim for Total War
+* [Military Grade](https://thenounproject.com/term/military-grade/578687/) By Ben Davis for Militarism
+* [Military Medal](https://thenounproject.com/term/military-medal/396457/) By iconsphere for Facism
+* [Newspaper](https://thenounproject.com/term/newspaper/1207487/) By Trishul for Populism
+* [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
+
 
 ## Others 
 
