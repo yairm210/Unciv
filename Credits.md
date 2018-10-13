@@ -1,11 +1,10 @@
 # Icon Credits
 
-
 Flag Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [www.flaticon.com](https://www.flaticon.com) 
  and licensed by Creative Commons 3.0
 
-
 All the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
+
 
 ## Units
 
@@ -17,7 +16,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Axe](https://thenounproject.com/search/?q=Axe&i=1688143) By ehab.abdullah for Warrior
 * [Bow And Arrow](https://thenounproject.com/search/?q=Bow%20and%20Arrow&i=338261) By Viktor Ostrovsky for Archer
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
-* Work Boats
+* [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 
@@ -85,88 +84,110 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 ## Improvements 
 
-* [Woodcutting axe](https://thenounproject.com/term/woodcutting-axe/1060560/) By Chanut is Industries
-* [Monument](https://thenounproject.com/term/monument/1175928/) By Setyo Ari Wibowo
+* [Woodcutting axe](https://thenounproject.com/term/woodcutting-axe/1060560/) By Chanut is Industries for Lumber Mill
+* [Monument](https://thenounproject.com/term/monument/1175928/) By Setyo Ari Wibowo for Landmark
 * [Farm](https://thenounproject.com/term/farm/25362/) By Bonnie Beach
-* [Unhappy](https://thenounproject.com/term/unhappy/116793/) By Daryl Vandermont
-* [Bank](https://thenounproject.com/term/bank/1648569/) By Scott Dunlap
+* [Unhappy](https://thenounproject.com/term/unhappy/116793/) By Daryl Vandermont (doesn't belong here)
+* [Bank](https://thenounproject.com/term/bank/1648569/) By Scott Dunlap for Customs House
 * [Academy](https://thenounproject.com/term/academy/1689703/) By CJS
-* [Factory](https://thenounproject.com/term/factory/1049531/) By RULI
+* [Factory](https://thenounproject.com/term/factory/1049531/) By RULI for Manufactory
 * [Mine](https://thenounproject.com/term/mine/543/) By Edward Boatman
 * [Corral](https://thenounproject.com/term/corral/1340751/) By Luis Prado for Pasture
-* [Plants](https://thenounproject.com/term/plants/1760916/) By hendra sudibyo
-* [Pickaxe](https://thenounproject.com/term/pickaxe/175792/) By Creative Stall
-* [Food stall](https://thenounproject.com/term/food-stall/1618358/) By I Putu Kharismayadi
+* [Plants](https://thenounproject.com/term/plants/1760916/) By hendra sudibyo for Plantation
+* [Pickaxe](https://thenounproject.com/term/pickaxe/175792/) By Creative Stall for Quarry
+* [Food stall](https://thenounproject.com/term/food-stall/1618358/) By I Putu Kharismayadi for Trading post
 * [Road](https://thenounproject.com/term/road/1600491/) By REVA
-* [Ruins](https://thenounproject.com/term/ruins/175277/) By Creative Stall
-* [Ruins](https://thenounproject.com/term/ruins/3849/) By Paulo Volkova
+* [Ruins](https://thenounproject.com/term/ruins/175277/) By Creative Stall for Ancient runs
+* [Ruins](https://thenounproject.com/term/ruins/3849/) By Paulo Volkova for City ruins
+* [Fishing Net](https://thenounproject.com/term/fishing-net/1073133/) By Made for Fishing Boats
 
 ## Buildings
 
-* [Chinese traditional tower](https://thenounproject.com/term/chinese-traditional-tower/1808410/) By 1516
-* [Factory](https://thenounproject.com/term/factory/545906/) By icon 54
-* [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov
-* [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez
-* [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell
-* [Opera House](https://thenounproject.com/term/opera-house/446672/) By Xinh Studio
-* [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
-* [Hand saw](https://thenounproject.com/term/hand-saw/990902/) By b farias
-* [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
-* [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward
-* [Cambodia](https://thenounproject.com/term/cambodia/1809152/) By Wichai Wi
-* [Stadium](https://thenounproject.com/term/stadium/1152530/) By Creaticca Creative Agency
-* [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra
-* [Stadium](https://thenounproject.com/term/stadium/13872/) By Karuna Lalvani
-* [Market](https://thenounproject.com/term/market/1723050/) By sofi
-* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma
-* [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi
-* [Hagia Sophia](https://thenounproject.com/term/hagia-sophia/1907752/) By Felipe Alvarado
-* [Shekel Coin](https://thenounproject.com/term/shekel-coin/204154/) By Till Teenck
-* [Machu Pichu](https://thenounproject.com/term/machu-picchu/1569706/) By Carpe Diem
-* [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett
-* [College](https://thenounproject.com/term/college/129978/) By Alexander Skowalsky
-* [College](https://thenounproject.com/term/college/1203703/) By Vectors Market
-* [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
-* [Great Wall Of China](https://thenounproject.com/term/great-wall-of-china/146039/) By Arthur Shlain
-* [Cross swords](https://thenounproject.com/term/cross-swords/965398/) By  Creaticca Creative Agency
-* [Temple](https://thenounproject.com/term/temple/1808407/) By 1516
-* [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem
-* [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
+### Ancient Era
+
+* [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos for Granary
+* [Great Wall Of China](https://thenounproject.com/term/great-wall-of-china/146039/) By Arthur Shlain for Walls
+* [Block](https://thenounproject.com/term/block/1711553/) By Monjin Friends for Stone Works
+* [korean palace](https://thenounproject.com/term/korean-palace/1797542/) By 1516 for Palace
+* [Obelisk](https://thenounproject.com/term/obelisk/749104/) By Eliricon for Monument
+* [Cross swords](https://thenounproject.com/term/cross-swords/965398/) By  Creaticca Creative Agency for Barracks
 * [Paper](https://thenounproject.com/term/paper/1443472/) By anam
 * [Circus](https://thenounproject.com/term/circus/743734/) By Ralph Schmitzer
-* [korean palace](https://thenounproject.com/term/korean-palace/1797542/) By 1516
-* [Obelisk](https://thenounproject.com/term/obelisk/749104/) By Eliricon
-* [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos
-* [Library](https://thenounproject.com/term/library/1122689/) By Rob Crosswell
-* [Block](https://thenounproject.com/term/block/1711553/) By Monjin Friends
-* [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon
-* [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs
-* [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
-* [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown
-* [Missile](https://thenounproject.com/term/missile/799922/) By ProSymbols
-* [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols
-* [Engine](https://thenounproject.com/term/engine/1877958/) By Andre
-* [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON
-* [Bank](https://thenounproject.com/term/bank/1882194/) By projecthayat
-* [Forbidden City](https://thenounproject.com/term/forbidden-city/1797540/) By 1516
-* [Theatre](https://thenounproject.com/term/theatre/1780401/) By b farias
-* [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
-* [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
+* [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54
+
+### Classical Era
+
+* [Temple](https://thenounproject.com/term/temple/1808407/) By 1516
+* [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
+* [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle
+* [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra for Colloseum
+* [Stadium](https://thenounproject.com/term/stadium/1152530/) By Creaticca Creative Agency for Circus Maximus
+* [Market](https://thenounproject.com/term/market/1723050/) By sofi
+* [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
+* [Shekel Coin](https://thenounproject.com/term/shekel-coin/204154/) By Till Teenck for Mint
+* [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
+ 
+### Medieval Era
+
+* [College](https://thenounproject.com/term/college/129978/) By Alexander Skowalsky for University
+* [College](https://thenounproject.com/term/college/1203703/) By Vectors Market for National College
+* [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
+* [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastary
+* [Cambodia](https://thenounproject.com/term/cambodia/1809152/) By Wichai Wi for Angkor Wat
+* [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University
+* [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
+* [Hand saw](https://thenounproject.com/term/hand-saw/990902/) By b farias for Workshop
+* [Hagia Sophia](https://thenounproject.com/term/hagia-sophia/1907752/) By Felipe Alvarado
+* [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov for Ironworks
+* [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi
+* [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Armory 
+* [Machu Pichu](https://thenounproject.com/term/machu-picchu/1569706/) By Carpe Diem
+
+### Renaissance Era
+
 * [Museum](https://thenounproject.com/term/museum/803560/) by zidney
 * [Hermitage](https://thenounproject.com/term/hermitage/133969/) By Yuri Mamaev
 * [The Louvre](https://thenounproject.com/term/the-louvre/1577539/) By roundicons.com
-* [Books](https://thenounproject.com/term/books/1767500/) By Minh Do
+* [Forbidden City](https://thenounproject.com/term/forbidden-city/1797540/) By 1516
+* [Theatre](https://thenounproject.com/term/theatre/1780401/) By b farias
+* [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
+* [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
+* [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell
+* [Opera House](https://thenounproject.com/term/opera-house/446672/) By Xinh Studio
+* [Chinese traditional tower](https://thenounproject.com/term/chinese-traditional-tower/1808410/) By 1516 for Porcelain Tower
+* [Bank](https://thenounproject.com/term/bank/1882194/) By projecthayat
+
+### Industrial Era
+
+* [Books](https://thenounproject.com/term/books/1767500/) By Minh Do for Public School
 * [Hospital](https://thenounproject.com/term/hospital/1658509/) By Adrien Coquet
 * [Stock exchange](https://thenounproject.com/term/stock-exchange/1210199/) By Pundimon
-* [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler
-* [Military](https://thenounproject.com/term/military/1857519/) By myiconfinder
-* [Signal Tower](https://thenounproject.com/term/signal-tower/1547758/) By Nociconist
+* [Military](https://thenounproject.com/term/military/1857519/) By myiconfinder for Military Academy
+* [Factory](https://thenounproject.com/term/factory/545906/) By icon 54
+ 
+### Modern Era
+
+* [Stadium](https://thenounproject.com/term/stadium/13872/) By Karuna Lalvani
+* [Signal Tower](https://thenounproject.com/term/signal-tower/1547758/) By Nociconist for Broadcast Tower
 * [Eiffel Tower](https://thenounproject.com/term/eiffel-tower/1907757/) By Felipe Alvarado
-* [Microscope](https://thenounproject.com/term/microscope/1452362/) By Arafat Uddin
-* [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall
-* [Solar panel](https://thenounproject.com/term/solar-panel/154447/) By Andrew J. Young
-* [Cathedral](https://thenounproject.com/term/cathedral/1325415/) By Dairy Free Design
-* [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
+* [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
+
+### Information Era
+
+* [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall for Medical Lab
+* [Microscope](https://thenounproject.com/term/microscope/1452362/) By Arafat Uddin for Research Lab
+* [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
+* [Solar panel](https://thenounproject.com/term/solar-panel/154447/) By Andrew J. Young for Solar Plant
+* [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
+* [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
+* [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
+
+### Future Era
+
+* [Missile](https://thenounproject.com/term/missile/799922/) By ProSymbols for SS Booster
+* [Rocket](https://thenounproject.com/term/rocket/937173/) By BomSymbols for SS Cockpit
+* [Engine](https://thenounproject.com/term/engine/1877958/) By Andre for SS Engine
+* [Chamber](https://thenounproject.com/term/chamber/1242689/) By IYIKON for SS Statis Chamber
 
 ## Social Policies
 
@@ -224,7 +245,6 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ## Technologies
 
 ### Ancient
-
 * [Agriculture](https://thenounproject.com/term/agriculture/4221/) By OCHA Visual Information Unit
 * [Jug](https://thenounproject.com/term/jug/869999/) By Vladimir Belochkin for Pottery
 * [Archery](https://thenounproject.com/term/archery/213836/) By icon 54
@@ -237,7 +257,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Bricks](https://thenounproject.com/term/bricks/1018659/) By Vaibhav Radhakrishnan for Construction
 * [Mallet](https://thenounproject.com/term/mallet/1306669/) By Ben Avery for Bronze Working
 
-## Classical
+### Classical
 * [Horse Riding](https://thenounproject.com/term/horse-riding/583093/) By Hea Poh Lin
 * [Abacus](https://thenounproject.com/term/abacus/1943303/) By Yo! Baba for Mathematics
 * [Arch](https://thenounproject.com/term/arch/1174168/) By Andrejs Kirma for Construction
@@ -246,7 +266,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Engineering Blueprint](https://thenounproject.com/term/engineering-blueprint/1588543/) By Sachin Modgekar for Engineering
 * [Metalworking](https://thenounproject.com/term/metalworking/1561383/) By Symbolon for Iron Working
 
-## Medieval
+### Medieval
 * [Judaism](https://thenounproject.com/term/judaism/324145/) By Ben Davis for Theology
 * [Institution](https://thenounproject.com/term/institution/260586/) By Luis Prado for Civil Service
 * [Education](https://thenounproject.com/term/education/1817512/) By Tomas Knopp
@@ -257,7 +277,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Lever](https://thenounproject.com/term/lever/4927/) By Jakob Ukrop for Physics
 * [Sword](https://thenounproject.com/term/sword/1365080/) By Jonathan P Lambert for Steel
 
-## Renaissance
+### Renaissance
 * [Telescope](https://thenounproject.com/term/telescope/1976706/) By ProSymbols for Astronomy
 * [Sound waves](https://thenounproject.com/term/sound-waves/792661/) By Makarenko Andrey for Acoustics
 * [Banking](https://thenounproject.com/term/banking/763867/) By Delwar Hossein
@@ -269,7 +289,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Metal Block](https://thenounproject.com/term/metal-bock/1518464/) By Creaticca Creative Agency for Metallurgy
 * [Chemistry](https://thenounproject.com/term/chemistry/175847/) By Creative Stall
 
-## Industrial
+### Industrial
 * [Science](https://thenounproject.com/term/science/1901524/) By Dinosoft Labs for Scientific Theory
 * [Factory](https://thenounproject.com/term/factory/26212/) By Lil Squid for Industrialization
 * [Rifle](https://thenounproject.com/term/rifle/371894/) By Alexander Skowalsky for Rifling
@@ -280,14 +300,14 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Turbines](https://thenounproject.com/term/turbine/86212/) By Leonardo Schneider for Steam Power
 * [Dynamite](https://thenounproject.com/term/dynamite/610652/) By Simon Martin
 
-## Modern
+### Modern
 * [Radio](https://thenounproject.com/term/radio/124575/) By Arthur Shlain
 * [Piston](https://thenounproject.com/term/piston/1224/) By Proletkult Graphik for Combustion
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
 * [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev for Mass Media
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
 
-## Information
+### Information
 * [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
 * [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry
 * [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission 
@@ -295,7 +315,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
 * [Rocket](https://thenounproject.com/term/rocket/1743642/) By kareemov for Rocketry
 
-## Future
+### Future
 * [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
 * [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
 * [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics

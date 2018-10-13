@@ -1,7 +1,7 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
-import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
 import com.unciv.logic.map.TileInfo
@@ -48,7 +48,7 @@ class GameInfo {
 
         for (civInfo in civilizations.filterNot { it==player || (it.isDefeated() && !it.isBarbarianCivilization()) }){
             civInfo.startTurn()
-            Automation().automateCivMoves(civInfo)
+            NextTurnAutomation().automateCivMoves(civInfo)
         }
 
         if(turns%10 == 0){ // every 10 turns add a barbarian in a random place

@@ -452,7 +452,7 @@
 				row:6,
 				prerequisites:["Flight","Computers"]
 			}
-		]	
+		]
 	},
 	{
 		columnNumber: 15,

@@ -1,5 +1,5 @@
 [
-
+	// Ancient Era
 	{
 		name:"Palace",
 		baseDescription: "Indicates that this city is the capital", 
@@ -100,52 +100,9 @@
 		maintenance:1,
 		requiredTech:"Bronze Working"
 	},
-	{
-		name:"Temple",
-		culture:3,
-		specialistSlots:{culture:1},
-		requiredBuilding:"Monument",
-		maintenance:2,
-		hurryCostModifier:25,
-		requiredTech:"Philosophy"
-	},
-	{
-		name:"Burial Tomb",
-		replaces:"Temple",
-		uniqueTo:"Egypt",
-		culture:3,
-		happiness:1,
-		specialistSlots:{culture:1},
-		requiredBuilding:"Monument",
-		hurryCostModifier:25,
-		requiredTech:"Philosophy"
-	},
-	{
-		name:"The Oracle",
-		baseDescription: "Provides a free social policy",
-		culture:3,
-		greatPersonPoints:{science:1},
-		isWonder:true,
-		uniques:["Free Social Policy"],
-		requiredTech:"Philosophy"
-	},
-	{
-		name:"National College",
-		science:3,
-		culture:1,
-		isWonder:true,
-		percentStatBonus:{science:50},
-		requiredBuildingInAllCities:"Library",
-		requiredTech:"Civil Service"
-	},
-	{
-		name:"Chichen Itza",
-		culture:1,
-		greatPersonPoints:{production:1},
-		isWonder:true,
-		uniques:["Golden Age length increases +50%"],
-		requiredTech:"Civil Service"
-	},
+	
+	// Classical Era
+	
 	{
 		name:"Stable", 
 		maintenance:1,
@@ -178,6 +135,35 @@
 		requiredTech:"Construction"
 	},
 	{
+		name:"Temple",
+		culture:3,
+		specialistSlots:{culture:1},
+		requiredBuilding:"Monument",
+		maintenance:2,
+		hurryCostModifier:25,
+		requiredTech:"Philosophy"
+	},
+	{
+		name:"Burial Tomb",
+		replaces:"Temple",
+		uniqueTo:"Egypt",
+		culture:3,
+		happiness:1,
+		specialistSlots:{culture:1},
+		requiredBuilding:"Monument",
+		hurryCostModifier:25,
+		requiredTech:"Philosophy"
+	},
+	{
+		name:"The Oracle",
+		baseDescription: "Provides a free social policy",
+		culture:3,
+		greatPersonPoints:{science:1},
+		isWonder:true,
+		uniques:["Free Social Policy"],
+		requiredTech:"Philosophy"
+	},
+	{
 		name:"Market",
 		gold:2,
 		specialistSlots:{gold:1},
@@ -197,20 +183,30 @@
 		requiredTech:"Currency"
 	},
 	{
+		name:"Mint",
+		maintenance:0,
+		requiredNearbyImprovedResources:["Gold","Silver"],
+		resourceBonusStats:{gold:2},
+		hurryCostModifier:25,
+		requiredTech:"Currency"
+	},
+	{
+		name:"Aqueduct",
+		maintenance:1,
+		hurryCostModifier:25,
+		uniques:["40% of food is carried over after a new citizen is born"]
+		requiredTech:"Engineering"
+	},
+	
+	// Medieval Era
+	
+	{
 		name:"Monastery",
 		maintenance:0,
 		requiredNearbyImprovedResources:["Wine","Incense"],
 		resourceBonusStats:{culture:2},
 		hurryCostModifier:25,
 		requiredTech:"Theology"
-	},
-	{
-		name:"Notre Dame",
-		culture:1,
-		happiness:10,
-		greatPersonPoints:{gold:1},
-		isWonder:true,
-		requiredTech:"Physics"
 	},
 	{
 		name:"Hagia Sophia",
@@ -221,12 +217,21 @@
 		requiredTech:"Theology"
 	},
 	{
-		name:"Mint",
-		maintenance:0,
-		requiredNearbyImprovedResources:["Gold","Silver"],
-		resourceBonusStats:{gold:2},
-		hurryCostModifier:25,
-		requiredTech:"Currency"
+		name:"National College",
+		science:3,
+		culture:1,
+		isWonder:true,
+		percentStatBonus:{science:50},
+		requiredBuildingInAllCities:"Library",
+		requiredTech:"Civil Service"
+	},
+	{
+		name:"Chichen Itza",
+		culture:1,
+		greatPersonPoints:{production:1},
+		isWonder:true,
+		uniques:["Golden Age length increases +50%"],
+		requiredTech:"Civil Service"
 	},
 	{
 		name:"Machu Pichu",
@@ -236,13 +241,6 @@
 		isWonder:true,
 		uniques:["Gold from all trade routes +25%"],
 		requiredTech:"Guilds"
-	},
-	{
-		name:"Aqueduct",
-		maintenance:1,
-		hurryCostModifier:25,
-		uniques:["40% of food is carried over after a new citizen is born"]
-		requiredTech:"Engineering"
 	},
 	{
 		name:"Workshop", 
@@ -298,20 +296,20 @@
 		requiredTech:"Chivalry"
 	},
 	{
-		name:"Porcelain Tower",
-		culture:1,
-		greatPersonPoints:{science:2},
-		isWonder:true,
-		uniques:["Free great scientist appears","Production to science conversion in cities increased by 33%"],
-		requiredTech:"Architecture"
-	},
-	{
 		name:"Ironworks",
 		production:8,
 		culture:1,
 		isWonder:true,
 		requiredBuildingInAllCities:"Workshop",
 		requiredTech:"Machinery"
+	},
+	{
+		name:"Notre Dame",
+		culture:1,
+		happiness:10,
+		greatPersonPoints:{gold:1},
+		isWonder:true,
+		requiredTech:"Physics"
 	},
 	{
 		name:"Armory",
@@ -321,6 +319,9 @@
 		requiredBuilding:"Barracks",
 		requiredTech:"Steel"
 	},
+	
+	// Renaissance Era
+	
 	{
 		name:"Observatory",
 		baseDescription: "City must be bordering a mountain", 
@@ -329,7 +330,7 @@
 		percentStatBonus:{science:50},
 		requiredBuilding:"Library",
 		requiredTech:"Astronomy"
-	}, 
+	},
 	{
 		name:"Opera House",
 		culture:4,
@@ -371,24 +372,6 @@
 		requiredTech:"Printing Press"
 	},
 	{
-		name:"Taj Mahal",
-		baseDescription: "Empire enters a golden age",
-		culture:1,
-		happiness:4,
-		isWonder:true,
-		uniques:["Empire enters golden age"],
-		requiredTech:"Architecture"
-	},
-	{
-		name:"Windmill",
-		production:2,
-		specialistSlots:{production:1},
-		hurryCostModifier:25,
-		maintenance:2,
-		percentStatBonus:{production:10},
-		requiredTech:"Economics"
-	}, 
-	{
 		name:"Museum",
 		culture:5,
 		specialistSlots:{culture:1},
@@ -404,7 +387,7 @@
 		isWonder:true,
 		requiredBuildingInAllCities:"Opera House",
 		requiredTech:"Archaeology"
-	},
+	}, 
 	{
 		name:"The Louvre",
 		baseDescription: "A Free Great Artist appears near the city",
@@ -415,6 +398,35 @@
 		requiredTech:"Archaeology"
 	},
 	{
+		name:"Taj Mahal",
+		baseDescription: "Empire enters a golden age",
+		culture:1,
+		happiness:4,
+		isWonder:true,
+		uniques:["Empire enters golden age"],
+		requiredTech:"Architecture"
+	},
+	{
+		name:"Porcelain Tower",
+		culture:1,
+		greatPersonPoints:{science:2},
+		isWonder:true,
+		uniques:["Free great scientist appears","Production to science conversion in cities increased by 33%"],
+		requiredTech:"Architecture"
+	}, 
+	{
+		name:"Windmill",
+		production:2,
+		specialistSlots:{production:1},
+		hurryCostModifier:25,
+		maintenance:2,
+		percentStatBonus:{production:10},
+		requiredTech:"Economics"
+	},
+	
+	// Industrial Era
+	
+	{
 		name:"Public School",
 		science:3,
 		specialistSlots:{science:1},
@@ -423,14 +435,6 @@
 		hurryCostModifier:0,
 		uniques:["+1 Science Per 2 Population"],
 		requiredTech:"Scientific Theory"
-	},
-	{
-		name:"Hospital",
-		food:5,
-		requiredBuilding:"Aqueduct",
-		maintenance:2,
-		hurryCostModifier:0,
-		requiredTech:"Biology"
 	},
 	{
 		name:"Factory",
@@ -444,6 +448,22 @@
 		requiredTech:"Industrialization"
 	},
 	{
+		name:"Military Academy",
+		xpForNewUnits:15,
+		hurryCostModifier:25,
+		maintenance:1,
+		requiredBuilding:"Armory",
+		requiredTech:"Military Science"
+	},
+	{
+		name:"Hospital",
+		food:5,
+		requiredBuilding:"Aqueduct",
+		maintenance:2,
+		hurryCostModifier:0,
+		requiredTech:"Biology"
+	},
+	{
 		name:"Stock Exchange",
 		gold:3,
 		percentStatBonus:{gold:25},
@@ -452,21 +472,9 @@
 		requiredBuilding:"Bank",
 		requiredTech:"Electricity"
 	},
-	{
-		name:"Cristo Redentor",
-		culture:5,
-		isWonder:true,
-		uniques:["Culture cost of adopting new Policies reduced by 10%"],
-		requiredTech:"Flight"
-	},
-	{
-		name:"Military Academy",
-		xpForNewUnits:15,
-		hurryCostModifier:25,
-		maintenance:1,
-		requiredBuilding:"Armory",
-		requiredTech:"Military Science"
-	},
+	
+	// Modern Era
+	
 	{
 		name:"Broadcast Tower",
 		culture:3,
@@ -483,13 +491,6 @@
 		isWonder:true,
 		uniques:["Provides 1 happiness per social policy"],
 		requiredTech:"Radio"
-	},
-	{
-		name:"Medical Lab",
-		baseDescription: "25% of food carried over after a new citizen is born",
-		requiredBuilding:"Hospital",
-		maintenance:3,
-		requiredTech:"Pharmaceuticals"
 	},
 	{
 		name:"Research Lab",
@@ -515,22 +516,21 @@
 		requiredTech:"Mass Media"
 	},
 	{
-		name:"Solar Plant",
-		baseDescription: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
-		production:5,		
-		percentStatBonus:{production:15},
-		requiredBuilding:"Factory",
-		maintenance:3,
-		cannotBeBuiltWith:"Nuclear Plant",
-		requiredTech:"Ecology",
-		uniques:["Must be next to desert"]
-	},
-	{
-		name:"Apollo Program",
-		cost:1500,
+		name:"Cristo Redentor",
+		culture:5,
 		isWonder:true,
-		uniques:["Enables construction of Spaceship parts"],
-		requiredTech:"Rocketry"
+		uniques:["Culture cost of adopting new Policies reduced by 10%"],
+		requiredTech:"Flight"
+	},
+	
+	// Information Era
+	
+	{
+		name:"Medical Lab",
+		baseDescription: "25% of food carried over after a new citizen is born",
+		requiredBuilding:"Hospital",
+		maintenance:3,
+		requiredTech:"Pharmaceuticals"
 	},
 	{
 		name:"Nuclear Plant",
@@ -541,6 +541,17 @@
 		cannotBeBuiltWith:"Solar Plant",
 		requiredResource:"Uranium",
 		requiredTech:"Nuclear Fission"
+	},
+	{
+		name:"Solar Plant",
+		baseDescription: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
+		production:5,		
+		percentStatBonus:{production:15},
+		requiredBuilding:"Factory",
+		maintenance:3,
+		cannotBeBuiltWith:"Nuclear Plant",
+		requiredTech:"Ecology",
+		uniques:["Must be next to desert"]
 	},
 	{
 		name:"Spaceship Factory",
@@ -556,6 +567,16 @@
 		requiredTech:"Robotics",
 		uniques:["Spaceship part"]
 	},
+	{
+		name:"Apollo Program",
+		cost:1500,
+		isWonder:true,
+		uniques:["Enables construction of Spaceship parts"],
+		requiredTech:"Rocketry"
+	},
+	
+	// Future Era
+	
 	{
 		name:"SS Cockpit",
 		requiredResource:"Aluminum",
