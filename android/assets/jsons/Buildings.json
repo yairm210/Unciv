@@ -590,7 +590,7 @@
 		uniques:["Spaceship part"]
 	},
 	{
-		name:"SS Statis Chamber",
+		name:"SS Stasis Chamber",
 		requiredResource:"Aluminum",
 		requiredTech:"Nanotechnology",
 		uniques:["Spaceship part"]
