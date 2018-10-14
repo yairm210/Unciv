@@ -527,10 +527,10 @@
 	
 	{
 		name:"Medical Lab",
-		baseDescription: "25% of food carried over after a new citizen is born",
 		requiredBuilding:"Hospital",
 		maintenance:3,
-		requiredTech:"Pharmaceuticals"
+		requiredTech:"Pharmaceuticals",
+		uniques:["25% of food carried over after a new citizen is born"]
 	},
 	{
 		name:"Nuclear Plant",
