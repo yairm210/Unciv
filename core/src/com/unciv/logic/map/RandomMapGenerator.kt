@@ -125,6 +125,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
 
         val mapToReturn = HashMap<String,TileInfo>()
         for (entry in map){
+            randomizeTile(entry.value)
             mapToReturn[entry.key.toString()] = entry.value
         }
 
