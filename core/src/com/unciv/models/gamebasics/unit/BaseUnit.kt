@@ -24,7 +24,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null
     var requiredResource:String? = null
-    var uniques:HashSet<String>?=null
+    var uniques =HashSet<String>()
     var obsoleteTech:String?=null
     var upgradesTo:String? = null
     var replaces:String?=null

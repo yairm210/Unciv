@@ -8,6 +8,7 @@ enum class UnitType{
     Scout,
     Mounted,
     WaterCivilian,
+    WaterMelee,
     Siege;
 
     fun isMelee(): Boolean {

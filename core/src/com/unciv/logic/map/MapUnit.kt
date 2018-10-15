@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.BaseUnit
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
 import java.text.DecimalFormat
 import java.util.*
@@ -98,17 +97,26 @@ class MapUnit {
         return "$name - $owner"
     }
 
-    /**
-     * Designates whether we can walk to the tile - without attacking
-     */
-    fun canMoveTo(tile: TileInfo): Boolean {
+    fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
         if(tile.getBaseTerrain().type==TerrainType.Water && baseUnit.unitType.isLandUnit())
             return false
         if(tile.getBaseTerrain().type==TerrainType.Land && baseUnit.unitType.isWaterUnit())
             return false
+        if(tile.baseTerrain=="Ocean" && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+                && !civInfo.tech.isResearched("Astronomy"))
+            return false
+        if(tile.baseTerrain=="Ocean" && baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
         if(tileOwner!=null && tileOwner.civName!=owner
                 && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
+        return true
+    }
+
+    /**
+     * Designates whether we can walk to the tile - without attacking
+     */
+    fun canMoveTo(tile: TileInfo): Boolean {
+        if(!canPassThrough(tile)) return false
 
         if (baseUnit().unitType.isCivilian())
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)

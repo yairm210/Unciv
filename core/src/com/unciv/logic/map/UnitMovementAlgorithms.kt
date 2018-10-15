@@ -1,7 +1,6 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.gamebasics.tile.TerrainType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
     val tileMap = unit.getTile().tileMap
@@ -24,6 +23,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return to.lastTerrain.movementCost.toFloat() // no road
     }
 
+
     fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): HashMap<TileInfo, Float> {
         if(unitMovement==0f) return hashMapOf()
         val distanceToTiles = LinkedHashMap<TileInfo, Float>()
@@ -36,13 +36,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
                     var totalDistanceToTile:Float
-                    val neighborOwner = neighbor.getOwner()
-                    val isOwnedByEnemy = neighborOwner!=null && neighborOwner!=unit.civInfo
-                    if ( (unit.baseUnit.unitType.isLandUnit() && neighbor.getBaseTerrain().type== TerrainType.Water)
-                            || (isOwnedByEnemy && neighbor.isCityCenter())// Enemy city,
-                            || (neighbor.getUnits().isNotEmpty() && neighbor.getUnits().first().civInfo!=unit.civInfo) // Enemy unit
-                            || (isOwnedByEnemy && !unit.civInfo.canEnterTiles(neighborOwner!!)) // enemyTile
-                    )
+                    if (!unit.canPassThrough(neighbor))
                         totalDistanceToTile = unitMovement // Can't go here.
                     // The reason that we don't just "return" is so that when calculating how to reach an enemy,
                     // You need to assume his tile is reachable, otherwise all movement algs on reaching enemy
