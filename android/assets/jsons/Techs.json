@@ -48,7 +48,6 @@
 				name:"Sailing",
 				row:1,
 				prerequisites:["Pottery"],
-				baseDescription:"Does nothing since we have no sea tiles - In theory, Allows access to sea resources by building work boats"
 			},
 			{
 				name:"Calendar",
@@ -89,13 +88,11 @@
 		buildingCost:100,
 		wonderCost:250,
 		techs:[
-			/*{
+			{
 				name:"Optics",
-				cost:95,
 				row:1,
 				prerequisites:["Sailing"],
-				baseDescription:"Does nothing since we have no sea tiles - In theory, Allows construction of lighthouses, providing more food for sea tiles"
-			},*/
+			},
 			{
 				name:"Horseback Riding",
 				row:5,

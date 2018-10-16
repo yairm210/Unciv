@@ -111,6 +111,10 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
+        if((baseTerrain=="Ocean"||baseTerrain=="Coast") && city!=null
+                && city.getBuildingUniques().contains("+1 food from Ocean and Coast tiles"))
+            stats.food += 1
+
         if (terrainFeature != null) {
             val terrainFeatureBase = getTerrainFeature()
             if (terrainFeatureBase!!.overrideStats)
@@ -118,6 +122,9 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
 
+            if (terrainFeature == "Jungle" && city != null
+                    && city.getBuildingUniques().contains("Jungles provide +2 science"))
+                stats.science += 2f
             if(terrainFeature=="Oasis" && city!=null
                     && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
@@ -156,13 +163,10 @@ open class TileInfo {
             if (stats.production < 1) stats.production = 1f
         }
 
-        if (stats.production < 0) stats.production = 0f
-
-        if ("Jungle" == terrainFeature && city != null
-                && city.getBuildingUniques().contains("Jungles provide +2 science"))
-            stats.science += 2f
         if (stats.gold != 0f && observingCiv.goldenAges.isGoldenAge())
             stats.gold++
+
+        if (stats.production < 0) stats.production = 0f
 
         return stats
     }

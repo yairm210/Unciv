@@ -104,6 +104,14 @@
 	// Classical Era
 	
 	{
+		name:"Lighthouse",
+		hurryCostModifier:25,
+		maintenance:1,
+		resourceBonusStats:{food:1},
+		uniques:["+1 food from Ocean and Coast tiles"]
+		requiredTech:"Optics"
+	},
+	{
 		name:"Stable", 
 		maintenance:1,
 		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]

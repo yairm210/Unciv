@@ -146,6 +146,10 @@ class MapUnit {
         return range
     }
 
+    fun isEmbarked(): Boolean {
+        return currentTile.baseTerrain=="Ocean"||currentTile.baseTerrain=="Coast"
+    }
+
     //endregion
 
     //region state-changing functions

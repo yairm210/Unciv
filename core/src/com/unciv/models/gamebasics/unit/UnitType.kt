@@ -15,6 +15,7 @@ enum class UnitType{
         return this == Melee
                 || this == Mounted
                 || this == Scout
+                || this==WaterMelee
     }
     fun isRanged(): Boolean {
         return this == Ranged
