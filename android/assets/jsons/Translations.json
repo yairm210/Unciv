@@ -348,7 +348,7 @@
 		Russian:"Начать игру!"
 		French:"Démarrer jeu!"
 		Romanian:"Incepe jocul!"
-		Spanish:"!Empezar partida!"
+		Spanish:"¡Empezar partida!"
 	}
 	"Civilization:":{
 		Italian:"Civiltà:"
@@ -696,6 +696,7 @@
 		Romanian:"a crescut"
 		German:"ist gewachsen"
 		Dutch:"is gegroeid"
+		Spanish:"ha crecido"
 	}
 	
 	"has been founded":{
@@ -705,6 +706,7 @@
 		Romanian:"a fost fondat"
 		German:"wurde gegründet"
 		Dutch:"is gesticht"
+		Spanish:"ha sido fundada"
 	}
 	
 	"has been razed to the ground":{
@@ -714,6 +716,7 @@
 		Romanian:"a fost distrus la pământ"
 		German:"wurde dem Erdboden gleichgemacht"
 		Dutch:"Is totaal verwoest"
+		Spanish:"ha sido arrasada hasta los cimientos"
 	}
 	
 	"We have conquered the city of [cityname]!":{
@@ -723,6 +726,7 @@
 		Romanian:"Am cucerit orașul [cityname]!"
 		German:"Wir haben die Stadt [cityname] eingenommen!"
 		Dutch:"We hebben de stad [cityname] ingenomen!"
+		Spanish:"¡Hemos conquistado la ciudad de [cityname]!"
 	}
 	
 	"Research of [tehnologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
@@ -732,6 +736,7 @@
 		Romanian:"Cercetarea [tehnologyName] a finalizat!"
 		German:"[tehnologyName] wurde erforscht!"
 		Dutch:"[tehnologyName] is onderzocht!"
+		Spanish:"¡Investigación de [tehnologyName] completada!"
 	}
 	
 	"You have entered a golden age":{
@@ -741,6 +746,7 @@
 		Romanian:"Ați intrat într-o epocă de aur"
 		German:"Ein goldenes Zeitalter ist eingetreten"
 		Dutch:"Een gouden eeuw is geariveerd"
+		Spanish:"Has entrado en una edad de oro"
 	}
 
 	"is starving":{
@@ -750,6 +756,7 @@
 		Romanian:"suferă de foame"
 		German:"verhungert"
 		Dutch:"verhongerd"
+		Spanish:"está muriendo de hambre"
 	}
 	
 	"has been built in":{
@@ -759,6 +766,7 @@
 		Romanian:"a fost construit in"
 		German:"wurde erbaut in"
 		Dutch:"is gebouwd in"
+		Spanish:"se ha construido en"
 	}
 	
 	"Work has started on [construction]":{
@@ -768,6 +776,7 @@
 		Romanian:"Munca a început pentru [construction]"
 		German:"Arbeit an [construction] hat begonnen"
 		Dutch:"Werk is begonen aan [construction]"
+		Spanish:"Se ha empezado a trabajar en [construction]"
 	}
 	
 	"Cannot continue work on [construction]":{
@@ -777,6 +786,7 @@
 		Romanian:"Nu pot continua munca pentru [construction]"
 		German:"Arbeit an [construction] konnte nicht fortgeführt werden"
 		Dutch:"Er kan niet meer veder gewerkt worden aan [construction]"
+		Spanish:"Imposible continuar trabajo en [construction]"
 	}
 
 	"has expanded its borders":{
@@ -786,6 +796,7 @@
 		Romanian:"și-a extins frontierele"
 		German:"hat seine Grenzen erweitert"
 		Dutch:"heeft zijn grenzen uitgebreid"
+		Spanish:"ha expandido sus fronteras"
 	}
 	"An enemy [unit] has attacked [cityname]":{
 		Italian:"Un [unit] nemico ha attaccato [cityname]"
@@ -794,6 +805,7 @@
 		Romanian:"Un dusman [unit] a atacat [cityname]"
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] angegriffen" // Gender sensitive
 		Dutch:"Een vijandelijke [unit] heeft [cityname] aangevallen"
+		Spanish:"Un [unit] enemigo ha atacado [cityname]"
 	}
 	
 	"An enemy [unit] has attacked our [ourUnit]":{
@@ -803,6 +815,7 @@
 		Romanian:"Un dusman [unit] a atacat [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] agegriffen" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft onze [ourUnit] aangevallen"
+		Spanish:"Un [unit] enemigo ha atacado nuestro [ourUnit]"
 	}
 	"An enemy [unit] has captured [cityname]":{
 		Italian:"Un [unit] nemico ha catturato [cityname]"
@@ -811,6 +824,7 @@
 		Romanian:"Un dusman [unit] a capturat [cityname]"
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen"
 		Dutch:"Een vijandige [unit] heeft [cityname] ingenomen"
+		Spanish:"Un [unit] enemigo ha capturado [cityname]"
 	}
 	
 	"An enemy [unit] has captured our [ourUnit]":{
@@ -820,6 +834,7 @@
 		Romanian:"Un dusman [unit] a capturat [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] gefangen"
 		Dutch:"Een vijandige [unit] heeft [ourUnit] gevangen genomen"
+		Spanish:"Un [unit] enemigo ha capturado nuestro [ourUnit]"
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
@@ -829,6 +844,7 @@
 		Romanian:"Un dusman [unit] a distrus [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] zerstört"
 		Dutch:"Een vijandige [unit] heeft onze [ourUnit] gedood"
+		Spanish:"Un [unit] enemigo ha destruido nuestro [ourUnit]"
 	}
 	
 	"An enemy [unit] was destroyed while attacking [cityname]":{
@@ -838,6 +854,7 @@
 		Romanian:"Un inamic [unit] a fost distrus în timp ce ataca [cityname]"
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf [cityname]" // Gender sensitive
 		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op [cityname]"
+		Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba [cityname]"
 	}
 	
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
@@ -847,6 +864,7 @@
 		Romanian:"Un inamic [unit] a fost distrus în timp ce atacă [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf unsere(n) [ourUnit]" // Gender sensitive
 		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op onze [unit]"
+		Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba nuestro [ourUnit]"
 	}
 	
 	"An enemy [unit] was spotted near our territory":{
@@ -856,6 +874,7 @@
 		Romanian:"Un inamic [unit] reperat în apropierea teritoriului nostru"
 		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt"
 		Dutch:"Een vijandige [unit] is gezien buiten onze grenzen"
+		Spanish:"Se ha avistado un [unit] enemigo cerca de nuestro territorio"
 	}
 	
 	"An enemy [unit] was spotted in our territory":{
@@ -865,6 +884,7 @@
 		Romanian:"Un inamic [unit] reperat pe teritoriul nostru"
 		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt"
 		Dutch:"Een vijandige [unit] is binnen onze grenzen gezien"
+		Spanish:"Se ha avistado un [unit] enemigo en nuestro territorio"
 	}
 	
 	
@@ -875,6 +895,7 @@
 		Romanian:"dezvăluit aproape"
 		German:"gefunden in der Nähe von"
 		Dutch:"Ontdekt: in de buurt van"
+		Spanish:"descubierto cerca de"
 	}
 	
 	"The civilization of [civName] has been destroyed!":{
@@ -884,6 +905,7 @@
 		Romanian:"Civilizația [civName] a fost distrus!"
 		German:"Die Zivilisation [civName] wurde vernichtet!"
 		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
+		Spanish:"¡La civilización de [civName] ha sido destruida!"
 	}
 	
 	"A [greatPerson] has been born!":{	
@@ -891,14 +913,17 @@
 		Russian:"[greatPerson] родился!!"
 		French:"Un [greatPerson] est né!"
 		Romanian:"Sa născut un [greatPerson]!"
+		Spanish:"¡Un [greatPerson] ha nacido!"
 	}
 	
 	"We have encountered [civName]!":{
 		Russian:"Мы встретились с цивилизацией [civName]!"
+		Spanish:"¡Hemos encontrado [civName]!"
 	}
 	
 	"Cannot provide upkeep for [unitName] - unit has been disbanded!":{
 		Russian:"Невоможно предоставить содержание для [unitName] - юнит распущен!"
+		Spanish:"¡No se puede mantener [unitName] - unidad disuelta!"
 	}
 
 	
@@ -911,6 +936,7 @@
 		Romanian:"Salvatajul curent"
 		German:"Gespeicherte Spiele"
 		Dutch:"Huidige spellen"
+		Spanish:"Partidas guardadas"
 	}
 
 	"Saved game name":{
@@ -920,6 +946,7 @@
 		Romanian:"Numele jocului salvat"
 		German:"Name des gespeicherten Spiels"
 		Dutch:"Naam van opgeslagen spellen"
+		Spanish:"Nombre de partida guardada"
 	}
 
 	"Copy game info":{
@@ -929,6 +956,7 @@
 		Romanian:"Copiați informațiile jocului"
 		German:"Spielinfo kopieren"
 		Dutch:"Spelinformatie kopiëren"
+		Spanish:"Copiar información de partida"
 	}
 
 	"Could not load game":{
@@ -938,6 +966,7 @@
 		Romanian:"Nu s-a putut încărca jocul"
 		German:"Spiel konnte nicht geladen werden"
 		Dutch:"Spel kon niet geladen worden"
+		Spanish:"Imposible cargar partida"
 	}
 
 	"Load [saveFileName]":{ // as in "Load SaveFile2"
@@ -947,6 +976,7 @@
 		Romanian:"încărca [saveFileName]"
 		German:"[saveFileName] laden"
 		Dutch:"[saveFileName] laden"
+		Spanish:"Cargar [saveFileName]"
 	}
 
 	"Delete save":{
@@ -956,6 +986,7 @@
 		Romanian:"Ștergeți salvatajul"
 		German:"Spiel löschen"
 		Dutch:"Spel verwijderen"
+		Spanish:"Borrar partida"
 	}
 
 	"Saved at":{
@@ -965,6 +996,7 @@
 		Romanian:"Salvat la"
 		German:"Gespeichert in"
 		Dutch:"Opgeslagen in"
+		Spanish:"Guardado en"
 	}
 	
 	
@@ -977,6 +1009,7 @@
 		Romanian:"Puterea orașului"
 		German:"Stärke der Stadt"
 		Dutch:"Kracht van de stad"
+		Spanish:"Fuerza de la ciudad"
 	}
 	
 	"City health":{
@@ -986,6 +1019,7 @@
 		Romanian:"Sănătatea orașului"
 		German:"Gesundheit der Stadt"
 		Dutch:"Gezondheid van de stad"
+		Spanish:"Salud de la ciudad"
 	}
 	
 	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
@@ -995,6 +1029,7 @@
 		Romanian:"Capturat"
 		German:"Gefangen"
 		Dutch:"Gevangen"
+		Spanish:"Capturada"
 	}
 	
 	"Attack":{
@@ -1004,6 +1039,7 @@
 		Romanian:"Atac"
 		German:"Angreiffen"
 		Dutch:"Aanvallen"
+		Spanish:"Ataque"
 	}
 	
 	// Terrains
@@ -1015,6 +1051,7 @@
 		Romanian:"Fâneață"
 		German:"Wiese"
 		Dutch:"Grasland"
+		Spanish:"Pradera"
 	}
 
 	"Plains":{
@@ -1024,6 +1061,7 @@
 		Romanian:"Inalzat"
 		German:"Flachland"
 		Dutch:"Vlakte"
+		Spanish:"Llanura"
 	}
 
 	"Tundra":{
@@ -1033,6 +1071,7 @@
 		Romanian:"Tundră"
 		German:"Tundra"
 		Dutch:"Toendra"
+		Spanish:"Tundra"
 	}
 
 	"Desert":{
@@ -1042,6 +1081,7 @@
 		Romanian:"Deşert"
 		German:"Wüste"
 		Dutch:"Woestijn"
+		Spanish:"Desierto"
 	}
 
 	"Lakes":{
@@ -1051,6 +1091,7 @@
 		Romanian:"Lacurile"
 		German:"Seen"
 		Dutch:"Meren"
+		Spanish:"Lagos"
 	}
 
 	"Hill":{
@@ -1059,6 +1100,7 @@
 		French:"Colline"
 		German:"Hügel"
 		Dutch:"Heuvel"
+		Spanish:"Colinas"
 	}
 
 	"Forest":{
@@ -1068,6 +1110,7 @@
 		Romanian:"Pădure"
 		German:"Wald"
 		Dutch:"Woud"
+		Spanish:"Bosque"
 	}
 
 	"Jungle":{
@@ -1077,6 +1120,7 @@
 		Romanian:"Junglă"
 		German:"Dschungel"
 		Dutch:"Oerwoud"
+		Spanish:"Selva"
 	}
 
 	"Marsh":{
@@ -1086,6 +1130,7 @@
 		Romanian:"Mlaştină"
 		German:"Sumpf"
 		Dutch:"Moeras"
+		Spanish:"Pantano"
 	}
 
 	"Oasis":{
@@ -1095,15 +1140,17 @@
 		Romanian:"Oază"
 		German:"Oase"
 		Dutch:"Oase"
+		Spanish:"Oasis"
 	}
 
-	"Food plains":{
+	"Flood plains":{ // Possible typo. Changed from "food" to "flood". Need to change all languages
 		Italian:"Pianure alimentari"
 		Russian:"Пищевые равнины"
 		French:"Plaines alimentaires"
 		Romanian:"Câmpiile alimentare"
 		// German translation not sure
 		Dutch:"Riviervlakte"
+		Spanish:"Terreno inundable"
 	}
 	
 	// Bonus Resources
@@ -1114,6 +1161,7 @@
 		Romanian:"Bovine"
 		German:"Rind"
 		Dutch:"Rundvee"
+		Spanish:"Ganado"
 	}
 
 	"Sheep":{
@@ -1123,6 +1171,7 @@
 		Romanian:"Oaie"
 		German:"Schaf"
 		Dutch:"Schaap"
+		Spanish:"Ovejas"
 	}
 
 	"Deer":{
@@ -1132,6 +1181,7 @@
 		Romanian:"Cerb"
 		German:"Hirsch"
 		Dutch:"Hert"
+		Spanish:"Ciervos"
 	}
 
 	"Bananas":{
@@ -1141,6 +1191,7 @@
 		Romanian:"Banane"
 		German:"Bananen"
 		Dutch:"Bananen"
+		Spanish:"Plátanos"
 	}
 
 	"Wheat":{
@@ -1150,6 +1201,7 @@
 		Romanian:"Grâu"
 		German:"Weizen"
 		Dutch:"Tarwe"
+		Spanish:"Trigo"
 	}
 
 	"Stone":{
@@ -1159,6 +1211,7 @@
 		Romanian:"Piatră"
 		German:"Stein"
 		Dutch:"Steen"
+		Spanish:"Piedra"
 	}
 	
 	// Strategic Resources
@@ -1169,6 +1222,7 @@
 		Romanian:"Cai"
 		German:"Pferde"
 		Dutch:"Paarden"
+		Spanish:"Caballos"
 	}
 
 	"Iron":{
@@ -1178,6 +1232,7 @@
 		Romanian:"Fier"
 		German:"Eisen"
 		Dutch:"Ijzer"
+		Spanish:"Hierro"
 	}
 
 	"Coal":{
@@ -1187,6 +1242,7 @@
 		Romanian:"Cărbune"
 		German:"Kohle"
 		Dutch:"Kool"
+		Spanish:"Carbón"
 	}
 
 	"Oil":{
@@ -1196,6 +1252,7 @@
 		Romanian:"Petrol"
 		German:"Erdöl"
 		Dutch:"Olie"
+		Spanish:"Petróleo"
 	}
 
 	"Aluminum":{
@@ -1205,6 +1262,7 @@
 		Romanian:"Aluminiu"
 		German:"Aluminium"
 		Dutch:"Aluminium"
+		Spanish:"Aluminio"
 	}
 
 	"Uranium":{
@@ -1214,6 +1272,7 @@
 		Romanian:"Uraniu"
 		German:"Uran"
 		Dutch:"Uranium"
+		Spanish:"Uranio"
 	}
 	
 	// Luxury Resources
@@ -1224,6 +1283,7 @@
 		Romanian:"Blănărie"
 		German:"Felle"
 		Dutch:"Bonten"
+		Spanish:"Pieles"
 	}
 
 	"Cotton":{
@@ -1233,6 +1293,7 @@
 		Romanian:"Bumbac"
 		German:"Baumwolle"
 		Dutch:"Katoen"
+		Spanish:"Algodón"
 	}
 
 	"Dyes":{
@@ -1242,6 +1303,7 @@
 		Romanian:"Coloranți"
 		German:"Farbstoffe"
 		Dutch:"Verfstoffen"
+		Spanish:"Tintes"
 	}
 
 	"Gems":{
@@ -1251,6 +1313,7 @@
 		Romanian:"Pietre pretioase"
 		German:"Edelsteine"
 		Dutch:"Edelstenen"
+		Spanish:"Gemas"
 	}
 
 	"Silver":{
@@ -1260,6 +1323,7 @@
 		Romanian:"Argint"
 		German:"Silber"
 		Dutch:"Zilver"
+		Spanish:"Plata"
 	}
 
 	"Incense":{
@@ -1269,6 +1333,7 @@
 		Romanian:"Parfume"
 		German:"Weihrauch"
 		Dutch:"Wierook"
+		Spanish:"Incienso"
 	}
 
 	"Silk":{
@@ -1278,6 +1343,7 @@
 		Romanian:"Mătase"
 		German:"Seide"
 		Dutch:"Zijde"
+		Spanish:"Seda"
 	}
 
 	"Spices":{
@@ -1287,6 +1353,7 @@
 		Romanian:"Aromate"
 		German:"Gewürze"
 		Dutch:"Kruiden"
+		Spanish:"Especias"
 	}
 
 	"Wine":{
@@ -1296,6 +1363,7 @@
 		Romanian:"Vin"
 		German:"Wein"
 		Dutch:"Wijn"
+		Spanish:"Vino"
 	}
 
 	"Sugar":{
@@ -1305,6 +1373,7 @@
 		Romanian:"Zahar"
 		German:"Zucker"
 		Dutch:"Suiker"
+		Spanish:"Azúcar"
 	}
 
 	"Marble":{
@@ -1314,6 +1383,7 @@
 		Romanian:"Marmură"
 		German:"Marmor"
 		Dutch:"Marmer"
+		Spanish:"Mármol"
 	}
 
 	"Pearls":{
@@ -1323,6 +1393,7 @@
 		Romanian:"Perle"
 		German:"Perlen"
 		Dutch:"Parels"
+		Spanish:"Perlas"
 	}
 
 	"Whales":{
@@ -1332,6 +1403,7 @@
 		Romanian:"Balene"
 		German:"Wale"
 		Dutch:"Walvissen"
+		Spanish:"Ballenas"
 	}
 	
 	// Tile improvements
@@ -1343,6 +1415,7 @@
 		Romanian:"Fermă"
 		German:"Farm"
 		Dutch:"Boerderij"
+		Spanish:"Granja"
 	}
 	"Lumber mill":{
 		Italian:"Segheria"
@@ -1351,6 +1424,7 @@
 		Romanian:"Cherestea"
 		German:"Sägewerk"
 		Dutch:"Houtzagerij"
+		Spanish:"Serrería"
 	}
 	"Mine":{
 		Italian:"Miniera"
@@ -1359,6 +1433,7 @@
 		Romanian:"Mina"
 		German:"Mine"
 		Dutch:"Mijn"
+		Spanish:"Mina"
 	}
 	"Trading post":{
 		Italian:"Base commerciale"
@@ -1367,6 +1442,7 @@
 		Romanian:"Post de vinzare"
 		German:"Handelsposten"
 		Dutch:"Handelspost"
+		Spanish:"Puesto comercial"
 	}
 	"Camp":{
 		Italian:"Campo"
@@ -1375,6 +1451,7 @@
 		Romanian:"Tabără"
 		German:"Lager"
 		Dutch:"Kamp"
+		Spanish:"Campamento"
 	}
 	"Oil well":{
 		Italian:"Pozzo di petrolio"
@@ -1383,6 +1460,7 @@
 		Romanian:"Sondă de nafta"
 		German:"Ölbrunnen"
 		Dutch:"Oliebron"
+		Spanish:"Pozo petrolífero""
 	}
 	"Pasture":{
 		Italian:"Pascolo"
@@ -1391,6 +1469,7 @@
 		Romanian:"Păşune"
 		German:"Weide"
 		Dutch:"Weide"
+		Spanish:"Pasto"
 	}
 	"Plantation":{
 		Italian:"Piantagione"
@@ -1399,6 +1478,7 @@
 		Romanian:"Plantaţie"
 		German:"Plantage"
 		Dutch:"Plantage"
+		Spanish:"Plantación"
 	}
 	"Quarry":{
 		Italian:"Cava"
@@ -1407,6 +1487,7 @@
 		Romanian:"Carieră"
 		German:"Steinbruch"
 		Dutch:"Steengroeve"
+		Spanish:"Cantera"
 	}
 	"Road":{
 		Italian:"Strada"
@@ -1415,6 +1496,7 @@
 		Romanian:"Drum"
 		German:"Strasse"
 		Dutch:"Weg"
+		Spanish:"Carretera"
 	}
 	"Railroad":{
 		Italian:"Ferrovia"
@@ -1423,6 +1505,7 @@
 		Romanian:"Cale ferată"
 		German:"Gleis"
 		Dutch:"Spoorweg"
+		Spanish:"Línea de ferrocarril"
 	}
 	/*
 	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
@@ -1432,16 +1515,20 @@
 		Romanian:"Elimina"
 		German:"Entfernen:" // verb behind object again
 		Dutch:"Verwijderen" // verb behind object
+		Spanish:"Quitar"
 	}
 	*/
 	"Remove Forest":{
 		Russian:"Вырубить лес"
+		Spanish:"Quitar bosque"
 	}
 	"Remove Jungle":{
 		Russian:"Вырубить джунгли"
+		Spanish:"Quitar selva"
 	}
 	"Remove Marsh":{
 		Russian:"Осушить болото"
+		Spanish:"Quitar pantano"
 	}
 	
 	"Academy":{
@@ -1451,6 +1538,7 @@
 		Romanian:"Academie"
 		German:"Akademie"
 		Dutch:"Academie"
+		Spanish:"Academia"
 	}
 	"Landmark":{
 		Italian:"Punto di riferimento"
