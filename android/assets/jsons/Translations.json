@@ -6,6 +6,7 @@
 		Romanian:"Runda urmatoare"
 		German:"Nächste Runde"
 		Dutch:"Volgende beurt"
+		Spanish:"Siguiente turno"
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
@@ -14,6 +15,7 @@
 		French:"Travail..."
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
+		Spanish:"Trabajando..."
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -23,6 +25,7 @@
 		Romanian:"Runda"
 		German:"Runde"
 		Dutch:"Beurt"
+		Spanish:"Turno"
 	}
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -32,6 +35,7 @@
 		Romanian:"în"
 		German:"in"
 		Dutch:"in"
+		Spanish:"en"
 	}
 	
 	"turns":{ // for e.g. turns to technology
@@ -41,6 +45,7 @@
 		Romanian:"Runde"
 		German:"Runden"
 		Dutch:"Beurten"
+		Spanish:"turnos"
 	}
 
 	// Unit
@@ -51,6 +56,7 @@
 		Romanian:"Mișcare"
 		German:"Bewegungen"
 		Dutch:"Mobieliteit"
+		Spanish:"Movimiento"
 	}
 
 	"Strength":{
@@ -60,6 +66,7 @@
 		Romanian:"Putere"
 		German:"Stärke"
 		Dutch:"Kracht"
+		Spanish:"Fuerza"
 	}
 
 	"Ranged strength":{
@@ -69,6 +76,7 @@
 		Romanian:"Puterea la distanta"
 		German:"Fernkampf Stärkte"
 		Dutch:"Kracht op afstand"
+		Spanish:"Fuerza a distancia"
 	}
 
 	"Move unit":{
@@ -78,6 +86,7 @@
 		Romanian:"Mutați unitatea"
 		German:"Einheit bewegen"
 		Dutch:"Eenheid verplaatsen"
+		Spanish:"Mover unidad"
 	}
 
 	"Stop movement":{
@@ -87,6 +96,7 @@
 		Romanian:"Opriți mișcarea"
 		German:"Bewgen abbrechen"
 		Dutch:"Verplaatsen stoppen"
+		Spanish:"Parar movimiento"
 	}
 
 	"Construct improvement":{
@@ -96,6 +106,7 @@
 		Romanian:"îmbunătățirea construcției"
 		German:"Verbesserung bauen"
 		Dutch:"Verbetering bouwen"
+		Spanish:"Construir mejora"
 	}
 
 	"Automate":{
@@ -105,6 +116,7 @@
 		Romanian:"Automatizare"
 		German:"Automatisieren"
 		Dutch:"Autoatiseren"
+		Spanish:"Automatizar"
 	}
 
 	"Fortify":{
@@ -114,6 +126,7 @@
 		Romanian:"Fortifica"
 		German:"Befestigen"
 		Dutch:"Versterken"
+		Spanish:"Fortificar"
 	}
 	
 	"Fortification":{ // as in "+40% Fortification"
@@ -123,6 +136,7 @@
 		Romanian:"Fortificație"
 		German:"Befestigung"
 		Dutch:"Versterking"
+		Spanish:"Fortificación"
 	}
 
 	"Set up":{ // For siege units
@@ -132,6 +146,7 @@
 		Romanian:"Dispune"
 		German:"Aufstellen"
 		Dutch:"Opstellen"
+		Spanish:"Montar"
 	}
 	
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
@@ -139,6 +154,7 @@
 		Russian:"Улучшить до [unitType] ([goldCost] золота)"
 		French:"Mise à niveau vers [unitType] ([goldCost] or)"
 		Romanian:"Treceți la [unitType] (aurul [goldCost])"
+		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
 	}
 	
 	"Found city":{
@@ -148,6 +164,7 @@
 		Romanian:"Creați oraș"
 		German:"Stadt gründen"
 		Dutch:"Stad stichten"
+		Spanish:"Fundar ciudad"
 	}
 	
 	"Promote":{
@@ -157,6 +174,7 @@
 		Romanian:"Promova"
 		German:"Befördern"
 		Dutch:"Promoveren"
+		Spanish:"Ascender"
 	}
 
 	"Health":{
@@ -166,6 +184,7 @@
 		Romanian:"Sanatate"
 		German:"Gesundheit"
 		Dutch:"Gezondheid"
+		Spanish:"Salud"
 	}
 
 	"Disband unit":{
@@ -174,6 +193,7 @@
 		French:"Dissoudre unité"
 		Romanian:"Desfaceți unitatea"
 		Dutch:"Eenheid opheffen"
+		Spanish:"Disolver unidad"
 	}
 	
 	"Do you really want to disband this unit?":{
@@ -182,6 +202,7 @@
 		French:"Voulez-vous vraiment dissoudre cette unité?"
 		Romanian:""
 		Dutch:"Wil je echt deze eenheid opheffen"
+		Spanish:"¿Realmente quieres disolver esta unidad?"
 	}
 	"Yes":{
 		Italian:"Sì"
@@ -189,6 +210,7 @@
 		French:"Oui"
 		Romanian:"Da"
 		Dutch:"Ja"
+		Spanish:"Sí"
 	}
 	"No":{
 		Italian:"No"
@@ -196,6 +218,7 @@
 		French:"Non"
 		Romanian:"Nu"
 		Dutch:"Nee"
+		Spanish:"No"
 	}
 	
 
@@ -207,6 +230,7 @@
 		Romanian:"Aur"
 		German:"Gold"
 		Dutch:"Goud"
+		Spanish:"Oro"
 	}
 
 	"Science":{
@@ -216,6 +240,7 @@
 		Romanian:"Ştiinţă"
 		German:"Erforschung"
 		Dutch:"Wetenschap"
+		Spanish:"Ciencia"
 	}
 
 	"Happiness":{
@@ -225,6 +250,7 @@
 		Romanian:"Fericire"
 		German:"Zufriedenheit"
 		Dutch:"Tevredenheid"
+		Spanish:"Felicidad"
 	}
 
 	"Production":{
@@ -234,6 +260,7 @@
 		Romanian:"Producere"
 		German:"Produktion"
 		Dutch:"Productie"
+		Spanish:"Producción"
 	}
 
 	"Culture":{
@@ -243,6 +270,7 @@
 		Romanian:"Cultură"
 		German:"Kultur"
 		Dutch:"Cultuur"
+		Spanish:"Cultura"
 	}
 
 	"Food":{
@@ -252,6 +280,7 @@
 		Romanian:"Hrană"
 		German:"Speise"
 		Dutch:"Eten"
+		Spanish:"Comida"
 	}
 	
 	"GOLDEN AGE":{
@@ -261,6 +290,7 @@
 		Romanian:"EPOCA DE AUR"
 		German:"GOLDENES ZEITALTER"
 		Dutch:"GOUDEN EEUW"
+		Spanish:"EDAD DE ORO"
 	}
 
 	
@@ -268,6 +298,7 @@
 	
 	"Civilopedia":{
 		Russian:"Цивилопедия"
+		Spanish:"Civilopedia"
 	}
 
 	"Start new game":{
@@ -277,6 +308,7 @@
 		Romanian:"Joc nou"
 		German:"Neues Spiel"
 		Dutch:"Nieuw spel"
+		Spanish:"Nueva partida"
 	}
 	
 	"Save game":{
@@ -286,6 +318,7 @@
 		Romanian:"Salveaza jocul"
 		German:"Speichern"
 		Dutch:"Spel opslaan"
+		Spanish:"Salvar partida"
 	}
 	
 	"Load game":{
@@ -295,6 +328,7 @@
 		Romanian:"Incarca jocul"
 		German:"Spiel laden"
 		Dutch:"Spel laden"
+		Spanish:"Cargar partida"
 	}
 	
 	"Load copied data":{
@@ -304,6 +338,7 @@
 		Romanian:"Încărcați datele copiate"
 		German:"Aus ZWischenablage laden"
 		Dutch:"Gekopieerde data laden"
+		Spanish:"Cargar datos copiados"
 	}
 	
 	// New game screen
@@ -313,24 +348,28 @@
 		Russian:"Начать игру!"
 		French:"Démarrer jeu!"
 		Romanian:"Incepe jocul!"
+		Spanish:"!Empezar partida!"
 	}
 	"Civilization:":{
 		Italian:"Civiltà:"
 		Russian:"Цивилизация:"
 		French:"Civilisation:"
 		Romanian:"Civilizaţie:"
+		Spanish:"Civilización"
 	}
 	"World size:":{
 		Italian:"Dimensione mappa:"
 		Russian:"Размер мира:"
 		French:"La taille du monde:"
 		Romanian:"Mărimea pamintului:"
+		Spanish:"Tamaño del mundo"
 	}
 	"Number of enemies:":{
 		Italian:"Numero di nemici:"
 		Russian:"Количество врагов:"
 		French:"Nombre d'ennemis:"
 		Romanian:"Numărul de dușmani:"
+		Spanish:"Número de enemigos"
 	}
 	
 
@@ -341,6 +380,7 @@
 		Romanian:"Statutul victoriei"
 		German:"Siegesstatus"
 		Dutch:"Overwinning Status"
+		Spanish:"Estatus de victoria"
 	}
 
 	"Social policies":{
@@ -350,6 +390,7 @@
 		Romanian:"Politici sociale"
 		German:"Sozialpolitiken"
 		Dutch:"Sociaal beleid"
+		Spanish:"Políticas sociales"
 	}
 
 	"Display options":{
@@ -359,6 +400,7 @@
 		Romanian:"Opțiuni ecran"
 		German:"Anzeigeeinstellungen"
 		Dutch:"Weergaveopties"
+		Spanish:"Opciones de pantalla"
 	}
 	
 	"Show":{
@@ -368,6 +410,7 @@
 		Romanian:"Indica"
 		German:"Zeigen"
 		Dutch:"Toon"
+		Spanish:"Mostrar"
 	}
 
 	"Hide":{
@@ -377,6 +420,7 @@
 		Romanian:"Ascunde"
 		German:"Verstecken"
 		Dutch:"Verberg"
+		Spanish:"Ocultar"
 	}
 	
 	"worked tiles":{
@@ -386,6 +430,7 @@
 		Romanian:"plăci lucrate"
 		German:"bearbeitete Felder"
 		Dutch:"Bewerkte velden"
+		Spanish:"casillas trabajadas"
 	}
 
 	"resources and improvements":{
@@ -395,6 +440,7 @@
 		Romanian:"resurse și îmbunătățiri"
 		German:"Ressourcen und Verbesserungen"
 		Dutch:"Grondstoffen en Verbeteringen"
+		Spanish:"recursos y mejoras"
 	}
 
 	"Close":{
@@ -404,6 +450,7 @@
 		Romanian:"Inchide"
 		German:"Schliessen"
 		Dutch:"Sluiten"
+		Spanish:"Cerrar"
 	}
 
 	// City screen
@@ -414,6 +461,7 @@
 		Romanian:"Ieșiți din oraș"
 		German:"Stadt schliessen"
 		Dutch:"Stadscherm sluiten"
+		Spanish:"Salir de la ciudad"
 	}
 
 	"Raze city":{
@@ -423,6 +471,7 @@
 		Romanian:"Demolarea orașului"
 		German:"Stadt zerstören"
 		Dutch:"Stad vernietigen"
+		Spanish:"Arrasar ciudad"
 	}
 
 	"Stop razing city":{
@@ -432,6 +481,7 @@
 		Romanian:"Anuleaza demolarea orașului"
 		German:"Zerstörung aufheben"
 		Dutch:"Stad vernieteging stoppen"
+		Spanish:"Dejar de arrasar ciudad"
 	}
 
 	"Buy for [amount] gold":{
@@ -441,6 +491,7 @@
 		Romanian:"Cumpara cu [amount] gold"
 		German:"Für [amount] gold kaufen"
 		Dutch:"Voor [amount] gold kopen"
+		Spanish:"Comprar por [amount] de oro"
 	}
 
 	"Maintenance cost":{
@@ -450,6 +501,7 @@
 		Romanian:"Costuri de întreținere"
 		German:"Wartungskosten"
 		Dutch:"Onderhouskosten"
+		Spanish:"Coste de mantenimiento"
 	}
 	
 	"Pick construction":{
@@ -459,6 +511,7 @@
 		Romanian:"Alegeți construcția"
 		German:"Bauwerk auswählen"
 		Dutch:"Bouwwerk kiezen"
+		Spanish:"Elige la construcción"
 	}
 	
 	"Build [building]":{ // eg Build Granary
@@ -468,6 +521,7 @@
 		Romanian:"Construiste [building]"
 		German:"[building] bauen"
 		Dutch:"[building] bouwen"
+		Spanish:"Construir [building]"
 	}
 	
 	"Train [unit]":{ // eg Train Scout
@@ -477,6 +531,7 @@
 		Romanian:"Instrui [unit]"
 		German:"[unit] rekrutieren"
 		Dutch:"[unit] rekruteren"
+		Spanish:"Entrenar [unit]"
 	}
 	
 	"Produce [thingToProduce]":{ // eg Produce gold
@@ -486,6 +541,7 @@
 		Romanian:"Produce [thingToProduce]"
 		German:"[thingToProduce] Herstellen"
 		Dutch:"[thingToProduce] produceren"
+		Spanish:"Producir [thingToProduce]"
 	} 
 	
 	"Nothing":{ // A city can choose to "idle" and produce nothing
@@ -495,6 +551,7 @@
 		Romanian:"Nimic"
 		German:"Faul dasitzen"
 		Dutch:"Niks"
+		Spanish:"Nada"
 	} 
 	
 	// Tech picker
@@ -505,6 +562,7 @@
 		Romanian:"Alege o tehnologie"
 		German:"Technologie auswählen"
 		Dutch:"Technologie kiezen"
+		Spanish:"Elige una tecnología"
 	}
 	
 	"Pick a free tech":{
@@ -513,6 +571,7 @@
 		French:"Choisissez une technologie gratuite"
 		Romanian:"Alege o tehnologie gratuită"
 		Dutch:"Gratis technologie kiezen"
+		Spanish:"Elige una tecnología gratis"
 	}
 
 	"Research [technology]":{ // eg "Research Pottery"
@@ -522,6 +581,7 @@
 		Romanian:"Exploreaza [technology]"
 		German:"[technology] Erforschen"
 		Dutch:"[technologie] onderzoeken"
+		Spanish:"Investigar [technology]"
 	}
 	
 	
@@ -531,6 +591,7 @@
 		French:"Choisissez [technology] comme technologie libre"
 		Romanian:"Alegeți [tehnology] ca tehnologie gratuită"
 		Dutch:"[technologie] kiezen als gratis technologie"
+		Spanish:"Elegir [technology] como tecnología gratis"
 	}
 
 	"Units enabled":{
@@ -540,6 +601,7 @@
 		Romanian:"Unități activate"
 		German:"Freigeschaltete Einheiten"
 		Dutch:"Eenheden vrijgespeeld"
+		Spanish:"Unidades habilitadas"
 	}
 
 	"Buildings enabled":{
@@ -549,6 +611,7 @@
 		Romanian:"Clădirile active"
 		German:"Freigeschaltete Bauwerke"
 		Dutch:"Gebouwen vreijgespeeld"
+		Spanish:"Edificios habilitados"
 	}
 	
 	"Wonder":{
@@ -558,6 +621,7 @@
 		Romanian:"Minune"
 		German:"Wunder"
 		Dutch:"Wonder"
+		Spanish:"Maravilla"
 	}
 	
 	"Wonders enabled":{
@@ -567,6 +631,7 @@
 		Romanian:"Minuni active"
 		German:"Freigschaltete Wunder"
 		Dutch:"Wonders vrijgespeeld"
+		Spanish:"Maravillas habilitadas"
 	}
 
 	"Tile improvements enabled":{
@@ -576,6 +641,7 @@
 		Romanian:"Ameliorare activa a plăcilor"
 		German:"Freigschaltete Feldverbesserungen"
 		Dutch:"Verbeteringen vrijgespeeld"
+		Spanish:"Mejoras de casilla habilitadas"
 	}
 
 	"Reveals [resource] on the map":{ // As in "Reveals Coal on the map"
@@ -585,6 +651,7 @@
 		Romanian:"Descoperă [resource] pe hartă"
 		German:"Zeigt [resource] auf der Karte"
 		Dutch:"Onthuld [recource] op de kaart"
+		Spanish:"Descubre [resource] en el mapa"
 	}
 	
 	"XP for new units":{
@@ -593,6 +660,7 @@
 		French:"XP pour les nouvelles unités"
 		Romanian:"XP pentru unități noi"
 		Dutch:"XP voor nieuwe eenheden"
+		Spanish:"PX para unidades nuevas"
 	}
 	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
@@ -602,6 +670,7 @@
 		Romanian:"Asigura"
 		German:"generieren"
 		Dutch:"genereren"
+		Spanish:"proporcionan"
 	}
 
 	"provides":{ // as in "Camp provides +1 Gold" (singular of above)
@@ -611,6 +680,7 @@
 		Romanian:"prevede"
 		German:"generiert"
 		Dutch:"genereert"
+		Spanish:"proporciona"
 	}
 	
 
