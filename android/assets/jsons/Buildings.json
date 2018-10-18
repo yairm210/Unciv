@@ -108,7 +108,7 @@
 		hurryCostModifier:25,
 		maintenance:1,
 		resourceBonusStats:{food:1},
-		uniques:["+1 food from Ocean and Coast tiles"]
+		uniques:["Can only be built in coastal cities","+1 food from Ocean and Coast tiles"]
 		requiredTech:"Optics"
 	},
 	{

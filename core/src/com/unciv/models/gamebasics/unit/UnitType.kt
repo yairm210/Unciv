@@ -37,6 +37,6 @@ enum class UnitType{
     }
 
     fun isWaterUnit(): Boolean {
-        return this == WaterCivilian
+        return !isLandUnit() // if we ever get air units, this'll have to change
     }
 }

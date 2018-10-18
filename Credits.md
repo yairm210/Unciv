@@ -17,7 +17,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Bow And Arrow](https://thenounproject.com/search/?q=Bow%20and%20Arrow&i=338261) By Viktor Ostrovsky for Archer
 * [Bow](https://thenounproject.com/search/?q=bow&i=101736) By Arthur Shlain for Bowman
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
-* [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
+* [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Triremehos
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 
@@ -118,6 +118,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 ### Classical Era
 
+* [Lighthouse](https://thenounproject.com/search/?q=lighthouse&i=866966) By Dolly Holmes
 * [Temple](https://thenounproject.com/term/temple/1808407/) By 1516
 * [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
 * [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle
@@ -284,7 +285,8 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Mallet](https://thenounproject.com/term/mallet/1306669/) By Ben Avery for Bronze Working
 
 ### Classical
-* [Horse Riding](https://thenounproject.com/term/horse-riding/583093/) By Hea Poh Lin
+* [Telescope](https://thenounproject.com/term/telescope/1932888/) for Optics 
+* [Horse Riding](https://thenounproject.com/term/horse-riding/583093/) By Hea Poh Lin for Horseback Riding
 * [Abacus](https://thenounproject.com/term/abacus/1943303/) By Yo! Baba for Mathematics
 * [Arch](https://thenounproject.com/term/arch/1174168/) By Andrejs Kirma for Construction
 * [Brain](https://thenounproject.com/term/brain/64073/) By Tony Gines for Philosophy

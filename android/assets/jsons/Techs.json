@@ -90,6 +90,7 @@
 		techs:[
 			{
 				name:"Optics",
+				cost:85,
 				row:1,
 				prerequisites:["Sailing"],
 			},
