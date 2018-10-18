@@ -102,7 +102,7 @@ class CityExpansionManager {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
             addNewTileWithCulture()
-            cityInfo.civInfo.addNotification(cityInfo.name + " {has expanded its borders}!", cityInfo.location, Color.PURPLE)
+            cityInfo.civInfo.addNotification("["+cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
         }
     }
 

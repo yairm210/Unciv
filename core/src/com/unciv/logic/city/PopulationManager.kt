@@ -52,7 +52,7 @@ class PopulationManager {
     fun nextTurn(food: Float) {
         foodStored += food.roundToInt()
         if(food.roundToInt() < 0)
-            cityInfo.civInfo.addNotification(cityInfo.name + " {is starving}!", cityInfo.location, Color.RED)
+            cityInfo.civInfo.addNotification("["+cityInfo.name + "] is starving!", cityInfo.location, Color.RED)
         if (foodStored < 0)
         // starvation!
         {
@@ -69,7 +69,7 @@ class PopulationManager {
             if (cityInfo.getBuildingUniques().contains("25% of food carried over after a new citizen is born")) foodStored += (0.25f * getFoodToNextPopulation()).toInt() // Medical Lab special
             population++
             autoAssignPopulation()
-            cityInfo.civInfo.addNotification(cityInfo.name + " {has grown}!", cityInfo.location, Color.GREEN)
+            cityInfo.civInfo.addNotification("["+cityInfo.name + "] has grown!", cityInfo.location, Color.GREEN)
         }
     }
 

@@ -689,31 +689,31 @@
 	// If so then we need to deal with that as well
 	// I remember that some languages have upside-down question marks before to mark a question
 	
-	"has grown":{
-		Italian:"è cresciuta"
-		Russian:"вырос"
-		French:"a grandi"
-		Romanian:"a crescut"
-		German:"ist gewachsen"
-		Dutch:"is gegroeid"
+	"[cityName] has grown!":{
+		Italian:"[cityName] è cresciuta!"
+		Russian:"[cityName] вырос!"
+		French:"[cityName] a grandi!"
+		Romanian:"[cityName] a crescut!"
+		German:"[cityName] ist gewachsen!"
+		Dutch:"[cityName] is gegroeid!"
 	}
 	
-	"has been founded":{
-		Italian:"è stata fondata"
-		Russian:"был основан" 
-		French:"a été fondé"
-		Romanian:"a fost fondat"
-		German:"wurde gegründet"
-		Dutch:"is gesticht"
+	"[cityName] has been founded!":{
+		Italian:"[cityName] è stata fondata!"
+		Russian:"[cityName] был основан!" 
+		French:"[cityName] a été fondé!"
+		Romanian:"[cityName] a fost fondat!"
+		German:"[cityName] wurde gegründet!"
+		Dutch:"[cityName] is gesticht!"
 	}
 	
-	"has been razed to the ground":{
-		Italian:"è stata rasa al suolo"
-		Russian:"был разрушен до основания"
-		French:"a été rasé à terre"
-		Romanian:"a fost distrus la pământ"
-		German:"wurde dem Erdboden gleichgemacht"
-		Dutch:"Is totaal verwoest"
+	"[cityName] has been razed to the ground!":{
+		Italian:"[cityName] è stata rasa al suolo!"
+		Russian:"[cityName] был разрушен до основания!"
+		French:"[cityName] a été rasé à terre!"
+		Romanian:"[cityName] a fost distrus la pământ!"
+		German:"[cityName] wurde dem Erdboden gleichgemacht!"
+		Dutch:"[cityName] Is totaal verwoest!"
 	}
 	
 	"We have conquered the city of [cityname]!":{
@@ -725,40 +725,40 @@
 		Dutch:"We hebben de stad [cityname] ingenomen!"
 	}
 	
-	"Research of [tehnologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
-		Italian:"Ricerca di [tehnologyName] completata!"
-		Russian:"Исследование [tehnologyName] завершено!"
-		French:"Recherche de [tehnologyName] a completé!"
-		Romanian:"Cercetarea [tehnologyName] a finalizat!"
-		German:"[tehnologyName] wurde erforscht!"
-		Dutch:"[tehnologyName] is onderzocht!"
+	"Research of [technologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
+		Italian:"Ricerca di [technologyName] completata!"
+		Russian:"Исследование [technologyName] завершено!"
+		French:"Recherche de [technologyName] a completé!"
+		Romanian:"Cercetarea [technologyName] a finalizat!"
+		German:"[technologyName] wurde erforscht!"
+		Dutch:"[technologyName] is onderzocht!"
 	}
 	
-	"You have entered a golden age":{
-		Italian:"Sei entrato in un'età dell'oro"
-		Russian:"Вы вошли в золотой век"
-		French:"Vous êtes entré dans un âge d'or"
-		Romanian:"Ați intrat într-o epocă de aur"
-		German:"Ein goldenes Zeitalter ist eingetreten"
-		Dutch:"Een gouden eeuw is geariveerd"
+	"You have entered a golden age!":{
+		Italian:"Sei entrato in un'età dell'oro!"
+		Russian:"Вы вошли в золотой век!"
+		French:"Vous êtes entré dans un âge d'or!"
+		Romanian:"Ați intrat într-o epocă de aur!"
+		German:"Ein goldenes Zeitalter ist eingetreten!"
+		Dutch:"Een gouden eeuw is geariveerd!"
 	}
 
-	"is starving":{
-		Italian:"sta morendo di fame"
-		Russian:"голодает"
-		French:"est affamé"
-		Romanian:"suferă de foame"
-		German:"verhungert"
-		Dutch:"verhongerd"
+	"[cityName] is starving!":{
+		Italian:"[cityName] sta morendo di fame!"
+		Russian:"[cityName] голодает!"
+		French:"[cityName] est affamé!"
+		Romanian:"[cityName] suferă de foame!"
+		German:"[cityName] verhungert!"
+		Dutch:"[cityName] verhongerd!"
 	}
 	
-	"has been built in":{
-		Italian:"è stato/a costruito/a in"
-		Russian:"была построена в"
-		French:"a été construit en"
-		Romanian:"a fost construit in"
-		German:"wurde erbaut in"
-		Dutch:"is gebouwd in"
+	"[construction] has been built in [cityName]":{
+		Italian:"[construction] è stato/a costruito/a in [cityName]"
+		Russian:"[construction] была построена в [cityName]"
+		French:"[construction] a été construit en [cityName]"
+		Romanian:"[construction] a fost construit in [cityName]"
+		German:"[construction] wurde erbaut in [cityName]"
+		Dutch:"[construction] is gebouwd in [cityName]"
 	}
 	
 	"Work has started on [construction]":{
@@ -779,13 +779,13 @@
 		Dutch:"Er kan niet meer veder gewerkt worden aan [construction]"
 	}
 
-	"has expanded its borders":{
-		Italian:"ha espanso i suoi confini"
-		Russian:"расширил свои границы"
-		French:"a élargi ses frontières"
-		Romanian:"și-a extins frontierele"
-		German:"hat seine Grenzen erweitert"
-		Dutch:"heeft zijn grenzen uitgebreid"
+	"[cityname] has expanded its borders!":{
+		Italian:"[cityname] ha espanso i suoi confini!"
+		Russian:"[cityname] расширил свои границы!"
+		French:"[cityname] a élargi ses frontières!"
+		Romanian:"[cityname] și-a extins frontierele!"
+		German:"[cityname] hat seine Grenzen erweitert!"
+		Dutch:"[cityname] heeft zijn grenzen uitgebreid!"
 	}
 	"An enemy [unit] has attacked [cityname]":{
 		Italian:"Un [unit] nemico ha attaccato [cityname]"

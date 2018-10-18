@@ -46,7 +46,7 @@
 	{
 		name:"King",
 		baseHappiness:9,
-		researchCostModifier:1,
+		researchCostModifier:1.1,
 		unhappinessModifier:1,
 		aiCityGrowthModifier:0.9,
 		aiUnitMaintainanceModifier:0.8,
@@ -57,7 +57,7 @@
 	{
 		name:"Emperor",
 		baseHappiness:9,
-		researchCostModifier:1,
+		researchCostModifier:1.2,
 		unhappinessModifier:1,
 		aiCityGrowthModifier:0.85,
 		aiUnitMaintainanceModifier:0.75,
@@ -68,7 +68,7 @@
 	{
 		name:"Immortal",
 		baseHappiness:9,
-		researchCostModifier:1,
+		researchCostModifier:1.3,
 		unhappinessModifier:1,
 		aiCityGrowthModifier:0.75,
 		aiUnitMaintainanceModifier:0.65,
@@ -79,7 +79,7 @@
 	{
 		name:"Deity",
 		baseHappiness:9,
-		researchCostModifier:1,
+		researchCostModifier:1.5,
 		unhappinessModifier:1,
 		aiCityGrowthModifier:0.6,
 		aiUnitMaintainanceModifier:0.5,
