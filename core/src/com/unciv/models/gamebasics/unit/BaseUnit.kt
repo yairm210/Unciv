@@ -73,10 +73,11 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         return sb.toString()
     }
 
-    fun getMapUnit(): MapUnit {
+    fun getMapUnit(civInfo: CivilizationInfo): MapUnit {
         val unit = MapUnit()
         unit.name = name
         unit.setTransients() // must be after setting name because it sets the baseUnit according to the name
+        unit.civInfo = civInfo // needed for the getMaxMovement function below, since movement can be affected by wonders (e.g. Great Lighthouse)
         unit.currentMovement = unit.getMaxMovement().toFloat() // must be after setTransients because it relies on having the baseUnit set
         return unit
     }

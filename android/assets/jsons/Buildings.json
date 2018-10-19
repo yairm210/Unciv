@@ -112,6 +112,15 @@
 		requiredTech:"Optics"
 	},
 	{
+		name:"The Great Lighthouse",
+		culture:1,
+		greatPersonPoints:{gold:1},
+		isWonder:true,
+		providesFreeBuilding: "Lighthouse",
+		uniques:["Can only be built in coastal cities", "All military naval units receive +1 movement and +1 sight"]
+		requiredTech:"Optics"
+	},
+	{
 		name:"Stable", 
 		maintenance:1,
 		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]

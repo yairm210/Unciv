@@ -119,6 +119,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ### Classical Era
 
 * [Lighthouse](https://thenounproject.com/search/?q=lighthouse&i=866966) By Dolly Holmes
+* [Lighthouse](https://thenounproject.com/term/lighthouse/583069/) By Hea Poh Lin for The Great Lighthouse
 * [Temple](https://thenounproject.com/term/temple/1808407/) By 1516
 * [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
 * [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle

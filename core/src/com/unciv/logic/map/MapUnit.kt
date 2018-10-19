@@ -45,6 +45,11 @@ class MapUnit {
     fun getMaxMovement(): Int {
         var movement = baseUnit.movement
         movement += getUniques().count{it=="+1 Movement"}
+
+        if(baseUnit.unitType.isWaterUnit() && !baseUnit.unitType.isCivilian()
+                && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
+            movement += 1
+
         return movement
     }
 
@@ -76,6 +81,9 @@ class MapUnit {
         visibilityRange += getUniques().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
         if(civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
+            visibilityRange += 1
+        if(baseUnit.unitType.isWaterUnit() && !baseUnit.unitType.isCivilian()
+                && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
             visibilityRange += 1
         val tile = getTile()
         if (tile.baseTerrain == "Hill") visibilityRange += 1
