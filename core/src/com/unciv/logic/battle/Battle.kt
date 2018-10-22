@@ -59,7 +59,8 @@ class Battle(val gameInfo:GameInfo) {
 
         if(defender.isDefeated()
                 && defender.getUnitType() == UnitType.City
-                && attacker.isMelee()){
+                && attacker.isMelee()
+                && attacker.getUnitType().isLandUnit()){
             conquerCity((defender as CityCombatant).city, attacker)
         }
 
