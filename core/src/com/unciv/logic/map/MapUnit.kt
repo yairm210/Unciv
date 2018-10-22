@@ -107,8 +107,12 @@ class MapUnit {
 
     fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
-        if(tile.getBaseTerrain().type==TerrainType.Water && baseUnit.unitType.isLandUnit())
-            return false
+        if(tile.getBaseTerrain().type==TerrainType.Water && baseUnit.unitType.isLandUnit()){
+            if(!civInfo.tech.isResearched("Optics"))
+                return false
+            if(tile.baseTerrain == "Ocean" && !civInfo.tech.isResearched("Astronomy"))
+                return false
+        }
         if(tile.getBaseTerrain().type==TerrainType.Land && baseUnit.unitType.isWaterUnit())
             return false
         if(tile.baseTerrain=="Ocean" && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
@@ -156,6 +160,13 @@ class MapUnit {
 
     fun isEmbarked(): Boolean {
         return currentTile.baseTerrain=="Ocean"||currentTile.baseTerrain=="Coast"
+    }
+
+    fun getEmbarkedMovement(){
+        var movement=2
+        movement += civInfo.tech.techsResearched.map { GameBasics.Technologies[it]!! }
+                        .count { it.baseDescription!=null && it.baseDescription!! == "Increases embarked movement" }
+        if(civInfo.tech.isResearched("Steam Power")) movement += 1
     }
 
     //endregion
