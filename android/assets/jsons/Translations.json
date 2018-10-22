@@ -1548,6 +1548,7 @@
 		Romanian:"Reper"
 		// German translation not sure
 		// Dutch translation not sure
+		Spanish:"Lugar emblemático"
 	}
 	"Manufactory":{
 		Italian:"Fabbrica"
@@ -1556,6 +1557,7 @@
 		Romanian:"Fabrică"
 		German:"Fabrik"
 		Dutch:"Fabriek"
+		Spanish:"Fábrica"
 	}
 	"Customs house":{
 		Italian:"Dogane"
@@ -1564,6 +1566,7 @@
 		Romanian:"Casa vamală"
 		German:"Zollamt"
 		Dutch:"Douanekantoor"
+		Spanish:"Aduana"
 	}
 	
 	
@@ -1575,6 +1578,7 @@
 		French:"Agriculture"
 		Romanian:"Agricultură"
 		Dutch:"Agricultuur"
+		Spanish:"Agricultura"
 	}
 	
 	"Pottery":{
@@ -1584,6 +1588,7 @@
 		Romanian:"Ceramică"
 		German:"Töpferkunst"
 		Dutch:"Aardwerk"
+		Spanish:"Cerámica"
 	}
 	"Animal Husbandry":{
 		Italian:"Allevamento di animali"
@@ -1592,6 +1597,7 @@
 		Romanian:"Creșterea animalelor"
 		German:"Tierhalutung"
 		Dutch:"Veeteelt"
+		Spanish:"Ganadería"
 	}
 	"Archery":{
 		Italian:"Tiro con l'arco"
@@ -1600,6 +1606,7 @@
 		Romanian:"TIR cu arcul"
 		German:"Bogenschiessen"
 		Dutch:"Boogschieten"
+		Spanish:"Tiro con arco"
 	}
 	"Mining":{
 		Italian:"Estrazione minerarie"
@@ -1608,6 +1615,7 @@
 		Romanian:"Exploatare minieră"
 		German:"Bergbau"
 		Dutch:"Mijnbouw"
+		Spanish:"Minería"
 	}
 	"Sailing":{
 		Italian:"Vela"
@@ -1616,6 +1624,7 @@
 		Romanian:"Navigație"
 		German:"Segeln"
 		Dutch:"Zeilen"
+		Spanish:"Náutica"
 	}
 	"Calendar":{
 		Italian:"Calendario"
@@ -1624,6 +1633,7 @@
 		Romanian:"Calendar"
 		German:"Kalender"
 		Dutch:"Kalender"
+		Spanish:"Calendario"
 	}
 	"Writing":{
 		Italian:"Scrittura"
@@ -1632,6 +1642,7 @@
 		Romanian:"Scriere"
 		German:"Schrift"
 		Dutch:"Schrift"
+		Spanish:"Escritura"
 	}
 	"Trapping":{
 		Italian:"Caccia"
@@ -1640,6 +1651,7 @@
 		Romanian:"Vânătoare"
 		German:"Fallen"
 		Dutch:"Valstrikken"
+		Spanish:"Caza"
 	}
 	"The Wheel":{
 		Italian:"Ruota"
@@ -1648,6 +1660,7 @@
 		Romanian:"Roata"
 		German:"Das Rad"
 		Dutch:"Het Wiel"
+		Spanish:"La rueda"
 	}
 	"Masonry":{
 		Italian:"Muratura"
@@ -1656,6 +1669,7 @@
 		Romanian:"Zidărie"
 		German:"Maurerei"
 		Dutch:"Metselkunst"
+		Spanish:"Albañilería"
 	}
 	"Bronze Working":{
 		Italian:"Lavorazione del bronzo"
@@ -1664,6 +1678,7 @@
 		Romanian:"Prelucrarea bronzului"
 		German:"Bronze Bearbeitung"
 		Dutch:"Brons Bewerking"
+		Spanish:"Trabajo del bronce"
 	}
 	
 	
@@ -1676,6 +1691,7 @@
 		Romanian:"Optica"
 		German:"Optik"
 		Dutch:"Optica"
+		Spanish:"Óptica"
 	}
 	"Horseback Riding":{
 		Italian:"Equitazione"
@@ -1684,6 +1700,7 @@
 		Romanian:"Călărie"
 		German:"Reiten"
 		Dutch:"Paardrijden"
+		Spanish:"Equitación"
 	}
 	"Mathematics":{
 		Italian:"Matematica"
@@ -1692,6 +1709,7 @@
 		Romanian:"Matematică"
 		German:"Mathematik"
 		Dutch:"Wiskunde"
+		Spanish:"Matemáticas"
 	}
 	"Construction":{
 		Italian:"Costruzione"
@@ -1700,6 +1718,7 @@
 		Romanian:"Clădire"
 		German:"Baukunst"
 		Dutch:"Bouwkunde"
+		Spanish:"Construcción"
 	}
 	"Philosophy":{
 		Italian:"Filosofia"
@@ -1708,6 +1727,7 @@
 		Romanian:"Filozofie"
 		German:"Philosophie"
 		Dutch:"Filosofie"
+		Spanish:"Filosofía"
 	}
 	"Currency":{
 		Italian:"Valuta"
@@ -1716,6 +1736,7 @@
 		Romanian:"Valută"
 		German:"Geld"
 		Dutch:"Geld"
+		Spanish:"Moneda"
 	}
 	"Engineering":{
 		Italian:"Ingegneria"
@@ -1724,6 +1745,7 @@
 		Romanian:"Inginerie"
 		German:"Ingenieurwesen"
 		Dutch:"Ingenieurswezen"
+		Spanish:"Ingeniería"
 	}
 	"Iron Working":{
 		Italian:"Lavorazione del ferro"
@@ -1732,6 +1754,7 @@
 		Romanian:"Prelucrarea fierului"
 		German:"Eisen Bearbeitung"
 		Dutch:"Ijzer Bewerking"
+		Spanish:"Trabajo del hierro"
 	}
 	
 	
@@ -1744,6 +1767,7 @@
 		Romanian:"Teologie"
 		German:"Theologie"
 		Dutch:"Theologie"
+		Spanish:"Teología"
 	}
 	"Civil Service":{
 		Italian:"Servizio civile"
@@ -1752,6 +1776,7 @@
 		Romanian:"Serviciu civil"
 		German:"Zivildienst"
 		Dutch:"Overheidsdienst"
+		Spanish:"Servicio civil"
 	}
 	"Guilds":{
 		Italian:"Gilde"
@@ -1759,6 +1784,7 @@
 		French:"Guildes"
 		Romanian:"Bresle"
 		Dutch:"Gildes"
+		Spanish:"Gremios"
 	}
 	"Physics":{
 		Italian:"Fisica"
@@ -1767,6 +1793,7 @@
 		Romanian:"Fizică"
 		German:"Physik"
 		Dutch:"Fysica"
+		Spanish:"Física"
 	}
 	"Metal Casting":{
 		Italian:"Colata di metallo"
@@ -1775,6 +1802,7 @@
 		Romanian:"Turnarea metalului"
 		German:"Metallurgie"
 		Dutch:"Metaal gieten"
+		Spanish:"Fundición"
 	}
 	"Steel":{
 		Italian:"Acciaio"
@@ -1782,6 +1810,7 @@
 		French:"Acier"
 		Romanian:"Oţel"
 		Dutch:"Staal"
+		Spanish:"Acero"
 	}
 	"Compass":{
 		Italian:"Bussola"
@@ -1790,6 +1819,7 @@
 		Romanian:"Busolă"
 		German:"Kompass"
 		Dutch:"Kompas"
+		Spanish:"Brújula"
 	}
 	"Education":{
 		Italian:"Istruzione"
@@ -1798,6 +1828,7 @@
 		Romanian:"Educaţie"
 		German:"Bildung"
 		Dutch:"Educatie"
+		Spanish:"Educación"
 	}
 	"Chivalry":{
 		Italian:"Codice cavalleresco"
@@ -1806,6 +1837,7 @@
 		Romanian:"Cavalerime"
 		German:"Kavallerie"
 		Dutch:"Ridderlijkheid"
+		Spanish:"Caballería"
 	}
 	"Machinery":{
 		Italian:"Meccanica"
@@ -1814,6 +1846,7 @@
 		Romanian:"Mașini"
 		German:"Maschienenbau"
 		Dutch:"Machinebouw"
+		Spanish:"Mecánica"
 	}
 	
 	
@@ -1826,6 +1859,7 @@
 		Romanian:"Astronomie"
 		German:"Astronomie"
 		Dutch:"Astronomie"
+		Spanish:"Astronomía"
 	}
 	"Acoustics":{
 		Italian:"Acustica"
@@ -1834,6 +1868,7 @@
 		Romanian:"Acustică"
 		German:"Akustik"
 		Dutch:"Akoestiek"
+		Spanish:"Acústica"
 	}
 	"Banking":{
 		Italian:"Sistema bancario"
@@ -1842,6 +1877,7 @@
 		Romanian:"Banca"
 		German:"Bank"
 		Dutch:"Bank"
+		Spanish:"Banca"
 	}
 	"Printing Press":{
 		Italian:"Tipografia"
@@ -1850,6 +1886,7 @@
 		Romanian:"Presă de tipar"
 		German:"Druckpresse"
 		Dutch:"Drukpers"
+		Spanish:"Imprenta"
 	}
 	"Gunpowder":{
 		Italian:"Polvere da sparo"
@@ -1857,6 +1894,7 @@
 		French:"Poudre à canon"
 		Romanian:"Praf de puşcă"
 		Dutch:"Buskruid"
+		Spanish:"Pólvora"
 	}
 	"Navigation":{
 		Italian:"Navigazione"
@@ -1865,6 +1903,7 @@
 		Romanian:"Navigare"
 		German:"Navigation"
 		Dutch:"Navigatie"
+		Spanish:"Navegación"
 	}
 	"Archaeology":{
 		Italian:"Archeologia"
@@ -1873,6 +1912,7 @@
 		Romanian:"Arheologie"
 		German:"Archeologie"
 		Dutch:"Archeologie"
+		Spanish:"Arqueología"
 	}
 	"Economics":{
 		Italian:"Economia"
@@ -1881,6 +1921,7 @@
 		Romanian:"Economie"
 		German:"Ökonomie"
 		Dutch:"Economie"
+		Spanish:"Economía"
 	}
 	
 	"Metallurgy":{
@@ -1889,6 +1930,7 @@
 		French:"Métallurgie"
 		Romanian:"Metalurgie"
 		Dutch:"Metaalkunde"
+		Spanish:"Metalurgia"
 	}
 	
 	"Chemistry":{
@@ -1898,6 +1940,7 @@
 		Romanian:"Chimie"
 		German:"Chemie"
 		Dutch:"Chemie"
+		Spanish:"Química"
 	}
 	
 	// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
@@ -1909,6 +1952,7 @@
 		Romanian:"Teoria științifică"
 		German:"Wissenschaftliche Thorie"
 		Dutch:"Wetenschappelijke Theorie"
+		Spanish:"Teoría científica"
 	}
 	
 	"Industrialization":{
@@ -1917,6 +1961,7 @@
 		French:"Industrialisation"
 		Romanian:"Industrializare"
 		Dutch:"Industrialisatie"
+		Spanish:"Industrialización"
 	}
 	"Rifling":{
 		Italian:"Rigatura"
@@ -1924,6 +1969,7 @@
 		French:"Rayeur"
 		Romanian:"Ghintuire"
 		Dutch:"Gedraaide loop"
+		Spanish:"Estriado"
 	}
 	"Military Science":{
 		Italian:"Scienza militare"
@@ -1931,6 +1977,7 @@
 		French:"Science militaire"
 		Romanian:"Știință militară"
 		Dutch:"Militaire Wetenschap"
+		Spanish:"Ciencia militar"
 	}
 	
 	"Fertilizer":{
@@ -1940,6 +1987,7 @@
 		Romanian:"Îngrăşământ"
 		German:"Dünger"
 		Dutch:"Mest"
+		Spanish:"Fertilizante"
 	}
 	"Biology":{
 		Italian:"Biologia"
@@ -1948,6 +1996,7 @@
 		Romanian:"Biologie"
 		German:"Biologie"
 		Dutch:"Biologie"
+		Spanish:"Biología"
 	}
 	"Electricity":{
 		Italian:"Electricità"
@@ -1956,6 +2005,7 @@
 		Romanian:"Electricitate"
 		German:"Elektrizität"
 		Dutch:"Elektriciteit"
+		Spanish:"Electricidad"
 	}
 	"Steam Power":{
 		Italian:"Energia a vapore"
@@ -1964,6 +2014,7 @@
 		Romanian:"Puterea aburului"
 		German:"Dampfkraft"
 		Dutch:"Stoomkracht"
+		Spanish:"Energía de vapor"
 	}
 	
 	"Dynamite":{
@@ -1972,6 +2023,7 @@
 		French:"Dynamiter"
 		Romanian:"Dinamită"
 		Dutch:"Dynamiet"
+		Spanish:"Dinamita"
 	}
 	
 	
@@ -1984,6 +2036,7 @@
 		Romanian:"Refrigeraţie"
 		German:"Kühlung"
 		Dutch:"Koeling"
+		Spanish:"Refrigeración"
 	}
 	"Radio":{
 		Italian:"Radio"
@@ -1992,6 +2045,7 @@
 		Romanian:"Radio"
 		German:"Radio"
 		Dutch:"Radio"
+		Spanish:"Radio"
 	}
 	"Combustion":{
 		Italian:"Combustione"
@@ -2000,6 +2054,7 @@
 		Romanian:"Combustie"
 		German:"Verbrennung"
 		Dutch:"Verbranding"
+		Spanish:"Combustión"
 	}
 	"Plastics":{
 		Italian:"Plastica"
@@ -2008,6 +2063,7 @@
 		Romanian:"Materiale plastice"
 		German:"Plastik"
 		Dutch:"Plastic"
+		Spanish:"Plástico"
 	}
 	"Electronics":{
 		Italian:"Elettronica"
@@ -2016,6 +2072,7 @@
 		Romanian:"Electronică"
 		German:"Elektronik"
 		Dutch:"Elektronica"
+		Spanish:"Electrónica"
 	}
 	"Mass Media":{
 		Italian:"Mass media"
@@ -2024,6 +2081,7 @@
 		Romanian:"Mass media"
 		German:"Massenmedien"
 		Dutch:"Massa Media"
+		Spanish:"Medios de comunicación"
 	}
 	"Flight":{
 		Italian:"Volo"
@@ -2032,6 +2090,7 @@
 		Romanian:"Zbor"
 		German:"Flug"
 		Dutch:"Vlucht"
+		Spanish:"Vuelo"
 	}
 	
 	// Technologies (Information Era)
@@ -2043,6 +2102,7 @@
 		Romanian:"Produse farmaceutice"
 		German:"Pharmazeut"
 		Dutch:"Farmaceutica"
+		Spanish:"Farmacéutica"
 	}
 	"Computers":{
 		Italian:"Computer"
@@ -2051,6 +2111,7 @@
 		Romanian:"Calculatoare"
 		German:"Computer"
 		Dutch:"Computers"
+		Spanish:"Ordenadores"
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
@@ -2059,6 +2120,7 @@
 		Romanian:"Fisiune nucleara"
 		German:"Kernspaltung"
 		Dutch:"Kernsplijting"
+		Spanish:"Fisión nuclear"
 	}
 	"Ecology":{
 		Italian:"Ecologia"
@@ -2067,6 +2129,7 @@
 		Romanian:"Ecologie"
 		German:"Ökologie"
 		Dutch:"Ecologie"
+		Spanish:"Ecología"
 	}
 	"Robotics":{
 		Italian:"Robotica"
@@ -2075,6 +2138,7 @@
 		Romanian:"Robotică"
 		German:"Robotik"
 		Dutch:"Robotica"
+		Spanish:"Robótica"
 	}
 	"Rocketry":{
 		Italian:"Missilistica"
@@ -2083,6 +2147,7 @@
 		Romanian:"Rachete"
 		German:"Raketentechnik"
 		Dutch:"Rakettechniek"
+		Spanish:"Cohetería"
 	}
 	
 	// Technologies (Future Era)
@@ -2093,6 +2158,7 @@
 		Romanian:"Nanotehnologie"
 		German:"Nanotechnologie"
 		Dutch:"Nanotechnologie"
+		Spanish:"Nanotecnología"
 	}
 	"Satellites":{
 		Italian:"Satelliti"
@@ -2101,6 +2167,7 @@
 		Romanian:"Sateliții"
 		German:"Satelitten"
 		Dutch:"Satellieten"
+		Spanish:"Satélites"
 	}
 	"Particle Physics":{
 		Italian:"Fisica delle particelle"
@@ -2109,6 +2176,7 @@
 		Romanian:"Fizica particulelor"
 		German:"Teilchenphysik"
 		Dutch:"Deeltjesfysica"
+		Spanish:"Física de partículas"
 	}
 	"Future Tech":{
 		Italian:"Tecnologia del futuro"
@@ -2117,20 +2185,25 @@
 		Romanian:"Tehnologia viitoare"
 		German:"Zukünftige Technologien"
 		Dutch:"Toekomst Technologie"
+		Spanish:"Tecnología del futuro"
 	}
 	
 	//Why do we have duplicates? Anyway i have translated it
 	"Enables conversion of city production to gold":{
 		Russian:"Разрешает конверсию производства в золото"
+		Spanish:"Habilita la conversión de producción a oro"
 	}
 	"Enables conversion of city production to science":{
 		Russian:"Разрешает конверсию производства в науку"
+		Spanish:"Habilita la conversión de producción a ciencia"
 	}
 	"Improves movement speed on roads":{
 		Russian:"Ускоряет скорость передвижения по дорогам"
+		Spanish:"Mejora la velocidad de movimiento en carreteras"
 	}
 	"+10% science and production in all cities":{
 		Russian:"+10% науки и производства во всех городах"
+		Spanish:"+10% de ciencia y producción en todas las ciudades"
 	}
 	
 	
@@ -2140,6 +2213,7 @@
 		French:"Qui sait ce que l'avenir réserve?"
 		Romanian:"Chi sa cosa riserva il futuro?"
 		Dutch:"Wie weet wat de toekomst inhoud?"
+		Spanish:"¿Quién sabe qué nos depara el futuro?"
 	}
 	
 	"Improves movement speed on roads":{
@@ -2147,18 +2221,21 @@
 		Russian:"Улучшает скорость передвижения по дорогам"
 		French:"Améliore la vitesse de déplacement sur les routes"
 		Romanian:"Îmbunătățește viteza de mișcare pe drumuri"
+		Spanish:"Mejora la velocidad de movimiento en carreteras"
 	}
 	"Enables conversion of city production to science":{
 		Italian:"Consente la conversione della produzione di città in scienza"
 		Russian:"Разрешает конверсию производства в науку"
 		French:"Permet la conversion de la production de la ville en science"
 		Romanian:"Permite conversia producției în oraș la știință"
+		Spanish:"Habilita la conversión de producción a ciencia"
 	}
 	"Enables conversion of city production to gold":{
 		Italian:"Consente la conversione della produzione di città in oro"
 		Russian:"Разрешает конверсию производства в золото"
 		French:"Permet la conversion de la production de la ville en or"
 		Romanian:"Permite conversia producției în oraș la aur"
+		Spanish:"Habilita la conversión de producción a oro"
 	}
 	
 	// Tech Eras
@@ -2170,6 +2247,7 @@
 		French:"Ancien"
 		Romanian:"Antica"
 		Dutch:"Oude"
+		Spanish:"Edad antigua"
 	}
 	"Classical era":{
 		Italian:"Classica"
@@ -2177,6 +2255,7 @@
 		French:"Classique"
 		Romanian:"Clasica"
 		Dutch:"Klasieke"
+		Spanish:"Edad clásica"
 	}
 	"Medieval era":{
 		Italian:"Medioevo" //one word translation
@@ -2184,6 +2263,7 @@
 		French:"Médiéval"
 		Romanian:"Medievala"
 		Dutch:"Middeleeuwse"
+		Spanish:"Edad medieval"
 	}
 	"Renaissance era":{
 		Italian:"Rinascimento" //one word translation
@@ -2191,6 +2271,7 @@
 		French:"Renaissance" //one word translation
 		Romanian:"Renaşterei"
 		Dutch:"Renaissance"
+		Spanish:"Renacimiento"
 	}
 	"Industrial era":{
 		Italian:"Industriale"
@@ -2198,6 +2279,7 @@
 		French:"Industriel"
 		Romanian:"Industriala"
 		Dutch:"Industrieele"
+		Spanish:"Era industrial"
 	}
 	"Modern era":{
 		Italian:"Moderna"
@@ -2205,6 +2287,7 @@
 		French:"Moderne"
 		Romanian:"Moderna"
 		Dutch:"Moderne"
+		Spanish:"Edad moderna"
 	}
 	"Information era":{
 		Italian:"Informatica"     //[newEra] +translation
@@ -2212,6 +2295,7 @@
 		French:"Information"
 		Romanian:"Informației"
 		Dutch:"Informatie"
+		Spanish:"Era de la información"
 	}
 	"Future era":{
 		Italian:"Futura"
@@ -2219,6 +2303,7 @@
 		French:"Avenir" 
 		Romanian:"Viitor"
 		Dutch:"Toekomst"
+		Spanish:"Era futura"
 	}
 	
 	// Building unique abilities
@@ -2230,6 +2315,7 @@
 		Romanian:"+1 știință pe 2 persoane"
 		German:"+1 Erforschung pro 2 Bewohner"
 		Dutch:"+1 Wetenschap per 2 Populatie"
+		Spanish:"+1 Ciencia cada 2 habitantes"
 	}
 	"Worker construction increased 25%":{
 		Italian:"+25% velocità costruzione lavoratori"
@@ -2238,6 +2324,7 @@
 		Romanian:"Lucrările de construcție a crescut cu 25%"
 		German:"Arbeiterproduktion um 25% erhöht"
 		Dutch:"Werkerproducktie met 25% vehoogt"
+		Spanish:"+25% velocidad de construcción trabajador"
 	}
 	"Provides 2 free workers":{
 		Italian:"Offre 2 lavoratori liberi"
@@ -2246,6 +2333,7 @@
 		Romanian:"Oferă 2 lucrători liberi"
 		German:"Gibt 2 freie Arbeiter"
 		Dutch:"Geeft 2 gratis werkers"
+		Spanish:"Proporciona 2 trabajadores gratis"
 	}
 	"Free Social Policy":{
 		Italian:"Politica sociale gratuita"
@@ -2254,6 +2342,7 @@
 		Romanian:"Politica socială gratuită"
 		German:"Freie Sozialpolitik"
 		Dutch:"Gratis sociaalbeleid"
+		Spanish:"Política social gratis"
 	}
 	"Golden Age length increases +50%":{
 		Italian:"+50% durata dell'Età dell'Oro"
@@ -2262,6 +2351,7 @@
 		Romanian:"Vârsta de aur crește + 50%"
 		German:"Länge eines Goldenen Zeitalters um 50% erhöht"
 		Dutch:"Gouden eeuw lengte neem toe met +50%"
+		Spanish:"La Edad de Oro dura 50% más"
 	}
 	"+33% great person generation in all cities":{
 		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
@@ -2270,6 +2360,7 @@
 		Romanian:"+ 33% generație mare de persoane în toate orașele"
 		// German translation not sure
 		Dutch:"+33% Geweldig persoon generatie in alle steden"
+		Spanish:"+33% generación de Grandes Personas en todas las ciudades"
 	}
 	"Gold from all trade routes +25%":{
 		Italian:"+25% oro da ogni rotta commerciale"
@@ -2278,6 +2369,7 @@
 		Romanian:"Aur din toate rutele comerciale + 25%"
 		German:"Gold von allen Handelsrouten um 25% erhöht"
 		Dutch:"Van alle handelroutes +25% goud"
+		Spanish:"+25% de oro en todas las rutas de comercio"
 	}
 	"40% of food is carried over after a new citizen is born":{
 		Italian:"Il 40% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
@@ -2286,6 +2378,7 @@
 		Romanian:"40% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
 		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
 		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
+		Spanish:"40% de comida es arrastrada cada vez que nace un nuevo habitante"
 	}
 	"Jungles provide +2 science":{
 		Italian:"+2 scienzada giungle"
@@ -2294,6 +2387,7 @@
 		Romanian:"Junglele oferă știință +2"
 		German:"Dschungel produziert 2 Erforschung"
 		Dutch:"Oerwouden leveren +2 Wetenschap"
+		Spanish:"Las selvas proporcionan +2 ciencia"
 	}
 	"Cost of acquiring new tiles reduced by 25%":{
 		Italian:"-25% costo di acquisto di nuove celle"
@@ -2302,6 +2396,7 @@
 		Romanian:"Costul de achiziționare a plăcilor noi a scăzut cu 25%"
 		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
 		Dutch:"Kosten voor het kopen van nieuwe velden verlaagt met 25%"
+		Spanish:"El coste de adquirir nuevas casillas se reduce 25%"
 	}
 	"Culture in all cities increased by 25%":{
 		Italian:"+25% cultura in ogni città"
@@ -2310,6 +2405,7 @@
 		Romanian:"Cultura în toate orașele a crescut cu 25%"
 		German:"Kultur wird in allen Städten um 25% erhöht"
 		Dutch:"Cultuur word in alle steden verhoogd met 25%"
+		Spanish:"Cultura en todas las ciudades incrementada 25%"
 	}
 	"Unhappiness from population decreased by 10%":{
 		Italian:"-10% infelicità della popolazione"
@@ -2318,6 +2414,7 @@
 		Romanian:"Nefericirea de la populație a scăzut cu 10%"
 		German:"Unzufriedenheit vom Volk um 10% verringert"
 		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
+		Spanish:"Infelicidad de la población reducida 10%"
 	}
 	"Empire enters golden age":{
 		Italian:"L'impero entra nell'Età dell'Oro"
@@ -2326,6 +2423,7 @@
 		Romanian:"Imperiul intră în epoca de aur"
 		German:"Das Reich tritt ein goldenes Zeitalter an"
 		Dutch:"Het rijk betreed een gouden eeuw"
+		Spanish:"El imperio comienza una Edad de Oro"
 	}
 	"Free Great Artist Appears":{
 		Italian:"Appare un Grande Artista gratuito"
@@ -2334,6 +2432,7 @@
 		Romanian:"Artistul Mare apare gratuit"
 		// German translation not sure
 		Dutch:"Een gratis geweldige artiest verschijnt"
+		Spanish:"Aparece un Gran Artista gratis"
 	}
 	"Culture cost of adopting new Policies reduced by 10%":{
 		Italian:"-10% costo in cultura per nuove politiche"
@@ -2342,6 +2441,7 @@
 		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
 		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
 		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
+		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
 	}
 	"Provides 1 happiness per social policy":{
 		Italian:"Fornisce 1 felicità per politica sociale"
@@ -2350,6 +2450,7 @@
 		Romanian:"Oferă 1 fericire pe politică socială"
 		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
 		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
+		Spanish:"Otorga 1 felicidad por cada política social"
 	}
 	"Must be next to desert":{
 		Italian:"Deve trovarsi vicino al deserto"
@@ -2358,6 +2459,7 @@
 		Romanian:"Trebuie să fie lângă deșert"
 		German:"Muss an eine Wüste grenzen"
 		Dutch:"Moet aan een woestijn grenzen"
+		Spanish:"Debe estar próximo a un desierto"
 	}
 	"Enables construction of Spaceship parts":{
 		Italian:"Consente la costruzione di parti di navi spaziali"
@@ -2366,6 +2468,7 @@
 		Romanian:"Permite construcția de părți ale navelor spațiale"
 		German:"Schaltet Arbeit an Raumschiffteilen frei"
 		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
+		Spanish:"Habilita la construcción de partes de Nave Espacial"
 	}
 	"Increases production of spaceship parts by 50%":{
 		Italian:"+50% produzione di parti di navi spaziali"
@@ -2374,6 +2477,7 @@
 		Romanian:"Crește producția de piese de navă spațială cu 50%"
 		German:"Erhöht Produktion an Raumschiffteilen um 50%"
 		Dutch:"Verhoogd de productiesnelheid van ruimteschips onderdelen met 50%"
+		Spanish:"Incrementa la producción de partes de Nave Espacial 50%"
 	}
 	"Spaceship part":{
 		Italian:"Parte della nave spaziale"
@@ -2382,6 +2486,7 @@
 		Romanian:"Partea spațială a navei"
 		German:"Raumschiffteil"
 		Dutch:"Ruimteschip onderdeel"
+		Spanish:"Parte de Nave Espacial"
 	}
 	
 	// Unit types
@@ -2392,6 +2497,7 @@
 		Romanian:"Civil"
 		German:"Zivilist"
 		Dutch:"Burger"
+		Spanish:"Civil"
 	}
 	"Melee":{
 		Italian:"Da mischia"
@@ -2400,6 +2506,7 @@
 		Romanian:"Incăierare"
 		German:"Nahkämpfer"
 		Dutch:"Melee"
+		Spanish:"Cuerpo a cuerpo"
 	}
 	"Ranged":{
 		Italian:"A distanza"
@@ -2408,6 +2515,7 @@
 		Romanian:"ranged"
 		German:"Fernkämpfer"
 		Dutch:"Afstands"
+		Spanish:"A distancia"
 	}
 	"Siege":{
 		Italian:"D'assedio"
@@ -2416,6 +2524,7 @@
 		Romanian:"Asediu"
 		German:"Belagerungsmaschiene"
 		Dutch:"Belegering"
+		Spanish:"Asedio"
 	}
 	"Mounted":{
 		Italian:"A cavallo"
@@ -2424,6 +2533,7 @@
 		Romanian:"Montat"
 		German:"Kavallerie"
 		Dutch:"Bereden"
+		Spanish:"A caballo"
 	}
 	"Scout":{
 		Italian:"D'esplorazione"
@@ -2432,6 +2542,7 @@
 		Romanian:"Cercetaș"
 		German:"Kundschafter"
 		Dutch:"Verkening"
+		Spanish:"Explorador"
 	}
 	"City":{
 		Italian:"Città"
@@ -2440,6 +2551,7 @@
 		Romanian:"Oraș"
 		German:"Stadt"
 		Dutch:"Stad"
+		Spanish:"Ciudad"
 	}
 	
 	
@@ -2451,6 +2563,7 @@
 		Romanian:"Poate construi îmbunătățiri pe plăci"
 		German:"Kan Verbesserungen auf Feldern bauen"
 		Dutch:"Kan verbeteringen op velden bouwen"
+		Spanish:"Puede construir mejoras en casillas"
 	}
 	"Founds a new city":{
 		Italian:"Fonda una nuova città"
@@ -2459,6 +2572,7 @@
 		Romanian:"Creează un oraș nou"
 		German:"Gründet eine neue Stadt"
 		Dutch:"Sticht een nieuwe stad"
+		Spanish:"Funda una nueva ciudad"
 	}
 	"Ignores terrain cost":{
 		Italian:"Ignora il costo del terreno"
@@ -2467,6 +2581,7 @@
 		Romanian:"Ignoră costul terenului"
 		// German translation not sure
 		Dutch:"Negeert terreinskosten"
+		Spanish:"Ignora el coste del terreno"
 	}
 	"No defensive terrain bonus":{
 		Italian:"Nessun bonus sul terreno difensivo"
@@ -2475,6 +2590,7 @@
 		Romanian:"Niciun bonus de teren defensiv"
 		German:"Keinen Geländeabhängigen Verteidigunsbonus"
 		Dutch:"Geen defensiefe terreinsbonussen"
+		Spanish:"Sin bonus de defensa de terreno"
 	}
 	"Rough terrain penalty":{
 		Italian:"Penalità su terreno grezzo"
@@ -2483,6 +2599,7 @@
 		Romanian:"Зenalizare pentru teren accidentat"
 		German:"Nachteil bei rauem Gelände"
 		Dutch:"Nadeel in ruig terrein"
+		Spanish:"Penalización en terreno escabroso"
 	}
 	"Bonus vs [unitType]":{
 		Italian:"Bonus contro [unitType]"
@@ -2491,6 +2608,7 @@
 		Romanian:"Bonus vs [unitType]"
 		German:"Vorteil gegen eine(n) [unitType]" // Gender sensitive
 		Dutch:"Voordeel tegen [unitType]"
+		Spanish:"Bonus contra [unitType]"
 	}
 	"Penalty vs [unitType]":{
 		Italian:"Penalità contro [unitType]"
@@ -2499,6 +2617,7 @@
 		Romanian:"Penalitate vs [unitType]"
 		German:"Nachteil gegen eine(n) [unitType]" // Gender sensitive
 		Dutch:"Nadeel tegen [unitType]"
+		Spanish:"Penalización contra [unitType]"
 	}
 	"Must set up to ranged attack":{
 		Italian:"Deve impostare un attacco a distanza"
@@ -2507,6 +2626,7 @@
 		Romanian:"Trebuie să fie pregătit să atace"
 		German:"Muss aufstellen um Fernattacken auszuführen"
 		Dutch:"Moet opstellen voordat er een aanval op afstand kan worden gemaakt"
+		Spanish:"Debe montarse para atacar a distancia"
 	}
 	"Can move after attacking":{
 		Italian:"Può muoversi dopo aver attaccato"
@@ -2515,6 +2635,7 @@
 		Romanian:"Poate să se miște după ce a atacat"
 		German:"Kann sich nach dem Angriff bewegen"
 		Dutch:"Kan zich verplaatsen na het aanvallen"
+		Spanish:"Puede mover después de atacar"
 	}
 	"Limited Visibility":{
 		Italian:"Visibilità limitata"
@@ -2523,6 +2644,7 @@
 		Romanian:"Vizibilitate redusă"
 		German:"Begrenzte Sichtweite"
 		Dutch:"Gelimiteerd zicht"
+		Spanish:"Visibilidad limitada"
 	}
 	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
 		Italian:"Può iniziare un'Età dell'Oro da 8 turni o costruire un Gran Monunento (+6 cultura)"
@@ -2531,6 +2653,7 @@
 		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (cultura + 6)"
 		// German translation not sure
 		// Dutch translation not sure
+		Spanish:"Puede comenzar una Edad de Oro de 8 turnos o construir un Edificio Emblemático (+6 cultura)"
 	}
 	"Can discover a technology, or construct an Academy (+4 science)" :{
 		Italian:"Può scoprire una tecnologia o costruire un'Accademia (+4 scienza)"
@@ -2539,6 +2662,7 @@
 		Romanian:"Poate să descopere o tehnologie sau să construiască o Academie (știință +4)"
 		German:"Kann eine Technologie entdecken, oder eine Akademie (+4 Erforschung) bauen"
 		Dutch:"Kan een technologie ontdekken, of een Academie (+4wetenschap) bouwen"
+		Spanish:"Puede descubrir una tecnología o construir una Academia (+4 ciencia)"
 	}
 	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)":{
 		Italian:"Può intraprendere una missione commerciale, dare una grande somma di oro, o costruire una Dogana (+4 oro)"
@@ -2547,6 +2671,7 @@
 		Romanian:"Poate să întreprindă o misiune comercială, să dea o sumă mare de aur sau să construiască o casă vamală (+4 de aur)"
 		German:"Kann eine Handelsmission unternehmen, viel Gold geben oder ein Zollamt (+4 Gold) bauen"
 		Dutch:"Kan een handelsmissie ondergaan, levert veel goud op, of bouwt een Douanekantoor (+4 goud) bouwen"
+		Spanish:"Puede emprender una misión de comercio que proporciona una gran suma de oro, o construir una Aduana (+4 oro)"
 	}
 	"Can speed up construction of a wonder, or construct a Manufactory (+4 production)":{
 		Italian:"Può velocizzare la costruzione di una meraviglia, o costruire una Manifattura (+4 produzione)"
@@ -2555,6 +2680,7 @@
 		Romanian:"Poate accelera construcția unei minune sau poate construi o fabrică (+4 producție)"
 		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
 		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
+		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
 	}
 	
 	// Policy picker screen
@@ -2564,6 +2690,7 @@
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ați intrat în epoca [newEra]!"
 		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is 
+		Spanish:"¡Has entrado en la [newEra]!"
 	}
 	"[policyBranch] policy branch unlocked!":{
 		Italian:"Ramo sociale [policyBranch] sbloccato!"
@@ -2571,6 +2698,7 @@
 		French:"[policyBranch] branche de la politique déverrouillée!"
 		Romanian:"[policyBranch] ramură de politică deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
+		Spanish:"¡Rama política [policyBranch] desbloqueada!"
 	} // EG Rationalism policy branch unlocked!
 	
 	// Trade	
