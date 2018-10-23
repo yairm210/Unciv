@@ -84,6 +84,9 @@ class BattleDamage{
                 modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
         }
 
+        if(attacker is MapUnitCombatant && attacker.unit.isEmbarked())
+            modifiers["Landing"] = -0.5f
+
         return modifiers
     }
 

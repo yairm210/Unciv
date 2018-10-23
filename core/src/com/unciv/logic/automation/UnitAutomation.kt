@@ -6,7 +6,6 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -127,17 +126,21 @@ class UnitAutomation{
         }
     }
 
-    fun containsAttackableEnemy(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
-        val tileCombatant = Battle(civInfo.gameInfo).getMapCombatantOfTile(tile)
+    fun containsAttackableEnemy(tile: TileInfo, unit: MapUnit): Boolean {
+        if(unit.isEmbarked()){
+            if(unit.baseUnit.unitType.isRanged()) return false
+            if(tile.getBaseTerrain().type==TerrainType.Water) return false // can't attack water units while embarked, only land
+        }
+        val tileCombatant = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
-        return tileCombatant.getCivilization()!=civInfo && civInfo.isAtWarWith(tileCombatant.getCivilization())
+        return tileCombatant.getCivilization()!=unit.civInfo && unit.civInfo.isAtWarWith(tileCombatant.getCivilization())
     }
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
     fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): ArrayList<AttackableTile> {
         val tilesWithEnemies = unit.civInfo.getViewableTiles()
-                .filter { containsAttackableEnemy(it,unit.civInfo) }
+                .filter { containsAttackableEnemy(it,unit) }
 
         val rangeOfAttack = unit.getRange()
 
@@ -162,7 +165,7 @@ class UnitAutomation{
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
         var closeEnemies = unit.getTile().getTilesInDistance(5)
-                .filter{ containsAttackableEnemy(it, unit.civInfo) && unit.movementAlgs().canReach(it)}
+                .filter{ containsAttackableEnemy(it, unit) && unit.movementAlgs().canReach(it)}
         if(unit.baseUnit().unitType.isRanged())
             closeEnemies = closeEnemies.filterNot { it.isCityCenter() && it.getCity()!!.health==1 }
 
