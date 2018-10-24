@@ -28,18 +28,21 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
 
 
         class Language(val language:String){
-            override fun toString(): String {
-                val percentComplete:Int
+            val percentComplete:Int
+            init{
                 val availableTranslations = GameBasics.Translations.filter { it.value.containsKey(language) }
                 if(language=="English") percentComplete = 100
                 else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size)
+            }
+            override fun toString(): String {
                 return "$language - $percentComplete%"
             }
         }
 
         val languageSelectBox = SelectBox<Language>(CameraStageBaseScreen.skin)
         val languageArray = com.badlogic.gdx.utils.Array<Language>()
-        GameBasics.Translations.getLanguages().forEach { languageArray.add(Language(it)) }
+        GameBasics.Translations.getLanguages().map { Language(it) }.sortedByDescending { it.percentComplete }
+                .forEach { languageArray.add(it) }
         languageSelectBox.items = languageArray
         languageSelectBox.selected = languageArray.first { it.language== UnCivGame.Current.settings.language}
         add(languageSelectBox).pad(10f).row()
