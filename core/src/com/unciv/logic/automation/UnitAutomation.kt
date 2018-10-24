@@ -133,7 +133,9 @@ class UnitAutomation{
         }
         val tileCombatant = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
-        return tileCombatant.getCivilization()!=unit.civInfo && unit.civInfo.isAtWarWith(tileCombatant.getCivilization())
+        if(tileCombatant.getCivilization()==unit.civInfo ) return false
+        if(!unit.civInfo.isAtWarWith(tileCombatant.getCivilization())) return false
+        return true
     }
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
