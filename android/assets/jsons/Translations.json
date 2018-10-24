@@ -79,6 +79,7 @@
 		Spanish:"Fuerza a distancia"
 	}
 
+	// Unit actions
 	"Move unit":{
 		Italian:"Sposta unità"
 		Russian:"Переместить юнит"
@@ -138,6 +139,8 @@
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
 	}
+	
+	"Sleep":{}
 
 	"Set up":{ // For siege units
 		Italian:"Monta"
@@ -1215,7 +1218,10 @@
 		Spanish:"Piedra"
 	}
 	
+	"Fish":{}
+	
 	// Strategic Resources
+	
 	"Horses":{
 		Italian:"Cavalli"
 		Russian:"Лошади"
@@ -1490,6 +1496,8 @@
 		Dutch:"Steengroeve"
 		Spanish:"Cantera"
 	}
+	"Fishing boats":{}
+	
 	"Road":{
 		Italian:"Strada"
 		Russian:"Дорога"
@@ -1508,17 +1516,7 @@
 		Dutch:"Spoorweg"
 		Spanish:"Línea de ferrocarril"
 	}
-	/*
-	"Remove":{ // as in "Remove Forest/Jungle/Marsh"
-		Italian:"Rimuovi"
-		Russian:"Убрать"
-		French:"Suprimer"
-		Romanian:"Elimina"
-		German:"Entfernen:" // verb behind object again
-		Dutch:"Verwijderen" // verb behind object
-		Spanish:"Quitar"
-	}
-	*/
+	
 	"Remove Forest":{
 		Russian:"Вырубить лес"
 		Spanish:"Quitar bosque"
@@ -1532,6 +1530,7 @@
 		Spanish:"Quitar pantano"
 	}
 	
+	// Great Unit improvements
 	"Academy":{
 		Italian:"Accademia"
 		Russian:"Академия"
@@ -2380,6 +2379,15 @@
 		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
 		Spanish:"40% de comida es arrastrada cada vez que nace un nuevo habitante"
 	}
+	"25% of food is carried over after a new citizen is born":{
+		Italian:"Il 25% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
+		Russian:"25% продовольствия сохраняется после рождения нового гражданина"
+		French:"25% de la nourriture est reportée après la naissance d'un nouveau citoyen"
+		Romanian:"25% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
+		German:"25% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
+		Dutch:"25% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
+		Spanish:"25% de comida es arrastrada cada vez que nace un nuevo habitante"
+	}
 	"Jungles provide +2 science":{
 		Italian:"+2 scienzada giungle"
 		Russian:"Джунгли обеспечивают +2 науки"
@@ -2434,6 +2442,8 @@
 		Dutch:"Een gratis geweldige artiest verschijnt"
 		Spanish:"Aparece un Gran Artista gratis"
 	}
+	"Free great scientist appears":{}
+	
 	"Culture cost of adopting new Policies reduced by 10%":{
 		Italian:"-10% costo in cultura per nuove politiche"
 		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
