@@ -23,6 +23,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getDefendingStrength(attacker: ICombatant): Int {  // todo remove attacker
+        if(unit.isEmbarked()) return 0
         return unit.baseUnit().strength
     }
 

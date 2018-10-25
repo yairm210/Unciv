@@ -1,13 +1,11 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.CheckBox
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -29,15 +27,28 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
         else addButton("{Show} {resources and improvements}") { settings.showResourcesAndImprovements = true; update() }
 
 
-        val languageSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
-        val languageArray = com.badlogic.gdx.utils.Array<String>()
-        GameBasics.Translations.getLanguages().forEach { languageArray.add(it) }
-        languageSelectBox.setItems(languageArray)
-        languageSelectBox.selected = UnCivGame.Current.settings.language
+        class Language(val language:String){
+            val percentComplete:Int
+            init{
+                val availableTranslations = GameBasics.Translations.filter { it.value.containsKey(language) }
+                if(language=="English") percentComplete = 100
+                else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size)
+            }
+            override fun toString(): String {
+                return "$language - $percentComplete%"
+            }
+        }
+
+        val languageSelectBox = SelectBox<Language>(CameraStageBaseScreen.skin)
+        val languageArray = com.badlogic.gdx.utils.Array<Language>()
+        GameBasics.Translations.getLanguages().map { Language(it) }.sortedByDescending { it.percentComplete }
+                .forEach { languageArray.add(it) }
+        languageSelectBox.items = languageArray
+        languageSelectBox.selected = languageArray.first { it.language== UnCivGame.Current.settings.language}
         add(languageSelectBox).pad(10f).row()
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UnCivGame.Current.settings.language = languageSelectBox.selected;
+                UnCivGame.Current.settings.language = languageSelectBox.selected.language;
                 UnCivGame.Current.settings.save()
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()

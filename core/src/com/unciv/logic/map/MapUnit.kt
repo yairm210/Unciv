@@ -158,7 +158,9 @@ class MapUnit {
         return range
     }
 
+
     fun isEmbarked(): Boolean {
+        if(!baseUnit.unitType.isLandUnit()) return false
         return currentTile.baseTerrain=="Ocean"||currentTile.baseTerrain=="Coast"
     }
 

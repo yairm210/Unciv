@@ -30,7 +30,7 @@ class WorkerAutomation(val unit: MapUnit) {
             if(reachedTile!=tile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
-        if (tile.improvementInProgress == null) {
+        if (tile.improvementInProgress == null && tile.getBaseTerrain().type==TerrainType.Land) {
             val improvement = chooseImprovement(tile)
             if (tile.canBuildImprovement(improvement, unit.civInfo)) {
                 // What if we're stuck on this tile but can't build there?
@@ -74,6 +74,9 @@ class WorkerAutomation(val unit: MapUnit) {
         return true
     }
 
+    /**
+     * Returns the current tile if no tile to work was found
+     */
     private fun findTileToWork(): TileInfo {
         val currentTile=unit.getTile()
         val workableTiles = currentTile.getTilesInDistance(4)
@@ -124,7 +127,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.baseTerrain == "Hill" -> "Mine"
             tile.baseTerrain in listOf("Grassland","Desert","Plains") -> "Farm"
             tile.baseTerrain == "Tundra" -> "Trading post"
-            else -> null
+            else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }
         return GameBasics.TileImprovements[improvementString]!!
     }
