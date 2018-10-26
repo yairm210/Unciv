@@ -1,615 +1,780 @@
 [
 	// Ancient Era
 	{
-		name:"Palace",
-		baseDescription: "Indicates that this city is the capital", 
-		isWonder:true,
-		production:3,
-		science:3,
-		gold:3,
-		culture:1,
-		cost:1
+		"name": "Palace",
+		"baseDescription": "Indicates that this city is the capital",
+		"isWonder": true,
+		"production": 3,
+		"science": 3,
+		"gold": 3,
+		"culture": 1,
+		"cost": 1
 	},
 	{
-		name:"Monument",
-		baseDescription: "Produces culture, enabling border growth", 
-		culture:2,
-		cost:40,
-		hurryCostModifier:40,
-		maintenance:1
+		"name": "Monument",
+		"baseDescription": "Produces culture, enabling border growth",
+		"culture": 2,
+		"cost": 40,
+		"hurryCostModifier": 40,
+		"maintenance": 1
 	},
 	{
-		name:"Granary", 
-		food:2,
-		resourceBonusStats:{food:1},
-		maintenance:1,
-		hurryCostModifier:25,
-		requiredTech:"Pottery"
+		"name": "Granary",
+		"food": 2,
+		"resourceBonusStats": {
+			"food": 1
+		},
+		"maintenance": 1,
+		"hurryCostModifier": 25,
+		"requiredTech": "Pottery"
 	},
 	{
-		name:"Stone Works", 
-		happiness:1,
-		production:1
-		requiredNearbyImprovedResources:["Marble","Stone"]
-		resourceBonusStats:{production:1},
-		maintenance:1,
-		hurryCostModifier:25,
-		requiredTech:"Calendar"
+		"name": "Stone Works",
+		"happiness": 1,
+		"production": 1,
+		"requiredNearbyImprovedResources": [
+			"Marble",
+			"Stone"
+		],
+		"resourceBonusStats": {
+			"production": 1
+		},
+		"maintenance": 1,
+		"hurryCostModifier": 25,
+		"requiredTech": "Calendar"
 	},
 	{
-		name:"Stonehenge",
-		culture:6,
-		isWonder:true,
-		greatPersonPoints:{production:1},
-		requiredTech:"Calendar"
+		"name": "Stonehenge",
+		"culture": 6,
+		"isWonder": true,
+		"greatPersonPoints": {
+			"production": 1
+		},
+		"requiredTech": "Calendar"
 	},
 	{
-		name:"The Great Library",
-		baseDescription: "Provides a free technology, and a library in the city it is built in",
-		science:3,
-		culture:1,
-		greatPersonPoints:{science:1},
-		isWonder:true,
-		providesFreeBuilding: "Library",
-		freeTechs:1,
-		requiredTech:"Writing"
+		"name": "The Great Library",
+		"baseDescription": "Provides a free technology, and a library in the city it is built in",
+		"science": 3,
+		"culture": 1,
+		"greatPersonPoints": {
+			"science": 1
+		},
+		"isWonder": true,
+		"providesFreeBuilding": "Library",
+		"freeTechs": 1,
+		"requiredTech": "Writing"
 	},
 	{
-		name:"Library",
-		hurryCostModifier:25,
-		maintenance:1,
-		uniques:["+1 Science Per 2 Population"],
-		requiredTech:"Writing"
+		"name": "Library",
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"uniques": [
+			"+1 Science Per 2 Population"
+		],
+		"requiredTech": "Writing"
 	},
 	{
-		name:"Paper Maker",
-		replaces:"Library",
-		uniqueTo:"China",
-		hurryCostModifier:25,
-		gold:2,
-		uniques:["+1 Science Per 2 Population"],
-		requiredTech:"Writing"
+		"name": "Paper Maker",
+		"replaces": "Library",
+		"uniqueTo": "China",
+		"hurryCostModifier": 25,
+		"gold": 2,
+		"uniques": [
+			"+1 Science Per 2 Population"
+		],
+		"requiredTech": "Writing"
 	},
 	{
-		name:"Circus", 
-		requiredNearbyImprovedResources:["Ivory","Horses"]
-		happiness:2,
-		hurryCostModifier:25,
-		requiredTech:"Trapping"
+		"name": "Circus",
+		"requiredNearbyImprovedResources": [
+			"Ivory",
+			"Horses"
+		],
+		"happiness": 2,
+		"hurryCostModifier": 25,
+		"requiredTech": "Trapping"
 	},
 	{
-		name:"Walls",
-		cityStrength:5,
-		cityHealth:50,
-		hurryCostModifier:25,
-		requiredTech:"Masonry"
+		"name": "Walls",
+		"cityStrength": 5,
+		"cityHealth": 50,
+		"hurryCostModifier": 25,
+		"requiredTech": "Masonry"
 	},
 	{
-		name:"The Pyramids",
-		baseDescription: "Worker construction increased 25%, provides 2 free workers",
-		culture:1,
-		greatPersonPoints:{production:1},
-		isWonder:true,
-		uniques:["Worker construction increased 25%","Provides 2 free workers"],
-		requiredTech:"Mathematics"
+		"name": "The Pyramids",
+		"baseDescription": "Worker construction increased 25%, provides 2 free workers",
+		"culture": 1,
+		"greatPersonPoints": {
+			"production": 1
+		},
+		"isWonder": true,
+		"uniques": [
+			"Worker construction increased 25%",
+			"Provides 2 free workers"
+		],
+		"requiredTech": "Mathematics"
 	},
 	{
-		name:"Barracks",
-		xpForNewUnits:15,
-		hurryCostModifier:25,
-		maintenance:1,
-		requiredTech:"Bronze Working"
+		"name": "Barracks",
+		"xpForNewUnits": 15,
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"requiredTech": "Bronze Working"
 	},
-	
 	// Classical Era
-	
 	{
-		name:"Lighthouse",
-		hurryCostModifier:25,
-		maintenance:1,
-		resourceBonusStats:{food:1},
-		uniques:["Can only be built in coastal cities","+1 food from Ocean and Coast tiles"]
-		requiredTech:"Optics"
+		"name": "Lighthouse",
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"resourceBonusStats": {
+			"food": 1
+		},
+		"uniques": [
+			"Can only be built in coastal cities",
+			"+1 food from Ocean and Coast tiles"
+		],
+		"requiredTech": "Optics"
 	},
 	{
-		name:"The Great Lighthouse",
-		culture:1,
-		greatPersonPoints:{gold:1},
-		isWonder:true,
-		providesFreeBuilding: "Lighthouse",
-		uniques:["Can only be built in coastal cities", "All military naval units receive +1 movement and +1 sight"]
-		requiredTech:"Optics"
+		"name": "The Great Lighthouse",
+		"culture": 1,
+		"greatPersonPoints": {
+			"gold": 1
+		},
+		"isWonder": true,
+		"providesFreeBuilding": "Lighthouse",
+		"uniques": [
+			"Can only be built in coastal cities",
+			"All military naval units receive +1 movement and +1 sight"
+		],
+		"requiredTech": "Optics"
 	},
 	{
-		name:"Stable", 
-		maintenance:1,
-		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]
-		resourceBonusStats:{production:1},
-		hurryCostModifier:25,
-		requiredTech:"Horseback Riding"
+		"name": "Stable",
+		"maintenance": 1,
+		"requiredNearbyImprovedResources": [
+			"Horses",
+			"Sheep",
+			"Cattle"
+		],
+		"resourceBonusStats": {
+			"production": 1
+		},
+		"hurryCostModifier": 25,
+		"requiredTech": "Horseback Riding"
 	},
 	{
-		name:"Circus Maximus",
-		happiness:5,
-		culture:1,
-		isWonder:true,
-		requiredBuildingInAllCities:"Colloseum",
-		requiredTech:"Horseback Riding"
+		"name": "Circus Maximus",
+		"happiness": 5,
+		"culture": 1,
+		"isWonder": true,
+		"requiredBuildingInAllCities": "Colloseum",
+		"requiredTech": "Horseback Riding"
 	},
 	{
-		name:"Hanging Gardens",
-		greatPersonPoints:{culture:1},
-		food:10,
-		culture:1,
-		isWonder:true,
-		requiredTech:"Mathematics"
+		"name": "Hanging Gardens",
+		"greatPersonPoints": {
+			"culture": 1
+		},
+		"food": 10,
+		"culture": 1,
+		"isWonder": true,
+		"requiredTech": "Mathematics"
 	},
 	{
-		name:"Colloseum", 
-		maintenance:1,
-		happiness:2,
-		hurryCostModifier:25,
-		requiredTech:"Construction"
+		"name": "Colloseum",
+		"maintenance": 1,
+		"happiness": 2,
+		"hurryCostModifier": 25,
+		"requiredTech": "Construction"
 	},
 	{
-		name:"Temple",
-		culture:3,
-		specialistSlots:{culture:1},
-		requiredBuilding:"Monument",
-		maintenance:2,
-		hurryCostModifier:25,
-		requiredTech:"Philosophy"
+		"name": "Temple",
+		"culture": 3,
+		"specialistSlots": {
+			"culture": 1
+		},
+		"requiredBuilding": "Monument",
+		"maintenance": 2,
+		"hurryCostModifier": 25,
+		"requiredTech": "Philosophy"
 	},
 	{
-		name:"Burial Tomb",
-		replaces:"Temple",
-		uniqueTo:"Egypt",
-		culture:3,
-		happiness:1,
-		specialistSlots:{culture:1},
-		requiredBuilding:"Monument",
-		hurryCostModifier:25,
-		requiredTech:"Philosophy"
+		"name": "Burial Tomb",
+		"replaces": "Temple",
+		"uniqueTo": "Egypt",
+		"culture": 3,
+		"happiness": 1,
+		"specialistSlots": {
+			"culture": 1
+		},
+		"requiredBuilding": "Monument",
+		"hurryCostModifier": 25,
+		"requiredTech": "Philosophy"
 	},
 	{
-		name:"The Oracle",
-		baseDescription: "Provides a free social policy",
-		culture:3,
-		greatPersonPoints:{science:1},
-		isWonder:true,
-		uniques:["Free Social Policy"],
-		requiredTech:"Philosophy"
+		"name": "The Oracle",
+		"baseDescription": "Provides a free social policy",
+		"culture": 3,
+		"greatPersonPoints": {
+			"science": 1
+		},
+		"isWonder": true,
+		"uniques": [
+			"Free Social Policy"
+		],
+		"requiredTech": "Philosophy"
 	},
 	{
-		name:"Market",
-		gold:2,
-		specialistSlots:{gold:1},
-		hurryCostModifier:25,
-		percentStatBonus:{gold:25},
-		requiredTech:"Currency"
+		"name": "Market",
+		"gold": 2,
+		"specialistSlots": {
+			"gold": 1
+		},
+		"hurryCostModifier": 25,
+		"percentStatBonus": {
+			"gold": 25
+		},
+		"requiredTech": "Currency"
 	},
 	{
-		name:"Bazaar",
-		replaces:"Market",
-		uniqueTo:"Arabia",
-		gold:2,
-		specialistSlots:{gold:1},
-		hurryCostModifier:25,
-		percentStatBonus:{gold:25},
-		uniques:["Provides 1 extra copy of each improved luxury resource near this City","+2 Gold for each source of Oil and oasis"],
-		requiredTech:"Currency"
+		"name": "Bazaar",
+		"replaces": "Market",
+		"uniqueTo": "Arabia",
+		"gold": 2,
+		"specialistSlots": {
+			"gold": 1
+		},
+		"hurryCostModifier": 25,
+		"percentStatBonus": {
+			"gold": 25
+		},
+		"uniques": [
+			"Provides 1 extra copy of each improved luxury resource near this City",
+			"+2 Gold for each source of Oil and oasis"
+		],
+		"requiredTech": "Currency"
 	},
 	{
-		name:"Mint",
-		maintenance:0,
-		requiredNearbyImprovedResources:["Gold","Silver"],
-		resourceBonusStats:{gold:2},
-		hurryCostModifier:25,
-		requiredTech:"Currency"
+		"name": "Mint",
+		"maintenance": 0,
+		"requiredNearbyImprovedResources": [
+			"Gold",
+			"Silver"
+		],
+		"resourceBonusStats": {
+			"gold": 2
+		},
+		"hurryCostModifier": 25,
+		"requiredTech": "Currency"
 	},
 	{
-		name:"Aqueduct",
-		maintenance:1,
-		hurryCostModifier:25,
-		uniques:["40% of food is carried over after a new citizen is born"]
-		requiredTech:"Engineering"
+		"name": "Aqueduct",
+		"maintenance": 1,
+		"hurryCostModifier": 25,
+		"uniques": [
+			"40% of food is carried over after a new citizen is born"
+		],
+		"requiredTech": "Engineering"
 	},
-	
 	// Medieval Era
-	
 	{
-		name:"Monastery",
-		maintenance:0,
-		requiredNearbyImprovedResources:["Wine","Incense"],
-		resourceBonusStats:{culture:2},
-		hurryCostModifier:25,
-		requiredTech:"Theology"
+		"name": "Monastery",
+		"maintenance": 0,
+		"requiredNearbyImprovedResources": [
+			"Wine",
+			"Incense"
+		],
+		"resourceBonusStats": {
+			"culture": 2
+		},
+		"hurryCostModifier": 25,
+		"requiredTech": "Theology"
 	},
 	{
-		name:"Hagia Sophia",
-		culture:1,
-		greatPersonPoints:{culture:1},
-		isWonder:true,
-		uniques:["+33% great person generation in all cities"],
-		requiredTech:"Theology"
+		"name": "Hagia Sophia",
+		"culture": 1,
+		"greatPersonPoints": {
+			"culture": 1
+		},
+		"isWonder": true,
+		"uniques": [
+			"+33% great person generation in all cities"
+		],
+		"requiredTech": "Theology"
 	},
 	{
-		name:"National College",
-		science:3,
-		culture:1,
-		isWonder:true,
-		percentStatBonus:{science:50},
-		requiredBuildingInAllCities:"Library",
-		requiredTech:"Civil Service"
+		"name": "National College",
+		"science": 3,
+		"culture": 1,
+		"isWonder": true,
+		"percentStatBonus": {
+			"science": 50
+		},
+		"requiredBuildingInAllCities": "Library",
+		"requiredTech": "Civil Service"
 	},
 	{
-		name:"Chichen Itza",
-		culture:1,
-		greatPersonPoints:{production:1},
-		isWonder:true,
-		uniques:["Golden Age length increases +50%"],
-		requiredTech:"Civil Service"
+		"name": "Chichen Itza",
+		"culture": 1,
+		"greatPersonPoints": {
+			"production": 1
+		},
+		"isWonder": true,
+		"uniques": [
+			"Golden Age length increases +50%"
+		],
+		"requiredTech": "Civil Service"
 	},
 	{
-		name:"Machu Pichu",
-		gold:5,
-		greatPersonPoints:{gold:1},
-		culture:1,
-		isWonder:true,
-		uniques:["Gold from all trade routes +25%"],
-		requiredTech:"Guilds"
+		"name": "Machu Pichu",
+		"gold": 5,
+		"greatPersonPoints": {
+			"gold": 1
+		},
+		"culture": 1,
+		"isWonder": true,
+		"uniques": [
+			"Gold from all trade routes +25%"
+		],
+		"requiredTech": "Guilds"
 	},
 	{
-		name:"Workshop", 
-		maintenance:2,
-		production:2,
-		specialistSlots:{production:1},
-		hurryCostModifier:25,
-		percentStatBonus:{production:15},
-		requiredTech:"Metal Casting"
+		"name": "Workshop",
+		"maintenance": 2,
+		"production": 2,
+		"specialistSlots": {
+			"production": 1
+		},
+		"hurryCostModifier": 25,
+		"percentStatBonus": {
+			"production": 15
+		},
+		"requiredTech": "Metal Casting"
 	},
 	{
-		name:"Forge",
-		maintenance:1,
-		hurryCostModifier:25,
-		requiredNearbyImprovedResources:["Iron"],
-		resourceBonusStats:{production:1},
-		requiredTech:"Metal Casting"
+		"name": "Forge",
+		"maintenance": 1,
+		"hurryCostModifier": 25,
+		"requiredNearbyImprovedResources": [
+			"Iron"
+		],
+		"resourceBonusStats": {
+			"production": 1
+		},
+		"requiredTech": "Metal Casting"
 	},
 	{
-		name:"University",
-		maintenance:2,
-		hurryCostModifier:15,
-		percentStatBonus:{science:33},
-		specialistSlots:{science:2},
-		requiredBuilding:"Library",
-		uniques:["Jungles provide +2 science"],
-		requiredTech:"Education"
+		"name": "University",
+		"maintenance": 2,
+		"hurryCostModifier": 15,
+		"percentStatBonus": {
+			"science": 33
+		},
+		"specialistSlots": {
+			"science": 2
+		},
+		"requiredBuilding": "Library",
+		"uniques": [
+			"Jungles provide +2 science"
+		],
+		"requiredTech": "Education"
 	},
 	{
-		name:"Oxford University",
-		science:3,
-		culture:1,
-		freeTechs:1,
-		isWonder:true,
-		percentStatBonus:{science:50},
-		requiredBuildingInAllCities:"University",
-		requiredTech:"Education"
+		"name": "Oxford University",
+		"science": 3,
+		"culture": 1,
+		"freeTechs": 1,
+		"isWonder": true,
+		"percentStatBonus": {
+			"science": 50
+		},
+		"requiredBuildingInAllCities": "University",
+		"requiredTech": "Education"
 	},
 	{
-		name:"Castle",
-		cityStrength:7,
-		cityHealth:25,
-		hurryCostModifier:25,
-		requiredBuilding:"Walls",
-		requiredTech:"Chivalry"
+		"name": "Castle",
+		"cityStrength": 7,
+		"cityHealth": 25,
+		"hurryCostModifier": 25,
+		"requiredBuilding": "Walls",
+		"requiredTech": "Chivalry"
 	},
 	{
-		name:"Angkor Wat",
-		culture:1,
-		greatPersonPoints:{production:1},
-		isWonder:true,
-		uniques:["Cost of acquiring new tiles reduced by 25%"],
-		requiredTech:"Chivalry"
+		"name": "Angkor Wat",
+		"culture": 1,
+		"greatPersonPoints": {
+			"production": 1
+		},
+		"isWonder": true,
+		"uniques": [
+			"Cost of acquiring new tiles reduced by 25%"
+		],
+		"requiredTech": "Chivalry"
 	},
 	{
-		name:"Ironworks",
-		production:8,
-		culture:1,
-		isWonder:true,
-		requiredBuildingInAllCities:"Workshop",
-		requiredTech:"Machinery"
+		"name": "Ironworks",
+		"production": 8,
+		"culture": 1,
+		"isWonder": true,
+		"requiredBuildingInAllCities": "Workshop",
+		"requiredTech": "Machinery"
 	},
 	{
-		name:"Notre Dame",
-		culture:1,
-		happiness:10,
-		greatPersonPoints:{gold:1},
-		isWonder:true,
-		requiredTech:"Physics"
+		"name": "Notre Dame",
+		"culture": 1,
+		"happiness": 10,
+		"greatPersonPoints": {
+			"gold": 1
+		},
+		"isWonder": true,
+		"requiredTech": "Physics"
 	},
 	{
-		name:"Armory",
-		xpForNewUnits:15,
-		hurryCostModifier:25,
-		maintenance:1,
-		requiredBuilding:"Barracks",
-		requiredTech:"Steel"
+		"name": "Armory",
+		"xpForNewUnits": 15,
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"requiredBuilding": "Barracks",
+		"requiredTech": "Steel"
 	},
-	
 	// Renaissance Era
-	
 	{
-		name:"Observatory",
-		baseDescription: "City must be bordering a mountain", 
-		maintenance:2,
-		hurryCostModifier:25,
-		percentStatBonus:{science:50},
-		requiredBuilding:"Library",
-		requiredTech:"Astronomy"
+		"name": "Observatory",
+		"baseDescription": "City must be bordering a mountain",
+		"maintenance": 2,
+		"hurryCostModifier": 25,
+		"percentStatBonus": {
+			"science": 50
+		},
+		"requiredBuilding": "Library",
+		"requiredTech": "Astronomy"
 	},
 	{
-		name:"Opera House",
-		culture:4,
-		specialistSlots:{culture:1},
-		hurryCostModifier:10,
-		requiredBuilding:"Temple",
-		maintenance:2,
-		requiredTech:"Acoustics"
+		"name": "Opera House",
+		"culture": 4,
+		"specialistSlots": {
+			"culture": 1
+		},
+		"hurryCostModifier": 10,
+		"requiredBuilding": "Temple",
+		"maintenance": 2,
+		"requiredTech": "Acoustics"
 	},
 	{
-		name:"Sistine Chapel",
-		culture:1,
-		isWonder:true,
-		uniques:["Culture in all cities increased by 25%"],
-		requiredTech:"Acoustics"
+		"name": "Sistine Chapel",
+		"culture": 1,
+		"isWonder": true,
+		"uniques": [
+			"Culture in all cities increased by 25%"
+		],
+		"requiredTech": "Acoustics"
 	},
 	{
-		name:"Bank",
-		gold:2,
-		specialistSlots:{gold:1},
-		hurryCostModifier:15,
-		percentStatBonus:{gold:25},
-		requiredBuilding:"Market",
-		requiredTech:"Banking"
+		"name": "Bank",
+		"gold": 2,
+		"specialistSlots": {
+			"gold": 1
+		},
+		"hurryCostModifier": 15,
+		"percentStatBonus": {
+			"gold": 25
+		},
+		"requiredBuilding": "Market",
+		"requiredTech": "Banking"
 	},
 	{
-		name:"Forbidden Palace",
-		culture:1,
-		isWonder:true,
-		uniques:["Unhappiness from population decreased by 10%"],
-		requiredTech:"Banking"
+		"name": "Forbidden Palace",
+		"culture": 1,
+		"isWonder": true,
+		"uniques": [
+			"Unhappiness from population decreased by 10%"
+		],
+		"requiredTech": "Banking"
 	},
 	{
-		name:"Theatre",
-		happiness:3,
-		hurryCostModifier:10,
-		maintenance:2,
-		requiredBuilding:"Colloseum",
-		requiredTech:"Printing Press"
+		"name": "Theatre",
+		"happiness": 3,
+		"hurryCostModifier": 10,
+		"maintenance": 2,
+		"requiredBuilding": "Colloseum",
+		"requiredTech": "Printing Press"
 	},
 	{
-		name:"Museum",
-		culture:5,
-		specialistSlots:{culture:1},
-		requiredBuilding:"Opera House",
-		maintenance:3,
-		hurryCostModifier:0,
-		requiredTech:"Archaeology"
+		"name": "Museum",
+		"culture": 5,
+		"specialistSlots": {
+			"culture": 1
+		},
+		"requiredBuilding": "Opera House",
+		"maintenance": 3,
+		"hurryCostModifier": 0,
+		"requiredTech": "Archaeology"
 	},
 	{
-		name:"Hermitage",
-		percentStatBonus:{culture:50},
-		culture:5,
-		isWonder:true,
-		requiredBuildingInAllCities:"Opera House",
-		requiredTech:"Archaeology"
-	}, 
-	{
-		name:"The Louvre",
-		baseDescription: "A Free Great Artist appears near the city",
-		culture:1,
-		happiness:4,
-		isWonder:true,
-		uniques:["Free Great Artist Appears"],
-		requiredTech:"Archaeology"
+		"name": "Hermitage",
+		"percentStatBonus": {
+			"culture": 50
+		},
+		"culture": 5,
+		"isWonder": true,
+		"requiredBuildingInAllCities": "Opera House",
+		"requiredTech": "Archaeology"
 	},
 	{
-		name:"Taj Mahal",
-		baseDescription: "Empire enters a golden age",
-		culture:1,
-		happiness:4,
-		isWonder:true,
-		uniques:["Empire enters golden age"],
-		requiredTech:"Architecture"
+		"name": "The Louvre",
+		"baseDescription": "A Free Great Artist appears near the city",
+		"culture": 1,
+		"happiness": 4,
+		"isWonder": true,
+		"uniques": [
+			"Free Great Artist Appears"
+		],
+		"requiredTech": "Archaeology"
 	},
 	{
-		name:"Porcelain Tower",
-		culture:1,
-		greatPersonPoints:{science:2},
-		isWonder:true,
-		uniques:["Free great scientist appears","Production to science conversion in cities increased by 33%"],
-		requiredTech:"Architecture"
-	}, 
-	{
-		name:"Windmill",
-		production:2,
-		specialistSlots:{production:1},
-		hurryCostModifier:25,
-		maintenance:2,
-		percentStatBonus:{production:10},
-		requiredTech:"Economics"
+		"name": "Taj Mahal",
+		"baseDescription": "Empire enters a golden age",
+		"culture": 1,
+		"happiness": 4,
+		"isWonder": true,
+		"uniques": [
+			"Empire enters golden age"
+		],
+		"requiredTech": "Architecture"
 	},
-	
+	{
+		"name": "Porcelain Tower",
+		"culture": 1,
+		"greatPersonPoints": {
+			"science": 2
+		},
+		"isWonder": true,
+		"uniques": [
+			"Free great scientist appears",
+			"Production to science conversion in cities increased by 33%"
+		],
+		"requiredTech": "Architecture"
+	},
+	{
+		"name": "Windmill",
+		"production": 2,
+		"specialistSlots": {
+			"production": 1
+		},
+		"hurryCostModifier": 25,
+		"maintenance": 2,
+		"percentStatBonus": {
+			"production": 10
+		},
+		"requiredTech": "Economics"
+	},
 	// Industrial Era
-	
 	{
-		name:"Public School",
-		science:3,
-		specialistSlots:{science:1},
-		requiredBuilding:"University",
-		maintenance:3,
-		hurryCostModifier:0,
-		uniques:["+1 Science Per 2 Population"],
-		requiredTech:"Scientific Theory"
+		"name": "Public School",
+		"science": 3,
+		"specialistSlots": {
+			"science": 1
+		},
+		"requiredBuilding": "University",
+		"maintenance": 3,
+		"hurryCostModifier": 0,
+		"uniques": [
+			"+1 Science Per 2 Population"
+		],
+		"requiredTech": "Scientific Theory"
 	},
 	{
-		name:"Factory",
-		production:4,
-		percentStatBonus:{production:10},
-		specialistSlots:{production:1},
-		requiredBuilding:"Workshop",
-		maintenance:3,
-		hurryCostModifier:0,
-		requiredResource:"Coal",
-		requiredTech:"Industrialization"
+		"name": "Factory",
+		"production": 4,
+		"percentStatBonus": {
+			"production": 10
+		},
+		"specialistSlots": {
+			"production": 1
+		},
+		"requiredBuilding": "Workshop",
+		"maintenance": 3,
+		"hurryCostModifier": 0,
+		"requiredResource": "Coal",
+		"requiredTech": "Industrialization"
 	},
 	{
-		name:"Military Academy",
-		xpForNewUnits:15,
-		hurryCostModifier:25,
-		maintenance:1,
-		requiredBuilding:"Armory",
-		requiredTech:"Military Science"
+		"name": "Military Academy",
+		"xpForNewUnits": 15,
+		"hurryCostModifier": 25,
+		"maintenance": 1,
+		"requiredBuilding": "Armory",
+		"requiredTech": "Military Science"
 	},
 	{
-		name:"Hospital",
-		food:5,
-		requiredBuilding:"Aqueduct",
-		maintenance:2,
-		hurryCostModifier:0,
-		requiredTech:"Biology"
+		"name": "Hospital",
+		"food": 5,
+		"requiredBuilding": "Aqueduct",
+		"maintenance": 2,
+		"hurryCostModifier": 0,
+		"requiredTech": "Biology"
 	},
 	{
-		name:"Stock Exchange",
-		gold:3,
-		percentStatBonus:{gold:25},
-		specialistSlots:{gold:2},
-		hurryCostModifier:15,
-		requiredBuilding:"Bank",
-		requiredTech:"Electricity"
+		"name": "Stock Exchange",
+		"gold": 3,
+		"percentStatBonus": {
+			"gold": 25
+		},
+		"specialistSlots": {
+			"gold": 2
+		},
+		"hurryCostModifier": 15,
+		"requiredBuilding": "Bank",
+		"requiredTech": "Electricity"
 	},
-	
 	// Modern Era
-	
 	{
-		name:"Broadcast Tower",
-		culture:3,
-		percentStatBonus:{culture:33},
-		requiredBuilding:"Museum",
-		maintenance:3,
-		requiredTech:"Radio"
+		"name": "Broadcast Tower",
+		"culture": 3,
+		"percentStatBonus": {
+			"culture": 33
+		},
+		"requiredBuilding": "Museum",
+		"maintenance": 3,
+		"requiredTech": "Radio"
 	},
 	{
-		name:"Eiffel Tower",
-		baseDescription: "Provides 1 happiness per social policy",
-		culture:1,
-		happiness:5
-		isWonder:true,
-		uniques:["Provides 1 happiness per social policy"],
-		requiredTech:"Radio"
+		"name": "Eiffel Tower",
+		"baseDescription": "Provides 1 happiness per social policy",
+		"culture": 1,
+		"happiness": 5,
+		"isWonder": true,
+		"uniques": [
+			"Provides 1 happiness per social policy"
+		],
+		"requiredTech": "Radio"
 	},
 	{
-		name:"Research Lab",
-		science:4,		
-		percentStatBonus:{science:50},
-		specialistSlots:{science:1},
-		requiredBuilding:"Public School",
-		maintenance:3,
-		requiredTech:"Plastics"
+		"name": "Research Lab",
+		"science": 4,
+		"percentStatBonus": {
+			"science": 50
+		},
+		"specialistSlots": {
+			"science": 1
+		},
+		"requiredBuilding": "Public School",
+		"maintenance": 3,
+		"requiredTech": "Plastics"
 	},
 	{
-		name:"Hydro Plant",
-		baseDescription: "Provides +1 production to tiles near rivers",
-		maintenance:3,
-		requiredResource:"Aluminum",
-		requiredTech:"Plastics"
+		"name": "Hydro Plant",
+		"baseDescription": "Provides +1 production to tiles near rivers",
+		"maintenance": 3,
+		"requiredResource": "Aluminum",
+		"requiredTech": "Plastics"
 	},
 	{
-		name:"Stadium",
-		happiness:4,
-		requiredBuilding:"Theatre",
-		maintenance:2,
-		requiredTech:"Mass Media"
+		"name": "Stadium",
+		"happiness": 4,
+		"requiredBuilding": "Theatre",
+		"maintenance": 2,
+		"requiredTech": "Mass Media"
 	},
 	{
-		name:"Cristo Redentor",
-		culture:5,
-		isWonder:true,
-		uniques:["Culture cost of adopting new Policies reduced by 10%"],
-		requiredTech:"Flight"
+		"name": "Cristo Redentor",
+		"culture": 5,
+		"isWonder": true,
+		"uniques": [
+			"Culture cost of adopting new Policies reduced by 10%"
+		],
+		"requiredTech": "Flight"
 	},
-	
 	// Information Era
-	
 	{
-		name:"Medical Lab",
-		requiredBuilding:"Hospital",
-		maintenance:3,
-		requiredTech:"Pharmaceuticals",
-		uniques:["25% of food carried over after a new citizen is born"]
+		"name": "Medical Lab",
+		"requiredBuilding": "Hospital",
+		"maintenance": 3,
+		"requiredTech": "Pharmaceuticals",
+		"uniques": [
+			"25% of food carried over after a new citizen is born"
+		]
 	},
 	{
-		name:"Nuclear Plant",
-		production:5,		
-		percentStatBonus:{production:15},
-		requiredBuilding:"Factory",
-		maintenance:3,
-		cannotBeBuiltWith:"Solar Plant",
-		requiredResource:"Uranium",
-		requiredTech:"Nuclear Fission"
+		"name": "Nuclear Plant",
+		"production": 5,
+		"percentStatBonus": {
+			"production": 15
+		},
+		"requiredBuilding": "Factory",
+		"maintenance": 3,
+		"cannotBeBuiltWith": "Solar Plant",
+		"requiredResource": "Uranium",
+		"requiredTech": "Nuclear Fission"
 	},
 	{
-		name:"Solar Plant",
-		baseDescription: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
-		production:5,		
-		percentStatBonus:{production:15},
-		requiredBuilding:"Factory",
-		maintenance:3,
-		cannotBeBuiltWith:"Nuclear Plant",
-		requiredTech:"Ecology",
-		uniques:["Must be next to desert"]
+		"name": "Solar Plant",
+		"baseDescription": "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
+		"production": 5,
+		"percentStatBonus": {
+			"production": 15
+		},
+		"requiredBuilding": "Factory",
+		"maintenance": 3,
+		"cannotBeBuiltWith": "Nuclear Plant",
+		"requiredTech": "Ecology",
+		"uniques": [
+			"Must be next to desert"
+		]
 	},
 	{
-		name:"Spaceship Factory",
-		production:3,
-		requiredResource:"Aluminum",
-		cost:360,
-		uniques:["Increases production of spaceship parts by 50%"]
-		requiredTech:"Robotics"
+		"name": "Spaceship Factory",
+		"production": 3,
+		"requiredResource": "Aluminum",
+		"cost": 360,
+		"uniques": [
+			"Increases production of spaceship parts by 50%"
+		],
+		"requiredTech": "Robotics"
 	},
 	{
-		name:"SS Booster",
-		requiredResource:"Aluminum",
-		requiredTech:"Robotics",
-		uniques:["Spaceship part"]
+		"name": "SS Booster",
+		"requiredResource": "Aluminum",
+		"requiredTech": "Robotics",
+		"uniques": [
+			"Spaceship part"
+		]
 	},
 	{
-		name:"Apollo Program",
-		cost:1500,
-		isWonder:true,
-		uniques:["Enables construction of Spaceship parts"],
-		requiredTech:"Rocketry"
+		"name": "Apollo Program",
+		"cost": 1500,
+		"isWonder": true,
+		"uniques": [
+			"Enables construction of Spaceship parts"
+		],
+		"requiredTech": "Rocketry"
 	},
-	
 	// Future Era
-	
 	{
-		name:"SS Cockpit",
-		requiredResource:"Aluminum",
-		requiredTech:"Satellites",
-		uniques:["Spaceship part"]
+		"name": "SS Cockpit",
+		"requiredResource": "Aluminum",
+		"requiredTech": "Satellites",
+		"uniques": [
+			"Spaceship part"
+		]
 	},
 	{
-		name:"SS Engine",
-		requiredResource:"Aluminum",
-		requiredTech:"Particle Physics",
-		uniques:["Spaceship part"]
+		"name": "SS Engine",
+		"requiredResource": "Aluminum",
+		"requiredTech": "Particle Physics",
+		"uniques": [
+			"Spaceship part"
+		]
 	},
 	{
-		name:"SS Stasis Chamber",
-		requiredResource:"Aluminum",
-		requiredTech:"Nanotechnology",
-		uniques:["Spaceship part"]
+		"name": "SS Stasis Chamber",
+		"requiredResource": "Aluminum",
+		"requiredTech": "Nanotechnology",
+		"uniques": [
+			"Spaceship part"
+		]
 	}
 ]

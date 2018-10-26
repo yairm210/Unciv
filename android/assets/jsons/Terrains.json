@@ -1,111 +1,156 @@
-[	
+[
 	// Base terrains
 	{
-		name:"Ocean",
-		type:"Water",
-		food:1,
-		gold:1,
-		movementCost:1,
-		RGB: [100,100,255]
+		"name": "Ocean",
+		"type": "Water",
+		"food": 1,
+		"gold": 1,
+		"movementCost": 1,
+		"RGB": [
+			100,
+			100,
+			255
+		]
 	},
 	{
-		name:"Coast",
-		type:"Water",
-		food:1,
-		movementCost:1,
-		RGB: [150,150,255]
+		"name": "Coast",
+		"type": "Water",
+		"food": 1,
+		"movementCost": 1,
+		"RGB": [
+			150,
+			150,
+			255
+		]
 	},
 	{
-		name:"Grassland",
-		type:"Land",
-		food:2,
-		movementCost:1,
-		RGB: [109,139,53]
+		"name": "Grassland",
+		"type": "Land",
+		"food": 2,
+		"movementCost": 1,
+		"RGB": [
+			109,
+			139,
+			53
+		]
 	},
 	{
-		name:"Plains",
-		type:"Land",
-		food:1,
-		production:1,
-		movementCost:1,
-		RGB: [200,208,161]
+		"name": "Plains",
+		"type": "Land",
+		"food": 1,
+		"production": 1,
+		"movementCost": 1,
+		"RGB": [
+			200,
+			208,
+			161
+		]
 	},
 	{
-		name:"Tundra",
-		type:"Land",
-		food:1,
-		movementCost:1,
-		RGB: [125,122,113]
+		"name": "Tundra",
+		"type": "Land",
+		"food": 1,
+		"movementCost": 1,
+		"RGB": [
+			125,
+			122,
+			113
+		]
 	},
 	{
-		name:"Desert",
-		type:"Land",
-		movementCost:1,
-		RGB: [ 255, 255, 102]
+		"name": "Desert",
+		"type": "Land",
+		"movementCost": 1,
+		"RGB": [
+			255,
+			255,
+			102
+		]
 	},
 	{
-		name:"Lakes",
-		type:"Water",
-		food:1,
-		gold:1,
-		RGB: [ 200, 200, 255],
-		canHaveOverlay:false
+		"name": "Lakes",
+		"type": "Water",
+		"food": 1,
+		"gold": 1,
+		"RGB": [
+			200,
+			200,
+			255
+		],
+		"canHaveOverlay": false
 	},
 	{
-		name:"Hill",
-		type:"Land",
-		production:2,
-		movementCost:2,
-		defenceBonus: 0.25,
-		RGB: [74,81,40]
+		"name": "Hill",
+		"type": "Land",
+		"production": 2,
+		"movementCost": 2,
+		"defenceBonus": 0.25,
+		"RGB": [
+			74,
+			81,
+			40
+		]
 	},
-	
 	// Terrain features
 	{
-		name:"Forest",
-		type:"TerrainFeature",
-		production:1,
-		food:1,
-		movementCost:2,
-		overrideStats:true,
-		unbuildable:true,
-		defenceBonus: 0.25,
-		occursOn:["Tundra","Plains","Grassland","Hill"]
+		"name": "Forest",
+		"type": "TerrainFeature",
+		"production": 1,
+		"food": 1,
+		"movementCost": 2,
+		"overrideStats": true,
+		"unbuildable": true,
+		"defenceBonus": 0.25,
+		"occursOn": [
+			"Tundra",
+			"Plains",
+			"Grassland",
+			"Hill"
+		]
 	},
 	{
-		name:"Jungle",
-		type:"TerrainFeature",
-		food:2,
-		movementCost:2,
-		overrideStats:true,
-		unbuildable:true,
-		defenceBonus: 0.25,
-		occursOn:["Plains","Grassland"]
+		"name": "Jungle",
+		"type": "TerrainFeature",
+		"food": 2,
+		"movementCost": 2,
+		"overrideStats": true,
+		"unbuildable": true,
+		"defenceBonus": 0.25,
+		"occursOn": [
+			"Plains",
+			"Grassland"
+		]
 	},
 	{
-		name:"Marsh",
-		type:"TerrainFeature",
-		food:-1,
-		movementCost:3,
-		unbuildable:true,
-		defenceBonus: -0.1,
-		occursOn:["Grassland"]
+		"name": "Marsh",
+		"type": "TerrainFeature",
+		"food": -1,
+		"movementCost": 3,
+		"unbuildable": true,
+		"defenceBonus": -0.1,
+		"occursOn": [
+			"Grassland"
+		]
 	},
 	{
-		name:"Oasis",
-		type:"TerrainFeature",
-		food:3,
-		movementCost:1,
-		unbuildable:true,
-		defenceBonus: -0.1,
-		occursOn:["Desert"]
+		"name": "Oasis",
+		"type": "TerrainFeature",
+		"food": 3,
+		"movementCost": 1,
+		"unbuildable": true,
+		"defenceBonus": -0.1,
+		"occursOn": [
+			"Desert"
+		]
 	},
 	{
-		name:"Flood plains",
-		type:"TerrainFeature",
-		food:2,
-		movementCost:1,
-		defenceBonus: -0.1,
-		occursOn:["Desert"]
+		"name": "Flood plains",
+		"type": "TerrainFeature",
+		"food": 2,
+		"movementCost": 1,
+		"defenceBonus": -0.1,
+		"occursOn": [
+			"Desert"
+		]
 	}
-]	
+]

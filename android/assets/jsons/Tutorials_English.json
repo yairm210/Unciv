@@ -1,12 +1,12 @@
 { // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
-	// so for example:
-	PolicyPickerScreen: [ // Activated when entering policy picker screen
+	// so for "example":
+	"PolicyPickerScreen": [ // Activated when entering policy picker screen
 		[ // This is simply a more comfortable format than "all in one line with \n".
 			"Each turn, the culture you gain from all your ",
 			"  cities is added to your Civilization's culture.",
 			"When you have enough culture, you may pick a ",
 			"  Social Policy, each one giving you a certain bonus."
-		],  // this will be displayed as 4 lines of text in-game as well
+		], // this will be displayed as 4 lines of text in-game as well
 		[
 			"The policies are organized into branches, with each",
 			"  branch providing a bonus ability when all policies ",
@@ -17,8 +17,7 @@
 			"  the cost of adopting another policy rises - so choose wisely!"
 		]
 	],
-	
-	CityEntered: [
+	"CityEntered": [
 		[
 			"Welcome to your first city!",
 			"As of now, you only have 1 population,",
@@ -31,7 +30,7 @@
 		],
 		[
 			"Each population in your city can work",
-			"  a single tile, providing the city with that tile's yields.",
+			"  a single tile, providing the city with that tile's yields."
 		],
 		[
 			"Population can be assigned and unassigned",
@@ -51,8 +50,7 @@
 			"  button on the bottom-left"
 		]
 	],
-	
-	ScienceVictoryScreenEntered : [
+	"ScienceVictoryScreenEntered": [
 		[
 			"This is the science victory screen, filter you",
 			"  can see your progress towards constructing a ",
@@ -61,10 +59,9 @@
 		[
 			"There are 6 spaceship parts you must build, ",
 			"  and they all require advanced technologies"
-		],
+		]
 	],
-	
-	TechPickerScreen : [
+	"TechPickerScreen": [
 		[
 			"Technology is central to your civilization,",
 			" as technological progress brings with it",
@@ -78,9 +75,7 @@
 			" necessary technologies to get there"
 		]
 	],
-	
-	
-	CityFounded : [
+	"CityFounded": [
 		[
 			"You have founded a city!",
 			"Cities are the lifeblood of your empire,",
@@ -90,7 +85,7 @@
 		[
 			"Science is used to research technologies.",
 			"You can enter the technology screen by clicking",
-			"  on the button on the top-left, underneath the bar",
+			"  on the button on the top-left, underneath the bar"
 		],
 		[
 			"You can click the city name to enter",
@@ -98,8 +93,7 @@
 			"  choose production, and see information on the city"
 		]
 	],
-	
-	NewGame: [
+	"NewGame": [
 		[
 			"Hello, and welcome to Unciv!",
 			"Civilization games can be complex, so we'll",
@@ -113,8 +107,7 @@
 			"  Click on a tile to assign orders the unit!"
 		]
 	],
-	
-	TileLayout: [
+	"TileLayout": [
 		[
 			"This is the world map, which is made up of multiple tiles.",
 			"Each tile can contain units, resources and improvements, which we'll get to later.",
@@ -122,25 +115,21 @@
 			"For more details, you can click on the tile and see the tile information."
 		]
 	],
-	
-	
-	TileClicked : [
+	"TileClicked": [
 		[
 			"Clicking on a tile selects that tile,",
 			"  and displays information on that tile on the bottom-right.",
-			"If the tile contains a unit, that will become the selected unit,"
+			"If the tile contains a unit, that will become the selected unit,",
 			"  and its info and actions will be displayed on the bottom left."
 		]
 	],
-	
-	UnitSelected : [
+	"UnitSelected": [
 		[
 			"When a unit is selected, its information will be displayed on the bottom-left corner.",
 			"The available actions of that unit will appear above the tile information."
 		]
 	],
-	
-	AfterCityEntered : [
+	"AfterCityEntered": [
 		[
 			"Once you've done everything you can, ",
 			"click the next turn button on the top right to continue."
@@ -151,55 +140,51 @@
 			" continues, and they may grow in population or area."
 		]
 	],
-	
-	NextTurn: [
+	"NextTurn": [
 		[
 			"In your first couple of turns,",
 			"  you will have very little options,",
 			"  but as your civilization grows, so do the ",
 			"  number of things requiring your attention"
 		]
-	]
-	
-	ContactMe:  [
+	],
+	"ContactMe": [
 		[
 			"Hi there! If you've played this far, you've probably",
 			"  seen that the game is currently incomplete.",
 			"UnCiv is meant to be open-source and free, forever.",
-			"  That means no ads or any other nonsense.",
+			"  That means no ads or any other nonsense."
 		],
 		[
 			"What motivates me to keep working on it, ",
-			"  besides the fact I think it's amazingly cool that I can,"
+			"  besides the fact I think it's amazingly cool that I can,",
 			"  is the support from the players - you guys are the best!"
 		],
 		[
 			"Every rating and review that I get puts a smile on my face =)",
-			"  So contact me! Send me an email, review, Github issue"
+			"  So contact me! Send me an email, review, Github issue",
 			"  or mail pigeon, and let's figure out how to make the game ",
-			"  even more awesome!"
-			"(Contact info is in the Play Store)" 
+			"  even more awesome!",
+			"(Contact info is in the Play Store)"
 		]
 	],
-	
-	Unhappiness:  [
+	"Unhappiness": [
 		[
 			"It seems that your citizens are unhappy!",
 			"While unhappy, cities  will grow at 1/4 the speed,",
 			"  and your units will suffer a 2% penalty for each unhappiness"
 		],
 		[
-			"Unhappiness has two main causes: Population and cities",
+			"Unhappiness has two main \"causes\": Population and cities",
 			"  Each city causes 3 unhappiness, and each population, 1"
 		],
 		[
-			"There are 2 main ways to combat unhappiness:",
+			"There are 2 main ways to combat \"unhappiness\":",
 			"  by building happiness buildings for your population",
 			"  or by having improved luxury resources within your borders"
 		]
 	],
-	
-	GoldenAge:  [
+	"GoldenAge": [
 		[
 			"You have entered a golden age!",
 			"Golden age points are accumulated each turn by the total happiness ",
@@ -208,71 +193,63 @@
 			"  and every tile already providing at least one gold will provide an extra gold."
 		]
 	],
-	
-	SecondCity:  [
+	"SecondCity": [
 		[
 			"You have founded your second city!",
 			"Connecting your cities to the capital by roads",
 			"  will generate gold via the trade route.",
-			"Note that each road costs 1 gold maintainance per turn, "
+			"Note that each road costs 1 gold maintainance per turn, ",
 			"  so it may be more economical to wait until the cities grow!"
 		]
-	]
-	
-	EnemyCity:  [
+	],
+	"EnemyCity": [
 		[
 			"You have encoutered an enemy city!",
 			"Cities can be conquered by reducing their health to 1,",
 			"  and entering the city with a melee unit.",
-			"Since cities heal each turn, it is best to attack with ranged units"
+			"Since cities heal each turn, it is best to attack with ranged units",
 			"  and use your melee units to defend them until the city has been defeated!"
 		]
-	]
-	
-	LuxuryResource:  [
+	],
+	"LuxuryResource": [
 		[
 			"You have gained your first luxury resource!",
 			"Each unique Luxury resource you have adds 5 happiness to your civilization,",
 			"  but extra resources of the same type don't add anything, ",
 			"  so use them for trading with other civilizations!"
 		]
-	]
-	
-	StrategicResource:  [
+	],
+	"StrategicResource": [
 		[
 			"You have gained your first strategic resource!",
 			"Strategic resources allow you to train units and construct buildings that",
-			"  require those specific resources, for example the Horseman requires Horses."
+			"  require those specific resources, for example the Horseman requires Horses.",
 			"Each unit 'consumes' a copy of that resource, but if the unit is killed you can ",
 			"  construct a new unit wth your now-unused resource.",
 			"The top bar keeps count of how many unused strategic resources you own."
 		]
-	]
-	
-	EnemyCityNeedsConqueringWithMeleeUnit:  [
+	],
+	"EnemyCityNeedsConqueringWithMeleeUnit": [
 		[
 			"The city can no longer put up any resistance!",
 			"However, to conquer it, you must enter the city with a melee unit"
 		]
-	]
-	
-	BarbarianEncountered:  [
+	],
+	"BarbarianEncountered": [
 		[
 			"You have encountered a barbarian unit!",
 			"Barbarians attack everyone indiscriminately, so don't let your ",
 			"  civilian units go near them, and be careful of your scout!"
 		]
-	]
-	
-	OtherCivEncountered:  [
+	],
+	"OtherCivEncountered": [
 		[
 			"You have encountered another civilization!",
 			"Other civilizations start out peaceful, and you can trade with them,",
 			"  but they may choose to declare war on you later on"
 		]
-	]
-	
-	GameCrashed:  [
+	],
+	"GameCrashed": [
 		[
 			"Oh no! It looks like something went DISASTROUSLY wrong!",
 			"This is ABSOLUTELY not supposed to happen!",
@@ -280,14 +257,12 @@
 			"   (menu -> save game -> copy game info -> paste into email)",
 			"   and I'll try to fix it as fast as I can!"
 		]
-	]
-	
-	ApolloProgram:  [
+	],
+	"ApolloProgram": [
 		[
 			"You have completed the Apollo Program!",
 			"You can now start constructing spaceship parts in your cities (with the ",
 			"  relevant technologies) to win a scientific victory!"
 		]
 	]
-	
 }
