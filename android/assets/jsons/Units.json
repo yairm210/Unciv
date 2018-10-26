@@ -1,362 +1,407 @@
 [
-
-// Info according to Civilization Wiki and https://www.civfanatics.com/civ5/info/units/
-
+	// Info according to Civilization Wiki and https://www.civfanatics.com/civ5/info/units/
 	/* Ancient Era */
 	{
-		name:"Worker",
-		unitType:"Civilian",
-		baseDescription: "Can build improvements on tiles", 
-		movement:2,
-		hurryCostModifier:20,
-		cost:70
+		"name": "Worker",
+		"unitType": "Civilian",
+		"baseDescription": "Can build improvements on tiles",
+		"movement": 2,
+		"hurryCostModifier": 20,
+		"cost": 70
 	},
 	{
-		name:"Settler",
-		unitType:"Civilian",
-		baseDescription: "Founds a new city", 
-		movement:2,
-		cost:106,
-		hurryCostModifier:20
+		"name": "Settler",
+		"unitType": "Civilian",
+		"baseDescription": "Founds a new city",
+		"movement": 2,
+		"cost": 106,
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Scout",
-		unitType:"Scout",
-		movement:2,
-		strength:5,
-		cost:25,
-		uniques:["Ignores terrain cost"]
+		"name": "Scout",
+		"unitType": "Scout",
+		"movement": 2,
+		"strength": 5,
+		"cost": 25,
+		"uniques": [
+			"Ignores terrain cost"
+		]
 	},
 	{
-		name:"Warrior",
-		unitType:"Melee",
-		movement:2,
-		strength:8,
-		cost: 40,
-		hurryCostModifier:20,
-		obsoleteTech:"Metal Casting",
-		upgradesTo:"Swordsman"
+		"name": "Warrior",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 8,
+		"cost": 40,
+		"hurryCostModifier": 20,
+		"obsoleteTech": "Metal Casting",
+		"upgradesTo": "Swordsman"
 	},
 	{
-		name:"Archer",
-		unitType:"Ranged",
-		movement:2,
-		strength:5,
-		rangedStrength:7,
-		cost: 40,
-		hurryCostModifier:20,
-		requiredTech:"Archery",
-		obsoleteTech:"Machinery",
-		upgradesTo:"Crossbowman"
+		"name": "Archer",
+		"unitType": "Ranged",
+		"movement": 2,
+		"strength": 5,
+		"rangedStrength": 7,
+		"cost": 40,
+		"hurryCostModifier": 20,
+		"requiredTech": "Archery",
+		"obsoleteTech": "Machinery",
+		"upgradesTo": "Crossbowman"
 	},
 	{
-		name:"Bowman",
-		unitType:"Ranged",
-		movement:2,
-		strength:7,
-		rangedStrength:9,
-		cost: 40,
-		hurryCostModifier:20,
-		requiredTech:"Archery",
-		obsoleteTech:"Machinery",
-		replaces:"Archer",
-		uniqueTo:"Babylon",
-		upgradesTo:"Crossbowman"
+		"name": "Bowman",
+		"unitType": "Ranged",
+		"movement": 2,
+		"strength": 7,
+		"rangedStrength": 9,
+		"cost": 40,
+		"hurryCostModifier": 20,
+		"requiredTech": "Archery",
+		"obsoleteTech": "Machinery",
+		"replaces": "Archer",
+		"uniqueTo": "Babylon",
+		"upgradesTo": "Crossbowman"
 	},
 	{
-		name:"Work Boats",
-		unitType:"WaterCivilian",
-		baseDescription: "May create improvements on water resources", 
-		movement:4,
-		cost: 30,
-		requiredTech:"Sailing",
-		uniques:["Cannot enter ocean tiles until Astronomy"]
-		hurryCostModifier:20
+		"name": "Work Boats",
+		"unitType": "WaterCivilian",
+		"baseDescription": "May create improvements on water resources",
+		"movement": 4,
+		"cost": 30,
+		"requiredTech": "Sailing",
+		"uniques": [
+			"Cannot enter ocean tiles until Astronomy"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Trireme",
-		unitType:"WaterMelee",
-		movement:4,
-		strength:10,
-		cost: 45,
-		requiredTech:"Sailing",
-		uniques:["Cannot enter ocean tiles"]
-		hurryCostModifier:20
+		"name": "Trireme",
+		"unitType": "WaterMelee",
+		"movement": 4,
+		"strength": 10,
+		"cost": 45,
+		"requiredTech": "Sailing",
+		"uniques": [
+			"Cannot enter ocean tiles"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Chariot Archer",
-		unitType:"Ranged",
-		movement:4,
-		strength:6,
-		rangedStrength:10,
-		cost: 56,
-		requiredTech:"The Wheel",
-		requiredResource:"Horses",
-		upgradesTo:"Knight",
-		uniques:["No defensive terrain bonus","Rough terrain penalty"],
-		hurryCostModifier:20
+		"name": "Chariot Archer",
+		"unitType": "Ranged",
+		"movement": 4,
+		"strength": 6,
+		"rangedStrength": 10,
+		"cost": 56,
+		"requiredTech": "The Wheel",
+		"requiredResource": "Horses",
+		"upgradesTo": "Knight",
+		"uniques": [
+			"No defensive terrain bonus",
+			"Rough terrain penalty"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Spearman",
-		unitType:"Melee",
-		movement:2,
-		strength:11,
-		cost: 56,
-		requiredTech:"Bronze Working",
-		obsoleteTech:"Civil Service",
-		upgradesTo: "Pikeman",
-		uniques:["Bonus vs Mounted 50%"],
-		hurryCostModifier:20
+		"name": "Spearman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 11,
+		"cost": 56,
+		"requiredTech": "Bronze Working",
+		"obsoleteTech": "Civil Service",
+		"upgradesTo": "Pikeman",
+		"uniques": [
+			"Bonus vs Mounted 50%"
+		],
+		"hurryCostModifier": 20
 	},
-	
-	
 	/* Classical Era */
 	{
-		name:"Catapult",
-		unitType:"Siege",
-		movement:2,
-		strength:7,
-		rangedStrength:8,
-		cost: 75,
-		requiredTech:"Mathematics",
-		obsoleteTech:"Physics",
-		upgradesTo: "Trebuchet",
-		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
-		hurryCostModifier:20
+		"name": "Catapult",
+		"unitType": "Siege",
+		"movement": 2,
+		"strength": 7,
+		"rangedStrength": 8,
+		"cost": 75,
+		"requiredTech": "Mathematics",
+		"obsoleteTech": "Physics",
+		"upgradesTo": "Trebuchet",
+		"uniques": [
+			"Bonus vs City 200%",
+			"No defensive terrain bonus",
+			"Must set up to ranged attack"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Ballista",
-		unitType:"Siege",
-		uniqueTo:"Rome",
-		replaces:"Horseman",
-		movement:2,
-		strength:8,
-		rangedStrength:10,
-		cost: 75,
-		requiredTech:"Mathematics",
-		obsoleteTech:"Physics",
-		upgradesTo: "Trebuchet",
-		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
-		hurryCostModifier:20
+		"name": "Ballista",
+		"unitType": "Siege",
+		"uniqueTo": "Rome",
+		"replaces": "Horseman",
+		"movement": 2,
+		"strength": 8,
+		"rangedStrength": 10,
+		"cost": 75,
+		"requiredTech": "Mathematics",
+		"obsoleteTech": "Physics",
+		"upgradesTo": "Trebuchet",
+		"uniques": [
+			"Bonus vs City 200%",
+			"No defensive terrain bonus",
+			"Must set up to ranged attack"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Swordsman",
-		unitType:"Melee",
-		movement:2,
-		strength:14,
-		cost: 75,
-		requiredTech:"Iron Working",
-		upgradesTo:"Longswordsman",
-		obsoleteTech:"Steel",
-		requiredResource:"Iron",
-		hurryCostModifier:20
+		"name": "Swordsman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 14,
+		"cost": 75,
+		"requiredTech": "Iron Working",
+		"upgradesTo": "Longswordsman",
+		"obsoleteTech": "Steel",
+		"requiredResource": "Iron",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Horseman",
-		unitType:"Mounted",
-		movement:4,
-		strength:12,
-		cost: 75,
-		requiredTech:"Horseback Riding",
-		requiredResource:"Horses",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		"name": "Horseman",
+		"unitType": "Mounted",
+		"movement": 4,
+		"strength": 12,
+		"cost": 75,
+		"requiredTech": "Horseback Riding",
+		"requiredResource": "Horses",
+		"uniques": [
+			"Can move after attacking",
+			"No defensive terrain bonus",
+			"Penalty vs City 33%"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Companion Cavalry",
-		unitType:"Mounted",
-		uniqueTo:"Greece",
-		replaces:"Horseman",
-		movement:5,
-		strength:14,
-		cost: 75,
-		requiredTech:"Horseback Riding",
-		requiredResource:"Horses",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		"name": "Companion Cavalry",
+		"unitType": "Mounted",
+		"uniqueTo": "Greece",
+		"replaces": "Horseman",
+		"movement": 5,
+		"strength": 14,
+		"cost": 75,
+		"requiredTech": "Horseback Riding",
+		"requiredResource": "Horses",
+		"uniques": [
+			"Can move after attacking",
+			"No defensive terrain bonus",
+			"Penalty vs City 33%"
+		],
+		"hurryCostModifier": 20
 	},
-	
 	// Medieval Era
 	{
-		name:"Crossbowman",
-		unitType:"Ranged",
-		movement:2,
-		strength:13,
-		rangedStrength:18,
-		cost: 120,
-		requiredTech:"Machinery",
-		hurryCostModifier:20
+		"name": "Crossbowman",
+		"unitType": "Ranged",
+		"movement": 2,
+		"strength": 13,
+		"rangedStrength": 18,
+		"cost": 120,
+		"requiredTech": "Machinery",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Longbowman",
-		unitType:"Ranged",
-		range:3,
-		movement:2,
-		strength:13,
-		rangedStrength:18,
-		replaces:"Crossbowman",
-		uniqueTo:"England",
-		cost: 120,
-		requiredTech:"Machinery",
-		hurryCostModifier:20
+		"name": "Longbowman",
+		"unitType": "Ranged",
+		"range": 3,
+		"movement": 2,
+		"strength": 13,
+		"rangedStrength": 18,
+		"replaces": "Crossbowman",
+		"uniqueTo": "England",
+		"cost": 120,
+		"requiredTech": "Machinery",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Trebuchet",
-		unitType:"Siege",
-		movement:2,
-		strength:12,
-		rangedStrength:14,
-		cost: 120,
-		requiredTech:"Physics",
-		obsoleteTech:"Chemistry",
-		upgradesTo:"Cannon",
-		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
-		hurryCostModifier:20
+		"name": "Trebuchet",
+		"unitType": "Siege",
+		"movement": 2,
+		"strength": 12,
+		"rangedStrength": 14,
+		"cost": 120,
+		"requiredTech": "Physics",
+		"obsoleteTech": "Chemistry",
+		"upgradesTo": "Cannon",
+		"uniques": [
+			"Bonus vs City 200%",
+			"No defensive terrain bonus",
+			"Must set up to ranged attack",
+			"Limited Visibility"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Longswordsman",
-		unitType:"Melee",
-		movement:2,
-		strength:21,
-		cost: 120,
-		requiredTech:"Steel",
-		requiredResource:"Iron",
-		hurryCostModifier:20
+		"name": "Longswordsman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 21,
+		"cost": 120,
+		"requiredTech": "Steel",
+		"requiredResource": "Iron",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Pikeman",
-		unitType:"Melee",
-		movement:2,
-		strength:16,
-		cost: 90,
-		requiredTech:"Civil Service",
-		uniques:["Bonus vs Mounted 50%"],
-		upgradesTo:"Musketman",
-		obsoleteTech:"Gunpowder",
-		hurryCostModifier:20
+		"name": "Pikeman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 16,
+		"cost": 90,
+		"requiredTech": "Civil Service",
+		"uniques": [
+			"Bonus vs Mounted 50%"
+		],
+		"upgradesTo": "Musketman",
+		"obsoleteTech": "Gunpowder",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Knight",
-		unitType:"Mounted",
-		movement:3,
-		strength:20,
-		cost: 120,
-		requiredTech:"Chivalry",
-		requiredResource:"Horses",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		"name": "Knight",
+		"unitType": "Mounted",
+		"movement": 3,
+		"strength": 20,
+		"cost": 120,
+		"requiredTech": "Chivalry",
+		"requiredResource": "Horses",
+		"uniques": [
+			"Can move after attacking",
+			"No defensive terrain bonus",
+			"Penalty vs City 33%"
+		],
+		"hurryCostModifier": 20
 	},
-	
 	// Rennaisance Era
-
-
 	{
-		name:"Cannon",
-		unitType:"Siege",
-		movement:2,
-		strength:14,
-		rangedStrength:20,
-		cost: 185,
-		requiredTech:"Chemistry",
-		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
-		hurryCostModifier:20
+		"name": "Cannon",
+		"unitType": "Siege",
+		"movement": 2,
+		"strength": 14,
+		"rangedStrength": 20,
+		"cost": 185,
+		"requiredTech": "Chemistry",
+		"uniques": [
+			"Bonus vs City 200%",
+			"No defensive terrain bonus",
+			"Must set up to ranged attack",
+			"Limited Visibility"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Musketman",
-		unitType:"Melee",
-		movement:2,
-		strength:24,
-		cost: 150,
-		requiredTech:"Gunpowder",
-		hurryCostModifier:20
+		"name": "Musketman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 24,
+		"cost": 150,
+		"requiredTech": "Gunpowder",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Musketeer",
-		unitType:"Melee",
-		replaces:"Musketman",
-		uniqueTo:"France",
-		movement:2,
-		strength:28,
-		cost: 150,
-		requiredTech:"Gunpowder",
-		hurryCostModifier:20
+		"name": "Musketeer",
+		"unitType": "Melee",
+		"replaces": "Musketman",
+		"uniqueTo": "France",
+		"movement": 2,
+		"strength": 28,
+		"cost": 150,
+		"requiredTech": "Gunpowder",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Lancer",
-		unitType:"Mounted",
-		movement:4,
-		strength:25,
-		cost: 185,
-		requiredTech:"Metallurgy",
-		requiredResource:"Horses",
-		hurryCostModifier:20,
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%" ],
+		"name": "Lancer",
+		"unitType": "Mounted",
+		"movement": 4,
+		"strength": 25,
+		"cost": 185,
+		"requiredTech": "Metallurgy",
+		"requiredResource": "Horses",
+		"hurryCostModifier": 20,
+		"uniques": [
+			"Can move after attacking",
+			"No defensive terrain bonus",
+			"Penalty vs City 33%",
+			"Bonus vs Mounted 33%"
+		],
 	},
-	
 	// Industrial Era
-	
 	{
-		name:"Rifleman",
-		unitType:"Melee",
-		movement:2,
-		strength:34,
-		cost: 225,
-		requiredTech:"Rifling",
-		hurryCostModifier:20
+		"name": "Rifleman",
+		"unitType": "Melee",
+		"movement": 2,
+		"strength": 34,
+		"cost": 225,
+		"requiredTech": "Rifling",
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Cavalry",
-		unitType:"Mounted",
-		movement:4,
-		strength:34,
-		cost: 225,
-		requiredTech:"Military Science",
-		requiredResource:"Horses",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		"name": "Cavalry",
+		"unitType": "Mounted",
+		"movement": 4,
+		"strength": 34,
+		"cost": 225,
+		"requiredTech": "Military Science",
+		"requiredResource": "Horses",
+		"uniques": [
+			"Can move after attacking",
+			"No defensive terrain bonus",
+			"Penalty vs City 33%"
+		],
+		"hurryCostModifier": 20
 	},
 	{
-		name:"Artillery",
-		unitType:"Siege",
-		movement:2,
-		strength:21,
-		rangedStrength:28,
-		range:3,
-		cost: 320,
-		requiredTech:"Dynamite",
-		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility","Indirect Fire"],
-		hurryCostModifier:20
+		"name": "Artillery",
+		"unitType": "Siege",
+		"movement": 2,
+		"strength": 21,
+		"rangedStrength": 28,
+		"range": 3,
+		"cost": 320,
+		"requiredTech": "Dynamite",
+		"uniques": [
+			"Bonus vs City 200%",
+			"No defensive terrain bonus",
+			"Must set up to ranged attack",
+			"Limited Visibility",
+			"Indirect Fire"
+		],
+		"hurryCostModifier": 20
 	},
-	
 	/* Great people */
-	
 	{
-		name:"Great Artist",
-		baseDescription: "Can start an 8-turn golden age or construct a Landmark (+6 culture)", 
-		unbuildable:true,
-		unitType:"Civilian",
-		movement:2
+		"name": "Great Artist",
+		"baseDescription": "Can start an 8-turn golden age or construct a Landmark (+6 culture)",
+		"unbuildable": true,
+		"unitType": "Civilian",
+		"movement": 2
 	},
 	{
-		name:"Great Scientist",
-		baseDescription: "Can discover a technology, or construct an Academy (+4 science)", 
-		unbuildable:true,
-		unitType:"Civilian",
-		movement:2
+		"name": "Great Scientist",
+		"baseDescription": "Can discover a technology, or construct an Academy (+4 science)",
+		"unbuildable": true,
+		"unitType": "Civilian",
+		"movement": 2
 	},
 	{
-		name:"Great Merchant",
-		baseDescription: "Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)", 
-		unbuildable:true,
-		unitType:"Civilian",
-		movement:2
+		"name": "Great Merchant",
+		"baseDescription": "Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)",
+		"unbuildable": true,
+		"unitType": "Civilian",
+		"movement": 2
 	},
 	{
-		name:"Great Engineer",
-		baseDescription: "Can speed up construction of a wonder, or construct a Manufactory (+4 production)", 
-		unbuildable:true,
-		unitType:"Civilian",
-		movement:2
-	},
-	
+		"name": "Great Engineer",
+		"baseDescription": "Can speed up construction of a wonder, or construct a Manufactory (+4 production)",
+		"unbuildable": true,
+		"unitType": "Civilian",
+		"movement": 2
+	}
 ]

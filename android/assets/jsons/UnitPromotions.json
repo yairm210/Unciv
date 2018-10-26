@@ -1,173 +1,316 @@
 [
-
 	{
-		name:"Accuracy I",
-		effect:"Bonus vs units in open terrain 15%",
-		unitTypes:["Siege","Ranged"]
-	}
+		"name": "Accuracy I",
+		"effect": "Bonus vs units in open terrain 15%",
+		"unitTypes": [
+			"Siege",
+			"Ranged"
+		]
+	},
 	{
-		name:"Accuracy II",
-		prerequisites:["Accuracy I"],
-		effect:"Bonus vs units in open terrain 15%",
-		unitTypes:["Siege","Ranged"]
-	}
+		"name": "Accuracy II",
+		"prerequisites": [
+			"Accuracy I"
+		],
+		"effect": "Bonus vs units in open terrain 15%",
+		"unitTypes": [
+			"Siege",
+			"Ranged"
+		]
+	},
 	{
-		name:"Accuracy III",
-		prerequisites:["Accuracy II"],
-		effect:"Bonus vs units in open terrain 15%",
-		unitTypes:["Siege","Ranged"]
-	}
+		"name": "Accuracy III",
+		"prerequisites": [
+			"Accuracy II"
+		],
+		"effect": "Bonus vs units in open terrain 15%",
+		"unitTypes": [
+			"Siege",
+			"Ranged"
+		]
+	},
 	{
-		name:"Barrage I",
-		effect:"Bonus vs units in rough terrain 15%",
-		unitTypes:["Siege","Ranged"]
-	}
+		"name": "Barrage I",
+		"effect": "Bonus vs units in rough terrain 15%",
+		"unitTypes": [
+			"Siege",
+			"Ranged"
+		]
+	},
 	{
-		name:"Barrage II",
-		prerequisites:["Barrage I"],
-		effect:"Bonus vs units in rough terrain 15%",
-		unitTypes:["Siege","Ranged"]
-	}
+		"name": "Barrage II",
+		"prerequisites": [
+			"Barrage I"
+		],
+		"effect": "Bonus vs units in rough terrain 15%",
+		"unitTypes": [
+			"Siege",
+			"Ranged"
+		]
+	},
 	{
-		name:"Barrage III",
-		prerequisites:["Barrage II"],
-		effect:"Bonus vs units in rough terrain 15%",
-		unitTypes:["Siege","Ranged"]
-	}
+		"name": "Barrage III",
+		"prerequisites": [
+			"Barrage II"
+		],
+		"effect": "Bonus vs units in rough terrain 15%",
+		"unitTypes": [
+			"Siege",
+			"Ranged"
+		]
+	},
 	{
-		name:"Shock I",
-		effect:"Bonus vs units in open terrain 15%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Shock I",
+		"effect": "Bonus vs units in open terrain 15%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Shock II",
-		prerequisites:["Shock I"],
-		effect:"Bonus vs units in open terrain 15%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Shock II",
+		"prerequisites": [
+			"Shock I"
+		],
+		"effect": "Bonus vs units in open terrain 15%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Shock III",
-		prerequisites:["Shock II"],
-		effect:"Bonus vs units in open terrain 15%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Shock III",
+		"prerequisites": [
+			"Shock II"
+		],
+		"effect": "Bonus vs units in open terrain 15%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Drill I",
-		effect:"Bonus vs units in rough terrain 15%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Drill I",
+		"effect": "Bonus vs units in rough terrain 15%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Drill II",
-		prerequisites:["Drill I"],
-		effect:"Bonus vs units in rough terrain 15%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Drill II",
+		"prerequisites": [
+			"Drill I"
+		],
+		"effect": "Bonus vs units in rough terrain 15%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Drill III",
-		prerequisites:["Drill II"],
-		effect:"Bonus vs units in rough terrain 15%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Drill III",
+		"prerequisites": [
+			"Drill II"
+		],
+		"effect": "Bonus vs units in rough terrain 15%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Scouting I",
-		effect:"+1 Visibility Range",
-		unitTypes:["Scout"]
-	}
+		"name": "Scouting I",
+		"effect": "+1 Visibility Range",
+		"unitTypes": [
+			"Scout"
+		]
+	},
 	{
-		name:"Scouting II",
-		prerequisites:["Scouting I"],
-		effect:"+1 Movement",
-		unitTypes:["Scout"]
-	}
+		"name": "Scouting II",
+		"prerequisites": [
+			"Scouting I"
+		],
+		"effect": "+1 Movement",
+		"unitTypes": [
+			"Scout"
+		]
+	},
 	{
-		name:"Scouting III",
-		prerequisites:["Scouting II"],
-		effect:"+1 Visibility Range",
-		unitTypes:["Scout"]
-	}
+		"name": "Scouting III",
+		"prerequisites": [
+			"Scouting II"
+		],
+		"effect": "+1 Visibility Range",
+		"unitTypes": [
+			"Scout"
+		]
+	},
 	{
-		name:"Cover I",
-		effect:"+25% Defence against ranged attacks",
-		unitTypes:["Melee","Ranged","Siege"]
-	}
+		"name": "Cover I",
+		"effect": "+25% Defence against ranged attacks",
+		"unitTypes": [
+			"Melee",
+			"Ranged",
+			"Siege"
+		]
+	},
 	{
-		name:"Cover II",
-		prerequisites:["Cover I"],
-		effect:"+25% Defence against ranged attacks",
-		unitTypes:["Melee","Ranged","Siege"]
-	}
+		"name": "Cover II",
+		"prerequisites": [
+			"Cover I"
+		],
+		"effect": "+25% Defence against ranged attacks",
+		"unitTypes": [
+			"Melee",
+			"Ranged",
+			"Siege"
+		]
+	},
 	{
-		name:"March",
-		prerequisites:["Accuracy II","Barrage II","Shock III","Drill III"],
-		effect:"Unit will heal every turn, even if it performs an action",
-		unitTypes:["Melee","Ranged","Siege","Mounted"]
-	}
+		"name": "March",
+		"prerequisites": [
+			"Accuracy II",
+			"Barrage II",
+			"Shock III",
+			"Drill III"
+		],
+		"effect": "Unit will heal every turn, even if it performs an action",
+		"unitTypes": [
+			"Melee",
+			"Ranged",
+			"Siege",
+			"Mounted"
+		]
+	},
 	{
-		name:"Charge",
-		prerequisites:["Shock II","Drill II"],
-		effect:"Bonus vs wounded units 33%",
-		unitTypes:["Mounted"]
-	}
+		"name": "Charge",
+		"prerequisites": [
+			"Shock II",
+			"Drill II"
+		],
+		"effect": "Bonus vs wounded units 33%",
+		"unitTypes": [
+			"Mounted"
+		]
+	},
 	{
-		name:"Siege",
-		prerequisites:["Shock II","Drill II"],
-		effect:"Bonus vs City 50%",
-		unitTypes:["Melee"]
-	}
+		"name": "Siege",
+		"prerequisites": [
+			"Shock II",
+			"Drill II"
+		],
+		"effect": "Bonus vs City 50%",
+		"unitTypes": [
+			"Melee"
+		]
+	},
 	{
-		name:"Volley",
-		prerequisites:["Accuracy I","Barrage I"],
-		effect:"Bonus vs City 50%",
-		unitTypes:["Ranged","Siege"]
-	}
+		"name": "Volley",
+		"prerequisites": [
+			"Accuracy I",
+			"Barrage I"
+		],
+		"effect": "Bonus vs City 50%",
+		"unitTypes": [
+			"Ranged",
+			"Siege"
+		]
+	},
 	{
-		name:"Sentry",
-		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II"],
-		effect:"+1 Visibility Range",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Sentry",
+		"prerequisites": [
+			"Accuracy I",
+			"Barrage I",
+			"Shock II",
+			"Drill II"
+		],
+		"effect": "+1 Visibility Range",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Range",
-		prerequisites:["Accuracy III","Barrage III"],
-		effect:"+1 Range",
-		unitTypes:["Ranged","Siege"]
-	}
+		"name": "Range",
+		"prerequisites": [
+			"Accuracy III",
+			"Barrage III"
+		],
+		"effect": "+1 Range",
+		"unitTypes": [
+			"Ranged",
+			"Siege"
+		]
+	},
 	{
-		name:"Indirect Fire",
-		prerequisites:["Accuracy III","Barrage III"],
-		effect:"Ranged attacks may be performed over obstacles",
-		unitTypes:["Ranged","Siege"]
-	}
-	
+		"name": "Indirect Fire",
+		"prerequisites": [
+			"Accuracy III",
+			"Barrage III"
+		],
+		"effect": "Ranged attacks may be performed over obstacles",
+		"unitTypes": [
+			"Ranged",
+			"Siege"
+		]
+	},
 	{
-		name:"Formation I",
-		prerequisites:["Shock II","Drill II"],
-		effect:"Bonus vs Mounted 33%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Formation I",
+		"prerequisites": [
+			"Shock II",
+			"Drill II"
+		],
+		"effect": "Bonus vs Mounted 33%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Formation II",
-		prerequisites:["Formation I"],
-		effect:"Bonus vs Mounted 33%",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Formation II",
+		"prerequisites": [
+			"Formation I"
+		],
+		"effect": "Bonus vs Mounted 33%",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Blitz",
-		prerequisites:["Shock III","Drill III"],
-		effect:"1 additional attack per turn",
-		unitTypes:["Melee","Mounted"]
-	}
+		"name": "Blitz",
+		"prerequisites": [
+			"Shock III",
+			"Drill III"
+		],
+		"effect": "1 additional attack per turn",
+		"unitTypes": [
+			"Melee",
+			"Mounted"
+		]
+	},
 	{
-		name:"Logistics",
-		prerequisites:["Accuracy III","Barrage III"],
-		effect:"1 additional attack per turn",
-		unitTypes:["Ranged","Siege"]
-	}
+		"name": "Logistics",
+		"prerequisites": [
+			"Accuracy III",
+			"Barrage III"
+		],
+		"effect": "1 additional attack per turn",
+		"unitTypes": [
+			"Ranged",
+			"Siege"
+		]
+	},
 	{
-		name:"Mobility",
-		prerequisites:["Shock III","Drill III"],
-		effect:"+1 Movement",
-		unitTypes:["Mounted"]
+		"name": "Mobility",
+		"prerequisites": [
+			"Shock III",
+			"Drill III"
+		],
+		"effect": "+1 Movement",
+		"unitTypes": [
+			"Mounted"
+		]
 	}
-	
 ]
