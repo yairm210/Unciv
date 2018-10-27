@@ -143,15 +143,16 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     private fun selectTechnology(tech: Technology?) {
         selectedTech = tech
         descriptionLabel.setText(tech!!.description)
-        if (isFreeTechPick) {
-            selectTechnologyForFreeTech(tech)
-            return
-        }
 
         if (civTech.isResearched(tech.name) && tech.name!="Future Tech") {
             rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()
+            return
+        }
+
+        if (isFreeTechPick) {
+            selectTechnologyForFreeTech(tech)
             return
         }
 
