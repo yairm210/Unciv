@@ -57,14 +57,16 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
             }
         })
 
-        add(Label("Missing translations:",CameraStageBaseScreen.skin)).pad(5f).row()
-        val missingTextSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
-        val missingTextArray = com.badlogic.gdx.utils.Array<String>()
-        val currentLanguage = UnCivGame.Current.settings.language
-        GameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }.forEach{missingTextArray.add(it.key)}
-        missingTextSelectBox.items = missingTextArray
-        missingTextSelectBox.selected="Untranslated texts"
-        add(missingTextSelectBox).pad(10f).width(UnCivGame.Current.worldScreen.stage.width/2).row()
+        if(languageSelectBox.selected.percentComplete!=100) {
+            add(Label("Missing translations:", CameraStageBaseScreen.skin)).pad(5f).row()
+            val missingTextSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
+            val missingTextArray = com.badlogic.gdx.utils.Array<String>()
+            val currentLanguage = UnCivGame.Current.settings.language
+            GameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }.forEach { missingTextArray.add(it.key) }
+            missingTextSelectBox.items = missingTextArray
+            missingTextSelectBox.selected = "Untranslated texts"
+            add(missingTextSelectBox).pad(10f).width(UnCivGame.Current.worldScreen.stage.width / 2).row()
+        }
 
         val resolutionSelectBox= SelectBox<String>(CameraStageBaseScreen.skin)
         val resolutionArray = com.badlogic.gdx.utils.Array<String>()

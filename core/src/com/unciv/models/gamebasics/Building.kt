@@ -111,7 +111,7 @@ class Building : NamedStats(), IConstruction{
             stringBuilder.appendln("Requires a $requiredBuildingInAllCities to be built in all cities")
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free $providesFreeBuilding in this city")
-        if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.map { it.tr() }.joinToString { "\n" })
+        if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
         if (this.percentStatBonus != null) {

@@ -146,9 +146,10 @@ fun String.tr(): String {
         return languageSpecificPlaceholder.tr()
     }
     if(contains("{")){ // sentence
-        return Regex("\\{(.*?)\\}").replace(this,{matchResult -> matchResult.groups[1]!!.value.tr() })
+        return Regex("\\{(.*?)\\}").replace(this) { it.groups[1]!!.value.tr() }
     }
-    else return GameBasics.Translations.get(this,UnCivGame.Current.settings.language) // single word
+    val translation = GameBasics.Translations.get(this,UnCivGame.Current.settings.language) // single word
+    return translation
 }
 
 
