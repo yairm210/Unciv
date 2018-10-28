@@ -20,17 +20,17 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
 
         rightSideButton.setText("Pick improvement")
         rightSideButton.onClick {
-                tileInfo.startWorkingOnImprovement(selectedImprovement!!, civInfo)
-                game.setWorldScreen()
-                dispose()
-            }
+            tileInfo.startWorkingOnImprovement(selectedImprovement!!, civInfo)
+            if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.action=null // this is to "wake up" the worker if it's sleeping
+            game.setWorldScreen()
+            dispose()
+        }
 
         val regularImprovements = VerticalGroup()
         regularImprovements.space(10f)
         for (improvement in GameBasics.TileImprovements.values) {
             if (!tileInfo.canBuildImprovement(improvement, civInfo) || improvement.name == tileInfo.improvement) continue
             val improvementButton = Button(skin)
-
 
             if(improvement.name.startsWith("Remove"))
                 improvementButton.add(ImageGetter.getImage("OtherIcons/Stop.png")).size(30f).pad(10f)

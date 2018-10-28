@@ -11,18 +11,19 @@ import com.unciv.ui.utils.getRandom
 
 class GameInfo {
     var notifications = mutableListOf<Notification>()
-    @Deprecated("As of 2.6.9") var tutorial = mutableListOf<String>()
+    @Deprecated("As of 2.6.9")
+    var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
     var tileMap: TileMap = TileMap()
     var turns = 0
 
     //region pure functions
-    fun clone():GameInfo{
+    fun clone(): GameInfo {
         val toReturn = GameInfo()
-        toReturn.tileMap=tileMap.clone()
+        toReturn.tileMap = tileMap.clone()
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.notifications.addAll(notifications)
-        toReturn.turns=turns
+        toReturn.turns = turns
         return toReturn
     }
 
@@ -34,8 +35,8 @@ class GameInfo {
         notifications.clear()
         val player = getPlayerCivilization()
 
-        for (civInfo in civilizations){
-            if(civInfo.tech.techsToResearch.isEmpty()){  // should belong in automation? yes/no?
+        for (civInfo in civilizations) {
+            if (civInfo.tech.techsToResearch.isEmpty()) {  // should belong in automation? yes/no?
                 val researchableTechs = GameBasics.Technologies.values
                         .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
                 civInfo.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
@@ -46,12 +47,12 @@ class GameInfo {
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
-        for (civInfo in civilizations.filterNot { it==player || (it.isDefeated() && !it.isBarbarianCivilization()) }){
+        for (civInfo in civilizations.filterNot { it == player || (it.isDefeated() && !it.isBarbarianCivilization()) }) {
             civInfo.startTurn()
             NextTurnAutomation().automateCivMoves(civInfo)
         }
 
-        if(turns%10 == 0){ // every 10 turns add a barbarian in a random place
+        if (turns % 10 == 0) { // every 10 turns add a barbarian in a random place
             placeBarbarianUnit(null)
         }
 
@@ -60,11 +61,13 @@ class GameInfo {
         player.startTurn()
 
         val enemyUnitsCloseToTerritory = player.getViewableTiles()
-                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=player
-                        && player.isAtWarWith(it.militaryUnit!!.civInfo)
-                && (it.getOwner()==player || it.neighbors.any { neighbor -> neighbor.getOwner()==player }) }
-        for(enemyUnitTile in enemyUnitsCloseToTerritory) {
-            val inOrNear = if(enemyUnitTile.getOwner()==player) "in" else "near"
+                .filter {
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo != player
+                            && player.isAtWarWith(it.militaryUnit!!.civInfo)
+                            && (it.getOwner() == player || it.neighbors.any { neighbor -> neighbor.getOwner() == player })
+                }
+        for (enemyUnitTile in enemyUnitsCloseToTerritory) {
+            val inOrNear = if (enemyUnitTile.getOwner() == player) "in" else "near"
             val unitName = enemyUnitTile.militaryUnit!!.name
             player.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
         }
@@ -74,15 +77,15 @@ class GameInfo {
 
     fun placeBarbarianUnit(tileToPlace: TileInfo?) {
         var tile = tileToPlace
-        if(tileToPlace==null) {
+        if (tileToPlace == null) {
             // Barbarians will only spawn in places that no one can see
             val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
                     .flatMap { it.getViewableTiles() }.toHashSet()
-            val viableTiles = tileMap.values.filterNot { allViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit!=null}
-            if(viableTiles.isEmpty()) return // no place for more barbs =(
-            tile=viableTiles.getRandom()
+            val viableTiles = tileMap.values.filterNot { allViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit != null }
+            if (viableTiles.isEmpty()) return // no place for more barbs =(
+            tile = viableTiles.getRandom()
         }
-        tileMap.placeUnitNearTile(tile!!.position,"Warrior",getBarbarianCivilization())
+        tileMap.placeUnitNearTile(tile!!.position, "Warrior", getBarbarianCivilization())
     }
 
     fun setTransients() {
@@ -99,10 +102,10 @@ class GameInfo {
 
                 val cityConstructions = cityInfo.cityConstructions
                 // As of 2.9.6, removed hydro plant, since it requires rivers, which we do not yet have
-                if("Hydro Plant" in cityConstructions.builtBuildings)
+                if ("Hydro Plant" in cityConstructions.builtBuildings)
                     cityConstructions.builtBuildings.remove("Hydro Plant")
-                if(cityConstructions.currentConstruction=="Hydro Plant") {
-                    cityConstructions.currentConstruction=""
+                if (cityConstructions.currentConstruction == "Hydro Plant") {
+                    cityConstructions.currentConstruction = ""
                     cityConstructions.chooseNextConstruction()
                 }
 
