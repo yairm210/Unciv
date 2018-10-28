@@ -12,7 +12,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.utils.tr
@@ -131,6 +130,7 @@ class CivilizationInfo {
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!isPlayerCivilization())
             cost *= gameInfo.getPlayerCivilization().getDifficulty().aiUnitMaintainanceModifier
+        if(policies.isAdopted("Autocracy")) cost = cost*0.66f
         return cost.toInt()
     }
 

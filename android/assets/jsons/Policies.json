@@ -98,14 +98,14 @@
 				column:2
 			},
 			{
-				name:"Dicipline",
+				name:"Discipline",
 				description:"+15% combat strength for melee units which have another military unit in an adjacent tile",
 				row:1,
 				column:4
 			},
 			{
 				name:"Military Tradition",
-				description:"Military units gain 50% more Experience from combat", // todo from here
+				description:"Military units gain 50% more Experience from combat",
 				requires:["Warrior Code"],
 				row:2,
 				column:2
@@ -113,7 +113,7 @@
 			{
 				name:"Military Caste",
 				description:"Each city with a garrison increases happiness by 1 and culture by 2",
-				requires:["Dicipline"],
+				requires:["Discipline"],
 				row:2,
 				column:4
 			},
@@ -307,7 +307,7 @@
 	{
 		name:"Autocracy",
 		era:"Industrial",
-		description:"-33% unit upkeep costs", // todo!
+		description:"-33% unit upkeep costs",
 		policies:[
 			{
 				name:"Populism",

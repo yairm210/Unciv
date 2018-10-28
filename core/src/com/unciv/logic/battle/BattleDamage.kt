@@ -41,10 +41,10 @@ class BattleDamage{
             if(combatant.getCivilization().policies.isAdopted("Populism"))
                 modifiers["Populism"] = 0.25f
 
-            if(combatant.getCivilization().policies.isAdopted("Dicipline") && combatant.isMelee()
+            if(combatant.getCivilization().policies.isAdopted("Discipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
                             .any { it.civInfo==combatant.getCivilization() && !it.baseUnit.unitType.isCivilian()})
-                modifiers["Dicipline"] = 0.15f
+                modifiers["Discipline"] = 0.15f
         }
 
         if (combatant.getCivilization().policies.isAdopted("Honor") && enemy.getCivilization().isBarbarianCivilization())

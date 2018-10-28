@@ -217,7 +217,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Sword](https://thenounproject.com/term/sword/5111/) By dsathiyaraj for Military Tradition
 * [Castle](https://thenounproject.com/term/castle/55045/) By Gabriele Malaspina for Military Caste
 * [Roman Armor](https://thenounproject.com/term/roman-armor/440138/) By Parkjisun for Professional Army
-* [Shield](https://thenounproject.com/term/shield/874633/) By Kimmi Studio for Dicipline
+* [Shield](https://thenounproject.com/term/shield/874633/) By Kimmi Studio for Discipline
 * [Spartan Helmet](https://thenounproject.com/term/spartan-helmet/1732615/) By Joni Ramadhan for Warrior Code
 
 ### Piety
