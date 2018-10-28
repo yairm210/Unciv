@@ -526,13 +526,6 @@
 		requiredTech:"Plastics"
 	},
 	{
-		name:"Hydro Plant",
-		baseDescription: "Provides +1 production to tiles near rivers",
-		maintenance:3,
-		requiredResource:"Aluminum",
-		requiredTech:"Plastics"
-	},
-	{
 		name:"Stadium",
 		happiness:4,
 		requiredBuilding:"Theatre",

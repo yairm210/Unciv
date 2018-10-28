@@ -311,7 +311,7 @@
 		policies:[
 			{
 				name:"Populism",
-				description:"Wounded military units deal +25% damage", // todo - this is different than +25% strength...
+				description:"Wounded military units deal +25% damage",
 				row:1,
 				column:1
 			},

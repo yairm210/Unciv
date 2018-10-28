@@ -37,6 +37,10 @@ class UnCivGame : Game() {
     }
 
     fun loadGame(gameInfo:GameInfo){
+        // As of 2.9.6, removed hydro plat, since it requires rivers, which we do not yet have
+        gameInfo.civilizations.flatMap { it.cities }.map { it.cityConstructions }
+                .forEach{if("Hydro Plant" in it.builtBuildings) it.builtBuildings.remove("Hydro Plant")}
+
         this.gameInfo = gameInfo
         if(settings.tutorialsShown.isEmpty()  && this.gameInfo.tutorial.isNotEmpty())
             settings.tutorialsShown.addAll(this.gameInfo.tutorial)
