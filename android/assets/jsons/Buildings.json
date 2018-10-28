@@ -280,7 +280,7 @@
 		name:"Harbor",
 		maintenance:2,
 		hurryCostModifier:25,
-		uniques:["+1 production from all sea resources worked by the city","Connects trade routes over water"]
+		uniques:["+1 production from all sea resources worked by the city","Connects trade routes over water"] // todo - trade routes over water!
 		requiredTech:"Compass"
 	},
 	{

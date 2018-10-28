@@ -27,20 +27,16 @@ class UnCivGame : Game() {
         GameBasics.run {  } // just to initialize the GameBasics
         settings = GameSaver().getGeneralSettings()
         if (GameSaver().getSave("Autosave").exists()) {
-            try {
+//            try {
                 loadGame("Autosave")
-            } catch (ex: Exception) { // silent fail if we can't read the autosave
-                startNewGame()
-            }
+//            } catch (ex: Exception) { // silent fail if we can't read the autosave
+//                startNewGame()
+//            }
         }
         else startNewGame() // screen=LanguagePickerScreen() disabled because of people's negative reviews =(
     }
 
     fun loadGame(gameInfo:GameInfo){
-        // As of 2.9.6, removed hydro plat, since it requires rivers, which we do not yet have
-        gameInfo.civilizations.flatMap { it.cities }.map { it.cityConstructions }
-                .forEach{if("Hydro Plant" in it.builtBuildings) it.builtBuildings.remove("Hydro Plant")}
-
         this.gameInfo = gameInfo
         if(settings.tutorialsShown.isEmpty()  && this.gameInfo.tutorial.isNotEmpty())
             settings.tutorialsShown.addAll(this.gameInfo.tutorial)

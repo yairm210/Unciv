@@ -154,6 +154,7 @@ class CityInfo {
         expansion.setTransients()
         cityStats.cityInfo = this
         cityConstructions.cityInfo = this
+
     }
 
     fun endTurn() {

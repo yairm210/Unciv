@@ -95,8 +95,19 @@ class GameInfo {
         }
 
         for (civInfo in civilizations)
-            for (cityInfo in civInfo.cities)
+            for (cityInfo in civInfo.cities) {
+
+                val cityConstructions = cityInfo.cityConstructions
+                // As of 2.9.6, removed hydro plant, since it requires rivers, which we do not yet have
+                if("Hydro Plant" in cityConstructions.builtBuildings)
+                    cityConstructions.builtBuildings.remove("Hydro Plant")
+                if(cityConstructions.currentConstruction=="Hydro Plant") {
+                    cityConstructions.currentConstruction=""
+                    cityConstructions.chooseNextConstruction()
+                }
+
                 cityInfo.cityStats.update()
+            }
     }
 
 }
