@@ -3883,6 +3883,22 @@
 		Spanish:"Gran Persona gratis a elegir cerca de la capital"
 	}
 	
+	// Honor branch
+	"Honor":{}
+	"+25% bonus vs Barbarians":{}
+	"Warrior Code":{}
+	"+20% production when training melee units":{}
+	"Dicipline":{}
+	"+15% combat strength for melee units which have another military unit in an adjacent tile":{}
+	"Military Tradition":{}
+	"Military units gain 50% more Experience from combat":{}
+	"Military Caste":{}
+	"Each city with a garrison increases happiness by 1 and culture by 2":{}
+	"Professional Army":{}
+	"Gold cost of upgrading military units reduced by 50%":{}
+	"Honor Complete":{}
+	"Gain gold for each unit killed":{}
+	
 	// Piety branch
 	"Piety":{
 		Russian:"Набожность"
@@ -4114,5 +4130,19 @@
 		Russian:"Доход клетки от великих улучшений +100%, золотые века увеличены на 50%"
 		Spanish:"Rendimiento de casilla por gran mejora aumenta en 100%, Edades de Oro incrementan 50%"
 	}
+	
+	// Autocracy branch
+	"Autocracy":{}
+	"-33% unit upkeep costs":{}
+	"Populism":{}
+	"Wounded military units deal +25% damage":{}
+	"Militarism":{}
+	"Gold cost of purchasing units -33%":{}
+	"Facism":{}
+	"Quantity of strategic resources produced by the empire increased by 100%":{}
+	"Police State":{}
+	"Captured cities retain their previous borders":{}
+	"Total War":{}
+	"+15% production when building military units and new military units start with 15 Experience":{}
 	
 }
