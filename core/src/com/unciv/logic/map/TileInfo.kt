@@ -218,6 +218,12 @@ open class TileInfo {
             if(militaryUnit!!.health<100) milUnitString += "(" + militaryUnit!!.health + ")"
             SB.appendln(milUnitString)
         }
+        if(getDefensiveBonus()!=0f){
+            var defencePercentString = (getDefensiveBonus()*100).toInt().toString()+"%"
+            if(!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
+            SB.appendln("[$defencePercentString] to unit defence".tr())
+        }
+
         return SB.toString().trim()
     }
 

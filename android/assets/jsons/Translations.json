@@ -1046,6 +1046,8 @@
 		Spanish:"Ataque"
 	}
 	
+	"[percentage] to unit defence":{} // e.g. +25% to unit defence
+	
 	// Terrains
 	
 	"Grassland":{

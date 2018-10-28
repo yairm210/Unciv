@@ -156,21 +156,19 @@ fun String.tr(): String {
 val fontCache = HashMap<Int,BitmapFont>()
 fun getFont(size: Int): BitmapFont {
     if(fontCache.containsKey(size)) return fontCache[size]!!
-//    var screenScale = Gdx.graphics.width / 1000f // screen virtual width as defined in CameraStageBaseScreen
-//    if(screenScale<1) screenScale=1f
 
     val generator = FreeTypeFontGenerator(Gdx.files.internal("skin/Arial.ttf"))
     val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
     parameter.size = size
-//    parameter.genMipMaps = true
     parameter.minFilter = Texture.TextureFilter.Linear
     parameter.magFilter = Texture.TextureFilter.Linear
-    parameter.characters = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćdđeéfghiîjklmnoöpqrsșštțuüvwxyzžАБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюяΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάΆέΈέΉίϊΐΊόΌύΰϋΎΫΏĂÂÊÔƠƯăâêôơưáéíóú1234567890‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
-    //generator.scaleForPixelHeight(size)
 
+    parameter.characters = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
+            "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +
+            "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάΆέΈέΉίϊΐΊόΌύΰϋΎΫΏĂÂÊÔƠƯăâêôơưáéíóú1234567890" +
+            "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
 
     val font = generator.generateFont(parameter)
-//    font.data.setScale(1f/screenScale)
     generator.dispose() // don't forget to dispose to avoid memory leaks!
     fontCache[size]=font
     return font
