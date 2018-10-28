@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.UnCivGame
@@ -56,10 +57,19 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
             }
         })
 
+        add(Label("Missing translations:",CameraStageBaseScreen.skin)).pad(5f).row()
+        val missingTextSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
+        val missingTextArray = com.badlogic.gdx.utils.Array<String>()
+        val currentLanguage = UnCivGame.Current.settings.language
+        GameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }.forEach{missingTextArray.add(it.key)}
+        missingTextSelectBox.items = missingTextArray
+        missingTextSelectBox.selected="Untranslated texts"
+        add(missingTextSelectBox).pad(10f).width(UnCivGame.Current.worldScreen.stage.width/2).row()
+
         val resolutionSelectBox= SelectBox<String>(CameraStageBaseScreen.skin)
         val resolutionArray = com.badlogic.gdx.utils.Array<String>()
         resolutionArray.addAll("900x600","1050x700","1200x800","1500x1000")
-        resolutionSelectBox.setItems(resolutionArray)
+        resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = UnCivGame.Current.settings.resolution
         add(resolutionSelectBox).pad(10f).row()
 
