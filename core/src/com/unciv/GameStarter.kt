@@ -26,7 +26,7 @@ class GameStarter(){
 
         val distanceAroundStartingPointNoOneElseWillStartIn = 5
         val freeTiles = gameInfo.tileMap.values
-                .filter { it.getBaseTerrain().type==TerrainType.Land && vectorIsWithinNTilesOfEdge(it.position,3)}
+                .filter { it.isLand() && vectorIsWithinNTilesOfEdge(it.position,3)}
                 .toMutableList()
         val playerPosition = freeTiles.getRandom().position
         val playerCiv = CivilizationInfo(newGameParameters.nation, gameInfo)

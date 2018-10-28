@@ -5,10 +5,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tile.Terrain
-import com.unciv.models.gamebasics.tile.TileImprovement
-import com.unciv.models.gamebasics.tile.TileResource
+import com.unciv.models.gamebasics.tile.*
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.tr
 import kotlin.math.abs
@@ -142,6 +139,9 @@ open class TileInfo {
             if(resource.name=="Oil" && city!=null
                     && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
+            if(city!=null && isWater()
+                    && city.getBuildingUniques().contains("+1 production from all sea resources worked by the city"))
+                stats.production+=1
         }
 
         val improvement = getTileImprovement()
@@ -257,6 +257,9 @@ open class TileInfo {
         val city = getCity()
         return city!=null && city.workedTiles.contains(position)
     }
+
+    fun isLand() = getBaseTerrain().type==TerrainType.Land
+    fun isWater() = getBaseTerrain().type==TerrainType.Water
 
     fun arialDistanceTo(otherTile:TileInfo): Int {
         val xDelta = position.x-otherTile.position.x

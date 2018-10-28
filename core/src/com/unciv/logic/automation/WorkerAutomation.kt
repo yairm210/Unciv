@@ -6,7 +6,6 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileImprovement
 
 class WorkerAutomation(val unit: MapUnit) {
@@ -30,7 +29,7 @@ class WorkerAutomation(val unit: MapUnit) {
             if(reachedTile!=tile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
-        if (tile.improvementInProgress == null && tile.getBaseTerrain().type==TerrainType.Land) {
+        if (tile.improvementInProgress == null && tile.isLand()) {
             val improvement = chooseImprovement(tile)
             if (tile.canBuildImprovement(improvement, unit.civInfo)) {
                 // What if we're stuck on this tile but can't build there?
@@ -83,7 +82,7 @@ class WorkerAutomation(val unit: MapUnit) {
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
                             && it.improvement == null
-                            && it.getBaseTerrain().type==TerrainType.Land
+                            && it.isLand()
                             && it.canBuildImprovement(chooseImprovement(it), unit.civInfo)
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ
                 }.sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()

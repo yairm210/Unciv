@@ -1,15 +1,14 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.models.gamebasics.tile.TerrainType
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
     val tileMap = unit.getTile().tileMap
 
     private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo): Float {
 
-        if(from.getBaseTerrain().type==TerrainType.Land && to.getBaseTerrain().type==TerrainType.Water
-            || from.getBaseTerrain().type==TerrainType.Water && to.getBaseTerrain().type==TerrainType.Land)
+        if(from.isLand() && to.isWater()
+            || from.isWater() && to.isLand())
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
         if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)

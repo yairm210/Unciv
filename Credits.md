@@ -139,6 +139,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Cambodia](https://thenounproject.com/term/cambodia/1809152/) By Wichai Wi for Angkor Wat
 * [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University
 * [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
+* [Anchor](https://thenounproject.com/term/anchor/1258518/) By Saeful Muslim for Harbor
 * [Hand saw](https://thenounproject.com/term/hand-saw/990902/) By b farias for Workshop
 * [Hagia Sophia](https://thenounproject.com/term/hagia-sophia/1907752/) By Felipe Alvarado
 * [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov for Ironworks
@@ -298,6 +299,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ### Medieval
 * [Judaism](https://thenounproject.com/term/judaism/324145/) By Ben Davis for Theology
 * [Institution](https://thenounproject.com/term/institution/260586/) By Luis Prado for Civil Service
+* [Compass](https://thenounproject.com/term/compass/821505/) By Bernar Novalyi
 * [Education](https://thenounproject.com/term/education/1817512/) By Tomas Knopp
 * [Casting](https://thenounproject.com/term/casting/10773/) By Jasmine Rae Friedrich
 * [Bar association](https://thenounproject.com/term/bar-association/217443/) By Miroslav Kurdov for Guilds

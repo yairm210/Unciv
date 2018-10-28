@@ -107,13 +107,13 @@ class MapUnit {
 
     fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
-        if(tile.getBaseTerrain().type==TerrainType.Water && baseUnit.unitType.isLandUnit()){
+        if(tile.isWater() && baseUnit.unitType.isLandUnit()){
             if(!civInfo.tech.isResearched("Optics"))
                 return false
             if(tile.baseTerrain == "Ocean" && !civInfo.tech.isResearched("Astronomy"))
                 return false
         }
-        if(tile.getBaseTerrain().type==TerrainType.Land && baseUnit.unitType.isWaterUnit())
+        if(tile.isLand() && baseUnit.unitType.isWaterUnit())
             return false
         if(tile.baseTerrain=="Ocean" && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !civInfo.tech.isResearched("Astronomy"))

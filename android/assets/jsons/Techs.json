@@ -177,13 +177,11 @@
 		buildingCost:200,
 		wonderCost:500,
 		techs:[
-			/*{
+			{
 				name:"Compass",
 				row:1,
-				cost:415,
-				prerequisites:["Optics"],
-				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of harbors"
-			},*/
+				prerequisites:["Optics","Theology"],
+			},
 			{
 				name:"Education",
 				row:3,

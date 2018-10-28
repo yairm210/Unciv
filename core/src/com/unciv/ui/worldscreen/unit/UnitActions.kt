@@ -6,7 +6,6 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.ImprovementPickerScreen
 import com.unciv.ui.pickerscreens.PromotionPickerScreen
@@ -131,7 +130,7 @@ class UnitActions {
         }
 
         if(unit.name == "Work Boats" &&  tile.improvement==null && tile.resource!=null
-                && tile.getBaseTerrain().type==TerrainType.Water)
+                && tile.isWater())
             actionList += UnitAction("Create Fishing Boats",{
                 tile.improvement = "Fishing Boats"
                 unit.destroy()

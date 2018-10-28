@@ -81,7 +81,7 @@ class UnitAutomation{
     }
 
     private fun hasWorkableSeaResource(tileInfo: TileInfo): Boolean {
-        return tileInfo.resource!=null && tileInfo.getBaseTerrain().type==TerrainType.Water && tileInfo.improvement==null
+        return tileInfo.resource!=null && tileInfo.isWater() && tileInfo.improvement==null
     }
 
     private fun automateWorkBoats(unit: MapUnit) {
@@ -129,7 +129,7 @@ class UnitAutomation{
     fun containsAttackableEnemy(tile: TileInfo, unit: MapUnit): Boolean {
         if(unit.isEmbarked()){
             if(unit.baseUnit.unitType.isRanged()) return false
-            if(tile.getBaseTerrain().type==TerrainType.Water) return false // can't attack water units while embarked, only land
+            if(tile.isWater()) return false // can't attack water units while embarked, only land
         }
         val tileCombatant = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false

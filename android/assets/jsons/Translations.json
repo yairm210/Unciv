@@ -2500,6 +2500,10 @@
 		Dutch:"Ruimteschip onderdeel"
 		Spanish:"Parte de Nave Espacial"
 	}
+	"Can only be built in coastal cities":{}
+	"All military naval units receive +1 movement and +1 sight":{}
+	"+1 production from all sea resources worked by the city":{}
+	"Connects trade routes over water":{}
 	
 	// Unit types
 	"Civilian":{
@@ -3226,6 +3230,8 @@
 		Romanian:"Chichen Itza"
 		Spanish:"Chichén Itzá"
 	}
+	"Lighthouse":{}
+	"The Great Lighthouse"{}
 	"Stable":{	
 		Italian:"Scuderia"
 		Russian:"Конюшня"
@@ -3284,7 +3290,6 @@
 	}
 	"Mint":{ 
 		Russian:"Монетный двор"
-		//don't know what this mint
 		Spanish:"Casa de la moneda"
 	}
 	"Machu Pichu":{	
@@ -3315,6 +3320,7 @@
 		Romanian:"Forja"
 		Spanish:"Forja"
 	}
+	"Harbor":{}
 	"University":{	
 		Italian:"Università"
 		Russian:"Университет"
@@ -3761,6 +3767,7 @@
 		Spanish:"Desbloqueado en"
 	}
 	
+	// Tradition branch
 	"Tradition":{
 		Russian:"Традиция"
 		Spanish:"Tradición"
@@ -3817,7 +3824,8 @@
 		Russian:"+15% роста и +2 еды во всех городах"
 		Spanish:"+15% crecimiento y +2 comida en todas las ciudades"
 	}
-	// And so on for all the policies. I can't be bothered to add them all now...
+	
+	// Liberty branch
 	"Liberty":{
 		Russian:"Воля"
 		Spanish:"Liberación"
