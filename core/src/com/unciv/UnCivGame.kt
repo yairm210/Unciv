@@ -17,7 +17,7 @@ class UnCivGame : Game() {
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
      */
-    val viewEntireMapForDebug = false
+    val viewEntireMapForDebug = true
 
     lateinit var worldScreen: WorldScreen
 
@@ -27,11 +27,11 @@ class UnCivGame : Game() {
         GameBasics.run {  } // just to initialize the GameBasics
         settings = GameSaver().getGeneralSettings()
         if (GameSaver().getSave("Autosave").exists()) {
-//            try {
+            try {
                 loadGame("Autosave")
-//            } catch (ex: Exception) { // silent fail if we can't read the autosave
-//                startNewGame()
-//            }
+            } catch (ex: Exception) { // silent fail if we can't read the autosave
+                startNewGame()
+            }
         }
         else startNewGame() // screen=LanguagePickerScreen() disabled because of people's negative reviews =(
     }

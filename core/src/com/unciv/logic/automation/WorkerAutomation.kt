@@ -1,7 +1,7 @@
 package com.unciv.logic.automation
 
-import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -40,37 +40,48 @@ class WorkerAutomation(val unit: MapUnit) {
         if(tile.improvementInProgress!=null) return // we're working!
     }
 
+
+
     fun tryConnectingCities():Boolean{ // returns whether we actually did anything
-        val cityThatNeedsConnecting = unit.civInfo.cities.filter { it.population.population>3 && !it.isCapital()
+        val citiesThatNeedConnecting = unit.civInfo.cities.filter { it.population.population>3 && !it.isCapital()
                 &&  !it.cityStats.isConnectedToCapital(RoadStatus.Road) }
-                .minBy { HexMath().getDistance(it.location, unit.getTile().position) }
-        if(cityThatNeedsConnecting==null) return false// do nothing.
+        if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
-        val closestConnectedCity = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(RoadStatus.Road) }
-                .minBy { HexMath().getDistance(cityThatNeedsConnecting.location,it.location) }!!
+        val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
+                .map { city -> BFS(city.getCenterTile()){it.isLand() && unit.canPassThrough(it)} }
+                .toMutableList()
 
-        val pathToClosestCity = unit.civInfo.gameInfo.tileMap
-                .getShortestPathBetweenTwoTiles(cityThatNeedsConnecting.getCenterTile(),
-                        closestConnectedCity.getCenterTile())
-                .filter { it.roadStatus==RoadStatus.None}
+        val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(RoadStatus.Road) }
+                .map { it.getCenterTile() }
 
-        val unitTile = unit.getTile()
-        if(unitTile in pathToClosestCity){
-            if(unitTile.improvementInProgress==null)
-                unitTile.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!,unit.civInfo)
-            return true
+
+        while(citiesThatNeedConnectingBfs.any()){
+            for(bfs in citiesThatNeedConnectingBfs.toList()){
+                bfs.nextStep()
+                if(bfs.tilesToCheck.isEmpty()){ // can't get to any connected city from here
+                    citiesThatNeedConnectingBfs.remove(bfs)
+                    continue
+                }
+                for(city in connectedCities)
+                    if(bfs.tilesToCheck.contains(city)) { // we have a winner!
+                        val pathToCity = bfs.getPathTo(city)
+                        val roadableTiles = pathToCity.filter { it.roadStatus==RoadStatus.None }
+                        val tileToConstructRoadOn :TileInfo
+                        if(unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
+                        else{
+                            val reachableTiles = roadableTiles.filter {  unit.canMoveTo(it)&& unit.movementAlgs().canReach(it)}
+                            if(!reachableTiles.any()) continue
+                            tileToConstructRoadOn = roadableTiles.minBy { unit.movementAlgs().getShortestPath(it).size }!!
+                        }
+                        unit.movementAlgs().headTowards(tileToConstructRoadOn)
+                        if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
+                                && unit.currentTile.improvementInProgress!="Road")
+                            tileToConstructRoadOn.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!,unit.civInfo)
+                        return true
+                    }
+            }
         }
-
-        val closestTileInPathWithNoRoad = pathToClosestCity
-                .filter { unit.canMoveTo(it)}
-                .sortedByDescending { HexMath().getDistance(unit.getTile().position, it.position) }
-                .firstOrNull { unit.movementAlgs().canReach(it) }
-
-        if(closestTileInPathWithNoRoad==null) return false
-        unit.movementAlgs().headTowards(closestTileInPathWithNoRoad)
-        if(unit.currentMovement>0 && unit.getTile()==closestTileInPathWithNoRoad)
-            closestTileInPathWithNoRoad.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!,unit.civInfo)
-        return true
+        return false
     }
 
     /**
