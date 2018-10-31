@@ -120,6 +120,12 @@ class WorldScreen : CameraStageBaseScreen() {
             }
         }
 
+        if(gameClone.getPlayerCivilization().getCivUnits().any { it.health<100 })
+            displayTutorials("InjuredUnits")
+
+        if(gameClone.getPlayerCivilization().getCivUnits().any { it.name=="Worker" })
+            displayTutorials("WorkerTrained")
+
         updateTechButton(cloneCivilization)
         updateDiplomacyButton(cloneCivilization)
 

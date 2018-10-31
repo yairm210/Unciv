@@ -290,4 +290,22 @@
 		]
 	]
 	
+	InjuredUnits:[
+		[
+			"One of your units is injured!",
+			"Injured units deal less damage, but recover after turns that they have been inactive",
+			"Units heal 5 health per turn in enemy territory, 10 in neutral land,"
+			"  15 inside your territory and 20 in your cities"
+		]
+	]
+	
+	Worker:[
+		[
+			"You have trained a worker!",
+			"Workers are vital to your cities' growth, since only they can onstruct improvements on tiles",
+			"Improvements raise the yield of your tiles, allowing your city to produce more and grow faster",
+			"  while working the same amount of tiles!"
+		]
+	]
+	
 }
