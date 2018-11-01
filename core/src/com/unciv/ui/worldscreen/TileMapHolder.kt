@@ -14,7 +14,6 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
@@ -172,10 +171,13 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 }
             }
         }
+        else if(overlayActor!=null){
+            overlayActor!!.remove()
+            overlayActor=null
+        }
 
         if(selectedTile!=null)
             tileGroups[selectedTile!!]!!.showCircle(Color.WHITE)
-
     }
 
     fun setCenterPosition(vector: Vector2) {
