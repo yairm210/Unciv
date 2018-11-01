@@ -41,7 +41,7 @@ class UnitActions {
             },true)
         }
 
-        if(!unit.baseUnit().unitType.isCivilian()
+        if(!unit.baseUnit().unitType.isCivilian() && !unit.isEmbarked()
                 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }
@@ -85,16 +85,17 @@ class UnitActions {
                             newunit.currentMovement=0f
                         },
                         unit.civInfo.gold >= goldCostOfUpgrade
+                                && !unit.isEmbarked()
                                 && unit.currentMovement == unit.getMaxMovement().toFloat()  )
             }
         }
 
-        if(unit.hasUnique("Must set up to ranged attack") && unit.action != "Set Up")
+        if(unit.hasUnique("Must set up to ranged attack") && unit.action != "Set Up" && !unit.isEmbarked())
             actionList+=UnitAction("Set up",
                     {unit.action="Set Up"; unit.currentMovement = max(0f, unit.currentMovement-1)},
                     unit.currentMovement != 0f)
 
-        if (unit.name == "Settler") {
+        if (unit.name == "Settler" && !unit.isEmbarked()) {
             actionList += UnitAction("Found city",
                     {
                         worldScreen.displayTutorials("CityFounded")
@@ -108,7 +109,7 @@ class UnitActions {
                             !tile.getTilesInDistance(3).any { it.isCityCenter() })
         }
         
-        if (unit.name == "Worker") {
+        if (unit.name == "Worker" && !unit.isEmbarked()) {
             actionList += UnitAction("Construct improvement",
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) },
                     unit.currentMovement != 0f
@@ -136,7 +137,7 @@ class UnitActions {
                 unit.destroy()
             }, unit.currentMovement != 0f)
 
-        if (unit.name == "Great Scientist") {
+        if (unit.name == "Great Scientist" && !unit.isEmbarked()) {
             actionList += UnitAction( "Discover Technology",
                     {
                         unit.civInfo.tech.freeTechs += 1
@@ -148,7 +149,7 @@ class UnitActions {
                     unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
-        if (unit.name == "Great Artist") {
+        if (unit.name == "Great Artist" && !unit.isEmbarked()) {
             actionList += UnitAction( "Start Golden Age",
                     {
                         unit.civInfo.goldenAges.enterGoldenAge()
@@ -160,7 +161,7 @@ class UnitActions {
                     unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
-        if (unit.name == "Great Engineer") {
+        if (unit.name == "Great Engineer" && !unit.isEmbarked()) {
             actionList += UnitAction( "Hurry Wonder",
                     {
                         tile.getCity()!!.cityConstructions.addConstruction(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
@@ -176,7 +177,7 @@ class UnitActions {
                     unit.currentMovement != 0f && !tile.isCityCenter())
         }
 
-        if (unit.name == "Great Merchant") {
+        if (unit.name == "Great Merchant" && !unit.isEmbarked()) {
             actionList += UnitAction("Conduct Trade Mission",
                     {
                         unit.civInfo.gold += 350 // + 50 * era_number - todo!
