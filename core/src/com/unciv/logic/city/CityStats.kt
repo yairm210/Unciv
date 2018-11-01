@@ -224,32 +224,14 @@ class CityStats {
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
+        if(roadType==RoadStatus.Road)  return cityInfo.isConnectedToCapital // this transient is not applicable to connection via railroad.
+
         val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
-        val BFS =
-                if(roadType==RoadStatus.Road) BFS(capitalTile){it.roadStatus!=RoadStatus.None}
-                else BFS(capitalTile){it.roadStatus == roadType}
+        val BFS = BFS(capitalTile){it.roadStatus == roadType}
 
         val cityTile = cityInfo.getCenterTile()
         BFS.stepUntilDestination(cityTile)
         return BFS.tilesReached.containsKey(cityTile)
-
-//        val tilesReached = HashSet<TileInfo>()
-//        var tilesToCheck: List<TileInfo> = listOf(cityInfo.getCenterTile())
-//        while (tilesToCheck.isNotEmpty()) {
-//            val newTiles = tilesToCheck
-//                    .flatMap { it.neighbors }.distinct()
-//                    .filter {
-//                        !tilesReached.contains(it)
-//                                && !tilesToCheck.contains(it)
-//                                && (roadType !== RoadStatus.Road || it.roadStatus !== RoadStatus.None)
-//                                && (roadType !== RoadStatus.Railroad || it.roadStatus === roadType)
-//                    }
-//
-//            if (newTiles.contains(capitalTile)) return true
-//            tilesReached.addAll(tilesToCheck)
-//            tilesToCheck = newTiles
-//        }
-//        return false
     }
     //endregion
 

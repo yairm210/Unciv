@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
@@ -15,6 +16,8 @@ import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.utils.tr
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
@@ -255,6 +258,7 @@ class CivilizationInfo {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the civInfo
             cityInfo.setTransients()
         }
+        setCitiesConnectedToCapitalTransients()
     }
 
     fun endTurn() {
@@ -296,6 +300,7 @@ class CivilizationInfo {
 
     fun startTurn(){
         getViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
+        setCitiesConnectedToCapitalTransients()
         for (city in cities)
             city.cityStats.update()
         happiness = getHappinessForNextTurn().values.sum().roundToInt()
@@ -326,6 +331,63 @@ class CivilizationInfo {
     fun addCity(location: Vector2) {
         val newCity = CityInfo(this, location)
         newCity.cityConstructions.chooseNextConstruction()
+    }
+
+    fun setCitiesConnectedToCapitalTransients(){
+        if(cities.isEmpty()) return // eg barbarians
+
+        // We map which cities we've reached, to the mediums they've been reached by -
+        // this is so we know that if we've seen which cities can be connected by port A, and one
+        // of those is city B, then we don't need to check the cities that B can connect to by port,
+        // since we'll get the same cities we got from A, since they're connected to the same sea.
+        val citiesReachedToMediums = HashMap<CityInfo,ArrayList<String>>()
+        var citiesToCheck = mutableListOf(getCapital())
+        citiesReachedToMediums[getCapital()] = arrayListOf("Start")
+        while(citiesToCheck.isNotEmpty() && citiesReachedToMediums.size<cities.size){
+            val newCitiesToCheck = mutableListOf<CityInfo>()
+            for(cityToConnectFrom in citiesToCheck){
+                val reachedMediums = citiesReachedToMediums[cityToConnectFrom]!!
+
+                // This is copypasta and can be cleaned up
+                if(!reachedMediums.contains("Road")){
+                    val roadBfs = BFS(cityToConnectFrom.getCenterTile()){it.roadStatus!=RoadStatus.None}
+                    roadBfs.stepToEnd()
+                    val reachedCities = cities.filter { roadBfs.tilesReached.containsKey(it.getCenterTile())}
+                    for(reachedCity in reachedCities){
+                        if(!citiesReachedToMediums.containsKey(reachedCity)){
+                            newCitiesToCheck.add(reachedCity)
+                            citiesReachedToMediums[reachedCity] = arrayListOf()
+                        }
+                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
+                        if(!cityReachedByMediums.contains("Road"))
+                            cityReachedByMediums.add("Road")
+                    }
+                    citiesReachedToMediums[cityToConnectFrom]!!.add("Road")
+                }
+
+                if(!reachedMediums.contains("Harbor")
+                        && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent("Harbor")){
+                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()){it.isWater() || it.isCityCenter()}
+                    seaBfs.stepToEnd()
+                    val reachedCities = cities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
+                    for(reachedCity in reachedCities){
+                        if(!citiesReachedToMediums.containsKey(reachedCity)){
+                            newCitiesToCheck.add(reachedCity)
+                            citiesReachedToMediums[reachedCity] = arrayListOf()
+                        }
+                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
+                        if(!cityReachedByMediums.contains("Harbor"))
+                            cityReachedByMediums.add("Harbor")
+                    }
+                    citiesReachedToMediums[cityToConnectFrom]!!.add("Harbor")
+                }
+            }
+            citiesToCheck = newCitiesToCheck
+        }
+
+        for(city in cities){
+            city.isConnectedToCapital = citiesReachedToMediums.containsKey(city)
+        }
     }
 
     //endregion

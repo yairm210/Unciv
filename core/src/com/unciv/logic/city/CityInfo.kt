@@ -15,6 +15,7 @@ import kotlin.math.min
 
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
+    @Transient var isConnectedToCapital = false
     var location: Vector2 = Vector2.Zero
     var name: String = ""
     var health = 200
@@ -78,6 +79,7 @@ class CityInfo {
         toReturn.tiles.addAll(tiles)
         toReturn.workedTiles.addAll(workedTiles)
         toReturn.isBeingRazed=isBeingRazed
+        toReturn.isConnectedToCapital = isConnectedToCapital
         return toReturn
     }
 

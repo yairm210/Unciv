@@ -94,6 +94,7 @@ class WorldScreen : CameraStageBaseScreen() {
         val cloneCivilization = gameClone.getPlayerCivilization()
         kotlin.concurrent.thread {
             civInfo.happiness = gameClone.getPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()
+            gameInfo.civilizations.forEach { it.setCitiesConnectedToCapitalTransients() }
         }
 
         if(bottomBar.unitTable.selectedUnit!=null){

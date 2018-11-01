@@ -12,6 +12,11 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         tilesReached.put(startingPoint,startingPoint)
     }
 
+    fun stepToEnd(){
+        while(tilesToCheck.isNotEmpty())
+            nextStep()
+    }
+
     fun stepUntilDestination(destination: TileInfo){
         while(!tilesReached.containsKey(destination) && tilesToCheck.isNotEmpty())
             nextStep()
