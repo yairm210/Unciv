@@ -240,7 +240,7 @@
 			},
 			{
 				name:"Gunpowder",
-				row:9,
+				row:10,
 				prerequisites:["Physics","Steel"]
 			}
 		]	
@@ -259,11 +259,6 @@
 				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of Frigates and Seaports"
 			},*/
 			{
-				name:"Archaeology",
-				row:2,
-				prerequisites:["Astronomy"]
-			},
-			{
 				name:"Architecture",
 				row:4,
 				prerequisites:["Acoustics","Banking"]
@@ -275,12 +270,12 @@
 			},
 			{
 				name:"Metallurgy",
-				row:8,
+				row:9,
 				prerequisites:["Printing Press","Gunpowder"]
 			}
 			{
 				name:"Chemistry",
-				row:9,
+				row:10,
 				prerequisites:["Gunpowder"]
 			}
 		]	
@@ -292,6 +287,11 @@
 		buildingCost:360,
 		wonderCost:920,
 		techs:[
+			{
+				name:"Archaeology",
+				row:2,
+				prerequisites:["Astronomy"]
+			},
 			{
 				name:"Scientific Theory",
 				row:4,
@@ -309,12 +309,12 @@
 			},
 			{
 				name:"Military Science",
-				row:8,
+				row:9,
 				prerequisites:["Metallurgy","Chemistry"]
 			},
 			{
 				name:"Fertilizer",
-				row:9,
+				row:10,
 				prerequisites:["Chemistry"]
 			}
 		]	

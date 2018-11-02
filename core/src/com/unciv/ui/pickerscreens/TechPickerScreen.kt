@@ -43,15 +43,38 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             defaults().pad(10f)
             background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
             if(ImageGetter.techIconExists(techName))
-                add(ImageGetter.getTechIconGroup(techName))
+                add(ImageGetter.getTechIconGroup(techName)) // this is 60*60
 
+            val rightSide = Table()
             val techCost = techManager.costOfTech(techName)
             val remainingTech = techManager.remainingScienceToTech(techName)
             if(techCost!=remainingTech){
                 val percentComplete = (techCost-remainingTech)/techCost.toFloat()
                 add(ImageGetter.getProgressBarVertical(2f,30f,percentComplete, Color.BLUE, Color.WHITE))
             }
-            add(text)
+            rightSide.add(text).row()
+
+            // here we add little images of what the tech gives you
+            val techEnabledIcons = Table()
+
+
+            for(unit in GameBasics.Units.values.filter { it.requiredTech==techName
+                    && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName) })
+                techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name)).size(25f).pad(2.5f)
+
+            for(building in GameBasics.Buildings.values.filter { it.requiredTech==techName
+                    && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName)})
+                techEnabledIcons.add(ImageGetter.getConstructionImage(building.name)).size(25f).pad(2.5f)
+
+            for(improvement in GameBasics.TileImprovements.values.filter { it.techRequired==techName }) {
+                if(improvement.name.startsWith("Remove"))
+                    techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(25f).pad(2.5f)
+                else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, 25f)).pad(2.5f)
+            }
+
+            rightSide.add(techEnabledIcons)
+
+            add(rightSide)
             pack()
         }
     }
