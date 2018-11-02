@@ -236,6 +236,17 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Galleass",
+		unitType:"WaterRanged",
+		movement:3,
+		strength:16,
+		rangedStrength:17
+		cost: 100,
+		requiredTech:"Compass",
+		uniques:["Cannot enter ocean tiles"]
+		hurryCostModifier:20
+	},
+	{
 		name:"Knight",
 		unitType:"Mounted",
 		movement:3,

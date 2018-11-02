@@ -101,7 +101,7 @@ class GameInfo {
             // we have to remove hydro plants from all cities BEFORE we update a single one,
             // because updating leads to getting the building uniques from the civ info,
             // which in turn leads to us trying to get info on all the building in all the cities...
-            // which can ail i there's an "unregistered" building anywhere
+            // which can fail i there's an "unregistered" building anywhere
             for (cityInfo in civInfo.cities) {
                 val cityConstructions = cityInfo.cityConstructions
                 // As of 2.9.6, removed hydro plant, since it requires rivers, which we do not yet have

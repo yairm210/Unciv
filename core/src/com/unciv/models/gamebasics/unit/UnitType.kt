@@ -7,19 +7,21 @@ enum class UnitType{
     Ranged,
     Scout,
     Mounted,
+    Siege,
     WaterCivilian,
     WaterMelee,
-    Siege;
+    WaterRanged;
 
     fun isMelee(): Boolean {
         return this == Melee
                 || this == Mounted
                 || this == Scout
-                || this==WaterMelee
+                || this == WaterMelee
     }
     fun isRanged(): Boolean {
         return this == Ranged
                 || this == Siege
+                || this == WaterRanged
     }
 
     fun isLandUnit(): Boolean {

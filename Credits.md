@@ -31,6 +31,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 ### Medieval Era
 
+* [Ship](https://thenounproject.com/term/ship/1998589/) By Vanisha for Galleass 
 * [Crossbow](https://thenounproject.com/term/crossbow/965389/) By Creaticca Creative Agency for Crossbowman
 * [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish for Longbowman
 * [Trebuchet](https://thenounproject.com/search/?q=Trebuchet&i=827987) By Ben Davis
