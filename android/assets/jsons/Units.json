@@ -81,6 +81,8 @@
 		cost: 45,
 		requiredTech:"Sailing",
 		uniques:["Cannot enter ocean tiles"]
+		upgradesTo:"Caravel",
+		obsoleteTech:"Astronomy",
 		hurryCostModifier:20
 	},
 	{
@@ -261,6 +263,16 @@
 	// Rennaisance Era
 
 
+	{
+		name:"Caravel",
+		unitType:"WaterMelee",
+		movement:4,
+		strength:20,
+		cost: 120,
+		requiredTech:"Astronomy",
+		uniques:["+1 Visibility Range"],
+		hurryCostModifier:20
+	},
 	{
 		name:"Cannon",
 		unitType:"Siege",
