@@ -58,7 +58,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setUnitsButton = TextButton("Units".tr(),skin)
         setUnitsButton .onClick {
             centerTable.clear()
-            centerTable.add(getUnitTable())
+            centerTable.add(ScrollPane(getUnitTable())).height(stage.height*0.8f)
             centerTable.pack()
             centerTable.center(stage)
         }
