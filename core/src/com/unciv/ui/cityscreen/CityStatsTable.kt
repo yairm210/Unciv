@@ -49,7 +49,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         val buildingPickButton = Button(CameraStageBaseScreen.skin)
         val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
         buildingPickButton.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction))
-                .size(40f).padRight(5f)
+                .size(30f).pad(5f)
         buildingPickButton.add(Label(buildingText , CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
         buildingPickButton.onClick {
             UnCivGame.Current.screen = ConstructionPickerScreen(city)

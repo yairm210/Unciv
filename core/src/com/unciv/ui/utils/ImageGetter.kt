@@ -67,24 +67,18 @@ object ImageGetter {
     }
 
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
-        val group= Group()
-        val circle = getImage("OtherIcons/Circle").apply { setSize(size,size) }
+        val iconGroup = IconCircleGroup(size, getImage("ImprovementIcons/$improvementName"))
 
         val improvement = GameBasics.TileImprovements[improvementName]!!
         when {
-            improvement.food>0 -> circle.color= Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
-            improvement.production>0 -> circle.color= Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
-            improvement.gold>0 -> circle.color= Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
-            improvement.science>0 -> circle.color= Color.GOLD.cpy().lerp(Color.BLUE,0.5f)
-            improvement.culture>0 -> circle.color= Color.GOLD.cpy().lerp(Color.PURPLE,0.5f)
+            improvement.food>0 -> iconGroup.circle.color= Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
+            improvement.production>0 -> iconGroup.circle.color= Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
+            improvement.gold>0 -> iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
+            improvement.science>0 -> iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.BLUE,0.5f)
+            improvement.culture>0 -> iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.PURPLE,0.5f)
         }
 
-
-        group.setSize(size,size)
-        group.addActor(circle)
-        group.addActor(getImage("ImprovementIcons/$improvementName")
-                .apply { setSize(size*0.8f,size*0.8f); center(group) })
-        return group
+        return iconGroup
     }
 
     fun getConstructionImage(construction: String): Image {
@@ -109,40 +103,29 @@ object ImageGetter {
     }
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
-        val group= Group()
+        val iconGroup = IconCircleGroup(size,getImage("ResourceIcons/$resourceName"))
         val resource = GameBasics.TileResources[resourceName]!!
-        val circle = getImage("OtherIcons/Circle").apply { setSize(size,size) }
-        if(resource.food>0) circle.color= Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
-        else if(resource.production>0) circle.color= Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
-        else if(resource.gold>0) circle.color= Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
+        if(resource.food>0) iconGroup.circle.color= Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
+        else if(resource.production>0) iconGroup.circle.color= Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
+        else if(resource.gold>0) iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
 
-        group.setSize(size,size)
-        group.addActor(circle)
-        group.addActor(getImage("ResourceIcons/${resourceName}")
-                .apply { setSize(size*0.8f,size*0.8f); center(group) })
         if(resource.resourceType==ResourceType.Luxury){
             val happiness = getStatIcon("Happiness")
             happiness.setSize(size/2,size/2)
-            happiness.x = group.width-happiness.width
-            group.addActor(happiness)
+            happiness.x = iconGroup.width-happiness.width
+            iconGroup.addActor(happiness)
         }
         if(resource.resourceType==ResourceType.Strategic){
             val production = getStatIcon("Production")
             production.setSize(size/2,size/2)
-            production.x = group.width-production.width
-            group.addActor(production)
+            production.x = iconGroup.width-production.width
+            iconGroup.addActor(production)
         }
-        return group
+        return iconGroup
     }
 
     fun getTechIconGroup(techName: String): Group {
-        val techIconGroup = Group()
-        techIconGroup.setSize(60f,60f)
-        techIconGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { setSize(60f,60f) })
-        val techIcon = getImage("TechIcons/$techName").apply { setSize(40f,40f)}
-        techIcon.center(techIconGroup)
-        techIconGroup.addActor(techIcon)
-        return techIconGroup
+        return IconCircleGroup(60f,getImage("TechIcons/$techName"))
     }
 
     fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {
@@ -153,4 +136,16 @@ object ImageGetter {
         advancementGroup.pack()
         return advancementGroup
     }
+
+    class IconCircleGroup(size:Float, val image:Image):Group(){
+        val circle = getImage("OtherIcons/Circle").apply { setSize(size, size) }
+        init {
+            setSize(size, size)
+            addActor(circle)
+            image.setSize(size * 0.75f, size * 0.75f)
+            image.center(this)
+            addActor(image)
+        }
+    }
+
 }

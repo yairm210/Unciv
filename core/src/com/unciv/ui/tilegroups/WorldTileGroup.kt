@@ -138,7 +138,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         val circle = ImageGetter.getImage("OtherIcons/Circle")
         circle.setSize(25f,25f)
         val image = ImageGetter.getConstructionImage(cityConstructions.currentConstruction)
-        image.setSize(20f,20f)
+        image.setSize(18f,18f)
         image.centerY(group)
         image.x = group.width-image.width
 

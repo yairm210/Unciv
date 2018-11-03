@@ -56,21 +56,24 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
 
             // here we add little images of what the tech gives you
             val techEnabledIcons = Table()
-
+            techEnabledIcons.defaults().pad(2.5f)
 
             for(unit in GameBasics.Units.values.filter { it.requiredTech==techName
                     && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName) })
-                techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name)).size(25f).pad(2.5f)
+                techEnabledIcons.add(ImageGetter.IconCircleGroup(30f,ImageGetter.getConstructionImage(unit.name)))
 
             for(building in GameBasics.Buildings.values.filter { it.requiredTech==techName
                     && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName)})
-                techEnabledIcons.add(ImageGetter.getConstructionImage(building.name)).size(25f).pad(2.5f)
+                techEnabledIcons.add(ImageGetter.IconCircleGroup(30f,ImageGetter.getConstructionImage(building.name)))
 
-            for(improvement in GameBasics.TileImprovements.values.filter { it.techRequired==techName }) {
+            for(improvement in GameBasics.TileImprovements.values.filter { it.techRequired==techName || it.improvingTech==techName }) {
                 if(improvement.name.startsWith("Remove"))
-                    techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(25f).pad(2.5f)
-                else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, 25f)).pad(2.5f)
+                    techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(30f)
+                else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, 30f))
             }
+
+            for(resource in GameBasics.TileResources.values.filter { it.revealedBy==techName })
+                techEnabledIcons.add(ImageGetter.getResourceImage(resource.name,30f))
 
             rightSide.add(techEnabledIcons)
 
