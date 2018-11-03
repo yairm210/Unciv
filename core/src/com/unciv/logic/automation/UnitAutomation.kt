@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -362,7 +361,7 @@ class UnitAutomation{
                 .associateBy ( {it},{ Automation().rankTile(it,unit.civInfo) })
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(5)
-                .filter { (unit.canMoveTo(it) || unit.currentTile==it) && it !in tilesNearCities }
+                .filter { (unit.canMoveTo(it) || unit.currentTile==it) && it !in tilesNearCities && it.isLand() }
 
         val bestCityLocation: TileInfo? = possibleCityLocations
                 .asSequence()
