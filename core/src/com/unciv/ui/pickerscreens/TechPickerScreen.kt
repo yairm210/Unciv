@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
@@ -37,7 +38,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     }
 
     class TechButton(techName:String, val techManager:TechManager) : Table(skin) {
-        val text=Label("",skin).setFontColor(Color.WHITE)
+        val text=Label("",skin).setFontColor(Color.WHITE).apply { setAlignment(Align.center) }
         init {
             touchable = Touchable.enabled
             defaults().pad(10f)
@@ -50,13 +51,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             val remainingTech = techManager.remainingScienceToTech(techName)
             if(techCost!=remainingTech){
                 val percentComplete = (techCost-remainingTech)/techCost.toFloat()
-                add(ImageGetter.getProgressBarVertical(2f,30f,percentComplete, Color.BLUE, Color.WHITE))
+                add(ImageGetter.getProgressBarVertical(2f,50f,percentComplete, Color.BLUE, Color.WHITE))
             }
             rightSide.add(text).row()
 
             // here we add little images of what the tech gives you
             val techEnabledIcons = Table()
-            techEnabledIcons.defaults().pad(2.5f)
+            techEnabledIcons.defaults().pad(5f)
 
             for(unit in GameBasics.Units.values.filter { it.requiredTech==techName
                     && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName) })

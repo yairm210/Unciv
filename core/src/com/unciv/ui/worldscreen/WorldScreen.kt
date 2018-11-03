@@ -31,7 +31,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val bottomBar = WorldScreenBottomBar(this)
     val unitActionsTable = UnitActionsTable(this)
 
-    private val techButton = Table().apply { background=ImageGetter.getDrawable("OtherIcons/civTableBackground.png").tint(colorFromRGB(7,46,43)); defaults().pad(10f) }
+    private val techButton = Table()
     val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
 
@@ -170,19 +170,20 @@ class WorldScreen : CameraStageBaseScreen() {
         techButton.isVisible = civInfo.cities.isNotEmpty()
 
         techButton.clearChildren()
-        if (civInfo.tech.currentTechnology() == null)
-            techButton.add(Label("{Pick a tech}!".tr(),skin).setFontColor(Color.WHITE).setFont(22))
+
+        if (civInfo.tech.currentTechnology() == null) {
+            val buttonPic = Table().apply { background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png").tint(colorFromRGB(7, 46, 43)); defaults().pad(10f) }
+            buttonPic.add(Label("{Pick a tech}!".tr(), skin).setFontColor(Color.WHITE).setFont(22))
+            techButton.add(buttonPic)
+        }
         else {
-            val tech = civInfo.tech.currentTechnology()!!
-            if(ImageGetter.techIconExists(tech))
-                techButton.add(ImageGetter.getTechIconGroup(tech))
-            val costOfTech = civInfo.tech.costOfTech(tech).toFloat()
-            val percentComplete = (costOfTech-civInfo.tech.remainingScienceToTech(tech)) / costOfTech
-            techButton.add(ImageGetter.getProgressBarVertical(2f,30f,percentComplete, Color.BLUE, Color.WHITE))
-            val turnsToTech = civInfo.tech.turnsToTech(tech)
-            techButton.add(Label(tech.tr() + "\r\n"
-                    + turnsToTech + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()),skin)
-                    .setFontColor(Color.WHITE).setFont(22))
+            val currentTech = civInfo.tech.currentTechnology()!!
+            val innerButton = TechPickerScreen.TechButton(currentTech,civInfo.tech)
+            innerButton.color = colorFromRGB(7, 46, 43)
+            techButton.add(innerButton)
+            val turnsToTech = civInfo.tech.turnsToTech(currentTech)
+            innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
+                    + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()))
         }
 
         techButton.setSize(techButton.prefWidth, techButton.prefHeight)
