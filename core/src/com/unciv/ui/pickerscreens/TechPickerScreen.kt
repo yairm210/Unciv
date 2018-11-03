@@ -115,7 +115,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                         selectTechnology(tech)
                     }
                     topTable.add(TB)
-                    if(eras[j].text.toString()=="") eras[j].setText(tech.era().toString().tr())
+                    if(eras[j].text.toString()=="") eras[j].setText((tech.era().toString()+" era").tr())
                 }
             }
         }
