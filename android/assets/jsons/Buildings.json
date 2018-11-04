@@ -564,6 +564,13 @@
 		uniques:["Must be next to desert"]
 	},
 	{
+		name:"Sydney Opera House",
+		isWonder:true,
+		percentStatBonus:{culture:50},
+		uniques:["Free Social Policy","Can only be built in coastal cities"],
+		requiredTech:"Flight"
+	},
+	{
 		name:"Spaceship Factory",
 		production:3,
 		requiredResource:"Aluminum",

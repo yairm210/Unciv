@@ -184,6 +184,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Microscope](https://thenounproject.com/term/microscope/1452362/) By Arafat Uddin for Research Lab
 * [Water dam](https://thenounproject.com/term/water-dam/1002726/) By Symbolon for Hydro Plant
 * [Solar panel](https://thenounproject.com/term/solar-panel/1131/) By Modik for Solar Plant
+* [Opera House Sydney](https://thenounproject.com/term/opera-house-sydney/1626283/) By Pham Duy Phuong Hung for Sydney Opera House
 * [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
 * [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 * [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
