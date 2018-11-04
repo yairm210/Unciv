@@ -221,6 +221,7 @@
 			{
 				name:"Astronomy",
 				row:2,
+				baseDescription:"Increases embarked movement +1",
 				prerequisites:[/*"Compass",*/"Education"]
 			},
 			{
@@ -339,6 +340,7 @@
 			{
 				name:"Steam Power",
 				row:7,
+				baseDescription:"Increases embarked movement +1",
 				prerequisites:["Industrialization","Scientific Theory","Rifling"]
 			},
 			{

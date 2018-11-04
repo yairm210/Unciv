@@ -262,16 +262,6 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Riot Police](https://thenounproject.com/term/riot-police/43117/) By Dan Hetteix for Police State
 
 
-## Others 
-
-* [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
-* [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell
-* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
-* [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin
-* [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito 
-* [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
-* [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys
-* [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
 
 ## Technologies
 
@@ -353,3 +343,15 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
 * [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
+
+## Others 
+
+* [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
+* [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell
+* [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
+* [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin
+* [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito 
+* [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
+* [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys
+* [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
+* [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units

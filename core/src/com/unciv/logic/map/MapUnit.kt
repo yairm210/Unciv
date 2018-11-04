@@ -6,7 +6,6 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.getRandom
 import java.text.DecimalFormat
@@ -43,6 +42,8 @@ class MapUnit {
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
     fun getTile(): TileInfo =  currentTile
     fun getMaxMovement(): Int {
+        if(isEmbarked()) return getEmbarkedMovement()
+
         var movement = baseUnit.movement
         movement += getUniques().count{it=="+1 Movement"}
 
@@ -67,7 +68,7 @@ class MapUnit {
     fun updateUniques(){
         val uniques = ArrayList<String>()
         val baseUnit = baseUnit()
-        if(baseUnit.uniques!=null) uniques.addAll(baseUnit.uniques!!)
+        uniques.addAll(baseUnit.uniques)
         uniques.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })
         tempUniques = uniques
     }
@@ -164,11 +165,11 @@ class MapUnit {
         return currentTile.baseTerrain=="Ocean"||currentTile.baseTerrain=="Coast"
     }
 
-    fun getEmbarkedMovement(){
+    fun getEmbarkedMovement(): Int {
         var movement=2
         movement += civInfo.tech.techsResearched.map { GameBasics.Technologies[it]!! }
-                        .count { it.baseDescription!=null && it.baseDescription!! == "Increases embarked movement" }
-        if(civInfo.tech.isResearched("Steam Power")) movement += 1
+                        .count { it.baseDescription!=null && it.baseDescription!! == "Increases embarked movement +1" }
+        return movement
     }
 
     //endregion
