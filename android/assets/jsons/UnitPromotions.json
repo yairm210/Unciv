@@ -17,6 +17,7 @@
 		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
+	
 	{
 		name:"Barrage I",
 		effect:"Bonus vs units in rough terrain 15%",
@@ -34,6 +35,7 @@
 		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Siege","Ranged"]
 	}
+	
 	{
 		name:"Shock I",
 		effect:"Bonus vs units in open terrain 15%",
@@ -51,6 +53,7 @@
 		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
+	
 	{
 		name:"Drill I",
 		effect:"Bonus vs units in rough terrain 15%",
@@ -68,6 +71,7 @@
 		effect:"Bonus vs units in rough terrain 15%",
 		unitTypes:["Melee","Mounted"]
 	}
+	
 	{
 		name:"Scouting I",
 		effect:"+1 Visibility Range",
@@ -85,6 +89,7 @@
 		effect:"+1 Visibility Range",
 		unitTypes:["Scout"]
 	}
+	
 	{
 		name:"Cover I",
 		effect:"+25% Defence against ranged attacks",
@@ -96,42 +101,57 @@
 		effect:"+25% Defence against ranged attacks",
 		unitTypes:["Melee","Ranged","Siege"]
 	}
+	
 	{
 		name:"March",
 		prerequisites:["Accuracy II","Barrage II","Shock III","Drill III"],
 		effect:"Unit will heal every turn, even if it performs an action",
 		unitTypes:["Melee","Ranged","Siege","Mounted"]
 	}
+	
 	{
 		name:"Charge",
 		prerequisites:["Shock II","Drill II"],
 		effect:"Bonus vs wounded units 33%",
 		unitTypes:["Mounted"]
 	}
+	
+	{
+		name:"Mobility",
+		prerequisites:["Shock II","Drill II","Targeting I",
+			"Bombardment I","Boarding Party I", "Coastal Raider I"],
+		effect:"+1 Movement",
+		unitTypes:["Mounted","WaterMelee","WaterRanged"]
+	}
+	
 	{
 		name:"Siege",
 		prerequisites:["Shock II","Drill II"],
 		effect:"Bonus vs City 50%",
 		unitTypes:["Melee"]
 	}
+	
 	{
 		name:"Volley",
 		prerequisites:["Accuracy I","Barrage I"],
 		effect:"Bonus vs City 50%",
 		unitTypes:["Ranged","Siege"]
 	}
+	
 	{
 		name:"Sentry",
-		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II"],
+		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II","Bombardment I","Targeting I"],
 		effect:"+1 Visibility Range",
-		unitTypes:["Melee","Mounted"]
+		unitTypes:["Melee","Mounted","WaterRanged"]
 	}
+	
 	{
 		name:"Range",
-		prerequisites:["Accuracy III","Barrage III"],
+		prerequisites:["Accuracy III","Barrage III","Targeting II","Bombardment II"],
 		effect:"+1 Range",
-		unitTypes:["Ranged","Siege"]
+		unitTypes:["Ranged","Siege","WaterRanged"]
 	}
+	
 	{
 		name:"Indirect Fire",
 		prerequisites:["Accuracy III","Barrage III"],
@@ -151,23 +171,92 @@
 		effect:"Bonus vs Mounted 33%",
 		unitTypes:["Melee","Mounted"]
 	}
+	
 	{
 		name:"Blitz",
 		prerequisites:["Shock III","Drill III"],
 		effect:"1 additional attack per turn",
 		unitTypes:["Melee","Mounted"]
 	}
+	
 	{
 		name:"Logistics",
-		prerequisites:["Accuracy III","Barrage III"],
+		prerequisites:["Accuracy III","Barrage III","Targeting III",
+			"Bombardment III", "Coastal Raider III","Boarding Party III"],
 		effect:"1 additional attack per turn",
-		unitTypes:["Ranged","Siege"]
+		unitTypes:["Ranged","Siege","WaterMelee","WaterRanged"]
+	}
+	
+	{
+		name:"Bombardment I",
+		effect:"Bonus vs land units 33%",
+		unitTypes:["WaterRanged"]
 	}
 	{
-		name:"Mobility",
-		prerequisites:["Shock III","Drill III"],
-		effect:"+1 Movement",
-		unitTypes:["Mounted"]
+		name:"Bombardment II",
+		prerequisites:["Bombardment I"],
+		effect:"Bonus vs land units 33%",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Bombardment III",
+		prerequisites:["Bombardment II"],
+		effect:"Bonus vs land units 34%",
+		unitTypes:["WaterRanged"]
+	}
+	
+	{
+		name:"Boarding Party I",
+		effect:"Bonus vs water units 15%",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Boarding Party II",
+		prerequisites:["Boarding Party I"],
+		effect:"Bonus vs water units 15%",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Boarding Party III",
+		prerequisites:["Boarding Party II"],
+		effect:"Bonus vs water units 15%",
+		unitTypes:["WaterMelee"]
+	}
+	
+	{
+		name:"Coastal Raider I",
+		effect:"Bonus vs City 15%",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Coastal Raider II",
+		prerequisites:["Coastal Raider I"],
+		effect:"Bonus vs City 15%",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Coastal Raider III",
+		prerequisites:["Coastal Raider II"],
+		effect:"Bonus vs City 15%",
+		unitTypes:["WaterMelee"]
+	}
+	
+	{
+		name:"Targeting I",
+		effect:"Bonus vs City 15%",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Targeting II",
+		prerequisites:["Targeting I"],
+		effect:"Bonus vs water units 15%",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Targeting III",
+		prerequisites:["Targeting II"],
+		effect:"Bonus vs water units 15%",
+		unitTypes:["WaterRanged"]
 	}
 	
 ]

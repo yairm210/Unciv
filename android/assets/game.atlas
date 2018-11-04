@@ -417,86 +417,93 @@ BuildingIcons/Stonehenge
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/Taj Mahal
+BuildingIcons/Sydney Opera House
   rotate: false
   xy: 1428, 826
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/Temple
+BuildingIcons/Taj Mahal
   rotate: false
   xy: 1530, 928
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/The Great Library
+BuildingIcons/Temple
   rotate: false
   xy: 1632, 1030
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/The Great Lighthouse
+BuildingIcons/The Great Library
   rotate: false
   xy: 1020, 316
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/The Louvre
+BuildingIcons/The Great Lighthouse
   rotate: false
   xy: 1122, 418
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/The Oracle
+BuildingIcons/The Louvre
   rotate: false
   xy: 1224, 520
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/The Pyramids
+BuildingIcons/The Oracle
   rotate: false
   xy: 1326, 622
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
+BuildingIcons/The Pyramids
+  rotate: false
+  xy: 1428, 724
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 BuildingIcons/Theatre
   rotate: false
-  xy: 1530, 826
+  xy: 1632, 928
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/University
   rotate: false
-  xy: 1428, 622
+  xy: 1530, 724
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Walls
   rotate: false
-  xy: 1632, 826
+  xy: 1224, 316
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Windmill
   rotate: false
-  xy: 1530, 622
+  xy: 1632, 724
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 BuildingIcons/Workshop
   rotate: false
-  xy: 1530, 520
+  xy: 1632, 622
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -678,7 +685,7 @@ ImprovementIcons/Road
   index: -1
 ImprovementIcons/Trading post
   rotate: false
-  xy: 1122, 316
+  xy: 1224, 418
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -762,7 +769,7 @@ OtherIcons/Sleep
   index: -1
 OtherIcons/Star
   rotate: false
-  xy: 1530, 424
+  xy: 1632, 526
   size: 100, 94
   orig: 100, 94
   offset: 0, 0
@@ -804,273 +811,273 @@ PolicyIcons/Aristocracy
   index: -1
 PolicyIcons/Citizenship
   rotate: false
-  xy: 1632, 570
+  xy: 1530, 367
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Civil Society
   rotate: false
-  xy: 1530, 372
+  xy: 1632, 474
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Collective Rule
   rotate: false
-  xy: 1632, 518
+  xy: 1632, 422
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Constitution
   rotate: false
-  xy: 1530, 320
+  xy: 1530, 315
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Democracy
   rotate: false
-  xy: 1632, 466
+  xy: 234, 48
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Discipline
   rotate: false
-  xy: 234, 48
+  xy: 286, 53
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Entrepreneurship
   rotate: false
-  xy: 286, 53
+  xy: 338, 53
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Facism
   rotate: false
-  xy: 338, 53
+  xy: 390, 53
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Religion
   rotate: false
-  xy: 390, 53
+  xy: 1582, 367
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Speech
   rotate: false
-  xy: 1684, 570
+  xy: 1582, 315
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Thought
   rotate: false
-  xy: 1684, 518
+  xy: 1684, 474
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Humanism
   rotate: false
-  xy: 1684, 466
+  xy: 1684, 422
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Landed Elite
   rotate: false
-  xy: 1582, 372
+  xy: 1634, 370
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Legalism
   rotate: false
-  xy: 1582, 320
+  xy: 1634, 318
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Mandate Of Heaven
   rotate: false
-  xy: 442, 53
+  xy: 1686, 370
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Mercantilism
   rotate: false
-  xy: 1965, 1662
+  xy: 1686, 318
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Meritocracy
   rotate: false
-  xy: 1734, 1102
+  xy: 442, 53
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Militarism
   rotate: false
-  xy: 1734, 1050
+  xy: 1965, 1662
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Military Caste
   rotate: false
-  xy: 1786, 1102
+  xy: 1734, 1102
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Military Tradition
   rotate: false
-  xy: 1734, 998
+  xy: 1734, 1050
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Monarchy
   rotate: false
-  xy: 1786, 1050
+  xy: 1786, 1102
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Oligarchy
   rotate: false
-  xy: 1734, 946
+  xy: 1734, 998
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Organized Religion
   rotate: false
-  xy: 1786, 998
+  xy: 1786, 1050
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Patronage
   rotate: false
-  xy: 1734, 894
+  xy: 1734, 946
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Police State
   rotate: false
-  xy: 1786, 946
+  xy: 1786, 998
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Populism
   rotate: false
-  xy: 1734, 842
+  xy: 1734, 894
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Professional Army
   rotate: false
-  xy: 1786, 894
+  xy: 1786, 946
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Protectionism
   rotate: false
-  xy: 1734, 790
+  xy: 1734, 842
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Reformation
   rotate: false
-  xy: 1786, 842
+  xy: 1786, 894
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Representation
   rotate: false
-  xy: 1734, 738
+  xy: 1734, 790
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Republic
   rotate: false
-  xy: 1786, 790
+  xy: 1786, 842
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Scientific Revolution
   rotate: false
-  xy: 1734, 686
+  xy: 1734, 738
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Secularism
   rotate: false
-  xy: 1786, 738
+  xy: 1786, 790
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Sovereignty
   rotate: false
-  xy: 1734, 634
+  xy: 1734, 686
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Theocracy
   rotate: false
-  xy: 1786, 686
+  xy: 1786, 738
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Total War
   rotate: false
-  xy: 1786, 634
+  xy: 1734, 634
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Trade Unions
   rotate: false
-  xy: 1736, 582
+  xy: 1786, 686
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Universal Suffrage
   rotate: false
-  xy: 1736, 530
+  xy: 1734, 582
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Warrior Code
   rotate: false
-  xy: 1736, 478
+  xy: 1786, 634
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1245,28 +1252,28 @@ ResourceIcons/Sugar
   index: -1
 ResourceIcons/Uranium
   rotate: false
-  xy: 1530, 724
+  xy: 1632, 826
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Whales
   rotate: false
-  xy: 1326, 418
+  xy: 1428, 520
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Wheat
   rotate: false
-  xy: 1428, 520
+  xy: 1530, 622
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 ResourceIcons/Wine
   rotate: false
-  xy: 1632, 724
+  xy: 1326, 316
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1798,28 +1805,28 @@ TechIcons/Steel
   index: -1
 TechIcons/The Wheel
   rotate: false
-  xy: 1428, 724
+  xy: 1530, 826
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Theology
   rotate: false
-  xy: 1632, 928
+  xy: 1122, 316
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Trapping
   rotate: false
-  xy: 1224, 418
+  xy: 1326, 520
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 TechIcons/Writing
   rotate: false
-  xy: 1632, 622
+  xy: 1428, 316
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2036,7 +2043,7 @@ UnitIcons/Musketeer
   index: -1
 UnitIcons/Musketman
   rotate: false
-  xy: 1428, 317
+  xy: 1530, 419
   size: 100, 99
   orig: 100, 99
   offset: 0, 0
@@ -2085,7 +2092,7 @@ UnitIcons/Swordsman
   index: -1
 UnitIcons/Trebuchet
   rotate: false
-  xy: 1326, 520
+  xy: 1428, 622
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2099,21 +2106,21 @@ UnitIcons/Trireme
   index: -1
 UnitIcons/Warrior
   rotate: false
-  xy: 1224, 316
+  xy: 1326, 418
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Work Boats
   rotate: false
-  xy: 1326, 316
+  xy: 1428, 418
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
 UnitIcons/Worker
   rotate: false
-  xy: 1428, 418
+  xy: 1530, 520
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2167,156 +2174,240 @@ UnitPromotionIcons/Blitz_(Civ5)
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Charge_(Civ5)
+UnitPromotionIcons/Boarding_Party_III_(Civ5)
   rotate: false
   xy: 306, 1252
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Cover_II_(Civ5)
+UnitPromotionIcons/Boarding_Party_II_(Civ5)
   rotate: false
   xy: 537, 1772
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Cover_I_(Civ5)
+UnitPromotionIcons/Boarding_Party_I_(Civ5)
   rotate: false
   xy: 2005, 2026
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Drill_III_(Civ5)
+UnitPromotionIcons/Bombardment_III_(Civ5)
   rotate: false
   xy: 1875, 1896
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Drill_II_(Civ5)
+UnitPromotionIcons/Bombardment_II_(Civ5)
   rotate: false
   xy: 1863, 1744
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Drill_I_(Civ5)
-  rotate: false
-  xy: 1632, 444
-  size: 20, 20
-  orig: 20, 20
-  offset: 0, 0
-  index: -1
-UnitPromotionIcons/Formation_II_(Civ5)
+UnitPromotionIcons/Bombardment_I_(Civ5)
   rotate: false
   xy: 1965, 1640
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Formation_I_(Civ5)
+UnitPromotionIcons/Charge_(Civ5)
   rotate: false
   xy: 1734, 1212
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Indirect_Fire_(Civ5)
+UnitPromotionIcons/Coastal_Raider_III_(Civ5)
   rotate: false
   xy: 1838, 1132
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Logistics_(Civ5)
+UnitPromotionIcons/Coastal_Raider_II_(Civ5)
   rotate: false
-  xy: 1788, 612
+  xy: 1734, 560
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/March_(Civ5)
+UnitPromotionIcons/Coastal_Raider_I_(Civ5)
+  rotate: false
+  xy: 1786, 612
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Cover_II_(Civ5)
   rotate: false
   xy: 132, 28
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Mobility_(Civ5)
+UnitPromotionIcons/Cover_I_(Civ5)
   rotate: false
   xy: 226, 1546
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Range_(Civ5)
+UnitPromotionIcons/Drill_III_(Civ5)
   rotate: false
   xy: 306, 1230
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_III_(Civ5)
+UnitPromotionIcons/Drill_II_(Civ5)
   rotate: false
   xy: 537, 1750
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_II_(Civ5)
+UnitPromotionIcons/Drill_I_(Civ5)
   rotate: false
   xy: 559, 1772
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_I_(Civ5)
+UnitPromotionIcons/Formation_II_(Civ5)
   rotate: false
   xy: 2005, 2004
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Sentry_(Civ5)
+UnitPromotionIcons/Formation_I_(Civ5)
   rotate: false
   xy: 1875, 1874
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_III_(Civ5)
+UnitPromotionIcons/Indirect_Fire_(Civ5)
   rotate: false
   xy: 1863, 1722
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_II_(Civ5)
+UnitPromotionIcons/Logistics_(Civ5)
   rotate: false
   xy: 1885, 1744
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_I_(Civ5)
-  rotate: false
-  xy: 1654, 444
-  size: 20, 20
-  orig: 20, 20
-  offset: 0, 0
-  index: -1
-UnitPromotionIcons/Siege_(Civ5)
+UnitPromotionIcons/March_(Civ5)
   rotate: false
   xy: 1965, 1618
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Volley_(Civ5)
+UnitPromotionIcons/Mobility_(Civ5)
   rotate: false
   xy: 1987, 1640
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Range_(Civ5)
+  rotate: false
+  xy: 1734, 1190
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting_III_(Civ5)
+  rotate: false
+  xy: 1838, 1110
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting_II_(Civ5)
+  rotate: false
+  xy: 1734, 538
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting_I_(Civ5)
+  rotate: false
+  xy: 1756, 560
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Sentry_(Civ5)
+  rotate: false
+  xy: 1786, 590
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_III_(Civ5)
+  rotate: false
+  xy: 1808, 612
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_II_(Civ5)
+  rotate: false
+  xy: 154, 28
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Shock_I_(Civ5)
+  rotate: false
+  xy: 248, 1546
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Siege_(Civ5)
+  rotate: false
+  xy: 559, 1750
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting_III_(Civ5)
+  rotate: false
+  xy: 2005, 1982
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting_II_(Civ5)
+  rotate: false
+  xy: 1885, 1722
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting_I_(Civ5)
+  rotate: false
+  xy: 1987, 1618
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Volley_(Civ5)
+  rotate: false
+  xy: 1734, 1168
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

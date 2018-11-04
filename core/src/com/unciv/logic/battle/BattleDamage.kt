@@ -34,6 +34,8 @@ class BattleDamage{
                     modifiers[BDM.getText()] = BDM.modificationAmount
                 if(BDM.vs == "wounded units" && enemy is MapUnitCombatant && enemy.getHealth()<100)
                     modifiers[BDM.getText()] = BDM.modificationAmount
+                if(BDM.vs == "land units" && enemy.getUnitType().isLandUnit())
+                    modifiers[BDM.getText()] = BDM.modificationAmount
             }
             if (combatant.getCivilization().happiness < 0)
                 modifiers["Unhappiness"] = 0.02f * combatant.getCivilization().happiness  //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
