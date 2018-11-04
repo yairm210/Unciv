@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
@@ -32,7 +33,7 @@ class WorldScreen : CameraStageBaseScreen() {
     val unitActionsTable = UnitActionsTable(this)
 
     private val techButton = Table()
-    val diplomacyButtonWrapper = Table()
+    private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
 
     private val notificationsScroll: NotificationsScroll
@@ -178,7 +179,7 @@ class WorldScreen : CameraStageBaseScreen() {
         }
         else {
             val currentTech = civInfo.tech.currentTechnology()!!
-            val innerButton = TechPickerScreen.TechButton(currentTech,civInfo.tech)
+            val innerButton = TechButton(currentTech,civInfo.tech)
             innerButton.color = colorFromRGB(7, 46, 43)
             techButton.add(innerButton)
             val turnsToTech = civInfo.tech.turnsToTech(currentTech)
@@ -254,7 +255,7 @@ class WorldScreen : CameraStageBaseScreen() {
         }
     }
 
-    var shouldUpdate=false
+    private var shouldUpdate=false
     override fun render(delta: Float) {
         if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
             // otherwise images will not load properly!
@@ -271,7 +272,7 @@ class WorldScreen : CameraStageBaseScreen() {
             val resources = civInfo.getCivResources()
             if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
             if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
-            if(civInfo.exploredTiles.map { gameInfo.tileMap[it] }.any { it.isCityCenter() && it.getOwner()!=civInfo })
+            if(civInfo.exploredTiles.asSequence().map { gameInfo.tileMap[it] }.any { it.isCityCenter() && it.getOwner()!=civInfo })
                 displayTutorials("EnemyCity")
             if("Enables construction of Spaceship parts" in civInfo.getBuildingUniques())
                 displayTutorials("ApolloProgram")

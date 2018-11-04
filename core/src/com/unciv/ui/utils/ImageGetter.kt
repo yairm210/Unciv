@@ -14,7 +14,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 
 object ImageGetter {
-    const val WhiteDot = "OtherIcons/whiteDot.png"
+    const private val whiteDotLocation = "OtherIcons/whiteDot.png"
 
     // When we used to load images directly from different files, without using a texture atlas,
     // The draw() phase of the main screen would take a really long time because the BatchRenderer would
@@ -22,9 +22,8 @@ object ImageGetter {
     // So, we now use TexturePacker in the DesktopLauncher class to pack all the different images into single images,
     // and the atlas is what tells us what was packed where.
     var atlas = TextureAtlas("game.atlas")
+    fun getWhiteDot() =  getImage(whiteDotLocation)
 
-    init{
-    }
 
     fun getExternalImage(fileName:String): Image {
         return Image(TextureRegion(Texture("ExtraImages/$fileName.png")))
@@ -49,7 +48,7 @@ object ImageGetter {
                 throw Exception("Could not find $fileName")
             return region
         } catch (ex: Exception) {
-            return getTextureRegion(WhiteDot)
+            return getTextureRegion(whiteDotLocation)
         }
     }
 
@@ -66,16 +65,19 @@ object ImageGetter {
         return getImage("UnitIcons/$unitName").apply { this.color=color }
     }
 
+    val foodCircleColor = Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
+    val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
+    val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
-        val iconGroup = IconCircleGroup(size, getImage("ImprovementIcons/$improvementName"))
+        val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
         val improvement = GameBasics.TileImprovements[improvementName]!!
         when {
-            improvement.food>0 -> iconGroup.circle.color= Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
-            improvement.production>0 -> iconGroup.circle.color= Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
-            improvement.gold>0 -> iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
-            improvement.science>0 -> iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.BLUE,0.5f)
-            improvement.culture>0 -> iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.PURPLE,0.5f)
+            improvement.food>0 -> iconGroup.circle.color= foodCircleColor
+            improvement.production>0 -> iconGroup.circle.color= productionCircleColor
+            improvement.gold>0 -> iconGroup.circle.color= goldCircleColor
+            improvement.science>0 -> iconGroup.circle.color= Color.BLUE.cpy().lerp(Color.WHITE,0.5f)
+            improvement.culture>0 -> iconGroup.circle.color= Color.PURPLE.cpy().lerp(Color.WHITE,0.5f)
         }
 
         return iconGroup
@@ -95,7 +97,7 @@ object ImageGetter {
     fun getBlue() = Color(0x004085bf)
 
     fun getBackground(color:Color): Drawable {
-        return getDrawable(WhiteDot).tint(color)
+        return getDrawable(whiteDotLocation).tint(color)
     }
 
     fun refreshAltas() {
@@ -103,11 +105,13 @@ object ImageGetter {
     }
 
     fun getResourceImage(resourceName: String, size:Float): Actor {
-        val iconGroup = IconCircleGroup(size,getImage("ResourceIcons/$resourceName"))
+        val iconGroup = getImage("ResourceIcons/$resourceName").surroundWithCircle(size)
         val resource = GameBasics.TileResources[resourceName]!!
-        if(resource.food>0) iconGroup.circle.color= Color.GREEN.cpy().lerp(Color.WHITE,0.5f)
-        else if(resource.production>0) iconGroup.circle.color= Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
-        else if(resource.gold>0) iconGroup.circle.color= Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
+        when {
+            resource.food>0 -> iconGroup.circle.color= foodCircleColor
+            resource.production>0 -> iconGroup.circle.color= productionCircleColor
+            resource.gold>0 -> iconGroup.circle.color= goldCircleColor
+        }
 
         if(resource.resourceType==ResourceType.Luxury){
             val happiness = getStatIcon("Happiness")
@@ -125,27 +129,15 @@ object ImageGetter {
     }
 
     fun getTechIconGroup(techName: String): Group {
-        return IconCircleGroup(60f,getImage("TechIcons/$techName"))
+        return getImage("TechIcons/$techName").surroundWithCircle(60f)
     }
 
     fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {
         val advancementGroup = Table()
         val completionHeight = height * percentComplete
-        advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = backgroundColor }).width(width).height(height-completionHeight).row()
-        advancementGroup.add(ImageGetter.getImage(ImageGetter.WhiteDot).apply { color= progressColor}).width(width).height(completionHeight)
+        advancementGroup.add(getImage(whiteDotLocation).apply { color = backgroundColor }).width(width).height(height-completionHeight).row()
+        advancementGroup.add(getImage(whiteDotLocation).apply { color= progressColor}).width(width).height(completionHeight)
         advancementGroup.pack()
         return advancementGroup
     }
-
-    class IconCircleGroup(size:Float, val image:Image):Group(){
-        val circle = getImage("OtherIcons/Circle").apply { setSize(size, size) }
-        init {
-            setSize(size, size)
-            addActor(circle)
-            image.setSize(size * 0.75f, size * 0.75f)
-            image.center(this)
-            addActor(image)
-        }
-    }
-
 }

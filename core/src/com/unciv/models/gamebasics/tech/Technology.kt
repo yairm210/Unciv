@@ -12,7 +12,6 @@ class Technology : ICivilopedia {
             val SB=StringBuilder()
             if(baseDescription!=null) SB.appendln(baseDescription!!.tr())
 
-
             val improvedImprovements = GameBasics.TileImprovements.values.filter { it.improvingTech==name }.groupBy { it.improvingTechStats.toString() }
             for (improvement in improvedImprovements) {
                 val impimpString = improvement.value.joinToString { it.name.tr() } +" {provide" + (if(improvement.value.size==1) "s" else "") +"} "+improvement.key

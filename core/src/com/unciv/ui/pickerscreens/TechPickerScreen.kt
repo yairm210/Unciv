@@ -1,10 +1,7 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
@@ -12,6 +9,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.ui.utils.*
 import java.util.*
+
 
 class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
 
@@ -35,52 +33,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
 
     constructor(freeTechPick: Boolean, civInfo: CivilizationInfo) : this(civInfo) {
         isFreeTechPick = freeTechPick
-    }
-
-    class TechButton(techName:String, val techManager:TechManager) : Table(skin) {
-        val text=Label("",skin).setFontColor(Color.WHITE).apply { setAlignment(Align.center) }
-        init {
-            touchable = Touchable.enabled
-            defaults().pad(10f)
-            background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-            if(ImageGetter.techIconExists(techName))
-                add(ImageGetter.getTechIconGroup(techName)) // this is 60*60
-
-            val rightSide = Table()
-            val techCost = techManager.costOfTech(techName)
-            val remainingTech = techManager.remainingScienceToTech(techName)
-            if(techCost!=remainingTech){
-                val percentComplete = (techCost-remainingTech)/techCost.toFloat()
-                add(ImageGetter.getProgressBarVertical(2f,50f,percentComplete, Color.BLUE, Color.WHITE))
-            }
-            rightSide.add(text).row()
-
-            // here we add little images of what the tech gives you
-            val techEnabledIcons = Table()
-            techEnabledIcons.defaults().pad(5f)
-
-            for(unit in GameBasics.Units.values.filter { it.requiredTech==techName
-                    && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName) })
-                techEnabledIcons.add(ImageGetter.IconCircleGroup(30f,ImageGetter.getConstructionImage(unit.name)))
-
-            for(building in GameBasics.Buildings.values.filter { it.requiredTech==techName
-                    && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName)})
-                techEnabledIcons.add(ImageGetter.IconCircleGroup(30f,ImageGetter.getConstructionImage(building.name)))
-
-            for(improvement in GameBasics.TileImprovements.values.filter { it.techRequired==techName || it.improvingTech==techName }) {
-                if(improvement.name.startsWith("Remove"))
-                    techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Stop")).size(30f)
-                else techEnabledIcons.add(ImageGetter.getImprovementIcon(improvement.name, 30f))
-            }
-
-            for(resource in GameBasics.TileResources.values.filter { it.revealedBy==techName })
-                techEnabledIcons.add(ImageGetter.getResourceImage(resource.name,30f))
-
-            rightSide.add(techEnabledIcons)
-
-            add(rightSide)
-            pack()
-        }
     }
 
     init {

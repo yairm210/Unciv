@@ -228,7 +228,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             }
             if (roadStatus == RoadStatus.None) continue // no road image
 
-            val image = if (roadStatus == RoadStatus.Road) ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BROWN }
+            val image = if (roadStatus == RoadStatus.Road) ImageGetter.getWhiteDot().apply { color = Color.BROWN }
             else ImageGetter.getImage("OtherIcons/Railroad.png")
             roadImage.image = image
 
@@ -378,13 +378,13 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
         val healthPercent = currentHealth / maxHealth
         val healthBar = Table()
-        val healthPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot)
+        val healthPartOfBar = ImageGetter.getWhiteDot()
         healthPartOfBar.color = when {
             healthPercent > 2 / 3f -> Color.GREEN
             healthPercent > 1 / 3f -> Color.ORANGE
             else -> Color.RED
         }
-        val emptyPartOfBar = ImageGetter.getImage(ImageGetter.WhiteDot).apply { color = Color.BLACK }
+        val emptyPartOfBar = ImageGetter.getWhiteDot().apply { color = Color.BLACK }
         healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
         healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
         healthBar.pack()

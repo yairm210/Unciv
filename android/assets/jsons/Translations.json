@@ -2189,24 +2189,6 @@
 		Spanish:"Tecnología del futuro"
 	}
 	
-	//Why do we have duplicates? Anyway i have translated it
-	"Enables conversion of city production to gold":{
-		Russian:"Разрешает конверсию производства в золото"
-		Spanish:"Habilita la conversión de producción a oro"
-	}
-	"Enables conversion of city production to science":{
-		Russian:"Разрешает конверсию производства в науку"
-		Spanish:"Habilita la conversión de producción a ciencia"
-	}
-	"Improves movement speed on roads":{
-		Russian:"Ускоряет скорость передвижения по дорогам"
-		Spanish:"Mejora la velocidad de movimiento en carreteras"
-	}
-	"+10% science and production in all cities":{
-		Russian:"+10% науки и производства во всех городах"
-		Spanish:"+10% de ciencia y producción en todas las ciudades"
-	}
-	
 	
 	"Who knows what the future holds?":{
 		Italian:"Chi sa cosa riserva il futuro?"
@@ -2215,6 +2197,15 @@
 		Romanian:"Chi sa cosa riserva il futuro?"
 		Dutch:"Wie weet wat de toekomst inhoud?"
 		Spanish:"¿Quién sabe qué nos depara el futuro?"
+	}
+	
+	"Improves movement speed on roads":{
+		Russian:"Ускоряет скорость передвижения по дорогам"
+		Spanish:"Mejora la velocidad de movimiento en carreteras"
+	}
+	"+10% science and production in all cities":{
+		Russian:"+10% науки и производства во всех городах"
+		Spanish:"+10% de ciencia y producción en todas las ciudades"
 	}
 	
 	"Improves movement speed on roads":{
@@ -2238,6 +2229,7 @@
 		Romanian:"Permite conversia producției în oraș la aur"
 		Spanish:"Habilita la conversión de producción a oro"
 	}
+	"Increases embarked movement +1":{}
 	
 	// Tech Eras
 	// In case of foreign languages it becomes gender sensitive words
@@ -3574,6 +3566,8 @@
 	
 	
 	// And finally, units!
+	
+	// Ancient Era Units
 	"Worker":{	
 		Italian:"Operaio"
 		Russian:"Рабочий"
@@ -3581,6 +3575,7 @@
 		Romanian:"Lucrător"
 		Spanish:"Trabajador"
 	}
+	// Settler already translated in difficulties
 	"Scout":{	
 		Italian:"Esploratore"
 		Russian:"Разведчик"
@@ -3608,6 +3603,8 @@
 		//In official Russian localization it's accurate archer :)
 		Spanish:"Arquero experto"
 	}
+	"Work Boats":{}
+	"Trireme":{}
 	"Chariot Archer":{	
 		Italian:"Arciere in carriola"
 		Russian:"Лучник на колеснице"
@@ -3622,6 +3619,8 @@
 		Romanian:"Lancer"
 		Spanish:"Lancero"
 	}
+	
+	// Classical Era Units
 	"Catapult":{	
 		Italian:"Catapulta"
 		Russian:"Катапульта"
@@ -3629,6 +3628,7 @@
 		Romanian:"Catapulta"
 		Spanish:"Catapulta"
 	}
+	"Ballista":{}
 	"Swordsman":{	
 		Italian:"Spadaccino"
 		Russian:"Мечник"
@@ -3650,6 +3650,9 @@
 		Romanian:"Compania cavalerilor"
 		Spanish:"Caballería de compañia"
 	}
+	
+	// Medieval units
+	"Galleass":{}
 	"Crossbowman":{	
 		Italian:"Balestriere"
 		Russian:"Арбалетчик"
@@ -3685,6 +3688,9 @@
 		Romanian:"Cavaler"
 		Spanish:"Caballero"
 	}
+	
+	// Renaissance units
+	"Caravel":{}
 	"Cannon":{	
 		Italian:"Cannone"
 		Russian:"Пушка"
@@ -3697,6 +3703,7 @@
 		French:"Mousquetaire"
 		Spanish:"Mosquetero"
 	}
+	"Musketeer":{}
 	"Lancer":{	
 		Italian:"lanciere"
 		Russian:"Улан"
@@ -3704,6 +3711,8 @@
 		Romanian:"Lăncier"
 		Spanish:"Jinete lancero"
 	}
+	
+	// Industrial units
 	"Rifleman":{	
 		Italian:"Fuciliere"
 		Russian:"Стрелок"
@@ -3725,6 +3734,8 @@
 		Romanian:"Artilerie"
 		Spanish:"Artillería"
 	}
+	
+	// Great units
 	"Great Artist":{	
 		Italian:"Grande artista"
 		Russian:"Великий художник"
@@ -3754,6 +3765,7 @@
 		Spanish:"Gran Ingeniero"
 	}
 	
+	// Social policies
 	"Requires":{
 		Russian:"Требует"
 		Spanish:"Requiere"

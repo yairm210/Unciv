@@ -8,7 +8,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.tr
 
 class Building : NamedStats(), IConstruction{
-    private var baseDescription: String? = null
     override val description: String
         get() = getDescription(false, hashSetOf())
 

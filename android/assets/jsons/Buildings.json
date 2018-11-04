@@ -2,17 +2,16 @@
 	// Ancient Era
 	{
 		name:"Palace",
-		baseDescription: "Indicates that this city is the capital", 
 		isWonder:true,
 		production:3,
 		science:3,
 		gold:3,
 		culture:1,
-		cost:1
+		cost:1,
+		uniques:["Indicates the capital city"]
 	},
 	{
 		name:"Monument",
-		baseDescription: "Produces culture, enabling border growth", 
 		culture:2,
 		cost:40,
 		hurryCostModifier:40,
@@ -45,7 +44,6 @@
 	},
 	{
 		name:"The Great Library",
-		baseDescription: "Provides a free technology, and a library in the city it is built in",
 		science:3,
 		culture:1,
 		greatPersonPoints:{science:1},
@@ -86,7 +84,6 @@
 	},
 	{
 		name:"The Pyramids",
-		baseDescription: "Worker construction increased 25%, provides 2 free workers",
 		culture:1,
 		greatPersonPoints:{production:1},
 		isWonder:true,
@@ -173,7 +170,6 @@
 	},
 	{
 		name:"The Oracle",
-		baseDescription: "Provides a free social policy",
 		culture:3,
 		greatPersonPoints:{science:1},
 		isWonder:true,
@@ -349,11 +345,11 @@
 	
 	{
 		name:"Observatory",
-		baseDescription: "City must be bordering a mountain", 
 		maintenance:2,
 		hurryCostModifier:25,
 		percentStatBonus:{science:50},
 		requiredBuilding:"Library",
+		uniques:[] //todo: "City must be bordering a mountain", 
 		requiredTech:"Astronomy"
 	},
 	{
@@ -415,7 +411,6 @@
 	}, 
 	{
 		name:"The Louvre",
-		baseDescription: "A Free Great Artist appears near the city",
 		culture:1,
 		happiness:4,
 		isWonder:true,
@@ -424,7 +419,6 @@
 	},
 	{
 		name:"Taj Mahal",
-		baseDescription: "Empire enters a golden age",
 		culture:1,
 		happiness:4,
 		isWonder:true,
@@ -510,7 +504,6 @@
 	},
 	{
 		name:"Eiffel Tower",
-		baseDescription: "Provides 1 happiness per social policy",
 		culture:1,
 		happiness:5
 		isWonder:true,
@@ -562,7 +555,6 @@
 	},
 	{
 		name:"Solar Plant",
-		baseDescription: "Can only be built in cities next to deserts; cannot be built in a city with a Nuclear Plant",
 		production:5,		
 		percentStatBonus:{production:15},
 		requiredBuilding:"Factory",
