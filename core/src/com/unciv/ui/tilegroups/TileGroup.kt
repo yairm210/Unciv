@@ -337,8 +337,12 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
                 .apply { setSize(20f, 20f) }
 
-        val background = if (unit.isFortified()) ImageGetter.getImage("OtherIcons/Shield.png")
-        else ImageGetter.getImage("OtherIcons/Circle.png")
+        val background =
+                when {
+                    unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
+                    unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield.png")
+                    else -> ImageGetter.getImage("OtherIcons/Circle.png")
+                }
         background.apply {
             this.color = unit.civInfo.getNation().getColor()
             setSize(size, size)

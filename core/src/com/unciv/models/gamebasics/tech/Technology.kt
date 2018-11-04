@@ -10,12 +10,12 @@ class Technology : ICivilopedia {
     override val description: String
         get(){
             val SB=StringBuilder()
-            if(baseDescription!=null) SB.appendln(baseDescription)
+            if(baseDescription!=null) SB.appendln(baseDescription!!.tr())
 
 
             val improvedImprovements = GameBasics.TileImprovements.values.filter { it.improvingTech==name }.groupBy { it.improvingTechStats.toString() }
-            improvedImprovements.forEach{
-                val impimpString = it.value.joinToString { it.name.tr() } +" {provide" + (if(it.value.size==1) "s" else "") +"} "+it.key
+            for (improvement in improvedImprovements) {
+                val impimpString = improvement.value.joinToString { it.name.tr() } +" {provide" + (if(improvement.value.size==1) "s" else "") +"} "+improvement.key
                 SB.appendln(impimpString.tr())
             }
 

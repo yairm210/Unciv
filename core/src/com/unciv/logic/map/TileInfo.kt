@@ -212,10 +212,11 @@ open class TileInfo {
         if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus.toString().tr())
         if (improvement != null) SB.appendln(improvement!!.tr())
         if (improvementInProgress != null && isViewableToPlayer) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
-        if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name.tr())
+        if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name.tr()+" - "+civilianUnit!!.civInfo.civName.tr())
         if(militaryUnit!=null && isViewableToPlayer){
             var milUnitString = militaryUnit!!.name.tr()
             if(militaryUnit!!.health<100) milUnitString += "(" + militaryUnit!!.health + ")"
+            milUnitString += " - "+militaryUnit!!.civInfo.civName.tr()
             SB.appendln(milUnitString)
         }
         if(getDefensiveBonus()!=0f){
