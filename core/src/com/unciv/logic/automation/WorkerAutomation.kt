@@ -71,9 +71,9 @@ class WorkerAutomation(val unit: MapUnit) {
                         else{
                             val reachableTiles = roadableTiles.filter {  unit.canMoveTo(it)&& unit.movementAlgs().canReach(it)}
                             if(!reachableTiles.any()) continue
-                            tileToConstructRoadOn = roadableTiles.minBy { unit.movementAlgs().getShortestPath(it).size }!!
+                            tileToConstructRoadOn = reachableTiles.minBy { unit.movementAlgs().getShortestPath(it).size }!!
+                            unit.movementAlgs().headTowards(tileToConstructRoadOn)
                         }
-                        unit.movementAlgs().headTowards(tileToConstructRoadOn)
                         if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
                                 && unit.currentTile.improvementInProgress!="Road")
                             tileToConstructRoadOn.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!,unit.civInfo)

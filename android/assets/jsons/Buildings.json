@@ -568,7 +568,7 @@
 		isWonder:true,
 		percentStatBonus:{culture:50},
 		uniques:["Free Social Policy","Can only be built in coastal cities"],
-		requiredTech:"Flight"
+		requiredTech:"Ecology"
 	},
 	{
 		name:"Spaceship Factory",
