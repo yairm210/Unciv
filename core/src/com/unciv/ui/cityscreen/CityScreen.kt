@@ -204,7 +204,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             }
             else if (!tileInfo.isCityCenter() && tileGroup.populationImage==null) { // workable
                 tileGroup.addPopulationIcon()
-                tileGroup.populationImage!!.onClick {
+                tileGroup.onClick {
                     if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
                         city.workedTiles.add(tileInfo.position)
                     else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
