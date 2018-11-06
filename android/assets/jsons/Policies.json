@@ -49,7 +49,7 @@
 		policies:[
 			{
 				name:"Collective Rule",
-				description:"Training of settlers increaed +50% in capital, recieve a new settler near capital",
+				description:"Training of settlers increased +50% in capital, recieve a new settler near capital",
 				row:1,
 				column:1
 			},

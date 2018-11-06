@@ -51,6 +51,10 @@ class Building : NamedStats(), IConstruction{
         val infoList= mutableListOf<String>()
         val str = getStats(hashSetOf()).toString()
         if(str.isNotEmpty()) infoList += str
+        if(percentStatBonus!=null){
+            for(stat in percentStatBonus!!.toHashMap())
+                if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key}"
+        }
         val improvedResources = GameBasics.TileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){
             // buildings that improve resources
