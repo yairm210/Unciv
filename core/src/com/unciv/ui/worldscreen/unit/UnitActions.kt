@@ -130,12 +130,16 @@ class UnitActions {
             }
         }
 
-        if(unit.name == "Work Boats" &&  tile.improvement==null && tile.resource!=null
-                && tile.isWater())
-            actionList += UnitAction("Create Fishing Boats",{
-                tile.improvement = "Fishing Boats"
-                unit.destroy()
-            }, unit.currentMovement != 0f)
+        for(improvement in listOf("Fishing Boats","Oil well")) {
+            if (unit.name == "Work Boats" && tile.resource != null
+                    && tile.getTileResource().improvement == improvement
+                    && unit.civInfo.tech.isResearched(GameBasics.TileImprovements[improvement]!!.techRequired!!)
+            )
+                actionList += UnitAction("Create $improvement", {
+                    tile.improvement = improvement
+                    unit.destroy()
+                }, unit.currentMovement != 0f)
+        }
 
         if (unit.name == "Great Scientist" && !unit.isEmbarked()) {
             actionList += UnitAction( "Discover Technology",

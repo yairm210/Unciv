@@ -40,6 +40,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Explore" -> return ImageGetter.getUnitIcon("Scout")
             "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop.png")
             "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
+            "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
             else -> return ImageGetter.getImage("OtherIcons/Star.png")
         }
     }
