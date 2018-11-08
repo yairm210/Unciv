@@ -45,7 +45,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
 
     fun isTradeAcceptable(): Boolean {
-        val sumOfTheirOffers = currentTrade.theirOffers.filter { it.type!= TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
+        val sumOfTheirOffers = currentTrade.theirOffers.asSequence()
+                .filter { it.type!= TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateOffer(it,false) }.sum()
         val sumOfOurOffers = currentTrade.ourOffers.map { evaluateOffer(it,true)}.sum()
         return sumOfOurOffers >= sumOfTheirOffers
@@ -71,7 +72,21 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
             }
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*10
-            TradeType.Strategic_Resource -> return 50 * offer.amount
+            TradeType.Strategic_Resource -> {
+                if(otherCivIsRecieving) {
+                    val resources = ourCivilization.getCivResources()
+                    val stringmap = HashMap<String, Int>()
+                    for (entry in resources) stringmap.put(entry.key.name, entry.value)
+                    if (stringmap.containsKey(offer.name) && stringmap[offer.name]!! >= 2) return 0 // we already have enough.
+                    val canUseForBuildings = ourCivilization.cities
+                            .any { city-> city.cityConstructions.getBuildableBuildings().any { it.requiredResource==offer.name } }
+                    val canUseForUnits = ourCivilization.cities
+                            .any { city-> city.cityConstructions.getConstructableUnits().any { it.requiredResource==offer.name } }
+                    if(!canUseForBuildings && !canUseForUnits) return 0
+                    return  50 * offer.amount
+                }
+                else return 50 * offer.amount
+            }
             TradeType.City -> {
                 val civ = if(otherCivIsRecieving) ourCivilization else otherCivilization
                 val city = civ.cities.first { it.name==offer.name }
