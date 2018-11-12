@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.ui.utils.tr
+import kotlin.math.min
 import kotlin.math.sqrt
 
 class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo){
@@ -64,12 +65,22 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     return value
                 }
                 else{
-                    var value = 50*offer.amount // they'll buy at 50 each only, and that's so they can trade it away
+                    val civsWhoWillTradeUsForTheLux = ourCivilization.diplomacy.values.map { it.civInfo }
+                            .filter { it!= otherCivilization }
+                            .filter { it.getCivResources().keys.none { it.name==offer.name } } //they don't have
+                    val ourResourceNames = ourCivilization.getCivResources().map { it.key.name }
+                    val civsWithLuxToTrade = civsWhoWillTradeUsForTheLux.filter {
+                        it.getCivResources().any {
+                            it.value > 1 && it.key.resourceType == ResourceType.Luxury //they have a lux we don't and will be willing to trade it
+                                    && !ourResourceNames.contains(it.key.name)
+                        }
+                    }
+
+                    var value = 50*min(offer.amount,civsWithLuxToTrade.size) // they'll buy at 50 each only, and that's so they can trade it away
                     if(!theirAvailableOffers.any { it.name==offer.name })
-                        value+=250 // only if they're lacking will they buy the first one at 300
+                        value+=300 // only if they're lacking will they buy the first one at 300
                     return value
                 }
-
             }
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*10
             TradeType.Strategic_Resource -> {
