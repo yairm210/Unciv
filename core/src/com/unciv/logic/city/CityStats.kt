@@ -139,18 +139,20 @@ class CityStats {
         return newHappinessList
     }
 
+    fun getStatsOfSpecialist(stat:Stat, policies: HashSet<String>): Stats {
+        val stats = Stats()
+        if(stat==Stat.Culture||stat==Stat.Science)  stats.add(stat,3f)
+        else stats.add(stat,2f) // science and gold specialists
+
+        if (policies.contains("Commerce Complete")) stats.gold += 1
+        if (policies.contains("Secularism")) stats.science += 2
+        return stats
+    }
+
     private fun getStatsFromSpecialists(specialists: Stats, policies: HashSet<String>): Stats {
         val stats = Stats()
-
-        // Specialists
-        stats.culture += specialists.culture * 3
-        stats.production += specialists.production * 2
-        stats.science += specialists.science * 3
-        stats.gold += specialists.gold * 2
-        val numOfSpecialists = cityInfo.population.getNumberOfSpecialists()
-        if (policies.contains("Commerce Complete")) stats.gold += numOfSpecialists.toFloat()
-        if (policies.contains("Secularism")) stats.science += (numOfSpecialists * 2).toFloat()
-
+        for(entry in specialists.toHashMap().filter { it.value>0 })
+            stats.add(getStatsOfSpecialist(entry.key,policies)*entry.value)
         return stats
     }
 
@@ -242,7 +244,7 @@ class CityStats {
         newBaseStatList["Population"] = Stats().add(Stat.Science, cityInfo.population.population.toFloat())
                 .add(Stat.Production, cityInfo.population.getFreePopulation().toFloat())
         newBaseStatList["Tile yields"] = getStatsFromTiles()
-        newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.getSpecialists(), civInfo.policies.adoptedPolicies)
+        newBaseStatList["Specialists"] = getStatsFromSpecialists(cityInfo.population.specialists, civInfo.policies.adoptedPolicies)
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)

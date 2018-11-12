@@ -112,7 +112,7 @@ class CityConstructions {
     }
     //endregion
 
-    //region state0changing functions
+    //region state changing functions
     fun addConstruction(constructionToAdd: Int) {
         if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions[currentConstruction] = 0
         inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + constructionToAdd

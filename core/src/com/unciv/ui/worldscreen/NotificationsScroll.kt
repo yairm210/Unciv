@@ -19,7 +19,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
         notificationsTable.clearChildren()
         for (notification in notifications) {
             val label = Label(notification.text.tr(), CameraStageBaseScreen.skin).setFontColor(Color.BLACK)
-                    .setFont(14)
+                    .setFontSize(14)
             val minitable = Table()
 
             minitable.add(ImageGetter.getImage("OtherIcons/Circle.png")

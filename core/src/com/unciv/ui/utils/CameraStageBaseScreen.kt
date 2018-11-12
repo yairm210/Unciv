@@ -175,7 +175,7 @@ fun getFont(size: Int): BitmapFont {
     return font
 }
 
-fun Label.setFont(size:Int): Label {
+fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
     style.font = getFont(size)
     style = style // because we need it to call the SetStyle function. Yuk, I know.

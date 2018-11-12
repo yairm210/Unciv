@@ -174,7 +174,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         if (civInfo.tech.currentTechnology() == null) {
             val buttonPic = Table().apply { background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png").tint(colorFromRGB(7, 46, 43)); defaults().pad(10f) }
-            buttonPic.add(Label("{Pick a tech}!".tr(), skin).setFontColor(Color.WHITE).setFont(22))
+            buttonPic.add(Label("{Pick a tech}!".tr(), skin).setFontColor(Color.WHITE).setFontSize(22))
             techButton.add(buttonPic)
         }
         else {

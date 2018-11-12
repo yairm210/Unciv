@@ -107,7 +107,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getHappinessTable(): Table {
         val happinessTable = Table(skin)
         happinessTable.defaults().pad(5f)
-        happinessTable.add(Label("Happiness".tr(), skin).setFont(24)).colspan(2).row()
+        happinessTable.add(Label("Happiness".tr(), skin).setFontSize(24)).colspan(2).row()
         for (entry in civInfo.getHappinessForNextTurn()) {
             happinessTable.add(entry.key.tr())
             happinessTable.add(entry.value.toString()).row()
@@ -121,7 +121,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getGoldTable(): Table {
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
-        goldTable.add(Label("Gold".tr(), skin).setFont(24)).colspan(2).row()
+        goldTable.add(Label("Gold".tr(), skin).setFontSize(24)).colspan(2).row()
         var total=0f
         for (entry in civInfo.getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
@@ -142,7 +142,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableIcons = Table(skin)
         cityInfoTableIcons.defaults().pad(padding).align(Align.center)
 
-        cityInfoTableIcons.add(Label("Cities".tr(), skin).setFont(24)).colspan(8).align(Align.center).row()
+        cityInfoTableIcons.add(Label("Cities".tr(), skin).setFontSize(24)).colspan(8).align(Align.center).row()
         cityInfoTableIcons.add()
         cityInfoTableIcons.add(ImageGetter.getStatIcon("Population")).size(iconSize)
         cityInfoTableIcons.add(ImageGetter.getStatIcon("Food")).size(iconSize)

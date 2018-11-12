@@ -140,7 +140,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         }
 
         val currentCityLabel = Label(city.name+" ("+city.population.population+")", CameraStageBaseScreen.skin)
-        currentCityLabel.setFont(25)
+        currentCityLabel.setFontSize(25)
         cityPickerTable.add(currentCityLabel)
 
 

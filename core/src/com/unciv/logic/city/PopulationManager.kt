@@ -12,7 +12,9 @@ class PopulationManager {
 
     var population = 1
     var foodStored = 0
-    var buildingsSpecialists = HashMap<String, Stats>()
+
+    val specialists = Stats()
+    //var buildingsSpecialists = HashMap<String, Stats>()
 
     //region pure functions
     fun clone(): PopulationManager {
@@ -22,15 +24,15 @@ class PopulationManager {
         return toReturn
     }
 
-    fun getSpecialists(): Stats {
-        val allSpecialists = Stats()
-        for (stats in buildingsSpecialists.values)
-            allSpecialists.add(stats)
-        return allSpecialists
-    }
+//    fun getSpecialists(): Stats {
+//        val allSpecialists = Stats()
+//        for (stats in buildingsSpecialists.values)
+//            allSpecialists.add(stats)
+//        return allSpecialists
+//    }
 
     fun getNumberOfSpecialists(): Int {
-        val specialists = getSpecialists()
+        //val specialists = getSpecialists()
         return (specialists.science + specialists.production + specialists.culture + specialists.gold).toInt()
     }
 
@@ -93,6 +95,20 @@ class PopulationManager {
                     .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
             cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
         }
+
+        // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
+        val maxSpecialists = getMaxSpecialists().toHashMap()
+        val specialistsHashmap = specialists.toHashMap()
+        for(entry in maxSpecialists)
+            if(specialistsHashmap[entry.key]!!>entry.value)
+                specialists.add(entry.key,specialistsHashmap[entry.key]!!-maxSpecialists[entry.key]!!)
+    }
+
+    fun getMaxSpecialists(): Stats {
+        val maximumSpecialists = Stats()
+        for (building in cityInfo.cityConstructions.getBuiltBuildings().filter { it.specialistSlots!=null })
+            maximumSpecialists.add(building.specialistSlots!!)
+        return maximumSpecialists
     }
 
 }

@@ -124,7 +124,7 @@ class CityInfo {
     fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }
 
     fun getGreatPersonPoints(): Stats {
-        var greatPersonPoints = population.getSpecialists().times(3f)
+        var greatPersonPoints = population.specialists.times(3f)
 
         for (building in cityConstructions.getBuiltBuildings())
             if (building.greatPersonPoints != null)

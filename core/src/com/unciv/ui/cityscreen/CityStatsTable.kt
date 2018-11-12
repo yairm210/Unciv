@@ -24,7 +24,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
 
         val cityStatsHeader = Label("City Stats", CameraStageBaseScreen.skin)
 
-        cityStatsHeader.setFont(15)
+        cityStatsHeader.setFontSize(15)
         add(cityStatsHeader).colspan(2).pad(10f)
         row()
 

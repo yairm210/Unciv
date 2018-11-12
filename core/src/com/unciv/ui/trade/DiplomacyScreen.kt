@@ -41,7 +41,7 @@ class DiplomacyScreen():CameraStageBaseScreen(){
             civTable.defaults().pad(10f)
             val peaceWarStatus = civDiplomacy.diplomaticStatus.toString()
             civTable.add(Label(civ.civName.tr() + " ({$peaceWarStatus})".tr(), skin)
-                    .apply { setFont(22); setFontColor(civ.getNation().getSecondaryColor()) }).row()
+                    .apply { setFontSize(22); setFontColor(civ.getNation().getSecondaryColor()) }).row()
 
             val tradeButton = TextButton("Trade".tr(), skin)
             tradeButton.onClick {

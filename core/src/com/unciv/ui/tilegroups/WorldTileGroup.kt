@@ -154,7 +154,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityConstructions.currentConstruction)
             val label = Label(turnsToConstruction.toString(),CameraStageBaseScreen.skin)
             label.setFontColor(secondaryColor)
-            label.setFont(10)
+            label.setFontSize(10)
             label.pack()
             group.addActor(label)
 

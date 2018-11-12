@@ -1,19 +1,46 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
+import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter.getImage
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFont
+import com.unciv.ui.utils.*
 
+
+class ExpanderTab(private val title:String,skin: Skin):Table(skin){
+    private val toggle = Table(skin) // the show/hide toggler
+    private val tab = Table() // what holds the information to be shown/hidden
+    val innerTable=Table() // the information itself
+
+    init{
+        toggle.defaults().pad(10f)
+        toggle.background(ImageGetter.getBackground(ImageGetter.getBlue()))
+        toggle.add("+ $title").apply { actor.setFontSize(24) }
+        toggle.onClick {
+            toggle.clearChildren()
+            if(tab.isVisible) {
+                toggle.add("- $title").apply { actor.setFontSize(24) }
+                tab.clear()
+            }
+            else {
+                toggle.add("+ $title").apply { actor.setFontSize(24) }
+                tab.add(innerTable)
+            }
+            tab.isVisible=!tab.isVisible
+        }
+        add(toggle).row()
+        tab.add(innerTable)
+        add(tab)
+    }
+}
 
 class BuildingsTable(private val cityScreen: CityScreen) : Table() {
+    init {
+        defaults().pad(10f)
+    }
 
     internal fun update() {
         clear()
@@ -31,69 +58,109 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
             }
         }
 
-        fun createLabel(text:String): Label {
-            val label = Label(text, skin)
-            label.setFont(20)
-            label.color = Color.GREEN
-            return label
-        }
-
         if (!wonders.isEmpty()) {
-
-            add(createLabel("Wonders")).pad(5f).row()
+            val wondersExpander = ExpanderTab("Wonders",skin)
             for (building in wonders)
-                add(Label(building.name, skin)).pad(5f).row()
+                wondersExpander.innerTable.add(Label(building.name, skin)).pad(5f).align(Align.left).row()
+            add(wondersExpander).row()
         }
 
         if (!specialistBuildings.isEmpty()) {
-            add(createLabel("Specialist Buildings")).pad(5f).row()
+            val specialistBuildingsExpander = ExpanderTab("Specialist Buildings",skin)
             for (building in specialistBuildings) {
-                add(Label(building.name, skin)).pad(5f)
-                val specialists = Table()
-                specialists.row().size(20f).pad(5f)
-                if (!cityInfo.population.buildingsSpecialists.containsKey(building.name))
-                    cityInfo.population.buildingsSpecialists[building.name] = Stats()
-                val currentBuildingSpecialists = cityInfo.population.buildingsSpecialists[building.name]!!.toHashMap()
-                for(stat in Stat.values()){
-                    for (i in 1..(currentBuildingSpecialists[stat]!!).toInt()) {
-                        specialists.add(getSpecialistIcon(
-                                "StatIcons/${stat}Specialist.png", building.name,
-                                currentBuildingSpecialists[stat]!! > i, stat))
-                    }
-                }
+                specialistBuildingsExpander.innerTable.add(Label(building.name, skin)).pad(5f)
+                val specialistIcons = Table()
+                specialistIcons.row().size(20f).pad(5f)
+                for(stat in building.specialistSlots!!.toHashMap())
+                    for(i in 0 until stat.value.toInt())
+                        specialistIcons.add(getSpecialistIcon(stat.key)).size(20f)
 
-                add(specialists).row()
+                specialistBuildingsExpander.innerTable.add(specialistIcons).row()
             }
+            add(specialistBuildingsExpander).row()
+
+            // specialist allocation
+            addSpecialistAllocation(skin, specialistBuildings, cityInfo)
         }
 
         if (!others.isEmpty()) {
-            add(createLabel("Buildings")).pad(5f).row()
+            val buildingsExpanderTab = ExpanderTab("Buildings",skin)
             for (building in others)
-                add(Label(building.name, skin)).pad(5f).row()
+                buildingsExpanderTab.innerTable.add(Label(building.name, skin)).pad(5f).row()
+            add(buildingsExpanderTab).row()
         }
         pack()
     }
 
+    private fun addSpecialistAllocation(skin: Skin, specialistBuildings: MutableList<Building>, cityInfo: CityInfo) {
+        val specialistAllocationExpander = ExpanderTab("Specialist allocation", skin)
+        specialistAllocationExpander.innerTable.defaults().pad(5f)
 
-    private fun getSpecialistIcon(imageName: String, building: String, isFilled: Boolean, stat: Stat): Image {
-        val specialist = getImage(imageName)
-        specialist.setSize(50f, 50f)
-        if (!isFilled) specialist.color = Color.GRAY
-        specialist.onClick( {
-            val cityInfo = cityScreen.city
-            when {
-                isFilled -> cityInfo.population.buildingsSpecialists[building]!!.add(stat,-1f) //unassign
-                cityInfo.population.getFreePopulation() == 0 -> return@onClick
-                else -> {
-                    if (!cityInfo.population.buildingsSpecialists.containsKey(building))
-                        cityInfo.population.buildingsSpecialists[building] = Stats()
-                    cityInfo.population.buildingsSpecialists[building]!!.add(stat,1f) //assign!}
+
+        val currentSpecialists = cityInfo.population.specialists.toHashMap()
+        val maximumSpecialists = cityInfo.population.getMaxSpecialists()
+
+        for (entry in maximumSpecialists.toHashMap()) {
+            if (entry.value == 0f) continue
+            val stat = entry.key
+            // these two are conflictingly named compared to above...
+            val assignedSpecialists = currentSpecialists[entry.key]!!.toInt()
+            val maxSpecialists = entry.value.toInt()
+            if (assignedSpecialists > 0) {
+                val unassignButton = TextButton("-", skin)
+                unassignButton.label.setFontSize(24)
+                unassignButton.onClick {
+                    cityInfo.population.specialists.add(entry.key, -1f)
+                    cityInfo.cityStats.update()
+                    cityScreen.update()
                 }
-            }
+                specialistAllocationExpander.innerTable.add(unassignButton)
+            } else specialistAllocationExpander.innerTable.add()
 
-            cityInfo.cityStats.update()
-            cityScreen.update()
-        })
+            val specialistTable = Table()
+            for (i in 1..maxSpecialists) {
+                val icon = getSpecialistIcon(stat, i <= assignedSpecialists)
+                specialistTable.add(icon).size(30f)
+            }
+            specialistAllocationExpander.innerTable.add(specialistTable)
+            if (assignedSpecialists < maxSpecialists) {
+                val assignButton = TextButton("+", skin)
+                assignButton.label.setFontSize(24)
+                assignButton.onClick {
+                    cityInfo.population.specialists.add(entry.key, +1f)
+                    cityInfo.cityStats.update()
+                    cityScreen.update()
+                }
+                if (cityInfo.population.getFreePopulation() == 0) assignButton.disable()
+                specialistAllocationExpander.innerTable.add(assignButton)
+            } else specialistAllocationExpander.innerTable.add()
+
+            specialistAllocationExpander.innerTable.row()
+
+            val specialistStatTable = Table().apply { defaults().pad(5f) }
+            val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(stat, cityInfo.civInfo.policies.adoptedPolicies).toHashMap()
+            for (entry in specialistStats) {
+                if (entry.value == 0f) continue
+                specialistStatTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
+                specialistStatTable.add(Label(entry.value.toInt().toString(), skin)).padRight(10f)
+            }
+            specialistAllocationExpander.innerTable.add()
+            specialistAllocationExpander.innerTable.add(specialistStatTable).row()
+        }
+        add(specialistAllocationExpander).row()
+    }
+
+
+    private fun getSpecialistIcon(stat: Stat, isFilled: Boolean =true): Image {
+        val specialist = ImageGetter.getImage("StatIcons/Specialist")
+        if (!isFilled) specialist.color = Color.GRAY
+        else specialist.color=when(stat){
+            Stat.Production -> Color.BROWN
+            Stat.Gold -> Color.GOLD
+            Stat.Science -> Color.BLUE
+            Stat.Culture -> Color.PURPLE
+            else -> Color.WHITE
+        }
 
         return specialist
     }
