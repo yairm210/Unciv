@@ -48,11 +48,11 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     fun getDescription(forPickerScreen:Boolean): String {
         val sb = StringBuilder()
         if(baseDescription!=null) sb.appendln(baseDescription!!.tr())
+        if(requiredResource!=null) sb.appendln("Requires {$requiredResource}".tr())
         if(!forPickerScreen) {
             if(uniqueTo!=null) sb.appendln("Unique to $uniqueTo, replaces $replaces")
             if (unbuildable) sb.appendln("Unbuildable".tr())
             else sb.appendln("Cost: $cost")
-            if(requiredResource!=null) sb.appendln("Required resource: {$requiredResource}".tr())
             if(requiredTech!=null) sb.appendln("Required tech: {$requiredTech}".tr())
             if(upgradesTo!=null) sb.appendln("Upgrades to $upgradesTo")
             if(obsoleteTech!=null) sb.appendln("Obsolete with $obsoleteTech")
@@ -64,10 +64,8 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
             sb.appendln()
         }
 
-        if(uniques!=null){
-            for(unique in uniques!!) {
-                sb.appendln(unique.tr())
-            }
+        for(unique in uniques) {
+            sb.appendln(unique.tr())
         }
         sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
