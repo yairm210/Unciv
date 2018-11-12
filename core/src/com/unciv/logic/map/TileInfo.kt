@@ -139,9 +139,14 @@ open class TileInfo {
             if(resource.name=="Oil" && city!=null
                     && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
-            if(city!=null && isWater()
-                    && city.getBuildingUniques().contains("+1 production from all sea resources worked by the city"))
-                stats.production+=1
+            if(city!=null && isWater()){
+                if(city.getBuildingUniques().contains("+1 production from all sea resources worked by the city"))
+                    stats.production+=1
+                if(city.getBuildingUniques().contains("+1 production and gold from all sea resources worked by the city")){
+                    stats.production+=1
+                    stats.gold+=1
+                }
+            }
         }
 
         val improvement = getTileImprovement()

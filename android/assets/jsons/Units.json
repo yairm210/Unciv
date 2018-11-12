@@ -245,6 +245,8 @@
 		rangedStrength:17
 		cost: 100,
 		requiredTech:"Compass",
+		obsoleteTech:"Navigation",
+		upgradesTo:"Frigate",
 		uniques:["Cannot enter ocean tiles"]
 		hurryCostModifier:20
 	},
@@ -302,6 +304,17 @@
 		strength:28,
 		cost: 150,
 		requiredTech:"Gunpowder",
+		hurryCostModifier:20
+	},
+	{
+		name:"Frigate",
+		unitType:"WaterRanged",
+		movement:5,
+		strength:25,
+		rangedStrength:28,
+		cost: 185,
+		requiredResource:"Iron",
+		requiredTech:"Navigation",
 		hurryCostModifier:20
 	},
 	{

@@ -45,6 +45,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
 * [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski for Musketman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
+* [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 
 ### Industrial
@@ -52,6 +53,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
+* [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
 ### Great People
 
@@ -162,6 +164,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Opera House](https://thenounproject.com/term/opera-house/446672/) By Xinh Studio
 * [Chinese traditional tower](https://thenounproject.com/term/chinese-traditional-tower/1808410/) By 1516 for Porcelain Tower
 * [Bank](https://thenounproject.com/term/bank/1882194/) By projecthayat
+* [Harbor](https://thenounproject.com/term/harbor/225583/) By Rflor for Seaport
 
 ### Industrial Era
 
@@ -308,6 +311,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Printing Press](https://thenounproject.com/term/printing-press/11880/) By Mike Wirth
 * [Flintlock](https://thenounproject.com/term/flintlock/1122659/) By Madison Apple for Gunpowder 
 * [Fossil](https://thenounproject.com/term/fossil/168650/) By Raf Verbraeken for Archaeology
+* [Sextant](https://thenounproject.com/term/sextant/313438/) By lastspark for Navigation
 * [Architecture](https://thenounproject.com/term/architecture/795297/) By Andrew Doane
 * [Money Growth](https://thenounproject.com/search/?q=economic%20model&i=136159) By DesignNex for Economics 
 * [Metal Block](https://thenounproject.com/term/metal-bock/1518464/) By Creaticca Creative Agency for Metallurgy

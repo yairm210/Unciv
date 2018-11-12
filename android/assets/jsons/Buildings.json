@@ -192,7 +192,8 @@
 		specialistSlots:{gold:1},
 		hurryCostModifier:25,
 		percentStatBonus:{gold:25},
-		uniques:["Provides 1 extra copy of each improved luxury resource near this City","+2 Gold for each source of Oil and oasis"],
+		uniques:["Provides 1 extra copy of each improved luxury resource near this City",
+			"+2 Gold for each source of Oil and oasis"],
 		requiredTech:"Currency"
 	},
 	{
@@ -416,6 +417,14 @@
 		isWonder:true,
 		uniques:["Free Great Artist Appears"],
 		requiredTech:"Archaeology"
+	},
+	{
+		name:"Seaport",
+		hurryCostModifier:25,
+		maintenance:2,
+		uniques:["+1 production and gold from all sea resources worked by the city",
+			"Can only be built in coastal cities", "+15% production of naval units"]
+		requiredTech:"Navigation"
 	},
 	{
 		name:"Taj Mahal",

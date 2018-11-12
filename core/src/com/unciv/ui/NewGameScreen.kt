@@ -26,7 +26,7 @@ class NewGameScreen: PickerScreen(){
         var nation="Babylon"
         var mapRadius=20
         var numberOfEnemies=3
-        var mapType=MapType.LandOnly
+        var mapType=MapType.WithWater
     }
 
     val newGameParameters=NewGameParameters()
@@ -144,13 +144,6 @@ class NewGameScreen: PickerScreen(){
         val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, newGameParameters.difficulty, skin)
         newGameOptionsTable.add(difficultySelectBox).pad(10f).row()
 
-
-        val checkBox = CheckBox("Add water tiles \n(EXPERIMENTAL/WIP)",skin)
-        checkBox.onClick {
-            if(checkBox.isChecked) newGameParameters.mapType = NewGameParameters.MapType.WithWater
-            else newGameParameters.mapType = NewGameParameters.MapType.LandOnly
-        }
-        newGameOptionsTable.add(checkBox).row()
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())

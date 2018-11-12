@@ -222,7 +222,7 @@
 				name:"Astronomy",
 				row:2,
 				baseDescription:"Increases embarked movement +1",
-				prerequisites:[/*"Compass",*/"Education"]
+				prerequisites:["Compass","Education"]
 			},
 			{
 				name:"Acoustics",
@@ -253,12 +253,11 @@
 		buildingCost:300,
 		wonderCost:750,
 		techs:[
-			/*{
+			{
 				name:"Navigation",
 				row:2,
-				prerequisites:["Astronomy"],
-				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of Frigates and Seaports"
-			},*/
+				prerequisites:["Astronomy"]
+			},
 			{
 				name:"Architecture",
 				row:4,
@@ -291,7 +290,7 @@
 			{
 				name:"Archaeology",
 				row:2,
-				prerequisites:["Astronomy"]
+				prerequisites:["Navigation"]
 			},
 			{
 				name:"Scientific Theory",
