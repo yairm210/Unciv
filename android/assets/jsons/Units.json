@@ -350,6 +350,17 @@
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility","Indirect Fire"],
 		hurryCostModifier:20
 	},
+	{
+		name:"Ironclad",
+		unitType:"WaterMelee",
+		movement:3,
+		strength:45,
+		cost: 250,
+		requiredTech:"Steam Power",
+		requiredResource:"Coal",
+		uniques:["Bonus vs City 33%","Double movement in coast"],
+		hurryCostModifier:20
+	},
 	
 	/* Great people */
 	

@@ -180,6 +180,8 @@ class CivilizationInfo {
         // we don't modify the iterator as we're using it
         for (city in cities) civResources.add(city.getCityResources())
         for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
+        for(resource in getCivUnits().map { it.baseUnit.requiredResource }.filterNotNull().map { GameBasics.TileResources[it] })
+            civResources.add(resource,-1)
         return civResources
     }
 
