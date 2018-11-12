@@ -105,7 +105,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
     internal fun update(civInfo: CivilizationInfo) {
         val revealedStrategicResources = GameBasics.TileResources.values
-                .filter { it.resourceType == ResourceType.Strategic } // &&  }
+                .filter { it.resourceType == ResourceType.Strategic }
         val civResources = civInfo.getCivResources()
         for (resource in revealedStrategicResources) {
             val isRevealed = civInfo.tech.isResearched(resource.revealedBy!!)

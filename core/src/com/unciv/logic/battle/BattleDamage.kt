@@ -47,6 +47,11 @@ class BattleDamage{
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
                             .any { it.civInfo==combatant.getCivilization() && !it.baseUnit.unitType.isCivilian()})
                 modifiers["Discipline"] = 0.15f
+
+            val requiredResource = combatant.unit.baseUnit.requiredResource
+            if(requiredResource!=null && !combatant.getCivilization().hasResource(requiredResource)){
+                modifiers["Missing resource"]=-0.25f
+            }
         }
 
         if (combatant.getCivilization().policies.isAdopted("Honor") && enemy.getCivilization().isBarbarianCivilization())

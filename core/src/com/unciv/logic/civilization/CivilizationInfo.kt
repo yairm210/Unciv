@@ -174,16 +174,29 @@ class CivilizationInfo {
         return statMap
     }
 
+    /**
+     * Returns a counter of non-zero resources that the civ has
+     */
     fun getCivResources(): Counter<TileResource> {
         val civResources = Counter<TileResource>()
-        // ToLists are so that when we update happiness on a different thread and we call this function,
-        // we don't modify the iterator as we're using it
         for (city in cities) civResources.add(city.getCityResources())
         for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
         for(resource in getCivUnits().map { it.baseUnit.requiredResource }.filterNotNull().map { GameBasics.TileResources[it] })
             civResources.add(resource,-1)
         return civResources
     }
+
+    /**
+     * Returns a dictionary of ALL resource names, and the amount that the civ has of each
+     */
+    fun getCivResourcesByName():HashMap<String,Int>{
+        val hashMap = HashMap<String,Int>()
+        for(resource in GameBasics.TileResources.keys) hashMap[resource]=0
+        for(entry in getCivResources()) hashMap[entry.key.name] = entry.value
+        return hashMap
+    }
+
+    fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
     fun getBuildingUniques(): List<String> = cities.flatMap { it.getBuildingUniques()}.distinct()
 

@@ -70,7 +70,7 @@ class CityStats {
 
         if (construction is Building
                 && construction.isWonder
-                && cityInfo.civInfo.getCivResources().containsKey(GameBasics.TileResources["Marble"]))
+                && cityInfo.civInfo.hasResource("Marble"))
             stats.production += 15f
 
         return stats

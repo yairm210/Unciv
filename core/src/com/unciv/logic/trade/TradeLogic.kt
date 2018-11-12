@@ -67,7 +67,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 else{
                     val civsWhoWillTradeUsForTheLux = ourCivilization.diplomacy.values.map { it.civInfo }
                             .filter { it!= otherCivilization }
-                            .filter { it.getCivResources().keys.none { it.name==offer.name } } //they don't have
+                            .filter { !it.hasResource(offer.name) } //they don't have
                     val ourResourceNames = ourCivilization.getCivResources().map { it.key.name }
                     val civsWithLuxToTrade = civsWhoWillTradeUsForTheLux.filter {
                         it.getCivResources().any {
@@ -85,10 +85,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*10
             TradeType.Strategic_Resource -> {
                 if(otherCivIsRecieving) {
-                    val resources = ourCivilization.getCivResources()
-                    val stringmap = HashMap<String, Int>()
-                    for (entry in resources) stringmap.put(entry.key.name, entry.value)
-                    if (stringmap.containsKey(offer.name) && stringmap[offer.name]!! >= 2) return 0 // we already have enough.
+                    val resources = ourCivilization.getCivResourcesByName()
+                    if (resources[offer.name]!! >= 2) return 0 // we already have enough.
                     val canUseForBuildings = ourCivilization.cities
                             .any { city-> city.cityConstructions.getBuildableBuildings().any { it.requiredResource==offer.name } }
                     val canUseForUnits = ourCivilization.cities

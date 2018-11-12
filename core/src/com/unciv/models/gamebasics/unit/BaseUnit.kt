@@ -94,7 +94,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
         if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
-        if (requiredResource!=null && !civInfo.getCivResources().keys.any { it.name == requiredResource }) return false
+        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return false
         return true
     }
 
