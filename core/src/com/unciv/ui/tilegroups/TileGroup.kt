@@ -21,8 +21,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var terrainFeatureImage: Image? = null
     protected var cityImage: Image? = null
 
-    protected var resourceImage: Actor? = null
-    protected var improvementImage: Actor? = null
+    var resourceImage: Actor? = null
+    var improvementImage: Actor? = null
     var populationImage: Image? = null
     private val roadImages = HashMap<TileInfo, RoadImage>()
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images

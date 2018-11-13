@@ -170,6 +170,16 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     tileGroups[tile]!!.showCrosshair()
                 }
             }
+
+            val fadeout = if(unit.baseUnit.unitType.isCivilian()) 1f
+                else 0.5f
+
+            for(tile in tileGroups.values){
+                if(tile.populationImage!=null) tile.populationImage!!.color.a=fadeout
+                if(tile.improvementImage!=null) tile.improvementImage!!.color.a=fadeout
+                if(tile.resourceImage!=null) tile.resourceImage!!.color.a=fadeout
+            }
+
         }
         else if(overlayActor!=null){
             overlayActor!!.remove()
