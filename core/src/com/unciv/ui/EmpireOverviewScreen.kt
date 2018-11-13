@@ -40,7 +40,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         setStatsInfoButton.onClick {
             centerTable.clear()
             centerTable.add(getHappinessTable())
-            centerTable.add(getGoldTable())
+            centerTable.add(getGoldTable()).row()
+            centerTable.add(getGreatPeopleTable())
             centerTable.pack()
             centerTable.center(stage)
         }
@@ -134,6 +135,32 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         goldTable.pack()
         return goldTable
     }
+
+
+    private fun getGreatPeopleTable(): Table {
+        val greatPeopleTable = Table(skin)
+
+        val greatPersonPoints = civInfo.greatPeople.greatPersonPoints.toHashMap()
+        val greatPersonPointsPerTurn = civInfo.getGreatPersonPointsForNextTurn().toHashMap()
+        val pointsToGreatPerson = civInfo.greatPeople.pointsForNextGreatPerson
+
+        greatPeopleTable.defaults().pad(5f)
+        greatPeopleTable.add(Label("Great person points".tr(), skin).setFontSize(24)).colspan(3).row()
+        greatPeopleTable.add()
+        greatPeopleTable.add("Current points")
+        greatPeopleTable.add("Points per turn").row()
+
+        val mapping = civInfo.greatPeople.statToGreatPersonMapping
+        for(entry in mapping){
+            greatPeopleTable.add(entry.value)
+            greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
+            greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
+        }
+        greatPeopleTable.pack()
+        return greatPeopleTable
+    }
+
+
 
     private fun getCityInfoTable(): Table {
         val iconSize = 20f//if you set this too low, there is a chance that the tables will be misaligned

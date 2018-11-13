@@ -100,8 +100,8 @@ class PopulationManager {
         val maxSpecialists = getMaxSpecialists().toHashMap()
         val specialistsHashmap = specialists.toHashMap()
         for(entry in maxSpecialists)
-            if(specialistsHashmap[entry.key]!!>entry.value)
-                specialists.add(entry.key,specialistsHashmap[entry.key]!!-maxSpecialists[entry.key]!!)
+            if(specialistsHashmap[entry.key]!! > entry.value)
+                specialists.add(entry.key,specialistsHashmap[entry.key]!! - maxSpecialists[entry.key]!!)
     }
 
     fun getMaxSpecialists(): Stats {

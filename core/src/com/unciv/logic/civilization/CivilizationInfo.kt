@@ -296,11 +296,12 @@ class CivilizationInfo {
 
         gold += nextTurnStats.gold.toInt()
 
-        if (cities.size > 0) tech.nextTurn(nextTurnStats.science.toInt())
+        if (cities.isNotEmpty()) tech.nextTurn(nextTurnStats.science.toInt())
+
+        greatPeople.addGreatPersonPoints(getGreatPersonPointsForNextTurn())
 
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
-            greatPeople.addGreatPersonPoints(city.getGreatPersonPoints())
         }
 
         val greatPerson = greatPeople.getNewGreatPerson()
@@ -311,6 +312,12 @@ class CivilizationInfo {
         goldenAges.endTurn(happiness)
         getCivUnits().forEach { it.endTurn() }
         diplomacy.values.forEach{it.nextTurn()}
+    }
+
+    fun getGreatPersonPointsForNextTurn(): Stats {
+        val stats = Stats()
+        for (city in cities) stats.add(city.getGreatPersonPoints())
+        return stats
     }
 
     fun startTurn(){
