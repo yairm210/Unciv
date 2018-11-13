@@ -39,7 +39,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     }
 
 
-    override fun update(isViewable: Boolean) {
+    fun update(isViewable: Boolean) {
         val city = tileInfo.getCity()
 
         removePopulationIcon()
@@ -51,7 +51,8 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 || UnCivGame.Current.viewEntireMapForDebug)
             updateCityButton(city, isViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
 
-        super.update(isViewable || UnCivGame.Current.viewEntireMapForDebug)
+        super.update(isViewable || UnCivGame.Current.viewEntireMapForDebug,
+                UnCivGame.Current.settings.showResourcesAndImprovements)
 
         yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
         if(yieldGroup.isVisible)

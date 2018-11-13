@@ -107,7 +107,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    open fun update(isViewable: Boolean) {
+    open fun update(isViewable: Boolean, showResourcesAndImprovements:Boolean) {
         hideCircle()
         if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
                 && !UnCivGame.Current.viewEntireMapForDebug) {
@@ -119,8 +119,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         updateCityImage()
         updateTileColor(isViewable)
 
-        updateResourceImage(isViewable)
-        updateImprovementImage(isViewable)
+        updateResourceImage(isViewable,showResourcesAndImprovements)
+        updateImprovementImage(isViewable,showResourcesAndImprovements)
 
 
         civilianUnitImage = newUnitImage(tileInfo.civilianUnit, civilianUnitImage, isViewable, -20f)
@@ -272,13 +272,13 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
     }
 
-    private fun updateImprovementImage(viewable: Boolean) {
+    private fun updateImprovementImage(viewable: Boolean, showResourcesAndImprovements: Boolean) {
         if (improvementImage != null) {
             improvementImage!!.remove()
             improvementImage = null
         }
 
-        if (tileInfo.improvement != null && UnCivGame.Current.settings.showResourcesAndImprovements) {
+        if (tileInfo.improvement != null && showResourcesAndImprovements) {
             improvementImage = ImageGetter.getImprovementIcon(tileInfo.improvement!!)
             addActor(improvementImage)
             improvementImage!!.run {
@@ -293,8 +293,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
     }
 
-    private fun updateResourceImage(viewable: Boolean) {
-        val shouldDisplayResource = UnCivGame.Current.settings.showResourcesAndImprovements
+    private fun updateResourceImage(viewable: Boolean, showResourcesAndImprovements: Boolean) {
+        val shouldDisplayResource = showResourcesAndImprovements
                 && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())
 
         if (resourceImage != null && !shouldDisplayResource) {

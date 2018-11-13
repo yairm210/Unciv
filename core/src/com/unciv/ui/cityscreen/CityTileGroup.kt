@@ -20,7 +20,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
     }
 
     fun update() {
-        super.update(true)
+        super.update(true,true)
 
         updatePopulationImage()
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
