@@ -380,7 +380,7 @@
 	
 
 	"Victory status":{
-		Italian:"Stato di vittoria"
+		Italian:"Condizioni vittoria"
 		Russian:"Статус победы"
 		French:"Statut de victoire"
 		Romanian:"Statutul victoriei"
@@ -400,7 +400,7 @@
 	}
 
 	"Display options":{
-		Italian:"Opzioni display"
+		Italian:"Opzioni"
 		Russian:"Параметры экрана"
 		French:"Options d'affichage"
 		Romanian:"Opțiuni ecran"
@@ -766,7 +766,7 @@
 	}
 
 	"[construction] has been built in [cityName]":{
-		Italian:"[construction] è stato/a costruito/a in [cityName]"
+		Italian:"[cityName] ha costruito [construction]"
 		Russian:"[construction] была построена в [cityName]"
 		French:"[construction] a été construit dans [cityName]"
 		Romanian:"[construction] a fost construit in [cityName]"
@@ -806,7 +806,7 @@
 	}
 	
 	"An enemy [unit] has attacked [cityname]":{
-		Italian:"Un [unit] nemico ha attaccato [cityname]"
+		Italian:"[unit], una nostra unità, ha attaccato [cityname]"
 		Russian:"Вражеский [unit] атаковал [cityname]"
 		French:"Un(e) [unit] ennemi(e) a attaqué [cityname]" // Gender sensitive
 		Romanian:"Un dusman [unit] a atacat [cityname]"
@@ -816,7 +816,7 @@
 	}
 	
 	"An enemy [unit] has attacked our [ourUnit]":{
-		Italian:"Un [unit] nemico ha attaccato [ourUnit]"
+		Italian:"[unit] dei nostri nemici ha attaccato [ourUnit]"
 		Russian:"Вражеский [unit] атаковал нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a attaqué [ourUnit]" // Gender sensitive
 		Romanian:"Un dusman [unit] a atacat [ourUnit]"
@@ -825,7 +825,7 @@
 		Spanish:"Un [unit] enemigo ha atacado nuestro [ourUnit]"
 	}
 	"An enemy [unit] has captured [cityname]":{
-		Italian:"Un [unit] nemico ha catturato [cityname]"
+		Italian:"[unit] dei nostri nemici ha catturato [cityname]"
 		Russian:"Вражеский [unit] захватил [cityname]"
 		French:"Un(e) [unit] ennemi(e) a capturé [cityname]" // Gender sensitive
 		Romanian:"Un dusman [unit] a capturat [cityname]"
@@ -835,7 +835,7 @@
 	}
 	
 	"An enemy [unit] has captured our [ourUnit]":{
-		Italian:"Un [unit] nemico ha catturato [ourUnit]"
+		Italian:"[unit] dei nostri nemici ha catturato [ourUnit]"
 		Russian:"Вражеский [unit] захватил нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a capturé [ourUnit]" // Gender sensitive
 		Romanian:"Un dusman [unit] a capturat [ourUnit]"
@@ -845,7 +845,7 @@
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
-		Italian:"Un [unit] nemico ha distrutto [ourUnit]"
+		Italian:"[unit] dei nostri nemici ha distrutto [ourUnit]"
 		Russian:"Вражеский [unit] уничтожил нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a détruit [ourUnit]" // Gender sensitive
 		Romanian:"Un dusman [unit] a distrus [ourUnit]"
@@ -855,7 +855,7 @@
 	}
 	
 	"An enemy [unit] was destroyed while attacking [cityname]":{
-		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava [cityname]"
+		Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava [cityname]"
 		Russian:"Вражеский [unit] был уничтожен при атаке [cityname]"
 		French:"Un(e) [unit] ennemi(e) a été détruit(e) en attaquant [cityname]" // Gender sensitive
 		Romanian:"Un inamic [unit] a fost distrus în timp ce ataca [cityname]"
@@ -865,7 +865,7 @@
 	}
 	
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
-		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava il nostro [ourUnit]"
+		Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava il nostro [ourUnit]"
 		Russian:"Вражеский [unit] был уничтожен, атакуя нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a été détruit(e) en attaquant [ourUnit]" // Gender sensitive
 		Romanian:"Un inamic [unit] a fost distrus în timp ce atacă [ourUnit]"
@@ -875,7 +875,7 @@
 	}
 	
 	"An enemy [unit] was spotted near our territory":{
-		Italian:"Un'unità nemica [unit] avvistato vicino al nostro territorio"
+		Italian:"Abbiamo avvistato un'unità nemica [unit] vicino al nostro territorio"
 		Russian:"Вражеский [unit] был замечен у нашей территории"
 		French:"Un(e) [unit] ennemi(e) a été repéré(e) près de notre territoire" // Gender sensitive
 		Romanian:"Un inamic [unit] reperat în apropierea teritoriului nostru"
@@ -885,7 +885,7 @@
 	}
 	
 	"An enemy [unit] was spotted in our territory":{
-		Italian:"Un'unità nemica [unit] avvistato nel nostro territorio"
+		Italian:"Abbiamo avvistato un'unità nemica [unit] nel nostro territorio"
 		Russian:"Вражеский [unit] был замечен на нашей территории"
 		French:"Un(e) [unit] ennemi(e) a été repéré(e) sur notre territoire" // Gender sensitive
 		Romanian:"Un inamic [unit] reperat pe teritoriul nostru"
@@ -2524,8 +2524,12 @@
 	"Connects trade routes over water":{
 		Italian:"Consente le rotte commerciali marittime"
 	}
-	"+1 production and gold from all sea resources worked by the city":{}
-	"+15% production of naval units":{}
+	"+1 production and gold from all sea resources worked by the city":{
+		Italian:"+1 Produzione e Oro da ogni risorsa marittima sfruttata dalla città"
+	}
+	"+15% production of naval units":{
+		Italian:"+15% Produzione per le unità marittime"
+	}
 	
 	// Unit types
 	"Civilian":{
@@ -2720,7 +2724,9 @@
 		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
 		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
 	}
-	"May create improvements on water resources":{}
+	"May create improvements on water resources":{
+		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
+	}
 	
 	// Policy picker screen
 	"You have entered the [newEra] era!":{
@@ -3484,7 +3490,9 @@
 		Romanian:"Luvru"
 		Spanish:"El Louvre"
 	}
-	"Seaport":{}
+	"Seaport":{
+		Italian:"Cantiere navale"
+	}
 	"Public School":{	
 		Italian:"Scuola pubblica"
 		Russian:"Школа"
@@ -3771,7 +3779,9 @@
 	"Musketeer":{
 		Italian:"Moschettiere"
 	}
-	"Frigate":{}
+	"Frigate":{
+		Italian:"Fregata"
+	}
 	"Lancer":{	
 		Italian:"lanciere"
 		Russian:"Улан"
@@ -3802,7 +3812,9 @@
 		Romanian:"Artilerie"
 		Spanish:"Artillería"
 	}
-	"Ironclad":{}
+	"Ironclad":{
+		Italian:"Ironclad"
+	}
 	
 	// Great units
 	"Great Artist":{	
