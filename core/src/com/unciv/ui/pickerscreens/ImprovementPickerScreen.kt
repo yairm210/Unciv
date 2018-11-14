@@ -29,7 +29,10 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
         val regularImprovements = VerticalGroup()
         regularImprovements.space(10f)
         for (improvement in GameBasics.TileImprovements.values) {
-            if (!tileInfo.canBuildImprovement(improvement, civInfo) || improvement.name == tileInfo.improvement) continue
+            if (!tileInfo.canBuildImprovement(improvement, civInfo)) continue
+            if(improvement.name == tileInfo.improvement) continue
+            if(improvement.name==tileInfo.improvementInProgress) continue
+            
             val improvementButton = Button(skin)
 
             if(improvement.name.startsWith("Remove"))

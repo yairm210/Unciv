@@ -130,7 +130,7 @@
 		name:"Ballista",
 		unitType:"Siege",
 		uniqueTo:"Rome",
-		replaces:"Horseman",
+		replaces:"Catapult",
 		movement:2,
 		strength:8,
 		rangedStrength:10,
