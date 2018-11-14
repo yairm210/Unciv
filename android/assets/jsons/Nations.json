@@ -83,7 +83,7 @@
 	},
 	{
 		name:"Barbarians",
-		mainColor:[200,200,200],
-		secondaryColor:[0,0,0]
+		mainColor:[0,0,0],
+		secondaryColor:[182,0,0]
 	}
 ]
