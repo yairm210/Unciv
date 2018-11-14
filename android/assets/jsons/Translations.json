@@ -101,7 +101,7 @@
 	}
 
 	"Construct improvement":{
-		Italian:"Migliora costruzione"
+		Italian:"Costruisci miglioramento"
 		Russian:"Построить улучшение"
 		French:"Bâtir une amélioration"
 		Romanian:"îmbunătățirea construcției"
@@ -140,7 +140,9 @@
 		Spanish:"Fortificación"
 	}
 	
-	"Sleep":{}
+	"Sleep":{
+		Italian:"Riposa"
+	}
 
 	"Set up":{ // For siege units
 		Italian:"Monta"
@@ -287,7 +289,7 @@
 	}
 	
 	"GOLDEN AGE":{
-		Italian:"ETÀ D'ORO"
+		Italian:"ETÀ DELL'ORO"
 		Russian:"ЗОЛОТОЙ ВЕК"
 		French:"ÂGE D'OR"
 		Romanian:"EPOCA DE AUR"
@@ -300,6 +302,7 @@
 	// Menu table
 	
 	"Civilopedia":{
+		Italian:"Civilopedia"
 		Russian:"Цивилопедия"
 		French:"Civilopédie"
 		Spanish:"Civilopedia"
@@ -590,7 +593,7 @@
 	
 	
 	"Pick [technology] as free tech":{
-		Italian:"Scegli [tecnology] come tecnologia libera"
+		Italian:"Scegli [tecnology] come tecnologia gratuita"
 		Russian:"Выбрать [technology] как бесплатную технологию"
 		French:"Choisir [technology] comme technologie libre"
 		Romanian:"Alegeți [tehnology] ca tehnologie gratuită"
@@ -668,7 +671,7 @@
 	}
 	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
-		Italian:"forniscono"
+		Italian:"fornisce"
 		Russian:"даёт"
 		French:"fournit"
 		Romanian:"Asigura"
@@ -904,7 +907,7 @@
 	}
 	
 	"The civilization of [civName] has been destroyed!":{
-		Italian:"La civiltà di [civName] è stata distrutta!"
+		Italian:"La civiltà [civName] è stata distrutta!"
 		Russian:"Цивилизация [civName] была уничтожена!"
 		French:"La civilisation des [civName] a été détruite!"
 		Romanian:"Civilizația [civName] a fost distrus!"
@@ -922,12 +925,14 @@
 	}
 	
 	"We have encountered [civName]!":{
+		Italian:"Abbiamo incontrato [civName]!"
 		Russian:"Мы встретились с цивилизацией [civName]!"
 		Spanish:"¡Hemos encontrado [civName]!"
 		French:"Nous sommes entrés en contact avec [civName]!"
 	}
 	
 	"Cannot provide upkeep for [unitName] - unit has been disbanded!":{
+		Italian:"Mantenimento troppo alto per [unitName]: l'unità si è sciolta!"
 		Russian:"Невоможно предоставить содержание для [unitName] - юнит распущен!"
 		Spanish:"¡No se puede mantener [unitName] - unidad disuelta!"
 		French:"Le support ne peut être fournit pour [unitName] - l'unité a été dissoute!" 
@@ -1049,7 +1054,9 @@
 		Spanish:"Ataque"
 	}
 	
-	"[percentage] to unit defence":{} // e.g. +25% to unit defence
+	"[percentage] to unit defence":{
+		Italian:"[] difesa dell'unità"
+	} // e.g. +25% to unit defence
 	
 	// Terrains
 	
@@ -1153,7 +1160,7 @@
 	}
 
 	"Flood plains":{ // Possible typo. Changed from "food" to "flood". Need to change all languages
-		Italian:"Pianure alimentari"
+		Italian:"Pianure allagate"
 		Russian:"Пищевые равнины"
 		French:"Plaines inondables"
 		Romanian:"Câmpiile alimentare"
@@ -1223,7 +1230,9 @@
 		Spanish:"Piedra"
 	}
 	
-	"Fish":{}
+	"Fish":{
+		Italian:"Pesce"
+	}
 	
 	// Strategic Resources
 	
@@ -1501,7 +1510,9 @@
 		Dutch:"Steengroeve"
 		Spanish:"Cantera"
 	}
-	"Fishing boats":{}
+	"Fishing boats":{
+		Italian:"Peschereccio"
+	}
 	
 	"Road":{
 		Italian:"Strada"
@@ -1523,14 +1534,17 @@
 	}
 	
 	"Remove Forest":{
+		Italian:"Rimuovi foresta"
 		Russian:"Вырубить лес"
 		Spanish:"Quitar bosque"
 	}
 	"Remove Jungle":{
+		Italian:"Rimuovi giungla"
 		Russian:"Вырубить джунгли"
 		Spanish:"Quitar selva"
 	}
 	"Remove Marsh":{
+		Italian:"Rimuovi palude"
 		Russian:"Осушить болото"
 		Spanish:"Quitar pantano"
 	}
@@ -2203,10 +2217,12 @@
 	}
 	
 	"Improves movement speed on roads":{
+		Italian:"Migliora la velocità sulle strade"
 		Russian:"Ускоряет скорость передвижения по дорогам"
 		Spanish:"Mejora la velocidad de movimiento en carreteras"
 	}
 	"+10% science and production in all cities":{
+		Italian:"+10% Scienza e Produzione in tutte le città"
 		Russian:"+10% науки и производства во всех городах"
 		Spanish:"+10% de ciencia y producción en todas las ciudades"
 	}
@@ -2386,7 +2402,7 @@
 		Spanish:"25% de comida es arrastrada cada vez que nace un nuevo habitante"
 	}
 	"Jungles provide +2 science":{
-		Italian:"+2 scienzada giungle"
+		Italian:"+2 scienza da giungle"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă știință +2"
@@ -2439,7 +2455,9 @@
 		Dutch:"Een gratis geweldige artiest verschijnt"
 		Spanish:"Aparece un Gran Artista gratis"
 	}
-	"Free great scientist appears":{}
+	"Free great scientist appears":{
+		Italian:"Appare un Grande Scienziato"
+	}
 	
 	"Culture cost of adopting new Policies reduced by 10%":{
 		Italian:"-10% costo in cultura per nuove politiche"
@@ -2495,10 +2513,18 @@
 		Dutch:"Ruimteschip onderdeel"
 		Spanish:"Parte de Nave Espacial"
 	}
-	"Can only be built in coastal cities":{}
-	"All military naval units receive +1 movement and +1 sight":{}
-	"+1 production from all sea resources worked by the city":{}
-	"Connects trade routes over water":{}
+	"Can only be built in coastal cities":{
+		Italian:"Disponibile solo nelle città costiere"
+	}
+	"All military naval units receive +1 movement and +1 sight":{
+		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
+	}
+	"+1 production from all sea resources worked by the city":{
+		Italian:"+1 Produzione per ogni risorsa marittima sfruttata"
+	}
+	"Connects trade routes over water":{
+		Italian:"Consente le rotte commerciali marittime"
+	}
 	
 	// Unit types
 	"Civilian":{
@@ -2791,16 +2817,19 @@
 		Spanish:"Aceptar"
 	}
 	"There's nothing on the table":{
+		Italian:"Non c'è niente da trattare"
 		Russian:"Вы ничего не предложили" //Don't know how to properly translate this one, but i think this will do okay
 		Spanish:"No hay nada sobre la mesa"
 	}
 
 	
 	"Peace treaty":{
+		Italian:"Trattato di pace"
 		Russian:"Мирный договор"
 		Spanish:"Tratado de paz"
 	}
 	"Gold per turn":{
+		Italian:"Oro per turno"
 		Russian:"Золота за ход"
 		Spanish:"Oro por turno"
 	}
@@ -2941,7 +2970,7 @@
 		Spanish:"Civilización"
 	}
 	"World size":{	
-		Italian:"Dimensione del mondo"
+		Italian:"Dimensione della mappa"
 		Russian:"Размер мира"
 		French:"La taille du monde"
 		Romanian:"Mărime universală"
@@ -2971,20 +3000,24 @@
 	}
 	
 	"War":{
+		Italian:"Guerra"
 		Russian:"Война"
 		Spanish:"Guerra"
 	}
 	"Peace":{
+		Italian:"Pace"
 		Russian:"Мир"
 		Spanish:"Paz"
 	}
 	
 	"Declare war":{
+		Italian:"Dichiara guerra"
 		Russian:"Объявить войну"
 		Spanish:"Declarar guerra"
 	}
 	
 	"[civName] has declared war on us!":{
+		Italian:"[civName] ci ha dichiarato guerra!"
 		Russian:"Цивилизация [civName]  объявила нам войну!"
 		Spanish:"¡[civName] te ha declarado la guerra!"
 	}
@@ -3054,7 +3087,7 @@
 		Spanish:"Recursos de lujo"
 	}
 	"Tile yields":{	
-		Italian:"Reso delle celle"
+		Italian:"Resa delle celle"
 		Russian:"Клетка дает"
 		French:"Rendement des carreaux"
 		Romanian:"Randamentele plăcilor"
@@ -3142,7 +3175,7 @@
 		Spanish:"Granero"
 	}
 	"Stone Works":{	
-		Italian:"Opere di pietra"
+		Italian:"Scalpellino"
 		Russian:"Каменные работы"
 		French:"Travaux de pierre"
 		Romanian:"Lucrări de piatră"
@@ -3163,7 +3196,7 @@
 		Spanish:"Biblioteca"
 	}
 	"The Great Library":{	
-		Italian:"La Grande Biblioteca"
+		Italian:"Grande Biblioteca"
 		Russian:"Великая Библиотека"
 		French:"La Grande Bibliothèque"
 		Romanian:"Marea Bibliotecă"
@@ -3177,14 +3210,14 @@
 		Spanish:"Circo"
 	}
 	"Walls":{	
-		Italian:"Muri"
+		Italian:"Mura"
 		Russian:"Стены"
 		French:"Murs"
 		Romanian:"Pereţi"
 		Spanish:"Muros"
 	}
 	"The Pyramids":{	
-		Italian:"Le piramidi"
+		Italian:"Grandi Piramidi"
 		Russian:"Пирамиды"
 		French:"Les pyramides"
 		Romanian:"Piramidele"
@@ -3205,7 +3238,7 @@
 		Spanish:"Templo"
 	}
 	"The Oracle":{	
-		Italian:"L'oracolo"
+		Italian:"Ooracolo"
 		Russian:"Оракул"
 		French:"L'oracle"
 		Romanian:"Oracolul"
@@ -3225,8 +3258,12 @@
 		Romanian:"Chichen Itza"
 		Spanish:"Chichén Itzá"
 	}
-	"Lighthouse":{}
-	"The Great Lighthouse":{}
+	"Lighthouse":{
+		Italian:"Faro"
+	}
+	"The Great Lighthouse":{
+		Italian:"Grande Faro"
+	}
 	"Stable":{	
 		Italian:"Scuderia"
 		Russian:"Конюшня"
@@ -3284,6 +3321,7 @@
 		Spanish:"Santa Sofía"
 	}
 	"Mint":{ 
+		Italian:"Zecca"
 		Russian:"Монетный двор"
 		Spanish:"Casa de la moneda"
 	}
@@ -3315,7 +3353,9 @@
 		Romanian:"Forja"
 		Spanish:"Forja"
 	}
-	"Harbor":{}
+	"Harbor":{
+		Italian:"Porto"
+	}
 	"University":{	
 		Italian:"Università"
 		Russian:"Университет"
@@ -3429,7 +3469,7 @@
 		Spanish:"Museo"
 	}
 	"Hermitage":{	
-		Italian:"Eremo"
+		Italian:"Hermitage"
 		Russian:"Эрмитаж"
 		French:"Ermitage"
 		Romanian:"Schit"
@@ -3533,7 +3573,9 @@
 		Romanian:"Implant Solar"
 		Spanish:"Planta Solar"
 	}
-	"Sydney Opera House":{}
+	"Sydney Opera House":{
+		Italian:"Teatro dell'Opera di Sidney"
+	}
 	"Apollo Program":{	
 		Italian:"Programma Apollo"
 		Russian:"Программа Аполлон"
@@ -3556,15 +3598,19 @@
 		Spanish:"Fábrica de Nave Espacial"
 	}
 	"SS Booster":{	//no translation that I know of
+		Italian:"Propulsore dell'astronave"
 		Spanish:"Potenciador (Nave espacial)"
 	}
 	"SS Cockpit":{	//no translation that I know of
+		Italian:"Abitacolo dell'astronave"
 		Spanish:"Cabina (Nave espacial)"
 	}
 	"SS Engine":{	//no translation that I know of
+		Italian:"Motore dell'astronave"
 		Spanish:"Motor (Nave espacial)"
 	}
 	"SS Stasis Chamber":{	//no translation that I know of
+		Italian:"Camera di stasi dell'astronave"
 		Spanish:"Cámara de estasis (Nave espacial)"
 	}
 	
@@ -3601,16 +3647,21 @@
 		Romanian:"Arcaş"
 		Spanish:"Arquero"
 	}
-	"Bowman":{	
+	"Bowman":{
+		Italian:"Guerriero con arco"	
 		Russian:"Меткий лучник"
 		//IS THIS SAME AS ARCHER IN OTHER LANGUAGES=?? 
 		//In official Russian localization it's accurate archer :)
 		Spanish:"Arquero experto"
 	}
-	"Work Boats":{}
-	"Trireme":{}
+	"Work Boats":{
+		Italian:"Chiatta"
+	}
+	"Trireme":{
+		Italian:"Trireme"
+	}
 	"Chariot Archer":{	
-		Italian:"Arciere in carriola"
+		Italian:"Arciere su carro"
 		Russian:"Лучник на колеснице"
 		French:"Charrette archer"
 		Romanian:"Arcer in caruta"
@@ -3632,7 +3683,9 @@
 		Romanian:"Catapulta"
 		Spanish:"Catapulta"
 	}
-	"Ballista":{}
+	"Ballista":{
+		Italian:"Ballista"
+	}
 	"Swordsman":{	
 		Italian:"Spadaccino"
 		Russian:"Мечник"
@@ -3656,7 +3709,9 @@
 	}
 	
 	// Medieval units
-	"Galleass":{}
+	"Galleass":{
+		Italian:"Galeazza"
+	}
 	"Crossbowman":{	
 		Italian:"Balestriere"
 		Russian:"Арбалетчик"
@@ -3676,6 +3731,7 @@
 		Spanish:"Fundíbulo"
 	}
 	"Longswordsman":{
+		Italian:"Guerriero con spada lunga"
 		Russian:"Мечник (длинный меч)"
 		Spanish:"Espadachín de espada larga"
 	}
@@ -3694,7 +3750,9 @@
 	}
 	
 	// Renaissance units
-	"Caravel":{}
+	"Caravel"{
+		Italian:"Caravella"
+	}
 	"Cannon":{	
 		Italian:"Cannone"
 		Russian:"Пушка"
@@ -3707,7 +3765,9 @@
 		French:"Mousquetaire"
 		Spanish:"Mosquetero"
 	}
-	"Musketeer":{}
+	"Musketeer":{
+		Italian:"Moschettiere"
+	}
 	"Lancer":{	
 		Italian:"lanciere"
 		Russian:"Улан"
@@ -3771,394 +3831,540 @@
 	
 	// Social policies
 	"Requires":{
+		Italian:"Politiche sociali"
 		Russian:"Требует"
 		Spanish:"Requiere"
 	}
 	"Adopt policy":{
+		Italian:"Adotta politica"
 		Russian:"Принять общественный институт"
 		Spanish:"Adoptar política"
 	}
 	"Unlocked at":{
+		Italian:"Si sblocca con"
 		Russian:"Разблокируется в"
 		Spanish:"Desbloqueado en"
 	}
 	
 	// Tradition branch
 	"Tradition":{
+		Italian:"Tradizione"
 		Russian:"Традиция"
 		Spanish:"Tradición"
 	}
 	"+3 culture in capital and increased rate of border expansion":{
+		Italian: +3 Cultura nella capitale, e maggior tasso di espansione dei confini
 		Russian:"+3 культуры в столице и увеличивается скорость расширения границ"
 		Spanish:"+3 cultura en la capital e incremento del ritmo de expansión de fronteras"
 	}
 	"Aristocracy":{
+		Italian:"Aristocrazia"
 		Russian:"Аристократия"
 		Spanish:"Aristocracia"
 	}
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
+		Italian: +15% produzione quando costruisci una Meraviglia, +1 Felicità ogni 10 cittadini in una città
 		Russian:"+15% производства при создании чудес, +1 счастье за каждые 10 жителей в городе"
 		Spanish:"+15% producción al construir maravillas, +1 felicidad cada 10 habitantes in una ciudad"
 	}
 	"Legalism":{
+		Italian:"Legalismo"
 		Russian:"Легализм"
 		Spanish:"Legalismo"
 	}
 	"Free culture building in your first 4 cities":{
+		Italian:"Un edificio culturale gratuito nelle prime 4 città"
 		Russian:"Бесплатное культурное здание в первых 4 городах"
 		Spanish:"Edificio de cultura gratis en las primeras 4 ciudades"
 	}
 	"Oligarchy":{
+		Italian:"Oligarchia"
 		Russian:"Олигархия"
 		Spanish:"Oligarquía"
 	}
 	"Units in cities cost no maintainance":{
+		Italian:"Nessuna manutenzione per le unità nelle città"
 		Russian:"Юниты в городах содержаться бесплатно"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento"
 	}
 	"Landed Elite":{
+		Italian:"Nobiltà terriera"
 		Russian:"Землевладельческая Элита"
 		Spanish:"Élite terrateniente"
 	}
 	"+10% food growth and +2 food in capital":{
+		Italian:"+10% crescita e +2 cibo nella capitale"
 		Russian:"+10% прироста еды и +2 еды в столице"
 		Spanish:"+10% crecimiento de comida y +2 comida en la capital"
 	}
 	"Monarchy":{
+		Italian:"Monarchia"
 		Russian:"Монархия"
 		Spanish:"Monarquía"
 	}
 	"+1 gold and -1 unhappiness for every 2 citizens in capital":{
+		Italian:"+1 oro e -1 Infelicità ogni 2 cittadini nella capitale"
 		Russian:"+1 золто и -1 недовольство за каждых двух жителей в столице"
 		Spanish:"+1 oro y -1 infelicidad cada 2 habitantes en la capital"
 	}
 	"Tradition Complete":{
+		Italian:"Tradizione Completa"
 		Russian:"Традиция Завершена"
 		Spanish:"Tradición Completa"
 	}
 	"+15% growth and +2 food in all cities":{
+		Italian:"+15% crescita e +2 cibo in tutte le città"
 		Russian:"+15% роста и +2 еды во всех городах"
 		Spanish:"+15% crecimiento y +2 comida en todas las ciudades"
 	}
 	
 	// Liberty branch
 	"Liberty":{
+		Italian:"Libertà"
 		Russian:"Воля"
 		Spanish:"Liberación"
 	}
 	"+1 culture in every city":{
+		Italian:"+1 Cultura in ogni città"
 		Russian:"+1 культура во всех городах"
 		Spanish:"+1 cultura en cada ciudad"
 	}
 	"Collective Rule":{
+		Italian:"Governo collettivo"
 		Russian:"Совместное управление"
 		Spanish:"Reglas colectivas"
 	}
 	"Training of settlers increaed +50% in capital, recieve a new settler near capital":{
+		Italian"+50% produzione di coloni nella capitale, più un colono gratuito nella capitale"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Spanish:"Entrenamiento de colonos incrementado +50% en la capital y un colono gratis cerca de la capital"
 	}
 	"Citizenship":{
+		Italian:"Cittadinanza"
 		Russian:"Гражданство"
 		Spanish:"Ciudadanía"
 	}
 	"+25% construction rate of workers, recieve free worker near the capital":{
+		Italian:"+25% produzione su lavoratori, più un lavoratore gratuito vicino alla capitale"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Spanish:"+25% ritmo de construcción de trabajadores y un trabajador gratis cerca de la capital"
 	}
 	"Republic":{
+		Italian:"Repubblica"
 		Russian:"Республика"
 		Spanish:"República"
 	}
 	"+1 construction in every city, +5% construction when constructing buildings":{
+		Italian:"+1 Produzione in ogni città, +5% Produzione quando costruisci una struttura"
 		Russian:"Увеличивает н 1% производство во всех городах и на 5% производство при строительстве зданий"
 		Spanish:"+1 construcción en cada ciudad, +5% al construir edificios"
 	}
 	"Representation":{
+		Italian:"Rappresentazione"
 		Russian:"Представительство"
 		Spanish:"Representación"
 	}
 	"Each city founded increases culture cost of policies 33% less than normal. Starts a golden age.":{
+		Italian:"Il costo in Cultura delle nuove Politiche Sociali aumenta del 33% in meno ad ogni nuova città fondata. Avvia inoltre un'Età dell'Oro."
 		Russian:"Каждый основанный город на 33% меньше увеличивает цену общественных институтов. Начинает в державе золотой век."
 		Spanish:"Cada ciudad fundada incrementa el coste cultural de las políticas 33% menos de lo normal. Comienza una Edad de Oro"
 	}
 	"Meritocracy":{
+		Italian:"Meritocrazia"
 		Russian:"Меритократия"
 		Spanish:"Meritocracia"
 	}
 	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{
+		Italian:"+1 Felicità per ogni città connessa alla capitale, -5% Infelicità dai cittadini"
 		Russian:"Улучшает на 1 настроение каждого города свзяанного со столицей. Уменьшает недовольство от граждан на 5%"
 		Spanish:"+1 felicidad por cada ciudad conectada a la capital, -5% infelicdad de ciudadanos"
 	}
 	"Liberty Complete":{
+		Italian:"Libertà Completa"
 		Russian:"Воля Завершена"
 		Spanish:"Liberación Completa"
 	}
 	"Free Great Person of choice near capital":{
+		Italian:"Un Grande Personaggio gratuito nella capitale"
 		Russian:"Бесплатный Великий Человек по выбору рядом со столицей"
 		Spanish:"Gran Persona gratis a elegir cerca de la capital"
 	}
-	
+
+
+	// Piety branch
+	"Piety":{
+		Italian:"Pietà"
+		Russian:"Набожность"
+		Spanish:"Piedad"
+	}
 	// Honor branch
-	"Honor":{}
-	"+25% bonus vs Barbarians":{}
-	"Warrior Code":{}
-	"+20% production when training melee units":{}
-	"Dicipline":{}
-	"+15% combat strength for melee units which have another military unit in an adjacent tile":{}
-	"Military Tradition":{}
-	"Military units gain 50% more Experience from combat":{}
-	"Military Caste":{}
-	"Each city with a garrison increases happiness by 1 and culture by 2":{}
-	"Professional Army":{}
-	"Gold cost of upgrading military units reduced by 50%":{}
-	"Honor Complete":{}
-	"Gain gold for each unit killed":{}
+	"Honor":{
+		Italian:"Onore"
+	}
+	"+25% bonus vs Barbarians":{
+		Italian:"+25% forza contro Barbari"
+	}
+	"Warrior Code":{
+		Italian:"Codice guerriero"
+	}
+	"+20% production when training melee units":{
+		Italian:"+20% Produzione per unità da mischia"
+	}
+	"Dicipline":{
+		Italian:"Disciplina"
+	}
+	"+15% combat strength for melee units which have another military unit in an adjacent tile":{
+		Italian:"+15% forza di combattimento alle unità da mischia vicine a un'altra unità militare"
+	}
+	"Military Tradition":{
+		Italian:"Tradizione militare"
+	}
+	"Military units gain 50% more Experience from combat":{
+		Italian:"+50% esperienza in battaglia per le unità militari"
+	}
+	"Military Caste":{
+		Italian:"Casta Militare"
+	}
+	"Each city with a garrison increases happiness by 1 and culture by 2":{
+		Italian:"+1 Felicità e +2 Cultura per ogni città con una guarnigione"
+	}
+	"Professional Army":{
+		Italian:"Esercito professionale"
+	}
+	"Gold cost of upgrading military units reduced by 50%":{
+		Italian:"-50% costi in Oro per aggiornare un'unità militare"
+	}
+	"Honor Complete":{
+		Italian:"Onore Completo"
+	}
+	"Gain gold for each unit killed":{
+		Italian:"Ottieni oro per ogni unità eliminata"
+	}
 	
 	// Piety branch
 	"Piety":{
+		Italian:"Pietà"
 		Russian:"Набожность"
 		Spanish:"Piedad"
 	}
 	"Building time of culture buildings reduced by 15%":{
+		Italian:"-15% tempi di costruzione per strutture religiose"
 		Russian:"Время строительства культурных зданий уменьшена на 15%"
 		Spanish:"Tiempo de construcción de edificios de cultura reducido un 15%"
 	}
 	"Organized Religion":{
+		Italian:"Religione Organizzata"
 		Russian:"Организованная религия"
 		Spanish:"Religión Organizada"
 	}
 	"+1 happiness for each monument, temple and monastery":{
+		Italian:"+1 felicità per ogni Monumento, Tempio e Monastero"
 		Russian:"+1 счастья за каждый монумент, храм и монастырь"
 		Spanish:"+1 felicidad por cada monumento, templo y monasterio"
 	}
 	"Mandate Of Heaven":{
+		Italian:"Mandato del Cielo"
 		Russian:"Небесный мандат"
 		Spanish:"Mandato del Cielo"
 	}
 	"50% of excess happiness added to culture towards policies":{
+		Italian:"Il 50% di Felicità in eccesso si converte in Cultura per le Politiche"
 		Russian:"50% избытка счатья прибавляется к культуре для попкупки общественных институтов"
 		Spanish:"50% de exceso de felicidad añadido a la cultura para políticas"
 	}
 	"Theocracy":{
+		Italian:"Teocrazia"
 		Russian:"Теократия"
 		Spanish:"Teocracia"
 	}
 	"Temples give +10% gold":{
+		Italian:"+10% Oro dai Templi"
 		Russian:"Храмы увеличивают на 10% приток золота в городах"
 		Spanish:"Templos dan +10% oro"
 	}
 	"Reformation":{
+		Italian:"Riforma"
 		Russian:"Реформация"
 		Spanish:"Reforma"
 	}
 	"+33% culture in all cities with a world wonder, immediately enter a golden age":{
+		Italian:"+33% Cultura in tutte le città con una Meraviglia Mondiale, e avvio di un'Età dell'Oro"
 		Russian:"+33% культуры во всез городах с чудом света, начинает в державе золотой век"
 		Spanish:"+33% cultura en todas las ciudades con una Maravilla. Inmediatamente entras en una Edad de Oro"
 	}
 	"Free Religion":{
+		Italian:"Tolleranza Religiosa"
 		Russian:"Веротерпимость"
 		Spanish:"Libertad de Culto"
 	}
 	"+1 culture for each monument, temple and monastery. Gain a free policy.":{
+		Italian:"+1 Cultura per ogni Monumento, Tempio e Monastero, più una Politica gratuita"
 		Russian:"+1 культура за каждый монумент, храм и монастырь. Даёт бесплатный общественный институт"
 		Spanish:"+1 cultura por cada monumento, templo y monasterio. Ganas una política gratis"
 	}
 	"Piety Complete":{
+		Italian:"Pietà Completa"
 		Russian:"Набожность завершена"
 		Spanish:"Piedad Completa"
 	}
 	"Reduce culture cost of future policies by 10%":{
+		Italian:"-10% costi un Cultura per le Politiche future"
 		Russian:"Уменьшает цену будущих общественных институтов на 10%"
 		Spanish:"Reduce el coste de cultura de políticas futuras un 10%"
 	}
 	
 	// Commerce branch
 	"Commerce":{
+		Italian:"Commercio
 		Russian:"Коммерция"
 		Spanish:"Comercio"
 	}
 	"+25% gold in capital":{
+		Italian:"+25% Oro nella Capitale"
 		Russian:"+25% золота в столице"
 		Spanish:"+25% oro en la capital"
 	}
 	"Trade Unions":{
+		Italian:"File di carri"
 		Russian:"Караваны фургонов"
 		Spanish:"Sindicatos"
 	}
 	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
+		Italian:"-33% manutenzioni su strade e ferrovie, +2 oro per ogni rotta commerciale"
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"
 	}
 	"Mercantilism":{
+		Italian:"Mercantilismo"
 		Russian:"Меркантилизм"
 		Spanish:"Mercantilismo"
 	}
 	"-25% to purchasing items in cities":{
+		Italian:"-25% costi d'acquisto nelle città"
 		Russian:"-25% цены покупок в городах"
 		Spanish:"-25% a la compra de ítems en ciudades"
 	}
 	"Entrepreneurship":{
+		Italian:"Imprenditorialità"
 		Russian:"Предпринимательство"
 		Spanish:"Emprendimiento"
 	}
 	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{
+		Italian:"+25% velocità di produzione Grandi Mercanti, +1 Scienza da ogni Zecca, Mercato, Banca e Borsa"
 		Russian:"Великие торговцы появляют на 25% быстрее, +1 наука от каждого Монетного двора, Рынка, Банка и Биржи"
 		Spanish:"Grandes Mercantes son ganados 25% más rápido, +1 ciencia por cada casa de la moneda, mercado, banco y Bolsa de Valores"
 	}
 	"Patronage":{
+		Italian:"Mecenatismo"
 		Russian:"Меценатство"
 		Spanish:"Mecenazgo"
 	}
 	"Cost of purchasing culture buildings reduced by 50%":{
+		Italian:"-50% costi di acquistare strutture culturali"
 		Russian:"Цена покупки культурных строений уменьшена на 50%"
 		Spanish:"Coste de comprar edificios de cultura reducido un 50%"
 	}
 	"Protectionism":{
+		Italian:"Protezionismo"
 		Russian:"Протекционизм"
 		Spanish:"Proteccionismo"
 	}
 	"+1 happiness from each luxury resource":{
+		Italian:"+1 Felicità per ogni risorsa di lusso"
 		Russian:"+1 к счастью от каждого редкого ресурса"
 		Spanish:"+1 felicidad por cada recurso de lujo"
 	}
 	"Commerce Complete":{
+		Italian:"Commercio Completo"
 		Russian:"Коммерция завершена"
 		Spanish:"Comercio Completo"
 	}
 	"+1 gold from each specialist":{
+		Italian:"+1 Oro per ogni specialista"
 		Russian:"+1 золота от каждого специалиста"
 		Spanish:"+1 oro por cada especialista"
 	}
 	
 	//Rationalism branch
 	"Rationalism":{
+		Italian:"Razionalismo"
 		Russian:"Рационализм"
 		Spanish:"Racionalismo"
 	}
 	"Production to science conversion in cities increased by 33%":{
+		Italian:"+33% conversione da Produzione a Scienza nelle città"
 		Russian:"Перевод городского производства в науку увеличен на 33%"
 		Spanish:"Conversión de producción a ciencia incrementado un 33% en todas las ciudades"
 	}
 	"Secularism":{
+		Italian:"Secolarismo"
 		Russian:"Секуляризм"
 		Spanish:"Laicismo"
 	}
 	"+2 science from every specialist":{
+		Italian:"+2 Scienza per ogni specialista"
 		Russian:"+2 науки от каждого специалиста"
 		Spanish:"+2 ciencia por cada especialista"
 	}
 	"Humanism":{
+		Italian:"Umanesimo"
 		Russian:"Гуманизм"
 		Spanish:"Humanismo"
 	}
 	"+1 happiness from every university, observatory and public school":{
+		Italian:"+1 Felicità per ogni Università, Osservatorio e Scuola Pubblica"
 		Russian:"+1 счатье от каждого университета, обсерватории и школы"
 		Spanish:"+1 felicidad por cada universidad, observatorio y escuela pública"
 	}
 	"Free Thought":{
+		Italian:"Libertà di pensiero"
 		Russian:"Свободомыслие"
 		Spanish:"Pensamiento Libre"
 	}
 	"+1 science from every trading post, +17% science from universities":{
+		Italian:"+1 Scienza per ogni base commerciale, +17% scienza per ogni Università"
 		Russian:"+1 наука от каждого торгового поста, +17% науки от университетов"
 		Spanish:"+1 ciencia por cada puesto comercial, +17% ciencia de las universidades"
 	}
 	"Sovereignty":{
+		Italian:"Sovranità"
 		Russian:"Суверинетет"
 		Spanish:"Soberanía"
 	}
 	"+15% science while empire is happy":{
+		Italian:"+15% Scienza quando l'Impero è felice"
 		Russian:"+15% науки, когда империя счастлива"
 		Spanish:"+15% ciencia mientras el imperio esté feliz"
 	}
 	"Scientific Revolution":{
+		Italian:"Rivoluzione Scientifica"
 		Russian:"Научная Революция"
 		Spanish:"Revolución Científica"
 	}
 	"Gain 2 free technologies":{
+		Italian:"Due Tecnologie gratuite"
 		Russian:"Даёт 2 бесплатные технологии"
 		Spanish:"Ganas 2 tecnologías gratis"
 	}
 	"Rationalism Complete":{
+		Italian:"Razionalismo Completo"
 		Russian:"Рационализм завершён"
 		Spanish:"Racionalismo Completo"
 	}
 	"+1 gold from all science buildings":{
+		Italian:"+1 Oro per ogni edificio scientifico
 		Russian:"+1 золото от всех научных зданий"
 		Spanish:"+1 oro de todos los edificios de ciencia"
 	}
 	
 	// Freedom branch
 	"Freedom":{
+		Italian:"Libertà"
 		Russian:"Свобода"
 		Spanish:"Libertad"
 	}
 	"+25% great people rate":{
+		Italian:"+25% generazione Grandi Personaggi"
 		Russian:"+25% к скорости появления великих людей"
 		Spanish:"+25% generación de Grandes Personas"
 	}
 	"Constitution":{
+		Italian:"Costituzione"
 		Russian:"Конституция"
 		Spanish:"Constitución"
 	}
 	"+2 culture from each wonder":{
+		Italian:"+2 Cultura per ogni Meravigli"
 		Russian:"+2 культуры от каждого чуда"
 		Spanish:"+2 cultura por cada Maravilla"
 	}
 	"Universal Suffrage":{
+		Italian:"Suffragio Universale"
 		Russian:"Всеобщее избирательное право"
 		Spanish:"Sufragio Universal"
 	}
 	"+1 production per 5 population":{
+		Italian:"+1 Produzione per ogni abitante"
 		Russian:"+1 производство за каждые 5 единиц населения"
 		Spanish:"+1 producción por cada 5 habitantes"
 	}
 	"Civil Society":{
+		Italian:"Società Civile"
 		Russian:"Гражданское общество"
 		Spanish:"Sociedad Civil"
 	}
 	"-50% food consumption by specialists":{
+		Italian:"-50% consumo di Cibo dagli specialisti"
 		Russian:"-50% потребления еды специалистами"
 		Spanish:"-50% gasto de comida por especialistas"
 	}
 	"Free Speech":{
+		Italian:"Libertà di parola"
 		Russian:"Свобода слова"
 		Spanish:"Libertad de Expresión"
 	}
 	"+1 culture for every 2 citizens":{
+		Italian:"+1 Cultura ogni 2 Cittadini"
 		Russian:"+1 культура за каждых 2 жителей"
 		Spanish:"+1 cultura por cada 2 habitantes"
 	}
 	"Democracy":{
+		Italian:"Democrazia"
 		Russian:"Демократия"
 		Spanish:"Democracia"
 	}
 	"Specialists produce half normal unhappiness":{
+		Italian:"Gli Specialisti dimezzano l'infelicità"
 		Russian:"Специалисты производят в половину меньше недовольства"
 		Spanish:"Especialistas producen la mitad de infelicidad"
 	}
 	"Freedom Complete":{
+		Italian:"Libertà Completa"
 		Russian:"Свобода завершена"
 		Spanish:"Libertad Completa"
 	}
 	"Tile yield from great improvement +100%, golden ages increase by 50%":{
+		Italian:"Doppia produzione dai miglioramenti, +50% durata da Età dell'Oro"
 		Russian:"Доход клетки от великих улучшений +100%, золотые века увеличены на 50%"
 		Spanish:"Rendimiento de casilla por gran mejora aumenta en 100%, Edades de Oro incrementan 50%"
 	}
 	
 	// Autocracy branch
-	"Autocracy":{}
-	"-33% unit upkeep costs":{}
-	"Populism":{}
-	"Wounded military units deal +25% damage":{}
-	"Militarism":{}
-	"Gold cost of purchasing units -33%":{}
-	"Facism":{}
-	"Quantity of strategic resources produced by the empire increased by 100%":{}
-	"Police State":{}
-	"Captured cities retain their previous borders":{}
-	"Total War":{}
-	"+15% production when building military units and new military units start with 15 Experience":{}
+	"Autocracy":{
+		Italian:"Autocrazia"
+	}
+	"-33% unit upkeep costs":{
+		Italian:"-33% mantenimento delle unità"
+	}
+	"Populism":{
+		Italian:"Populismo"
+	}
+	"Wounded military units deal +25% damage":{
+		Italian:"+25% danno per le unità militari ferite"
+	}
+	"Militarism":{
+		Italian:"Militarismo"
+	}
+	"Gold cost of purchasing units -33%":{
+		Italian:"-33% costi d'acquisto di unità"
+	}
+	"Facism":{
+		Italian:"Fascismo"
+	}
+	"Quantity of strategic resources produced by the empire increased by 100%":{
+		Italian:"Doppia produzione di risorse strategiche nell'impero"
+	}
+	"Police State":{
+		Italian:"Stato di polizia"
+	}
+	"Captured cities retain their previous borders":{
+		Italian:"Le città catturate mantengono i loro confini precedenti"
+	}
+	"Total War":{
+		Italian:"Guerra Totale"
+	}
+	"+15% production when building military units and new military units start with 15 Experience":{
+		Italian:"+15% Produzione per le unità militari, +15 esperienza per le nuove unità militari"
+	}
 	
 }
