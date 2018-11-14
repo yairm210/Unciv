@@ -53,7 +53,7 @@ class Building : NamedStats(), IConstruction{
         if(str.isNotEmpty()) infoList += str
         if(percentStatBonus!=null){
             for(stat in percentStatBonus!!.toHashMap())
-                if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key}"
+                if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key.toString().tr()}"
         }
         val improvedResources = GameBasics.TileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){

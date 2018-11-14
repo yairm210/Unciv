@@ -205,7 +205,6 @@
 		Italian:"Vuoi davvero sciogliere questa unità?"
 		Russian:"Вы действительно хотите распустить этот юнит?"
 		French:"Voulez-vous vraiment dissoudre cette unité?"
-		Romanian:""
 		Dutch:"Wil je echt deze eenheid opheffen"
 		Spanish:"¿Realmente quieres disolver esta unidad?"
 	}
@@ -376,7 +375,7 @@
 		Russian:"Количество врагов:"
 		French:"Nombre d'ennemis:"
 		Romanian:"Numărul de dușmani:"
-		Spanish:"Número de enemigos"
+		Spanish:"Número de enemigos:"
 	}
 	
 
@@ -1510,7 +1509,7 @@
 		Dutch:"Steengroeve"
 		Spanish:"Cantera"
 	}
-	"Fishing boats":{
+	"Fishing Boats":{
 		Italian:"Peschereccio"
 	}
 	
@@ -2525,6 +2524,8 @@
 	"Connects trade routes over water":{
 		Italian:"Consente le rotte commerciali marittime"
 	}
+	"+1 production and gold from all sea resources worked by the city":{}
+	"+15% production of naval units":{}
 	
 	// Unit types
 	"Civilian":{
@@ -2719,6 +2720,7 @@
 		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
 		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
 	}
+	"May create improvements on water resources":{}
 	
 	// Policy picker screen
 	"You have entered the [newEra] era!":{
@@ -3482,6 +3484,7 @@
 		Romanian:"Luvru"
 		Spanish:"El Louvre"
 	}
+	"Seaport":{}
 	"Public School":{	
 		Italian:"Scuola pubblica"
 		Russian:"Школа"
@@ -3750,7 +3753,7 @@
 	}
 	
 	// Renaissance units
-	"Caravel"{
+	"Caravel":{
 		Italian:"Caravella"
 	}
 	"Cannon":{	
@@ -3768,6 +3771,7 @@
 	"Musketeer":{
 		Italian:"Moschettiere"
 	}
+	"Frigate":{}
 	"Lancer":{	
 		Italian:"lanciere"
 		Russian:"Улан"
@@ -3798,6 +3802,7 @@
 		Romanian:"Artilerie"
 		Spanish:"Artillería"
 	}
+	"Ironclad":{}
 	
 	// Great units
 	"Great Artist":{	
@@ -3853,7 +3858,7 @@
 		Spanish:"Tradición"
 	}
 	"+3 culture in capital and increased rate of border expansion":{
-		Italian: +3 Cultura nella capitale, e maggior tasso di espansione dei confini
+		Italian: "+3 Cultura nella capitale, e maggior tasso di espansione dei confini"
 		Russian:"+3 культуры в столице и увеличивается скорость расширения границ"
 		Spanish:"+3 cultura en la capital e incremento del ritmo de expansión de fronteras"
 	}
@@ -3863,7 +3868,7 @@
 		Spanish:"Aristocracia"
 	}
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
-		Italian: +15% produzione quando costruisci una Meraviglia, +1 Felicità ogni 10 cittadini in una città
+		Italian: "+15% produzione quando costruisci una Meraviglia, +1 Felicità ogni 10 cittadini in una città"
 		Russian:"+15% производства при создании чудес, +1 счастье за каждые 10 жителей в городе"
 		Spanish:"+15% producción al construir maravillas, +1 felicidad cada 10 habitantes in una ciudad"
 	}
@@ -3935,7 +3940,7 @@
 		Spanish:"Reglas colectivas"
 	}
 	"Training of settlers increaed +50% in capital, recieve a new settler near capital":{
-		Italian"+50% produzione di coloni nella capitale, più un colono gratuito nella capitale"
+		Italian:"+50% produzione di coloni nella capitale, più un colono gratuito nella capitale"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Spanish:"Entrenamiento de colonos incrementado +50% en la capital y un colono gratis cerca de la capital"
 	}
@@ -4115,7 +4120,7 @@
 	
 	// Commerce branch
 	"Commerce":{
-		Italian:"Commercio
+		Italian:"Commercio"
 		Russian:"Коммерция"
 		Spanish:"Comercio"
 	}
@@ -4252,7 +4257,7 @@
 		Spanish:"Racionalismo Completo"
 	}
 	"+1 gold from all science buildings":{
-		Italian:"+1 Oro per ogni edificio scientifico
+		Italian:"+1 Oro per ogni edificio scientifico"
 		Russian:"+1 золото от всех научных зданий"
 		Spanish:"+1 oro de todos los edificios de ciencia"
 	}
