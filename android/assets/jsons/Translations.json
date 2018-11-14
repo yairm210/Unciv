@@ -2,7 +2,7 @@
 	"Next turn":{
 		Italian:"Prossimo turno"
 		Russian:"Следующий ход"
-		French:"Tour prochain"
+		French:"Prochain tour"
 		Romanian:"Runda urmatoare"
 		German:"Nächste Runde"
 		Dutch:"Volgende beurt"
@@ -12,7 +12,7 @@
 	"Working...":{ // Displayed when next turn is being...turned
 		Italian:"Lavoro..."
 		Russian:"Работает..."
-		French:"Travail..."
+		French:"Patientez..."
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
 		Spanish:"Trabajando..."
@@ -52,7 +52,7 @@
 	"Movement":{
 		Italian:"Movimento"
 		Russian:"Передвижение"
-		French:"Deplacer"
+		French:"Déplacer"
 		Romanian:"Mișcare"
 		German:"Bewegungen"
 		Dutch:"Mobieliteit"
@@ -83,7 +83,7 @@
 	"Move unit":{
 		Italian:"Sposta unità"
 		Russian:"Переместить юнит"
-		French:"Dèplacer unité"
+		French:"Déplacer l'unité"
 		Romanian:"Mutați unitatea"
 		German:"Einheit bewegen"
 		Dutch:"Eenheid verplaatsen"
@@ -103,7 +103,7 @@
 	"Construct improvement":{
 		Italian:"Migliora costruzione"
 		Russian:"Построить улучшение"
-		French:"Amèlioré construcion"
+		French:"Bâtir une amélioration"
 		Romanian:"îmbunătățirea construcției"
 		German:"Verbesserung bauen"
 		Dutch:"Verbetering bouwen"
@@ -113,7 +113,7 @@
 	"Automate":{
 		Italian:"Automatizza"
 		Russian:"Автоматизация"
-		French:"Automacion"
+		French:"Automatiser"
 		Romanian:"Automatizare"
 		German:"Automatisieren"
 		Dutch:"Autoatiseren"
@@ -145,7 +145,7 @@
 	"Set up":{ // For siege units
 		Italian:"Monta"
 		Russian:"Подготовится"
-		French:"Implanter"
+		French:"Installer"
 		Romanian:"Dispune"
 		German:"Aufstellen"
 		Dutch:"Opstellen"
@@ -163,7 +163,7 @@
 	"Found city":{
 		Italian:"Fonda città"
 		Russian:"Основать город"
-		French:"Créer une ville"
+		French:"Fonder une ville"
 		Romanian:"Creați oraș"
 		German:"Stadt gründen"
 		Dutch:"Stad stichten"
@@ -193,7 +193,7 @@
 	"Disband unit":{
 		Italian:"Sciogli"
 		Russian:"Распустить юнит"
-		French:"Dissoudre unité"
+		French:"Dissoudre l'unité"
 		Romanian:"Desfaceți unitatea"
 		Dutch:"Eenheid opheffen"
 		Spanish:"Disolver unidad"
@@ -301,13 +301,14 @@
 	
 	"Civilopedia":{
 		Russian:"Цивилопедия"
+		French:"Civilopédie"
 		Spanish:"Civilopedia"
 	}
 
 	"Start new game":{
 		Italian:"Nuova partita"
 		Russian:"Новая игра"
-		French:"Nouveau jeu"
+		French:"Nouvelle partie"
 		Romanian:"Joc nou"
 		German:"Neues Spiel"
 		Dutch:"Nieuw spel"
@@ -349,7 +350,7 @@
 	"Start game!":{
 		Italian:"Inizia partita!"
 		Russian:"Начать игру!"
-		French:"Démarrer jeu!"
+		French:"Démarrer la partie!"
 		Romanian:"Incepe jocul!"
 		Spanish:"¡Empezar partida!"
 	}
@@ -363,7 +364,7 @@
 	"World size:":{
 		Italian:"Dimensione mappa:"
 		Russian:"Размер мира:"
-		French:"La taille du monde:"
+		French:"Taille du monde:"
 		Romanian:"Mărimea pamintului:"
 		Spanish:"Tamaño del mundo"
 	}
@@ -379,7 +380,7 @@
 	"Victory status":{
 		Italian:"Stato di vittoria"
 		Russian:"Статус победы"
-		French:"Statut de la victoire"
+		French:"Statut de victoire"
 		Romanian:"Statutul victoriei"
 		German:"Siegesstatus"
 		Dutch:"Overwinning Status"
@@ -399,7 +400,7 @@
 	"Display options":{
 		Italian:"Opzioni display"
 		Russian:"Параметры экрана"
-		French:"Option d'affichage"
+		French:"Options d'affichage"
 		Romanian:"Opțiuni ecran"
 		German:"Anzeigeeinstellungen"
 		Dutch:"Weergaveopties"
@@ -429,7 +430,7 @@
 	"worked tiles":{
 		Italian:"celle lavorate"
 		Russian:"обработанные клетки"
-		French:"carreaux travaillés"
+		French:"carreaux exploités"
 		Romanian:"plăci lucrate"
 		German:"bearbeitete Felder"
 		Dutch:"Bewerkte velden"
@@ -470,7 +471,7 @@
 	"Raze city":{
 		Italian:"Demolizione città"
 		Russian:"Разрушить город"
-		French:"Demolition de la ville"
+		French:"Démolir la ville"
 		Romanian:"Demolarea orașului"
 		German:"Stadt zerstören"
 		Dutch:"Stad vernietigen"
@@ -480,7 +481,7 @@
 	"Stop razing city":{
 		Italian:"Anulla demolizione città"
 		Russian:"Отменить разрушение города"
-		French:"Anuller demolition de la ville"
+		French:"Annuler démolition de la ville"
 		Romanian:"Anuleaza demolarea orașului"
 		German:"Zerstörung aufheben"
 		Dutch:"Stad vernieteging stoppen"
@@ -490,7 +491,7 @@
 	"Buy for [amount] gold":{
 		Italian:"Acquista con [amount] oro"
 		Russian:"Купить за [amount] золота"
-		French:"Acheter avec [amount] gold"
+		French:"Acheter avec [amount] or"
 		Romanian:"Cumpara cu [amount] gold"
 		German:"Für [amount] gold kaufen"
 		Dutch:"Voor [amount] gold kopen"
@@ -510,7 +511,7 @@
 	"Pick construction":{
 		Italian:"Scegli la costruzione"
 		Russian:"Выбор здания"
-		French:"Choisissez la construction"
+		French:"Sélectionner la construction"
 		Romanian:"Alegeți construcția"
 		German:"Bauwerk auswählen"
 		Dutch:"Bouwwerk kiezen"
@@ -561,7 +562,7 @@
 	"Pick a tech":{
 		Italian:"Scegli una tecnologia"
 		Russian:"Выберите технологию"
-		French:"Choisissez une technologie"
+		French:"Choisir une technologie"
 		Romanian:"Alege o tehnologie"
 		German:"Technologie auswählen"
 		Dutch:"Technologie kiezen"
@@ -571,7 +572,7 @@
 	"Pick a free tech":{
 		Italian:"Scegli una tecnologia gratuita"
 		Russian:"Выберите бесплатную технологию"
-		French:"Choisissez une technologie gratuite"
+		French:"Choisir une technologie gratuite"
 		Romanian:"Alege o tehnologie gratuită"
 		Dutch:"Gratis technologie kiezen"
 		Spanish:"Elige una tecnología gratis"
@@ -580,7 +581,7 @@
 	"Research [technology]":{ // eg "Research Pottery"
 		Italian:"Ricerca [technology]"
 		Russian:"Исследование [technology]"
-		French:"Recherche [technology]"
+		French:"Rechercher [technology]"
 		Romanian:"Exploreaza [technology]"
 		German:"[technology] Erforschen"
 		Dutch:"[technologie] onderzoeken"
@@ -591,7 +592,7 @@
 	"Pick [technology] as free tech":{
 		Italian:"Scegli [tecnology] come tecnologia libera"
 		Russian:"Выбрать [technology] как бесплатную технологию"
-		French:"Choisissez [technology] comme technologie libre"
+		French:"Choisir [technology] comme technologie libre"
 		Romanian:"Alegeți [tehnology] ca tehnologie gratuită"
 		Dutch:"[technologie] kiezen als gratis technologie"
 		Spanish:"Elegir [technology] como tecnología gratis"
@@ -669,7 +670,7 @@
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
 		Italian:"forniscono"
 		Russian:"даёт"
-		French:"fournir"
+		French:"fournit"
 		Romanian:"Asigura"
 		German:"generieren"
 		Dutch:"genereren"
@@ -705,7 +706,7 @@
 	"[cityName] has been founded!":{
 		Italian:"[cityName] è stata fondata!"
 		Russian:"[cityName] был основан!" 
-		French:"[cityName] a été fondé!"
+		French:"[cityName] a été fondée!"
 		Romanian:"[cityName] a fost fondat!"
 		German:"[cityName] wurde gegründet!"
 		Dutch:"[cityName] is gesticht!"
@@ -715,7 +716,7 @@
 	"[cityName] has been razed to the ground!":{
 		Italian:"[cityName] è stata rasa al suolo!"
 		Russian:"[cityName] был разрушен до основания!"
-		French:"[cityName] a été rasé à terre!"
+		French:"[cityName] a été rasée au sol!"
 		Romanian:"[cityName] a fost distrus la pământ!"
 		German:"[cityName] wurde dem Erdboden gleichgemacht!"
 		Dutch:"[cityName] Is totaal verwoest!"
@@ -735,7 +736,7 @@
 	"Research of [technologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
 		Italian:"Ricerca di [technologyName] completata!"
 		Russian:"Исследование [technologyName] завершено!"
-		French:"Recherche de [technologyName] a completé!"
+		French:"Recherche de [technologyName] est completée!"
 		Romanian:"Cercetarea [technologyName] a finalizat!"
 		German:"[technologyName] wurde erforscht!"
 		Dutch:"[technologyName] is onderzocht!"
@@ -755,7 +756,7 @@
 	"[cityName] is starving!":{
 		Italian:"[cityName] sta morendo di fame!"
 		Russian:"[cityName] голодает!"
-		French:"[cityName] est affamé!"
+		French:"[cityName] est en famine!"
 		Romanian:"[cityName] suferă de foame!"
 		German:"[cityName] verhungert!"
 		Dutch:"[cityName] verhongerd!"
@@ -765,7 +766,7 @@
 	"[construction] has been built in [cityName]":{
 		Italian:"[construction] è stato/a costruito/a in [cityName]"
 		Russian:"[construction] была построена в [cityName]"
-		French:"[construction] a été construit en [cityName]"
+		French:"[construction] a été construit dans [cityName]"
 		Romanian:"[construction] a fost construit in [cityName]"
 		German:"[construction] wurde erbaut in [cityName]"
 		Dutch:"[construction] is gebouwd in [cityName]"
@@ -775,7 +776,7 @@
 	"Work has started on [construction]":{
 		Italian:"Sono iniziati i lavori per [construction]"
 		Russian:"Началась работа над [construction]"
-		French:"Le travail a commencé sur le [construction]"
+		French:"Le travail a commencé sur [construction]"
 		Romanian:"Munca a început pentru [construction]"
 		German:"Arbeit an [construction] hat begonnen"
 		Dutch:"Werk is begonen aan [construction]"
@@ -805,7 +806,7 @@
 	"An enemy [unit] has attacked [cityname]":{
 		Italian:"Un [unit] nemico ha attaccato [cityname]"
 		Russian:"Вражеский [unit] атаковал [cityname]"
-		French:"Un ennemi [unit] a attaqué [cityname]"
+		French:"Un(e) [unit] ennemi(e) a attaqué [cityname]" // Gender sensitive
 		Romanian:"Un dusman [unit] a atacat [cityname]"
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] angegriffen" // Gender sensitive
 		Dutch:"Een vijandelijke [unit] heeft [cityname] aangevallen"
@@ -815,7 +816,7 @@
 	"An enemy [unit] has attacked our [ourUnit]":{
 		Italian:"Un [unit] nemico ha attaccato [ourUnit]"
 		Russian:"Вражеский [unit] атаковал нашего [ourUnit]"
-		French:"Un ennemi [unit] a attaqué [ourUnit]"
+		French:"Un(e) [unit] ennemi(e) a attaqué [ourUnit]" // Gender sensitive
 		Romanian:"Un dusman [unit] a atacat [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] agegriffen" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft onze [ourUnit] aangevallen"
@@ -824,9 +825,9 @@
 	"An enemy [unit] has captured [cityname]":{
 		Italian:"Un [unit] nemico ha catturato [cityname]"
 		Russian:"Вражеский [unit] захватил [cityname]"
-		French:"Un ennemi [unit] a capturé [cityname]"
+		French:"Un(e) [unit] ennemi(e) a capturé [cityname]" // Gender sensitive
 		Romanian:"Un dusman [unit] a capturat [cityname]"
-		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen"
+		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft [cityname] ingenomen"
 		Spanish:"Un [unit] enemigo ha capturado [cityname]"
 	}
@@ -834,9 +835,9 @@
 	"An enemy [unit] has captured our [ourUnit]":{
 		Italian:"Un [unit] nemico ha catturato [ourUnit]"
 		Russian:"Вражеский [unit] захватил нашего [ourUnit]"
-		French:"Un ennemi [unit] a capturé [ourUnit]"
+		French:"Un(e) [unit] ennemi(e) a capturé [ourUnit]" // Gender sensitive
 		Romanian:"Un dusman [unit] a capturat [ourUnit]"
-		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] gefangen"
+		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] gefangen" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft [ourUnit] gevangen genomen"
 		Spanish:"Un [unit] enemigo ha capturado nuestro [ourUnit]"
 	}
@@ -844,9 +845,9 @@
 	"An enemy [unit] has destroyed our [ourUnit]":{
 		Italian:"Un [unit] nemico ha distrutto [ourUnit]"
 		Russian:"Вражеский [unit] уничтожил нашего [ourUnit]"
-		French:"Un ennemi [unit] a détruit [ourUnit]"
+		French:"Un(e) [unit] ennemi(e) a détruit [ourUnit]" // Gender sensitive
 		Romanian:"Un dusman [unit] a distrus [ourUnit]"
-		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] zerstört"
+		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] zerstört" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft onze [ourUnit] gedood"
 		Spanish:"Un [unit] enemigo ha destruido nuestro [ourUnit]"
 	}
@@ -854,7 +855,7 @@
 	"An enemy [unit] was destroyed while attacking [cityname]":{
 		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava [cityname]"
 		Russian:"Вражеский [unit] был уничтожен при атаке [cityname]"
-		French:"Un ennemi [unit] a été détruit en attaquant [cityname]"
+		French:"Un(e) [unit] ennemi(e) a été détruit(e) en attaquant [cityname]" // Gender sensitive
 		Romanian:"Un inamic [unit] a fost distrus în timp ce ataca [cityname]"
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf [cityname]" // Gender sensitive
 		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op [cityname]"
@@ -864,7 +865,7 @@
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
 		Italian:"Un'unità [unit] nemica è stata distrutta mentre attaccava il nostro [ourUnit]"
 		Russian:"Вражеский [unit] был уничтожен, атакуя нашего [ourUnit]"
-		French:"Un ennemi [unit] a été détruit en attaquant notre [ourUnit]"
+		French:"Un(e) [unit] ennemi(e) a été détruit(e) en attaquant [ourUnit]" // Gender sensitive
 		Romanian:"Un inamic [unit] a fost distrus în timp ce atacă [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf unsere(n) [ourUnit]" // Gender sensitive
 		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op onze [unit]"
@@ -874,9 +875,9 @@
 	"An enemy [unit] was spotted near our territory":{
 		Italian:"Un'unità nemica [unit] avvistato vicino al nostro territorio"
 		Russian:"Вражеский [unit] был замечен у нашей территории"
-		French:"Un ennemi [unit] repéré près de notre territoire"
+		French:"Un(e) [unit] ennemi(e) a été repéré(e) près de notre territoire" // Gender sensitive
 		Romanian:"Un inamic [unit] reperat în apropierea teritoriului nostru"
-		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt"
+		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt" // Gender sensitive
 		Dutch:"Een vijandige [unit] is gezien buiten onze grenzen"
 		Spanish:"Se ha avistado un [unit] enemigo cerca de nuestro territorio"
 	}
@@ -884,9 +885,9 @@
 	"An enemy [unit] was spotted in our territory":{
 		Italian:"Un'unità nemica [unit] avvistato nel nostro territorio"
 		Russian:"Вражеский [unit] был замечен на нашей территории"
-		French:"Un ennemi [unit] repéré sur notre territoire"
+		French:"Un(e) [unit] ennemi(e) a été repéré(e) sur notre territoire" // Gender sensitive
 		Romanian:"Un inamic [unit] reperat pe teritoriul nostru"
-		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt"
+		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt" // Gender sensitive
 		Dutch:"Een vijandige [unit] is binnen onze grenzen gezien"
 		Spanish:"Se ha avistado un [unit] enemigo en nuestro territorio"
 	}
@@ -895,7 +896,7 @@
 	"revealed near":{ // As in "Coal revealed near London"
 		Italian:"rivelato vicino a"
 		Russian:"обнаружен вблизи "
-		French:"a capturé"
+		French:"est dévoilé près de"
 		Romanian:"dezvăluit aproape"
 		German:"gefunden in der Nähe von"
 		Dutch:"Ontdekt: in de buurt van"
@@ -905,7 +906,7 @@
 	"The civilization of [civName] has been destroyed!":{
 		Italian:"La civiltà di [civName] è stata distrutta!"
 		Russian:"Цивилизация [civName] была уничтожена!"
-		French:"La civilisation de [civName] a été détruit!"
+		French:"La civilisation des [civName] a été détruite!"
 		Romanian:"Civilizația [civName] a fost distrus!"
 		German:"Die Zivilisation [civName] wurde vernichtet!"
 		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
@@ -923,11 +924,13 @@
 	"We have encountered [civName]!":{
 		Russian:"Мы встретились с цивилизацией [civName]!"
 		Spanish:"¡Hemos encontrado [civName]!"
+		French:"Nous sommes entrés en contact avec [civName]!"
 	}
 	
 	"Cannot provide upkeep for [unitName] - unit has been disbanded!":{
 		Russian:"Невоможно предоставить содержание для [unitName] - юнит распущен!"
 		Spanish:"¡No se puede mantener [unitName] - unidad disuelta!"
+		French:"Le support ne peut être fournit pour [unitName] - l'unité a été dissoute!" 
 	}
 
 	
@@ -936,7 +939,7 @@
 	"Current saves":{
 		Italian:"Salvataggio attuale"
 		Russian:"Текущие сохранения"
-		French:"épargne courante"
+		French:"Sauvegardes présentes"
 		Romanian:"Salvatajul curent"
 		German:"Gespeicherte Spiele"
 		Dutch:"Huidige spellen"
@@ -946,7 +949,7 @@
 	"Saved game name":{
 		Italian:"Nome del salvataggio"
 		Russian:"Название сохранённой игры"
-		French:"Nom du jeu sauvegardé"
+		French:"Nom de la partie sauvegardée"
 		Romanian:"Numele jocului salvat"
 		German:"Name des gespeicherten Spiels"
 		Dutch:"Naam van opgeslagen spellen"
@@ -956,7 +959,7 @@
 	"Copy game info":{
 		Italian:"Copia le informazioni sul gioco"
 		Russian:"Копировать информацию об игре"
-		French:"Copier les informations du jeu"
+		French:"Copier les données de la partie"
 		Romanian:"Copiați informațiile jocului"
 		German:"Spielinfo kopieren"
 		Dutch:"Spelinformatie kopiëren"
@@ -966,7 +969,7 @@
 	"Could not load game":{
 		Italian:"Impossibile caricare il gioco"
 		Russian:"Не удалось загрузить игру"
-		French:"Impossible de charger le jeu"
+		French:"Impossible de charger la partie"
 		Romanian:"Nu s-a putut încărca jocul"
 		German:"Spiel konnte nicht geladen werden"
 		Dutch:"Spel kon niet geladen worden"
@@ -986,7 +989,7 @@
 	"Delete save":{
 		Italian:"Elimina Salvataggio"
 		Russian:"Удалить сохранение"
-		French:"Supprimer enregistrer"
+		French:"Supprimer la sauvegarde"
 		Romanian:"Ștergeți salvatajul"
 		German:"Spiel löschen"
 		Dutch:"Spel verwijderen"
@@ -1053,7 +1056,7 @@
 	"Grassland":{
 		Italian:"Prateria"
 		Russian:"Луга"
-		French:"Herbage"
+		French:"Prairie"
 		Romanian:"Fâneață"
 		German:"Wiese"
 		Dutch:"Grasland"
@@ -1152,7 +1155,7 @@
 	"Flood plains":{ // Possible typo. Changed from "food" to "flood". Need to change all languages
 		Italian:"Pianure alimentari"
 		Russian:"Пищевые равнины"
-		French:"Plaines alimentaires"
+		French:"Plaines inondables"
 		Romanian:"Câmpiile alimentare"
 		// German translation not sure
 		Dutch:"Riviervlakte"
@@ -1173,7 +1176,7 @@
 	"Sheep":{
 		Italian:"Pecora"
 		Russian:"Овцы"
-		French:"Mouton"
+		French:"Moutons"
 		Romanian:"Oaie"
 		German:"Schaf"
 		Dutch:"Schaap"
@@ -1183,7 +1186,7 @@
 	"Deer":{
 		Italian:"Cervo"
 		Russian:"Oлени"
-		French:"Cerf"
+		French:"Cerfs"
 		Romanian:"Cerb"
 		German:"Hirsch"
 		Dutch:"Hert"
@@ -1305,10 +1308,10 @@
 		Spanish:"Algodón"
 	}
 
-	"Dyes":{
+	"Dyes":{ // Seems to have translated in all languages as *food dyes* Needs to be rechecked in all languages except french
 		Italian:"Coloranti"
 		Russian:"Красители"
-		French:"Colorants"
+		French:"Teintures"
 		Romanian:"Coloranți"
 		German:"Farbstoffe"
 		Dutch:"Verfstoffen"
@@ -1318,7 +1321,7 @@
 	"Gems":{
 		Italian:"Pietre preziose"
 		Russian:"Драгоценные камни"
-		French:"Gems"
+		French:"Gemmes"
 		Romanian:"Pietre pretioase"
 		German:"Edelsteine"
 		Dutch:"Edelstenen"
