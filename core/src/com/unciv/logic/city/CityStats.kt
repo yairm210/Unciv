@@ -58,7 +58,10 @@ class CityStats {
 
     private fun getStatPercentBonusesFromRailroad(): Stats {
         val stats = Stats()
-        if (cityInfo.civInfo.tech.isResearched("Combustion")
+        val techEnablingRailroad = GameBasics.TileImprovements["Railroad"]!!.techRequired!!
+        // If we conquered enemy cities connected by railroad, but we don't yet have that tech,
+        // we shouldn't get bonuses, it's as if the tracks aare layed out but we can't operate them.
+        if (cityInfo.civInfo.tech.isResearched(techEnablingRailroad)
                 && (cityInfo.isCapital() || isConnectedToCapital(RoadStatus.Railroad)))
             stats.production += 25f
         return stats
@@ -79,7 +82,7 @@ class CityStats {
     private fun getStatPercentBonusesFromComputers(): Stats {
         val stats = Stats()
 
-        if (cityInfo.civInfo.tech.isResearched("Computers")) {
+        if (cityInfo.civInfo.tech.getUniques().contains("+10% science and production in all cities")) {
             stats.production += 10f
             stats.science += 10f
         }

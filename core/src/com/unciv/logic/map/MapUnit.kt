@@ -109,9 +109,10 @@ class MapUnit {
     fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
         if(tile.isWater() && baseUnit.unitType.isLandUnit()){
-            if(!civInfo.tech.isResearched("Optics"))
+            val techUniques = civInfo.tech.getUniques()
+            if(!techUniques.contains("Enables embarkation for land units"))
                 return false
-            if(tile.baseTerrain == "Ocean" && !civInfo.tech.isResearched("Astronomy"))
+            if(tile.baseTerrain == "Ocean" && !techUniques.contains("Enables embarked units to enter ocean tiles"))
                 return false
         }
         if(tile.isLand() && baseUnit.unitType.isWaterUnit())
@@ -167,8 +168,7 @@ class MapUnit {
 
     fun getEmbarkedMovement(): Int {
         var movement=2
-        movement += civInfo.tech.techsResearched.map { GameBasics.Technologies[it]!! }
-                        .count { it.baseDescription!=null && it.baseDescription!! == "Increases embarked movement +1" }
+        movement += civInfo.tech.getUniques().count { it == "Increases embarked movement +1" }
         return movement
     }
 

@@ -56,6 +56,11 @@ class TechManager {
     fun canBeResearched(TechName: String): Boolean {
         return GameBasics.Technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
+
+    fun getResearchedTechs() = techsResearched.map { GameBasics.Technologies[it]!! }
+
+    fun getUniques() = getResearchedTechs().flatMap { it.uniques }
+
     //endregion
 
     fun nextTurn(scienceForNewTurn: Int) {

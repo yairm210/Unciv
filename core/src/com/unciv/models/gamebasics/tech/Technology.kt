@@ -10,7 +10,7 @@ class Technology : ICivilopedia {
     override val description: String
         get(){
             val SB=StringBuilder()
-            if(baseDescription!=null) SB.appendln(baseDescription!!.tr())
+            for(unique in uniques) SB.appendln(unique.tr())
 
             val improvedImprovements = GameBasics.TileImprovements.values.filter { it.improvingTech==name }.groupBy { it.improvingTechStats.toString() }
             for (improvement in improvedImprovements) {
@@ -42,9 +42,9 @@ class Technology : ICivilopedia {
         }
     lateinit var name: String
 
-    var baseDescription: String? = null
     var cost: Int = 0
     var prerequisites = HashSet<String>()
+    var uniques = ArrayList<String>()
 
     var column: TechColumn? = null // The column that this tech is in the tech tree
     var row: Int = 0

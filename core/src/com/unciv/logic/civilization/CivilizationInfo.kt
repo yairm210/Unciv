@@ -48,7 +48,6 @@ class CivilizationInfo {
 
     constructor(civName: String, gameInfo: GameInfo) {
         this.civName = civName
-//        this.gameInfo = gameInfo // already happens in setTransients
         tech.techsResearched.add("Agriculture")
     }
 
@@ -236,7 +235,7 @@ class CivilizationInfo {
 
     fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
     fun getEra(): TechEra {
-        val maxEraOfTech =  tech.techsResearched.map { GameBasics.Technologies[it]!! }
+        val maxEraOfTech =  tech.getResearchedTechs()
                 .map { it.era() }
                 .max()
         if(maxEraOfTech!=null) return maxEraOfTech

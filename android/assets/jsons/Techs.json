@@ -93,6 +93,7 @@
 				cost:85,
 				row:1,
 				prerequisites:["Sailing"],
+				uniques:["Enables embarkation for land units"]
 			},
 			{
 				name:"Horseback Riding",
@@ -161,7 +162,7 @@
 				name:"Guilds",
 				row:7,
 				prerequisites:["Currency"],
-				baseDescription:"Enables conversion of city production to gold"
+				uniques:["Enables conversion of city production to gold"]
 			},
 			{
 				name:"Metal Casting",
@@ -186,7 +187,7 @@
 				name:"Education",
 				row:3,
 				prerequisites:["Theology","Civil Service"],
-				baseDescription:"Enables conversion of city production to science"
+				uniques:["Enables conversion of city production to science"]
 			},
 			{
 				name:"Chivalry",
@@ -197,7 +198,7 @@
 				name:"Machinery",
 				row:8,
 				prerequisites:["Guilds","Engineering"],
-				baseDescription:"Improves movement speed on roads"
+				uniques:["Improves movement speed on roads"]
 			},
 			{
 				name:"Physics",
@@ -221,7 +222,7 @@
 			{
 				name:"Astronomy",
 				row:2,
-				baseDescription:"Increases embarked movement +1",
+				uniques:["Increases embarked movement +1","Enables embarked units to enter ocean tiles"],
 				prerequisites:["Compass","Education"]
 			},
 			{
@@ -339,7 +340,7 @@
 			{
 				name:"Steam Power",
 				row:7,
-				baseDescription:"Increases embarked movement +1",
+				uniques:["Increases embarked movement +1"],
 				prerequisites:["Industrialization","Scientific Theory","Rifling"]
 			},
 			{
@@ -419,7 +420,7 @@
 				name:"Computers",
 				row:5,
 				prerequisites:["Mass Media"],
-				baseDescription:"+10% science and production in all cities"		
+				uniques:["+10% science and production in all cities"]
 			},
 			{
 				name:"Nuclear Fission",
@@ -486,7 +487,7 @@
 				name:"Future Tech",
 				row:5,
 				prerequisites:["Nanotechnology","Particle Physics","Satellites"],
-				baseDescription:"Who knows what the future holds?"
+				uniques:["Who knows what the future holds?"]
 			}
 		]	
 	}
