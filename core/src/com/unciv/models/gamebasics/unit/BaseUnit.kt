@@ -37,7 +37,15 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     fun getShortDescription(): String {
         val infoList= mutableListOf<String>()
-        infoList += uniques.map { it.tr() }
+        for(unique in uniques){
+            val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(unique)
+            if(regexResult==null) infoList += unique.tr()
+            else{
+                val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
+                val translatedUnique = start.tr() + " "+ regexResult.groups[3]!!.value+"%"
+                infoList+=translatedUnique
+            }
+        }
         if(strength!=0) infoList += "{Strength}: $strength".tr()
         if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
         if(movement!=2) infoList+="{Movement}: $movement".tr()

@@ -2688,6 +2688,8 @@
 		Dutch:"Gelimiteerd zicht"
 		Spanish:"Visibilidad limitada"
 	}
+	
+	/* Old Great Person translations (for reference only)
 	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
 		Italian:"Può iniziare un'Età dell'Oro da 8 turni o costruire un Gran Monunento (+6 cultura)"
 		Russian:"Может начать золотой век на 8 ходов или построить памятник (+6 культура)"
@@ -2723,10 +2725,25 @@
 		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
 		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
 		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
-	}
+	}*/ 
+	
 	"May create improvements on water resources":{
 		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
 	}
+	"Can start an 8-turn golden age":{}
+	"Can build improvement: Landmark":{}
+	"Can discover a technology":{}
+	"Can build improvement: Academy":{}
+	"Can undertake a trade mission, giving a large sum of gold":{}
+	"Can build improvement: Customs House":{}
+	"Can speed up construction of a wonder":{}
+	"Can build improvement: Manufactory":{}
+	
+	"Cannot enter ocean tiles":{}
+	"Cannot enter ocean tiles until Astronomy":{}
+	"+1 Visibility Range":{}
+	"Double movement in coast":{}
+	
 	
 	// Policy picker screen
 	"You have entered the [newEra] era!":{
