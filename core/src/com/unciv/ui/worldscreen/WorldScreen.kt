@@ -12,6 +12,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
@@ -236,7 +237,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
                 // BOOM! Exception!
                 // That's why this needs to be after the game is saved.
-                shouldUpdate=true
+                shouldUpdateBecauseOfNewTurn=true
 
                 nextTurnButton.setText("Next turn".tr())
                 Gdx.input.inputProcessor = stage
@@ -255,14 +256,15 @@ class WorldScreen : CameraStageBaseScreen() {
         }
     }
 
-    private var shouldUpdate=false
+    private var shouldUpdateBecauseOfNewTurn=false
     override fun render(delta: Float) {
-        if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+        if(shouldUpdateBecauseOfNewTurn){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
             // otherwise images will not load properly!
             update()
 
+            val shownTutorials = UnCivGame.Current.settings.tutorialsShown
             displayTutorials("NextTurn")
-            if("BarbarianEncountered" !in UnCivGame.Current.settings.tutorialsShown
+            if("BarbarianEncountered" !in shownTutorials
                     && civInfo.getViewableTiles().any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
                 displayTutorials("BarbarianEncountered")
             if(civInfo.cities.size > 2) displayTutorials("SecondCity")
@@ -272,12 +274,18 @@ class WorldScreen : CameraStageBaseScreen() {
             val resources = civInfo.getCivResources()
             if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
             if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
-            if(civInfo.exploredTiles.asSequence().map { gameInfo.tileMap[it] }.any { it.isCityCenter() && it.getOwner()!=civInfo })
+            if("EnemyCity" !in shownTutorials
+                    && civInfo.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
+                            .any { it.isCityCenter() && it.getOwner()!=civInfo })
                 displayTutorials("EnemyCity")
             if("Enables construction of Spaceship parts" in civInfo.getBuildingUniques())
                 displayTutorials("ApolloProgram")
+            if(civInfo.getCivUnits().any { it.baseUnit.unitType == UnitType.Siege })
+                displayTutorials("SiegeUnitTrained")
+            if(civInfo.tech.getUniques().contains("Enables embarkation for land units"))
+                displayTutorials("CanEmbark")
 
-            shouldUpdate=false
+            shouldUpdateBecauseOfNewTurn=false
         }
         super.render(delta)
     }
