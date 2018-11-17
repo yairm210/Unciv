@@ -95,7 +95,7 @@ class UnitActions {
                     {unit.action="Set Up"; unit.currentMovement = max(0f, unit.currentMovement-1)},
                     unit.currentMovement != 0f)
 
-        if (unit.name == "Settler" && !unit.isEmbarked()) {
+        if (unit.hasUnique("Founds a new city") && !unit.isEmbarked()) {
             actionList += UnitAction("Found city",
                     {
                         worldScreen.displayTutorials("CityFounded")
@@ -109,7 +109,7 @@ class UnitActions {
                             !tile.getTilesInDistance(3).any { it.isCityCenter() })
         }
         
-        if (unit.name == "Worker" && !unit.isEmbarked()) {
+        if (unit.hasUnique("Can build improvements on tiles") && !unit.isEmbarked()) {
             actionList += UnitAction("Construct improvement",
                     { worldScreen.game.screen = ImprovementPickerScreen(tile) },
                     unit.currentMovement != 0f
@@ -131,7 +131,7 @@ class UnitActions {
         }
 
         for(improvement in listOf("Fishing Boats","Oil well")) {
-            if (unit.name == "Work Boats" && tile.resource != null
+            if (unit.hasUnique("May create improvements on water resources") && tile.resource != null
                     && tile.getTileResource().improvement == improvement
                     && unit.civInfo.tech.isResearched(GameBasics.TileImprovements[improvement]!!.techRequired!!)
             )

@@ -46,7 +46,7 @@ class CivilizationInfo {
 
     constructor()
 
-    constructor(civName: String, gameInfo: GameInfo) {
+    constructor(civName: String) {
         this.civName = civName
         tech.techsResearched.add("Agriculture")
     }

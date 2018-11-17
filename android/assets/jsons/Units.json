@@ -6,17 +6,17 @@
 	{
 		name:"Worker",
 		unitType:"Civilian",
-		baseDescription: "Can build improvements on tiles", 
 		movement:2,
 		hurryCostModifier:20,
+		uniques:["Can build improvements on tiles"]
 		cost:70
 	},
 	{
 		name:"Settler",
 		unitType:"Civilian",
-		baseDescription: "Founds a new city", 
 		movement:2,
 		cost:106,
+		uniques:["Founds a new city"]
 		hurryCostModifier:20
 	},
 	{
@@ -66,11 +66,10 @@
 	{
 		name:"Work Boats",
 		unitType:"WaterCivilian",
-		baseDescription: "May create improvements on water resources", 
 		movement:4,
 		cost: 30,
 		requiredTech:"Sailing",
-		uniques:["Cannot enter ocean tiles until Astronomy"]
+		uniques:["Cannot enter ocean tiles until Astronomy","May create improvements on water resources"]
 		hurryCostModifier:20
 	},
 	{
@@ -379,30 +378,30 @@
 	
 	{
 		name:"Great Artist",
-		baseDescription: "Can start an 8-turn golden age or construct a Landmark (+6 culture)", 
 		unbuildable:true,
 		unitType:"Civilian",
+		uniques:["Can start an 8-turn golden age","Can build improvement: Landmark"]
 		movement:2
 	},
 	{
 		name:"Great Scientist",
-		baseDescription: "Can discover a technology, or construct an Academy (+4 science)", 
 		unbuildable:true,
 		unitType:"Civilian",
+		uniques:["Can discover a technology","Can build improvement: Academy"]
 		movement:2
 	},
 	{
 		name:"Great Merchant",
-		baseDescription: "Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 gold)", 
 		unbuildable:true,
 		unitType:"Civilian",
+		uniques:["Can undertake a trade mission, giving a large sum of gold","Can build improvement: Customs House"]
 		movement:2
 	},
 	{
 		name:"Great Engineer",
-		baseDescription: "Can speed up construction of a wonder, or construct a Manufactory (+4 production)", 
 		unbuildable:true,
 		unitType:"Civilian",
+		uniques:["Can speed up construction of a wonder","Can build improvement: Manufactory"]
 		movement:2
 	},
 	

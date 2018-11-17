@@ -25,7 +25,7 @@ class GreatPersonPickerScreen : PickerScreen() {
             button.onClick {
                 theChosenOne = unit
                 pick("Get " +unit.name)
-                descriptionLabel.setText(unit.baseDescription)
+                descriptionLabel.setText(unit.uniques.joinToString())
             }
             topTable.add(button).pad(10f)
         }

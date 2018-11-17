@@ -5,7 +5,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.ui.NewGameScreen
 import com.unciv.ui.utils.getRandom
 
@@ -29,7 +28,7 @@ class GameStarter(){
                 .filter { it.isLand() && vectorIsWithinNTilesOfEdge(it.position,3)}
                 .toMutableList()
         val playerPosition = freeTiles.getRandom().position
-        val playerCiv = CivilizationInfo(newGameParameters.nation, gameInfo)
+        val playerCiv = CivilizationInfo(newGameParameters.nation)
         playerCiv.difficulty=newGameParameters.difficulty
         gameInfo.civilizations.add(playerCiv) // first one is player civ
 
@@ -40,7 +39,7 @@ class GameStarter(){
 
         for (nationName in GameBasics.Nations.keys.filterNot { it=="Barbarians" || it==newGameParameters.nation }.shuffled()
                 .take(newGameParameters.numberOfEnemies)) {
-            val civ = CivilizationInfo(nationName, gameInfo)
+            val civ = CivilizationInfo(nationName)
             civ.tech.techsResearched.addAll(playerCiv.getDifficulty().aiFreeTechs)
             gameInfo.civilizations.add(civ)
         }

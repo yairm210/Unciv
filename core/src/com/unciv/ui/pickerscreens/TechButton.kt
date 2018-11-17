@@ -52,8 +52,9 @@ class TechButton(techName:String, val techManager: TechManager) : Table(CameraSt
             techEnabledIcons.add(ImageGetter.getResourceImage(resource.name, 30f))
 
         val tech = GameBasics.Technologies[techName]!!
-        if(tech.baseDescription!=null)
-            techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Star").apply { color= Color.BLACK }.surroundWithCircle(30f))
+        for(unique in tech.uniques)
+            techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Star")
+                    .apply { color= Color.BLACK }.surroundWithCircle(30f))
 
         rightSide.add(techEnabledIcons)
 

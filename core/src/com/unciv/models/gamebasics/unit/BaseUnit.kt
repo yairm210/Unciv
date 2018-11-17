@@ -13,7 +13,6 @@ import com.unciv.ui.utils.tr
 class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override lateinit var name: String
-    var baseDescription: String? = null
     var cost: Int = 0
     var hurryCostModifier: Int = 0
     var movement: Int = 0
@@ -38,7 +37,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     fun getShortDescription(): String {
         val infoList= mutableListOf<String>()
-        if(baseDescription!=null) infoList+=baseDescription!!
+        infoList += uniques.map { it.tr() }
         if(strength!=0) infoList += "{Strength}: $strength".tr()
         if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
         if(movement!=2) infoList+="{Movement}: $movement".tr()
@@ -47,7 +46,6 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     fun getDescription(forPickerScreen:Boolean): String {
         val sb = StringBuilder()
-        if(baseDescription!=null) sb.appendln(baseDescription!!.tr())
         if(requiredResource!=null) sb.appendln("Requires {$requiredResource}".tr())
         if(!forPickerScreen) {
             if(uniqueTo!=null) sb.appendln("Unique to $uniqueTo, replaces $replaces")
@@ -71,7 +69,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         return sb.toString()
     }
 
-    fun getMapUnit(civInfo: CivilizationInfo): MapUnit {
+    fun getMapUnit(): MapUnit {
         val unit = MapUnit()
         unit.name = name
         unit.setTransients() // must be after setting name because it sets the baseUnit according to the name
