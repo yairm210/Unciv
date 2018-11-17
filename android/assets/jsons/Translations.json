@@ -2730,6 +2730,7 @@
 	"May create improvements on water resources":{
 		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
 	}
+	
 	"Can start an 8-turn golden age":{}
 	"Can build improvement: Landmark":{}
 	"Can discover a technology":{}
@@ -2743,6 +2744,7 @@
 	"Cannot enter ocean tiles until Astronomy":{}
 	"+1 Visibility Range":{}
 	"Double movement in coast":{}
+	"Indirect Fire":{} // units can fire over forests/hills
 	
 	
 	// Policy picker screen
