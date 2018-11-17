@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -151,9 +152,12 @@ class UnitAutomation{
         // and then later we round it off to a whole.
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
-        val tilesToAttackFrom = unitDistanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
+        var tilesToAttackFrom = unitDistanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
+        if(unit.type.isLandUnit())
+            tilesToAttackFrom = tilesToAttackFrom.filter { it.getBaseTerrain().type==TerrainType.Land }
+        
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
             val tilesInAttackRange = if (unit.hasUnique("Indirect fire")) reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTiles(rangeOfAttack)
