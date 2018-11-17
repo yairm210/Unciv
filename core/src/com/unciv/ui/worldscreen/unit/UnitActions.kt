@@ -41,7 +41,7 @@ class UnitActions {
             },true)
         }
 
-        if(!unit.baseUnit().unitType.isCivilian() && !unit.isEmbarked()
+        if(!unit.baseUnit().unitType.isCivilian() && !unit.isEmbarked() && !unit.baseUnit.unitType.isWaterUnit()
                 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }

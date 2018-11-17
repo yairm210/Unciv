@@ -64,7 +64,7 @@ class CivilizationInfo {
         toReturn.scienceVictory = scienceVictory.clone()
         toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
         toReturn.cities = cities.map { it.clone() }
-        toReturn.exploredTiles.addAll(exploredTiles)
+        toReturn.exploredTiles.addAll(exploredTiles.toList()) // we actually fot a concurrent modification exception here, the toList should solve that
         return toReturn
     }
 
