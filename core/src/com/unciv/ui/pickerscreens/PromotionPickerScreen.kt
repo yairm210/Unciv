@@ -26,7 +26,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
         val availablePromotionsGroup = VerticalGroup()
         availablePromotionsGroup.space(10f)
-        val unitType = mapUnit.baseUnit().unitType
+        val unitType = mapUnit.type
         val promotionsForUnitType = GameBasics.UnitPromotions.values.filter { it.unitTypes.contains(unitType.toString()) }
         val unitAvailablePromotions = mapUnit.promotions.getAvailablePromotions()
         for (promotion in promotionsForUnitType) {

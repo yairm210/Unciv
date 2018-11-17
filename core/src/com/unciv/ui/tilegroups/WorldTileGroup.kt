@@ -24,7 +24,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         val whiteHalo = if(unit.isFortified())  ImageGetter.getImage("OtherIcons/Shield.png")
         else ImageGetter.getImage("OtherIcons/Circle.png")
         whiteHalo.setSize(30f,30f)
-        val unitImage = if(unit.baseUnit().unitType.isCivilian()) civilianUnitImage
+        val unitImage = if(unit.type.isCivilian()) civilianUnitImage
                         else militaryUnitImage
         if(unitImage==null) //Stuff has changed since we requested this, the unit is no longer here...
             return

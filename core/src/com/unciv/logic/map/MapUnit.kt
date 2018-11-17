@@ -7,6 +7,7 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
 import java.text.DecimalFormat
 import java.util.*
@@ -38,6 +39,9 @@ class MapUnit {
         return toReturn
     }
 
+    val type:UnitType
+        get()=baseUnit.unitType
+
     fun baseUnit(): BaseUnit = baseUnit
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
     fun getTile(): TileInfo =  currentTile
@@ -47,7 +51,7 @@ class MapUnit {
         var movement = baseUnit.movement
         movement += getUniques().count{it=="+1 Movement"}
 
-        if(baseUnit.unitType.isWaterUnit() && !baseUnit.unitType.isCivilian()
+        if(type.isWaterUnit() && !type.isCivilian()
                 && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
@@ -83,7 +87,7 @@ class MapUnit {
         if(hasUnique("Limited Visibility")) visibilityRange-=1
         if(civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
             visibilityRange += 1
-        if(baseUnit.unitType.isWaterUnit() && !baseUnit.unitType.isCivilian()
+        if(type.isWaterUnit() && !type.isCivilian()
                 && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
             visibilityRange += 1
         val tile = getTile()
@@ -108,14 +112,14 @@ class MapUnit {
 
     fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
-        if(tile.isWater() && baseUnit.unitType.isLandUnit()){
+        if(tile.isWater() && type.isLandUnit()){
             val techUniques = civInfo.tech.getUniques()
             if(!techUniques.contains("Enables embarkation for land units"))
                 return false
             if(tile.baseTerrain == "Ocean" && !techUniques.contains("Enables embarked units to enter ocean tiles"))
                 return false
         }
-        if(tile.isLand() && baseUnit.unitType.isWaterUnit())
+        if(tile.isLand() && type.isWaterUnit())
             return false
         if(tile.baseTerrain=="Ocean" && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !civInfo.tech.isResearched("Astronomy"))
@@ -132,7 +136,7 @@ class MapUnit {
     fun canMoveTo(tile: TileInfo): Boolean {
         if(!canPassThrough(tile)) return false
 
-        if (baseUnit().unitType.isCivilian())
+        if (type.isCivilian())
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==owner)
         else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==owner)
     }
@@ -154,7 +158,7 @@ class MapUnit {
     }
 
     fun getRange(): Int {
-        if(baseUnit().unitType.isMelee()) return 1
+        if(type.isMelee()) return 1
         var range = baseUnit().range
         if(hasUnique("+1 Range")) range++
         return range
@@ -162,7 +166,7 @@ class MapUnit {
 
 
     fun isEmbarked(): Boolean {
-        if(!baseUnit.unitType.isLandUnit()) return false
+        if(!type.isLandUnit()) return false
         return currentTile.baseTerrain=="Ocean"||currentTile.baseTerrain=="Coast"
     }
 
@@ -298,13 +302,13 @@ class MapUnit {
     }
 
     fun removeFromTile(){
-        if (baseUnit().unitType.isCivilian()) getTile().civilianUnit=null
+        if (type.isCivilian()) getTile().civilianUnit=null
         else getTile().militaryUnit=null
     }
 
     fun putInTile(tile:TileInfo){
         if(!canMoveTo(tile)) throw Exception("I can't go there!")
-        if(baseUnit().unitType.isCivilian())
+        if(type.isCivilian())
             tile.civilianUnit=this
         else tile.militaryUnit=this
         currentTile = tile
@@ -336,7 +340,7 @@ class MapUnit {
             civInfo.addNotification("A [$chosenUnit] has joined us!",null, Color.BLUE)
         }
 
-        if(!baseUnit.unitType.isCivilian())
+        if(!type.isCivilian())
             actions.add {
                 promotions.XP+=10
                 civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!",null, Color.RED)

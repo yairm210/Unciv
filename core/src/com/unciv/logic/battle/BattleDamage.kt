@@ -45,7 +45,7 @@ class BattleDamage{
 
             if(combatant.getCivilization().policies.isAdopted("Discipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                            .any { it.civInfo==combatant.getCivilization() && !it.baseUnit.unitType.isCivilian()})
+                            .any { it.civInfo==combatant.getCivilization() && !it.type.isCivilian()})
                 modifiers["Discipline"] = 0.15f
 
             val requiredResource = combatant.unit.baseUnit.requiredResource

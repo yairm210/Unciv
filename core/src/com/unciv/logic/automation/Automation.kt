@@ -54,7 +54,7 @@ class Automation {
             val buildableWonders = getBuildableBuildings().filter { it.isWonder }
 
             val civUnits = cityInfo.civInfo.getCivUnits()
-            val militaryUnits = civUnits.filter { !it.baseUnit().unitType.isCivilian()}.size
+            val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size
             val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
             val cities = cityInfo.civInfo.cities.size
 

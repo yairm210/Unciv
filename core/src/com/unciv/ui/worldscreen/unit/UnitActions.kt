@@ -41,7 +41,7 @@ class UnitActions {
             },true)
         }
 
-        if(!unit.baseUnit().unitType.isCivilian() && !unit.isEmbarked() && !unit.baseUnit.unitType.isWaterUnit()
+        if(!unit.type.isCivilian() && !unit.isEmbarked() && !unit.type.isWaterUnit()
                 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
             actionList += UnitAction("Fortify", { unit.action = "Fortify 0" }, unit.currentMovement != 0f)
         }
@@ -50,7 +50,7 @@ class UnitActions {
             actionList += UnitAction("Sleep", { unit.action = "Sleep" }, unit.currentMovement != 0f)
         }
 
-        if(unit.baseUnit.unitType == UnitType.Scout){
+        if(unit.type == UnitType.Scout){
             if(unit.action != "explore")
                 actionList += UnitAction("Explore", { UnitAutomation().automatedExplore(unit); unit.action = "explore" },
                         unit.currentMovement != 0f)
@@ -58,7 +58,7 @@ class UnitActions {
                 actionList += UnitAction("Stop exploration", { unit.action = null }, true)
         }
 
-        if(!unit.baseUnit().unitType.isCivilian() && unit.promotions.canBePromoted()){
+        if(!unit.type.isCivilian() && unit.promotions.canBePromoted()){
                 actionList += UnitAction("Promote",
                         {UnCivGame.Current.screen = PromotionPickerScreen(unit)},
                         unit.currentMovement != 0f)

@@ -70,7 +70,7 @@ class NextTurnAutomation(){
     private fun declareWar(civInfo: CivilizationInfo) {
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()
                 && !civInfo.isAtWar()
-                && civInfo.getCivUnits().filter { !it.baseUnit.unitType.isCivilian() }.size > civInfo.cities.size * 2) {
+                && civInfo.getCivUnits().filter { !it.type.isCivilian() }.size > civInfo.cities.size * 2) {
 
             val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
                     .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
@@ -101,7 +101,7 @@ class NextTurnAutomation(){
                     unit.promotions.addPromotion(availablePromotions.getRandom().name)
             }
 
-            val unitType = unit.baseUnit().unitType
+            val unitType = unit.type
             if (unitType.isRanged()) rangedUnits.add(unit)
             else if (unitType.isMelee()) meleeUnits.add(unit)
             else civilianUnits.add(unit)

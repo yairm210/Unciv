@@ -31,7 +31,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     fun update() {
         val unitTable = worldScreen.bottomBar.unitTable
         if (unitTable.selectedUnit == null
-                || unitTable.selectedUnit!!.baseUnit().unitType.isCivilian()){
+                || unitTable.selectedUnit!!.type.isCivilian()){
             hide()
             return
         } // no attacker

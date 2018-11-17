@@ -280,7 +280,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 displayTutorials("EnemyCity")
             if("Enables construction of Spaceship parts" in civInfo.getBuildingUniques())
                 displayTutorials("ApolloProgram")
-            if(civInfo.getCivUnits().any { it.baseUnit.unitType == UnitType.Siege })
+            if(civInfo.getCivUnits().any { it.type == UnitType.Siege })
                 displayTutorials("SiegeUnitTrained")
             if(civInfo.tech.getUniques().contains("Enables embarkation for land units"))
                 displayTutorials("CanEmbark")

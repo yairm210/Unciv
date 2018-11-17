@@ -127,7 +127,7 @@ class UnitAutomation{
 
     fun containsAttackableEnemy(tile: TileInfo, unit: MapUnit): Boolean {
         if(unit.isEmbarked()){
-            if(unit.baseUnit.unitType.isRanged()) return false
+            if(unit.type.isRanged()) return false
             if(tile.isWater()) return false // can't attack water units while embarked, only land
         }
         val tileCombatant = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(tile)
@@ -167,7 +167,7 @@ class UnitAutomation{
         // this can be sped up if we check each layer separately
         var closeEnemies = unit.getTile().getTilesInDistance(5)
                 .filter{ containsAttackableEnemy(it, unit) && unit.movementAlgs().canReach(it)}
-        if(unit.baseUnit().unitType.isRanged())
+        if(unit.type.isRanged())
             closeEnemies = closeEnemies.filterNot { it.isCityCenter() && it.getCity()!!.health==1 }
 
         val closestEnemy = closeEnemies.minBy { it.arialDistanceTo(unit.getTile()) }
@@ -213,7 +213,7 @@ class UnitAutomation{
                 .filter { it.location in unit.civInfo.exploredTiles }
                 .map { it.getCenterTile() }.toList()
 
-        if(unit.baseUnit().unitType.isRanged()) // ranged units don't harm capturable cities, waste of a turn
+        if(unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
             enemyCities = enemyCities.filterNot { it.getCity()!!.health==1 }
 
         val closestReachableEnemyCity = enemyCities
@@ -245,7 +245,7 @@ class UnitAutomation{
         val cityWithHealthLeft = cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
                 .minBy { it.tileToAttack.getCity()!!.health  }
 
-        if (unit.baseUnit().unitType.isMelee() && capturableCity!=null)
+        if (unit.type.isMelee() && capturableCity!=null)
             enemyTileToAttack = capturableCity // enter it quickly, top priority!
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
@@ -266,7 +266,7 @@ class UnitAutomation{
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
-        if(unit.baseUnit().unitType.isMelee()) return false // don't garrison melee units, they're not that good at it
+        if(unit.type.isMelee()) return false // don't garrison melee units, they're not that good at it
         val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
             val centerTile = it.getCenterTile()
             centerTile.militaryUnit==null
