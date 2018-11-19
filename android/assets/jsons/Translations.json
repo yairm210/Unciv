@@ -10,7 +10,7 @@
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
-		Italian:"Lavoro..."
+		Italian:"Attendere..."
 		Russian:"Работает..."
 		French:"Patientez..."
 		Romanian:"Lucru..."
@@ -786,7 +786,7 @@
 	}
 	
 	"Cannot continue work on [construction]":{
-		Italian:"Impossibile lavorare su [construction]"
+		Italian:"Impossibile produrre [construction]"
 		Russian:"Не удается продолжить работу над [construction]"
 		French:"Impossible de continuer à travailler sur [construction]"
 		Romanian:"Nu pot continua munca pentru [construction]"
@@ -1054,7 +1054,7 @@
 	}
 	
 	"[percentage] to unit defence":{
-		Italian:"[] difesa dell'unità"
+		Italian:"[percentage] difesa dell'unità"
 	} // e.g. +25% to unit defence
 	
 	// Terrains
@@ -1577,7 +1577,7 @@
 		Spanish:"Fábrica"
 	}
 	"Customs house":{
-		Italian:"Dogane"
+		Italian:"Dogana"
 		Russian:"Таможня"
 		French:"Maison des douanes"
 		Romanian:"Casa vamală"
@@ -2247,7 +2247,9 @@
 		Romanian:"Permite conversia producției în oraș la aur"
 		Spanish:"Habilita la conversión de producción a oro"
 	}
-	"Increases embarked movement +1":{}
+	"Increases embarked movement +1":{
+		Italian:"+1 movimento delle unità imbarcate"
+	}
 	
 	// Tech Eras
 	// In case of foreign languages it becomes gender sensitive words
@@ -2338,7 +2340,7 @@
 		Spanish:"+25% velocidad de construcción trabajador"
 	}
 	"Provides 2 free workers":{
-		Italian:"Offre 2 lavoratori liberi"
+		Italian:"Offre 2 Lavoratori liberi"
 		Russian:"предоставляет 2 бесплатных рабочих"
 		French:"Fournit 2 travailleurs libres"
 		Romanian:"Oferă 2 lucrători liberi"
@@ -2662,7 +2664,7 @@
 		Spanish:"Penalización contra [unitType]"
 	}
 	"Must set up to ranged attack":{
-		Italian:"Deve impostare un attacco a distanza"
+		Italian:"Deve montare per attaccare a distanza"
 		Russian:"Необходимо подготовится к дальнобойной атаке"
 		French:"Doit être configuré pour une attaque à distance"
 		Romanian:"Trebuie să fie pregătit să atace"
@@ -2731,20 +2733,46 @@
 		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
 	}
 	
-	"Can start an 8-turn golden age":{}
-	"Can build improvement: Landmark":{}
-	"Can discover a technology":{}
-	"Can build improvement: Academy":{}
-	"Can undertake a trade mission, giving a large sum of gold":{}
-	"Can build improvement: Customs House":{}
-	"Can speed up construction of a wonder":{}
-	"Can build improvement: Manufactory":{}
+	"Can start an 8-turn golden age":{
+		Italian:"Può avviare un'Età dell'Oro di 8 turni"
+	}
+	"Can build improvement: Landmark":{
+		Italian:"Può costruire il miglioramento: Punto di Riferimento"
+	}
+	"Can discover a technology":{
+		Italian:"Può scoprire una tecnologia"
+	}
+	"Can build improvement: Academy":{
+		Italian:"Può costruire il miglioramento: Accademia"
+	}
+	"Can undertake a trade mission, giving a large sum of gold":{
+		Italian:"Può compiere missioni commerciali, donando grandi quantità di Oro"
+	}
+	"Can build improvement: Customs House":{
+		Italian:"Può costruire il miglioramento: Dogana"
+	}
+	"Can speed up construction of a wonder":{
+		Italian:"Può accelerare la costruzione di una Meraviglia"
+	}
+	"Can build improvement: Manufactory":{
+		Italian:"Può costruire il miglioramento: Manifattura"
+	}
 	
-	"Cannot enter ocean tiles":{}
-	"Cannot enter ocean tiles until Astronomy":{}
-	"+1 Visibility Range":{}
-	"Double movement in coast":{}
-	"Indirect Fire":{} // units can fire over forests/hills
+	"Cannot enter ocean tiles":{
+		Italian:"Può entrare nell'oceano"
+	}
+	"Cannot enter ocean tiles until Astronomy":{
+		Italian:"Può entrare nell'oceano solo dopo Astronomia"
+	}
+	"+1 Visibility Range":{
+		Italian:"+1 raggio di Visione"
+	}
+	"Double movement in coast":{
+		Italian:"Doppio movimento sulla costa"
+	}
+	"Indirect Fire":{
+		Italian:"Fuoco indiretto (l'unità può sparare oltre le foreste o le colline)"
+	} // units can fire over forests/hills
 	
 	
 	// Policy picker screen
@@ -3367,7 +3395,7 @@
 		Spanish:"Acueducto"
 	}
 	"Workshop":{	
-		Italian:"Laboratorio"
+		Italian:"Bottega"
 		Russian:"Мастерская"
 		French:"Atelier"
 		Romanian:"Atelier"
@@ -3649,7 +3677,7 @@
 	
 	// Ancient Era Units
 	"Worker":{	
-		Italian:"Operaio"
+		Italian:"Lavoratore"
 		Russian:"Рабочий"
 		French:"Travailleur"
 		Romanian:"Lucrător"
@@ -3802,7 +3830,7 @@
 		Italian:"Fregata"
 	}
 	"Lancer":{	
-		Italian:"lanciere"
+		Italian:"Lanciere a cavallo"
 		Russian:"Улан"
 		French:"Lancier"
 		Romanian:"Lăncier"
@@ -3837,21 +3865,21 @@
 	
 	// Great units
 	"Great Artist":{	
-		Italian:"Grande artista"
+		Italian:"Grande Artista"
 		Russian:"Великий художник"
 		French:"Grand artiste"
 		Romanian:"Mare Artist"
 		Spanish:"Gran Artista"
 	}
 	"Great Scientist":{	
-		Italian:"Grande scienziato"
+		Italian:"Grande Scienziato"
 		Russian:"Великий ученый"
 		French:"Grand scientifique"
 		Romanian:"Mare Scientist"
 		Spanish:"Gran Científico"
 	}
 	"Great Merchant":{	
-		Italian:"Grande mercante"
+		Italian:"Grande Mercante"
 		Russian:"Великий торговец"
 		French:"Marele comerciant"
 		Romanian:"Grand marchand"
