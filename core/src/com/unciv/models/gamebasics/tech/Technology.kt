@@ -21,7 +21,11 @@ class Technology : ICivilopedia {
             var enabledUnits = GameBasics.Units.values.filter { it.requiredTech==name && (it.uniqueTo==null || it.uniqueTo==UnCivGame.Current.gameInfo.getPlayerCivilization().civName) }
             val replacedUnits = enabledUnits.map { it.replaces }.filterNotNull()
             enabledUnits = enabledUnits.filter { it.name !in replacedUnits}
-            if(enabledUnits.isNotEmpty()) SB.appendln("{Units enabled}: "+enabledUnits.map { it.name.tr() + " ("+it.getShortDescription()+")" }.joinToString())
+            if(enabledUnits.isNotEmpty()){
+                SB.appendln("{Units enabled}: ")
+                for(unit in enabledUnits)
+                    SB.appendln(" * "+unit.name.tr() + " ("+unit.getShortDescription()+")")
+            }
 
             var enabledBuildings = GameBasics.Buildings.values.filter { it.requiredTech==name && (it.uniqueTo==null || it.uniqueTo==UnCivGame.Current.gameInfo.getPlayerCivilization().civName) }
             val replacedBuildings = enabledBuildings.map { it.replaces }.filterNotNull()
