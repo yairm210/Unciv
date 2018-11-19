@@ -151,7 +151,7 @@ open class TileInfo {
 
         val improvement = getTileImprovement()
         if (improvement != null) {
-            if (resource != null && getTileResource().improvement == improvement.name)
+            if (hasViewableResource(observingCiv) && getTileResource().improvement == improvement.name)
                 stats.add(getTileResource().improvementStats!!) // resource-specifc improvement
             else
                 stats.add(improvement) // basic improvement

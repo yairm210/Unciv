@@ -47,7 +47,7 @@ class UnitAutomation{
         if (tryUpgradeUnit(unit, unitActions)) return
 
         // Accompany settlers
-        if (tryAccompanySettler(unit,unitDistanceToTiles)) return
+        if (tryAccompanySettler(unit)) return
 
         if (unit.health < 50) {
             healUnit(unit,unitDistanceToTiles)
@@ -183,9 +183,9 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryAccompanySettler(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+    private fun tryAccompanySettler(unit: MapUnit): Boolean {
         val settlerToAccompany = unit.civInfo.getCivUnits()
-                .firstOrNull { val tile = it.currentTile;
+                .firstOrNull { val tile = it.currentTile
                     it.name=="Settler" && tile.militaryUnit==null
                         && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
         if(settlerToAccompany==null) return false
