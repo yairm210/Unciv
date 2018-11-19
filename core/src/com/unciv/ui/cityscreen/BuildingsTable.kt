@@ -6,7 +6,6 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.stats.Stat
-import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 
 
@@ -32,7 +31,7 @@ class ExpanderTab(private val title:String,skin: Skin):Table(skin){
             tab.isVisible=!tab.isVisible
         }
         add(toggle).row()
-        tab.add(innerTable)
+        tab.add(innerTable).pad(10f)
         add(tab)
     }
 }
@@ -60,14 +59,17 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
 
         if (!wonders.isEmpty()) {
             val wondersExpander = ExpanderTab("Wonders",skin)
-            for (building in wonders)
+            for (building in wonders) {
+                wondersExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 wondersExpander.innerTable.add(Label(building.name, skin)).pad(5f).align(Align.left).row()
+            }
             add(wondersExpander).row()
         }
 
         if (!specialistBuildings.isEmpty()) {
             val specialistBuildingsExpander = ExpanderTab("Specialist Buildings",skin)
             for (building in specialistBuildings) {
+                specialistBuildingsExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 specialistBuildingsExpander.innerTable.add(Label(building.name, skin)).pad(5f)
                 val specialistIcons = Table()
                 specialistIcons.row().size(20f).pad(5f)
@@ -85,8 +87,10 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
 
         if (!others.isEmpty()) {
             val buildingsExpanderTab = ExpanderTab("Buildings",skin)
-            for (building in others)
+            for (building in others) {
+                buildingsExpanderTab.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 buildingsExpanderTab.innerTable.add(Label(building.name, skin)).pad(5f).row()
+            }
             add(buildingsExpanderTab).row()
         }
         pack()
