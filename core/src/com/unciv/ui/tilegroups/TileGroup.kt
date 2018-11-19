@@ -335,7 +335,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     fun getUnitImage(unit: MapUnit, size: Float): Group {
         val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
-                .apply { setSize(20f, 20f) }
+                .apply { setSize(size*0.75f, size*0.75f) }
 
         val background =
                 when {

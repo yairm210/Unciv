@@ -22,7 +22,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     internal var selectedTile: TileInfo? = null
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
-    var overlayActor :Actor?=null
+    var moveToOverlay :Actor?=null
+    val cityButtonOverlays = ArrayList<Actor>()
 
     internal fun addTiles() {
         val allTiles = Group()
@@ -34,62 +35,20 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         var bottomY = 0f
 
         for (tileInfo in tileMap.values) {
-            val group = WorldTileGroup(tileInfo)
+            val tileGroup = WorldTileGroup(tileInfo)
 
-            group.onClick {
-                worldScreen.displayTutorials("TileClicked")
-                if(overlayActor!=null) overlayActor!!.remove()
-                selectedTile = tileInfo
-
-                val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
-                if(selectedUnit!=null && selectedUnit.getTile()!=tileInfo
-                        && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
-                    val size = 60f
-                    val moveHereGroup = Group().apply { width = size;height = size; }
-                    moveHereGroup.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
-                    moveHereGroup.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereGroup) })
-
-                    val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
-                    val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size/2; height = size/2;color= Color.BLUE }
-                    moveHereGroup.addActor(numberCircle)
-                    moveHereGroup.addActor(Label(turnsToGetThere.toString(),CameraStageBaseScreen.skin).apply { center(numberCircle); setFontColor(Color.WHITE) })
-
-                    val unitIcon  = TileGroup(TileInfo()).getUnitImage(selectedUnit,size/3)
-                    unitIcon.y = size-unitIcon.height
-                    moveHereGroup.addActor(unitIcon)
-
-                    if(selectedUnit.currentMovement>0)
-                        moveHereGroup.onClick {
-                            if(selectedUnit.movementAlgs().canReach(tileInfo)) {
-                                selectedUnit.movementAlgs().headTowards(tileInfo)
-                                if (selectedUnit.currentTile != tileInfo)
-                                    selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
-                            }
-
-                            worldScreen.update()
-                            overlayActor!!.remove()
-                            overlayActor=null
-                        }
-                    else moveHereGroup.color.a=0.5f
-                    addAboveGroup(group, moveHereGroup).apply { width = size; height = size }
-                }
-
-                worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
-                worldScreen.update()
-            }
-
-
+            tileGroup.onClick{onTileClicked(tileInfo, tileGroup)}
 
             val positionalVector = HexMath().hex2WorldCoords(tileInfo.position)
             val groupSize = 50
-            group.setPosition(worldScreen.stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
+            tileGroup.setPosition(worldScreen.stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     worldScreen.stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
-            tileGroups[tileInfo] = group
-            allTiles.addActor(group)
-            topX = Math.max(topX, group.x + groupSize)
-            topY = Math.max(topY, group.y + groupSize)
-            bottomX = Math.min(bottomX, group.x)
-            bottomY = Math.min(bottomY, group.y)
+            tileGroups[tileInfo] = tileGroup
+            allTiles.addActor(tileGroup)
+            topX = Math.max(topX, tileGroup.x + groupSize)
+            topY = Math.max(topY, tileGroup.y + groupSize)
+            bottomX = Math.min(bottomX, tileGroup.x)
+            bottomY = Math.min(bottomY, tileGroup.y)
         }
 
         for (group in tileGroups.values) {
@@ -100,11 +59,15 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         // so we zero out the starting position of the whole board so they will be displayed as well
         allTiles.setSize(topX - bottomX + groupPadding*2, topY - bottomY + groupPadding*2)
 
-
         widget = allTiles
         setFillParent(true)
         setOrigin(worldScreen.stage.width/2,worldScreen.stage.height/2)
         setSize(worldScreen.stage.width, worldScreen.stage.height)
+        addZoomListener()
+        layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
+    }
+
+    private fun addZoomListener() {
         addListener(object : ActorGestureListener() {
             var lastScale = 1f
             var lastInitialDistance = 0f
@@ -117,21 +80,63 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 val scale: Float = Math.sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
                 if (scale < 1) return
                 setScale(scale)
-                for(tilegroup in tileGroups.values.filter { it.cityButton!=null })
-                    tilegroup.cityButton!!.setScale(1/scale)
+                for (tilegroup in tileGroups.values.filter { it.cityButton != null })
+                    tilegroup.cityButton!!.setScale(1 / scale)
             }
 
         })
-        layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
 
-    private fun addAboveGroup(group:Group, actor: Actor) {
+    private fun onTileClicked(tileInfo: TileInfo, tileGroup: WorldTileGroup){
+            worldScreen.displayTutorials("TileClicked")
+            if (moveToOverlay != null) moveToOverlay!!.remove()
+            selectedTile = tileInfo
+
+            val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+            if (selectedUnit != null && selectedUnit.getTile() != tileInfo
+                    && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
+                val size = 60f
+                val moveHereButton = Group().apply { width = size;height = size; }
+                moveHereButton.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
+                moveHereButton.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereButton) })
+
+                val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
+                val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size / 2; height = size / 2;color = Color.BLUE }
+                moveHereButton.addActor(numberCircle)
+                moveHereButton.addActor(Label(turnsToGetThere.toString(), CameraStageBaseScreen.skin).apply { center(numberCircle); setFontColor(Color.WHITE) })
+
+                val unitIcon = TileGroup(TileInfo()).getUnitImage(selectedUnit, size / 2)
+                unitIcon.y = size - unitIcon.height
+                moveHereButton.addActor(unitIcon)
+
+                if (selectedUnit.currentMovement > 0)
+                    moveHereButton.onClick {
+                        if (selectedUnit.movementAlgs().canReach(tileInfo)) {
+                            selectedUnit.movementAlgs().headTowards(tileInfo)
+                            if (selectedUnit.currentTile != tileInfo)
+                                selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+                        }
+
+                        worldScreen.update()
+                        moveToOverlay!!.remove()
+                        moveToOverlay = null
+                    }
+                else moveHereButton.color.a = 0.5f
+                addOverlayOnTileGroup(tileGroup, moveHereButton).apply { width = size; height = size }
+                moveHereButton.y += tileGroup.height
+                moveToOverlay = moveHereButton
+            }
+
+            worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
+            worldScreen.update()
+    }
+
+    private fun addOverlayOnTileGroup(group:WorldTileGroup, actor: Actor) {
         actor.center(group)
         actor.x+=group.x
-        actor.y+=group.y+group.height
+        actor.y+=group.y
         group.parent.addActor(actor)
         actor.toFront()
-        overlayActor=actor
     }
 
     internal fun updateTiles(civInfo: CivilizationInfo) {
@@ -181,9 +186,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
         }
-        else if(overlayActor!=null){
-            overlayActor!!.remove()
-            overlayActor=null
+        else if(moveToOverlay!=null){
+            moveToOverlay!!.remove()
+            moveToOverlay=null
         }
 
         if(selectedTile!=null)

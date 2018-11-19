@@ -95,7 +95,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         if(selectedUnit!=null) {
 
-            unitIconHolder.add(TileGroup(TileInfo()).getUnitImage(selectedUnit!!,20f)).pad(5f)
+            unitIconHolder.add(TileGroup(TileInfo()).getUnitImage(selectedUnit!!,30f)).pad(5f)
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 
