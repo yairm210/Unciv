@@ -78,6 +78,7 @@ class PopulationManager {
     internal fun autoAssignPopulation() {
         if(getFreePopulation()==0) return
         val toWork: TileInfo? = cityInfo.getTiles()
+                .filter { it.arialDistanceTo(cityInfo.getCenterTile()) <= 3 }
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
                 .maxBy { Automation().rankTile(it,cityInfo.civInfo) }
         if (toWork != null) // This is when we've run out of tiles!
@@ -85,9 +86,12 @@ class PopulationManager {
     }
 
     fun unassignExtraPopulation() {
-        for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] })
-            if(tile.getCity()!=cityInfo)
+        for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] }) {
+            if (tile.getCity() != cityInfo)
                 cityInfo.workedTiles.remove(tile.position)
+            if(tile.arialDistanceTo(cityInfo.getCenterTile()) > 3) // AutoAssignPopulation used to assign pop outside of allowed range, fixed as of 2.10.4
+                cityInfo.workedTiles.remove(tile.position)
+        }
 
         while (cityInfo.workedTiles.size > population) {
             val lowestRankedWorkedTile = cityInfo.workedTiles
