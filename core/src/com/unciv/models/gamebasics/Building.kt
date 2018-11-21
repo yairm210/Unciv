@@ -184,7 +184,7 @@ class Building : NamedStats(), IConstruction{
         if("Can only be built in coastal cities" in uniques
                 && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
             return false
-        if (requiredResource != null && civInfo.hasResource(requiredResource!!))
+        if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
             return false
 
 
