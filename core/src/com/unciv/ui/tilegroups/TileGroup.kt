@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
@@ -356,7 +355,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
 
         if (unit.health < 100) { // add health bar
-            group.addActor(getHealthBar(unit.health.toFloat(),100f,size))
+            group.addActor(ImageGetter.getHealthBar(unit.health.toFloat(),100f,size))
         }
 
         return group
@@ -375,20 +374,5 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    protected fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
-        val healthPercent = currentHealth / maxHealth
-        val healthBar = Table()
-        val healthPartOfBar = ImageGetter.getWhiteDot()
-        healthPartOfBar.color = when {
-            healthPercent > 2 / 3f -> Color.GREEN
-            healthPercent > 1 / 3f -> Color.ORANGE
-            else -> Color.RED
-        }
-        val emptyPartOfBar = ImageGetter.getWhiteDot().apply { color = Color.BLACK }
-        healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
-        healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
-        healthBar.pack()
-        return healthBar
 
-    }
 }

@@ -12,6 +12,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.tilegroups.TileGroup
@@ -95,40 +96,44 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
             if (selectedUnit != null && selectedUnit.getTile() != tileInfo
                     && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
-                val size = 60f
-                val moveHereButton = Group().apply { width = size;height = size; }
-                moveHereButton.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
-                moveHereButton.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereButton) })
-
-                val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
-                val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size / 2; height = size / 2;color = Color.BLUE }
-                moveHereButton.addActor(numberCircle)
-                moveHereButton.addActor(Label(turnsToGetThere.toString(), CameraStageBaseScreen.skin).apply { center(numberCircle); setFontColor(Color.WHITE) })
-
-                val unitIcon = TileGroup(TileInfo()).getUnitImage(selectedUnit, size / 2)
-                unitIcon.y = size - unitIcon.height
-                moveHereButton.addActor(unitIcon)
-
-                if (selectedUnit.currentMovement > 0)
-                    moveHereButton.onClick {
-                        if (selectedUnit.movementAlgs().canReach(tileInfo)) {
-                            selectedUnit.movementAlgs().headTowards(tileInfo)
-                            if (selectedUnit.currentTile != tileInfo)
-                                selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
-                        }
-
-                        worldScreen.update()
-                        moveToOverlay!!.remove()
-                        moveToOverlay = null
-                    }
-                else moveHereButton.color.a = 0.5f
-                addOverlayOnTileGroup(tileGroup, moveHereButton).apply { width = size; height = size }
-                moveHereButton.y += tileGroup.height
-                moveToOverlay = moveHereButton
+                addMoveHereButtonToTile(selectedUnit, tileInfo, tileGroup)
             }
 
             worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
             worldScreen.update()
+    }
+
+    private fun addMoveHereButtonToTile(selectedUnit: MapUnit, tileInfo: TileInfo, tileGroup: WorldTileGroup) {
+        val size = 60f
+        val moveHereButton = Group().apply { width = size;height = size; }
+        moveHereButton.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
+        moveHereButton.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereButton) })
+
+        val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
+        val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size / 2; height = size / 2;color = Color.BLUE }
+        moveHereButton.addActor(numberCircle)
+        moveHereButton.addActor(Label(turnsToGetThere.toString(), CameraStageBaseScreen.skin).apply { center(numberCircle); setFontColor(Color.WHITE) })
+
+        val unitIcon = TileGroup(TileInfo()).getUnitImage(selectedUnit, size / 2)
+        unitIcon.y = size - unitIcon.height
+        moveHereButton.addActor(unitIcon)
+
+        if (selectedUnit.currentMovement > 0)
+            moveHereButton.onClick {
+                if (selectedUnit.movementAlgs().canReach(tileInfo)) {
+                    selectedUnit.movementAlgs().headTowards(tileInfo)
+                    if (selectedUnit.currentTile != tileInfo)
+                        selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+                }
+
+                worldScreen.update()
+                moveToOverlay!!.remove()
+                moveToOverlay = null
+            }
+        else moveHereButton.color.a = 0.5f
+        addOverlayOnTileGroup(tileGroup, moveHereButton).apply { width = size; height = size }
+        moveHereButton.y += tileGroup.height
+        moveToOverlay = moveHereButton
     }
 
     private fun addOverlayOnTileGroup(group:WorldTileGroup, actor: Actor) {
@@ -142,13 +147,16 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     internal fun updateTiles(civInfo: CivilizationInfo) {
         val playerViewableTilePositions = civInfo.getViewableTiles().map { it.position }.toHashSet()
 
-        for (WG in tileGroups.values){
-            WG.update(playerViewableTilePositions.contains(WG.tileInfo.position))
-            val unitsInTile = WG.tileInfo.getUnits()
-            if((playerViewableTilePositions.contains(WG.tileInfo.position) || UnCivGame.Current.viewEntireMapForDebug)
+        cityButtonOverlays.forEach{it.remove()}
+        cityButtonOverlays.clear()
+
+        for (tileGroup in tileGroups.values){
+            tileGroup.update(playerViewableTilePositions.contains(tileGroup.tileInfo.position))
+            val unitsInTile = tileGroup.tileInfo.getUnits()
+            if((playerViewableTilePositions.contains(tileGroup.tileInfo.position) || UnCivGame.Current.viewEntireMapForDebug)
                     && unitsInTile.isNotEmpty() && !unitsInTile.first().civInfo.isPlayerCivilization())
-                WG.showCircle(Color.RED)
-        } // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
+                tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
+        }
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
