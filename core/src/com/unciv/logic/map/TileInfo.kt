@@ -200,7 +200,7 @@ open class TileInfo {
 
     override fun toString(): String {
         val SB = StringBuilder()
-        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().getViewableTiles().contains(this)
+        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().viewableTiles.contains(this)
                 || UnCivGame.Current.viewEntireMapForDebug
 
         if (isCityCenter()) {

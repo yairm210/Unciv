@@ -265,7 +265,7 @@ class WorldScreen : CameraStageBaseScreen() {
             val shownTutorials = UnCivGame.Current.settings.tutorialsShown
             displayTutorials("NextTurn")
             if("BarbarianEncountered" !in shownTutorials
-                    && civInfo.getViewableTiles().any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
+                    && civInfo.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
                 displayTutorials("BarbarianEncountered")
             if(civInfo.cities.size > 2) displayTutorials("SecondCity")
             if(civInfo.happiness<0) displayTutorials("Unhappiness")

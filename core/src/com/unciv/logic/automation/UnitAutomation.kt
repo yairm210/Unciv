@@ -146,7 +146,7 @@ class UnitAutomation{
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
     fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): ArrayList<AttackableTile> {
-        val tilesWithEnemies = unit.civInfo.getViewableTiles()
+        val tilesWithEnemies = unit.civInfo.viewableTiles
                 .filter { containsAttackableEnemy(it,unit) }
 
         val rangeOfAttack = unit.getRange()

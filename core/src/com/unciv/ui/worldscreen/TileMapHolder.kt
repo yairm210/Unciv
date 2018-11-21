@@ -145,7 +145,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles(civInfo: CivilizationInfo) {
-        val playerViewableTilePositions = civInfo.getViewableTiles().map { it.position }.toHashSet()
+        val playerViewableTilePositions = civInfo.viewableTiles.map { it.position }.toHashSet()
 
         cityButtonOverlays.forEach{it.remove()}
         cityButtonOverlays.clear()

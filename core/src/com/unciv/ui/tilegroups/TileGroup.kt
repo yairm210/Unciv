@@ -331,17 +331,19 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         return newImage
     }
 
+    fun getBackgroundImageForUnit(unit: MapUnit):Image{
+        return when {
+            unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
+            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield.png")
+            else -> ImageGetter.getImage("OtherIcons/Circle.png")
+        }
+    }
 
     fun getUnitImage(unit: MapUnit, size: Float): Group {
         val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
                 .apply { setSize(size*0.75f, size*0.75f) }
 
-        val background =
-                when {
-                    unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
-                    unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield.png")
-                    else -> ImageGetter.getImage("OtherIcons/Circle.png")
-                }
+        val background = getBackgroundImageForUnit(unit)
         background.apply {
             this.color = unit.civInfo.getNation().getColor()
             setSize(size, size)

@@ -95,6 +95,8 @@ class CityExpansionManager {
         for(unit in tileInfo.getUnits())
             if(!unit.civInfo.canEnterTiles(cityInfo.civInfo))
                 unit.movementAlgs().teleportToClosestMoveableTile()
+
+        cityInfo.civInfo.updateViewableTiles()
     }
 
 

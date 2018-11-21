@@ -20,6 +20,7 @@ class UnitPromotions{
         promotions.add(promotionName)
         numberOfPromotions++
         unit.updateUniques()
+        unit.civInfo.updateViewableTiles() // some promotions give the unit bonus sight
     }
 
     fun getAvailablePromotions(): List<Promotion> {

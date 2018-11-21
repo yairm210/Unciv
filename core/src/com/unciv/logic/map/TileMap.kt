@@ -117,6 +117,11 @@ class TileMap {
             tileInfo.tileMap = this
             if(tileInfo.militaryUnit!=null) tileInfo.militaryUnit!!.currentTile = tileInfo
             if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.currentTile = tileInfo
+
+            for (unit in tileInfo.getUnits()) {
+                unit.assignOwner(gameInfo.civilizations.first { it.civName == unit.owner })
+                unit.setTransients()
+            }
         }
     }
 

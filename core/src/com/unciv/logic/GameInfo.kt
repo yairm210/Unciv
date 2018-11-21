@@ -60,7 +60,7 @@ class GameInfo {
 
         player.startTurn()
 
-        val enemyUnitsCloseToTerritory = player.getViewableTiles()
+        val enemyUnitsCloseToTerritory = player.viewableTiles
                 .filter {
                     it.militaryUnit != null && it.militaryUnit!!.civInfo != player
                             && player.isAtWarWith(it.militaryUnit!!.civInfo)
@@ -80,7 +80,7 @@ class GameInfo {
         if (tileToPlace == null) {
             // Barbarians will only spawn in places that no one can see
             val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
-                    .flatMap { it.getViewableTiles() }.toHashSet()
+                    .flatMap { it.viewableTiles }.toHashSet()
             val viableTiles = tileMap.values.filterNot { allViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit != null }
             if (viableTiles.isEmpty()) return // no place for more barbs =(
             tile = viableTiles.getRandom()
@@ -92,10 +92,10 @@ class GameInfo {
         tileMap.gameInfo = this
         tileMap.setTransients()
 
-        for (civInfo in civilizations) {
-            civInfo.gameInfo = this
-            civInfo.setTransients()
-        }
+        // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,
+        //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
+        for (civInfo in civilizations) civInfo.gameInfo = this
+        for (civInfo in civilizations) civInfo.setTransients()
 
         for (civInfo in civilizations) {
             // we have to remove hydro plants from all cities BEFORE we update a single one,

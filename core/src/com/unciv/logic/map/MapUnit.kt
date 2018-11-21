@@ -314,6 +314,7 @@ class MapUnit {
         currentTile = tile
         if(tile.improvement=="Ancient ruins" && !civInfo.isBarbarianCivilization())
             getAncientRuinBonus()
+        civInfo.updateViewableTiles()
     }
 
     private fun getAncientRuinBonus() {

@@ -35,6 +35,7 @@ class CityInfo {
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
         this.civInfo = civInfo
+        this.location = cityLocation
         setTransients()
 
         // Since cities can be captures between civilizations,
@@ -48,7 +49,6 @@ class CityInfo {
             else name = civInfo.getNation().cities.map { "Newer $it" }.first{ !allExistingCityNames.contains(it) }
         }
 
-        this.location = cityLocation
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
         if(civInfo == civInfo.gameInfo.getPlayerCivilization())
             civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)

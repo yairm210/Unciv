@@ -26,6 +26,7 @@ import kotlin.math.roundToInt
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
     @Transient var units=ArrayList<MapUnit>()
+    @Transient var viewableTiles = HashSet<TileInfo>()
 
     var gold = 0
     var happiness = 15
@@ -203,25 +204,26 @@ class CivilizationInfo {
         return units.toList() // to avoid comodification problems (ie concurrency again...)
     }
 
-    fun getViewableTiles(): List<TileInfo> {
-        var viewablePositions = emptyList<TileInfo>()
-        viewablePositions += cities.flatMap { it.getTiles() }
-                        .flatMap { it.neighbors } // tiles adjacent to city tiles
-        viewablePositions += getCivUnits()
-                .flatMap { it.getViewableTiles()} // Tiles within 2 tiles of units
-        viewablePositions.map { it.position }.filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
 
-        val viewedCivs = viewablePositions
-                .flatMap { it.getUnits().map { u->u.civInfo }.union(listOf(it.getOwner())) }
-                .filterNotNull().filterNot { it==this || it.isBarbarianCivilization() }
+    fun updateViewableTiles() {
+        viewableTiles.clear()
+        viewableTiles.addAll(cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
+        viewableTiles.addAll(getCivUnits().flatMap { it.getViewableTiles()})
+
+        // updating the viewable tiles also affects the explored tiles, obvs
+        viewableTiles.asSequence().map { it.position }
+                .filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
+
+        val viewedCivs = viewableTiles
+                .flatMap { it.getUnits().map { unit->unit.civInfo }.union(listOf(it.getOwner())) }
+                // we can meet a civ either by meeting its unit, or its tile
+                .asSequence().filterNotNull().filterNot { it==this || it.isBarbarianCivilization() }
 
         for(otherCiv in viewedCivs)
             if(!diplomacy.containsKey(otherCiv.civName)){
                 meetCivilization(otherCiv)
                 addNotification("We have encountered [${otherCiv.civName}]!".tr(),null, Color.GOLD)
             }
-
-        return viewablePositions.distinct()
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
@@ -254,7 +256,6 @@ class CivilizationInfo {
 
     //region state-changing functions
     fun setTransients() {
-        if(civName=="") civName="Babylon" // this is because it used to be a default but now it isn't so we can change it.
         goldenAges.civInfo = this
         policies.civInfo = this
         if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
@@ -263,16 +264,13 @@ class CivilizationInfo {
         tech.civInfo = this
         diplomacy.values.forEach { it.civInfo=this}
 
-        for (unit in gameInfo.tileMap.values.flatMap { it.getUnits() }.filter { it.owner==civName }) {
-            unit.assignOwner(this)
-            unit.setTransients()
-        }
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the civInfo
             cityInfo.setTransients()
         }
         setCitiesConnectedToCapitalTransients()
+        updateViewableTiles()
     }
 
     fun endTurn() {
@@ -320,7 +318,7 @@ class CivilizationInfo {
     }
 
     fun startTurn(){
-        getViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
+        updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         setCitiesConnectedToCapitalTransients()
         for (city in cities)
             city.cityStats.update()
