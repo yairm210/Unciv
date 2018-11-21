@@ -1231,6 +1231,7 @@
 	
 	"Fish":{
 		Italian:"Pesce"
+		French: "Poisson"
 	}
 	
 	// Strategic Resources
@@ -1511,6 +1512,7 @@
 	}
 	"Fishing Boats":{
 		Italian:"Peschereccio"
+		French: "Bateaux de pêche"
 	}
 	
 	"Road":{
@@ -1535,16 +1537,19 @@
 	"Remove Forest":{
 		Italian:"Rimuovi foresta"
 		Russian:"Вырубить лес"
+		French: "Couper la forêt"
 		Spanish:"Quitar bosque"
 	}
 	"Remove Jungle":{
 		Italian:"Rimuovi giungla"
 		Russian:"Вырубить джунгли"
+		French: "Défricher la jungle"
 		Spanish:"Quitar selva"
 	}
 	"Remove Marsh":{
 		Italian:"Rimuovi palude"
 		Russian:"Осушить болото"
+		French:"Assécher le marais"
 		Spanish:"Quitar pantano"
 	}
 	
@@ -1664,7 +1669,7 @@
 	"Trapping":{
 		Italian:"Caccia"
 		Russian:"Охота"
-		French:"Chasse"
+		French:"Trappage"
 		Romanian:"Vânătoare"
 		German:"Fallen"
 		Dutch:"Valstrikken"
@@ -1691,7 +1696,7 @@
 	"Bronze Working":{
 		Italian:"Lavorazione del bronzo"
 		Russian:"Обработка бронзы"
-		French:"Traitement de bronze"
+		French:"Travail du bronze"
 		Romanian:"Prelucrarea bronzului"
 		German:"Bronze Bearbeitung"
 		Dutch:"Brons Bewerking"
@@ -1713,7 +1718,7 @@
 	"Horseback Riding":{
 		Italian:"Equitazione"
 		Russian:"Верховая езда"
-		French:"Monter à cheval"
+		French:"Équitation"
 		Romanian:"Călărie"
 		German:"Reiten"
 		Dutch:"Paardrijden"
@@ -1731,7 +1736,7 @@
 	"Construction":{
 		Italian:"Costruzione"
 		Russian:"Металлоконструкции"
-		French:"Bâtiment"
+		French:"Architecture"
 		Romanian:"Clădire"
 		German:"Baukunst"
 		Dutch:"Bouwkunde"
@@ -1767,7 +1772,7 @@
 	"Iron Working":{
 		Italian:"Lavorazione del ferro"
 		Russian:"Обработка железа"
-		French:"Traitement du fer"
+		French:"Travail du fer"
 		Romanian:"Prelucrarea fierului"
 		German:"Eisen Bearbeitung"
 		Dutch:"Ijzer Bewerking"
@@ -1815,7 +1820,7 @@
 	"Metal Casting":{
 		Italian:"Colata di metallo"
 		Russian:"Литье"
-		French:"Coulée de métal"
+		French:"Fonderie"
 		Romanian:"Turnarea metalului"
 		German:"Metallurgie"
 		Dutch:"Metaal gieten"
@@ -1859,7 +1864,7 @@
 	"Machinery":{
 		Italian:"Meccanica"
 		Russian:"Машиностроение"
-		French:"Machinerie"
+		French:"Mécanique"
 		Romanian:"Mașini"
 		German:"Maschienenbau"
 		Dutch:"Machinebouw"
@@ -1890,7 +1895,7 @@
 	"Banking":{
 		Italian:"Sistema bancario"
 		Russian:"Банковское дело"
-		French:"Bancaire"
+		French:"Banques"
 		Romanian:"Banca"
 		German:"Bank"
 		Dutch:"Bank"
@@ -1899,7 +1904,7 @@
 	"Printing Press":{
 		Italian:"Tipografia"
 		Russian:"Печатный пресс"
-		French:"Presse d'imprimerie"
+		French:"Imprimerie"
 		Romanian:"Presă de tipar"
 		German:"Druckpresse"
 		Dutch:"Drukpers"
@@ -1934,7 +1939,7 @@
 	"Economics":{
 		Italian:"Economia"
 		Russian:"Экономика"
-		French:"Économie"
+		French:"Économique"
 		Romanian:"Economie"
 		German:"Ökonomie"
 		Dutch:"Economie"
@@ -1965,7 +1970,7 @@
 	"Scientific Theory":{
 		Italian:"Teoria scientifica"
 		Russian:"Научная теория"
-		French:"Théorie scientifique"
+		French:"Méthode scientifique"
 		Romanian:"Teoria științifică"
 		German:"Wissenschaftliche Thorie"
 		Dutch:"Wetenschappelijke Theorie"
@@ -1983,7 +1988,7 @@
 	"Rifling":{
 		Italian:"Rigatura"
 		Russian:"Нарезные стволы"
-		French:"Rayeur"
+		French:"Rayure des canons"
 		Romanian:"Ghintuire"
 		Dutch:"Gedraaide loop"
 		Spanish:"Estriado"
@@ -2027,7 +2032,7 @@
 	"Steam Power":{
 		Italian:"Energia a vapore"
 		Russian:"Паровой двигатель"
-		French:"Puissance de la vapeur"
+		French:"Machine à vapeur"
 		Romanian:"Puterea aburului"
 		German:"Dampfkraft"
 		Dutch:"Stoomkracht"
@@ -2037,7 +2042,7 @@
 	"Dynamite":{
 		Italian:"Dinamite"
 		Russian:"Динамит"
-		French:"Dynamiter"
+		French:"Dynamite"
 		Romanian:"Dinamită"
 		Dutch:"Dynamiet"
 		Spanish:"Dinamita"
@@ -2103,7 +2108,7 @@
 	"Flight":{
 		Italian:"Volo"
 		Russian:"Авиация"
-		French:"Vol"
+		French:"Aviation"
 		Romanian:"Zbor"
 		German:"Flug"
 		Dutch:"Vlucht"
@@ -2160,7 +2165,7 @@
 	"Rocketry":{
 		Italian:"Missilistica"
 		Russian:"Ракетостроение"
-		French:"Rocketry"
+		French:"Aérospatiale" //could be *ballistique* (ballistics), depending on what exactly represents the technology 
 		Romanian:"Rachete"
 		German:"Raketentechnik"
 		Dutch:"Rakettechniek"
@@ -2218,6 +2223,7 @@
 	"Improves movement speed on roads":{
 		Italian:"Migliora la velocità sulle strade"
 		Russian:"Ускоряет скорость передвижения по дорогам"
+		French:"Améliore la vitesse de déplacement sur les routes"
 		Spanish:"Mejora la velocidad de movimiento en carreteras"
 	}
 	"+10% science and production in all cities":{
@@ -2236,19 +2242,20 @@
 	"Enables conversion of city production to science":{
 		Italian:"Consente la conversione della produzione di città in scienza"
 		Russian:"Разрешает конверсию производства в науку"
-		French:"Permet la conversion de la production de la ville en science"
+		French:"Permet la conversion de la production des villes en science"
 		Romanian:"Permite conversia producției în oraș la știință"
 		Spanish:"Habilita la conversión de producción a ciencia"
 	}
 	"Enables conversion of city production to gold":{
 		Italian:"Consente la conversione della produzione di città in oro"
 		Russian:"Разрешает конверсию производства в золото"
-		French:"Permet la conversion de la production de la ville en or"
+		French:"Permet la conversion de la production des villes en or"
 		Romanian:"Permite conversia producției în oraș la aur"
 		Spanish:"Habilita la conversión de producción a oro"
 	}
 	"Increases embarked movement +1":{
 		Italian:"+1 movimento delle unità imbarcate"
+		French:"Améliore le déplacement en embarcation +1"
 	}
 	
 	// Tech Eras
@@ -2257,7 +2264,7 @@
 	"Ancient era":{
 		Italian:"Antichità" //one word translation
 		Russian:"Древнейший мир"
-		French:"Ancien"
+		French:"Antiquité"
 		Romanian:"Antica"
 		Dutch:"Oude"
 		Spanish:"Edad antigua"
@@ -2265,7 +2272,7 @@
 	"Classical era":{
 		Italian:"Classica"
 		Russian:"Античность" //one word translation
-		French:"Classique"
+		French:"Âge classique"
 		Romanian:"Clasica"
 		Dutch:"Klasieke"
 		Spanish:"Edad clásica"
@@ -2273,7 +2280,7 @@
 	"Medieval era":{
 		Italian:"Medioevo" //one word translation
 		Russian:"Средневековье" //one word translation
-		French:"Médiéval"
+		French:"Moyen Âge"
 		Romanian:"Medievala"
 		Dutch:"Middeleeuwse"
 		Spanish:"Edad medieval"
@@ -2289,7 +2296,7 @@
 	"Industrial era":{
 		Italian:"Industriale"
 		Russian:"Новейшее время"
-		French:"Industriel"
+		French:"Ère industrielle"
 		Romanian:"Industriala"
 		Dutch:"Industrieele"
 		Spanish:"Era industrial"
@@ -2297,7 +2304,7 @@
 	"Modern era":{
 		Italian:"Moderna"
 		Russian:"Современность" //one word translation
-		French:"Moderne"
+		French:"Ère contemporaine"
 		Romanian:"Moderna"
 		Dutch:"Moderne"
 		Spanish:"Edad moderna"
@@ -2305,7 +2312,7 @@
 	"Information era":{
 		Italian:"Informatica"     //[newEra] +translation
 		Russian:"Информационная эра" //translation+ [newEra]
-		French:"Information"
+		French:"Ére médiatique"
 		Romanian:"Informației"
 		Dutch:"Informatie"
 		Spanish:"Era de la información"
@@ -2313,7 +2320,7 @@
 	"Future era":{
 		Italian:"Futura"
 		Russian:"Будущее" //all one word translation
-		French:"Avenir" 
+		French:"Ère du futur" 
 		Romanian:"Viitor"
 		Dutch:"Toekomst"
 		Spanish:"Era futura"
