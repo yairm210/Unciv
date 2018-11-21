@@ -67,39 +67,6 @@ class Building : NamedStats(), IConstruction{
         return infoList.joinToString()
     }
 
-    fun getStats(adoptedPolicies: HashSet<String>): Stats {
-        val stats = this.clone()
-        if (adoptedPolicies.contains("Organized Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
-            stats.happiness += 1
-
-        if (adoptedPolicies.contains("Free Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
-            stats.culture += 1f
-
-        if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(name))
-            stats.science += 1f
-
-        if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(name))
-            stats.science += 1f
-
-        if (adoptedPolicies.contains("Theocracy") && name == "Temple")
-            percentStatBonus = Stats().apply { gold=10f }
-
-        if (adoptedPolicies.contains("Free Thought") && name == "University")
-            percentStatBonus!!.science = 50f
-
-        if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
-            stats.gold += 1f
-
-        if (adoptedPolicies.contains("Constitution") && isWonder)
-            stats.culture += 2f
-
-        if(adoptedPolicies.contains("Autocracy Complete") && cityStrength>0)
-            stats.happiness+=1
-
-        return stats
-    }
-
-
     fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: HashSet<String>): String {
         val stats = getStats(adoptedPolicies)
         val stringBuilder = StringBuilder()
@@ -138,10 +105,44 @@ class Building : NamedStats(), IConstruction{
 
         if(cityStrength!=0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)
         if(cityHealth!=0) stringBuilder.appendln("{City health} +".tr() + cityHealth)
+        if(xpForNewUnits!=0) stringBuilder.appendln("+$xpForNewUnits {XP for new units}".tr())
         if (maintenance != 0)
             stringBuilder.appendln("{Maintenance cost}: $maintenance {Gold}".tr())
         return stringBuilder.toString().trim()
     }
+
+    fun getStats(adoptedPolicies: HashSet<String>): Stats {
+        val stats = this.clone()
+        if (adoptedPolicies.contains("Organized Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
+            stats.happiness += 1
+
+        if (adoptedPolicies.contains("Free Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
+            stats.culture += 1f
+
+        if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(name))
+            stats.science += 1f
+
+        if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(name))
+            stats.science += 1f
+
+        if (adoptedPolicies.contains("Theocracy") && name == "Temple")
+            percentStatBonus = Stats().apply { gold=10f }
+
+        if (adoptedPolicies.contains("Free Thought") && name == "University")
+            percentStatBonus!!.science = 50f
+
+        if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
+            stats.gold += 1f
+
+        if (adoptedPolicies.contains("Constitution") && isWonder)
+            stats.culture += 2f
+
+        if(adoptedPolicies.contains("Autocracy Complete") && cityStrength>0)
+            stats.happiness+=1
+
+        return stats
+    }
+
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
         return if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety")) (cost * 0.85).toInt()

@@ -80,6 +80,8 @@ class PolicyManager {
 
         for (cityInfo in civInfo.cities)
             cityInfo.cityStats.update()
+
+        if(!canAdoptPolicy()) shouldOpenPolicyPicker=false
     }
 
     fun endTurn(culture: Int) {
