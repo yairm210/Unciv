@@ -6,6 +6,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -80,24 +81,28 @@ class UnitAutomation{
         // if both failed, then... there aren't any reachable tiles. Which is possible.
     }
 
-    private fun hasWorkableSeaResource(tileInfo: TileInfo): Boolean {
-        return tileInfo.resource!=null && tileInfo.isWater() && tileInfo.improvement==null
+    private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean {
+        return tileInfo.hasViewableResource(civInfo) && tileInfo.isWater() && tileInfo.improvement==null
     }
 
     private fun automateWorkBoats(unit: MapUnit) {
-        val seaResourcesInCities = unit.civInfo.cities.flatMap { it.getTilesInRange() }
-                .filter { hasWorkableSeaResource(it) && (unit.canMoveTo(it) || unit.currentTile==it) }
-        if (seaResourcesInCities.any()) {
-            val reachableResource = seaResourcesInCities.asSequence().sortedBy { it.arialDistanceTo(unit.currentTile) }
-                    .firstOrNull { unit.movementAlgs().canReach(it) }
-            if (reachableResource != null) {
-                unit.movementAlgs().headTowards(reachableResource)
-                if(unit.currentMovement>0 && hasWorkableSeaResource(unit.currentTile))
-                    UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
-                            .first { it.name=="Create Fishing Boats" }.action()
+        val seaResourcesInCities = unit.civInfo.cities.flatMap { it.getTilesInRange() }.asSequence()
+                .filter { hasWorkableSeaResource(it, unit.civInfo) && (unit.canMoveTo(it) || unit.currentTile == it) }
+        val closestReachableResource = seaResourcesInCities.sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .firstOrNull { unit.movementAlgs().canReach(it) }
+
+        if (closestReachableResource != null) {
+            unit.movementAlgs().headTowards(closestReachableResource)
+            if (unit.currentMovement > 0 && unit.currentTile == closestReachableResource) {
+                val createImprovementAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                        .firstOrNull { it.name.startsWith("Create") } // could be either fishing boats or oil well
+                if (createImprovementAction != null) {
+                    createImprovementAction.action()
+                    return // unit is already gone, can't "explore"
+                }
             }
         }
-        explore(unit, unit.getDistanceToTiles())
+        else explore(unit, unit.getDistanceToTiles())
     }
 
     fun rankTileForHealing(tileInfo: TileInfo, unit: MapUnit): Int {
