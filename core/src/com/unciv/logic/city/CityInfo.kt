@@ -16,6 +16,8 @@ import kotlin.math.min
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
     @Transient var isConnectedToCapital = false
+    @Transient lateinit var ccenterTile:TileInfo  // 'cached' for better performance
+
     var location: Vector2 = Vector2.Zero
     var name: String = ""
     var health = 200
@@ -86,7 +88,7 @@ class CityInfo {
     internal val tileMap: TileMap
         get() = civInfo.gameInfo.tileMap
 
-    fun getCenterTile(): TileInfo = tileMap[location]
+    fun getCenterTile(): TileInfo = ccenterTile
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
     fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
 
@@ -151,6 +153,7 @@ class CityInfo {
 
     //region state-changing functions
     fun setTransients() {
+        ccenterTile = tileMap[location]
         population.cityInfo = this
         expansion.cityInfo = this
         expansion.setTransients()

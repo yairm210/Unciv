@@ -157,7 +157,8 @@ class UnitAutomation{
         // and then later we round it off to a whole.
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
-        var tilesToAttackFrom = unitDistanceToTiles.filter { unit.currentMovement - it.value > 0.1 }
+        var tilesToAttackFrom = unitDistanceToTiles.asSequence()
+                .filter { unit.currentMovement - it.value > 0.1 }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
         if(unit.type.isLandUnit())
@@ -167,7 +168,7 @@ class UnitAutomation{
             val tilesInAttackRange = if (unit.hasUnique("Indirect fire")) reachableTile.getTilesInDistance(rangeOfAttack)
                 else reachableTile.getViewableTiles(rangeOfAttack)
             attackableTiles += tilesInAttackRange.asSequence().filter { it in tilesWithEnemies }
-                    .map { AttackableTile(reachableTile,it) }.toList()
+                    .map { AttackableTile(reachableTile,it) }
         }
         return attackableTiles
     }
@@ -275,17 +276,17 @@ class UnitAutomation{
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
-        if(unit.type.isMelee()) return false // don't garrison melee units, they're not that good at it
-        val reachableCitiesWithoutUnits = unit.civInfo.cities.filter {
+        if(unit.type.isMelee() || unit.type.isWaterUnit()) return false // don't garrison melee units, they're not that good at it
+        val citiesWithoutGarrison = unit.civInfo.cities.filter {
             val centerTile = it.getCenterTile()
             centerTile.militaryUnit==null
                 && unit.canMoveTo(centerTile)
-                && unit.movementAlgs().canReach(centerTile)
         }
 
-        fun cityThatNeedsDefendingInWartime(city: CityInfo): Boolean {
+        fun isCityThatNeedsDefendingInWartime(city: CityInfo): Boolean {
             if (city.health < city.getMaxHealth()) return true // this city is under attack!
-            for (enemyCivCity in unit.civInfo.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
+            for (enemyCivCity in unit.civInfo.diplomacy.values
+                    .filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() }.flatMap { it.cities })
                 if (city.getCenterTile().arialDistanceTo(enemyCivCity.getCenterTile()) <= 5) return true// this is an edge city that needs defending
             return false
@@ -293,23 +294,25 @@ class UnitAutomation{
 
         if (!unit.civInfo.isAtWar()) {
             if (unit.getTile().isCityCenter()) return true // It's always good to have a unit in the city center, so if you haven't found anyone around to attack, forget it.
-            if (reachableCitiesWithoutUnits.isNotEmpty()) {
-                val closestCity = reachableCitiesWithoutUnits.minBy { it.getCenterTile().arialDistanceTo(unit.currentTile) }!!
-                unit.movementAlgs().headTowards(closestCity.getCenterTile())
-                return true
-            }
+
+            val closestReachableCityWithNoGarrison = citiesWithoutGarrison.asSequence()
+                    .sortedBy{ it.getCenterTile().arialDistanceTo(unit.currentTile) }
+                    .firstOrNull { unit.movementAlgs().canReach(it.getCenterTile()) }
+            if(closestReachableCityWithNoGarrison==null) return false // no
+            unit.movementAlgs().headTowards(closestReachableCityWithNoGarrison.getCenterTile())
+            return true
         } else {
             if (unit.getTile().isCityCenter() &&
-                    cityThatNeedsDefendingInWartime(unit.getTile().getCity()!!)) return true
-            val citiesThatCanBeDefended = reachableCitiesWithoutUnits.filter { cityThatNeedsDefendingInWartime(it) }
-            if (citiesThatCanBeDefended.isNotEmpty()) {
-                val closestCityWithoutUnit = citiesThatCanBeDefended
-                        .minBy { unit.movementAlgs().getShortestPath(it.getCenterTile()).size }!!
-                unit.movementAlgs().headTowards(closestCityWithoutUnit.getCenterTile())
-                return true
-            }
+                    isCityThatNeedsDefendingInWartime(unit.getTile().getCity()!!)) return true
+
+            val closestReachableCityNeedsDefending = citiesWithoutGarrison.asSequence()
+                    .filter { isCityThatNeedsDefendingInWartime(it) }
+                    .sortedBy{ it.getCenterTile().arialDistanceTo(unit.currentTile) }
+                    .firstOrNull { unit.movementAlgs().canReach(it.getCenterTile()) }
+            if(closestReachableCityNeedsDefending==null) return false
+            unit.movementAlgs().headTowards(closestReachableCityNeedsDefending.getCenterTile())
+            return true
         }
-        return false
     }
 
     fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
