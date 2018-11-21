@@ -119,8 +119,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         updateCityImage()
         updateTileColor(isViewable)
 
-        updateResourceImage(isViewable,showResourcesAndImprovements)
-        updateImprovementImage(isViewable,showResourcesAndImprovements)
+        updateResourceImage(showResourcesAndImprovements)
+        updateImprovementImage(showResourcesAndImprovements)
 
 
         civilianUnitImage = newUnitImage(tileInfo.civilianUnit, civilianUnitImage, isViewable, -20f)
@@ -272,7 +272,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
     }
 
-    private fun updateImprovementImage(viewable: Boolean, showResourcesAndImprovements: Boolean) {
+    private fun updateImprovementImage(showResourcesAndImprovements: Boolean) {
         if (improvementImage != null) {
             improvementImage!!.remove()
             improvementImage = null
@@ -293,7 +293,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
     }
 
-    private fun updateResourceImage(viewable: Boolean, showResourcesAndImprovements: Boolean) {
+    private fun updateResourceImage(showResourcesAndImprovements: Boolean) {
         val shouldDisplayResource = showResourcesAndImprovements
                 && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())
 
@@ -365,9 +365,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     fun showCircle(color: Color) {
         circleImage.isVisible = true
-        val color = color.cpy()
-        color.a = 0.3f
-        circleImage.color = color
+        val colorCopy = color.cpy()
+        colorCopy.a = 0.3f
+        circleImage.color = colorCopy
     }
 
     fun hideCircle() {

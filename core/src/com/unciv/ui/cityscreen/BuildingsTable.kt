@@ -82,7 +82,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
             add(specialistBuildingsExpander).row()
 
             // specialist allocation
-            addSpecialistAllocation(skin, specialistBuildings, cityInfo)
+            addSpecialistAllocation(skin, cityInfo)
         }
 
         if (!others.isEmpty()) {
@@ -96,7 +96,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
         pack()
     }
 
-    private fun addSpecialistAllocation(skin: Skin, specialistBuildings: MutableList<Building>, cityInfo: CityInfo) {
+    private fun addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
         val specialistAllocationExpander = ExpanderTab("Specialist allocation", skin)
         specialistAllocationExpander.innerTable.defaults().pad(5f)
 
@@ -104,17 +104,17 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
         val currentSpecialists = cityInfo.population.specialists.toHashMap()
         val maximumSpecialists = cityInfo.population.getMaxSpecialists()
 
-        for (entry in maximumSpecialists.toHashMap()) {
-            if (entry.value == 0f) continue
-            val stat = entry.key
+        for (statToMaximumSpecialist in maximumSpecialists.toHashMap()) {
+            if (statToMaximumSpecialist.value == 0f) continue
+            val stat = statToMaximumSpecialist.key
             // these two are conflictingly named compared to above...
-            val assignedSpecialists = currentSpecialists[entry.key]!!.toInt()
-            val maxSpecialists = entry.value.toInt()
+            val assignedSpecialists = currentSpecialists[statToMaximumSpecialist.key]!!.toInt()
+            val maxSpecialists = statToMaximumSpecialist.value.toInt()
             if (assignedSpecialists > 0) {
                 val unassignButton = TextButton("-", skin)
                 unassignButton.label.setFontSize(24)
                 unassignButton.onClick {
-                    cityInfo.population.specialists.add(entry.key, -1f)
+                    cityInfo.population.specialists.add(statToMaximumSpecialist.key, -1f)
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
@@ -131,7 +131,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
                 val assignButton = TextButton("+", skin)
                 assignButton.label.setFontSize(24)
                 assignButton.onClick {
-                    cityInfo.population.specialists.add(entry.key, +1f)
+                    cityInfo.population.specialists.add(statToMaximumSpecialist.key, +1f)
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
