@@ -131,7 +131,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
         val nextTurnStats = civInfo.getStatsForNextTurn()
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + Math.round(nextTurnStats.gold) + ")"
-        goldLabel.setText("" + Math.round(civInfo.gold.toFloat()) + goldPerTurn)
+        goldLabel.setText(Math.round(civInfo.gold.toFloat()).toString() + goldPerTurn)
 
         scienceLabel.setText("+" + Math.round(nextTurnStats.science))
 

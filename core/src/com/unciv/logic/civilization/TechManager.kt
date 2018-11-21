@@ -9,8 +9,8 @@ import com.unciv.ui.utils.tr
 import java.util.*
 
 class TechManager {
-    @Transient
-    lateinit var civInfo: CivilizationInfo
+    @Transient lateinit var civInfo: CivilizationInfo
+    @Transient val researchedTechnologies=ArrayList<Technology>()
 
     var freeTechs = 0
     var techsResearched = HashSet<String>()
@@ -57,9 +57,7 @@ class TechManager {
         return GameBasics.Technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
 
-    fun getResearchedTechs() = techsResearched.map { GameBasics.Technologies[it]!! }
-
-    fun getUniques() = getResearchedTechs().flatMap { it.uniques }
+    fun getUniques() = researchedTechnologies.flatMap { it.uniques }
 
     //endregion
 
@@ -77,6 +75,7 @@ class TechManager {
         if(currentTechnology!="Future Tech")
             techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
+        researchedTechnologies.add(GameBasics.Technologies[currentTechnology]!!)
         civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
 
         val currentEra = civInfo.getEra()
@@ -108,6 +107,10 @@ class TechManager {
                 val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
+    }
+
+    fun setTransients(){
+        researchedTechnologies.addAll(techsResearched.map { GameBasics.Technologies[it]!! })
     }
 }
 
