@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
@@ -14,13 +15,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val unitIconHolder=Table()
     private val unitNameLabel = Label("",CameraStageBaseScreen.skin)
     private val promotionsTable = Table()
-    private val unitDescriptionLabel = Label("",CameraStageBaseScreen.skin)
+    private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
     var selectedUnit : MapUnit? = null
     var currentlyExecutingAction : String? = null
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
     var selectedUnitHasChanged = false
+    val separator: Image
 
     init {
         pad(5f)
@@ -31,8 +33,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             add(unitNameLabel).pad(5f)
             add(nextIdleUnitButton)
         }).colspan(2).row()
-        add(promotionsTable).row()
-        add(unitDescriptionLabel)
+        separator= addSeparator()
+        add(promotionsTable).colspan(2).row()
+        add(unitDescriptionTable)
     }
 
     fun update() {
@@ -58,32 +61,45 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         if(selectedUnit!=null) { // set texts - this is valid even when it's the same unit, because movement points and health change
+            separator.isVisible=true
             val unit = selectedUnit!!
             var nameLabelText = unit.name.tr()
             if(unit.health<100) nameLabelText+=" ("+unit.health+")"
             unitNameLabel.setText(nameLabelText)
 
-            var unitLabelText = "Movement".tr()+": " + unit.getMovementString()
-            if (!unit.type.isCivilian())
-                unitLabelText += "\n"+"Strength".tr()+": " + unit.baseUnit().strength
+            unitDescriptionTable.clear()
+            unitDescriptionTable.defaults().pad(2f).padRight(5f)
+            unitDescriptionTable.add("Movement")
+            unitDescriptionTable.add(unit.getMovementString()).row()
 
-            if (unit.baseUnit().rangedStrength!=0)
-                unitLabelText += "\n"+"Ranged strength".tr()+": "+unit.baseUnit().rangedStrength
+            if (!unit.type.isCivilian()) {
+                unitDescriptionTable.add("Strength")
+                unitDescriptionTable.add(unit.baseUnit().strength.toString()).row()
+            }
 
-            if (!unit.type.isCivilian())
-                unitLabelText += "\n"+"XP".tr()+": "+unit.promotions.XP+"/"+unit.promotions.xpForNextPromotion()
+            if (unit.baseUnit().rangedStrength!=0) {
+                unitDescriptionTable.add("Ranged strength")
+                unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).row()
+            }
 
-            if(unit.isFortified() && unit.getFortificationTurns()>0)
-                unitLabelText+="\n+"+unit.getFortificationTurns()*20+"% fortification"
+            if (!unit.type.isCivilian()) {
+                unitDescriptionTable.add("XP")
+                unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion()).row()
+            }
 
-            unitDescriptionLabel.setText(unitLabelText)
+            if(unit.isFortified() && unit.getFortificationTurns()>0) {
+                unitDescriptionTable.add("Fortification")
+                unitDescriptionTable.add(""+unit.getFortificationTurns() * 20 + "%")
+            }
+            unitDescriptionTable.pack()
 
             if(unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                 selectedUnitHasChanged = true
         }
         else {
+            separator.isVisible=false
             unitNameLabel.setText("")
-            unitDescriptionLabel.setText("")
+            unitDescriptionTable.clear()
             unitIconHolder.clear()
         }
 
@@ -91,15 +107,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
         unitIconHolder.clear()
         promotionsTable.clear()
-        unitDescriptionLabel.clearListeners()
+        unitDescriptionTable.clearListeners()
 
         if(selectedUnit!=null) {
-
             unitIconHolder.add(TileGroup(TileInfo()).getUnitImage(selectedUnit!!,30f)).pad(5f)
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 
-            unitDescriptionLabel.onClick { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
+            unitDescriptionTable.onClick { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
         }
 
         pack()

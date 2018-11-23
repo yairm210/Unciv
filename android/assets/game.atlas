@@ -697,6 +697,13 @@ ImprovementIcons/Trading post
   orig: 100, 100
   offset: 0, 0
   index: -1
+OtherIcons/BackArrow
+  rotate: false
+  xy: 1734, 1215
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
 OtherIcons/Banner
   rotate: false
   xy: 1297, 1727
@@ -811,273 +818,273 @@ PolicyIcons/Aristocracy
   index: -1
 PolicyIcons/Citizenship
   rotate: false
-  xy: 1734, 1215
+  xy: 1734, 1163
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Civil Society
   rotate: false
-  xy: 1734, 1163
+  xy: 1734, 1111
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Collective Rule
   rotate: false
-  xy: 1734, 1111
+  xy: 1734, 1059
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Constitution
   rotate: false
-  xy: 1734, 1059
+  xy: 1734, 1007
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Democracy
   rotate: false
-  xy: 1734, 1007
+  xy: 1734, 955
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Discipline
   rotate: false
-  xy: 1734, 955
+  xy: 1734, 903
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Entrepreneurship
   rotate: false
-  xy: 1734, 903
+  xy: 1734, 851
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Facism
   rotate: false
-  xy: 1734, 851
+  xy: 1734, 799
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Religion
   rotate: false
-  xy: 1734, 799
+  xy: 1734, 747
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Speech
   rotate: false
-  xy: 1734, 747
+  xy: 1734, 695
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Thought
   rotate: false
-  xy: 1734, 695
+  xy: 1734, 643
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Humanism
   rotate: false
-  xy: 1734, 643
+  xy: 1734, 591
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Landed Elite
   rotate: false
-  xy: 1734, 591
+  xy: 1734, 539
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Legalism
   rotate: false
-  xy: 1734, 539
+  xy: 1734, 487
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Mandate Of Heaven
   rotate: false
-  xy: 1734, 487
+  xy: 1734, 435
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Mercantilism
   rotate: false
-  xy: 1734, 435
+  xy: 1734, 383
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Meritocracy
   rotate: false
-  xy: 1734, 383
+  xy: 1734, 331
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Militarism
   rotate: false
-  xy: 1734, 331
+  xy: 1892, 1237
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Military Caste
   rotate: false
-  xy: 1892, 1237
+  xy: 1944, 1237
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Military Tradition
   rotate: false
-  xy: 1944, 1237
+  xy: 1786, 1187
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Monarchy
   rotate: false
-  xy: 1786, 1187
+  xy: 1786, 1135
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Oligarchy
   rotate: false
-  xy: 1786, 1135
+  xy: 1838, 1187
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Organized Religion
   rotate: false
-  xy: 1838, 1187
+  xy: 1786, 1083
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Patronage
   rotate: false
-  xy: 1786, 1083
+  xy: 1838, 1135
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Police State
   rotate: false
-  xy: 1838, 1135
+  xy: 1786, 1031
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Populism
   rotate: false
-  xy: 1786, 1031
+  xy: 1838, 1083
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Professional Army
   rotate: false
-  xy: 1838, 1083
+  xy: 1786, 979
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Protectionism
   rotate: false
-  xy: 1786, 979
+  xy: 1838, 1031
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Reformation
   rotate: false
-  xy: 1838, 1031
+  xy: 1786, 927
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Representation
   rotate: false
-  xy: 1786, 927
+  xy: 1838, 979
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Republic
   rotate: false
-  xy: 1838, 979
+  xy: 1786, 875
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Scientific Revolution
   rotate: false
-  xy: 1786, 875
+  xy: 1838, 927
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Secularism
   rotate: false
-  xy: 1838, 927
+  xy: 1786, 823
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Sovereignty
   rotate: false
-  xy: 1786, 823
+  xy: 1838, 875
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Theocracy
   rotate: false
-  xy: 1838, 875
+  xy: 1786, 771
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Total War
   rotate: false
-  xy: 1786, 771
+  xy: 1838, 823
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Trade Unions
   rotate: false
-  xy: 1838, 823
+  xy: 1786, 719
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Universal Suffrage
   rotate: false
-  xy: 1786, 719
+  xy: 1838, 771
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Warrior Code
   rotate: false
-  xy: 1838, 771
+  xy: 1786, 667
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -2281,14 +2288,14 @@ UnitPromotionIcons/Coastal_Raider_I_(Civ5)
   index: -1
 UnitPromotionIcons/Cover_II_(Civ5)
   rotate: false
-  xy: 1786, 697
+  xy: 1838, 749
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Cover_I_(Civ5)
   rotate: false
-  xy: 1838, 749
+  xy: 1786, 645
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2414,28 +2421,28 @@ UnitPromotionIcons/Shock_I_(Civ5)
   index: -1
 UnitPromotionIcons/Siege_(Civ5)
   rotate: false
-  xy: 1786, 675
+  xy: 1838, 727
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_III_(Civ5)
   rotate: false
-  xy: 1808, 697
+  xy: 1860, 749
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_II_(Civ5)
   rotate: false
-  xy: 1838, 727
+  xy: 1786, 623
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_I_(Civ5)
   rotate: false
-  xy: 1860, 749
+  xy: 1808, 645
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

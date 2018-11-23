@@ -94,6 +94,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.defaults().pad(10f)
         table.background = ImageGetter.getBackground(civ.getNation().getColor())
         table.add(Label(civ.civName.tr(),skin).setFontColor(civ.getNation().getSecondaryColor())).row()
+        table.addSeparator()
         for(offer in offersList){
             var offerText = offer.amount.toString()+" "+offer.name.tr()
             if(offer.duration>0)offerText += " ("+offer.duration+" {turns})".tr()

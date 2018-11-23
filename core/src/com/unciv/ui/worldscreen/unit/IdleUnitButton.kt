@@ -1,18 +1,32 @@
 package com.unciv.ui.worldscreen.unit
 
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileMapHolder
 
-class IdleUnitButton internal constructor(internal val unitTable: UnitTable,
+class IdleUnitButton (internal val unitTable: UnitTable,
                                           val tileMapHolder: TileMapHolder, val previous:Boolean)
-    : TextButton(if(previous)"<" else ">", CameraStageBaseScreen.skin) {
+    : Table() {
+
+    val image = ImageGetter.getImage("OtherIcons/BackArrow")
 
     fun getTilesWithIdleUnits() = tileMapHolder.tileMap.values
                     .filter { it.hasIdleUnit() && it.getUnits().first().owner == unitTable.worldScreen.civInfo.civName }
+
     init {
+        val imageSize = 25f
+        if(!previous){
+            image.setSize(imageSize,imageSize)
+            image.setOrigin(Align.center)
+            image.rotateBy(180f)
+        }
+        add(image).size(imageSize).pad(10f,20f,10f,20f)
+        enable()
         onClick {
             val tilesWithIdleUnits = getTilesWithIdleUnits()
 
@@ -29,6 +43,16 @@ class IdleUnitButton internal constructor(internal val unitTable: UnitTable,
             tileMapHolder.setCenterPosition(tileToSelect.position)
             unitTable.worldScreen.update()
         }
+    }
+
+    fun enable(){
+        image.color= Color.WHITE
+        touchable=Touchable.enabled
+    }
+
+    fun disable(){
+        image.color= Color.GRAY
+        touchable=Touchable.disabled
     }
 }
 
