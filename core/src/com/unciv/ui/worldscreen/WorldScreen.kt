@@ -47,8 +47,16 @@ class WorldScreen : CameraStageBaseScreen() {
                 topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(this)
         notificationsScroll.width = stage.width/3
-        minimap.setSize(stage.width/5,stage.height/5)
-        minimap.x = stage.width - minimap.width
+        
+        val externalMinimapWrapper = Table()
+        val internalMinimapWrapper = Table()
+        internalMinimapWrapper.add(minimap).size(stage.width/5,stage.height/5)
+        internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
+        internalMinimapWrapper.pack()
+        externalMinimapWrapper.add(internalMinimapWrapper).pad(5f)
+        externalMinimapWrapper.background=ImageGetter.getBackground(Color.WHITE)
+        externalMinimapWrapper.pack()
+        externalMinimapWrapper.x = stage.width - externalMinimapWrapper.width
 
         tileMapHolder.addTiles()
 
@@ -58,7 +66,7 @@ class WorldScreen : CameraStageBaseScreen() {
         }
 
         stage.addActor(tileMapHolder)
-        stage.addActor(minimap)
+        stage.addActor(externalMinimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
         stage.addActor(techButton)
@@ -134,7 +142,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         minimap.update(cloneCivilization)
-        minimap.y = bottomBar.height
+        minimap.parent.parent.y = bottomBar.height // couldn't be bothered to create a separate val for minimap wrapper
 
         unitActionsTable.update(bottomBar.unitTable.selectedUnit)
         unitActionsTable.y = bottomBar.height
