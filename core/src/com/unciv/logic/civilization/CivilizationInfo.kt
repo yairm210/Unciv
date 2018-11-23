@@ -214,12 +214,15 @@ class CivilizationInfo {
         viewableTiles.asSequence().map { it.position }
                 .filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
 
-        val viewedCivs = viewableTiles
-                .flatMap { it.getUnits().map { unit->unit.civInfo }.union(listOf(it.getOwner())) }
-                // we can meet a civ either by meeting its unit, or its tile
-                .asSequence().filterNotNull().filterNot { it==this || it.isBarbarianCivilization() }
 
-        for(otherCiv in viewedCivs)
+        val viewedCivs = HashSet<CivilizationInfo>()
+        for(tile in viewableTiles){
+            val tileOwner = tile.getOwner()
+            if(tileOwner!=null) viewedCivs+=tileOwner
+            for(unit in tile.getUnits()) viewedCivs+=unit.civInfo
+        }
+
+        for(otherCiv in viewedCivs.filterNot { it==this || it.isBarbarianCivilization() })
             if(!diplomacy.containsKey(otherCiv.civName)){
                 meetCivilization(otherCiv)
                 addNotification("We have encountered [${otherCiv.civName}]!".tr(),null, Color.GOLD)

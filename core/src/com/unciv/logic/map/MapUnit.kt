@@ -12,6 +12,7 @@ import com.unciv.ui.utils.getRandom
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 class MapUnit {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -63,14 +64,14 @@ class MapUnit {
         return movementAlgs().getDistanceToTilesWithinTurn(tile.position,currentMovement)
     }
 
-    @Transient var tempUniques: List<String> = ArrayList()
+    @Transient var tempUniques= HashSet<String>()
 
-    fun getUniques(): List<String> {
+    fun getUniques(): HashSet<String> {
         return tempUniques
     }
 
     fun updateUniques(){
-        val uniques = ArrayList<String>()
+        val uniques = HashSet<String>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniques)
         uniques.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })
@@ -274,7 +275,7 @@ class MapUnit {
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"
-        if(isFortified() || action=="Set Up") action=null // unfortify/setup after moving
+        if(isFortified() || action=="Set Up" || action=="Sleep") action=null // unfortify/setup after moving
         removeFromTile()
         putInTile(otherTile)
     }
