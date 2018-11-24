@@ -113,19 +113,20 @@ class MapUnit {
 
     fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
+        val isOcean = tile.baseTerrain == "Ocean" // profiling showed that 3.5% of all nextTurn time is taken up by string equals in this function =|
         if(tile.isWater() && type.isLandUnit()){
             val techUniques = civInfo.tech.getUniques()
             if(!techUniques.contains("Enables embarkation for land units"))
                 return false
-            if(tile.baseTerrain == "Ocean" && !techUniques.contains("Enables embarked units to enter ocean tiles"))
+            if(isOcean && !techUniques.contains("Enables embarked units to enter ocean tiles"))
                 return false
         }
         if(tile.isLand() && type.isWaterUnit())
             return false
-        if(tile.baseTerrain=="Ocean" && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+        if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !civInfo.tech.isResearched("Astronomy"))
             return false
-        if(tile.baseTerrain=="Ocean" && baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
+        if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
         if(tileOwner!=null && tileOwner.civName!=owner
                 && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
         return true
@@ -299,7 +300,7 @@ class MapUnit {
 
     fun destroy(){
         removeFromTile()
-        civInfo.units.remove(this)
+        civInfo.removeUnit(this)
     }
 
     fun removeFromTile(){
@@ -360,7 +361,7 @@ class MapUnit {
     fun assignOwner(civInfo:CivilizationInfo){
         owner=civInfo.civName
         this.civInfo=civInfo
-        civInfo.units.add(this)
+        civInfo.addUnit(this)
     }
     //endregion
 }

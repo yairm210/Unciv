@@ -111,12 +111,13 @@ class Building : NamedStats(), IConstruction{
         return stringBuilder.toString().trim()
     }
 
+    val cultureBuildings = hashSetOf("Monument", "Temple", "Monastery")
     fun getStats(adoptedPolicies: HashSet<String>): Stats {
         val stats = this.clone()
-        if (adoptedPolicies.contains("Organized Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
+        if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(name))
             stats.happiness += 1
 
-        if (adoptedPolicies.contains("Free Religion") && hashSetOf("Monument", "Temple", "Monastery").contains(name))
+        if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(name))
             stats.culture += 1f
 
         if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(name))

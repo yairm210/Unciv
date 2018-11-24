@@ -39,7 +39,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         topTable.row().pad(30f)
 
         for (branch in GameBasics.PolicyBranches.values) {
-            if (branch.name == "Commerce") topTable.row()
+            if (branch.name == "Commerce") topTable.addSeparator()
             val branchGroup = Table()
             branchGroup.row().pad(20f)
             branchGroup.add(getPolicyButton(branch, false)).row()

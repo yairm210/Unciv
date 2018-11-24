@@ -173,7 +173,7 @@ class Battle(val gameInfo:GameInfo) {
         capturedUnit.civInfo.addNotification("An enemy ["+attacker.getName()+"] has captured our ["+defender.getName()+"]",
                 defender.getTile().position, Color.RED)
 
-        capturedUnit.civInfo.units.remove(capturedUnit)
+        capturedUnit.civInfo.removeUnit(capturedUnit)
         capturedUnit.assignOwner(attacker.getCivilization())
     }
 }

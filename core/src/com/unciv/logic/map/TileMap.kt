@@ -82,7 +82,7 @@ class TileMap {
             unit.putInTile(unitToPlaceTile)
             unit.currentMovement = unit.getMaxMovement().toFloat()
         }
-        else civInfo.units.remove(unit) // since we added it to the civ units in the previous assignOwner
+        else civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
 
         return unit
     }

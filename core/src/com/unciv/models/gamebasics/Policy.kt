@@ -13,5 +13,9 @@ open class Policy : INamed {
     fun getBranch():PolicyBranch{
         return GameBasics.PolicyBranches[branch]!!
     }
+
+    override fun toString(): String {
+        return name
+    }
 }
 

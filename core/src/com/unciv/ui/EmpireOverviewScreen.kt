@@ -110,6 +110,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val happinessTable = Table(skin)
         happinessTable.defaults().pad(5f)
         happinessTable.add(Label("Happiness".tr(), skin).setFontSize(24)).colspan(2).row()
+        happinessTable.addSeparator()
         for (entry in civInfo.getHappinessForNextTurn()) {
             happinessTable.add(entry.key.tr())
             happinessTable.add(entry.value.toString()).row()
@@ -124,6 +125,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
         goldTable.add(Label("Gold".tr(), skin).setFontSize(24)).colspan(2).row()
+        goldTable.addSeparator()
         var total=0f
         for (entry in civInfo.getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue

@@ -21,8 +21,10 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
         divideIntoAreas(6, 0f, map)
 
         val mapToReturn = HashMap<String, TileInfo>()
-        for(tile in map)
+        for(tile in map) {
+            tile.value.setTransients()
             mapToReturn[tile.key.toString()] = tile.value
+        }
 
         setWaterTiles(mapToReturn)
         for(tile in mapToReturn.values) randomizeTile(tile)

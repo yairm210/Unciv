@@ -33,9 +33,10 @@ class PolicyManager {
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
     fun isAdoptable(policy: Policy): Boolean {
-        return (!policy.name.endsWith("Complete")
-                && getAdoptedPolicies().containsAll(policy.requires!!)
-                && policy.getBranch().era <= civInfo.getEra())
+        if (policy.name.endsWith("Complete")) return false
+        if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
+        if (policy.getBranch().era > civInfo.getEra()) return false
+        return true
     }
 
     fun canAdoptPolicy(): Boolean = freePolicies > 0 || storedCulture >= getCultureNeededForNextPolicy()

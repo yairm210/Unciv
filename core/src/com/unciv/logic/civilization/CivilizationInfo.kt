@@ -17,6 +17,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.utils.tr
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.pow
@@ -25,7 +26,12 @@ import kotlin.math.roundToInt
 
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
-    @Transient var units=ArrayList<MapUnit>()
+    /**
+     * never add or remove from here directly, could cause comodification problems.
+     * Instead, create a copy list with the change, and replace this list.
+     * The other solution, casting toList() every "get", has a performance cost
+     */
+    @Transient private var units=ArrayList<MapUnit>()
     @Transient var viewableTiles = HashSet<TileInfo>()
 
     var gold = 0
@@ -200,8 +206,18 @@ class CivilizationInfo {
 
     fun getBuildingUniques(): List<String> = cities.flatMap { it.getBuildingUniques()}.distinct()
 
-    fun getCivUnits(): List<MapUnit> {
-        return units.toList() // to avoid comodification problems (ie concurrency again...)
+    fun getCivUnits(): List<MapUnit> = units
+
+    fun addUnit(mapUnit: MapUnit){
+        val newList = ArrayList(units)
+        newList.add(mapUnit)
+        units=newList
+    }
+
+    fun removeUnit(mapUnit: MapUnit){
+        val newList = ArrayList(units)
+        newList.remove(mapUnit)
+        units=newList
     }
 
 
@@ -241,6 +257,7 @@ class CivilizationInfo {
     fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
+                .asSequence()
                 .map { it.era() }
                 .max()
         if(maxEraOfTech!=null) return maxEraOfTech
@@ -265,6 +282,7 @@ class CivilizationInfo {
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
 
         tech.civInfo = this
+        tech.setTransients()
         diplomacy.values.forEach { it.civInfo=this}
 
 
