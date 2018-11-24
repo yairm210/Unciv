@@ -28,7 +28,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.hasUnique("Double movement in coast") && to.baseTerrain=="Coast")
             return 1/2f
 
-        return to.lastTerrain.movementCost.toFloat() // no road
+        return to.getLastTerrain().movementCost.toFloat() // no road
     }
 
 

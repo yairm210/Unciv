@@ -243,7 +243,7 @@ open class RandomMapGenerator {
         var tileResources = GameBasics.TileResources.values.toList()
 
         // Resources are placed according to TerrainFeature, if exists, otherwise according to BaseLayer.
-        tileResources = tileResources.filter { it.terrainsCanBeFoundOn.contains(tileInfo.lastTerrain.name) }
+        tileResources = tileResources.filter { it.terrainsCanBeFoundOn.contains(tileInfo.getLastTerrain().name) }
 
         var resource: TileResource? = null
         when {

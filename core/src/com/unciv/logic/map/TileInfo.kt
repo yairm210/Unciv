@@ -13,6 +13,7 @@ import kotlin.math.abs
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
     @Transient var owningCity:CityInfo?=null
+    @Transient lateinit var baseTerrainObject:Terrain
 
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
@@ -43,7 +44,7 @@ open class TileInfo {
         return toReturn
     }
 
-
+    //region pure functions
     fun getUnits(): List<MapUnit> {
         val list = ArrayList<MapUnit>(2)
         if(militaryUnit!=null) list.add(militaryUnit!!)
@@ -52,12 +53,9 @@ open class TileInfo {
         // this used to be "return listOf(militaryUnit,civilianUnit).filterNotNull()" but profiling revealed that that took considerably longer
     }
 
-    fun getCity(): CityInfo? {
-        return owningCity
-    }
+    fun getCity(): CityInfo? = owningCity
 
-    val lastTerrain: Terrain
-        get() = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!
+    fun getLastTerrain(): Terrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()!!
 
     fun getTileResource(): TileResource =
             if (resource == null) throw Exception("No resource exists for this tile!")
@@ -78,17 +76,14 @@ open class TileInfo {
             return internalNeighbors!!
         }
 
-    val height: Int
-        get() {
-            var height = 0
-            if (listOf("Forest", "Jungle").contains(terrainFeature)) height += 1
-            if ("Hill" == baseTerrain) height += 2
-            return height
-        }
-
-    fun getBaseTerrain(): Terrain {
-        return GameBasics.Terrains[baseTerrain]!!
+    fun getHeight(): Int {
+        var height = 0
+        if (listOf("Forest", "Jungle").contains(terrainFeature)) height += 1
+        if ("Hill" == baseTerrain) height += 2
+        return height
     }
+
+    fun getBaseTerrain(): Terrain = baseTerrainObject
 
     fun getOwner(): CivilizationInfo? {
         val containingCity = getCity()
@@ -100,6 +95,13 @@ open class TileInfo {
         return if (terrainFeature == null) null else GameBasics.Terrains[terrainFeature!!]
     }
 
+    fun isWorked(): Boolean {
+        val city = getCity()
+        return city!=null && city.workedTiles.contains(position)
+    }
+
+    fun isLand() = getBaseTerrain().type==TerrainType.Land
+    fun isWater() = getBaseTerrain().type==TerrainType.Water
 
     fun getTileStats(observingCiv: CivilizationInfo): Stats {
         return getTileStats(getCity(), observingCiv)
@@ -188,15 +190,37 @@ open class TileInfo {
 
     }
 
-    fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
-        improvementInProgress = improvement.name
-        turnsToImprovement = improvement.getTurnsToBuild(civInfo)
+    fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
+        return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
     }
 
-    fun stopWorkingOnImprovement() {
-        improvementInProgress = null
+    fun hasIdleUnit(): Boolean {
+        return getUnits().any{it.isIdle()}
     }
 
+    fun getViewableTiles(distance:Int): MutableList<TileInfo> {
+        return tileMap.getViewableTiles(this.position,distance)
+    }
+
+    fun getTilesInDistance(distance:Int): List<TileInfo> {
+        return tileMap.getTilesInDistance(position,distance)
+    }
+
+    fun getTilesAtDistance(distance:Int): List<TileInfo> {
+        return tileMap.getTilesAtDistance(position,distance)
+    }
+
+    fun getDefensiveBonus(): Float {
+        var bonus = getBaseTerrain().defenceBonus
+        if(terrainFeature!=null) bonus += getTerrainFeature()!!.defenceBonus
+        return bonus
+    }
+
+    fun arialDistanceTo(otherTile:TileInfo): Int {
+        val xDelta = position.x-otherTile.position.x
+        val yDelta = position.y-otherTile.position.y
+        return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()
+    }
 
     override fun toString(): String {
         val SB = StringBuilder()
@@ -233,43 +257,28 @@ open class TileInfo {
         return SB.toString().trim()
     }
 
-    fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
-        return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
+    //endregion
+
+    //region state-changing functions
+    fun setTransients(){
+        baseTerrainObject = GameBasics.Terrains[baseTerrain]!!
+
+        if(militaryUnit!=null) militaryUnit!!.currentTile = this
+        if(civilianUnit!=null) civilianUnit!!.currentTile = this
+
+        for (unit in getUnits()) {
+            unit.assignOwner(tileMap.gameInfo.civilizations.first { it.civName == unit.owner })
+            unit.setTransients()
+        }
     }
 
-    fun hasIdleUnit(): Boolean {
-        return getUnits().any{it.isIdle()}
+    fun startWorkingOnImprovement(improvement: TileImprovement, civInfo: CivilizationInfo) {
+        improvementInProgress = improvement.name
+        turnsToImprovement = improvement.getTurnsToBuild(civInfo)
     }
 
-    fun getViewableTiles(distance:Int): MutableList<TileInfo> {
-        return tileMap.getViewableTiles(this.position,distance)
+    fun stopWorkingOnImprovement() {
+        improvementInProgress = null
     }
-
-    fun getTilesInDistance(distance:Int): List<TileInfo> {
-        return tileMap.getTilesInDistance(position,distance)
-    }
-
-    fun getTilesAtDistance(distance:Int): List<TileInfo> {
-        return tileMap.getTilesAtDistance(position,distance)
-    }
-
-    fun getDefensiveBonus(): Float {
-        var bonus = getBaseTerrain().defenceBonus
-        if(terrainFeature!=null) bonus += getTerrainFeature()!!.defenceBonus
-        return bonus
-    }
-
-    fun isWorked(): Boolean {
-        val city = getCity()
-        return city!=null && city.workedTiles.contains(position)
-    }
-
-    fun isLand() = getBaseTerrain().type==TerrainType.Land
-    fun isWater() = getBaseTerrain().type==TerrainType.Water
-
-    fun arialDistanceTo(otherTile:TileInfo): Int {
-        val xDelta = position.x-otherTile.position.x
-        val yDelta = position.y-otherTile.position.y
-        return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()
-    }
+    //endregion
 }

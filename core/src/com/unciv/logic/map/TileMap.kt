@@ -91,7 +91,7 @@ class TileMap {
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
         for (i in 1..sightDistance) { // in each layer,
             getTilesAtDistance(position, i).filterTo(viewableTiles) // take only tiles which have a visible neighbor, which is lower than the tile
-                { tile -> tile.neighbors.any{viewableTiles.contains(it) && (it.height==0 || it.height < tile.height)}  }
+                { tile -> tile.neighbors.any{viewableTiles.contains(it) && (it.getHeight() ==0 || it.getHeight() < tile.getHeight())}  }
         }
 
         return viewableTiles
@@ -115,13 +115,7 @@ class TileMap {
         for (tileInfo in values){
             tileMatrix[tileInfo.position.x.toInt()-leftX][tileInfo.position.y.toInt()-bottomY] = tileInfo
             tileInfo.tileMap = this
-            if(tileInfo.militaryUnit!=null) tileInfo.militaryUnit!!.currentTile = tileInfo
-            if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.currentTile = tileInfo
-
-            for (unit in tileInfo.getUnits()) {
-                unit.assignOwner(gameInfo.civilizations.first { it.civName == unit.owner })
-                unit.setTransients()
-            }
+            tileInfo.setTransients()
         }
     }
 
