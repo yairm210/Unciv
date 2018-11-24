@@ -27,7 +27,7 @@ class WorldScreen : CameraStageBaseScreen() {
     internal val civInfo: CivilizationInfo = gameInfo.getPlayerCivilization()
 
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
-    val minimap = Minimap(tileMapHolder)
+    val minimapWrapper = MinimapHolder(tileMapHolder)
 
     private val topBar = WorldScreenTopBar(this)
     val bottomBar = WorldScreenBottomBar(this)
@@ -48,15 +48,7 @@ class WorldScreen : CameraStageBaseScreen() {
         notificationsScroll = NotificationsScroll(this)
         notificationsScroll.width = stage.width/3
 
-        val externalMinimapWrapper = Table()
-        val internalMinimapWrapper = Table()
-        internalMinimapWrapper.add(minimap).size(stage.width/5,stage.height/5)
-        internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
-        internalMinimapWrapper.pack()
-        externalMinimapWrapper.add(internalMinimapWrapper).pad(5f)
-        externalMinimapWrapper.background=ImageGetter.getBackground(Color.WHITE)
-        externalMinimapWrapper.pack()
-        externalMinimapWrapper.x = stage.width - externalMinimapWrapper.width
+        minimapWrapper.x = stage.width - minimapWrapper.width
 
         tileMapHolder.addTiles()
 
@@ -66,7 +58,7 @@ class WorldScreen : CameraStageBaseScreen() {
         }
 
         stage.addActor(tileMapHolder)
-        stage.addActor(externalMinimapWrapper)
+        stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
         stage.addActor(techButton)
@@ -141,15 +133,15 @@ class WorldScreen : CameraStageBaseScreen() {
         updateDiplomacyButton(cloneCivilization)
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
-        minimap.update(cloneCivilization)
-        minimap.parent.parent.y = bottomBar.height // couldn't be bothered to create a separate val for minimap wrapper
+        minimapWrapper.update(cloneCivilization)
+        minimapWrapper.y = bottomBar.height // couldn't be bothered to create a separate val for minimap wrapper
 
         unitActionsTable.update(bottomBar.unitTable.selectedUnit)
         unitActionsTable.y = bottomBar.height
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
-        // it causes a bug when we move a unit to an unexplored tile (for instance  cavalry unit which can move far)
+        // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
         tileMapHolder.updateTiles(civInfo)
 
         topBar.update(cloneCivilization)

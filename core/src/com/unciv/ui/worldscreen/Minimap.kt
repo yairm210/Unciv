@@ -6,12 +6,15 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputListener
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.surroundWithCircle
 
 class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
     val allTiles = Group()
@@ -79,4 +82,58 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
             else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f) // Todo add to baseterrain as function
         }
     }
+}
+
+class MinimapHolder(val tileMapHolder: TileMapHolder): Table(){
+    val minimap = Minimap(tileMapHolder)
+    val worldScreen = tileMapHolder.worldScreen
+
+    init{
+        add(getToggleIcons()).align(Align.bottom)
+        add(getWrappedMinimap())
+        pack()
+    }
+
+    fun getWrappedMinimap(): Table {
+        val internalMinimapWrapper = Table()
+        internalMinimapWrapper.add(minimap).size(worldScreen.stage.width/5,worldScreen.stage.height/5)
+        internalMinimapWrapper.background=ImageGetter.getBackground(Color.GRAY)
+        internalMinimapWrapper.pack()
+
+        val externalMinimapWrapper = Table()
+        externalMinimapWrapper.add(internalMinimapWrapper).pad(5f)
+        externalMinimapWrapper.background=ImageGetter.getBackground(Color.WHITE)
+        externalMinimapWrapper.pack()
+
+        return externalMinimapWrapper
+    }
+
+    fun getToggleIcons():Table{
+        val toggleIconTable=Table()
+        val settings = UnCivGame.Current.settings
+
+        val populationImage = ImageGetter.getStatIcon("Population").surroundWithCircle(40f)
+        populationImage.circle.color = Color.BLACK
+        populationImage.image.color.a = if(settings.showWorkedTiles) 1f else 0.5f
+        populationImage.onClick {
+            settings.showWorkedTiles = !settings.showWorkedTiles
+            populationImage.image.color.a = if(settings.showWorkedTiles) 1f else 0.5f
+            worldScreen.update()
+        }
+        toggleIconTable.add(populationImage).row()
+
+        val resourceImage = ImageGetter.getResourceImage("Cattle",30f).surroundWithCircle(40f)
+        resourceImage.circle.color = Color.BLACK
+        resourceImage.image.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
+        resourceImage.onClick {
+            settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
+            resourceImage.image.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
+            worldScreen.update()
+        }
+        toggleIconTable.add(resourceImage)
+        toggleIconTable.pack()
+        return toggleIconTable
+    }
+
+    fun update(civInfo:CivilizationInfo){minimap.update(civInfo)}
 }

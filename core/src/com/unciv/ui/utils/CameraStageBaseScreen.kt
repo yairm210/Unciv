@@ -193,7 +193,7 @@ fun Actor.onClick(function: () -> Unit) {
     } )
 }
 
-fun Image.surroundWithCircle(size:Float): IconCircleGroup {
+fun Actor.surroundWithCircle(size:Float): IconCircleGroup {
     return IconCircleGroup(size,this)
 }
 
