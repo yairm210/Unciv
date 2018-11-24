@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
+import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 
@@ -156,5 +157,39 @@ object ImageGetter {
         healthBar.pack()
         return healthBar
     }
+
+
+    fun getUnitImage(unit: MapUnit, size: Float): Group {
+        val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
+                .apply { setSize(size*0.75f, size*0.75f) }
+
+        val background = getBackgroundImageForUnit(unit)
+        background.apply {
+            this.color = unit.civInfo.getNation().getColor()
+            setSize(size, size)
+        }
+        val group = Group().apply {
+            setSize(size, size)
+            addActor(background)
+        }
+        unitBaseImage.center(group)
+        group.addActor(unitBaseImage)
+
+
+        if (unit.health < 100) { // add health bar
+            group.addActor(ImageGetter.getHealthBar(unit.health.toFloat(),100f,size))
+        }
+
+        return group
+    }
+
+    fun getBackgroundImageForUnit(unit: MapUnit):Image{
+        return when {
+            unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
+            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield.png")
+            else -> ImageGetter.getImage("OtherIcons/Circle.png")
+        }
+    }
+
 
 }

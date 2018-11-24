@@ -5,6 +5,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 
 
@@ -12,7 +13,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: CityButton? = null
 
     fun addWhiteHaloAroundUnit(unit: MapUnit) {
-        val whiteHalo = getBackgroundImageForUnit(unit)
+        val whiteHalo = ImageGetter.getBackgroundImageForUnit(unit)
         whiteHalo.setSize(30f,30f)
         val unitImage = if(unit.type.isCivilian()) civilianUnitImage
                         else militaryUnitImage

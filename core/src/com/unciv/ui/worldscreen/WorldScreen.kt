@@ -47,7 +47,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(this)
         notificationsScroll.width = stage.width/3
-        
+
         val externalMinimapWrapper = Table()
         val internalMinimapWrapper = Table()
         internalMinimapWrapper.add(minimap).size(stage.width/5,stage.height/5)

@@ -147,6 +147,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
         greatPeopleTable.defaults().pad(5f)
         greatPeopleTable.add(Label("Great person points".tr(), skin).setFontSize(24)).colspan(3).row()
+        greatPeopleTable.addSeparator()
         greatPeopleTable.add()
         greatPeopleTable.add("Current points")
         greatPeopleTable.add("Points per turn").row()
@@ -239,6 +240,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add("Movement".tr())
         table.add("Closest city".tr())
         table.row()
+        table.addSeparator()
+
         for(unit in civInfo.getCivUnits()){
             val baseUnit = unit.baseUnit()
             table.add(unit.name.tr())

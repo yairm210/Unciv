@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -33,7 +32,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             add(unitNameLabel).pad(5f)
             add(nextIdleUnitButton)
         }).colspan(2).row()
-        separator= addSeparator()
+        separator= addSeparator().actor!!
         add(promotionsTable).colspan(2).row()
         add(unitDescriptionTable)
     }
@@ -110,7 +109,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         unitDescriptionTable.clearListeners()
 
         if(selectedUnit!=null) {
-            unitIconHolder.add(TileGroup(TileInfo()).getUnitImage(selectedUnit!!,30f)).pad(5f)
+            unitIconHolder.add(ImageGetter.getUnitImage(selectedUnit!!,30f)).pad(5f)
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 

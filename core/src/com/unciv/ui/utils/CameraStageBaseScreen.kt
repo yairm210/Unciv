@@ -197,8 +197,10 @@ fun Image.surroundWithCircle(size:Float): IconCircleGroup {
     return IconCircleGroup(size,this)
 }
 
-fun Table.addSeparator(): Image {
+fun Table.addSeparator(): Cell<Image> {
+    row()
     val image = ImageGetter.getWhiteDot()
-    add(image).colspan(columns).fill().row()
-    return image
+    val cell = add(image).colspan(columns).fill()
+    row()
+    return cell
 }

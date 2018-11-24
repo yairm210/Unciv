@@ -15,7 +15,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 
@@ -114,7 +113,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         moveHereButton.addActor(numberCircle)
         moveHereButton.addActor(Label(turnsToGetThere.toString(), CameraStageBaseScreen.skin).apply { center(numberCircle); setFontColor(Color.WHITE) })
 
-        val unitIcon = TileGroup(TileInfo()).getUnitImage(selectedUnit, size / 2)
+        val unitIcon = ImageGetter.getUnitImage(selectedUnit, size / 2)
         unitIcon.y = size - unitIcon.height
         moveHereButton.addActor(unitIcon)
 

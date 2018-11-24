@@ -18,9 +18,9 @@ com.badlogic.gdx.graphics.Color: {
 		a: 1
 	}
 	color: {
-		r: 0.3372549
-		g: 0.7
-		b: 0.44705883
+		r: 0.2
+		g: 0.3
+		b: 0.5
 		a: 1
 	}
 	gray: {

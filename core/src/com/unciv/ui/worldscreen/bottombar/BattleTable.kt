@@ -53,20 +53,28 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     fun simulateBattle(attacker: MapUnitCombatant, defender: ICombatant){
         clear()
-        row().pad(5f)
+        defaults().pad(5f)
+
+        val attackerNameWrapper = Table()
         val attackerLabel = Label(attacker.getName(), skin)
-                .setFontColor(attacker.getCivilization().getNation().getColor())
-        add(attackerLabel)
+//                .setFontColor(attacker.getCivilization().getNation().getColor())
+        attackerNameWrapper.add(ImageGetter.getUnitImage(attacker.unit,25f)).padRight(5f)
+        attackerNameWrapper.add(attackerLabel)
+        add(attackerNameWrapper)
 
+        val defenderNameWrapper = Table()
         val defenderLabel = Label(defender.getName(), skin)
-                .setFontColor(defender.getCivilization().getNation().getColor())
-        add(defenderLabel)
+//                .setFontColor(defender.getCivilization().getNation().getColor())
+        if(defender is MapUnitCombatant)
+            defenderNameWrapper.add(ImageGetter.getUnitImage(defender.unit,25f)).padRight(5f)
 
-        row().pad(5f)
+        defenderNameWrapper.add(defenderLabel)
+        add(defenderNameWrapper).row()
+
+        addSeparator().pad(0f)
 
         add("{Strength}: ".tr()+attacker.getAttackingStrength(defender))
-        add("{Strength}: ".tr()+defender.getDefendingStrength(attacker))
-        row().pad(5f)
+        add("{Strength}: ".tr()+defender.getDefendingStrength(attacker)).row()
 
         val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
         val defenderModifiers = if (defender is MapUnitCombatant)
