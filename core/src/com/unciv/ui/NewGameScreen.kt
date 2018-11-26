@@ -115,6 +115,7 @@ class NewGameScreen: PickerScreen(){
         worldSizeToRadius["Small"] = 10
         worldSizeToRadius["Medium"] = 20
         worldSizeToRadius["Large"] = 30
+        worldSizeToRadius["Huge"] = 40
         val worldSizeSelectBox = TranslatedSelectBox(worldSizeToRadius.keys, "Medium", skin)
 
         worldSizeSelectBox.addListener(object : ChangeListener() {
@@ -128,7 +129,7 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray = Array<Int>()
-        (1..5).forEach { enemiesArray.add(it) }
+        (1..GameBasics.Nations.size-1).forEach { enemiesArray.add(it) }
         enemiesSelectBox.items = enemiesArray
         enemiesSelectBox.selected = newGameParameters.numberOfEnemies
 
