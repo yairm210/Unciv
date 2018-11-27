@@ -216,8 +216,16 @@ class Building : NamedStats(), IConstruction{
         }
         construction.addBuilding(name)
 
-        if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
-            construction.addBuilding(providesFreeBuilding!!)
+        if (providesFreeBuilding != null && !construction.containsBuildingOrEquivalent(providesFreeBuilding!!)) {
+            var buildingToAdd = providesFreeBuilding!!
+
+            for(building in GameBasics.Buildings.values)
+                if(building.replaces == buildingToAdd && building.uniqueTo==civInfo.civName)
+                    buildingToAdd = building.name
+
+            construction.addBuilding(buildingToAdd)
+        }
+
         when {
             "Empire enters golden age" in uniques-> civInfo.goldenAges.enterGoldenAge()
             "Free Great Artist Appears" in uniques-> civInfo.addGreatPerson("Great Artist")
