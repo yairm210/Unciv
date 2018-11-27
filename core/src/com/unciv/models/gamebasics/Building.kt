@@ -214,10 +214,10 @@ class Building : NamedStats(), IConstruction{
             civInfo.scienceVictory.currentParts.add(name, 1)
             return
         }
-        construction.builtBuildings.add(name)
+        construction.addBuilding(name)
 
         if (providesFreeBuilding != null && !construction.builtBuildings.contains(providesFreeBuilding!!))
-            construction.builtBuildings.add(providesFreeBuilding!!)
+            construction.addBuilding(providesFreeBuilding!!)
         when {
             "Empire enters golden age" in uniques-> civInfo.goldenAges.enterGoldenAge()
             "Free Great Artist Appears" in uniques-> civInfo.addGreatPerson("Great Artist")

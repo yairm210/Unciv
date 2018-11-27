@@ -210,7 +210,7 @@ class CityStats {
             stats.production += 5f
         if(policies.contains("Warrior Code") && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
             stats.production += 20
-        if (policies.contains("Reformation") && cityConstructions.builtBuildings.any { GameBasics.Buildings[it]!!.isWonder })
+        if (policies.contains("Reformation") && cityConstructions.getBuiltBuildings().any { it.isWonder })
             stats.culture += 33f
         if (policies.contains("Commerce") && cityInfo.isCapital())
             stats.gold += 25f

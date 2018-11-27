@@ -54,7 +54,7 @@ class CityInfo {
             civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
-            cityConstructions.builtBuildings.add("Palace")
+            cityConstructions.addBuilding("Palace")
             cityConstructions.currentConstruction = "Worker" // Default for first city only!
         }
 
@@ -159,7 +159,7 @@ class CityInfo {
         expansion.setTransients()
         cityStats.cityInfo = this
         cityConstructions.cityInfo = this
-
+        cityConstructions.setTransients()
     }
 
     fun endTurn() {
@@ -178,7 +178,7 @@ class CityInfo {
                 civInfo.addNotification("[$name] has been razed to the ground!",location, Color.RED)
                 destroyCity()
                 if(isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
-                    civInfo.cities.first().cityConstructions.builtBuildings.add("Palace")
+                    civInfo.cities.first().cityConstructions.addBuilding("Palace")
             }
         }
         else population.nextTurn(stats.food)
@@ -206,7 +206,7 @@ class CityInfo {
 
         // Remove all national wonders
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
-            cityConstructions.builtBuildings.remove(building.name)
+            cityConstructions.removeBuilding(building.name)
         isBeingRazed=false
     }
     //endregion

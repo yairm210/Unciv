@@ -6,12 +6,15 @@ import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.tr
+import com.unciv.ui.utils.withItem
+import com.unciv.ui.utils.withoutItem
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class CityConstructions {
-    @Transient
-    lateinit var cityInfo: CityInfo
+    @Transient lateinit var cityInfo: CityInfo
+    @Transient private var builtBuildingObjects=ArrayList<Building>()
 
     var builtBuildings = ArrayList<String>()
     private val inProgressConstructions = HashMap<String, Int>()
@@ -89,7 +92,7 @@ class CityConstructions {
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
-    internal fun getBuiltBuildings(): List<Building> = builtBuildings.toList().map { GameBasics.Buildings[it]!! } // toList os to avoid concurrency problems
+    internal fun getBuiltBuildings(): List<Building> = builtBuildingObjects // toList os to avoid concurrency problems
 
     fun containsBuildingOrEquivalent(building: String): Boolean =
             isBuilt(building) || getBuiltBuildings().any{it.replaces==building}
@@ -113,9 +116,13 @@ class CityConstructions {
     //endregion
 
     //region state changing functions
-    fun addConstruction(constructionToAdd: Int) {
+    fun setTransients(){
+        builtBuildingObjects = ArrayList(builtBuildings.map { GameBasics.Buildings[it]!! })
+    }
+
+    fun addProduction(productionToAdd: Int) {
         if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions[currentConstruction] = 0
-        inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + constructionToAdd
+        inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + productionToAdd
     }
 
     fun nextTurn(cityStats: Stats) {
@@ -136,24 +143,39 @@ class CityConstructions {
         var productionToAdd = cityStats.production
         if(!cityInfo.civInfo.isPlayerCivilization())
             productionToAdd *= cityInfo.civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiConstructionModifier
-        addConstruction(Math.round(cityStats.production))
+        addProduction(Math.round(cityStats.production))
         val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {
-            construction.postBuildEvent(this)
-            inProgressConstructions.remove(currentConstruction)
-
-            if(construction is Building && construction.isWonder && construction.requiredBuildingInAllCities==null) {
-                val playerCiv = cityInfo.civInfo.gameInfo.getPlayerCivilization() 
-                val builtLocation = if(playerCiv.exploredTiles.contains(cityInfo.location)) cityInfo.name else "a faraway land"
-                playerCiv.addNotification("[$currentConstruction] has been built in [$builtLocation]", cityInfo.location, Color.BROWN)
-            }
-            else
-                cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name+"]", cityInfo.location, Color.BROWN)
-
-            currentConstruction=""
-            Automation().chooseNextConstruction(this)
+            constructionComplete(construction)
         }
 
+    }
+
+    fun constructionComplete(construction: IConstruction) {
+        construction.postBuildEvent(this)
+        inProgressConstructions.remove(currentConstruction)
+
+        if (construction is Building && construction.isWonder && construction.requiredBuildingInAllCities == null) {
+            val playerCiv = cityInfo.civInfo.gameInfo.getPlayerCivilization()
+            val builtLocation = if (playerCiv.exploredTiles.contains(cityInfo.location)) cityInfo.name else "a faraway land"
+            playerCiv.addNotification("[$currentConstruction] has been built in [$builtLocation]", cityInfo.location, Color.BROWN)
+        } else
+            cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
+
+        currentConstruction = ""
+        Automation().chooseNextConstruction(this)
+    }
+
+    fun addBuilding(buildingName:String){
+        val buildingObject = GameBasics.Buildings[buildingName]!!
+        builtBuildingObjects = builtBuildingObjects.withItem(buildingObject)
+        builtBuildings.add(buildingName)
+    }
+
+    fun removeBuilding(buildingName:String){
+        val buildingObject = GameBasics.Buildings[buildingName]!!
+        builtBuildingObjects = builtBuildingObjects.withoutItem(buildingObject)
+        builtBuildings.remove(buildingName)
     }
 
     fun purchaseBuilding(buildingName: String) {

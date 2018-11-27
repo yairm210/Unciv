@@ -143,14 +143,14 @@ class Battle(val gameInfo:GameInfo) {
         }
 
         if(city.cityConstructions.isBuilt("Palace")){
-            city.cityConstructions.builtBuildings.remove("Palace")
+            city.cityConstructions.removeBuilding("Palace")
             if(enemyCiv.isDefeated()) {
                 gameInfo.getPlayerCivilization()
                         .addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
                 enemyCiv.getCivUnits().forEach { it.destroy() }
             }
             else if(enemyCiv.cities.isNotEmpty()){
-                enemyCiv.cities.first().cityConstructions.builtBuildings.add("Palace") // relocate palace
+                enemyCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
             }
         }
 

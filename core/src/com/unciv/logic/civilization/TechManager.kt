@@ -6,6 +6,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.tr
+import com.unciv.ui.utils.withItem
 import java.util.*
 
 class TechManager {
@@ -77,9 +78,7 @@ class TechManager {
         techsResearched.add(currentTechnology)
 
         // this is to avoid concurrent modification problems
-        val newResearchedTechnologies = ArrayList(researchedTechnologies)
-        newResearchedTechnologies.add(GameBasics.Technologies[currentTechnology]!!)
-        researchedTechnologies = newResearchedTechnologies
+        researchedTechnologies = researchedTechnologies.withItem(GameBasics.Technologies[currentTechnology]!!)
 
         civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
 

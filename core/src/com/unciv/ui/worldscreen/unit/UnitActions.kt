@@ -168,7 +168,7 @@ class UnitActions {
         if (unit.name == "Great Engineer" && !unit.isEmbarked()) {
             actionList += UnitAction( "Hurry Wonder",
                     {
-                        tile.getCity()!!.cityConstructions.addConstruction(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                        tile.getCity()!!.cityConstructions.addProduction(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                         unit.destroy()
                     },
                     unit.currentMovement != 0f &&
