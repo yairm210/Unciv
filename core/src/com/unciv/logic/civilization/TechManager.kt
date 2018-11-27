@@ -10,7 +10,7 @@ import java.util.*
 
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
-    @Transient val researchedTechnologies=ArrayList<Technology>()
+    @Transient var researchedTechnologies=ArrayList<Technology>()
 
     var freeTechs = 0
     var techsResearched = HashSet<String>()
@@ -75,7 +75,12 @@ class TechManager {
         if(currentTechnology!="Future Tech")
             techsToResearch.remove(currentTechnology)
         techsResearched.add(currentTechnology)
-        researchedTechnologies.add(GameBasics.Technologies[currentTechnology]!!)
+
+        // this is to avoid concurrent modification problems
+        val newResearchedTechnologies = ArrayList(researchedTechnologies)
+        newResearchedTechnologies.add(GameBasics.Technologies[currentTechnology]!!)
+        researchedTechnologies = newResearchedTechnologies
+
         civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
 
         val currentEra = civInfo.getEra()

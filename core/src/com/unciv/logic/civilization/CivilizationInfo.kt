@@ -71,7 +71,7 @@ class CivilizationInfo {
         toReturn.scienceVictory = scienceVictory.clone()
         toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
         toReturn.cities = cities.map { it.clone() }
-        toReturn.exploredTiles.addAll(exploredTiles.toList()) // we actually fot a concurrent modification exception here, the toList should solve that
+        toReturn.exploredTiles.addAll(exploredTiles)
         return toReturn
     }
 
@@ -222,13 +222,17 @@ class CivilizationInfo {
 
 
     fun updateViewableTiles() {
-        viewableTiles.clear()
-        viewableTiles.addAll(cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
-        viewableTiles.addAll(getCivUnits().flatMap { it.getViewableTiles()})
+        val newViewableTiles = HashSet<TileInfo>()
+        newViewableTiles.addAll(cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
+        newViewableTiles.addAll(getCivUnits().flatMap { it.getViewableTiles()})
+        viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
         // updating the viewable tiles also affects the explored tiles, obvs
-        viewableTiles.asSequence().map { it.position }
-                .filterNot { exploredTiles.contains(it) }.toCollection(exploredTiles)
+
+        val newExploredTiles = HashSet<Vector2>(exploredTiles)
+        newExploredTiles.addAll(newViewableTiles.asSequence().map { it.position }
+                .filterNot { exploredTiles.contains(it) })
+        exploredTiles = newExploredTiles // ditto
 
 
         val viewedCivs = HashSet<CivilizationInfo>()
