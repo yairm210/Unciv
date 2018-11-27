@@ -260,7 +260,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             addActor(terrainFeatureImage)
             terrainFeatureImage!!.run {
                 setSize(30f, 30f)
-                //setColor(1f, 1f, 1f, 0.5f)
+                setColor(1f, 1f, 1f, 0.5f)
                 center(this@TileGroup)
             }
         }

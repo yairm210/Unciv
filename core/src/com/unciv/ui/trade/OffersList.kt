@@ -27,7 +27,7 @@ class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffe
             val labelName = when(offertype){
                 Gold, Gold_Per_Turn, Treaty,Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
-                Strategic_Resource -> "Luxury resources"
+                Strategic_Resource -> "Strategic resources"
                 Technology -> "Technologies"
                 WarDeclaration -> "Declarations of war"
                 City -> "Cities"
