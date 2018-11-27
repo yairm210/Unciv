@@ -8,5 +8,6 @@ enum class TradeType{
     Strategic_Resource,
     Technology,
     Introduction,
+    WarDeclaration,
     City
 }

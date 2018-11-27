@@ -1,6 +1,7 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
@@ -13,26 +14,36 @@ class ExpanderTab(private val title:String,skin: Skin):Table(skin){
     private val toggle = Table(skin) // the show/hide toggler
     private val tab = Table() // what holds the information to be shown/hidden
     val innerTable=Table() // the information itself
+    var isOpen=true
 
     init{
         toggle.defaults().pad(10f)
+        toggle.touchable=Touchable.enabled
         toggle.background(ImageGetter.getBackground(ImageGetter.getBlue()))
         toggle.add("+ $title").apply { actor.setFontSize(24) }
         toggle.onClick {
-            toggle.clearChildren()
-            if(tab.isVisible) {
-                toggle.add("- $title").apply { actor.setFontSize(24) }
-                tab.clear()
-            }
-            else {
-                toggle.add("+ $title").apply { actor.setFontSize(24) }
-                tab.add(innerTable)
-            }
-            tab.isVisible=!tab.isVisible
+            if(isOpen) close()
+            else open()
         }
         add(toggle).row()
         tab.add(innerTable).pad(10f)
         add(tab)
+    }
+
+    fun close(){
+        if(!isOpen) return
+        toggle.clearChildren()
+        toggle.add("- $title").apply { actor.setFontSize(24) }
+        tab.clear()
+        isOpen=false
+    }
+
+    fun open(){
+        if(isOpen) return
+        toggle.clearChildren()
+        toggle.add("+ $title").apply { actor.setFontSize(24) }
+        tab.add(innerTable)
+        isOpen=true
     }
 }
 

@@ -1,6 +1,7 @@
 package com.unciv.logic.trade
 
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
@@ -34,16 +35,24 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         for(city in civInfo.cities.filterNot { it.isCapital() })
             offers.add(TradeOffer(city.name, TradeType.City, 0))
 
-        val civsWeKnowAndTheyDont = civInfo.diplomacy.values.map { it.otherCiv() }
-                .filter { !otherCivilization.diplomacy.containsKey(it.civName)
-                        && it != otherCivilization && !it.isBarbarianCivilization() }
+        val otherCivsWeKnow = civInfo.diplomacy.values.map { it.otherCiv() }
+                .filter { it != otherCivilization && !it.isBarbarianCivilization() }
+        val civsWeKnowAndTheyDont = otherCivsWeKnow
+                .filter { !otherCivilization.diplomacy.containsKey(it.civName) }
         for(thirdCiv in civsWeKnowAndTheyDont){
             offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0))
         }
 
+        val civsWeBothKnow = otherCivsWeKnow
+                .filter { otherCivilization.diplomacy.containsKey(it.civName) }
+        val civsWeArentAtWarWith = civsWeBothKnow
+                .filter { civInfo.diplomacy[it.civName]!!.diplomaticStatus==DiplomaticStatus.Peace }
+        for(thirdCiv in civsWeArentAtWarWith){
+            offers.add(TradeOffer("Declare war on "+thirdCiv.civName,TradeType.WarDeclaration,0))
+        }
+
         return offers
     }
-
 
     fun isTradeAcceptable(): Boolean {
         val sumOfTheirOffers = currentTrade.theirOffers.asSequence()
@@ -109,11 +118,38 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 else return 1000
             }
             TradeType.Introduction -> return 250
+            TradeType.WarDeclaration -> {
+                val nameOfCivToDeclareWarOn = offer.name.split(' ').last()
+                val civToDeclareWarOn = ourCivilization.gameInfo.civilizations.first { it.civName==nameOfCivToDeclareWarOn }
+                val threatToThem = Automation().threatAssessment(otherCivilization,civToDeclareWarOn)
+
+                if(!otherCivIsRecieving) { // we're getting this from them, that is, they're declaring war
+                    when (threatToThem) {
+                        ThreatLevel.VeryLow -> return 100
+                        ThreatLevel.Low -> return 250
+                        ThreatLevel.Medium -> return 500
+                        ThreatLevel.High -> return 1000
+                        ThreatLevel.VeryHigh -> return 10000 // no way
+                    }
+                }
+                else{
+                    if(otherCivilization.diplomacy[nameOfCivToDeclareWarOn]!!.diplomaticStatus==DiplomaticStatus.War){
+                        when (threatToThem) {
+                            ThreatLevel.VeryLow -> return 0
+                            ThreatLevel.Low -> return 0
+                            ThreatLevel.Medium -> return 100
+                            ThreatLevel.High -> return 500
+                            ThreatLevel.VeryHigh -> return 1000
+                        }
+                    }
+                    else return 0 // why should we pay you to go fight someone...?
+                }
+
+            }
         // Dunno what this is?
             else -> return 1000
         }
     }
-
 
     fun evaluatePeaceCostForThem(): Int {
         val ourCombatStrength = Automation().evaluteCombatStrength(ourCivilization)
@@ -139,34 +175,38 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         otherCivilization.diplomacy[ourCivilization.civName]!!.trades.add(currentTrade.reverse())
 
         // instant transfers
-        fun transfer(us: CivilizationInfo, them: CivilizationInfo, trade: Trade) {
+        fun transferTrade(to: CivilizationInfo, from: CivilizationInfo, trade: Trade) {
             for (offer in trade.theirOffers) {
                 if (offer.type == TradeType.Gold) {
-                    us.gold += offer.amount
-                    them.gold -= offer.amount
+                    to.gold += offer.amount
+                    from.gold -= offer.amount
                 }
                 if (offer.type == TradeType.Technology) {
-                    us.tech.techsResearched.add(offer.name)
+                    to.tech.techsResearched.add(offer.name)
                 }
                 if(offer.type== TradeType.City){
-                    val city = them.cities.first { it.name==offer.name }
-                    city.moveToCiv(us)
+                    val city = from.cities.first { it.name==offer.name }
+                    city.moveToCiv(to)
                     city.getCenterTile().getUnits().forEach { it.movementAlgs().teleportToClosestMoveableTile() }
                 }
                 if(offer.type== TradeType.Treaty){
                     if(offer.name=="Peace Treaty"){
-                        us.diplomacy[them.civName]!!.diplomaticStatus= DiplomaticStatus.Peace
-                        for(unit in us.getCivUnits().filter { it.getTile().getOwner()==them })
+                        to.diplomacy[from.civName]!!.diplomaticStatus= DiplomaticStatus.Peace
+                        for(unit in to.getCivUnits().filter { it.getTile().getOwner()==from })
                             unit.movementAlgs().teleportToClosestMoveableTile()
                     }
                 }
                 if(offer.type==TradeType.Introduction)
-                    us.meetCivilization(us.gameInfo.civilizations
+                    to.meetCivilization(to.gameInfo.civilizations
                             .first { it.civName==offer.name.split(" ")[2] })
+                if(offer.type==TradeType.WarDeclaration){
+                    val nameOfCivToDeclareWarOn = offer.name.split(' ').last()
+                    from.diplomacy[nameOfCivToDeclareWarOn]!!.declareWar()
+                }
             }
         }
 
-        transfer(ourCivilization,otherCivilization,currentTrade)
-        transfer(otherCivilization,ourCivilization,currentTrade.reverse())
+        transferTrade(ourCivilization,otherCivilization,currentTrade)
+        transferTrade(otherCivilization,ourCivilization,currentTrade.reverse())
     }
 }

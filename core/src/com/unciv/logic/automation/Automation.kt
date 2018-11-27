@@ -100,5 +100,24 @@ class Automation {
         return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt()
     }
 
+    fun threatAssessment(assessor:CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
+        val powerLevelComparison = evaluteCombatStrength(assessed)/evaluteCombatStrength(assessor).toFloat()
+        when{
+            powerLevelComparison>2 -> return ThreatLevel.VeryHigh
+            powerLevelComparison>1.5f -> return ThreatLevel.High
+            powerLevelComparison<(1/1.5f) -> return ThreatLevel.Low
+            powerLevelComparison<0.5f -> return ThreatLevel.VeryLow
+            else -> return ThreatLevel.Medium
+        }
+    }
+
+}
+
+enum class ThreatLevel{
+    VeryLow,
+    Low,
+    Medium,
+    High,
+    VeryHigh
 }
 
