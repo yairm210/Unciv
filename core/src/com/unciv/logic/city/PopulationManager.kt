@@ -14,11 +14,11 @@ class PopulationManager {
     var foodStored = 0
 
     val specialists = Stats()
-    //var buildingsSpecialists = HashMap<String, Stats>()
 
     //region pure functions
     fun clone(): PopulationManager {
         val toReturn = PopulationManager()
+        toReturn.specialists.add(specialists)
         toReturn.population=population
         toReturn.foodStored=foodStored
         return toReturn
