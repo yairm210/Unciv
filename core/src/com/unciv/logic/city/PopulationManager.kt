@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.getRandom
 import kotlin.math.roundToInt
 
 class PopulationManager {
@@ -24,15 +25,7 @@ class PopulationManager {
         return toReturn
     }
 
-//    fun getSpecialists(): Stats {
-//        val allSpecialists = Stats()
-//        for (stats in buildingsSpecialists.values)
-//            allSpecialists.add(stats)
-//        return allSpecialists
-//    }
-
     fun getNumberOfSpecialists(): Int {
-        //val specialists = getSpecialists()
         return (specialists.science + specialists.production + specialists.culture + specialists.gold).toInt()
     }
 
@@ -93,11 +86,18 @@ class PopulationManager {
                 cityInfo.workedTiles.remove(tile.position)
         }
 
-        while (cityInfo.workedTiles.size > population) {
-            val lowestRankedWorkedTile = cityInfo.workedTiles
-                    .map { cityInfo.tileMap[it] }
-                    .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
-            cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
+        while (getFreePopulation()<0) {
+            if(getNumberOfSpecialists()>0){
+                val specialistTypeToUnassign = specialists.toHashMap().filter { it.value>0 }.map { it.key }.getRandom()
+                specialists.add(specialistTypeToUnassign,-1f)
+            }
+            else {
+                val lowestRankedWorkedTile = cityInfo.workedTiles
+                        .asSequence()
+                        .map { cityInfo.tileMap[it] }
+                        .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
+                cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
+            }
         }
 
         // unassign specialists that cannot be (e.g. the city was captured and one of the specialist buildings was destroyed)
