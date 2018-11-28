@@ -27,6 +27,7 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
         }
 
         setWaterTiles(mapToReturn)
+
         for(tile in mapToReturn.values) randomizeTile(tile)
 
         return mapToReturn
@@ -281,8 +282,10 @@ open class RandomMapGenerator {
 
     fun setWaterTiles(map: HashMap<String, TileInfo>) {
         for (tile in map.values.filter { it.baseTerrain == "Ocean" }) {
-            if (HexMath().getVectorsInDistance(tile.position,2).any { hasWaterTile(map,it) })
+            if (HexMath().getVectorsInDistance(tile.position,2).any { hasWaterTile(map,it) }) {
                 tile.baseTerrain = "Coast"
+                tile.setTransients()
+            }
         }
     }
 
