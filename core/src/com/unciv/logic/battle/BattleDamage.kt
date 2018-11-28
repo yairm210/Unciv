@@ -28,14 +28,20 @@ class BattleDamage{
 
     private fun getGeneralModifiers(combatant: ICombatant, enemy: ICombatant): HashMap<String, Float> {
         val modifiers = HashMap<String, Float>()
+        fun addToModifiers(BDM:BattleDamageModifier){
+            val text = BDM.getText()
+            if(!modifiers.containsKey(text)) modifiers[text]=0f
+            modifiers[text]=modifiers[text]!!+BDM.modificationAmount
+        }
+
         if (combatant is MapUnitCombatant) {
             for (BDM in getBattleDamageModifiersOfUnit(combatant.unit)) {
                 if (BDM.vs == enemy.getUnitType().toString())
-                    modifiers[BDM.getText()] = BDM.modificationAmount
+                    addToModifiers(BDM)
                 if(BDM.vs == "wounded units" && enemy is MapUnitCombatant && enemy.getHealth()<100)
-                    modifiers[BDM.getText()] = BDM.modificationAmount
+                    addToModifiers(BDM)
                 if(BDM.vs == "land units" && enemy.getUnitType().isLandUnit())
-                    modifiers[BDM.getText()] = BDM.modificationAmount
+                    addToModifiers(BDM)
             }
             if (combatant.getCivilization().happiness < 0)
                 modifiers["Unhappiness"] = 0.02f * combatant.getCivilization().happiness  //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php

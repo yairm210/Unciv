@@ -60,6 +60,8 @@ class Building : NamedStats(), IConstruction{
             // buildings that improve resources
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
         }
+        if(requiredNearbyImprovedResources!=null)
+            infoList += "requires worked "+requiredNearbyImprovedResources!!.joinToString("/")+" near city"
         if(uniques.isNotEmpty()) infoList += uniques.map { it.tr() }.joinToString()
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
@@ -102,6 +104,9 @@ class Building : NamedStats(), IConstruction{
             val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
             stringBuilder.appendln("$resources {provide} $resourceBonusStats".tr())
         }
+
+        if(requiredNearbyImprovedResources!=null)
+            stringBuilder.appendln("Requires worked "+requiredNearbyImprovedResources!!.joinToString("/")+" near city")
 
         if(cityStrength!=0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)
         if(cityHealth!=0) stringBuilder.appendln("{City health} +".tr() + cityHealth)
