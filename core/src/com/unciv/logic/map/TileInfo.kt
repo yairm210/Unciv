@@ -13,7 +13,7 @@ import kotlin.math.abs
 open class TileInfo {
     @Transient lateinit var tileMap: TileMap
     @Transient var owningCity:CityInfo?=null
-    @Transient lateinit var baseTerrainObject:Terrain
+    @Transient private lateinit var baseTerrainObject:Terrain
 
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
@@ -253,6 +253,7 @@ open class TileInfo {
             if(!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
             SB.appendln("[$defencePercentString] to unit defence".tr())
         }
+        if(getBaseTerrain().impassable) SB.appendln("Impassible")
 
         return SB.toString().trim()
     }

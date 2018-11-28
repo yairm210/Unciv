@@ -1,9 +1,11 @@
 package com.unciv.ui.cityscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.surroundWithCircle
 
 class YieldGroup : HorizontalGroup() {
 
@@ -15,24 +17,28 @@ class YieldGroup : HorizontalGroup() {
         pack()
     }
 
+    fun getIcon(statName: String) =
+            ImageGetter.getStatIcon(statName).surroundWithCircle(20f)
+                    .apply { circle.color= Color.BLACK;circle.color.a=0.5f }
+
     private fun getStatIconsTable(statName: String, number: Int): Table {
         val table = Table()
         when (number) {
-            1 -> table.add(ImageGetter.getStatIcon(statName)).size(20f)
+            1 -> table.add(getIcon(statName))
             2 -> {
-                table.add(ImageGetter.getStatIcon(statName)).size(20f).row()
-                table.add(ImageGetter.getStatIcon(statName)).size(20f)
+                table.add(getIcon(statName)).row()
+                table.add(getIcon(statName))
             }
             3 -> {
-                table.add(ImageGetter.getStatIcon(statName)).size(20f).colspan(2).row()
-                table.add(ImageGetter.getStatIcon(statName)).size(20f)
-                table.add(ImageGetter.getStatIcon(statName)).size(20f)
+                table.add(getIcon(statName)).colspan(2).row()
+                table.add(getIcon(statName))
+                table.add(getIcon(statName))
             }
             4 -> {
-                table.add(ImageGetter.getStatIcon(statName)).size(20f)
-                table.add(ImageGetter.getStatIcon(statName)).size(20f).row()
-                table.add(ImageGetter.getStatIcon(statName)).size(20f)
-                table.add(ImageGetter.getStatIcon(statName)).size(20f)
+                table.add(getIcon(statName))
+                table.add(getIcon(statName)).row()
+                table.add(getIcon(statName))
+                table.add(getIcon(statName))
             }
             else -> {
                 val largeImage = ImageGetter.getStatIcon(statName)

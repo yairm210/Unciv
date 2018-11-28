@@ -113,6 +113,7 @@ class MapUnit {
 
     fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
+        if(tile.getBaseTerrain().impassable) return false
         val isOcean = tile.baseTerrain == "Ocean" // profiling showed that 3.5% of all nextTurn time is taken up by string equals in this function =|
         if(tile.isWater() && type.isLandUnit()){
             val techUniques = civInfo.tech.getUniques()

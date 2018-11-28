@@ -290,8 +290,12 @@ open class RandomMapGenerator {
     }
 
     fun randomizeTile(tileInfo: TileInfo){
-        RandomMapGenerator().addRandomTerrainFeature(tileInfo)
-        RandomMapGenerator().addRandomResourceToTile(tileInfo)
-        RandomMapGenerator().maybeAddAncientRuins(tileInfo)
+        if(tileInfo.getBaseTerrain().type==TerrainType.Land && Math.random()<0.05f){
+            tileInfo.baseTerrain = "Mountain"
+            tileInfo.setTransients()
+        }
+        addRandomTerrainFeature(tileInfo)
+        addRandomResourceToTile(tileInfo)
+        maybeAddAncientRuins(tileInfo)
     }
 }

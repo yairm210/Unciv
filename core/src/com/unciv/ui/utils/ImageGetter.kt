@@ -53,8 +53,12 @@ object ImageGetter {
         }
     }
 
+    fun imageExists(fileName:String): Boolean {
+        return atlas.findRegion(fileName)!=null
+    }
+
     fun techIconExists(techName:String): Boolean {
-        return atlas.findRegion("TechIcons/$techName")!=null
+        return imageExists("TechIcons/$techName")
     }
 
     fun getStatIcon(statName: String): Image {

@@ -3,7 +3,7 @@ package com.unciv
 import com.unciv.logic.GameSaver
 
 class GameSettings {
-    var showWorkedTiles: Boolean = true
+    var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var language: String = "English"
     var resolution: String = "1050x700"

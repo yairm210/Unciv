@@ -352,11 +352,13 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ## Others 
 
 * [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
-* [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell
+* [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
+* https://thenounproject.com/term/arrow/2032227/
 * [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
-* [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin
+* [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
 * [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito 
 * [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
-* [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys
+* [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for 
 * [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
 * [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
+* [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units

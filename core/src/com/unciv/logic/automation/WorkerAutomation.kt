@@ -94,6 +94,7 @@ class WorkerAutomation(val unit: MapUnit) {
                     (it.civilianUnit== null || it == currentTile)
                             && it.improvement == null
                             && it.isLand()
+                            && !it.getBaseTerrain().impassable
                             && it.canBuildImprovement(chooseImprovement(it), unit.civInfo)
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ
                 }.sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()

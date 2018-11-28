@@ -17,6 +17,7 @@ import com.unciv.ui.utils.center
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
+    protected var baseTerrainImage: Image? = null
     protected var terrainFeatureImage: Image? = null
     protected var cityImage: Image? = null
 
@@ -44,7 +45,20 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         addCircleImage()
         addFogImage(groupSize)
         addCrosshairImage()
+        addBaseTerrainImage()
         isTransform = false
+    }
+
+    private fun addBaseTerrainImage() {
+        val imagePath = "TerrainIcons/"+tileInfo.baseTerrain
+        if(!ImageGetter.imageExists(imagePath)) return
+        baseTerrainImage = ImageGetter.getImage(imagePath)
+        baseTerrainImage!!.run {
+            color.a=0.25f
+            setSize(40f,40f)
+            center(this@TileGroup)
+        }
+        addActor(baseTerrainImage)
     }
 
     private fun addCircleImage() {

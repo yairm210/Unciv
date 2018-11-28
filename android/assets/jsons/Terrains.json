@@ -59,6 +59,12 @@
 		defenceBonus: 0.25,
 		RGB: [74,81,40]
 	},
+	{
+		name:"Mountain",
+		type:"Land",
+		impassable:true,
+		RGB: [89, 45, 0]
+	},
 	
 	// Terrain features
 	{
