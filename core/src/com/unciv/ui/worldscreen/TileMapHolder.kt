@@ -37,7 +37,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         for (tileInfo in tileMap.values) {
             val tileGroup = WorldTileGroup(tileInfo)
 
-            tileGroup.onClick{onTileClicked(tileInfo, tileGroup)}
+            tileGroup.onClick{ onTileClicked(tileInfo, tileGroup)}
 
             val positionalVector = HexMath().hex2WorldCoords(tileInfo.position)
             val groupSize = 50
@@ -95,7 +95,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
             if (selectedUnit != null && selectedUnit.getTile() != tileInfo
                     && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
-                addMoveHereButtonToTile(selectedUnit, tileInfo, tileGroup)
+                // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+                kotlin.concurrent.thread {
+                    addMoveHereButtonToTile(selectedUnit, tileInfo, tileGroup)
+                }
             }
 
             worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
@@ -119,16 +122,21 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if (selectedUnit.currentMovement > 0)
             moveHereButton.onClick {
-                if (selectedUnit.movementAlgs().canReach(tileInfo)) {
-                    selectedUnit.movementAlgs().headTowards(tileInfo)
-                    if (selectedUnit.currentTile != tileInfo)
-                        selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
-                }
+                // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+                kotlin.concurrent.thread {
+                    if (selectedUnit.movementAlgs().canReach(tileInfo)) {
+                        selectedUnit.movementAlgs().headTowards(tileInfo)
+                        if (selectedUnit.currentTile != tileInfo)
+                            selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+                    }
 
-                worldScreen.update()
-                moveToOverlay!!.remove()
-                moveToOverlay = null
+                    // we don't update it directly because we're on a different thread; instead, we tell it to update itself
+                    worldScreen.shouldUpdate = true
+                    moveToOverlay!!.remove()
+                    moveToOverlay = null
+                }
             }
+
         else moveHereButton.color.a = 0.5f
         addOverlayOnTileGroup(tileGroup, moveHereButton).apply { width = size; height = size }
         moveHereButton.y += tileGroup.height

@@ -237,7 +237,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
                 // BOOM! Exception!
                 // That's why this needs to be after the game is saved.
-                shouldUpdateBecauseOfNewTurn=true
+                shouldUpdate=true
 
                 nextTurnButton.setText("Next turn".tr())
                 Gdx.input.inputProcessor = stage
@@ -256,9 +256,9 @@ class WorldScreen : CameraStageBaseScreen() {
         }
     }
 
-    private var shouldUpdateBecauseOfNewTurn=false
+    var shouldUpdate=false
     override fun render(delta: Float) {
-        if(shouldUpdateBecauseOfNewTurn){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+        if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
             // otherwise images will not load properly!
             update()
 
@@ -285,7 +285,7 @@ class WorldScreen : CameraStageBaseScreen() {
             if(civInfo.tech.getUniques().contains("Enables embarkation for land units"))
                 displayTutorials("CanEmbark")
 
-            shouldUpdateBecauseOfNewTurn=false
+            shouldUpdate=false
         }
         super.render(delta)
     }
