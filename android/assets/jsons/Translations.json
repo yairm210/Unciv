@@ -330,7 +330,7 @@
 	"Load game":{
 		Italian:"Carica partita"
 		Russian:"Загрузить игру"
-		French:"Chargement du jeu"
+		French:"Charger une partie"
 		Romanian:"Incarca jocul"
 		German:"Spiel laden"
 		Dutch:"Spel laden"
@@ -1584,7 +1584,7 @@
 	"Customs house":{
 		Italian:"Dogana"
 		Russian:"Таможня"
-		French:"Maison des douanes"
+		French:"Douanes"
 		Romanian:"Casa vamală"
 		German:"Zollamt"
 		Dutch:"Douanekantoor"
@@ -2312,7 +2312,7 @@
 	"Information era":{
 		Italian:"Informatica"     //[newEra] +translation
 		Russian:"Информационная эра" //translation+ [newEra]
-		French:"Ére médiatique"
+		French:"Ère médiatique"
 		Romanian:"Informației"
 		Dutch:"Informatie"
 		Spanish:"Era de la información"
@@ -2349,7 +2349,7 @@
 	"Provides 2 free workers":{
 		Italian:"Offre 2 Lavoratori liberi"
 		Russian:"предоставляет 2 бесплатных рабочих"
-		French:"Fournit 2 travailleurs libres"
+		French:"Fournit 2 travailleurs gratuits"
 		Romanian:"Oferă 2 lucrători liberi"
 		German:"Gibt 2 freie Arbeiter"
 		Dutch:"Geeft 2 gratis werkers"
@@ -2376,7 +2376,7 @@
 	"+33% great person generation in all cities":{
 		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
 		Russian:"+ 33% к созданию великих людей во всех городах"
-		French:"+ 33% de génération géniale dans toutes les villes"
+		French:"+ 33% de génération de Grand Personnage dans toutes les villes"
 		Romanian:"+ 33% generație mare de persoane în toate orașele"
 		// German translation not sure
 		Dutch:"+33% Geweldig persoon generatie in alle steden"
@@ -2394,7 +2394,7 @@
 	"40% of food is carried over after a new citizen is born":{
 		Italian:"Il 40% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
 		Russian:"40% продовольствия сохраняется после рождения нового гражданина"
-		French:"40% de la nourriture est reportée après la naissance d'un nouveau citoyen"
+		French:"40% de la nourriture est préservée après la naissance d'un nouveau citoyen"
 		Romanian:"40% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
 		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
 		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
@@ -2403,7 +2403,7 @@
 	"25% of food is carried over after a new citizen is born":{
 		Italian:"Il 25% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
 		Russian:"25% продовольствия сохраняется после рождения нового гражданина"
-		French:"25% de la nourriture est reportée après la naissance d'un nouveau citoyen"
+		French:"25% de la nourriture est préservée après la naissance d'un nouveau citoyen"
 		Romanian:"25% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
 		German:"25% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
 		Dutch:"25% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
@@ -2448,7 +2448,7 @@
 	"Empire enters golden age":{
 		Italian:"L'impero entra nell'Età dell'Oro"
 		Russian:"Империя вступает в золотой век"
-		French:"L'Empire entre dans l'âge d'or"
+		French:"L'Empire entre dans un âge d'or"
 		Romanian:"Imperiul intră în epoca de aur"
 		German:"Das Reich tritt ein goldenes Zeitalter an"
 		Dutch:"Het rijk betreed een gouden eeuw"
@@ -2457,7 +2457,7 @@
 	"Free Great Artist Appears":{
 		Italian:"Appare un Grande Artista gratuito"
 		Russian:"Появляется бесплатный великий художник"
-		French:"Grand artiste libre apparaît"
+		French:"Grand artiste gratuit apparaît"
 		Romanian:"Artistul Mare apare gratuit"
 		// German translation not sure
 		Dutch:"Een gratis geweldige artiest verschijnt"
@@ -2465,12 +2465,13 @@
 	}
 	"Free great scientist appears":{
 		Italian:"Appare un Grande Scienziato"
+		French:"Grand scientifique gratuit apparaît"
 	}
 	
 	"Culture cost of adopting new Policies reduced by 10%":{
 		Italian:"-10% costo in cultura per nuove politiche"
 		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
-		French:"Coût culturel de l'adoption de nouvelles polices réduit de 10%"
+		French:"Coût culturel de l'adoption de nouvelles politiques réduit de 10%"
 		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
 		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
 		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
@@ -2479,7 +2480,7 @@
 	"Provides 1 happiness per social policy":{
 		Italian:"Fornisce 1 felicità per politica sociale"
 		Russian:"Обеспечивает 1 счастье за каждый общественный институт"
-		French:"Fournit 1 bonheur par politique sociale"
+		French:"Fournit 1 de bonheur par politique sociale"
 		Romanian:"Oferă 1 fericire pe politică socială"
 		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
 		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
@@ -2488,7 +2489,7 @@
 	"Must be next to desert":{
 		Italian:"Deve trovarsi vicino al deserto"
 		Russian:"Должно быть рядом с пустыней"
-		French:"Doit être à côté du désert"
+		French:"Doit être à côté d'un désert"
 		Romanian:"Trebuie să fie lângă deșert"
 		German:"Muss an eine Wüste grenzen"
 		Dutch:"Moet aan een woestijn grenzen"
@@ -2497,7 +2498,7 @@
 	"Enables construction of Spaceship parts":{
 		Italian:"Consente la costruzione di parti di navi spaziali"
 		Russian:"Разрешает строительство частей космического корабля"
-		French:"Permet la construction de pièces de vaisseau spatial"
+		French:"Permet la construction de pièces du Vaisseau Spatial"
 		Romanian:"Permite construcția de părți ale navelor spațiale"
 		German:"Schaltet Arbeit an Raumschiffteilen frei"
 		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
@@ -2506,7 +2507,7 @@
 	"Increases production of spaceship parts by 50%":{
 		Italian:"+50% produzione di parti di navi spaziali"
 		Russian:"Ускоряет производство частей космического корабля на 50%"
-		French:"Augmente la production de pièces de vaisseaux spatiaux de 50%"
+		French:"Augmente la production de pièces de Vaisseau Spatial de 50%"
 		Romanian:"Crește producția de piese de navă spațială cu 50%"
 		German:"Erhöht Produktion an Raumschiffteilen um 50%"
 		Dutch:"Verhoogd de productiesnelheid van ruimteschips onderdelen met 50%"
@@ -2515,7 +2516,7 @@
 	"Spaceship part":{
 		Italian:"Parte della nave spaziale"
 		Russian:"Часть космического корабля"
-		French:"Pièce de navire spatial"
+		French:"Pièce de Vaisseau Spatial"
 		Romanian:"Partea spațială a navei"
 		German:"Raumschiffteil"
 		Dutch:"Ruimteschip onderdeel"
@@ -2523,28 +2524,34 @@
 	}
 	"Can only be built in coastal cities":{
 		Italian:"Disponibile solo nelle città costiere"
+		French:"Peut seulement être construit dans les villes côtières"
 	}
 	"All military naval units receive +1 movement and +1 sight":{
 		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
+		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
 	}
 	"+1 production from all sea resources worked by the city":{
 		Italian:"+1 Produzione per ogni risorsa marittima sfruttata"
+		French:"+1 de production pour toutes les ressources maritimes exploitées par la ville"
 	}
 	"Connects trade routes over water":{
 		Italian:"Consente le rotte commerciali marittime"
+		French:"Connecter des routes commerciales maritimes"
 	}
 	"+1 production and gold from all sea resources worked by the city":{
 		Italian:"+1 Produzione e Oro da ogni risorsa marittima sfruttata dalla città"
+		French:"+1 de production et d'or pour toutes les ressources maritimes exploitées par la ville"
 	}
 	"+15% production of naval units":{
 		Italian:"+15% Produzione per le unità marittime"
+		French:"+15% à la production d'unités maritimes"
 	}
 	
 	// Unit types
 	"Civilian":{
 		Italian:"Civile"
 		Russian:"Мирный"
-		French:"Civil"
+		French:"Civile"
 		Romanian:"Civil"
 		German:"Zivilist"
 		Dutch:"Burger"
@@ -2580,7 +2587,7 @@
 	"Mounted":{
 		Italian:"A cavallo"
 		Russian:"Конный"
-		French:"Monté"
+		French:"Montée"
 		Romanian:"Montat"
 		German:"Kavallerie"
 		Dutch:"Bereden"
@@ -2589,7 +2596,7 @@
 	"Scout":{
 		Italian:"D'esplorazione"
 		Russian:"Разведчик"
-		French:"Scout"
+		French:"Éclaireur"
 		Romanian:"Cercetaș"
 		German:"Kundschafter"
 		Dutch:"Verkening"
@@ -2619,7 +2626,7 @@
 	"Founds a new city":{
 		Italian:"Fonda una nuova città"
 		Russian:"Основывает новый город"
-		French:"Trouve une nouvelle ville"
+		French:"Fonder une nouvelle ville"
 		Romanian:"Creează un oraș nou"
 		German:"Gründet eine neue Stadt"
 		Dutch:"Sticht een nieuwe stad"
@@ -2646,7 +2653,7 @@
 	"Rough terrain penalty":{
 		Italian:"Penalità su terreno grezzo"
 		Russian:"Штраф грубой местности"
-		French:"Pénalité de terrain rugueux"
+		French:"Pénalité de terrain difficile"
 		Romanian:"Зenalizare pentru teren accidentat"
 		German:"Nachteil bei rauem Gelände"
 		Dutch:"Nadeel in ruig terrein"
@@ -2655,7 +2662,7 @@
 	"Bonus vs [unitType]":{
 		Italian:"Bonus contro [unitType]"
 		Russian:"Бонус против [unitType]"
-		French:"Bonus vs [unitType]"
+		French:"Bonus contre [unitType]"
 		Romanian:"Bonus vs [unitType]"
 		German:"Vorteil gegen eine(n) [unitType]" // Gender sensitive
 		Dutch:"Voordeel tegen [unitType]"
@@ -2664,7 +2671,7 @@
 	"Penalty vs [unitType]":{
 		Italian:"Penalità contro [unitType]"
 		Russian:"Штраф против [unitType]"
-		French:"Pénalité vs [unitType]"
+		French:"Pénalité contre [unitType]"
 		Romanian:"Penalitate vs [unitType]"
 		German:"Nachteil gegen eine(n) [unitType]" // Gender sensitive
 		Dutch:"Nadeel tegen [unitType]"
@@ -2673,7 +2680,7 @@
 	"Must set up to ranged attack":{
 		Italian:"Deve montare per attaccare a distanza"
 		Russian:"Необходимо подготовится к дальнобойной атаке"
-		French:"Doit être configuré pour une attaque à distance"
+		French:"Doit être installé pour une attaque à distance"
 		Romanian:"Trebuie să fie pregătit să atace"
 		German:"Muss aufstellen um Fernattacken auszuführen"
 		Dutch:"Moet opstellen voordat er een aanval op afstand kan worden gemaakt"
@@ -2691,7 +2698,7 @@
 	"Limited Visibility":{
 		Italian:"Visibilità limitata"
 		Russian:"Ограниченная видимость"
-		French:"Visibilité limitée"
+		French:"Visibilité réduite"
 		Romanian:"Vizibilitate redusă"
 		German:"Begrenzte Sichtweite"
 		Dutch:"Gelimiteerd zicht"
@@ -2738,47 +2745,61 @@
 	
 	"May create improvements on water resources":{
 		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
+		French:"Peut créer des améliorations de ressources maritimes"
 	}
 	
 	"Can start an 8-turn golden age":{
 		Italian:"Può avviare un'Età dell'Oro di 8 turni"
+		French:"Peut commencer un âge d'or de 8 tours"
 	}
 	"Can build improvement: Landmark":{
 		Italian:"Può costruire il miglioramento: Punto di Riferimento"
+		French:"Peut construire l'amélioration suivante: Point de repère"
 	}
 	"Can discover a technology":{
 		Italian:"Può scoprire una tecnologia"
+		French:"Peut découvrir une technologie"
 	}
 	"Can build improvement: Academy":{
 		Italian:"Può costruire il miglioramento: Accademia"
+		French:"Peut construire l'amélioration suivante: Académie"
 	}
 	"Can undertake a trade mission, giving a large sum of gold":{
 		Italian:"Può compiere missioni commerciali, donando grandi quantità di Oro"
+		French:"Peut entreprendre une mission commerciale qui donne une large somme en or"
 	}
 	"Can build improvement: Customs House":{
 		Italian:"Può costruire il miglioramento: Dogana"
+		French:"Peut construire l'amélioration suivante: Douanes"
 	}
 	"Can speed up construction of a wonder":{
 		Italian:"Può accelerare la costruzione di una Meraviglia"
+		French:"Peut accélérer la construction d'une Merveille"
 	}
 	"Can build improvement: Manufactory":{
 		Italian:"Può costruire il miglioramento: Manifattura"
+		French:"Peut construire l'amélioration suivante: Manufacture"
 	}
 	
 	"Cannot enter ocean tiles":{
 		Italian:"Può entrare nell'oceano"
+		French:"Ne peut pas entrer sur les tuiles océan"
 	}
 	"Cannot enter ocean tiles until Astronomy":{
 		Italian:"Può entrare nell'oceano solo dopo Astronomia"
+		French:"Ne peut pas entrer les tuiles océan avant la découverte de l'Astronomie"
 	}
 	"+1 Visibility Range":{
 		Italian:"+1 raggio di Visione"
+		French:"+1 à la Portée de Vision"
 	}
 	"Double movement in coast":{
 		Italian:"Doppio movimento sulla costa"
+		French:"Double mouvement le long des côtes"
 	}
 	"Indirect Fire":{
 		Italian:"Fuoco indiretto (l'unità può sparare oltre le foreste o le colline)"
+		French:"Tir indirect"
 	} // units can fire over forests/hills
 	
 	
@@ -2794,7 +2815,7 @@
 	"[policyBranch] policy branch unlocked!":{
 		Italian:"Ramo sociale [policyBranch] sbloccato!"
 		Russian:"Ветвь общественных институтов [policyBranch] разблокирована!"
-		French:"[policyBranch] branche de la politique déverrouillée!"
+		French:"Branche de politiques [policyBranch] déverrouillée!"
 		Romanian:"[policyBranch] ramură de politică deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
 		Spanish:"¡Rama política [policyBranch] desbloqueada!"
@@ -2804,14 +2825,14 @@
 	"Trade":{	
 		Italian:"Scambia"
 		Russian:"Торговля"
-		French:"Échanger"
+		French:"Échanges"
 		Romanian:"Comerțul"
 		Spanish:"Comerciar"
 	}
 	"Offer trade":{	
 		Italian:"Offerta commerciale"
 		Russian:"Предложить обмен"
-		French:"Offre d'échange"
+		French:"Offrir des échanges"
 		Romanian:"Oferta comerciala"
 		Spanish:"Ofrecer intercambio"
 	}
@@ -2832,14 +2853,14 @@
 	"Our trade offer":{	
 		Italian:"La nostra \n offerta commerciale"
 		Russian:"Наше предложение\n  обмена"
-		French:"Notre offre \n commerciale"
+		French:"Notre offre d'échange"
 		Romanian:"Oferta noastră \n comercială"
 		Spanish:"Nuestra oferta"
 	}
 	"[otherCiv]'s trade offer":{
 		Italian:"Offerta commerciale \n di [otherCiv]"
 		Russian:"Предложение обмена \n цивилизации [otherCiv]"
-		French:"L'offre commerciale \n de [otherCiv]"
+		French:"L'offre d'échange de [otherCiv]"
 		Romanian:"ofertă de \n schimb a [otherCiv]"
 		Spanish:"Oferta de [otherCiv]"
 	}
@@ -2853,14 +2874,14 @@
 	"Pleasure doing business with you!":{
 		Italian:"È un piacere fare affari con voi!"
 		Russian:"С вами приятно иметь дело!"
-		French:"Plaisir de faire des affaires avec vous!"
+		French:"C'est un plaisir de faire des affaires avec vous!"
 		Romanian:"Plăcerea face afaceri cu dumneavoastra!"
 		Spanish:"¡Un placer hacer negocios contigo!"
 	}
 	"I think not.":{	
 		Italian:"Non ci penso proprio!"
 		Russian:"Думаю, нет."
-		French:"Je crois pas."
+		French:"Je ne crois pas."
 		Romanian:"Asa nu!"
 		Spanish:"Creo que no."
 	}
@@ -2874,13 +2895,14 @@
 	"Accept":{	
 		Italian:"Accetta"
 		Russian:"Принять"
-		French:"Accept"
+		French:"Accepter"
 		Romanian:"Accepta"
 		Spanish:"Aceptar"
 	}
 	"There's nothing on the table":{
 		Italian:"Non c'è niente da trattare"
 		Russian:"Вы ничего не предложили" //Don't know how to properly translate this one, but i think this will do okay
+		French:"Rien n'est en jeu //Don't know how to properly translate this one, I went with the figurative sens e.g. nothing is in danger of being lost
 		Spanish:"No hay nada sobre la mesa"
 	}
 
@@ -2888,11 +2910,13 @@
 	"Peace treaty":{
 		Italian:"Trattato di pace"
 		Russian:"Мирный договор"
+		French:"Traité de paix"
 		Spanish:"Tratado de paz"
 	}
 	"Gold per turn":{
 		Italian:"Oro per turno"
 		Russian:"Золота за ход"
+		French:"Or par tour"
 		Spanish:"Oro por turno"
 	}
 
@@ -2922,7 +2946,7 @@
 	"Egypt":{	
 		Italian:"Egitto"
 		Russian:"Египет"
-		French:"Egypte"
+		French:"Égypte"
 		Romanian:"Egipt"
 		Spanish:"Egipto"
 	}
@@ -2945,7 +2969,7 @@
 	"Settler":{	
 		Italian:"Colono"
 		Russian:"Поселенец"
-		French:"colonisateur"
+		French:"Colon"
 		Romanian:"Colonist"
 		Spanish:"Colono"
 	}
@@ -2959,7 +2983,7 @@
 	"Warlord":{	
 		Italian:"Condottiere"
 		Russian:"Военачальник"
-		French:"Chef militaire"
+		French:"Chef de guerre"
 		Romanian:"General"
 		Spanish:"Señor de la guerra"
 	}
@@ -3034,7 +3058,7 @@
 	"World size":{	
 		Italian:"Dimensione della mappa"
 		Russian:"Размер мира"
-		French:"La taille du monde"
+		French:"Taille du monde"
 		Romanian:"Mărime universală"
 		Spanish:"Tamaño del mundo"
 	}
@@ -3064,23 +3088,27 @@
 	"War":{
 		Italian:"Guerra"
 		Russian:"Война"
+		French:"Guerre"
 		Spanish:"Guerra"
 	}
 	"Peace":{
 		Italian:"Pace"
 		Russian:"Мир"
+		French:"Paix"
 		Spanish:"Paz"
 	}
 	
 	"Declare war":{
 		Italian:"Dichiara guerra"
 		Russian:"Объявить войну"
+		French:"Déclarer la guerre"
 		Spanish:"Declarar guerra"
 	}
 	
 	"[civName] has declared war on us!":{
 		Italian:"[civName] ci ha dichiarato guerra!"
 		Russian:"Цивилизация [civName]  объявила нам войну!"
+		French:"[civName] nous a déclaré la guerre!"
 		Spanish:"¡[civName] te ha declarado la guerra!"
 	}
 	
@@ -3116,7 +3144,7 @@
 	"Policies":{	
 		Italian:"Politiche"
 		Russian:"Общественные институты"
-		French:"Les politiques"
+		French:"Politiques"
 		Romanian:"Politici"
 		Spanish:"Políticas"
 	}
@@ -3172,14 +3200,14 @@
 	"Transportation upkeep":{	
 		Italian:"Manutenzione dei trasporti"
 		Russian:"Транспортировка"
-		French:"Entretien du transport"
+		French:"Entretien des transports"
 		Romanian:"întreținerea trasportului"
 		Spanish:"Mantenimiento de transporte"
 	}
 	"Unit upkeep":{	
 		Italian:"Manutenzione dell'unità"
 		Russian:"Поддержание содержания"
-		French:"Unité d'entretien"
+		French:"Entretien des unités"
 		Romanian:"Întreținerea unității"
 		Spanish:"Mantenimiento de unidades"
 	}
@@ -3187,7 +3215,7 @@
 	"Trades":{	
 		Italian:"Trades"
 		Russian:"Соглашения"
-		French:"Métiers"
+		French:"Échanges"
 		Romanian:"Tranzacții"
 		Spanish:"Comercio"
 	}
@@ -3201,14 +3229,14 @@
 	"Name":{	
 		Italian:"Nome"
 		Russian:"Имя"
-		French:"Prénom"
+		French:"Nom"
 		Romanian:"Nume"
 		Spanish:"Nombre"
 	}
 	"Closest city":{	
 		Italian:"La città più vicina"
 		Russian:"Ближайший город"
-		French:"La ville la plus proche"
+		French:"Ville la plus proche"
 		Romanian:"Cel mai apropiat oras"
 		Spanish:"Ciudad más cercana"
 	}
@@ -3239,7 +3267,7 @@
 	"Stone Works":{	
 		Italian:"Scalpellino"
 		Russian:"Каменные работы"
-		French:"Travaux de pierre"
+		French:"Ouvrages de maçonnerie"
 		Romanian:"Lucrări de piatră"
 		Spanish:"Cantería"
 	}
@@ -3322,14 +3350,16 @@
 	}
 	"Lighthouse":{
 		Italian:"Faro"
+		French:"Phare"
 	}
 	"The Great Lighthouse":{
 		Italian:"Grande Faro"
+		French:"Grand Phare"
 	}
 	"Stable":{	
 		Italian:"Scuderia"
 		Russian:"Конюшня"
-		French:"Ecurie de cheval"
+		French:"Écurie"
 		Romanian:"Grajd"
 		Spanish:"Establos"
 	}
@@ -3350,7 +3380,7 @@
 	"Colloseum":{	
 		Italian:"Colosseo"
 		Russian:"Колизей"
-		French:"Colloseum"
+		French:"Collisée"
 		Romanian:"Colloseum"
 		Spanish:"Coliseo"
 	}
@@ -3371,7 +3401,7 @@
 	"Notre Dame":{	
 		Italian:"Notre Dame"
 		Russian:"Нотр-Дам"
-		French:"Notre Dame"
+		French:"Notre-Dame"
 		Romanian:"Notre Dame"
 		Spanish:"Notre Dame"
 	}
@@ -3385,6 +3415,7 @@
 	"Mint":{ 
 		Italian:"Zecca"
 		Russian:"Монетный двор"
+		French:"Hôtel de la monnaie"
 		Spanish:"Casa de la moneda"
 	}
 	"Machu Pichu":{	
@@ -3411,12 +3442,13 @@
 	"Forge":{	
 		Italian:"Fucina"
 		Russian:"Кузница"
-		French:"Forger"
+		French:"Forge"
 		Romanian:"Forja"
 		Spanish:"Forja"
 	}
 	"Harbor":{
 		Italian:"Porto"
+		French:"Havre"
 	}
 	"University":{	
 		Italian:"Università"
@@ -3456,7 +3488,7 @@
 	"Ironworks":{	
 		Italian:"Lavori in ferro"
 		Russian:"Металлургический завод"
-		French:"Ferronnerie"
+		French:"Atelier métallurgique"
 		Romanian:"Fierarie"
 		Spanish:"Herrería"
 	}
@@ -3498,7 +3530,7 @@
 	"Forbidden Palace":{	
 		Italian:"Palazzo Proibito"
 		Russian:"Запретный дворец"
-		French:"Palais interdit"
+		French:"Cité Interdite"
 		Romanian:"Palatul interzis"
 		Spanish:"Palacio Prohibido"
 	}
@@ -3546,6 +3578,7 @@
 	}
 	"Seaport":{
 		Italian:"Cantiere navale"
+		French:"Port"
 	}
 	"Public School":{	
 		Italian:"Scuola pubblica"
@@ -3599,7 +3632,7 @@
 	"Eiffel Tower":{	
 		Italian:"Torre Eiffel"
 		Russian:"Эйфелева башня"
-		French:"Le Tour Eiffel"
+		French:"La Tour Eiffel"
 		Romanian:"Turnul Eiffel"
 		Spanish:"Torre Eiffel"
 	}
@@ -3640,6 +3673,7 @@
 	}
 	"Sydney Opera House":{
 		Italian:"Teatro dell'Opera di Sidney"
+		French:"Opéra de Sydney"
 	}
 	"Apollo Program":{	
 		Italian:"Programma Apollo"
@@ -3658,25 +3692,29 @@
 	"Spaceship Factory":{	
 		Italian:"Fabbrica di astronave"
 		Russian:"Завод космических кораблей"
-		French:"Usine du vaisseau spatial"
+		French:"Usine de Vaisseau Spatial"
 		Romanian:"Fabbrica di astronave"
 		Spanish:"Fábrica de Nave Espacial"
 	}
 	"SS Booster":{	//no translation that I know of
 		Italian:"Propulsore dell'astronave"
 		Spanish:"Potenciador (Nave espacial)"
+		French:"Propulseur du Vaisseau Spatial"
 	}
 	"SS Cockpit":{	//no translation that I know of
 		Italian:"Abitacolo dell'astronave"
 		Spanish:"Cabina (Nave espacial)"
+		French:"Cabine du Vaisseau Spatial"
 	}
 	"SS Engine":{	//no translation that I know of
 		Italian:"Motore dell'astronave"
 		Spanish:"Motor (Nave espacial)"
+		French:"Moteur-fusée du Vaisseau Spatial"
 	}
 	"SS Stasis Chamber":{	//no translation that I know of
 		Italian:"Camera di stasi dell'astronave"
 		Spanish:"Cámara de estasis (Nave espacial)"
+		French:"Chambre de biostase du Vaisseau Spatial"
 	}
 	
 	
@@ -3694,7 +3732,7 @@
 	"Scout":{	
 		Italian:"Esploratore"
 		Russian:"Разведчик"
-		French:"Eclaireur"
+		French:"Éclaireur"
 		Romanian:"Explorator"
 		Spanish:"Explorador"
 	}
@@ -3715,27 +3753,30 @@
 	"Bowman":{
 		Italian:"Guerriero con arco"	
 		Russian:"Меткий лучник"
+		French:"Archer"
 		//IS THIS SAME AS ARCHER IN OTHER LANGUAGES=?? 
 		//In official Russian localization it's accurate archer :)
 		Spanish:"Arquero experto"
 	}
 	"Work Boats":{
 		Italian:"Chiatta"
+		French:"Bateau de travail"
 	}
 	"Trireme":{
 		Italian:"Trireme"
+		French:"Trirème"
 	}
 	"Chariot Archer":{	
 		Italian:"Arciere su carro"
 		Russian:"Лучник на колеснице"
-		French:"Charrette archer"
+		French:"Char à archer"
 		Romanian:"Arcer in caruta"
 		Spanish:"Arquero en carro"
 	}
 	"Spearman":{	
 		Italian:"Lanciere"
 		Russian:"Копейщик"
-		French:"Lancier"
+		French:"Infanterie"
 		Romanian:"Lancer"
 		Spanish:"Lancero"
 	}
@@ -3750,6 +3791,7 @@
 	}
 	"Ballista":{
 		Italian:"Ballista"
+		French:"Balliste"
 	}
 	"Swordsman":{	
 		Italian:"Spadaccino"
@@ -3768,7 +3810,7 @@
 	"Companion Cavalry":{	
 		Italian:"Compania dei cavalieri"
 		Russian:"Сопутствующая кавалерия"
-		French:"Compagnon cavalerie"
+		French:"Cavalerie accompagnante"
 		Romanian:"Compania cavalerilor"
 		Spanish:"Caballería de compañia"
 	}
@@ -3776,6 +3818,7 @@
 	// Medieval units
 	"Galleass":{
 		Italian:"Galeazza"
+		French:"Galléasse"
 	}
 	"Crossbowman":{	
 		Italian:"Balestriere"
@@ -3786,7 +3829,9 @@
 	}
 	"Longbowman":{	
 		Italian:"Arciere con arco lungo"
+		French:"Archer longbow"
 		Spanish:"Arquero de arco largo"
+		
 	}
 	"Trebuchet":{	
 		Italian:"Trebuchet"
@@ -3798,11 +3843,13 @@
 	"Longswordsman":{
 		Italian:"Guerriero con spada lunga"
 		Russian:"Мечник (длинный меч)"
+		French:"Espadonnier"
 		Spanish:"Espadachín de espada larga"
 	}
 	"Pikeman":{	
 		Italian:"Picchiere"
 		Russian:"Пикинер"
+		French:"Piquier"
 		Romanian:"Suliţaş"
 		Spanish:"Piquero"
 	}
@@ -3817,6 +3864,7 @@
 	// Renaissance units
 	"Caravel":{
 		Italian:"Caravella"
+		French:"Caravelle"
 	}
 	"Cannon":{	
 		Italian:"Cannone"
@@ -3827,14 +3875,16 @@
 	}
 	"Musketman":{	
 		Italian:"Soldato con moschetto"
-		French:"Mousquetaire"
+		French:"Arquebusier"
 		Spanish:"Mosquetero"
 	}
 	"Musketeer":{
 		Italian:"Moschettiere"
+		French:"Mousquetaire"
 	}
 	"Frigate":{
 		Italian:"Fregata"
+		French:"Frégate"
 	}
 	"Lancer":{	
 		Italian:"Lanciere a cavallo"
@@ -3868,6 +3918,7 @@
 	}
 	"Ironclad":{
 		Italian:"Ironclad"
+		French:"Cuirassé"
 	}
 	
 	// Great units
@@ -3902,18 +3953,21 @@
 	
 	// Social policies
 	"Requires":{
-		Italian:"Politiche sociali"
+		Italian:"Politiche sociali"//is some kind of mistake, seems to translate "social policies"
 		Russian:"Требует"
+		French:"Requiert"
 		Spanish:"Requiere"
 	}
 	"Adopt policy":{
 		Italian:"Adotta politica"
 		Russian:"Принять общественный институт"
+		French:"Adopter la politique"
 		Spanish:"Adoptar política"
 	}
 	"Unlocked at":{
 		Italian:"Si sblocca con"
 		Russian:"Разблокируется в"
+		French:"Débloqué à"
 		Spanish:"Desbloqueado en"
 	}
 	
@@ -3921,6 +3975,7 @@
 	"Tradition":{
 		Italian:"Tradizione"
 		Russian:"Традиция"
+		French:"Tradition"
 		Spanish:"Tradición"
 	}
 	"+3 culture in capital and increased rate of border expansion":{
