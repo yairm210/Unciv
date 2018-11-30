@@ -329,7 +329,8 @@ class MapUnit {
             city.population.autoAssignPopulation()
             civInfo.addNotification("We have found survivors the ruins - population added to ["+city.name+"]",city.location, Color.GREEN)
         }
-        val researchableAncientEraTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name)}
+        val researchableAncientEraTechs = GameBasics.Technologies.values
+                .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name)}
         if(researchableAncientEraTechs.isNotEmpty())
             actions.add {
                 val tech = researchableAncientEraTechs.getRandom().name
