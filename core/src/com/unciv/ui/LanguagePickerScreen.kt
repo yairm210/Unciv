@@ -9,8 +9,8 @@ import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.tr
 
 
@@ -22,11 +22,12 @@ class LanguageTable(val language:String,skin: Skin):Table(skin){
     init{
         pad(10f)
         defaults().pad(10f)
-        add(ImageGetter.getImage("FlagIcons/$language.png")).size(40f)
+        if(ImageGetter.imageExists("FlagIcons/$language"))
+            add(ImageGetter.getImage("FlagIcons/$language")).size(40f)
         val availableTranslations = GameBasics.Translations.filter { it.value.containsKey(language) }
 
         if(language=="English") percentComplete = 100
-        else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size) - 10
+        else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size) - 5
         add("$language ($percentComplete%)")
         update("")
         touchable = Touchable.enabled // so click listener is activated when any part is clicked, not only children
@@ -55,7 +56,7 @@ class LanguagePickerScreen: PickerScreen(){
                     "community-based work in progress and are INCOMPLETE! \n" +
                     "The percentage shown is how much of the language is translated in-game.\n" +
                     "If you want to help translating the game " +
-                    "into your language, contact me!",skin)).pad(10f).row()
+                    "into your language, send me an email to yairm210@hotmail.com!",skin)).pad(10f).row()
 
         languageTables.addAll(GameBasics.Translations.getLanguages().map { LanguageTable(it,skin) }
                 .sortedByDescending { it.percentComplete } )

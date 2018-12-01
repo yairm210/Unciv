@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.NewGameScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
@@ -33,7 +34,8 @@ class UnCivGame : Game() {
                 startNewGame()
             }
         }
-        else startNewGame() // screen=LanguagePickerScreen() disabled because of people's negative reviews =(
+        //startNewGame() //
+        else screen= LanguagePickerScreen() // disabled because of people's negative reviews =(
     }
 
     fun loadGame(gameInfo:GameInfo){
