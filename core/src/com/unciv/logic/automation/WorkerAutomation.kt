@@ -70,7 +70,7 @@ class WorkerAutomation(val unit: MapUnit) {
                         if(unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
                         else{
                             val reachableTiles = roadableTiles.filter {  unit.canMoveTo(it)&& unit.movementAlgs().canReach(it)}
-                            if(!reachableTiles.any()) continue
+                            if(reachableTiles.isEmpty()) continue
                             tileToConstructRoadOn = reachableTiles.minBy { unit.movementAlgs().getShortestPath(it).size }!!
                             unit.movementAlgs().headTowards(tileToConstructRoadOn)
                         }
