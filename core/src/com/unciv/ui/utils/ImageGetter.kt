@@ -76,6 +76,7 @@ object ImageGetter {
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 
+
         val improvement = GameBasics.TileImprovements[improvementName]!!
         when {
             improvement.food>0 -> iconGroup.circle.color= foodCircleColor

@@ -8,10 +8,12 @@ import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TerrainType
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
@@ -21,21 +23,20 @@ class UnitAutomation{
     fun automateUnitMoves(unit: MapUnit) {
 
         if (unit.name == "Settler") {
-            automateSettlerActions(unit)
-            return
+            return SpecificUnitAutomation().automateSettlerActions(unit)
         }
 
         if (unit.name == "Worker") {
-            WorkerAutomation(unit).automateWorkerAction()
-            return
+            return WorkerAutomation(unit).automateWorkerAction()
         }
 
         if(unit.name=="Work Boats"){
-            automateWorkBoats(unit)
-            return
+            return SpecificUnitAutomation().automateWorkBoats(unit)
         }
 
-        if(unit.name.startsWith("Great")) return // I don't know what to do with you yet.
+        if(unit.name.startsWith("Great")){
+            return SpecificUnitAutomation().automateGreatPerson(unit)// I don't know what to do with you yet.
+        }
 
         val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
         var unitDistanceToTiles = unit.getDistanceToTiles()
@@ -79,30 +80,6 @@ class UnitAutomation{
         // else, go to a random space
         explore(unit,unitDistanceToTiles)
         // if both failed, then... there aren't any reachable tiles. Which is possible.
-    }
-
-    private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean {
-        return tileInfo.hasViewableResource(civInfo) && tileInfo.isWater() && tileInfo.improvement==null
-    }
-
-    private fun automateWorkBoats(unit: MapUnit) {
-        val seaResourcesInCities = unit.civInfo.cities.flatMap { it.getTilesInRange() }.asSequence()
-                .filter { hasWorkableSeaResource(it, unit.civInfo) && (unit.canMoveTo(it) || unit.currentTile == it) }
-        val closestReachableResource = seaResourcesInCities.sortedBy { it.arialDistanceTo(unit.currentTile) }
-                .firstOrNull { unit.movementAlgs().canReach(it) }
-
-        if (closestReachableResource != null) {
-            unit.movementAlgs().headTowards(closestReachableResource)
-            if (unit.currentMovement > 0 && unit.currentTile == closestReachableResource) {
-                val createImprovementAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
-                        .firstOrNull { it.name.startsWith("Create") } // could be either fishing boats or oil well
-                if (createImprovementAction != null) {
-                    createImprovementAction.action()
-                    return // unit is already gone, can't "explore"
-                }
-            }
-        }
-        else explore(unit, unit.getDistanceToTiles())
     }
 
     fun rankTileForHealing(tileInfo: TileInfo, unit: MapUnit): Int {
@@ -322,7 +299,7 @@ class UnitAutomation{
         return true
     }
 
-    private fun explore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+    internal fun explore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
         val distanceToTiles:HashMap<TileInfo, Float>
         if(tryGoToRuin(unit,unitDistanceToTiles))
         {
@@ -347,6 +324,49 @@ class UnitAutomation{
         else if (reachableTiles.any()) unit.moveToTile(reachableTiles.toList().getRandom().first)
     }
 
+    fun automatedExplore(unit:MapUnit){
+        if(tryGoToRuin(unit,unit.getDistanceToTiles()) && unit.currentMovement==0f) return
+
+        for(i in 1..10){
+            val unexploredTilesAtDistance = unit.getTile().getTilesAtDistance(i)
+                    .filter { unit.canMoveTo(it)  && it.position !in unit.civInfo.exploredTiles
+                            && unit.movementAlgs().canReach(it) }
+            if(unexploredTilesAtDistance.isNotEmpty()){
+                unit.movementAlgs().headTowards(unexploredTilesAtDistance.getRandom())
+                return
+            }
+        }
+    }
+
+}
+
+class SpecificUnitAutomation{
+
+    private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean {
+        return tileInfo.hasViewableResource(civInfo) && tileInfo.isWater() && tileInfo.improvement==null
+    }
+
+    fun automateWorkBoats(unit: MapUnit) {
+        val seaResourcesInCities = unit.civInfo.cities.flatMap { it.getTilesInRange() }.asSequence()
+                .filter { hasWorkableSeaResource(it, unit.civInfo) && (unit.canMoveTo(it) || unit.currentTile == it) }
+        val closestReachableResource = seaResourcesInCities.sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .firstOrNull { unit.movementAlgs().canReach(it) }
+
+        if (closestReachableResource != null) {
+            unit.movementAlgs().headTowards(closestReachableResource)
+            if (unit.currentMovement > 0 && unit.currentTile == closestReachableResource) {
+                val createImprovementAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                        .firstOrNull { it.name.startsWith("Create") } // could be either fishing boats or oil well
+                if (createImprovementAction != null) {
+                    createImprovementAction.action()
+                    return // unit is already gone, can't "explore"
+                }
+            }
+        }
+        else UnitAutomation().explore(unit, unit.getDistanceToTiles())
+    }
+
+
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
         val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
                 .asSequence()
@@ -362,7 +382,8 @@ class UnitAutomation{
         return rank
     }
 
-    private fun automateSettlerActions(unit: MapUnit) {
+
+    fun automateSettlerActions(unit: MapUnit) {
         if(unit.getTile().militaryUnit==null) return // Don't move until you're accompanied by a military unit
 
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
@@ -382,7 +403,7 @@ class UnitAutomation{
 
         if(bestCityLocation==null) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
         {
-            explore(unit, unit.getDistanceToTiles())
+            UnitAutomation().explore(unit, unit.getDistanceToTiles())
             return
         }
 
@@ -398,18 +419,39 @@ class UnitAutomation{
         }
     }
 
-    fun automatedExplore(unit:MapUnit){
-        if(tryGoToRuin(unit,unit.getDistanceToTiles()) && unit.currentMovement==0f) return
+    fun automateGreatPerson(unit: MapUnit) {
+        val relatedStat = GreatPersonManager().statToGreatPersonMapping.entries.first { it.value==unit.name }.key
 
-        for(i in 1..10){
-            val unexploredTilesAtDistance = unit.getTile().getTilesAtDistance(i)
-                    .filter { unit.canMoveTo(it)  && it.position !in unit.civInfo.exploredTiles
-                            && unit.movementAlgs().canReach(it) }
-            if(unexploredTilesAtDistance.isNotEmpty()){
-                unit.movementAlgs().headTowards(unexploredTilesAtDistance.getRandom())
+        val citiesByStatBoost = unit.civInfo.cities.sortedByDescending{
+            val stats = Stats()
+            for (bonus in it.cityStats.statPercentBonusList.values) stats.add(bonus)
+            stats.toHashMap()[relatedStat]!!
+        }
+        for(city in citiesByStatBoost){
+            val pathToCity =unit.movementAlgs().getShortestPath(city.getCenterTile())
+            if(pathToCity.isEmpty()) continue
+            if(pathToCity.size>2) {
+                unit.movementAlgs().headTowards(city.getCenterTile())
                 return
             }
+
+            // if we got here, we're pretty close, start looking!
+            val tiles = city.getTiles().asSequence()
+                    .filter { (unit.canMoveTo(it) || unit.currentTile==it)
+                            && it.isLand()
+                            && !it.isCityCenter()
+                            && it.resource==null }
+                    .sortedByDescending { Automation().rankTile(it,unit.civInfo) }.toList()
+            val chosenTile = tiles.firstOrNull { unit.movementAlgs().canReach(it) }
+            if(chosenTile==null) continue // to another city
+
+            unit.movementAlgs().headTowards(chosenTile)
+            if(unit.currentTile==chosenTile && unit.currentMovement>0)
+                UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
+                        .first { it.name.startsWith("Construct") }.action()
+            return
         }
+
     }
 
 }

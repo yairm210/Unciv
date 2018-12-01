@@ -394,7 +394,7 @@
 		name:"Great Merchant",
 		unbuildable:true,
 		unitType:"Civilian",
-		uniques:["Can undertake a trade mission, giving a large sum of gold","Can build improvement: Customs House"]
+		uniques:["Can undertake a trade mission, giving a large sum of gold","Can build improvement: Customs house"]
 		movement:2
 	},
 	{

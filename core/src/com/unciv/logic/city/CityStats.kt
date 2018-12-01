@@ -11,14 +11,11 @@ import com.unciv.models.stats.Stats
 
 class CityStats {
 
-    @Transient
-    var baseStatList = LinkedHashMap<String, Stats>()
-    @Transient
-    var happinessList = LinkedHashMap<String, Float>()
-    @Transient
-    var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
-    @Transient
-    lateinit var cityInfo: CityInfo
+    @Transient var baseStatList = LinkedHashMap<String, Stats>()
+    @Transient var statPercentBonusList = LinkedHashMap<String, Stats>()
+    @Transient var happinessList = LinkedHashMap<String, Float>()
+    @Transient var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
+    @Transient lateinit var cityInfo: CityInfo
 
     //region pure fuctions
     private fun getStatsFromTiles(): Stats {
@@ -28,7 +25,7 @@ class CityStats {
         return stats
     }
 
-    fun getStatsFromTradeRoute(): Stats {
+    private fun getStatsFromTradeRoute(): Stats {
         val stats = Stats()
         if (!cityInfo.isCapital() && isConnectedToCapital(RoadStatus.Road)) {
             val civInfo = cityInfo.civInfo
@@ -252,15 +249,19 @@ class CityStats {
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
 
-        val statPercentBonuses = cityInfo.cityConstructions.getStatPercentBonuses()
-        statPercentBonuses.add(getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge()))
-        statPercentBonuses.add(getStatPercentBonusesFromPolicies(civInfo.policies.adoptedPolicies, cityInfo.cityConstructions))
+        val newStatPercentBonusList = LinkedHashMap<String,Stats>()
+        newStatPercentBonusList["Buildings"] = cityInfo.cityConstructions.getStatPercentBonuses()
+        newStatPercentBonusList["Golden Age"]=getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
+        newStatPercentBonusList["Policies"]=getStatPercentBonusesFromPolicies(civInfo.policies.adoptedPolicies, cityInfo.cityConstructions)
         // from wonders - Culture in all cities increased by 25%
-        statPercentBonuses.add(getStatPercentBonusesFromWonders())
-        statPercentBonuses.add(getStatPercentBonusesFromRailroad())
-        statPercentBonuses.add(getStatPercentBonusesFromMarble())
-        statPercentBonuses.add(getStatPercentBonusesFromComputers())
+        newStatPercentBonusList["Wonders"]=getStatPercentBonusesFromWonders()
+        newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
+        newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
+        newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
+        statPercentBonusList=newStatPercentBonusList
 
+        val statPercentBonuses = Stats()
+        for(bonus in statPercentBonusList.values) statPercentBonuses.add(bonus)
 
         //val stats = Stats()
         for (stat in newBaseStatList.values) stat.production *= 1 + statPercentBonuses.production / 100

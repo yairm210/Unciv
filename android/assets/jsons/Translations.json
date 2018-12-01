@@ -2899,10 +2899,11 @@
 		Romanian:"Accepta"
 		Spanish:"Aceptar"
 	}
+	
 	"There's nothing on the table":{
 		Italian:"Non c'è niente da trattare"
 		Russian:"Вы ничего не предложили" //Don't know how to properly translate this one, but i think this will do okay
-		French:"Rien n'est en jeu //Don't know how to properly translate this one, I went with the figurative sens e.g. nothing is in danger of being lost
+		French:"Rien n'est en jeu" //Don't know how to properly translate this one, I went with the figurative sens e.g. nothing is in danger of being lost
 		Spanish:"No hay nada sobre la mesa"
 	}
 
