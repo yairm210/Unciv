@@ -349,16 +349,26 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 
+## Terrain
+
+* [Hills](https://thenounproject.com/term/hills/540185/) By Juraj Sedlák
+* [Mountains](https://thenounproject.com/term/mountains/2062034/) By icon 54
+* [Forest](https://thenounproject.com/term/forest/1826995/) by Milinda Courey for Jungle
+* [Forest](https://thenounproject.com/search/?q=forest&i=1744681) By Lance B
+* [Palm Tree](https://thenounproject.com/search/?q=palm%20tree&i=366833) By Tatiana for Oasis
+* [Water](https://thenounproject.com/term/water/1762848/) By Kozan for Marsh
+* [Harvest](https://thenounproject.com/term/harvest/1022373/) By Made for Flood plains
+
 ## Others 
 
 * [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By Joe Mortell for movement
-* https://thenounproject.com/term/arrow/2032227/
 * [Connection](https://thenounproject.com/search/?q=connection&i=1521886) By Travis Avery
 * [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
-* [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito 
+* [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
 * [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
 * [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for 
 * [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
 * [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
+
