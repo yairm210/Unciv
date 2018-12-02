@@ -24,6 +24,16 @@ android {
         versionCode 169
         versionName "2.10.8"
     }
+    
+    signingConfigs {
+        debug {
+            storeFile rootProject.file('debug.keystore')
+            keyAlias 'androiddebugkey'
+            keyPassword 'android'
+            storePassword 'android'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
