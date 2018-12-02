@@ -1,6 +1,6 @@
 buildscript {
 
-    ext.kotlinVersion = '1.2.41'
+    ext.kotlinVersion = '1.2.71'
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
@@ -8,6 +8,7 @@ buildscript {
 
 
     repositories {
+        google()
         mavenLocal()
         mavenCentral()
         maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
@@ -15,7 +16,7 @@ buildscript {
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.2.1'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
         
 
@@ -29,7 +30,7 @@ allprojects {
     version = '1.0.1'
     ext {
         appName = "unciv-game"
-        gdxVersion = '1.9.6'
+        gdxVersion = '1.9.9'
         roboVMVersion = '2.3.1'
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
@@ -62,7 +63,7 @@ project(":desktop") {
 
 project(":android") {
     apply plugin: "android"
-    apply plugin: "kotlin-android"
+    //apply plugin: "kotlin-android"
 
     configurations { natives }
 
