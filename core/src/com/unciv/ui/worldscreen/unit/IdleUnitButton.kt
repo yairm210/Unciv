@@ -41,7 +41,7 @@ class IdleUnitButton (internal val unitTable: UnitTable,
                 tileToSelect = tilesWithIdleUnits[index]
             }
             tileMapHolder.setCenterPosition(tileToSelect.position)
-            unitTable.worldScreen.update()
+            unitTable.worldScreen.shouldUpdate=true
         }
     }
 

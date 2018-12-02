@@ -84,7 +84,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             } else
                 civTech.techsToResearch = techsToResearch
             game.setWorldScreen()
-            game.worldScreen.update()
+            game.worldScreen.shouldUpdate=true
             dispose()
         }
 

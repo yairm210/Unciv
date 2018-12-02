@@ -89,6 +89,6 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)
-        UnCivGame.Current.worldScreen.update()
+        UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 }

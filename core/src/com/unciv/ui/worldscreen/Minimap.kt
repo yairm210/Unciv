@@ -118,7 +118,7 @@ class MinimapHolder(val tileMapHolder: TileMapHolder): Table(){
         populationImage.onClick {
             settings.showWorkedTiles = !settings.showWorkedTiles
             populationImage.image.color.a = if(settings.showWorkedTiles) 1f else 0.5f
-            worldScreen.update()
+            worldScreen.shouldUpdate=true
         }
         toggleIconTable.add(populationImage).row()
 
@@ -128,7 +128,7 @@ class MinimapHolder(val tileMapHolder: TileMapHolder): Table(){
         resourceImage.onClick {
             settings.showResourcesAndImprovements = !settings.showResourcesAndImprovements
             resourceImage.image.color.a = if(settings.showResourcesAndImprovements) 1f else 0.5f
-            worldScreen.update()
+            worldScreen.shouldUpdate=true
         }
         toggleIconTable.add(resourceImage)
         toggleIconTable.pack()

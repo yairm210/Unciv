@@ -2,8 +2,8 @@
 
 ![](https://travis-ci.org/yairm210/UnCiv.svg?branch=master)
 
-[![LibGDX](https://img.shields.io/badge/libgdx-1.9.6-red.svg)](https://libgdx.badlogicgames.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.2.41-orange.svg)](http://kotlinlang.org/)
+[![LibGDX](https://img.shields.io/badge/libgdx-1.9.9-red.svg)](https://libgdx.badlogicgames.com/)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.3.10-orange.svg)](http://kotlinlang.org/)
 
 ## What is this?
 

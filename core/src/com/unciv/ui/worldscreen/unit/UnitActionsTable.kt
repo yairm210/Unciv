@@ -14,7 +14,9 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
     fun getIconForUnitAction(unitAction:String): Actor {
         if(unitAction.startsWith("Upgrade to")){
-            val unitToUpgradeTo = Regex("""Upgrade to \[(\S*)\]""").find(unitAction)!!.groups[1]!!.value
+            // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
+            // What you find between the first [ and the first ] that comes after it, will be group no. 1
+            val unitToUpgradeTo = Regex("""Upgrade to \[([^\]]*)\]""").find(unitAction)!!.groups[1]!!.value
             return ImageGetter.getUnitIcon(unitToUpgradeTo)
         }
         when(unitAction){
@@ -60,7 +62,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         actionButton.add(Label(unitAction.name.tr(),CameraStageBaseScreen.skin)
                 .setFontColor(Color.WHITE)).pad(5f)
         actionButton.pack()
-        actionButton.onClick({ unitAction.action(); UnCivGame.Current.worldScreen.update() })
+        actionButton.onClick { unitAction.action(); UnCivGame.Current.worldScreen.shouldUpdate=true }
         if (!unitAction.canAct) actionButton.disable()
         return actionButton
     }

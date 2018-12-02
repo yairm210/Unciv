@@ -102,7 +102,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
             worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
-            worldScreen.update()
+            worldScreen.shouldUpdate=true
     }
 
     private fun addMoveHereButtonToTile(selectedUnit: MapUnit, tileInfo: TileInfo, tileGroup: WorldTileGroup) {
@@ -114,7 +114,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
         val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)
-        moveHereButton.addActor(Label(turnsToGetThere.toString(), CameraStageBaseScreen.skin).apply { center(numberCircle); setFontColor(Color.WHITE) })
+        moveHereButton.addActor(Label(turnsToGetThere.toString(), CameraStageBaseScreen.skin)
+                .apply { center(numberCircle); setFontColor(Color.WHITE) })
 
         val unitIcon = ImageGetter.getUnitImage(selectedUnit, size / 2)
         unitIcon.y = size - unitIcon.height
@@ -132,7 +133,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
                     // we don't update it directly because we're on a different thread; instead, we tell it to update itself
                     worldScreen.shouldUpdate = true
-                    moveToOverlay!!.remove()
+                    moveToOverlay?.remove()
                     moveToOverlay = null
                 }
             }
@@ -220,7 +221,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - worldScreen.stage.height / 2)
         updateVisualScroll()
-        worldScreen.update()
+        worldScreen.shouldUpdate=true
     }
 
 

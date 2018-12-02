@@ -86,8 +86,10 @@ class WorldScreen : CameraStageBaseScreen() {
         createNextTurnButton() // needs civ table to be positioned
     }
 
-
-    fun update() {
+    // This is private so that we will set the shouldUpdate to true instead.
+    // That way, not only do we save a lot of unneccesary updates, we also ensure that all updates are called from the main GL thread
+    // and we don't get any silly concurrency problems!
+    private fun update() {
         // many of the display functions will be called with the game clone and not the actual game,
         // because that's guaranteed to stay the exact same and so we won't get any concurrent modification exceptions
 

@@ -364,6 +364,11 @@
 				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
 			},*/
 			{
+				name:"Replacable Parts",
+				row:4,
+				prerequisites:["Electricity","Steam Power"]
+			},
+			{
 				name:"Radio",
 				row:5,
 				prerequisites:["Electricity"]
@@ -385,7 +390,7 @@
 			{
 				name:"Plastics",
 				row:3,
-				prerequisites:["Biology"]
+				prerequisites:["Biology","Replacable Parts"]
 			},/*
 			{
 				name:"Electronics",

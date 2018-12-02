@@ -57,6 +57,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 ### Modern
 
+* [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
 * [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
 
 ### Great People

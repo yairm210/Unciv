@@ -62,7 +62,7 @@ class UnCivGame : Game() {
     fun setWorldScreen() {
         setScreen(worldScreen)
         Gdx.input.inputProcessor = worldScreen.stage
-        worldScreen.update() // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
+        worldScreen.shouldUpdate=true // This can set the screen to the policy picker or tech picker screen, so the input processor must come before
     }
 
     override fun resume() {

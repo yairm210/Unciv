@@ -185,7 +185,7 @@ class UnitActions {
         actionList += UnitAction("Disband unit",unit.currentMovement != 0f
         ) {
             YesNoPopupTable("Do you really want to disband this unit?".tr(),
-                    {unit.destroy(); worldScreen.update()} )
+                    {unit.destroy(); worldScreen.shouldUpdate=true} )
         }
 
         return actionList

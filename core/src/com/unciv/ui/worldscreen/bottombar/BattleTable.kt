@@ -137,7 +137,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.onClick {
                 attacker.unit.moveToTile(attackableEnemy.tileToAttackFrom)
                 battle.attack(attacker, defender)
-                worldScreen.update()
+                worldScreen.shouldUpdate=true
             }
         }
 

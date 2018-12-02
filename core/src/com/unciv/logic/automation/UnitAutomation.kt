@@ -34,7 +34,8 @@ class UnitAutomation{
             return SpecificUnitAutomation().automateWorkBoats(unit)
         }
 
-        if(unit.name.startsWith("Great")){
+        if(unit.name.startsWith("Great")
+                && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)// I don't know what to do with you yet.
         }
 
@@ -357,10 +358,8 @@ class SpecificUnitAutomation{
             if (unit.currentMovement > 0 && unit.currentTile == closestReachableResource) {
                 val createImprovementAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
                         .firstOrNull { it.name.startsWith("Create") } // could be either fishing boats or oil well
-                if (createImprovementAction != null) {
-                    createImprovementAction.action()
-                    return // unit is already gone, can't "explore"
-                }
+                if (createImprovementAction != null)
+                    return createImprovementAction.action() // unit is already gone, can't "explore"
             }
         }
         else UnitAutomation().explore(unit, unit.getDistanceToTiles())
@@ -402,10 +401,7 @@ class SpecificUnitAutomation{
                 .firstOrNull { unit.movementAlgs().canReach(it) }
 
         if(bestCityLocation==null) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
-        {
-            UnitAutomation().explore(unit, unit.getDistanceToTiles())
-            return
-        }
+            return UnitAutomation().explore(unit, unit.getDistanceToTiles())
 
         if(bestCityLocation.getTilesInDistance(3).any { it.isCityCenter() })
             throw Exception("City within distance")
@@ -430,7 +426,7 @@ class SpecificUnitAutomation{
         for(city in citiesByStatBoost){
             val pathToCity =unit.movementAlgs().getShortestPath(city.getCenterTile())
             if(pathToCity.isEmpty()) continue
-            if(pathToCity.size>2) {
+            if(pathToCity.size>2){
                 unit.movementAlgs().headTowards(city.getCenterTile())
                 return
             }
