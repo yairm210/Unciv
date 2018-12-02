@@ -55,6 +55,10 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
+### Modern
+
+* [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
+
 ### Great People
 
 * [Pallet](https://thenounproject.com/search/?q=Pallet&i=6862) By James Keuning for Great Artist

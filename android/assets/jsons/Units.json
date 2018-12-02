@@ -374,6 +374,20 @@
 		hurryCostModifier:20
 	},
 	
+	// Modern era
+	
+	{
+		name:"Landship",
+		unitType:"Armor",
+		movement:4,
+		strength:60,
+		cost: 350,
+		requiredTech:"Combustion",
+		requiredResource:"Oil",
+		uniques:["Can move after attacking","No defensive terrain bonus"],
+		hurryCostModifier:20
+	},
+	
 	/* Great people */
 	
 	{

@@ -73,8 +73,8 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         addSeparator().pad(0f)
 
-        add("{Strength}: ".tr()+attacker.getAttackingStrength(defender))
-        add("{Strength}: ".tr()+defender.getDefendingStrength(attacker)).row()
+        add("{Strength}: ".tr()+attacker.getAttackingStrength())
+        add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
 
         val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
         val defenderModifiers = if (defender is MapUnitCombatant)

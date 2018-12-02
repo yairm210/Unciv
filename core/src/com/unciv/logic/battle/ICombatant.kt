@@ -8,8 +8,8 @@ interface ICombatant{
     fun getName(): String
     fun getHealth():Int
     fun getUnitType(): UnitType
-    fun getAttackingStrength(defender: ICombatant): Int
-    fun getDefendingStrength(attacker: ICombatant): Int
+    fun getAttackingStrength(): Int
+    fun getDefendingStrength(): Int
     fun takeDamage(damage:Int)
     fun isDefeated():Boolean
     fun getCivilization(): CivilizationInfo

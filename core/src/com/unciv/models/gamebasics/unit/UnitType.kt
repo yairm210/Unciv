@@ -7,6 +7,7 @@ enum class UnitType{
     Ranged,
     Scout,
     Mounted,
+    Armor,
     Siege,
     WaterCivilian,
     WaterMelee,
@@ -15,6 +16,7 @@ enum class UnitType{
     fun isMelee(): Boolean {
         return this == Melee
                 || this == Mounted
+                || this == Armor
                 || this == Scout
                 || this == WaterMelee
     }
@@ -28,6 +30,7 @@ enum class UnitType{
         return this == Civilian
                 || this == Melee
                 || this == Mounted
+                || this == Armor
                 || this == Scout
                 || this == Ranged
                 || this == Siege

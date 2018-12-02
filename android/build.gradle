@@ -25,6 +25,9 @@ android {
         versionName "2.10.8"
     }
 
+    // Had to add this crap for Travis to build, it wanted to sign the app
+    // but couldn't create the debug keystore for some reason
+
     signingConfigs {
         debug {
             storeFile rootProject.file('debug.keystore')

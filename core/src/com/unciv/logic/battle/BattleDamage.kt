@@ -155,7 +155,7 @@ class BattleDamage{
      */
     fun getAttackingStrength(attacker: ICombatant, defender: ICombatant): Float {
         val attackModifier = modifiersToMultiplicationBonus(getAttackModifiers(attacker,defender))
-        return attacker.getAttackingStrength(defender) * attackModifier
+        return attacker.getAttackingStrength() * attackModifier
     }
 
 
@@ -165,7 +165,7 @@ class BattleDamage{
     fun getDefendingStrength(attacker: ICombatant, defender: ICombatant): Float {
         var defenceModifier = 1f
         if(defender is MapUnitCombatant) defenceModifier = modifiersToMultiplicationBonus(getDefenceModifiers(attacker,defender))
-        return defender.getDefendingStrength(attacker) * defenceModifier
+        return defender.getDefendingStrength() * defenceModifier
     }
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {

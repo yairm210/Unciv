@@ -19,8 +19,8 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     }
 
     override fun getUnitType(): UnitType = UnitType.City
-    override fun getAttackingStrength(defender: ICombatant): Int = getCityStrength()
-    override fun getDefendingStrength(attacker: ICombatant): Int{
+    override fun getAttackingStrength(): Int = getCityStrength()
+    override fun getDefendingStrength(): Int{
         if(isDefeated()) return 1
         return getCityStrength()
     }
