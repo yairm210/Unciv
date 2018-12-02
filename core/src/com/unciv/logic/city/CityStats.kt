@@ -278,7 +278,7 @@ class CityStats {
 
 
         val isUnhappy = civInfo.happiness < 0
-        if (!isUnhappy) // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+        if (isUnhappy) // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
             for (stat in newBaseStatList.values) stat.food *= 1 + statPercentBonuses.food / 100
 
         var foodEaten = (cityInfo.population.population * 2).toFloat()

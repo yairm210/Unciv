@@ -1,60 +1,25 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
+import java.text.DecimalFormat
+import java.util.*
+import kotlin.collections.HashMap
 
 
-class ExpanderTab(private val title:String,skin: Skin):Table(skin){
-    private val toggle = Table(skin) // the show/hide toggler
-    private val tab = Table() // what holds the information to be shown/hidden
-    val innerTable=Table() // the information itself
-    var isOpen=true
-
-    init{
-        toggle.defaults().pad(10f)
-        toggle.touchable=Touchable.enabled
-        toggle.background(ImageGetter.getBackground(ImageGetter.getBlue()))
-        toggle.add("+ $title").apply { actor.setFontSize(24) }
-        toggle.onClick {
-            if(isOpen) close()
-            else open()
-        }
-        add(toggle).row()
-        tab.add(innerTable).pad(10f)
-        add(tab)
-    }
-
-    fun close(){
-        if(!isOpen) return
-        toggle.clearChildren()
-        toggle.add("- $title").apply { actor.setFontSize(24) }
-        tab.clear()
-        isOpen=false
-    }
-
-    fun open(){
-        if(isOpen) return
-        toggle.clearChildren()
-        toggle.add("+ $title").apply { actor.setFontSize(24) }
-        tab.add(innerTable)
-        isOpen=true
-    }
-}
-
-class BuildingsTable(private val cityScreen: CityScreen) : Table() {
+class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     init {
         defaults().pad(10f)
     }
 
     internal fun update() {
         clear()
-        val skin = CameraStageBaseScreen.skin
         val cityInfo = cityScreen.city
         val wonders = mutableListOf<Building>()
         val specialistBuildings = mutableListOf<Building>()
@@ -104,7 +69,43 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
             }
             add(buildingsExpanderTab).row()
         }
+
+        addStatInfo()
+
         pack()
+    }
+
+    private fun addStatInfo() {
+        val cityStats = cityScreen.city.cityStats
+        val unifiedStatList = LinkedHashMap<String, Stats>(cityStats.baseStatList)
+        for(entry in cityStats.happinessList.filter { it.value!=0f }){
+            if(!unifiedStatList.containsKey(entry.key)) unifiedStatList[entry.key]= Stats()
+            unifiedStatList[entry.key]!!.happiness=entry.value
+        }
+
+        val statToCauses = HashMap<Stat,HashMap<String,Float>>()
+        for(stat in Stat.values()) statToCauses[stat] = hashMapOf()
+
+        for(cause in unifiedStatList) {
+            val statHashmap = cause.value.toHashMap()
+            for (statEntry in statHashmap.filter { it.value != 0f })
+                statToCauses[statEntry.key]!![cause.key] = statEntry.value
+        }
+
+        for(stat in statToCauses){
+            val expander = ExpanderTab(stat.key.name.tr(),skin)
+            expander.innerTable.defaults().pad(2f)
+            for(entry in stat.value) {
+                expander.innerTable.add(Label(entry.key.tr(), skin))
+                expander.innerTable.add(Label(DecimalFormat("0.#").format(entry.value), skin)).row()
+            }
+            if(stat.value.isNotEmpty()){
+                expander.innerTable.add(Label("Total".tr(),skin))
+                expander.innerTable.add(Label(DecimalFormat("0.#").format(stat.value.values.sum()),skin))
+            }
+            add(expander).row()
+        }
+
     }
 
     private fun addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
@@ -165,7 +166,6 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
         add(specialistAllocationExpander).row()
     }
 
-
     private fun getSpecialistIcon(stat: Stat, isFilled: Boolean =true): Image {
         val specialist = ImageGetter.getImage("StatIcons/Specialist")
         if (!isFilled) specialist.color = Color.GRAY
@@ -179,6 +179,5 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table() {
 
         return specialist
     }
-
 
 }

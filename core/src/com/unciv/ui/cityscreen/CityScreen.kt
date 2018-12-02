@@ -49,7 +49,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         stage.addActor(cityStatsTable)
         stage.addActor(goToWorldButton)
         stage.addActor(cityPickerTable)
-        stage.addActor(statExplainer)
+        //stage.addActor(statExplainer)
         stage.addActor(buildingsTableContainer)
         update()
         displayTutorials("CityEntered")
