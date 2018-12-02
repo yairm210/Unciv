@@ -9,7 +9,7 @@ before_install:
 install:
   - echo yes | sdkmanager "tools" &>/dev/null
   - echo yes | sdkmanager "platform-tools" &>/dev/null
-  - echo yes | sdkmanager "build-tools;26.0.2" &>/dev/null
+  - echo yes | sdkmanager "build-tools;28.0.3" &>/dev/null
   - echo yes | sdkmanager "platforms;android-26" &>/dev/null
 
 before_cache:
