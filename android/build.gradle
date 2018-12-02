@@ -24,7 +24,7 @@ android {
         versionCode 169
         versionName "2.10.8"
     }
-    
+
     signingConfigs {
         debug {
             storeFile rootProject.file('debug.keystore')
