@@ -32,6 +32,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
     fun getStatsTable(tile: TileInfo):Table{
         val table=Table()
         table.pad(10f)
+        table.defaults().pad(2f)
 
         for (entry in tile.getTileStats(worldScreen.civInfo).toHashMap().filterNot { it.value == 0f }) {
             table.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f).align(Align.right)
