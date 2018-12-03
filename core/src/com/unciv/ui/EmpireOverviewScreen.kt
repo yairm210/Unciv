@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.ui.utils.*
+import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
 class EmpireOverviewScreen : CameraStageBaseScreen(){
@@ -249,7 +250,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             table.add(unit.name.tr())
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
-            table.add(unit.currentMovement.toString()+"/"+unit.getMaxMovement())
+            table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
             val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
             if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
             table.row()

@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
-import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
@@ -195,7 +194,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             val tileGroup = CityTileGroup(cityInfo, tileInfo)
             val tilesInRange = city.getTilesInRange()
 
-            // this needs to happen on pdate, because we can buy tiles, which changes the definition of the bought tiles...
+            // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
             if (tileInfo.getCity()!=city) { // outside of city
                 tileGroup.setColor(0f, 0f, 0f, 0.3f)
                 tileGroup.yieldGroup.isVisible = false
@@ -259,15 +258,15 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val stats = tile.getTileStats(city, city.civInfo)
         tileTable.pad(20f)
-        tileTable.columnDefaults(0).padRight(10f)
 
         tileTable.add(Label(tile.toString(), CameraStageBaseScreen.skin)).colspan(2)
         tileTable.row()
 
         val statsTable = Table()
+        statsTable.defaults().pad(2f)
         for (entry in stats.toHashMap().filterNot { it.value==0f }) {
-            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f).align(Align.right)
-            statsTable.add(Label(Math.round(entry.value).toString() + "", CameraStageBaseScreen.skin)).align(Align.left)
+            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
+            statsTable.add(Label(Math.round(entry.value).toString() + "", CameraStageBaseScreen.skin))
             statsTable.row()
         }
         tileTable.add(statsTable).row()

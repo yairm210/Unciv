@@ -186,6 +186,8 @@
 		rangedStrength:18,
 		cost: 120,
 		requiredTech:"Machinery",
+		upgradesTo:"Gatling Gun",
+		obsoleteTech:"Industrialization",
 		hurryCostModifier:20
 	},
 	{
@@ -199,6 +201,8 @@
 		uniqueTo:"England",
 		cost: 120,
 		requiredTech:"Machinery",
+		upgradesTo:"Gatling Gun",
+		obsoleteTech:"Industrialization",
 		hurryCostModifier:20
 	},
 	{
@@ -282,6 +286,8 @@
 		rangedStrength:20,
 		cost: 185,
 		requiredTech:"Chemistry",
+		upgradesTo:"Artillery",
+		obsoleteTech:"Dynamite",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
 		hurryCostModifier:20
 	},
@@ -334,6 +340,17 @@
 	
 	// Industrial Era
 	
+	{
+		name:"Gatling Gun",
+		unitType:"Ranged",
+		range:1,
+		movement:2,
+		strength:30,
+		rangedStrength:30,
+		cost: 225,
+		requiredTech:"Industrialization",
+		hurryCostModifier:20
+	},
 	{
 		name:"Rifleman",
 		unitType:"Melee",

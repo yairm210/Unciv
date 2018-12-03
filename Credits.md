@@ -334,6 +334,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Dynamite](https://thenounproject.com/term/dynamite/610652/) By Simon Martin
 
 ### Modern
+* [Gears](https://thenounproject.com/term/gears/1484672/) By Aiden Icons for Replacable Parts
 * [Radio](https://thenounproject.com/term/radio/124575/) By Arthur Shlain
 * [Piston](https://thenounproject.com/term/piston/1224/) By Proletkult Graphik for Combustion
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
