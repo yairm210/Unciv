@@ -25,6 +25,8 @@ class CityButton(val city: CityInfo, skin: Skin): Table(skin){
 
     fun update(isCityViewable:Boolean) {
         val cityButtonText = city.population.population.toString() + " | " + city.name
+        background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+                .tint(city.civInfo.getNation().getColor())
         val label = Label(cityButtonText, CameraStageBaseScreen.skin)
         label.setFontColor(city.civInfo.getNation().getSecondaryColor())
 
