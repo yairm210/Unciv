@@ -138,7 +138,7 @@ class CivilizationInfo {
         var cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!isPlayerCivilization())
-            cost *= gameInfo.getPlayerCivilization().getDifficulty().aiUnitMaintainanceModifier
+            cost *= gameInfo.getPlayerCivilization().getDifficulty().aiUnitMaintenanceModifier
         if(policies.isAdopted("Autocracy")) cost = cost*0.66f
         return cost.toInt()
     }

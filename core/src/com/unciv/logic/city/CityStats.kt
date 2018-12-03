@@ -87,6 +87,23 @@ class CityStats {
         return stats
     }
 
+    private fun getStatPercentBonusesFromDifficulty(): Stats {
+        val stats = Stats()
+
+        val civ = cityInfo.civInfo
+        if (!civ.isPlayerCivilization()) {
+            val modifier = civ.gameInfo.getPlayerCivilization().getDifficulty().aiYieldModifier
+            stats.production += modifier
+            stats.science += modifier
+            stats.food += modifier
+            stats.gold += modifier
+            stats.culture += modifier
+        }
+
+        return stats
+    }
+
+
     private fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
         if (cityInfo.civInfo.policies.isAdopted("Landed Elite") && cityInfo.isCapital())
@@ -258,14 +275,13 @@ class CityStats {
         newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
+        newStatPercentBonusList["Difficutly"]=getStatPercentBonusesFromDifficulty()
         statPercentBonusList=newStatPercentBonusList
 
         val statPercentBonuses = Stats()
         for(bonus in statPercentBonusList.values) statPercentBonuses.add(bonus)
 
-        //val stats = Stats()
         for (stat in newBaseStatList.values) stat.production *= 1 + statPercentBonuses.production / 100
-        //stats.production *= 1 + statPercentBonuses.production / 100  // So they get bonuses for production and gold/science
 
         val statsFromProduction = getStatsFromProduction(newBaseStatList.values.map { it.production }.sum())
         newBaseStatList["Construction"] = statsFromProduction

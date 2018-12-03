@@ -9,8 +9,8 @@ class Difficulty: INamed {
     var researchCostModifier:Float = 1f
     var unhappinessModifier = 1f
     var aiCityGrowthModifier = 1f
-    var aiUnitMaintainanceModifier = 1f
-    var aiConstructionModifier = 1f
+    var aiUnitMaintenanceModifier = 1f
+    var aiYieldModifier = 1f
     var aiFreeTechs = ArrayList<String>()
     var aiUnhappinessModifier = 1f
 }

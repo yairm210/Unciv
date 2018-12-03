@@ -292,7 +292,7 @@
 		strength:24,
 		cost: 150,
 		requiredTech:"Gunpowder",
-		upgradesTo:"Rifleman,"
+		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
 		hurryCostModifier:20
 	},
@@ -305,7 +305,7 @@
 		strength:28,
 		cost: 150,
 		requiredTech:"Gunpowder",
-		upgradesTo:"Rifleman,"
+		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
 		hurryCostModifier:20
 	},
