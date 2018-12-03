@@ -16,7 +16,11 @@ class GreatPersonPickerScreen : PickerScreen() {
     init {
         closeButton.isVisible=false
         rightSideButton.setText("Choose a free great person")
-        for (unit in GameBasics.Units.values.filter { it.name.startsWith("Great") }) {
+        for (unit in GameBasics.Units.values.filter { it.name.startsWith("Great Scientist")
+          || it.name.startsWith("Great Artist")
+          || it.name.startsWith("Great Engineer")
+          || it.name.startsWith("Great Merchant") })
+        {
             val button = Button(skin)
 
             button.add(ImageGetter.getUnitIcon(unit.name)).size(30f).pad(10f)
