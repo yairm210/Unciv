@@ -9,7 +9,6 @@ import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
-import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 import java.util.*
 
@@ -19,7 +18,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var tileTable = Table()
     private var buildingsTable = BuildingsTable(this)
     private var cityStatsTable = CityStatsTable(this)
-    private var statExplainer = Table(skin)
     private var cityPickerTable = Table()
     private var goToWorldButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
     private var tileGroups = ArrayList<CityTileGroup>()
@@ -58,46 +56,10 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         buildingsTable.update()
         updateCityPickerTable()
         cityStatsTable.update()
-        updateStatExplainer()
         updateGoToWorldButton()
         updateTileTable()
         updateTileGroups()
     }
-
-    private fun updateStatExplainer() {
-        statExplainer.defaults().pad(5f)
-        statExplainer.clear()
-        statExplainer.add()
-        statExplainer.add("Production")
-        statExplainer.add("Food")
-        statExplainer.add("Science")
-        statExplainer.add("Gold")
-        statExplainer.add("Culture")
-        statExplainer.add("Happiness")
-
-        val unifiedStatList = LinkedHashMap<String, Stats>(city.cityStats.baseStatList)
-        for(entry in city.cityStats.happinessList.filter { it.value!=0f }){
-            if(!unifiedStatList.containsKey(entry.key)) unifiedStatList[entry.key]= Stats()
-            unifiedStatList[entry.key]!!.happiness=entry.value
-        }
-
-        for (entry in unifiedStatList){
-            if(entry.value.toHashMap().values.all { it==0f }) continue //irrelevant!
-            statExplainer.row()
-            statExplainer.add(entry.key)
-            statExplainer.add(entry.value.production.toInt().toString())
-            statExplainer.add(entry.value.food.toInt().toString())
-            statExplainer.add(entry.value.science.toInt().toString())
-            statExplainer.add(entry.value.gold.toInt().toString())
-            statExplainer.add(entry.value.culture.toInt().toString())
-            statExplainer.add(entry.value.happiness.toInt().toString())
-        }
-        statExplainer.pack()
-        statExplainer.isTransform=true
-        statExplainer.setScale(0.8f)
-        statExplainer.setPosition(5f,cityStatsTable.top + 10)
-    }
-
 
     private fun updateTileGroups() {
         val nextTile = city.expansion.chooseNewTileToOwn()
@@ -231,7 +193,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         scrollPane.setOrigin(stage.width / 2, stage.height / 2)
         scrollPane.addListener(object : ActorGestureListener() {
             var lastScale = 1f
-            internal var lastInitialDistance = 0f
+            var lastInitialDistance = 0f
 
             override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
                 if (lastInitialDistance != initialDistance) {

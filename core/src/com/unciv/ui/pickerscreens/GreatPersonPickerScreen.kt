@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.UnCivGame
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.ImageGetter
@@ -16,10 +17,8 @@ class GreatPersonPickerScreen : PickerScreen() {
     init {
         closeButton.isVisible=false
         rightSideButton.setText("Choose a free great person")
-        for (unit in GameBasics.Units.values.filter { it.name.startsWith("Great Scientist")
-          || it.name.startsWith("Great Artist")
-          || it.name.startsWith("Great Engineer")
-          || it.name.startsWith("Great Merchant") })
+        for (unit in GameBasics.Units.values
+                .filter { it.name in GreatPersonManager().statToGreatPersonMapping.values})
         {
             val button = Button(skin)
 
