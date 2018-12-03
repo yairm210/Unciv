@@ -4,6 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.tr
 
 class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit): Table(CameraStageBaseScreen.skin) {
@@ -18,16 +19,21 @@ class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit
             tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers) { onChange() }
 
     init {
+        defaults().pad(5f)
+        val columnWidth = stage.width / 3
+
         add("Our items".tr())
-        add("Our trade offer".tr())
-        add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr())
         add("[${tradeLogic.otherCivilization.civName}]'s items".tr()).row()
-        val columnWidth = stage.width / 5f
-        val columnHeight = stage.height * 0.8f
-        add(ourAvailableOffersTable).size(columnWidth,columnHeight)
-        add(ourOffersTable).size(columnWidth,columnHeight)
-        add(theirOffersTable).size(columnWidth,columnHeight)
-        add(theirAvailableOffersTable).size(columnWidth,columnHeight)
+
+        add(ourAvailableOffersTable).size(columnWidth,stage.height/2)
+        add(theirAvailableOffersTable).size(columnWidth,stage.height/2).row()
+
+        addSeparator().height(2f)
+
+        add("Our trade offer".tr())
+        add("[${tradeLogic.otherCivilization.civName}]'s trade offer".tr()).row()
+        add(ourOffersTable).size(columnWidth,stage.height/5)
+        add(theirOffersTable).size(columnWidth,stage.height/5)
         pack()
     }
 
