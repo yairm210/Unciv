@@ -139,8 +139,8 @@ class Battle(val gameInfo:GameInfo) {
                 city.expansion.cultureStored = 0
                 city.expansion.reset()
             }
-            city.moveToCiv(attacker.getCivilization())
             city.population.unassignExtraPopulation()
+            city.moveToCiv(attacker.getCivilization())
         }
 
         if(city.cityConstructions.isBuilt("Palace")){
