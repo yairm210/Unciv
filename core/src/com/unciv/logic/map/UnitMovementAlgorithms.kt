@@ -183,13 +183,24 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     fun teleportToClosestMoveableTile(){
         var allowedTile:TileInfo? = null
         var distance=0
-        while(allowedTile==null){
+        while(allowedTile==null && distance<5){
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
                     .firstOrNull{unit.canMoveTo(it)}
         }
+
+        // No tile within 4 spaces? move him to a city.
+        // When we didn't limit the allowed distance the game would sometimes spend a whole minute looking for a suitable tile.
+        if(allowedTile==null){
+            for(city in unit.civInfo.cities){
+                allowedTile = city.getCenterTile().getTilesInDistance(1)
+                        .firstOrNull { unit.canMoveTo(it) }
+                if(allowedTile!=null) break
+            }
+        }
         unit.removeFromTile() // we "teleport" them away
-        unit.putInTile(allowedTile)
+        if(allowedTile!=null) // it's possible that there is no close tile, and all the guy's cities are full. Screw him then.
+            unit.putInTile(allowedTile)
     }
 
 }
