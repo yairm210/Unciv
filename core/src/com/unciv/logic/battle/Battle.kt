@@ -139,6 +139,7 @@ class Battle(val gameInfo:GameInfo) {
                 city.expansion.cultureStored = 0
                 city.expansion.reset()
             }
+            city.population.unassignExtraPopulation()
             city.moveToCiv(attacker.getCivilization())
         }
 
