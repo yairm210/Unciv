@@ -126,9 +126,17 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
                 kotlin.concurrent.thread {
                     if (selectedUnit.movementAlgs().canReach(tileInfo)) {
-                        selectedUnit.movementAlgs().headTowards(tileInfo)
-                        if (selectedUnit.currentTile != tileInfo)
-                            selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+                        try {
+                            // Because this is darned concurrent (as it MUST be to avoid ANRs),
+                            // there are edge cases where the canReach is true,
+                            // but until it reaches the headTowards the board has changed and so the headTowards fails.
+                            // I can't think of any way to avoid this,
+                            // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
+                            selectedUnit.movementAlgs().headTowards(tileInfo)
+                            if (selectedUnit.currentTile != tileInfo)
+                                selectedUnit.action = "moveTo " + tileInfo.position.x.toInt() + "," + tileInfo.position.y.toInt()
+                        }
+                        catch (e:Exception){}
                     }
 
                     // we don't update it directly because we're on a different thread; instead, we tell it to update itself

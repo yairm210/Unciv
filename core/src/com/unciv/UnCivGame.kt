@@ -67,6 +67,14 @@ class UnCivGame : Game() {
 
     override fun resume() {
         ImageGetter.refreshAltas()
+
+        // This is to solve a rare problem that I still on't understand its cause -
+        // Sometimes, resume() is called and the gameInfo doesn't have any civilizations.
+        // My guess is that resume() was called but create() wasn't, or perhaps was aborted too early,
+        // and the original (and empty) initial GameInfo remained.
+        if(gameInfo.civilizations.isEmpty())
+            return create()
+
         worldScreen = WorldScreen()
         setWorldScreen()
     }
