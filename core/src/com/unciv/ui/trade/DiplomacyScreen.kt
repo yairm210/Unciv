@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UnCivGame
 import com.unciv.ui.utils.*
 
-class DiplomacyScreen():CameraStageBaseScreen(){
+class DiplomacyScreen:CameraStageBaseScreen(){
 
     val leftSideTable = Table().apply { defaults().pad(10f) }
     val rightSideTable = Table()
@@ -13,7 +13,7 @@ class DiplomacyScreen():CameraStageBaseScreen(){
     init{
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         val splitPane = SplitPane(ScrollPane(leftSideTable),rightSideTable,false, skin)
-        splitPane.setSplitAmount(0.2f)
+        splitPane.splitAmount = 0.2f
 
         updateLeftSideTable()
 

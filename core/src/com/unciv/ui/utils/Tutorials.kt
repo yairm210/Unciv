@@ -17,7 +17,7 @@ import kotlin.collections.set
 
 class Tutorials{
 
-    class Tutorial(var name: String, var texts: ArrayList<String>) {}
+    class Tutorial(var name: String, var texts: ArrayList<String>)
 
     private val tutorialTexts = mutableListOf<Tutorial>()
 

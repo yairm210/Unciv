@@ -281,8 +281,5 @@ open class TileInfo {
         turnsToImprovement = improvement.getTurnsToBuild(civInfo)
     }
 
-    fun stopWorkingOnImprovement() {
-        improvementInProgress = null
-    }
     //endregion
 }

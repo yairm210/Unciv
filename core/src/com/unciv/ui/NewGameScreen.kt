@@ -129,7 +129,7 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray = Array<Int>()
-        (1..GameBasics.Nations.size-1).forEach { enemiesArray.add(it) }
+        (0..GameBasics.Nations.size).forEach { enemiesArray.add(it) }
         enemiesSelectBox.items = enemiesArray
         enemiesSelectBox.selected = newGameParameters.numberOfEnemies
 

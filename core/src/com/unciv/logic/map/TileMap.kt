@@ -119,15 +119,4 @@ class TileMap {
         }
     }
 
-    fun getShortestPathBetweenTwoTiles(from:TileInfo, to:TileInfo): ArrayList<TileInfo> {
-        val path = ArrayList<TileInfo>()
-        var currentTile = from
-        while(currentTile!=to){
-            path += currentTile
-            currentTile = currentTile.neighbors.minBy { it.arialDistanceTo(to) }!!
-        }
-        path+=to
-        return path
-    }
-
 }

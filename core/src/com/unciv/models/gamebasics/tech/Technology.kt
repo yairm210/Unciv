@@ -25,7 +25,7 @@ class Technology : ICivilopedia {
                 it.requiredTech == name &&
                         (it.uniqueTo == null || it.uniqueTo == playerCiv)
             }
-            val replacedUnits = enabledUnits.map { it.replaces }.filterNotNull()
+            val replacedUnits = enabledUnits.mapNotNull { it.replaces }
             enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
             if (enabledUnits.isNotEmpty()) {
                 lineList += "{Units enabled}: "
@@ -37,7 +37,7 @@ class Technology : ICivilopedia {
                 it.requiredTech == name &&
                         (it.uniqueTo == null || it.uniqueTo == playerCiv)
             }
-            val replacedBuildings = enabledBuildings.map { it.replaces }.filterNotNull()
+            val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
             enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
             val regularBuildings = enabledBuildings.filter { !it.isWonder }
             if (regularBuildings.isNotEmpty()) {
@@ -57,9 +57,9 @@ class Technology : ICivilopedia {
 
             val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired == name }
             if (tileImprovements.isNotEmpty())
-                lineList += "{Tile improvements enabled}: " + tileImprovements.map { it.name.tr() }.joinToString()
+                lineList += "{Tile improvements enabled}: " + tileImprovements.joinToString { it.name.tr() }
 
-            return lineList.map { it.tr() }.joinToString("\n")
+            return lineList.joinToString("\n") { it.tr() }
         }
 
     lateinit var name: String

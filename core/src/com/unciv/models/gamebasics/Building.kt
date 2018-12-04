@@ -62,7 +62,7 @@ class Building : NamedStats(), IConstruction{
         }
         if(requiredNearbyImprovedResources!=null)
             infoList += "requires worked "+requiredNearbyImprovedResources!!.joinToString("/")+" near city"
-        if(uniques.isNotEmpty()) infoList += uniques.map { it.tr() }.joinToString()
+        if(uniques.isNotEmpty()) infoList += uniques.joinToString { it.tr() }
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
         if(xpForNewUnits!=0) infoList+= "+$xpForNewUnits {XP for new units}".tr()

@@ -9,7 +9,7 @@ import com.unciv.OldGameSettings
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
 
-    fun json() = Json().apply { setIgnoreDeprecated(true); setIgnoreUnknownFields(true) } // Json() is NOT THREAD SAFE so we need to create a new one for each function
+    fun json() = Json().apply { setIgnoreDeprecated(true); ignoreUnknownFields = true } // Json() is NOT THREAD SAFE so we need to create a new one for each function
 
     fun getSave(GameName: String): FileHandle {
         return Gdx.files.local("$saveFilesFolder/$GameName")

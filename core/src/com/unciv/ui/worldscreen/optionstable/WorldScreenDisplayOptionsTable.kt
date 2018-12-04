@@ -10,7 +10,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
 
-class WorldScreenDisplayOptionsTable() : PopupTable(){
+class WorldScreenDisplayOptionsTable : PopupTable(){
     init {
         update()
     }
@@ -49,7 +49,7 @@ class WorldScreenDisplayOptionsTable() : PopupTable(){
         add(languageSelectBox).pad(10f).row()
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UnCivGame.Current.settings.language = languageSelectBox.selected.language;
+                UnCivGame.Current.settings.language = languageSelectBox.selected.language
                 UnCivGame.Current.settings.save()
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()

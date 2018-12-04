@@ -18,7 +18,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         buttonTable.pad(15f)
         val entryTable = Table()
         val splitPane = SplitPane(buttonTable, entryTable, true, CameraStageBaseScreen.skin)
-        splitPane.setSplitAmount(0.2f)
+        splitPane.splitAmount = 0.2f
         splitPane.setFillParent(true)
 
         stage.addActor(splitPane)

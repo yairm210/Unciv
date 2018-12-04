@@ -8,7 +8,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 import kotlin.math.min
 
-class NextTurnAutomation(){
+class NextTurnAutomation{
 
     fun automateCivMoves(civInfo: CivilizationInfo) {
         chooseTechToResearch(civInfo)
@@ -102,9 +102,11 @@ class NextTurnAutomation(){
             }
 
             val unitType = unit.type
-            if (unitType.isRanged()) rangedUnits.add(unit)
-            else if (unitType.isMelee()) meleeUnits.add(unit)
-            else civilianUnits.add(unit)
+            when {
+                unitType.isRanged() -> rangedUnits.add(unit)
+                unitType.isMelee() -> meleeUnits.add(unit)
+                else -> civilianUnits.add(unit)
+            }
         }
 
         for (unit in civilianUnits) UnitAutomation().automateUnitMoves(unit) // They move first so that combat units can accompany a settler

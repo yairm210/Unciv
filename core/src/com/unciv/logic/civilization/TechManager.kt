@@ -29,8 +29,6 @@ class TechManager {
         return toReturn
     }
 
-    private fun getCurrentTechnology(): Technology = GameBasics.Technologies[currentTechnology()]!!
-
     fun costOfTech(techName: String): Int {
         return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
     }

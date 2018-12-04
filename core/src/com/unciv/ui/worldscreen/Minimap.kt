@@ -45,7 +45,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
                 setScrollToTileMapHolder()
             }
             allTiles.addActor(hex)
-            tileImages.put(tileInfo,hex)
+            tileImages[tileInfo] = hex
 
             topX = Math.max(topX, hex.x + groupSize)
             topY = Math.max(topY, hex.y + groupSize)
@@ -87,7 +87,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
     }
 }
 
-class MinimapHolder(val tileMapHolder: TileMapHolder): Table(){
+class MinimapHolder(tileMapHolder: TileMapHolder): Table(){
     val minimap = Minimap(tileMapHolder)
     val worldScreen = tileMapHolder.worldScreen
 

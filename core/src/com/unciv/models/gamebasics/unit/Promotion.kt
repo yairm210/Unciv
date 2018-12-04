@@ -10,6 +10,6 @@ class Promotion : ICivilopedia, INamed{
             return effect
         }
     var prerequisites = listOf<String>()
-    lateinit var effect:String;
+    lateinit var effect:String
     var unitTypes = listOf<String>() // The json parser woulddn't agree to deserialize this as a list of UnitTypes. =(
 }

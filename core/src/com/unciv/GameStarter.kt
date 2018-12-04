@@ -10,7 +10,7 @@ import com.unciv.ui.NewGameScreen
 import com.unciv.ui.utils.getRandom
 import java.util.*
 
-class GameStarter(){
+class GameStarter{
     fun startNewGame(newGameParameters: NewGameScreen.NewGameParameters): GameInfo {
         val gameInfo = GameInfo()
 

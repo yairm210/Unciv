@@ -139,7 +139,7 @@ class CivilizationInfo {
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!isPlayerCivilization())
             cost *= gameInfo.getPlayerCivilization().getDifficulty().aiUnitMaintenanceModifier
-        if(policies.isAdopted("Autocracy")) cost = cost*0.66f
+        if(policies.isAdopted("Autocracy")) cost *= 0.66f
         return cost.toInt()
     }
 
@@ -174,7 +174,8 @@ class CivilizationInfo {
 
         if (getBuildingUniques().contains("Provides 1 happiness per social policy")) {
             if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
-            statMap["Policies"] = statMap["Policies"]!! + policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
+            statMap["Policies"] = statMap["Policies"]!! +
+                    policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
         }
 
         return statMap
@@ -187,7 +188,7 @@ class CivilizationInfo {
         val civResources = Counter<TileResource>()
         for (city in cities) civResources.add(city.getCityResources())
         for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
-        for(resource in getCivUnits().map { it.baseUnit.requiredResource }.filterNotNull().map { GameBasics.TileResources[it] })
+        for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it] })
             civResources.add(resource,-1)
         return civResources
     }

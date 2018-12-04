@@ -24,7 +24,7 @@ class GreatPersonManager {
     }
 
     fun getNewGreatPerson(): String? {
-        var greatPerson: String? = null
+        val greatPerson: String? = null
         val greatPersonPointsHashmap = greatPersonPoints.toHashMap()
         for(entry in statToGreatPersonMapping){
             if(greatPersonPointsHashmap[entry.key]!!>pointsForNextGreatPerson){

@@ -143,7 +143,8 @@ class WorkerAutomation(val unit: MapUnit) {
         return GameBasics.TileImprovements[improvementString]!!
     }
 
-
+    // todo: is this neccesary? Worker automation does something else to build roads.
+    //  Either generalize or delete
     fun constructRoadTo(destination:TileInfo) {
         val currentTile = unit.getTile()
         if (currentTile.roadStatus == RoadStatus.None) {

@@ -9,7 +9,7 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
 
     init{
         tilesToCheck.add(startingPoint)
-        tilesReached.put(startingPoint,startingPoint)
+        tilesReached[startingPoint] = startingPoint
     }
 
     fun stepToEnd(){

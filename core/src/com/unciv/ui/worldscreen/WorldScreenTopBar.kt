@@ -60,10 +60,10 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
                 .filter { it.resourceType == ResourceType.Strategic } // && civInfo.tech.isResearched(it.revealedBy!!) }
         for (resource in revealedStrategicResources) {
             val resourceImage = ImageGetter.getResourceImage(resource.name,20f)
-            resourceImages.put(resource.name, resourceImage)
+            resourceImages[resource.name] = resourceImage
             resourceTable.add(resourceImage)
             val resourceLabel = Label("0", labelSkin)
-            resourceLabels.put(resource.name, resourceLabel)
+            resourceLabels[resource.name] = resourceLabel
             resourceTable.add(resourceLabel)
         }
         resourceTable.pack()

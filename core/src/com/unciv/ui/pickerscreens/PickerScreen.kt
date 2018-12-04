@@ -41,7 +41,7 @@ open class PickerScreen : CameraStageBaseScreen() {
         scrollPane.setSize(stage.width, stage.height * screenSplit)
 
         splitPane = SplitPane(scrollPane, bottomTable, true, CameraStageBaseScreen.skin)
-        splitPane.setSplitAmount(screenSplit)
+        splitPane.splitAmount = screenSplit
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
     }

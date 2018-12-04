@@ -15,7 +15,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 
 object ImageGetter {
-    const private val whiteDotLocation = "OtherIcons/whiteDot.png"
+    private const val whiteDotLocation = "OtherIcons/whiteDot.png"
 
     // When we used to load images directly from different files, without using a texture atlas,
     // The draw() phase of the main screen would take a really long time because the BatchRenderer would

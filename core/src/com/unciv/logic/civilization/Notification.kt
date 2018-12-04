@@ -8,7 +8,7 @@ class Notification {
     var location: Vector2? = null
     var color:Color = Color.BLACK
 
-    internal constructor()
+    internal constructor() // Needed for json deserialization
 
     constructor(text: String, location: Vector2?,color: Color) {
         this.text = text

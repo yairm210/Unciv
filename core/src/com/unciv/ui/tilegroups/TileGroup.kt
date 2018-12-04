@@ -196,7 +196,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
                 // This is some crazy voodoo magic so I'll explain.
                 val images = mutableListOf<Image>()
-                borderImages.put(neighbor, images)
+                borderImages[neighbor] = images
                 for (i in -2..2) {
                     val image = ImageGetter.getImage("OtherIcons/Circle.png")
                     image.setSize(5f, 5f)
@@ -330,9 +330,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     protected fun newUnitImage(unit: MapUnit?, currentImage: Group?, isViewable: Boolean, yFromCenter: Float): Group? {
         var newImage: Group? = null
-        if (currentImage != null) { // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
-            currentImage.remove()
-        }
+        // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
+        currentImage?.remove()
 
         if (unit != null && isViewable) { // Tile is visible
             newImage = ImageGetter.getUnitImage(unit, 25f)
