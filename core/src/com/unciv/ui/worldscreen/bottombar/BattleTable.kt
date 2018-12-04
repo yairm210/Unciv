@@ -43,8 +43,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
-        if(defender==null || defender.getCivilization()==worldScreen.civInfo
-                || !(attacker.getCivilization().exploredTiles.contains(selectedTile.position) || UnCivGame.Current.viewEntireMapForDebug)) {
+        if(defender==null ||
+                defender.getCivilization()==worldScreen.civInfo
+                || !(UnCivGame.Current.viewEntireMapForDebug
+                        || attacker.getCivilization().exploredTiles.contains(selectedTile.position))) {
             hide()
             return
         }
@@ -57,7 +59,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val attackerNameWrapper = Table()
         val attackerLabel = Label(attacker.getName(), skin)
-//                .setFontColor(attacker.getCivilization().getNation().getColor())
         attackerNameWrapper.add(ImageGetter.getUnitImage(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)

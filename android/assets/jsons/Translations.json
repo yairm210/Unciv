@@ -1168,6 +1168,8 @@
 		Spanish:"Terreno inundable"
 	}
 	
+	"Impassible":{}
+	
 	// Bonus Resources
 	"Cattle":{
 		Italian:"Bestiame"
@@ -3921,6 +3923,10 @@
 		Italian:"Ironclad"
 		French:"Cuirassé"
 	}
+	
+	// Modern units
+	"Landship":{}
+	"Great War Infantry":{}
 	
 	// Great units
 	"Great Artist":{	

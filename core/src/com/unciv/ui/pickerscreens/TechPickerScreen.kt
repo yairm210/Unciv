@@ -60,13 +60,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                     topTable.add() // empty cell
 
                 else {
-                    val TB = TechButton(tech.name,civTech)
+                    val techButton = TechButton(tech.name,civTech)
 
-                    techNameToButton[tech.name] = TB
-                    TB.onClick {
+                    techNameToButton[tech.name] = techButton
+                    techButton.onClick {
                         selectTechnology(tech)
                     }
-                    topTable.add(TB)
+                    topTable.add(techButton)
                     if(eras[j].text.toString()=="") eras[j].setText((tech.era().toString()+" era").tr())
                 }
             }
@@ -93,19 +93,19 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
 
     private fun setButtonsInfo() {
         for (techName in techNameToButton.keys) {
-            val TB = techNameToButton[techName]!!
+            val techButton = techNameToButton[techName]!!
             when {
-                civTech.isResearched(techName) && techName!="Future Tech" -> TB.color = researchedTechColor
-                techsToResearch.isNotEmpty() && techsToResearch.first() == techName -> TB.color = currentTechColor
-                techsToResearch.contains(techName) -> TB.color = queuedTechColor
-                researchableTechs.contains(techName) -> TB.color = researchableTechColor
-                else -> TB.color = Color.BLACK
+                civTech.isResearched(techName) && techName!="Future Tech" -> techButton.color = researchedTechColor
+                techsToResearch.isNotEmpty() && techsToResearch.first() == techName -> techButton.color = currentTechColor
+                techsToResearch.contains(techName) -> techButton.color = queuedTechColor
+                researchableTechs.contains(techName) -> techButton.color = researchableTechColor
+                else -> techButton.color = Color.BLACK
             }
 
             var text = techName.tr()
 
             if (techName == selectedTech?.name) {
-                TB.color = TB.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
+                techButton.color = techButton.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
             }
 
             if (techsToResearch.contains(techName) && techsToResearch.size > 1) {
@@ -115,7 +115,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             if (!civTech.isResearched(techName) || techName=="Future Tech")
                 text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
 
-            TB.text.setText(text)
+            techButton.text.setText(text)
         }
     }
 

@@ -8,42 +8,60 @@ import java.util.*
 
 class Technology : ICivilopedia {
     override val description: String
-        get(){
-            val SB=StringBuilder()
-            for(unique in uniques) SB.appendln(unique.tr())
+        get() {
+            val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
+            for (unique in uniques) lineList += unique.tr()
 
-            val improvedImprovements = GameBasics.TileImprovements.values.filter { it.improvingTech==name }.groupBy { it.improvingTechStats.toString() }
+            val improvedImprovements = GameBasics.TileImprovements.values
+                    .filter { it.improvingTech == name }.groupBy { it.improvingTechStats.toString() }
             for (improvement in improvedImprovements) {
-                val impimpString = improvement.value.joinToString { it.name.tr() } +" {provide" + (if(improvement.value.size==1) "s" else "") +"} "+improvement.key
-                SB.appendln(impimpString.tr())
+                val impimpString = improvement.value.joinToString { it.name.tr() } +
+                        " {provide" + (if (improvement.value.size == 1) "s" else "") + "} " + improvement.key
+                lineList += impimpString.tr()
             }
 
-            var enabledUnits = GameBasics.Units.values.filter { it.requiredTech==name && (it.uniqueTo==null || it.uniqueTo==UnCivGame.Current.gameInfo.getPlayerCivilization().civName) }
+            val playerCiv = UnCivGame.Current.gameInfo.getPlayerCivilization().civName
+            var enabledUnits = GameBasics.Units.values.filter {
+                it.requiredTech == name &&
+                        (it.uniqueTo == null || it.uniqueTo == playerCiv)
+            }
             val replacedUnits = enabledUnits.map { it.replaces }.filterNotNull()
-            enabledUnits = enabledUnits.filter { it.name !in replacedUnits}
-            if(enabledUnits.isNotEmpty()){
-                SB.appendln("{Units enabled}: ")
-                for(unit in enabledUnits)
-                    SB.appendln(" * "+unit.name.tr() + " ("+unit.getShortDescription()+")")
+            enabledUnits = enabledUnits.filter { it.name !in replacedUnits }
+            if (enabledUnits.isNotEmpty()) {
+                lineList += "{Units enabled}: "
+                for (unit in enabledUnits)
+                    lineList += " * " + unit.name.tr() + " (" + unit.getShortDescription() + ")"
             }
 
-            var enabledBuildings = GameBasics.Buildings.values.filter { it.requiredTech==name && (it.uniqueTo==null || it.uniqueTo==UnCivGame.Current.gameInfo.getPlayerCivilization().civName) }
+            var enabledBuildings = GameBasics.Buildings.values.filter {
+                it.requiredTech == name &&
+                        (it.uniqueTo == null || it.uniqueTo == playerCiv)
+            }
             val replacedBuildings = enabledBuildings.map { it.replaces }.filterNotNull()
             enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
             val regularBuildings = enabledBuildings.filter { !it.isWonder }
-            if(regularBuildings.isNotEmpty())
-                SB.appendln("{Buildings enabled}: "+regularBuildings.map { "\n * "+it.name.tr() + " ("+it.getShortDescription()+")" }.joinToString())
+            if (regularBuildings.isNotEmpty()) {
+                lineList += "{Buildings enabled}: "
+                for (building in regularBuildings)
+                    lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
+            }
             val wonders = enabledBuildings.filter { it.isWonder }
-            if(wonders.isNotEmpty()) SB.appendln("{Wonders enabled}: "+wonders.map { "\n * "+it.name.tr()+ " ("+it.getShortDescription()+")" }.joinToString())
+            if (wonders.isNotEmpty()) {
+                lineList += "{Wonders enabled}: "
+                for (wonder in wonders)
+                    lineList += " * " + wonder.name.tr() + " (" + wonder.getShortDescription() + ")"
+            }
 
-            val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy==name }.map { it.name }.firstOrNull() // can only be one
-            if(revealedResource!=null) SB.appendln("Reveals [$revealedResource] on the map".tr())
+            val revealedResource = GameBasics.TileResources.values.filter { it.revealedBy == name }.map { it.name }.firstOrNull() // can only be one
+            if (revealedResource != null) lineList += "Reveals [$revealedResource] on the map".tr()
 
-            val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired==name }
-            if(tileImprovements.isNotEmpty()) SB.appendln("{Tile improvements enabled}: "+tileImprovements.map { it.name.tr() }.joinToString())
+            val tileImprovements = GameBasics.TileImprovements.values.filter { it.techRequired == name }
+            if (tileImprovements.isNotEmpty())
+                lineList += "{Tile improvements enabled}: " + tileImprovements.map { it.name.tr() }.joinToString()
 
-            return SB.toString().trim().tr()
+            return lineList.map { it.tr() }.joinToString("\n")
         }
+
     lateinit var name: String
 
     var cost: Int = 0

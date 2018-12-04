@@ -122,8 +122,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     open fun update(isViewable: Boolean, showResourcesAndImprovements:Boolean) {
         hideCircle()
-        if (!tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)
-                && !UnCivGame.Current.viewEntireMapForDebug) {
+        if (!UnCivGame.Current.viewEntireMapForDebug
+                && !tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
             hexagon.color = Color.BLACK
             return
         }

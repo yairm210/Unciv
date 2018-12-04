@@ -71,8 +71,8 @@ object ImageGetter {
     }
 
     val foodCircleColor =  colorFromRGB(129, 199, 132)// .GREEN.cpy().lerp(Color.WHITE,0.5f)
-    val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)
-    val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)
+    val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!
+    val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)!!
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
         val iconGroup = getImage("ImprovementIcons/$improvementName").surroundWithCircle(size)
 

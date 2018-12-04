@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.tr
 
 class VictoryScreen : PickerScreen() {
@@ -90,10 +90,10 @@ class VictoryScreen : PickerScreen() {
     }
 
     fun getMilestone(text:String, achieved:Boolean): TextButton {
-        val TB = TextButton(text,skin)
-        if(achieved) TB.setColor(Color.GREEN)
-        else TB.setColor(Color.GRAY)
-        return TB
+        val textButton = TextButton(text,skin)
+        if(achieved) textButton.color = Color.GREEN
+        else textButton.color = Color.GRAY
+        return textButton
     }
 
 

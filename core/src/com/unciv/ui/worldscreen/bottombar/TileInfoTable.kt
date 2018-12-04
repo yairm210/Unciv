@@ -19,7 +19,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
         val civInfo = worldScreen.civInfo
         columnDefaults(0).padRight(10f)
 
-        if (civInfo.exploredTiles.contains(tile.position) || UnCivGame.Current.viewEntireMapForDebug) {
+        if (UnCivGame.Current.viewEntireMapForDebug || civInfo.exploredTiles.contains(tile.position)) {
             add(getStatsTable(tile)).pad(10f)
             add(Label(tile.toString(), skin)).colspan(2)
         }

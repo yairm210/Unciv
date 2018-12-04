@@ -224,39 +224,41 @@ open class TileInfo {
     }
 
     override fun toString(): String {
-        val SB = StringBuilder()
-        val isViewableToPlayer = UnCivGame.Current.gameInfo.getPlayerCivilization().viewableTiles.contains(this)
-                || UnCivGame.Current.viewEntireMapForDebug
+        val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
+        val isViewableToPlayer = UnCivGame.Current.viewEntireMapForDebug
+                || UnCivGame.Current.gameInfo.getPlayerCivilization().viewableTiles.contains(this)
 
         if (isCityCenter()) {
             val city = getCity()!!
             var cityString = city.name
             if(isViewableToPlayer) cityString += " ("+city.health+")"
-            SB.appendln(cityString)
-            if(city.civInfo.isPlayerCivilization() || UnCivGame.Current.viewEntireMapForDebug)
-                SB.appendln(city.cityConstructions.getProductionForTileInfo())
+            lineList += cityString
+            if(UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isPlayerCivilization())
+                lineList += city.cityConstructions.getProductionForTileInfo()
         }
-        SB.appendln(this.baseTerrain.tr())
-        if (terrainFeature != null) SB.appendln(terrainFeature!!.tr())
-        if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) SB.appendln(resource!!.tr())
-        if (roadStatus !== RoadStatus.None && !isCityCenter()) SB.appendln(roadStatus.toString().tr())
-        if (improvement != null) SB.appendln(improvement!!.tr())
-        if (improvementInProgress != null && isViewableToPlayer) SB.appendln("{$improvementInProgress} in ${this.turnsToImprovement} {turns}".tr())
-        if (civilianUnit != null && isViewableToPlayer) SB.appendln(civilianUnit!!.name.tr()+" - "+civilianUnit!!.civInfo.civName.tr())
+        lineList += baseTerrain.tr()
+        if (terrainFeature != null) lineList += terrainFeature!!.tr()
+        if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) lineList += resource!!.tr()
+        if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
+        if (improvement != null) lineList += improvement!!.tr()
+        if (improvementInProgress != null && isViewableToPlayer)
+            lineList += "{$improvementInProgress} in $turnsToImprovement {turns}".tr() // todo change to [] translation notation
+        if (civilianUnit != null && isViewableToPlayer)
+            lineList += civilianUnit!!.name.tr()+" - "+civilianUnit!!.civInfo.civName.tr()
         if(militaryUnit!=null && isViewableToPlayer){
             var milUnitString = militaryUnit!!.name.tr()
             if(militaryUnit!!.health<100) milUnitString += "(" + militaryUnit!!.health + ")"
             milUnitString += " - "+militaryUnit!!.civInfo.civName.tr()
-            SB.appendln(milUnitString)
+            lineList += milUnitString
         }
         if(getDefensiveBonus()!=0f){
             var defencePercentString = (getDefensiveBonus()*100).toInt().toString()+"%"
             if(!defencePercentString.startsWith("-")) defencePercentString = "+$defencePercentString"
-            SB.appendln("[$defencePercentString] to unit defence".tr())
+            lineList += "[$defencePercentString] to unit defence".tr()
         }
-        if(getBaseTerrain().impassable) SB.appendln("Impassible")
+        if(getBaseTerrain().impassable) lineList += "Impassible".tr()
 
-        return SB.toString().trim()
+        return lineList.joinToString("\n")
     }
 
     //endregion

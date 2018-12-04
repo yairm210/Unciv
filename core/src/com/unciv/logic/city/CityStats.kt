@@ -246,11 +246,11 @@ class CityStats {
         if(roadType==RoadStatus.Road)  return cityInfo.isConnectedToCapital // this transient is not applicable to connection via railroad.
 
         val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
-        val BFS = BFS(capitalTile){it.roadStatus == roadType}
+        val bfs = BFS(capitalTile){it.roadStatus == roadType}
 
         val cityTile = cityInfo.getCenterTile()
-        BFS.stepUntilDestination(cityTile)
-        return BFS.tilesReached.containsKey(cityTile)
+        bfs.stepUntilDestination(cityTile)
+        return bfs.tilesReached.containsKey(cityTile)
     }
     //endregion
 

@@ -169,7 +169,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         for (tileGroup in tileGroups.values){
             tileGroup.update(playerViewableTilePositions.contains(tileGroup.tileInfo.position))
             val unitsInTile = tileGroup.tileInfo.getUnits()
-            if((playerViewableTilePositions.contains(tileGroup.tileInfo.position) || UnCivGame.Current.viewEntireMapForDebug)
+            if((UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(tileGroup.tileInfo.position))
                     && unitsInTile.isNotEmpty() && !unitsInTile.first().civInfo.isPlayerCivilization())
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
@@ -192,7 +192,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             for (tile in attackableTiles.filter {
                 it.getUnits().isNotEmpty()
                         && it.getUnits().first().owner != unit.owner
-                        && (playerViewableTilePositions.contains(it.position) || UnCivGame.Current.viewEntireMapForDebug)}) {
+                        && (UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position))}) {
                 if(unit.type.isCivilian()) tileGroups[tile]!!.hideCircle()
                 else {
                     tileGroups[tile]!!.showCircle(colorFromRGB(237, 41, 57))
