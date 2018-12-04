@@ -133,13 +133,15 @@ class Battle(val gameInfo:GameInfo) {
         else {
             val currentPopulation = city.population.population
             if(currentPopulation>1) city.population.population -= 1 + currentPopulation/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+            city.population.unassignExtraPopulation()
+
             city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
 
             if(!attacker.getCivilization().policies.isAdopted("Police State")) {
                 city.expansion.cultureStored = 0
                 city.expansion.reset()
             }
-            city.population.unassignExtraPopulation()
+
             city.moveToCiv(attacker.getCivilization())
         }
 
