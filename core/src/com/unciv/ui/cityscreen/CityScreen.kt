@@ -241,7 +241,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             tileTable.add(buyTileButton)
         }
         if(tile.getOwner()!=null && tile.getOwner()!!.isPlayerCivilization()
-                && tile.arialDistanceTo(city.getCenterTile()) <= 3){
+                && tile.arialDistanceTo(city.getCenterTile()) <= 3
+                && tile.neighbors.any{it.getCity()==city}){
             val transferTileButton = TextButton("Acquire".tr(),skin)
             transferTileButton.onClick { city.expansion.AcquireOwnership(tile); game.screen = CityScreen(city); dispose() }
             tileTable.add(transferTileButton)
