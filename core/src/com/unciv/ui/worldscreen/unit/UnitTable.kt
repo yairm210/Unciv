@@ -68,16 +68,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
-            unitDescriptionTable.add("Movement")
+            unitDescriptionTable.add("Movement".tr())
             unitDescriptionTable.add(unit.getMovementString()).row()
 
             if (!unit.type.isCivilian()) {
-                unitDescriptionTable.add("Strength")
+                unitDescriptionTable.add("Strength".tr())
                 unitDescriptionTable.add(unit.baseUnit().strength.toString()).row()
             }
 
             if (unit.baseUnit().rangedStrength!=0) {
-                unitDescriptionTable.add("Ranged strength")
+                unitDescriptionTable.add("Ranged strength".tr())
                 unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).row()
             }
 

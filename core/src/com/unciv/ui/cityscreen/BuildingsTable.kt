@@ -37,7 +37,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBase
             val wondersExpander = ExpanderTab("Wonders",skin)
             for (building in wonders) {
                 wondersExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
-                wondersExpander.innerTable.add(Label(building.name, skin)).pad(5f).align(Align.left).row()
+                wondersExpander.innerTable.add(Label(building.name.tr(), skin)).pad(5f).align(Align.left).row()
             }
             add(wondersExpander).row()
         }
@@ -46,7 +46,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBase
             val specialistBuildingsExpander = ExpanderTab("Specialist Buildings",skin)
             for (building in specialistBuildings) {
                 specialistBuildingsExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
-                specialistBuildingsExpander.innerTable.add(Label(building.name, skin)).pad(5f)
+                specialistBuildingsExpander.innerTable.add(Label(building.name.tr(), skin)).pad(5f)
                 val specialistIcons = Table()
                 specialistIcons.row().size(20f).pad(5f)
                 for(stat in building.specialistSlots!!.toHashMap())
@@ -65,7 +65,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBase
             val buildingsExpanderTab = ExpanderTab("Buildings",skin)
             for (building in others) {
                 buildingsExpanderTab.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
-                buildingsExpanderTab.innerTable.add(Label(building.name, skin)).pad(5f).row()
+                buildingsExpanderTab.innerTable.add(Label(building.name.tr(), skin)).pad(5f).row()
             }
             add(buildingsExpanderTab).row()
         }
