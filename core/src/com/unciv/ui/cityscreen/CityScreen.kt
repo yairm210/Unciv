@@ -240,7 +240,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             if(goldCostOfTile>city.civInfo.gold) buyTileButton.disable()
             tileTable.add(buyTileButton)
         }
-        if(tile.getOwner()!=null && tile.getOwner()!!.isPlayerCivilization()
+        if(tile.getOwner()!=null && tile.getCity()!=city
+                && tile.getOwner()!!.isPlayerCivilization()
                 && tile.arialDistanceTo(city.getCenterTile()) <= 3
                 && tile.neighbors.any{it.getCity()==city}){
             val acquireTileButton = TextButton("Acquire".tr(),skin)
