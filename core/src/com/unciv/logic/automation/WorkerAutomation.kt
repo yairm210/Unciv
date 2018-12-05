@@ -43,8 +43,9 @@ class WorkerAutomation(val unit: MapUnit) {
 
 
     fun tryConnectingCities():Boolean{ // returns whether we actually did anything
-        val citiesThatNeedConnecting = unit.civInfo.cities.filter { it.population.population>3 && !it.isCapital()
-                &&  !it.cityStats.isConnectedToCapital(RoadStatus.Road) }
+        val citiesThatNeedConnecting = unit.civInfo.cities
+                .filter { it.population.population>3 && !it.isCapital()
+                    && !it.cityStats.isConnectedToCapital(RoadStatus.Road) }
         if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
@@ -147,22 +148,19 @@ class WorkerAutomation(val unit: MapUnit) {
     //  Either generalize or delete
     fun constructRoadTo(destination:TileInfo) {
         val currentTile = unit.getTile()
-        if (currentTile.roadStatus == RoadStatus.None) {
-            currentTile.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!, unit.civInfo)
-            return
-        }
+        if (currentTile.roadStatus == RoadStatus.None)
+            return currentTile.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!, unit.civInfo)
+
         val pathToDestination = unit.movementAlgs().getShortestPath(destination)
         val destinationThisTurn = pathToDestination.first()
         val fullPathToCurrentDestination = unit.movementAlgs().getFullPathToCloseTile(destinationThisTurn)
         val firstTileWithoutRoad = fullPathToCurrentDestination.firstOrNull { it.roadStatus == RoadStatus.None && unit.canMoveTo(it) }
-        if (firstTileWithoutRoad == null) {
-            unit.moveToTile(destinationThisTurn)
-            return
-        }
+        if (firstTileWithoutRoad == null)
+            return unit.moveToTile(destinationThisTurn)
+
         unit.moveToTile(firstTileWithoutRoad)
         if (unit.currentMovement > 0)
             firstTileWithoutRoad.startWorkingOnImprovement(GameBasics.TileImprovements["Road"]!!, unit.civInfo)
     }
-
 
 }

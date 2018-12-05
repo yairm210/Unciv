@@ -97,7 +97,7 @@ class TechManager {
                         .firstOrNull { it.isCityCenter() }
                 if (closestCityTile != null) {
                     civInfo.addNotification("{"+revealedResource.name + "} {revealed near} "
-                            + closestCityTile.getCity()!!.name, tileInfo.position, Color.BLUE)
+                            + closestCityTile.getCity()!!.name, tileInfo.position, Color.BLUE) // todo change to [] notation
                     break
                 }
             }

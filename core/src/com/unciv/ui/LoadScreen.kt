@@ -66,7 +66,7 @@ class LoadScreen : PickerScreen() {
                 loadedGame.setTransients()
                 UnCivGame.Current.loadGame(loadedGame)
             }catch (ex:Exception){
-                errorLabel.setText("Could not load game from clipboard!")
+                errorLabel.setText("Could not load game from clipboard!".tr())
             }
         }
 

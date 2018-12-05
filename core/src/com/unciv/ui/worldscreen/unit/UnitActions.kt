@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
@@ -131,7 +132,7 @@ class UnitActions {
                     && tile.getTileResource().improvement == improvement
                     && unit.civInfo.tech.isResearched(GameBasics.TileImprovements[improvement]!!.techRequired!!)
             )
-                actionList += UnitAction("Create $improvement", unit.currentMovement != 0f) {
+                actionList += UnitAction("Create [$improvement]", unit.currentMovement != 0f) {
                     tile.improvement = improvement
                     unit.destroy()
                 }
@@ -139,7 +140,7 @@ class UnitActions {
 
         for(unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }){
             val improvementName = unique.replace("Can build improvement: ","")
-            actionList += UnitAction("Construct $improvementName",
+            actionList += UnitAction("Create [$improvementName]",
                     unit.currentMovement != 0f && !tile.isCityCenter(),
                     constructImprovementAndDestroyUnit(unit, improvementName))
         }
@@ -177,7 +178,10 @@ class UnitActions {
         if (unit.name == "Great Merchant" && !unit.isEmbarked()) {
             actionList += UnitAction("Conduct Trade Mission", unit.currentMovement != 0f
             ) {
-                unit.civInfo.gold += 350 // + 50 * era_number - todo!
+                // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
+                val goldGained = 350 + 50 * unit.civInfo.getEra().ordinal
+                unit.civInfo.gold += goldGained
+                unit.civInfo.addNotification("Your trade mission has earned you [$goldGained] gold!",null, Color.GOLD)
                 unit.destroy()
             }
         }

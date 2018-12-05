@@ -37,19 +37,19 @@ open class SpecialConstruction(override var name: String, override val descripti
 
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw Exception("Impossible!")
     }
 
     override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw Exception("Impossible!")
     }
 
     override fun isBuildable(construction: CityConstructions): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw Exception("Impossible!")
     }
 
     override fun postBuildEvent(construction: CityConstructions) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        throw Exception("Impossible!")
     }
 
 }

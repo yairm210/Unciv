@@ -347,6 +347,8 @@
 		Spanish:"Cargar datos copiados"
 	}
 	
+	"Could not load game from clipboard!":{}
+	
 	// New game screen
 	
 	"Start game!":{
@@ -2751,10 +2753,14 @@
 		French:"Peut créer des améliorations de ressources maritimes"
 	}
 	
+	"Create [improvementName]":{ // for unit action button - also used for "create fishing boats" and "create oil well"
+	}
+	
 	"Can start an 8-turn golden age":{
 		Italian:"Può avviare un'Età dell'Oro di 8 turni"
 		French:"Peut commencer un âge d'or de 8 tours"
 	}
+	"Start Golden Age":{} // for unit action button
 	"Can build improvement: Landmark":{
 		Italian:"Può costruire il miglioramento: Punto di Riferimento"
 		French:"Peut construire l'amélioration suivante: Point de repère"
@@ -2763,6 +2769,7 @@
 		Italian:"Può scoprire una tecnologia"
 		French:"Peut découvrir une technologie"
 	}
+	"Discover Technology":{} // for unit action button
 	"Can build improvement: Academy":{
 		Italian:"Può costruire il miglioramento: Accademia"
 		French:"Peut construire l'amélioration suivante: Académie"
@@ -2771,6 +2778,8 @@
 		Italian:"Può compiere missioni commerciali, donando grandi quantità di Oro"
 		French:"Peut entreprendre une mission commerciale qui donne une large somme en or"
 	}
+	"Conduct Trade Mission":{} // for unit action button
+	"Your trade mission has earned you [goldGained] gold!":{}
 	"Can build improvement: Customs House":{
 		Italian:"Può costruire il miglioramento: Dogana"
 		French:"Peut construire l'amélioration suivante: Douanes"
@@ -2779,6 +2788,7 @@
 		Italian:"Può accelerare la costruzione di una Meraviglia"
 		French:"Peut accélérer la construction d'une Merveille"
 	}
+	"Hurry Wonder":{} // for unit action button
 	"Can build improvement: Manufactory":{
 		Italian:"Può costruire il miglioramento: Manifattura"
 		French:"Peut construire l'amélioration suivante: Manufacture"
