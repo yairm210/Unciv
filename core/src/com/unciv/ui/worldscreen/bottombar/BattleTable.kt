@@ -59,15 +59,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         val attackerNameWrapper = Table()
         val attackerLabel = Label(attacker.getName(), skin)
-        attackerNameWrapper.add(ImageGetter.getUnitImage(attacker.unit,25f)).padRight(5f)
+        attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
         val defenderLabel = Label(defender.getName(), skin)
-//                .setFontColor(defender.getCivilization().getNation().getColor())
         if(defender is MapUnitCombatant)
-            defenderNameWrapper.add(ImageGetter.getUnitImage(defender.unit,25f)).padRight(5f)
+            defenderNameWrapper.add(UnitGroup(defender.unit,25f)).padRight(5f)
 
         defenderNameWrapper.add(defenderLabel)
         add(defenderNameWrapper).row()

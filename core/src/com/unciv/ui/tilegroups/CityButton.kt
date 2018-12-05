@@ -72,7 +72,7 @@ class CityButton(val city: CityInfo, skin: Skin): Table(skin){
         val groupHeight = 25f
         group.setSize(40f,groupHeight)
 
-        val circle = ImageGetter.getImage("OtherIcons/Circle")
+        val circle = ImageGetter.getCircle()
         circle.setSize(25f,25f)
         val image = ImageGetter.getConstructionImage(cityConstructions.currentConstruction)
         image.setSize(18f,18f)

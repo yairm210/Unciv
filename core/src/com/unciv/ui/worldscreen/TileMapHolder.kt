@@ -108,16 +108,16 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     private fun addMoveHereButtonToTile(selectedUnit: MapUnit, tileInfo: TileInfo, tileGroup: WorldTileGroup) {
         val size = 60f
         val moveHereButton = Group().apply { width = size;height = size; }
-        moveHereButton.addActor(ImageGetter.getImage("OtherIcons/Circle").apply { width = size; height = size })
+        moveHereButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
         moveHereButton.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereButton) })
 
         val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size
-        val numberCircle = ImageGetter.getImage("OtherIcons/Circle").apply { width = size / 2; height = size / 2;color = Color.BLUE }
+        val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)
         moveHereButton.addActor(Label(turnsToGetThere.toString(), CameraStageBaseScreen.skin)
                 .apply { center(numberCircle); setFontColor(Color.WHITE) })
 
-        val unitIcon = ImageGetter.getUnitImage(selectedUnit, size / 2)
+        val unitIcon = UnitGroup(selectedUnit, size / 2)
         unitIcon.y = size - unitIcon.height
         moveHereButton.addActor(unitIcon)
 
@@ -176,7 +176,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
-            tileGroups[unit.getTile()]!!.addWhiteHaloAroundUnit(unit)
+            tileGroups[unit.getTile()]!!.selectUnit(unit)
 
             for(tile: TileInfo in unit.getDistanceToTiles().keys)
                 if(unit.canMoveTo(tile))

@@ -22,7 +22,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
                     .setFontSize(14)
             val minitable = Table()
 
-            minitable.add(ImageGetter.getImage("OtherIcons/Circle.png")
+            minitable.add(ImageGetter.getCircle()
                     .apply { color=notification.color }).size(10f).pad(5f)
             minitable.background(ImageGetter.getDrawable("OtherIcons/civTableBackground.png"))
             minitable.add(label).pad(3f).padRight(10f)

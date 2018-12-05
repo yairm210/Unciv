@@ -13,6 +13,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
@@ -26,10 +27,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     var populationImage: Image? = null //reuse for acquire icon
     private val roadImages = HashMap<TileInfo, RoadImage>()
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
-    protected var civilianUnitImage: Group? = null
-    protected var militaryUnitImage: Group? = null
-    private val circleImage = ImageGetter.getImage("OtherIcons/Circle.png") // for blue and red circles on the tile
-    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for blue and red circles on the tile
+    protected var civilianUnitImage: UnitGroup? = null
+    protected var militaryUnitImage: UnitGroup? = null
+    private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
+    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targeted
     protected val fogImage = ImageGetter.getImage("TerrainIcons/CrosshatchHexagon")
     var yieldGroup = YieldGroup()
 
@@ -210,7 +211,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 val images = mutableListOf<Image>()
                 borderImages[neighbor] = images
                 for (i in -2..2) {
-                    val image = ImageGetter.getImage("OtherIcons/Circle.png")
+                    val image = ImageGetter.getCircle()
                     image.setSize(5f, 5f)
                     image.center(this)
                     // in addTiles, we set the position of groups by relative world position *0.8*groupSize, filter groupSize = 50
@@ -340,13 +341,17 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    protected fun newUnitImage(unit: MapUnit?, currentImage: Group?, isViewable: Boolean, yFromCenter: Float): Group? {
-        var newImage: Group? = null
+    protected fun newUnitImage(unit: MapUnit?, oldUnitGroup: UnitGroup?, isViewable: Boolean, yFromCenter: Float): UnitGroup? {
+        var newImage: UnitGroup? = null
         // The unit can change within one update - for instance, when attacking, the attacker replaces the defender!
-        currentImage?.remove()
+        oldUnitGroup?.remove()
 
         if (unit != null && isViewable) { // Tile is visible
-            newImage = ImageGetter.getUnitImage(unit, 25f)
+            newImage = UnitGroup(unit, 25f)
+            if(oldUnitGroup?.blackSpinningCircle != null){
+                newImage.blackSpinningCircle = ImageGetter.getCircle()
+                        .apply { rotation= oldUnitGroup.blackSpinningCircle!!.rotation}
+            }
             addActor(newImage)
             newImage.center(this)
             newImage.y += yFromCenter

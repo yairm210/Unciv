@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 
 class IconCircleGroup(size:Float, val image: Actor): Group(){
-    val circle = ImageGetter.getImage("OtherIcons/Circle").apply { setSize(size, size) }
+    val circle = ImageGetter.getCircle().apply { setSize(size, size) }
     init {
         setSize(size, size)
         addActor(circle)

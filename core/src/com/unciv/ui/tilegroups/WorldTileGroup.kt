@@ -5,28 +5,21 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 
 
 class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: CityButton? = null
 
-    fun addWhiteHaloAroundUnit(unit: MapUnit) {
-        val whiteHalo = ImageGetter.getBackgroundImageForUnit(unit)
-        whiteHalo.setSize(30f,30f)
-        val unitImage = if(unit.type.isCivilian()) civilianUnitImage
-                        else militaryUnitImage
-        if(unitImage==null) //Stuff has changed since we requested this, the unit is no longer here...
-            return
-        whiteHalo.center(unitImage)
-        unitImage.addActor(whiteHalo)
-        whiteHalo.toBack()
+    fun selectUnit(unit: MapUnit) {
+        val unitImage = if (unit.type.isCivilian()) civilianUnitImage
+        else militaryUnitImage
+        unitImage?.selectUnit()
     }
 
-    init{
+    init {
         yieldGroup.center(this)
-        yieldGroup.moveBy(-22f,0f)
+        yieldGroup.moveBy(-22f, 0f)
     }
 
 
@@ -46,7 +39,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
                 UnCivGame.Current.settings.showResourcesAndImprovements)
 
         yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
-        if(yieldGroup.isVisible)
+        if (yieldGroup.isVisible)
             yieldGroup.setStats(tileInfo.getTileStats(UnCivGame.Current.gameInfo.getPlayerCivilization()))
 
         // order by z index!
@@ -63,14 +56,14 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
 
     private fun updateCityButton(city: CityInfo?, viewable: Boolean) {
-        if(city==null && cityButton!=null)// there used to be a city here but it was razed
+        if (city == null && cityButton != null)// there used to be a city here but it was razed
         {
             cityButton!!.remove()
-            cityButton=null
+            cityButton = null
         }
         if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
-                cityButton = CityButton(city,CameraStageBaseScreen.skin)
+                cityButton = CityButton(city, CameraStageBaseScreen.skin)
                 addActor(cityButton)
                 toFront() // so this tile is rendered over neighboring tiles
             }
@@ -80,5 +73,4 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
 
         }
     }
-
 }

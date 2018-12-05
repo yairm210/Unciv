@@ -1,10 +1,15 @@
 package com.unciv.ui.utils
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.unciv.logic.map.MapUnit
 
-class UnitImage(val unit: MapUnit, val size: Float): Group() {
+class UnitGroup(val unit: MapUnit, val size: Float): Group() {
+    var blackSpinningCircle:Image?=null
+
     init {
         val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.getNation().getSecondaryColor())
                 .apply { setSize(size * 0.75f, size * 0.75f) }
@@ -31,5 +36,27 @@ class UnitImage(val unit: MapUnit, val size: Float): Group() {
             unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield.png")
             else -> ImageGetter.getCircle()
         }
+    }
+
+
+    fun selectUnit() {
+        val whiteHalo = getBackgroundImageForUnit(unit)
+        val whiteHaloSize = 30f
+        whiteHalo.setSize(whiteHaloSize, whiteHaloSize)
+        whiteHalo.center(this)
+        addActor(whiteHalo)
+        whiteHalo.toBack()
+
+
+        val spinningCircle = if (blackSpinningCircle != null) blackSpinningCircle!!
+        else ImageGetter.getCircle()
+        spinningCircle.setSize(5f, 5f)
+        spinningCircle.color = Color.BLACK
+        spinningCircle.center(this)
+        spinningCircle.x += whiteHaloSize / 2 // to edge of white halo
+        spinningCircle.setOrigin(spinningCircle.width / 2 - whiteHaloSize / 2, spinningCircle.height / 2)
+        addActor(spinningCircle)
+        spinningCircle.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.rotateBy(90f, 1f)))
+        blackSpinningCircle = spinningCircle
     }
 }
