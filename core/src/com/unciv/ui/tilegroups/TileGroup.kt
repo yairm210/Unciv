@@ -23,7 +23,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     var resourceImage: Actor? = null
     var improvementImage: Actor? = null
-    var populationImage: Image? = null
+    var populationImage: Image? = null //reuse for acquire icon
     private val roadImages = HashMap<TileInfo, RoadImage>()
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
     protected var civilianUnitImage: Group? = null
@@ -98,6 +98,18 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         hexagon.center(this)
         hexagon.zIndex = 0
         addActor(hexagon)
+    }
+
+    fun addAcquirableIcon(){
+        this.
+        populationImage = ImageGetter.getStatIcon("Acquire")
+        populationImage!!.run {
+            color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
+            setSize(20f, 20f)
+            center(this@TileGroup)
+            x += 20 // right
+        }
+        addActor(populationImage)
     }
 
     fun addPopulationIcon() {
