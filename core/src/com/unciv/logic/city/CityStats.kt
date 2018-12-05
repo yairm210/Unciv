@@ -316,7 +316,8 @@ class CityStats {
         baseStatList = newBaseStatList
 
         val newCurrentCityStats = Stats() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
-        for (stat in baseStatList.values) newCurrentCityStats.add(stat)
+        if (cityInfo.resistanceCounter <= 0)
+            for (stat in baseStatList.values) newCurrentCityStats.add(stat)
 
         if(newCurrentCityStats.production<1) newCurrentCityStats.production=1f
         currentCityStats = newCurrentCityStats
