@@ -62,7 +62,8 @@ class CivilopediaScreen : CameraStageBaseScreen() {
             buttons.add(button)
             val buttonClicked = {
                 val newArray = Array<ICivilopedia>()
-                for (civilopediaEntry in map[str]!!) newArray.add(civilopediaEntry)
+                for (civilopediaEntry in map[str]!!.sortedBy { it.toString() })  // Alphabetical order
+                    newArray.add(civilopediaEntry)
                 nameList.setItems(newArray)
                 nameList.selected = nameList.items.get(0)
                 label.setText(nameList.selected.description)
