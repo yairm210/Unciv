@@ -158,8 +158,13 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
             // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
             if (tileInfo.getCity()!=city) { // outside of city
-                tileGroup.setColor(0f, 0f, 0f, 0.3f)
-                tileGroup.yieldGroup.isVisible = false
+                if(city.canAcquireTile(tileInfo)){
+                    tileGroup.addAcquirableIcon()
+                    tileGroup.yieldGroup.isVisible = false
+                } else {
+                    tileGroup.setColor(0f, 0f, 0f, 0.3f)
+                    tileGroup.yieldGroup.isVisible = false
+                }
             } else if(tileInfo !in tilesInRange){ // within city but not close enough to be workable
                 tileGroup.yieldGroup.isVisible = false
             }
@@ -240,10 +245,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             if(goldCostOfTile>city.civInfo.gold) buyTileButton.disable()
             tileTable.add(buyTileButton)
         }
-        if(tile.getOwner()!=null && tile.getCity()!=city
-                && tile.getOwner()!!.isPlayerCivilization()
-                && tile.arialDistanceTo(city.getCenterTile()) <= 3
-                && tile.neighbors.any{it.getCity()==city}){
+        if(city.canAcquireTile(tile)){
             val acquireTileButton = TextButton("Acquire".tr(),skin)
             acquireTileButton.onClick { city.expansion.takeOwnership(tile); game.screen = CityScreen(city); dispose() }
             tileTable.add(acquireTileButton)
