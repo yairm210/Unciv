@@ -209,5 +209,16 @@ class CityInfo {
             cityConstructions.removeBuilding(building.name)
         isBeingRazed=false
     }
+
+    fun canAcquireTile(newTileInfo: TileInfo): Boolean {
+        val owningCity = newTileInfo.getCity()
+        if (owningCity!=null && owningCity!=this
+                && newTileInfo.getOwner()!!.isPlayerCivilization()
+                && newTileInfo.arialDistanceTo(getCenterTile()) <= 3
+                && newTileInfo.neighbors.any{it.getCity()==this}) {
+            return true
+        }
+        return false
+    }
     //endregion
 }

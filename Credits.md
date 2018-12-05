@@ -377,4 +377,4 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
 * [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
-
+* [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe, AU

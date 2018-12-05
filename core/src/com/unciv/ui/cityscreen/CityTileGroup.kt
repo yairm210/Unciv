@@ -46,7 +46,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
             populationImage!!.setPosition(width / 2 - populationImage!!.width / 2,
                     height * 0.85f - populationImage!!.height / 2)
 
-            if (tileInfo.isWorked()) {
+            if (tileInfo.isWorked() || city.canAcquireTile(tileInfo)) {
                 populationImage!!.color = Color.WHITE
             }
             else if(!tileInfo.isCityCenter()){
