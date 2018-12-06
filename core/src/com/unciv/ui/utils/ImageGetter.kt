@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
+import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 
@@ -162,5 +163,31 @@ object ImageGetter {
         healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
         healthBar.pack()
         return healthBar
+    }
+
+    fun getLine(startX:Float,startY:Float,endX:Float,endY:Float, width:Float): Image {
+        /** The simplest way to draw a line between 2 points seems to be:
+         * A. Get a pixel dot, set its width to the required length (hypotenuse)
+         * B. Set its rotational center, and set its rotation
+         * C. Center it on the point where you want its center to be
+         */
+
+        // A
+        val line = getWhiteDot()
+        val deltaX = (startX-endX).toDouble()
+        val deltaY = (startY-endY).toDouble()
+        line.width = Math.sqrt(deltaX*deltaX+deltaY*deltaY).toFloat()
+        line.height = width // the width of the line, is the height of the
+
+        // B
+        line.setOrigin(Align.center)
+        val radiansToDegrees = 180 / Math.PI
+        line.rotation = (Math.atan2(deltaY, deltaX) * radiansToDegrees).toFloat()
+
+        // C
+        line.x = (startX+endX)/2 - line.width/2
+        line.y = (startY+endY)/2 - line.height/2
+
+        return line
     }
 }

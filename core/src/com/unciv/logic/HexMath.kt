@@ -7,7 +7,7 @@ import kotlin.math.max
 
 class HexMath {
 
-    private fun getVectorForAngle(angle: Float): Vector2 {
+    fun getVectorForAngle(angle: Float): Vector2 {
         return Vector2(Math.sin(angle.toDouble()).toFloat(), Math.cos(angle.toDouble()).toFloat())
     }
 

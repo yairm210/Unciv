@@ -1,12 +1,17 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
+import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.ui.utils.*
@@ -65,6 +70,16 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.center(stage)
         }
         topTable.add(setUnitsButton )
+
+
+        val setDiplomacyButton = TextButton("Diplomacy".tr(),skin)
+        setDiplomacyButton.onClick {
+            centerTable.clear()
+            centerTable.add(createDiplomacyGroup()).height(stage.height*0.8f)
+            centerTable.pack()
+            centerTable.center(stage)
+        }
+        topTable.add(setDiplomacyButton )
 
         topTable.pack()
         topTable.width = stage.width
@@ -257,5 +272,50 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         }
         table.pack()
         return table
+    }
+
+    fun createDiplomacyGroup(): Group {
+        val relevantCivs = civInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() }
+        val groupSize = 500f
+        val group = Group()
+        group.setSize(groupSize,groupSize)
+        val civGroups = HashMap<CivilizationInfo,Actor>()
+        for(i in 0 until relevantCivs.size){
+            val civ = relevantCivs[i]
+
+
+            val civGroup = Table()
+            civGroup.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+                    .tint(civ.getNation().getColor())
+            val label = Label(civ.civName, CameraStageBaseScreen.skin)
+            label.setFontColor(civ.getNation().getSecondaryColor())
+            civGroup.add(label).pad(10f)
+            civGroup.pack()
+
+            val vector = HexMath().getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
+            civGroup.center(group)
+            civGroup.moveBy(vector.x*groupSize/3, vector.y*groupSize/3)
+
+            civGroups[civ]=civGroup
+            group.addActor(civGroup)
+        }
+
+        for(civ in relevantCivs)
+            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() }){
+                val civGroup = civGroups[civ]!!
+                val otherCivGroup = civGroups[diplomacy.otherCiv()]!!
+
+                val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
+                        otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
+
+                statusLine.color = if(diplomacy.diplomaticStatus==DiplomaticStatus.War) Color.RED
+                else Color.GREEN
+
+                group.addActor(statusLine)
+                statusLine.toBack()
+            }
+
+
+        return group
     }
 }
