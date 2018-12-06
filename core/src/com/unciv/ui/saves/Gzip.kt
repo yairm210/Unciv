@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv.ui.saves
 
 import com.badlogic.gdx.utils.Base64Coder
 import java.io.BufferedReader

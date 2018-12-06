@@ -1,4 +1,4 @@
-package com.unciv.ui
+package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color

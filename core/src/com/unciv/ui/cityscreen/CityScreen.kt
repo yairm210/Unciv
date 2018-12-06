@@ -233,7 +233,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         statsTable.defaults().pad(2f)
         for (entry in stats.toHashMap().filterNot { it.value==0f }) {
             statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            statsTable.add(Label(Math.round(entry.value).toString() + "", CameraStageBaseScreen.skin))
+            statsTable.add(Label(Math.round(entry.value).toString(), CameraStageBaseScreen.skin))
             statsTable.row()
         }
         tileTable.add(statsTable).row()
