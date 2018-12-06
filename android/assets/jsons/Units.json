@@ -264,6 +264,20 @@
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
 		hurryCostModifier:20
 	},
+	{
+		name:"Camel Archer",
+		replaces:"Knight",
+		uniqueTo:"Arabia",
+		unitType:"Mounted",
+		movement:4,
+		strength:17,
+		rangedStrength:21,
+		cost: 120,
+		requiredTech:"Chivalry",
+		requiredResource:"Horses",
+		uniques:["Can move after attacking","No defensive terrain bonus"],
+		hurryCostModifier:20
+	},
 	
 	// Rennaisance Era
 

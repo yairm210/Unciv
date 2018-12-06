@@ -278,7 +278,7 @@ class CityStats {
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
         newStatPercentBonusList["Difficulty"]=getStatPercentBonusesFromDifficulty()
 
-        if(UnCivGame.Current.SuperchagedForDebug) {
+        if(UnCivGame.Current.superchagedForDebug) {
             val stats = Stats()
             for(stat in Stat.values()) stats.add(stat,10000f)
             newStatPercentBonusList["Supercharged"] = stats

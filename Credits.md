@@ -44,6 +44,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Sail boat](https://thenounproject.com/term/sail-boat/5292/) By Alessandro Suraci for Caravel
 * [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
 * [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski for Musketman
+* [Black powder musket](https://thenounproject.com/term/black-powder-musket/1202078/) By Jarem Fyre for Minuteman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
@@ -306,6 +307,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Casting](https://thenounproject.com/term/casting/10773/) By Jasmine Rae Friedrich
 * [Bar association](https://thenounproject.com/term/bar-association/217443/) By Miroslav Kurdov for Guilds
 * [Knight](https://thenounproject.com/term/knight/1026633/) By Robert Bjurshagen for Chivalry
+* [Camel](https://thenounproject.com/search/?q=camel&i=1210751) By Orin Zuu for Camel Archer
 * [Machinery](https://thenounproject.com/term/machinery/1170931/) By Greenhill
 * [Lever](https://thenounproject.com/term/lever/4927/) By Jakob Ukrop for Physics
 * [Sword](https://thenounproject.com/term/sword/1365080/) By Jonathan P Lambert for Steel
