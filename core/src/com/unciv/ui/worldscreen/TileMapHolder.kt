@@ -192,8 +192,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 
-        if(moveHereButtonDto!=null)
+        if(moveHereButtonDto!=null) {
             addMoveHereButtonToTile(moveHereButtonDto!!, tileGroups[moveHereButtonDto!!.tileInfo]!!)
+            moveHereButtonDto=null
+        }
 
         if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
