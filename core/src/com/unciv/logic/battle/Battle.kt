@@ -143,6 +143,8 @@ class Battle(val gameInfo:GameInfo) {
             }
 
             city.moveToCiv(attacker.getCivilization())
+            city.resistanceCounter = city.population.population
+            city.cityStats.update()
         }
 
         if(city.cityConstructions.isBuilt("Palace")){

@@ -42,6 +42,11 @@ class CityButton(val city: CityInfo, skin: Skin): Table(skin){
             add(healthBar).colspan(3).row()
         }
 
+        if(city.resistanceCounter > 0){
+            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance.png")
+            add(resistanceImage).size(20f).pad(2f).padLeft(5f)
+        }
+
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
             add(fireImage).size(20f).pad(2f).padLeft(5f)

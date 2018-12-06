@@ -21,6 +21,7 @@ class CityInfo {
     var location: Vector2 = Vector2.Zero
     var name: String = ""
     var health = 200
+    var resistanceCounter = 0
 
     var population = PopulationManager()
     var cityConstructions = CityConstructions()
@@ -182,6 +183,7 @@ class CityInfo {
             }
         }
         else population.nextTurn(stats.food)
+        if (resistanceCounter > 0) resistanceCounter--
 
         if(this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
