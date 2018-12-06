@@ -444,7 +444,7 @@ class SpecificUnitAutomation{
             unit.movementAlgs().headTowards(chosenTile)
             if(unit.currentTile==chosenTile && unit.currentMovement>0)
                 UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
-                        .first { it.name.startsWith("Construct") }.action()
+                        .first { it.name.startsWith("Create") }.action()
             return
         }
 
