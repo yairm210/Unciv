@@ -57,7 +57,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         val resourceTable = Table()
         resourceTable.defaults().pad(5f)
         val revealedStrategicResources = GameBasics.TileResources.values
-                .filter { it.resourceType == ResourceType.Strategic } // && civInfo.tech.isResearched(it.revealedBy!!) }
+                .filter { it.resourceType == ResourceType.Strategic } // && playerCivInfo.tech.isResearched(it.revealedBy!!) }
         for (resource in revealedStrategicResources) {
             val resourceImage = ImageGetter.getResourceImage(resource.name,20f)
             resourceImages[resource.name] = resourceImage

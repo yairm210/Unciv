@@ -12,7 +12,9 @@ import com.unciv.ui.utils.tr
 
 class VictoryScreen : PickerScreen() {
 
-    val civInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
+    // todo translate this screen
+
+    val playerCivInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
 
     init {
         topTable.skin=skin
@@ -31,17 +33,17 @@ class VictoryScreen : PickerScreen() {
 
         rightSideButton.isVisible=false
 
-        if(civInfo.scienceVictory.hasWon()){
+        if(playerCivInfo.scienceVictory.hasWon()){
             descriptionLabel.setText("You have won a scientific victory!")
             won()
         }
 
-        if(civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3){
+        if(playerCivInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3){
             descriptionLabel.setText("You have won a cultural victory!")
             won()
         }
 
-        if(civInfo.gameInfo.civilizations.all { it.isPlayerCivilization() || it.isDefeated() }){
+        if(playerCivInfo.gameInfo.civilizations.all { it.isPlayerCivilization() || it.isDefeated() }){
             descriptionLabel.setText("You have won a conquest victory!")
             won()
         }
@@ -58,9 +60,9 @@ class VictoryScreen : PickerScreen() {
     fun scienceVictoryColumn():Table{
         val t = Table()
         t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program",civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts"))).row()
+        t.add(getMilestone("Built Apollo Program",playerCivInfo.getBuildingUniques().contains("Enables construction of Spaceship parts"))).row()
 
-        val scienceVictory = civInfo.scienceVictory
+        val scienceVictory = playerCivInfo.scienceVictory
 
         for (key in scienceVictory.requiredParts.keys)
             for (i in 0 until scienceVictory.requiredParts[key]!!)
@@ -74,7 +76,7 @@ class VictoryScreen : PickerScreen() {
         t.defaults().pad(5f)
         for(branch in GameBasics.PolicyBranches.values) {
             val finisher = branch.policies.last().name
-            t.add(getMilestone(finisher, civInfo.policies.isAdopted(finisher))).row()
+            t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
         }
         return t
     }
@@ -82,9 +84,12 @@ class VictoryScreen : PickerScreen() {
     fun conquestVictoryColumn():Table{
         val t=Table()
         t.defaults().pad(5f)
-        for (civ in civInfo.gameInfo.civilizations){
-            if(civ.isPlayerCivilization() || civ.isBarbarianCivilization()) continue
-            t.add(getMilestone("Destroy "+civ.civName, civ.isDefeated())).row()
+        for (civ in playerCivInfo.gameInfo.civilizations) {
+            if (civ.isPlayerCivilization() || civ.isBarbarianCivilization()) continue
+            val civName =
+                    if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
+                    else "???"
+            t.add(getMilestone("Destroy $civName", civ.isDefeated())).row()
         }
         return t
     }
