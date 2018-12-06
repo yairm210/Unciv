@@ -57,6 +57,9 @@ class MapUnit {
                 && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
+        if(type.isWaterUnit() && civInfo.getNation().unique=="+2 movement for all naval units")
+            movement+=2
+        
         return movement
     }
 

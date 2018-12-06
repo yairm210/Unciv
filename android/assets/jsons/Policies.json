@@ -18,7 +18,7 @@
 			},
 			{
 				name:"Oligarchy",
-				description:"Units in cities cost no maintainance",
+				description:"Units in cities cost no Maintenance",
 				row:1,
 				column:5
 			},
@@ -179,7 +179,7 @@
 		policies:[
 			{
 				name:"Trade Unions",
-				description:"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes",
+				description:"Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes",
 				row:1,
 				column:2
 			},

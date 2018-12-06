@@ -318,6 +318,20 @@
 		hurryCostModifier:20
 	},
 	{
+		name:"Minuteman",
+		unitType:"Melee",
+		replaces:"Musketman",
+		uniqueTo:"America",
+		movement:2,
+		strength:24,
+		cost: 150,
+		requiredTech:"Gunpowder",
+		upgradesTo:"Rifleman"
+		obsoleteTech:"Rifling",
+		uniques:["Bonus vs units in rough terrain 15%","Ignores terrain cost"]
+		hurryCostModifier:20
+	},
+	{
 		name:"Frigate",
 		unitType:"WaterRanged",
 		movement:5,

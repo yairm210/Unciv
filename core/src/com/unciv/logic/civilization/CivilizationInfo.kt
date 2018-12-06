@@ -134,7 +134,7 @@ class CivilizationInfo {
         var unitsToPayFor = getCivUnits()
         if(policies.isAdopted("Oligarchy")) unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
         val totalPaidUnits = max(0,unitsToPayFor.count()-freeUnits)
-        val gameProgress = gameInfo.turns/400f // as game progresses maintainance cost rises
+        val gameProgress = gameInfo.turns/400f // as game progresses Maintenance cost rises
         var cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!isPlayerCivilization())

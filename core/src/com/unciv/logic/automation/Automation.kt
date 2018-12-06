@@ -62,7 +62,7 @@ class Automation {
 
             val goldBuildings = buildableNotWonders.filter { it.gold>0 }
             val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }.sortedBy { it.maintenance }
-            val zeroMaintainanceBuildings = buildableNotWonders.filter { it.maintenance == 0 && it !in wartimeBuildings }
+            val zeroMaintenanceBuildings = buildableNotWonders.filter { it.maintenance == 0 && it !in wartimeBuildings }
             val isAtWar = cityInfo.civInfo.isAtWar()
 
             when {
@@ -77,7 +77,7 @@ class Automation {
                 buildableNotWonders.any { it.name=="Market"} -> currentConstruction = "Market"
                 militaryUnits==0 -> trainCombatUnit(cityInfo)
                 workers==0 -> currentConstruction = CityConstructions.Worker
-                zeroMaintainanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintainanceBuildings.getRandom().name
+                zeroMaintenanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintenanceBuildings.getRandom().name
                 isAtWar && militaryUnits<cities -> trainCombatUnit(cityInfo)
                 isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.getRandom().name
                 workers<cities/2 -> currentConstruction = CityConstructions.Worker

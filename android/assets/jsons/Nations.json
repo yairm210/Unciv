@@ -35,6 +35,7 @@
 		name:"England",
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
+		unique:"+2 movement for all naval units"
 		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
 			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]

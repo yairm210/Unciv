@@ -4027,7 +4027,7 @@
 		Russian:"Олигархия"
 		Spanish:"Oligarquía"
 	}
-	"Units in cities cost no maintainance":{
+	"Units in cities cost no Maintenance":{
 		Italian:"Nessuna manutenzione per le unità nelle città"
 		Russian:"Юниты в городах содержаться бесплатно"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento"
@@ -4274,7 +4274,7 @@
 		Russian:"Караваны фургонов"
 		Spanish:"Sindicatos"
 	}
-	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
+	"Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
 		Italian:"-33% manutenzioni su strade e ferrovie, +2 oro per ogni rotta commerciale"
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"

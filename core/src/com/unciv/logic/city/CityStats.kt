@@ -1,5 +1,6 @@
 package com.unciv.logic.city
 
+import com.unciv.UnCivGame
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.Building
@@ -275,7 +276,14 @@ class CityStats {
         newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
-        newStatPercentBonusList["Difficutly"]=getStatPercentBonusesFromDifficulty()
+        newStatPercentBonusList["Difficulty"]=getStatPercentBonusesFromDifficulty()
+
+        if(UnCivGame.Current.SuperchagedForDebug) {
+            val stats = Stats()
+            for(stat in Stat.values()) stats.add(stat,10000f)
+            newStatPercentBonusList["Supercharged"] = stats
+        }
+
         statPercentBonusList=newStatPercentBonusList
 
         val statPercentBonuses = Stats()
@@ -310,8 +318,8 @@ class CityStats {
         if (!newBaseStatList.containsKey("Policies")) newBaseStatList["Policies"] = Stats()
         newBaseStatList["Policies"]!!.food += getGrowthBonusFromPolicies() * excessFood
 
-        val buildingsMaintainance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        newBaseStatList["Maintenance"] = Stats().apply { gold = -buildingsMaintainance }
+        val buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
+        newBaseStatList["Maintenance"] = Stats().apply { gold = -buildingsMaintenance }
 
         baseStatList = newBaseStatList
 
