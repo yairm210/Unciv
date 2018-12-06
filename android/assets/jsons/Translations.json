@@ -3038,6 +3038,7 @@
 	}
 
 	//world size
+	"Tiny":{}
 	"Small":{	
 		Italian:"Piccolo"
 		Russian:"Маленький"
