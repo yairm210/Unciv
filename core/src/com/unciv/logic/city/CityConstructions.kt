@@ -188,9 +188,11 @@ class CityConstructions {
     fun addCultureBuilding() {
         val cultureBuildingToBuild = listOf("Monument", "Temple", "Opera House", "Museum").firstOrNull { !builtBuildings.contains(it) }
         if (cultureBuildingToBuild == null) return
-        builtBuildings.add(cultureBuildingToBuild)
-        if (currentConstruction == cultureBuildingToBuild)
+        addBuilding(cultureBuildingToBuild)
+        if (currentConstruction == cultureBuildingToBuild) {
+            currentConstruction=""
             Automation().chooseNextConstruction(this)
+        }
     }
 
     fun chooseNextConstruction() {
