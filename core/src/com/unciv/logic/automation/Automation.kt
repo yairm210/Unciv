@@ -4,18 +4,36 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.CityStats
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import kotlin.math.max
 import kotlin.math.sqrt
 
 class Automation {
 
-    internal fun rankTile(tile: TileInfo, civInfo: CivilizationInfo): Float {
+    internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
+        if (tile == null) return 0.0f
         val stats = tile.getTileStats(null, civInfo)
+        var rank = rankStatsValue(stats, civInfo)
+        if (tile.improvement == null) rank += 0.5f // improvement potential!
+        if (tile.hasViewableResource(civInfo)) rank += 1.0f
+        return rank
+    }
+
+    internal fun rankSpecialist(stats: Stats?, civInfo: CivilizationInfo): Float {
+        if (stats == null) return 0.0f
+        var rank = rankStatsValue(stats, civInfo)
+        rank += 0.3f //GPP bonus
+        return rank
+    }
+
+    fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
         if (stats.food <= 2) rank += stats.food
         else rank += (2 + (stats.food - 2) / 2) // 1 point for each food up to 2, from there on half a point
@@ -26,8 +44,6 @@ class Automation {
         rank += stats.production
         rank += stats.science
         rank += stats.culture
-        if (tile.improvement == null) rank += 0.5f // improvement potential!
-        if (tile.hasViewableResource(civInfo)) rank += 1.0f
         return rank
     }
 
