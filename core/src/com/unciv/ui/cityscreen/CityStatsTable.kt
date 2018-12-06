@@ -38,6 +38,9 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
                 + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")")
         cityStatsValues["Population"] = city.population.getFreePopulation().toString() + "/" + city.population.population
         cityStatsValues["Happiness"] = city.cityStats.getCityHappiness().values.sum().toInt().toString()
+        if (city.resistanceCounter > 0) {
+            cityStatsValues["Resistance"] = city.resistanceCounter.toString()
+        }
 
         for (key in cityStatsValues.keys) {
             add(ImageGetter.getStatIcon(key)).size(20f).align(Align.right)
