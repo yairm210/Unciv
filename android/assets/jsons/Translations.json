@@ -3402,6 +3402,8 @@
 		Spanish:"Palacio"
 		Portuguese:"Palácio"
 	}
+	"Indicates the capital city":{}
+	
 	"Monument":{	
 		Italian:"Monumento"
 		Russian:"Монумент"
@@ -3517,7 +3519,10 @@
 		Spanish:"Barracones"
 		Portuguese:"Quartéis"
 	}
+	
 	"Krepost":{} // russian uique, transliterate this probably, this is a russian word
+	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{}
+	
 	"Temple":{	
 		Italian:"Tempio"
 		Russian:"Храм"
@@ -3637,7 +3642,11 @@
 		Spanish:"Mercado"
 		Portuguese:"Mercado"
 	}
+	
 	"Bazaar":{}// Arabian unique - transliterate?
+	"Provides 1 extra copy of each improved luxury resource near this City":{}
+	"+2 Gold for each source of Oil and oasis":{}
+			
 	"Monastery":{	
 		Italian:"Monastero"
 		Russian:"Монастырь"
