@@ -10,6 +10,7 @@ import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
 import com.unciv.logic.battle.ICombatant
 import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen

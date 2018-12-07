@@ -7,6 +7,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.util.*
 

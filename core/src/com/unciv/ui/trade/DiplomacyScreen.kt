@@ -3,6 +3,7 @@ package com.unciv.ui.trade
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UnCivGame
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
 class DiplomacyScreen:CameraStageBaseScreen(){

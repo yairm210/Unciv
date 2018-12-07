@@ -9,6 +9,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.util.*
 

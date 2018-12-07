@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.models.gamebasics.Building
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*

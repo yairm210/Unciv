@@ -4,8 +4,8 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
-import com.unciv.ui.utils.tr
 import com.unciv.ui.utils.withItem
 import java.util.*
 

@@ -6,8 +6,9 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
+import com.unciv.models.gamebasics.Translations
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.INamed
-import com.unciv.ui.utils.tr
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
 class BaseUnit : INamed, IConstruction, ICivilopedia {
@@ -35,16 +36,12 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
             return getDescription(false)
         }
 
+
+
     fun getShortDescription(): String {
         val infoList= mutableListOf<String>()
         for(unique in uniques){
-            val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(unique)
-            if(regexResult==null) infoList += unique.tr()
-            else{
-                val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
-                val translatedUnique = start.tr() + " "+ regexResult.groups[3]!!.value+"%"
-                infoList+=translatedUnique
-            }
+            infoList+=Translations.translateBonusOrPenalty(unique)
         }
         if(strength!=0) infoList += "{Strength}: $strength".tr()
         if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()

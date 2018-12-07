@@ -6,11 +6,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.logic.trade.TradeType.*
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.cityscreen.ExpanderTab
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.tr
 import kotlin.math.min
 
 class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffersList,

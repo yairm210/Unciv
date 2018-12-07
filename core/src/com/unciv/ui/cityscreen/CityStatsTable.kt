@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.ConstructionPickerScreen
 import com.unciv.ui.utils.*
 import java.util.*

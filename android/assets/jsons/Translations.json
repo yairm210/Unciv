@@ -2583,36 +2583,6 @@
 	
 	// Building unique abilities
 	
-	"+1 Science Per 2 Population":{
-		Italian:"+1 Scienza ogni 2 abitanti"
-		Russian:"+1 Наука за 2 населения"
-		French:"+1 Science par 2 Population"
-		Romanian:"+1 știință pe 2 persoane"
-		German:"+1 Erforschung pro 2 Bewohner"
-		Dutch:"+1 Wetenschap per 2 Populatie"
-		Spanish:"+1 Ciencia cada 2 habitantes"
-		Portuguese:"+1 Ciência a cada 2 habitantes"
-	}
-	"Worker construction increased 25%":{
-		Italian:"+25% velocità costruzione lavoratori"
-		Russian:"Увеличивает на 25% скорость создания улучшений на клетках"
-		French:"La construction des travailleurs a augmenté de 25%"
-		Romanian:"Lucrările de construcție a crescut cu 25%"
-		German:"Arbeiterproduktion um 25% erhöht"
-		Dutch:"Werkerproducktie met 25% vehoogt"
-		Spanish:"+25% velocidad de construcción trabajador"
-		Portuguese:"Velocidade de construção dos trabalhadores aumentada em +25%"
-	}
-	"Provides 2 free workers":{
-		Italian:"Offre 2 Lavoratori liberi"
-		Russian:"предоставляет 2 бесплатных рабочих"
-		French:"Fournit 2 travailleurs gratuits"
-		Romanian:"Oferă 2 lucrători liberi"
-		German:"Gibt 2 freie Arbeiter"
-		Dutch:"Geeft 2 gratis werkers"
-		Spanish:"Proporciona 2 trabajadores gratis"
-		Portuguese:"Proporciona 2 trabalhadores gratis"
-	}
 	"Free Social Policy":{
 		Italian:"Politica sociale gratuita"
 		Russian:"Бесплатный общественный институт"
@@ -3262,7 +3232,10 @@
 	}
 
 
-	//civilisations
+	// Civilisations and uniques
+	"replaces":{// As in "Camel Archer replaces Knight", "Krepost replaces Barracks"		
+	}
+	
 	"Babylon":{	
 		Italian:"Babilonia"
 		Russian:"Вавилон"
@@ -3303,6 +3276,8 @@
 		Spanish:"Inglaterra"
 		Portuguese:"Inglaterra"
 	}
+	"+2 movement for all naval units":{}
+	
 	"France":{	
 		Italian:"Francia"
 		Russian:"Франция"
@@ -3311,6 +3286,14 @@
 		Spanish:"Francia"
 		Portuguese:"França"
 	}
+	"Russia":{}
+	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{}
+	"Rome":{}
+	"Arabia":{}
+	"America":{}
+	"All land military units have +1 sight, 50% discount when purchasing tiles":{}
+	"Barbarians":{}
+	
 
 	//Difficulty
 	"Settler":{	
@@ -3669,6 +3652,7 @@
 		Spanish:"Stonehenge"
 		Portuguese:"Stonehenge"
 	}
+	
 	"Library":{	
 		Italian:"Biblioteca"
 		Russian:"Библиотека"
@@ -3677,6 +3661,18 @@
 		Spanish:"Biblioteca"
 		Portuguese:"Livraria"
 	}
+	"+1 Science Per 2 Population":{
+		Italian:"+1 Scienza ogni 2 abitanti"
+		Russian:"+1 Наука за 2 населения"
+		French:"+1 Science par 2 Population"
+		Romanian:"+1 știință pe 2 persoane"
+		German:"+1 Erforschung pro 2 Bewohner"
+		Dutch:"+1 Wetenschap per 2 Populatie"
+		Spanish:"+1 Ciencia cada 2 habitantes"
+		Portuguese:"+1 Ciência a cada 2 habitantes"
+	}
+	"Paper Maker":{}
+	
 	"The Great Library":{	
 		Italian:"Grande Biblioteca"
 		Russian:"Великая Библиотека"
@@ -3701,6 +3697,7 @@
 		Spanish:"Muros"
 		Portuguese:"Muralhas"
 	}
+	
 	"The Pyramids":{	
 		Italian:"Grandi Piramidi"
 		Russian:"Пирамиды"
@@ -3709,6 +3706,27 @@
 		Spanish:"Las Pirámides"
 		Portuguese:"Pirâmides"
 	}
+	"Worker construction increased 25%":{
+		Italian:"+25% velocità costruzione lavoratori"
+		Russian:"Увеличивает на 25% скорость создания улучшений на клетках"
+		French:"La construction des travailleurs a augmenté de 25%"
+		Romanian:"Lucrările de construcție a crescut cu 25%"
+		German:"Arbeiterproduktion um 25% erhöht"
+		Dutch:"Werkerproducktie met 25% vehoogt"
+		Spanish:"+25% velocidad de construcción trabajador"
+		Portuguese:"Velocidade de construção dos trabalhadores aumentada em +25%"
+	}
+	"Provides 2 free workers":{
+		Italian:"Offre 2 Lavoratori liberi"
+		Russian:"предоставляет 2 бесплатных рабочих"
+		French:"Fournit 2 travailleurs gratuits"
+		Romanian:"Oferă 2 lucrători liberi"
+		German:"Gibt 2 freie Arbeiter"
+		Dutch:"Geeft 2 gratis werkers"
+		Spanish:"Proporciona 2 trabajadores gratis"
+		Portuguese:"Proporciona 2 trabalhadores gratis"
+	}
+	
 	"Barracks":{	
 		Italian:"Caserma"
 		Russian:"Казармы"
@@ -3717,6 +3735,7 @@
 		Spanish:"Barracones"
 		Portuguese:"Quartéis"
 	}
+	"Krepost":{} // russian uique, transliterate this probably, this is a russian word
 	"Temple":{	
 		Italian:"Tempio"
 		Russian:"Храм"
@@ -3725,6 +3744,7 @@
 		Spanish:"Templo"
 		Portuguese:"Templo"
 	}
+	"Burial Tomb":{}
 	"The Oracle":{	
 		Italian:"Ooracolo"
 		Russian:"Оракул"
@@ -3799,6 +3819,7 @@
 		Spanish:"Mercado"
 		Portuguese:"Mercado"
 	}
+	"Bazaar":{}// Arabian unique - transliterate?
 	"Monastery":{	
 		Italian:"Monastero"
 		Russian:"Монастырь"
@@ -4337,6 +4358,7 @@
 		Spanish:"Caballero"
 		Portuguese:"Cavaleiro"
 	}
+	"Camel Archer":{}
 	
 	// Renaissance units
 	"Caravel":{
@@ -4363,6 +4385,7 @@
 		French:"Mousquetaire"
 		Portuguese:"Mosqueteiro"
 	}
+	"Minuteman":{}
 	"Frigate":{
 		Italian:"Fregata"
 		French:"Frégate"
@@ -4408,10 +4431,10 @@
 		// iron clad has 3 different tranlations to portuguese but i am not sure wich one to use
 	}
 	
-	// Modern units
-	// Are we suppossed to do these?
+	// Modern units (do these, yes)
 	"Landship":{}
 	"Great War Infantry":{}
+	"Destroyer":{}
 	
 	// Great units
 	"Great Artist":{	

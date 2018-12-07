@@ -3,7 +3,7 @@ package com.unciv.models.gamebasics.tech
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
-import com.unciv.ui.utils.tr
+import com.unciv.models.gamebasics.tr
 import java.util.*
 
 class Technology : ICivilopedia {

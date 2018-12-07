@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.TradeLogic
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.tr
 
 class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeComplete: () -> Unit): Table(CameraStageBaseScreen.skin){
     var tradeLogic = TradeLogic(UnCivGame.Current.gameInfo.getPlayerCivilization(),otherCivilization)

@@ -6,7 +6,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.ui.utils.tr
+import com.unciv.models.gamebasics.tr
 
 enum class DiplomaticStatus{
     Peace,

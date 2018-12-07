@@ -10,6 +10,8 @@ import com.unciv.GameStarter
 import com.unciv.logic.GameInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
+import com.unciv.models.gamebasics.Translations
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -35,7 +37,7 @@ class NewGameScreen: PickerScreen(){
         init {
             pad(10f)
             background=ImageGetter.getBackground(nation.getColor().apply { a=0.5f })
-            add(Label(nation.name, skin).apply { setFontColor(nation.getSecondaryColor())}).row()
+            add(Label(nation.name.tr(), skin).apply { setFontColor(nation.getSecondaryColor())}).row()
             add(Label(getUniqueLabel(nation), skin).apply { setWrap(true);setFontColor(nation.getSecondaryColor())}).width(width)
             onClick { newGameParameters.nation=nation.name; onClick() }
             touchable=Touchable.enabled
@@ -46,7 +48,7 @@ class NewGameScreen: PickerScreen(){
             val textList = ArrayList<String>()
 
             if(nation.unique!=null) {
-                textList += nation.unique!!
+                textList += nation.unique!!.tr()
                 textList += ""
             }
 
@@ -58,7 +60,7 @@ class NewGameScreen: PickerScreen(){
                     val originalBuildingStatMap = originalBuilding.toHashMap()
                     for (stat in building.toHashMap())
                         if (stat.value != originalBuildingStatMap[stat.key])
-                            textList += "  "+stat.value.toInt() + " " + stat.key + " vs " + originalBuildingStatMap[stat.key]!!.toInt()
+                            textList += "  "+stat.key.toString().tr() +" "+stat.value.toInt() + " vs " + originalBuildingStatMap[stat.key]!!.toInt()
                     for(unique in building.uniques.filter { it !in originalBuilding.uniques })
                         textList += "  "+unique.tr()
                     if (building.maintenance != originalBuilding.maintenance)
@@ -72,7 +74,7 @@ class NewGameScreen: PickerScreen(){
 
                     textList += unit.name.tr() + " - {replaces} " + originalUnit.name.tr()
                     if (unit.strength != originalUnit.strength)
-                        textList += "  {Combat strength} " + unit.strength + " vs " + originalUnit.strength
+                        textList += "  {Strength} " + unit.strength + " vs " + originalUnit.strength
                     if (unit.rangedStrength!= originalUnit.rangedStrength)
                         textList+= "  {Ranged strength} " + unit.rangedStrength+ " vs " + originalUnit.rangedStrength
                     if (unit.range!= originalUnit.range)
@@ -81,7 +83,7 @@ class NewGameScreen: PickerScreen(){
                         textList+= "  {Movement} " + unit.movement+ " vs " + originalUnit.movement
                     val newUniques = unit.uniques.filterNot { it in originalUnit.uniques }
                     if(newUniques.isNotEmpty())
-                        textList+="  {Uniques}: "+newUniques.joinToString()
+                        textList+="  {Uniques}: "+newUniques.joinToString{ Translations.translateBonusOrPenalty(it)}
                     textList+=""
                 }
 

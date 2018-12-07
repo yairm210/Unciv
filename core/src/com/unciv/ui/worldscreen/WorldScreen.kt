@@ -12,6 +12,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen

@@ -11,6 +11,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
 import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.utils.*

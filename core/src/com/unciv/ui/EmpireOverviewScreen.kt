@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
@@ -291,7 +292,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             val civGroup = Table()
             val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
 
-            val label = Label(civ.civName, CameraStageBaseScreen.skin)
+            val label = Label(civ.civName.tr(), CameraStageBaseScreen.skin)
 
             if(playerKnows(civ)) {
                 civGroup.background = civGroupBackground.tint(civ.getNation().getColor())

@@ -7,10 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontColor
-import com.unciv.ui.utils.tr
 
 class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null

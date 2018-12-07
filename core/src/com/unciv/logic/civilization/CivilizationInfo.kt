@@ -13,9 +13,9 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
-import com.unciv.ui.utils.tr
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap

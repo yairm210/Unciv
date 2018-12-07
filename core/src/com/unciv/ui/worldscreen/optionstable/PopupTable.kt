@@ -5,7 +5,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
-import com.unciv.ui.utils.*
+import com.unciv.models.gamebasics.tr
+import com.unciv.ui.utils.CameraStageBaseScreen
+import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.center
+import com.unciv.ui.utils.onClick
 
 open class PopupTable: Table(){
     init {

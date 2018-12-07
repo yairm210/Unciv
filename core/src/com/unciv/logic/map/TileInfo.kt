@@ -6,8 +6,8 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.*
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.tr
 import kotlin.math.abs
 
 open class TileInfo {

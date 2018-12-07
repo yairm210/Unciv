@@ -7,11 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.tr
 
 
 class LanguageTable(val language:String,skin: Skin):Table(skin){

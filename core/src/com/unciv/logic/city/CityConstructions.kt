@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.tr
 import com.unciv.ui.utils.withItem
 import com.unciv.ui.utils.withoutItem
 import java.util.*

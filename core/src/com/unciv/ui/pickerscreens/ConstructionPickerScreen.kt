@@ -7,11 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontColor
-import com.unciv.ui.utils.tr
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     private var selectedProduction: String? = null

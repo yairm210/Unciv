@@ -8,6 +8,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
 

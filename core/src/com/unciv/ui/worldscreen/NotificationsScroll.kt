@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import kotlin.math.min
 

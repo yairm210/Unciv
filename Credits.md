@@ -123,6 +123,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [korean palace](https://thenounproject.com/term/korean-palace/1797542/) By 1516 for Palace
 * [Obelisk](https://thenounproject.com/term/obelisk/749104/) By Eliricon for Monument
 * [Cross swords](https://thenounproject.com/term/cross-swords/965398/) By  Creaticca Creative Agency for Barracks
+* [Fortress](https://thenounproject.com/search/?q=fortress&i=146989) By Creative Stall for Krepost
 * [Paper](https://thenounproject.com/term/paper/1443472/) By anam
 * [Circus](https://thenounproject.com/term/circus/743734/) By Ralph Schmitzer
 * [Stonehenge](https://thenounproject.com/term/stonehenge/543289/) By icon 54

@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 

@@ -3,9 +3,9 @@ package com.unciv.ui.trade
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.trade.TradeLogic
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.tr
 
 class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit): Table(CameraStageBaseScreen.skin) {
 

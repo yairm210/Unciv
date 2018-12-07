@@ -6,7 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.ui.utils.tr
+import com.unciv.models.gamebasics.tr
 import kotlin.math.min
 import kotlin.math.sqrt
 

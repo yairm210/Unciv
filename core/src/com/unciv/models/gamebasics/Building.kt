@@ -5,7 +5,6 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.tr
 
 class Building : NamedStats(), IConstruction{
     override val description: String
