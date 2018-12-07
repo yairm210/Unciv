@@ -25,7 +25,10 @@ class CityExpansionManager {
     fun getCultureToNextTile(): Int {
         val numTilesClaimed = cityInfo.tiles.size - 7
         var cultureToNextTile = 6 * Math.pow(numTilesClaimed + 1.4813, 1.3)
-        if (cityInfo.civInfo.getBuildingUniques().contains("Cost of acquiring new tiles reduced by 25%")) cultureToNextTile *= 0.75 //Speciality of Angkor Wat
+        if (cityInfo.civInfo.getBuildingUniques().contains("Cost of acquiring new tiles reduced by 25%"))
+            cultureToNextTile *= 0.75 //Speciality of Angkor Wat
+        if(cityInfo.getBuildingUniques().contains("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
+            cultureToNextTile *= 0.75 // Specialty of Krepost
         if (cityInfo.civInfo.policies.isAdopted("Tradition")) cultureToNextTile *= 0.75
         return Math.round(cultureToNextTile).toInt()
     }
@@ -42,10 +45,16 @@ class CityExpansionManager {
         val baseCost = 50
         val numTilesClaimed= cityInfo.tiles.size - 7
         val distanceFromCenter = tileInfo.arialDistanceTo(cityInfo.getCenterTile())
-        var cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5
+        var cost = baseCost * (distanceFromCenter-1) + numTilesClaimed*5.0
+
+        if (cityInfo.civInfo.getBuildingUniques().contains("Cost of acquiring new tiles reduced by 25%"))
+            cost *= 0.75 //Speciality of Angkor Wat
+        if(cityInfo.getBuildingUniques().contains("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
+            cost *= 0.75 // Specialty of Krepost
+
         if(cityInfo.civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
             cost /= 2
-        return cost
+        return cost.toInt()
     }
 
 

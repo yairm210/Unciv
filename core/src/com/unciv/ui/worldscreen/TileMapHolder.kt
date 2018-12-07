@@ -220,16 +220,13 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = when {
-            unitType.isCivilian() -> unit.getDistanceToTiles().keys.toList()
+            unitType.isCivilian() -> listOf()
             else -> UnitAutomation().getAttackableEnemies(unit, unit.getDistanceToTiles()).map { it.tileToAttack }
                     .filter { (UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         }
         for (attackableTile in attackableTiles) {
-            if (unit.type.isCivilian()) tileGroups[attackableTile]!!.hideCircle()
-            else {
-                tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
-                tileGroups[attackableTile]!!.showCrosshair()
-            }
+            tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
+            tileGroups[attackableTile]!!.showCrosshair()
         }
 
         // Fadeout less relevant images if a military unit is selected
