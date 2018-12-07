@@ -7,7 +7,7 @@
 		German:"Nächste Runde"
 		Dutch:"Volgende beurt"
 		Spanish:"Siguiente turno"
-                Portuguese:"Proximo turno"
+        Portuguese:"Proximo turno"
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
@@ -17,7 +17,7 @@
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
 		Spanish:"Trabajando..."
-	        Portuguese:"Trabalhando..."
+        Portuguese:"Trabalhando..."
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -130,7 +130,7 @@
 		German:"Automatisieren"
 		Dutch:"Autoatiseren"
 		Spanish:"Automatizar"
-		Portuguese:"Automatizar
+		Portuguese:"Automatizar"
 	}
 
 	"Fortify":{
@@ -168,7 +168,7 @@
 		German:"Aufstellen"
 		Dutch:"Opstellen"
 		Spanish:"Montar"
-		Portguese:"Montar"
+		Portuguese:"Montar"
 	}
 	
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
@@ -177,7 +177,7 @@
 		French:"Mise à niveau vers [unitType] ([goldCost] or)"
 		Romanian:"Treceți la [unitType] (aurul [goldCost])"
 		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
-		Portuguese:"Melhoria a [unitType] custará ([goldCost]) ouro
+		Portuguese:"Melhoria a [unitType] custará ([goldCost] ouro)"
 	}
 	
 	"Found city":{
@@ -282,7 +282,7 @@
 		German:"Zufriedenheit"
 		Dutch:"Tevredenheid"
 		Spanish:"Felicidad"
-		Portuguese:"Felicidade
+		Portuguese:"Felicidade"
 	}
 
 	"Production":{
@@ -856,7 +856,7 @@
 		German:"[construction] wurde erbaut in [cityName]"
 		Dutch:"[construction] is gebouwd in [cityName]"
 		Spanish:"[construction] se ha construido en [cityName]"
-		Portuguese:"o(a) [construction] foi construirdo em [cityName]
+		Portuguese:"o(a) [construction] foi construirdo em [cityName]"
 	}
 	
 	"Work has started on [construction]":{
@@ -900,7 +900,7 @@
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] angegriffen" // Gender sensitive
 		Dutch:"Een vijandelijke [unit] heeft [cityname] aangevallen"
 		Spanish:"Un [unit] enemigo ha atacado [cityname]"
-		Portuguese:"Um(a) [unit] inimaga(o) atacou [cityname]
+		Portuguese:"Um(a) [unit] inimaga(o) atacou [cityname]"
 	}
 	
 	"An enemy [unit] has attacked our [ourUnit]":{
@@ -921,7 +921,7 @@
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft [cityname] ingenomen"
 		Spanish:"Un [unit] enemigo ha capturado [cityname]"
-		Portuguese:"Um(a) [unit] inimigo(a) capturou [cityname]
+		Portuguese:"Um(a) [unit] inimigo(a) capturou [cityname]"
 	}
 	
 	"An enemy [unit] has captured our [ourUnit]":{
@@ -932,7 +932,7 @@
 		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] gefangen" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft [ourUnit] gevangen genomen"
 		Spanish:"Un [unit] enemigo ha capturado nuestro [ourUnit]"
-		Portuguese:"Um(a) [unit] inimigo(a) capturou nosso(a) [ourUnit]
+		Portuguese:"Um(a) [unit] inimigo(a) capturou nosso(a) [ourUnit]"
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
@@ -943,7 +943,7 @@
 		German:"Ein(e) feindliche(r) [unit] hat [ourUnit] zerstört" // Gender sensitive
 		Dutch:"Een vijandige [unit] heeft onze [ourUnit] gedood"
 		Spanish:"Un [unit] enemigo ha destruido nuestro [ourUnit]"
-		Português:"Um(a) [unit] inimigo(a) destruiu nosso(a) [ourUnit]
+		Portuguese:"Um(a) [unit] inimigo(a) destruiu nosso(a) [ourUnit]"
 	}
 	
 	"An enemy [unit] was destroyed while attacking [cityname]":{
@@ -954,7 +954,7 @@
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf [cityname]" // Gender sensitive
 		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op [cityname]"
 		Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba [cityname]"
-		Portuguese:"Um(a) [unit] inimigo(a) foi destruido enquanto atacava [cityname]
+		Portuguese:"Um(a) [unit] inimigo(a) foi destruido enquanto atacava [cityname]"
 	}
 	
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
@@ -965,7 +965,7 @@
 		German:"Ein(e) feindliche(r) [unit] wurde zerstört beim Angriff auf unsere(n) [ourUnit]" // Gender sensitive
 		Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op onze [unit]"
 		Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba nuestro [ourUnit]"
-		Portuguese:"Um(a) [unit] inimigo(a) foi destruido(a) enquanto atacando nosso(a) [ourUit]
+		Portuguese:"Um(a) [unit] inimigo(a) foi destruido(a) enquanto atacando nosso(a) [ourUit]"
 	}
 	
 	"An enemy [unit] was spotted near our territory":{
@@ -1162,7 +1162,7 @@
 		German:"Angreiffen"
 		Dutch:"Aanvallen"
 		Spanish:"Ataque"
-		Porteguese:"Ataque"
+		Portuguese:"Ataque"
 	}
 	
 	"[percentage] to unit defence":{
@@ -1359,7 +1359,7 @@
 		German:"Stein"
 		Dutch:"Steen"
 		Spanish:"Piedra"
-		Portuguese:"Pedra"s
+		Portuguese:"Pedra"
 	}
 	
 	"Fish":{
@@ -1630,7 +1630,7 @@
 		German:"Lager"
 		Dutch:"Kamp"
 		Spanish:"Campamento"
-		Portugues:"Campo"
+		Portuguese:"Campo"
 	}
 	"Oil well":{
 		Italian:"Pozzo di petrolio"
@@ -1948,7 +1948,7 @@
 		German:"Geld"
 		Dutch:"Geld"
 		Spanish:"Moneda"
-		Português:"Moeda"
+		Portuguese:"Moeda"
 	}
 	"Engineering":{
 		Italian:"Ingegneria"
@@ -2040,7 +2040,7 @@
 		German:"Kompass"
 		Dutch:"Kompas"
 		Spanish:"Brújula"
-		Portuguese:"Bússola
+		Portuguese:"Bússola"
 	}
 	"Education":{
 		Italian:"Istruzione"
@@ -2060,7 +2060,7 @@
 		German:"Kavallerie"
 		Dutch:"Ridderlijkheid"
 		Spanish:"Caballería"
-		Portuguesse:"Cavalheirismo"
+		Portuguese:"Cavalheirismo"
 	}
 	"Machinery":{
 		Italian:"Meccanica"
@@ -2094,7 +2094,7 @@
 		German:"Akustik"
 		Dutch:"Akoestiek"
 		Spanish:"Acústica"
-		Portuguese"Acústica"
+		Portuguese:"Acústica"
 	}
 	"Banking":{
 		Italian:"Sistema bancario"
@@ -2123,7 +2123,7 @@
 		Romanian:"Praf de puşcă"
 		Dutch:"Buskruid"
 		Spanish:"Pólvora"
-		Portuguese"Pólvora"
+		Portuguese:"Pólvora"
 	}
 	"Navigation":{
 		Italian:"Navigazione"
@@ -2187,7 +2187,7 @@
 		German:"Wissenschaftliche Thorie"
 		Dutch:"Wetenschappelijke Theorie"
 		Spanish:"Teoría científica"
-		Portuguese"Teoria científica"
+		Portuguese:"Teoria científica"
 	}
 	
 	"Industrialization":{
@@ -2322,7 +2322,7 @@
 		German:"Elektronik"
 		Dutch:"Elektronica"
 		Spanish:"Electrónica"
-		Portugueses:"Eletronicos"
+		Portuguese:"Eletronicos"
 	}
 	"Mass Media":{
 		Italian:"Mass media"
@@ -2332,7 +2332,7 @@
 		German:"Massenmedien"
 		Dutch:"Massa Media"
 		Spanish:"Medios de comunicación"
-		Portugueses:"Mídia de massa"
+		Portuguese:"Mídia de massa"
 	}
 	"Flight":{
 		Italian:"Volo"
@@ -2542,7 +2542,7 @@
 		Romanian:"Renaşterei"
 		Dutch:"Renaissance"
 		Spanish:"Renacimiento"
-		Portuguese"Era da Renascença"
+		Portuguese:"Era da Renascença"
 	}
 	"Industrial era":{
 		Italian:"Industriale"
@@ -2711,7 +2711,7 @@
 		German:"Unzufriedenheit vom Volk um 10% verringert"
 		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
 		Spanish:"Infelicidad de la población reducida 10%"
-		Potuguese:"Infelicidade da população reduzida em 10%"
+		Portuguese:"Infelicidade da população reduzida em 10%"
 	}
 	"Empire enters golden age":{
 		Italian:"L'impero entra nell'Età dell'Oro"
@@ -2839,7 +2839,7 @@
 		German:"Zivilist"
 		Dutch:"Burger"
 		Spanish:"Civil"
-		Production:"Cidadão"
+		Portuguese:"Cidadão"
 	}
 	"Melee":{
 		Italian:"Da mischia"
@@ -2859,7 +2859,7 @@
 		German:"Fernkämpfer"
 		Dutch:"Afstands"
 		Spanish:"A distancia"
-		Portuguese"Ataque a distancia"
+		Portuguese:"Ataque a distancia"
 	}
 	"Siege":{
 		Italian:"D'assedio"
@@ -2879,7 +2879,7 @@
 		German:"Kavallerie"
 		Dutch:"Bereden"
 		Spanish:"A caballo"
-		Portuguese:"Montado(a)
+		Portuguese:"Montado(a)"
 	}
 	"Scout":{
 		Italian:"D'esplorazione"
@@ -2962,7 +2962,7 @@
 		German:"Vorteil gegen eine(n) [unitType]" // Gender sensitive
 		Dutch:"Voordeel tegen [unitType]"
 		Spanish:"Bonus contra [unitType]"
-		Portuguese:"Bonus contra [unitType]
+		Portuguese:"Bonus contra [unitType]"
 	}
 	"Penalty vs [unitType]":{
 		Italian:"Penalità contro [unitType]"
@@ -2972,7 +2972,7 @@
 		German:"Nachteil gegen eine(n) [unitType]" // Gender sensitive
 		Dutch:"Nadeel tegen [unitType]"
 		Spanish:"Penalización contra [unitType]"
-		Portuguese:"Penalização contra [unitType]
+		Portuguese:"Penalização contra [unitType]"
 	}
 	"Must set up to ranged attack":{
 		Italian:"Deve montare per attaccare a distanza"
@@ -3061,7 +3061,7 @@
 	"Can build improvement: Landmark":{
 		Italian:"Può costruire il miglioramento: Punto di Riferimento"
 		French:"Peut construire l'amélioration suivante: Point de repère"
-		Portuguese:"Pode construir melhoria: ponto de refêrencia
+		Portuguese:"Pode construir melhoria: ponto de refêrencia"
 	}
 	"Can discover a technology":{
 		Italian:"Può scoprire una tecnologia"
@@ -3144,7 +3144,7 @@
 		Romanian:"[policyBranch] ramură de politică deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
 		Spanish:"¡Rama política [policyBranch] desbloqueada!"
-		Portuguese:"[policyBranch] foi desbloqueado(a)
+		Portuguese:"[policyBranch] foi desbloqueado(a)"
 	} // EG Rationalism policy branch unlocked!
 	
 	// Trade	
@@ -3154,7 +3154,7 @@
 		French:"Échanges"
 		Romanian:"Comerțul"
 		Spanish:"Comerciar"
-		Portuguese"Comércio"
+		Portuguese:"Comércio"
 	}
 	"Offer trade":{	
 		Italian:"Offerta commerciale"
@@ -3386,7 +3386,7 @@
 		French:"Petit"
 		Romanian:"Mic"
 		Spanish:"Pequeño"
-		Portuguese:"Pequeno
+		Portuguese:"Pequeno"
 	}
 	"Medium":{	
 		Italian:"Medio"
@@ -3421,7 +3421,7 @@
 		French:"Taille du monde"
 		Romanian:"Mărime universală"
 		Spanish:"Tamaño del mundo"
-		Potuguese:"Tamanho do mundo"
+		Portuguese:"Tamanho do mundo"
 	}
 	"Number of enemies":{	
 		Italian:"Numero di nemici"
@@ -3608,7 +3608,7 @@
 		French:"Unités"
 		Romanian:"Unități"
 		Spanish:"Unidades"
-		Portuguese"Unidades"
+		Portuguese:"Unidades"
 	}
 	"Name":{	
 		Italian:"Nome"
@@ -3873,7 +3873,7 @@
 		French:"Université"
 		Romanian:"Universitate"
 		Spanish:"Universidad"
-		Portuguese"Universidade"
+		Portuguese:"Universidade"
 	}
 	"Oxford University":{	
 		Italian:"Università di Oxford"
@@ -4055,7 +4055,7 @@
 		French:"Cristo Redentor"
 		Romanian:"Cristo Redentor"
 		Spanish:"Cristo Redentor"
-		Potuguese:"Cristo Redentor"
+		Portuguese:"Cristo Redentor"
 	}
 	"Military Academy":{	
 		Italian:"Accademia Militare"
@@ -4124,7 +4124,7 @@
 	"Sydney Opera House":{
 		Italian:"Teatro dell'Opera di Sidney"
 		French:"Opéra de Sydney"
-		Poertuguese:"Ópera de Sydney"
+		Portuguese:"Ópera de Sydney"
 	}
 	"Apollo Program":{	
 		Italian:"Programma Apollo"
@@ -4223,7 +4223,7 @@
 	"Work Boats":{
 		Italian:"Chiatta"
 		French:"Bateau de travail"
-		Portuguesse:"Barcos de trabalho"
+		Portuguese:"Barcos de trabalho"
 	}
 	"Trireme":{
 		Italian:"Trireme"
@@ -4243,7 +4243,7 @@
 		Russian:"Копейщик"
 		French:"Infanterie"
 		Romanian:"Lancer"
-		Spanish:"Lancero
+		Spanish:"Lancero"
 		Portuguese:"Lanceiro"
 	}
 	
@@ -4290,7 +4290,7 @@
 	"Galleass":{
 		Italian:"Galeazza"
 		French:"Galléasse"
-		Portugues:"Galleass"
+		Portuguese:"Galleass"
 	}
 	"Crossbowman":{	
 		Italian:"Balestriere"
@@ -4374,7 +4374,7 @@
 		French:"Lancier"
 		Romanian:"Lăncier"
 		Spanish:"Jinete lancero"
-		Portugues:"Lanceiro montado"
+		Portuguese:"Lanceiro montado"
 	}
 	
 	// Industrial units
@@ -4518,7 +4518,7 @@
 		Italian:"Nessuna manutenzione per le unità nelle città"
 		Russian:"Юниты в городах содержаться бесплатно"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento"
-		Portuguese"Unidades em cidades não custam manutenção"
+		Portuguese:"Unidades em cidades não custam manutenção"
 	}
 	"Landed Elite":{
 		Italian:"Nobiltà terriera"
@@ -4530,7 +4530,7 @@
 		Italian:"+10% crescita e +2 cibo nella capitale"
 		Russian:"+10% прироста еды и +2 еды в столице"
 		Spanish:"+10% crecimiento de comida y +2 comida en la capital"
-		PortuguesE:"+10% adicionado ao crescimente de comida e +2 comida na capital"
+		Portuguese:"+10% adicionado ao crescimente de comida e +2 comida na capital"
 	}
 	"Monarchy":{
 		Italian:"Monarchia"
@@ -4580,7 +4580,7 @@
 		Italian:"+50% produzione di coloni nella capitale, più un colono gratuito nella capitale"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Spanish:"Entrenamiento de colonos incrementado +50% en la capital y un colono gratis cerca de la capital"
-		Portugues:"Treinamento em de colonos +50% mais rapido na capital, receba um novo colono próximo a capital"
+		Portuguese:"Treinamento em de colonos +50% mais rapido na capital, receba um novo colono próximo a capital"
 	}
 	"Citizenship":{
 		Italian:"Cittadinanza"
@@ -4604,7 +4604,7 @@
 		Italian:"+1 Produzione in ogni città, +5% Produzione quando costruisci una struttura"
 		Russian:"Увеличивает н 1% производство во всех городах и на 5% производство при строительстве зданий"
 		Spanish:"+1 construcción en cada ciudad, +5% al construir edificios"
-		Portuguese:"+1 de produção em todas as cidades,+5% construção quando construindo edificios.
+		Portuguese:"+1 de produção em todas as cidades,+5% construção quando construindo edificios"
 	}
 	"Representation":{
 		Italian:"Rappresentazione"
@@ -4616,7 +4616,7 @@
 		Italian:"Il costo in Cultura delle nuove Politiche Sociali aumenta del 33% in meno ad ogni nuova città fondata. Avvia inoltre un'Età dell'Oro."
 		Russian:"Каждый основанный город на 33% меньше увеличивает цену общественных институтов. Начинает в державе золотой век."
 		Spanish:"Cada ciudad fundada incrementa el coste cultural de las políticas 33% menos de lo normal. Comienza una Edad de Oro"
-		Portguese:"Toda cidade fundada aumenta o custo de políticas 33% a menos que o normal, aciona uma Idade Dourada"
+		Portuguese:"Toda cidade fundada aumenta o custo de políticas 33% a menos que o normal, aciona uma Idade Dourada"
 	}
 	"Meritocracy":{
 		Italian:"Meritocrazia"
@@ -4634,7 +4634,7 @@
 		Italian:"Libertà Completa"
 		Russian:"Воля Завершена"
 		Spanish:"Liberación Completa"
-		Portugues:"Liberade Completa"
+		Portuguese:"Liberade Completa"
 	}
 	"Free Great Person of choice near capital":{
 		Italian:"Un Grande Personaggio gratuito nella capitale"
@@ -4690,7 +4690,7 @@
 	}
 	"Each city with a garrison increases happiness by 1 and culture by 2":{
 		Italian:"+1 Felicità e +2 Cultura per ogni città con una guarnigione"
-		Portuguese:"+1 felicidade e +2 cultara por cidade com guarda
+		Portuguese:"+1 felicidade e +2 cultara por cidade com guarda"
 	}
 	"Professional Army":{
 		Italian:"Esercito professionale"
@@ -4702,11 +4702,11 @@
 	}
 	"Honor Complete":{
 		Italian:"Onore Completo"
-		Portuguese"Honra Completa"
+		Portuguese:"Honra Completa"
 	}
 	"Gain gold for each unit killed":{
 		Italian:"Ottieni oro per ogni unità eliminata"
-		Portuguse:"Ganhe ouro por cada unidade morta"
+		Portuguese:"Ganhe ouro por cada unidade morta"
 	}
 	
 	// Piety branch
@@ -4812,19 +4812,19 @@
 		Italian:"File di carri"
 		Russian:"Караваны фургонов"
 		Spanish:"Sindicatos"
-		Portugues:"Sindicatos"
+		Portuguese:"Sindicatos"
 	}
 	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
 		Italian:"-33% manutenzioni su strade e ferrovie, +2 oro per ogni rotta commerciale"
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"
-		Portugues:"Manutenção reduzida em estradas e linhas férreas em 33%, +2 ouro de todas as rotas de comércio"
+		Portuguese:"Manutenção reduzida em estradas e linhas férreas em 33%, +2 ouro de todas as rotas de comércio"
 	}
 	"Mercantilism":{
 		Italian:"Mercantilismo"
 		Russian:"Меркантилизм"
 		Spanish:"Mercantilismo"
-		Portugues:"Mercantilismo"
+		Portuguese:"Mercantilismo"
 	}
 	"-25% to purchasing items in cities":{
 		Italian:"-25% costi d'acquisto nelle città"
@@ -4842,13 +4842,13 @@
 		Italian:"+25% velocità di produzione Grandi Mercanti, +1 Scienza da ogni Zecca, Mercato, Banca e Borsa"
 		Russian:"Великие торговцы появляют на 25% быстрее, +1 наука от каждого Монетного двора, Рынка, Банка и Биржи"
 		Spanish:"Grandes Mercantes son ganados 25% más rápido, +1 ciencia por cada casa de la moneda, mercado, banco y Bolsa de Valores"
-		Potuguese:"Grander mercadores são obtidos 25% mais rápido, +1 ciência de cada de Casa da Moeda, banco e bolsa de valores"
+		Portuguese:"Grander mercadores são obtidos 25% mais rápido, +1 ciência de cada de Casa da Moeda, banco e bolsa de valores"
 	}
 	"Patronage":{
 		Italian:"Mecenatismo"
 		Russian:"Меценатство"
 		Spanish:"Mecenazgo"
-		Portugues:"Patrocínio" // not sure so double check yourself if deemed nescessary
+		Portuguese:"Patrocínio" // not sure so double check yourself if deemed nescessary
 	}
 	"Cost of purchasing culture buildings reduced by 50%":{
 		Italian:"-50% costi di acquistare strutture culturali"
@@ -4866,7 +4866,7 @@
 		Italian:"+1 Felicità per ogni risorsa di lusso"
 		Russian:"+1 к счастью от каждого редкого ресурса"
 		Spanish:"+1 felicidad por cada recurso de lujo"
-		Portugues:"+1 Felicidade por cade recurso de luxo"
+		Portuguese:"+1 Felicidade por cade recurso de luxo"
 	}
 	"Commerce Complete":{
 		Italian:"Commercio Completo"
@@ -4898,7 +4898,7 @@
 		Italian:"Secolarismo"
 		Russian:"Секуляризм"
 		Spanish:"Laicismo"
-		Portuguese:"Secularismo
+		Portuguese:"Secularismo"
 	}
 	"+2 science from every specialist":{
 		Italian:"+2 Scienza per ogni specialista"
@@ -4922,7 +4922,7 @@
 		Italian:"Libertà di pensiero"
 		Russian:"Свободомыслие"
 		Spanish:"Pensamiento Libre"
-		Portugues:"Pensamento Livre"
+		Portuguese:"Pensamento Livre"
 	}
 	"+1 science from every trading post, +17% science from universities":{
 		Italian:"+1 Scienza per ogni base commerciale, +17% scienza per ogni Università"
@@ -4934,7 +4934,7 @@
 		Italian:"Sovranità"
 		Russian:"Суверинетет"
 		Spanish:"Soberanía"
-		Portugues:"Soberania"
+		Portuguese:"Soberania"
 	}
 	"+15% science while empire is happy":{
 		Italian:"+15% Scienza quando l'Impero è felice"
@@ -5096,7 +5096,7 @@
 	}
 	"Total War":{
 		Italian:"Guerra Totale"
-		Portugues:"Guerra Total"
+		Portuguese:"Guerra Total"
 	}
 	"+15% production when building military units and new military units start with 15 Experience":{
 		Italian:"+15% Produzione per le unità militari, +15 esperienza per le nuove unità militari"
