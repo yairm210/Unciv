@@ -35,8 +35,8 @@ class Automation {
 
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
-        if (stats.food <= 2) rank += stats.food
-        else rank += (2 + (stats.food - 2) / 2) // 1 point for each food up to 2, from there on half a point
+        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to kepp city growing
+        else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
         if (civInfo.gold < 0 && civInfo.getStatsForNextTurn().gold <= 0) rank += stats.gold
         else rank += stats.gold / 2
