@@ -2581,224 +2581,6 @@
 		Portuguese:"Era futurista" //Futurista means futuristic if you want it replaced just put futura (same as spanish) in its place.
 	}
 	
-	// Building unique abilities
-	
-	"Free Social Policy":{
-		Italian:"Politica sociale gratuita"
-		Russian:"Бесплатный общественный институт"
-		French:"Politique sociale gratuite"
-		Romanian:"Politica socială gratuită"
-		German:"Freie Sozialpolitik"
-		Dutch:"Gratis sociaalbeleid"
-		Spanish:"Política social gratis"
-		Portuguese:"Politica social gratis"
-	}
-	"Golden Age length increases +50%":{
-		Italian:"+50% durata dell'Età dell'Oro"
-		Russian:"Длина золотого века +50%"
-		French:"La longueur de l'âge d'or augmente de 50%"
-		Romanian:"Vârsta de aur crește + 50%"
-		German:"Länge eines Goldenen Zeitalters um 50% erhöht"
-		Dutch:"Gouden eeuw lengte neem toe met +50%"
-		Spanish:"La Edad de Oro dura 50% más"
-		Portuguese:"Duração de idade dourada aumentada em 50%"
-	}
-	"+33% great person generation in all cities":{
-		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
-		Russian:"+ 33% к созданию великих людей во всех городах"
-		French:"+ 33% de génération de Grand Personnage dans toutes les villes"
-		Romanian:"+ 33% generație mare de persoane în toate orașele"
-		// German translation not sure
-		Dutch:"+33% Geweldig persoon generatie in alle steden"
-		Spanish:"+33% generación de Grandes Personas en todas las ciudades"
-		Portuguese:"+33% de geração de grandes pessoas em todas as cidades"
-	}
-	"Gold from all trade routes +25%":{
-		Italian:"+25% oro da ogni rotta commerciale"
-		Russian:"Золото со всех торговых путей + 25%"
-		French:"Or de toutes les routes commerciales + 25%"
-		Romanian:"Aur din toate rutele comerciale + 25%"
-		German:"Gold von allen Handelsrouten um 25% erhöht"
-		Dutch:"Van alle handelroutes +25% goud"
-		Spanish:"+25% de oro en todas las rutas de comercio"
-		Portuguese:"+25% de ouro de todas as linhas comerciais" // Linhas comerciais= comertial lines, replace with rotas de comércio if needed
-	}
-	"40% of food is carried over after a new citizen is born":{
-		Italian:"Il 40% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
-		Russian:"40% продовольствия сохраняется после рождения нового гражданина"
-		French:"40% de la nourriture est préservée après la naissance d'un nouveau citoyen"
-		Romanian:"40% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
-		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
-		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
-		Spanish:"40% de comida es arrastrada cada vez que nace un nuevo habitante"
-		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
-	}
-	"25% of food is carried over after a new citizen is born":{
-		Italian:"Il 25% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
-		Russian:"25% продовольствия сохраняется после рождения нового гражданина"
-		French:"25% de la nourriture est préservée après la naissance d'un nouveau citoyen"
-		Romanian:"25% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
-		German:"25% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
-		Dutch:"25% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
-		Spanish:"25% de comida es arrastrada cada vez que nace un nuevo habitante"
-		Portuguese:"25% da comida é mantida depois de um novo cidadão nascer"
-	}
-	"Jungles provide +2 science":{
-		Italian:"+2 scienza da giungle"
-		Russian:"Джунгли обеспечивают +2 науки"
-		French:"Jungles fournissent +2 science"
-		Romanian:"Junglele oferă știință +2"
-		German:"Dschungel produziert 2 Erforschung"
-		Dutch:"Oerwouden leveren +2 Wetenschap"
-		Spanish:"Las selvas proporcionan +2 ciencia"
-		Portuguese:"Selvas proporcionam +2 ciência"
-	}
-	"Cost of acquiring new tiles reduced by 25%":{
-		Italian:"-25% costo di acquisto di nuove celle"
-		Russian:"Сокращает стоимость приобретения новых клеток на 25%"
-		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
-		Romanian:"Costul de achiziționare a plăcilor noi a scăzut cu 25%"
-		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
-		Dutch:"Kosten voor het kopen van nieuwe velden verlaagt met 25%"
-		Spanish:"El coste de adquirir nuevas casillas se reduce 25%"
-		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
-	}
-	"Culture in all cities increased by 25%":{
-		Italian:"+25% cultura in ogni città"
-		Russian:"Увеличивает прирост культуры на 25% во всех городах"
-		French:"La culture dans toutes les villes a augmenté de 25%"
-		Romanian:"Cultura în toate orașele a crescut cu 25%"
-		German:"Kultur wird in allen Städten um 25% erhöht"
-		Dutch:"Cultuur word in alle steden verhoogd met 25%"
-		Spanish:"Cultura en todas las ciudades incrementada 25%"
-		Portuguese:"Cultura em todas as cidades incrementada em 25%"
-	}
-	"Unhappiness from population decreased by 10%":{
-		Italian:"-10% infelicità della popolazione"
-		Russian:"Снижает недовольство от населения на 10%"
-		French:"Le mécontentement de la population a diminué de 10%"
-		Romanian:"Nefericirea de la populație a scăzut cu 10%"
-		German:"Unzufriedenheit vom Volk um 10% verringert"
-		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
-		Spanish:"Infelicidad de la población reducida 10%"
-		Portuguese:"Infelicidade da população reduzida em 10%"
-	}
-	"Empire enters golden age":{
-		Italian:"L'impero entra nell'Età dell'Oro"
-		Russian:"Империя вступает в золотой век"
-		French:"L'Empire entre dans un âge d'or"
-		Romanian:"Imperiul intră în epoca de aur"
-		German:"Das Reich tritt ein goldenes Zeitalter an"
-		Dutch:"Het rijk betreed een gouden eeuw"
-		Spanish:"El imperio comienza una Edad de Oro"
-		Portuguese:" Império entra idade dourada"
-	}
-	"Free Great Artist Appears":{
-		Italian:"Appare un Grande Artista gratuito"
-		Russian:"Появляется бесплатный великий художник"
-		French:"Grand artiste gratuit apparaît"
-		Romanian:"Artistul Mare apare gratuit"
-		// German translation not sure
-		Dutch:"Een gratis geweldige artiest verschijnt"
-		Spanish:"Aparece un Gran Artista gratis"
-		Portuguese:"Aparece um Grande Artista grátis"
-	}
-	"Free great scientist appears":{
-		Italian:"Appare un Grande Scienziato"
-		French:"Grand scientifique gratuit apparaît"
-		Portuguese:"Aparece um Grande Cientista grátis"
-	}
-	
-	"Culture cost of adopting new Policies reduced by 10%":{
-		Italian:"-10% costo in cultura per nuove politiche"
-		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
-		French:"Coût culturel de l'adoption de nouvelles politiques réduit de 10%"
-		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
-		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
-		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
-		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
-		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
-	}
-	"Provides 1 happiness per social policy":{
-		Italian:"Fornisce 1 felicità per politica sociale"
-		Russian:"Обеспечивает 1 счастье за каждый общественный институт"
-		French:"Fournit 1 de bonheur par politique sociale"
-		Romanian:"Oferă 1 fericire pe politică socială"
-		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
-		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
-		Spanish:"Otorga 1 felicidad por cada política social"
-		Portuguese:"Provem 1 felicade por política social"
-	}
-	"Must be next to desert":{
-		Italian:"Deve trovarsi vicino al deserto"
-		Russian:"Должно быть рядом с пустыней"
-		French:"Doit être à côté d'un désert"
-		Romanian:"Trebuie să fie lângă deșert"
-		German:"Muss an eine Wüste grenzen"
-		Dutch:"Moet aan een woestijn grenzen"
-		Spanish:"Debe estar próximo a un desierto"
-		Portuguese:"Nescessário que esteja proximo ao deserto"
-	}
-	"Enables construction of Spaceship parts":{
-		Italian:"Consente la costruzione di parti di navi spaziali"
-		Russian:"Разрешает строительство частей космического корабля"
-		French:"Permet la construction de pièces du Vaisseau Spatial"
-		Romanian:"Permite construcția de părți ale navelor spațiale"
-		German:"Schaltet Arbeit an Raumschiffteilen frei"
-		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
-		Spanish:"Habilita la construcción de partes de Nave Espacial"
-		Portuguese:"Habilita a construção de partes da nave espacial"
-	}
-	"Increases production of spaceship parts by 50%":{
-		Italian:"+50% produzione di parti di navi spaziali"
-		Russian:"Ускоряет производство частей космического корабля на 50%"
-		French:"Augmente la production de pièces de Vaisseau Spatial de 50%"
-		Romanian:"Crește producția de piese de navă spațială cu 50%"
-		German:"Erhöht Produktion an Raumschiffteilen um 50%"
-		Dutch:"Verhoogd de productiesnelheid van ruimteschips onderdelen met 50%"
-		Spanish:"Incrementa la producción de partes de Nave Espacial 50%"
-		Portuguese:"Torna a construção de partes de nave em 50%"
-	}
-	"Spaceship part":{
-		Italian:"Parte della nave spaziale"
-		Russian:"Часть космического корабля"
-		French:"Pièce de Vaisseau Spatial"
-		Romanian:"Partea spațială a navei"
-		German:"Raumschiffteil"
-		Dutch:"Ruimteschip onderdeel"
-		Spanish:"Parte de Nave Espacial"
-		Portuguese:"Parte de Nave Espacial"
-	}
-	"Can only be built in coastal cities":{
-		Italian:"Disponibile solo nelle città costiere"
-		French:"Peut seulement être construit dans les villes côtières"
-		Portuguese:"Só pode ser construido em cidades costeiras"
-	}
-	"All military naval units receive +1 movement and +1 sight":{
-		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
-		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
-		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
-	}
-	"+1 production from all sea resources worked by the city":{
-		Italian:"+1 Produzione per ogni risorsa marittima sfruttata"
-		French:"+1 de production pour toutes les ressources maritimes exploitées par la ville"
-		Portuguese:"1+ de produção de todos os recursos marítimos trabalhados pelo cidade"
-	}
-	"Connects trade routes over water":{
-		Italian:"Consente le rotte commerciali marittime"
-		French:"Connecter des routes commerciales maritimes"
-		Portuguese:"Conecta rotas comerciais pela água"
-	}
-	"+1 production and gold from all sea resources worked by the city":{
-		Italian:"+1 Produzione e Oro da ogni risorsa marittima sfruttata dalla città"
-		French:"+1 de production et d'or pour toutes les ressources maritimes exploitées par la ville"
-		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
-	}
-	"+15% production of naval units":{
-		Italian:"+15% Produzione per le unità marittime"
-		French:"+15% à la production d'unités maritimes"
-		Portuguese:"15% na produção de unidades marítimas"
-	}
 	
 	// Unit types
 	"Civilian":{
@@ -3745,6 +3527,7 @@
 		Portuguese:"Templo"
 	}
 	"Burial Tomb":{}
+	
 	"The Oracle":{	
 		Italian:"Ooracolo"
 		Russian:"Оракул"
@@ -3753,6 +3536,17 @@
 		Spanish:"El Oráculo"
 		Portuguese:"O Oráculo"
 	}
+	"Free Social Policy":{
+		Italian:"Politica sociale gratuita"
+		Russian:"Бесплатный общественный институт"
+		French:"Politique sociale gratuite"
+		Romanian:"Politica socială gratuită"
+		German:"Freie Sozialpolitik"
+		Dutch:"Gratis sociaalbeleid"
+		Spanish:"Política social gratis"
+		Portuguese:"Politica social gratis"
+	}
+	
 	"National College":{	
 		Italian:"Colleggio Nazionale"
 		Russian:"Национальный колледж"
@@ -3761,6 +3555,7 @@
 		Spanish:"Universidad Nacional"
 		Portuguese:"Universidade Nacional"
 	}
+	
 	"Chichen Itza":{	
 		Italian:"Chichen Itza"
 		Russian:"Чичен-Ица"
@@ -3769,16 +3564,39 @@
 		Spanish:"Chichén Itzá"
 		Portuguese:"Chichen Itza"
 	}
+	"Golden Age length increases +50%":{
+		Italian:"+50% durata dell'Età dell'Oro"
+		Russian:"Длина золотого века +50%"
+		French:"La longueur de l'âge d'or augmente de 50%"
+		Romanian:"Vârsta de aur crește + 50%"
+		German:"Länge eines Goldenen Zeitalters um 50% erhöht"
+		Dutch:"Gouden eeuw lengte neem toe met +50%"
+		Spanish:"La Edad de Oro dura 50% más"
+		Portuguese:"Duração de idade dourada aumentada em 50%"
+	}
+	
 	"Lighthouse":{
 		Italian:"Faro"
 		French:"Phare"
 		Portuguese:"Farol" // farol also means that thing wich has a red ligh (i do not remember it's name) so if deemed nescessarry can add costeira to the beggining
 	}
+	"Can only be built in coastal cities":{
+		Italian:"Disponibile solo nelle città costiere"
+		French:"Peut seulement être construit dans les villes côtières"
+		Portuguese:"Só pode ser construido em cidades costeiras"
+	}
+	
 	"The Great Lighthouse":{
 		Italian:"Grande Faro"
 		French:"Grand Phare"
 		Portuguese:"O Grande Farol"
 	}
+	"All military naval units receive +1 movement and +1 sight":{
+		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
+		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
+		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
+	}
+
 	"Stable":{	
 		Italian:"Scuderia"
 		Russian:"Конюшня"
@@ -3836,6 +3654,7 @@
 		Spanish:"Notre Dame"
 		Portuguese:"Notre Dame"
 	}
+	
 	"Hagia Sophia":{	
 		Italian:"Hagia Sophia"
 		Russian:"Собор Святой Софии"
@@ -3844,6 +3663,17 @@
 		Spanish:"Santa Sofía"
 		Portuguese:"Santa Sofia"
 	}
+	"+33% great person generation in all cities":{
+		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
+		Russian:"+ 33% к созданию великих людей во всех городах"
+		French:"+ 33% de génération de Grand Personnage dans toutes les villes"
+		Romanian:"+ 33% generație mare de persoane în toate orașele"
+		// German translation not sure
+		Dutch:"+33% Geweldig persoon generatie in alle steden"
+		Spanish:"+33% generación de Grandes Personas en todas las ciudades"
+		Portuguese:"+33% de geração de grandes pessoas em todas as cidades"
+	}
+	
 	"Mint":{ 
 		Italian:"Zecca"
 		Russian:"Монетный двор"
@@ -3851,6 +3681,7 @@
 		Spanish:"Casa de la moneda"
 		Portuguese:"Casa da moeda"
 	}
+	
 	"Machu Pichu":{	
 		Italian:"Machu Pichu"
 		Russian:"Мачу-Пикчу"
@@ -3859,6 +3690,17 @@
 		Spanish:"Machu Picchu"
 		Portuguese:"Machu Picchu"
 	}
+	"Gold from all trade routes +25%":{
+		Italian:"+25% oro da ogni rotta commerciale"
+		Russian:"Золото со всех торговых путей + 25%"
+		French:"Or de toutes les routes commerciales + 25%"
+		Romanian:"Aur din toate rutele comerciale + 25%"
+		German:"Gold von allen Handelsrouten um 25% erhöht"
+		Dutch:"Van alle handelroutes +25% goud"
+		Spanish:"+25% de oro en todas las rutas de comercio"
+		Portuguese:"+25% de ouro de todas as linhas comerciais" // Linhas comerciais= comertial lines, replace with rotas de comércio if needed
+	}
+	
 	"Aqueduct":{	
 		Italian:"Acquedotto"
 		Russian:"Акведук"
@@ -3867,6 +3709,17 @@
 		Spanish:"Acueducto"
 		Portuguese:"Aqueduto"
 	}
+	"40% of food is carried over after a new citizen is born":{
+		Italian:"Il 40% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
+		Russian:"40% продовольствия сохраняется после рождения нового гражданина"
+		French:"40% de la nourriture est préservée après la naissance d'un nouveau citoyen"
+		Romanian:"40% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
+		German:"40% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
+		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
+		Spanish:"40% de comida es arrastrada cada vez que nace un nuevo habitante"
+		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
+	}
+	
 	"Workshop":{	
 		Italian:"Bottega"
 		Russian:"Мастерская"
@@ -3883,11 +3736,23 @@
 		Spanish:"Forja"
 		Portuguese:"Forja"
 	}
+	
 	"Harbor":{
 		Italian:"Porto"
 		French:"Havre"
 		Portuguese:"Porto"
 	}
+	"+1 production from all sea resources worked by the city":{
+		Italian:"+1 Produzione per ogni risorsa marittima sfruttata"
+		French:"+1 de production pour toutes les ressources maritimes exploitées par la ville"
+		Portuguese:"1+ de produção de todos os recursos marítimos trabalhados pelo cidade"
+	}
+	"Connects trade routes over water":{
+		Italian:"Consente le rotte commerciali marittime"
+		French:"Connecter des routes commerciales maritimes"
+		Portuguese:"Conecta rotas comerciais pela água"
+	}
+	
 	"University":{	
 		Italian:"Università"
 		Russian:"Университет"
@@ -3896,6 +3761,17 @@
 		Spanish:"Universidad"
 		Portuguese:"Universidade"
 	}
+	"Jungles provide +2 science":{
+		Italian:"+2 scienza da giungle"
+		Russian:"Джунгли обеспечивают +2 науки"
+		French:"Jungles fournissent +2 science"
+		Romanian:"Junglele oferă știință +2"
+		German:"Dschungel produziert 2 Erforschung"
+		Dutch:"Oerwouden leveren +2 Wetenschap"
+		Spanish:"Las selvas proporcionan +2 ciencia"
+		Portuguese:"Selvas proporcionam +2 ciência"
+	}
+	
 	"Oxford University":{	
 		Italian:"Università di Oxford"
 		Russian:"Оксфордский университет"
@@ -3912,6 +3788,7 @@
 		Spanish:"Castillo"
 		Portuguese:"Castelo"
 	}
+	
 	"Angkor Wat":{	
 		Italian:"Angkor Wat"
 		Russian:"Ангкор-Ват"
@@ -3920,6 +3797,17 @@
 		Spanish:"Angkor Wat"
 		Portuguese:"Angkor Wat"
 	}
+	"Cost of acquiring new tiles reduced by 25%":{
+		Italian:"-25% costo di acquisto di nuove celle"
+		Russian:"Сокращает стоимость приобретения новых клеток на 25%"
+		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
+		Romanian:"Costul de achiziționare a plăcilor noi a scăzut cu 25%"
+		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
+		Dutch:"Kosten voor het kopen van nieuwe velden verlaagt met 25%"
+		Spanish:"El coste de adquirir nuevas casillas se reduce 25%"
+		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
+	}
+	
 	"Porcelain Tower":{	
 		Italian:"Torre di Porcellana"
 		Russian:"Фарфоровая башня"
@@ -3928,6 +3816,12 @@
 		Spanish:"Torre de Porcelana"
 		Portuguese:"Torre de Porcelana"
 	}
+	"Free great scientist appears":{
+		Italian:"Appare un Grande Scienziato"
+		French:"Grand scientifique gratuit apparaît"
+		Portuguese:"Aparece um Grande Cientista grátis"
+	}
+	
 	"Ironworks":{	
 		Italian:"Lavori in ferro"
 		Russian:"Металлургический завод"
@@ -3960,6 +3854,7 @@
 		Spanish:"Teatro de la Ópera"
 		Portuguese:"Casa de Ópera"
 	}
+	
 	"Sistine Chapel":{	
 		Italian:"Cappella Sistina"
 		Russian:"Сикстинская капелла"
@@ -3968,6 +3863,17 @@
 		Spanish:"Capilla Sixtina"
 		Portuguese:" Capela Sistina"
 	}
+	"Culture in all cities increased by 25%":{
+		Italian:"+25% cultura in ogni città"
+		Russian:"Увеличивает прирост культуры на 25% во всех городах"
+		French:"La culture dans toutes les villes a augmenté de 25%"
+		Romanian:"Cultura în toate orașele a crescut cu 25%"
+		German:"Kultur wird in allen Städten um 25% erhöht"
+		Dutch:"Cultuur word in alle steden verhoogd met 25%"
+		Spanish:"Cultura en todas las ciudades incrementada 25%"
+		Portuguese:"Cultura em todas as cidades incrementada em 25%"
+	}
+	
 	"Bank":{	
 		Italian:"Banca"
 		Russian:"Банк"
@@ -3976,6 +3882,7 @@
 		Spanish:"Banco"
 		Portuguese:"Banco"
 	}
+	
 	"Forbidden Palace":{	
 		Italian:"Palazzo Proibito"
 		Russian:"Запретный дворец"
@@ -3984,6 +3891,17 @@
 		Spanish:"Palacio Prohibido"
 		Portuguese:"Palácio Proibido"
 	}
+	"Unhappiness from population decreased by 10%":{
+		Italian:"-10% infelicità della popolazione"
+		Russian:"Снижает недовольство от населения на 10%"
+		French:"Le mécontentement de la population a diminué de 10%"
+		Romanian:"Nefericirea de la populație a scăzut cu 10%"
+		German:"Unzufriedenheit vom Volk um 10% verringert"
+		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
+		Spanish:"Infelicidad de la población reducida 10%"
+		Portuguese:"Infelicidade da população reduzida em 10%"
+	}
+	
 	"Theatre":{	
 		Italian:"Teatro"
 		Russian:"Tеатр"
@@ -3992,6 +3910,7 @@
 		Spanish:"Teatro"
 		Portuguese:"Teatro"
 	}
+	
 	"Taj Mahal":{	
 		Italian:"Taj Mahal"
 		Russian:"Тадж-Махал"
@@ -4001,6 +3920,17 @@
 		Portuguese:"Taj Mahal" // somethimes h has no sound in the portuguese language (brazilian variation [altough i am not sure about other variations]) and others it has the sound of h (weak sound)
 				       // so that is why i would double check it later to see if Taj Mahal is correctly written in portuguese
 	}
+	"Empire enters golden age":{
+		Italian:"L'impero entra nell'Età dell'Oro"
+		Russian:"Империя вступает в золотой век"
+		French:"L'Empire entre dans un âge d'or"
+		Romanian:"Imperiul intră în epoca de aur"
+		German:"Das Reich tritt ein goldenes Zeitalter an"
+		Dutch:"Het rijk betreed een gouden eeuw"
+		Spanish:"El imperio comienza una Edad de Oro"
+		Portuguese:" Império entra idade dourada"
+	}
+	
 	"Windmill":{	
 		Italian:"Mulino a vento"
 		Russian:"Ветряная мельница"
@@ -4025,6 +3955,7 @@
 		Spanish:"Ermita"
 		Portuguese:"Eremitério"
 	}
+	
 	"The Louvre":{	
 		Italian:"Il Louvre"
 		Russian:"Лувр"
@@ -4033,11 +3964,33 @@
 		Spanish:"El Louvre"
 		Portuguese:"O Louvre"
 	}
+	"Free Great Artist Appears":{
+		Italian:"Appare un Grande Artista gratuito"
+		Russian:"Появляется бесплатный великий художник"
+		French:"Grand artiste gratuit apparaît"
+		Romanian:"Artistul Mare apare gratuit"
+		// German translation not sure
+		Dutch:"Een gratis geweldige artiest verschijnt"
+		Spanish:"Aparece un Gran Artista gratis"
+		Portuguese:"Aparece um Grande Artista grátis"
+	}
+	
 	"Seaport":{
 		Italian:"Cantiere navale"
 		French:"Port"
 		Portuguese:"Port"
 	}
+	"+1 production and gold from all sea resources worked by the city":{
+		Italian:"+1 Produzione e Oro da ogni risorsa marittima sfruttata dalla città"
+		French:"+1 de production et d'or pour toutes les ressources maritimes exploitées par la ville"
+		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
+	}
+	"+15% production of naval units":{
+		Italian:"+15% Produzione per le unità marittime"
+		French:"+15% à la production d'unités maritimes"
+		Portuguese:"15% na produção de unidades marítimas"
+	}
+	
 	"Public School":{	
 		Italian:"Scuola pubblica"
 		Russian:"Школа"
@@ -4046,6 +3999,7 @@
 		Spanish:"Escuela pública"
 		Portuguese:"Escola Pública"
 	}
+	
 	"Hospital":{	
 		Italian:"Ospedale"
 		Russian:"Больница"
@@ -4054,6 +4008,17 @@
 		Spanish:"Hospital"
 		Portuguese:"Hospital"
 	}
+	"25% of food is carried over after a new citizen is born":{
+		Italian:"Il 25% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
+		Russian:"25% продовольствия сохраняется после рождения нового гражданина"
+		French:"25% de la nourriture est préservée après la naissance d'un nouveau citoyen"
+		Romanian:"25% din produsele alimentare sunt mentinute după ce se naște un nou cetățean"
+		German:"25% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
+		Dutch:"25% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
+		Spanish:"25% de comida es arrastrada cada vez que nace un nuevo habitante"
+		Portuguese:"25% da comida é mantida depois de um novo cidadão nascer"
+	}
+	
 	"Factory":{	
 		Italian:"Fabbrica"
 		Russian:"Завод"
@@ -4070,7 +4035,8 @@
 		Spanish:"Bolsa de valores"
 		Portuguese:"Bolsa de valores"
 	}
-	"Cristo Redentor":{	//?
+	
+	"Cristo Redentor":{
 		Italian:"Cristo Redentor"
 		Russian:"Кристо Редентор"
 		French:"Cristo Redentor"
@@ -4078,6 +4044,17 @@
 		Spanish:"Cristo Redentor"
 		Portuguese:"Cristo Redentor"
 	}
+	"Culture cost of adopting new Policies reduced by 10%":{
+		Italian:"-10% costo in cultura per nuove politiche"
+		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
+		French:"Coût culturel de l'adoption de nouvelles politiques réduit de 10%"
+		Romanian:"Costul culturii de adoptare a noilor politici a scăzut cu 10%"
+		German:"Neue Sozialpolitiken brauchen 10% weniger Kultur"
+		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
+		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
+		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
+	}
+	
 	"Military Academy":{	
 		Italian:"Accademia Militare"
 		Russian:"Военная академия"
@@ -4094,6 +4071,7 @@
 		Spanish:"Torre de emisión"
 		Portuguese:"Torre de Transmissão"
 	}
+	
 	"Eiffel Tower":{	
 		Italian:"Torre Eiffel"
 		Russian:"Эйфелева башня"
@@ -4102,6 +4080,17 @@
 		Spanish:"Torre Eiffel"
 		Portuguese:"Torre Eiffel"
 	}
+	"Provides 1 happiness per social policy":{
+		Italian:"Fornisce 1 felicità per politica sociale"
+		Russian:"Обеспечивает 1 счастье за каждый общественный институт"
+		French:"Fournit 1 de bonheur par politique sociale"
+		Romanian:"Oferă 1 fericire pe politică socială"
+		German:"Gibt 1 Zufriedenheit pro Sozialpolitik"
+		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
+		Spanish:"Otorga 1 felicidad por cada política social"
+		Portuguese:"Provem 1 felicade por política social"
+	}
+	
 	"Medical Lab":{	
 		Italian:"Laboratorio medico"
 		Russian:"Медицинская лаборатория"
@@ -4134,6 +4123,7 @@
 		Spanish:"Estadio"
 		Portuguese:"Estadio"
 	}
+	
 	"Solar Plant":{	
 		Italian:"Impianto solare"
 		Russian:"Солнечный завод"
@@ -4142,11 +4132,23 @@
 		Spanish:"Planta Solar"
 		Portuguese:"Planta Solar"
 	}
+	"Must be next to desert":{
+		Italian:"Deve trovarsi vicino al deserto"
+		Russian:"Должно быть рядом с пустыней"
+		French:"Doit être à côté d'un désert"
+		Romanian:"Trebuie să fie lângă deșert"
+		German:"Muss an eine Wüste grenzen"
+		Dutch:"Moet aan een woestijn grenzen"
+		Spanish:"Debe estar próximo a un desierto"
+		Portuguese:"Nescessário que esteja proximo ao deserto"
+	}
+	
 	"Sydney Opera House":{
 		Italian:"Teatro dell'Opera di Sidney"
 		French:"Opéra de Sydney"
 		Portuguese:"Ópera de Sydney"
 	}
+	
 	"Apollo Program":{	
 		Italian:"Programma Apollo"
 		Russian:"Программа Аполлон"
@@ -4154,6 +4156,17 @@
 		Romanian:"Programul Apollo"
 		Spanish:"Programa Apollo"
 	}
+	"Enables construction of Spaceship parts":{
+		Italian:"Consente la costruzione di parti di navi spaziali"
+		Russian:"Разрешает строительство частей космического корабля"
+		French:"Permet la construction de pièces du Vaisseau Spatial"
+		Romanian:"Permite construcția de părți ale navelor spațiale"
+		German:"Schaltet Arbeit an Raumschiffteilen frei"
+		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
+		Spanish:"Habilita la construcción de partes de Nave Espacial"
+		Portuguese:"Habilita a construção de partes da nave espacial"
+	}
+	
 	"Nuclear Plant":{	
 		Italian:"Centrale nucleare"
 		Russian:"АЭС"
@@ -4162,6 +4175,7 @@
 		Spanish:"Central nuclear"
 		Portuguese:"Planta Nuclear"
 	}
+	
 	"Spaceship Factory":{	
 		Italian:"Fabbrica di astronave"
 		Russian:"Завод космических кораблей"
@@ -4169,6 +4183,27 @@
 		Romanian:"Fabbrica di astronave"
 		Spanish:"Fábrica de Nave Espacial"
 		Portuguese:"Fábrica de Naves Espaciais"
+	}
+	"Increases production of spaceship parts by 50%":{
+		Italian:"+50% produzione di parti di navi spaziali"
+		Russian:"Ускоряет производство частей космического корабля на 50%"
+		French:"Augmente la production de pièces de Vaisseau Spatial de 50%"
+		Romanian:"Crește producția de piese de navă spațială cu 50%"
+		German:"Erhöht Produktion an Raumschiffteilen um 50%"
+		Dutch:"Verhoogd de productiesnelheid van ruimteschips onderdelen met 50%"
+		Spanish:"Incrementa la producción de partes de Nave Espacial 50%"
+		Portuguese:"Torna a construção de partes de nave em 50%"
+	}
+	
+	"Spaceship part":{
+		Italian:"Parte della nave spaziale"
+		Russian:"Часть космического корабля"
+		French:"Pièce de Vaisseau Spatial"
+		Romanian:"Partea spațială a navei"
+		German:"Raumschiffteil"
+		Dutch:"Ruimteschip onderdeel"
+		Spanish:"Parte de Nave Espacial"
+		Portuguese:"Parte de Nave Espacial"
 	}
 	"SS Booster":{	//no translation that I know of
 		Italian:"Propulsore dell'astronave"
