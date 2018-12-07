@@ -362,7 +362,7 @@ class MapUnit {
         actions.add {
             val amount = listOf(25,60,100).getRandom()
             civInfo.gold+=amount
-            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!!",currentTile.position, Color.GOLD)
+            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",currentTile.position, Color.GOLD)
         }
 
         (actions.getRandom())()

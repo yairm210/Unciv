@@ -1037,6 +1037,12 @@
 		French:"Le support ne peut être fournit pour [unitName] - l'unité a été dissoute!" 
 		Portuguese:"Não é possivel providenciar manutenção para [unitName] - a unidade foi dissolvida!"
 	}
+	
+	"We have found survivors the ruins - population added to [cityName]":{}
+	"We have discovered the lost technology of [techName] in the ruins!":{}
+	"A [unitName] has joined us!":{}
+	"An ancient tribe trains our [unitName] in their ways of combat!":{}
+	"We have found a stash of [amount] gold in the ruins!":{}
 
 	
 	// Save and load game
@@ -1236,6 +1242,8 @@
 		Spanish:"Colinas"
 		Portuguese:"Morro"
 	}
+	
+	"Mountain":{}
 
 	"Forest":{
 		Italian:"Foresta"
@@ -1292,8 +1300,9 @@
 	}
 	
 	"Impassible":{
-	Portuguese:"Impassevel"
+		Portuguese:"Impassevel"
 	}
+	
 	
 	// Bonus Resources
 	"Cattle":{
@@ -1720,6 +1729,9 @@
 		Spanish:"Quitar pantano"
 		Portuguese:"Drenar pântano"
 	}
+	
+	"Ancient Ruins":{}
+	"City Ruins":{}
 	
 	// Great Unit improvements
 	"Academy":{
@@ -4303,6 +4315,7 @@
 		Spanish:"Arquero en carro"
 		Portuguese:"Arqueiro de Biga"
 	}
+	"War Chariot":{} // Egypt unique
 	"Spearman":{	
 		Italian:"Lanciere"
 		Russian:"Копейщик"
@@ -4311,8 +4324,10 @@
 		Spanish:"Lancero"
 		Portuguese:"Lanceiro"
 	}
+	"Hoplite":{}// Greek unique
 	
 	// Classical Era Units
+	"Composite Bowman":{}
 	"Catapult":{	
 		Italian:"Catapulta"
 		Russian:"Катапульта"
@@ -4334,6 +4349,7 @@
 		Spanish:"Espadachín"
 		Portuguese:"Espadachin" // may replace with guerreiro com espada if nescessary
 	}
+	"Legion":{} // Rome unique
 	"Horseman":{	
 		Italian:"Cavaliere"
 		Russian:"Всадник"
@@ -4357,6 +4373,7 @@
 		French:"Galléasse"
 		Portuguese:"Galleass"
 	}
+	
 	"Crossbowman":{	
 		Italian:"Balestriere"
 		Russian:"Арбалетчик"
@@ -4371,6 +4388,8 @@
 		Spanish:"Arquero de arco largo"
 		Portuguese:"Arqueiro de arco longo"
 	}
+	"Chu-ko-nu":{} // Chinese unique, can transliterate
+	
 	"Trebuchet":{	
 		Italian:"Trebuchet"
 		Russian:"Требушет"
@@ -4429,12 +4448,13 @@
 		French:"Mousquetaire"
 		Portuguese:"Mosqueteiro"
 	}
-	"Minuteman":{}
+	"Minuteman":{} // American unique
 	"Frigate":{
 		Italian:"Fregata"
 		French:"Frégate"
 		Portuguese:"Fragata"
 	}
+	"Ship of the Line":{} // English unique
 	"Lancer":{	
 		Italian:"Lanciere a cavallo"
 		Russian:"Улан"
@@ -4445,6 +4465,8 @@
 	}
 	
 	// Industrial units
+	
+	"Gatling Gun":{}
 	"Rifleman":{	
 		Italian:"Fuciliere"
 		Russian:"Стрелок"
@@ -4461,6 +4483,7 @@
 		Spanish:"Cavallería"
 		Portuguese:"Cavalaria"
 	}
+	"Cossack":{} // Russia unique
 	"Artillery":{	
 		Italian:"Artiglieria"
 		Russian:"Артиллерия"
@@ -4479,6 +4502,30 @@
 	"Landship":{}
 	"Great War Infantry":{}
 	"Destroyer":{}
+	"Machine Gun":{}
+	"Anti-aircraft Gun":{}
+	"Infantry":{}
+	"Foreign Legion":{} // French Unique
+	"Battleship":{}
+	"Submarine":{}
+	"Carrier":{} // aircrat carrier
+	"Great War Bomber":{}
+	"Triplane":{}
+	
+	// Atomic units (not in game yet but will be, not super important but why not)
+	"Rocket Artillery":{}
+	"Anti-tank Gun":{}
+	"Marine":{}
+	"Mobile SAM":{}
+	"Paratrooper":{}
+	"Tank":{}
+	"Panzer":{} // german unique
+	"Bomber":{}
+	"B17":{} // american unique
+	"Fighter":{}
+	"Helicopter Gunship":{}
+	
+	// Information era - not even putting here, too far off
 	
 	// Great units
 	"Great Artist":{	
@@ -4513,6 +4560,7 @@
 		Spanish:"Gran Ingeniero"
 		Portuguese:"Grande engenheiro"
 	}
+	"Great General":{}
 	
 	// Social policies
 	"Requires":{
