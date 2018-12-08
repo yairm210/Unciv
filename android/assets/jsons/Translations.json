@@ -7,8 +7,8 @@
 		German:"Nächste Runde"
 		Dutch:"Volgende beurt"
 		Spanish:"Siguiente turno"
-		Chinese:"下一回合"
-        Portuguese:"Proximo turno"
+		Simplified Chinese:"下一回合"
+		Portuguese:"Proximo turno"
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
@@ -18,8 +18,8 @@
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
 		Spanish:"Trabajando..."
-        Simplified Chinese:"工作中"
-        Portuguese:"Trabalhando..."
+		Simplified Chinese:"工作中"
+		Portuguese:"Trabalhando..."
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
@@ -30,8 +30,8 @@
 		German:"Runde"
 		Dutch:"Beurt"
 		Spanish:"Turno"
-        Simplified Chinese:"回合"
-        Portuguese:"Turno"
+		Simplified Chinese:"回合"
+		Portuguese:"Turno"
 	}
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -42,8 +42,8 @@
 		German:"in"
 		Dutch:"in"
 		Spanish:"en"
-        Simplified Chinese:"在"
-        Portuguese:"em"
+		Simplified Chinese:"在"
+		Portuguese:"em"
 	}
 	
 	"turns":{ // for e.g. turns to technology
@@ -54,8 +54,8 @@
 		German:"Runden"
 		Dutch:"Beurten"
 		Spanish:"turnos"
-        Simplified Chinese:"回合"
-        Portuguese:"turnos"
+		Simplified Chinese:"回合"
+		Portuguese:"turnos"
 	}
 
 	// Unit
@@ -67,8 +67,8 @@
 		German:"Bewegungen"
 		Dutch:"Mobieliteit"
 		Spanish:"Movimiento"
-	    Portuguese:"Movimento"
-		Chinese:"移动"
+		Simplified Chinese:"移动力"
+		Portuguese:"Movimento"
 	}
 
 	"Strength":{
@@ -79,8 +79,8 @@
 		German:"Stärke"
 		Dutch:"Kracht"
 		Spanish:"Fuerza"
-        Simplified Chinese:"近战攻击"
-        Portuguese:"Força"
+		Simplified Chinese:"近战攻击"
+		Portuguese:"Força"
 	}
 
 	"Ranged strength":{
@@ -91,8 +91,8 @@
 		German:"Fernkampf Stärkte"
 		Dutch:"Kracht op afstand"
 		Spanish:"Fuerza a distancia"
-        Simplified Chinese:"远程攻击"
-        Portuguese:"Força a distancia"
+		Simplified Chinese:"远程攻击"
+		Portuguese:"Força a distancia"
 	}
 
 
@@ -105,8 +105,8 @@
 		German:"Einheit bewegen"
 		Dutch:"Eenheid verplaatsen"
 		Spanish:"Mover unidad"
-        Simplified Chinese:"移动单位"
-        Portuguese:"Mover unidade"
+		Simplified Chinese:"移动单位"
+		Portuguese:"Mover unidade"
 	}
 
 	"Stop movement":{
@@ -117,8 +117,8 @@
 		German:"Bewgen abbrechen"
 		Dutch:"Verplaatsen stoppen"
 		Spanish:"Parar movimiento"
-        Simplified Chinese:"停止移动"
-        Portuguese:"Parar movimento"
+		Simplified Chinese:"停止移动"
+		Portuguese:"Parar movimento"
 	}
 
 	"Construct improvement":{
@@ -129,8 +129,8 @@
 		German:"Verbesserung bauen"
 		Dutch:"Verbetering bouwen"
 		Spanish:"Construir mejora"
-        Simplified Chinese:"建造建筑"
-        Portuguese:"Construir melhoria"
+		Simplified Chinese:"建造建筑"
+        	Portuguese:"Construir melhoria"
 	}
 
 	"Automate":{
@@ -141,8 +141,8 @@
 		German:"Automatisieren"
 		Dutch:"Autoatiseren"
 		Spanish:"Automatizar"
-        Simplified Chinese:"自动工作"
-        Portuguese:"Automatizar"
+		Simplified Chinese:"自动工作"
+		Portuguese:"Automatizar"
 	}
 
 	"Fortify":{
@@ -153,8 +153,8 @@
 		German:"Befestigen"
 		Dutch:"Versterken"
 		Spanish:"Fortificar"
-        Simplified Chinese:"驻守"
-        Portuguese:"Fortificar"
+		Simplified Chinese:"驻守"
+		Portuguese:"Fortificar"
 	}
 	
 	"Fortification":{ // as in "+40% Fortification"
@@ -165,14 +165,14 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-        Simplified Chinese:"设防"
-        Portuguese:"Fortficação"
+		Simplified Chinese:"设防"
+		Portuguese:"Fortficação"
 	}
 	
 	"Sleep":{
 		Italian:"Riposa"
-        Simplified Chinese:"睡眠"
-        Portuguese:"Dormir"
+		Simplified Chinese:"睡眠"
+		Portuguese:"Dormir"
 	}
 
 	"Set up":{ // For siege units
@@ -183,8 +183,8 @@
 		German:"Aufstellen"
 		Dutch:"Opstellen"
 		Spanish:"Montar"
-        Simplified Chinese:"架设"
-        Portuguese:"Montar"
+		Simplified Chinese:"架设"
+        	Portuguese:"Montar"
 	}
 	
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
@@ -193,8 +193,8 @@
 		French:"Mise à niveau vers [unitType] ([goldCost] or)"
 		Romanian:"Treceți la [unitType] (aurul [goldCost])"
 		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
-        Simplified Chinese:"升级到 [unitType] 需要 ([goldCost] 钱"
-        Portuguese:"Melhoria a [unitType] custará ([goldCost] ouro)"
+        	Simplified Chinese:"升级到 [unitType] 需要 ([goldCost] 钱"
+        	Portuguese:"Melhoria a [unitType] custará ([goldCost] ouro)"
 	}
 	
 	"Found city":{
@@ -205,8 +205,8 @@
 		German:"Stadt gründen"
 		Dutch:"Stad stichten"
 		Spanish:"Fundar ciudad"
-        Simplified Chinese:"建立城市"
-        Portuguese:"Fundar Cidade"
+        	Simplified Chinese:"建立城市"
+        	Portuguese:"Fundar Cidade"
 	}
 	
 	"Promote":{
@@ -217,8 +217,8 @@
 		German:"Befördern"
 		Dutch:"Promoveren"
 		Spanish:"Ascender"
-        Simplified Chinese:"提升"
-        Portuguese:"Promover"
+        	Simplified Chinese:"提升"
+        	Portuguese:"Promover"
 	}
 
 	"Health":{
@@ -229,8 +229,8 @@
 		German:"Gesundheit"
 		Dutch:"Gezondheid"
 		Spanish:"Salud"
-        Simplified Chinese:"生命"
-        Portuguese:"Saúde"
+        	Simplified Chinese:"生命"
+        	Portuguese:"Saúde"
 	}
 
 	"Disband unit":{
@@ -240,8 +240,8 @@
 		Romanian:"Desfaceți unitatea"
 		Dutch:"Eenheid opheffen"
 		Spanish:"Disolver unidad"
-        Simplified Chinese:"解雇单位"
-        Portuguese:"Desfazer unidade"
+		Simplified Chinese:"解雇单位"
+		Portuguese:"Desfazer unidade"
 	}
 	
 	"Do you really want to disband this unit?":{
@@ -250,8 +250,8 @@
 		French:"Voulez-vous vraiment dissoudre cette unité?"
 		Dutch:"Wil je echt deze eenheid opheffen"
 		Spanish:"¿Realmente quieres disolver esta unidad?"
-        Simplified Chinese:"您真的想解雇这个单位?"
-        Portuguese:"Voçê realmente quer desfazer essa unidade?"
+		Simplified Chinese:"您真的想解雇这个单位?"
+		Portuguese:"Voçê realmente quer desfazer essa unidade?"
 	}
 	"Yes":{
 		Italian:"Sì"
