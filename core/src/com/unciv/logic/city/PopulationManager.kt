@@ -84,11 +84,13 @@ class PopulationManager {
         val policies = cityInfo.civInfo.policies.adoptedPolicies
         val bestJob: Stat? = specialists.toHashMap()
                 .filter {maxSpecialistsMap.containsKey(it.key) && it.value < maxSpecialistsMap[it.key]!!}
-                .maxBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it.key, policies), cityInfo.civInfo) }
-                ?.key
+                .map {it.key}
+                .maxBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo.civInfo) }
         var valueBestSpecialist = 0f
-        if (bestJob != null)
-            valueBestSpecialist = Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(bestJob, policies), cityInfo.civInfo)
+        if (bestJob != null) {
+            val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(bestJob, policies)
+            valueBestSpecialist = Automation().rankSpecialist(specialistStats, cityInfo.civInfo)
+        }
 
         //assign population
         if (valueBestTile > valueBestSpecialist) {
@@ -114,22 +116,22 @@ class PopulationManager {
             val worstWorkedTile: TileInfo? = cityInfo.workedTiles
                     .asSequence()
                     .map { cityInfo.tileMap[it] }
-                    .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
+                    .minBy {Automation().rankTile(it, cityInfo.civInfo)}
             val valueWorstTile = Automation().rankTile(worstWorkedTile, cityInfo.civInfo)
 
             //evaluate specialists
             val policies = cityInfo.civInfo.policies.adoptedPolicies
             val worstJob: Stat? = specialists.toHashMap()
                     .filter { it.value > 0 }
-                    .minBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it.key, policies), cityInfo.civInfo) }
-                    ?.key
+                    .map {it.key}
+                    .minBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo.civInfo) }
             var valueWorstSpecialist = 0f
             if (worstJob != null)
                 valueWorstSpecialist = Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(worstJob, policies), cityInfo.civInfo)
 
             //un-assign population
             if ((valueWorstTile < valueWorstSpecialist && worstWorkedTile != null)
-                    || (getNumberOfSpecialists() == 0)) {
+                    || worstJob == null) {
                 cityInfo.workedTiles.remove(worstWorkedTile!!.position)
             } else {
                 specialists.add(worstJob!!, -1f)
