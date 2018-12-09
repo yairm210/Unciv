@@ -51,6 +51,7 @@ class WorldScreenDisplayOptionsTable : PopupTable(){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.language = languageSelectBox.selected.language
                 UnCivGame.Current.settings.save()
+                CameraStageBaseScreen.resetFonts()
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()
                 UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())
