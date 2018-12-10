@@ -118,7 +118,9 @@ class NextTurnAutomation{
         for (city in civInfo.cities) {
             city.workedTiles.clear()
             city.population.specialists.clear()
-            (0..city.population.population).forEach { city.population.autoAssignPopulation() }
+            for (i in 0..city.population.population)
+                city.population.autoAssignPopulation()
+
             Automation().chooseNextConstruction(city.cityConstructions)
             if (city.health < city.getMaxHealth())
                 Automation().trainCombatUnit(city) // override previous decision if city is under attack

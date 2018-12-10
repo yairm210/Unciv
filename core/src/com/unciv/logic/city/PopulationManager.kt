@@ -5,7 +5,6 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.getRandom
 import kotlin.math.roundToInt
 
 class PopulationManager {
@@ -134,7 +133,7 @@ class PopulationManager {
                     || worstJob == null) {
                 cityInfo.workedTiles.remove(worstWorkedTile!!.position)
             } else {
-                specialists.add(worstJob!!, -1f)
+                specialists.add(worstJob, -1f)
             }
         }
 

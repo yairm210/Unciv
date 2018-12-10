@@ -137,10 +137,11 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private fun updateGoToWorldButton() {
         goToWorldButton.clearListeners()
         goToWorldButton.onClick {
-                game.setWorldScreen()
-                game.worldScreen.tileMapHolder.setCenterPosition(city.location)
-                dispose()
-            }
+            game.setWorldScreen()
+            game.worldScreen.tileMapHolder.setCenterPosition(city.location)
+            game.worldScreen.bottomBar.unitTable.selectedUnit=null
+            dispose()
+        }
 
         goToWorldButton.pad(5f)
         goToWorldButton.setSize(goToWorldButton.prefWidth, goToWorldButton.prefHeight)
