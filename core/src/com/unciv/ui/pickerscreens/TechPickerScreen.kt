@@ -79,9 +79,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         rightSideButton.onClick {
             if (isFreeTechPick) {
                 civTech.techsResearched.add(selectedTech!!.name)
-                civTech.freeTechs -= 1
-                if (selectedTech!!.name == civTech.currentTechnology())
+                if (civTech.techsToResearch.contains(selectedTech!!.name)) {
                     civTech.techsToResearch.remove(selectedTech!!.name)
+                }
+                civTech.freeTechs -= 1
             } else
                 civTech.techsToResearch = techsToResearch
             game.setWorldScreen()
