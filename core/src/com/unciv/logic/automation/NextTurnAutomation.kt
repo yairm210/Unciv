@@ -117,6 +117,7 @@ class NextTurnAutomation{
     private fun reassignWorkedTiles(civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
             city.workedTiles.clear()
+            city.population.specialists.clear()
             (0..city.population.population).forEach { city.population.autoAssignPopulation() }
             Automation().chooseNextConstruction(city.cityConstructions)
             if (city.health < city.getMaxHealth())
