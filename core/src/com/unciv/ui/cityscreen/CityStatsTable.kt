@@ -23,12 +23,6 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
         columnDefaults(0).padRight(10f)
         clear()
 
-        val cityStatsHeader = Label("City Stats", CameraStageBaseScreen.skin)
-
-        cityStatsHeader.setFontSize(15)
-        add(cityStatsHeader).colspan(2).pad(10f)
-        row()
-
         val cityStatsValues = LinkedHashMap<String, String>()
         cityStatsValues["Production"] = Math.round(stats.production).toString() + city.cityConstructions.getAmountConstructedText()
         cityStatsValues["Food"] = (Math.round(stats.food).toString()

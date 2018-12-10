@@ -35,7 +35,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBase
         }
 
         if (!wonders.isEmpty()) {
-            val wondersExpander = ExpanderTab("Wonders",skin)
+            val wondersExpander = ExpanderTab("Wonders".tr(),skin)
             for (building in wonders) {
                 wondersExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 wondersExpander.innerTable.add(Label(building.name.tr(), skin)).pad(5f).align(Align.left).row()
@@ -44,7 +44,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBase
         }
 
         if (!specialistBuildings.isEmpty()) {
-            val specialistBuildingsExpander = ExpanderTab("Specialist Buildings",skin)
+            val specialistBuildingsExpander = ExpanderTab("Specialist Buildings".tr(),skin)
             for (building in specialistBuildings) {
                 specialistBuildingsExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 specialistBuildingsExpander.innerTable.add(Label(building.name.tr(), skin)).pad(5f)
@@ -63,7 +63,7 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBase
         }
 
         if (!others.isEmpty()) {
-            val buildingsExpanderTab = ExpanderTab("Buildings",skin)
+            val buildingsExpanderTab = ExpanderTab("Buildings".tr(),skin)
             for (building in others) {
                 buildingsExpanderTab.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 buildingsExpanderTab.innerTable.add(Label(building.name.tr(), skin)).pad(5f).row()

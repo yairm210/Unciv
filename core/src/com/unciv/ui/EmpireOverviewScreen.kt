@@ -173,7 +173,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
         val mapping = playerCivInfo.greatPeople.statToGreatPersonMapping
         for(entry in mapping){
-            greatPeopleTable.add(entry.value)
+            greatPeopleTable.add(entry.value.tr())
             greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
             greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
         }
