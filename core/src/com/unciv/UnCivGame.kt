@@ -82,6 +82,11 @@ class UnCivGame : Game() {
         setWorldScreen()
     }
 
+    // Maybe this will solve the resume error on chrome OS, issue 322? Worth a shot
+    override fun resize(width: Int, height: Int) {
+        resume()
+    }
+
     companion object {
         lateinit var Current: UnCivGame
     }

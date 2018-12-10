@@ -144,6 +144,8 @@
 		Simplified_Chinese:"自动工作"
 		Portuguese:"Automatizar"
 	}
+	
+	"Stop automation":{}
 
 	"Fortify":{
 		Italian:"Fortifica"
@@ -2715,6 +2717,8 @@
         Portuguese:"Quem sabe o que o futuro reserva?"
 	}
 	
+	// Tech uniques
+	
 	"Improves movement speed on roads":{
 		Italian:"Migliora la velocità sulle strade"
 		Russian:"Ускоряет скорость передвижения по дорогам"
@@ -2758,6 +2762,12 @@
         Simplified_Chinese:"使城市生产转化为金钱"
         Portuguese:"Habilita a conversão da produção das cidades para ouro"
 	}
+	
+	"Enables embarkation for land units":{}
+	
+	
+	"Enables embarked units to enter ocean tiles":{}
+	
 	"Increases embarked movement +1":{
 		Italian:"+1 movimento delle unità imbarcate"
 		French:"Améliore le déplacement en embarcation +1"
@@ -4011,6 +4021,7 @@
         Simplified_Chinese:"只能建在沿海城市"
         Portuguese:"Só pode ser construido em cidades costeiras"
 	}
+	"+1 food from Ocean and Coast tiles":{}
 	
 	"The Great Lighthouse":{
 		Italian:"Grande Faro"

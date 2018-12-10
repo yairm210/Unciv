@@ -39,8 +39,20 @@ android {
 
     buildTypes {
         release {
+            // Don't add local save files and fonts to release, obviously
+            aaptOptions {
+                ignoreAssetsPattern "!SaveFiles:!fonts"
+            }
+        
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            // Don't add local save files and fonts to release, obviously
+            aaptOptions {
+                ignoreAssetsPattern "!SaveFiles:!fonts"
+            }
         }
     }
 }
