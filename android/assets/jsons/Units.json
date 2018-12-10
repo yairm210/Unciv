@@ -109,6 +109,20 @@
 		uniques:["Bonus vs Mounted 50%"],
 		hurryCostModifier:20
 	},
+	{
+		name:"Hoplite",
+		replaces:"Spearman",
+		uniqueTo:"Greece",
+		unitType:"Melee",
+		movement:2,
+		strength:13,
+		cost: 56,
+		requiredTech:"Bronze Working",
+		obsoleteTech:"Civil Service",
+		upgradesTo: "Pikeman",
+		uniques:["Bonus vs Mounted 50%"],
+		hurryCostModifier:20
+	},
 	
 	
 	/* Classical Era */

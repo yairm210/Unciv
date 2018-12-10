@@ -104,6 +104,19 @@ class CityStats {
         return stats
     }
 
+    private fun getStatPercentBonusesFromNationUnique(): Stats {
+        val stats = Stats()
+
+        val civUnique = cityInfo.civInfo.getNation().unique
+        if(civUnique=="+25% Production towards any buildings that already exist in the Capital"
+            && cityInfo.cityConstructions.getCurrentConstruction() is Building
+            && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings
+                        .contains(cityInfo.cityConstructions.currentConstruction))
+            stats.production+=25f
+
+        return stats
+    }
+
 
     private fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
@@ -277,8 +290,9 @@ class CityStats {
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
         newStatPercentBonusList["Difficulty"]=getStatPercentBonusesFromDifficulty()
+        newStatPercentBonusList["National ability"]=getStatPercentBonusesFromNationUnique()
 
-        if(UnCivGame.Current.superchagedForDebug) {
+        if(UnCivGame.Current.superchargedForDebug) {
             val stats = Stats()
             for(stat in Stat.values()) stats.add(stat,10000f)
             newStatPercentBonusList["Supercharged"] = stats

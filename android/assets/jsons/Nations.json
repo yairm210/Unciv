@@ -61,6 +61,7 @@
 		name:"Rome",
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
+		unique:"+25% Production towards any buildings that already exist in the Capital",
 		cities:["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]

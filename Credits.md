@@ -20,6 +20,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
+* [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 
 ### Classical Era
 

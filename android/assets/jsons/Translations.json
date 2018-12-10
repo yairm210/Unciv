@@ -3354,6 +3354,9 @@
 		Simplified_Chinese:"替代"
 	}
 	
+	"National ability":{ // the unique ability that each nation has
+	}
+	
 	"Babylon":{	
 		Italian:"Babilonia"
 		Russian:"Вавилон"
@@ -3412,24 +3415,30 @@
         Simplified_Chinese:"法兰西"
         Portuguese:"França"
 	}
+	
 	"Russia":{
 		Simplified_Chinese:"俄罗斯"
 	}
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
 		Simplified_Chinese:"所有战略资源+1生产力, 并且马 铁和铀 提供双份"
 	}
+	
 	"Rome":{
 		Simplified_Chinese:"罗马"
 	}
+	"+25% Production towards any buildings that already exist in the Capital":{}
+	
 	"Arabia":{
 		Simplified_Chinese:"阿拉伯"
 	}
+	
 	"America":{
 		Simplified_Chinese:"美国"
 	}
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
 		Simplified_Chinese:"所有陆军 +1 视野, 购买地块打五折"
 	}
+	
 	"Barbarians":{
 		Simplified_Chinese:"蛮族"
 	}
@@ -4827,9 +4836,11 @@
         Simplified_Chinese:"战车射手"
         Portuguese:"Arqueiro de Biga"
 	}
-	"War Chariot":{
+	"War Chariot":{ // Egypt unique
 		Simplified_Chinese:"埃及战车"
-	} // Egypt unique
+	} 
+	
+	
 	"Spearman":{	
 		Italian:"Lanciere"
 		Russian:"Копейщик"
@@ -5044,7 +5055,9 @@
 	}
 	"Cossack":{
 		Simplified_Chinese:"哥萨克骑兵"
-		Russian:"Казаки:} // Russia unique
+		Russian:"Казаки"
+	} // Russia unique
+	
 	"Artillery":{	
 		Italian:"Artiglieria"
 		Russian:"Артиллерия"
