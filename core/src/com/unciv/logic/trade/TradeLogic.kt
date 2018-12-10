@@ -183,6 +183,9 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 }
                 if (offer.type == TradeType.Technology) {
                     to.tech.techsResearched.add(offer.name)
+                    if (to.tech.techsToResearch.contains(offer.name)) {
+                        to.tech.techsToResearch.remove(offer.name)
+                    }
                 }
                 if(offer.type== TradeType.City){
                     val city = from.cities.first { it.name==offer.name }
