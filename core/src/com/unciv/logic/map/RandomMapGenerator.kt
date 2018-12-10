@@ -271,7 +271,8 @@ open class RandomMapGenerator {
     }
 
     fun maybeAddAncientRuins(tile: TileInfo) {
-        if(tile.getBaseTerrain().type!=TerrainType.Water && Random().nextDouble() < 1f/100)
+        val baseTerrain = tile.getBaseTerrain()
+        if(baseTerrain.type!=TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f/100)
             tile.improvement = "Ancient ruins"
     }
 
