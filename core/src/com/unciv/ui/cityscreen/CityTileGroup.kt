@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
@@ -20,7 +21,10 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
     }
 
     fun update() {
-        super.update(true,true)
+        val canSeeTile = UnCivGame.Current.viewEntireMapForDebug
+                || city.civInfo.viewableTiles.contains(tileInfo)
+
+        super.update(canSeeTile,true)
 
         updatePopulationImage()
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
