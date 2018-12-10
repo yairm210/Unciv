@@ -11,7 +11,7 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 
-open class PopupTable: Table(){
+open class PopupTable: Table(CameraStageBaseScreen.skin){
     init {
         val tileTableBackground = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         background = tileTableBackground
@@ -21,7 +21,7 @@ open class PopupTable: Table(){
     }
 
     fun addButton(text:String, action:()->Unit){
-        val button = TextButton(text.tr(), CameraStageBaseScreen.skin).apply { color= ImageGetter.getBlue() }
+        val button = TextButton(text.tr(), skin).apply { color= ImageGetter.getBlue() }
         button.onClick(action)
         add(button).row()
     }
@@ -32,7 +32,6 @@ class YesNoPopupTable(question:String, action:()->Unit,
     init{
         if(!isOpen) {
             isOpen=true
-            val skin = CameraStageBaseScreen.skin
             add(Label(question, skin)).colspan(2).row()
 
             add(TextButton("No".tr(), skin).apply { onClick { close() } })

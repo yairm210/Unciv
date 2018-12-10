@@ -5,19 +5,13 @@ import com.badlogic.gdx.Input
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
-import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.scenes.scene2d.*
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UnCivGame
-import com.unciv.models.gamebasics.GameBasics
-import java.io.FileOutputStream
-import java.net.URL
 
 open class CameraStageBaseScreen : Screen {
 
@@ -69,14 +63,14 @@ open class CameraStageBaseScreen : Screen {
         }
 
         fun resetFonts(){
-            skin.get<TextButton.TextButtonStyle>(TextButton.TextButtonStyle::class.java).font = getFont(20)
+            skin.get<TextButton.TextButtonStyle>(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(20)
             skin.get<Label.LabelStyle>(Label.LabelStyle::class.java).apply {
-                font = getFont(18)
+                font = Fonts().getFont(18)
                 fontColor= Color.WHITE
             }
-            skin.get<TextField.TextFieldStyle>(TextField.TextFieldStyle::class.java).font = getFont(18)
-            skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).font = getFont(20)
-            skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).listStyle.font = getFont(20)
+            skin.get<TextField.TextFieldStyle>(TextField.TextFieldStyle::class.java).font = Fonts().getFont(18)
+            skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(20)
+            skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(20)
         }
         internal var batch: Batch = SpriteBatch()
     }
@@ -121,85 +115,9 @@ fun Actor.center(parent:Stage){ centerX(parent); centerY(parent)}
 
 fun Label.setFontColor(color:Color): Label {style=Label.LabelStyle(style).apply { fontColor=color }; return this}
 
-
-// Contains e.g. "Arial 22", fontname and size, to BitmapFont
-val fontCache = HashMap<String,BitmapFont>()
-
-fun getFontForLanguage(): String {
-    if(UnCivGame.Current.settings.language.contains("Chinese")) return chineseFont
-    else return "Arial"
-}
-
-val chineseFont = "SimSun"
-
-fun getCharsForFont(font:String): String {
-    val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
-            "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +
-            "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάΆέΈέΉίϊΐΊόΌύΰϋΎΫΏĂÂÊÉÔƠƯăâêôơưáéèíóú1234567890" +
-            "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
-    if(font=="Arial") return defaultText
-    if(font== chineseFont) {
-        val constants = "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
-        val charSet = HashSet<Char>()
-        charSet.addAll(constants.asIterable())
-        charSet.addAll(defaultText.asIterable())
-        for (entry in GameBasics.Translations.entries) {
-            for(lang in entry.value){
-                if(lang.key.contains("Chinese")) charSet.addAll(lang.value.asIterable())
-            }
-        }
-        return charSet.joinToString()
-    }
-    return ""
-}
-
-fun download(link: String, path: String) {
-    val input = URL(link).openStream()
-    val output = FileOutputStream(Gdx.files.local(path).file())
-    input.use {
-        output.use {
-            input.copyTo(output)
-        }
-    }
-}
-
-fun getFont(size: Int): BitmapFont {
-    val fontForLanguage = getFontForLanguage()
-    val keyForFont = "$fontForLanguage $size"
-    if(fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
-    val generator:FreeTypeFontGenerator
-
-    if(Gdx.files.internal("skin/$fontForLanguage.ttf").exists())
-        generator = FreeTypeFontGenerator(Gdx.files.internal("skin/$fontForLanguage.ttf"))
-    else {
-        val localPath = "fonts/$fontForLanguage.ttf"
-        if (!Gdx.files.local("fonts/$fontForLanguage.ttf").exists()) {
-            if(!Gdx.files.local("fonts").exists())
-                Gdx.files.local("fonts").mkdirs()
-
-            if(fontForLanguage == chineseFont)
-                download("https://github.com/micmro/Stylify-Me/raw/master/.fonts/SimSun.ttf",localPath)
-        }
-
-        generator = FreeTypeFontGenerator(Gdx.files.internal(localPath))
-    }
-
-    val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
-    parameter.size = size
-    parameter.minFilter = Texture.TextureFilter.Linear
-    parameter.magFilter = Texture.TextureFilter.Linear
-
-    parameter.characters = getCharsForFont(fontForLanguage)
-
-    val font = generator.generateFont(parameter)
-    generator.dispose() // don't forget to dispose to avoid memory leaks!
-    fontCache[keyForFont]=font
-    return font
-}
-
 fun Label.setFontSize(size:Int): Label {
     style = Label.LabelStyle(style)
-    style.font = getFont(size)
+    style.font = Fonts().getFont(size)
     style = style // because we need it to call the SetStyle function. Yuk, I know.
     return this // for chaining
 }

@@ -244,6 +244,8 @@
 		Portuguese:"Desfazer unidade"
 	}
 	
+	"Explore":{}
+	
 	"Do you really want to disband this unit?":{
 		Italian:"Vuoi davvero sciogliere questa unità?"
 		Russian:"Вы действительно хотите распустить этот юнит?"
@@ -1894,7 +1896,7 @@
         Portuguese:"Drenar pântano"
 	}
 	
-	"Ancient Ruins":{
+	"Ancient ruins":{
 	Simplified_Chinese:"远古遗址"
 	}
 	"City Ruins":{
