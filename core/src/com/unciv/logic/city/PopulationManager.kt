@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import kotlin.math.roundToInt
@@ -70,12 +71,36 @@ class PopulationManager {
 
     internal fun autoAssignPopulation() {
         if(getFreePopulation()==0) return
-        val toWork: TileInfo? = cityInfo.getTiles()
+
+        //evaluate tiles
+        val bestTile: TileInfo? = cityInfo.getTiles()
                 .filter { it.arialDistanceTo(cityInfo.getCenterTile()) <= 3 }
                 .filterNot { cityInfo.workedTiles.contains(it.position) || cityInfo.location==it.position}
                 .maxBy { Automation().rankTile(it,cityInfo.civInfo) }
-        if (toWork != null) // This is when we've run out of tiles!
-            cityInfo.workedTiles.add(toWork.position)
+        val valueBestTile = Automation().rankTile(bestTile, cityInfo.civInfo)
+
+        //evaluate specialists
+        val maxSpecialistsMap = getMaxSpecialists().toHashMap()
+        val policies = cityInfo.civInfo.policies.adoptedPolicies
+        val bestJob: Stat? = specialists.toHashMap()
+                .filter {maxSpecialistsMap.containsKey(it.key) && it.value < maxSpecialistsMap[it.key]!!}
+                .map {it.key}
+                .maxBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo.civInfo) }
+        var valueBestSpecialist = 0f
+        if (bestJob != null) {
+            val specialistStats = cityInfo.cityStats.getStatsOfSpecialist(bestJob, policies)
+            valueBestSpecialist = Automation().rankSpecialist(specialistStats, cityInfo.civInfo)
+        }
+
+        //assign population
+        if (valueBestTile > valueBestSpecialist) {
+            if (bestTile != null)
+                cityInfo.workedTiles.add(bestTile.position)
+        } else {
+            if (bestJob != null) {
+                specialists.add(bestJob, 1f)
+            }
+        }
     }
 
     fun unassignExtraPopulation() {
@@ -87,16 +112,29 @@ class PopulationManager {
         }
 
         while (getFreePopulation()<0) {
-            if(getNumberOfSpecialists()>0){
-                val specialistTypeToUnassign = specialists.toHashMap().filter { it.value>0 }.map { it.key }.getRandom()
-                specialists.add(specialistTypeToUnassign,-1f)
-            }
-            else {
-                val lowestRankedWorkedTile = cityInfo.workedTiles
-                        .asSequence()
-                        .map { cityInfo.tileMap[it] }
-                        .minBy { Automation().rankTile(it, cityInfo.civInfo) }!!
-                cityInfo.workedTiles.remove(lowestRankedWorkedTile.position)
+            //evaluate tiles
+            val worstWorkedTile: TileInfo? = cityInfo.workedTiles
+                    .asSequence()
+                    .map { cityInfo.tileMap[it] }
+                    .minBy {Automation().rankTile(it, cityInfo.civInfo)}
+            val valueWorstTile = Automation().rankTile(worstWorkedTile, cityInfo.civInfo)
+
+            //evaluate specialists
+            val policies = cityInfo.civInfo.policies.adoptedPolicies
+            val worstJob: Stat? = specialists.toHashMap()
+                    .filter { it.value > 0 }
+                    .map {it.key}
+                    .minBy { Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(it, policies), cityInfo.civInfo) }
+            var valueWorstSpecialist = 0f
+            if (worstJob != null)
+                valueWorstSpecialist = Automation().rankSpecialist(cityInfo.cityStats.getStatsOfSpecialist(worstJob, policies), cityInfo.civInfo)
+
+            //un-assign population
+            if ((valueWorstTile < valueWorstSpecialist && worstWorkedTile != null)
+                    || worstJob == null) {
+                cityInfo.workedTiles.remove(worstWorkedTile!!.position)
+            } else {
+                specialists.add(worstJob!!, -1f)
             }
         }
 

@@ -15,6 +15,15 @@ open class Stats() {
         setStats(hashMap)
     }
 
+    fun clear() {
+        production = 0f
+        food = 0f
+        gold = 0f
+        science = 0f
+        culture = 0f
+        happiness = 0f
+    }
+
     fun add(other: Stats) {
         // Doing this through the hashmap is nicer code but is SUPER INEFFICIENT!
         production += other.production
