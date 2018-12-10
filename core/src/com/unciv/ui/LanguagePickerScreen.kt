@@ -29,7 +29,9 @@ class LanguageTable(val language:String,skin: Skin):Table(skin){
 
         if(language=="English") percentComplete = 100
         else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size) - 5
-        add("$language ($percentComplete%)")
+
+        val spaceSplitLang = language.replace("_"," ")
+        add("$spaceSplitLang ($percentComplete%)")
         update("")
         touchable = Touchable.enabled // so click listener is activated when any part is clicked, not only children
         pack()
@@ -78,8 +80,9 @@ class LanguagePickerScreen: PickerScreen(){
             if (Fonts().containsFont(Fonts().getFontForLanguage(chosenLanguage)))
                 pickLanguage()
             else {
+                val spaceSplitLang = chosenLanguage.replace("_"," ")
                 YesNoPopupTable("This language requires you to download fonts.\n" +
-                        "Do you want to download fonts for $chosenLanguage?",
+                        "Do you want to download fonts for $spaceSplitLang?",
                         {
                             val downloading = PopupTable()
                             downloading.add(Label("Downloading...",skin))

@@ -21,7 +21,8 @@ class Language(val language:String){
         else percentComplete = (availableTranslations.size*100 / GameBasics.Translations.size)
     }
     override fun toString(): String {
-        return "$language - $percentComplete%"
+        val spaceSplitLang = language.replace("_"," ")
+        return "$spaceSplitLang- $percentComplete%"
     }
 }
 
@@ -60,8 +61,9 @@ class WorldScreenDisplayOptionsTable : PopupTable(){
                 if (Fonts().containsFont(Fonts().getFontForLanguage(selectedLanguage)))
                     selectLanguage()
                 else {
+                    val spaceSplitLang = selectedLanguage.replace("_"," ")
                     YesNoPopupTable("This language requires you to download fonts.\n" +
-                            "Do you want to download fonts for $selectedLanguage?",
+                            "Do you want to download fonts for $spaceSplitLang?",
                             {
 
                                 val downloading = PopupTable()
