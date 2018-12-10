@@ -4958,7 +4958,7 @@
 	}
 	"Camel Archer":{
 		Simplified_Chinese:"骆驼骑射手"
-	}
+	Russian:"Лучник на верблюде"}
 	
 	// Renaissance units
 	"Caravel":{
@@ -4966,7 +4966,7 @@
 		French:"Caravelle"
         Simplified_Chinese:"轻快帆船"
         Portuguese:"Caravela"
-	}
+	Russian:"Каравелла"}
 	"Cannon":{	
 		Italian:"Cannone"
 		Russian:"Пушка"
@@ -4982,25 +4982,25 @@
 		Spanish:"Mosquetero"
         Simplified_Chinese:"火铳手"
         Portuguese:"Soldado com mosquete"
-	}
+	Russian:"Стрельцы"}
 	"Musketeer":{
 		Italian:"Moschettiere"
 		French:"Mousquetaire"
         Simplified_Chinese:"火枪手"
         Portuguese:"Mosqueteiro"
-	}
+	Russian:"Мушкетёр"}
 	"Minuteman":{
 		Simplified_Chinese:"应召民兵"
-	} // American unique
+	Russian:"Минитмэн"} // American unique
 	"Frigate":{
 		Italian:"Fregata"
 		French:"Frégate"
         Simplified_Chinese:"护卫舰"
         Portuguese:"Fragata"
-	}
+	Russian:"Фригат"}
 	"Ship of the Line":{
 		Simplified_Chinese:"主力舰"
-	} // English unique
+	Russian:"Линейный корабль"} // English unique
 	"Lancer":{	
 		Italian:"Lanciere a cavallo"
 		Russian:"Улан"
@@ -5015,7 +5015,7 @@
 	
 	"Gatling Gun":{
 		Simplified_Chinese:"加特林"
-	}
+	Russian:"Пулемёт Гатлинга"}
 	"Rifleman":{	
 		Italian:"Fuciliere"
 		Russian:"Стрелок"
@@ -5036,7 +5036,7 @@
 	}
 	"Cossack":{
 		Simplified_Chinese:"哥萨克骑兵"
-	} // Russia unique
+	Russian:"Казаки:} // Russia unique
 	"Artillery":{	
 		Italian:"Artiglieria"
 		Russian:"Артиллерия"
@@ -5051,71 +5051,71 @@
 		French:"Cuirassé"
 		Simplified_Chinese:"铁甲舰"
 		// iron clad has 3 different tranlations to portuguese but i am not sure wich one to use
-	}
+	Russian:"Броненосец"}
 	
 	// Modern units (do these, yes)
 	"Landship":{
 		Simplified_Chinese:"履带战车"
-	}
+	Russian:"Танкетка"}
 	"Great War Infantry":{
 		Simplified_Chinese:"一战装甲舰"
-	}
+	Russian:"Стрелок"}
 	"Destroyer":{
 		Simplified_Chinese:"驱逐舰"
-	}
+	Russian:"УНИЧТОЖИТЕЛЬ ВСЕГО И ВСЕЯ ЖИВОГО"}
 	"Machine Gun":{
 		Simplified_Chinese:"机关枪"
-	}
+	Russian:"Пулемёт"}
 	"Anti-aircraft Gun":{
 		Simplified_Chinese:"高射炮"
-	}
+	Russian:"Зенитка"}
 	"Infantry":{
 		Simplified_Chinese:"步兵团"
-	}
+	Russian:"Пехота"}
 	"Foreign Legion":{
 		Simplified_Chinese:"外国志愿军"
-	} // French Unique
+	Russian:"Иностранный легион"} // French Unique
 	"Battleship":{
 		Simplified_Chinese:"战舰"		// not sure,
-	}
+	Russian:"Линкор"}
 	"Submarine":{
 		Simplified_Chinese:"潜艇"
-	}
+	Russian:"Подводная Лодка"}
 	"Carrier":{
 		Simplified_Chinese:"运输船"     // not sure,
-	} // aircrat carrier
+	Russian:"Авианосец"} // aircrat carrier
 	"Great War Bomber":{
 		Simplified_Chinese:"一战轰炸机"
-	}
+	Russian:"великий бомбардировщик0_0"}
 	"Triplane":{
 		Simplified_Chinese:"三翼飞机"
-	}
+	Russian:"ТРИПЛАН"}
 	
 	// Atomic units (not in game yet but will be, not super important but why not)
 	"Rocket Artillery":{
 		Simplified_Chinese:"火箭炮"
-	}
+	Russian:"Ракетная Артиллерия"}
 	"Anti-tank Gun":{
 		Simplified_Chinese:"反坦克炮"
-	}
+	Russian:"противотанковое оружие"}
 	"Marine":{
 		Simplified_Chinese:"海军陆战队"
-	}
+	Russian:"Морской пехотинец"}
 	"Mobile SAM":{
 		Simplified_Chinese:"防空导弹车"
-	}
+	Russian:"Мобильный СЭМ хуй знвет что это"}
 	"Paratrooper":{
 		Simplified_Chinese:"伞兵"
-	}
+	Russian:"Парашютист"}
 	"Tank":{
 		Simplified_Chinese:"坦克"
-	}
+	Russian:"ТАНК"}
 	"Panzer":{
 		Simplified_Chinese:"虎式坦克"
-	} // german unique
+	Russian:"Панзэр"} // german unique
 	"Bomber":{
 		Simplified_Chinese:"轰炸机"
-	}
+	Russian:"Бомбардировщик"}
 	"B17":{
 		Simplified_Chinese:"B17轰炸机"
 	} // american unique
@@ -5124,7 +5124,7 @@
 	}
 	"Helicopter Gunship":{
 		Simplified_Chinese:"武装直升机"
-	}
+	Russian:"Боевой вертолёт"}
 	
 	// Information era - not even putting here, too far off
 	
@@ -5167,7 +5167,7 @@
 	}
 	"Great General":{
 		Simplified_Chinese:"大军事家"
-	}
+	Russian:"Великий полководец"}
 	
 	// Social policies
 	"Requires":{
@@ -5410,72 +5410,72 @@
 		Italian:"Onore"
         Simplified_Chinese:"荣誉"
         Portuguese:"Honra"
-	}
+	Russian:"Честь"}
 	"+25% bonus vs Barbarians":{
 		Italian:"+25% forza contro Barbari"
         Simplified_Chinese:"对野蛮人+25%奖励"
         Portuguese:"+25% Força ao lutar contra Barbáros"
-	}
+	Russian:"+25% к силе атаки против варваров"}
 	"Warrior Code":{
 		Italian:"Codice guerriero"
         Simplified_Chinese:"尚武精神"
         Portuguese:"Código de Honra"
-	}
+	Russian:"Военная присяга"}
 	"+20% production when training melee units":{
 		Italian:"+20% Produzione per unità da mischia"
         Simplified_Chinese:"当训练近战单位时，产量增加20%"
         Portuguese:"+20% Produção ao treinar unidades militares"
-	}
+	Russian:"+20% к производству при создании военных юнитов"}
 	"Dicipline":{
 		Italian:"Disciplina"
         Simplified_Chinese:"纪律"
         Portuguese:"Disciplina"
-	}
+	Russian:"Дисциплина"}
 	"+15% combat strength for melee units which have another military unit in an adjacent tile":{
 		Italian:"+15% forza di combattimento alle unità da mischia vicine a un'altra unità militare"
         Simplified_Chinese:"近战单位在相邻区域内有另一个军事单位时, 增加15%的战斗力"
         Portuguese:"+15% força para unidadaes corpo a corpo que tem outra unidade militar em um terreno adjacente"
-	}
+	Russian:"+15% к силе за дружественный юнит на соседней клетке"}
 	"Military Tradition":{
 		Italian:"Tradizione militare"
         Simplified_Chinese:"军事传统"
         Portuguese:"Tradição militar"
-	}
+	Russian:"Военные традиции"}
 	"Military units gain 50% more Experience from combat":{
 		Italian:"+50% esperienza in battaglia per le unità militari"
         Simplified_Chinese:"军事单位从战斗中获得更多50%的经验"
         Portuguese:"+50% experiencia em batalha para as unidades militares"
-	}
+	Russian:"юниты получают на 50% больше опыта от сражений"}
 	"Military Caste":{
 		Italian:"Casta Militare"
         Simplified_Chinese:"军权社会"
         Portuguese:"Casta Militar"
-	}
+	Russian:"военная каста"}
 	"Each city with a garrison increases happiness by 1 and culture by 2":{
 		Italian:"+1 Felicità e +2 Cultura per ogni città con una guarnigione"
         Simplified_Chinese:"每个有驻防的城市增加1个幸福度和2个文化"
         Portuguese:"+1 felicidade e +2 cultara por cidade com guarda"
-	}
+	Russian:"каждый город с гарнизоном увеличивает счастье на 1 и культуру на 2"}
 	"Professional Army":{
 		Italian:"Esercito professionale"
         Simplified_Chinese:"职业军队"
         Portuguese:"Exército Profissional"
-	}
+	Russian:"профессиональная армия"}
 	"Gold cost of upgrading military units reduced by 50%":{
 		Italian:"-50% costi in Oro per aggiornare un'unità militare"
         Simplified_Chinese:"升级军事单位的成本降低50%"
         Portuguese:"-50% custo de ouro para unidades militares"
-	}
+	Russian:"стоимость улучшения юнита снижается на 50%"}
 	"Honor Complete":{
 		Italian:"Onore Completo"
         Simplified_Chinese:"完整的荣誉主义"
         Portuguese:"Honra Completa"
-	}
+	Russian:"институт чести изучен"}
 	"Gain gold for each unit killed":{
 		Italian:"Ottieni oro per ogni unità eliminata"
         Simplified_Chinese:"每杀死一个单位获得金钱"
         Portuguese:"Ganhe ouro por cada unidade morta"
-	}
+	Russian:"получает золото за каждого убитого юнита"}
 	
 	// Piety branch
 	"Piety":{
@@ -5882,32 +5882,32 @@
 		Italian:"Autocrazia"
         Simplified_Chinese:"独裁"
         Portuguese:"Autocracia"
-	}
+	Russian:"автократия"}
 	"-33% unit upkeep costs":{
 		Italian:"-33% mantenimento delle unità"
         Simplified_Chinese:"-33%的单位维护成本"
         Portuguese:"-33% Manutenção de unidades"
-	}
+	Russian:"-33% затрат на содержание юнитов"}
 	"Populism":{
 		Italian:"Populismo"
         Simplified_Chinese:"民粹主义"
         Portuguese:"Populismo"
-	}
+	Russian:"популизм"}
 	"Wounded military units deal +25% damage":{
 		Italian:"+25% danno per le unità militari ferite"
         Simplified_Chinese:"受伤的军队单位造成+25%的伤害"
         Portuguese:"+25% dano para unidades militares feridas"
-	}
+	Russian:"раненые военные юниты наносят на 25% урона больше"}
 	"Militarism":{
 		Italian:"Militarismo"
         Simplified_Chinese:"军国主义"
         Portuguese:"Militarismo"
-	}
+	Russian:"Милитаризм"}
 	"Gold cost of purchasing units -33%":{
 		Italian:"-33% costi d'acquisto di unità"
         Simplified_Chinese:"购买单位金钱成本-33%"
         Portuguese:"-33% custo de comprar unidades"
-	}
+	Russian:"Стоимость покупки снижается на 33%"}
 	"Facism":{
 		Italian:"Fascismo"
         Simplified_Chinese:"法西斯"
@@ -5917,17 +5917,17 @@
 		Italian:"Doppia produzione di risorse strategiche nell'impero"
         Simplified_Chinese:"帝国生产的战略资源数量增加了100%"
         Portuguese:"Quantidade de recursos estratégicos produzidos pelo império incrementado em 100%"
-	}
+	Russian:"количество стратегических ресурсов обрабатываемых империей, удваивается"}
 	"Police State":{
 		Italian:"Stato di polizia"
         Simplified_Chinese:"极权国家"
         Portuguese:"Estado de Polícia"
-	}
+	Russian:"полицейский участок"}
 	"Captured cities retain their previous borders":{
 		Italian:"Le città catturate mantengono i loro confini precedenti"
         Simplified_Chinese:"被占领的城市保留了以前的边界"
         Portuguese:"Cidades capturadas retem suas antigas frontieras"
-	}
+	Russian:"Захваченные города сохраняют свои прежние границы"}
 	"Total War":{
 		Italian:"Guerra Totale"
         Simplified_Chinese:"全面战争"
@@ -5937,6 +5937,7 @@
 		Italian:"+15% Produzione per le unità militari, +15 esperienza per le nuove unità militari"
         Simplified_Chinese:"+15%的生产当建造军事单位和新的军事单位开始有15个经验"
         Portuguese:"+15% produção ao construir unidades militares e novas unidades militares começam com 15 experiencia"
+	Russian:"+15% К производству военных юнитов, Военные юниты начинают с 15 опыта"
 	}
 	
 }
