@@ -5101,11 +5101,11 @@
 		Russian:"Пехота"
 	}
 	"Foreign Legion":{
-		Simplified_Chinese:"外国志愿军"
+		Simplified_Chinese:"外籍军团"
 		Russian:"Иностранный легион"
 	} // French Unique
 	"Battleship":{
-		Simplified_Chinese:"战舰"		// not sure,
+		Simplified_Chinese:"战列舰"
 		Russian:"Линкор"
 	}
 	"Submarine":{
@@ -5113,7 +5113,7 @@
 		Russian:"Подводная Лодка"
 	}
 	"Carrier":{
-		Simplified_Chinese:"运输船"     // not sure,
+		Simplified_Chinese:"航母"
 		Russian:"Авианосец"
 	} // aircrat carrier
 	"Great War Bomber":{
