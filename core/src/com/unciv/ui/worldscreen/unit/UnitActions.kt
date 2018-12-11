@@ -85,6 +85,7 @@ class UnitActions {
                     val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
                     newunit.health = unit.health
                     newunit.promotions = unit.promotions
+                    newunit.updateUniques()
                     newunit.currentMovement = 0f
                 }
             }
