@@ -391,13 +391,12 @@
 				name:"Plastics",
 				row:3,
 				prerequisites:["Biology","Replacable Parts"]
-			},/*
+			},
 			{
 				name:"Electronics",
 				row:5,
 				prerequisites:["Radio"],
-				baseDescription:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			},*/
+			},
 			{
 				name:"Mass Media",
 				row:6,

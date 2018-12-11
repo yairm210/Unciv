@@ -368,6 +368,7 @@
 		cost: 185,
 		requiredResource:"Iron",
 		requiredTech:"Navigation",
+		upgradesTo:"Battleship",
 		hurryCostModifier:20
 	},
 	{
@@ -466,6 +467,19 @@
 		cost: 375,
 		requiredTech:"Combustion",
 		uniques:[], // todo: add interception and bonus vs submarines once we have air and submarine units
+		hurryCostModifier:20
+	},
+	{
+		name: "Battleship",
+		unitType: "WaterRanged",
+		movement: 5,
+		strength: 55,
+		rangedStrength: 55,
+		range: 3,
+		cost: 375,
+		requiredResource:"Oil",
+		requiredTech:"Electronics",
+		uniques:["Indirect Fire", "Bonus vs City 30%"],
 		hurryCostModifier:20
 	},
 	{
