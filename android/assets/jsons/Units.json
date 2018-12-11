@@ -368,6 +368,7 @@
 		cost: 185,
 		requiredResource:"Iron",
 		requiredTech:"Navigation",
+		obsoleteTech:"Electronics",
 		upgradesTo:"Battleship",
 		hurryCostModifier:20
 	},
