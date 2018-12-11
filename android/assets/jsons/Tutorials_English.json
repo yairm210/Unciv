@@ -306,5 +306,13 @@
 			"Units are defenseless while embarked, so be careful!"
 		]
 	]
+
+	CityRange:[
+		[
+			"Your citizens can work 3 tiles away from city center.",
+			"The city border will keep expanding,",
+			"But citizen cannot be assigned to a tile too far."
+		]
+	]
 	
 }

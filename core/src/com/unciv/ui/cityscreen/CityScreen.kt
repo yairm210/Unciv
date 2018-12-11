@@ -60,6 +60,10 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         updateGoToWorldButton()
         updateTileTable()
         updateTileGroups()
+
+        if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
+            displayTutorials("CityRange")
+        }
     }
 
     private fun updateTileGroups() {
