@@ -139,8 +139,6 @@ class UnitAutomation{
                 .filter { unit.currentMovement - it.value > 0.1 }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
-        if(unit.type.isLandUnit())
-            tilesToAttackFrom = tilesToAttackFrom.filter { it.getBaseTerrain().type==TerrainType.Land }
 
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
             val tilesInAttackRange = if (unit.hasUnique("Indirect fire")) reachableTile.getTilesInDistance(rangeOfAttack)
