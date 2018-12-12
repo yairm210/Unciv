@@ -2,7 +2,7 @@ package com.unciv.logic.battle
 
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.unit.UnitType
-import kotlin.math.min
+import kotlin.math.max
 
 class BattleDamageModifier(val vs:String,val modificationAmount:Float){
     fun getText(): String = "vs $vs"
@@ -47,7 +47,7 @@ class BattleDamage{
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             if (combatant.getCivilization().happiness < 0)
-                modifiers["Unhappiness"] = min(0.02f * combatant.getCivilization().happiness,0.9f) // otherwise it could exceed 100% and start healing enemy units...
+                modifiers["Unhappiness"] = max(0.02f * combatant.getCivilization().happiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
             if(combatant.getCivilization().policies.isAdopted("Populism"))
                 modifiers["Populism"] = 0.25f
