@@ -467,7 +467,7 @@
 		strength:55,
 		cost: 375,
 		requiredTech:"Combustion",
-		uniques:[], // todo: add interception and bonus vs submarines once we have air and submarine units
+		uniques:["Can attack submarines"], // todo: add interception and bonus vs submarines once we have air and submarine units
 		hurryCostModifier:20
 	},
 	{
@@ -491,7 +491,7 @@
 		rangedStrength: 60,
 		cost: 325,
 		requiredTech:"Refrigeration",
-		uniques:["Bonus as Attacker 75%", "Invisible to others", "Can Only Attack Water"], //to do: 3 uniques
+		uniques:["Bonus as Attacker 75%", "Invisible to others", "Can Only Attack Water", "Can attack submarines"], //to do: 3 uniques
 		hurryCostModifier:20
 	},
 	{

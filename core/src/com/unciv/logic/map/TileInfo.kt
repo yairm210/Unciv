@@ -281,5 +281,14 @@ open class TileInfo {
         turnsToImprovement = improvement.getTurnsToBuild(civInfo)
     }
 
+    fun hasEnemySubmarine(): Boolean {
+        val unitsInTile = getUnits()
+        if (unitsInTile.isEmpty()) return false
+        if (!unitsInTile.first().civInfo.isPlayerCivilization() &&
+                unitsInTile.firstOrNull {it.isInvisible() == true} != null) {
+            return true
+        }
+        return false
+    }
     //endregion
 }

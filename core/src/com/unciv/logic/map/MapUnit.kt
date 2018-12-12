@@ -177,6 +177,12 @@ class MapUnit {
         return currentTile.baseTerrain=="Ocean"||currentTile.baseTerrain=="Coast"
     }
 
+    fun isInvisible(): Boolean {
+        if(hasUnique("Invisible to others"))
+            return true
+        return false
+    }
+
     fun getEmbarkedMovement(): Int {
         var movement=2
         movement += civInfo.tech.getUniques().count { it == "Increases embarked movement +1" }
