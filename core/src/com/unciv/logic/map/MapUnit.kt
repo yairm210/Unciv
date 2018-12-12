@@ -13,7 +13,6 @@ import com.unciv.ui.utils.getRandom
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
 
 class MapUnit {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -68,14 +67,16 @@ class MapUnit {
         return movementAlgs().getDistanceToTilesWithinTurn(tile.position,currentMovement)
     }
 
-    @Transient var tempUniques= HashSet<String>()
+    // This SHOULD NOT be a hashset, because if it is, thenn promotions with the same text (e.g. barrage I, barrage II)
+    //  will not get counted twice!
+    @Transient var tempUniques= ArrayList<String>()
 
-    fun getUniques(): HashSet<String> {
+    fun getUniques(): ArrayList<String> {
         return tempUniques
     }
 
     fun updateUniques(){
-        val uniques = HashSet<String>()
+        val uniques = ArrayList<String>()
         val baseUnit = baseUnit()
         uniques.addAll(baseUnit.uniques)
         uniques.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })

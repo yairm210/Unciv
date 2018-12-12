@@ -312,7 +312,7 @@ BuildingIcons/Palace
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/Paper maker
+BuildingIcons/Paper Maker
   rotate: false
   xy: 1660, 1127
   size: 100, 100
