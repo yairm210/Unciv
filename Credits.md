@@ -63,6 +63,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
 * [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
 * [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
+* [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
 
 ### Great People
 
@@ -346,6 +347,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
 * [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev for Mass Media
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
+* [Refridgerator](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias, CL
 
 ### Information
 * [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals

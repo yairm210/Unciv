@@ -484,6 +484,17 @@
 		hurryCostModifier:20
 	},
 	{
+		name: "Submarine",
+		unitType: "WaterRanged",
+		movement: 5,
+		strength: 35,
+		rangedStrength: 60,
+		cost: 325,
+		requiredTech:"Refrigeration",
+		uniques:["Bonus as Attacker 75%", "Invisible to others", "Can Only Attack Water"], //to do: 3 uniques
+		hurryCostModifier:20
+	},
+	{
 		name:"Great War Infantry",
 		unitType:"Melee",
 		movement:2,

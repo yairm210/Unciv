@@ -88,6 +88,12 @@ class BattleDamage{
                     else modifiers[text] = BDM.modificationAmount
                 }
             }
+
+            for (ability in attacker.unit.getUniques()) {
+                val regexResult = Regex("""Bonus as Attacker (\d*)%""").matchEntire(ability) //to do: extend to defender, and penalyy
+                if (regexResult == null) continue
+                modifiers["Attacker Bonus"] = regexResult.groups[1]!!.value.toFloat() / 100
+            }
         }
 
         if (attacker.isMelee()) {
