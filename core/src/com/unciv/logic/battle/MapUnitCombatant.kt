@@ -11,6 +11,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getTile(): TileInfo = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
+    override fun isInvisible(): Boolean = unit.isInvisible()
 
     override fun takeDamage(damage: Int) {
         unit.health -= damage

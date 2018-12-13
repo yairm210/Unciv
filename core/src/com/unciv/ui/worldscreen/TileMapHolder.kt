@@ -180,6 +180,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     internal fun updateTiles(civInfo: CivilizationInfo) {
         val playerViewableTilePositions = civInfo.viewableTiles.map { it.position }.toHashSet()
+        val playerViewableInvisibleUnitsTilePositions = civInfo.viewableInvisibleUnitsTiles.map { it.position }.toHashSet()
 
         cityButtonOverlays.forEach{it.remove()}
         cityButtonOverlays.clear()
@@ -187,9 +188,16 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         for (tileGroup in tileGroups.values){
             val canSeeTile = UnCivGame.Current.viewEntireMapForDebug
                     || playerViewableTilePositions.contains(tileGroup.tileInfo.position)
-            tileGroup.update(canSeeTile)
+
+            val showSubmarine = UnCivGame.Current.viewEntireMapForDebug
+                    || playerViewableInvisibleUnitsTilePositions.contains(tileGroup.tileInfo.position)
+                    || (!tileGroup.tileInfo.hasEnemySubmarine())
+            tileGroup.update(canSeeTile, showSubmarine)
+
             val unitsInTile = tileGroup.tileInfo.getUnits()
-            if(canSeeTile && unitsInTile.isNotEmpty() && !unitsInTile.first().civInfo.isPlayerCivilization())
+            val canSeeEnemy = unitsInTile.isNotEmpty() && !unitsInTile.first().civInfo.isPlayerCivilization()
+                    && (showSubmarine || unitsInTile.firstOrNull {!it.isInvisible()}!=null)
+            if(canSeeTile && canSeeEnemy)
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 

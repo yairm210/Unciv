@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 
@@ -14,6 +15,7 @@ interface ICombatant{
     fun isDefeated():Boolean
     fun getCivilization(): CivilizationInfo
     fun getTile(): TileInfo
+    fun isInvisible(): Boolean
 
     fun isMelee(): Boolean {
         return this.getUnitType().isMelee()

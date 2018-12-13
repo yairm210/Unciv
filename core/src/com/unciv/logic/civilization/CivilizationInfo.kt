@@ -33,6 +33,7 @@ class CivilizationInfo {
      */
     @Transient private var units=ArrayList<MapUnit>()
     @Transient var viewableTiles = HashSet<TileInfo>()
+    @Transient var viewableInvisibleUnitsTiles = HashSet<TileInfo>()
 
     var gold = 0
     var happiness = 15
@@ -228,6 +229,9 @@ class CivilizationInfo {
         newViewableTiles.addAll(getCivUnits().flatMap { it.getViewableTiles()})
         viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
+        val newViewableInvisibleTiles = HashSet<TileInfo>()
+        newViewableInvisibleTiles.addAll(getCivUnits().filter {it.hasUnique("Can attack submarines")}.flatMap {it.getViewableTiles()})
+        viewableInvisibleUnitsTiles = newViewableInvisibleTiles
         // updating the viewable tiles also affects the explored tiles, obvs
 
         val newExploredTiles = HashSet<Vector2>(exploredTiles)

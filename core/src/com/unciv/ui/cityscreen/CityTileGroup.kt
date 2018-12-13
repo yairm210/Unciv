@@ -23,8 +23,10 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
     fun update() {
         val canSeeTile = UnCivGame.Current.viewEntireMapForDebug
                 || city.civInfo.viewableTiles.contains(tileInfo)
-
-        super.update(canSeeTile,true)
+        val showSubmarine = UnCivGame.Current.viewEntireMapForDebug
+                || city.civInfo.viewableInvisibleUnitsTiles.contains(tileInfo)
+                || (!tileInfo.hasEnemySubmarine())
+        super.update(canSeeTile,true, showSubmarine)
 
         updatePopulationImage()
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)

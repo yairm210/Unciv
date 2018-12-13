@@ -62,6 +62,8 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
 * [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
 * [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
+* [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
+* [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
 
 ### Great People
 
@@ -345,6 +347,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
 * [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev for Mass Media
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
+* [Refridgerator](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias, CL
 
 ### Information
 * [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
@@ -357,6 +360,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ### Future
 * [Nanoparticles](https://thenounproject.com/term/nanoparticles/822286/) By Gyan Lakhwani for Nanotechnology
 * [Satellite](https://thenounproject.com/term/satellite/1466641/) By Ben Davis for Satellites
+* [Electronics](https://thenounproject.com/search/?q=Electronics&i=1565843) By Cuby Design
 * [Atom](https://thenounproject.com/term/atom/1586852/) By Kelsey Armstrong for Particle Physics
 * [Information Technology](https://thenounproject.com/term/information-technology/1927668/) By Vectors Markeet for Future Tech
 

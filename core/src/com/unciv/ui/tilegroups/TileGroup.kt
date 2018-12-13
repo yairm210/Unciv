@@ -133,7 +133,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-    open fun update(isViewable: Boolean, showResourcesAndImprovements:Boolean) {
+    open fun update(isViewable: Boolean, showResourcesAndImprovements:Boolean, showSubmarine: Boolean) {
         hideCircle()
         if (!UnCivGame.Current.viewEntireMapForDebug
                 && !tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
@@ -150,7 +150,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
 
         civilianUnitImage = newUnitImage(tileInfo.civilianUnit, civilianUnitImage, isViewable, -20f)
-        militaryUnitImage = newUnitImage(tileInfo.militaryUnit, militaryUnitImage, isViewable, 20f)
+        militaryUnitImage = newUnitImage(tileInfo.militaryUnit, militaryUnitImage, isViewable && showSubmarine, 20f)
 
         updateRoadImages()
         updateBorderImages()

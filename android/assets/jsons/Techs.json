@@ -356,13 +356,12 @@
 		techCost: 4505,
 		buildingCost:500,
 		wonderCost:1250,
-		techs:[/*
+		techs:[
 			{
 				name:"Refrigeration",
-				row:4,
-				prerequisites:["Electricity"],
-				baseDescription:"Does nothing since we have no sea tiles - In theory, allows construction of offshore platforms and submarines"
-			},*/
+				row:3,
+				prerequisites:["Biology", "Electricity"], //to do: offshore platform should need this
+			},
 			{
 				name:"Replacable Parts",
 				row:4,
@@ -391,13 +390,12 @@
 				name:"Plastics",
 				row:3,
 				prerequisites:["Biology","Replacable Parts"]
-			},/*
+			},
 			{
 				name:"Electronics",
 				row:5,
-				prerequisites:["Radio"],
-				baseDescription:"Contributes only war-relatied things - on hold until AI is introduced - todo"
-			},*/
+				prerequisites:["Replacable Parts", "Flight"],
+			},
 			{
 				name:"Mass Media",
 				row:6,
