@@ -121,7 +121,7 @@ class UnitAutomation{
 
         //only submarine and destroyer can attack submarine
         if (tileCombatant.isInvisible()
-                && (!unit.hasUnique("Can attack submarines") || unit.civInfo.viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position))){
+                && (!unit.hasUnique("Can attack submarines") || !unit.civInfo.viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position))){
             return false
         }
         return true
