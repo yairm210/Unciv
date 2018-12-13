@@ -94,6 +94,7 @@
 		requiredTech:"The Wheel",
 		requiredResource:"Horses",
 		upgradesTo:"Knight",
+		obsoleteTech:"Chivalry",
 		uniques:["No defensive terrain bonus","Rough terrain penalty"],
 		hurryCostModifier:20
 	},
@@ -174,6 +175,8 @@
 		cost: 75,
 		requiredTech:"Horseback Riding",
 		requiredResource:"Horses",
+		upgradesTo:"Knight",
+		obsoleteTech:"Chivalry",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
 		hurryCostModifier:20
 	},
@@ -186,6 +189,8 @@
 		strength:14,
 		cost: 75,
 		requiredTech:"Horseback Riding",
+		upgradesTo:"Knight",
+		obsoleteTech:"Chivalry",
 		requiredResource:"Horses",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
 		hurryCostModifier:20
@@ -239,6 +244,8 @@
 		strength:21,
 		cost: 120,
 		requiredTech:"Steel",
+		upgradesTo:"Musketman",
+		obsoleteTech:"Gunpowder",
 		requiredResource:"Iron",
 		hurryCostModifier:20
 	},
@@ -274,6 +281,8 @@
 		strength:20,
 		cost: 120,
 		requiredTech:"Chivalry",
+		obsoleteTech:"Military science",
+		upgradesTo:"Cavalry",
 		requiredResource:"Horses",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
 		hurryCostModifier:20
@@ -289,6 +298,8 @@
 		cost: 120,
 		requiredTech:"Chivalry",
 		requiredResource:"Horses",
+		upgradesTo:"Cavalry",
+		obsoleteTech:"Military science",
 		uniques:["Can move after attacking","No defensive terrain bonus"],
 		hurryCostModifier:20
 	},
@@ -491,7 +502,7 @@
 		rangedStrength: 60,
 		cost: 325,
 		requiredTech:"Refrigeration",
-		uniques:["Bonus as Attacker 75%", "Invisible to others", "Can Only Attack Water", "Can attack submarines"], //to do: 3 uniques
+		uniques:["Bonus as Attacker 75%", "Invisible to others", "Can only attack water", "Can attack submarines"],
 		hurryCostModifier:20
 	},
 	{
