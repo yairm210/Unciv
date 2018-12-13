@@ -118,6 +118,12 @@ class UnitAutomation{
         if(tileCombatant==null) return false
         if(tileCombatant.getCivilization()==unit.civInfo ) return false
         if(!unit.civInfo.isAtWarWith(tileCombatant.getCivilization())) return false
+
+        //only submarine and destroyer can attack submarine
+        if (tileCombatant.isInvisible()
+                && (!unit.hasUnique("Can attack submarines") || unit.civInfo.viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position))){
+            return false
+        }
         return true
     }
 

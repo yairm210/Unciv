@@ -12,6 +12,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun getTile(): TileInfo = city.getCenterTile()
     override fun getName(): String = city.name
     override fun isDefeated(): Boolean = city.health==1
+    override fun isInvisible(): Boolean = false
 
     override fun takeDamage(damage: Int) {
         city.health -= damage
