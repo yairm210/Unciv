@@ -176,7 +176,7 @@
 		requiredTech:"Horseback Riding",
 		requiredResource:"Horses",
 		upgradesTo:"Knight",
-		obsoleteTech:"Chivalry",
+		obsoleteTech:"Metallurgy",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
 		hurryCostModifier:20
 	},
@@ -190,7 +190,7 @@
 		cost: 75,
 		requiredTech:"Horseback Riding",
 		upgradesTo:"Knight",
-		obsoleteTech:"Chivalry",
+		obsoleteTech:"Metallurgy",
 		requiredResource:"Horses",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
 		hurryCostModifier:20
