@@ -114,6 +114,7 @@ class UnitAutomation{
             if(unit.type.isRanged()) return false
             if(tile.isWater()) return false // can't attack water units while embarked, only land
         }
+        if (unit.hasUnique("Can only attack water") && tile.isLand()) return false
         val tileCombatant = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
         if(tileCombatant.getCivilization()==unit.civInfo ) return false
