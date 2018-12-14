@@ -360,7 +360,7 @@
 		hurryCostModifier:25,
 		percentStatBonus:{science:50},
 		requiredBuilding:"Library",
-		uniques:[] //todo: "City must be bordering a mountain", 
+		uniques:["Must be next to mountain"],
 		requiredTech:"Astronomy"
 	},
 	{

@@ -186,6 +186,9 @@ class Building : NamedStats(), IConstruction{
         if ("Must be next to desert" in uniques
                 && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
             return false
+        if ("Must be next to mountain" in uniques
+                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Mountain" })
+            return false
         if("Can only be built in coastal cities" in uniques
                 && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
             return false
