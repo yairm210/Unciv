@@ -57,6 +57,11 @@ class UnitAutomation{
             return
         } // do nothing but heal
 
+        // if a embarked melee unit can land and attack next turn, do not attack from water.
+        if (unit.type.isLandUnit() && unit.type.isMelee() && unit.isEmbarked()) {
+            if (tryLandUnitToAttackPosition(unit,unitDistanceToTiles)) return
+        }
+
         // if there is an attackable unit in the vicinity, attack!
         if (tryAttackNearbyEnemy(unit,unitDistanceToTiles)) return
 
@@ -130,7 +135,7 @@ class UnitAutomation{
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
-    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): ArrayList<AttackableTile> {
+    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>, minMovBeforeAtaack: Float = 0.1f): ArrayList<AttackableTile> {
         val tilesWithEnemies = unit.civInfo.viewableTiles
                 .filter { containsAttackableEnemy(it,unit) }
 
@@ -143,7 +148,7 @@ class UnitAutomation{
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
         var tilesToAttackFrom = unitDistanceToTiles.asSequence()
-                .filter { unit.currentMovement - it.value > 0.1 }
+                .filter { unit.currentMovement - it.value >= minMovBeforeAtaack }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
 
@@ -222,6 +227,25 @@ class UnitAutomation{
         return false
     }
 
+    private fun tryLandUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+        if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
+        val attackableEnemiesNextTurn = getAttackableEnemies(unit,unitDistanceToTiles, -200f)
+                // Only take enemies we can fight without dying
+                .filter {
+                    BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
+                            Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
+                }
+                .filter {it.tileToAttackFrom.isLand()}
+
+        val enemyTileToAttackNextTurn = chooseAttackTarget(unit, attackableEnemiesNextTurn)
+
+        if (enemyTileToAttackNextTurn != null) {
+            unit.moveToTile(enemyTileToAttackNextTurn.tileToAttackFrom)
+            return true
+        }
+        return false
+    }
+
     private fun tryAttackNearbyEnemy(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
         val attackableEnemies = getAttackableEnemies(unit,unitDistanceToTiles)
                 // Only take enemies we can fight without dying
@@ -230,6 +254,22 @@ class UnitAutomation{
                             Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
 
+        val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
+
+        if (enemyTileToAttack != null) {
+            val enemy = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
+            unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
+            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                    .firstOrNull { it.name == "Set up" }
+            if (setupAction != null) setupAction.action()
+            if (unit.currentMovement > 0) // This can be 0, if the set up action took away what action points we had left...
+                Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
+            return true
+        }
+        return false
+    }
+
+    private fun chooseAttackTarget(unit: MapUnit, attackableEnemies: List<AttackableTile>): AttackableTile? {
         val cityTilesToAttack = attackableEnemies.filter { it.tileToAttack.isCityCenter() }
         val nonCityTilesToAttack = attackableEnemies.filter { !it.tileToAttack.isCityCenter() }
 
@@ -245,17 +285,7 @@ class UnitAutomation{
             enemyTileToAttack = nonCityTilesToAttack.minBy { Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
         else if (cityWithHealthLeft!=null) enemyTileToAttack = cityWithHealthLeft// third priority, city
 
-        if (enemyTileToAttack != null) {
-            val enemy = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
-            unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
-            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
-                    .firstOrNull { it.name == "Set up" }
-            if (setupAction != null) setupAction.action()
-            if (unit.currentMovement > 0) // This can be 0, if the set up action took away what action points we had left...
-                Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
-            return true
-        }
-        return false
+        return enemyTileToAttack
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {
