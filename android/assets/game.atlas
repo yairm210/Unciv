@@ -690,6 +690,20 @@ ImprovementIcons/Quarry
   orig: 100, 100
   offset: 0, 0
   index: -1
+ImprovementIcons/Railroad
+  rotate: false
+  xy: 1836, 821
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Railroad
+  rotate: false
+  xy: 1836, 821
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Road
   rotate: false
   xy: 245, 506
@@ -763,20 +777,6 @@ OtherIcons/MenuIcon
 OtherIcons/Pentagon
   rotate: false
   xy: 1864, 1229
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Railroad
-  rotate: false
-  xy: 1836, 821
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-ImprovementIcons/Railroad
-  rotate: false
-  xy: 1836, 821
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

@@ -28,7 +28,7 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
 
         setWaterTiles(mapToReturn)
 
-        for(tile in mapToReturn.values) randomizeTile(tile)
+        for(tile in mapToReturn.values) randomizeTile(tile,mapToReturn)
 
         return mapToReturn
     }
@@ -41,7 +41,7 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
         + Perlin.noise(vector.x*ratio*2,vector.y*ratio*2,mapRandomSeed)/2
         + Perlin.noise(vector.x*ratio*4,vector.y*ratio*4,mapRandomSeed)/4
         when {
-//            height>0.4 -> tile.baseTerrain = "Hill"
+            height>0.8 -> tile.baseTerrain = "Mountain"
             height>0   -> tile.baseTerrain = "" // we'll leave this to the area division
             else       -> tile.baseTerrain = "Ocean"
         }
@@ -127,10 +127,9 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
         divideIntoAreas(6, waterPercent, map)
 
         val mapToReturn = HashMap<String,TileInfo>()
-        for (entry in map){
-            randomizeTile(entry.value)
-            mapToReturn[entry.key.toString()] = entry.value
-        }
+
+        for (entry in map) mapToReturn[entry.key.toString()] = entry.value
+        for (entry in map) randomizeTile(entry.value, mapToReturn)
 
         setWaterTiles(mapToReturn)
         return mapToReturn
@@ -139,7 +138,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
     fun divideIntoAreas(averageTilesPerArea: Int, waterPercent: Float, map: HashMap<Vector2, TileInfo>) {
         val areas = ArrayList<Area>()
 
-        val terrains = GameBasics.Terrains.values.filter { it.type === TerrainType.Land && it.name != "Lakes" }
+        val terrains = GameBasics.Terrains.values.filter { it.type === TerrainType.Land && it.name != "Lakes" && it.name != "Mountain" }
 
         while(map.values.any { it.baseTerrain=="" }) // the world could be split into lots off tiny islands, and every island deserves land types
         {
@@ -277,22 +276,27 @@ open class RandomMapGenerator {
     }
 
 
-    private fun hasWaterTile(map: HashMap<String, TileInfo>, vector: Vector2): Boolean {
+    private fun hasLandTile(map: HashMap<String, TileInfo>, vector: Vector2): Boolean {
         return map.containsKey(vector.toString()) && map[vector.toString()]!!.getBaseTerrain().type == TerrainType.Land
     }
 
     fun setWaterTiles(map: HashMap<String, TileInfo>) {
         for (tile in map.values.filter { it.baseTerrain == "Ocean" }) {
-            if (HexMath().getVectorsInDistance(tile.position,2).any { hasWaterTile(map,it) }) {
+            if (HexMath().getVectorsInDistance(tile.position,2).any { hasLandTile(map,it) }) {
                 tile.baseTerrain = "Coast"
                 tile.setTransients()
             }
         }
     }
 
-    fun randomizeTile(tileInfo: TileInfo){
+    fun randomizeTile(tileInfo: TileInfo, map: HashMap<String, TileInfo>){
         if(tileInfo.getBaseTerrain().type==TerrainType.Land && Math.random()<0.05f){
             tileInfo.baseTerrain = "Mountain"
+            tileInfo.setTransients()
+        }
+        if(tileInfo.getBaseTerrain().type==TerrainType.Land && Math.random()<0.05f
+            && HexMath().getVectorsInDistance(tileInfo.position,1).all { hasLandTile(map,it) }){
+            tileInfo.baseTerrain = "Lakes"
             tileInfo.setTransients()
         }
         addRandomTerrainFeature(tileInfo)
