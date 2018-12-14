@@ -86,7 +86,7 @@ class Fonts {
         else {
             val localPath = "fonts/$fontForLanguage.ttf"
             if(!containsFont(fontForLanguage))  downloadFontForLanguage(language)
-            generator = FreeTypeFontGenerator(Gdx.files.internal(localPath))
+            generator = FreeTypeFontGenerator(Gdx.files.local(localPath))
         }
 
         val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
