@@ -74,10 +74,12 @@ class TileMap {
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
         val tilesInDistance = getTilesInDistance(position, 2)
-
         unit.assignOwner(civInfo)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        val unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
-        if(unitToPlaceTile!=null) {
+        var unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) && (unit.type.isWaterUnit() || it.isLand()) }
+        if (unitToPlaceTile==null)
+            unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
+
+        if(unitToPlaceTile!=null) { //see if a land unit can be placed on land. if impossible, put it on water.
             // only once we know the unit can be placed do we add it to the civ's unit list
             unit.putInTile(unitToPlaceTile)
             unit.currentMovement = unit.getMaxMovement().toFloat()
