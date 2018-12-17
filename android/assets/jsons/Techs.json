@@ -296,7 +296,7 @@
 			{
 				name:"Scientific Theory",
 				row:4,
-				prerequisites:["Archaeology","Architecture","Economics"]
+				prerequisites:["Architecture","Economics"]
 			},
 			{
 				name:"Industrialization",
@@ -329,17 +329,17 @@
 		techs:[
 			{
 				name:"Biology",
-				row:3,
-				prerequisites:["Archaeology","Scientific Theory","Fertilizer"]
+				row:2,
+				prerequisites:["Archaeology","Scientific Theory"]
 			},
 			{
 				name:"Electricity",
-				row:5,
+				row:3,
 				prerequisites:["Scientific Theory"]
 			},
 			{
 				name:"Steam Power",
-				row:7,
+				row:6,
 				uniques:["Increases embarked movement +1"],
 				prerequisites:["Industrialization","Scientific Theory","Rifling"]
 			},
@@ -359,8 +359,13 @@
 		techs:[
 			{
 				name:"Refrigeration",
-				row:3,
+				row:2,
 				prerequisites:["Biology", "Electricity"], //to do: offshore platform should need this
+			},
+			{
+				name:"Radio",
+				row:3,
+				prerequisites:["Electricity"]
 			},
 			{
 				name:"Replacable Parts",
@@ -368,14 +373,9 @@
 				prerequisites:["Electricity","Steam Power"]
 			},
 			{
-				name:"Radio",
-				row:5,
-				prerequisites:["Electricity"]
-			},
-			{
-				name:"Combustion",
-				row:8,
-				prerequisites:["Steam Power","Dynamite"]
+				name:"Flight",
+				row:6,
+				prerequisites:["Steam Power"]
 			}
 		]	
 	},
@@ -389,7 +389,7 @@
 			{
 				name:"Plastics",
 				row:3,
-				prerequisites:["Biology","Replacable Parts"]
+				prerequisites:["Radio","Replacable Parts"]
 			},
 			{
 				name:"Electronics",
@@ -397,15 +397,10 @@
 				prerequisites:["Replacable Parts", "Flight"],
 			},
 			{
-				name:"Mass Media",
-				row:6,
-				prerequisites:["Radio"]
-			},
-			{
-				name:"Flight",
-				row:7,
-				prerequisites:["Combustion"]
-			},
+				name:"Combustion",
+				row:8,
+				prerequisites:["Steam Power","Dynamite"]
+			}
 		]	
 	},
 	{
@@ -416,13 +411,13 @@
 		techs:[
 			{
 				name:"Pharmaceuticals",
-				row:3,
-				prerequisites:["Plastics"]
+				row:2,
+				prerequisites:["Plastics","Refrigeration"]
 			},
 			{
 				name:"Computers",
 				row:5,
-				prerequisites:["Mass Media"],
+				prerequisites:["Electronics"],
 				uniques:["+10% science and production in all cities"]
 			},
 			{
@@ -440,7 +435,7 @@
 		techs:[
 			{
 				name:"Ecology",
-				row:3,
+				row:2,
 				prerequisites:["Pharmaceuticals"]
 			},
 			{

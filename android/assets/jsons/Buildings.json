@@ -543,7 +543,7 @@
 		happiness:4,
 		requiredBuilding:"Theatre",
 		maintenance:2,
-		requiredTech:"Mass Media"
+		requiredTech:"Refrigeration"
 	},
 	{
 		name:"Cristo Redentor",

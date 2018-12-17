@@ -18,7 +18,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     private var isFreeTechPick: Boolean = false
     private var selectedTech: Technology? = null
     private var civTech: TechManager = civInfo.tech
-    private var techsToResearch: ArrayList<String>
+    private var tempTechsToResearch: ArrayList<String>
 
     // All these are to counter performance problems when updating buttons for all techs.
     private var researchableTechs = GameBasics.Technologies.keys
@@ -39,7 +39,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
 
-        techsToResearch = ArrayList(civTech.techsToResearch)
+        tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
         val columns = 17
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
@@ -68,7 +68,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                         selectTechnology(tech)
                     }
                     topTable.add(techButton)
-                    if(eras[j].text.toString()=="") eras[j].setText((tech.era().toString()+" era").tr())
+                    if(eras[j].text.toString()=="") // name of era was not yet set
+                        eras[j].setText((tech.era().toString()+" era").tr())
                 }
             }
         }
@@ -78,13 +79,9 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick {
             if (isFreeTechPick) {
-                civTech.techsResearched.add(selectedTech!!.name)
-                if (civTech.techsToResearch.contains(selectedTech!!.name)) {
-                    civTech.techsToResearch.remove(selectedTech!!.name)
-                }
-                civTech.freeTechs -= 1
+                civTech.getFreeTechnology(selectedTech!!.name)
             } else
-                civTech.techsToResearch = techsToResearch
+                civTech.techsToResearch = tempTechsToResearch
             game.setWorldScreen()
             game.worldScreen.shouldUpdate=true
             dispose()
@@ -98,8 +95,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             val techButton = techNameToButton[techName]!!
             when {
                 civTech.isResearched(techName) && techName!="Future Tech" -> techButton.color = researchedTechColor
-                techsToResearch.isNotEmpty() && techsToResearch.first() == techName -> techButton.color = currentTechColor
-                techsToResearch.contains(techName) -> techButton.color = queuedTechColor
+                tempTechsToResearch.isNotEmpty() && tempTechsToResearch.first() == techName -> techButton.color = currentTechColor
+                tempTechsToResearch.contains(techName) -> techButton.color = queuedTechColor
                 researchableTechs.contains(techName) -> techButton.color = researchableTechColor
                 else -> techButton.color = Color.BLACK
             }
@@ -110,8 +107,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                 techButton.color = techButton.color.cpy().lerp(Color.LIGHT_GRAY, 0.5f)
             }
 
-            if (techsToResearch.contains(techName) && techsToResearch.size > 1) {
-                text += " (" + techsToResearch.indexOf(techName) + ")"
+            if (tempTechsToResearch.contains(techName) && tempTechsToResearch.size > 1) {
+                text += " (" + tempTechsToResearch.indexOf(techName) + ")"
             }
 
             if (!civTech.isResearched(techName) || techName=="Future Tech")
@@ -129,36 +126,21 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             return
         }
 
-        if (civTech.isResearched(tech.name) && tech.name!="Future Tech") {
+        if (civTech.isResearched(tech.name) && tech.name != "Future Tech") {
             rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()
             return
         }
 
-        if (researchableTechs.contains(tech.name)) {
-            techsToResearch.clear()
-            techsToResearch.add(tech.name)
-        } else {
-            val prerequisites = Stack<String>()
-            val checkPrerequisites = ArrayDeque<String>()
-            checkPrerequisites.add(tech.name)
-            while (!checkPrerequisites.isEmpty()) {
-                val techNameToCheck = checkPrerequisites.pop()
-                if (civTech.isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck))
-                    continue //no need to add or check prerequisites
-                val techToCheck = GameBasics.Technologies[techNameToCheck]
-                for (str in techToCheck!!.prerequisites)
-                    if (!checkPrerequisites.contains(str)) checkPrerequisites.add(str)
-                prerequisites.add(techNameToCheck)
-            }
-            techsToResearch.clear()
-            while (!prerequisites.isEmpty()) techsToResearch.add(prerequisites.pop())
-        }
+        tempTechsToResearch.clear()
+        tempTechsToResearch.addAll(civTech.getRequiredTechsToDestination(tech))
 
-        pick("Research [${techsToResearch[0]}]".tr())
+        pick("Research [${tempTechsToResearch[0]}]".tr())
         setButtonsInfo()
     }
+
+
 
     private fun selectTechnologyForFreeTech(tech: Technology) {
         if (researchableTechs.contains(tech.name)) {

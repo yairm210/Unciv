@@ -60,6 +60,24 @@ class TechManager {
 
     //endregion
 
+    fun getRequiredTechsToDestination(destinationTech: Technology): List<String> {
+        val prerequisites = Stack<String>()
+        val checkPrerequisites = ArrayDeque<String>()
+        checkPrerequisites.add(destinationTech.name)
+
+        while (!checkPrerequisites.isEmpty()) {
+            val techNameToCheck = checkPrerequisites.pop()
+            if (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck))
+                continue //no need to add or check prerequisites
+            val techToCheck = GameBasics.Technologies[techNameToCheck]
+            for (str in techToCheck!!.prerequisites)
+                if (!checkPrerequisites.contains(str)) checkPrerequisites.add(str)
+            prerequisites.add(techNameToCheck)
+        }
+
+        return prerequisites.reversed()
+    }
+
     fun nextTurn(scienceForNewTurn: Int) {
         val currentTechnology = currentTechnology()
         if (currentTechnology == null) return
@@ -67,27 +85,36 @@ class TechManager {
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
 
-        val previousEra = civInfo.getEra()
-
         // We finished it!
         techsInProgress.remove(currentTechnology)
-        if(currentTechnology!="Future Tech")
-            techsToResearch.remove(currentTechnology)
-        techsResearched.add(currentTechnology)
+        addTechnology(currentTechnology)
+    }
+
+    fun getFreeTechnology(techName:String){
+        freeTechs--
+        addTechnology(techName)
+    }
+
+    private fun addTechnology(techName:String) {
+        if(techName!="Future Tech")
+            techsToResearch.remove(techName)
+
+        val previousEra = civInfo.getEra()
+        techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
-        researchedTechnologies = researchedTechnologies.withItem(GameBasics.Technologies[currentTechnology]!!)
+        researchedTechnologies = researchedTechnologies.withItem(GameBasics.Technologies[techName]!!)
 
-        civInfo.addNotification("Research of [$currentTechnology] has completed!", null, Color.BLUE)
+        civInfo.addNotification("Research of [$techName] has completed!", null, Color.BLUE)
 
         val currentEra = civInfo.getEra()
-        if(previousEra < currentEra){
-            civInfo.addNotification("You have entered the [$currentEra] era!".tr(),null,Color.GOLD)
-            GameBasics.PolicyBranches.values.filter { it.era==currentEra }
-                .forEach{civInfo.addNotification("["+it.name+"] policy branch unlocked!".tr(),null,Color.PURPLE)}
+        if (previousEra < currentEra) {
+            civInfo.addNotification("You have entered the [$currentEra] era!".tr(), null, Color.GOLD)
+            GameBasics.PolicyBranches.values.filter { it.era == currentEra }
+                    .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!".tr(), null, Color.PURPLE) }
         }
 
-        val revealedResource = GameBasics.TileResources.values.firstOrNull { currentTechnology == it.revealedBy }
+        val revealedResource = GameBasics.TileResources.values.firstOrNull { techName == it.revealedBy }
 
         if (revealedResource != null) {
             for (tileInfo in civInfo.gameInfo.tileMap.values
@@ -96,22 +123,26 @@ class TechManager {
                 val closestCityTile = tileInfo.getTilesInDistance(4)
                         .firstOrNull { it.isCityCenter() }
                 if (closestCityTile != null) {
-                    civInfo.addNotification("{"+revealedResource.name + "} {revealed near} "
+                    civInfo.addNotification("{" + revealedResource.name + "} {revealed near} "
                             + closestCityTile.getCity()!!.name, tileInfo.position, Color.BLUE) // todo change to [] notation
                     break
                 }
             }
         }
 
-        val obsoleteUnits = GameBasics.Units.values.filter { it.obsoleteTech==currentTechnology }
-        for(city in civInfo.cities)
-            if(city.cityConstructions.getCurrentConstruction() in obsoleteUnits){
+        val obsoleteUnits = GameBasics.Units.values.filter { it.obsoleteTech == techName }
+        for (city in civInfo.cities)
+            if (city.cityConstructions.getCurrentConstruction() in obsoleteUnits) {
                 val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
     }
 
     fun setTransients(){
+        // As of 2.10.16, removed mass media, since our tech tree is like G&K
+        techsResearched.remove("Mass Media")
+        techsToResearch.remove("Mass Media")
+
         researchedTechnologies.addAll(techsResearched.map { GameBasics.Technologies[it]!! })
     }
 }
