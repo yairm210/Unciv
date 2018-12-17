@@ -74,7 +74,7 @@ class Automation {
             val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
             val cities = cityInfo.civInfo.cities.size
             val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
-                    && !cityInfo.getTiles().any { val civUnit = it.civilianUnit; civUnit != null && civUnit!!.name == "Work Boats" }
+                    && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
             val needWorkboat = canBuildWorkboat
                     && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
