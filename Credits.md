@@ -400,3 +400,4 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody for Fortify
 * [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti for Promote action
 * [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest for special actions (free tech, build city, hhurry wonder etc.
+* [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 for purchasing tiles and constructions

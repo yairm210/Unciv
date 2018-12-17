@@ -182,6 +182,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     shouldToggleTilesWorked=true
                 }
             }
+
             tileGroup.onClick {
                 selectedTile = tileInfo
                 if (shouldToggleTilesWorked) {
@@ -251,7 +252,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         if(tile.getOwner()==null && tile.neighbors.any{it.getCity()==city}){
             val goldCostOfTile = city.expansion.getGoldCostOfTile(tile)
             val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(),skin)
-            buyTileButton.onClick { city.expansion.buyTile(tile); game.screen = CityScreen(city); dispose() }
+            buyTileButton.onClick("coin") { city.expansion.buyTile(tile); game.screen = CityScreen(city); dispose() }
             if(goldCostOfTile>city.civInfo.gold) buyTileButton.disable()
             tileTable.add(buyTileButton)
         }

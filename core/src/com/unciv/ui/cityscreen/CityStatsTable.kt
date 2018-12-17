@@ -66,7 +66,7 @@ class CityStatsTable(val cityScreen: CityScreen) : Table(){
             row()
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
             val buildingBuyButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
-            buildingBuyButton.onClick {
+            buildingBuyButton.onClick("coin") {
                 city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
                 update()
             }
