@@ -389,3 +389,10 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe, AU
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By By HeadsOfBirds, GB 
 
+
+# Sound credits
+
+Sounds are from FreeSound.org
+
+* [Click 01_Minimal UI Sounds](https://freesound.org/people/cabled_mess/sounds/370962/) By cabled_mess  for most clicks
+* [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?

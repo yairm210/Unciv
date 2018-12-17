@@ -93,20 +93,20 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         })
     }
 
-    private fun onTileClicked(tileInfo: TileInfo, tileGroup: WorldTileGroup){
-            worldScreen.displayTutorials("TileClicked")
-            if (moveToOverlay != null) moveToOverlay!!.remove()
-            selectedTile = tileInfo
+    private fun onTileClicked(tileInfo: TileInfo, tileGroup: WorldTileGroup) {
+        worldScreen.displayTutorials("TileClicked")
+        if (moveToOverlay != null) moveToOverlay!!.remove()
+        selectedTile = tileInfo
 
-            val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
-            if (selectedUnit != null && selectedUnit.getTile() != tileInfo
-                    && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
-                // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-                queueAddMoveHereButton(selectedUnit, tileInfo)
-            }
+        val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+        if (selectedUnit != null && selectedUnit.getTile() != tileInfo
+                && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
+            // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+            queueAddMoveHereButton(selectedUnit, tileInfo)
+        }
 
-            worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
-            worldScreen.shouldUpdate=true
+        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
+        worldScreen.shouldUpdate = true
     }
 
     private fun queueAddMoveHereButton(selectedUnit: MapUnit, tileInfo: TileInfo) {

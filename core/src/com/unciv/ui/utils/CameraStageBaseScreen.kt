@@ -122,9 +122,11 @@ fun Label.setFontSize(size:Int): Label {
     return this // for chaining
 }
 
+// If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
 fun Actor.onClick(function: () -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
+            Sounds.play("click")
             function()
         }
     } )
