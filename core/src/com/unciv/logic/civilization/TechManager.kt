@@ -12,6 +12,12 @@ import java.util.*
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
     @Transient var researchedTechnologies=ArrayList<Technology>()
+    @Transient private var researchedTechUniques=ArrayList<String>()
+
+    // MapUnit.canPassThrough is the most called function in the game, and having these extremey specific booleans is or way of improving the time cost
+    @Transient var unitsCanEmbark=false
+    @Transient var embarkedUnitsCanEnterOcean=false
+
 
     var freeTechs = 0
     var techsResearched = HashSet<String>()
@@ -56,7 +62,7 @@ class TechManager {
         return GameBasics.Technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
 
-    fun getUniques() = researchedTechnologies.flatMap { it.uniques }
+    fun getUniques() = researchedTechUniques
 
     //endregion
 
@@ -103,7 +109,11 @@ class TechManager {
         techsResearched.add(techName)
 
         // this is to avoid concurrent modification problems
-        researchedTechnologies = researchedTechnologies.withItem(GameBasics.Technologies[techName]!!)
+        val newTech = GameBasics.Technologies[techName]!!
+        researchedTechnologies = researchedTechnologies.withItem(newTech)
+        for(unique in newTech.uniques)
+            researchedTechUniques = researchedTechUniques.withItem(unique)
+        updateTransientBooleans()
 
         civInfo.addNotification("Research of [$techName] has completed!", null, Color.BLUE)
 
@@ -144,7 +154,13 @@ class TechManager {
         techsToResearch.remove("Mass Media")
 
         researchedTechnologies.addAll(techsResearched.map { GameBasics.Technologies[it]!! })
+        researchedTechUniques.addAll(researchedTechnologies.flatMap { it.uniques })
+        updateTransientBooleans()
+    }
+
+    fun updateTransientBooleans(){
+        if(researchedTechUniques.contains("Enables embarkation for land units")) unitsCanEmbark=true
+        if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")) embarkedUnitsCanEnterOcean=true
+
     }
 }
-
-

@@ -19,6 +19,13 @@ class MapUnit {
     @Transient lateinit var baseUnit: BaseUnit
     @Transient internal lateinit var currentTile :TileInfo
 
+    // These are for performance improvements to getMovementCostBetweenAdjacentTiles,
+    // a major component of getDistanceToTilesWithinTurn,
+    // which in turn is a component of getShortestPath and canReach
+    @Transient var ignoresTerrainCost = false
+    @Transient var roughTerrainPenalty = false
+    @Transient var doubleMovementInCoast = false
+
     lateinit var owner: String
     lateinit var name: String
     var currentMovement: Float = 0f
@@ -81,6 +88,10 @@ class MapUnit {
         uniques.addAll(baseUnit.uniques)
         uniques.addAll(promotions.promotions.map { GameBasics.UnitPromotions[it]!!.effect })
         tempUniques = uniques
+
+        if("Ignores terrain cost" in uniques) ignoresTerrainCost=true
+        if("Rough terrain penalty" in uniques) roughTerrainPenalty=true
+        if("Double movement in coast" in uniques) doubleMovementInCoast=true
     }
 
     fun hasUnique(unique:String): Boolean {
@@ -116,23 +127,26 @@ class MapUnit {
         return "$name - $owner"
     }
 
+    // This is the most called function in the entire game,
+    // so multiple callees of this function have been optimized,
+    // because optimization on this function results in massive benefits!
     fun canPassThrough(tile: TileInfo):Boolean{
         val tileOwner = tile.getOwner()
+
         if(tile.getBaseTerrain().impassable) return false
-        val isOcean = tile.baseTerrain == "Ocean" // profiling showed that 3.5% of all nextTurn time is taken up by string equals in this function =|
-        if(tile.isWater() && type.isLandUnit()){
-            val techUniques = civInfo.tech.getUniques()
-            if(!techUniques.contains("Enables embarkation for land units"))
-                return false
-            if(isOcean && !techUniques.contains("Enables embarked units to enter ocean tiles"))
-                return false
-        }
         if(tile.isLand() && type.isWaterUnit())
             return false
+
+        val isOcean = tile.baseTerrain == "Ocean"
+        if(tile.isWater() && type.isLandUnit()){
+            if(!civInfo.tech.unitsCanEmbark) return false
+            if(isOcean && !civInfo.tech.embarkedUnitsCanEnterOcean)
+                return false
+        }
+        if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
         if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !civInfo.tech.isResearched("Astronomy"))
             return false
-        if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
         if(tileOwner!=null && tileOwner.civName!=owner
                 && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
         return true

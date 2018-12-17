@@ -19,13 +19,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             if (unit.civInfo.tech.getUniques().contains("Improves movement speed on roads")) return 1 / 3f
             else return 1 / 2f
         }
-        if (unit.hasUnique("Ignores terrain cost")) return 1f
+        if (unit.ignoresTerrainCost) return 1f
 
-        if (unit.hasUnique("Rough terrain penalty")
+        if (unit.roughTerrainPenalty
                 && (to.baseTerrain == "Hill" || to.terrainFeature == "Forest" || to.terrainFeature == "Jungle"))
             return 4f
 
-        if(unit.hasUnique("Double movement in coast") && to.baseTerrain=="Coast")
+        if(unit.doubleMovementInCoast && to.baseTerrain=="Coast")
             return 1/2f
 
         return to.getLastTerrain().movementCost.toFloat() // no road

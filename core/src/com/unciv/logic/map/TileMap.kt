@@ -92,8 +92,19 @@ class TileMap {
     fun getViewableTiles(position: Vector2, sightDistance: Int): MutableList<TileInfo> {
         val viewableTiles = getTilesInDistance(position, 1).toMutableList()
         for (i in 1..sightDistance) { // in each layer,
-            getTilesAtDistance(position, i).filterTo(viewableTiles) // take only tiles which have a visible neighbor, which is lower than the tile
-                { tile -> tile.neighbors.any{viewableTiles.contains(it) && (it.getHeight() ==0 || it.getHeight() < tile.getHeight())}  }
+            // This is so we don't use tiles in the same distance to "see over",
+            // that is to say, the "viewableTiles.contains(it) check will return false for neighbors from the same distance
+            val tilesToAddInDistanceI = ArrayList<TileInfo>()
+
+            for (tile in getTilesAtDistance(position, i)) { // for each tile in that layer,
+                val tileHeight = tile.getHeight()
+                val containsViewableNeighborThatCanSeeOver = tile.neighbors.any {
+                    val neighborHeight = it.getHeight()
+                    viewableTiles.contains(it) && (neighborHeight == 0 || neighborHeight < tileHeight)
+                }
+                if (containsViewableNeighborThatCanSeeOver) tilesToAddInDistanceI.add(tile)
+            }
+            viewableTiles.addAll(tilesToAddInDistanceI)
         }
 
         return viewableTiles
