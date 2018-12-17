@@ -73,6 +73,10 @@ class Automation {
             val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size
             val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
             val cities = cityInfo.civInfo.cities.size
+            val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
+                    && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
+            val needWorkboat = canBuildWorkboat
+                    && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
             val goldBuildings = buildableNotWonders.filter { it.gold>0 }
             val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }.sortedBy { it.maintenance }
@@ -94,6 +98,7 @@ class Automation {
                 zeroMaintenanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintenanceBuildings.getRandom().name
                 isAtWar && militaryUnits<cities -> trainCombatUnit(cityInfo)
                 isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.getRandom().name
+                needWorkboat -> currentConstruction = "Work Boats"
                 workers<cities/2 -> currentConstruction = CityConstructions.Worker
                 militaryUnits<cities -> trainCombatUnit(cityInfo)
                 buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.minBy { it.maintenance }!!.name
