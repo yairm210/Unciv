@@ -43,7 +43,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         for (tileInfo in tileMap.values) {
             val tileGroup = WorldTileGroup(tileInfo)
 
-            tileGroup.onClick{ onTileClicked(tileInfo, tileGroup)}
+            tileGroup.onClick{ onTileClicked(tileInfo)}
 
             val positionalVector = HexMath().hex2WorldCoords(tileInfo.position)
             val groupSize = 50
@@ -93,7 +93,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         })
     }
 
-    private fun onTileClicked(tileInfo: TileInfo, tileGroup: WorldTileGroup) {
+    private fun onTileClicked(tileInfo: TileInfo) {
         worldScreen.displayTutorials("TileClicked")
         if (moveToOverlay != null) moveToOverlay!!.remove()
         selectedTile = tileInfo

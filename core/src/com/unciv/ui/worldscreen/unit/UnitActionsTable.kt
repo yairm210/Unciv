@@ -63,7 +63,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         actionButton.add(Label(unitAction.name.tr(),CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
                 .pad(5f)
         actionButton.pack()
-        actionButton.onClick { unitAction.action(); UnCivGame.Current.worldScreen.shouldUpdate=true }
+        actionButton.onClick(unitAction.sound) { unitAction.action(); UnCivGame.Current.worldScreen.shouldUpdate=true }
         if (!unitAction.canAct) actionButton.disable()
         return actionButton
     }

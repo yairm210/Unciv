@@ -54,7 +54,7 @@ class WorldScreen : CameraStageBaseScreen() {
         tileMapHolder.addTiles()
 
         techButton.touchable=Touchable.enabled
-        techButton.onClick {
+        techButton.onClick("paper") {
             game.screen = TechPickerScreen(civInfo)
         }
 

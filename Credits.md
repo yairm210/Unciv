@@ -392,7 +392,11 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 # Sound credits
 
-Sounds are from FreeSound.org
+Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 
 * [Click 01_Minimal UI Sounds](https://freesound.org/people/cabled_mess/sounds/370962/) By cabled_mess  for most clicks
+* [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn for opening and closing the tech picker
 * [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
+* [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody for Fortify
+* [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti for Promote action
+* [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest for special actions (free tech, build city, hhurry wonder etc.

@@ -163,31 +163,35 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             val tilesInRange = city.getTilesInRange()
 
             // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
-            if (tileInfo.getCity()!=city) { // outside of city
-                if(city.canAcquireTile(tileInfo)){
-                    tileGroup.addAcquirableIcon()
+            var shouldToggleTilesWorked = false
+            when {
+                tileInfo.getCity()!=city -> // outside of city
+                    if(city.canAcquireTile(tileInfo)){
+                        tileGroup.addAcquirableIcon()
+                        tileGroup.yieldGroup.isVisible = false
+                    } else {
+                        tileGroup.setColor(0f, 0f, 0f, 0.3f)
+                        tileGroup.yieldGroup.isVisible = false
+                    }
+
+                tileInfo !in tilesInRange -> // within city but not close enough to be workable
                     tileGroup.yieldGroup.isVisible = false
-                } else {
-                    tileGroup.setColor(0f, 0f, 0f, 0.3f)
-                    tileGroup.yieldGroup.isVisible = false
+
+                !tileInfo.isCityCenter() && tileGroup.populationImage==null -> { // workable
+                    tileGroup.addPopulationIcon()
+                    shouldToggleTilesWorked=true
                 }
-            } else if(tileInfo !in tilesInRange){ // within city but not close enough to be workable
-                tileGroup.yieldGroup.isVisible = false
             }
-            else if (!tileInfo.isCityCenter() && tileGroup.populationImage==null) { // workable
-                tileGroup.addPopulationIcon()
-                tileGroup.onClick {
+            tileGroup.onClick {
+                selectedTile = tileInfo
+                if (shouldToggleTilesWorked) {
                     if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
                         city.workedTiles.add(tileInfo.position)
                     else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
                     city.cityStats.update()
-                    update()
                 }
+                update()
             }
-            tileGroup.onClick {
-                    selectedTile = tileInfo
-                    update()
-                }
 
 
             val positionalVector = HexMath().hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))

@@ -17,7 +17,10 @@ import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
 import kotlin.math.max
 
-class UnitAction(var name: String, var canAct:Boolean, var action:()->Unit)
+class UnitAction(var name: String, var canAct:Boolean, var action:()->Unit){
+    var sound="click"
+    fun sound(soundName:String): UnitAction {sound=soundName; return this}
+}
 
 class UnitActions {
 
@@ -44,7 +47,8 @@ class UnitActions {
 
         if(!unit.type.isCivilian() && !unit.isEmbarked() && !unit.type.isWaterUnit()
                 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
-            actionList += UnitAction("Fortify", unit.currentMovement != 0f) { unit.action = "Fortify 0" }
+            actionList += UnitAction("Fortify", unit.currentMovement != 0f)
+                { unit.action = "Fortify 0" }.sound("fortify")
         }
 
         if(!unit.isFortified() && actionList.none{it.name=="Fortify"} && unit.action!="Sleep") {
@@ -61,7 +65,7 @@ class UnitActions {
 
         if(!unit.type.isCivilian() && unit.promotions.canBePromoted()) {
             actionList += UnitAction("Promote", unit.currentMovement != 0f)
-            { UnCivGame.Current.screen = PromotionPickerScreen(unit) }
+            { UnCivGame.Current.screen = PromotionPickerScreen(unit) }.sound("promote")
         }
 
         if(unit.baseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
@@ -87,7 +91,7 @@ class UnitActions {
                     newunit.promotions = unit.promotions
                     newunit.updateUniques()
                     newunit.currentMovement = 0f
-                }
+                }.sound("promote")
             }
         }
 
@@ -106,7 +110,7 @@ class UnitActions {
                 tile.improvement = null
                 unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                 unit.destroy()
-            }
+            }.sound("chimes")
         }
         
         if (unit.hasUnique("Can build improvements on tiles") && !unit.isEmbarked()) {
@@ -143,7 +147,7 @@ class UnitActions {
             val improvementName = unique.replace("Can build improvement: ","")
             actionList += UnitAction("Create [$improvementName]",
                     unit.currentMovement != 0f && !tile.isCityCenter(),
-                    constructImprovementAndDestroyUnit(unit, improvementName))
+                    constructImprovementAndDestroyUnit(unit, improvementName)).sound("chimes")
         }
 
 
@@ -153,7 +157,7 @@ class UnitActions {
                 unit.civInfo.tech.freeTechs += 1
                 unit.destroy()
                 worldScreen.game.screen = TechPickerScreen(true, unit.civInfo)
-            }
+            }.sound("chimes")
         }
 
         if (unit.name == "Great Artist" && !unit.isEmbarked()) {
@@ -161,7 +165,7 @@ class UnitActions {
             ) {
                 unit.civInfo.goldenAges.enterGoldenAge()
                 unit.destroy()
-            }
+            }.sound("chimes")
         }
 
         if (unit.name == "Great Engineer" && !unit.isEmbarked()) {
@@ -173,7 +177,7 @@ class UnitActions {
             ) {
                 tile.getCity()!!.cityConstructions.addProduction(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
                 unit.destroy()
-            }
+            }.sound("chimes")
         }
 
         if (unit.name == "Great Merchant" && !unit.isEmbarked()) {
@@ -184,7 +188,7 @@ class UnitActions {
                 unit.civInfo.gold += goldGained
                 unit.civInfo.addNotification("Your trade mission has earned you [$goldGained] gold!",null, Color.GOLD)
                 unit.destroy()
-            }
+            }.sound("chimes")
         }
 
         actionList += UnitAction("Disband unit",unit.currentMovement != 0f
