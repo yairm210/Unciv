@@ -5,6 +5,7 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.getRandom
 
 class Building : NamedStats(), IConstruction{
     override val description: String
@@ -234,15 +235,17 @@ class Building : NamedStats(), IConstruction{
         }
 
         when {
-            "Empire enters golden age" in uniques-> civInfo.goldenAges.enterGoldenAge()
-            "Free Great Artist Appears" in uniques-> civInfo.addGreatPerson("Great Artist")
+            "Empire enters golden age" in uniques -> civInfo.goldenAges.enterGoldenAge()
+            "Free Great Artist Appears" in uniques -> civInfo.addGreatPerson("Great Artist")
             "Free great scientist appears" in uniques -> civInfo.addGreatPerson("Great Scientist")
             "Provides 2 free workers" in uniques -> {
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
             }
-            "Free Social Policy" in uniques -> {
-                civInfo.policies.freePolicies++
+            "Free Social Policy" in uniques -> civInfo.policies.freePolicies++
+            "Free Great Person" in uniques -> {
+                if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
+                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.getRandom())
             }
         }
 

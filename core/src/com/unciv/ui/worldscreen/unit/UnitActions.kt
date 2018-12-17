@@ -91,13 +91,13 @@ class UnitActions {
                     newunit.promotions = unit.promotions
                     newunit.updateUniques()
                     newunit.currentMovement = 0f
-                }.sound("promote")
+                }.sound("upgrade")
             }
         }
 
         if(unit.hasUnique("Must set up to ranged attack") && unit.action != "Set Up" && !unit.isEmbarked())
             actionList+=UnitAction("Set up",unit.currentMovement != 0f)
-                {unit.action="Set Up"; unit.currentMovement = max(0f, unit.currentMovement-1)}
+                {unit.action="Set Up"; unit.currentMovement = max(0f, unit.currentMovement-1)}.sound("setup")
 
         if (unit.hasUnique("Founds a new city") && !unit.isEmbarked()) {
             actionList += UnitAction("Found city",

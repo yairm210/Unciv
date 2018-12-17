@@ -9,7 +9,7 @@ class GameSettings {
     var resolution: String = "1050x700"
     var tutorialsShown = ArrayList<String>()
     var hasCrashedRecently = false
-    var soundEffectsVolume = 1.0f
+    var soundEffectsVolume = 0.5f
 
     fun save(){
         GameSaver().setGeneralSettings(this)

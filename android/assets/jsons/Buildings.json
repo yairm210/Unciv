@@ -104,7 +104,7 @@
 		xpForNewUnits:15,
 		hurryCostModifier:25,
 		maintenance:1,
-		uniques:["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"] // todo implement
+		uniques:["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"]
 		requiredTech:"Bronze Working"
 	},
 	
@@ -401,6 +401,13 @@
 		hurryCostModifier:10,
 		maintenance:2,
 		requiredBuilding:"Colloseum",
+		requiredTech:"Printing Press"
+	},
+	{
+		name:"Leaning Tower of Pisa",
+		culture:1,
+		isWonder:true,
+		uniques:["Free Great Person"]
 		requiredTech:"Printing Press"
 	},
 	{

@@ -373,6 +373,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Palm Tree](https://thenounproject.com/search/?q=palm%20tree&i=366833) By Tatiana for Oasis
 * [Water](https://thenounproject.com/term/water/1762848/) By Kozan for Marsh
 * [Harvest](https://thenounproject.com/term/harvest/1022373/) By Made for Flood plains
+* [Puddle](https://thenounproject.com/search/?q=puddle&i=1138155) By Bakunetsu Kaito for Lakes
 
 ## Others 
 
@@ -398,7 +399,10 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
 * [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
 * [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify'
-* [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'promote' for Promote action and upgrading units
+* [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'upgrade' for upgrading units
 * [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.)
 * [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions
 * [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around
+* [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions
+* [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
+* [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies

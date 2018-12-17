@@ -111,7 +111,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     private fun queueAddMoveHereButton(selectedUnit: MapUnit, tileInfo: TileInfo) {
         thread {
-            /** LibGdx sometimes has these wierd errors when you try to edit the UI layout from 2 separate thread.
+            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate thread.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
              * so that and that alone will be relegated to the concurrent thread.
@@ -140,35 +140,37 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         moveHereButton.addActor(unitIcon)
 
         if (dto.unit.currentMovement > 0)
-            moveHereButton.onClick("") {
-                // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-                kotlin.concurrent.thread {
-                    if (dto.unit.movementAlgs().canReach(dto.tileInfo)) {
-                        try {
-                            // Because this is darned concurrent (as it MUST be to avoid ANRs),
-                            // there are edge cases where the canReach is true,
-                            // but until it reaches the headTowards the board has changed and so the headTowards fails.
-                            // I can't think of any way to avoid this,
-                            // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
-                            dto.unit.movementAlgs().headTowards(dto.tileInfo)
-                            Sounds.play("whoosh")
-                            if (dto.unit.currentTile != dto.tileInfo)
-                                dto.unit.action = "moveTo " + dto.tileInfo.position.x.toInt() + "," + dto.tileInfo.position.y.toInt()
-                        }
-                        catch (e:Exception){}
-                    }
-
-                    // we don't update it directly because we're on a different thread; instead, we tell it to update itself
-                    worldScreen.shouldUpdate = true
-                    moveToOverlay?.remove()
-                    moveToOverlay = null
-                }
-            }
+            moveHereButton.onClick(""){onMoveButtonClick(dto)}
 
         else moveHereButton.color.a = 0.5f
         addOverlayOnTileGroup(tileGroup, moveHereButton).apply { width = size; height = size }
         moveHereButton.y += tileGroup.height
         moveToOverlay = moveHereButton
+    }
+
+    private fun onMoveButtonClick(dto: MoveHereButtonDto) {
+        // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
+        thread {
+            if (dto.unit.movementAlgs().canReach(dto.tileInfo)) {
+                try {
+                    // Because this is darned concurrent (as it MUST be to avoid ANRs),
+                    // there are edge cases where the canReach is true,
+                    // but until it reaches the headTowards the board has changed and so the headTowards fails.
+                    // I can't think of any way to avoid this,
+                    // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
+                    dto.unit.movementAlgs().headTowards(dto.tileInfo)
+                    Sounds.play("whoosh")
+                    if (dto.unit.currentTile != dto.tileInfo)
+                        dto.unit.action = "moveTo " + dto.tileInfo.position.x.toInt() + "," + dto.tileInfo.position.y.toInt()
+                } catch (e: Exception) {
+                }
+            }
+
+            // we don't update it directly because we're on a different thread; instead, we tell it to update itself
+            worldScreen.shouldUpdate = true
+            moveToOverlay?.remove()
+            moveToOverlay = null
+        }
     }
 
     private fun addOverlayOnTileGroup(group:WorldTileGroup, actor: Actor) {
