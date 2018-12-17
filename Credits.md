@@ -395,7 +395,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 
-* [Click 01_Minimal UI Sounds](https://freesound.org/people/cabled_mess/sounds/370962/) By cabled_mess as 'click' for most clicks
+* [Soft two-fingered snap](https://freesound.org/people/EathanMarkson/sounds/388958/) By EathanMarkson as 'click' for most clicks
 * [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
 * [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
 * [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify'
