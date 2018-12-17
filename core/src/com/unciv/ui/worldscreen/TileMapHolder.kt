@@ -140,7 +140,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         moveHereButton.addActor(unitIcon)
 
         if (dto.unit.currentMovement > 0)
-            moveHereButton.onClick {
+            moveHereButton.onClick("") {
                 // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
                 kotlin.concurrent.thread {
                     if (dto.unit.movementAlgs().canReach(dto.tileInfo)) {
@@ -151,6 +151,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                             // I can't think of any way to avoid this,
                             // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
                             dto.unit.movementAlgs().headTowards(dto.tileInfo)
+                            Sounds.play("whoosh")
                             if (dto.unit.currentTile != dto.tileInfo)
                                 dto.unit.action = "moveTo " + dto.tileInfo.position.x.toInt() + "," + dto.tileInfo.position.y.toInt()
                         }

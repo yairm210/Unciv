@@ -129,7 +129,7 @@ fun Label.setFontSize(size:Int): Label {
 fun Actor.onClick(sound:String,function: () -> Unit){
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            Sounds.play(sound)
+            if(sound!="") Sounds.play(sound)
             function()
         }
     } )

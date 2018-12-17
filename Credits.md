@@ -394,10 +394,11 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 
-* [Click 01_Minimal UI Sounds](https://freesound.org/people/cabled_mess/sounds/370962/) By cabled_mess  for most clicks
-* [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn for opening and closing the tech picker
+* [Click 01_Minimal UI Sounds](https://freesound.org/people/cabled_mess/sounds/370962/) By cabled_mess as 'click' for most clicks
+* [Pencil1](https://freesound.org/people/stijn/sounds/43673/) By stijn as 'paper' for opening and closing the tech picker
 * [SawInOut01](https://freesound.org/people/kingof_thelab/sounds/340243/) By kingof_thelab for construction picking?
-* [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody for Fortify
-* [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti for Promote action
-* [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest for special actions (free tech, build city, hhurry wonder etc.
-* [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 for purchasing tiles and constructions
+* [Chain Snare #1](https://freesound.org/people/lovesbody/sounds/322079/) By lovesbody as 'fortify'
+* [Level up](https://freesound.org/people/Marregheriti/sounds/266100/) By Marregheriti as 'promote' for Promote action and upgrading units
+* [levelup](https://freesound.org/people/Seidhepriest/sounds/382915/) By Seidhepriest as 'chimes' for special actions (free tech, build city, hurry wonder etc.)
+* [Coin](https://freesound.org/people/TheDJoe93/sounds/97373/) By TheDJoe93 as 'coin' for purchasing tiles and constructions
+* [fast simple chop 1](https://freesound.org/people/dave.des/sounds/127196/) By dave.dev as 'whoosh' for moving units around
