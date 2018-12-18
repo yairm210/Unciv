@@ -153,9 +153,10 @@ class CityConstructions {
         inProgressConstructions.remove(currentConstruction)
 
         if (construction is Building && construction.isWonder && construction.requiredBuildingInAllCities == null) {
-            val playerCiv = cityInfo.civInfo.gameInfo.getPlayerCivilization()
-            val builtLocation = if (playerCiv.exploredTiles.contains(cityInfo.location)) cityInfo.name else "a faraway land"
-            playerCiv.addNotification("[$currentConstruction] has been built in [$builtLocation]", cityInfo.location, Color.BROWN)
+            for (civ in cityInfo.civInfo.gameInfo.civilizations) {
+                val builtLocation = if (civ.exploredTiles.contains(cityInfo.location)) cityInfo.name else "a faraway land"
+                civ.addNotification("[$currentConstruction] has been built in [$builtLocation]", cityInfo.location, Color.BROWN)
+            }
         } else
             cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
 

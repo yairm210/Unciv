@@ -148,7 +148,7 @@ class WorldScreen : CameraStageBaseScreen() {
         tileMapHolder.updateTiles(civInfo)
 
         topBar.update(cloneCivilization)
-        notificationsScroll.update(gameClone.notifications)
+        notificationsScroll.update(civInfo.notifications)
         notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)

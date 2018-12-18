@@ -23,6 +23,10 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
+enum class PlayerType{
+    AI,
+    Human
+}
 
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
@@ -38,6 +42,7 @@ class CivilizationInfo {
     var gold = 0
     var happiness = 15
     var difficulty = "Chieftain"
+    var playerType = PlayerType.AI
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()
@@ -45,6 +50,7 @@ class CivilizationInfo {
     var greatPeople = GreatPersonManager()
     var scienceVictory = ScienceVictoryManager()
     var diplomacy = HashMap<String,DiplomacyManager>()
+    var notifications = ArrayList<Notification>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -73,6 +79,7 @@ class CivilizationInfo {
         toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
         toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
+        toReturn.notifications.addAll(notifications)
         return toReturn
     }
 
@@ -304,6 +311,8 @@ class CivilizationInfo {
     }
 
     fun endTurn() {
+        notifications.clear()
+
         val nextTurnStats = getStatsForNextTurn()
 
         policies.endTurn(nextTurnStats.culture.toInt())
@@ -363,8 +372,8 @@ class CivilizationInfo {
     }
 
     fun addNotification(text: String, location: Vector2?,color: Color) {
-        if(isPlayerCivilization())
-            gameInfo.notifications.add(Notification(text, location,color))
+        if(playerType==PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
+        notifications.add(Notification(text, location,color))
     }
 
     fun addGreatPerson(greatPerson: String) {

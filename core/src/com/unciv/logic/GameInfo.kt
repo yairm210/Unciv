@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.Notification
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
@@ -22,7 +23,6 @@ class GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
-        toReturn.notifications.addAll(notifications)
         toReturn.turns = turns
         return toReturn
     }
@@ -32,7 +32,6 @@ class GameInfo {
     //endregion
 
     fun nextTurn() {
-        notifications.clear()
         val player = getPlayerCivilization()
 
         for (civInfo in civilizations) {
@@ -95,6 +94,11 @@ class GameInfo {
         // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
         for (civInfo in civilizations) civInfo.gameInfo = this
+
+        // PlayerType was only added in 2.11.1, so we need to adjust for older saved games
+        if(civilizations.all { it.playerType==PlayerType.AI })
+            getPlayerCivilization().playerType=PlayerType.Human
+
         for (civInfo in civilizations) civInfo.setTransients()
 
         for (civInfo in civilizations) {

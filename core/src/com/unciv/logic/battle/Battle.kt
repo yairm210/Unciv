@@ -150,8 +150,8 @@ class Battle(val gameInfo:GameInfo) {
         if(city.cityConstructions.isBuilt("Palace")){
             city.cityConstructions.removeBuilding("Palace")
             if(enemyCiv.isDefeated()) {
-                gameInfo.getPlayerCivilization()
-                        .addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
+                for(civ in gameInfo.civilizations)
+                    civ.addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
                 enemyCiv.getCivUnits().forEach { it.destroy() }
             }
             else if(enemyCiv.cities.isNotEmpty()){

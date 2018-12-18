@@ -3,6 +3,7 @@ package com.unciv
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
@@ -21,6 +22,7 @@ class GameStarter{
 
         val playerCiv = CivilizationInfo(newGameParameters.nation)
         playerCiv.difficulty=newGameParameters.difficulty
+        playerCiv.playerType=PlayerType.Human
         gameInfo.civilizations.add(playerCiv) // first one is player civ
 
         val barbarianCivilization = CivilizationInfo()
