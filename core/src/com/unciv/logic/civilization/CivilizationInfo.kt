@@ -9,6 +9,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
+import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -41,7 +42,7 @@ class CivilizationInfo {
 
     var gold = 0
     var happiness = 15
-    var difficulty = "Chieftain"
+    @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
     var playerType = PlayerType.AI
     var civName = ""
     var tech = TechManager()
@@ -69,7 +70,7 @@ class CivilizationInfo {
         val toReturn = CivilizationInfo()
         toReturn.gold = gold
         toReturn.happiness=happiness
-        toReturn.difficulty=difficulty
+        toReturn.playerType=playerType
         toReturn.civName=civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
@@ -84,7 +85,11 @@ class CivilizationInfo {
     }
 
     //region pure functions
-    fun getDifficulty() =  GameBasics.Difficulties[difficulty]!!
+    fun getDifficulty():Difficulty {
+        if(playerType==PlayerType.AI) return GameBasics.Difficulties["Chieftain"]!!
+        else return gameInfo.getDifficulty()
+    }
+
     fun getNation() = GameBasics.Nations[civName]!!
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this

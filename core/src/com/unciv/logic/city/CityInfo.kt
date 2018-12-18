@@ -51,8 +51,8 @@ class CityInfo {
         }
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
-        if(civInfo == civInfo.gameInfo.getPlayerCivilization())
-            civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
+        civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)
+
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
             cityConstructions.addBuilding("Palace")

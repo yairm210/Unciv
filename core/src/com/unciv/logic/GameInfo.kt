@@ -15,6 +15,7 @@ class GameInfo {
     @Deprecated("As of 2.6.9")
     var tutorial = mutableListOf<String>()
     var civilizations = mutableListOf<CivilizationInfo>()
+    var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on diffferent difficulties?
     var tileMap: TileMap = TileMap()
     var turns = 0
 
@@ -24,11 +25,13 @@ class GameInfo {
         toReturn.tileMap = tileMap.clone()
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.turns = turns
+        toReturn.difficulty=difficulty
         return toReturn
     }
 
     fun getPlayerCivilization(): CivilizationInfo = civilizations[0]
     fun getBarbarianCivilization(): CivilizationInfo = civilizations[1]
+    fun getDifficulty() = GameBasics.Difficulties[difficulty]!!
     //endregion
 
     fun nextTurn() {
@@ -98,6 +101,8 @@ class GameInfo {
         // PlayerType was only added in 2.11.1, so we need to adjust for older saved games
         if(civilizations.all { it.playerType==PlayerType.AI })
             getPlayerCivilization().playerType=PlayerType.Human
+        if(getPlayerCivilization().difficulty!="Chieftain")
+            difficulty= getPlayerCivilization().difficulty
 
         for (civInfo in civilizations) civInfo.setTransients()
 

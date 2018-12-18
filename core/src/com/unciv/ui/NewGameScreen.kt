@@ -157,6 +157,11 @@ class NewGameScreen: PickerScreen(){
 
         newGameOptionsTable.add("{Difficulty}:".tr())
         val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, newGameParameters.difficulty, skin)
+        difficultySelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.difficulty = difficultySelectBox.selected.value
+            }
+        })
         newGameOptionsTable.add(difficultySelectBox).pad(10f).row()
 
 
