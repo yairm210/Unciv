@@ -169,6 +169,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [The Louvre](https://thenounproject.com/term/the-louvre/1577539/) By roundicons.com
 * [Forbidden City](https://thenounproject.com/term/forbidden-city/1797540/) By 1516
 * [Theatre](https://thenounproject.com/term/theatre/1780401/) By b farias
+* [Tower of Pisa](https://thenounproject.com/search/?q=leaning%20tower%20of%20pisa&i=1002578) By Pedro Santos
 * [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
 * [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
 * [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell
@@ -406,3 +407,10 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Military kick](https://freesound.org/people/Dodgy%20C/sounds/72070/) By Dodgy C as 'promote' for unit promotions
 * [Tank reload](https://freesound.org/people/KieranKeegan/sounds/418882/) By KieranKeegan as 'setup' for siege unit setup
 * [Scribble_short](https://freesound.org/people/waldram/sounds/257518/) By waldram as 'policy' for adopting policies
+* [Hit Impact](https://freesound.org/people/Mrguff/sounds/369711/) by Mrguff as 'throw' for catapult & trebuchet attacks
+* [Slingshot fly by 2](https://freesound.org/people/saturdaysoundguy/sounds/394186/) by saturdaysoundguy as 'arrow' for arrow attacks
+* [Metal hit slide](https://freesound.org/people/orginaljun/sounds/149102/) by orginaljun as 'nonmetalhit' for pre-metal melee sounds
+* [klick_anlauf](https://freesound.org/people/jascha/sounds/16576/) By jascha as 'metalhit' for metal melee sounds
+* [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
+* [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
+* [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks

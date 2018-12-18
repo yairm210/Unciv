@@ -29,7 +29,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     var upgradesTo:String? = null
     var replaces:String?=null
     var uniqueTo:String?=null
-
+    var attackSound:String?=null
 
     override val description: String
         get(){

@@ -135,7 +135,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if(attackableEnemy==null || !attacker.unit.canAttack()) attackButton.disable()
         else {
-            attackButton.onClick {
+            var attackSound = attacker.unit.baseUnit.attackSound
+            if(attackSound==null) attackSound="click"
+            attackButton.onClick(attackSound) {
                 attacker.unit.moveToTile(attackableEnemy.tileToAttackFrom)
                 battle.attack(attacker, defender)
                 worldScreen.shouldUpdate=true

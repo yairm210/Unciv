@@ -25,7 +25,8 @@
 		movement:2,
 		strength:5,
 		cost:25,
-		uniques:["Ignores terrain cost"]
+		uniques:["Ignores terrain cost"],
+		attackSound:"nonmetalhit"
 	},
 	{
 		name:"Warrior",
@@ -35,7 +36,8 @@
 		cost: 40,
 		hurryCostModifier:20,
 		obsoleteTech:"Metal Casting",
-		upgradesTo:"Swordsman"
+		upgradesTo:"Swordsman",
+		attackSound:"nonmetalhit"
 	},
 	{
 		name:"Archer",
@@ -47,7 +49,8 @@
 		hurryCostModifier:20,
 		requiredTech:"Archery",
 		obsoleteTech:"Machinery",
-		upgradesTo:"Crossbowman"
+		upgradesTo:"Crossbowman",
+		attackSound:"arrow"
 	},
 	{
 		name:"Bowman",
@@ -61,7 +64,8 @@
 		obsoleteTech:"Machinery",
 		replaces:"Archer",
 		uniqueTo:"Babylon",
-		upgradesTo:"Crossbowman"
+		upgradesTo:"Crossbowman",
+		attackSound:"arrow"
 	},
 	{
 		name:"Work Boats",
@@ -82,7 +86,8 @@
 		uniques:["Cannot enter ocean tiles"]
 		upgradesTo:"Caravel",
 		obsoleteTech:"Astronomy",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"nonmetalhit"
 	},
 	{
 		name:"Chariot Archer",
@@ -96,7 +101,8 @@
 		upgradesTo:"Knight",
 		obsoleteTech:"Chivalry",
 		uniques:["No defensive terrain bonus","Rough terrain penalty"],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"arrow"
 	},
 	{
 		name:"Spearman",
@@ -108,7 +114,8 @@
 		obsoleteTech:"Civil Service",
 		upgradesTo: "Pikeman",
 		uniques:["Bonus vs Mounted 50%"],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"metalhit"
 	},
 	{
 		name:"Hoplite",
@@ -122,7 +129,8 @@
 		obsoleteTech:"Civil Service",
 		upgradesTo: "Pikeman",
 		uniques:["Bonus vs Mounted 50%"],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"metalhit"
 	},
 	
 	
@@ -138,7 +146,8 @@
 		obsoleteTech:"Physics",
 		upgradesTo: "Trebuchet",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"throw"
 	},
 	{
 		name:"Ballista",
@@ -153,7 +162,8 @@
 		obsoleteTech:"Physics",
 		upgradesTo: "Trebuchet",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"throw"
 	},
 	{
 		name:"Swordsman",
@@ -165,7 +175,8 @@
 		upgradesTo:"Longswordsman",
 		obsoleteTech:"Steel",
 		requiredResource:"Iron",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"metalhit"
 	},
 	{
 		name:"Horseman",
@@ -178,7 +189,8 @@
 		upgradesTo:"Knight",
 		obsoleteTech:"Metallurgy",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"horse"
 	},
 	{
 		name:"Companion Cavalry",
@@ -193,7 +205,8 @@
 		obsoleteTech:"Metallurgy",
 		requiredResource:"Horses",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"horse"
 	},
 	
 	// Medieval Era
@@ -207,7 +220,8 @@
 		requiredTech:"Machinery",
 		upgradesTo:"Gatling Gun",
 		obsoleteTech:"Industrialization",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"arrow"
 	},
 	{
 		name:"Longbowman",
@@ -222,7 +236,8 @@
 		requiredTech:"Machinery",
 		upgradesTo:"Gatling Gun",
 		obsoleteTech:"Industrialization",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"arrow"
 	},
 	{
 		name:"Trebuchet",
@@ -235,7 +250,8 @@
 		obsoleteTech:"Chemistry",
 		upgradesTo:"Cannon",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack","Limited Visibility"],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"throw"
 	},
 	{
 		name:"Longswordsman",
@@ -247,7 +263,8 @@
 		upgradesTo:"Musketman",
 		obsoleteTech:"Gunpowder",
 		requiredResource:"Iron",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"metalhit"
 	},
 	{
 		name:"Pikeman",
@@ -259,7 +276,8 @@
 		uniques:["Bonus vs Mounted 50%"],
 		upgradesTo:"Musketman",
 		obsoleteTech:"Gunpowder",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"metalhit"
 	},
 	{
 		name:"Galleass",
@@ -272,7 +290,8 @@
 		obsoleteTech:"Navigation",
 		upgradesTo:"Frigate",
 		uniques:["Cannot enter ocean tiles"]
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"arrow"
 	},
 	{
 		name:"Knight",
@@ -285,7 +304,8 @@
 		upgradesTo:"Cavalry",
 		requiredResource:"Horses",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"horse"
 	},
 	{
 		name:"Camel Archer",
@@ -301,7 +321,8 @@
 		upgradesTo:"Cavalry",
 		obsoleteTech:"Military science",
 		uniques:["Can move after attacking","No defensive terrain bonus"],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"arrow"
 	},
 	
 	// Rennaisance Era
@@ -341,7 +362,8 @@
 		requiredTech:"Gunpowder",
 		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"shot"
 	},
 	{
 		name:"Musketeer",
@@ -354,7 +376,8 @@
 		requiredTech:"Gunpowder",
 		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"shot"
 	},
 	{
 		name:"Minuteman",
@@ -368,7 +391,8 @@
 		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
 		uniques:["Bonus vs units in rough terrain 15%","Ignores terrain cost"]
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"shot"
 	},
 	{
 		name:"Frigate",
@@ -392,7 +416,9 @@
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20,
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%" ],
+		uniques:["Can move after attacking","No defensive terrain bonus",
+			"Penalty vs City 33%","Bonus vs Mounted 33%" ],
+		attackSound:"horse"
 	},
 	
 	// Industrial Era
@@ -406,7 +432,8 @@
 		rangedStrength:30,
 		cost: 225,
 		requiredTech:"Industrialization",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"machinegun"
 	},
 	{
 		name:"Rifleman",
@@ -417,7 +444,8 @@
 		requiredTech:"Rifling",
 		obsoleteTech:"Replacable Parts",
 		upgradesTo:"Great War Infantry",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"shot"
 	},
 	{
 		name:"Cavalry",
@@ -429,7 +457,8 @@
 		requiredResource:"Horses",
 		upgradesTo:"Landship",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"horse"
 	},
 	{
 		name:"Artillery",
@@ -512,7 +541,8 @@
 		strength:50,
 		cost: 320,
 		requiredTech:"Replacable Parts",
-		hurryCostModifier:20
+		hurryCostModifier:20,
+		attackSound:"shot"
 	},
 	
 	/* Great people */
