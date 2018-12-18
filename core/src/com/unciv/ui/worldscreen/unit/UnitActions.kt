@@ -134,6 +134,7 @@ class UnitActions {
 
         for(improvement in listOf("Fishing Boats","Oil well")) {
             if (unit.hasUnique("May create improvements on water resources") && tile.resource != null
+                    && tile.improvement==null
                     && tile.getTileResource().improvement == improvement
                     && unit.civInfo.tech.isResearched(GameBasics.TileImprovements[improvement]!!.techRequired!!)
             )
