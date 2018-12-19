@@ -7,8 +7,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo): Float {
 
-        if(from.isLand() && to.isWater()
-            || from.isWater() && to.isLand())
+        if(unit.type.isLandUnit() && (from.isLand() != to.isLand()))
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
         if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)

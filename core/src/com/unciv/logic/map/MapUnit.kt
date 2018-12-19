@@ -134,7 +134,7 @@ class MapUnit {
         val tileOwner = tile.getOwner()
 
         if(tile.getBaseTerrain().impassable) return false
-        if(tile.isLand() && type.isWaterUnit())
+        if(tile.isLand() && type.isWaterUnit() && !tile.isCityCenter())
             return false
 
         val isOcean = tile.baseTerrain == "Ocean"
