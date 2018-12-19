@@ -101,7 +101,7 @@ class TechManager {
         addTechnology(techName)
     }
 
-    private fun addTechnology(techName:String) {
+    fun addTechnology(techName:String) {
         if(techName!="Future Tech")
             techsToResearch.remove(techName)
 

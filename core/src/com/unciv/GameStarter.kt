@@ -31,7 +31,8 @@ class GameStarter{
         for (nationName in GameBasics.Nations.keys.filterNot { it=="Barbarians" || it==newGameParameters.nation }.shuffled()
                 .take(newGameParameters.numberOfEnemies)) {
             val civ = CivilizationInfo(nationName)
-            civ.tech.techsResearched.addAll(gameInfo.getDifficulty().aiFreeTechs)
+            for (tech in gameInfo.getDifficulty().aiFreeTechs)
+                civ.tech.addTechnology(tech)
             gameInfo.civilizations.add(civ)
         }
 
