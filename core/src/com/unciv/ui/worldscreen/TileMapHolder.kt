@@ -24,8 +24,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
     var moveToOverlay :Actor?=null
-    val cityButtonOverlays = ArrayList<Actor>()
-
+    var removeMoveToOverlay=false
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
     class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
@@ -49,6 +48,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val groupSize = 50
             tileGroup.setPosition(worldScreen.stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     worldScreen.stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
+
             tileGroups[tileInfo] = tileGroup
             allTiles.addActor(tileGroup)
             topX = Math.max(topX, tileGroup.x + groupSize)
@@ -168,8 +168,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
             // we don't update it directly because we're on a different thread; instead, we tell it to update itself
             worldScreen.shouldUpdate = true
-            moveToOverlay?.remove()
-            moveToOverlay = null
+
+            removeMoveToOverlay=true
         }
     }
 
@@ -182,11 +182,13 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles(civInfo: CivilizationInfo) {
+        if(removeMoveToOverlay){
+            removeMoveToOverlay=false
+            moveToOverlay?.remove()
+        }
+
         val playerViewableTilePositions = civInfo.viewableTiles.map { it.position }.toHashSet()
         val playerViewableInvisibleUnitsTilePositions = civInfo.viewableInvisibleUnitsTiles.map { it.position }.toHashSet()
-
-        cityButtonOverlays.forEach{it.remove()}
-        cityButtonOverlays.clear()
 
         for (tileGroup in tileGroups.values){
             val canSeeTile = UnCivGame.Current.viewEntireMapForDebug
