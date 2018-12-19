@@ -74,8 +74,12 @@ class HexMath {
         return hexesToReturn
     }
 
-    fun getDistance(origin: Vector2, destination: Vector2): Int { // Yes, this is a dumb implementation. But I can't be arsed to think of a better one right now, other stuff to do.
-        return max(abs(origin.x-destination.x),abs(origin.y-destination.y) ).toInt()
+    fun getDistance(origin: Vector2, destination: Vector2): Int {
+        val relative_x = origin.x-destination.x
+        val relative_y = origin.y-destination.y
+        if (relative_x * relative_y >= 0)
+            return max(abs(relative_x),abs(relative_y)).toInt()
+        else
+            return (abs(relative_x) + abs(relative_y)).toInt()
     }
-
 }

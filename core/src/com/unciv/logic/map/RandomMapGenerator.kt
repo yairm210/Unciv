@@ -11,6 +11,79 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.ceil
 
+class CelluarAutomataRandomMapGenerator:SeedRandomMapGenerator() {
+    internal val landProb = 0.55f
+    internal val numSmooth = 4
+
+    override fun generateMap(distance: Int): HashMap<String, TileInfo> {
+        val mapVectors = HexMath().getVectorsInDistance(Vector2.Zero, distance)
+        val landscape = HashMap<Vector2, TerrainType>()
+
+        //init
+        for (vector in mapVectors)
+            landscape[vector] = generateInitTerrain(vector, distance)
+
+        //smooth
+        for (loop in 0..numSmooth) {
+            for (vector in mapVectors) {
+                if (HexMath().getDistance(Vector2.Zero, vector) < distance) {
+                    val neighborLands = HexMath().getAdjacentVectors(vector).count {landscape[it] == TerrainType.Land}
+                    if (landscape[vector] == TerrainType.Land) {
+                        if (neighborLands < 3)
+                            landscape[vector] = TerrainType.Water
+                    } else {
+                        if (neighborLands > 3)
+                            landscape[vector] = TerrainType.Land
+                    }
+                }
+                else {
+                    landscape[vector] = TerrainType.Water
+                }
+            }
+        }
+
+        val map = HashMap<Vector2, TileInfo>()
+        for (vector in mapVectors)
+            map[vector] = generateTile(vector,landscape[vector]!!)
+
+        divideIntoAreas(6, 0f, map)
+
+        val mapToReturn = HashMap<String, TileInfo>()
+        for(tile in map) {
+            tile.value.setTransients()
+            mapToReturn[tile.key.toString()] = tile.value
+        }
+
+        setWaterTiles(mapToReturn)
+
+        for(tile in mapToReturn.values) randomizeTile(tile,mapToReturn)
+
+        return mapToReturn
+    }
+
+    private fun generateInitTerrain(vector: Vector2, distance: Int): TerrainType {
+        var type = TerrainType.Land
+        if (HexMath().getDistance(Vector2.Zero, vector) > 0.9f * distance)
+            type = if (Random().nextDouble() < 0.1) TerrainType.Land else TerrainType.Water
+        else if (HexMath().getDistance(Vector2.Zero, vector) > 0.85f * distance)
+            type = if (Random().nextDouble() < 0.2) TerrainType.Land else TerrainType.Water
+        else
+            type = if (Random().nextDouble() < landProb) TerrainType.Land else TerrainType.Water
+        return type
+    }
+
+    private fun generateTile(vector: Vector2, type: TerrainType): TileInfo {
+        val tile=TileInfo()
+        tile.position=vector
+        if (type == TerrainType.Land)
+            tile.baseTerrain = ""
+        else
+            tile.baseTerrain = "Ocean"
+        return tile
+    }
+}
+
+
 class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
     override fun generateMap(distance: Int): HashMap<String, TileInfo> {
         val map = HashMap<Vector2, TileInfo>()

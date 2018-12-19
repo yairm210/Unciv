@@ -35,7 +35,7 @@ class TileMap {
         val map:HashMap<String,TileInfo>
 
         if(mapType==NewGameScreen.NewGameParameters.MapType.WithWater)
-            map = PerlinNoiseRandomMapGenerator().generateMap(distance)
+            map = CelluarAutomataRandomMapGenerator().generateMap(distance)
 
         else map = SeedRandomMapGenerator().generateMap(distance,0f)
 
