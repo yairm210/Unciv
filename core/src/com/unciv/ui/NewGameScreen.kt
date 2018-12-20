@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.GameStarter
 import com.unciv.logic.GameInfo
+import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.Translations
@@ -20,15 +21,11 @@ import kotlin.concurrent.thread
 class NewGameScreen: PickerScreen(){
 
     class NewGameParameters{
-        enum class MapType{
-            LandOnly,
-            WithWater
-        }
         var difficulty="Prince"
         var nation="Babylon"
         var mapRadius=20
         var numberOfEnemies=3
-        var mapType=MapType.WithWater
+        var mapType=MapType.Perlin
     }
 
     val newGameParameters=NewGameParameters()
@@ -122,6 +119,19 @@ class NewGameScreen: PickerScreen(){
     private fun getOptionsTable(): Table {
         val newGameOptionsTable = Table()
         newGameOptionsTable.skin = skin
+
+        newGameOptionsTable.add("{Map type}:".tr())
+        val mapTypes = LinkedHashMap<String, MapType>()
+        for (type in MapType.values()) {
+            mapTypes[type.toString()] = type
+        }
+        val mapTypeSelectBox = TranslatedSelectBox(mapTypes.keys, "Perlin", skin)
+        mapTypeSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.mapType = mapTypes[mapTypeSelectBox.selected.value]!!
+            }
+        })
+        newGameOptionsTable.add(mapTypeSelectBox).pad(10f).row()
 
         newGameOptionsTable.add("{World size}:".tr())
         val worldSizeToRadius = LinkedHashMap<String, Int>()

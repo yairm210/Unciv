@@ -3,6 +3,7 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
+import com.unciv.logic.map.MapType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.NewGameScreen
@@ -31,13 +32,13 @@ class TileMap {
         get() = tileList
 
 
-    constructor(distance: Int, mapType: NewGameScreen.NewGameParameters.MapType) {
+    constructor(distance: Int, mapType: MapType) {
         val map:HashMap<String,TileInfo>
 
-        if(mapType==NewGameScreen.NewGameParameters.MapType.WithWater)
-            map = CelluarAutomataRandomMapGenerator().generateMap(distance)
-
-        else map = SeedRandomMapGenerator().generateMap(distance,0f)
+        if(mapType==MapType.Perlin)
+            map = PerlinNoiseRandomMapGenerator().generateMap(distance)
+        else
+            map = CelluarAutomataRandomMapGenerator(mapType).generateMap(distance)
 
         tileList.addAll(map.values)
 //        tileList.addAll(AlexanderRandomMapGenerator().generateMap(distance,0.8f).values)

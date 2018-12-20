@@ -57,7 +57,7 @@
 	{
 		name:"Fish",
 		resourceType:"Bonus",
-		terrainsCanBeFoundOn:["Coast"],
+		terrainsCanBeFoundOn:["Coast", "Lakes"],
 		food:1,
 		improvement:"Fishing Boats",
 		improvementStats:{food:1},
