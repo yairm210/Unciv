@@ -100,6 +100,7 @@ class CityExpansionManager {
         cityInfo.tiles.add(tileInfo.position)
         tileInfo.owningCity = cityInfo
         cityInfo.population.autoAssignPopulation()
+        cityInfo.cityStats.update()
 
         for(unit in tileInfo.getUnits())
             if(!unit.civInfo.canEnterTiles(cityInfo.civInfo))
