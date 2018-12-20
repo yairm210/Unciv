@@ -11,6 +11,8 @@ import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.ceil
 import kotlin.math.pow
+import kotlin.math.abs
+import kotlin.math.sin
 
 enum class MapType {
     Perlin,
@@ -62,7 +64,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
         for (vector in mapVectors)
             map[vector] = generateTile(vector,landscape[vector]!!)
 
-        divideIntoAreas(6, 0f, map)
+        divideIntoAreas2(6, 0.05f, distance, map)
 
         val mapToReturn = HashMap<String, TileInfo>()
         for(tile in map) {
@@ -150,8 +152,58 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
         addRandomResourceToTile(tileInfo)
         maybeAddAncientRuins(tileInfo)
     }
-}
 
+    fun getLatitude(vector: Vector2): Float {
+        return (sin(3.1416/3) * vector.y).toFloat()
+    }
+
+    fun divideIntoAreas2(averageTilesPerArea: Int, waterPercent: Float, distance: Int, map: HashMap<Vector2, TileInfo>) {
+        val areas = ArrayList<Area>()
+
+        val terrains = GameBasics.Terrains.values.filter { it.type === TerrainType.Land && it.name != "Lakes"
+                && it.name != "Mountain"}
+
+        while(map.values.any { it.baseTerrain=="" }) // the world could be split into lots off tiny islands, and every island deserves land types
+        {
+            val emptyTiles = map.values.filter { it.baseTerrain == "" }.toMutableList()
+            val numberOfSeeds = ceil(emptyTiles.size / averageTilesPerArea.toFloat()).toInt()
+            val maxLatitude = abs(getLatitude(Vector2(distance.toFloat(), distance.toFloat())))
+
+            for (i in 0 until numberOfSeeds) {
+                var terrain = if (Math.random() > waterPercent) terrains.getRandom().name
+                else "Ocean"
+                val tile = emptyTiles.getRandom()
+
+                //change glassland to desert or tundra based on y
+                if (abs(getLatitude(tile.position)) < maxLatitude * 0.1) {
+                    if (terrain == "Grassland" || terrain == "Tundra")
+                        terrain = "Desert"
+                } else if (abs(getLatitude(tile.position)) > maxLatitude * 0.7) {
+                    if (terrain == "Grassland" || terrain == "Plains" || terrain == "Desert" || terrain == "Ocean") {
+                        terrain = "Tundra"
+                    }
+                } else {
+                    if (terrain == "Tundra")
+                        terrain = "Plains"
+                    else if (terrain == "Desert")
+                        terrain = "Grassland"
+                }
+
+
+                if (terrain == "Grassland") {
+
+                }
+                val area = Area(terrain)
+                emptyTiles -= tile
+                area.addTile(tile)
+                areas += area
+            }
+
+            expandAreas(areas, map)
+            expandAreas(areas, map)
+        }
+    }
+}
 
 class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
     override fun generateMap(distance: Int): HashMap<String, TileInfo> {
@@ -277,7 +329,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
         return mapToReturn
     }
 
-    fun divideIntoAreas(averageTilesPerArea: Int, waterPercent: Float, map: HashMap<Vector2, TileInfo>) {
+    open fun divideIntoAreas(averageTilesPerArea: Int, waterPercent: Float, map: HashMap<Vector2, TileInfo>) {
         val areas = ArrayList<Area>()
 
         val terrains = GameBasics.Terrains.values.filter { it.type === TerrainType.Land && it.name != "Lakes" && it.name != "Mountain" }
