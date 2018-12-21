@@ -280,7 +280,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             playerCivInfo.diplomacy.containsKey(civ.civName)
 
     fun createDiplomacyGroup(): Group {
-        val relevantCivs = playerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() }
+        val relevantCivs = playerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }
         val groupSize = 500f
         val group = Group()
         group.setSize(groupSize,groupSize)
@@ -316,7 +316,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
 
         for(civ in relevantCivs.filter { playerKnows(it) })
-            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) }){
+            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
                 val civGroup = civGroups[civ]!!
                 val otherCivGroup = civGroups[diplomacy.otherCiv()]!!
 
