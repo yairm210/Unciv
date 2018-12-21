@@ -296,7 +296,6 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
             if (civ.isDefeated()) {
                 civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
-                label.setText(civ.civName + "(Fallen)")
             } else if (playerKnows(civ)) {
                 civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
                 label.setFontColor(civ.getNation().getSecondaryColor())
