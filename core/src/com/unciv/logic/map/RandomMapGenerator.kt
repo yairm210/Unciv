@@ -9,9 +9,9 @@ import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.ui.utils.getRandom
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.pow
-import kotlin.math.abs
 import kotlin.math.sin
 
 enum class MapType {
@@ -80,7 +80,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
     }
 
     private fun generateInitTerrain(vector: Vector2, distance: Int): TerrainType {
-        var type: TerrainType
+        val type: TerrainType
         if (mapType == MapType.Pangaea) {
             val distanceFactor = (HexMath().getDistance(Vector2.Zero, vector) * 1.8 / distance).toFloat()
             type = if (Random().nextDouble() < landProb.pow(distanceFactor)) TerrainType.Land else TerrainType.Water
@@ -98,37 +98,38 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
     private fun generateTile(vector: Vector2, type: TerrainType): TileInfo {
         val tile=TileInfo()
         tile.position=vector
-        if (type == TerrainType.Land)
-            tile.baseTerrain = ""
-        else
-            tile.baseTerrain = "Ocean"
+        if (type == TerrainType.Land) tile.baseTerrain = ""
+        else tile.baseTerrain = "Ocean"
         return tile
     }
 
     override fun setWaterTiles(map: HashMap<String, TileInfo>) {
         //define lakes
         var waterTiles = map.values.filter { it.isWater() }.map { it.position }
-        var tilesInArea = ArrayList<Vector2>()
-        var tilesToCheck = ArrayList<Vector2>()
+        val tilesInArea = ArrayList<Vector2>()
+        val tilesToCheck = ArrayList<Vector2>()
         while (waterTiles.isNotEmpty()) {
-            val tile = waterTiles.getRandom()
-            tilesInArea.add(tile)
-            tilesToCheck.add(tile)
-            waterTiles -= tile
+            val initialWaterTile = waterTiles.getRandom()
+            tilesInArea += initialWaterTile
+            tilesToCheck += initialWaterTile
+            waterTiles -= initialWaterTile
 
             while (tilesToCheck.isNotEmpty()) {
                 val tileChecking = tilesToCheck.getRandom()
-                for (vector in HexMath().getVectorsAtDistance(tileChecking,1).filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
-                    tilesInArea.add(vector)
-                    tilesToCheck.add(vector)
+                for (vector in HexMath().getVectorsAtDistance(tileChecking,1)
+                        .filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
+                    tilesInArea += vector
+                    tilesToCheck += vector
                     waterTiles -= vector
                 }
-                tilesToCheck.remove(tileChecking)
+                tilesToCheck -= tileChecking
             }
 
             if (tilesInArea.size <= 10) {
                 for (vector in tilesInArea) {
-                    map[vector.toString()]!!.baseTerrain = "Lakes"
+                    val tile = map[vector.toString()]!!
+                    tile.baseTerrain = "Lakes"
+                    tile.setTransients()
                 }
             }
             tilesInArea.clear()
@@ -174,7 +175,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
                 else "Ocean"
                 val tile = emptyTiles.getRandom()
 
-                //change glassland to desert or tundra based on y
+                //change grassland to desert or tundra based on y
                 if (abs(getLatitude(tile.position)) < maxLatitude * 0.1) {
                     if (terrain == "Grassland" || terrain == "Tundra")
                         terrain = "Desert"
@@ -183,16 +184,10 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
                         terrain = "Tundra"
                     }
                 } else {
-                    if (terrain == "Tundra")
-                        terrain = "Plains"
-                    else if (terrain == "Desert")
-                        terrain = "Grassland"
+                    if (terrain == "Tundra") terrain = "Plains"
+                    else if (terrain == "Desert") terrain = "Grassland"
                 }
 
-
-                if (terrain == "Grassland") {
-
-                }
                 val area = Area(terrain)
                 emptyTiles -= tile
                 area.addTile(tile)
@@ -205,6 +200,13 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
     }
 }
 
+/**
+ * This generator simply generates Perlin noise,
+ * "spreads" it out according to the ratio in generateTile,
+ * and assigns it as the height of the various tiles.
+ * Tiles below a certain height threshold (determined in generateTile, currently 50%)
+ *   are considered water tiles, the rest are land tiles
+ */
 class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
     override fun generateMap(distance: Int): HashMap<String, TileInfo> {
         val map = HashMap<Vector2, TileInfo>()
@@ -243,6 +245,10 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
     }
 }
 
+/**
+ * This generator uses the algorithm from the game "Alexander", outlined here:
+ * http://www.cartania.com/alexander/generation.html
+ */
 class AlexanderRandomMapGenerator:RandomMapGenerator(){
     fun generateMap(distance: Int, landExpansionChance:Float): HashMap<String, TileInfo> {
         val map = HashMap<Vector2, TileInfo?>()

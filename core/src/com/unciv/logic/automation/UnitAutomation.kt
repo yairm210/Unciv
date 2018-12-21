@@ -12,7 +12,6 @@ import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitAction
@@ -305,27 +304,25 @@ class UnitAutomation{
             return false
         }
 
+        val citiesToTry:Sequence<CityInfo>
+
         if (!unit.civInfo.isAtWar()) {
             if (unit.getTile().isCityCenter()) return true // It's always good to have a unit in the city center, so if you haven't found anyone around to attack, forget it.
-
-            val closestReachableCityWithNoGarrison = citiesWithoutGarrison.asSequence()
-                    .sortedBy{ it.getCenterTile().arialDistanceTo(unit.currentTile) }
-                    .firstOrNull { unit.movementAlgs().canReach(it.getCenterTile()) }
-            if(closestReachableCityWithNoGarrison==null) return false // no
-            unit.movementAlgs().headTowards(closestReachableCityWithNoGarrison.getCenterTile())
-            return true
+            citiesToTry = citiesWithoutGarrison.asSequence()
         } else {
             if (unit.getTile().isCityCenter() &&
                     isCityThatNeedsDefendingInWartime(unit.getTile().getCity()!!)) return true
 
-            val closestReachableCityNeedsDefending = citiesWithoutGarrison.asSequence()
+            citiesToTry = citiesWithoutGarrison.asSequence()
                     .filter { isCityThatNeedsDefendingInWartime(it) }
-                    .sortedBy{ it.getCenterTile().arialDistanceTo(unit.currentTile) }
-                    .firstOrNull { unit.movementAlgs().canReach(it.getCenterTile()) }
-            if(closestReachableCityNeedsDefending==null) return false
-            unit.movementAlgs().headTowards(closestReachableCityNeedsDefending.getCenterTile())
-            return true
         }
+
+        val closestReachableCityNeedsDefending =citiesToTry
+                .sortedBy{ it.getCenterTile().arialDistanceTo(unit.currentTile) }
+                .firstOrNull { unit.movementAlgs().canReach(it.getCenterTile()) }
+        if(closestReachableCityNeedsDefending==null) return false
+        unit.movementAlgs().headTowards(closestReachableCityNeedsDefending.getCenterTile())
+        return true
     }
 
     fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
