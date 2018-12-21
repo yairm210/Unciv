@@ -91,6 +91,7 @@ class UnitActions {
                     newunit.promotions = unit.promotions
                     newunit.updateUniques()
                     newunit.currentMovement = 0f
+                    worldScreen.shouldUpdate = true
                 }.sound("upgrade")
             }
         }
