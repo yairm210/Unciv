@@ -294,11 +294,13 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
             val label = Label(civ.civName.tr(), CameraStageBaseScreen.skin)
 
-            if(playerKnows(civ)) {
+            if (civ.isDefeated()) {
+                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
+                label.setText(civ.civName + "(Fallen)")
+            } else if (playerKnows(civ)) {
                 civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
                 label.setFontColor(civ.getNation().getSecondaryColor())
-            }
-            else {
+            } else {
                 civGroup.background = civGroupBackground.tint(Color.DARK_GRAY)
                 label.setText("???")
             }
@@ -315,8 +317,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         }
 
 
-        for(civ in relevantCivs.filter { playerKnows(it) })
-            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) }){
+        for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
+            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
                 val civGroup = civGroups[civ]!!
                 val otherCivGroup = civGroups[diplomacy.otherCiv()]!!
 
