@@ -36,7 +36,7 @@ class DiplomacyManager() {
     fun turnsToPeaceTreaty(): Int {
         for(trade in trades)
             for(offer in trade.ourOffers)
-                if(offer.name=="Peace Treaty") return offer.duration
+                if(offer.name=="Peace Treaty" && offer.duration > 0) return offer.duration
         return 0
     }
 
