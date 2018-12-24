@@ -31,8 +31,6 @@ class GameStarter{
         for (nationName in GameBasics.Nations.keys.filterNot { it=="Barbarians" || it==newGameParameters.nation }.shuffled()
                 .take(newGameParameters.numberOfEnemies)) {
             val civ = CivilizationInfo(nationName)
-            for (tech in gameInfo.getDifficulty().aiFreeTechs)
-                civ.tech.addTechnology(tech)
             gameInfo.civilizations.add(civ)
         }
 
@@ -40,6 +38,11 @@ class GameStarter{
         barbarianCivilization.civName = "Barbarians"
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
+
+        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarianCivilization() && !it.isPlayerCivilization()}) {
+            for (tech in gameInfo.getDifficulty().aiFreeTechs)
+                civInfo.tech.addTechnology(tech)
+        }
 
         // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
 
