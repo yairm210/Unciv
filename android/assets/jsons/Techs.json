@@ -432,6 +432,7 @@
 		era:"Information",
 		techCost: 8465,
 		buildingCost:750,
+		wonderCost:2000,
 		techs:[
 			{
 				name:"Ecology",

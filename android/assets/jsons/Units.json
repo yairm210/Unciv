@@ -311,7 +311,7 @@
 		name:"Camel Archer",
 		replaces:"Knight",
 		uniqueTo:"Arabia",
-		unitType:"Mounted",
+		unitType:"Ranged",
 		movement:4,
 		strength:17,
 		rangedStrength:21,
