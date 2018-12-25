@@ -21,7 +21,7 @@ class UnCivGame : Game() {
     val viewEntireMapForDebug = false
 
     // For when you need to test something in an advanced game and don't have time to faff around
-    val superchargedForDebug = true
+    val superchargedForDebug = false
 
     lateinit var worldScreen: WorldScreen
 
@@ -43,9 +43,6 @@ class UnCivGame : Game() {
 
     fun loadGame(gameInfo:GameInfo){
         this.gameInfo = gameInfo
-        if(settings.tutorialsShown.isEmpty()  && this.gameInfo.tutorial.isNotEmpty())
-            settings.tutorialsShown.addAll(this.gameInfo.tutorial)
-
         worldScreen = WorldScreen()
         setWorldScreen()
     }

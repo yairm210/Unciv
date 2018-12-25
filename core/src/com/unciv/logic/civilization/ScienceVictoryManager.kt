@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 import com.unciv.models.Counter
 
+@Deprecated("As of 2.11.3")
 class ScienceVictoryManager {
     var requiredParts = Counter<String>()
     var currentParts = Counter<String>()
