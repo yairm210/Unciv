@@ -33,7 +33,6 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     init {
         val civInfo = game.gameInfo.getPlayerCivilization()
 
-        closeButton.clearListeners() // Don't go back to the world screen, unlike the other picker screens!
         closeButton.onClick {
             game.screen = CityScreen(this@ConstructionPickerScreen.city)
             dispose()

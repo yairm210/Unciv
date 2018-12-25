@@ -99,6 +99,7 @@ class NewGameScreen: PickerScreen(){
     val nationTables = ArrayList<NationTable>()
 
     init {
+        setDefaultCloseAction()
         val mainTable = Table()
         mainTable.add(getOptionsTable())
         val civPickerTable = Table().apply { defaults().pad(5f) }

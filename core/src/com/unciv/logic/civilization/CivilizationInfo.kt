@@ -49,7 +49,8 @@ class CivilizationInfo {
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
     var greatPeople = GreatPersonManager()
-    var scienceVictory = ScienceVictoryManager()
+    @Deprecated("As of 2.11.3") var scienceVictory = ScienceVictoryManager()
+    var victoryManager=VictoryManager()
     var diplomacy = HashMap<String,DiplomacyManager>()
     var notifications = ArrayList<Notification>()
 
@@ -76,7 +77,7 @@ class CivilizationInfo {
         toReturn.policies = policies.clone()
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople=greatPeople.clone()
-        toReturn.scienceVictory = scienceVictory.clone()
+        toReturn.victoryManager=victoryManager.clone()
         toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
         toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
@@ -306,6 +307,10 @@ class CivilizationInfo {
         tech.setTransients()
         diplomacy.values.forEach { it.civInfo=this}
 
+        victoryManager.civInfo=this
+        if(victoryManager.currentsSpaceshipParts.values.sum() == 0
+                && scienceVictory.currentParts.values.sum()>0)
+            victoryManager.currentsSpaceshipParts = scienceVictory.currentParts
 
         for (cityInfo in cities) {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the playerCivInfo

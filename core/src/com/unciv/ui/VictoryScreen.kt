@@ -33,28 +33,32 @@ class VictoryScreen : PickerScreen() {
 
         rightSideButton.isVisible=false
 
-        if(playerCivInfo.scienceVictory.hasWon()){
-            descriptionLabel.setText("You have won a scientific victory!")
-            won()
+        if(playerCivInfo.victoryManager.hasWonScientificVictory()){
+            won("You have won a scientific victory!")
+        }
+        else if(playerCivInfo.victoryManager.hasWonCulturalVictory()){
+            won("You have won a cultural victory!")
+        }
+        else if(playerCivInfo.victoryManager.hasWonConquestVictory()){
+            won("You have won a conquest victory!")
         }
 
-        if(playerCivInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3){
-            descriptionLabel.setText("You have won a cultural victory!")
-            won()
-        }
-
-        if(playerCivInfo.gameInfo.civilizations.all { it.isPlayerCivilization() || it.isDefeated() }){
-            descriptionLabel.setText("You have won a conquest victory!")
-            won()
-        }
+        else setDefaultCloseAction()
     }
 
-    fun won(){
+    fun won(description: String) {
+        descriptionLabel.setText(description)
+
         rightSideButton.setText("Start new game".tr())
-        rightSideButton.isVisible=true
-        closeButton.isVisible=false
+        rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick { UnCivGame.Current.startNewGame() }
+
+        closeButton.setText("One more turn...!")
+        closeButton.onClick {
+            playerCivInfo.gameInfo.oneMoreTurnMode = true
+            UnCivGame.Current.setWorldScreen()
+        }
     }
 
     fun scienceVictoryColumn():Table{
@@ -62,11 +66,11 @@ class VictoryScreen : PickerScreen() {
         t.defaults().pad(5f)
         t.add(getMilestone("Built Apollo Program",playerCivInfo.getBuildingUniques().contains("Enables construction of Spaceship parts"))).row()
 
-        val scienceVictory = playerCivInfo.scienceVictory
+        val victoryManager= playerCivInfo.victoryManager
 
-        for (key in scienceVictory.requiredParts.keys)
-            for (i in 0 until scienceVictory.requiredParts[key]!!)
-                t.add(getMilestone(key, scienceVictory.currentParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
+        for (key in victoryManager.requiredSpaceshipParts.keys)
+            for (i in 0 until victoryManager.requiredSpaceshipParts[key]!!)
+                t.add(getMilestone(key, victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
 
         return t
     }

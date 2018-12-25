@@ -19,6 +19,7 @@ class LoadScreen : PickerScreen() {
     lateinit var selectedSave:String
 
     init {
+        setDefaultCloseAction()
         val saveTable = Table()
 
         val deleteSaveButton = TextButton("Delete save".tr(), CameraStageBaseScreen.skin)

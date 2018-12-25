@@ -19,6 +19,7 @@ class SaveScreen : PickerScreen() {
     val textField = TextField("", skin)
 
     init {
+        setDefaultCloseAction()
         val currentSaves = Table()
 
         currentSaves.add(Label("Current saves".tr(),skin)).row()

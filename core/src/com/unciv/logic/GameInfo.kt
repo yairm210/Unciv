@@ -18,6 +18,7 @@ class GameInfo {
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on diffferent difficulties?
     var tileMap: TileMap = TileMap()
     var turns = 0
+    var oneMoreTurnMode=false
 
     //region pure functions
     fun clone(): GameInfo {

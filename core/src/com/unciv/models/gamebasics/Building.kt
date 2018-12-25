@@ -210,7 +210,7 @@ class Building : NamedStats(), IConstruction{
 
         if ("Spaceship part" in uniques) {
             if (!civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts")) return false
-            if (civInfo.scienceVictory.unconstructedParts()[name] == 0) return false // Don't need to build any more of these!
+            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return false // Don't need to build any more of these!
         }
         return true
     }
@@ -219,7 +219,7 @@ class Building : NamedStats(), IConstruction{
         val civInfo = construction.cityInfo.civInfo
 
         if ("Spaceship part" in uniques) {
-            civInfo.scienceVictory.currentParts.add(name, 1)
+            civInfo.victoryManager.currentsSpaceshipParts.add(name, 1)
             return
         }
         construction.addBuilding(name)

@@ -14,6 +14,7 @@ import com.unciv.logic.civilization.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
@@ -153,7 +154,8 @@ class WorldScreen : CameraStageBaseScreen() {
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
-        if(civInfo.policies.freePolicies>0) game.screen = PolicyPickerScreen(civInfo)
+        if(!gameInfo.oneMoreTurnMode && civInfo.victoryManager.hasWon()) game.screen = VictoryScreen()
+        else if(civInfo.policies.freePolicies>0) game.screen = PolicyPickerScreen(civInfo)
         else if(civInfo.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
     }
 

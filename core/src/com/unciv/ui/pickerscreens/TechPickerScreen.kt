@@ -37,6 +37,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
     }
 
     init {
+        setDefaultCloseAction()
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)

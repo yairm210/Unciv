@@ -22,6 +22,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
 
         rightSideButton.setText("{Adopt policy}\r\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
 
+        setDefaultCloseAction()
         if (policies.freePolicies > 0) {
             rightSideButton.setText("Adopt free policy".tr())
             closeButton.disable()

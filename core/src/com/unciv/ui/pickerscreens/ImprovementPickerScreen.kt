@@ -17,6 +17,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
 
     init {
         val civInfo = game.gameInfo.getPlayerCivilization()
+        setDefaultCloseAction()
 
         rightSideButton.setText("Pick improvement")
         rightSideButton.onClick {

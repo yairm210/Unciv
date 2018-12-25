@@ -20,10 +20,6 @@ open class PickerScreen : CameraStageBaseScreen() {
     internal var splitPane: SplitPane
 
     init {
-        closeButton.onClick {
-                game.setWorldScreen()
-                dispose()
-            }
         bottomTable.add(closeButton).width(stage.width / 4)
 
         descriptionLabel = Label("", CameraStageBaseScreen.skin)
@@ -48,6 +44,13 @@ open class PickerScreen : CameraStageBaseScreen() {
         splitPane.splitAmount = screenSplit
         splitPane.setFillParent(true)
         stage.addActor(splitPane)
+    }
+
+    fun setDefaultCloseAction() {
+        closeButton.onClick {
+            game.setWorldScreen()
+            dispose()
+        }
     }
 
     protected fun pick(rightButtonText: String) {
