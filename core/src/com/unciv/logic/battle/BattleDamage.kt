@@ -61,6 +61,16 @@ class BattleDamage{
             if(requiredResource!=null && combatant.getCivilization().getCivResourcesByName()[requiredResource]!!<0){
                 modifiers["Missing resource"]=-0.25f
             }
+
+            //to do : performance improvement
+            if (combatant.getUnitType().isLandUnit()) {
+                val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
+                        .filter {it.civilianUnit?.civInfo == combatant.unit.civInfo}
+                        .map {it.civilianUnit}
+                if (nearbyCivUnits.any { it!!.hasUnique("Bonus for land units in 2 radius 15%") }) {
+                    modifiers["Great general"]=0.25f
+                }
+            }
         }
 
         if (combatant.getCivilization().policies.isAdopted("Honor") && enemy.getCivilization().isBarbarianCivilization())

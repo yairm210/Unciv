@@ -579,7 +579,7 @@
 		name:"Great General",
 		unbuildable:true,
 		unitType:"Civilian",
-		uniques:["Can start an 8-turn golden age","Bonus for landunits in 2 radius 15%"] //to do : should be able to build mega-fort
+		uniques:["Can start an 8-turn golden age","Bonus for land units in 2 radius 15%"] //to do : should be able to build mega-fort
 		movement:2
 	},
 	
