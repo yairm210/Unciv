@@ -115,7 +115,7 @@
 	{
 		name:"Uranium",
 		resourceType:"Strategic",
-		revealedBy:"Atomic Theory",
+		revealedBy:"Nuclear Fission",
 		terrainsCanBeFoundOn:["Plains","Desert","Tundra","Hill","Snow","Forest","Desert","Marsh","Grassland"],
 		production:1,
 		improvement:"Mine",
