@@ -575,5 +575,12 @@
 		uniques:["Can speed up construction of a wonder","Can build improvement: Manufactory"]
 		movement:2
 	},
+	{
+		name:"Great General",
+		unbuildable:true,
+		unitType:"Civilian",
+		uniques:["Can start an 8-turn golden age","Bonus for landunits in 2 radius 15%"] //to do : should be able to build mega-fort
+		movement:2
+	},
 	
 ]
