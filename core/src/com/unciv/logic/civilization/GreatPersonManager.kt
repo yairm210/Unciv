@@ -22,6 +22,8 @@ class GreatPersonManager {
         toReturn.freeGreatPeople=freeGreatPeople
         toReturn.greatPersonPoints=greatPersonPoints.clone()
         toReturn.pointsForNextGreatPerson=pointsForNextGreatPerson
+        toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
+        toReturn.greatGeneralPoints = greatGeneralPoints
         return toReturn
     }
 
