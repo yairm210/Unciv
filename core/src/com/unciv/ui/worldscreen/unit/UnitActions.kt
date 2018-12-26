@@ -162,7 +162,7 @@ class UnitActions {
             }.sound("chimes")
         }
 
-        if (unit.name == "Great Artist" && !unit.isEmbarked()) {
+        if ((unit.name == "Great Artist" || unit.name == "Great General") && !unit.isEmbarked()) {
             actionList += UnitAction( "Start Golden Age",unit.currentMovement != 0f
             ) {
                 unit.civInfo.goldenAges.enterGoldenAge()

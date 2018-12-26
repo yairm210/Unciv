@@ -33,7 +33,9 @@ class UnitAutomation{
             return SpecificUnitAutomation().automateWorkBoats(unit)
         }
 
-        if(unit.name.startsWith("Great")
+        if (unit.name == "Great General") {
+            return SpecificUnitAutomation().automateGeneral(unit)
+        } else if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)// I don't know what to do with you yet.
         }
@@ -397,6 +399,24 @@ class SpecificUnitAutomation{
         else UnitAutomation().explore(unit, unit.getDistanceToTiles())
     }
 
+    fun automateGeneral(unit: MapUnit){
+        val militantToCompany = unit.civInfo.getCivUnits()
+                .firstOrNull { val tile = it.currentTile
+                    it.type.isLandUnit() && it.getMaxMovement() <= 2.0f && tile.civilianUnit==null
+                            && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
+        if(militantToCompany!=null) {
+            unit.movementAlgs().headTowards(militantToCompany.currentTile)
+            return
+        }
+
+        val cityToGarison = unit.civInfo.cities.filter {it.getCenterTile().civilianUnit == null}
+                .minBy { it.getCenterTile().arialDistanceTo(unit.currentTile) }
+        if (cityToGarison != null) {
+            unit.movementAlgs().headTowards(cityToGarison.getCenterTile())
+            return
+        }
+        return
+    }
 
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
         val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
