@@ -18,7 +18,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
 
     internal fun update(notifications: MutableList<Notification>) {
         notificationsTable.clearChildren()
-        for (notification in notifications) {
+        for (notification in notifications.toList()) { // tolist to avoid concurrecy problems
             val label = Label(notification.text.tr(), CameraStageBaseScreen.skin).setFontColor(Color.BLACK)
                     .setFontSize(14)
             val minitable = Table()
