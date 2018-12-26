@@ -129,7 +129,7 @@ class Building : NamedStats(), IConstruction{
             stats.science += 1f
 
         if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(name))
-            stats.science += 1f
+            stats.happiness += 1f
 
         if (adoptedPolicies.contains("Theocracy") && name == "Temple")
             percentStatBonus = Stats().apply { gold=10f }
