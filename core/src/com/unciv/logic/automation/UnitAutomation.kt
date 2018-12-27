@@ -400,19 +400,23 @@ class SpecificUnitAutomation{
     }
 
     fun automateGeneral(unit: MapUnit){
+        //try to follow nearby units. Do not garrison in city if possible
         val militantToCompany = unit.civInfo.getCivUnits()
                 .firstOrNull { val tile = it.currentTile
                     it.type.isLandUnit() && it.getMaxMovement() <= 2.0f && tile.civilianUnit==null
-                            && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
+                            && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) && !tile.isCityCenter() }
+
         if(militantToCompany!=null) {
             unit.movementAlgs().headTowards(militantToCompany.currentTile)
             return
         }
 
-        val cityToGarison = unit.civInfo.cities.filter {it.getCenterTile().civilianUnit == null}
-                .minBy { it.getCenterTile().arialDistanceTo(unit.currentTile) }
+        //if no unit to follow, take refuge in city.
+        val cityToGarison = unit.civInfo.cities.map {it.getCenterTile()}
+                .filter {it.civilianUnit == null && unit.canMoveTo(it)}
+                .minBy { it.arialDistanceTo(unit.currentTile) }
         if (cityToGarison != null) {
-            unit.movementAlgs().headTowards(cityToGarison.getCenterTile())
+            unit.movementAlgs().headTowards(cityToGarison)
             return
         }
         return

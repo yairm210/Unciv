@@ -93,6 +93,7 @@ class NextTurnAutomation{
         val rangedUnits = mutableListOf<MapUnit>()
         val meleeUnits = mutableListOf<MapUnit>()
         val civilianUnits = mutableListOf<MapUnit>()
+        val generals = mutableListOf<MapUnit>()
 
         for (unit in civInfo.getCivUnits()) {
             if (unit.promotions.canBePromoted()) {
@@ -101,10 +102,10 @@ class NextTurnAutomation{
                     unit.promotions.addPromotion(availablePromotions.getRandom().name)
             }
 
-            val unitType = unit.type
             when {
-                unitType.isRanged() -> rangedUnits.add(unit)
-                unitType.isMelee() -> meleeUnits.add(unit)
+                unit.type.isRanged() -> rangedUnits.add(unit)
+                unit.type.isMelee() -> meleeUnits.add(unit)
+                unit.name == "Great General" -> generals.add(unit) //generals move after military units
                 else -> civilianUnits.add(unit)
             }
         }
@@ -112,6 +113,7 @@ class NextTurnAutomation{
         for (unit in civilianUnits) UnitAutomation().automateUnitMoves(unit) // They move first so that combat units can accompany a settler
         for (unit in rangedUnits) UnitAutomation().automateUnitMoves(unit)
         for (unit in meleeUnits) UnitAutomation().automateUnitMoves(unit)
+        for (unit in generals) UnitAutomation().automateUnitMoves(unit)
     }
 
     private fun reassignWorkedTiles(civInfo: CivilizationInfo) {
