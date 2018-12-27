@@ -68,7 +68,7 @@ class BattleDamage{
                         .filter {it.civilianUnit?.civInfo == combatant.unit.civInfo}
                         .map {it.civilianUnit}
                 if (nearbyCivUnits.any { it!!.hasUnique("Bonus for land units in 2 radius 15%") }) {
-                    modifiers["Great general"]=0.25f
+                    modifiers["Great general"]=0.15f
                 }
             }
         }
