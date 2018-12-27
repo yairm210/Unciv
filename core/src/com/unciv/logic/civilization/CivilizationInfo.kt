@@ -350,10 +350,14 @@ class CivilizationInfo {
             city.endTurn()
         }
 
-        val greatPerson = greatPeople.getNewGreatPerson()
-        if (greatPerson != null) {
-            addGreatPerson(greatPerson)
+        //if no city available, addGreatPerson will throw exception
+        if (!cities.isNotEmpty()) {
+            val greatPerson = greatPeople.getNewGreatPerson()
+            if (greatPerson != null) {
+                addGreatPerson(greatPerson)
+            }
         }
+
 
         goldenAges.endTurn(happiness)
         getCivUnits().forEach { it.endTurn() }
