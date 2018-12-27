@@ -413,7 +413,7 @@ class SpecificUnitAutomation{
 
         //if no unit to follow, take refuge in city.
         val cityToGarison = unit.civInfo.cities.map {it.getCenterTile()}
-                .filter {it.civilianUnit == null && unit.canMoveTo(it)}
+                .filter {it.civilianUnit == null && unit.canMoveTo(it) && unit.movementAlgs().canReach(it)}
                 .minBy { it.arialDistanceTo(unit.currentTile) }
         if (cityToGarison != null) {
             unit.movementAlgs().headTowards(cityToGarison)
