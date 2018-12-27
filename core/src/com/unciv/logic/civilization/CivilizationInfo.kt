@@ -351,7 +351,7 @@ class CivilizationInfo {
         }
 
         //if no city available, addGreatPerson will throw exception
-        if (!cities.isNotEmpty()) {
+        if (cities.isNotEmpty()) {
             val greatPerson = greatPeople.getNewGreatPerson()
             if (greatPerson != null) {
                 addGreatPerson(greatPerson)
