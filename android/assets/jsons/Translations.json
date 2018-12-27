@@ -3227,8 +3227,8 @@
         Simplified_Chinese:"在海岸双倍移动力"
         Portuguese:"Movimento em dobro nas costas"
 	}
-	"Indirect Fire":
-		Spanish:"Fuego Indirecto (Puede disparar sobre colinas y bosques) "
+	"Indirect Fire":{
+		Spanish:"Fuego Indirecto (Puede disparar sobre colinas y bosques)"
 		Italian:"Fuoco indiretto (l'unità può sparare oltre le foreste o le colline)"
 		French:"Tir indirect"
         Simplified_Chinese:"间接射击"
