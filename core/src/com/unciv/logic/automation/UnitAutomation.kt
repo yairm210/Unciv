@@ -33,9 +33,9 @@ class UnitAutomation{
             return SpecificUnitAutomation().automateWorkBoats(unit)
         }
 
-        if (unit.name == "Great General") {
+        if (unit.name == "Great General")
             return SpecificUnitAutomation().automateGeneral(unit)
-        } else if(unit.name.startsWith("Great")
+        if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)// I don't know what to do with you yet.
         }
@@ -403,8 +403,9 @@ class SpecificUnitAutomation{
         //try to follow nearby units. Do not garrison in city if possible
         val militantToCompany = unit.civInfo.getCivUnits()
                 .firstOrNull { val tile = it.currentTile
-                    it.type.isLandUnit() && it.getMaxMovement() <= 2.0f && tile.civilianUnit==null
-                            && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) && !tile.isCityCenter() }
+                    it.type.isLandUnit() && it.getMaxMovement() <= 2.0f
+                            && (tile.civilianUnit == null || tile.civilianUnit == unit)
+                            && unit.canMoveTo(tile) && !tile.isCityCenter() && unit.movementAlgs().canReach(tile) }
 
         if(militantToCompany!=null) {
             unit.movementAlgs().headTowards(militantToCompany.currentTile)
