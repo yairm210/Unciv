@@ -24,14 +24,6 @@ class UnitAction(var name: String, var canAct:Boolean, var action:()->Unit){
 
 class UnitActions {
 
-    private fun constructImprovementAndDestroyUnit(unit:MapUnit, improvementName: String): () -> Unit {
-        return {
-            unit.getTile().improvement = improvementName
-            unit.destroy()
-        }
-    }
-
-
     fun getUnitActions(unit:MapUnit,worldScreen: WorldScreen): List<UnitAction> {
         val tile = unit.getTile()
         val unitTable = worldScreen.bottomBar.unitTable
@@ -75,7 +67,15 @@ class UnitActions {
             while (upgradedUnit.obsoleteTech!=null && unit.civInfo.tech.isResearched(upgradedUnit.obsoleteTech!!))
                 upgradedUnit = upgradedUnit.getUpgradeUnit(unit.civInfo)
 
-            if (upgradedUnit.isBuildable(unit.civInfo)) {
+            // We need to remove the unit from the civ for this check,
+            // because if the unit requires, say, horses, and so does its upgrade,
+            // and the civ currently has 0 horses,
+            // if we don;t remove the unit before the check it's return false!
+            unit.civInfo.removeUnit(unit)
+            val canUpgrade = upgradedUnit.isBuildable(unit.civInfo)
+            unit.civInfo.addUnit(unit)
+
+            if (canUpgrade) {
                 var goldCostOfUpgrade = (upgradedUnit.cost - unit.baseUnit().cost) * 2 + 10
                 if (unit.civInfo.policies.isAdopted("Professional Army")) goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
                 actionList += UnitAction("Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
@@ -148,8 +148,12 @@ class UnitActions {
         for(unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }){
             val improvementName = unique.replace("Can build improvement: ","")
             actionList += UnitAction("Create [$improvementName]",
-                    unit.currentMovement != 0f && !tile.isCityCenter(),
-                    constructImprovementAndDestroyUnit(unit, improvementName)).sound("chimes")
+                    unit.currentMovement != 0f && !tile.isCityCenter()
+            ) {
+                unit.getTile().terrainFeature=null // remove forest/jungle/marsh
+                unit.getTile().improvement = improvementName
+                unit.destroy()
+            }.sound("chimes")
         }
 
 

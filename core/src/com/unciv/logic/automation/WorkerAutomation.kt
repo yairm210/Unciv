@@ -109,9 +109,7 @@ class WorkerAutomation(val unit: MapUnit) {
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
         val selectedTile = workableTiles.firstOrNull{
-            unit.movementAlgs()
-                .getShortestPath(workableTiles.first())
-                .isNotEmpty()}
+            unit.movementAlgs().canReach(it) }
 
         if (selectedTile != null
                 && getPriority(selectedTile, unit.civInfo)>1
