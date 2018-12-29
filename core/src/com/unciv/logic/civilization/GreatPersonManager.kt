@@ -5,7 +5,9 @@ import com.unciv.models.stats.Stats
 
 class GreatPersonManager {
     var pointsForNextGreatPerson = 100
+    var pointsForNextGreatGeneral = 30
     var greatPersonPoints = Stats()
+    var greatGeneralPoints = 0
     var freeGreatPeople=0
 
     val statToGreatPersonMapping = HashMap<Stat,String>().apply {
@@ -20,11 +22,20 @@ class GreatPersonManager {
         toReturn.freeGreatPeople=freeGreatPeople
         toReturn.greatPersonPoints=greatPersonPoints.clone()
         toReturn.pointsForNextGreatPerson=pointsForNextGreatPerson
+        toReturn.pointsForNextGreatGeneral = pointsForNextGreatGeneral
+        toReturn.greatGeneralPoints = greatGeneralPoints
         return toReturn
     }
 
     fun getNewGreatPerson(): String? {
         val greatPerson: String? = null
+
+        if (greatGeneralPoints > pointsForNextGreatGeneral) {
+            greatGeneralPoints -= pointsForNextGreatGeneral
+            pointsForNextGreatGeneral += 50
+            return "Great General"
+        }
+
         val greatPersonPointsHashmap = greatPersonPoints.toHashMap()
         for(entry in statToGreatPersonMapping){
             if(greatPersonPointsHashmap[entry.key]!!>pointsForNextGreatPerson){

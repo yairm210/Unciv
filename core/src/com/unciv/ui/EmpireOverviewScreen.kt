@@ -177,6 +177,10 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
             greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
         }
+        val pointsForGreatGeneral = playerCivInfo.greatPeople.greatGeneralPoints.toInt().toString()
+        val pointsForNextGreatGeneral = playerCivInfo.greatPeople.pointsForNextGreatGeneral.toInt().toString()
+        greatPeopleTable.add("Great General".tr())
+        greatPeopleTable.add(pointsForGreatGeneral+"/"+pointsForNextGreatGeneral).row()
         greatPeopleTable.pack()
         return greatPeopleTable
     }

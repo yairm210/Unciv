@@ -96,6 +96,7 @@ class Battle(val gameInfo:GameInfo) {
             var amountToAdd = amount
             if(thisCombatant.getCivilization().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
             thisCombatant.unit.promotions.XP += amountToAdd
+            thisCombatant.getCivilization().greatPeople.greatGeneralPoints += amountToAdd
         }
 
         if(attacker.isMelee()){

@@ -166,7 +166,7 @@ class UnitActions {
             }.sound("chimes")
         }
 
-        if (unit.name == "Great Artist" && !unit.isEmbarked()) {
+        if (unit.hasUnique("Can start an 8-turn golden age") && !unit.isEmbarked()) {
             actionList += UnitAction( "Start Golden Age",unit.currentMovement != 0f
             ) {
                 unit.civInfo.goldenAges.enterGoldenAge()

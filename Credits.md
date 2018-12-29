@@ -70,7 +70,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Pallet](https://thenounproject.com/search/?q=Pallet&i=6862) By James Keuning for Great Artist
 * [Gear](https://thenounproject.com/search/?q=Gear&i=17369) By Melvin Salas for Great Engineer
 * [Beaker](https://thenounproject.com/search/?q=Beaker&i=621510) By Delwar Hossain for Great Scientist
-
+* [General](https://thenounproject.com/search/?q=general&i=933566) By anbileru adaleru for Great General
 
 ## Resources
 

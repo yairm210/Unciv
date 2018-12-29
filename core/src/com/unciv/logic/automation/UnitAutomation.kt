@@ -33,6 +33,8 @@ class UnitAutomation{
             return SpecificUnitAutomation().automateWorkBoats(unit)
         }
 
+        if (unit.name == "Great General")
+            return SpecificUnitAutomation().automateGeneral(unit)
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)// I don't know what to do with you yet.
@@ -397,6 +399,29 @@ class SpecificUnitAutomation{
         else UnitAutomation().explore(unit, unit.getDistanceToTiles())
     }
 
+    fun automateGeneral(unit: MapUnit){
+        //try to follow nearby units. Do not garrison in city if possible
+        val militantToCompany = unit.getDistanceToTiles().map { it.key }
+                .firstOrNull {val militant = it.militaryUnit;
+            militant != null && militant.civInfo == unit.civInfo
+                && (it.civilianUnit == null || it.civilianUnit == unit)
+                && militant.getMaxMovement() <= 2.0f && !it.isCityCenter()}
+
+        if(militantToCompany!=null) {
+            unit.movementAlgs().headTowards(militantToCompany)
+            return
+        }
+
+        //if no unit to follow, take refuge in city.
+        val cityToGarison = unit.civInfo.cities.map {it.getCenterTile()}
+                .filter {it.civilianUnit == null && unit.canMoveTo(it) && unit.movementAlgs().canReach(it)}
+                .minBy { it.arialDistanceTo(unit.currentTile) }
+        if (cityToGarison != null) {
+            unit.movementAlgs().headTowards(cityToGarison)
+            return
+        }
+        return
+    }
 
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
         val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)

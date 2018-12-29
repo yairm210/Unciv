@@ -18,7 +18,7 @@ class GreatPersonPickerScreen : PickerScreen() {
         closeButton.isVisible=false
         rightSideButton.setText("Choose a free great person")
         for (unit in GameBasics.Units.values
-                .filter { it.name in GreatPersonManager().statToGreatPersonMapping.values})
+                .filter { it.name in GreatPersonManager().statToGreatPersonMapping.values || it.name == "Great General"})
         {
             val button = Button(skin)
 
