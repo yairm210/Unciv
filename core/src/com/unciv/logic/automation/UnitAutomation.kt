@@ -401,14 +401,14 @@ class SpecificUnitAutomation{
 
     fun automateGeneral(unit: MapUnit){
         //try to follow nearby units. Do not garrison in city if possible
-        val militantToCompany = unit.civInfo.getCivUnits()
-                .firstOrNull { val tile = it.currentTile
-                    it.type.isLandUnit() && it.getMaxMovement() <= 2.0f
-                            && (tile.civilianUnit == null || tile.civilianUnit == unit)
-                            && unit.canMoveTo(tile) && !tile.isCityCenter() && unit.movementAlgs().canReach(tile) }
+        val militantToCompany = unit.getDistanceToTiles().map { it.key }
+                .firstOrNull {val militant = it.militaryUnit;
+            militant != null && militant.civInfo == unit.civInfo
+                && (it.civilianUnit == null || it.civilianUnit == unit)
+                && militant.getMaxMovement() <= 2.0f && !it.isCityCenter()}
 
         if(militantToCompany!=null) {
-            unit.movementAlgs().headTowards(militantToCompany.currentTile)
+            unit.movementAlgs().headTowards(militantToCompany)
             return
         }
 
