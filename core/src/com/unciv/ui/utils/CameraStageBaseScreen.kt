@@ -163,8 +163,27 @@ fun <T> ArrayList<T>.withItem(item:T): ArrayList<T> {
 /**
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */
+fun <T> HashSet<T>.withItem(item:T): HashSet<T> {
+    val newHashSet = HashSet(this)
+    newHashSet.add(item)
+    return newHashSet
+}
+
+/**
+ * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
+ */
 fun <T> ArrayList<T>.withoutItem(item:T): ArrayList<T> {
     val newArrayList = ArrayList(this)
     newArrayList.remove(item)
     return newArrayList
+}
+
+
+/**
+ * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
+ */
+fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
+    val newHashSet = HashSet(this)
+    newHashSet.remove(item)
+    return newHashSet
 }

@@ -3,6 +3,8 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
+import com.unciv.ui.utils.withItem
+import com.unciv.ui.utils.withoutItem
 
 class CityExpansionManager {
     @Transient
@@ -87,9 +89,9 @@ class CityExpansionManager {
     }
 
     fun relinquishOwnership(tileInfo: TileInfo){
-        cityInfo.tiles.remove(tileInfo.position)
+        cityInfo.tiles = cityInfo.tiles.withoutItem(tileInfo.position)
         if(cityInfo.workedTiles.contains(tileInfo.position))
-            cityInfo.workedTiles.remove(tileInfo.position)
+            cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tileInfo.position)
         tileInfo.owningCity=null
     }
 
@@ -97,7 +99,7 @@ class CityExpansionManager {
         if(tileInfo.isCityCenter()) throw Exception("What?")
         if(tileInfo.getCity()!=null) tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
 
-        cityInfo.tiles.add(tileInfo.position)
+        cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
         tileInfo.owningCity = cityInfo
         cityInfo.population.autoAssignPopulation()
         cityInfo.cityStats.update()

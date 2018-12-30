@@ -11,6 +11,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.withoutItem
 import kotlin.math.min
 
 class CityInfo {
@@ -79,8 +80,8 @@ class CityInfo {
         toReturn.population = population.clone()
         toReturn.cityConstructions=cityConstructions.clone()
         toReturn.expansion = expansion.clone()
-        toReturn.tiles.addAll(tiles)
-        toReturn.workedTiles.addAll(workedTiles)
+        toReturn.tiles = tiles
+        toReturn.workedTiles = workedTiles
         toReturn.isBeingRazed=isBeingRazed
         toReturn.isConnectedToCapital = isConnectedToCapital
         return toReturn
@@ -210,7 +211,7 @@ class CityInfo {
 
         // now that the tiles have changed, we need to reassign population
         workedTiles.filterNot { tiles.contains(it) }
-                .forEach { workedTiles.remove(it); population.autoAssignPopulation() }
+                .forEach { workedTiles = workedTiles.withoutItem(it); population.autoAssignPopulation() }
 
         // Remove all national wonders
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })

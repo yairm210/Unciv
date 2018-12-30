@@ -118,7 +118,7 @@ class NextTurnAutomation{
 
     private fun reassignWorkedTiles(civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
-            city.workedTiles.clear()
+            city.workedTiles = hashSetOf()
             city.population.specialists.clear()
             for (i in 0..city.population.population)
                 city.population.autoAssignPopulation()

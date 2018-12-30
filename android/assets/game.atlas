@@ -319,7 +319,7 @@ BuildingIcons/Palace
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/Paper maker
+BuildingIcons/Paper Maker
   rotate: false
   xy: 1864, 1232
   size: 100, 100
@@ -697,6 +697,20 @@ ImprovementIcons/Quarry
   orig: 100, 100
   offset: 0, 0
   index: -1
+ImprovementIcons/Railroad
+  rotate: false
+  xy: 1734, 722
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Railroad
+  rotate: false
+  xy: 1734, 722
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
 ImprovementIcons/Road
   rotate: false
   xy: 347, 407
@@ -770,20 +784,6 @@ OtherIcons/MenuIcon
 OtherIcons/Pentagon
   rotate: false
   xy: 1864, 1028
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Railroad
-  rotate: false
-  xy: 1734, 722
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-ImprovementIcons/Railroad
-  rotate: false
-  xy: 1734, 722
   size: 100, 100
   orig: 100, 100
   offset: 0, 0

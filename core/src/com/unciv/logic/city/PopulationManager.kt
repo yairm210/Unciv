@@ -5,6 +5,8 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.utils.withItem
+import com.unciv.ui.utils.withoutItem
 import kotlin.math.roundToInt
 
 class PopulationManager {
@@ -94,7 +96,7 @@ class PopulationManager {
         //assign population
         if (valueBestTile > valueBestSpecialist) {
             if (bestTile != null)
-                cityInfo.workedTiles.add(bestTile.position)
+                cityInfo.workedTiles = cityInfo.workedTiles.withItem(bestTile.position)
         } else {
             if (bestJob != null) {
                 specialists.add(bestJob, 1f)
@@ -105,9 +107,9 @@ class PopulationManager {
     fun unassignExtraPopulation() {
         for(tile in cityInfo.workedTiles.map { cityInfo.tileMap[it] }) {
             if (tile.getCity() != cityInfo)
-                cityInfo.workedTiles.remove(tile.position)
+                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
             if(tile.arialDistanceTo(cityInfo.getCenterTile()) > 3) // AutoAssignPopulation used to assign pop outside of allowed range, fixed as of 2.10.4
-                cityInfo.workedTiles.remove(tile.position)
+                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tile.position)
         }
 
         while (getFreePopulation()<0) {
@@ -131,7 +133,7 @@ class PopulationManager {
             //un-assign population
             if ((valueWorstTile < valueWorstSpecialist && worstWorkedTile != null)
                     || worstJob == null) {
-                cityInfo.workedTiles.remove(worstWorkedTile!!.position)
+                cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(worstWorkedTile!!.position)
             } else {
                 specialists.add(worstJob, -1f)
             }
