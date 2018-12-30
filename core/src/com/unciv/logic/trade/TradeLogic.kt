@@ -155,8 +155,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val ourCombatStrength = Automation().evaluteCombatStrength(ourCivilization)
         val theirCombatStrength = Automation().evaluteCombatStrength(otherCivilization)
         if(ourCombatStrength==theirCombatStrength) return 0
-        if(ourCombatStrength==0) return 1000
-        if(theirCombatStrength==0) return -1000 // Chumps got no cities or units
+        if(ourCombatStrength==0) return -1000
+        if(theirCombatStrength==0) return 1000 // Chumps got no cities or units
         if(ourCombatStrength>theirCombatStrength){
             val absoluteAdvantage = ourCombatStrength-theirCombatStrength
             val percentageAdvantage = absoluteAdvantage / theirCombatStrength.toFloat()
