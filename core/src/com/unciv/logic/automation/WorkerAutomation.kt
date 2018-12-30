@@ -98,7 +98,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
-                            && (it.improvement == null || (it.hasViewableResource(unit.civInfo) && it.getTileResource().improvement != it.improvement))
+                            && (it.improvement == null || (it.hasViewableResource(unit.civInfo) && !it.containsGreatImprovement() && it.getTileResource().improvement != it.improvement))
                             && it.isLand()
                             && !it.getBaseTerrain().impassable
                             && it.canBuildImprovement(chooseImprovement(it, unit.civInfo), unit.civInfo)
