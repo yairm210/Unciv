@@ -96,6 +96,10 @@ class Battle(val gameInfo:GameInfo) {
             var amountToAdd = amount
             if(thisCombatant.getCivilization().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
             thisCombatant.unit.promotions.XP += amountToAdd
+
+            if(thisCombatant.getCivilization().getNation().unique
+                    == "Great general provides double combat bonus, and spawns 50% faster")
+                amountToAdd = (amountToAdd * 1.5f).toInt()
             thisCombatant.getCivilization().greatPeople.greatGeneralPoints += amountToAdd
         }
 

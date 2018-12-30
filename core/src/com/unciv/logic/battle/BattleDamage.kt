@@ -68,7 +68,10 @@ class BattleDamage{
                         .filter {it.civilianUnit?.civInfo == combatant.unit.civInfo}
                         .map {it.civilianUnit}
                 if (nearbyCivUnits.any { it!!.hasUnique("Bonus for land units in 2 radius 15%") }) {
-                    modifiers["Great general"]=0.15f
+                    modifiers["Great general"]= when {
+                        combatant.unit.civInfo.getNation().unique == "Great general provides double combat bonus, and spawns 50% faster" -> 0.3f
+                        else -> 0.15f
+                    }
                 }
             }
         }

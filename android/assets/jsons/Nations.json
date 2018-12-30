@@ -19,6 +19,7 @@
 		name:"China",
 		mainColor:[9, 112, 84],
 		secondaryColor:[255,255,255],
+		unique:"Great general provides double combat bonus, and spawns 50% faster"
 		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]

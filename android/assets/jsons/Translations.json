@@ -3446,6 +3446,9 @@
 		Spanish:"+2 de movimiento a las unidades navales"
 		Simplified_Chinese:"所有有海军+2行动力"
 	}
+	"Great general provides double combat bonus, and spawns 50% faster":{
+		Simplified_Chinese:"大军事家提供双倍战斗加成，出生速率+50%"
+	}
 	
 	"France":{	
 		Italian:"Francia"
