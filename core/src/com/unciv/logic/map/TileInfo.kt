@@ -44,6 +44,11 @@ open class TileInfo {
         return toReturn
     }
 
+    fun containsGreatImprovement(): Boolean {
+        if (getTileImprovement() == null) return false
+        return getTileImprovement()!!.name in listOf("Academy", "Landmark", "Manufactory", "Customs house")
+    }
+
     //region pure functions
     fun getUnits(): List<MapUnit> {
         val list = ArrayList<MapUnit>(2)
@@ -162,7 +167,7 @@ open class TileInfo {
             if (improvement.improvingTech != null && observingCiv.tech.isResearched(improvement.improvingTech!!)) stats.add(improvement.improvingTechStats!!) // eg Chemistry for mines
             if (improvement.name == "Trading post" && city != null && city.civInfo.policies.isAdopted("Free Thought"))
                 stats.science += 1f
-            if (improvement.name in listOf("Academy", "Landmark", "Manufactory", "Customs house") && observingCiv.policies.isAdopted("Freedom Complete"))
+            if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement) // again, for the double effect
         }
 

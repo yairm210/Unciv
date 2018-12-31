@@ -30,7 +30,7 @@ class WorkerAutomation(val unit: MapUnit) {
             return
         }
         if (tile.improvementInProgress == null && tile.isLand()) {
-            val improvement = chooseImprovement(tile)
+            val improvement = chooseImprovement(tile, unit.civInfo)
             if (tile.canBuildImprovement(improvement, unit.civInfo)) {
                 // What if we're stuck on this tile but can't build there?
                 tile.startWorkingOnImprovement(improvement, unit.civInfo)
@@ -98,10 +98,10 @@ class WorkerAutomation(val unit: MapUnit) {
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
-                            && it.improvement == null
+                            && (it.improvement == null || (it.hasViewableResource(unit.civInfo) && !it.containsGreatImprovement() && it.getTileResource().improvement != it.improvement))
                             && it.isLand()
                             && !it.getBaseTerrain().impassable
-                            && it.canBuildImprovement(chooseImprovement(it), unit.civInfo)
+                            && it.canBuildImprovement(chooseImprovement(it, unit.civInfo), unit.civInfo)
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ
                 }.sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
 
@@ -131,14 +131,21 @@ class WorkerAutomation(val unit: MapUnit) {
         return priority
     }
 
-    private fun chooseImprovement(tile: TileInfo): TileImprovement {
+    private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement {
+        val improvementStringForResource : String ?= when {
+            tile.resource == null || !tile.hasViewableResource(civInfo) -> null
+            tile.terrainFeature == "Marsh" -> "Remove Marsh"
+            tile.terrainFeature == "Jungle" -> "Remove Jungle"
+            tile.terrainFeature == "Forest" && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
+            else -> tile.getTileResource().improvement
+        }
+
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress
+            improvementStringForResource != null -> improvementStringForResource
             tile.terrainFeature == "Jungle" -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
-            tile.terrainFeature == "Forest" &&
-                    (tile.resource == null || tile.getTileResource().improvement!="Camp") -> "Lumber mill"
-            tile.resource != null -> tile.getTileResource().improvement
+            tile.terrainFeature == "Forest" -> "Lumber mill"
             tile.baseTerrain == "Hill" -> "Mine"
             tile.baseTerrain in listOf("Grassland","Desert","Plains") -> "Farm"
             tile.baseTerrain == "Tundra" -> "Trading post"
