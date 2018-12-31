@@ -697,20 +697,6 @@ ImprovementIcons/Quarry
   orig: 100, 100
   offset: 0, 0
   index: -1
-ImprovementIcons/Railroad
-  rotate: false
-  xy: 1734, 722
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-OtherIcons/Railroad
-  rotate: false
-  xy: 1734, 722
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 ImprovementIcons/Road
   rotate: false
   xy: 347, 407
@@ -784,6 +770,20 @@ OtherIcons/MenuIcon
 OtherIcons/Pentagon
   rotate: false
   xy: 1864, 1028
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+OtherIcons/Railroad
+  rotate: false
+  xy: 1734, 722
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+ImprovementIcons/Railroad
+  rotate: false
+  xy: 1734, 722
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2604,6 +2604,27 @@ UnitPromotionIcons/Targeting_I_(Civ5)
 UnitPromotionIcons/Volley_(Civ5)
   rotate: false
   xy: 2018, 634
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Wolfpack_III_(Civ5)
+  rotate: false
+  xy: 380, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Wolfpack_II_(Civ5)
+  rotate: false
+  xy: 402, 27
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Wolfpack_I_(Civ5)
+  rotate: false
+  xy: 1983, 532
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

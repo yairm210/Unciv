@@ -525,7 +525,7 @@
 	},
 	{
 		name: "Submarine",
-		unitType: "WaterRanged",
+		unitType: "WaterSubmarine",
 		movement: 5,
 		strength: 35,
 		rangedStrength: 60,
