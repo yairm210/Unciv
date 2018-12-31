@@ -119,9 +119,9 @@
 	{
 		name:"Mobility",
 		prerequisites:["Shock II","Drill II","Targeting I",
-			"Bombardment I","Boarding Party I", "Coastal Raider I"],
+			"Bombardment I","Boarding Party I", "Coastal Raider I", "Wolfpack I"],
 		effect:"+1 Movement",
-		unitTypes:["Mounted","WaterMelee","WaterRanged","Armor"]
+		unitTypes:["Mounted","WaterMelee","WaterRanged","Armor","WaterSubmarine"]
 	}
 	
 	{
@@ -147,9 +147,9 @@
 	
 	{
 		name:"Range",
-		prerequisites:["Accuracy III","Barrage III","Targeting II","Bombardment II"],
+		prerequisites:["Accuracy III","Barrage III","Targeting II","Bombardment II", "Wolfpack II"],
 		effect:"+1 Range",
-		unitTypes:["Ranged","Siege","WaterRanged"]
+		unitTypes:["Ranged","Siege","WaterRanged","WaterSubmarine"]
 	}
 	
 	{
@@ -181,10 +181,10 @@
 	
 	{
 		name:"Logistics",
-		prerequisites:["Accuracy III","Barrage III","Targeting III",
+		prerequisites:["Accuracy III","Barrage III","Targeting III", "Wolfpack III",
 			"Bombardment III", "Coastal Raider III","Boarding Party III"],
 		effect:"1 additional attack per turn",
-		unitTypes:["Ranged","Siege","WaterMelee","WaterRanged"]
+		unitTypes:["Ranged","Siege","WaterMelee","WaterRanged","WaterSubmarine"]
 	}
 	
 	{
@@ -240,7 +240,6 @@
 		effect:"Bonus vs City 15%",
 		unitTypes:["WaterMelee"]
 	}
-	
 	{
 		name:"Targeting I",
 		effect:"Bonus vs City 15%",
@@ -258,5 +257,21 @@
 		effect:"Bonus vs water units 15%",
 		unitTypes:["WaterRanged"]
 	}
-	
+	{
+		name:"Wolfpack I",
+		effect:"Bonus as Attacker 25%",
+		unitTypes:["WaterSubmarine"]
+	}
+	{
+		name:"Wolfpack II",
+		prerequisites:["Wolfpack I"],
+		effect:"Bonus as Attacker 25%",
+		unitTypes:["WaterSubmarine"]
+	}
+	{
+		name:"Wolfpack III",
+		prerequisites:["Wolfpack II"],
+		effect:"Bonus as Attacker 25%",
+		unitTypes:["WaterSubmarine"]
+	}
 ]

@@ -11,7 +11,8 @@ enum class UnitType{
     Siege,
     WaterCivilian,
     WaterMelee,
-    WaterRanged;
+    WaterRanged,
+    WaterSubmarine;
 
     fun isMelee(): Boolean {
         return this == Melee
@@ -24,6 +25,7 @@ enum class UnitType{
         return this == Ranged
                 || this == Siege
                 || this == WaterRanged
+                || this == WaterSubmarine
     }
 
     fun isLandUnit(): Boolean {
