@@ -1,4 +1,4 @@
-package com.unciv.game;
+package com.unciv.app;
 
 import android.os.Bundle;
 

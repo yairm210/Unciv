@@ -1,4 +1,4 @@
-package com.unciv.game.desktop;
+package com.unciv.app.desktop;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
