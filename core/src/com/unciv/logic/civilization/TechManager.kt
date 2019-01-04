@@ -146,6 +146,10 @@ class TechManager {
                 val currentConstructionUnit = city.cityConstructions.getCurrentConstruction() as BaseUnit
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
+
+        if(techName=="Writing" && civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster"
+                && civInfo.cities.any())
+            civInfo.addGreatPerson("Great Scientist")
     }
 
     fun setTransients(){

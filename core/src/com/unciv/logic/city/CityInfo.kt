@@ -141,6 +141,9 @@ class CityInfo {
         if (civInfo.policies.isAdopted("Freedom"))
             greatPersonPoints = greatPersonPoints.times(1.25f)
 
+        if(civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
+            greatPersonPoints.science *= 1.5f
+
         return greatPersonPoints
     }
 
