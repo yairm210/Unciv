@@ -6,7 +6,6 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.LanguagePickerScreen
-import com.unciv.ui.NewGameScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -37,8 +36,7 @@ class UnCivGame : Game() {
                 startNewGame()
             }
         }
-        //startNewGame() //
-        else screen= LanguagePickerScreen() // disabled because of people's negative reviews =(
+        else screen= LanguagePickerScreen()
     }
 
     fun loadGame(gameInfo:GameInfo){
@@ -52,7 +50,7 @@ class UnCivGame : Game() {
     }
 
     fun startNewGame() {
-        val newGame = GameStarter().startNewGame(NewGameScreen.NewGameParameters().apply { difficulty="Chieftain" })
+        val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty="Chieftain" })
         gameInfo = newGame
 
         worldScreen = WorldScreen()

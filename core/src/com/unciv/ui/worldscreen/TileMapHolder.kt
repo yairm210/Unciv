@@ -32,7 +32,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     internal fun addTiles() {
         val allTiles = Group()
-        val groupPadding = 300f // This is so that no tile will be stuck "on the side" and be unreachable or difficult to reach
+        val groupPadding = 600f // This is so that no tile will be stuck "on the side" and be unreachable or difficult to reach
 
         var topX = 0f
         var topY = 0f

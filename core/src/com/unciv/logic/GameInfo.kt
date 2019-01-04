@@ -1,9 +1,9 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.GameParameters
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.Notification
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -11,10 +11,10 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 
 class GameInfo {
-    var notifications = mutableListOf<Notification>()
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on diffferent difficulties?
     var tileMap: TileMap = TileMap()
+    var gameParameters=GameParameters()
     var turns = 0
     var oneMoreTurnMode=false
 
@@ -25,6 +25,7 @@ class GameInfo {
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
         toReturn.turns = turns
         toReturn.difficulty=difficulty
+        toReturn.gameParameters = gameParameters
         return toReturn
     }
 

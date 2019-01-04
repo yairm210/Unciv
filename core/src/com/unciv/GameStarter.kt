@@ -4,17 +4,27 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.NewGameScreen
 import com.unciv.ui.utils.getRandom
 import java.util.*
 
+
+class GameParameters{
+    var difficulty="Prince"
+    var nation="Babylon"
+    var mapRadius=20
+    var numberOfEnemies=3
+    var mapType= MapType.Perlin
+}
+
 class GameStarter{
-    fun startNewGame(newGameParameters: NewGameScreen.NewGameParameters): GameInfo {
+    fun startNewGame(newGameParameters: GameParameters): GameInfo {
         val gameInfo = GameInfo()
 
+        gameInfo.gameParameters = newGameParameters
         gameInfo.tileMap = TileMap(newGameParameters.mapRadius, newGameParameters.mapType)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         val startingLocations = getStartingLocations(newGameParameters.numberOfEnemies+1,gameInfo.tileMap)
