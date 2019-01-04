@@ -152,6 +152,8 @@ class UnitActions {
             ) {
                 unit.getTile().terrainFeature=null // remove forest/jungle/marsh
                 unit.getTile().improvement = improvementName
+                unit.getTile().improvementInProgress = null
+                unit.getTile().turnsToImprovement = 0
                 unit.destroy()
             }.sound("chimes")
         }
