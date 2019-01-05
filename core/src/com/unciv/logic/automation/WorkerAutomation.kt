@@ -38,6 +38,7 @@ class WorkerAutomation(val unit: MapUnit) {
             }
         }
         if(tile.improvementInProgress!=null) return // we're working!
+        if(tryConnectingCities()) return //nothing to do, try again to connect cities
     }
 
 
