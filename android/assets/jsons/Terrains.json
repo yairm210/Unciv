@@ -49,7 +49,6 @@
 		food:1,
 		gold:1,
 		RGB: [ 200, 200, 255],
-		impassable:true,
 		canHaveOverlay:false
 	},
 	{
