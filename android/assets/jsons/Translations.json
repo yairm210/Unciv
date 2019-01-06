@@ -6444,4 +6444,19 @@
 		Russian:"+15% К производству военных юнитов, Военные юниты начинают с 15 опыта"
 	}
 	
+	// Victory Screen
+	"Science victory":{}
+	"Cultural victory":{}
+	"Conquest victory":{}
+	"Complete all the spaceship parts\n to win!":{}
+	"Complete 4 policy branches\n to win!":{}
+	"Destroy all enemies\n to win!":{}
+	"You have won a scientific victory!":{}
+	"You have won a cultural victory!":{}
+	"You have won a conquest victory!":{}
+	"One more turn...!":{}
+	"Built Apollo Program":{}
+	"Destroy [civName]":{}
+	
+	
 }

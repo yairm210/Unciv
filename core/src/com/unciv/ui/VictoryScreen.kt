@@ -12,24 +12,22 @@ import com.unciv.ui.utils.onClick
 
 class VictoryScreen : PickerScreen() {
 
-    // todo translate this screen
-
     val playerCivInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
 
     init {
         topTable.skin=skin
         topTable.defaults().pad(10f)
-        topTable.add("Science victory")
-        topTable.add("Cultural victory")
-        topTable.add("Conquest victory")
+        topTable.add("Science victory".tr())
+        topTable.add("Cultural victory".tr())
+        topTable.add("Conquest victory".tr())
         topTable.row()
         topTable.add(scienceVictoryColumn())
         topTable.add(culturalVictoryColumn())
         topTable.add(conquestVictoryColumn())
         topTable.row()
-        topTable.add("Complete all the spaceship parts\n to win!")
-        topTable.add("Complete 4 policy branches\n to win!")
-        topTable.add("Destroy all enemies\n to win!")
+        topTable.add("Complete all the spaceship parts\n to win!".tr())
+        topTable.add("Complete 4 policy branches\n to win!".tr())
+        topTable.add("Destroy all enemies\n to win!".tr())
 
         rightSideButton.isVisible=false
 
@@ -47,14 +45,14 @@ class VictoryScreen : PickerScreen() {
     }
 
     fun won(description: String) {
-        descriptionLabel.setText(description)
+        descriptionLabel.setText(description.tr())
 
         rightSideButton.setText("Start new game".tr())
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick { UnCivGame.Current.startNewGame() }
 
-        closeButton.setText("One more turn...!")
+        closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
             playerCivInfo.gameInfo.oneMoreTurnMode = true
             UnCivGame.Current.setWorldScreen()
@@ -64,7 +62,7 @@ class VictoryScreen : PickerScreen() {
     fun scienceVictoryColumn():Table{
         val t = Table()
         t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program",playerCivInfo.getBuildingUniques().contains("Enables construction of Spaceship parts"))).row()
+        t.add(getMilestone("Built Apollo Program".tr(),playerCivInfo.getBuildingUniques().contains("Enables construction of Spaceship parts"))).row()
 
         val victoryManager= playerCivInfo.victoryManager
 
@@ -86,16 +84,16 @@ class VictoryScreen : PickerScreen() {
     }
 
     fun conquestVictoryColumn():Table{
-        val t=Table()
-        t.defaults().pad(5f)
+        val table=Table()
+        table.defaults().pad(5f)
         for (civ in playerCivInfo.gameInfo.civilizations) {
             if (civ.isPlayerCivilization() || civ.isBarbarianCivilization()) continue
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
                     else "???"
-            t.add(getMilestone("Destroy $civName", civ.isDefeated())).row()
+            table.add(getMilestone("Destroy [$civName]".tr(), civ.isDefeated())).row()
         }
-        return t
+        return table
     }
 
     fun getMilestone(text:String, achieved:Boolean): TextButton {
