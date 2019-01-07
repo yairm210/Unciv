@@ -121,7 +121,7 @@ class CityStats {
 
         if(civUnique == "+2 Culture per turn from cities before discovering Steam Power")
             stats.culture += 2
-        
+
         return stats
     }
 

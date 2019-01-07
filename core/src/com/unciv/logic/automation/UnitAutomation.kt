@@ -136,7 +136,7 @@ class UnitAutomation{
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
-    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>, minMovBeforeAtaack: Float = 0.1f): ArrayList<AttackableTile> {
+    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>, minMovementBeforeAttack: Float = 0.1f): ArrayList<AttackableTile> {
         val tilesWithEnemies = unit.civInfo.viewableTiles
                 .filter { containsAttackableEnemy(it,unit) }
 
@@ -149,7 +149,7 @@ class UnitAutomation{
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
         var tilesToAttackFrom = unitDistanceToTiles.asSequence()
-                .filter { unit.currentMovement - it.value >= minMovBeforeAtaack }
+                .filter { unit.currentMovement - it.value >= minMovementBeforeAttack }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
 

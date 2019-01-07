@@ -6,7 +6,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
-import kotlin.math.max
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -80,7 +79,7 @@ class Battle(val gameInfo:GameInfo) {
             if (unit.hasUnique("Can move after attacking")
                     || (unit.hasUnique("1 additional attack per turn") && unit.attacksThisTurn==0)){
                 if(!attacker.getUnitType().isMelee() || !defender.isDefeated()) // if it was a melee attack and we won, then the unit ALREADY got movement points deducted, for the movement to the enemie's tile!
-                    unit.currentMovement = max(0f, unit.currentMovement - 1)
+                    unit.useMovementPoints(1f)
             }
             else unit.currentMovement = 0f
             unit.attacksThisTurn+=1

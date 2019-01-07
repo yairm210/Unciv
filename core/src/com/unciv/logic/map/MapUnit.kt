@@ -212,6 +212,12 @@ class MapUnit {
         baseUnit=GameBasics.Units[name]!!
         updateUniques()
     }
+
+    fun useMovementPoints(amount:Float){
+        currentMovement -= amount
+        if(currentMovement<0) currentMovement = 0f
+    }
+
     fun doPreTurnAction() {
         val currentTile = getTile()
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
@@ -232,7 +238,7 @@ class MapUnit {
             if(gotTo==currentTile) // We didn't move at all
                 return
             if (gotTo.position == destinationVector) action = null
-            if (currentMovement != 0f) doPreTurnAction()
+            if (currentMovement >0) doPreTurnAction()
             return
         }
 

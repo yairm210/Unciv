@@ -47,7 +47,7 @@
 		name:"France",
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
-		unique:"+2 Culture per turn from Cities before discovering Steam Power"
+		unique:"+2 Culture per turn from cities before discovering Steam Power",
 		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]

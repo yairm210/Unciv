@@ -389,8 +389,8 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
 * [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe, AU
-* [Resistance](https://thenounproject.com/term/revolution/1315305/) By By HeadsOfBirds, GB 
-
+* [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
+* [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud
 
 # Sound credits
 

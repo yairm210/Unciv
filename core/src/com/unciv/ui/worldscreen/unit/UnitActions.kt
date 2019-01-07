@@ -15,7 +15,7 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
-import kotlin.math.max
+import kotlin.math.min
 
 class UnitAction(var name: String, var canAct:Boolean, var action:()->Unit){
     var sound="click"
@@ -39,24 +39,24 @@ class UnitActions {
 
         if(!unit.type.isCivilian() && !unit.isEmbarked() && !unit.type.isWaterUnit()
                 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
-            actionList += UnitAction("Fortify", unit.currentMovement != 0f)
+            actionList += UnitAction("Fortify", unit.currentMovement >0)
                 { unit.action = "Fortify 0" }.sound("fortify")
         }
 
         if(!unit.isFortified() && actionList.none{it.name=="Fortify"} && unit.action!="Sleep") {
-            actionList += UnitAction("Sleep",unit.currentMovement != 0f) { unit.action = "Sleep" }
+            actionList += UnitAction("Sleep",unit.currentMovement >0) { unit.action = "Sleep" }
         }
 
         if(unit.type == UnitType.Scout){
             if(unit.action != "explore")
-                actionList += UnitAction("Explore",unit.currentMovement != 0f)
+                actionList += UnitAction("Explore",unit.currentMovement >0)
                     { UnitAutomation().automatedExplore(unit); unit.action = "explore" }
             else
                 actionList += UnitAction("Stop exploration", true) { unit.action = null }
         }
 
         if(!unit.type.isCivilian() && unit.promotions.canBePromoted()) {
-            actionList += UnitAction("Promote", unit.currentMovement != 0f)
+            actionList += UnitAction("Promote", unit.currentMovement >0)
             { UnCivGame.Current.screen = PromotionPickerScreen(unit) }.sound("promote")
         }
 
@@ -96,13 +96,24 @@ class UnitActions {
             }
         }
 
+        if(!unit.type.isCivilian() && tile.improvement !=null && unit.health<100){
+            actionList += UnitAction("Pillage", unit.currentMovement>0)
+            {
+                tile.improvementInProgress = tile.improvement
+                tile.turnsToImprovement = 2
+                tile.improvement = null
+                unit.useMovementPoints(1f)
+                unit.health = min(100,unit.health+25)
+            }
+        }
+
         if(unit.hasUnique("Must set up to ranged attack") && unit.action != "Set Up" && !unit.isEmbarked())
-            actionList+=UnitAction("Set up",unit.currentMovement != 0f)
-                {unit.action="Set Up"; unit.currentMovement = max(0f, unit.currentMovement-1)}.sound("setup")
+            actionList+=UnitAction("Set up",unit.currentMovement >0)
+                {unit.action="Set Up"; unit.useMovementPoints(1f)}.sound("setup")
 
         if (unit.hasUnique("Founds a new city") && !unit.isEmbarked()) {
             actionList += UnitAction("Found city",
-                    unit.currentMovement != 0f &&
+                    unit.currentMovement >0 &&
                             !tile.getTilesInDistance(3).any { it.isCityCenter() })
             {
                 worldScreen.displayTutorials("CityFounded")
@@ -116,7 +127,7 @@ class UnitActions {
         
         if (unit.hasUnique("Can build improvements on tiles") && !unit.isEmbarked()) {
             actionList += UnitAction("Construct improvement",
-                    unit.currentMovement != 0f
+                    unit.currentMovement >0
                             && !tile.isCityCenter()
                             && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
             ) { worldScreen.game.screen = ImprovementPickerScreen(tile) }
@@ -125,7 +136,7 @@ class UnitActions {
                 actionList += UnitAction("Stop automation",true) {unit.action = null}
             }
             else {
-                actionList += UnitAction("Automate", unit.currentMovement != 0f)
+                actionList += UnitAction("Automate", unit.currentMovement >0)
                 {
                     unit.action = "automation"
                     WorkerAutomation(unit).automateWorkerAction()
@@ -139,7 +150,7 @@ class UnitActions {
                     && tile.getTileResource().improvement == improvement
                     && unit.civInfo.tech.isResearched(GameBasics.TileImprovements[improvement]!!.techRequired!!)
             )
-                actionList += UnitAction("Create [$improvement]", unit.currentMovement != 0f) {
+                actionList += UnitAction("Create [$improvement]", unit.currentMovement >0) {
                     tile.improvement = improvement
                     unit.destroy()
                 }
@@ -148,7 +159,7 @@ class UnitActions {
         for(unique in unit.getUniques().filter { it.startsWith("Can build improvement: ") }){
             val improvementName = unique.replace("Can build improvement: ","")
             actionList += UnitAction("Create [$improvementName]",
-                    unit.currentMovement != 0f && !tile.isCityCenter()
+                    unit.currentMovement >0f && !tile.isCityCenter()
             ) {
                 unit.getTile().terrainFeature=null // remove forest/jungle/marsh
                 unit.getTile().improvement = improvementName
@@ -160,7 +171,7 @@ class UnitActions {
 
 
         if (unit.name == "Great Scientist" && !unit.isEmbarked()) {
-            actionList += UnitAction( "Discover Technology",unit.currentMovement != 0f
+            actionList += UnitAction( "Discover Technology",unit.currentMovement >0
             ) {
                 unit.civInfo.tech.freeTechs += 1
                 unit.destroy()
@@ -169,7 +180,7 @@ class UnitActions {
         }
 
         if (unit.hasUnique("Can start an 8-turn golden age") && !unit.isEmbarked()) {
-            actionList += UnitAction( "Start Golden Age",unit.currentMovement != 0f
+            actionList += UnitAction( "Start Golden Age",unit.currentMovement >0
             ) {
                 unit.civInfo.goldenAges.enterGoldenAge()
                 unit.destroy()
@@ -178,7 +189,7 @@ class UnitActions {
 
         if (unit.name == "Great Engineer" && !unit.isEmbarked()) {
             actionList += UnitAction( "Hurry Wonder",
-                    unit.currentMovement != 0f &&
+                    unit.currentMovement >0 &&
                             tile.isCityCenter() &&
                             tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building &&
                             (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder
@@ -189,7 +200,7 @@ class UnitActions {
         }
 
         if (unit.name == "Great Merchant" && !unit.isEmbarked()) {
-            actionList += UnitAction("Conduct Trade Mission", unit.currentMovement != 0f
+            actionList += UnitAction("Conduct Trade Mission", unit.currentMovement >0
             ) {
                 // http://civilization.wikia.com/wiki/Great_Merchant_(Civ5)
                 val goldGained = 350 + 50 * unit.civInfo.getEra().ordinal
@@ -199,7 +210,7 @@ class UnitActions {
             }.sound("chimes")
         }
 
-        actionList += UnitAction("Disband unit",unit.currentMovement != 0f
+        actionList += UnitAction("Disband unit",unit.currentMovement >0
         ) {
             YesNoPopupTable("Do you really want to disband this unit?".tr(),
                     {unit.destroy(); worldScreen.shouldUpdate=true} )

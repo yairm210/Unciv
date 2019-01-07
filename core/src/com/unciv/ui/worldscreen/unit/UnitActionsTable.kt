@@ -23,11 +23,11 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         when(unitAction){
             "Move unit" -> return ImageGetter.getStatIcon("Movement")
             "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
-            "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield.png").apply { color= Color.BLACK }
-            "Promote" -> return ImageGetter.getImage("OtherIcons/Star.png").apply { color= Color.GOLD }
+            "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
+            "Promote" -> return ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }
             "Construct improvement" -> return ImageGetter.getUnitIcon("Worker")
             "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
-            "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop.png")
+            "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop")
             "Found city" -> return ImageGetter.getUnitIcon("Settler")
             "Discover Technology" -> return ImageGetter.getUnitIcon("Great Scientist")
             "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
@@ -38,13 +38,14 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Conduct Trade Mission" -> return ImageGetter.getUnitIcon("Great Merchant")
             "Construct Customs House" -> return ImageGetter.getImprovementIcon("Customs house")
             "Set up" -> return ImageGetter.getUnitIcon("Catapult")
-            "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit.png")
-            "Sleep" -> return ImageGetter.getImage("OtherIcons/Sleep.png")
+            "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit")
+            "Sleep" -> return ImageGetter.getImage("OtherIcons/Sleep")
             "Explore" -> return ImageGetter.getUnitIcon("Scout")
             "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop.png")
             "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
             "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
-            else -> return ImageGetter.getImage("OtherIcons/Star.png")
+            "Pillage" -> return ImageGetter.getImage("OtherIcons/Pillage")
+            else -> return ImageGetter.getImage("OtherIcons/Star")
         }
     }
 

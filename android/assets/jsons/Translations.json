@@ -255,6 +255,8 @@
 		Spanish:"Explorar"
 	}
 	
+	"Pillage":{}
+	
 	"Do you really want to disband this unit?":{
 		Italian:"Vuoi davvero sciogliere questa unità?"
 		Russian:"Вы действительно хотите распустить этот юнит?"
@@ -285,7 +287,6 @@
     	Simplified_Chinese:"不"
     	Portuguese:"Sim"
 	}
-	
 
 	// Stats
 	"Gold":{
