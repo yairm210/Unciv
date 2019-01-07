@@ -184,7 +184,8 @@ open class TileInfo {
         return stats
     }
 
-    fun canBuildImprovement(improvement: TileImprovement, civInfo: CivilizationInfo): Boolean {
+    fun canBuildImprovement(improvement: TileImprovement?, civInfo: CivilizationInfo): Boolean {
+        if (improvement == null) return false
         if (isCityCenter() || improvement.name == this.improvement) return false
         val topTerrain = if (terrainFeature == null) getBaseTerrain() else getTerrainFeature()
         if (improvement.techRequired != null && !civInfo.tech.isResearched(improvement.techRequired!!)) return false

@@ -31,7 +31,7 @@ class WorkerAutomation(val unit: MapUnit) {
         }
         if (tile.improvementInProgress == null && tile.isLand()) {
             val improvement = chooseImprovement(tile, unit.civInfo)
-            if (tile.canBuildImprovement(improvement, unit.civInfo)) {
+            if (improvement != null && tile.canBuildImprovement(improvement, unit.civInfo)) {
                 // What if we're stuck on this tile but can't build there?
                 tile.startWorkingOnImprovement(improvement, unit.civInfo)
                 return
@@ -132,7 +132,7 @@ class WorkerAutomation(val unit: MapUnit) {
         return priority
     }
 
-    private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement {
+    private fun chooseImprovement(tile: TileInfo, civInfo: CivilizationInfo): TileImprovement? {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
@@ -144,6 +144,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val improvementString = when {
             tile.improvementInProgress != null -> tile.improvementInProgress
             improvementStringForResource != null -> improvementStringForResource
+            tile.containsGreatImprovement() -> null
             tile.terrainFeature == "Jungle" -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
             tile.terrainFeature == "Forest" -> "Lumber mill"
@@ -152,6 +153,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.baseTerrain == "Tundra" -> "Trading post"
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }
+        if (improvementString == null) return null
         return GameBasics.TileImprovements[improvementString]!!
     }
 
