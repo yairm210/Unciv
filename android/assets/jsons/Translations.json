@@ -3498,6 +3498,11 @@
         Simplified_Chinese:"中华"
         Portuguese:"China"
 	}
+	"Great general provides double combat bonus, and spawns 50% faster":{
+		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
+		Simplified_Chinese:"大军事家提供双倍战斗加成，出生速率+50%"
+	}
+	
 	"Egypt":{	
 		Italian:"Egitto"
 		Russian:"Египет"
@@ -3507,6 +3512,8 @@
         Simplified_Chinese:"埃及"
         Portuguese:"Egito"
 	}
+	"+20% production towards Wonder construction":{}
+	
 	"England":{	
 		Italian:"Inghilterra"
 		Russian:"Англия"
@@ -3521,10 +3528,6 @@
 		Spanish:"+2 de movimiento a las unidades navales"
 		Simplified_Chinese:"所有有海军+2行动力"
 	}
-	"Great general provides double combat bonus, and spawns 50% faster":{
-		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
-		Simplified_Chinese:"大军事家提供双倍战斗加成，出生速率+50%"
-	}
 	
 	"France":{	
 		Italian:"Francia"
@@ -3535,6 +3538,7 @@
         Simplified_Chinese:"法兰西"
         Portuguese:"França"
 	}
+	"+2 Culture per turn from cities before discovering Steam Power":{}
 	
 	"Russia":{
 		Romanian:"Rusia"

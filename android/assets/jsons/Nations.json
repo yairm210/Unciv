@@ -29,6 +29,7 @@
 		name:"Egypt",
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
+		unique:"+20% production towards Wonder construction"
 		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
 			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
@@ -46,6 +47,7 @@
 		name:"France",
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
+		unique:"+2 Culture per turn from Cities before discovering Steam Power"
 		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
 			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]

@@ -108,12 +108,20 @@ class CityStats {
         val stats = Stats()
 
         val civUnique = cityInfo.civInfo.getNation().unique
+        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if(civUnique=="+25% Production towards any buildings that already exist in the Capital"
-            && cityInfo.cityConstructions.getCurrentConstruction() is Building
+            && currentConstruction is Building
             && cityInfo.civInfo.getCapital().cityConstructions.builtBuildings
-                        .contains(cityInfo.cityConstructions.currentConstruction))
+                        .contains(currentConstruction.name))
             stats.production+=25f
 
+        if(civUnique=="+20% production towards Wonder construction"
+            && currentConstruction is Building && currentConstruction.isWonder)
+            stats.production+=20
+
+        if(civUnique == "+2 Culture per turn from cities before discovering Steam Power")
+            stats.culture += 2
+        
         return stats
     }
 
