@@ -32,7 +32,7 @@ class CityInfo {
     var tiles = HashSet<Vector2>()
     var workedTiles = HashSet<Vector2>()
     var isBeingRazed = false
-
+    val range = 2
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {

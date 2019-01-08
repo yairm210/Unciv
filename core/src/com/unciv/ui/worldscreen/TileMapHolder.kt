@@ -11,6 +11,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.automation.UnitAutomation
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -211,11 +212,13 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             moveHereButtonDto=null
         }
 
-        if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
+        if (worldScreen.bottomBar.unitTable.selectedCity!=null){
+            val city = worldScreen.bottomBar.unitTable.selectedCity!!
+            updateTilegroupsForSelectedCity(city, playerViewableTilePositions)
+        } else if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
             updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
         }
-
         else if(moveToOverlay!=null){
             moveToOverlay!!.remove()
             moveToOverlay=null
@@ -250,6 +253,15 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             if (tile.populationImage != null) tile.populationImage!!.color.a = fadeout
             if (tile.improvementImage != null) tile.improvementImage!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
+        }
+    }
+
+    private fun updateTilegroupsForSelectedCity(city: CityInfo, playerViewableTilePositions: HashSet<Vector2>) {
+        val attackableTiles: List<TileInfo> = UnitAutomation().getBombardTargets(city)
+                    .filter { (UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
+        for (attackableTile in attackableTiles) {
+            tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
+            tileGroups[attackableTile]!!.showCrosshair()
         }
     }
 

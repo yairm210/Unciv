@@ -134,6 +134,17 @@ class UnitAutomation{
         return true
     }
 
+    fun containsBombardableEnemy(tile: TileInfo, city: CityInfo): Boolean {
+        val tileCombatant = Battle(city.civInfo.gameInfo).getMapCombatantOfTile(tile)
+        if(tileCombatant==null) return false
+        if(tileCombatant.getCivilization()==city.civInfo) return false
+        if(!city.civInfo.isAtWarWith(tileCombatant.getCivilization())) return false
+
+        //city cannot bombard submarine
+        if (tileCombatant.isInvisible()) return false
+        return true
+    }
+
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
     fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>, minMovementBeforeAttack: Float = 0.1f): ArrayList<AttackableTile> {
@@ -160,6 +171,10 @@ class UnitAutomation{
                     .map { AttackableTile(reachableTile,it) }
         }
         return attackableTiles
+    }
+
+    fun getBombardTargets(city: CityInfo): List<TileInfo> {
+        return city.getCenterTile().getViewableTiles(city.range).filter { containsBombardableEnemy(it, city) }
     }
 
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
