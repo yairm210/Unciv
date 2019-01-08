@@ -4,6 +4,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.battle.Battle
 import com.unciv.logic.battle.BattleDamage
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -285,6 +286,17 @@ class UnitAutomation{
         return false
     }
 
+    fun tryBombardEnemy(city: CityInfo): Boolean {
+        val target = chooseBombardTarget(city)
+        if (target == null) return false
+        if (city.attacksThisTurn == 0) {
+            val enemy = Battle(city.civInfo.gameInfo).getMapCombatantOfTile(target)!!
+            Battle(city.civInfo.gameInfo).attack(CityCombatant(city), enemy)
+            return true
+        }
+        return false
+    }
+
     private fun chooseAttackTarget(unit: MapUnit, attackableEnemies: List<AttackableTile>): AttackableTile? {
         val cityTilesToAttack = attackableEnemies.filter { it.tileToAttack.isCityCenter() }
         val nonCityTilesToAttack = attackableEnemies.filter { !it.tileToAttack.isCityCenter() }
@@ -302,6 +314,12 @@ class UnitAutomation{
         else if (cityWithHealthLeft!=null) enemyTileToAttack = cityWithHealthLeft// third priority, city
 
         return enemyTileToAttack
+    }
+
+    private fun chooseBombardTarget(city: CityInfo) : TileInfo? {
+        val targets = getBombardTargets(city)
+        if (targets.isEmpty()) return null
+        return targets.minBy { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getHealth() }
     }
 
     private fun tryGarrisoningUnit(unit: MapUnit): Boolean {

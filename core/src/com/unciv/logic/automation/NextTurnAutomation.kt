@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.TradeLogic
@@ -15,6 +16,7 @@ class NextTurnAutomation{
         adoptPolicy(civInfo)
         exchangeLuxuries(civInfo)
         declareWar(civInfo)
+        automateCityBombardment(civInfo)
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
@@ -114,6 +116,10 @@ class NextTurnAutomation{
         for (unit in rangedUnits) UnitAutomation().automateUnitMoves(unit)
         for (unit in meleeUnits) UnitAutomation().automateUnitMoves(unit)
         for (unit in generals) UnitAutomation().automateUnitMoves(unit)
+    }
+
+    private fun automateCityBombardment(civInfo: CivilizationInfo) {
+        for (city in civInfo.cities) UnitAutomation().tryBombardEnemy(city)
     }
 
     private fun reassignWorkedTiles(civInfo: CivilizationInfo) {
