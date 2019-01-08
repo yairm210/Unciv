@@ -40,7 +40,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         var bottomY = 0f
 
         for (tileInfo in tileMap.values) {
-            val tileGroup = WorldTileGroup(tileInfo)
+            val tileGroup = WorldTileGroup(worldScreen, tileInfo)
 
             tileGroup.onClick{ onTileClicked(tileInfo)}
 

@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
@@ -17,7 +18,9 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val promotionsTable = Table()
     private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
     var selectedUnit : MapUnit? = null
+    var selectedCity : CityInfo? = null
     var currentlyExecutingAction : String? = null
+    var lastSelectedCityButton : Boolean = false
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
@@ -42,10 +45,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         if(selectedUnit!=null) {
             if (selectedUnit!!.civInfo != worldScreen.civInfo) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
+                selectedCity = null
                 currentlyExecutingAction = null
                 selectedUnitHasChanged = true
             } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists}
                 selectedUnit = null
+                selectedCity = null
                 currentlyExecutingAction = null
                 selectedUnitHasChanged = true
             }
@@ -96,6 +101,17 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if(unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                 selectedUnitHasChanged = true
         }
+        else if (selectedCity != null) {
+            separator.isVisible=true
+            val unit = selectedCity!!
+            var nameLabelText = unit.name.tr()
+            if(unit.health<unit.getMaxHealth()) nameLabelText+=" ("+unit.health+")"
+            unitNameLabel.setText(nameLabelText)
+
+            unitDescriptionTable.clear()
+            unitDescriptionTable.defaults().pad(2f).padRight(5f)
+            selectedUnitHasChanged = true
+        }
         else {
             separator.isVisible=false
             unitNameLabel.setText("")
@@ -121,7 +137,21 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         selectedUnitHasChanged=false
     }
 
+    fun citySelected(cityInfo: CityInfo) : Boolean {
+        if (cityInfo == selectedCity) return false
+        lastSelectedCityButton = true
+        selectedCity = cityInfo
+        selectedUnit = null
+        selectedUnitHasChanged = true
+        return true
+    }
+
     fun tileSelected(selectedTile: TileInfo) {
+        if (lastSelectedCityButton) {
+            lastSelectedCityButton = false
+            return
+        }
+
         val previouslySelectedUnit = selectedUnit
         if(currentlyExecutingAction=="moveTo"){
             if(selectedUnit!!.movementAlgs()
@@ -137,12 +167,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.civInfo
-                && selectedUnit!=selectedTile.militaryUnit)
+                && selectedUnit!=selectedTile.militaryUnit) {
             selectedUnit = selectedTile.militaryUnit
+            selectedCity = null
+        }
 
         else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.civInfo
-                        && selectedUnit!=selectedTile.civilianUnit)
-                selectedUnit = selectedTile.civilianUnit
+                        && selectedUnit!=selectedTile.civilianUnit) {
+            selectedUnit = selectedTile.civilianUnit
+            selectedCity = null
+        }
 
         if(selectedUnit != previouslySelectedUnit)
             selectedUnitHasChanged = true

@@ -13,9 +13,10 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.map.RoadStatus
 import com.unciv.ui.cityscreen.CityScreen
+import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 
-class CityButton(val city: CityInfo, skin: Skin): Table(skin){
+class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
     init{
         background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
                 .tint(city.civInfo.getNation().getColor())
@@ -33,7 +34,9 @@ class CityButton(val city: CityInfo, skin: Skin): Table(skin){
         clear()
         if (city.civInfo.isPlayerCivilization()) {
             onClick {
-                UnCivGame.Current.screen = CityScreen(city)
+                if (!tileGroup.selectCity(city)) {
+                    UnCivGame.Current.screen = CityScreen(city)
+                }
             }
         }
 

@@ -6,9 +6,10 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.center
+import com.unciv.ui.worldscreen.WorldScreen
 
 
-class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
+class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) : TileGroup(tileInfo) {
     var cityButton: CityButton? = null
 
     fun selectUnit(unit: MapUnit) {
@@ -63,7 +64,7 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
         }
         if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
-                cityButton = CityButton(city, CameraStageBaseScreen.skin)
+                cityButton = CityButton(city, this, CameraStageBaseScreen.skin)
                 addActor(cityButton)
                 toFront() // so this tile is rendered over neighboring tiles
             }
@@ -72,5 +73,10 @@ class WorldTileGroup(tileInfo: TileInfo) : TileGroup(tileInfo) {
             cityButton!!.center(this)
 
         }
+    }
+
+    fun selectCity(city: CityInfo?) : Boolean {
+        if (city == null) return false
+        return worldScreen.bottomBar.unitTable.citySelected(city)
     }
 }
