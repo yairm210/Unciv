@@ -85,6 +85,8 @@ class Battle(val gameInfo:GameInfo) {
             unit.attacksThisTurn+=1
             if(unit.isFortified() || unit.action=="Sleep")
                 attacker.unit.action=null // but not, for instance, if it's Set Up - then it should definitely keep the action!
+        } else if (attacker is CityCombatant) {
+            attacker.city.attacksThisTurn ++
         }
 
         // XP!

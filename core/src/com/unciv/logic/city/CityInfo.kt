@@ -32,6 +32,7 @@ class CityInfo {
     var tiles = HashSet<Vector2>()
     var workedTiles = HashSet<Vector2>()
     var isBeingRazed = false
+    var attacksThisTurn = 0
     val range = 2
 
     constructor()   // for json parsing, we need to have a default constructor
@@ -193,6 +194,7 @@ class CityInfo {
             health = min(health + 20, getMaxHealth())
             population.unassignExtraPopulation()
         }
+        attacksThisTurn = 0
     }
 
     fun destroyCity() {

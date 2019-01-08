@@ -6,10 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
-import com.unciv.logic.battle.Battle
-import com.unciv.logic.battle.BattleDamage
-import com.unciv.logic.battle.ICombatant
-import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.*
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.*
@@ -31,13 +28,15 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     fun update() {
         val unitTable = worldScreen.bottomBar.unitTable
-        if (unitTable.selectedUnit == null
-                || unitTable.selectedUnit!!.type.isCivilian()){
-            hide()
-            return
-        } // no attacker
-
-        val attacker = MapUnitCombatant(unitTable.selectedUnit!!)
+        val attacker : ICombatant?
+        if (unitTable.selectedUnit != null
+                && !unitTable.selectedUnit!!.type.isCivilian()) {
+            attacker = MapUnitCombatant(unitTable.selectedUnit!!)
+        } else if (unitTable.selectedCity != null) {
+            attacker = CityCombatant(unitTable.selectedCity!!)
+        } else {
+            return // no attacker
+        }
 
         if (worldScreen.tileMapHolder.selectedTile == null) return
         val selectedTile = worldScreen.tileMapHolder.selectedTile!!
@@ -54,13 +53,15 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         simulateBattle(attacker, defender)
     }
 
-    fun simulateBattle(attacker: MapUnitCombatant, defender: ICombatant){
+    fun simulateBattle(attacker: ICombatant, defender: ICombatant){
         clear()
         defaults().pad(5f)
+        println("debuglog simulateBattle")
 
         val attackerNameWrapper = Table()
         val attackerLabel = Label(attacker.getName(), skin)
-        attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
+        if(attacker is MapUnitCombatant)
+            attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)
         add(attackerNameWrapper)
 
@@ -68,7 +69,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val defenderLabel = Label(defender.getName(), skin)
         if(defender is MapUnitCombatant)
             defenderNameWrapper.add(UnitGroup(defender.unit,25f)).padRight(5f)
-
         defenderNameWrapper.add(defenderLabel)
         add(defenderNameWrapper).row()
 
@@ -126,19 +126,33 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         row().pad(5f)
-        val attackButton = TextButton("Attack".tr(), skin).apply { color= Color.RED }
+        val attackText : String = if (attacker is MapUnitCombatant) "Attack" else "Bombard"
+        val attackButton = TextButton(attackText.tr(), skin).apply { color= Color.RED }
 
-        attacker.unit.getDistanceToTiles()
+        var attackableEnemy : UnitAutomation.AttackableTile? = null
+        var canAttack : Boolean = false
 
-        val attackableEnemy = UnitAutomation().getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
-                .firstOrNull{ it.tileToAttack == defender.getTile()}
+        if (attacker is MapUnitCombatant) {
+            attacker.unit.getDistanceToTiles()
+            attackableEnemy = UnitAutomation().getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
+                    .firstOrNull{ it.tileToAttack == defender.getTile()}
+            canAttack = (attacker.unit.canAttack() && attackableEnemy != null)
+        }
+        else if (attacker is CityCombatant)
+        {
+            canAttack = (attacker.city.attacksThisTurn == 0)
+                    && UnitAutomation().containsBombardableEnemy(defender.getTile(), attacker.city)
+        }
 
-        if(attackableEnemy==null || !attacker.unit.canAttack()) attackButton.disable()
+        if(!canAttack) attackButton.disable()
         else {
-            var attackSound = attacker.unit.baseUnit.attackSound
-            if(attackSound==null) attackSound="click"
-            attackButton.onClick(attackSound) {
-                attacker.unit.moveToTile(attackableEnemy.tileToAttackFrom)
+            //var attackSound = attacker.unit.baseUnit.attackSound
+            //if(attackSound==null) attackSound="click"
+            //attackButton.onClick(attackSound) {
+            attackButton.onClick {
+                if (attacker is MapUnitCombatant) {
+                    attacker.unit.moveToTile(attackableEnemy!!.tileToAttackFrom)
+                }
                 battle.attack(attacker, defender)
                 worldScreen.shouldUpdate=true
             }
