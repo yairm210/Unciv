@@ -169,11 +169,14 @@ class Building : NamedStats(), IConstruction{
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
         if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return false
-        if (isWonder && requiredBuildingInAllCities==null
-                && civInfo.gameInfo.civilizations.flatMap { it.cities }.any {
-                            it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
-                        })
-            return false
+        if (isWonder && requiredBuildingInAllCities==null){
+            if(civInfo.gameInfo.civilizations.flatMap { it.cities }
+                            .any {it.cityConstructions.isBuilt(name)})
+                return false
+            
+            if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBuilding(name) })
+                return false
+        }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) return false
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
