@@ -2,10 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
-import com.unciv.logic.battle.Battle
-import com.unciv.logic.battle.BattleDamage
-import com.unciv.logic.battle.CityCombatant
-import com.unciv.logic.battle.MapUnitCombatant
+import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.DiplomaticStatus
@@ -116,33 +113,30 @@ class UnitAutomation{
         }
     }
 
-    fun containsAttackableEnemy(tile: TileInfo, unit: MapUnit): Boolean {
-        if(unit.isEmbarked()){
-            if(unit.type.isRanged()) return false
-            if(tile.isWater()) return false // can't attack water units while embarked, only land
+    fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
+        if(combatant is MapUnitCombatant){
+            if (combatant.unit.isEmbarked()) {
+                if (combatant.isRanged()) return false
+                if (tile.isWater()) return false // can't attack water units while embarked, only land
+            }
+            if (combatant.unit.hasUnique("Can only attack water") && tile.isLand()) return false
         }
-        if (unit.hasUnique("Can only attack water") && tile.isLand()) return false
-        val tileCombatant = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(tile)
+
+        val tileCombatant = Battle(combatant.getCivInfo().gameInfo).getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
-        if(tileCombatant.getCivilization()==unit.civInfo ) return false
-        if(!unit.civInfo.isAtWarWith(tileCombatant.getCivilization())) return false
+        if(tileCombatant.getCivilization()==combatant.getCivInfo() ) return false
+        if(!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivilization())) return false
 
         //only submarine and destroyer can attack submarine
-        if (tileCombatant.isInvisible()
-                && (!unit.hasUnique("Can attack submarines") || !unit.civInfo.viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position))){
+        //garisoned submarine can be attacked by anyone, or the city will be in invincible
+        if (tileCombatant.isInvisible() && !tile.isCityCenter()) {
+            if (combatant is MapUnitCombatant
+                    && combatant.unit.hasUnique("Can attack submarines")
+                    && combatant.getCivInfo().viewableInvisibleUnitsTiles.map { it.position }.contains(tile.position)) {
+                return true
+            }
             return false
         }
-        return true
-    }
-
-    fun containsBombardableEnemy(tile: TileInfo, city: CityInfo): Boolean {
-        val tileCombatant = Battle(city.civInfo.gameInfo).getMapCombatantOfTile(tile)
-        if(tileCombatant==null) return false
-        if(tileCombatant.getCivilization()==city.civInfo) return false
-        if(!city.civInfo.isAtWarWith(tileCombatant.getCivilization())) return false
-
-        //city cannot bombard submarine
-        if (tileCombatant.isInvisible()) return false
         return true
     }
 
@@ -150,7 +144,7 @@ class UnitAutomation{
 
     fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>, minMovementBeforeAttack: Float = 0.1f): ArrayList<AttackableTile> {
         val tilesWithEnemies = unit.civInfo.viewableTiles
-                .filter { containsAttackableEnemy(it,unit) }
+                .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
 
         val rangeOfAttack = unit.getRange()
 
@@ -175,13 +169,13 @@ class UnitAutomation{
     }
 
     fun getBombardTargets(city: CityInfo): List<TileInfo> {
-        return city.getCenterTile().getViewableTiles(city.range).filter { containsBombardableEnemy(it, city) }
+        return city.getCenterTile().getViewableTiles(city.range).filter { containsAttackableEnemy(it, CityCombatant(city)) }
     }
 
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {
         // this can be sped up if we check each layer separately
         var closeEnemies = unit.getTile().getTilesInDistance(5)
-                .filter{ containsAttackableEnemy(it, unit) && unit.movementAlgs().canReach(it)}
+                .filter{ containsAttackableEnemy(it, MapUnitCombatant(unit)) && unit.movementAlgs().canReach(it)}
         if(unit.type.isRanged())
             closeEnemies = closeEnemies.filterNot { it.isCityCenter() && it.getCity()!!.health==1 }
 
