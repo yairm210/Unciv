@@ -45,8 +45,13 @@ open class TileInfo {
     }
 
     fun containsGreatImprovement(): Boolean {
-        if (getTileImprovement() == null) return false
-        return getTileImprovement()!!.name in listOf("Academy", "Landmark", "Manufactory", "Customs house")
+        if (improvement in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        return false
+    }
+
+    fun containsUnfinishedGreatImprovement(): Boolean {
+        if (improvementInProgress in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        return false
     }
 
     //region pure functions
