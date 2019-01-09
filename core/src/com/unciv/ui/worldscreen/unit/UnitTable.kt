@@ -3,6 +3,7 @@ package com.unciv.ui.worldscreen.unit
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -103,13 +104,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
         else if (selectedCity != null) {
             separator.isVisible=true
-            val unit = selectedCity!!
-            var nameLabelText = unit.name.tr()
-            if(unit.health<unit.getMaxHealth()) nameLabelText+=" ("+unit.health+")"
+            val city = selectedCity!!
+            var nameLabelText = city.name.tr()
+            if(city.health<city.getMaxHealth()) nameLabelText+=" ("+city.health+")"
             unitNameLabel.setText(nameLabelText)
 
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
+            unitDescriptionTable.add("Strength".tr())
+            unitDescriptionTable.add(CityCombatant(city).getCityStrength().toString()).row()
+
             selectedUnitHasChanged = true
         }
         else {

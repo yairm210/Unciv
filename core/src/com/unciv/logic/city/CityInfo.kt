@@ -85,6 +85,7 @@ class CityInfo {
         toReturn.workedTiles = workedTiles
         toReturn.isBeingRazed=isBeingRazed
         toReturn.isConnectedToCapital = isConnectedToCapital
+        toReturn.attacksThisTurn = attacksThisTurn
         return toReturn
     }
 
@@ -233,6 +234,10 @@ class CityInfo {
             return true
         }
         return false
+    }
+
+    fun canAttack(): Boolean {
+        return (attacksThisTurn == 0)
     }
     //endregion
 }

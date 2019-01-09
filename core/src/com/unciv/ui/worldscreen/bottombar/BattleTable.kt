@@ -140,14 +140,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
         else if (attacker is CityCombatant)
         {
-            canAttack = (attacker.city.attacksThisTurn == 0)
-                    && UnitAutomation().containsBombardableEnemy(defender.getTile(), attacker.city)
+            canAttack = (attacker.city.canAttack())
+                    && UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
         }
 
         if(!canAttack) attackButton.disable()
         else {
             //var attackSound = attacker.unit.baseUnit.attackSound
-            //if(attackSound==null) attackSound="click"
+            //if(attackSound==null) attackSound="click"`
             //attackButton.onClick(attackSound) {
             attackButton.onClick {
                 if (attacker is MapUnitCombatant) {
