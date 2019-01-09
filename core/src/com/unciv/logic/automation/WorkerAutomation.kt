@@ -102,7 +102,7 @@ class WorkerAutomation(val unit: MapUnit) {
                             && (it.improvement == null || (it.hasViewableResource(unit.civInfo) && !it.containsGreatImprovement() && it.getTileResource().improvement != it.improvement))
                             && it.isLand()
                             && !it.getBaseTerrain().impassable
-                            && it.canBuildImprovement(chooseImprovement(it, unit.civInfo), unit.civInfo)
+                            && (it.containsUnfinishedGreatImprovement() || it.canBuildImprovement(chooseImprovement(it, unit.civInfo), unit.civInfo))
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ
                 }.sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
 
@@ -145,6 +145,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.improvementInProgress != null -> tile.improvementInProgress
             improvementStringForResource != null -> improvementStringForResource
             tile.containsGreatImprovement() -> null
+            tile.containsUnfinishedGreatImprovement() -> null
             tile.terrainFeature == "Jungle" -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
             tile.terrainFeature == "Forest" -> "Lumber mill"
