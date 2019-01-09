@@ -48,10 +48,13 @@ class Battle(val gameInfo:GameInfo) {
             val whatHappenedString =
                     if (attacker.isDefeated()) " {was destroyed while attacking}"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
+            val attackerString =
+                    if (attacker.getUnitType() == UnitType.City) "Enemy city [" + attacker.getName() + "]"
+                    else "An enemy [" + attacker.getName() + "]"
             val defenderString =
                     if (defender.getUnitType() == UnitType.City) " [" + defender.getName()+"]"
                     else " our [" + defender.getName()+"]"
-            val notificationString = "An enemy [" + attacker.getName()+"]" + whatHappenedString + defenderString
+            val notificationString = attackerString + whatHappenedString + defenderString
             defender.getCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
