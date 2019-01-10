@@ -93,7 +93,7 @@ class CityStats {
 
         val civ = cityInfo.civInfo
         if (!civ.isPlayerCivilization()) {
-            val modifier = civ.gameInfo.getPlayerCivilization().getDifficulty().aiYieldModifier
+            val modifier = civ.gameInfo.getCurrentPlayerCivilization().getDifficulty().aiYieldModifier
             stats.production += modifier
             stats.science += modifier
             stats.food += modifier
@@ -143,7 +143,7 @@ class CityStats {
         val newHappinessList = LinkedHashMap<String,Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
         if(!civInfo.isPlayerCivilization())
-            unhappinessModifier *= civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiUnhappinessModifier
+            unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         newHappinessList ["Cities"] = -3f * unhappinessModifier
 

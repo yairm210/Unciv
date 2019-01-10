@@ -136,7 +136,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     open fun update(isViewable: Boolean, showResourcesAndImprovements:Boolean, showSubmarine: Boolean) {
         hideCircle()
         if (!UnCivGame.Current.viewEntireMapForDebug
-                && !tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
+                && !tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
             hexagon.color = Color.BLACK
             return
         }
@@ -321,7 +321,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun updateResourceImage(showResourcesAndImprovements: Boolean) {
         val shouldDisplayResource = showResourcesAndImprovements
-                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getPlayerCivilization())
+                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization())
 
         if (resourceImage != null && !shouldDisplayResource) {
             resourceImage!!.remove()

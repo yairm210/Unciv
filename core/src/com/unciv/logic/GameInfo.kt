@@ -17,25 +17,27 @@ class GameInfo {
     var gameParameters=GameParameters()
     var turns = 0
     var oneMoreTurnMode=false
+    var currentPlayer=""
 
     //region pure functions
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.currentPlayer=currentPlayer
         toReturn.turns = turns
         toReturn.difficulty=difficulty
         toReturn.gameParameters = gameParameters
         return toReturn
     }
 
-    fun getPlayerCivilization(): CivilizationInfo = civilizations[0]
-    fun getBarbarianCivilization(): CivilizationInfo = civilizations[1]
+    fun getCurrentPlayerCivilization(): CivilizationInfo = civilizations.first { it.civName==currentPlayer }
+    fun getBarbarianCivilization(): CivilizationInfo = civilizations.first { it.civName=="Barbarians" }
     fun getDifficulty() = GameBasics.Difficulties[difficulty]!!
     //endregion
 
     fun nextTurn() {
-        val player = getPlayerCivilization()
+        val currentPlayer = getCurrentPlayerCivilization()
 
         for (civInfo in civilizations) {
             if (civInfo.tech.techsToResearch.isEmpty()) {  // should belong in automation? yes/no?
@@ -49,7 +51,7 @@ class GameInfo {
         // We need to update the stats after ALL the cities are done updating because
         // maybe one of them has a wonder that affects the stats of all the rest of the cities
 
-        for (civInfo in civilizations.filterNot { it == player || (it.isDefeated() && !it.isBarbarianCivilization()) }) {
+        for (civInfo in civilizations.filterNot { it == currentPlayer || (it.isDefeated() && !it.isBarbarianCivilization()) }) {
             civInfo.startTurn()
             NextTurnAutomation().automateCivMoves(civInfo)
         }
@@ -60,18 +62,18 @@ class GameInfo {
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
 
-        player.startTurn()
+        currentPlayer.startTurn()
 
-        val enemyUnitsCloseToTerritory = player.viewableTiles
+        val enemyUnitsCloseToTerritory = currentPlayer.viewableTiles
                 .filter {
-                    it.militaryUnit != null && it.militaryUnit!!.civInfo != player
-                            && player.isAtWarWith(it.militaryUnit!!.civInfo)
-                            && (it.getOwner() == player || it.neighbors.any { neighbor -> neighbor.getOwner() == player })
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo != currentPlayer
+                            && currentPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
+                            && (it.getOwner() == currentPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == currentPlayer })
                 }
         for (enemyUnitTile in enemyUnitsCloseToTerritory) {
-            val inOrNear = if (enemyUnitTile.getOwner() == player) "in" else "near"
+            val inOrNear = if (enemyUnitTile.getOwner() == currentPlayer) "in" else "near"
             val unitName = enemyUnitTile.militaryUnit!!.name
-            player.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
+            currentPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
         }
 
         turns++
@@ -94,15 +96,17 @@ class GameInfo {
         tileMap.gameInfo = this
         tileMap.setTransients()
 
+        if(currentPlayer=="") currentPlayer=civilizations[0].civName
+
         // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
         for (civInfo in civilizations) civInfo.gameInfo = this
 
         // PlayerType was only added in 2.11.1, so we need to adjust for older saved games
         if(civilizations.all { it.playerType==PlayerType.AI })
-            getPlayerCivilization().playerType=PlayerType.Human
-        if(getPlayerCivilization().difficulty!="Chieftain")
-            difficulty= getPlayerCivilization().difficulty
+            getCurrentPlayerCivilization().playerType=PlayerType.Human
+        if(getCurrentPlayerCivilization().difficulty!="Chieftain")
+            difficulty= getCurrentPlayerCivilization().difficulty
 
         for (civInfo in civilizations) civInfo.setTransients()
 

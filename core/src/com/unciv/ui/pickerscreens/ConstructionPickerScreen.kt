@@ -31,7 +31,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     }
 
     init {
-        val civInfo = game.gameInfo.getPlayerCivilization()
+        val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
 
         closeButton.onClick {
             game.screen = CityScreen(this@ConstructionPickerScreen.city)
@@ -60,7 +60,7 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
             if (!building.isBuildable(cityConstructions) && building.name!=cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
                     building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
-                    building.getDescription(true, civInfo.policies.getAdoptedPolicies()),
+                    building.getDescription(true, currentPlayerCiv.policies.getAdoptedPolicies()),
                     "Build [${building.name}]".tr())
             if (building.isWonder)
                 wonders.addActor(productionTextButton)

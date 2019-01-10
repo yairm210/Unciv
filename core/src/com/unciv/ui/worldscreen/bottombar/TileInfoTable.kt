@@ -16,7 +16,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
 
     internal fun updateTileTable(tile: TileInfo) {
         clearChildren()
-        val civInfo = worldScreen.civInfo
+        val civInfo = worldScreen.currentPlayerCiv
         columnDefaults(0).padRight(10f)
 
         if (UnCivGame.Current.viewEntireMapForDebug || civInfo.exploredTiles.contains(tile.position)) {
@@ -34,7 +34,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
         table.pad(10f)
         table.defaults().pad(2f)
 
-        for (entry in tile.getTileStats(worldScreen.civInfo).toHashMap().filterNot { it.value == 0f }) {
+        for (entry in tile.getTileStats(worldScreen.currentPlayerCiv).toHashMap().filterNot { it.value == 0f }) {
             table.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f).align(Align.right)
             table.add(Label(entry.value.toInt().toString(), skin)).align(Align.left)
             table.row()

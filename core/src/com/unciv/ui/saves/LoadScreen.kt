@@ -44,7 +44,8 @@ class LoadScreen : PickerScreen() {
                 textToSet+="\n{Saved at}: ".tr()+ SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
                 try{
                     val game = GameSaver().loadGame(it)
-                    textToSet+="\n"+game.getPlayerCivilization().civName.tr()+
+                    val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString{it.civName.tr()}
+                    textToSet+="\n"+playerCivNames+
                             ", "+game.difficulty.tr()+", {Turn} ".tr()+game.turns
                 }catch (ex:Exception){
                     textToSet+="\n{Could not load game}!".tr()

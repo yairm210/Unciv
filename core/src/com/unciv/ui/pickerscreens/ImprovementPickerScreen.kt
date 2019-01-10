@@ -16,12 +16,12 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
 
     init {
-        val civInfo = game.gameInfo.getPlayerCivilization()
+        val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         setDefaultCloseAction()
 
         rightSideButton.setText("Pick improvement")
         rightSideButton.onClick {
-            tileInfo.startWorkingOnImprovement(selectedImprovement!!, civInfo)
+            tileInfo.startWorkingOnImprovement(selectedImprovement!!, currentPlayerCiv)
             if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.action=null // this is to "wake up" the worker if it's sleeping
             game.setWorldScreen()
             dispose()
@@ -30,7 +30,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
         val regularImprovements = VerticalGroup()
         regularImprovements.space(10f)
         for (improvement in GameBasics.TileImprovements.values) {
-            if (!tileInfo.canBuildImprovement(improvement, civInfo)) continue
+            if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
             if(improvement.name == tileInfo.improvement) continue
             if(improvement.name==tileInfo.improvementInProgress) continue
 
@@ -40,7 +40,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
                 improvementButton.add(ImageGetter.getImage("OtherIcons/Stop.png")).size(30f).pad(10f)
             else improvementButton.add(ImageGetter.getImprovementIcon(improvement.name,30f)).pad(10f)
 
-            improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(civInfo) + " {turns}".tr(),skin)
+            improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}".tr(),skin)
                     .setFontColor(Color.WHITE)).pad(10f)
 
             improvementButton.onClick {
