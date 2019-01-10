@@ -17,6 +17,7 @@ interface ICombatant{
     fun getTile(): TileInfo
     fun isInvisible(): Boolean
     fun getCivInfo(): CivilizationInfo
+    fun canAttack(): Boolean
 
     fun isMelee(): Boolean {
         return this.getUnitType().isMelee()

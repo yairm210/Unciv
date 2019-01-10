@@ -195,7 +195,6 @@ class BattleDamage{
 
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
         if(attacker.isRanged()) return 0
-        if(attacker is CityCombatant) return 0
         if(defender.getUnitType().isCivilian()) return 0
         val ratio = getDefendingStrength(attacker,defender) / getAttackingStrength(attacker,defender)
         return (ratio * 30 * getHealthDependantDamageRatio(defender)).toInt()

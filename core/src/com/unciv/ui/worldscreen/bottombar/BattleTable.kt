@@ -130,18 +130,19 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val attackButton = TextButton(attackText.tr(), skin).apply { color= Color.RED }
 
         var attackableEnemy : UnitAutomation.AttackableTile? = null
-        var canAttack : Boolean = false
+        var canAttack : Boolean = attacker.canAttack()
 
-        if (attacker is MapUnitCombatant) {
-            attacker.unit.getDistanceToTiles()
-            attackableEnemy = UnitAutomation().getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
-                    .firstOrNull{ it.tileToAttack == defender.getTile()}
-            canAttack = (attacker.unit.canAttack() && attackableEnemy != null)
-        }
-        else if (attacker is CityCombatant)
-        {
-            canAttack = (attacker.city.canAttack())
-                    && UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
+        if (canAttack) {
+            if (attacker is MapUnitCombatant) {
+                attacker.unit.getDistanceToTiles()
+                attackableEnemy = UnitAutomation().getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
+                        .firstOrNull{ it.tileToAttack == defender.getTile()}
+                canAttack = attackableEnemy != null
+            }
+            else if (attacker is CityCombatant)
+            {
+                canAttack = UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
+            }
         }
 
         if(!canAttack) attackButton.disable()

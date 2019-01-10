@@ -281,9 +281,9 @@ class UnitAutomation{
     }
 
     fun tryBombardEnemy(city: CityInfo): Boolean {
-        val target = chooseBombardTarget(city)
-        if (target == null) return false
-        if (city.canAttack()) {
+        if (!city.attackedThisTurn) {
+            val target = chooseBombardTarget(city)
+            if (target == null) return false
             val enemy = Battle(city.civInfo.gameInfo).getMapCombatantOfTile(target)!!
             Battle(city.civInfo.gameInfo).attack(CityCombatant(city), enemy)
             return true

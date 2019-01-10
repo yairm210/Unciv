@@ -14,6 +14,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
     override fun isDefeated(): Boolean = city.health==1
     override fun isInvisible(): Boolean = false
     override fun getCivInfo(): CivilizationInfo = city.civInfo
+    override fun canAttack(): Boolean = (!city.attackedThisTurn)
 
     override fun takeDamage(damage: Int) {
         city.health -= damage
