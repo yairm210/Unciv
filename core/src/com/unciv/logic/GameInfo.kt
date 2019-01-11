@@ -37,46 +37,52 @@ class GameInfo {
     //endregion
 
     fun nextTurn() {
-        val currentPlayer = getCurrentPlayerCivilization()
+        val previousHumanPlayer = getCurrentPlayerCivilization()
+        var thisPlayer = previousHumanPlayer // not calling is currentPlayer because that's alreay taken and I can't think of a better name
+        var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
-        for (civInfo in civilizations) {
-            if (civInfo.tech.techsToResearch.isEmpty()) {  // should belong in automation? yes/no?
-                val researchableTechs = GameBasics.Technologies.values
-                        .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
-                civInfo.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
+        fun switchTurn(){
+            thisPlayer.endTurn()
+            currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
+            if(currentPlayerIndex==0){
+                turns++
+                if (turns % 10 == 0) { // every 10 turns add a barbarian in a random place
+                    placeBarbarianUnit(null)
+                }
             }
-            civInfo.endTurn()
+            thisPlayer = civilizations[currentPlayerIndex]
+            thisPlayer.startTurn()
         }
 
-        // We need to update the stats after ALL the cities are done updating because
-        // maybe one of them has a wonder that affects the stats of all the rest of the cities
+        switchTurn()
 
-        for (civInfo in civilizations.filterNot { it == currentPlayer || (it.isDefeated() && !it.isBarbarianCivilization()) }) {
-            civInfo.startTurn()
-            NextTurnAutomation().automateCivMoves(civInfo)
+        while(thisPlayer.playerType==PlayerType.AI){
+            NextTurnAutomation().automateCivMoves(thisPlayer)
+            if (thisPlayer.tech.techsToResearch.isEmpty()) {  // should belong in automation? yes/no?
+                val researchableTechs = GameBasics.Technologies.values
+                        .filter { !thisPlayer.tech.isResearched(it.name) && thisPlayer.tech.canBeResearched(it.name) }
+                thisPlayer.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
+            }
+            switchTurn()
         }
 
-        if (turns % 10 == 0) { // every 10 turns add a barbarian in a random place
-            placeBarbarianUnit(null)
-        }
+        currentPlayer=thisPlayer.civName
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
 
-        currentPlayer.startTurn()
-
-        val enemyUnitsCloseToTerritory = currentPlayer.viewableTiles
+        val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
                 .filter {
-                    it.militaryUnit != null && it.militaryUnit!!.civInfo != currentPlayer
-                            && currentPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
-                            && (it.getOwner() == currentPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == currentPlayer })
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
+                            && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
+                            && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer })
                 }
+
         for (enemyUnitTile in enemyUnitsCloseToTerritory) {
-            val inOrNear = if (enemyUnitTile.getOwner() == currentPlayer) "in" else "near"
+            val inOrNear = if (enemyUnitTile.getOwner() == thisPlayer) "in" else "near"
             val unitName = enemyUnitTile.militaryUnit!!.name
-            currentPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
+            thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
         }
 
-        turns++
     }
 
     fun placeBarbarianUnit(tileToPlace: TileInfo?) {

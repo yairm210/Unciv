@@ -264,6 +264,13 @@ class WorldScreen : CameraStageBaseScreen() {
     var shouldUpdate=false
     override fun render(delta: Float) {
         if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+            if(currentPlayerCiv!=gameInfo.getCurrentPlayerCivilization()){
+                UnCivGame.Current.worldScreen= WorldScreen().apply {
+                    shouldUpdate=true
+                }
+                UnCivGame.Current.setWorldScreen()
+            }
+
             // otherwise images will not load properly!
             update()
 

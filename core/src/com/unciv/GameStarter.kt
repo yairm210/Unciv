@@ -31,20 +31,23 @@ class GameStarter{
         val startingLocations = getStartingLocations(
                 newGameParameters.numberOfEnemies+newGameParameters.humanPlayers, gameInfo.tileMap)
 
+        val availableCivNames = Stack<String>()
+        availableCivNames.addAll(GameBasics.Nations.keys.shuffled())
+        availableCivNames.remove(newGameParameters.nation)
 
         for(i in 1..newGameParameters.humanPlayers) {
-            val playerCiv = CivilizationInfo(newGameParameters.nation)
+            val playerCiv =
+                    if(i==1) CivilizationInfo(newGameParameters.nation)
+                    else CivilizationInfo(availableCivNames.pop())
             gameInfo.difficulty = newGameParameters.difficulty
             playerCiv.playerType = PlayerType.Human
             gameInfo.civilizations.add(playerCiv)
         }
 
-        val barbarianCivilization = CivilizationInfo()
-        barbarianCivilization.civName = "Barbarians"
+        val barbarianCivilization = CivilizationInfo("Barbarians")
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
-        for (nationName in GameBasics.Nations.keys.filterNot { it=="Barbarians" || it==newGameParameters.nation }.shuffled()
-                .take(newGameParameters.numberOfEnemies)) {
+        for (nationName in availableCivNames.take(newGameParameters.numberOfEnemies)) {
             val civ = CivilizationInfo(nationName)
             gameInfo.civilizations.add(civ)
         }
