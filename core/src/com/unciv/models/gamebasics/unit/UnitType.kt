@@ -26,6 +26,7 @@ enum class UnitType{
                 || this == Siege
                 || this == WaterRanged
                 || this == WaterSubmarine
+                || this == City
     }
 
     fun isLandUnit(): Boolean {

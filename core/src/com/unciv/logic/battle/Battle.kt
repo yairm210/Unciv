@@ -48,10 +48,13 @@ class Battle(val gameInfo:GameInfo) {
             val whatHappenedString =
                     if (attacker.isDefeated()) " {was destroyed while attacking}"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
+            val attackerString =
+                    if (attacker.getUnitType() == UnitType.City) "Enemy city [" + attacker.getName() + "]"
+                    else "An enemy [" + attacker.getName() + "]"
             val defenderString =
                     if (defender.getUnitType() == UnitType.City) " [" + defender.getName()+"]"
                     else " our [" + defender.getName()+"]"
-            val notificationString = "An enemy [" + attacker.getName()+"]" + whatHappenedString + defenderString
+            val notificationString = attackerString + whatHappenedString + defenderString
             defender.getCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
@@ -85,6 +88,8 @@ class Battle(val gameInfo:GameInfo) {
             unit.attacksThisTurn+=1
             if(unit.isFortified() || unit.action=="Sleep")
                 attacker.unit.action=null // but not, for instance, if it's Set Up - then it should definitely keep the action!
+        } else if (attacker is CityCombatant) {
+            attacker.city.attackedThisTurn = true
         }
 
         // XP!

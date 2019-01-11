@@ -18,6 +18,7 @@ class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
     @Transient var isConnectedToCapital = false
     @Transient lateinit var ccenterTile:TileInfo  // 'cached' for better performance
+    @Transient val range = 2
 
     var location: Vector2 = Vector2.Zero
     var name: String = ""
@@ -32,7 +33,7 @@ class CityInfo {
     var tiles = HashSet<Vector2>()
     var workedTiles = HashSet<Vector2>()
     var isBeingRazed = false
-
+    var attackedThisTurn = false
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
@@ -84,6 +85,7 @@ class CityInfo {
         toReturn.workedTiles = workedTiles
         toReturn.isBeingRazed=isBeingRazed
         toReturn.isConnectedToCapital = isConnectedToCapital
+        toReturn.attackedThisTurn = attackedThisTurn
         return toReturn
     }
 
@@ -193,6 +195,7 @@ class CityInfo {
             health = min(health + 20, getMaxHealth())
             population.unassignExtraPopulation()
         }
+        attackedThisTurn = false
     }
 
     fun destroyCity() {
@@ -232,5 +235,6 @@ class CityInfo {
         }
         return false
     }
+
     //endregion
 }
