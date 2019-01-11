@@ -103,8 +103,8 @@ class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBase
             if(stat.value.isNotEmpty()){
                 expander.innerTable.add(Label("Total".tr(),skin))
                 expander.innerTable.add(Label(DecimalFormat("0.#").format(stat.value.values.sum()),skin))
+                add(expander).row()
             }
-            add(expander).row()
         }
 
     }
