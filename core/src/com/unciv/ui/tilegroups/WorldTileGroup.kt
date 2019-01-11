@@ -32,8 +32,9 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
                 && city!!.civInfo.isPlayerCivilization())
             addPopulationIcon()
 
+        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         if (UnCivGame.Current.viewEntireMapForDebug
-                || tileInfo.tileMap.gameInfo.getPlayerCivilization().exploredTiles.contains(tileInfo.position))
+                || currentPlayerCiv.exploredTiles.contains(tileInfo.position))
             updateCityButton(city, isViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
 
         super.update(isViewable || UnCivGame.Current.viewEntireMapForDebug,
@@ -41,7 +42,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
 
         yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
         if (yieldGroup.isVisible)
-            yieldGroup.setStats(tileInfo.getTileStats(UnCivGame.Current.gameInfo.getPlayerCivilization()))
+            yieldGroup.setStats(tileInfo.getTileStats(currentPlayerCiv))
 
         // order by z index!
         cityImage?.toFront()

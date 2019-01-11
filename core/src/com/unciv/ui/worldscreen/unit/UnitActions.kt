@@ -96,7 +96,7 @@ class UnitActions {
             }
         }
 
-        if(!unit.type.isCivilian() && tile.improvement !=null && unit.health<100){
+        if(!unit.type.isCivilian() && tile.improvement !=null){
             actionList += UnitAction("Pillage", unit.currentMovement>0)
             {
                 tile.improvementInProgress = tile.improvement

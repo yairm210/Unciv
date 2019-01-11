@@ -21,7 +21,7 @@ import kotlin.math.roundToInt
 
 class EmpireOverviewScreen : CameraStageBaseScreen(){
 
-    val playerCivInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
+    val currentPlayerCivInfo = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         val topTable = Table().apply { defaults().pad(10f) }
@@ -92,7 +92,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
-        for(diplomacy in playerCivInfo.diplomacy.values)
+        for(diplomacy in currentPlayerCivInfo.diplomacy.values)
             for(trade in diplomacy.trades)
                 tradesTable.add(createTradeTable(trade,diplomacy.otherCiv())).row()
 
@@ -101,7 +101,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
         val generalTable = Table(skin)
-        generalTable.add(createOffersTable(playerCivInfo,trade.ourOffers, trade.theirOffers.size))
+        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size))
         generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size))
         return generalTable
     }
@@ -128,12 +128,12 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         happinessTable.defaults().pad(5f)
         happinessTable.add(Label("Happiness".tr(), skin).setFontSize(24)).colspan(2).row()
         happinessTable.addSeparator()
-        for (entry in playerCivInfo.getHappinessForNextTurn()) {
+        for (entry in currentPlayerCivInfo.getHappinessForNextTurn()) {
             happinessTable.add(entry.key.tr())
             happinessTable.add(entry.value.toString()).row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(playerCivInfo.getHappinessForNextTurn().values.sum().toString())
+        happinessTable.add(currentPlayerCivInfo.getHappinessForNextTurn().values.sum().toString())
         happinessTable.pack()
         return happinessTable
     }
@@ -144,7 +144,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         goldTable.add(Label("Gold".tr(), skin).setFontSize(24)).colspan(2).row()
         goldTable.addSeparator()
         var total=0f
-        for (entry in playerCivInfo.getStatMapForNextTurn()) {
+        for (entry in currentPlayerCivInfo.getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
             goldTable.add(entry.value.gold.toString()).row()
@@ -160,9 +160,9 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getGreatPeopleTable(): Table {
         val greatPeopleTable = Table(skin)
 
-        val greatPersonPoints = playerCivInfo.greatPeople.greatPersonPoints.toHashMap()
-        val greatPersonPointsPerTurn = playerCivInfo.getGreatPersonPointsForNextTurn().toHashMap()
-        val pointsToGreatPerson = playerCivInfo.greatPeople.pointsForNextGreatPerson
+        val greatPersonPoints = currentPlayerCivInfo.greatPeople.greatPersonPoints.toHashMap()
+        val greatPersonPointsPerTurn = currentPlayerCivInfo.getGreatPersonPointsForNextTurn().toHashMap()
+        val pointsToGreatPerson = currentPlayerCivInfo.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)
         greatPeopleTable.add(Label("Great person points".tr(), skin).setFontSize(24)).colspan(3).row()
@@ -171,14 +171,14 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         greatPeopleTable.add("Current points")
         greatPeopleTable.add("Points per turn").row()
 
-        val mapping = playerCivInfo.greatPeople.statToGreatPersonMapping
+        val mapping = currentPlayerCivInfo.greatPeople.statToGreatPersonMapping
         for(entry in mapping){
             greatPeopleTable.add(entry.value.tr())
             greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
             greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
         }
-        val pointsForGreatGeneral = playerCivInfo.greatPeople.greatGeneralPoints.toInt().toString()
-        val pointsForNextGreatGeneral = playerCivInfo.greatPeople.pointsForNextGreatGeneral.toInt().toString()
+        val pointsForGreatGeneral = currentPlayerCivInfo.greatPeople.greatGeneralPoints.toInt().toString()
+        val pointsForNextGreatGeneral = currentPlayerCivInfo.greatPeople.pointsForNextGreatGeneral.toInt().toString()
         greatPeopleTable.add("Great General".tr())
         greatPeopleTable.add(pointsForGreatGeneral+"/"+pointsForNextGreatGeneral).row()
         greatPeopleTable.pack()
@@ -208,7 +208,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableDetails = Table(skin)
         cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
 
-        for (city in playerCivInfo.cities) {
+        for (city in currentPlayerCivInfo.cities) {
             cityInfoTableDetails.add(city.name)
             cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
             cityInfoTableDetails.add(city.population.population.toString()).actor!!.setAlignment(Align.center)
@@ -230,13 +230,13 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         cityInfoTableTotal.defaults().pad(padding).minWidth(iconSize)//we need the min width so we can align the different tables
 
         cityInfoTableTotal.add("Total".tr())
-        cityInfoTableTotal.add(playerCivInfo.cities.sumBy { it.population.population }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.population.population }.toString()).actor!!.setAlignment(Align.center)
         cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(playerCivInfo.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toString()).actor!!.setAlignment(Align.center)
-        cityInfoTableTotal.add(playerCivInfo.cities.sumBy { it.cityStats.currentCityStats.science.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.cityStats.currentCityStats.gold.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.cityStats.currentCityStats.science.toInt() }.toString()).actor!!.setAlignment(Align.center)
         cityInfoTableTotal.add()//an intended empty space
-        cityInfoTableTotal.add(playerCivInfo.cities.sumBy { it.cityStats.currentCityStats.culture.toInt() }.toString()).actor!!.setAlignment(Align.center)
-        cityInfoTableTotal.add(playerCivInfo.cities.sumBy {  it.cityStats.currentCityStats.happiness.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy { it.cityStats.currentCityStats.culture.toInt() }.toString()).actor!!.setAlignment(Align.center)
+        cityInfoTableTotal.add(currentPlayerCivInfo.cities.sumBy {  it.cityStats.currentCityStats.happiness.toInt() }.toString()).actor!!.setAlignment(Align.center)
 
         cityInfoTableTotal.pack()
 
@@ -265,7 +265,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.row()
         table.addSeparator()
 
-        for(unit in playerCivInfo.getCivUnits()){
+        for(unit in currentPlayerCivInfo.getCivUnits()){
             val baseUnit = unit.baseUnit()
             table.add(unit.name.tr())
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
@@ -281,10 +281,10 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
 
     fun playerKnows(civ:CivilizationInfo) = civ.isPlayerCivilization() ||
-            playerCivInfo.diplomacy.containsKey(civ.civName)
+            currentPlayerCivInfo.diplomacy.containsKey(civ.civName)
 
     fun createDiplomacyGroup(): Group {
-        val relevantCivs = playerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() }
+        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() }
         val groupSize = 500f
         val group = Group()
         group.setSize(groupSize,groupSize)

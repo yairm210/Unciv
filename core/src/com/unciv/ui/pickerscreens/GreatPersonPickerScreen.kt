@@ -34,9 +34,9 @@ class GreatPersonPickerScreen : PickerScreen() {
         }
 
         rightSideButton.onClick("choir") {
-            val civInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
-            civInfo.placeUnitNearTile(civInfo.cities[0].location, theChosenOne!!.name)
-            civInfo.greatPeople.freeGreatPeople--
+            val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+            currentPlayerCiv.placeUnitNearTile(currentPlayerCiv.cities[0].location, theChosenOne!!.name)
+            currentPlayerCiv.greatPeople.freeGreatPeople--
             UnCivGame.Current.setWorldScreen()
         }
 

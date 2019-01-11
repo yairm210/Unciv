@@ -12,7 +12,7 @@ import com.unciv.ui.utils.onClick
 
 class VictoryScreen : PickerScreen() {
 
-    val playerCivInfo = UnCivGame.Current.gameInfo.getPlayerCivilization()
+    val playerCivInfo = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
 
     init {
         topTable.skin=skin

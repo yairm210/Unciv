@@ -17,64 +17,72 @@ class GameInfo {
     var gameParameters=GameParameters()
     var turns = 0
     var oneMoreTurnMode=false
+    var currentPlayer=""
 
     //region pure functions
     fun clone(): GameInfo {
         val toReturn = GameInfo()
         toReturn.tileMap = tileMap.clone()
         toReturn.civilizations.addAll(civilizations.map { it.clone() })
+        toReturn.currentPlayer=currentPlayer
         toReturn.turns = turns
         toReturn.difficulty=difficulty
         toReturn.gameParameters = gameParameters
         return toReturn
     }
 
-    fun getPlayerCivilization(): CivilizationInfo = civilizations[0]
-    fun getBarbarianCivilization(): CivilizationInfo = civilizations[1]
+    fun getCurrentPlayerCivilization(): CivilizationInfo = civilizations.first { it.civName==currentPlayer }
+    fun getBarbarianCivilization(): CivilizationInfo = civilizations.first { it.civName=="Barbarians" }
     fun getDifficulty() = GameBasics.Difficulties[difficulty]!!
     //endregion
 
     fun nextTurn() {
-        val player = getPlayerCivilization()
+        val previousHumanPlayer = getCurrentPlayerCivilization()
+        var thisPlayer = previousHumanPlayer // not calling is currentPlayer because that's alreay taken and I can't think of a better name
+        var currentPlayerIndex = civilizations.indexOf(thisPlayer)
 
-        for (civInfo in civilizations) {
-            if (civInfo.tech.techsToResearch.isEmpty()) {  // should belong in automation? yes/no?
-                val researchableTechs = GameBasics.Technologies.values
-                        .filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
-                civInfo.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
+        fun switchTurn(){
+            thisPlayer.endTurn()
+            currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
+            if(currentPlayerIndex==0){
+                turns++
+                if (turns % 10 == 0) { // every 10 turns add a barbarian in a random place
+                    placeBarbarianUnit(null)
+                }
             }
-            civInfo.endTurn()
+            thisPlayer = civilizations[currentPlayerIndex]
+            thisPlayer.startTurn()
         }
 
-        // We need to update the stats after ALL the cities are done updating because
-        // maybe one of them has a wonder that affects the stats of all the rest of the cities
+        switchTurn()
 
-        for (civInfo in civilizations.filterNot { it == player || (it.isDefeated() && !it.isBarbarianCivilization()) }) {
-            civInfo.startTurn()
-            NextTurnAutomation().automateCivMoves(civInfo)
+        while(thisPlayer.playerType==PlayerType.AI){
+            NextTurnAutomation().automateCivMoves(thisPlayer)
+            if (thisPlayer.tech.techsToResearch.isEmpty()) {  // should belong in automation? yes/no?
+                val researchableTechs = GameBasics.Technologies.values
+                        .filter { !thisPlayer.tech.isResearched(it.name) && thisPlayer.tech.canBeResearched(it.name) }
+                thisPlayer.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
+            }
+            switchTurn()
         }
 
-        if (turns % 10 == 0) { // every 10 turns add a barbarian in a random place
-            placeBarbarianUnit(null)
-        }
+        currentPlayer=thisPlayer.civName
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
 
-        player.startTurn()
-
-        val enemyUnitsCloseToTerritory = player.viewableTiles
+        val enemyUnitsCloseToTerritory = thisPlayer.viewableTiles
                 .filter {
-                    it.militaryUnit != null && it.militaryUnit!!.civInfo != player
-                            && player.isAtWarWith(it.militaryUnit!!.civInfo)
-                            && (it.getOwner() == player || it.neighbors.any { neighbor -> neighbor.getOwner() == player })
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo != thisPlayer
+                            && thisPlayer.isAtWarWith(it.militaryUnit!!.civInfo)
+                            && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer })
                 }
+
         for (enemyUnitTile in enemyUnitsCloseToTerritory) {
-            val inOrNear = if (enemyUnitTile.getOwner() == player) "in" else "near"
+            val inOrNear = if (enemyUnitTile.getOwner() == thisPlayer) "in" else "near"
             val unitName = enemyUnitTile.militaryUnit!!.name
-            player.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
+            thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
         }
 
-        turns++
     }
 
     fun placeBarbarianUnit(tileToPlace: TileInfo?) {
@@ -94,15 +102,17 @@ class GameInfo {
         tileMap.gameInfo = this
         tileMap.setTransients()
 
+        if(currentPlayer=="") currentPlayer=civilizations[0].civName
+
         // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
         for (civInfo in civilizations) civInfo.gameInfo = this
 
         // PlayerType was only added in 2.11.1, so we need to adjust for older saved games
         if(civilizations.all { it.playerType==PlayerType.AI })
-            getPlayerCivilization().playerType=PlayerType.Human
-        if(getPlayerCivilization().difficulty!="Chieftain")
-            difficulty= getPlayerCivilization().difficulty
+            getCurrentPlayerCivilization().playerType=PlayerType.Human
+        if(getCurrentPlayerCivilization().difficulty!="Chieftain")
+            difficulty= getCurrentPlayerCivilization().difficulty
 
         for (civInfo in civilizations) civInfo.setTransients()
 

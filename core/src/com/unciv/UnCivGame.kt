@@ -64,6 +64,7 @@ class UnCivGame : Game() {
     }
 
     override fun resume() {
+        super.resume()
         ImageGetter.refreshAltas()
 
         // This is to solve a rare problem that I still on't understand its cause -

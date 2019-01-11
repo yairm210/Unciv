@@ -87,13 +87,13 @@ class CivilizationInfo {
 
     //region pure functions
     fun getDifficulty():Difficulty {
-        if(playerType==PlayerType.AI) return GameBasics.Difficulties["Chieftain"]!!
-        else return gameInfo.getDifficulty()
+        if (isPlayerCivilization()) return gameInfo.getDifficulty()
+        return GameBasics.Difficulties["Chieftain"]!!
     }
 
     fun getNation() = GameBasics.Nations[civName]!!
     fun getCapital()=cities.first { it.isCapital() }
-    fun isPlayerCivilization() =  gameInfo.getPlayerCivilization()==this
+    fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
 
     fun getStatsForNextTurn():Stats{
@@ -152,7 +152,7 @@ class CivilizationInfo {
         var cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!isPlayerCivilization())
-            cost *= gameInfo.getPlayerCivilization().getDifficulty().aiUnitMaintenanceModifier
+            cost *= gameInfo.getDifficulty().aiUnitMaintenanceModifier
         if(policies.isAdopted("Autocracy")) cost *= 0.66f
         return cost.toInt()
     }
@@ -313,7 +313,7 @@ class CivilizationInfo {
             victoryManager.currentsSpaceshipParts = scienceVictory.currentParts
 
         for (cityInfo in cities) {
-            cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the playerCivInfo
+            cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
             cityInfo.setTransients()
         }
         setCitiesConnectedToCapitalTransients()

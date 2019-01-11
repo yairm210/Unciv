@@ -26,7 +26,7 @@ import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
-    internal val civInfo: CivilizationInfo = gameInfo.getPlayerCivilization()
+    internal val currentPlayerCiv: CivilizationInfo = gameInfo.getCurrentPlayerCivilization()
 
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
     val minimapWrapper = MinimapHolder(tileMapHolder)
@@ -56,7 +56,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         techButton.touchable=Touchable.enabled
         techButton.onClick("paper") {
-            game.screen = TechPickerScreen(civInfo)
+            game.screen = TechPickerScreen(currentPlayerCiv)
         }
 
         stage.addActor(tileMapHolder)
@@ -80,8 +80,8 @@ class WorldScreen : CameraStageBaseScreen() {
 
         val tileToCenterOn: Vector2 =
                 when {
-                    civInfo.cities.isNotEmpty() -> civInfo.getCapital().location
-                    civInfo.getCivUnits().isNotEmpty() -> civInfo.getCivUnits().first().getTile().position
+                    currentPlayerCiv.cities.isNotEmpty() -> currentPlayerCiv.getCapital().location
+                    currentPlayerCiv.getCivUnits().isNotEmpty() -> currentPlayerCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
         tileMapHolder.setCenterPosition(tileToCenterOn)
@@ -97,9 +97,9 @@ class WorldScreen : CameraStageBaseScreen() {
 
         val gameClone = gameInfo.clone()
         gameClone.setTransients()
-        val cloneCivilization = gameClone.getPlayerCivilization()
+        val cloneCivilization = gameClone.getCurrentPlayerCivilization()
         kotlin.concurrent.thread {
-            civInfo.happiness = gameClone.getPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()
+            currentPlayerCiv.happiness = gameClone.getCurrentPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()
             gameInfo.civilizations.forEach { it.setCitiesConnectedToCapitalTransients() }
         }
 
@@ -127,10 +127,10 @@ class WorldScreen : CameraStageBaseScreen() {
             }
         }
 
-        if(gameClone.getPlayerCivilization().getCivUnits().any { it.health<100 })
+        if(gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.health<100 })
             displayTutorials("InjuredUnits")
 
-        if(gameClone.getPlayerCivilization().getCivUnits().any { it.name=="Worker" })
+        if(gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.name=="Worker" })
             displayTutorials("WorkerTrained")
 
         updateTechButton(cloneCivilization)
@@ -146,17 +146,17 @@ class WorldScreen : CameraStageBaseScreen() {
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
-        tileMapHolder.updateTiles(civInfo)
+        tileMapHolder.updateTiles(currentPlayerCiv)
 
         topBar.update(cloneCivilization)
-        notificationsScroll.update(civInfo.notifications)
+        notificationsScroll.update(currentPlayerCiv.notifications)
         notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
-        if(!gameInfo.oneMoreTurnMode && civInfo.victoryManager.hasWon()) game.screen = VictoryScreen()
-        else if(civInfo.policies.freePolicies>0) game.screen = PolicyPickerScreen(civInfo)
-        else if(civInfo.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
+        if(!gameInfo.oneMoreTurnMode && currentPlayerCiv.victoryManager.hasWon()) game.screen = VictoryScreen()
+        else if(currentPlayerCiv.policies.freePolicies>0) game.screen = PolicyPickerScreen(currentPlayerCiv)
+        else if(currentPlayerCiv.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
@@ -200,16 +200,16 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton(): TextButton {
         val nextTurnButton = TextButton("Next turn".tr(), CameraStageBaseScreen.skin)
         nextTurnButton.onClick {
-            if (civInfo.tech.freeTechs != 0) {
-                game.screen = TechPickerScreen(true, civInfo)
+            if (currentPlayerCiv.tech.freeTechs != 0) {
+                game.screen = TechPickerScreen(true, currentPlayerCiv)
                 return@onClick
-            } else if (civInfo.policies.shouldOpenPolicyPicker) {
-                game.screen = PolicyPickerScreen(civInfo)
-                civInfo.policies.shouldOpenPolicyPicker = false
+            } else if (currentPlayerCiv.policies.shouldOpenPolicyPicker) {
+                game.screen = PolicyPickerScreen(currentPlayerCiv)
+                currentPlayerCiv.policies.shouldOpenPolicyPicker = false
                 return@onClick
             }
-            else if (civInfo.tech.currentTechnology() == null && civInfo.cities.isNotEmpty()) {
-                game.screen = TechPickerScreen(civInfo)
+            else if (currentPlayerCiv.tech.currentTechnology() == null && currentPlayerCiv.cities.isNotEmpty()) {
+                game.screen = TechPickerScreen(currentPlayerCiv)
                 return@onClick
             }
 
@@ -264,30 +264,37 @@ class WorldScreen : CameraStageBaseScreen() {
     var shouldUpdate=false
     override fun render(delta: Float) {
         if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+            if(currentPlayerCiv!=gameInfo.getCurrentPlayerCivilization()){
+                UnCivGame.Current.worldScreen= WorldScreen().apply {
+                    shouldUpdate=true
+                }
+                UnCivGame.Current.setWorldScreen()
+            }
+
             // otherwise images will not load properly!
             update()
 
             val shownTutorials = UnCivGame.Current.settings.tutorialsShown
             displayTutorials("NextTurn")
             if("BarbarianEncountered" !in shownTutorials
-                    && civInfo.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
+                    && currentPlayerCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
                 displayTutorials("BarbarianEncountered")
-            if(civInfo.cities.size > 2) displayTutorials("SecondCity")
-            if(civInfo.happiness < 0) displayTutorials("Unhappiness")
-            if(civInfo.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
+            if(currentPlayerCiv.cities.size > 2) displayTutorials("SecondCity")
+            if(currentPlayerCiv.happiness < 0) displayTutorials("Unhappiness")
+            if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
             if(gameInfo.turns >= 100) displayTutorials("ContactMe")
-            val resources = civInfo.getCivResources()
+            val resources = currentPlayerCiv.getCivResources()
             if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
             if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
             if("EnemyCity" !in shownTutorials
-                    && civInfo.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
-                            .any { it.isCityCenter() && it.getOwner()!=civInfo })
+                    && currentPlayerCiv.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
+                            .any { it.isCityCenter() && it.getOwner()!=currentPlayerCiv })
                 displayTutorials("EnemyCity")
-            if("Enables construction of Spaceship parts" in civInfo.getBuildingUniques())
+            if("Enables construction of Spaceship parts" in currentPlayerCiv.getBuildingUniques())
                 displayTutorials("ApolloProgram")
-            if(civInfo.getCivUnits().any { it.type == UnitType.Siege })
+            if(currentPlayerCiv.getCivUnits().any { it.type == UnitType.Siege })
                 displayTutorials("SiegeUnitTrained")
-            if(civInfo.tech.getUniques().contains("Enables embarkation for land units"))
+            if(currentPlayerCiv.tech.getUniques().contains("Enables embarkation for land units"))
                 displayTutorials("CanEmbark")
 
             shouldUpdate=false

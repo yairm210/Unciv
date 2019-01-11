@@ -44,7 +44,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun update() {
         if(selectedUnit!=null) {
-            if (selectedUnit!!.civInfo != worldScreen.civInfo) { // The unit that was selected, was captured. It exists but is no longer ours.
+            if (selectedUnit!!.civInfo != worldScreen.currentPlayerCiv) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 selectedCity = null
                 currentlyExecutingAction = null
@@ -170,14 +170,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             currentlyExecutingAction = null
         }
 
-        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.civInfo
-                && selectedUnit!=selectedTile.militaryUnit) {
+        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
+                && selectedUnit!=selectedTile.militaryUnit){
             selectedUnit = selectedTile.militaryUnit
             selectedCity = null
         }
-
-        else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.civInfo
-                        && selectedUnit!=selectedTile.civilianUnit) {
+        else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.currentPlayerCiv
+                        && selectedUnit!=selectedTile.civilianUnit){
             selectedUnit = selectedTile.civilianUnit
             selectedCity = null
         }

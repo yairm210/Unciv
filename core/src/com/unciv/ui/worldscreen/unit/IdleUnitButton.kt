@@ -16,7 +16,7 @@ class IdleUnitButton (internal val unitTable: UnitTable,
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
 
     fun getTilesWithIdleUnits() = tileMapHolder.tileMap.values
-                    .filter { it.hasIdleUnit() && it.getUnits().first().owner == unitTable.worldScreen.civInfo.civName }
+                    .filter { it.hasIdleUnit() && it.getUnits().first().owner == unitTable.worldScreen.currentPlayerCiv.civName }
 
     init {
         val imageSize = 25f

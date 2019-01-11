@@ -31,11 +31,11 @@ class DiplomacyScreen:CameraStageBaseScreen(){
 
     private fun updateLeftSideTable() {
         leftSideTable.clear()
-        val playerCiv = UnCivGame.Current.gameInfo.getPlayerCivilization()
+        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         for (civ in UnCivGame.Current.gameInfo.civilizations
                 .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }) {
-            if (!playerCiv.diplomacy.containsKey(civ.civName)) continue
-            val civDiplomacy = playerCiv.diplomacy[civ.civName]!!
+            if (!currentPlayerCiv.diplomacy.containsKey(civ.civName)) continue
+            val civDiplomacy = currentPlayerCiv.diplomacy[civ.civName]!!
 
             val civTable = Table().apply { background = ImageGetter.getBackground(civ.getNation().getColor()) }
             civTable.pad(10f)
@@ -52,7 +52,7 @@ class DiplomacyScreen:CameraStageBaseScreen(){
             }
             civTable.add(tradeButton).row()
 
-            if (!playerCiv.isAtWarWith(civ)) {
+            if (!currentPlayerCiv.isAtWarWith(civ)) {
                 val declareWarButton = TextButton("Declare war".tr(), skin)
                 declareWarButton.color = Color.RED
                 val turnsToPeaceTreaty = civDiplomacy.turnsToPeaceTreaty()

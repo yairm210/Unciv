@@ -7,6 +7,7 @@ import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
+import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.getRandom
@@ -189,7 +190,7 @@ class MapUnit {
 
     fun isEmbarked(): Boolean {
         if(!type.isLandUnit()) return false
-        return currentTile.baseTerrain=="Ocean"||currentTile.baseTerrain=="Coast"
+        return currentTile.getBaseTerrain().type==TerrainType.Water
     }
 
     fun isInvisible(): Boolean {

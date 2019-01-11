@@ -45,8 +45,13 @@ open class TileInfo {
     }
 
     fun containsGreatImprovement(): Boolean {
-        if (getTileImprovement() == null) return false
-        return getTileImprovement()!!.name in listOf("Academy", "Landmark", "Manufactory", "Customs house")
+        if (improvement in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        return false
+    }
+
+    fun containsUnfinishedGreatImprovement(): Boolean {
+        if (improvementInProgress in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        return false
     }
 
     //region pure functions
@@ -232,7 +237,7 @@ open class TileInfo {
     override fun toString(): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case
         val isViewableToPlayer = UnCivGame.Current.viewEntireMapForDebug
-                || UnCivGame.Current.gameInfo.getPlayerCivilization().viewableTiles.contains(this)
+                || UnCivGame.Current.gameInfo.getCurrentPlayerCivilization().viewableTiles.contains(this)
 
         if (isCityCenter()) {
             val city = getCity()!!
@@ -244,7 +249,7 @@ open class TileInfo {
         }
         lineList += baseTerrain.tr()
         if (terrainFeature != null) lineList += terrainFeature!!.tr()
-        if (hasViewableResource(tileMap.gameInfo.getPlayerCivilization())) lineList += resource!!.tr()
+        if (hasViewableResource(tileMap.gameInfo.getCurrentPlayerCivilization())) lineList += resource!!.tr()
         if (roadStatus !== RoadStatus.None && !isCityCenter()) lineList += roadStatus.toString().tr()
         if (improvement != null) lineList += improvement!!.tr()
         if (improvementInProgress != null && isViewableToPlayer)

@@ -16,6 +16,7 @@ class GameParameters{
     var difficulty="Prince"
     var nation="Babylon"
     var mapRadius=20
+    var humanPlayers=1
     var numberOfEnemies=3
     var mapType= MapType.Perlin
 }
@@ -27,25 +28,30 @@ class GameStarter{
         gameInfo.gameParameters = newGameParameters
         gameInfo.tileMap = TileMap(newGameParameters.mapRadius, newGameParameters.mapType)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
-        val startingLocations = getStartingLocations(newGameParameters.numberOfEnemies+1,gameInfo.tileMap)
+        val startingLocations = getStartingLocations(
+                newGameParameters.numberOfEnemies+newGameParameters.humanPlayers, gameInfo.tileMap)
 
+        val availableCivNames = Stack<String>()
+        availableCivNames.addAll(GameBasics.Nations.keys.shuffled())
+        availableCivNames.remove(newGameParameters.nation)
 
-        val playerCiv = CivilizationInfo(newGameParameters.nation)
-        gameInfo.difficulty=newGameParameters.difficulty
-        playerCiv.playerType=PlayerType.Human
-        gameInfo.civilizations.add(playerCiv) // first one is player civ
+        for(i in 1..newGameParameters.humanPlayers) {
+            val playerCiv =
+                    if(i==1) CivilizationInfo(newGameParameters.nation)
+                    else CivilizationInfo(availableCivNames.pop())
+            gameInfo.difficulty = newGameParameters.difficulty
+            playerCiv.playerType = PlayerType.Human
+            gameInfo.civilizations.add(playerCiv)
+        }
 
-        val barbarianCivilization = CivilizationInfo()
+        val barbarianCivilization = CivilizationInfo("Barbarians")
         gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
-        for (nationName in GameBasics.Nations.keys.filterNot { it=="Barbarians" || it==newGameParameters.nation }.shuffled()
-                .take(newGameParameters.numberOfEnemies)) {
+        for (nationName in availableCivNames.take(newGameParameters.numberOfEnemies)) {
             val civ = CivilizationInfo(nationName)
             gameInfo.civilizations.add(civ)
         }
 
-
-        barbarianCivilization.civName = "Barbarians"
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 

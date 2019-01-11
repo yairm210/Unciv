@@ -40,7 +40,7 @@ class PopulationManager {
         // civ v math, civilization.wikia
         var foodRequired =  15 + 6 * (population - 1) + Math.floor(Math.pow((population - 1).toDouble(), 1.8))
         if(!cityInfo.civInfo.isPlayerCivilization())
-            foodRequired *= cityInfo.civInfo.gameInfo.getPlayerCivilization().getDifficulty().aiCityGrowthModifier
+            foodRequired *= cityInfo.civInfo.gameInfo.getDifficulty().aiCityGrowthModifier
         return foodRequired.toInt()
     }
 
