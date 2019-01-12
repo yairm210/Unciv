@@ -18,7 +18,7 @@
 			},
 			{
 				name:"Oligarchy",
-				description:"Units in cities cost no Maintenance",
+				description:"Units in cities cost no Maintenance, garrisoned city +50% attacking strength",
 				row:1,
 				column:5
 			},
