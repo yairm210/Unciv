@@ -111,6 +111,10 @@ class BattleDamage{
                 else modifiers["Attacker Bonus"] = bonus
             }
         }
+        else if (attacker is CityCombatant) {
+            if (attacker.getCivInfo().policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
+                modifiers["Oligarchy"] = 0.5f
+        }
 
         if (attacker.isMelee()) {
             val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {

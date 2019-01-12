@@ -113,6 +113,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
             unitDescriptionTable.add("Strength".tr())
             unitDescriptionTable.add(CityCombatant(city).getCityStrength().toString()).row()
+            unitDescriptionTable.add("Ranged Strength".tr())
+            unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 
             selectedUnitHasChanged = true
         }
