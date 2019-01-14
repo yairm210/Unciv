@@ -12,7 +12,7 @@ Made with LibGDX on Android Studio
 
 # What's been implemented?
 
-* Map tiles, resources and improvements
+* Map tiles (including water), resources and improvements
 * Units and movement
 * Cities, production and buildings
   * Population and Specialists
@@ -20,12 +20,12 @@ Made with LibGDX on Android Studio
 * Combat and barbarians
    * Promotions and combat modifiers
 * Other civilizations, diplomacy and trade
+* Hotseat multiplayer
 
 # What's next?
 
 * UI+UX improvements (suggestions welcome!)
-
-* Water tiles!
+* Map editor
 
 ## So, does it work?
 

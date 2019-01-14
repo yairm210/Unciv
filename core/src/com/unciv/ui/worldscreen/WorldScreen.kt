@@ -76,7 +76,8 @@ class WorldScreen : CameraStageBaseScreen() {
 
         displayTutorials("NewGame")
         displayTutorials("TileLayout")
-        update()
+
+        createNextTurnButton() // needs civ table to be positioned
 
         val tileToCenterOn: Vector2 =
                 when {
@@ -85,7 +86,6 @@ class WorldScreen : CameraStageBaseScreen() {
                     else -> Vector2.Zero
                 }
         tileMapHolder.setCenterPosition(tileToCenterOn)
-        createNextTurnButton() // needs civ table to be positioned
     }
 
     // This is private so that we will set the shouldUpdate to true instead.
@@ -261,7 +261,7 @@ class WorldScreen : CameraStageBaseScreen() {
         }
     }
 
-    var shouldUpdate=false
+    var shouldUpdate=true
     override fun render(delta: Float) {
         if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
             if(currentPlayerCiv!=gameInfo.getCurrentPlayerCivilization()){
@@ -301,4 +301,3 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
 }
-
