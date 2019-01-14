@@ -14,14 +14,27 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontColor
 
 class NationTable(val nation: Nation, val newGameParameters: GameParameters, skin: Skin, width:Float, onClick:()->Unit): Table(skin){
+    val innerTable = Table()
     init {
-        pad(10f)
-        background= ImageGetter.getBackground(nation.getColor().apply { a = 0.5f })
-        add(Label(nation.name.tr(), skin).apply { setFontColor(nation.getSecondaryColor())}).row()
-        add(Label(getUniqueLabel(nation), skin).apply { setWrap(true);setFontColor(nation.getSecondaryColor())}).width(width)
-        onClick { newGameParameters.nation=nation.name; onClick() }
+        background= ImageGetter.getBackground(nation.getSecondaryColor())
+        innerTable.pad(10f)
+        innerTable.background= ImageGetter.getBackground(nation.getColor())
+        innerTable.add(Label(nation.name.tr(), skin).apply { setFontColor(nation.getSecondaryColor())}).row()
+        innerTable.add(Label(getUniqueLabel(nation), skin)
+                .apply { setWrap(true);setFontColor(nation.getSecondaryColor())})
+                .width(width)
+        onClick {
+            if (nation.name in newGameParameters.humanNations) {
+                newGameParameters.humanNations.remove(nation.name)
+            } else {
+                newGameParameters.humanNations.add(nation.name)
+                if (newGameParameters.humanNations.size > newGameParameters.numberOfHumanPlayers)
+                    newGameParameters.humanNations.removeAt(0)
+            }
+            onClick()
+        }
         touchable= Touchable.enabled
-        update()
+        add(innerTable)
     }
 
     private fun getUniqueLabel(nation: Nation): String {
@@ -73,8 +86,8 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
 
 
     fun update(){
-        val color = nation.getColor()
-        if(newGameParameters.nation!=nation.name) color.a=0.5f
-        background= ImageGetter.getBackground(color)
+        if(nation.name in newGameParameters.humanNations) pad(10f)
+        else pad(0f)
+        pack()
     }
 }

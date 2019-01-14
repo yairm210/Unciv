@@ -20,6 +20,7 @@ import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
+import kotlin.math.min
 
 class NewGameScreen: PickerScreen(){
 
@@ -27,23 +28,43 @@ class NewGameScreen: PickerScreen(){
 
     val nationTables = ArrayList<NationTable>()
 
+    val civPickerTable = Table().apply { defaults().pad(15f) }
     init {
         setDefaultCloseAction()
         val mainTable = Table()
         mainTable.add(getOptionsTable())
-        val civPickerTable = Table().apply { defaults().pad(5f) }
+
         for(nation in GameBasics.Nations.values.filterNot { it.name == "Barbarians" }){
             val nationTable = NationTable(nation,newGameParameters,skin,stage.width/3 ){updateNationTables()}
             nationTables.add(nationTable)
             civPickerTable.add(nationTable).row()
         }
+        civPickerTable.pack()
         mainTable.setFillParent(true)
         mainTable.add(ScrollPane(civPickerTable).apply { setScrollingDisabled(true,false) })
         topTable.addActor(mainTable)
+        updateNationTables()
     }
 
     private fun updateNationTables(){
         nationTables.forEach { it.update() }
+        civPickerTable.pack()
+        if(newGameParameters.humanNations.size==newGameParameters.numberOfHumanPlayers)
+            rightSideButton.enable()
+        else rightSideButton.disable()
+    }
+
+    fun removeExtraHumanNations(humanPlayers: SelectBox<Int>) {
+        val maxNumberOfHumanPlayers = GameBasics.Nations.size - newGameParameters.numberOfEnemies
+        if(newGameParameters.numberOfHumanPlayers>maxNumberOfHumanPlayers){
+            newGameParameters.numberOfHumanPlayers=maxNumberOfHumanPlayers
+            humanPlayers.selected=maxNumberOfHumanPlayers
+        }
+        if(newGameParameters.humanNations.size>newGameParameters.numberOfHumanPlayers) {
+            val nationsOverAllowed = newGameParameters.humanNations.size - newGameParameters.numberOfHumanPlayers
+            newGameParameters.humanNations.removeAll(newGameParameters.humanNations.take(nationsOverAllowed))
+            updateNationTables()
+        }
     }
 
     private fun getOptionsTable(): Table {
@@ -82,20 +103,41 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add(worldSizeSelectBox).pad(10f).row()
 
 
+
+        newGameOptionsTable.add("{Number of human players}:".tr())
+        val humanPlayers = SelectBox<Int>(skin)
+        val humanPlayersArray = Array<Int>()
+        (1..GameBasics.Nations.size).forEach { humanPlayersArray .add(it) }
+        humanPlayers.items = humanPlayersArray
+        humanPlayers.selected = newGameParameters.numberOfHumanPlayers
+        newGameOptionsTable.add(humanPlayers).pad(10f).row()
+
+
         newGameOptionsTable.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray = Array<Int>()
         (0..GameBasics.Nations.size).forEach { enemiesArray.add(it) }
         enemiesSelectBox.items = enemiesArray
         enemiesSelectBox.selected = newGameParameters.numberOfEnemies
+        newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
+
+        humanPlayers.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.numberOfHumanPlayers = humanPlayers.selected
+                removeExtraHumanNations(humanPlayers)
+
+                val maxNumberOfEnemies = GameBasics.Nations.size - newGameParameters.numberOfHumanPlayers
+                newGameParameters.numberOfEnemies = min(newGameParameters.numberOfEnemies, maxNumberOfEnemies)
+                enemiesSelectBox.selected = newGameParameters.numberOfEnemies
+            }
+        })
 
         enemiesSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.numberOfEnemies = enemiesSelectBox.selected
+                removeExtraHumanNations(humanPlayers)
             }
         })
-        newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
-
 
         newGameOptionsTable.add("{Difficulty}:".tr())
         val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, newGameParameters.difficulty , skin)

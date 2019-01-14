@@ -16,7 +16,8 @@ class GameParameters{
     var difficulty="Prince"
     var nation="Babylon"
     var mapRadius=20
-    var humanPlayers=1
+    var numberOfHumanPlayers=1
+    var humanNations=ArrayList<String>().apply { add("Babylon") }
     var numberOfEnemies=3
     var mapType= MapType.Perlin
 }
@@ -29,16 +30,14 @@ class GameStarter{
         gameInfo.tileMap = TileMap(newGameParameters.mapRadius, newGameParameters.mapType)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         val startingLocations = getStartingLocations(
-                newGameParameters.numberOfEnemies+newGameParameters.humanPlayers, gameInfo.tileMap)
+                newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers, gameInfo.tileMap)
 
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(GameBasics.Nations.keys.shuffled())
-        availableCivNames.remove(newGameParameters.nation)
+        availableCivNames.removeAll(newGameParameters.humanNations)
 
-        for(i in 1..newGameParameters.humanPlayers) {
-            val playerCiv =
-                    if(i==1) CivilizationInfo(newGameParameters.nation)
-                    else CivilizationInfo(availableCivNames.pop())
+        for(nation in newGameParameters.humanNations) {
+            val playerCiv = CivilizationInfo(nation)
             gameInfo.difficulty = newGameParameters.difficulty
             playerCiv.playerType = PlayerType.Human
             gameInfo.civilizations.add(playerCiv)
