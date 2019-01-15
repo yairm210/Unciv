@@ -109,7 +109,7 @@ class MapUnit {
                 && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
             visibilityRange += 1
         val tile = getTile()
-        if (tile.baseTerrain == "Hill") visibilityRange += 1
+        if (tile.baseTerrain == "Hill" && type.isLandUnit()) visibilityRange += 1
         return tile.getViewableTiles(visibilityRange)
     }
 

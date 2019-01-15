@@ -537,6 +537,13 @@
 		requiredTech:"Radio"
 	},
 	{
+		name:"Statue of Liberty",
+		culture:1,
+		isWonder:true,
+		uniques:["+1 Production from specialists"],
+		requiredTech:"Replacable Parts"
+	},
+	{
 		name:"Research Lab",
 		science:4,		
 		percentStatBonus:{science:50},

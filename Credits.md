@@ -191,6 +191,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Stadium](https://thenounproject.com/term/stadium/13872/) By Karuna Lalvani
 * [Signal Tower](https://thenounproject.com/term/signal-tower/1547758/) By Nociconist for Broadcast Tower
 * [Eiffel Tower](https://thenounproject.com/term/eiffel-tower/1907757/) By Felipe Alvarado
+* [Statue of Liberty](https://thenounproject.com/search/?q=statue%20of%20liberty&i=1801199) By 1516
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
 
 ### Information Era
@@ -348,6 +349,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Plastic](https://thenounproject.com/term/plastic/478826/) By Yu luck
 * [Microphone](https://thenounproject.com/term/microphone/470266/) By Viktor Vorobyev for Mass Media
 * [Flight](https://thenounproject.com/term/flight/1014306/) By Genius Icons
+* [Train](https://thenounproject.com/term/train/651644/) By  Federico Panzano for Railroad
 * [Refridgerator](https://thenounproject.com/search/?q=refridgerator&i=1188873) By b farias, CL
 
 ### Information

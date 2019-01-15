@@ -185,6 +185,8 @@ class CityStats {
 
         if (policies.contains("Commerce Complete")) stats.gold += 1
         if (policies.contains("Secularism")) stats.science += 2
+        if(cityInfo.getBuildingUniques().contains("+1 Production from specialists"))
+            stats.production += 1
         return stats
     }
 

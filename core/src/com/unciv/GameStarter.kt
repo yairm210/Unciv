@@ -35,6 +35,7 @@ class GameStarter{
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(GameBasics.Nations.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.humanNations)
+        availableCivNames.remove("Barbarians")
 
         for(nation in newGameParameters.humanNations) {
             val playerCiv = CivilizationInfo(nation)

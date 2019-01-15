@@ -542,8 +542,33 @@
 		cost: 320,
 		requiredTech:"Replacable Parts",
 		hurryCostModifier:20,
+		upgradesTo:"Infantry",
+		obsoleteTech:"Plastics"
 		attackSound:"shot"
 	},
+	{
+		name:"Infantry",
+		unitType:"Melee",
+		movement:2,
+		strength:70,
+		cost: 375,
+		requiredTech:"Plastics",
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
+	{
+		name:"Machine Gun",
+		unitType:"Ranged",
+		range:1,
+		movement:2,
+		strength:60,
+		rangedStrength:60,
+		cost: 350,
+		requiredTech:"Ballistics",
+		hurryCostModifier:20,
+		attackSound:"machinegun"
+	},
+	
 	
 	/* Great people */
 	

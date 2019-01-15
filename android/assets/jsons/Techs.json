@@ -377,6 +377,11 @@
 				row:6,
 				prerequisites:["Steam Power"]
 			}
+			{
+				name:"Railroad",
+				row:8,
+				prerequisites:["Steam Power","Dynamite"]
+			}
 		]	
 	},
 	{
@@ -397,9 +402,14 @@
 				prerequisites:["Replacable Parts", "Flight"],
 			},
 			{
+				name:"Ballistics",
+				row:6,
+				prerequisites:["Flight"],
+			},
+			{
 				name:"Combustion",
 				row:8,
-				prerequisites:["Steam Power","Dynamite"]
+				prerequisites:["Railroad"]
 			}
 		]	
 	},
@@ -420,11 +430,6 @@
 				prerequisites:["Electronics"],
 				uniques:["+10% science and production in all cities"]
 			},
-			{
-				name:"Nuclear Fission",
-				row:7,
-				prerequisites:["Combustion"]
-			}
 		]	
 	},
 	{
@@ -447,7 +452,12 @@
 			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Flight","Computers"]
+				prerequisites:["Ballistics","Computers"]
+			},
+			{
+				name:"Nuclear Fission",
+				row:7,
+				prerequisites:["Combustion"]
 			}
 		]
 	},
