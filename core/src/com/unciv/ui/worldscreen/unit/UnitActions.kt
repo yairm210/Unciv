@@ -61,23 +61,11 @@ class UnitActions {
         }
 
         if(unit.baseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
-            var upgradedUnit = unit.baseUnit().getUpgradeUnit(unit.civInfo)
 
-            // Go up the upgrade tree until you find the first one which isn't obsolete
-            while (upgradedUnit.obsoleteTech!=null && unit.civInfo.tech.isResearched(upgradedUnit.obsoleteTech!!))
-                upgradedUnit = upgradedUnit.getUpgradeUnit(unit.civInfo)
+            if (unit.canUpgrade()) {
+                val goldCostOfUpgrade = unit.getCostOfUpgrade()
+                val upgradedUnit = unit.getUnitToUpgradeTo()
 
-            // We need to remove the unit from the civ for this check,
-            // because if the unit requires, say, horses, and so does its upgrade,
-            // and the civ currently has 0 horses,
-            // if we don;t remove the unit before the check it's return false!
-            unit.civInfo.removeUnit(unit)
-            val canUpgrade = upgradedUnit.isBuildable(unit.civInfo)
-            unit.civInfo.addUnit(unit)
-
-            if (canUpgrade) {
-                var goldCostOfUpgrade = (upgradedUnit.cost - unit.baseUnit().cost) * 2 + 10
-                if (unit.civInfo.policies.isAdopted("Professional Army")) goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
                 actionList += UnitAction("Upgrade to [${upgradedUnit.name}] ([$goldCostOfUpgrade] gold)",
                         unit.civInfo.gold >= goldCostOfUpgrade
                                 && !unit.isEmbarked()

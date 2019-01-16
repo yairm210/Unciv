@@ -615,6 +615,23 @@
 		requiredTech:"Ecology"
 	},
 	{
+		name:"CN Tower",
+		isWonder:true,
+		culture:1,
+		greatPersonPoints:{production:1}
+		providesFreeBuilding:"Broadcast Tower"
+		uniques:["+1 population in each city","+1 happiness in each city"]
+		requiredTech:"Telecommunications"
+	},
+	{
+		name:"Pentagon",
+		isWonder:true,
+		culture:1,
+		greatPersonPoints:{production:2}
+		uniques:["Gold cost of upgrading military units reduced by 33%"]
+		requiredTech:"Combined Arms"
+	},
+	{
 		name:"Spaceship Factory",
 		production:3,
 		requiredResource:"Aluminum",

@@ -4892,6 +4892,21 @@
         Portuguese:"Ópera de Sydney"
 	}
 	
+	"CN Tower":{}
+	"+1 population in each city":{}
+	"+1 happiness in each city":{}
+	
+	"Pentagon":{}
+	"Gold cost of upgrading military units reduced by 33%":{
+		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
+		Italian:"-33% costi in Oro per aggiornare un'unità militare"
+		Romanian:"Costurile în aur pentru dezvoltarea unităților militare reduse cu 33%"
+        Simplified_Chinese:"升级军事单位的成本降低33%"
+        Portuguese:"-33% custo de ouro para unidades militares"
+		Russian:"стоимость улучшения юнита снижается на 33%"
+	}
+	
+	
 	"Apollo Program":{	
 		Italian:"Programma Apollo"
 		Russian:"Программа Аполлон"
@@ -5887,14 +5902,6 @@
         Simplified_Chinese:"职业军队"
         Portuguese:"Exército Profissional"
 		Russian:"профессиональная армия"
-	}
-	"Gold cost of upgrading military units reduced by 50%":{
-		Spanish:"El coste de mejorar unidades con oro se reduce un 50%"
-		Italian:"-50% costi in Oro per aggiornare un'unità militare"
-		Romanian:"Costurile în aur pentru dezvoltarea unităților militare reduse cu 50%"
-        Simplified_Chinese:"升级军事单位的成本降低50%"
-        Portuguese:"-50% custo de ouro para unidades militares"
-		Russian:"стоимость улучшения юнита снижается на 50%"
 	}
 	"Honor Complete":{
 		Spanish:"Honor completado"

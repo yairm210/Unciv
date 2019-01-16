@@ -173,6 +173,9 @@ class CityStats {
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList ["Buildings"] = happinessFromBuildings
 
+        if(civInfo.getBuildingUniques().contains("+1 happiness in each city"))
+            newHappinessList["Wonders"] = 1f
+
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
         happinessList=newHappinessList

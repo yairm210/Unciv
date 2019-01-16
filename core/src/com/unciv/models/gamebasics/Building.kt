@@ -254,6 +254,12 @@ class Building : NamedStats(), IConstruction{
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
                 else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.getRandom())
             }
+            "+1 population in each city" in uniques -> {
+                for(city in civInfo.cities){
+                    city.population.population += 1
+                    city.population.autoAssignPopulation()
+                }
+            }
         }
 
         if (freeTechs != 0) civInfo.tech.freeTechs += freeTechs

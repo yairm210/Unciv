@@ -119,7 +119,7 @@
 			},
 			{
 				name:"Professional Army",
-				description:"Gold cost of upgrading military units reduced by 50%",
+				description:"Gold cost of upgrading military units reduced by 33%",
 				requires:["Military Caste"],
 				row:3,
 				column:4

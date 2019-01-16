@@ -206,6 +206,8 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Spaceship](https://thenounproject.com/term/spaceship/1444621/) By Dinosoft Labs for Apollo Program
 * [Build](https://thenounproject.com/term/build/1156478/) By Michael G Brown for Spaceship Factory
 * [Nuclear Plant](https://thenounproject.com/term/nuclear-plant/1132340/) By Andrejs Kirma
+* [CN Tower Toronto](https://thenounproject.com/search/?q=cn%20tower&i=807678) By mikicon
+* [Pentagon](https://thenounproject.com/search/?q=the%20pentagon&i=1788323) By Maxim Kulikov
 
 ### Future Era
 * [Hubble Telescope](https://thenounproject.com/search/?q=hubble%20space&i=445502) By Scott Lewis for Hubble Space Telescope

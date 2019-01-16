@@ -205,6 +205,38 @@ class MapUnit {
         return movement
     }
 
+    fun getUnitToUpgradeTo(): BaseUnit {
+        var upgradedUnit = baseUnit().getUpgradeUnit(civInfo)
+
+        // Go up the upgrade tree until you find the first one which isn't obsolete
+        while (upgradedUnit.obsoleteTech!=null && civInfo.tech.isResearched(upgradedUnit.obsoleteTech!!))
+            upgradedUnit = upgradedUnit.getUpgradeUnit(civInfo)
+        return upgradedUnit
+    }
+
+    fun canUpgrade(): Boolean {
+        // We need to remove the unit from the civ for this check,
+        // because if the unit requires, say, horses, and so does its upgrade,
+        // and the civ currently has 0 horses,
+        // if we don't remove the unit before the check it's return false!
+
+        val unitToUpgradeTo = getUnitToUpgradeTo()
+        civInfo.removeUnit(this)
+        val canUpgrade = unitToUpgradeTo.isBuildable(civInfo)
+        civInfo.addUnit(this)
+        return canUpgrade
+    }
+
+    fun getCostOfUpgrade(): Int {
+        val unitToUpgradeTo = getUnitToUpgradeTo()
+        var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2 + 10
+        if (civInfo.policies.isAdopted("Professional Army"))
+            goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
+        if(civInfo.getBuildingUniques().contains("Gold cost of upgrading military units reduced by 33%"))
+            goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
+        return goldCostOfUpgrade
+    }
+
     //endregion
 
     //region state-changing functions
