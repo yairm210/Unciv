@@ -239,8 +239,12 @@ class Building : NamedStats(), IConstruction{
 
         when {
             "Empire enters golden age" in uniques -> civInfo.goldenAges.enterGoldenAge()
-            "Free Great Artist Appears" in uniques -> civInfo.addGreatPerson("Great Artist")
-            "Free great scientist appears" in uniques -> civInfo.addGreatPerson("Great Scientist")
+            "Free Great Artist Appears" in uniques -> civInfo.addGreatPerson("Great Artist", construction.cityInfo)
+            "Free great scientist appears" in uniques -> civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+            "2 free great scientists appear" in uniques -> {
+                civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+                civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
+            }
             "Provides 2 free workers" in uniques -> {
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
                 civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")

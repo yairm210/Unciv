@@ -2616,6 +2616,7 @@
         Simplified_Chinese:"电子"
         Portuguese:"Eletronicos"
 	}
+	"Ballistics":{}
 	"Mass Media":{
 		Italian:"Mass media"
 		Russian:"СМИ"
@@ -4231,6 +4232,8 @@
         Simplified_Chinese:"马厩"
         Portuguese:"Estabulos"
 	}
+	"+15% Production when building Mounted Units in this city":{}
+	
 	"Circus Maximus":{	
 		Italian:"Circo Maximus"
 		Russian:"Цирк Максимус"
@@ -4816,6 +4819,9 @@
         Portuguese:"Provem 1 felicade por política social"
 	}
 	
+	"Statue of Liberty":{}
+	"+1 Production from specialists":{}
+	
 	"Medical Lab":{	
 		Italian:"Laboratorio medico"
 		Russian:"Медицинская лаборатория"
@@ -4945,6 +4951,11 @@
         Simplified_Chinese:"宇宙飞船的部件"
         Portuguese:"Parte de Nave Espacial"
 	}
+	
+	"Hubble Space Telescope":{}
+	"2 free great scientists appear":{}
+	"Increases production of spaceship parts by 25%":{}
+	
 	"SS Booster":{	//no translation that I know of
 		Italian:"Propulsore dell'astronave"
 		Spanish:"Potenciador (Nave espacial)"

@@ -133,6 +133,7 @@
 		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]
 		resourceBonusStats:{production:1},
 		hurryCostModifier:25,
+		uniques:["+15% Production when building Mounted Units in this city"]
 		requiredTech:"Horseback Riding"
 	},
 	{
@@ -627,6 +628,15 @@
 	
 	// Future Era
 	
+	{
+		name:"Hubble Space Telescope",
+		cost:1250,
+		isWonder:true,
+		providesFreeBuilding: "Spaceship Factory",
+		uniques:["2 free great scientists appear",
+			"Increases production of spaceship parts by 25%"],
+		requiredTech:"Satellites"
+	},
 	{
 		name:"SS Cockpit",
 		requiredResource:"Aluminum",

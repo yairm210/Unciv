@@ -390,10 +390,9 @@ class CivilizationInfo {
         notifications.add(Notification(text, location,color))
     }
 
-    fun addGreatPerson(greatPerson: String) {
-        val randomCity = cities.getRandom()
-        placeUnitNearTile(cities.getRandom().location, greatPerson)
-        addNotification("A [$greatPerson] has been born!".tr(), randomCity.location, Color.GOLD)
+    fun addGreatPerson(greatPerson: String, city:CityInfo = cities.getRandom()) {
+        placeUnitNearTile(city.location, greatPerson)
+        addNotification("A [$greatPerson] has been born!".tr(), city.location, Color.GOLD)
     }
 
     fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit {

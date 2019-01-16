@@ -33,17 +33,17 @@ class LoadScreen : PickerScreen() {
         topTable.add(saveTable)
         val saves = GameSaver().getSaves()
         rightSideButton.setText("Load game".tr())
-        saves.forEach {
-            val textButton = TextButton(it,skin)
+        for (save in saves) {
+            val textButton = TextButton(save,skin)
             textButton.onClick {
-                selectedSave=it
+                selectedSave=save
 
-                var textToSet = it
+                var textToSet = save
 
-                val savedAt = Date(GameSaver().getSave(it).lastModified())
+                val savedAt = Date(GameSaver().getSave(save).lastModified())
                 textToSet+="\n{Saved at}: ".tr()+ SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
                 try{
-                    val game = GameSaver().loadGame(it)
+                    val game = GameSaver().loadGame(save)
                     val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString{it.civName.tr()}
                     textToSet+="\n"+playerCivNames+
                             ", "+game.difficulty.tr()+", {Turn} ".tr()+game.turns
@@ -51,7 +51,7 @@ class LoadScreen : PickerScreen() {
                     textToSet+="\n{Could not load game}!".tr()
                 }
                 descriptionLabel.setText(textToSet)
-                rightSideButton.setText("Load [$it]".tr())
+                rightSideButton.setText("Load [$save]".tr())
                 rightSideButton.enable()
                 deleteSaveButton.enable()
                 deleteSaveButton.color= Color.RED

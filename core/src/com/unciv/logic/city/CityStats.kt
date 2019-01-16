@@ -6,6 +6,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 
@@ -230,10 +231,23 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromWonders(): Stats {
+    private fun getStatPercentBonusesFromBuildings(): Stats {
         val stats = Stats()
         val civUniques = cityInfo.civInfo.getBuildingUniques()
         if (civUniques.contains("Culture in all cities increased by 25%")) stats.culture += 25f
+
+        val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
+        if(currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")){
+            if(civUniques.contains("Increases production of spaceship parts by 25%"))
+                stats.production += 25
+            if(cityInfo.getBuildingUniques().contains("Increases production of spaceship parts by 50%"))
+                stats.production += 50
+        }
+
+        if(currentConstruction is BaseUnit && currentConstruction.unitType==UnitType.Mounted
+            && cityInfo.getBuildingUniques().contains("+15% Production when building Mounted Units in this city"))
+            stats.production += 15
+
         return stats
     }
 
@@ -295,7 +309,7 @@ class CityStats {
         newStatPercentBonusList["Golden Age"]=getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"]=getStatPercentBonusesFromPolicies(civInfo.policies.adoptedPolicies, cityInfo.cityConstructions)
         // from wonders - Culture in all cities increased by 25%
-        newStatPercentBonusList["Wonders"]=getStatPercentBonusesFromWonders()
+        newStatPercentBonusList["Buildings"]=getStatPercentBonusesFromBuildings()
         newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
