@@ -418,6 +418,8 @@
 		hurryCostModifier:20,
 		uniques:["Can move after attacking","No defensive terrain bonus",
 			"Penalty vs City 33%","Bonus vs Mounted 33%" ],
+		upgradesTo:"Anti-Tank Gun",
+		obsoleteTech:"Combined Arms",
 		attackSound:"horse"
 	},
 	
@@ -567,6 +569,27 @@
 		requiredTech:"Ballistics",
 		hurryCostModifier:20,
 		attackSound:"machinegun"
+	},
+	{
+		name:"Tank",
+		unitType:"Armor",
+		movement:5,
+		strength:70,
+		cost: 375,
+		requiredTech:"Combined Arms",
+		requiredResource:"Oil",
+		uniques:["Can move after attacking","No defensive terrain bonus"]
+		hurryCostModifier:20,
+	},
+	{
+		name:"Anti-Tank Gun",
+		unitType:"Melee",
+		movement:2,
+		strength:50,
+		cost: 300,
+		requiredTech:"Combined Arms",
+		uniques:["Bonus vs Armor 100%"]
+		hurryCostModifier:20,
 	},
 	
 	

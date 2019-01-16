@@ -64,6 +64,10 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
 * [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
 * [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
+* [xm8](https://thenounproject.com/term/xm8/172007/) By Xela Ub for Infantry
+* [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira
+* [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
+* [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
 
 ### Great People
 

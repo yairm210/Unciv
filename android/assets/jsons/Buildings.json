@@ -621,7 +621,7 @@
 		greatPersonPoints:{production:1}
 		providesFreeBuilding:"Broadcast Tower"
 		uniques:["+1 population in each city","+1 happiness in each city"]
-		requiredTech:"Telecommunications"
+		requiredTech:"Telecommunications" // todo doesn't exist yet!
 	},
 	{
 		name:"Pentagon",
@@ -629,7 +629,7 @@
 		culture:1,
 		greatPersonPoints:{production:2}
 		uniques:["Gold cost of upgrading military units reduced by 33%"]
-		requiredTech:"Combined Arms"
+		requiredTech:"Combined Arms" // todo doesn't exist yet!
 	},
 	{
 		name:"Spaceship Factory",
