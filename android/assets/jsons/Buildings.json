@@ -329,6 +329,16 @@
 		requiredTech:"Chivalry"
 	},
 	{
+		name:"Alhambra",
+		culture:1,
+		greatPersonPoints:{culture:1},
+		isWonder:true,
+		providesFreeBuilding:"Castle",
+		percentStatBonus:{culture:20},
+		uniques:["All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"],
+		requiredTech:"Chivalry"
+	},
+	{
 		name:"Ironworks",
 		production:8,
 		culture:1,

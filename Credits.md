@@ -151,7 +151,9 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [College](https://thenounproject.com/term/college/1203703/) By Vectors Market for National College
 * [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
 * [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
+* [Castle](https://thenounproject.com/search/?q=castle&i=390189) By Mint Shirt
 * [Cambodia](https://thenounproject.com/term/cambodia/1809152/) By Wichai Wi for Angkor Wat
+* [Alhambra](https://thenounproject.com/search/?q=alhambra&i=403759) By parkjisun
 * [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University
 * [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
 * [Anchor](https://thenounproject.com/term/anchor/1258518/) By Saeful Muslim for Harbor

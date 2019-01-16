@@ -112,6 +112,11 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War"))
             unit.promotions.XP += 15
+
+        if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
+            && construction.cityInfo.getBuildingUniques()
+                .contains("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
+            unit.promotions.addPromotion("Drill I")
     }
 
     fun getUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
