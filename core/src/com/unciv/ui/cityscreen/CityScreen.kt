@@ -49,8 +49,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width-5,
                 stage.height - buildingsTableContainer.height-5)
 
-        //constructionsTable.background = ImageGetter.getBackground(tableBackgroundColor)
-        //val constructionsTableWithBorder = con
         stage.addActor(constructionsTable)
         stage.addActor(goToWorldButton)
         stage.addActor(cityPickerTable)
@@ -323,4 +321,3 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         @Transient var cityTilesY = 0f
     }
 }
-

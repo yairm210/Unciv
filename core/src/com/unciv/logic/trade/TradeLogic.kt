@@ -188,6 +188,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     val city = from.cities.first { it.name==offer.name }
                     city.moveToCiv(to)
                     city.getCenterTile().getUnits().forEach { it.movementAlgs().teleportToClosestMoveableTile() }
+                    to.updateViewableTiles()
+                    from.updateViewableTiles()
                 }
                 if(offer.type== TradeType.Treaty){
                     if(offer.name=="Peace Treaty"){
