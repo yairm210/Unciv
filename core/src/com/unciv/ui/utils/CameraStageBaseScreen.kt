@@ -147,7 +147,7 @@ fun Actor.addBorder(size:Float,color:Color):Table{
     val table = Table()
     table.pad(size)
     table.background = ImageGetter.getBackground(color)
-    table.add(this)
+    table.add(this).fill()
     table.pack()
     return table
 }

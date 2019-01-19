@@ -1,112 +1,171 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.unciv.UnCivGame
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.pickerscreens.ConstructionPickerScreen
+import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.*
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin){
 
-    private fun getProductionButton(production: String, buttonText: String,
-                                    description: String?, rightSideButtonText: String): Button {
-        val productionTextButton = Button(CameraStageBaseScreen.skin)
-        productionTextButton.add(ImageGetter.getConstructionImage(production)).size(40f).padRight(5f)
-        productionTextButton.add(Label(buttonText, CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
-        productionTextButton.onClick {
-            cityScreen.city.cityConstructions.currentConstruction = production
+    var constructionScrollPane:ScrollPane?=null
+
+    private fun getProductionButton(construction: String, buttonText: String): Table {
+        val pickProductionButton = Table()
+        pickProductionButton.touchable = Touchable.enabled
+        pickProductionButton.align(Align.left)
+        pickProductionButton.pad(5f)
+
+        if(cityScreen.city.cityConstructions.currentConstruction==construction)
+            pickProductionButton.background = ImageGetter.getBackground(Color.GREEN.cpy().lerp(Color.BLACK,0.5f))
+        else
+            pickProductionButton.background = ImageGetter.getBackground(Color.BLACK)
+
+        pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
+        pickProductionButton.add(Label(buttonText, CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
+        pickProductionButton.onClick {
+            cityScreen.city.cityConstructions.currentConstruction = construction
             update()
         }
-        if(production==cityScreen.city.cityConstructions.currentConstruction)
-            productionTextButton.color= Color.GREEN
-        return productionTextButton
+        if(construction==cityScreen.city.cityConstructions.currentConstruction)
+            pickProductionButton.color= Color.GREEN
+        return pickProductionButton
     }
-
 
     fun update() {
         val city = cityScreen.city
-        val buttonScale = 0.9f
-        pad(20f)
+        pad(10f)
         columnDefaults(0).padRight(10f)
         clear()
 
+        addConstructionPickerScrollpane(city)
+        addCurrentConstructionTable(city)
+
+        pack()
+    }
+
+    private fun Table.addCategory(title:String,list:ArrayList<Table>){
+        if(list.isEmpty()) return
+        val titleTable = Table()
+        titleTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
+        titleTable.add(Label(title.tr(),CameraStageBaseScreen.skin))
+
+        addSeparator()
+        add(titleTable).fill().row()
+        addSeparator()
+
+        for(table in list) {
+            add(table).fill().row()
+            if(table != list.last()) addSeparator()
+        }
+    }
+
+    private fun addConstructionPickerScrollpane(city: CityInfo) {
         val cityConstructions = city.cityConstructions
-        val regularBuildings = VerticalGroup().space(10f)
-        val wonders = VerticalGroup().space(10f)
-        val units = VerticalGroup().space(10f)
-        val specials = VerticalGroup().space(10f)
-
-        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
-            units.addActor(getProductionButton(unit.name,
-                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr(),
-                    unit.getDescription(true), "Train [${unit.name}]".tr()))
-        }
-
-        for (building in GameBasics.Buildings.values) {
-            if (!building.isBuildable(cityConstructions) && building.name!=cityConstructions.currentConstruction) continue
-            val productionTextButton = getProductionButton(building.name,
-                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
-                    building.getDescription(true, city.civInfo.policies.getAdoptedPolicies()),
-                    "Build [${building.name}]".tr())
-            if (building.isWonder)
-                wonders.addActor(productionTextButton)
-            else
-                regularBuildings.addActor(productionTextButton)
-        }
-
-
-        for(specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }){
-            specials.addActor(getProductionButton(specialConstruction.name, "Produce [${specialConstruction.name}]".tr(),
-                    specialConstruction.description, "Produce [${specialConstruction.name}]".tr()))
-        }
 
         val constructionPickerTable = Table()
-        constructionPickerTable.add(ExpanderTab("Units".tr(),skin).apply { this.innerTable.add(units) }).row()
-        constructionPickerTable.add(ExpanderTab("Buildings".tr(),skin).apply { this.innerTable.add(regularBuildings) }).row()
-        constructionPickerTable.add(ExpanderTab("Wonders".tr(),skin).apply { this.innerTable.add(wonders) }).row()
-        constructionPickerTable.add(ExpanderTab("Special".tr(),skin).apply { this.innerTable.add(specials) }).row()
+        constructionPickerTable.background = ImageGetter.getBackground(Color.BLACK)
 
-        val scrollPane = ScrollPane(constructionPickerTable,skin)
-        add(scrollPane).height(cityScreen.stage.height/2).row()
+        val units = ArrayList<Table>()
+        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions) })
+            units += getProductionButton(unit.name,
+                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr())
 
-        val buildingPickButton = Button(CameraStageBaseScreen.skin)
-        val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
-        buildingPickButton.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction))
-                .size(30f).pad(5f)
-        buildingPickButton.add(Label(buildingText , CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
-        buildingPickButton.onClick {
-            UnCivGame.Current.screen = ConstructionPickerScreen(city)
-            cityScreen.dispose()
+        constructionPickerTable.addCategory("Units",units)
+
+        val buildableWonders = ArrayList<Table>()
+        val buildableBuildings = ArrayList<Table>()
+        for (building in GameBasics.Buildings.values) {
+            if (!building.isBuildable(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
+            val productionTextButton = getProductionButton(building.name,
+                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr())
+            if (building.isWonder)
+                buildableWonders += productionTextButton
+            else
+                buildableBuildings += productionTextButton
         }
-        buildingPickButton.pack()
 
-        add(buildingPickButton).colspan(2).pad(10f)
-                .size(buildingPickButton.width * buttonScale, buildingPickButton.height * buttonScale)
+        constructionPickerTable.addCategory("Wonders",buildableWonders)
+        constructionPickerTable.addCategory("Buildings",buildableBuildings)
 
+        val specialConstructions = ArrayList<Table>()
+        for (specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }) {
+            specialConstructions += getProductionButton(specialConstruction.name,
+                    "Produce [${specialConstruction.name}]".tr())
+        }
+        constructionPickerTable.addCategory("Other",specialConstructions)
 
-        // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
+        val scrollPane = ScrollPane(constructionPickerTable, skin)
+
+        // This is to keep the same amount of scrolling on the construction picker scroll between refresh()es
+        if(constructionScrollPane!=null){
+            scrollPane.layout()
+            scrollPane.scrollY = constructionScrollPane!!.scrollY
+            scrollPane.updateVisualScroll()
+        }
+        constructionScrollPane = scrollPane
+
+        add(scrollPane).height(stage.height / 3).minWidth(stage.width/4).row()
+    }
+
+    private fun addCurrentConstructionTable(city: CityInfo) {
         val construction = city.cityConstructions.getCurrentConstruction()
+
+        row()
+        val purchaseConstructionButton: TextButton
         if (construction !is SpecialConstruction &&
                 !(construction is Building && construction.isWonder)) {
-            row()
+
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
-            val buildingBuyButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
-            buildingBuyButton.onClick("coin") {
+            purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
+            purchaseConstructionButton.onClick("coin") {
                 city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
                 update()
             }
             if (buildingGoldCost > city.civInfo.gold) {
-                buildingBuyButton.disable()
+                purchaseConstructionButton.disable()
             }
-            add(buildingBuyButton).colspan(2).pad(10f)
-                    .size(buildingBuyButton.width * buttonScale, buildingBuyButton.height * buttonScale)
+        } else {
+            purchaseConstructionButton = TextButton("Buy", CameraStageBaseScreen.skin)
+            purchaseConstructionButton.disable()
         }
+        add(purchaseConstructionButton).pad(10f).row()
 
-        setPosition(10f, 10f)
-        pack()
+
+        val currentConstructionTable = Table()
+        currentConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
+        currentConstructionTable.pad(10f)
+
+        currentConstructionTable.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction))
+                .size(30f).pad(5f)
+
+        val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
+        currentConstructionTable.add(Label(buildingText, CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).row()
+
+        val currentConstruction = city.cityConstructions.getCurrentConstruction()
+        val description: String
+        if (currentConstruction is BaseUnit)
+            description = currentConstruction.getDescription(true)
+        else if (currentConstruction is Building)
+            description = currentConstruction.getDescription(true, city.civInfo.policies.adoptedPolicies)
+        else description = currentConstruction.description
+
+        val descriptionLabel = Label(description, CameraStageBaseScreen.skin)
+        descriptionLabel.setWrap(true)
+        descriptionLabel.width = stage.width / 4
+        val descriptionScroll = ScrollPane(descriptionLabel)
+        currentConstructionTable.add(descriptionScroll).colspan(2).width(stage.width / 4).height(stage.height / 8)
+
+        add(currentConstructionTable.addBorder(2f, Color.WHITE))
     }
+
 }

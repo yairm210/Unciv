@@ -156,6 +156,7 @@ class Building : NamedStats(), IConstruction{
     }
 
     override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
+        // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = Math.pow((30 * getProductionCost(adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
         if (adoptedPolicies.contains("Mercantilism")) cost *= 0.75
         if (adoptedPolicies.contains("Patronage")) cost *= 0.5

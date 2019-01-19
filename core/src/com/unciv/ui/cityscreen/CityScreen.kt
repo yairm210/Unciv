@@ -38,7 +38,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         tileTable.background = ImageGetter.getBackground(tableBackgroundColor)
 
         var buildingsTableContainer = Table()
-        buildingsTableContainer.pad(20f)
+        buildingsTableContainer.pad(3f)
         buildingsTableContainer.background = ImageGetter.getBackground(tableBackgroundColor)
         cityInfoTable.update()
         val buildingsScroll = ScrollPane(cityInfoTable)
@@ -46,8 +46,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 .height(stage.height / 2)
 
         buildingsTableContainer = buildingsTableContainer.addBorder(2f, Color.WHITE)
-        buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width-20,
-                stage.height - buildingsTableContainer.height-20)
+        buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width-5,
+                stage.height - buildingsTableContainer.height-5)
 
         //constructionsTable.background = ImageGetter.getBackground(tableBackgroundColor)
         //val constructionsTableWithBorder = con
@@ -70,7 +70,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         topCityStatsTable.remove()
         topCityStatsTable = getCityStatsTable()
-        topCityStatsTable.setPosition(20f, stage.height-20-topCityStatsTable.height)
+        topCityStatsTable.setPosition(5f, stage.height-5-topCityStatsTable.height)
         stage.addActor(topCityStatsTable)
 
         if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
@@ -315,7 +315,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         }
 
         tileTable=tileTable.addBorder(2f, Color.WHITE)
-        tileTable.setPosition(stage.width - 10f - tileTable.width, 10f)
+        tileTable.setPosition(stage.width - 5f - tileTable.width, 5f)
     }
 
     companion object {

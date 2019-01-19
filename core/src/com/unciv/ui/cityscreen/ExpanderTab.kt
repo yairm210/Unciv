@@ -22,7 +22,7 @@ class ExpanderTab(private val title:String,skin: Skin): Table(skin){
             if(isOpen) close()
             else open()
         }
-        add(toggle).row()
+        add(toggle).fill().row()
         tab.add(innerTable).pad(10f)
         add(tab)
     }
