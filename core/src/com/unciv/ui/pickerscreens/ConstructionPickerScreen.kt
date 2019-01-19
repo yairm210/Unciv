@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
@@ -15,6 +16,8 @@ import com.unciv.ui.utils.setFontColor
 
 class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
     private var selectedProduction: String? = null
+
+    private var buySelectedProductionButton = TextButton("BUY ME!",skin)
 
     private fun getProductionButton(production: String, buttonText: String,
                                     description: String?, rightSideButtonText: String): Button {
@@ -56,6 +59,12 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
         val units = VerticalGroup().space(10f)
         val specials = VerticalGroup().space(10f)
 
+        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
+            units.addActor(getProductionButton(unit.name,
+                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr(),
+                    unit.getDescription(true), "Train [${unit.name}]".tr()))
+        }
+
         for (building in GameBasics.Buildings.values) {
             if (!building.isBuildable(cityConstructions) && building.name!=cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
@@ -68,11 +77,6 @@ class ConstructionPickerScreen(val city: CityInfo) : PickerScreen() {
                 regularBuildings.addActor(productionTextButton)
         }
 
-        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions)}) {
-            units.addActor(getProductionButton(unit.name,
-                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr(),
-                    unit.getDescription(true), "Train [${unit.name}]".tr()))
-        }
 
         for(specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }){
             specials.addActor(getProductionButton(specialConstruction.name, "Produce [${specialConstruction.name}]".tr(),

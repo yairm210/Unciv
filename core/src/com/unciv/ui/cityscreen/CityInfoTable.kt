@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.collections.HashMap
 
 
-class BuildingsTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
+class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
     init {
         defaults().pad(10f)
     }

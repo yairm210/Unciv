@@ -10,18 +10,23 @@ import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 import java.util.*
+import kotlin.math.ceil
+import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var selectedTile: TileInfo? = null
 
     private var tileTable = Table()
-    private var buildingsTable = BuildingsTable(this)
-    private var cityStatsTable = CityStatsTable(this)
+    private var cityInfoTable = CityInfoTable(this)
+    private var constructionsTable = ConstructionsTable(this)
     private var cityPickerTable = Table()
     private var goToWorldButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
     private var tileGroups = ArrayList<CityTileGroup>()
+    var topCityStatsTable=Table()
 
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
@@ -32,34 +37,41 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         val tableBackgroundColor = ImageGetter.getBlue().lerp(Color.BLACK,0.5f)
         tileTable.background = ImageGetter.getBackground(tableBackgroundColor)
 
-        val buildingsTableContainer = Table()
+        var buildingsTableContainer = Table()
         buildingsTableContainer.pad(20f)
         buildingsTableContainer.background = ImageGetter.getBackground(tableBackgroundColor)
-        buildingsTable.update()
-        val buildingsScroll = ScrollPane(buildingsTable)
-        buildingsTableContainer.add(buildingsScroll).height(stage.height / 2)
+        cityInfoTable.update()
+        val buildingsScroll = ScrollPane(cityInfoTable)
+        buildingsTableContainer.add(buildingsScroll)
+                .height(stage.height / 2)
 
-        buildingsTableContainer.pack()
-        buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width,
-                stage.height - buildingsTableContainer.height)
+        buildingsTableContainer = buildingsTableContainer.addBorder(2f, Color.WHITE)
+        buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width-20,
+                stage.height - buildingsTableContainer.height-20)
 
-        cityStatsTable.background = ImageGetter.getBackground(tableBackgroundColor)
-        stage.addActor(cityStatsTable)
+        //constructionsTable.background = ImageGetter.getBackground(tableBackgroundColor)
+        //val constructionsTableWithBorder = con
+        stage.addActor(constructionsTable)
         stage.addActor(goToWorldButton)
         stage.addActor(cityPickerTable)
-        //stage.addActor(statExplainer)
         stage.addActor(buildingsTableContainer)
+
         update()
         displayTutorials("CityEntered")
     }
 
     internal fun update() {
-        buildingsTable.update()
+        cityInfoTable.update()
         updateCityPickerTable()
-        cityStatsTable.update()
+        constructionsTable.update()
         updateGoToWorldButton()
         updateTileTable()
         updateTileGroups()
+
+        topCityStatsTable.remove()
+        topCityStatsTable = getCityStatsTable()
+        topCityStatsTable.setPosition(20f, stage.height-20-topCityStatsTable.height)
+        stage.addActor(topCityStatsTable)
 
         if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
             displayTutorials("CityRange")
@@ -79,9 +91,45 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     }
 
+    fun getCityStatsTable(): Table {
+        val table=Table().pad(10f)
+        table.defaults().pad(5f)
+        table.background=ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
+        val columns = Stats().toHashMap().size
+        table.add(Label("Free population:"
+                +city.population.getFreePopulation().toString() + "/" + city.population.population,skin))
+                .colspan(columns).row()
+
+        val turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
+                / city.cityStats.currentCityStats.culture).toInt()
+        val turnsToExpansionString = turnsToExpansion.toString() + " turns to expansion"+
+            " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")"
+        table.add(Label(turnsToExpansionString,skin)).colspan(columns).row()
+
+        val turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
+                / city.cityStats.currentCityStats.food).toInt()
+        val turnsToPopString = turnsToPopulation.toString()+ " turns to new population" +
+                " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
+        table.add(Label(turnsToPopString,skin)).colspan(columns).row()
+
+        if (city.resistanceCounter > 0) {
+            table.add(Label("In resistance for another ${city.resistanceCounter} turns",skin)).row()
+        }
+
+        table.addSeparator()
+        val beige = colorFromRGB(194,180,131)
+        for(stat in city.cityStats.currentCityStats.toHashMap()) {
+            if(stat.key==Stat.Happiness) continue
+            val minitable=Table().padRight(5f).padLeft(5f)
+            minitable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
+            minitable.add(Label(round(stat.value).toInt().toString(), CameraStageBaseScreen.skin))
+            table.add(minitable)
+        }
+        return table.addBorder(2f, beige)
+    }
+
     private fun updateCityPickerTable() {
         cityPickerTable.clear()
-        cityPickerTable.row()
 
         val civInfo = city.civInfo
         if (civInfo.cities.size > 1) {
@@ -93,21 +141,24 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     dispose()
                 }
             cityPickerTable.add(prevCityButton).pad(20f)
-        }
+        } else cityPickerTable.add()
 
+        val cityNameTable = Table()
         if(city.isBeingRazed){
             val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
-            cityPickerTable.add(fireImage).size(20f).padRight(5f)
+            cityNameTable.add(fireImage).size(20f).padRight(5f)
         }
 
         if(city.isCapital()){
             val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
-            cityPickerTable.add(starImage).size(20f).padRight(5f)
+            cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
         val currentCityLabel = Label(city.name+" ("+city.population.population+")", CameraStageBaseScreen.skin)
         currentCityLabel.setFontSize(25)
-        cityPickerTable.add(currentCityLabel)
+        cityNameTable.add(currentCityLabel)
+
+        cityPickerTable.add(cityNameTable)
 
 
         if (civInfo.cities.size > 1) {
@@ -119,7 +170,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     dispose()
                 }
             cityPickerTable.add(nextCityButton).pad(20f)
-        }
+        } else cityPickerTable.add()
         cityPickerTable.row()
 
         if(!city.isBeingRazed) {
@@ -148,8 +199,9 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         }
 
         goToWorldButton.pad(5f)
-        goToWorldButton.setSize(goToWorldButton.prefWidth, goToWorldButton.prefHeight)
-        goToWorldButton.setPosition(20f, stage.height - goToWorldButton.height - 20)
+        //goToWorldButton.setSize(goToWorldButton.prefWidth, goToWorldButton.prefHeight)
+        goToWorldButton.centerX(stage)
+        goToWorldButton.y = stage.height - goToWorldButton.height - 20
     }
 
     private fun addTiles() {
@@ -262,7 +314,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             tileTable.add(acquireTileButton)
         }
 
-        tileTable.pack()
+        tileTable=tileTable.addBorder(2f, Color.WHITE)
         tileTable.setPosition(stage.width - 10f - tileTable.width, 10f)
     }
 

@@ -143,10 +143,19 @@ fun Actor.surroundWithCircle(size:Float): IconCircleGroup {
     return IconCircleGroup(size,this)
 }
 
+fun Actor.addBorder(size:Float,color:Color):Table{
+    val table = Table()
+    table.pad(size)
+    table.background = ImageGetter.getBackground(color)
+    table.add(this)
+    table.pack()
+    return table
+}
+
 fun Table.addSeparator(): Cell<Image> {
     row()
     val image = ImageGetter.getWhiteDot()
-    val cell = add(image).colspan(columns).fill()
+    val cell = add(image).colspan(columns).height(2f).fill()
     row()
     return cell
 }

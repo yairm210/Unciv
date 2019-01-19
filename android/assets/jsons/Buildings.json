@@ -614,6 +614,7 @@
 		uniques:["Free Social Policy","Can only be built in coastal cities"],
 		requiredTech:"Ecology"
 	},
+	/*
 	{
 		name:"CN Tower",
 		isWonder:true,
@@ -630,7 +631,7 @@
 		greatPersonPoints:{production:2}
 		uniques:["Gold cost of upgrading military units reduced by 33%"]
 		requiredTech:"Combined Arms" // todo doesn't exist yet!
-	},
+	},*/
 	{
 		name:"Spaceship Factory",
 		production:3,
