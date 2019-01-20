@@ -63,9 +63,6 @@ class Automation {
 
     fun chooseNextConstruction(cityConstructions: CityConstructions) {
         cityConstructions.run {
-            //currentConstruction="" // This is so that if we're currently in the middle of building a wonder,
-            // buildableWonders will still contain it
-
             val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder }
             val buildableWonders = getBuildableBuildings().filter { it.isWonder }
 
@@ -81,6 +78,7 @@ class Automation {
             val goldBuildings = buildableNotWonders.filter { it.gold>0 }
             val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }.sortedBy { it.maintenance }
             val zeroMaintenanceBuildings = buildableNotWonders.filter { it.maintenance == 0 && it !in wartimeBuildings }
+            val productionBuildings = buildableNotWonders.filter { it.production>0 }
             val isAtWar = cityInfo.civInfo.isAtWar()
 
             when {
@@ -95,14 +93,15 @@ class Automation {
                 buildableNotWonders.any { it.name=="Market"} -> currentConstruction = "Market"
                 militaryUnits==0 -> trainCombatUnit(cityInfo)
                 workers==0 -> currentConstruction = CityConstructions.Worker
-                zeroMaintenanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintenanceBuildings.getRandom().name
+                productionBuildings.isNotEmpty() -> currentConstruction = productionBuildings.minBy { it.cost }!!.name
+                zeroMaintenanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintenanceBuildings.minBy { it.cost }!!.name
                 isAtWar && militaryUnits<cities -> trainCombatUnit(cityInfo)
-                isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.getRandom().name
+                isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.minBy { it.cost }!!.name
                 needWorkboat -> currentConstruction = "Work Boats"
                 workers<cities/2 -> currentConstruction = CityConstructions.Worker
                 militaryUnits<cities -> trainCombatUnit(cityInfo)
                 buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.minBy { it.maintenance }!!.name
-                buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.getRandom().name
+                buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.minBy { it.cost }!!.name
                 else -> trainCombatUnit(cityInfo)
             }
 
