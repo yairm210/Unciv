@@ -104,11 +104,19 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")"
         table.add(Label(turnsToExpansionString,skin)).colspan(columns).row()
 
-        val turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
-                / city.cityStats.currentCityStats.food).toInt()
-        val turnsToPopString = turnsToPopulation.toString()+ " turns to new population" +
-                " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
-        table.add(Label(turnsToPopString,skin)).colspan(columns).row()
+        val turnsToPopString : String
+        if (city.cityStats.currentCityStats.food > 0) {
+            val turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
+                    / city.cityStats.currentCityStats.food).toInt()
+            turnsToPopString = turnsToPopulation.toString()+ " turns to new population"
+        } else if (city.cityStats.currentCityStats.food < 0) {
+            val turnsToStarvation = ceil(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt()
+            turnsToPopString = turnsToStarvation.toString()+ " turns to lose population"
+        } else {
+            turnsToPopString = "Stopped population growth"
+        }
+        table.add(Label(turnsToPopString + " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
+                ,skin)).colspan(columns).row()
 
         if (city.resistanceCounter > 0) {
             table.add(Label("In resistance for another ${city.resistanceCounter} turns",skin)).row()
