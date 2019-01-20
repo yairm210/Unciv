@@ -12,7 +12,7 @@
 			},
 			{
 				name:"Legalism",
-				description:"Free culture building in your first 4 cities",
+				description:"Immediately creates a cheapest available cultural building in each your first 4 cities for free",
 				row:1,
 				column:3
 			},
