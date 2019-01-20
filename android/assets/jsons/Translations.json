@@ -662,6 +662,11 @@
     	Simplified_Chinese:"购买花费 [amount] 钱"
     	Portuguese:"Comprar por [amount] peças de ouro"
 	}
+	
+	"Buy":{ // for when the construction is a wonder/special and can't be bought, the button is disabled but still displays text
+	}
+	
+	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{}
 
 	"Maintenance cost":{
 		Italian:"Costo di manutenzione"

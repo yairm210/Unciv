@@ -14,6 +14,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin){
 
@@ -128,14 +129,16 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
             purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
-                city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
-                update()
+                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$buildingGoldCost] gold?".tr(), {
+                    city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
+                    update()
+                }, cityScreen)
             }
             if (buildingGoldCost > city.civInfo.gold) {
                 purchaseConstructionButton.disable()
             }
         } else {
-            purchaseConstructionButton = TextButton("Buy", CameraStageBaseScreen.skin)
+            purchaseConstructionButton = TextButton("Buy".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.disable()
         }
         add(purchaseConstructionButton).pad(10f).row()
