@@ -132,7 +132,6 @@ class MapUnit {
     // so multiple callees of this function have been optimized,
     // because optimization on this function results in massive benefits!
     fun canPassThrough(tile: TileInfo):Boolean{
-        val tileOwner = tile.getOwner()
 
         if(tile.getBaseTerrain().impassable) return false
         if(tile.isLand() && type.isWaterUnit() && !tile.isCityCenter())
@@ -148,8 +147,18 @@ class MapUnit {
         if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !civInfo.tech.isResearched("Astronomy"))
             return false
+
+        val tileOwner = tile.getOwner()
         if(tileOwner!=null && tileOwner.civName!=owner
                 && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
+
+        val unitsInTile = tile.getUnits()
+        if(unitsInTile.isNotEmpty()){
+            val firstUnit = unitsInTile.first()
+            if(firstUnit.civInfo != civInfo && civInfo.isAtWarWith(firstUnit.civInfo))
+                return false
+        }
+
         return true
     }
 
