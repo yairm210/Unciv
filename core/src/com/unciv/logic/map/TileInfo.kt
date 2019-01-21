@@ -210,8 +210,8 @@ open class TileInfo {
         return getUnits().any{it.isIdle()}
     }
 
-    fun getViewableTiles(distance:Int): MutableList<TileInfo> {
-        return tileMap.getViewableTiles(this.position,distance)
+    fun getViewableTiles(distance:Int, ignoreCurrentTileHeight:Boolean = false): MutableList<TileInfo> {
+        return tileMap.getViewableTiles(this.position,distance,ignoreCurrentTileHeight)
     }
 
     fun getTilesInDistance(distance:Int): List<TileInfo> {

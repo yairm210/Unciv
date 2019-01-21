@@ -110,7 +110,7 @@ class MapUnit {
             visibilityRange += 1
         val tile = getTile()
         if (tile.baseTerrain == "Hill" && type.isLandUnit()) visibilityRange += 1
-        return tile.getViewableTiles(visibilityRange)
+        return tile.getViewableTiles(visibilityRange, type.isWaterUnit())
     }
 
     fun isFortified(): Boolean {

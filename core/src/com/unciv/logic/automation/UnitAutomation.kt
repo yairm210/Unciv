@@ -154,14 +154,14 @@ class UnitAutomation{
         // and then later we round it off to a whole.
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
-        var tilesToAttackFrom = unitDistanceToTiles.asSequence()
+        val tilesToAttackFrom = unitDistanceToTiles.asSequence()
                 .filter { unit.currentMovement - it.value >= minMovementBeforeAttack }
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
 
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
             val tilesInAttackRange = if (unit.hasUnique("Indirect Fire")) reachableTile.getTilesInDistance(rangeOfAttack)
-                else reachableTile.getViewableTiles(rangeOfAttack)
+                else reachableTile.getViewableTiles(rangeOfAttack, unit.type.isWaterUnit())
             attackableTiles += tilesInAttackRange.asSequence().filter { it in tilesWithEnemies }
                     .map { AttackableTile(reachableTile,it) }
         }
