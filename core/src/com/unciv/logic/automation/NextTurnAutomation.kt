@@ -2,16 +2,19 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.ui.utils.getRandom
 import kotlin.math.min
 
 class NextTurnAutomation{
 
     fun automateCivMoves(civInfo: CivilizationInfo) {
+        exchangeTechs(civInfo)
         chooseTechToResearch(civInfo)
         adoptPolicy(civInfo)
         exchangeLuxuries(civInfo)
@@ -22,11 +25,43 @@ class NextTurnAutomation{
         trainSettler(civInfo)
     }
 
+    private fun exchangeTechs(civInfo: CivilizationInfo) {
+        for (otherCiv in civInfo.diplomacy.values.map { it.otherCiv() }.filter { it.playerType == PlayerType.AI }.sortedBy { it.tech.techsResearched.size }) {
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            val ourTradableTechs = tradeLogic.ourAvailableOffers
+                    .filter { it.type == TradeType.Technology }
+            val theirTradableTechs = tradeLogic.theirAvailableOffers
+                    .filter { it.type == TradeType.Technology }
+
+            for (ourOffer in ourTradableTechs) {
+                val theirOfferList = theirTradableTechs.filter{
+                    tradeLogic.evaluateOffer(ourOffer, false) >= tradeLogic.evaluateOffer(it, false)
+                            && !tradeLogic.currentTrade.theirOffers.contains(it) }
+                if (theirOfferList.isNotEmpty()) {
+                    tradeLogic.currentTrade.ourOffers.add(ourOffer)
+                    tradeLogic.currentTrade.theirOffers.add(theirOfferList.getRandom())
+                }
+            }
+
+            if (tradeLogic.currentTrade.theirOffers.isNotEmpty()) {
+                tradeLogic.acceptTrade()
+            }
+        }
+    }
+
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
-            val researchableTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name) }
-            val techToResearch = researchableTechs.groupBy { it.cost }.minBy { it.key }!!.value.getRandom()
-            civInfo.tech.techsResearched.add(techToResearch.name)
+            val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+            val techsGroups = researchableTechs.groupBy { it.cost }
+            val costs = techsGroups.keys.sorted()
+
+            val tech: Technology
+            if (techsGroups[costs[0]]!!.size == 1 || costs.size == 1) {
+                tech = techsGroups[costs[0]]!!.getRandom()
+            } else {
+                tech = (techsGroups[costs[0]]!! + techsGroups[costs[1]]!!).getRandom()
+            }
+            civInfo.tech.techsToResearch.add(tech.name)
         }
     }
 
