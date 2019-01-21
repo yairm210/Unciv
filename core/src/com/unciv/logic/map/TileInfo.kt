@@ -87,11 +87,10 @@ open class TileInfo {
         }
 
     fun getHeight(): Int {
-        var height = 0
-        if (listOf("Forest", "Jungle").contains(terrainFeature)) height += 1
-        if (baseTerrain == "Hill") height += 2
-        if(baseTerrain=="Mountain") height = 4
-        return height
+        if (baseTerrain=="Mountain") return 4
+        if (baseTerrain == "Hill") return 2
+        if (listOf("Forest", "Jungle").contains(terrainFeature)) return 1
+        return 0
     }
 
     fun getBaseTerrain(): Terrain = baseTerrainObject
