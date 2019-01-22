@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -125,6 +126,11 @@ class CityConstructions {
         inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + productionToAdd
     }
 
+    fun canBePruchasedWithGold(construction: IConstruction): Boolean {
+        return construction !is SpecialConstruction &&
+                !(construction is Building && construction.isWonder)
+    }
+
     fun nextTurn(cityStats: Stats) {
         var construction = getConstruction(currentConstruction)
         if(construction is SpecialConstruction) return
@@ -144,8 +150,15 @@ class CityConstructions {
         val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {
             constructionComplete(construction)
-        }
 
+            //allow ai spending money to purchase building & unit. Buying staff has slightly lower priority than buying tech.
+            while (cityInfo.civInfo.playerType == PlayerType.AI
+                    && cityInfo.population.population >= 5
+                    && canBePruchasedWithGold(getConstruction(currentConstruction))
+                    && cityInfo.civInfo.gold / 5 >= getConstruction(currentConstruction).getGoldCost(cityInfo.civInfo.policies.getAdoptedPolicies()) ) {
+                purchaseBuilding(currentConstruction)
+            }
+        }
     }
 
     fun constructionComplete(construction: IConstruction) {
