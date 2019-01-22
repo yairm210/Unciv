@@ -79,7 +79,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         val units = ArrayList<Table>()
         for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions) })
             units += getProductionButton(unit.name,
-                    unit.name + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr())
+                    unit.name.tr() + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr())
 
         constructionPickerTable.addCategory("Units",units)
 
@@ -160,7 +160,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             description = currentConstruction.getDescription(true)
         else if (currentConstruction is Building)
             description = currentConstruction.getDescription(true, city.civInfo.policies.adoptedPolicies)
-        else description = currentConstruction.description
+        else description = currentConstruction.description.tr()
 
         val descriptionLabel = Label(description, CameraStageBaseScreen.skin)
         descriptionLabel.setWrap(true)

@@ -738,7 +738,19 @@
 		Spanish:"Nada"
     	Simplified_Chinese:"无"
     	Portuguese:"Nada"
-	} 
+	}
+	
+	"Specialist Buildings":{}
+	"Specialist Allocation":{}
+	"Free population":{} // as in "Free population: 2/13
+	"[turnsToExpansion] turns to expansion":{}
+	"Stopped expansion":{} // if culture is 0
+	"[turnsToPopulation] turns to new population":{}
+	"[turnsToStarvation] turns to lose population":{}
+	"Stopped population growth":{}
+	"In resistance for another [numberOfTurns] turns":{}
+	
+	// todo
 	
 	// Tech picker
 	"Pick a tech":{
@@ -4023,12 +4035,15 @@
 		Romanian:"Minuni"
 		Spanish:"Maravillas"
 		German:"Wunder"
-}
+	}
 	"Specialist Buildings":{
 		Romanian:"Clădiri specializate"
 		Spanish:"Edificios Ocupables"
 		German:"Gebäude der Spezialisten"
-}
+	}
+	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
+		
+	} 
 	"Population":{	
 		Italian:"Popolazione"
 		Russian:"Население"

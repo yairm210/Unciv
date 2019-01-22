@@ -31,11 +31,9 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         addTiles()
-        stage.addActor(tileTable)
-
 
         val tableBackgroundColor = ImageGetter.getBlue().lerp(Color.BLACK,0.5f)
-        tileTable.background = ImageGetter.getBackground(tableBackgroundColor)
+
 
         var buildingsTableContainer = Table()
         buildingsTableContainer.pad(3f)
@@ -94,7 +92,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         table.defaults().pad(5f)
         table.background=ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
         val columns = Stats().toHashMap().size
-        table.add(Label("Free population:"
+        table.add(Label("{Free population}:".tr()
                 +city.population.getFreePopulation().toString() + "/" + city.population.population,skin))
                 .colspan(columns).row()
 
@@ -102,7 +100,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         if (city.cityStats.currentCityStats.culture > 0) {
             val turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
                     / city.cityStats.currentCityStats.culture).toInt()
-            turnsToExpansionString = turnsToExpansion.toString() + " turns to expansion"
+            turnsToExpansionString = "[$turnsToExpansion] turns to expansion".tr()
         } else {
             turnsToExpansionString = "Stopped expansion"
         }
@@ -113,18 +111,18 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         if (city.cityStats.currentCityStats.food > 0) {
             val turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
                     / city.cityStats.currentCityStats.food).toInt()
-            turnsToPopString = turnsToPopulation.toString()+ " turns to new population"
+            turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
         } else if (city.cityStats.currentCityStats.food < 0) {
             val turnsToStarvation = ceil(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt()
-            turnsToPopString = turnsToStarvation.toString()+ " turns to lose population"
+            turnsToPopString = "[$turnsToStarvation] turns to lose population"
         } else {
-            turnsToPopString = "Stopped population growth"
+            turnsToPopString = "Stopped population growth".tr()
         }
         table.add(Label(turnsToPopString + " (" + city.population.foodStored + "/" + city.population.getFoodToNextPopulation() + ")"
                 ,skin)).colspan(columns).row()
 
         if (city.resistanceCounter > 0) {
-            table.add(Label("In resistance for another ${city.resistanceCounter} turns",skin)).colspan(columns).row()
+            table.add(Label("In resistance for another [${city.resistanceCounter}] turns".tr(),skin)).colspan(columns).row()
         }
 
         table.addSeparator()
@@ -293,6 +291,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     }
 
     private fun updateTileTable() {
+        tileTable.remove()
         if (selectedTile == null) return
         val tile = selectedTile!!
         tileTable.clearChildren()
@@ -325,8 +324,10 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             tileTable.add(acquireTileButton)
         }
 
+        tileTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         tileTable=tileTable.addBorder(2f, Color.WHITE)
         tileTable.setPosition(stage.width - 5f - tileTable.width, 5f)
+        stage.addActor(tileTable)
     }
 
     companion object {

@@ -24,13 +24,13 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         val cityInfo = cityScreen.city
         val wonders = mutableListOf<Building>()
         val specialistBuildings = mutableListOf<Building>()
-        val others = mutableListOf<Building>()
+        val otherBuildings = mutableListOf<Building>()
 
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {
                 building.isWonder -> wonders.add(building)
                 building.specialistSlots != null -> specialistBuildings.add(building)
-                else -> others.add(building)
+                else -> otherBuildings.add(building)
             }
         }
 
@@ -62,9 +62,9 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             addSpecialistAllocation(skin, cityInfo)
         }
 
-        if (!others.isEmpty()) {
+        if (!otherBuildings.isEmpty()) {
             val buildingsExpanderTab = ExpanderTab("Buildings".tr(),skin)
-            for (building in others) {
+            for (building in otherBuildings) {
                 buildingsExpanderTab.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 buildingsExpanderTab.innerTable.add(Label(building.name.tr(), skin)).pad(5f).row()
             }
@@ -110,7 +110,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     }
 
     private fun addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {
-        val specialistAllocationExpander = ExpanderTab("Specialist allocation", skin)
+        val specialistAllocationExpander = ExpanderTab("Specialist Allocation".tr(), skin)
         specialistAllocationExpander.innerTable.defaults().pad(5f)
 
 
