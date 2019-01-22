@@ -98,11 +98,16 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 +city.population.getFreePopulation().toString() + "/" + city.population.population,skin))
                 .colspan(columns).row()
 
-        val turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
-                / city.cityStats.currentCityStats.culture).toInt()
-        val turnsToExpansionString = turnsToExpansion.toString() + " turns to expansion"+
-            " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")"
-        table.add(Label(turnsToExpansionString,skin)).colspan(columns).row()
+        val turnsToExpansionString : String
+        if (city.cityStats.currentCityStats.culture > 0) {
+            val turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
+                    / city.cityStats.currentCityStats.culture).toInt()
+            turnsToExpansionString = turnsToExpansion.toString() + " turns to expansion"
+        } else {
+            turnsToExpansionString = "Stopped expansion"
+        }
+        table.add(Label(turnsToExpansionString + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")",
+                skin)).colspan(columns).row()
 
         val turnsToPopString : String
         if (city.cityStats.currentCityStats.food > 0) {
@@ -119,7 +124,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 ,skin)).colspan(columns).row()
 
         if (city.resistanceCounter > 0) {
-            table.add(Label("In resistance for another ${city.resistanceCounter} turns",skin)).row()
+            table.add(Label("In resistance for another ${city.resistanceCounter} turns",skin)).colspan(columns).row()
         }
 
         table.addSeparator()
