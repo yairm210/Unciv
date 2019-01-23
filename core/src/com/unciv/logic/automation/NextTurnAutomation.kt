@@ -2,31 +2,99 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tech.Technology
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.getRandom
 import kotlin.math.min
 
 class NextTurnAutomation{
 
     fun automateCivMoves(civInfo: CivilizationInfo) {
+        exchangeTechs(civInfo)
         chooseTechToResearch(civInfo)
         adoptPolicy(civInfo)
         exchangeLuxuries(civInfo)
         declareWar(civInfo)
         automateCityBombardment(civInfo)
+        buyBuildingOrUnit(civInfo)
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
     }
 
+    private fun buyBuildingOrUnit(civInfo: CivilizationInfo) {
+        //allow ai spending money to purchase building & unit. Buying staff has slightly lower priority than buying tech.
+        for (city in civInfo.cities.sortedByDescending{ it.population.population }) {
+            val construction = city.cityConstructions.getCurrentConstruction()
+            if (construction.canBePurchased()
+                    && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo.policies.getAdoptedPolicies()) ) {
+                city.cityConstructions.purchaseBuilding(construction.name)
+            }
+        }
+    }
+
+    private fun exchangeTechs(civInfo: CivilizationInfo) {
+        val otherCivList = civInfo.diplomacy.values.map { it.otherCiv() }.
+                filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }.
+                sortedBy { it.tech.techsResearched.size }
+
+        for (otherCiv in otherCivList) {
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            var ourGold = tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }.amount
+            val ourTradableTechs = tradeLogic.ourAvailableOffers
+                    .filter { it.type == TradeType.Technology }
+            val theirTradableTechs = tradeLogic.theirAvailableOffers
+                    .filter { it.type == TradeType.Technology }
+
+            for (theirOffer in theirTradableTechs) {
+                val theirValue = tradeLogic.evaluateOffer(theirOffer, false)
+                val ourOfferList = ourTradableTechs.filter{
+                            tradeLogic.evaluateOffer(it, false) == theirValue
+                            && !tradeLogic.currentTrade.ourOffers.contains(it) }
+
+                if (ourOfferList.isNotEmpty()) {
+                    tradeLogic.currentTrade.ourOffers.add(ourOfferList.getRandom())
+                    tradeLogic.currentTrade.theirOffers.add(theirOffer)
+                } else {
+                    //try to buy tech with money, not spending more than 1/3 of treasury
+                    if (ourGold / 2 >= theirValue)
+                    {
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, theirValue))
+                        tradeLogic.currentTrade.theirOffers.add(theirOffer)
+                        ourGold -= theirValue
+                    }
+                }
+            }
+
+            if (tradeLogic.currentTrade.theirOffers.isNotEmpty()) {
+                tradeLogic.acceptTrade()
+            }
+        }
+    }
+
     private fun chooseTechToResearch(civInfo: CivilizationInfo) {
         if (civInfo.tech.techsToResearch.isEmpty()) {
-            val researchableTechs = GameBasics.Technologies.values.filter { civInfo.tech.canBeResearched(it.name) }
-            val techToResearch = researchableTechs.groupBy { it.cost }.minBy { it.key }!!.value.getRandom()
-            civInfo.tech.techsResearched.add(techToResearch.name)
+            val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+            val techsGroups = researchableTechs.groupBy { it.cost }
+            val costs = techsGroups.keys.sorted()
+
+            val tech: Technology
+            val techsCheapest = techsGroups[costs[0]]!!
+            //Do not consider advanced techs if only one tech left in cheapest groupe
+            if (techsCheapest.size == 1 || costs.size == 1) {
+                tech = techsCheapest.getRandom()
+            } else {
+                //Choose randomly between cheapest and second cheapest groupe
+                val techsAdvanced = techsGroups[costs[1]]!!
+                tech = (techsCheapest + techsAdvanced).getRandom()
+            }
+            civInfo.tech.techsToResearch.add(tech.name)
         }
     }
 

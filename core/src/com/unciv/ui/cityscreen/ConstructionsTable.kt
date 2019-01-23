@@ -123,9 +123,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         row()
         val purchaseConstructionButton: TextButton
-        if (construction !is SpecialConstruction &&
-                !(construction is Building && construction.isWonder)) {
-
+        if (construction.canBePurchased()) {
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
             purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
