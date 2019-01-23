@@ -8,6 +8,7 @@ interface IConstruction : INamed, ICivilopedia {
     fun getGoldCost(adoptedPolicies: HashSet<String>): Int
     fun isBuildable(construction: CityConstructions): Boolean
     fun postBuildEvent(construction: CityConstructions)  // Yes I'm hilarious.
+    fun canBePurchased(): Boolean
 }
 
 
@@ -35,6 +36,9 @@ open class SpecialConstruction(override var name: String, override val descripti
         }
     }
 
+    override fun canBePurchased(): Boolean {
+        return false
+    }
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
         throw Exception("Impossible!")

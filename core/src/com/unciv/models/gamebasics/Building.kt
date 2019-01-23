@@ -149,6 +149,9 @@ class Building : NamedStats(), IConstruction{
         return stats
     }
 
+    override fun canBePurchased(): Boolean {
+        return !isWonder
+    }
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
         return if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety")) (cost * 0.85).toInt()

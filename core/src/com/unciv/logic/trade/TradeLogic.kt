@@ -91,7 +91,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     return value
                 }
             }
-            TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*10
+            TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*20
             TradeType.Strategic_Resource -> {
                 if(otherCivIsRecieving) {
                     val resources = ourCivilization.getCivResourcesByName()

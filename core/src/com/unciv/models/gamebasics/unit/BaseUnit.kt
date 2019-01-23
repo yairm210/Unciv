@@ -81,6 +81,10 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         return unit
     }
 
+    override fun canBePurchased(): Boolean {
+        return true
+    }
+
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int = cost
 
     override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {

@@ -22,9 +22,21 @@ class NextTurnAutomation{
         exchangeLuxuries(civInfo)
         declareWar(civInfo)
         automateCityBombardment(civInfo)
+        buyBuildingOrUnit(civInfo)
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
+    }
+
+    private fun buyBuildingOrUnit(civInfo: CivilizationInfo) {
+        //allow ai spending money to purchase building & unit. Buying staff has slightly lower priority than buying tech.
+        for (city in civInfo.cities.sortedByDescending{ it.population.population }) {
+            val construction = city.cityConstructions.getCurrentConstruction()
+            if (construction.canBePurchased()
+                    && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo.policies.getAdoptedPolicies()) ) {
+                city.cityConstructions.purchaseBuilding(construction.name)
+            }
+        }
     }
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
@@ -51,7 +63,7 @@ class NextTurnAutomation{
                     tradeLogic.currentTrade.theirOffers.add(theirOffer)
                 } else {
                     //try to buy tech with money, not spending more than 1/3 of treasury
-                    if (ourGold / 3 >= theirValue)
+                    if (ourGold / 2 >= theirValue)
                     {
                         tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, theirValue))
                         tradeLogic.currentTrade.theirOffers.add(theirOffer)
@@ -73,10 +85,14 @@ class NextTurnAutomation{
             val costs = techsGroups.keys.sorted()
 
             val tech: Technology
-            if (techsGroups[costs[0]]!!.size == 1 || costs.size == 1) {
-                tech = techsGroups[costs[0]]!!.getRandom()
+            val techsCheapest = techsGroups[costs[0]]!!
+            //Do not consider advanced techs if only one tech left in cheapest groupe
+            if (techsCheapest.size == 1 || costs.size == 1) {
+                tech = techsCheapest.getRandom()
             } else {
-                tech = (techsGroups[costs[0]]!! + techsGroups[costs[1]]!!).getRandom()
+                //Choose randomly between cheapest and second cheapest groupe
+                val techsAdvanced = techsGroups[costs[1]]!!
+                tech = (techsCheapest + techsAdvanced).getRandom()
             }
             civInfo.tech.techsToResearch.add(tech.name)
         }

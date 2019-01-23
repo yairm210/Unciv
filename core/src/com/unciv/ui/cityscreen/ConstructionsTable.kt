@@ -8,7 +8,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.city.IConstruction
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
@@ -124,7 +123,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         row()
         val purchaseConstructionButton: TextButton
-        if (city.cityConstructions.canBePruchasedWithGold(construction)) {
+        if (construction.canBePurchased()) {
             val buildingGoldCost = construction.getGoldCost(city.civInfo.policies.getAdoptedPolicies())
             purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
