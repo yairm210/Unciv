@@ -46,7 +46,7 @@ class Battle(val gameInfo:GameInfo) {
 
         if(attacker.getCivilization()!=defender.getCivilization()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
             val whatHappenedString =
-                    if (attacker.isDefeated()) " {was destroyed while attacking}"
+                    if (attacker !is CityCombatant && attacker.isDefeated()) " {was destroyed while attacking}"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
             val attackerString =
                     if (attacker.getUnitType() == UnitType.City) "Enemy city [" + attacker.getName() + "]"
