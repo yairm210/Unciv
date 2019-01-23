@@ -235,7 +235,7 @@ class CityStats {
     }
 
     private fun getStatPercentBonusesFromBuildings(): Stats {
-        val stats = Stats()
+        val stats = cityInfo.cityConstructions.getStatPercentBonuses()
         val civUniques = cityInfo.civInfo.getBuildingUniques()
         if (civUniques.contains("Culture in all cities increased by 25%")) stats.culture += 25f
 
@@ -308,7 +308,6 @@ class CityStats {
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
 
         val newStatPercentBonusList = LinkedHashMap<String,Stats>()
-        newStatPercentBonusList["Buildings"] = cityInfo.cityConstructions.getStatPercentBonuses()
         newStatPercentBonusList["Golden Age"]=getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"]=getStatPercentBonusesFromPolicies(civInfo.policies.adoptedPolicies, cityInfo.cityConstructions)
         // from wonders - Culture in all cities increased by 25%
