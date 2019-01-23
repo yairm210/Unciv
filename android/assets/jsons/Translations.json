@@ -750,8 +750,6 @@
 	"Stopped population growth":{}
 	"In resistance for another [numberOfTurns] turns":{}
 	
-	// todo
-	
 	// Tech picker
 	"Pick a tech":{
 		Italian:"Scegli una tecnologia"
@@ -3948,6 +3946,7 @@
 		Portuguese:"Declarar guerra"
 		German:"Krieg erklären"
 	}
+	"Declare war on [civName]?":{}
 	
 	"[civName] has declared war on us!":{
 		Italian:"[civName] ci ha dichiarato guerra!"

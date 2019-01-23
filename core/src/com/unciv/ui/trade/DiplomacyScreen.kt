@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
 class DiplomacyScreen:CameraStageBaseScreen(){
 
@@ -61,8 +62,9 @@ class DiplomacyScreen:CameraStageBaseScreen(){
                     declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
                 }
                 declareWarButton.onClick {
+                    YesNoPopupTable("Declare war on [${civ.civName}]?".tr(),{
                     civDiplomacy.declareWar()
-                    updateLeftSideTable()
+                    updateLeftSideTable()}, this@DiplomacyScreen)
                 }
                 civTable.add(declareWarButton).row()
             }
