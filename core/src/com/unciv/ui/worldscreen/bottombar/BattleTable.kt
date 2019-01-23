@@ -153,6 +153,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.onClick {
                 if (attacker is MapUnitCombatant) {
                     attacker.unit.moveToTile(attackableEnemy!!.tileToAttackFrom)
+                    if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != "Set Up") {
+                        attacker.unit.action = "Set Up"
+                        attacker.unit.useMovementPoints(1f)
+                    }
                 }
                 battle.attack(attacker, defender)
                 worldScreen.shouldUpdate=true

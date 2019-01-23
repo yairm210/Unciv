@@ -185,7 +185,6 @@ class MapUnit {
         if(currentMovement==0f) return false
         if(attacksThisTurn>0 && !hasUnique("1 additional attack per turn")) return false
         if(attacksThisTurn>1) return false
-        if(hasUnique("Must set up to ranged attack") && action != "Set Up") return false
         return true
     }
 
