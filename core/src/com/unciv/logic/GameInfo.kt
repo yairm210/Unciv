@@ -58,11 +58,6 @@ class GameInfo {
 
         while(thisPlayer.playerType==PlayerType.AI){
             NextTurnAutomation().automateCivMoves(thisPlayer)
-        //    if (thisPlayer.tech.techsToResearch.isEmpty()) {  // should belong in automation? yes/no?
-        //        val researchableTechs = GameBasics.Technologies.values
-        //                .filter { !thisPlayer.tech.isResearched(it.name) && thisPlayer.tech.canBeResearched(it.name) }
-        //        thisPlayer.tech.techsToResearch.add(researchableTechs.minBy { it.cost }!!.name)
-        //    }
             switchTurn()
         }
 

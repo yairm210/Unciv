@@ -10,6 +10,7 @@ import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.util.*
+import kotlin.collections.HashSet
 
 
 class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
@@ -49,10 +50,12 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
+        val alreadyDisplayedEras = HashSet<String>()
         val eras = ArrayList<Label>()
         for(i in techMatrix.indices) eras.add(Label("",CameraStageBaseScreen.skin).apply { setFontColor(Color.WHITE) })
         eras.forEach { topTable.add(it) }
 
+        // Create tech table (row by row)
         for (i in 0..9) {
             topTable.row().pad(5f)
 
@@ -69,11 +72,22 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                         selectTechnology(tech)
                     }
                     topTable.add(techButton)
-                    if(eras[j].text.toString()=="") // name of era was not yet set
-                        eras[j].setText((tech.era().toString()+" era").tr())
                 }
             }
         }
+
+        // Set era names (column by column)
+        for(j in techMatrix.indices)
+            for(i in 0..9)
+            {
+                val tech = techMatrix[j][i]
+                if(tech==null) continue
+                val eraName = tech.era().name
+                if(!alreadyDisplayedEras.contains(eraName)) { // name of era was not yet set
+                    eras[j].setText("$eraName era".tr())
+                    alreadyDisplayedEras.add(eraName)
+                }
+            }
 
         setButtonsInfo()
 
