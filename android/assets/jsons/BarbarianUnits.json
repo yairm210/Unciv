@@ -1,0 +1,17 @@
+[	
+	{
+		name:"Warrior",
+	},
+	{
+		name:"Archer",
+	},
+    {
+        name:"Horseman",
+    },
+    {
+        name:"Swordsman",
+    },
+    {
+        name:"Trireme",
+    },
+]

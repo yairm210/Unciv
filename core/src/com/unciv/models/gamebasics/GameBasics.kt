@@ -9,7 +9,9 @@ import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.Promotion
+import com.unciv.models.gamebasics.BarbarianUnit
 import com.unciv.models.stats.INamed
+import java.util.*
 import kotlin.collections.set
 
 object GameBasics {
@@ -24,6 +26,7 @@ object GameBasics {
     val Nations = LinkedHashMap<String, Nation>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
     val Difficulties = LinkedHashMap<String, Difficulty>()
+    val BarbarianUnitsList = LinkedHashMap<String, BarbarianUnit>()
     val Translations = Translations(Gdx.files.internal("jsons/Translations.json").readString())
 
     fun <T> getFromJson(tClass: Class<T>, name: String): T {
@@ -49,6 +52,7 @@ object GameBasics {
             PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
             Nations += createHashmap(getFromJson(Array<Nation>::class.java, "Nations"))
             Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
+            BarbarianUnitsList += createHashmap(getFromJson(Array<BarbarianUnit>::class.java, "BarbarianUnits"))
 
             val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")
             for (techColumn in techColumns) {
