@@ -90,7 +90,14 @@ class GameInfo {
             if (viableTiles.isEmpty()) return // no place for more barbs =(
             tile = viableTiles.getRandom()
         }
-        tileMap.placeUnitNearTile(tile!!.position, "Warrior", getBarbarianCivilization())
+
+        val allResearchedTechs = civilizations.filterNot { it.isBarbarianCivilization() }
+                .flatMap { it.tech.researchedTechnologies }.map{ it.name }
+        val unitList = GameBasics.BarbarianUnitsList.keys
+                .filter{ allResearchedTechs.contains(GameBasics.Units[it]?.requiredTech) }
+        val unit = if (unitList.isEmpty()) "Warrior" else unitList.getRandom()
+
+        tileMap.placeUnitNearTile(tile!!.position, unit, getBarbarianCivilization())
     }
 
     fun setTransients() {
