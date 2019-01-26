@@ -93,9 +93,9 @@ class GameInfo {
 
         val allResearchedTechs = civilizations.filterNot { it.isBarbarianCivilization() }
                 .flatMap { it.tech.researchedTechnologies }.map{ it.name }
-        val unitList = GameBasics.BarbarianUnitsList.keys
-                .filter{ allResearchedTechs.contains(GameBasics.Units[it]?.requiredTech) }
-        val unit = if (unitList.isEmpty()) "Warrior" else unitList.getRandom()
+        val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() }
+                .filter{ allResearchedTechs.contains(it.requiredTech) }
+        val unit = if (unitList.isEmpty()) "Warrior" else unitList.getRandom().name
 
         tileMap.placeUnitNearTile(tile!!.position, unit, getBarbarianCivilization())
     }
