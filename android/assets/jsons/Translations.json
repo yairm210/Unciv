@@ -293,6 +293,8 @@
 		Portuguese:"Voçê realmente quer desfazer essa unidade?"
 		German:"Wollen Sie diese Einheit wirklich auflösen?"
 	}
+	"Disband this unit for [goldAmount] gold?":{}
+	
 	"Yes":{
 		Italian:"Sì"
 		Russian:"Да"

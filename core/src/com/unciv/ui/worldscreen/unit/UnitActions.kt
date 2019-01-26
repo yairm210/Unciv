@@ -200,8 +200,11 @@ class UnitActions {
 
         actionList += UnitAction("Disband unit",unit.currentMovement >0
         ) {
-            YesNoPopupTable("Do you really want to disband this unit?".tr(),
-                    {unit.destroy(); worldScreen.shouldUpdate=true} )
+            val disbandText = if(unit.currentTile.getOwner()==unit.civInfo)
+                "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
+            else "Do you really want to disband this unit?".tr()
+            YesNoPopupTable(disbandText,
+                    {unit.disband(); worldScreen.shouldUpdate=true} )
         }
 
         return actionList

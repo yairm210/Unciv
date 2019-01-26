@@ -87,11 +87,15 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int = cost
 
+    fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+
     override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
-        var cost = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+        var cost = getBaseGoldCost()
         if(adoptedPolicies.contains("Militarism")) cost *= 0.66f
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
+
+    fun getDisbandGold() = getBaseGoldCost().toInt()/20
 
     fun isBuildable(civInfo:CivilizationInfo): Boolean {
         if (unbuildable) return false

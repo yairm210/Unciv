@@ -392,6 +392,12 @@ class MapUnit {
         civInfo.updateViewableTiles()
     }
 
+    fun disband(){
+        destroy()
+        if(currentTile.isCityCenter() && currentTile.getOwner()==civInfo)
+            civInfo.gold += baseUnit.getDisbandGold()
+    }
+
     private fun getAncientRuinBonus() {
         currentTile.improvement=null
         val actions: ArrayList<() -> Unit> = ArrayList()
