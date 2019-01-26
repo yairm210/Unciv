@@ -93,7 +93,7 @@ class GameInfo {
 
         val allResearchedTechs = civilizations.filterNot { it.isBarbarianCivilization() }
                 .flatMap { it.tech.researchedTechnologies }.map{ it.name }
-        val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() }
+        val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() && it.uniqueTo == null }
                 .filter{ allResearchedTechs.contains(it.requiredTech) }
         val unit = if (unitList.isEmpty()) "Warrior" else unitList.getRandom().name
 
