@@ -50,7 +50,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
-        val alreadyDisplayedEras = HashSet<String>()
         val eras = ArrayList<Label>()
         for(i in techMatrix.indices) eras.add(Label("",CameraStageBaseScreen.skin).apply { setFontColor(Color.WHITE) })
         eras.forEach { topTable.add(it) }
@@ -77,13 +76,14 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         }
 
         // Set era names (column by column)
+        val alreadyDisplayedEras = HashSet<String>()
         for(j in techMatrix.indices)
             for(i in 0..9)
             {
                 val tech = techMatrix[j][i]
                 if(tech==null) continue
                 val eraName = tech.era().name
-                if(!alreadyDisplayedEras.contains(eraName)) { // name of era was not yet set
+                if(!alreadyDisplayedEras.contains(eraName)) { // name of era was not yet displayed
                     eras[j].setText("$eraName era".tr())
                     alreadyDisplayedEras.add(eraName)
                 }

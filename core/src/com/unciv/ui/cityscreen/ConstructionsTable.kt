@@ -128,7 +128,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
                 YesNoPopupTable("Would you like to purchase [${construction.name}] for [$buildingGoldCost] gold?".tr(), {
-                    city.cityConstructions.purchaseBuilding(city.cityConstructions.currentConstruction)
+                    city.cityConstructions.purchaseBuilding(construction.name)
                     update()
                 }, cityScreen)
             }
