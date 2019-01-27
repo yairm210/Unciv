@@ -1,6 +1,5 @@
 package com.unciv.logic.automation
 
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.MapUnit
@@ -85,6 +84,11 @@ class NextTurnAutomation{
             val costs = techsGroups.keys.sorted()
 
             val tech: Technology
+            if (researchableTechs.isEmpty()) { // no non-researched techs available, go for future tech
+                civInfo.tech.techsToResearch.add("Future Tech")
+                return
+            }
+
             val techsCheapest = techsGroups[costs[0]]!!
             //Do not consider advanced techs if only one tech left in cheapest groupe
             if (techsCheapest.size == 1 || costs.size == 1) {
@@ -94,6 +98,7 @@ class NextTurnAutomation{
                 val techsAdvanced = techsGroups[costs[1]]!!
                 tech = (techsCheapest + techsAdvanced).getRandom()
             }
+
             civInfo.tech.techsToResearch.add(tech.name)
         }
     }
