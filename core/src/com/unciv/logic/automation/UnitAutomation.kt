@@ -146,7 +146,6 @@ class UnitAutomation{
         val tilesWithEnemies = unit.civInfo.viewableTiles
                 .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
 
-        val minMovBeforeSetup = if (unit.hasUnique("Must set up to ranged attack") && unit.action != "Set Up" ) minMovementBeforeAttack+1.0f else minMovementBeforeAttack
         val rangeOfAttack = unit.getRange()
 
         val attackableTiles = ArrayList<AttackableTile>()
@@ -155,8 +154,14 @@ class UnitAutomation{
         // and then later we round it off to a whole.
         // So the poor unit thought it could attack from the tile, but when it comes to do so it has no movement points!
         // Silly floats, basically
+
+        val unitMustBeSetUp = unit.hasUnique("Must set up to ranged attack")
         val tilesToAttackFrom = unitDistanceToTiles.asSequence()
-                .filter { unit.currentMovement - it.value >= minMovBeforeSetup }
+                .filter {
+                    val movementPointsToExpendAfterMovement = if(unitMustBeSetUp) 1 else 0
+                    val movementPointsToExpendHere = if(unitMustBeSetUp && unit.action != "Set Up") 1 else 0
+                    val movementPointsToExpendBeforeAttack = if(it.key==unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
+                    unit.currentMovement - it.value - movementPointsToExpendBeforeAttack > 0 } // still got leftover movement points after all that, to attack
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
 
