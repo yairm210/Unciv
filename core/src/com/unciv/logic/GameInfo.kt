@@ -91,10 +91,13 @@ class GameInfo {
             tile = viableTiles.getRandom()
         }
 
-        val allResearchedTechs = civilizations.filterNot { it.isBarbarianCivilization() }
-                .flatMap { it.tech.researchedTechnologies }.map{ it.name }
+        var allResearchedTechs = GameBasics.Technologies.keys
+        for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
+            allResearchedTechs.retainAll(civ.tech.techsResearched)
+        }
         val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() && it.uniqueTo == null }
-                .filter{ allResearchedTechs.contains(it.requiredTech) }
+                .filter{ allResearchedTechs.contains(it.requiredTech)
+                        && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
         val unit = if (unitList.isEmpty()) "Warrior" else unitList.getRandom().name
 
         tileMap.placeUnitNearTile(tile!!.position, unit, getBarbarianCivilization())
