@@ -91,6 +91,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
         var cost = getBaseGoldCost()
+        if(adoptedPolicies.contains("Mercantilism")) cost *= 0.75
         if(adoptedPolicies.contains("Militarism")) cost *= 0.66f
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
