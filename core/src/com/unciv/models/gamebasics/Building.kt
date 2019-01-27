@@ -162,7 +162,8 @@ class Building : NamedStats(), IConstruction{
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost = Math.pow((30 * getProductionCost(adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
         if (adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-        if (adoptedPolicies.contains("Patronage")) cost *= 0.5
+        if (adoptedPolicies.contains("Patronage")
+                && listOf("Monument", "Temple", "Opera House", "Museum").contains(name) ) cost *= 0.5
         return (cost / 10).toInt() * 10
     }
 
