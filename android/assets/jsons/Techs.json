@@ -482,12 +482,12 @@
 				name:"Nanotechnology",
 				row:3,
 				prerequisites:["Robotics","Ecology"]
-			}
+			},
 			{
 				name:"Particle Physics",
 				row:4,
 				prerequisites:["Nuclear Fission"]
-			}
+			},
 			{
 				name:"Satellites",
 				row:5,

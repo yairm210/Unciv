@@ -91,7 +91,7 @@ class GameInfo {
             tile = viableTiles.getRandom()
         }
 
-        var allResearchedTechs = GameBasics.Technologies.keys
+        val allResearchedTechs = GameBasics.Technologies.keys.toMutableList()
         for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
