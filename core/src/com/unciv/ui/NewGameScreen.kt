@@ -183,6 +183,7 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         val translation = value.tr()
         override fun toString()=translation
     }
+
     init {
         val array = Array<TranslatedString>()
         values.forEach{array.add(TranslatedString(it))}

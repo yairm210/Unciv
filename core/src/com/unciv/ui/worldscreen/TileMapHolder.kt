@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -32,39 +31,17 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     var moveHereButtonDto :MoveHereButtonDto?=null
 
     internal fun addTiles() {
-        val allTiles = Group()
-        val groupPadding = 600f // This is so that no tile will be stuck "on the side" and be unreachable or difficult to reach
 
-        var topX = 0f
-        var topY = 0f
-        var bottomX = 0f
-        var bottomY = 0f
 
-        for (tileInfo in tileMap.values) {
-            val tileGroup = WorldTileGroup(worldScreen, tileInfo)
+        val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it) }
 
-            tileGroup.onClick{ onTileClicked(tileInfo)}
+        for(tileGroup in daTileGroups) tileGroups[tileGroup.tileInfo]=tileGroup
 
-            val positionalVector = HexMath().hex2WorldCoords(tileInfo.position)
-            val groupSize = 50
-            tileGroup.setPosition(worldScreen.stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
-                    worldScreen.stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
+        val allTiles = TileGroupMap(daTileGroups)
 
-            tileGroups[tileInfo] = tileGroup
-            allTiles.addActor(tileGroup)
-            topX = Math.max(topX, tileGroup.x + groupSize)
-            topY = Math.max(topY, tileGroup.y + groupSize)
-            bottomX = Math.min(bottomX, tileGroup.x)
-            bottomY = Math.min(bottomY, tileGroup.y)
+        for(tileGroup in tileGroups.values){
+            tileGroup.onClick{ onTileClicked(tileGroup.tileInfo)}
         }
-
-        for (group in tileGroups.values) {
-            group.moveBy(-bottomX + groupPadding, -bottomY + groupPadding)
-        }
-
-        // there are tiles "below the zero",
-        // so we zero out the starting position of the whole board so they will be displayed as well
-        allTiles.setSize(topX - bottomX + groupPadding*2, topY - bottomY + groupPadding*2)
 
         actor = allTiles
         setFillParent(true)
