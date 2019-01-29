@@ -125,7 +125,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
             && construction.cityInfo.getBuildingUniques()
                 .contains("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
-            unit.promotions.addPromotion("Drill I")
+            unit.promotions.addPromotion("Drill I", isFree = true)
     }
 
     fun getUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
