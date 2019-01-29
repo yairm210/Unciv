@@ -16,9 +16,11 @@ class UnitPromotions{
     fun canBePromoted() = XP >= xpForNextPromotion()
 
     fun addPromotion(promotionName:String, isFree:Boolean = false){
-        if (!isFree) XP -= xpForNextPromotion()
+        if (!isFree) {
+            XP -= xpForNextPromotion()
+            numberOfPromotions++
+        }
         promotions.add(promotionName)
-        numberOfPromotions++
         unit.updateUniques()
         unit.civInfo.updateViewableTiles() // some promotions give the unit bonus sight
     }
