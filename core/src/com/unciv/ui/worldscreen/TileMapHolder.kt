@@ -37,7 +37,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         for(tileGroup in daTileGroups) tileGroups[tileGroup.tileInfo]=tileGroup
 
-        val allTiles = TileGroupMap(daTileGroups)
+        val allTiles = TileGroupMap(daTileGroups,600f)
 
         for(tileGroup in tileGroups.values){
             tileGroup.onClick{ onTileClicked(tileGroup.tileInfo)}

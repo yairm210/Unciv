@@ -18,6 +18,8 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
             populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6).png")
             addActor(populationImage)
         }
+
+
     }
 
     fun update() {

@@ -1,10 +1,7 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
@@ -13,6 +10,7 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.TileGroupMap
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.round
@@ -114,7 +112,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
         } else if (city.cityStats.currentCityStats.food < 0) {
             val turnsToStarvation = ceil(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt()
-            turnsToPopString = "[$turnsToStarvation] turns to lose population"
+            turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()
         } else {
             turnsToPopString = "Stopped population growth".tr()
         }
@@ -216,12 +214,14 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private fun addTiles() {
         val cityInfo = city
 
-        val allTiles = Group()
 
-        for (tileInfo in cityInfo.getCenterTile().getTilesInDistance(5)) {
-            if (!city.civInfo.exploredTiles.contains(tileInfo.position)) continue // Don't even bother to display it.
-            val tileGroup = CityTileGroup(cityInfo, tileInfo)
-            val tilesInRange = city.getTilesInRange()
+        val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
+                .filter { city.civInfo.exploredTiles.contains(it.position) }
+                .map { CityTileGroup(cityInfo, it) }
+
+        val tilesInRange = city.getTilesInRange()
+        for (tileGroup in cityTileGroups) {
+            val tileInfo = tileGroup.tileInfo
 
             // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
             var shouldToggleTilesWorked = false
@@ -255,39 +255,25 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 update()
             }
 
+            tileGroups.add(tileGroup)
 
             val positionalVector = HexMath().hex2WorldCoords(tileInfo.position.cpy().sub(cityInfo.location))
             val groupSize = 50
             tileGroup.setPosition(stage.width / 2 + positionalVector.x * 0.8f * groupSize.toFloat(),
                     stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
-            tileGroups.add(tileGroup)
-            allTiles.addActor(tileGroup)
         }
 
-        val scrollPane = ScrollPane(allTiles)
-        scrollPane.setFillParent(true)
-        scrollPane.setPosition(cityTilesX, cityTilesY)
+        val tileMapGroup = TileGroupMap(tileGroups,300f)
+        val scrollPane = ScrollPane(tileMapGroup)
+        scrollPane.setSize(stage.width,stage.height)
         scrollPane.setOrigin(stage.width / 2, stage.height / 2)
-        scrollPane.addListener(object : ActorGestureListener() {
-            var lastScale = 1f
-            var lastInitialDistance = 0f
-
-            override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
-                if (lastInitialDistance != initialDistance) {
-                    lastInitialDistance = initialDistance
-                    lastScale = scrollPane.scaleX
-                }
-                val scale = Math.sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
-                scrollPane.setScale(scale)
-            }
-
-            override fun pan(event: InputEvent?, x: Float, y: Float, deltaX: Float, deltaY: Float) {
-                scrollPane.moveBy(deltaX * scrollPane.scaleX, deltaY * scrollPane.scaleX)
-                cityTilesX = scrollPane.x
-                cityTilesY = scrollPane.y
-            }
-        })
+        scrollPane.center(stage)
         stage.addActor(scrollPane)
+
+        scrollPane.layout() // center scrolling
+        scrollPane.scrollPercentX=0.5f
+        scrollPane.scrollPercentY=0.5f
+        scrollPane.updateVisualScroll()
     }
 
     private fun updateTileTable() {
@@ -328,10 +314,5 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         tileTable=tileTable.addBorder(2f, Color.WHITE)
         tileTable.setPosition(stage.width - 5f - tileTable.width, 5f)
         stage.addActor(tileTable)
-    }
-
-    companion object {
-        @Transient var cityTilesX = 0f
-        @Transient var cityTilesY = 0f
     }
 }
