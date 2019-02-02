@@ -3,16 +3,22 @@ package com.unciv.ui.worldscreen.optionstable
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
+import com.unciv.ui.MapEditorScreen
 import com.unciv.ui.NewGameScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.saves.LoadScreen
 import com.unciv.ui.saves.SaveScreen
-import com.unciv.ui.utils.center
+import com.unciv.ui.worldscreen.WorldScreen
 
-class WorldScreenOptionsTable internal constructor() : PopupTable() {
+class WorldScreenOptionsTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
 
     init {
+        addButton("Map editor - IN PROGRESS".tr()){
+            UnCivGame.Current.screen = MapEditorScreen()
+            remove()
+        }
+
         addButton("Civilopedia".tr()){
             UnCivGame.Current.screen = CivilopediaScreen()
             remove()
@@ -38,14 +44,13 @@ class WorldScreenOptionsTable internal constructor() : PopupTable() {
 
 
         addButton("Display options".tr()){
-            UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())
+            UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable(worldScreen))
             remove()
         }
 
         addButton("Close".tr()){ remove() }
 
-        pack() // Needed to show the background.
-        center(UnCivGame.Current.worldScreen.stage)
+        open()
     }
 }
 

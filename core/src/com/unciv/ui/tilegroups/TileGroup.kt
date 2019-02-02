@@ -19,10 +19,13 @@ import com.unciv.ui.utils.center
 open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
     protected var baseTerrainImage: Image? = null
+    protected var baseTerrain:String=""
     protected var terrainFeatureImage: Image? = null
+    protected var terrainFeature:String?=null
     protected var cityImage: Image? = null
 
     var resourceImage: Actor? = null
+    var resource:String?=null
     var improvementImage: Actor? = null
     var populationImage: Image? = null //reuse for acquire icon
     private val roadImages = HashMap<TileInfo, RoadImage>()
@@ -33,6 +36,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targeted
     protected val fogImage = ImageGetter.getImage("TerrainIcons/CrosshatchHexagon")
     var yieldGroup = YieldGroup()
+
+    var showEntireMap = UnCivGame.Current.viewEntireMapForDebug
 
     class RoadImage {
         var roadStatus: RoadStatus = RoadStatus.None
@@ -46,21 +51,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         addCircleImage()
         addFogImage(groupSize)
         addCrosshairImage()
-        addBaseTerrainImage()
         isTransform = false
     }
 
-    private fun addBaseTerrainImage() {
-        val imagePath = "TerrainIcons/"+tileInfo.baseTerrain
-        if(!ImageGetter.imageExists(imagePath)) return
-        baseTerrainImage = ImageGetter.getImage(imagePath)
-        baseTerrainImage!!.run {
-            color.a=0.25f
-            setSize(40f,40f)
-            center(this@TileGroup)
-        }
-        addActor(baseTerrainImage)
-    }
 
     private fun addCircleImage() {
         circleImage.width = 50f
@@ -135,13 +128,14 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     open fun update(isViewable: Boolean, showResourcesAndImprovements:Boolean, showSubmarine: Boolean) {
         hideCircle()
-        if (!UnCivGame.Current.viewEntireMapForDebug
+        if (!showEntireMap
                 && !tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
             hexagon.color = Color.BLACK
             return
         }
 
         updateTerrainFeatureImage()
+        updateTerrainBaseImage()
         updateCityImage()
         updateTileColor(isViewable)
 
@@ -159,7 +153,26 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         crosshairImage.isVisible = false
 
         fogImage.toFront()
-        fogImage.isVisible = !(isViewable || UnCivGame.Current.viewEntireMapForDebug)
+        fogImage.isVisible = !(isViewable || showEntireMap)
+    }
+
+    private fun updateTerrainBaseImage() {
+        if (tileInfo.baseTerrain == baseTerrain) return
+
+        if(baseTerrainImage!=null){
+            baseTerrainImage!!.remove()
+            baseTerrainImage=null
+        }
+
+        val imagePath = "TerrainIcons/" + tileInfo.baseTerrain
+        if (!ImageGetter.imageExists(imagePath)) return
+        baseTerrainImage = ImageGetter.getImage(imagePath)
+        baseTerrainImage!!.run {
+            color.a = 0.25f
+            setSize(40f, 40f)
+            center(this@TileGroup)
+        }
+        addActor(baseTerrainImage)
     }
 
     private fun updateCityImage() {
@@ -282,19 +295,20 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateTerrainFeatureImage() {
-        if (terrainFeatureImage == null && tileInfo.terrainFeature != null) {
-            terrainFeatureImage = ImageGetter.getImage("TerrainIcons/${tileInfo.terrainFeature}.png")
-            addActor(terrainFeatureImage)
-            terrainFeatureImage!!.run {
-                setSize(30f, 30f)
-                setColor(1f, 1f, 1f, 0.5f)
-                center(this@TileGroup)
-            }
-        }
-
-        if (terrainFeatureImage != null && tileInfo.terrainFeature == null) {
-            terrainFeatureImage!!.remove()
+        if (tileInfo.terrainFeature != terrainFeature) {
+            terrainFeature = tileInfo.terrainFeature
+            if(terrainFeatureImage!=null) terrainFeatureImage!!.remove()
             terrainFeatureImage = null
+
+            if(terrainFeature!=null) {
+                terrainFeatureImage = ImageGetter.getImage("TerrainIcons/$terrainFeature.png")
+                addActor(terrainFeatureImage)
+                terrainFeatureImage!!.run {
+                    setSize(30f, 30f)
+                    setColor(1f, 1f, 1f, 0.5f)
+                    center(this@TileGroup)
+                }
+            }
         }
     }
 
@@ -320,23 +334,23 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateResourceImage(showResourcesAndImprovements: Boolean) {
-        val shouldDisplayResource = showResourcesAndImprovements
+        val shouldDisplayResource =
+            if(showEntireMap) tileInfo.resource!=null
+            else showResourcesAndImprovements
                 && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization())
 
-        if (resourceImage != null && !shouldDisplayResource) {
-            resourceImage!!.remove()
-            resourceImage = null
+        if(resource!=tileInfo.resource){
+            resource=tileInfo.resource
+            if (resourceImage != null) resourceImage!!.remove()
+            resourceImage=null
         }
 
-        if (resourceImage == null && shouldDisplayResource) { // Need to add the resource image!
+        if (resourceImage == null && shouldDisplayResource) { // This could happen on any turn, since resources need certain techs to reveal them
             resourceImage = ImageGetter.getResourceImage(tileInfo.resource!!, 20f)
             resourceImage!!.center(this)
             resourceImage!!.x = resourceImage!!.x - 22 // left
             resourceImage!!.y = resourceImage!!.y + 10 // top
             addActor(resourceImage!!)
-        }
-        if (resourceImage != null) {
-            resourceImage!!.color = Color.WHITE.cpy().apply { a = 0.7f }
         }
     }
 
@@ -374,7 +388,5 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     fun hideCircle() {
         circleImage.isVisible = false
     }
-
-
 
 }

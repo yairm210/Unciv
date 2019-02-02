@@ -84,11 +84,9 @@ class LanguagePickerScreen: PickerScreen(){
                 YesNoPopupTable("This language requires you to download fonts.\n" +
                         "Do you want to download fonts for $spaceSplitLang?",
                         {
-                            val downloading = PopupTable()
+                            val downloading = PopupTable(this)
                             downloading.add(Label("Downloading...",skin))
-                            downloading.pack()
-                            downloading.center(stage)
-                            stage.addActor(downloading)
+                            downloading.open()
                             Gdx.input.inputProcessor = null // no interaction until download is over
 
                             kotlin.concurrent.thread {

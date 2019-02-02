@@ -65,7 +65,7 @@ class LoadScreen : PickerScreen() {
         loadFromClipboardButton.onClick {
             try{
                 val clipboardContentsString = Gdx.app.clipboard.contents
-                val decoded = Gzip.decompress(Gzip.decoder(clipboardContentsString))
+                val decoded = Gzip.unzip(clipboardContentsString)
                 val loadedGame = Json().fromJson(GameInfo::class.java, decoded)
                 loadedGame.setTransients()
                 UnCivGame.Current.loadGame(loadedGame)

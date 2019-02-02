@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.GameStarter
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -74,6 +75,7 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Map type}:".tr())
         val mapTypes = LinkedHashMap<String, MapType>()
         for (type in MapType.values()) {
+            if(type==MapType.File && !GameSaver().getMap("Test").exists()) continue
             mapTypes[type.toString()] = type
         }
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes.keys, newGameParameters.mapType.toString(), skin)
@@ -191,3 +193,4 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         selected = array.first { it.value==default }
     }
 }
+

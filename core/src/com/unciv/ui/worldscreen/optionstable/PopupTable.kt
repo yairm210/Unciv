@@ -11,13 +11,19 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 
-open class PopupTable: Table(CameraStageBaseScreen.skin){
+open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseScreen.skin){
     init {
         val tileTableBackground = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
         background = tileTableBackground
 
         this.pad(20f)
         this.defaults().pad(5f)
+    }
+
+    fun open(){
+        pack()
+        center(screen.stage)
+        screen.stage.addActor(this)
     }
 
     fun addButton(text:String, action:()->Unit){
@@ -28,7 +34,7 @@ open class PopupTable: Table(CameraStageBaseScreen.skin){
 }
 
 class YesNoPopupTable(question:String, action:()->Unit,
-                      screen: CameraStageBaseScreen = UnCivGame.Current.worldScreen) : PopupTable(){
+                      screen: CameraStageBaseScreen = UnCivGame.Current.worldScreen) : PopupTable(screen){
     init{
         if(!isOpen) {
             isOpen=true
@@ -36,9 +42,7 @@ class YesNoPopupTable(question:String, action:()->Unit,
 
             add(TextButton("No".tr(), skin).apply { onClick { close() } })
             add(TextButton("Yes".tr(), skin).apply { onClick { close(); action() } })
-            pack()
-            center(screen.stage)
-            screen.stage.addActor(this)
+            open()
         }
     }
 

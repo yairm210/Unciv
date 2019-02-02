@@ -30,13 +30,13 @@ class Language(val language:String){
     }
 }
 
-class WorldScreenDisplayOptionsTable : PopupTable(){
+class WorldScreenDisplayOptionsTable(screen:WorldScreen) : PopupTable(screen){
     val languageSelectBox = SelectBox<Language>(skin)
 
     init {
         update()
+        open()
     }
-
 
 
     fun update() {
@@ -67,7 +67,7 @@ class WorldScreenDisplayOptionsTable : PopupTable(){
                 UnCivGame.Current.settings.save()
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()
-                UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())
+                WorldScreenDisplayOptionsTable(UnCivGame.Current.worldScreen)
             }
         })
 
@@ -109,11 +109,9 @@ class WorldScreenDisplayOptionsTable : PopupTable(){
                             "Do you want to download fonts for $spaceSplitLang?",
                             {
 
-                                val downloading = PopupTable()
+                                val downloading = PopupTable(screen)
                                 downloading.add(Label("Downloading...", skin))
-                                downloading.pack()
-                                downloading.center(stage)
-                                stage.addActor(downloading)
+                                downloading.open()
                                 Gdx.input.inputProcessor = null // no interaction until download is over
 
                                 thread {
@@ -122,7 +120,6 @@ class WorldScreenDisplayOptionsTable : PopupTable(){
                                     // This means that we have to tell the table to create it on render.
                                     shouldSelectLanguage = true
                                 }
-
                             })
                 }
             }
@@ -149,7 +146,7 @@ class WorldScreenDisplayOptionsTable : PopupTable(){
 
         UnCivGame.Current.worldScreen = WorldScreen()
         UnCivGame.Current.setWorldScreen()
-        UnCivGame.Current.worldScreen.stage.addActor(WorldScreenDisplayOptionsTable())
+        WorldScreenDisplayOptionsTable(UnCivGame.Current.worldScreen)
     }
 
     var shouldSelectLanguage = false

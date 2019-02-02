@@ -10,7 +10,10 @@ import java.util.zip.GZIPOutputStream
 
 object Gzip {
 
-    fun compress(data: String): ByteArray {
+    fun zip(data:String):String = encoder(compress(data))
+    fun unzip(data:String):String  = decompress(decoder(data))
+
+    private fun compress(data: String): ByteArray {
         val bos = ByteArrayOutputStream(data.length)
         val gzip = GZIPOutputStream(bos)
         gzip.write(data.toByteArray())
@@ -20,7 +23,7 @@ object Gzip {
         return compressed
     }
 
-    fun decompress(compressed: ByteArray): String {
+    private fun decompress(compressed: ByteArray): String {
         val bis = ByteArrayInputStream(compressed)
         val gis = GZIPInputStream(bis)
         val br = BufferedReader(InputStreamReader(gis, "UTF-8"))
@@ -37,11 +40,11 @@ object Gzip {
     }
 
 
-    fun encoder(bytes:ByteArray): String{
+    private fun encoder(bytes:ByteArray): String{
         return String(Base64Coder.encode(bytes))
     }
 
-    fun decoder(base64Str: String): ByteArray{
+    private fun decoder(base64Str: String): ByteArray{
         return Base64Coder.decode(base64Str)
     }
 }

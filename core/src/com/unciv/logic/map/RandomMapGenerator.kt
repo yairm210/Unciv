@@ -18,6 +18,7 @@ enum class MapType {
     Perlin,
     Default,
     Pangaea,
+    File
 }
 
 class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {

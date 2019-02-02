@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -31,14 +32,16 @@ class TileMap {
 
 
     constructor(distance: Int, mapType: MapType) {
-        val map:HashMap<String,TileInfo>
+        val mapValues:Collection<TileInfo>
 
-        if(mapType==MapType.Perlin)
-            map = PerlinNoiseRandomMapGenerator().generateMap(distance)
+        if(mapType == MapType.File)
+            mapValues = GameSaver().loadMap("Test").values
+        else if(mapType==MapType.Perlin)
+            mapValues = PerlinNoiseRandomMapGenerator().generateMap(distance).values
         else
-            map = CelluarAutomataRandomMapGenerator(mapType).generateMap(distance)
+            mapValues = CelluarAutomataRandomMapGenerator(mapType).generateMap(distance).values
 
-        tileList.addAll(map.values)
+        tileList.addAll(mapValues)
 //        tileList.addAll(AlexanderRandomMapGenerator().generateMap(distance,0.8f).values)
 
         setTransients()
