@@ -2,10 +2,7 @@ package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.GameStarter
@@ -75,35 +72,46 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Map type}:".tr())
         val mapTypes = LinkedHashMap<String, MapType>()
         for (type in MapType.values()) {
-            if(type==MapType.File && !GameSaver().getMap("Test").exists()) continue
+            if(type==MapType.File && GameSaver().getMaps().isEmpty()) continue
             mapTypes[type.toString()] = type
         }
+
+        val mapFileLabel = Label("{Map file}:".tr(),skin)
+        val mapFileSelectBox = getMapFileSelectBox()
+        mapFileLabel.isVisible=false
+        mapFileSelectBox.isVisible=false
+
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes.keys, newGameParameters.mapType.toString(), skin)
+
+        val worldSizeSelectBox = getWorldSizeSelectBox()
+        val worldSizeLabel = Label("{World size}:".tr(),skin)
+
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.mapType = mapTypes[mapTypeSelectBox.selected.value]!!
+                if (newGameParameters.mapType == MapType.File) {
+                    worldSizeSelectBox.isVisible = false
+                    worldSizeLabel.isVisible = false
+                    mapFileSelectBox.isVisible = true
+                    mapFileLabel.isVisible=true
+                    newGameParameters.mapFileName = mapFileSelectBox.selected
+                } else {
+                    worldSizeSelectBox.isVisible = true
+                    worldSizeLabel.isVisible = true
+                    mapFileSelectBox.isVisible = false
+                    mapFileLabel.isVisible=false
+                    newGameParameters.mapFileName = null
+                }
             }
         })
         newGameOptionsTable.add(mapTypeSelectBox).pad(10f).row()
 
-        newGameOptionsTable.add("{World size}:".tr())
-        val worldSizeToRadius = LinkedHashMap<String, Int>()
-        worldSizeToRadius["Tiny"] = 10
-        worldSizeToRadius["Small"] = 15
-        worldSizeToRadius["Medium"] = 20
-        worldSizeToRadius["Large"] = 30
-        worldSizeToRadius["Huge"] = 40
 
-        val currentWorldSizeName = worldSizeToRadius.entries.first { it.value==newGameParameters.mapRadius }.key
-        val worldSizeSelectBox = TranslatedSelectBox(worldSizeToRadius.keys, currentWorldSizeName, skin)
-
-        worldSizeSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.mapRadius = worldSizeToRadius[worldSizeSelectBox.selected.value]!!
-            }
-        })
+        newGameOptionsTable.add(worldSizeLabel)
         newGameOptionsTable.add(worldSizeSelectBox).pad(10f).row()
 
+        newGameOptionsTable.add(mapFileLabel)
+        newGameOptionsTable.add(mapFileSelectBox).pad(10f).row()
 
 
         newGameOptionsTable.add("{Number of human players}:".tr())
@@ -168,6 +176,39 @@ class NewGameScreen: PickerScreen(){
         return newGameOptionsTable
     }
 
+    private fun getMapFileSelectBox(): SelectBox<String> {
+        val mapFileSelectBox = SelectBox<String>(skin)
+        val mapNames = Array<String>()
+        for (mapName in GameSaver().getMaps()) mapNames.add(mapName)
+        mapFileSelectBox.items = mapNames
+
+        mapFileSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.mapFileName = mapFileSelectBox.selected!!
+            }
+        })
+        return mapFileSelectBox
+    }
+
+    private fun getWorldSizeSelectBox(): TranslatedSelectBox {
+        val worldSizeToRadius = LinkedHashMap<String, Int>()
+        worldSizeToRadius["Tiny"] = 10
+        worldSizeToRadius["Small"] = 15
+        worldSizeToRadius["Medium"] = 20
+        worldSizeToRadius["Large"] = 30
+        worldSizeToRadius["Huge"] = 40
+
+        val currentWorldSizeName = worldSizeToRadius.entries.first { it.value == newGameParameters.mapRadius }.key
+        val worldSizeSelectBox = TranslatedSelectBox(worldSizeToRadius.keys, currentWorldSizeName, skin)
+
+        worldSizeSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.mapRadius = worldSizeToRadius[worldSizeSelectBox.selected.value]!!
+            }
+        })
+        return worldSizeSelectBox
+    }
+
     var newGame:GameInfo?=null
 
     override fun render(delta: Float) {
@@ -190,7 +231,8 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         val array = Array<TranslatedString>()
         values.forEach{array.add(TranslatedString(it))}
         items = array
-        selected = array.first { it.value==default }
+        val defaultItem = array.firstOrNull { it.value==default }
+        selected = if(defaultItem!=null) defaultItem else array.first()
     }
 }
 

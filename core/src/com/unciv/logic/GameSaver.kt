@@ -22,6 +22,8 @@ class GameSaver {
         val unzippedJson = Gzip.unzip(gzippedString)
         return json().fromJson(TileMap::class.java, unzippedJson)
     }
+    fun getMaps() = Gdx.files.local(mapsFolder).list().map { it.name() }
+
 
     fun getSave(GameName: String): FileHandle {
         return Gdx.files.local("$saveFilesFolder/$GameName")

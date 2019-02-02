@@ -21,8 +21,8 @@ android {
         applicationId "com.unciv.app"
         minSdkVersion 14
         targetSdkVersion 28
-        versionCode 198
-        versionName "2.12.5"
+        versionCode 199
+        versionName "2.13.0"
     }
 
     // Had to add this crap for Travis to build, it wanted to sign the app

@@ -20,6 +20,7 @@ class GameParameters{
     var humanNations=ArrayList<String>().apply { add("Babylon") }
     var numberOfEnemies=3
     var mapType= MapType.Perlin
+    var mapFileName :String?=null
 }
 
 class GameStarter{
@@ -27,7 +28,7 @@ class GameStarter{
         val gameInfo = GameInfo()
 
         gameInfo.gameParameters = newGameParameters
-        gameInfo.tileMap = TileMap(newGameParameters.mapRadius, newGameParameters.mapType)
+        gameInfo.tileMap = TileMap(newGameParameters)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         val startingLocations = getStartingLocations(
                 newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers, gameInfo.tileMap)
