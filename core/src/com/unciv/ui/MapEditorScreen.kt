@@ -3,6 +3,7 @@ package com.unciv.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Array
 import com.unciv.GameParameters
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
@@ -20,7 +21,7 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileGroupMap
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 
-class MapEditorScreen: CameraStageBaseScreen(){
+class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
     var clearTerrainFeature=false
     var selectedTerrain : Terrain?=null
     var clearResource=false
@@ -49,6 +50,11 @@ class MapEditorScreen: CameraStageBaseScreen(){
     }
 
     init{
+        if(mapToLoad!=null){
+            mapName=mapToLoad!!
+            tileMap=GameSaver().loadMap(mapName)
+            tileMap.setTransients()
+        }
         val scrollPane = getMapHolder(tileMap)
 
         stage.addActor(scrollPane)
@@ -154,6 +160,32 @@ class mapScreenOptionsTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEdit
             UnCivGame.Current.setWorldScreen()
         }
         add(saveMapButton).row()
+
+        val loadMapButton = TextButton("Load".tr(),CameraStageBaseScreen.skin)
+        loadMapButton.onClick { MapScreenLoadTable(mapEditorScreen); remove() }
+        add(loadMapButton).row()
+
+        val closeOptionsButtton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
+        closeOptionsButtton.onClick { remove() }
+        add(closeOptionsButtton).row()
+
+        open()
+    }
+}
+
+class MapScreenLoadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScreen){
+    init{
+        val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
+        val mapNames = Array<String>()
+        for (mapName in GameSaver().getMaps()) mapNames.add(mapName)
+        mapFileSelectBox.items = mapNames
+        add(mapFileSelectBox).row()
+
+        val loadMapButton = TextButton("Load".tr(),CameraStageBaseScreen.skin)
+        loadMapButton.onClick {
+            UnCivGame.Current.screen = MapEditorScreen(mapFileSelectBox.selected)
+        }
+        add(loadMapButton).row()
 
         val closeOptionsButtton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
         closeOptionsButtton.onClick { remove() }

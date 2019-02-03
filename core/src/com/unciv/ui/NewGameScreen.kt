@@ -235,4 +235,3 @@ class TranslatedSelectBox(values : Collection<String>, default:String, skin: Ski
         selected = if(defaultItem!=null) defaultItem else array.first()
     }
 }
-
