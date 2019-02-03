@@ -50,14 +50,19 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
     }
 
     init{
+        if (mapToLoad == null) {
+            val existingSaves = GameSaver().getMaps()
+            if(existingSaves.isNotEmpty())
+                mapToLoad = existingSaves.first()
+        }
         if(mapToLoad!=null){
             mapName=mapToLoad!!
             tileMap=GameSaver().loadMap(mapName)
             tileMap.setTransients()
         }
-        val scrollPane = getMapHolder(tileMap)
+        val mapHolder = getMapHolder(tileMap)
 
-        stage.addActor(scrollPane)
+        stage.addActor(mapHolder)
 
         val scrollTable = getTileEditorOptions()
         stage.addActor(scrollTable)
@@ -95,6 +100,10 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
         val mapHolder = TileGroupMap(tileGroups, 300f)
         val scrollPane = ScrollPane(mapHolder)
         scrollPane.setSize(stage.width, stage.height)
+        scrollPane.layout()
+        scrollPane.scrollPercentX=0.5f
+        scrollPane.scrollPercentY=0.5f
+        scrollPane.updateVisualScroll()
         return scrollPane
     }
 
