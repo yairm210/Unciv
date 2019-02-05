@@ -2,7 +2,6 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -124,10 +123,16 @@ class CityConstructions {
     fun addProduction(productionToAdd: Int) {
         if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions[currentConstruction] = 0
         inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + productionToAdd
+
+        val construction = getConstruction(currentConstruction)
+        val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
+        if (inProgressConstructions[currentConstruction]!! >= productionCost) {
+            constructionComplete(construction)
+        }
     }
 
     fun nextTurn(cityStats: Stats) {
-        var construction = getConstruction(currentConstruction)
+        val construction = getConstruction(currentConstruction)
         if(construction is SpecialConstruction) return
 
         // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
@@ -137,15 +142,10 @@ class CityConstructions {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
             cityInfo.civInfo.addNotification("[${cityInfo.name}] Cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
             Automation().chooseNextConstruction(this)
-            construction = getConstruction(currentConstruction)
         } else
             currentConstruction = saveCurrentConstruction
 
         addProduction(Math.round(cityStats.production))
-        val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
-        if (inProgressConstructions[currentConstruction]!! >= productionCost) {
-            constructionComplete(construction)
-        }
     }
 
     fun constructionComplete(construction: IConstruction) {
