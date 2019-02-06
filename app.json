@@ -1,0 +1,17 @@
+{
+  "addons": [
+
+  ],
+  "buildpacks": [
+
+  ],
+  "description": "",
+  "env": {
+  },
+  "formation": {
+  },
+  "name": "UnCiv",
+  "scripts": {
+  },
+  "stack": "heroku-18"
+}
