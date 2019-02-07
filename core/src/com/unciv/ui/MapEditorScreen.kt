@@ -2,6 +2,7 @@ package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Array
 import com.unciv.GameParameters
@@ -28,6 +29,7 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
     var selectedResource:TileResource?=null
     var tileMap = TileMap(GameParameters())
     var mapName = "My first map"
+    var currentHex=Group()
 
     fun clearSelection(){
         clearTerrainFeature=false
@@ -36,10 +38,15 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
         selectedResource=null
     }
 
-    fun getHex(color: Color, image: Actor?=null): Table {
+    fun getHex(color: Color, image: Actor?=null): Group {
         val hex = ImageGetter.getImage("TerrainIcons/Hexagon.png")
         hex.color = color
-        val group = Table().apply { add(hex).size(hex.width*0.3f,hex.height*0.3f); pack() }
+        hex.width*=0.3f
+        hex.height*=0.3f
+        val group = Group()
+        group.setSize(hex.width,hex.height)
+        hex.center(group)
+        group.addActor(hex)
 
         if(image!=null) {
             image.setSize(40f, 40f)
@@ -107,30 +114,49 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
         return scrollPane
     }
 
+
+    fun setCurrentHex(color: Color, image: Actor?=null){
+        currentHex.remove()
+        currentHex=getHex(color,image)
+        currentHex.setPosition(stage.width-currentHex.width-10, 10f)
+        stage.addActor(currentHex)
+    }
+
     private fun getTileEditorOptions(): Table {
 
         val baseTerrainHolder = Table()
         val terrainFeatureHolder = Table()
-        terrainFeatureHolder.add(getHex(Color.WHITE).apply { onClick { clearSelection(); clearTerrainFeature = true } })
+        terrainFeatureHolder.add(getHex(Color.WHITE).apply {
+            onClick {
+                clearSelection()
+                clearTerrainFeature = true
+                setCurrentHex(Color.WHITE)
+            }
+        })
 
         for (terrain in GameBasics.Terrains.values) {
-            var icon: Image? = null
+            var iconPath: String? = null
             var color = Color.WHITE
 
             if (terrain.type == TerrainType.TerrainFeature)
-                icon = ImageGetter.getImage("TerrainIcons/${terrain.name}.png")
+                iconPath = "TerrainIcons/${terrain.name}.png"
             else {
                 color = terrain.getColor()
                 val imagePath = "TerrainIcons/" + terrain.name
                 if (ImageGetter.imageExists(imagePath)) {
-                    icon = ImageGetter.getImage(imagePath)
+                    iconPath = imagePath
                 }
             }
 
-            val group = getHex(color, icon)
-            group.onClick { clearSelection(); selectedTerrain = terrain }
+            val group = getHex(color, if(iconPath==null) null else ImageGetter.getImage(iconPath))
+            group.onClick {
+                clearSelection()
+                selectedTerrain = terrain
+                setCurrentHex(color, if(iconPath==null) null else ImageGetter.getImage(iconPath))
+            }
 
-            if (terrain.type == TerrainType.TerrainFeature) terrainFeatureHolder.add(group)
+            if (terrain.type == TerrainType.TerrainFeature)
+                terrainFeatureHolder.add(group)
             else baseTerrainHolder.add(group)
         }
 
@@ -142,7 +168,11 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
 
         for (resource in GameBasics.TileResources.values) {
             val resourceHex = getHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
-            resourceHex.onClick { clearSelection(); selectedResource = resource }
+            resourceHex.onClick {
+                clearSelection()
+                selectedResource = resource
+                setCurrentHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
+            }
             resourcesHolder.add(resourceHex)
         }
 
