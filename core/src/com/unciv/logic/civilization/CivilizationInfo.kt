@@ -320,6 +320,16 @@ class CivilizationInfo {
         updateViewableTiles()
     }
 
+    fun startTurn(){
+        updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
+        setCitiesConnectedToCapitalTransients()
+        for (city in cities){
+            city.startTurn()
+        }
+        happiness = getHappinessForNextTurn().values.sum().roundToInt()
+        getCivUnits().toList().forEach { it.startTurn() }
+    }
+
     fun endTurn() {
         notifications.clear()
 
@@ -368,15 +378,6 @@ class CivilizationInfo {
         val stats = Stats()
         for (city in cities) stats.add(city.getGreatPersonPoints())
         return stats
-    }
-
-    fun startTurn(){
-        updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
-        setCitiesConnectedToCapitalTransients()
-        for (city in cities)
-            city.cityStats.update()
-        happiness = getHappinessForNextTurn().values.sum().roundToInt()
-        getCivUnits().toList().forEach { it.startTurn() }
     }
 
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {

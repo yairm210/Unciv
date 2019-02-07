@@ -64,7 +64,9 @@ class CityInfo {
         expansion.reset()
 
         val tile = getCenterTile()
-        tile.roadStatus = RoadStatus.Railroad
+
+        tryUpdateRoadStatus()
+
         if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
             tile.terrainFeature = null
 
@@ -169,13 +171,19 @@ class CityInfo {
         cityConstructions.setTransients()
     }
 
+    fun startTurn(){
+        cityStats.update()
+        tryUpdateRoadStatus()
+        attackedThisTurn = false
+        if (resistanceCounter > 0) resistanceCounter--
+    }
+
     fun endTurn() {
         val stats = cityStats.currentCityStats
         if (cityConstructions.currentConstruction == CityConstructions.Settler && stats.food > 0) {
             stats.production += stats.food
             stats.food = 0f
         }
-
 
         cityConstructions.nextTurn(stats)
         expansion.nextTurn(stats.culture)
@@ -189,13 +197,11 @@ class CityInfo {
             }
         }
         else population.nextTurn(stats.food)
-        if (resistanceCounter > 0) resistanceCounter--
 
         if(this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
             population.unassignExtraPopulation()
         }
-        attackedThisTurn = false
     }
 
     fun destroyCity() {
@@ -223,6 +229,7 @@ class CityInfo {
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             cityConstructions.removeBuilding(building.name)
         isBeingRazed=false
+        tryUpdateRoadStatus()
     }
 
     fun canAcquireTile(newTileInfo: TileInfo): Boolean {
@@ -236,5 +243,14 @@ class CityInfo {
         return false
     }
 
+    fun tryUpdateRoadStatus(){
+        if(getCenterTile().roadStatus==RoadStatus.None
+                && GameBasics.TileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
+            getCenterTile().roadStatus==RoadStatus.Road
+
+        else if(getCenterTile().roadStatus!=RoadStatus.Railroad
+                && GameBasics.TileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
+            getCenterTile().roadStatus==RoadStatus.Railroad
+    }
     //endregion
 }
