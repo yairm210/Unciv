@@ -34,11 +34,11 @@ class GameSaver {
     }
 
     fun saveGame(game: GameInfo, GameName: String) {
-        getSave(GameName).writeString(json().toJson(game), false)
+        json().toJson(game,getSave(GameName))
     }
 
     fun loadGame(GameName: String) : GameInfo {
-        val game = json().fromJson(GameInfo::class.java, getSave(GameName).readString())
+        val game = json().fromJson(GameInfo::class.java, getSave(GameName))
         game.setTransients()
         return game
     }
