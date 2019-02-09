@@ -133,7 +133,11 @@ class BattleDamage{
     }
 
     fun getDefenceModifiers(attacker: ICombatant, defender: MapUnitCombatant): HashMap<String, Float> {
+        if(defender.unit.isEmbarked()) // embarked units get no defensive modifiers
+            return HashMap()
+
         val modifiers = getGeneralModifiers(defender, attacker)
+
         if (!(defender.unit.hasUnique("No defensive terrain bonus"))) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus

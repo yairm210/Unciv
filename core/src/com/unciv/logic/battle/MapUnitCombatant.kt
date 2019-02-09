@@ -26,7 +26,7 @@ class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     }
 
     override fun getDefendingStrength(): Int {
-        if(unit.isEmbarked()) return 0
+        if(unit.isEmbarked()) return 5 * getCivInfo().getEra().ordinal
         return unit.baseUnit().strength
     }
 
