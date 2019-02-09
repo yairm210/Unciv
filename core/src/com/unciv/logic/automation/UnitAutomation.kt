@@ -1,7 +1,6 @@
 package com.unciv.logic.automation
 
 import com.unciv.UnCivGame
-import com.unciv.logic.HexMath
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -142,7 +141,7 @@ class UnitAutomation{
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
-    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>, minMovementBeforeAttack: Float = 0.1f): ArrayList<AttackableTile> {
+    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): ArrayList<AttackableTile> {
         val tilesWithEnemies = unit.civInfo.viewableTiles
                 .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
 
@@ -233,12 +232,43 @@ class UnitAutomation{
 
         val closestReachableEnemyCity = enemyCities
                 .asSequence()
-                .filter { unit.movementAlgs().canReach(it) }
-                .minBy { city ->
-                    unit.civInfo.cities.asSequence().map { HexMath().getDistance(city.position, it.getCenterTile().position) }.min()!!
+                .sortedBy { city -> // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
+                    unit.civInfo.cities.asSequence().map { city.arialDistanceTo(it.getCenterTile()) }.min()!!
                 }
+                .firstOrNull { unit.movementAlgs().canReach(it) }
+
         if (closestReachableEnemyCity != null) {
-            unit.movementAlgs().headTowards(closestReachableEnemyCity)
+            val unitDistanceToTiles = unit.getDistanceToTiles()
+            val tilesInBombardRange = closestReachableEnemyCity.getTilesInDistance(2)
+            val reachableTilesNotInBombardRange = unitDistanceToTiles.keys.filter { it !in tilesInBombardRange }
+            val canMoveIntoBombardRange = tilesInBombardRange.any { unitDistanceToTiles.containsKey(it)}
+
+            if(!canMoveIntoBombardRange) // no need to worry, keep going as the movement alg. says
+                unit.movementAlgs().headTowards(closestReachableEnemyCity)
+
+            else{
+                if(unit.getRange()>2){ // should never be in a bombardable position
+                    val tilesCanAttackFromButNotInBombardRange =
+                            reachableTilesNotInBombardRange.filter{it.arialDistanceTo(closestReachableEnemyCity) <= unit.getRange()}
+                    // move into position far away enough that the bombard doesn't hurt
+                    if(tilesCanAttackFromButNotInBombardRange.any())
+                        unit.movementAlgs().headTowards(tilesCanAttackFromButNotInBombardRange.minBy { unitDistanceToTiles[it]!! }!!)
+                }
+                else {
+                    // calculate total damage of units in surrounding 4-spaces from enemy city (so we can attack a city from 2 directions at once)
+                    val militaryUnitsAroundEnemyCity = closestReachableEnemyCity.getTilesInDistance(3)
+                            .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo == unit.civInfo }
+                            .map { it.militaryUnit!! }
+                    var totalAttackOnCityPerTurn = -20 // cities heal 20 per turn, so anything below that its useless
+                    val enemyCityCombatant = CityCombatant(closestReachableEnemyCity.getCity()!!)
+                    for(militaryUnit in militaryUnitsAroundEnemyCity){
+                        totalAttackOnCityPerTurn +=  BattleDamage().calculateDamageToDefender(MapUnitCombatant(militaryUnit), enemyCityCombatant)
+                    }
+                    if(totalAttackOnCityPerTurn * 3 > closestReachableEnemyCity.getCity()!!.health) // if we can defeat it in 3 turns with the current units,
+                        unit.movementAlgs().headTowards(closestReachableEnemyCity) // go for it!
+                }
+            }
+
             return true
         }
         return false
@@ -246,7 +276,7 @@ class UnitAutomation{
 
     private fun tryLandUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
         if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
-        val attackableEnemiesNextTurn = getAttackableEnemies(unit,unitDistanceToTiles, -200f)
+        val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
@@ -264,7 +294,7 @@ class UnitAutomation{
     }
 
     private fun tryAttackNearbyEnemy(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
-        val attackableEnemies = getAttackableEnemies(unit,unitDistanceToTiles)
+        val attackableEnemies = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
@@ -435,7 +465,7 @@ class SpecificUnitAutomation{
     fun automateGeneral(unit: MapUnit){
         //try to follow nearby units. Do not garrison in city if possible
         val militantToCompany = unit.getDistanceToTiles().map { it.key }
-                .firstOrNull {val militant = it.militaryUnit;
+                .firstOrNull {val militant = it.militaryUnit
             militant != null && militant.civInfo == unit.civInfo
                 && (it.civilianUnit == null || it.civilianUnit == unit)
                 && militant.getMaxMovement() <= 2.0f && !it.isCityCenter()}
