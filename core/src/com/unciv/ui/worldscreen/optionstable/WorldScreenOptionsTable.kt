@@ -3,7 +3,7 @@ package com.unciv.ui.worldscreen.optionstable
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
-import com.unciv.ui.MapEditorScreen
+import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.NewGameScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen

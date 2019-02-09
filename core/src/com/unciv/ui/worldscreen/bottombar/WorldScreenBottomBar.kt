@@ -3,7 +3,6 @@ package com.unciv.ui.worldscreen.bottombar
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
@@ -16,7 +15,7 @@ class WorldScreenBottomBar(val worldScreen: WorldScreen) : Table(){
 
     init {
         touchable= Touchable.enabled
-        add(unitTable).width(worldScreen.stage.width/3)
+        add(unitTable).width(worldScreen.stage.width/3).fill()
         add(battleTable).width(worldScreen.stage.width/3).fill() // so that background fills entire middle third
         add(tileInfoTable).width(worldScreen.stage.width/3).fill()
 

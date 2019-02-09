@@ -56,7 +56,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
     fun simulateBattle(attacker: ICombatant, defender: ICombatant){
         clear()
         defaults().pad(5f)
-        println("debuglog simulateBattle")
 
         val attackerNameWrapper = Table()
         val attackerLabel = Label(attacker.getName(), skin)

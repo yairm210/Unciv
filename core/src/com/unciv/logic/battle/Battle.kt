@@ -12,6 +12,7 @@ import java.util.*
  */
 class Battle(val gameInfo:GameInfo) {
     fun attack(attacker: ICombatant, defender: ICombatant) {
+        println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+defender.getCivInfo().civName+" "+defender.getName())
         val attackedTile = defender.getTile()
 
         var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)

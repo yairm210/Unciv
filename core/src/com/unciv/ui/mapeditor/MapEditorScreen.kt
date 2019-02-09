@@ -1,12 +1,12 @@
-package com.unciv.ui
+package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.*
-import com.badlogic.gdx.utils.Array
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.GameParameters
-import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
@@ -14,13 +14,13 @@ import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
+import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileGroupMap
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 
 class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
     var clearTerrainFeature=false
@@ -77,7 +77,7 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
 
         val saveMapButton = TextButton("Options".tr(),skin)
         saveMapButton.onClick {
-            mapScreenOptionsTable(this)
+            MapScreenOptionsTable(this)
         }
         stage.addActor(saveMapButton)
     }
@@ -187,49 +187,8 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
     }
 }
 
-class mapScreenOptionsTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScreen){
+class NewMapScreen:PickerScreen(){
     init{
-        val mapNameEditor = TextField(mapEditorScreen.mapName, CameraStageBaseScreen.skin)
-        mapNameEditor.addListener{ mapEditorScreen.mapName=mapNameEditor.text; true }
-        add(mapNameEditor).row()
 
-        val saveMapButton = TextButton("Save".tr(), CameraStageBaseScreen.skin)
-        saveMapButton.onClick {
-            GameSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
-            UnCivGame.Current.setWorldScreen()
-        }
-        add(saveMapButton).row()
-
-        val loadMapButton = TextButton("Load".tr(),CameraStageBaseScreen.skin)
-        loadMapButton.onClick { MapScreenLoadTable(mapEditorScreen); remove() }
-        add(loadMapButton).row()
-
-        val closeOptionsButtton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
-        closeOptionsButtton.onClick { remove() }
-        add(closeOptionsButtton).row()
-
-        open()
-    }
-}
-
-class MapScreenLoadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScreen){
-    init{
-        val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
-        val mapNames = Array<String>()
-        for (mapName in GameSaver().getMaps()) mapNames.add(mapName)
-        mapFileSelectBox.items = mapNames
-        add(mapFileSelectBox).row()
-
-        val loadMapButton = TextButton("Load".tr(),CameraStageBaseScreen.skin)
-        loadMapButton.onClick {
-            UnCivGame.Current.screen = MapEditorScreen(mapFileSelectBox.selected)
-        }
-        add(loadMapButton).row()
-
-        val closeOptionsButtton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
-        closeOptionsButtton.onClick { remove() }
-        add(closeOptionsButtton).row()
-
-        open()
     }
 }

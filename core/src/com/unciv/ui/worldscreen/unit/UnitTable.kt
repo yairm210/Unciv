@@ -1,5 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -22,6 +24,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     var selectedCity : CityInfo? = null
     var currentlyExecutingAction : String? = null
     var lastSelectedCityButton : Boolean = false
+    val deselectUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
@@ -40,6 +43,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         separator= addSeparator().actor!!
         add(promotionsTable).colspan(2).row()
         add(unitDescriptionTable)
+
+        deselectUnitButton.add(Label("X",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(20f)
+        deselectUnitButton.pack()
+        deselectUnitButton.touchable = Touchable.enabled
+        deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true }
+        addActor(deselectUnitButton)
     }
 
     fun update() {
