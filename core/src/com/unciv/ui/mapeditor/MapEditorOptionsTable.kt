@@ -9,7 +9,7 @@ import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 
-class MapScreenOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEditorScreen){
+class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEditorScreen){
     init{
         val mapNameEditor = TextField(mapEditorScreen.mapName, CameraStageBaseScreen.skin)
         mapNameEditor.addListener{ mapEditorScreen.mapName=mapNameEditor.text; true }
@@ -25,6 +25,10 @@ class MapScreenOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
         val loadMapButton = TextButton("Load".tr(), CameraStageBaseScreen.skin)
         loadMapButton.onClick { MapScreenLoadTable(mapEditorScreen); remove() }
         add(loadMapButton).row()
+
+        val exitMapEditorButton = TextButton("Exit map editor".tr(), CameraStageBaseScreen.skin)
+        exitMapEditorButton.onClick { UnCivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
+        add(exitMapEditorButton ).row()
 
         val closeOptionsButtton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
         closeOptionsButtton.onClick { remove() }

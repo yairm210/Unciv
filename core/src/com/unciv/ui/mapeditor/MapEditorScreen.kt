@@ -77,7 +77,7 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
 
         val saveMapButton = TextButton("Options".tr(),skin)
         saveMapButton.onClick {
-            MapScreenOptionsTable(this)
+            MapEditorOptionsTable(this)
         }
         stage.addActor(saveMapButton)
     }
