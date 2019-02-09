@@ -22,7 +22,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var cityInfoTable = CityInfoTable(this)
     private var constructionsTable = ConstructionsTable(this)
     private var cityPickerTable = Table()
-    private var goToWorldButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
+    private var razeCityButtonHolder = Table()
     private var tileGroups = ArrayList<CityTileGroup>()
     var topCityStatsTable=Table()
 
@@ -46,7 +46,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 stage.height - buildingsTableContainer.height-5)
 
         stage.addActor(constructionsTable)
-        stage.addActor(goToWorldButton)
         stage.addActor(cityPickerTable)
         stage.addActor(buildingsTableContainer)
 
@@ -58,13 +57,14 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         cityInfoTable.update()
         updateCityPickerTable()
         constructionsTable.update()
-        updateGoToWorldButton()
+        updateRazeCityButton()
         updateTileTable()
         updateTileGroups()
 
         topCityStatsTable.remove()
         topCityStatsTable = getCityStatsTable()
         topCityStatsTable.setPosition(5f, stage.height-5-topCityStatsTable.height)
+        stage.addActor(topCityStatsTable)
         stage.addActor(topCityStatsTable)
 
         if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
@@ -180,35 +180,40 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         } else cityPickerTable.add()
         cityPickerTable.row()
 
-        if(!city.isBeingRazed) {
-            val razeCityButton = TextButton("Raze city".tr(), skin)
-            razeCityButton.onClick { city.isBeingRazed=true; update() }
-            cityPickerTable.add(razeCityButton).colspan(cityPickerTable.columns)
-        }
-        else{
-            val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
-            stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
-            cityPickerTable.add(stopRazingCityButton).colspan(cityPickerTable.columns)
-        }
+        val exitCityButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
 
-        cityPickerTable.pack()
-        cityPickerTable.centerX(stage)
-        stage.addActor(cityPickerTable)
-    }
-
-    private fun updateGoToWorldButton() {
-        goToWorldButton.clearListeners()
-        goToWorldButton.onClick {
+        exitCityButton.onClick {
             game.setWorldScreen()
             game.worldScreen.tileMapHolder.setCenterPosition(city.location)
             game.worldScreen.bottomBar.unitTable.selectedUnit=null
             dispose()
         }
 
-        goToWorldButton.pad(5f)
+        cityPickerTable.add(exitCityButton).colspan(cityPickerTable.columns)
+
+        cityPickerTable.pack()
+        cityPickerTable.centerX(stage)
+        stage.addActor(cityPickerTable)
+    }
+
+    private fun updateRazeCityButton() {
+        razeCityButtonHolder.clear()
+
+        if(!city.isBeingRazed) {
+            val razeCityButton = TextButton("Raze city".tr(), skin)
+            razeCityButton.onClick { city.isBeingRazed=true; update() }
+            razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
+        }
+        else{
+            val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
+            stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
+            razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
+        }
+        razeCityButtonHolder.pack()
         //goToWorldButton.setSize(goToWorldButton.prefWidth, goToWorldButton.prefHeight)
-        goToWorldButton.centerX(stage)
-        goToWorldButton.y = stage.height - goToWorldButton.height - 20
+        razeCityButtonHolder.centerX(stage)
+        razeCityButtonHolder.y = stage.height - razeCityButtonHolder.height - 20
+        stage.addActor(razeCityButtonHolder)
     }
 
     private fun addTiles() {
