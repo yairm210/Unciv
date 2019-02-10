@@ -1,16 +1,16 @@
 package com.unciv.logic.trade
 
 class Trade{
+
+    val theirOffers = TradeOffersList()
+    val ourOffers = TradeOffersList()
+
     fun reverse(): Trade {
         val newTrade = Trade()
         newTrade.theirOffers+=ourOffers.map { it.copy() }
         newTrade.ourOffers+=theirOffers.map { it.copy() }
         return newTrade
     }
-
-
-    val theirOffers = TradeOffersList()
-    val ourOffers = TradeOffersList()
 
     fun equals(trade: Trade):Boolean{
        if(trade.ourOffers.size!=ourOffers.size

@@ -22,7 +22,7 @@ class Tutorials{
 
     private val tutorialTexts = mutableListOf<Tutorial>()
 
-    private var isTutorialShowing = false
+    var isTutorialShowing = false
 
 
     fun displayTutorials(name: String, stage: Stage) {

@@ -19,7 +19,7 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
         background= ImageGetter.getBackground(nation.getSecondaryColor())
         innerTable.pad(10f)
         innerTable.background= ImageGetter.getBackground(nation.getColor())
-        innerTable.add(Label(nation.name.tr(), skin).apply { setFontColor(nation.getSecondaryColor())}).row()
+        innerTable.add(Label(nation.leaderName.tr()+" - "+nation.name.tr(), skin).apply { setFontColor(nation.getSecondaryColor())}).row()
         innerTable.add(Label(getUniqueLabel(nation), skin)
                 .apply { setWrap(true);setFontColor(nation.getSecondaryColor())})
                 .width(width)

@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.models.gamebasics.tr
@@ -328,7 +328,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
 
-                statusLine.color = if(diplomacy.diplomaticStatus==DiplomaticStatus.War) Color.RED
+                statusLine.color = if(diplomacy.diplomaticStatus== DiplomaticStatus.War) Color.RED
                 else Color.GREEN
 
                 group.addActor(statusLine)

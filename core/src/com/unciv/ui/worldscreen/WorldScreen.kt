@@ -10,7 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
+import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
@@ -22,6 +24,7 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
+import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {
@@ -157,6 +160,11 @@ class WorldScreen : CameraStageBaseScreen() {
         if(!gameInfo.oneMoreTurnMode && currentPlayerCiv.victoryManager.hasWon()) game.screen = VictoryScreen()
         else if(currentPlayerCiv.policies.freePolicies>0) game.screen = PolicyPickerScreen(currentPlayerCiv)
         else if(currentPlayerCiv.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
+
+        if(game.screen==this && !tutorials.isTutorialShowing
+                && currentPlayerCiv.diplomaticIncidents.any() && !DiplomaticIncidentPopup.isOpen){
+            DiplomaticIncidentPopup(this,currentPlayerCiv.diplomaticIncidents.first())
+        }
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
@@ -300,4 +308,42 @@ class WorldScreen : CameraStageBaseScreen() {
         super.render(delta)
     }
 
+}
+
+class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncident: DiplomaticIncident):PopupTable(worldScreen){
+    init{
+        val otherCiv = worldScreen.gameInfo.getCivilization(diplomaticIncident.civName)
+        val otherCivLeaderName = otherCiv.getNation().leaderName+" of "+otherCiv.civName
+        add(Label(otherCivLeaderName,skin))
+        addSeparator()
+        when(diplomaticIncident.type){
+            DiplomaticIncidentType.WarDeclaration -> {
+                add(Label("We've decided to declare war on you, k?",skin)).row()
+                val responseTable = Table()
+
+                val angryResponse = TextButton("You'll pay for this",skin)
+                angryResponse.onClick { close() }
+
+                val acceptingResponse= TextButton("This is fine",skin)
+                acceptingResponse.onClick { close() }
+
+                responseTable.add(angryResponse)
+                responseTable.add(acceptingResponse)
+                add(responseTable)
+            }
+            DiplomaticIncidentType.TradeOffer -> TODO()
+        }
+        open()
+        isOpen = true
+    }
+
+    fun close(){
+        worldScreen.currentPlayerCiv.diplomaticIncidents.remove(diplomaticIncident)
+        isOpen = false
+        remove()
+    }
+
+    companion object {
+        var isOpen = false
+    }
 }

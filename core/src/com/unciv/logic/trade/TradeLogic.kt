@@ -3,7 +3,7 @@ package com.unciv.logic.trade
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
@@ -46,7 +46,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val civsWeBothKnow = otherCivsWeKnow
                 .filter { otherCivilization.diplomacy.containsKey(it.civName) }
         val civsWeArentAtWarWith = civsWeBothKnow
-                .filter { civInfo.diplomacy[it.civName]!!.diplomaticStatus==DiplomaticStatus.Peace }
+                .filter { civInfo.diplomacy[it.civName]!!.diplomaticStatus== DiplomaticStatus.Peace }
         for(thirdCiv in civsWeArentAtWarWith){
             offers.add(TradeOffer("Declare war on "+thirdCiv.civName,TradeType.WarDeclaration,0))
         }
@@ -120,7 +120,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
                 val nameOfCivToDeclareWarOn = offer.name.split(' ').last()
-                val civToDeclareWarOn = ourCivilization.gameInfo.civilizations.first { it.civName==nameOfCivToDeclareWarOn }
+                val civToDeclareWarOn = ourCivilization.gameInfo.getCivilization(nameOfCivToDeclareWarOn)
                 val threatToThem = Automation().threatAssessment(otherCivilization,civToDeclareWarOn)
 
                 if(!otherCivIsRecieving) { // we're getting this from them, that is, they're declaring war
@@ -133,7 +133,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     }
                 }
                 else{
-                    if(otherCivilization.diplomacy[nameOfCivToDeclareWarOn]!!.diplomaticStatus==DiplomaticStatus.War){
+                    if(otherCivilization.diplomacy[nameOfCivToDeclareWarOn]!!.diplomaticStatus== DiplomaticStatus.War){
                         when (threatToThem) {
                             ThreatLevel.VeryLow -> return 0
                             ThreatLevel.Low -> return 0
@@ -199,8 +199,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     }
                 }
                 if(offer.type==TradeType.Introduction)
-                    to.meetCivilization(to.gameInfo.civilizations
-                            .first { it.civName==offer.name.split(" ")[2] })
+                    to.meetCivilization(to.gameInfo.getCivilization(offer.name.split(" ")[2]))
+
                 if(offer.type==TradeType.WarDeclaration){
                     val nameOfCivToDeclareWarOn = offer.name.split(' ').last()
                     from.diplomacy[nameOfCivToDeclareWarOn]!!.declareWar()

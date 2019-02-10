@@ -4,6 +4,9 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -51,8 +54,9 @@ class CivilizationInfo {
     var greatPeople = GreatPersonManager()
     @Deprecated("As of 2.11.3") var scienceVictory = ScienceVictoryManager()
     var victoryManager=VictoryManager()
-    var diplomacy = HashMap<String,DiplomacyManager>()
+    var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
+    val diplomaticIncidents = ArrayList<DiplomaticIncident>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -294,7 +298,7 @@ class CivilizationInfo {
         return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
     }
 
-    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus==DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+    fun isAtWar() = diplomacy.values.any { it.diplomaticStatus== DiplomaticStatus.War && !it.otherCiv().isDefeated() }
     //endregion
 
     //region state-changing functions

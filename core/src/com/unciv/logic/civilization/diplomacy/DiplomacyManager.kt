@@ -1,17 +1,13 @@
-package com.unciv.logic.civilization
+package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
-
-enum class DiplomaticStatus{
-    Peace,
-    War
-}
 
 class DiplomacyManager() {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -42,7 +38,7 @@ class DiplomacyManager() {
 
     fun canDeclareWar() = turnsToPeaceTreaty()==0
 
-    fun otherCiv() = civInfo.gameInfo.civilizations.first{it.civName==otherCivName}
+    fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
 
     fun goldPerTurn():Int{
         var goldPerTurnForUs = 0
@@ -103,6 +99,7 @@ class DiplomacyManager() {
         diplomaticStatus = DiplomaticStatus.War
         otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
         otherCiv().addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
+        otherCiv().diplomaticIncidents.add(DiplomaticIncident(civInfo.civName,DiplomaticIncidentType.WarDeclaration))
     }
     //endregion
 }

@@ -1,6 +1,7 @@
 [
 	{
 		name:"Babylon",
+		leaderName:"Nebuchadnezzar II",
 		mainColor:[27,53,63],
 		secondaryColor:[213,249,255],
 		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
@@ -10,6 +11,7 @@
 	},
 	{
 		name:"Greece",
+		leaderName:"Alexander",
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
@@ -18,6 +20,7 @@
 	},
 	{
 		name:"China",
+		leaderName:"Wu Zetian",
 		mainColor:[9, 112, 84],
 		secondaryColor:[255,255,255],
 		unique:"Great general provides double combat bonus, and spawns 50% faster"
@@ -27,6 +30,7 @@
 	},
 	{
 		name:"Egypt",
+		leaderName:"Ramesses II",
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
 		unique:"+20% production towards Wonder construction"
@@ -36,6 +40,7 @@
 	},
 	{
 		name:"England",
+		leaderName:"Elizabeth",
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
 		unique:"+2 movement for all naval units"
@@ -45,6 +50,7 @@
 	},
 	{
 		name:"France",
+		leaderName:"Napoleon",
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
 		unique:"+2 Culture per turn from cities before discovering Steam Power",
@@ -54,6 +60,7 @@
 	},
 	{
 		name:"Russia",
+		leaderName:"Catherine",
 		mainColor:[ 236, 178, 0],
 		secondaryColor:[0,0,0],
 		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
@@ -63,6 +70,7 @@
 	},
 	{
 		name:"Rome",
+		leaderName:"Augustus Caesar",
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
 		unique:"+25% Production towards any buildings that already exist in the Capital",
@@ -72,6 +80,7 @@
 	},
 	{
 		name:"Arabia",
+		leaderName:"Harun al-Rashid",
 		mainColor:[ 41,83,42],
 		secondaryColor:[146,221,9],
 		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
@@ -80,6 +89,7 @@
 	},
 	{
 		name:"America",
+		leaderName:"Washington",
 		mainColor:[ 28,51,119],
 		secondaryColor:[255,255,255],
 		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",

@@ -4,7 +4,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo

@@ -31,8 +31,9 @@ class GameInfo {
         return toReturn
     }
 
-    fun getCurrentPlayerCivilization(): CivilizationInfo = civilizations.first { it.civName==currentPlayer }
-    fun getBarbarianCivilization(): CivilizationInfo = civilizations.first { it.civName=="Barbarians" }
+    fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
+    fun getCurrentPlayerCivilization() = getCivilization(currentPlayer)
+    fun getBarbarianCivilization() = getCivilization("Barbarians")
     fun getDifficulty() = GameBasics.Difficulties[difficulty]!!
     //endregion
 

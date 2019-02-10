@@ -281,7 +281,7 @@ open class TileInfo {
         if(civilianUnit!=null) civilianUnit!!.currentTile = this
 
         for (unit in getUnits()) {
-            unit.assignOwner(tileMap.gameInfo.civilizations.first { it.civName == unit.owner })
+            unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner))
             unit.setTransients()
         }
     }
