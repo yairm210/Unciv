@@ -2,6 +2,7 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
@@ -11,6 +12,7 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
+import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.round
@@ -163,6 +165,19 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val currentCityLabel = Label(city.name+" ("+city.population.population+")", CameraStageBaseScreen.skin)
         currentCityLabel.setFontSize(25)
+        currentCityLabel.onClick {
+            val popup = PopupTable(this)
+            val textArea = TextField(city.name, skin)
+            textArea.setAlignment(Align.center)
+            popup.add(textArea).colspan(2).row()
+            popup.addButton("Close".tr()){popup.remove()}
+            popup.addButton("Save".tr()){
+                city.name = textArea.text
+                UnCivGame.Current.screen = CityScreen(city)
+            }
+            popup.open()
+            }
+
         cityNameTable.add(currentCityLabel)
 
         cityPickerTable.add(cityNameTable)
