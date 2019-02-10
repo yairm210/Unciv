@@ -4019,6 +4019,8 @@
 		German:"Schwierigkeitsgrad"
 	}
 	
+	// Diplomacy!
+	
 	"Diplomacy":{	
 		Italian:"Diplomazia"
 		Russian:"Дипломатия"
@@ -4073,6 +4075,10 @@
 		Portuguese:"[civName] Declarou guerra contra nós!"
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
+	
+	"You'll pay for this!":{}
+	"Very well.":{}
+	"Farewell.":{}
 	
 	// Overview screen
 	"Overview":{	
@@ -4274,6 +4280,8 @@
 		Portuguese:"Cidade mais próxima"
 		German:"Nächstgelegene Stadt"
 	}
+	
+	"Defeated":{}
 	
 
 	// Buildings!
@@ -7362,5 +7370,6 @@
 		German:"Zerstöre [civName]"
 		French:"Détruiser [civName]"
 	}	
+	
 	
 }

@@ -2,6 +2,9 @@
 	{
 		name:"Babylon",
 		leaderName:"Nebuchadnezzar II",
+		declaringWar:"The demon wants the blood of soldiers!"
+		attacked:"Oh well, I presume you know what you're doing."
+		defeated:"It is over. Perhaps now I shall have peace, at last."
 		mainColor:[27,53,63],
 		secondaryColor:[213,249,255],
 		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
@@ -11,6 +14,9 @@
 	},
 	{
 		name:"Greece",
+		declaringWar:"You are in my way, you must be destroyed."
+		attacked:"As a matter of fact I too grow weary of peace."
+		defeated:"You have somehow become my undoing! What kind of beast are you?"
 		leaderName:"Alexander",
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
@@ -21,6 +27,9 @@
 	{
 		name:"China",
 		leaderName:"Wu Zetian",
+		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
+		attacked:"Fool! I will disembowel you all!"
+		defeated:"You have proven to be a cunning and competent adversary. I congratulate you on your victory."
 		mainColor:[9, 112, 84],
 		secondaryColor:[255,255,255],
 		unique:"Great general provides double combat bonus, and spawns 50% faster"
@@ -31,6 +40,9 @@
 	{
 		name:"Egypt",
 		leaderName:"Ramesses II",
+		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
+		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!"
+		defeated:"Strike me down and my soul will torment yours forever – you have won nothing."
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
 		unique:"+20% production towards Wonder construction"
@@ -41,6 +53,9 @@
 	{
 		name:"England",
 		leaderName:"Elizabeth",
+		declaringWar:"By the grace of God, your days are numbered."
+		attacked:"We shall never surrender."
+		defeated:"You have triumphed over us. The day is yours."
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
 		unique:"+2 movement for all naval units"
@@ -51,6 +66,9 @@
 	{
 		name:"France",
 		leaderName:"Napoleon",
+		declaringWar:"You're disturbing us, prepare for war.",
+		attacked:"You've fallen into my trap. I'll bury you.",
+		defeated:"I congratulate you for your victory."
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
 		unique:"+2 Culture per turn from cities before discovering Steam Power",
@@ -61,6 +79,9 @@
 	{
 		name:"Russia",
 		leaderName:"Catherine",
+		declaringWar:"You've behaved yourself very badly, you know it. Now it's payback time.",
+		attacked:"You've mistaken my passion for a weakness, you'll regret about this."
+		defeated:"We were defeated, so this makes me your prisoner. I suppose there are worse fates."
 		mainColor:[ 236, 178, 0],
 		secondaryColor:[0,0,0],
 		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
@@ -71,6 +92,9 @@
 	{
 		name:"Rome",
 		leaderName:"Augustus Caesar",
+		declaringWar:"My treasury contains little and my soldiers are getting impatient... <sigh> ...therefore you must die."
+		attacked:"So brave, yet so stupid! If only you had a brain similar to your courage."
+		defeated:"The gods have deprived Rome of their favour. We have been defeated."
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
 		unique:"+25% Production towards any buildings that already exist in the Capital",
@@ -81,6 +105,9 @@
 	{
 		name:"Arabia",
 		leaderName:"Harun al-Rashid",
+		declaringWar:"The world will be more beautiful without you. Prepare for war."
+		attacked:"Fool! You will soon regret dearly! I swear it!"
+		defeated:"You have won, congratulations. My palace is now in your possession, and I beg that you care well for the peacock."
 		mainColor:[ 41,83,42],
 		secondaryColor:[146,221,9],
 		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
@@ -90,6 +117,9 @@
 	{
 		name:"America",
 		leaderName:"Washington",
+		declaringWar:"Your wanton aggression leaves us no choice. Prepare for war!"
+		attacked:"You have mistaken our love of peace for weakness. You shall regret this!"
+		defeated:"The day...is yours. I hope you will be merciful in your triumph."
 		mainColor:[ 28,51,119],
 		secondaryColor:[255,255,255],
 		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",

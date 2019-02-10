@@ -7,6 +7,11 @@ import com.unciv.ui.utils.colorFromRGB
 class Nation : INamed {
     override lateinit var name: String
     lateinit var leaderName: String
+
+    lateinit var declaringWar:String
+    lateinit var attacked:String
+    lateinit var defeated:String
+
     lateinit var mainColor: List<Int>
     var unique:String?=null
     var secondaryColor: List<Int>?=null

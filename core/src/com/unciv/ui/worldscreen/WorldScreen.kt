@@ -311,27 +311,30 @@ class WorldScreen : CameraStageBaseScreen() {
 }
 
 class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncident: DiplomaticIncident):PopupTable(worldScreen){
-    init{
+    fun getCloseButton(text:String): TextButton {
+        val button = TextButton(text.tr(), skin)
+        button.onClick { close() }
+        return button
+    }
+
+    init {
         val otherCiv = worldScreen.gameInfo.getCivilization(diplomaticIncident.civName)
         val otherCivLeaderName = otherCiv.getNation().leaderName+" of "+otherCiv.civName
         add(Label(otherCivLeaderName,skin))
         addSeparator()
+
         when(diplomaticIncident.type){
             DiplomaticIncidentType.WarDeclaration -> {
-                add(Label("We've decided to declare war on you, k?",skin)).row()
+                addGoodSizedLabel(otherCiv.getNation().declaringWar).row()
                 val responseTable = Table()
-
-                val angryResponse = TextButton("You'll pay for this",skin)
-                angryResponse.onClick { close() }
-
-                val acceptingResponse= TextButton("This is fine",skin)
-                acceptingResponse.onClick { close() }
-
-                responseTable.add(angryResponse)
-                responseTable.add(acceptingResponse)
+                responseTable.add(getCloseButton("You'll pay for this!"))
+                responseTable.add(getCloseButton("Very well."))
                 add(responseTable)
             }
-            DiplomaticIncidentType.TradeOffer -> TODO()
+            DiplomaticIncidentType.Defeated -> {
+                addGoodSizedLabel(otherCiv.getNation().defeated).row()
+                add(getCloseButton("Farewell."))
+            }
         }
         open()
         isOpen = true

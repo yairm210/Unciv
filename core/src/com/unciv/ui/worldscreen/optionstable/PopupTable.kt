@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -24,6 +25,12 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         pack()
         center(screen.stage)
         screen.stage.addActor(this)
+    }
+
+    fun addGoodSizedLabel(text: String): Cell<Label> {
+        val label = Label(text,CameraStageBaseScreen.skin)
+        label.setWrap(true)
+        return add(label).width(screen.stage.width/2)
     }
 
     fun addButton(text:String, action:()->Unit){

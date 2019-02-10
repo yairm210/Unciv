@@ -296,10 +296,14 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             val civGroup = Table()
             val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
 
-            val label = Label(civ.civName.tr(), CameraStageBaseScreen.skin)
+            var civNameText = civ.civName.tr()
+            if(civ.isDefeated()) civNameText += "\n({Defeated})".tr()
+            val label = Label(civNameText, CameraStageBaseScreen.skin)
+            label.setAlignment(Align.center)
 
             if (civ.isDefeated()) {
                 civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
+                label.setFontColor(Color.BLACK)
             } else if (playerKnows(civ)) {
                 civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
                 label.setFontColor(civ.getNation().getSecondaryColor())
