@@ -216,7 +216,7 @@ class NextTurnAutomation{
                 && civInfo.cities.none { it.cityConstructions.currentConstruction == "Settler" }) {
 
             val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
-            if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwisse focus on self first
+            if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
                 bestCity.cityConstructions.currentConstruction = "Settler"
         }
     }

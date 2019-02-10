@@ -28,7 +28,7 @@ object GameBasics {
 
     fun <T> getFromJson(tClass: Class<T>, name: String): T {
         val jsonText = Gdx.files.internal("jsons/$name.json").readString()
-        return Json().fromJson(tClass, jsonText)
+        return Json().apply { ignoreUnknownFields=true }.fromJson(tClass, jsonText)
     }
 
     private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
