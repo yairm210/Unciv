@@ -41,16 +41,18 @@ class CityInfo {
         this.location = cityLocation
         setTransients()
 
-        // Since cities can be captures between civilizations,
-        // we need to check which other cities exist globally and name accordingly
-        val allExistingCityNames = civInfo.gameInfo.civilizations.flatMap { it.cities }.map { it.name }.toHashSet()
-        val probablyName = civInfo.getNation().cities.firstOrNull { !allExistingCityNames.contains(it) }
-        if(probablyName!=null) name=probablyName
-        else {
-            val newName = civInfo.getNation().cities.map { "New $it" }.firstOrNull{ !allExistingCityNames.contains(it) }
-            if(newName!=null) name=newName
-            else name = civInfo.getNation().cities.map { "Newer $it" }.first{ !allExistingCityNames.contains(it) }
-        }
+        val nationCities = civInfo.getNation().cities
+        val cityNameIndex = civInfo.citiesCreated % nationCities.size
+        val cityName = nationCities[cityNameIndex]
+
+        val cityNameRounds = civInfo.citiesCreated / nationCities.size
+        val cityNamePrefix = if(cityNameRounds==0) ""
+        else if(cityNameRounds==2) "New "
+        else "Newer "
+
+        name = cityNamePrefix + cityName
+
+        civInfo.citiesCreated++
 
         civInfo.cities = civInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo.addNotification("[$name] has been founded!", cityLocation, Color.PURPLE)

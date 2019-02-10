@@ -58,6 +58,7 @@ class CivilizationInfo {
     // we won't get concurrent modification exceptions.
     // This is basically a way to ensure our lists are immutable.
     var cities = listOf<CityInfo>()
+    var citiesCreated = 0
     var exploredTiles = HashSet<Vector2>()
 
     constructor()
@@ -302,6 +303,9 @@ class CivilizationInfo {
         policies.civInfo = this
         if(policies.adoptedPolicies.size>0 && policies.numberOfAdoptedPolicies == 0)
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
+
+        if(citiesCreated==0 && cities.any())
+            citiesCreated = cities.filter { it.name in getNation().cities }.count()
 
         tech.civInfo = this
         tech.setTransients()
