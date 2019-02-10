@@ -2,9 +2,25 @@
 	{
 		name:"Babylon",
 		leaderName:"Nebuchadnezzar II",
+		
 		declaringWar:"The demon wants the blood of soldiers!"
 		attacked:"Oh well, I presume you know what you're doing."
 		defeated:"It is over. Perhaps now I shall have peace, at last."
+		introduction:"Are you real or a phantom?"
+		
+		neutralHello:"Greetings."
+		neutralLetsHearIt:["I'm listening.","What do you want?"]
+		neutralNo:["No!","Certainly not.","Unacceptable!"]
+		neutralYes:["Completed!","Yes!","Agreed!"]
+
+		hateHello:"What do YOU want?!"
+		hateLetsHearIt:["I'm certainly listening.","I'm listening!"]
+		hateNo:["No!","Certainly not!","Unacceptable!"]
+		hateYes:["Yes!"]
+		
+		afterPeace:"Foolish, foolish – letting me live."
+		tradeRequest:" It appears that you do have a reason for existing – to make this deal with me."
+				
 		mainColor:[27,53,63],
 		secondaryColor:[213,249,255],
 		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
@@ -14,10 +30,26 @@
 	},
 	{
 		name:"Greece",
+		leaderName:"Alexander",
+		
 		declaringWar:"You are in my way, you must be destroyed."
 		attacked:"As a matter of fact I too grow weary of peace."
 		defeated:"You have somehow become my undoing! What kind of beast are you?"
-		leaderName:"Alexander",
+		introduction:"Hello stranger! I am Alexandros, son of kings and grandson of the gods!"
+		
+		neutralHello:"Greetings!"
+		neutralLetsHearIt:["I'm listening.","Go on.","Yes?","Come."]
+		neutralNo:["We decline.","Certainly not.","It is necessary not to accept."]
+		neutralYes:["Certainly.","Very much.","The very best!"]
+
+		hateHello:"What?"
+		hateLetsHearIt:["You say.","And?","Come on."]
+		hateNo:["This is not pleasant!","You're not being earnest!","Pardon me?"]
+		hateYes:["Oh, very well.","I suppose I must.","Well done."]
+		
+		afterPeace:"I must congratulate you on your remarkable victory."
+		tradeRequest:"My friend, does this seem reasonable to you?"
+				
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
@@ -27,9 +59,25 @@
 	{
 		name:"China",
 		leaderName:"Wu Zetian",
+		
 		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
 		attacked:"Fool! I will disembowel you all!"
 		defeated:"You have proven to be a cunning and competent adversary. I congratulate you on your victory."
+		introduction:"Greetings, I am Empress Wu Zetian. China desires peace and development. You leave us alone, we'll leave you alone."
+		
+		neutralHello:"How are you today?"
+		neutralLetsHearIt:["Continue.","What?","Keep going."]
+		neutralNo:["Nope.","Of course not.","Definitely not."]
+		neutralYes:["Of course.","I agree.","Excellent!"]
+
+		hateHello:" Oh. It's you?"
+		hateLetsHearIt:["And what else?","Keep talking."]
+		hateNo:["I cannot accept that.","Sorry, say that again.","Get out of my face!"]
+		hateYes:["I suppose I must accept.","Ah. Very good."]
+		
+		afterPeace:"The Blessings of Heaven be upon you."
+		tradeRequest:"My friend, do you think you can accept this request?"
+				
 		mainColor:[9, 112, 84],
 		secondaryColor:[255,255,255],
 		unique:"Great general provides double combat bonus, and spawns 50% faster"
@@ -40,9 +88,25 @@
 	{
 		name:"Egypt",
 		leaderName:"Ramesses II",
+		
 		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
 		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!"
 		defeated:"Strike me down and my soul will torment yours forever – you have won nothing."
+		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
+		
+		neutralHello:"Good day."
+		letsHearIt:["Go on.","Speak.","I am all ears."]
+		neutralNo:["No.","Definitely not."]
+		neutralYes:["Okay.","Very well."]
+		
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["Then?","Finish your speech."]
+		hateNo:["This is unacceptable.","You cannot be serious about your request."]
+		hateYes:["Oh, very well.","I think I should agree."]
+		
+		afterPeace:"You know I could have destroyed you, but the feeling of generosity perfumes me today."
+		tradeRequest:"Generous Egypt makes you this offer."
+		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
 		unique:"+20% production towards Wonder construction"
@@ -53,9 +117,25 @@
 	{
 		name:"England",
 		leaderName:"Elizabeth",
+		
 		declaringWar:"By the grace of God, your days are numbered."
 		attacked:"We shall never surrender."
 		defeated:"You have triumphed over us. The day is yours."
+		introduction:"We are pleased to meet you."
+		
+		neutralHello:"Hello, again."
+		neutralLetsHearIt:["Go on.","Go ahead."]
+		neutralNo:["I beg your pardon?","That's unacceptable!"]
+		neutralYes:["Certainly!","Very well!"]
+
+		hateHello:"Oh, it's you!"
+		hateLetsHearIt:["I'm listening.","You were saying?"]
+		hateNo:["You cannot be serious.","Of course not!"]
+		hateYes:["Oh, very well!","I suppose I must!"]
+		
+		afterPeace:"Well then, that's settled."
+		tradeRequest:"Would you be interested in a trade agreement with England?"
+		
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
 		unique:"+2 movement for all naval units"
@@ -66,9 +146,25 @@
 	{
 		name:"France",
 		leaderName:"Napoleon",
+		
 		declaringWar:"You're disturbing us, prepare for war.",
 		attacked:"You've fallen into my trap. I'll bury you.",
 		defeated:"I congratulate you for your victory."
+		introduction:"Welcome. I'm Napoleon, of France; the smartest military man in world history."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["Continue.","I'm listening.","Go on.","You were saying?"]
+		neutralNo:["We refuse.","Of course not.","No."]
+		neutralYes:["Excellent.","Very well.","I heard."]
+
+		hateHello:"It's you."
+		hateLetsHearIt:["Speak."]
+		hateNo:["You cannot be serious.","Certainly not.","That's unacceptable."]
+		hateYes:["All right.","I guess I've no choice.","Certainly.","It's all right."]
+		
+		afterPeace:"It seems I underestimated you. I won't make the same mistake again, I promise you."
+		tradeRequest:"France offers you this exceptional proposition."
+		
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
 		unique:"+2 Culture per turn from cities before discovering Steam Power",
@@ -79,9 +175,25 @@
 	{
 		name:"Russia",
 		leaderName:"Catherine",
+		
 		declaringWar:"You've behaved yourself very badly, you know it. Now it's payback time.",
 		attacked:"You've mistaken my passion for a weakness, you'll regret about this."
 		defeated:"We were defeated, so this makes me your prisoner. I suppose there are worse fates."
+		introduction:"I greet you, stranger! If you are as intelligent and tactful as you are attractive, we'll get along just fine."
+		
+		neutralHello:"Hello!"
+		neutralLetsHearIt:["Go on.","Speak."]
+		neutralNo:["We decline.","Ha! Of course not!","Certainly not."]
+		neutralYes:["Of course.","I agree.","Excellent!"]
+
+		hateHello:"What do you need?!"
+		hateLetsHearIt:["And?","Forward.","Go on."]
+		hateNo:["Are you joking?!","I beg your pardon?!","This is unacceptable."]
+		hateYes:["I think...I shall agree.","Oh... Very good.","Deal."]
+		
+		afterPeace:"Now it's the time to enjoy the fruits of peace."
+		tradeRequest:"How would you like it if I propose this kind of exchange?"
+				
 		mainColor:[ 236, 178, 0],
 		secondaryColor:[0,0,0],
 		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
@@ -92,9 +204,25 @@
 	{
 		name:"Rome",
 		leaderName:"Augustus Caesar",
+		
 		declaringWar:"My treasury contains little and my soldiers are getting impatient... <sigh> ...therefore you must die."
 		attacked:"So brave, yet so stupid! If only you had a brain similar to your courage."
 		defeated:"The gods have deprived Rome of their favour. We have been defeated."
+		introduction:"I greet you. I am Augustus, Imperator and Pontifex Maximus of Rome. If you are a friend of Rome, you are welcome."
+		
+		neutralHello:"Hail."
+		neutralLetsHearIt:["Begin.","Continue."]
+		neutralNo:["No.","Certainly not!"]
+		neutralYes:["Good.","I agree."]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["And?","Continue."]
+		hateNo:["That is unpleasant.","You can't be serious!"]
+		hateYes:["Good.","Oh. Good."]
+		
+		afterPeace:"Your soldiers fought well. I congratulate you on your victory."
+		tradeRequest:"I offer this, for your consideration."
+				
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
 		unique:"+25% Production towards any buildings that already exist in the Capital",
@@ -105,9 +233,25 @@
 	{
 		name:"Arabia",
 		leaderName:"Harun al-Rashid",
+		
 		declaringWar:"The world will be more beautiful without you. Prepare for war."
 		attacked:"Fool! You will soon regret dearly! I swear it!"
 		defeated:"You have won, congratulations. My palace is now in your possession, and I beg that you care well for the peacock."
+		introduction:"Welcome foreigner, I am Harun Al-Rashid, Caliph of the Arabs. Come and tell me about your empire."
+		
+		neutralHello:"Peace be upon you."
+		neutralLetsHearIt:["What is this?","What were you saying?"]
+		neutralNo:["Of course not.","Certainly not."]
+		neutralYes:["Okay.","Excellent."]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["What's this?!","Finish your speech."]
+		hateNo:["This matter is unacceptable.","You can't be serious about this request."]
+		hateYes:["Very well.","If I must."]
+		
+		afterPeace:"We thank you for your generous terms, we will not forget the favor you show us."
+		tradeRequest:"Come forth, let's do business."
+				
 		mainColor:[ 41,83,42],
 		secondaryColor:[146,221,9],
 		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
@@ -117,9 +261,25 @@
 	{
 		name:"America",
 		leaderName:"Washington",
+		
 		declaringWar:"Your wanton aggression leaves us no choice. Prepare for war!"
 		attacked:"You have mistaken our love of peace for weakness. You shall regret this!"
 		defeated:"The day...is yours. I hope you will be merciful in your triumph."
+		introduction:"The people of the United States of America welcome you."
+		
+		neutralHello:"Good day."
+		neutralLetsHearIt:["Proceed!","Go ahead.","I'm listening."]
+		neutralNo:["Of course not!","No."]
+		neutralYes:["Very well.","Alright.","Certainly!"]
+
+		hateHello:"Well?"
+		hateLetsHearIt:["Go on.","You were saying?"]
+		hateNo:["Certainly not.","We decline!","You cannot be serious."]
+		hateYes:["Oh, very well.","I suppose I must.","Agreed.","Alright."]
+		
+		afterPeace:"We welcome peace with your great nation. I pray that no future misunderstanding will come between our two peoples."
+		tradeRequest:"Is the following trade of interest to you?"
+				
 		mainColor:[ 28,51,119],
 		secondaryColor:[255,255,255],
 		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",
