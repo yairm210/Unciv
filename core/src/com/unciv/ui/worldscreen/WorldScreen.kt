@@ -335,6 +335,10 @@ class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncide
                 addGoodSizedLabel(otherCiv.getNation().defeated).row()
                 add(getCloseButton("Farewell."))
             }
+            DiplomaticIncidentType.FirstContact -> {
+                addGoodSizedLabel(otherCiv.getNation().introduction).row()
+                add(getCloseButton("A pleasure to meet you."))
+            }
         }
         open()
         isOpen = true

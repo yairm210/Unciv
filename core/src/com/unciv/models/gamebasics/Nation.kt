@@ -11,6 +11,11 @@ class Nation : INamed {
     lateinit var declaringWar:String
     lateinit var attacked:String
     lateinit var defeated:String
+    lateinit var introduction:String
+
+    var neutralLetsHearIt = ArrayList<String>()
+    var neutralYes = ArrayList<String>()
+    var neutralNo = ArrayList<String>()
 
     lateinit var mainColor: List<Int>
     var unique:String?=null

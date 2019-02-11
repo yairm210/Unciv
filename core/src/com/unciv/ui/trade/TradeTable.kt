@@ -15,7 +15,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
     var offerColumnsTableWrapper = Table() // This is so that after a trade has been traded, we can switch out the offers to start anew - this is the easiest way
-    val tradeText = Label("What do you have in mind?".tr(), CameraStageBaseScreen.skin)
+    val tradeText = Label(otherCivilization.getNation().neutralLetsHearIt.random().tr(), CameraStageBaseScreen.skin)
     val offerButton = TextButton("Offer trade".tr(), CameraStageBaseScreen.skin)
 
 
@@ -30,14 +30,14 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
         offerButton.onClick {
             if(offerButton.text.toString() == "Offer trade".tr()) {
                 if(tradeLogic.currentTrade.theirOffers.size==0 && tradeLogic.currentTrade.ourOffers.size==0){
-                    tradeText.setText("There's nothing on the table.".tr())
+                    tradeText.setText(otherCivilization.getNation().neutralLetsHearIt.random().tr())
                 }
                 else if (tradeLogic.isTradeAcceptable()){
-                    tradeText.setText("That is acceptable.".tr())
+                    tradeText.setText(otherCivilization.getNation().neutralYes.random().tr())
                     offerButton.setText("Accept".tr())
                 }
                 else{
-                    tradeText.setText("I think not.".tr())
+                    tradeText.setText(otherCivilization.getNation().neutralNo.random().tr())
                 }
             }
             else if(offerButton.text.toString() == "Accept".tr()){
@@ -48,7 +48,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
                 offerColumnsTableWrapper.add(offerColumnsTable)
                 tradeText.setText("Pleasure doing business with you!".tr())
                 onTradeComplete()
-                tradeText.setText("Offer trade".tr())
+                offerButton.setText("Offer trade".tr())
             }
         }
 
@@ -63,7 +63,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
     private fun onChange(){
         offerColumnsTable.update()
         offerButton.setText("Offer trade".tr())
-        tradeText.setText("What do you have in mind?".tr())
+        tradeText.setText(otherCivilization.getNation().neutralLetsHearIt.random().tr())
     }
 
 }

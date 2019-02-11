@@ -6,6 +6,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
+import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
@@ -265,18 +266,24 @@ class CivilizationInfo {
             for(unit in tile.getUnits()) viewedCivs+=unit.civInfo
         }
 
-        for(otherCiv in viewedCivs.filterNot { it==this || it.isBarbarianCivilization() })
-            if(!diplomacy.containsKey(otherCiv.civName)){
-                meetCivilization(otherCiv)
-                addNotification("We have encountered [${otherCiv.civName}]!".tr(),null, Color.GOLD)
-            }
+        if(!isBarbarianCivilization()) {
+            for (otherCiv in viewedCivs.filterNot { it == this || it.isBarbarianCivilization() })
+                if (!diplomacy.containsKey(otherCiv.civName)) {
+                    meetCivilization(otherCiv)
+                    addNotification("We have encountered [${otherCiv.civName}]!".tr(), null, Color.GOLD)
+                }
+        }
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
+        otherCiv.diplomaticIncidents.add(DiplomaticIncident(civName, DiplomaticIncidentType.FirstContact))
+
         otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv, civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
+
+        diplomaticIncidents.add(DiplomaticIncident(otherCiv.civName, DiplomaticIncidentType.FirstContact))
     }
 
     override fun toString(): String {return civName} // for debug
