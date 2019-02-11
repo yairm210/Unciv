@@ -136,7 +136,7 @@ class TileMap {
     }
 
     fun setTransients() {
-        if(tiles.any()) //
+        if(tiles.any())
             tileList.addAll(tiles.values)
 
         val topY= tileList.asSequence().map { it.position.y.toInt() }.max()!!

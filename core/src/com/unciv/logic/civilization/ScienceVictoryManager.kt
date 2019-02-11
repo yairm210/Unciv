@@ -13,18 +13,4 @@ class ScienceVictoryManager {
         requiredParts.add("SS Engine", 1)
         requiredParts.add("SS Stasis Chamber", 1)
     }
-
-    fun clone(): ScienceVictoryManager {
-        val toReturn = ScienceVictoryManager()
-        toReturn.currentParts.putAll(currentParts)
-        return toReturn
-    }
-
-    fun unconstructedParts(): Counter<String> {
-        val counter = requiredParts.clone()
-        counter.remove(currentParts)
-        return counter
-    }
-
-    fun hasWon() = requiredParts.equals(currentParts)
 }

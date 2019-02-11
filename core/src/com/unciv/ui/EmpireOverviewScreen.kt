@@ -262,6 +262,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add("Ranged strength".tr())
         table.add("Movement".tr())
         table.add("Closest city".tr())
+        table.add("Go to unit".tr())
         table.row()
         table.addSeparator()
 
@@ -273,6 +274,12 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
             val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
             if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
+            val goToUnitButton = TextButton("Go to unit".tr(),skin)
+            goToUnitButton.onClick {
+                UnCivGame.Current.setWorldScreen()
+                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
+            }
+            table.add(goToUnitButton)
             table.row()
         }
         table.pack()
