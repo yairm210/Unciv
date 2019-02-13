@@ -146,8 +146,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         currentConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         currentConstructionTable.pad(10f)
 
-        currentConstructionTable.add(ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction))
-                .size(30f).pad(5f)
+        currentConstructionTable.add(
+                ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction).surroundWithCircle(50f))
+                .pad(5f)
 
         val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
         currentConstructionTable.add(Label(buildingText, CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).row()

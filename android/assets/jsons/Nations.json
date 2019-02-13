@@ -95,7 +95,7 @@
 		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
 		
 		neutralHello:"Good day."
-		letsHearIt:["Go on.","Speak.","I am all ears."]
+		neutralLetsHearIt:["Go on.","Speak.","I am all ears."]
 		neutralNo:["No.","Definitely not."]
 		neutralYes:["Okay.","Very well."]
 		

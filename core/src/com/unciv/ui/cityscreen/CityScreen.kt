@@ -204,7 +204,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             dispose()
         }
 
-        cityPickerTable.add(exitCityButton).colspan(cityPickerTable.columns)
+        cityPickerTable.add(exitCityButton).pad(10f).colspan(cityPickerTable.columns)
 
         cityPickerTable.pack()
         cityPickerTable.centerX(stage)
