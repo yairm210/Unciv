@@ -3,10 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {
 
@@ -22,7 +19,7 @@ open class PickerScreen : CameraStageBaseScreen() {
     init {
         bottomTable.add(closeButton).width(stage.width / 4)
 
-        descriptionLabel = Label("", CameraStageBaseScreen.skin)
+        descriptionLabel = "".toLabel()
         descriptionLabel.setWrap(true)
         val labelScroll = ScrollPane(descriptionLabel)
         bottomTable.add(labelScroll).pad(5f).width(stage.width / 2)

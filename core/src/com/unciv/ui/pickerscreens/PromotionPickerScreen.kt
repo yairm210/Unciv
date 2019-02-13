@@ -2,7 +2,6 @@ package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
@@ -37,7 +36,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
             if(!isPromotionAvailable) promotionButton.color = Color.GRAY
             promotionButton.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
-            promotionButton.add(Label(promotion.name, skin)
+            promotionButton.add(promotion.name.toLabel()
                     .setFontColor(Color.WHITE)).pad(10f)
             if(unitHasPromotion) promotionButton.color = Color.GREEN
 

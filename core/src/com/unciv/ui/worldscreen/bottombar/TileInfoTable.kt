@@ -7,6 +7,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
 class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
@@ -21,7 +22,7 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
 
         if (UnCivGame.Current.viewEntireMapForDebug || civInfo.exploredTiles.contains(tile.position)) {
             add(getStatsTable(tile)).pad(10f)
-            add(Label(tile.toString(), skin)).colspan(2)
+            add(tile.toString().toLabel()).colspan(2)
         }
 
         pack()

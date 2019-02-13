@@ -85,7 +85,7 @@ class LanguagePickerScreen: PickerScreen(){
                         "Do you want to download fonts for $spaceSplitLang?",
                         {
                             val downloading = PopupTable(this)
-                            downloading.add(Label("Downloading...",skin))
+                            downloading.add("Downloading...".toLabel())
                             downloading.open()
                             Gdx.input.inputProcessor = null // no interaction until download is over
 

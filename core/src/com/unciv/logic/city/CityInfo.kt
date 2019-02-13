@@ -34,6 +34,7 @@ class CityInfo {
     var workedTiles = HashSet<Vector2>()
     var isBeingRazed = false
     var attackedThisTurn = false
+    var hasSoldBuildingThisTurn = false
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
@@ -245,7 +246,7 @@ class CityInfo {
         return false
     }
 
-    fun tryUpdateRoadStatus(){
+    private fun tryUpdateRoadStatus(){
         if(getCenterTile().roadStatus==RoadStatus.None
                 && GameBasics.TileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus==RoadStatus.Road
@@ -253,6 +254,14 @@ class CityInfo {
         else if(getCenterTile().roadStatus!=RoadStatus.Railroad
                 && GameBasics.TileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
             getCenterTile().roadStatus==RoadStatus.Railroad
+    }
+
+    fun getGoldForSellingBuilding(buildingName:String) = GameBasics.Buildings[buildingName]!!.cost / 10
+
+    fun sellBuilding(buildingName:String){
+        cityConstructions.builtBuildings.remove(buildingName)
+        cityConstructions.removeBuilding(buildingName)
+        civInfo.gold += getGoldForSellingBuilding(buildingName)
     }
     //endregion
 }

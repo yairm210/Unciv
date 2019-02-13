@@ -3,7 +3,6 @@ package com.unciv.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -64,7 +63,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         topTable.add(setCurrentTradesButton)
 
         val setUnitsButton = TextButton("Units".tr(),skin)
-        setUnitsButton .onClick {
+        setUnitsButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(getUnitTable())).height(stage.height*0.8f)
             centerTable.pack()
@@ -110,15 +109,15 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val table = Table()
         table.defaults().pad(10f)
         table.background = ImageGetter.getBackground(civ.getNation().getColor())
-        table.add(Label(civ.civName.tr(),skin).setFontColor(civ.getNation().getSecondaryColor())).row()
+        table.add(civ.civName.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
         table.addSeparator()
         for(offer in offersList){
             var offerText = offer.amount.toString()+" "+offer.name.tr()
             if(offer.duration>0)offerText += " ("+offer.duration+" {turns})".tr()
-            table.add(Label(offerText,skin).setFontColor(civ.getNation().getSecondaryColor())).row()
+            table.add(offerText.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
         }
         for(i in 1..numberOfOtherSidesOffers - offersList.size)
-            table.add(Label("",skin)).row() // we want both sides of the general table to have the same number of rows
+            table.add("".toLabel()).row() // we want both sides of the general table to have the same number of rows
         return table
     }
 
@@ -126,7 +125,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getHappinessTable(): Table {
         val happinessTable = Table(skin)
         happinessTable.defaults().pad(5f)
-        happinessTable.add(Label("Happiness".tr(), skin).setFontSize(24)).colspan(2).row()
+        happinessTable.add("Happiness".toLabel().setFontSize(24)).colspan(2).row()
         happinessTable.addSeparator()
         for (entry in currentPlayerCivInfo.getHappinessForNextTurn()) {
             happinessTable.add(entry.key.tr())
@@ -141,7 +140,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun getGoldTable(): Table {
         val goldTable = Table(skin)
         goldTable.defaults().pad(5f)
-        goldTable.add(Label("Gold".tr(), skin).setFontSize(24)).colspan(2).row()
+        goldTable.add("Gold".toLabel().setFontSize(24)).colspan(2).row()
         goldTable.addSeparator()
         var total=0f
         for (entry in currentPlayerCivInfo.getStatMapForNextTurn()) {
@@ -165,7 +164,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val pointsToGreatPerson = currentPlayerCivInfo.greatPeople.pointsForNextGreatPerson
 
         greatPeopleTable.defaults().pad(5f)
-        greatPeopleTable.add(Label("Great person points".tr(), skin).setFontSize(24)).colspan(3).row()
+        greatPeopleTable.add("Great person points".toLabel().setFontSize(24)).colspan(3).row()
         greatPeopleTable.addSeparator()
         greatPeopleTable.add()
         greatPeopleTable.add("Current points")
@@ -180,7 +179,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val pointsForGreatGeneral = currentPlayerCivInfo.greatPeople.greatGeneralPoints.toInt().toString()
         val pointsForNextGreatGeneral = currentPlayerCivInfo.greatPeople.pointsForNextGreatGeneral.toInt().toString()
         greatPeopleTable.add("Great General".tr())
-        greatPeopleTable.add(pointsForGreatGeneral+"/"+pointsForNextGreatGeneral).row()
+        greatPeopleTable.add("$pointsForGreatGeneral/$pointsForNextGreatGeneral").row()
         greatPeopleTable.pack()
         return greatPeopleTable
     }
@@ -194,7 +193,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableIcons = Table(skin)
         cityInfoTableIcons.defaults().pad(padding).align(Align.center)
 
-        cityInfoTableIcons.add(Label("Cities".tr(), skin).setFontSize(24)).colspan(8).align(Align.center).row()
+        cityInfoTableIcons.add("Cities".toLabel().setFontSize(24)).colspan(8).align(Align.center).row()
         cityInfoTableIcons.add()
         cityInfoTableIcons.add(ImageGetter.getStatIcon("Population")).size(iconSize)
         cityInfoTableIcons.add(ImageGetter.getStatIcon("Food")).size(iconSize)
@@ -305,7 +304,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
             var civNameText = civ.civName.tr()
             if(civ.isDefeated()) civNameText += "\n({Defeated})".tr()
-            val label = Label(civNameText, CameraStageBaseScreen.skin)
+            val label = civNameText.toLabel()
             label.setAlignment(Align.center)
 
             if (civ.isDefeated()) {

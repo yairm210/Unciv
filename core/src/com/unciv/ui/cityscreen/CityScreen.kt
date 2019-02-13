@@ -20,13 +20,25 @@ import kotlin.math.round
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var selectedTile: TileInfo? = null
 
-    private var tileTable = Table()
-    private var cityInfoTable = CityInfoTable(this)
-    private var constructionsTable = ConstructionsTable(this)
-    private var cityPickerTable = Table()
-    private var razeCityButtonHolder = Table()
-    private var tileGroups = ArrayList<CityTileGroup>()
+    // Clockwise from the top-left
+    /** Displays city stats - sits on the top left side */
     var topCityStatsTable=Table()
+
+    private var razeCityButtonHolder = Table() // sits on the top
+
+    /** Displays buildings, specialists and stats drilldown - sits on the top left of the city screen */
+    private var cityInfoTable = CityInfoTable(this)
+
+    /** Displays tile info, sits on the bottom right */
+    private var tileTable = Table()
+
+    /** Displays city name, allows switching between cities - sits on the bottom */
+    private var cityPickerTable = Table()
+
+    /** Holds production list and current production - sits on the bottom left */
+    private var constructionsTable = ConstructionsTable(this)
+
+    private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
@@ -131,7 +143,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             if(stat.key==Stat.Happiness) continue
             val minitable=Table().padRight(5f).padLeft(5f)
             minitable.add(ImageGetter.getStatIcon(stat.key.name)).size(20f).padRight(3f)
-            minitable.add(Label(round(stat.value).toInt().toString(), CameraStageBaseScreen.skin))
+            minitable.add(round(stat.value).toInt().toString().toLabel())
             table.add(minitable)
         }
         return table.addBorder(2f, beige)
@@ -336,3 +348,4 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         stage.addActor(tileTable)
     }
 }
+

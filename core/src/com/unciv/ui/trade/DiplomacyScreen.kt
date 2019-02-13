@@ -44,7 +44,7 @@ class DiplomacyScreen:CameraStageBaseScreen(){
             civTable.defaults().pad(10f)
             val peaceWarStatus = civDiplomacy.diplomaticStatus.toString()
             civTable.add(Label(civ.civName.tr() + " ({$peaceWarStatus})".tr(), skin)
-                    .apply { setFontSize(22); setFontColor(civ.getNation().getSecondaryColor()) }).row()
+                    .setFontSize(22).setFontColor(civ.getNation().getSecondaryColor())).row()
             civTable.addSeparator()
 
             val tradeButton = TextButton("Trade".tr(), skin)
@@ -68,7 +68,7 @@ class DiplomacyScreen:CameraStageBaseScreen(){
 
                         val responsePopup = PopupTable(this)
                         val otherCivLeaderName = civ.getNation().leaderName + " of " + civ.civName
-                        responsePopup.add(Label(otherCivLeaderName, skin))
+                        responsePopup.add(otherCivLeaderName.toLabel())
                         responsePopup.addSeparator()
                         responsePopup.addGoodSizedLabel(civ.getNation().attacked).row()
                         responsePopup.addButton("Very well.".tr()) { responsePopup.remove() }

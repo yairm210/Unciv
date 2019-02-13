@@ -51,7 +51,8 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         }
 
         val eras = ArrayList<Label>()
-        for(i in techMatrix.indices) eras.add(Label("",CameraStageBaseScreen.skin).apply { setFontColor(Color.WHITE) })
+        for(i in techMatrix.indices)
+            eras.add("".toLabel().setFontColor(Color.WHITE))
         eras.forEach { topTable.add(it) }
 
         // Create tech table (row by row)

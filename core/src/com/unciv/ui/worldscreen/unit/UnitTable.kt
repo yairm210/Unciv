@@ -17,7 +17,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val prevIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,true)
     private val nextIdleUnitButton = IdleUnitButton(this,worldScreen.tileMapHolder,false)
     private val unitIconHolder=Table()
-    private val unitNameLabel = Label("",CameraStageBaseScreen.skin)
+    private val unitNameLabel = "".toLabel()
     private val promotionsTable = Table()
     private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
     var selectedUnit : MapUnit? = null

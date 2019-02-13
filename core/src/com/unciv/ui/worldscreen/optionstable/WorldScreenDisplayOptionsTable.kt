@@ -3,17 +3,13 @@ package com.unciv.ui.worldscreen.optionstable
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.Fonts
-import com.unciv.ui.utils.Sounds
-import com.unciv.ui.utils.center
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 
@@ -110,7 +106,7 @@ class WorldScreenDisplayOptionsTable(screen:WorldScreen) : PopupTable(screen){
                             {
 
                                 val downloading = PopupTable(screen)
-                                downloading.add(Label("Downloading...", skin))
+                                downloading.add("Downloading...".toLabel())
                                 downloading.open()
                                 Gdx.input.inputProcessor = null // no interaction until download is over
 
@@ -126,7 +122,7 @@ class WorldScreenDisplayOptionsTable(screen:WorldScreen) : PopupTable(screen){
         })
 
         if (languageSelectBox.selected.percentComplete != 100) {
-            add(Label("Missing translations:", skin)).pad(5f).row()
+            add("Missing translations:".toLabel()).pad(5f).row()
             val missingTextSelectBox = SelectBox<String>(skin)
             val missingTextArray = Array<String>()
             val currentLanguage = UnCivGame.Current.settings.language

@@ -58,7 +58,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         defaults().pad(5f)
 
         val attackerNameWrapper = Table()
-        val attackerLabel = Label(attacker.getName(), skin)
+        val attackerLabel = attacker.getName().toLabel()
         if(attacker is MapUnitCombatant)
             attackerNameWrapper.add(UnitGroup(attacker.unit,25f)).padRight(5f)
         attackerNameWrapper.add(attackerLabel)

@@ -5,7 +5,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
@@ -89,7 +88,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     private fun queueAddMoveHereButton(selectedUnit: MapUnit, tileInfo: TileInfo) {
         thread {
-            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate thread.
+            /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
              * so that and that alone will be relegated to the concurrent thread.
@@ -110,7 +109,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)
-        moveHereButton.addActor(Label(dto.turnsToGetThere.toString(), CameraStageBaseScreen.skin)
+        moveHereButton.addActor(dto.turnsToGetThere.toString().toLabel()
                 .apply { center(numberCircle); setFontColor(Color.WHITE) })
 
         val unitIcon = UnitGroup(dto.unit, size / 2)
@@ -223,7 +222,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             tileGroups[attackableTile]!!.showCrosshair()
         }
 
-        // Fadeout less relevant images if a military unit is selected
+        // Fade out less relevant images if a military unit is selected
         val fadeout = if (unit.type.isCivilian()) 1f
         else 0.5f
         for (tile in tileGroups.values) {
@@ -254,6 +253,5 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         updateVisualScroll()
         worldScreen.shouldUpdate=true
     }
-
 
 }

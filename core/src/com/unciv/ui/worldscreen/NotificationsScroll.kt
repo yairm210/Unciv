@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
@@ -19,7 +18,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
     internal fun update(notifications: MutableList<Notification>) {
         notificationsTable.clearChildren()
         for (notification in notifications.toList()) { // tolist to avoid concurrecy problems
-            val label = Label(notification.text.tr(), CameraStageBaseScreen.skin).setFontColor(Color.BLACK)
+            val label = notification.text.toLabel().setFontColor(Color.BLACK)
                     .setFontSize(14)
             val minitable = Table()
 

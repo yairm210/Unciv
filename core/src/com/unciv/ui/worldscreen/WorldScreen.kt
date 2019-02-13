@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
@@ -187,8 +186,11 @@ class WorldScreen : CameraStageBaseScreen() {
         techButton.clearChildren()
 
         if (civInfo.tech.currentTechnology() == null) {
-            val buttonPic = Table().apply { background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png").tint(colorFromRGB(7, 46, 43)); defaults().pad(10f) }
-            buttonPic.add(Label("{Pick a tech}!".tr(), skin).setFontColor(Color.WHITE).setFontSize(22))
+            val buttonPic = Table()
+            buttonPic.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+                    .tint(colorFromRGB(7, 46, 43))
+            buttonPic.defaults().pad(10f)
+            buttonPic.add("{Pick a tech}!".toLabel().setFontColor(Color.WHITE).setFontSize(22))
             techButton.add(buttonPic)
         }
         else {
@@ -320,7 +322,7 @@ class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncide
     init {
         val otherCiv = worldScreen.gameInfo.getCivilization(diplomaticIncident.civName)
         val otherCivLeaderName = otherCiv.getNation().leaderName+" of "+otherCiv.civName
-        add(Label(otherCivLeaderName,skin))
+        add(otherCivLeaderName.toLabel())
         addSeparator()
 
         when(diplomaticIncident.type){

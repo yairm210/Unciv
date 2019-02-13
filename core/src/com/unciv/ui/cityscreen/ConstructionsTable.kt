@@ -2,7 +2,6 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -32,7 +31,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             pickProductionButton.background = ImageGetter.getBackground(Color.BLACK)
 
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
-        pickProductionButton.add(Label(buttonText, CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
+        pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
         pickProductionButton.onClick {
             cityScreen.city.cityConstructions.currentConstruction = construction
             update()
@@ -58,7 +57,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if(list.isEmpty()) return
         val titleTable = Table()
         titleTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
-        titleTable.add(Label(title.tr(),CameraStageBaseScreen.skin))
+        titleTable.add(title.toLabel())
 
         addSeparator()
         add(titleTable).fill().row()
@@ -151,7 +150,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 .pad(5f)
 
         val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
-        currentConstructionTable.add(Label(buildingText, CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).row()
+        currentConstructionTable.add(buildingText.toLabel().setFontColor(Color.WHITE)).row()
 
         val currentConstruction = city.cityConstructions.getCurrentConstruction()
         val description: String
@@ -161,7 +160,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             description = currentConstruction.getDescription(true, city.civInfo.policies.adoptedPolicies)
         else description = currentConstruction.description.tr()
 
-        val descriptionLabel = Label(description, CameraStageBaseScreen.skin)
+        val descriptionLabel = description.toLabel()
         descriptionLabel.setWrap(true)
         descriptionLabel.width = stage.width / 4
         val descriptionScroll = ScrollPane(descriptionLabel)

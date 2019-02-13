@@ -9,6 +9,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 import java.util.*
 
 class CivilopediaScreen : CameraStageBaseScreen() {
@@ -23,7 +24,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
 
         stage.addActor(splitPane)
 
-        val label = Label("", CameraStageBaseScreen.skin)
+        val label = "".toLabel()
         label.setWrap(true)
 
         val goToGameButton = TextButton("Return \r\nto game", CameraStageBaseScreen.skin)

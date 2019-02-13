@@ -3,7 +3,6 @@ package com.unciv.ui.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -13,7 +12,6 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.map.RoadStatus
 import com.unciv.ui.cityscreen.CityScreen
-import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 
 class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
@@ -28,7 +26,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val cityButtonText = city.population.population.toString() + " | " + city.name
         background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
                 .tint(city.civInfo.getNation().getColor())
-        val label = Label(cityButtonText, CameraStageBaseScreen.skin)
+        val label = cityButtonText.toLabel()
         label.setFontColor(city.civInfo.getNation().getSecondaryColor())
 
         clear()
@@ -97,7 +95,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val secondaryColor = cityConstructions.cityInfo.civInfo.getNation().getSecondaryColor()
         if(cityConstructions.getCurrentConstruction() !is SpecialConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityConstructions.currentConstruction)
-            val label = Label(turnsToConstruction.toString(), CameraStageBaseScreen.skin)
+            val label = turnsToConstruction.toString().toLabel()
             label.setFontColor(secondaryColor)
             label.setFontSize(10)
             label.pack()

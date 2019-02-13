@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.unciv.UnCivGame
+import com.unciv.models.gamebasics.tr
 
 open class CameraStageBaseScreen : Screen {
 
@@ -51,8 +52,6 @@ open class CameraStageBaseScreen : Screen {
     fun displayTutorials(name: String) {
         tutorials.displayTutorials(name,stage)
     }
-
-
 
 
     companion object {
@@ -135,8 +134,9 @@ fun Actor.onClick(sound:String,function: () -> Unit){
     } )
 }
 
-fun Actor.onClick(function: () -> Unit) {
+fun Actor.onClick(function: () -> Unit): Actor {
     onClick("click",function)
+    return this
 }
 
 fun Actor.surroundWithCircle(size:Float): IconCircleGroup {
@@ -196,3 +196,6 @@ fun <T> HashSet<T>.withoutItem(item:T): HashSet<T> {
     newHashSet.remove(item)
     return newHashSet
 }
+
+/** also translates */
+fun String.toLabel() = Label(this.tr(),CameraStageBaseScreen.skin)

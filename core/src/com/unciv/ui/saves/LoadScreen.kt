@@ -2,7 +2,6 @@ package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Json
@@ -61,7 +60,7 @@ class LoadScreen : PickerScreen() {
 
         val rightSideTable = Table()
         val loadFromClipboardButton = TextButton("Load copied data".tr(),skin)
-        val errorLabel = Label("",skin).setFontColor(Color.RED)
+        val errorLabel = "".toLabel().setFontColor(Color.RED)
         loadFromClipboardButton.onClick {
             try{
                 val clipboardContentsString = Gdx.app.clipboard.contents

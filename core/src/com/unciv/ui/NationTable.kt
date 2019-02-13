@@ -12,6 +12,7 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.toLabel
 
 class NationTable(val nation: Nation, val newGameParameters: GameParameters, skin: Skin, width:Float, onClick:()->Unit): Table(skin){
     val innerTable = Table()
@@ -19,8 +20,9 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
         background= ImageGetter.getBackground(nation.getSecondaryColor())
         innerTable.pad(10f)
         innerTable.background= ImageGetter.getBackground(nation.getColor())
-        innerTable.add(Label(nation.leaderName.tr()+" - "+nation.name.tr(), skin).apply { setFontColor(nation.getSecondaryColor())}).row()
-        innerTable.add(Label(getUniqueLabel(nation), skin)
+        innerTable.add(Label(nation.leaderName.tr()+" - "+nation.name.tr(), skin)
+                .apply { setFontColor(nation.getSecondaryColor())}).row()
+        innerTable.add(getUniqueLabel(nation)
                 .apply { setWrap(true);setFontColor(nation.getSecondaryColor())})
                 .width(width)
         onClick {
@@ -37,7 +39,7 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
         add(innerTable)
     }
 
-    private fun getUniqueLabel(nation: Nation): String {
+    private fun getUniqueLabel(nation: Nation): Label {
         val textList = ArrayList<String>()
 
         if(nation.unique!=null) {
@@ -81,7 +83,7 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
             }
 
 
-        return textList.joinToString("\n").tr().trim()
+        return textList.joinToString("\n").tr().trim().toLabel()
     }
 
 

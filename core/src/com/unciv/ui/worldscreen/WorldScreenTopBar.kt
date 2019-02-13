@@ -23,11 +23,11 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
     val labelSkin = CameraStageBaseScreen.skin
 
-    private val turnsLabel = Label("Turns: 0/400",labelSkin).setFontColor(Color.WHITE)
-    private val goldLabel = Label("Gold:", labelSkin).setFontColor(colorFromRGB(225, 217, 71) )
-    private val scienceLabel = Label("Science:", labelSkin).setFontColor(colorFromRGB(78, 140, 151) )
-    private val happinessLabel = Label("Happiness:", labelSkin)
-    private val cultureLabel = Label("Culture:", labelSkin).setFontColor(colorFromRGB(210, 94, 210) )
+    private val turnsLabel = "Turns: 0/400".toLabel().setFontColor(Color.WHITE)
+    private val goldLabel = "Gold:".toLabel().setFontColor(colorFromRGB(225, 217, 71) )
+    private val scienceLabel = "Science:".toLabel().setFontColor(colorFromRGB(78, 140, 151) )
+    private val happinessLabel = "Happiness:".toLabel()
+    private val cultureLabel = "Culture:".toLabel().setFontColor(colorFromRGB(210, 94, 210) )
     private val resourceLabels = HashMap<String, Label>()
     private val resourceImages = HashMap<String, Actor>()
     private val happinessImage = Group()
@@ -63,7 +63,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
             val resourceImage = ImageGetter.getResourceImage(resource.name,20f)
             resourceImages[resource.name] = resourceImage
             resourceTable.add(resourceImage)
-            val resourceLabel = Label("0", labelSkin)
+            val resourceLabel = "0".toLabel()
             resourceLabels[resource.name] = resourceLabel
             resourceTable.add(resourceLabel)
         }

@@ -2,7 +2,10 @@ package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.GameStarter
@@ -16,6 +19,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
 import kotlin.math.min
@@ -77,7 +81,7 @@ class NewGameScreen: PickerScreen(){
             mapTypes[type.toString()] = type
         }
 
-        val mapFileLabel = Label("{Map file}:".tr(),skin)
+        val mapFileLabel = "{Map file}:".toLabel()
         val mapFileSelectBox = getMapFileSelectBox()
         mapFileLabel.isVisible=false
         mapFileSelectBox.isVisible=false
@@ -85,7 +89,7 @@ class NewGameScreen: PickerScreen(){
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes.keys, newGameParameters.mapType.toString(), skin)
 
         val worldSizeSelectBox = getWorldSizeSelectBox()
-        val worldSizeLabel = Label("{World size}:".tr(),skin)
+        val worldSizeLabel = "{World size}:".toLabel()
 
         mapTypeSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {

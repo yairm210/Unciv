@@ -38,7 +38,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             val wondersExpander = ExpanderTab("Wonders".tr(),skin)
             for (building in wonders) {
                 wondersExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
-                wondersExpander.innerTable.add(Label(building.name.tr(), skin)).pad(5f).align(Align.left).row()
+                wondersExpander.innerTable.add(building.name.toLabel()).pad(5f).align(Align.left).row()
             }
             add(wondersExpander).row()
         }
@@ -47,7 +47,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             val specialistBuildingsExpander = ExpanderTab("Specialist Buildings".tr(),skin)
             for (building in specialistBuildings) {
                 specialistBuildingsExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
-                specialistBuildingsExpander.innerTable.add(Label(building.name.tr(), skin)).pad(5f)
+                specialistBuildingsExpander.innerTable.add(building.name.toLabel()).pad(5f)
                 val specialistIcons = Table()
                 specialistIcons.row().size(20f).pad(5f)
                 for(stat in building.specialistSlots!!.toHashMap())
@@ -66,7 +66,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             val buildingsExpanderTab = ExpanderTab("Buildings".tr(),skin)
             for (building in otherBuildings) {
                 buildingsExpanderTab.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
-                buildingsExpanderTab.innerTable.add(Label(building.name.tr(), skin)).pad(5f).row()
+                buildingsExpanderTab.innerTable.add(building.name.toLabel()).pad(5f).row()
             }
             add(buildingsExpanderTab).row()
         }
@@ -96,13 +96,14 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         for(stat in statToCauses){
             val expander = ExpanderTab(stat.key.name.tr(),skin)
             expander.innerTable.defaults().pad(2f)
+
             for(entry in stat.value) {
-                expander.innerTable.add(Label(entry.key.tr(), skin))
-                expander.innerTable.add(Label(DecimalFormat("0.#").format(entry.value), skin)).row()
+                expander.innerTable.add(entry.key.toLabel())
+                expander.innerTable.add(DecimalFormat("0.#").format(entry.value).toLabel()).row()
             }
             if(stat.value.isNotEmpty()){
-                expander.innerTable.add(Label("Total".tr(),skin))
-                expander.innerTable.add(Label(DecimalFormat("0.#").format(stat.value.values.sum()),skin))
+                expander.innerTable.add("Total".toLabel())
+                expander.innerTable.add(DecimalFormat("0.#").format(stat.value.values.sum()).toLabel())
                 add(expander).row()
             }
         }

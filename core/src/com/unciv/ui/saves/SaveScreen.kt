@@ -1,7 +1,6 @@
 package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -13,6 +12,7 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.getRandom
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.toLabel
 
 
 class SaveScreen : PickerScreen() {
@@ -22,7 +22,7 @@ class SaveScreen : PickerScreen() {
         setDefaultCloseAction()
         val currentSaves = Table()
 
-        currentSaves.add(Label("Current saves".tr(),skin)).row()
+        currentSaves.add("Current saves".toLabel()).row()
         val saves = GameSaver().getSaves()
         saves.forEach {
             val textButton = TextButton(it, skin)
@@ -44,7 +44,7 @@ class SaveScreen : PickerScreen() {
         val defaultSaveName = adjectives.getRandom()+" "+nouns.getRandom()
         textField.text = defaultSaveName
 
-        newSave.add(Label("Saved game name".tr(),skin)).row()
+        newSave.add("Saved game name".toLabel()).row()
         newSave.add(textField).width(300f).pad(10f).row()
 
         val copyJsonButton = TextButton("Copy game info".tr(),skin)
