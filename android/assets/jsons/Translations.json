@@ -112,6 +112,9 @@
 		Simplified_Chinese:"远程攻击"
 		Portuguese:"Força a distancia"
 	}
+	
+	"Bombard strength":{ // for displaying city info
+	}
 
 
 // Unit actions

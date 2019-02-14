@@ -394,13 +394,14 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Skull](https://thenounproject.com/search/?q=Skull&i=1030702) By Vladimir Belochkin for disbanding units
 * [Crosshair](https://thenounproject.com/search/?q=crosshairs&i=916030) By Bakunetsu Kaito for selecting enemies to attack
 * [City](https://thenounproject.com/search/?q=city&i=571332) By Felix Westphal
-* [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for 
+* [Fire](https://thenounproject.com/search/?q=Fire&i=96564) By Lloyd Humphreys for "city being razed" icon
 * [Sleep](https://thenounproject.com/search/?q=sleep&i=1760085) By Saeful Muslim 
 * [Banner](https://thenounproject.com/term/banner/866282/) By Emir Palavan for embarked units
 * [Arrow](https://thenounproject.com/term/arrow/18123/) By uzeir syarief for moving between idle units
-* [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe, AU
+* [Replace](https://thenounproject.com/search/?q=replace&i=17858) By Mike Rowe for switching tiles between cities
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
-* [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud
+* [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
+* [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
 
 # Sound credits
 

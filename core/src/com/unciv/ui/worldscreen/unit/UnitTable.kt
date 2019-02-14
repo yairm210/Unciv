@@ -83,26 +83,27 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitNameLabel.setText(nameLabelText)
 
             unitDescriptionTable.clear()
-            unitDescriptionTable.defaults().pad(2f).padRight(5f)
-            unitDescriptionTable.add("Movement".tr())
-            unitDescriptionTable.add(unit.getMovementString()).row()
+            unitDescriptionTable.defaults().pad(2f)
+            unitDescriptionTable.add(ImageGetter.getStatIcon("Movement")).size(20f)
+            unitDescriptionTable.add(unit.getMovementString()).padRight(10f)
 
             if (!unit.type.isCivilian()) {
-                unitDescriptionTable.add("Strength".tr())
-                unitDescriptionTable.add(unit.baseUnit().strength.toString()).row()
+                unitDescriptionTable.add(ImageGetter.getStatIcon("Strength")).size(20f)
+                unitDescriptionTable.add(unit.baseUnit().strength.toString()).padRight(10f)
             }
 
             if (unit.baseUnit().rangedStrength!=0) {
-                unitDescriptionTable.add("Ranged strength".tr())
-                unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).row()
+                unitDescriptionTable.add(ImageGetter.getStatIcon("RangedStrength")).size(20f)
+                unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
             }
 
             if (!unit.type.isCivilian()) {
                 unitDescriptionTable.add("XP")
-                unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion()).row()
+                unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion())
             }
 
             if(unit.isFortified() && unit.getFortificationTurns()>0) {
+                unitDescriptionTable.row()
                 unitDescriptionTable.add("Fortification")
                 unitDescriptionTable.add(""+unit.getFortificationTurns() * 20 + "%")
             }
@@ -122,7 +123,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitDescriptionTable.defaults().pad(2f).padRight(5f)
             unitDescriptionTable.add("Strength".tr())
             unitDescriptionTable.add(CityCombatant(city).getCityStrength().toString()).row()
-            unitDescriptionTable.add("Ranged Strength".tr())
+            unitDescriptionTable.add("Bombard strength".tr())
             unitDescriptionTable.add(CityCombatant(city).getAttackingStrength().toString()).row()
 
             selectedUnitHasChanged = true
