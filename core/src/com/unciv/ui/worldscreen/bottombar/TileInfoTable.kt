@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.bottombar
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -10,9 +11,9 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
 
-class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
+class TileInfoTable(private val worldScreen: WorldScreen) : Table(CameraStageBaseScreen.skin) {
     init{
-        skin = CameraStageBaseScreen.skin
+        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
     }
 
     internal fun updateTileTable(tile: TileInfo) {
@@ -43,4 +44,3 @@ class TileInfoTable(private val worldScreen: WorldScreen) : Table() {
         return table
     }
 }
-

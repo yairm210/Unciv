@@ -33,6 +33,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     init {
         pad(5f)
+        background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
         add(Table().apply {
             add(prevIdleUnitButton)

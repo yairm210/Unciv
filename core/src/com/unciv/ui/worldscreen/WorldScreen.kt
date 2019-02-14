@@ -22,6 +22,7 @@ import com.unciv.ui.pickerscreens.TechButton
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
@@ -35,6 +36,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private val topBar = WorldScreenTopBar(this)
     val bottomBar = WorldScreenBottomBar(this)
+    val battleTable = BattleTable(this)
     val unitActionsTable = UnitActionsTable(this)
 
     private val techButton = Table()
@@ -74,6 +76,11 @@ class WorldScreen : CameraStageBaseScreen() {
 
         bottomBar.width = stage.width
         stage.addActor(bottomBar)
+
+        battleTable.width = stage.width/3
+        battleTable.x = stage.width/3
+        stage.addActor(battleTable)
+
         stage.addActor(unitActionsTable)
 
         displayTutorials("NewGame")
@@ -139,6 +146,8 @@ class WorldScreen : CameraStageBaseScreen() {
         updateDiplomacyButton(cloneCivilization)
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
+        battleTable.update()
+
         minimapWrapper.update(cloneCivilization)
         minimapWrapper.y = bottomBar.height // couldn't be bothered to create a separate val for minimap wrapper
 

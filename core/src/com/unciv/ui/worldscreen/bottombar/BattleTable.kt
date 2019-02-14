@@ -24,6 +24,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
     fun hide(){
         clear()
+        pack()
     }
 
     fun update() {
@@ -35,6 +36,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         } else if (unitTable.selectedCity != null) {
             attacker = CityCombatant(unitTable.selectedCity!!)
         } else {
+            hide()
             return // no attacker
         }
 
