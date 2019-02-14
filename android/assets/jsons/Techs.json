@@ -418,6 +418,7 @@
 		era:"Information",
 		techCost: 7035,
 		buildingCost:500,
+		wonderCost:1250,
 		techs:[
 			{
 				name:"Pharmaceuticals",
