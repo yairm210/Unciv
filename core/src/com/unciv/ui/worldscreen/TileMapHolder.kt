@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
@@ -245,12 +246,25 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
         selectedTile = tileGroup.tileInfo
         worldScreen.bottomBar.unitTable.tileSelected(selectedTile!!)
+
+        val originalScrollX = scrollX
+        val originalScrollY = scrollY
+
         // We want to center on the middle of TG (TG.getX()+TG.getWidth()/2)
         // and so the scroll position (== filter the screen starts) needs to be half a screen away
-        scrollX = tileGroup.x + tileGroup.width / 2 - worldScreen.stage.width / 2
+        val finalScrollX = tileGroup.x + tileGroup.width / 2 - worldScreen.stage.width / 2
+        
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
-        scrollY = maxY - (tileGroup.y + tileGroup.width / 2 - worldScreen.stage.height / 2)
-        updateVisualScroll()
+        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - worldScreen.stage.height / 2)
+
+        addAction(object : FloatAction(0f,1f,0.4f){
+            override fun update(percent: Float) {
+                scrollX = finalScrollX*percent + originalScrollX * (1-percent)
+                scrollY = finalScrollY*percent + originalScrollY*(1-percent)
+                updateVisualScroll()
+            }
+        })
+
         worldScreen.shouldUpdate=true
     }
 
