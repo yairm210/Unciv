@@ -106,7 +106,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val size = 60f
         val moveHereButton = Group().apply { width = size;height = size; }
         moveHereButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
-        moveHereButton.addActor(ImageGetter.getStatIcon("Movement").apply { width = size / 2; height = size / 2; center(moveHereButton) })
+        moveHereButton.addActor(ImageGetter.getStatIcon("Movement")
+                .apply { color= Color.BLACK; width = size / 2; height = size / 2; center(moveHereButton) })
 
         val numberCircle = ImageGetter.getCircle().apply { width = size / 2; height = size / 2;color = Color.BLUE }
         moveHereButton.addActor(numberCircle)

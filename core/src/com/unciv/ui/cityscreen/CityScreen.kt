@@ -1,9 +1,11 @@
 package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
@@ -12,7 +14,6 @@ import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.round
@@ -30,10 +31,10 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var cityInfoTable = CityInfoTable(this)
 
     /** Displays tile info, sits on the bottom right */
-    private var tileTable = Table()
+    private var tileTable = CityScreenTileTable(city)
 
     /** Displays city name, allows switching between cities - sits on the bottom */
-    private var cityPickerTable = Table()
+    private var cityPickerTable = CityScreenCityPickerTable(this)
 
     /** Holds production list and current production - sits on the bottom left */
     private var constructionsTable = ConstructionsTable(this)
@@ -41,11 +42,10 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
+        onBackButtonClicked { game.setWorldScreen(); dispose() }
         addTiles()
 
         val tableBackgroundColor = ImageGetter.getBlue().lerp(Color.BLACK,0.5f)
-
 
         var buildingsTableContainer = Table()
         buildingsTableContainer.pad(3f)
@@ -60,6 +60,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                 stage.height - buildingsTableContainer.height-5)
 
         stage.addActor(constructionsTable)
+        stage.addActor(tileTable)
+
         stage.addActor(cityPickerTable)
         stage.addActor(buildingsTableContainer)
 
@@ -69,15 +71,19 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     internal fun update() {
         cityInfoTable.update()
-        updateCityPickerTable()
+
+        cityPickerTable.update()
+        cityPickerTable.centerX(stage)
+
         constructionsTable.update()
         updateRazeCityButton()
-        updateTileTable()
+        tileTable.update(selectedTile)
+        tileTable.setPosition(stage.width-5, 5f,Align.bottomRight)
         updateTileGroups()
 
         topCityStatsTable.remove()
         topCityStatsTable = getCityStatsTable()
-        topCityStatsTable.setPosition(5f, stage.height-5-topCityStatsTable.height)
+        topCityStatsTable.setPosition(5f, stage.height-5, Align.topLeft)
         stage.addActor(topCityStatsTable)
         stage.addActor(topCityStatsTable)
 
@@ -149,80 +155,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         return table.addBorder(2f, beige)
     }
 
-    private fun updateCityPickerTable() {
-        cityPickerTable.clear()
-
-        val civInfo = city.civInfo
-        if (civInfo.cities.size > 1) {
-            val prevCityButton = TextButton("<", CameraStageBaseScreen.skin)
-            prevCityButton.onClick {
-                    val indexOfCity = civInfo.cities.indexOf(city)
-                    val indexOfNextCity = if (indexOfCity == 0) civInfo.cities.size - 1 else indexOfCity - 1
-                    game.screen = CityScreen(civInfo.cities[indexOfNextCity])
-                    dispose()
-                }
-            cityPickerTable.add(prevCityButton).pad(20f)
-        } else cityPickerTable.add()
-
-        val cityNameTable = Table()
-        if(city.isBeingRazed){
-            val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
-            cityNameTable.add(fireImage).size(20f).padRight(5f)
-        }
-
-        if(city.isCapital()){
-            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
-            cityNameTable.add(starImage).size(20f).padRight(5f)
-        }
-
-        val currentCityLabel = Label(city.name+" ("+city.population.population+")", CameraStageBaseScreen.skin)
-        currentCityLabel.setFontSize(25)
-        currentCityLabel.onClick {
-            val popup = PopupTable(this)
-            val textArea = TextField(city.name, skin)
-            textArea.setAlignment(Align.center)
-            popup.add(textArea).colspan(2).row()
-            popup.addButton("Close".tr()){popup.remove()}
-            popup.addButton("Save".tr()){
-                city.name = textArea.text
-                UnCivGame.Current.screen = CityScreen(city)
-            }
-            popup.open()
-            }
-
-        cityNameTable.add(currentCityLabel)
-
-        cityPickerTable.add(cityNameTable)
-
-
-        if (civInfo.cities.size > 1) {
-            val nextCityButton = TextButton(">", CameraStageBaseScreen.skin)
-            nextCityButton.onClick {
-                    val indexOfCity = civInfo.cities.indexOf(city)
-                    val indexOfNextCity = if (indexOfCity == civInfo.cities.size - 1) 0 else indexOfCity + 1
-                    game.screen = CityScreen(civInfo.cities[indexOfNextCity])
-                    dispose()
-                }
-            cityPickerTable.add(nextCityButton).pad(20f)
-        } else cityPickerTable.add()
-        cityPickerTable.row()
-
-        val exitCityButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
-
-        exitCityButton.onClick {
-            game.setWorldScreen()
-            game.worldScreen.tileMapHolder.setCenterPosition(city.location)
-            game.worldScreen.bottomBar.unitTable.selectedUnit=null
-            dispose()
-        }
-
-        cityPickerTable.add(exitCityButton).pad(10f).colspan(cityPickerTable.columns)
-
-        cityPickerTable.pack()
-        cityPickerTable.centerX(stage)
-        stage.addActor(cityPickerTable)
-    }
-
     private fun updateRazeCityButton() {
         razeCityButtonHolder.clear()
 
@@ -231,7 +163,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             razeCityButton.onClick { city.isBeingRazed=true; update() }
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
         }
-        else{
+        else {
             val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
             razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
@@ -245,7 +177,6 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     private fun addTiles() {
         val cityInfo = city
-
 
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
                 .filter { city.civInfo.exploredTiles.contains(it.position) }
@@ -308,44 +239,4 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         scrollPane.updateVisualScroll()
     }
 
-    private fun updateTileTable() {
-        tileTable.remove()
-        if (selectedTile == null) return
-        val tile = selectedTile!!
-        tileTable.clearChildren()
-
-        val stats = tile.getTileStats(city, city.civInfo)
-        tileTable.pad(20f)
-
-        tileTable.add(Label(tile.toString(), CameraStageBaseScreen.skin)).colspan(2)
-        tileTable.row()
-
-        val statsTable = Table()
-        statsTable.defaults().pad(2f)
-        for (entry in stats.toHashMap().filterNot { it.value==0f }) {
-            statsTable.add(ImageGetter.getStatIcon(entry.key.toString())).size(20f)
-            statsTable.add(Label(Math.round(entry.value).toString(), CameraStageBaseScreen.skin))
-            statsTable.row()
-        }
-        tileTable.add(statsTable).row()
-
-        if(tile.getOwner()==null && tile.neighbors.any{it.getCity()==city}){
-            val goldCostOfTile = city.expansion.getGoldCostOfTile(tile)
-            val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(),skin)
-            buyTileButton.onClick("coin") { city.expansion.buyTile(tile); game.screen = CityScreen(city); dispose() }
-            if(goldCostOfTile>city.civInfo.gold) buyTileButton.disable()
-            tileTable.add(buyTileButton)
-        }
-        if(city.canAcquireTile(tile)){
-            val acquireTileButton = TextButton("Acquire".tr(),skin)
-            acquireTileButton.onClick { city.expansion.takeOwnership(tile); game.screen = CityScreen(city); dispose() }
-            tileTable.add(acquireTileButton)
-        }
-
-        tileTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
-        tileTable=tileTable.addBorder(2f, Color.WHITE)
-        tileTable.setPosition(stage.width - 5f - tileTable.width, 5f)
-        stage.addActor(tileTable)
-    }
 }
-
