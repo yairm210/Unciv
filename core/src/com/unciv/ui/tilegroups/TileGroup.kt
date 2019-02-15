@@ -267,7 +267,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             }
             if (roadStatus == RoadStatus.None) continue // no road image
 
-            val image = if (roadStatus == RoadStatus.Road) ImageGetter.getWhiteDot().apply { color = Color.BROWN }
+            val image = if (roadStatus == RoadStatus.Road) ImageGetter.getDot(Color.BROWN)
             else ImageGetter.getImage("OtherIcons/Railroad.png")
             roadImage.image = image
 

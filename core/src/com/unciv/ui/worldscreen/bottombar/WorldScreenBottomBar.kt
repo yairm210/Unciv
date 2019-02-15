@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen.bottombar
 
-import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.worldscreen.WorldScreen
@@ -11,7 +10,6 @@ class WorldScreenBottomBar(val worldScreen: WorldScreen) : Table(){
     val tileInfoTable = TileInfoTable(worldScreen)
 
     init {
-        touchable= Touchable.enabled
         add(unitTable).width(worldScreen.stage.width/3).fill()
         add().width(worldScreen.stage.width/3) // empty space for the battle table
         add(tileInfoTable).width(worldScreen.stage.width/3).fill()

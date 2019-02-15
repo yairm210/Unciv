@@ -7,6 +7,10 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.UnitType
 
 class CityCombatant(val city: CityInfo) : ICombatant {
+    override fun getMaxHealth(): Int {
+        return city.getMaxHealth()
+    }
+
     override fun getHealth(): Int = city.health
     override fun getCivilization(): CivilizationInfo = city.civInfo
     override fun getTile(): TileInfo = city.getCenterTile()

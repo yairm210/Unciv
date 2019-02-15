@@ -24,7 +24,7 @@ object ImageGetter {
     // and the atlas is what tells us what was packed where.
     var atlas = TextureAtlas("game.atlas")
     fun getWhiteDot() =  getImage(whiteDotLocation)
-
+    fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}
 
     fun getExternalImage(fileName:String): Image {
         return Image(TextureRegion(Texture("ExtraImages/$fileName.png")))
@@ -158,7 +158,7 @@ object ImageGetter {
             healthPercent > 1 / 3f -> Color.ORANGE
             else -> Color.RED
         }
-        val emptyPartOfBar = ImageGetter.getWhiteDot().apply { color = Color.BLACK }
+        val emptyPartOfBar = ImageGetter.getDot(Color.BLACK)
         healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
         healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
         healthBar.pack()

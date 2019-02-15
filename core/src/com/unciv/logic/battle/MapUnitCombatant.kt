@@ -7,6 +7,7 @@ import com.unciv.models.gamebasics.unit.UnitType
 
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getHealth(): Int = unit.health
+    override fun getMaxHealth() = 100
     override fun getCivilization(): CivilizationInfo = unit.civInfo
     override fun getTile(): TileInfo = unit.getTile()
     override fun getName(): String = unit.name

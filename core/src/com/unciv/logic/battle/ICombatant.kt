@@ -1,13 +1,13 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 
 interface ICombatant{
     fun getName(): String
     fun getHealth():Int
+    fun getMaxHealth():Int
     fun getUnitType(): UnitType
     fun getAttackingStrength(): Int
     fun getDefendingStrength(): Int

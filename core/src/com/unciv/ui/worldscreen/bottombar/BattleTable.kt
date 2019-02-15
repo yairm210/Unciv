@@ -1,6 +1,9 @@
 package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
+import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
+import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -118,12 +121,10 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             add("{Captured!}".tr())
         }
 
-        else {
-            add("{Health}: ".tr() + attacker.getHealth().toString() + " -> "
-                    + (attacker.getHealth() - damageToAttacker))
 
-            add("{Health}: ".tr() + defender.getHealth().toString() + " -> "
-                    + (defender.getHealth() - damageToDefender))
+        else {
+            add(getHealthBar(attacker.getHealth(), attacker.getMaxHealth(), damageToAttacker))
+            add(getHealthBar(defender.getHealth(), defender.getMaxHealth(), damageToDefender))
         }
 
         row().pad(5f)
@@ -169,6 +170,34 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         pack()
 
         setPosition(worldScreen.stage.width/2-width/2, 5f)
+    }
+
+    fun getHealthBar(currentHealth: Int, maxHealth: Int, expectedDamage:Int): Table {
+        val healthBar = Table()
+        val totalWidth = 100f
+        fun addHealthToBar(image: Image, amount:Int){
+            healthBar.add(image).size(amount*totalWidth/maxHealth,3f)
+        }
+        addHealthToBar(ImageGetter.getDot(Color.BLACK), maxHealth-currentHealth)
+
+        val damagedHealth = ImageGetter.getDot(Color.RED)
+        damagedHealth.addAction(Actions.repeat(RepeatAction.FOREVER, Actions.sequence(
+                Actions.color(Color.BLACK,0.7f),
+                Actions.color(Color.RED,0.7f)
+        )))
+        addHealthToBar(damagedHealth,expectedDamage)
+
+        val remainingHealth = currentHealth-expectedDamage
+        val remainingHealthDot = ImageGetter.getWhiteDot()
+        remainingHealthDot.color = when {
+            remainingHealth / maxHealth.toFloat() > 2 / 3f -> Color.GREEN
+            remainingHealth / maxHealth.toFloat() > 1 / 3f -> Color.ORANGE
+            else -> Color.RED
+        }
+        addHealthToBar(remainingHealthDot ,remainingHealth)
+
+        healthBar.pack()
+        return healthBar
     }
 
 }
