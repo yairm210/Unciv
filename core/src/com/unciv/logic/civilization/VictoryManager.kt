@@ -31,7 +31,7 @@ class VictoryManager {
 
     fun hasWonCulturalVictory() = civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3
 
-    fun hasWonConquestVictory() = civInfo.gameInfo.civilizations.all { it.isPlayerCivilization() || it.isDefeated() }
+    fun hasWonConquestVictory() = civInfo.gameInfo.civilizations.all { it==civInfo || it.isDefeated() }
 
     fun hasWon() = hasWonConquestVictory() || hasWonCulturalVictory() || hasWonScientificVictory()
 }
