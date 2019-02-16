@@ -122,7 +122,7 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Number of human players}:".tr())
         val humanPlayers = SelectBox<Int>(skin)
         val humanPlayersArray = Array<Int>()
-        (1..GameBasics.Nations.size).forEach { humanPlayersArray .add(it) }
+        (1..GameBasics.Nations.size).forEach { humanPlayersArray.add(it) }
         humanPlayers.items = humanPlayersArray
         humanPlayers.selected = newGameParameters.numberOfHumanPlayers
         newGameOptionsTable.add(humanPlayers).pad(10f).row()

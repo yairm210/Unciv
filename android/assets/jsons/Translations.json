@@ -795,6 +795,10 @@
 		Italian:"La resistenza dura per altri [numberOfTurns] turni"
 	}
 	
+	"[greatPerson] points":{ // e.g "Great Scientist points"
+		
+	}
+	
 	// Tech picker
 	"Pick a tech":{
 		Italian:"Scegli una tecnologia"

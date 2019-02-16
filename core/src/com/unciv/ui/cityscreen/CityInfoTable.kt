@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
@@ -22,6 +23,32 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     internal fun update() {
         clear()
         val cityInfo = cityScreen.city
+
+        addBuildingInfo(cityInfo)
+
+        addStatInfo()
+
+        val greatPersonPoints = cityInfo.getGreatPersonMap()
+        val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
+        for(stat in Stat.values()){
+            if(!statToGreatPerson.containsKey(stat)) continue
+            val expanderName = "["+statToGreatPerson[stat]!!+"] points"
+            val expanderTab = ExpanderTab(expanderName.tr(),skin)
+            expanderTab.innerTable.defaults().pad(3f)
+            for(entry in greatPersonPoints){
+                val value = entry.value.toHashMap()[stat]!!
+                if(value==0f) continue
+                expanderTab.innerTable.add(entry.key.toLabel())
+                expanderTab.innerTable.add(DecimalFormat("0.#").format(value).toLabel()).row()
+            }
+            if(expanderTab.innerTable.hasChildren())
+                add(expanderTab).row()
+        }
+
+        pack()
+    }
+
+    private fun addBuildingInfo(cityInfo: CityInfo) {
         val wonders = mutableListOf<Building>()
         val specialistBuildings = mutableListOf<Building>()
         val otherBuildings = mutableListOf<Building>()
@@ -35,7 +62,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
 
         if (!wonders.isEmpty()) {
-            val wondersExpander = ExpanderTab("Wonders".tr(),skin)
+            val wondersExpander = ExpanderTab("Wonders".tr(), skin)
             for (building in wonders) {
                 wondersExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 wondersExpander.innerTable.add(building.name.toLabel()).pad(5f).align(Align.left).row()
@@ -44,14 +71,14 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
 
         if (!specialistBuildings.isEmpty()) {
-            val specialistBuildingsExpander = ExpanderTab("Specialist Buildings".tr(),skin)
+            val specialistBuildingsExpander = ExpanderTab("Specialist Buildings".tr(), skin)
             for (building in specialistBuildings) {
                 specialistBuildingsExpander.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 specialistBuildingsExpander.innerTable.add(building.name.toLabel()).pad(5f)
                 val specialistIcons = Table()
                 specialistIcons.row().size(20f).pad(5f)
-                for(stat in building.specialistSlots!!.toHashMap())
-                    for(i in 0 until stat.value.toInt())
+                for (stat in building.specialistSlots!!.toHashMap())
+                    for (i in 0 until stat.value.toInt())
                         specialistIcons.add(getSpecialistIcon(stat.key)).size(20f)
 
                 specialistBuildingsExpander.innerTable.add(specialistIcons).row()
@@ -63,17 +90,13 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         }
 
         if (!otherBuildings.isEmpty()) {
-            val buildingsExpanderTab = ExpanderTab("Buildings".tr(),skin)
+            val buildingsExpanderTab = ExpanderTab("Buildings".tr(), skin)
             for (building in otherBuildings) {
                 buildingsExpanderTab.innerTable.add(ImageGetter.getConstructionImage(building.name).surroundWithCircle(30f))
                 buildingsExpanderTab.innerTable.add(building.name.toLabel()).pad(5f).row()
             }
             add(buildingsExpanderTab).row()
         }
-
-        addStatInfo()
-
-        pack()
     }
 
     private fun addStatInfo() {

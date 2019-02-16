@@ -134,24 +134,38 @@ class CityInfo {
 
     fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }
 
-    fun getGreatPersonPoints(): Stats {
-        var greatPersonPoints = population.specialists.times(3f)
+    fun getGreatPersonMap():HashMap<String,Stats>{
+        val stats = HashMap<String,Stats>()
+        if(population.specialists.toString()!="")
+            stats["Specialists"] = population.specialists.times(3f)
 
+        val buildingStats = Stats()
         for (building in cityConstructions.getBuiltBuildings())
             if (building.greatPersonPoints != null)
-                greatPersonPoints.add(building.greatPersonPoints!!)
+                buildingStats.add(building.greatPersonPoints!!)
+        if(buildingStats.toString()!="")
+            stats["Buildings"] = buildingStats
 
-        if (civInfo.getBuildingUniques().contains("+33% great person generation in all cities"))
-            greatPersonPoints = greatPersonPoints.times(1.33f)
-        if (civInfo.policies.isAdopted("Entrepreneurship"))
-            greatPersonPoints.gold *= 1.25f
-        if (civInfo.policies.isAdopted("Freedom"))
-            greatPersonPoints = greatPersonPoints.times(1.25f)
+        for(entry in stats){
+            if(civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
+                entry.value.science *= 1.5f
+            if (civInfo.policies.isAdopted("Entrepreneurship"))
+                entry.value.gold *= 1.25f
 
-        if(civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
-            greatPersonPoints.science *= 1.5f
+            if (civInfo.getBuildingUniques().contains("+33% great person generation in all cities"))
+                stats[entry.key] = stats[entry.key]!!.times(1.33f)
+            if (civInfo.policies.isAdopted("Freedom"))
+                stats[entry.key] = stats[entry.key]!!.times(1.25f)
+        }
 
-        return greatPersonPoints
+        return stats
+    }
+
+    fun getGreatPersonPoints(): Stats {
+        val stats=Stats()
+        for(entry in getGreatPersonMap().values)
+            stats.add(entry)
+        return stats
     }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
