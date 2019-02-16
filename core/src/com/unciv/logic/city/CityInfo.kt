@@ -263,11 +263,11 @@ class CityInfo {
     private fun tryUpdateRoadStatus(){
         if(getCenterTile().roadStatus==RoadStatus.None
                 && GameBasics.TileImprovements["Road"]!!.techRequired in civInfo.tech.techsResearched)
-            getCenterTile().roadStatus==RoadStatus.Road
+            getCenterTile().roadStatus=RoadStatus.Road
 
         else if(getCenterTile().roadStatus!=RoadStatus.Railroad
                 && GameBasics.TileImprovements["Railroad"]!!.techRequired in civInfo.tech.techsResearched)
-            getCenterTile().roadStatus==RoadStatus.Railroad
+            getCenterTile().roadStatus=RoadStatus.Railroad
     }
 
     fun getGoldForSellingBuilding(buildingName:String) = GameBasics.Buildings[buildingName]!!.cost / 10
