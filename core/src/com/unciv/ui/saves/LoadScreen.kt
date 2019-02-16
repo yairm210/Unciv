@@ -63,7 +63,7 @@ class LoadScreen : PickerScreen() {
         val errorLabel = "".toLabel().setFontColor(Color.RED)
         loadFromClipboardButton.onClick {
             try{
-                val clipboardContentsString = Gdx.app.clipboard.contents
+                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
                 val loadedGame = Json().fromJson(GameInfo::class.java, decoded)
                 loadedGame.setTransients()

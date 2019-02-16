@@ -105,6 +105,16 @@ class CityStats {
         return stats
     }
 
+    private fun getStatsFromNationUnique(): Stats {
+        val stats = Stats()
+
+        val civUnique = cityInfo.civInfo.getNation().unique
+        if(civUnique == "+2 Culture per turn from cities before discovering Steam Power")
+            stats.culture += 2
+
+        return stats
+    }
+
     private fun getStatPercentBonusesFromNationUnique(): Stats {
         val stats = Stats()
 
@@ -119,9 +129,6 @@ class CityStats {
         if(civUnique=="+20% production towards Wonder construction"
             && currentConstruction is Building && currentConstruction.isWonder)
             stats.production+=20
-
-        if(civUnique == "+2 Culture per turn from cities before discovering Steam Power")
-            stats.culture += 2
 
         return stats
     }
@@ -306,6 +313,7 @@ class CityStats {
         newBaseStatList["Trade routes"] = getStatsFromTradeRoute()
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
+        newBaseStatList["National ability"] = getStatsFromNationUnique()
 
         val newStatPercentBonusList = LinkedHashMap<String,Stats>()
         newStatPercentBonusList["Golden Age"]=getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
