@@ -416,8 +416,7 @@ class MapUnit {
         if(researchableAncientEraTechs.isNotEmpty())
             actions.add {
                 val tech = researchableAncientEraTechs.getRandom().name
-                civInfo.tech.techsResearched.add(tech)
-                if(civInfo.tech.techsToResearch.contains(tech)) civInfo.tech.techsToResearch.remove(tech)
+                civInfo.tech.addTechnology(tech)
                 civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",currentTile.position, Color.BLUE)
             }
 

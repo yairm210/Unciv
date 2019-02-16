@@ -70,7 +70,7 @@ class CivilizationInfo {
 
     constructor(civName: String) {
         this.civName = civName
-        tech.techsResearched.add("Agriculture")
+        tech.addTechnology("Agriculture")
     }
 
     fun clone(): CivilizationInfo {

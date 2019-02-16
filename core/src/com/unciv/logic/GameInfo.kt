@@ -92,6 +92,8 @@ class GameInfo {
             tile = viableTiles.getRandom()
         }
 
+        // if we don't make this into a separate list then the retain() will happen on the Tech keys,
+        // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = GameBasics.Technologies.keys.toMutableList()
         for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)

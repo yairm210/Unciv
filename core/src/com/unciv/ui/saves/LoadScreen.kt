@@ -82,7 +82,6 @@ class LoadScreen : PickerScreen() {
             UnCivGame.Current.loadGame(selectedSave)
         }
 
-
     }
 
 }
