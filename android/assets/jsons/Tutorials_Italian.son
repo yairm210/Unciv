@@ -1,0 +1,314 @@
+{ // Each entry s a tutorial, but the tutorial may be spread over separate paragraphs.
+	// so for example:
+	PolicyPickerScreen: [ // Activated when entering policy picker screen
+		[ // This is simply a more comfortable format than "all in one line with \n".
+			"Ad ogni turno, la cultura ottenuta da ogni tua città ",
+			"  si aggiunge alla cultura della tua civiltà.",
+			"Una volta accumultata abbastanza cultura, potrai scegliere ",
+			"  una Politica Sociale tra tante, ognuna con i propri bonus."
+		],  // this will be displayed as 4 lines of text in-game as well
+		[
+			"Le politiche sono divise in otto rami, e ognuno",
+			"  di essi donano un'abilità bonus quanto tutte le sue ",
+			"  politiche sono state adottate."
+		],
+		[
+			"Ad ogni politica adottata, e ad ogni nuova città fondata,",
+			"  il costo di adottare un'altra politica aumenta, quindi pianifica con cautela!"
+		]
+	],
+	
+	CityEntered: [
+		[
+			"Benvenuto nella tua prima città!",
+			"Per ora, possiedi solo 1 abitante, ma la popolazione crescerà quando possiedi del cibo in eccesso",
+			"In modo simile, la città espanderà i suoi confini quando accumulerà cultura sufficiente,",
+			"  che non si genera dalle caselle, ma piuttosto dagli edifici."
+		],
+		[
+			"Ogni abitante nella tua città può sfruttare una singola casella, dando alla città gli introiti della casella.",
+			"Puoi assegnare e togliere lavoro agli abitanti cliccando sulle caselle - ",
+			"  ma, ovviamente, puoi dare lavoro solo se hai ancora abitanti non attivi."
+		],
+		[
+			"La casella centrale di una città è sempre sfruttata e non richiede abitanti,",
+			"  ma non può contenere miglioramenti."
+		],
+		[
+			"La produzione cittadina tira sempre verso la costruzione attuale. ",
+			"Puoi scegliere la costruzione cliccando sul tasto costruzione in basso a sinistra"
+		]
+	],
+	
+	ScienceVictoryScreenEntered : [
+		[
+			"Questa è la schermata di vittoria scientifica, dove",
+			"  puoi vedere i tuoi progressi nella costruzione ",
+			"  dell'astronave che ti lancerà nello spazio."
+		],
+		[
+			"Sei sono le parti dell'astronave che devi costruire, ",
+			"  e richiedono tutte tecnologie molto avanzate."
+		],
+	],
+	
+	TechPickerScreen : [
+		[
+			"La tecnologia è centrale per la tua civiltà,",
+			" perché quante più tecnologie ricerchi",
+			" più abilità, unità, miglioramenti ed edifici ti saranno concessi."
+		],
+		[
+			"La maggior parte delle tecnologie sono dipese dalla ricerca di altre tecnologie, ",
+			"  ma puoi scegliere a quale tecnologia aspiri, e la tua civiltà",
+			"  ricercherà le tecnologie necessarie per arrivarci."
+		]
+	],
+	
+	
+	CityFounded : [
+		[
+			"Hai fondato una città!",
+			"Le città sono la linfa vitale dell'impero, in quanto donano oro e scienza globalmente,",
+			"  mostrati nella barra superiore dello schermo."
+		],
+		[
+			"La scienza si usa per ricercare tecnologie.",
+			"Puoi entrare nella schermata tecnologie cliccando sul tasto in alto a sinistra, sotto la barra risorse",
+		],
+		[
+			"Puoi cliccare sul nome della città per entrare nella schermata cittadina e assegnarne gli abitanti,",
+			"  sceglierne una produzione, e vederne le informazioni."
+		]
+	],
+	
+	NewGame: [
+		[
+			"Salve. Benvenuto su UnCiv!",
+			"I giochi di civiltà tipo appunto Civilization possono essere complessi,",
+      " quindi ti guideremo nel tuo primo viaggio.",
+			"Prima di iniziare, rivediamo i concetti base del gioco."
+		],
+		[
+			"Cominci con tre sole unità: ",
+      " un Colono, che può fondare una città; ",
+			" un Guerriero, la primissima unità militare; ",
+			" un Esploratore, per appunto esplorare i dintorni.",
+			"Clicca su una casella per dare ordini all'unità."
+		]
+	],
+	
+	TileLayout: [
+		[
+			"Questa è la mappa del mondo, che è composta da moltissime caselle.",
+			"Ogni casella può contenere unità, risorse e miglioramenti, che ti spiegheremo in seguito.",
+			"La posizione dell'icona ti dice cosa significa.",
+			"Per maggiori dettagli, puoi cliccare sulla casella e vederne le informazioni."
+		]
+	],
+	
+	
+	TileClicked : [
+		[
+			"Cliccando su una casella, non solo la selezioni,",
+			"  ma ne visualizzi le informazioni in basso a destra.",
+			"Se una casella contiene un'unità, questa verrà selezionata,"
+			"  e in basso a sinistra saranno visualizzate informazioni e azioni."
+		]
+	],
+	
+	UnitSelected : [
+		[
+			"Quando un'unità viene selezionata, ne vedrai le informazioni nell'angolo in basso a sinistra.",
+			"Le azioni disponibili dell'unità appariranno sopra le sue informazioni e statistiche."
+		]
+	],
+	
+	AfterCityEntered : [
+		[
+			"Una volta fatto tutto il possibile, ",
+			"clicca sul tasto Prossimo Turno nell'angolo in alto a destra per continuare."
+		],
+		[
+			"Ad ogni turno, si aggiungono scienza, cultura e oro",
+			" alla tua civiltà, le città continuano a costruire, ",
+			" e anche la popolazione potrebbe aumentare."
+		]
+	],
+	
+	NextTurn: [
+		[
+			"Nei tuoi primi turni, avrai ben poche opzioni, ",
+			"  ma con il crescere della tua civiltà, lo stesso accadrà ",
+			"  alla quantità di cose che richiedono la tua attenzione"
+		]
+	]
+	
+	ContactMe:  [
+		[
+			"Salve! Se sei giunto/a fin qui, forse avrai visto che il gioco è al momento incompleto.",
+			"UnCiv dovrebbe essere open-source e gratuito per sempre, quindi nessuna pubblicità o altre siocchezze."
+		],
+		[
+			"Ciò che mi motiva a continuare il progetto, oltre al fatto che è fantastico, ",
+			"  è il supporto dai giocatori."
+			"  Vi ringrazio tutti di cuore!"
+		],
+		[
+			"Ogni voto e recensione che mi date mi fa sempre sorridere =)",
+			"  Perciò contattatemi! Mandatemi un'email, una recensione, un fattoide Github"
+			"  o un piccione viaggiatore, e vediamo di rendere il gioco ancora più bello! "
+			"(Informazioni contatti nel Play Store)" 
+		]
+	],
+	
+	Unhappiness:  [
+		[
+			"Sembra che i tuoi cittadini siano insoddisfatti!",
+			"Se il tuo impero non è felice, le città cresceranno a 1/4 della loro velocità,",
+			"  e le tue unità saranno penalizzate del 2% ad ogni punto infelicità"
+		],
+		[
+			"L'infelicità possiede due cause: abitanti e città.",
+			"  Ogni città dona 3 punti infelicità, e ogni abitante ne dona 1."
+		],
+		[
+			"Vi sono due modi per combattere la felicità:",
+			"  o costruisci edifici che migliorano la felicità della tua popolazione,",
+			"  o sfrutti delle caselle contenenti risorse di lusso entro i tuoi confini."
+		]
+	],
+	
+	GoldenAge:  [
+		[
+			"Sei entrato in un'Età dell'Oro!",
+			"I punti Età dell'Oro si accumulano ad ogni turno dalla felicità totale della tua civiltà.",
+			"Durante l'Età dell'Oro, generi Cultura e Produzione il 20% in più,",
+			"  e ogni casella che frutta minimo un punto Oro ne frutta uno aggiuntivo."
+		]
+	],
+	
+	SecondCity:  [
+		[
+			"Hai fondato la tua seconda città!",
+			"Se connetti le tua città alla capitale con le strade, le rotte commerciali ti frutteranno oro.",
+			"Nota che ogni strada costa 1 Oro di manutenzione al turno, quindi attendi di avere una forte economia "
+			"  finché le città crescono!"
+		]
+	]
+	
+	EnemyCity:  [
+		[
+			"Hai avvistato una città nemica!",
+			"Puoi conquistare le città prima riducendo la loro salute a 1,",
+			"  e poi facendo entrare un'unità da mischia.",
+			"Dato che le città guariscono ad ogni turno, è meglio attaccare con unità da tiro e d'assedio,"
+			"  e usare le tue unità da mischia per difenderle fino alla sconfitta della città."
+		]
+	]
+	
+	LuxuryResource:  [
+		[
+			"Hai ottenuto la tua prima risorsa di lusso!",
+			"Ogni risorsa unica di lusso posseduta frutta 5 punti felicità alla civiltà,",
+			"  ma risorse extra dello stesso tipo non fruttano niente, ",
+			"  quindi usale per commerciare con le altre civiltà."
+		]
+	]
+	
+	StrategicResource:  [
+		[
+			"Hai ottenuto la tua prima risorsa strategica!",
+			"Le risorse strategiche ti permettono di addestrare unità e costruire edifici",
+			"  che richiedono tali risorse specifiche (ad esempio, lo Spadaccino richiede Ferro)."
+			"Ogni unità 'consuma' una copia di quella risorsa, ma se quell'unità muore recuperi quella "copia" della risorsa, ",
+			"  e puoi quindi costruire una nuova unità con quella risorsa ora non utilizzata.",
+			"La barra superiore tiene conto di quante risorse strategiche non usate possiedi."
+		]
+	]
+	
+	EnemyCityNeedsConqueringWithMeleeUnit:  [
+		[
+			"La città ha esaurito la sua resistenza!",
+			"Ricordati che per conquistarla devi farvi entrare un'unità da mischi."
+		]
+	]
+	
+	BarbarianEncountered:  [
+		[
+			"Hai incontrato un'unità barbarica!",
+			"I barbari attaccano chiunque indiscriminatamente, quindi tieni le tue unità civili ",
+			"  lontane dalla loro vista, e stai attento col tuo esploratore!"
+		]
+	]
+	
+	OtherCivEncountered:  [
+		[
+			"Hai incontrato un'altra civiltà!",
+			"Le altre civiltà cominciamo come pacifiche, e tu puoi commerciare con loro,",
+			"  ma ben presto potrebbero dichiararti guerra!"
+		]
+	]
+	
+	GameCrashed:  [
+		[
+			"Santi numi! Pare che qualcosa sia andato disastrosamente storto!",
+			"Questo non doveva assolutamente accadere!",
+			"Mandami un'email all'indirizzo yairm210@hotmail.com con l'info della partita",
+			"   (menu -> salva partita -> copia info partita -> incolla in email)",
+			"   e proverò a riparare il guasto il più in fretta possibile!"
+		]
+	]
+	
+	ApolloProgram:  [
+		[
+			"Hai completato il Programma Apollo!",
+			"Ora puoi iniziare a costruire le parti dell'astronave nelle tue città",
+			"  (con le apposite tecnologie) e cercare di ottenere una vittoria scientifica!"
+		]
+	]
+	
+	InjuredUnits:[
+		[
+			"Una delle tue unità ha subito danni!",
+			"Le unità ferite infliggono meno dani, ma recuperano salute finché rimangono inattive",
+			"Le unità recuperano 5 punti salute in territorio nemico, 10 in terra neutrale,"
+			"  15 nel tuo territorio o in territorio amico e 20 nelle tue città"
+		]
+	]
+	
+	WorkerTrained:[
+		[
+			"Hai addestrato un lavoratore!",
+			"I lavoratori sono vitali per la crescita dellecittà, perché solo loro possono costruire miglioramenti nelle caselle.",
+			"I miglioramenti incrementano la resa delle caselle, permettendo alle città di produrre di più",
+			"  e crescere più in fretta, senza dover espandersi a forza!"
+		]
+	]
+	
+	SiegeUnitTrained:[
+		[
+			"Hai addestrato un'unità d'assedio!",
+			"Le unità d'assedio sono estremamente potenti contro le città, ma devono essere montate prima di attaccare.",
+			"Una volta montata, l'unità d'assedio può attaccare dalla sua casella presente,",
+			"  ma una volta spostatasi a un'altra casella, dovrà essere montata di nuovo."
+		]
+	]
+	
+	CanEmbark:[
+		[
+			"Ora le tue unità terrestri possono imbarcarsi e attraversare caselle acquatiche!",
+			"Entrare o abbandonare una casella acquatica impiega un intero turno.",
+			"Fà attenzione, perché le unità imbarcate sono indifese!"
+		]
+	]
+
+	CityRange:[
+		[
+			"Your citizens can work 3 tiles away from city center.",
+			"The city border will keep expanding,",
+			"but citizen cannot be assigned to a tile too far."
+		]
+	]
+	
+}
