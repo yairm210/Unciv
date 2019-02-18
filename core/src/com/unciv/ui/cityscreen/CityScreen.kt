@@ -226,7 +226,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     stage.height / 2 + positionalVector.y * 0.8f * groupSize.toFloat())
         }
 
-        val tileMapGroup = TileGroupMap(tileGroups,300f)
+        val tileMapGroup = TileGroupMap(tileGroups,stage.width/2)
         val scrollPane = ScrollPane(tileMapGroup)
         scrollPane.setSize(stage.width,stage.height)
         scrollPane.setOrigin(stage.width / 2, stage.height / 2)
