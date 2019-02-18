@@ -248,8 +248,10 @@ class MapUnit {
 
     fun canFortify(): Boolean {
         if(type.isWaterUnit()) return false
+        if(type.isCivilian()) return false
         if(isEmbarked()) return false
         if(hasUnique("No defensive terrain bonus")) return false
+        if(isFortified()) return false
         return true
     }
 

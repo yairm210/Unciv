@@ -107,7 +107,7 @@ class UnitAutomation{
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
         if(unitTile!=bestTileForHealing && rankTileForHealing(bestTileForHealing,unit)>rankTileForHealing(unitTile,unit))
             unit.moveToTile(bestTileForHealing)
-        if(unit.currentMovement>0 && !unit.isFortified() && unit.canFortify()){
+        if(unit.currentMovement>0 && unit.canFortify()){
             unit.action="Fortify 0"
         }
     }

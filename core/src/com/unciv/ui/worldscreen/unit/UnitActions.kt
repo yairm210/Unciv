@@ -37,13 +37,12 @@ class UnitActions {
                     }
         }
 
-        if(!unit.type.isCivilian() && !unit.isEmbarked() && !unit.type.isWaterUnit()
-                && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified()) {
+        if(unit.canFortify()) {
             actionList += UnitAction("Fortify", unit.currentMovement >0)
                 { unit.action = "Fortify 0" }.sound("fortify")
         }
 
-        if(!unit.isFortified() && actionList.none{it.name=="Fortify"} && unit.action!="Sleep") {
+        if(!unit.isFortified() && !unit.canFortify() && unit.action!="Sleep") {
             actionList += UnitAction("Sleep",unit.currentMovement >0) { unit.action = "Sleep" }
         }
 
