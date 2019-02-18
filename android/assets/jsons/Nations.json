@@ -287,6 +287,177 @@
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
 			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
 	},
+	/*
+	{
+	name:"Germany",
+		leaderName:"Otto von Bismark",
+		
+		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!"
+		attacked:"Corrupted villain! We will bring you into the ground!"
+		defeated:"Germany has been destroyed. I weep for the future generations."
+		introduction:"Guten tag. In the name of the great German people, I bid you welcome."
+		
+		neutralHello:"What now?"
+		neutralLetsHearIt:["What do ye say?","Yes?","Ja?"]
+		neutralNo:["We do not accept.","Nein.","Not a chance."]
+		neutralYes:["Agreed","Very well, then","Alright."]
+
+		hateHello:"So, out with it!"
+		hateLetsHearIt:["And?!","Come on!","Well, tell me!"]
+		hateNo:["That is unacceptable!","Ye can't be serious!","Nein!"]
+		hateYes:["Well, okay.","Gut.","It seems I can't refuse."]
+		
+		afterPeace:"What do ye think about calling it a draw?"
+		tradeRequest:"We do not accept."
+				
+		mainColor:[],
+		secondaryColor:[],
+		unique:"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Also, land unit manteinance is reduced by 25%.",
+		cities:["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
+			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
+			"Mnster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
+			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrcken","Krefeld","Pirmasens","Potsdam","Solingen",
+			"Osnabrck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mlheim","Darmstadt","Herne","Wrzburg",
+			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
+	},
+	{
+		name:"India",
+		leaderName:"Gandhi",
+		
+		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
+		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
+		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
+		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
+		
+		neutralHello:"I wish you peace."
+		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
+		neutralNo:["Absolutely not.","No.","This is unacceptable"]
+		neutralYes:["Okay.","We can cooperate on this","Fine."]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["Continue.","And?","Go on."]
+		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
+		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
+		
+		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
+		tradeRequest:"My friend, are you interested in this arrangement?"
+				
+		mainColor:[],
+		secondaryColor:[],
+		unique:"Cities only provide 1 Unhappiness instead of 3.",
+		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
+			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
+			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
+	},
+	{
+		name:"Aztecs",
+		leaderName:"Montezuma I",
+		
+		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Die, die, die!)"
+		attacked:"Excellent! Let the blood flow in raging torrents!"
+		defeated:" Monster! Who are you to destroy my greatness?"
+		introduction:"What do I see before me? Another beating heart for my sacrificial fire."
+		
+		neutralHello:"Welcome, friend."
+		neutralLetsHearIt:["Go ahead.","Proceed.","I'm listening."]
+		neutralNo:["Certainly not!","No!","Unacceptable!"]
+		neutralYes:["Certainly.","Yes, it is good.","Agreed!"]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["What?","What do you say?","Go on."]
+		hateNo:["Are you crazy?","Certainly not!","I would rather pierce my bowels with hot skewers!"]
+		hateYes:["Oh, very well.","I suppose I must.","Yes, it is good!"]
+		
+		afterPeace:"Curses! I will sacrifice ten thousand citizens to expiate this humiliation!"
+		tradeRequest:" Accept this agreement or suffer the consequences."
+				
+		mainColor:[],
+		secondaryColor:[],
+		unique:"Gain Culture for the empire from each enemy unit killed.",
+		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
+	},
+	{
+		name:"Zulu",
+		leaderName:"Shaka Zulu",
+		
+		declaringWar:"None will slow our progress, not even you! Prepare for war!"
+		attacked:"Your arrogance will only lead you to defeat!"
+		defeated:"My warriors have failed, and so I failed them."
+		introduction:"I'm Shaka of Zulu. Don't try to move, warrior, or I'll destroy you."
+		
+		neutralHello:"Hail your Majesty!"
+		neutralLetsHearIt:["Go ahead.","Proceed.","I'm listening."]
+		neutralNo:["Not a bit.","No!","Try again"]
+		neutralYes:["I accept","It is good.","Alright."]
+
+		hateHello:"What are you doing here?"
+		hateLetsHearIt:["Speak!","What do you say?","Go on."]
+		hateNo:["No way.","Certainly not!","Impossible!"]
+		hateYes:["Fine!","I suppose I must.","Very well..."]
+		
+		afterPeace:"It seems that the Gods of War were against our dispute..."
+		tradeRequest:"You might accept this offer."
+				
+		mainColor:[],
+		secondaryColor:[],
+		unique:"Melee units cost 50% less maintenance, and all units require 25% less experience to earn their next promotion.",
+		cities:["Ulundi","Umugungundlovu","Nobamba","Bulawayo","KwaDukuza","Nongoma","oNdini","Nodwengu","Ndonakusuka","Babanango","Khangela","KwaHlomendlini","Hlobane","eThekwini","Mlambongwenya","Eziqwaqweni","eMangweni","Isiphezi","Masotsheni","Mtunzini","Nyakamubi","Dumazulu","Hlatikulu","Mthonjaneni","Empangeni","Pongola","Tugela","Kwamashi","Ingwavuma","Hluhluwe","Matubatuba","Mhlahlandlela","Mthatha","Maseru","Lobamba","Qunu"]
+	},
+	{
+		name:"Japan",
+		leaderName:"Oda Nobunaga",
+		
+		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
+		attacked:"Pitiful fool! Now we shall destroy you!"
+		defeated:"You were much wiser than I thought."
+		introduction:"We hope for a fair and just relationship with you, who are renowned for military bravery."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
+		neutralNo:["Sorry.","No.","Maybe another time."]
+		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
+
+		hateHello:"Oh, it's you..."
+		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
+		hateNo:["Hya. (No)","Excuse me?","Maybe another time"]
+		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
+		
+		afterPeace:"It was an honor to fight you."
+		tradeRequest:"I would be grateful if you agreed on the following proposal."
+				
+		mainColor:[],
+		secondaryColor:[],
+		unique:"Units fight as though they were at full strength even when damaged. You gain +1 Culture from each Fishing Boat, and +2 Culture from each Atoll.",
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
+	},
+	{
+		name:"Inca",
+		leaderName:"Pachacuti",
+		
+		declaringWar:"Resistance is futile! You cannot hope to stand against the mighty Incan empire. If you will not surrender immediately, then prepare for war!"
+		attacked:"Declare war on me?!? You can't, because I declare war on you first!"
+		defeated:"How did you darken the sun? I ruled with diligence and mercy—see that you do so as well."
+		introduction:"How are you? You stand before Pachacuti Inca Yupanqui."
+		
+		neutralHello:"How are you doing?"
+		neutralLetsHearIt:["Go on.","What do you say?","You may begin."]
+		neutralNo:["We absolutely refuse.","No!","I refuse."]
+		neutralYes:["Very good.","Of course, yes","That is very good."]
+
+		hateHello:"What do you want now?"
+		hateLetsHearIt:["Speak!","What do you say?","Go on."]
+		hateNo:["That is not possible!","We are not agreeing to that!","I beg your pardon?"]
+		hateYes:["That is fine.","That is good enough.","Very well..."]
+		
+		afterPeace:"Viracocha has frowned upon our war, and has agreed to our peace agreements."
+		tradeRequest:"The Incan people offer this fair trade."
+				
+		mainColor:[],
+		secondaryColor:[],
+		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
+		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
+	}
+	*/
 	{
 		name:"Barbarians",
 		mainColor:[0,0,0],
