@@ -3945,7 +3945,7 @@
 
 	//world size
 	"Tiny":{
-		Italian:"Minuscolo"
+		Italian:"Minuscola"
 		Romanian:"Micuț"
 		Spanish:"Micro"
 		Simplified_Chinese:"迷你"
@@ -3953,7 +3953,7 @@
 		French:"Minuscule"
 	}
 	"Small":{	
-		Italian:"Piccolo"
+		Italian:"Piccola"
 		Russian:"Маленький"
 		French:"Petit"
 		Romanian:"Mic"
@@ -3963,7 +3963,7 @@
 		German:"Klein"
 	}
 	"Medium":{	
-		Italian:"Medio"
+		Italian:"Media"
 		Russian:"Средний"
 		French:"Moyen"
 		Romanian:"Mediu"
@@ -3981,6 +3981,9 @@
         Simplified_Chinese:"大"
 		Portuguese:"Grande"
 		German:"Groß"
+	}
+	"Huge":{	
+		Italian:"Enorme"
 	}
 
 	// New game screen
