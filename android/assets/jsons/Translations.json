@@ -3349,7 +3349,7 @@
 		Spanish:"Comienza una edad dorada por 8 turnos"
 		Italian:"Può avviare un'Età dell'Oro di 8 turni"
 		French:"Peut commencer un âge d'or de 8 tours"
-        	Simplified_Chinese:"可以开始8回合黄金时代"
+		Simplified_Chinese:"可以开始8回合黄金时代"
 		Portuguese:"Pode criar uma Idade Dourada de 8 turnos"
 		German:"Kann ein Goldenes Zeitalter über 8 Runden starten" //I chose to transl. as if Golden Age is a proper name
 	}
@@ -3368,7 +3368,7 @@
 		Italian:"Può costruire il miglioramento: Punto di Riferimento"
 		French:"Peut construire l'amélioration suivante: Monument culturel"
 		Romanian:"Poate construi îmbunătățire: Reper"
-        	Simplified_Chinese:"可以建设改良设施:里程碑"
+        Simplified_Chinese:"可以建设改良设施:里程碑"
 		Portuguese:"Pode construir melhoria: ponto de refêrencia"
 		German:"Kann Verbesserung errichten: Sehenswürdigkeit"
 	}
@@ -3377,7 +3377,7 @@
 		Italian:"Può scoprire una tecnologia"
 		French:"Peut découvrir une technologie"
 		Romanian:"Poate descoperi o tehnologie"
-        	Simplified_Chinese:"可以发现一个科技"
+		Simplified_Chinese:"可以发现一个科技"
 		Portuguese:"Pode descobrir uma tecnologia"
 		German:"Kann eine Technologie entdecken"
 	}
@@ -3432,7 +3432,7 @@
 		Italian:"Può costruire il miglioramento: Dogana"
 		French:"Peut construire l'amélioration suivante: Douanes"
 		Romanian:"Poate construi îmbunătățire: Punct vamal"
-        	Simplified_Chinese:"可以建海关"
+        Simplified_Chinese:"可以建海关"
 		Portuguese:"Pode criar melhoria: Alfândega"
 		German:"Kann Verbesserung errichten: Zollhaus"
 	}
@@ -3459,7 +3459,7 @@
 		Italian:"Può costruire il miglioramento: Manifattura"
 		French:"Peut construire l'amélioration suivante: Manufacture"
 		Romanian:"Poate construi îmbunătățire: fabrică"
-       		Simplified_Chinese:"能否建立改进:制造厂"
+       	Simplified_Chinese:"能否建立改进:制造厂"
 		Portuguese:"Pode construir melhoria: Fábrica"
 		German:"Kann Verbesserung errichten: Manufaktur"
 	}
@@ -3469,7 +3469,7 @@
 		Italian:"Può entrare nell'oceano"
 		French:"Ne peut pas aller sur les tuiles océan"
 		Romanian:"Nu poate accesa celule ocean"
-        	Simplified_Chinese:"不能进入海洋"
+        Simplified_Chinese:"不能进入海洋"
 		Portuguese:"Não pode entrar o terreno 'oceano' "
 		German:"Ozeanfelder können nicht befahren werden"
 	}
@@ -3478,7 +3478,7 @@
 		Italian:"Può entrare nell'oceano solo dopo Astronomia"
 		French:"Ne peut pas aller sur les tuiles océan avant la découverte de l'Astronomie"
 		Romanian:"Nu poate accesa celule ocean înainte de descoperirea Astronomiei"
-        	Simplified_Chinese:"不能进入海洋直到掌握天文学"
+        Simplified_Chinese:"不能进入海洋直到掌握天文学"
 		Portuguese:"Não pode entrar o terreno 'oceano' até a pesquisa Astronomia" // if you want you can take away the 'a pesquisa'
 		German:"Ozeanfelder können nicht befahren werden bis Astronomie erforscht ist"
 	}
@@ -3487,7 +3487,7 @@
 		Italian:"+1 raggio di Visione"
 		French:"+1 à la Portée de Vision"
 		Romanian:"+1 Rază vizuală"
-        	Simplified_Chinese:"+1 可见范围"
+        Simplified_Chinese:"+1 可见范围"
 		Portuguese:"+1 de alcançe ao campo de visão"
 		German:"+1 Sichtweite"
 	}
@@ -3496,7 +3496,7 @@
 		Italian:"Doppio movimento sulla costa"
 		French:"Double mouvement le long des côtes"
 		Romanian:"Deplasare dublă pe țărm"
-        	Simplified_Chinese:"在海岸双倍移动力"
+        Simplified_Chinese:"在海岸双倍移动力"
 		Portuguese:"Movimento em dobro nas costas"
 		German:"Doppelte Bewegungsgeschwindigkeit an der Küste"
 	}
@@ -3505,7 +3505,7 @@
 		Italian:"Fuoco indiretto (l'unità può sparare oltre le foreste o le colline)"
 		French:"Tir indirect"
 		Romanian:"Tir cu boltă"
-        	Simplified_Chinese:"间接射击"
+        Simplified_Chinese:"间接射击"
 		Portuguese:"Fogo indireto"
 		German:"Indirekter Beschuss"
 	} // units can fire over forests/hills
@@ -3519,7 +3519,7 @@
 		Romanian:"Ai intrat în epoca [newEra]!"
 		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is 
 		Spanish:"¡Has entrado en la [newEra]!"
-        	Simplified_Chinese:"您已经进入了 [newEra]"
+        Simplified_Chinese:"您已经进入了 [newEra]"
 		Portuguese:"Voçê entrou na [newEra]!"
 		German:"Zeitalter [newEra] ist eingeläutet!"
 	}
@@ -3530,7 +3530,7 @@
 		Romanian:"Ramura [policyBranch] deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
 		Spanish:"¡Rama política [policyBranch] desbloqueada!"
-        	Simplified_Chinese:"[policyBranch] 政策分支解锁!"
+        Simplified_Chinese:"[policyBranch] 政策分支解锁!"
 		Portuguese:"[policyBranch] foi desbloqueado(a)"
 		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet"
 	} // EG Rationalism policy branch unlocked!
@@ -7394,5 +7394,61 @@
 		French:"Détruiser [civName]"
 	}	
 	
-	
+	// Unit Promotions
+	"Accuracy I":{}
+	"Accuracy II":{}
+	"Accuracy III":{}
+	"Bonus vs units in open terrain 15%":{}
+	"Barrage I":{}
+	"Barrage II":{}
+	"Barrage III":{}
+	"Bonus vs units in rough terrain 15%":{}
+	"Shock I":{}
+	"Shock II":{}
+	"Shock III":{}
+	"Drill I":{}
+	"Drill II":{}
+	"Drill III":{}
+	"Scouting I":{}
+	"Scouting II":{}
+	"Scouting III":{}
+	"+1 Movement":{}
+	"Cover I":{}
+	"Cover II":{}
+	"+25% Defence against ranged attacks":{}
+	"March":{}
+	"Unit will heal every turn, even if it performs an action":{}
+	"Charge":{}
+	"Bonus vs wounded units 33%":{}
+	"Mobility":{}
+	"Siege":{}
+	"Volley":{}
+	"Sentry":{}
+	"Range":{}
+	"+1 Range":{}
+	"Indirect Fire":{}
+	"Ranged attacks may be performed over obstacles":{}
+	"Formation I":{}
+	"Formation II":{}
+	"Blitz":{}
+	"1 additional attack per turn":{}
+	"Logistics":{}
+	"Bombardment I":{}
+	"Bombardment II":{}
+	"Bombardment III":{}
+	"Bonus vs land units 33%":{}
+	"Bonus vs land units 34%":{}
+	"Boarding Party I":{}
+	"Boarding Party II":{}
+	"Boarding Party III":{}
+	"Bonus vs water units 15%":{}
+	"Coastal Raider I":{}
+	"Coastal Raider II":{}
+	"Coastal Raider III":{}
+	"Targeting I":{}
+	"Targeting II":{}
+	"Targeting III":{}
+	"Wolfpack I":{}
+	"Wolfpack II":{}
+	"Wolfpack III":{}
 }
