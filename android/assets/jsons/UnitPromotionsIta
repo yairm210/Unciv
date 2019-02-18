@@ -1,0 +1,276 @@
+[
+
+	{
+		name:"Precisione I",
+		effect:"Bonus del 15% contro le unità in terreno aperto",
+		unitTypes:["Siege","Ranged"]
+	}
+	{
+		name:"Precisione II",
+		prerequisites:["Precisione I"],
+		effect:"Bonus del 15% contro le unità in terreno aperto",
+		unitTypes:["Siege","Ranged"]
+	}
+	{
+		name:"Precisione III",
+		prerequisites:["Precisione II"],
+		effect:"Bonus del 15% contro le unità in terreno aperto",
+		unitTypes:["Siege","Ranged"]
+	}
+	
+	{
+		name:"Fuoco di fila I",
+		effect:"Bonus del 15% contro le unità in terreno accidentato",
+		unitTypes:["Siege","Ranged"]
+	}
+	{
+		name:"Fuoco di fila II",
+		prerequisites:["Fuoco di fila I"],
+		effect:"Bonus del 15% contro le unità in terreno accidentato",
+		unitTypes:["Siege","Ranged"]
+	}
+	{
+		name:"Fuoco di fila III",
+		prerequisites:["Fuoco di fila II"],
+		effect:"Bonus del 15% contro le unità in terreno accidentato",
+		unitTypes:["Siege","Ranged"]
+	}
+	
+	{
+		name:"Assalto I",
+		effect:"Bonus del 15% contro le unità in terreno aperto",
+		unitTypes:["Melee","Mounted","Armor"]
+	}
+	{
+		name:"Assalto II",
+		prerequisites:["Assalto I"],
+		effect:"Bonus del 15% contro le unità in terreno aperto",
+		unitTypes:["Melee","Mounted","Armor"]
+	}
+	{
+		name:"Assalto III",
+		prerequisites:["Assalto II"],
+		effect:"Bonus del 15% contro le unità in terreno aperto",
+		unitTypes:["Melee","Mounted","Armor"]
+	}
+	
+	{
+		name:"Addestramento I",
+		effect:"Bonus del 15% contro le unità in terreno accidentato",
+		unitTypes:["Melee","Mounted","Armor"]
+	}
+	{
+		name:"Addestramento II",
+		prerequisites:["Addestramento I"],
+		effect:"Bonus del 15% contro le unità in terreno accidentato",
+		unitTypes:["Melee","Mounted","Armor"]
+	}
+	{
+		name:"Addestramento III",
+		prerequisites:["Addestramento II"],
+		effect:"Bonus del 15% contro le unità in terreno accidentato",
+		unitTypes:["Melee","Mounted","Armor"]
+	}
+	
+	{
+		name:"Esplorazione I",
+		effect:"+1 raggio visivo",
+		unitTypes:["Scout"]
+	}
+	{
+		name:"Esplorazione II",
+		prerequisites:["Esplorazione I"],
+		effect:"+1 raggio visivo",
+		unitTypes:["Scout"]
+	}
+	{
+		name:"Esplorazione III",
+		prerequisites:["Esplorazione II"],
+		effect:"+1 raggio visivo",
+		unitTypes:["Scout"]
+	}
+	
+	{
+		name:"Copertura I",
+		effect:"+25% difesa contro gli attacchi a distanza",
+		unitTypes:["Melee","Ranged","Siege"]
+	}
+	{
+		name:"Copertura II",
+		prerequisites:["Copertura I"],
+		effect:"+25% difesa contro gli attacchi a distanza",
+		unitTypes:["Melee","Ranged","Siege"]
+	}
+	
+	{
+		name:"Marcia",
+		prerequisites:["Precisione II","Fuoco di fila II","Assalto III","Addestramento III"],
+		effect:"L'unità guarisce ad ogni turno, anche se esegue un'azione",
+		unitTypes:["Melee","Ranged","Siege","Mounted"]
+	}
+	
+	{
+		name:"Carica",
+		prerequisites:["Assalto II","Addestramento II"],
+		effect:"+33% bonus contro unità ferite",
+		unitTypes:["Mounted","Armor"]
+	}
+	
+	{
+		name:"Mobilità",
+		prerequisites:["Assalto III","Addestramento III","Puntamento I","Bombardamento I","Incursione costiera I","Abbordaggio I","Attacco in massa I","Ponte di volo I","Corazza I",""],
+		effect:"+1 movimento",
+		unitTypes:["Mounted","WaterMelee","WaterRanged","Armor","WaterSubmarine"]
+	}
+	
+	{
+		name:"Assedio",
+		prerequisites:["Assalto II","Addestramento II"],
+		effect:"50% bonus contro le città",
+		unitTypes:["Melee"]
+	}
+	
+	{
+		name:"Raffica",
+		prerequisites:["Precisione I","Fuoco di fila I"],
+		effect:"50% bonus contro città",
+		unitTypes:["Ranged","Siege"]
+	}
+	
+	{
+		name:"Sentinella",
+		prerequisites:["Precisione I","Fuoco di fila I","Assalto II","Addestramento II","Bombardamento I","Puntamento I"],
+		effect:"+1 raggio visibilità",
+		unitTypes:["Melee","Mounted","WaterRanged","Armor","WaterMelee"]
+	}
+	
+	{
+		name:"Raggio di tiro",
+		prerequisites:["Precisione III","Fuoco di fila III","Puntamento II","Bombardamento II", "Attacco in massa II"],
+		effect:"+1 raggio",
+		unitTypes:["Ranged","Siege","WaterRanged","WaterSubmarine"]
+	}
+	
+	{
+		name:"Fuoco indiretto",
+		prerequisites:["Precisione III","Fuoco di Fila III"],
+		effect:"Gli attacchi a distanza possono superare gli ostacoli",
+		unitTypes:["Ranged","Siege"]
+	}
+	
+	{
+		name:"Formazione I",
+		prerequisites:["Assalto II","Addestramento II"],
+		effect:"33% bonus contro unità a cavallo",
+		unitTypes:["Melee","Mounted"]
+	}
+	{
+		name:"Formazione II",
+		prerequisites:["Formazione I"],
+		effect:"33% bonus contro unità a cavallo",
+		unitTypes:["Melee","Mounted"]
+	}
+	
+	{
+		name:"Blitz",
+		prerequisites:["Assalto III","Addestramento III"],
+		effect:"33% bonus contro unità a cavallo",
+		unitTypes:["Melee","Mounted","Armor"]
+	}
+	
+	{
+		name:"Logistica",
+		prerequisites:["Precisione III","Fuoco di Fila III","Puntamento III", "Attacco in massa III",
+			"Bombardamento III", "Incursione costiera III","Abbordaggio III"],
+		effect:"1 attacco aggiuntivo al turno",
+		unitTypes:["Ranged","Siege","WaterMelee","WaterRanged","WaterSubmarine"]
+	}
+	
+	{
+		name:"Bombardamento I",
+		effect:"33% bonus contro unità terrestri",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Bombardamento II",
+		prerequisites:["Bombardamento I"],
+		effect:"33% bonus contro unità terrestri",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Bombardamento III",
+		prerequisites:["Bombardamento II"],
+		effect:"33% bonus contro unità terrestri",
+		unitTypes:["WaterRanged"]
+	}
+	
+	{
+		name:"Abbordaggio I",
+		effect:"15% bonus contro unità anfibie",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Abbordaggio II",
+		prerequisites:["Abbordaggio I"],
+		effect:"15% bonus contro unità anfibie",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Abbordaggio III",
+		prerequisites:["Abbordaggio II"],
+		effect:"15% bonus contro unità anfibie",
+		unitTypes:["WaterMelee"]
+	}
+	
+	{
+		name:"Incursione costiera I",
+		effect:"15% bonus contro città",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Incursione costiera II",
+		prerequisites:["Incursione costiera I"],
+		effect:"15% bonus contro città",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Incursione costiera III",
+		prerequisites:["Incursione costiera II"],
+		effect:"15% bonus contro città",
+		unitTypes:["WaterMelee"]
+	}
+	{
+		name:"Puntamento I",
+		effect:"15% Bonus contro unità anfibie",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Puntamento II",
+		prerequisites:["Puntamento I"],
+		effect:"15% Bonus contro unità anfibie",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Puntamento III",
+		prerequisites:["Puntamento II"],
+		effect:"15% Bonus contro unità anfibie",
+		unitTypes:["WaterRanged"]
+	}
+	{
+		name:"Attacco in massa I",
+		effect:"25% bonus come attaccante",
+		unitTypes:["WaterSubmarine"]
+	}
+	{
+		name:"Attacco in massa II",
+		prerequisites:["Attacco in massa I"],
+		effect:"25% bonus come attaccante",
+		unitTypes:["WaterSubmarine"]
+	}
+	{
+		name:"Attacco in massa III",
+		prerequisites:["Attacco in massa II"],
+		effect:"25% bonus come attaccante",
+		unitTypes:["WaterSubmarine"]
+	}
+]
