@@ -245,6 +245,14 @@ class MapUnit {
         return goldCostOfUpgrade
     }
 
+
+    fun canFortify(): Boolean {
+        if(type.isWaterUnit()) return false
+        if(isEmbarked()) return false
+        if(hasUnique("No defensive terrain bonus")) return false
+        return true
+    }
+
     //endregion
 
     //region state-changing functions
@@ -446,5 +454,6 @@ class MapUnit {
         this.civInfo=civInfo
         civInfo.addUnit(this)
     }
+
     //endregion
 }

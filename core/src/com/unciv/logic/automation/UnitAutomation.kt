@@ -4,8 +4,8 @@ import com.unciv.UnCivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.GreatPersonManager
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -107,7 +107,7 @@ class UnitAutomation{
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
         if(unitTile!=bestTileForHealing && rankTileForHealing(bestTileForHealing,unit)>rankTileForHealing(unitTile,unit))
             unit.moveToTile(bestTileForHealing)
-        if(unit.currentMovement>0 && !unit.hasUnique("No defensive terrain bonus") && !unit.isFortified() ){
+        if(unit.currentMovement>0 && !unit.isFortified() && unit.canFortify()){
             unit.action="Fortify 0"
         }
     }
