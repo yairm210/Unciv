@@ -114,6 +114,7 @@
 	}
 	
 	"Bombard strength":{ // for displaying city info
+		Italian:"Forza bombardamento"
 	}
 
 
@@ -302,7 +303,9 @@
 		Portuguese:"Voçê realmente quer desfazer essa unidade?"
 		German:"Wollen Sie diese Einheit wirklich auflösen?"
 	}
-	"Disband this unit for [goldAmount] gold?":{}
+	"Disband this unit for [goldAmount] gold?":{
+		Italian:"Vuoi sciogliere questa unità per [goldAmount]?"
+	}
 	
 	"Yes":{
 		Italian:"Sì"
@@ -792,11 +795,11 @@
 	}
 
 	"In resistance for another [numberOfTurns] turns":{
-		Italian:"La resistenza dura per altri [numberOfTurns] turni"
+		Italian:"La resistenza derà per altri [numberOfTurns] turni"
 	}
 	
 	"[greatPerson] points":{ // e.g "Great Scientist points"
-		
+		Italian:"Punti [greatPerson]"
 	}
 	
 	// Tech picker
@@ -934,7 +937,7 @@
 	}
 	
 	"provide":{ // as in "Camp, Customs House provide +1 Gold"
-		Italian:"fornisce"
+		Italian:"forniscono"
 		Russian:"даёт"
 		French:"fournit"
 		Romanian:"furnizează"
@@ -1268,21 +1271,21 @@
 		French:"Des survivants ont été trouvés dans les ruines - ils ont rejoins [cityName]"
 	}
 	"We have discovered the lost technology of [techName] in the ruins!":{
-		Italian:"Abbiamo scoperto la tecnologia perduta [techName] nelle rovine]!"
+		Italian:"Abbiamo scoperto tra le rovine la tecnologia perduta [techName]]!"
 		Romanian:"Am descoperit tehnologia pierdută [techName] printre ruine!"
 		German:"Wir haben die vergessene Technologie [techName] in den Ruinen wiederentdeckt!"
 		French:"Nous avons découvert la technologie perdu [techName] dans les ruines!"
 	}
 	
 	"A [unitName] has joined us!":{
-		Italian:"Un'unità [unitName] si è unita al nostro esercito!"
+		Italian:"Il nostro esercito ha ricevuto [unitName] come nuova unità!"
 		Romanian:"Un [unitName] ni s-a alăturat!"
 		German:"Ein(e) [unitName] ist uns beigetreten!" //Gender sensitive
 		French:"Un(e) [unitName] nous a rejoint!" //Gender sensitive
 	}
 	
 	"An ancient tribe trains our [unitName] in their ways of combat!":{
-		Italian:"Un'antica tribù a addestrato la nostra unità [unitName] nelle loro arti della guerra!"
+		Italian:"Un'antica tribù ha addestrato la nostra unità [unitName] nelle loro arti della guerra!"
 		Romanian:"Un trib străvechi ne invață un [unitName] metodele lor de luptă!"
 		German:"Ein antiker Stamm bringt unserer(em) [unitName] dessen Kampftechniken bei!" //Gender sensitive
 		French:"Une tribue ancienne a entrainée notre [unitName] au combat" //Gender sensitive
@@ -1976,8 +1979,8 @@
 		German:"Ölbohrloch"
 		Dutch:"Oliebron"
 		Spanish:"Pozo petrolífero"
-        Simplified_Chinese:"油井"
-        Portuguese:"Poço de petróleo"
+        	Simplified_Chinese:"油井"
+        	Portuguese:"Poço de petróleo"
 	}
 	"Pasture":{
 		Italian:"Pascolo"
@@ -3286,7 +3289,7 @@
 	
 	/* Old Great Person translations (for reference only)
 	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
-		Italian:"Può iniziare un'Età dell'Oro da 8 turni o costruire un Gran Monunento (+6 cultura)"
+		Italian:"Può iniziare un'Età dell'Oro da 8 turni o costruire un Gran Monumento (+6 cultura)"
 		Russian:"Может начать золотой век на 8 ходов или построить памятник (+6 культура)"
 		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 culture)"
 		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (cultura + 6)"
@@ -3429,7 +3432,7 @@
 		Italian:"Può costruire il miglioramento: Dogana"
 		French:"Peut construire l'amélioration suivante: Douanes"
 		Romanian:"Poate construi îmbunătățire: Punct vamal"
-        Simplified_Chinese:"可以建海关"
+        	Simplified_Chinese:"可以建海关"
 		Portuguese:"Pode criar melhoria: Alfândega"
 		German:"Kann Verbesserung errichten: Zollhaus"
 	}
@@ -3438,7 +3441,7 @@
 		Italian:"Può accelerare la costruzione di una Meraviglia"
 		French:"Peut accélérer la construction d'une Merveille"
 		Romanian:"Poate accelera construirea unei minuni"
-        Simplified_Chinese:"可以加速建设一个奇迹"
+        	Simplified_Chinese:"可以加速建设一个奇迹"
 		Portuguese:"Pode acelerar a construção de uma maravilha"
 		German:"Kann die Produktion eines Wunders beschleunigen"
 	}
@@ -3516,7 +3519,7 @@
 		Romanian:"Ai intrat în epoca [newEra]!"
 		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is 
 		Spanish:"¡Has entrado en la [newEra]!"
-        Simplified_Chinese:"您已经进入了 [newEra]"
+        	Simplified_Chinese:"您已经进入了 [newEra]"
 		Portuguese:"Voçê entrou na [newEra]!"
 		German:"Zeitalter [newEra] ist eingeläutet!"
 	}
@@ -3835,7 +3838,7 @@
 	}
 	
 	"America":{
-		Italian:"Stai Uniti"
+		Italian:"Stati Uniti"
 		Romanian:"Statele Unite"
 		Spanish:"Estados Unidos"
 		Simplified_Chinese:"美国"
@@ -3843,7 +3846,7 @@
 		French:"Etats-Unis"
 	}
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
-		Italian:"+1 Visione per le unità militari terrestri, e 50% di sconto nell'acquistare le celle"
+		Italian:"+1 Visione per le unità militari terrestri, e 50% di sconto quando acquisti delle celle"
 		Romanian:"Toate unitățile militare terestre au raza vizuală +1, 50% reducere la cumpărarea celulelor"
 		Spanish:"Todas las unidades militares de tierra obtienen +1 de vision, 50% de descuento al comprar terrenos"
 		Simplified_Chinese:"所有陆军 +1 视野, 购买地块打五折"
@@ -4070,10 +4073,12 @@
 		Portuguese:"Declarar guerra"
 		German:"Krieg erklären"
 	}
-	"Declare war on [civName]?":{}
+	"Declare war on [civName]?":{
+		Italian:"Dichiarare guerra alla civiltà [civName]?"
+	}
 	
 	"[civName] has declared war on us!":{
-		Italian:"[civName] ci ha dichiarato guerra!"
+		Italian:"La civiltà [civName] ci ha dichiarato guerra!"
 		Russian:"Цивилизация [civName]  объявила нам войну!"
 		French:"[civName] nous a déclaré la guerre!"
 		Romanian:"[civName] ne-au declarat război!"
@@ -4083,9 +4088,15 @@
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
 	
-	"You'll pay for this!":{}
-	"Very well.":{}
-	"Farewell.":{}
+	"You'll pay for this!":{
+		Italian:"Pagherai caro questo affronto!"
+	}
+	"Very well.":{
+		Italian:"Molto bene."
+	}
+	"Farewell.":{
+		Italian:"Addio."
+	}
 	
 	// Overview screen
 	"Overview":{	
@@ -4288,7 +4299,9 @@
 		German:"Nächstgelegene Stadt"
 	}
 	
-	"Defeated":{}
+	"Defeated":{
+		Italian:"Sconfitto"
+	}
 	
 
 	// Buildings!
@@ -4434,7 +4447,7 @@
 		Portuguese:"Velocidade de construção dos trabalhadores aumentada em +25%"
 	}
 	"Provides 2 free workers":{
-		Italian:"Offre 2 Lavoratori liberi"
+		Italian:"Offre 2 Lavoratori gratuiti"
 		Russian:"предоставляет 2 бесплатных рабочих"
 		French:"Fournit 2 travailleurs gratuits"
 		Romanian:"Oferă gratuit 2 muncitori"
@@ -5048,8 +5061,8 @@
 		French:"Taj Mahal"
 		Romanian:"Taj Mahal"
 		Spanish:"Taj Mahal"
-        Simplified_Chinese:"泰姬陵"
-        Portuguese:"Taj Mahal" // somethimes h has no sound in the portuguese language (brazilian variation [altough i am not sure about other variations]) and others it has the sound of h (weak sound)
+        	Simplified_Chinese:"泰姬陵"
+        	Portuguese:"Taj Mahal" // somethimes h has no sound in the portuguese language (brazilian variation [altough i am not sure about other variations]) and others it has the sound of h (weak sound)
 					   // so that is why i would double check it later to see if Taj Mahal is correctly written in portuguese
 		German:"Taj Mahal"
 	}
@@ -6796,7 +6809,7 @@
 		Russian:"Караваны фургонов"
 		Romanian:"Uniuni comerciale"
 		Spanish:"Sindicatos"
-        Simplified_Chinese:"商会"
+        	Simplified_Chinese:"商会"
 		Portuguese:"Sindicatos"
 		German:"Handelsunion"
 		French:"Unions commerciales"
@@ -6806,7 +6819,7 @@
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Romanian:"Întreținerea drumurilor și a căilor ferate redusă cu 33%, +2 aur din toate rutele comerciale"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"
-        Simplified_Chinese:"公路和铁路的维修费降低33%，所有贸易路线的金钱增加2"
+        	Simplified_Chinese:"公路和铁路的维修费降低33%，所有贸易路线的金钱增加2"
 		Portuguese:"Manutenção reduzida em estradas e linhas férreas em 33%, +2 ouro de todas as rotas de comércio"
 		German:"Instandhaltung von Straßen und Schienen um 33% reduziert; +2 Gold für alle Handelsrouten"
 		French:"Le coût des routes et des chemins de fer est réduit de 33%, +2 or pour chaques routes commerciales"
@@ -6816,7 +6829,7 @@
 		Russian:"Меркантилизм"
 		Romanian:"Mercantilism"
 		Spanish:"Mercantilismo"
-        Simplified_Chinese:"重商主义"
+        	Simplified_Chinese:"重商主义"
 		Portuguese:"Mercantilismo"
 		German:"Merkantilismus"
 		French:"Mercantilisme"
@@ -6826,7 +6839,7 @@
 		Russian:"-25% цены покупок в городах"
 		Romanian:"-25% la cumpărarea obiectelor în orașe"
 		Spanish:"-25% a la compra de ítems en ciudades"
-        Simplified_Chinese:"-25%花费用于在城市购买物品"
+        	Simplified_Chinese:"-25%花费用于在城市购买物品"
 		Portuguese:"-25% a compra de itens em cidades"
 		German:"-25% Gold Kosten beim Kauf von Objekten in Städten"
 		French:"-25% de coût en or d'achat de batiments/unités dans les villes"
@@ -6958,7 +6971,7 @@
 		Russian:"Гуманизм"
 		Romanian:"Umanism"
 		Spanish:"Humanismo"
-        Simplified_Chinese:"人文主义"
+        	Simplified_Chinese:"人文主义"
 		Portuguese:"Humanismo"
 		German:"Humanismus"
 		French:"Humanisme"
@@ -6968,7 +6981,7 @@
 		Russian:"+1 счатье от каждого университета, обсерватории и школы"
 		Romanian:"+1 fericire de la fiecare universitate, observator sau școală publică"
 		Spanish:"+1 felicidad por cada universidad, observatorio y escuela pública"
-        Simplified_Chinese:"+1幸福度来自每一所大学、瞭望台和公立学校"
+        	Simplified_Chinese:"+1幸福度来自每一所大学、瞭望台和公立学校"
 		Portuguese:"+1 felicidade por cada universidade, observatório e escola pública"
 		German:"+1 Zufriedenheit durch jede Universität, öffentliche Schule oder Observatorium."
 		French:"+1 bonheur pour chaque université, observatoire et école publique"
@@ -6978,7 +6991,7 @@
 		Russian:"Свободомыслие"
 		Romanian:"Gândire liberă"
 		Spanish:"Pensamiento Libre"
-        Simplified_Chinese:"自由思想"
+        	Simplified_Chinese:"自由思想"
 		Portuguese:"Pensamento Livre"
 		German:"Freies Denken"
 		French:"Liberté de pensée"
@@ -6988,7 +7001,7 @@
 		Russian:"+1 наука от каждого торгового поста, +17% науки от университетов"
 		Romanian:"+1 știință de la fiecare punct comercial, +17% știință de la universități"
 		Spanish:"+1 ciencia por cada puesto comercial, +17% ciencia de las universidades"
-        Simplified_Chinese:"+1个交易站的科学，+17%的大学的科学"
+        	Simplified_Chinese:"+1个交易站的科学，+17%的大学的科学"
 		Portuguese:"+1 ciência por cada posto mercantil, +17% ciência de todas as universidades" 
 		German:"+1 Wissenschaft durch jeden Handelsposten; +17% Wissenschaft von Universitäten"
 		French:"Comptoirs commerciaux : science +1 et science +17% grâce aux universités"
@@ -6998,7 +7011,7 @@
 		Russian:"Суверинетет"
 		Romanian:"Suveranitate"
 		Spanish:"Soberanía"
-        Simplified_Chinese:"主权"
+        	Simplified_Chinese:"主权"
 		Portuguese:"Soberania"
 		German:"Souveränität"
 		French:"Souveraineté"
@@ -7008,7 +7021,7 @@
 		Russian:"+15% науки, когда империя счастлива"
 		Romanian:"+15% știință cât timp imperiul este fericit"
 		Spanish:"+15% ciencia mientras el imperio esté feliz"
-        Simplified_Chinese:"+15%科学当帝国是快乐的"
+        	Simplified_Chinese:"+15%科学当帝国是快乐的"
 		Portuguese:"+15% ciência enquanto império está feliz"
 		German:"+15% Wissenschaft solange das Reich zufrieden ist"
 		French:"+15% science tant que l'empire est heureux"
@@ -7018,7 +7031,7 @@
 		Russian:"Научная Революция"
 		Romanian:"Revoluție științifică"
 		Spanish:"Revolución Científica"
-        Simplified_Chinese:"科技革命"
+        	Simplified_Chinese:"科技革命"
 		Portuguese:"Revolução Ciêntifica"
 		German:"Wissenschaftsrevolution"
 		French:"Révolution scientifique"
@@ -7028,7 +7041,7 @@
 		Russian:"Даёт 2 бесплатные технологии"
 		Romanian:"Obține 2 tehnologii gratuite"
 		Spanish:"Ganas 2 tecnologías gratis"
-        Simplified_Chinese:"给予2个免费科技"
+        	Simplified_Chinese:"给予2个免费科技"
 		Portuguese:"Ganhe 2 tecnologias grátis"
 		German:"2 kostenlose Technologien"
 		French:"2 technologies gratuites"
@@ -7038,7 +7051,7 @@
 		Russian:"Рационализм завершён"
 		Romanian:"Raționalism realizat"
 		Spanish:"Racionalismo Completo"
-        Simplified_Chinese:"完整的理性主义"
+        	Simplified_Chinese:"完整的理性主义"
 		Portuguese:"Racionalismo Completo"
 		German:"Rationalismus vollständig"
 		French:"Rationalisme complet"
@@ -7048,7 +7061,7 @@
 		Russian:"+1 золото от всех научных зданий"
 		Romanian:"+1 aur de la toate clădirile științifice"
 		Spanish:"+1 oro de todos los edificios de ciencia"
-        Simplified_Chinese:"所有科学建筑+1金钱"
+        	Simplified_Chinese:"所有科学建筑+1金钱"
 		Portuguese:"+1 ouro de todos os edifícios de ciência"
 		German:"+1 Gold von allen Wissenschaftsgebäuden"
 		French:"Les batiments scientifiques rapportent +1 or"
@@ -7060,7 +7073,7 @@
 		Russian:"Свобода"
 		Romanian:"Libertate"
 		Spanish:"Libertad"
-        Simplified_Chinese:"自由"
+        	Simplified_Chinese:"自由"
 		Portuguese:"Liberdade"
 		German:"Freiheit"
 		French:"Liberté"
@@ -7070,7 +7083,7 @@
 		Russian:"+25% к скорости появления великих людей"
 		Romanian:"+25% rată Oameni Mari"
 		Spanish:"+25% generación de Grandes Personas"
-        Simplified_Chinese:"+25%的伟人点数"
+        	Simplified_Chinese:"+25%的伟人点数"
 		Portuguese:"+25% Geração de Grandes Pessoas"
 		German:"+25% mehr Große Persönlichkeiten"
 		French:"+25% d'apparition des personnages illustres"
@@ -7080,7 +7093,7 @@
 		Russian:"Конституция"
 		Romanian:"Constituție"
 		Spanish:"Constitución"
-        Simplified_Chinese:"宪法"
+        	Simplified_Chinese:"宪法"
 		Portuguese:"Constituição"
 		German:"Verfassung"
 		French:"Constitution"
@@ -7090,7 +7103,7 @@
 		Russian:"+2 культуры от каждого чуда"
 		Romanian:"+2 cultură din fiecare minune"
 		Spanish:"+2 cultura por cada Maravilla"
-        Simplified_Chinese:"每个奇迹 +2 文化"
+        	Simplified_Chinese:"每个奇迹 +2 文化"
 		Portuguese:"+2 cultura por cada Maravilha"
 		German:"+2 Kultur durch jedes Wunder"
 		French:"+2 culture pour chaque merveilles"
@@ -7100,7 +7113,7 @@
 		Russian:"Всеобщее избирательное право"
 		Romanian:"Vot universal"
 		Spanish:"Sufragio Universal"
-        Simplified_Chinese:"普选"
+        	Simplified_Chinese:"普选"
 		Portuguese:"Sufrágio Universal"
 		German:"Allgemeines Wahlrecht"
 		French:"Suffrage universel"
@@ -7110,7 +7123,7 @@
 		Russian:"+1 производство за каждые 5 единиц населения"
 		Romanian:"+1 producție la fiecare 5 cetățeni"
 		Spanish:"+1 producción por cada 5 habitantes"
-        Simplified_Chinese:"每5个人口+1个生产力"
+        	Simplified_Chinese:"每5个人口+1个生产力"
 		Portuguese:"+1 produção por cada 5 habitantes"
 		German:"+1 Produktion für jeden 5. Einwohner"
 		French:"+1 production par tranches de 5 habitants"
@@ -7120,7 +7133,7 @@
 		Russian:"Гражданское общество"
 		Romanian:"Societate civilă"
 		Spanish:"Sociedad Civil"
-        Simplified_Chinese:"民间团体"
+        	Simplified_Chinese:"民间团体"
 		Portuguese:"Sociedade Civil"
 		German:"Zivilgesellschaft"
 		French:"Société civile"
@@ -7130,7 +7143,7 @@
 		Russian:"-50% потребления еды специалистами"
 		Romanian:"-50% consum hrană de către specialiști"
 		Spanish:"-50% gasto de comida por especialistas"
-        Simplified_Chinese:"-50%的食物由专家消耗"
+        	Simplified_Chinese:"-50%的食物由专家消耗"
 		Portuguese:"-50% gasto de comida por especialistas"
 		German:"-50% Nahrungsverbrauch durch Spezialisten"
 		French:"-50% consommation de nourriture des spécialistes"
@@ -7140,7 +7153,7 @@
 		Russian:"Свобода слова"
 		Romanian:"Exprimare liberă"
 		Spanish:"Libertad de Expresión"
-        Simplified_Chinese:"言论自由"
+        	Simplified_Chinese:"言论自由"
 		Portuguese:"Liberdade de Expressão"
 		German:"Meinungsfreiheit"
 		French:"Liberté de parler"
@@ -7150,7 +7163,7 @@
 		Russian:"+1 культура за каждых 2 жителей"
 		Romanian:"+1 cultură la fiecare 2 cetățeni"
 		Spanish:"+1 cultura por cada 2 habitantes"
-        Simplified_Chinese:"+1 文化 每 2 公民"
+        	Simplified_Chinese:"+1 文化 每 2 公民"
 		Portuguese:"+1 cultura para cada 2 habitantes"
 		German:"+1 Kultur für jeden 2. Einwohner"
 		French:"+1 culture tous les 2 citoyens"
@@ -7160,17 +7173,17 @@
 		Russian:"Демократия"
 		Romanian:"Democrație"
 		Spanish:"Democracia"
-        Simplified_Chinese:"民主主义"
+        	Simplified_Chinese:"民主主义"
 		Portuguese:"Democracia"
 		German:"Demokratie"
 		French:"Démocratie"
 	}
 	"Specialists produce half normal unhappiness":{
-		Italian:"Gli Specialisti dimezzano l'infelicità"
+		Italian:"Gli Specialisti dimezzano l'infelicità prodotta"
 		Russian:"Специалисты производят в половину меньше недовольства"
 		Romanian:"Specialiștii produc jumătate din nefericire"
 		Spanish:"Especialistas producen la mitad de infelicidad"
-        Simplified_Chinese:"专家们只提供相对于一般人口不快乐度的一半"
+        	Simplified_Chinese:"专家们只提供相对于一般人口不快乐度的一半"
 		Portuguese:"Especialistas produzem metade da infelicidade normal"
 		German:"Spezialisten produzieren 50% weniger Unzufriedenheit"
 		French:"Les spécialistes produisent moitié moins de mécontentement"
@@ -7180,17 +7193,17 @@
 		Russian:"Свобода завершена"
 		Romanian:"Libertate realizată"
 		Spanish:"Libertad Completa"
-        Simplified_Chinese:"完整的自由主义"
+        	Simplified_Chinese:"完整的自由主义"
 		Portuguese:"Liberdade Completa"
 		German:"Freiheit vollständig"
 		French:"Liberté complète"
 	}
 	"Tile yield from great improvement +100%, golden ages increase by 50%":{
-		Italian:"Doppia produzione dai miglioramenti, +50% durata da Età dell'Oro"
+		Italian:"Doppia resa dai miglioramenti, +50% durata da Età dell'Oro"
 		Russian:"Доход клетки от великих улучшений +100%, золотые века увеличены на 50%"
 		Romanian:"Producția celulelor din îmbunătățiri majore +100%, durata epocilor de aur crește cu 50%"
 		Spanish:"Rendimiento de casilla por gran mejora aumenta en 100%, Edades de Oro incrementan 50%"
-        Simplified_Chinese:"地块产量大幅度提高+100%，黄金时代增加50%"
+        	Simplified_Chinese:"地块产量大幅度提高+100%，黄金时代增加50%"
 		Portuguese:"Rendimento de de terrenos com grandes melhorias +100%, Idades de Ouro incrementam 50%"
 		German:"+100% Felderträge aus Verbesserungen Großer Persönlichkeiten; Goldene Zeitalter dauern 50% länger"
 		French:"Bonus des cases améliorés par les spécialistes +100%, la durée des âges d'or augmente de 50%"
@@ -7201,8 +7214,8 @@
 		Spanish:"Autocracia"
 		Italian:"Autocrazia"
 		Romanian:"Autocrație"
-        Simplified_Chinese:"独裁"
-        Portuguese:"Autocracia"
+        	Simplified_Chinese:"独裁"
+        	Portuguese:"Autocracia"
 		Russian:"автократия"
 		German:"Autokratie"
 		French:"Autocratie"
@@ -7211,8 +7224,8 @@
 		Spanish:"Coste de mantenimiento de unidades reducido en 33%"
 		Italian:"-33% mantenimento delle unità"
 		Romanian:"-33% la costurile de întreținere pentru unități"
-        Simplified_Chinese:"-33%的单位维护成本"
-        Portuguese:"-33% Manutenção de unidades"
+        	Simplified_Chinese:"-33%的单位维护成本"
+        	Portuguese:"-33% Manutenção de unidades"
 		Russian:"-33% затрат на содержание юнитов"
 		German:"-33% Einheiten Unterhaltskosten"
 		French:"-33% de coût de maintenance des unités"
@@ -7221,8 +7234,8 @@
 		Spanish:"Populismo"
 		Italian:"Populismo"
 		Romanian:"Populism"
-        Simplified_Chinese:"民粹主义"
-        Portuguese:"Populismo"
+        	Simplified_Chinese:"民粹主义"
+        	Portuguese:"Populismo"
 		Russian:"популизм"
 		German:"Populismus"
 		French:"Populisme"
@@ -7231,8 +7244,8 @@
 		Spanish:"Las unidades militares hacen un +25% de daño cuando estan heridas"
 		Italian:"+25% danno per le unità militari ferite"
 		Romanian:"Unitățile militare rănite fac distrugeri +25%"
-        Simplified_Chinese:"受伤的军队单位造成+25%的伤害"
-        Portuguese:"+25% dano para unidades militares feridas"
+        	Simplified_Chinese:"受伤的军队单位造成+25%的伤害"
+        	Portuguese:"+25% dano para unidades militares feridas"
 		Russian:"раненые военные юниты наносят на 25% урона больше"
 		German:"Verwundete Militäreinheiten haben +25% Schaden"
 		French:"Les unités militaires blessés infligent +25% dégats"
@@ -7241,8 +7254,8 @@
 		Spanish:"Militarismo"
 		Italian:"Militarismo"
 		Romanian:"Militarism"
-        Simplified_Chinese:"军国主义"
-        Portuguese:"Militarismo"
+        	Simplified_Chinese:"军国主义"
+        	Portuguese:"Militarismo"
 		Russian:"Милитаризм"
 		German:"Militarismus"
 		French:"Militarisme"
@@ -7251,8 +7264,8 @@
 		Spanish:"Coste de comprar oro reducido a -33%"
 		Italian:"-33% costi d'acquisto di unità"
 		Romanian:"Costul cumpărării de unități -33%"
-        Simplified_Chinese:"购买单位金钱成本-33%"
-        Portuguese:"-33% custo de comprar unidades"
+        	Simplified_Chinese:"购买单位金钱成本-33%"
+        	Portuguese:"-33% custo de comprar unidades"
 		Russian:"Стоимость покупки снижается на 33%"
 		German:"-33% Goldkosten für das Kaufen von Einheiten"
 		French:"Le coût d'achat des unités militaires est réduit de 33%"
@@ -7261,7 +7274,7 @@
 		Spanish:"Facismo"
 		Italian:"Fascismo"
 		Romanian:"Fascism"
-        Simplified_Chinese:"法西斯"
+        	Simplified_Chinese:"法西斯"
 		Portuguese:"Fascismo"
 		German:"Faschismus"
 		French:"fascisme"
@@ -7270,8 +7283,8 @@
 		Spanish:"El imperio produce un +100% de recursos estrategicos"
 		Italian:"Doppia produzione di risorse strategiche nell'impero"
 		Romanian:"Resursele strategice produse de imperiu crescute cu 100%"
-        Simplified_Chinese:"帝国生产的战略资源数量增加了100%"
-        Portuguese:"Quantidade de recursos estratégicos produzidos pelo império incrementado em 100%"
+        	Simplified_Chinese:"帝国生产的战略资源数量增加了100%"
+        	Portuguese:"Quantidade de recursos estratégicos produzidos pelo império incrementado em 100%"
 		Russian:"количество стратегических ресурсов обрабатываемых империей, удваивается"
 		German:"Menge an strategische Resourcen ist um 100% erhöht."
 		French:"La quantité de ressources stratégiques est doublé"
@@ -7280,8 +7293,8 @@
 		Spanish:"Estado de policias"
 		Italian:"Stato di polizia"
 		Romanian:"Stat polițienesc"
-        Simplified_Chinese:"极权国家"
-        Portuguese:"Estado de Polícia"
+        	Simplified_Chinese:"极权国家"
+        	Portuguese:"Estado de Polícia"
 		Russian:"полицейский участок"
 		German:"Polizeistaat"
 		French:"Etat policier"
@@ -7290,8 +7303,8 @@
 		Spanish:"Las ciudades capturadas retienen sus fronteras"
 		Italian:"Le città catturate mantengono i loro confini precedenti"
 		Romanian:"Orașele cucerite își păstrează vechile hotare"
-        Simplified_Chinese:"被占领的城市保留了以前的边界"
-        Portuguese:"Cidades capturadas retem suas antigas frontieras"
+        	Simplified_Chinese:"被占领的城市保留了以前的边界"
+        	Portuguese:"Cidades capturadas retem suas antigas frontieras"
 		Russian:"Захваченные города сохраняют свои прежние границы"
 		German:"Eingenommene Städte behalten ihre vorherigen Grenzen"
 		French:"Les villes capturés ne perdent plus leurs territoires"
@@ -7300,7 +7313,7 @@
 		Spanish:"Guerra Total"
 		Italian:"Guerra Totale"
 		Romanian:"Război total"
-        Simplified_Chinese:"全面战争"
+        	Simplified_Chinese:"全面战争"
 		Portuguese:"Guerra Total"
 		German:"Totaler Krieg"
 		French:"Guerre Totale"
@@ -7309,8 +7322,8 @@
 		Spanish:"+15% a la produccion cuando se esta construyendo unidades militares, las unidades militares comienzan con 15 de PX"
 		Italian:"+15% Produzione per le unità militari, +15 esperienza per le nuove unità militari"
 		Romanian:"+15% producție când se construiesc unități militare, iar noile unități militare au 15 experiență din start"
-        Simplified_Chinese:"+15%的生产当建造军事单位和新的军事单位开始有15个经验"
-        Portuguese:"+15% produção ao construir unidades militares e novas unidades militares começam com 15 experiencia"
+        	Simplified_Chinese:"+15%的生产当建造军事单位和新的军事单位开始有15个经验"
+        	Portuguese:"+15% produção ao construir unidades militares e novas unidades militares começam com 15 experiencia"
 		Russian:"+15% К производству военных юнитов, Военные юниты начинают с 15 опыта"
 		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (XP)"
 		French:"+15% production lors de la construction d'unités militaires, les nouvelles unités apparaissent avec +15 EXP"
