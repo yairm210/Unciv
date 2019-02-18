@@ -1,0 +1,296 @@
+[
+	{
+		name:"Babilonia",
+		leaderName:"Nabucodonosor II",
+		
+		declaringWar:"Il demone vuole il sangue dei soldati!"
+		attacked:"Oh, bene... spero tu sappia cosa stai facendo."
+		defeated:"È finita. Forse ora almeno io avrò la mia pace."
+		introduction:"Io sono Nabucodonosor, re di Babilonia. Sei reale o forse uno spettro?"
+		
+		neutralHello:"Salute."
+		neutralLetsHearIt:["Ti ascolto.","E dunque?"]
+		neutralNo:["No!","Certo che no.","Inaccettabile!"]
+		neutralYes:["D'accordo!","Sì!","Molto bene!"]
+
+		hateHello:"Che cosa vuoi?!"
+		hateLetsHearIt:["Ti ascolto.","Parla!"]
+		hateNo:["No!","Certo che no!","Inaccettabile!"]
+		hateYes:["E va bene!"]
+		
+		afterPeace:"Sciocco, sciocco errore, lasciarmi vivere..."
+		tradeRequest:"Sembra che la tua ragione di esistere è fare un accordo con me..."
+				
+		mainColor:[27,53,63],
+		secondaryColor:[213,249,255],
+		unique:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura. I Grandi Scienziati nascono il 50% più in fretta.",
+		cities:["Babilonia","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
+			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninive","Nimrud","Arbela","Nuzi",
+			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+	},
+	{
+		name:"Grecia",
+		leaderName:"Alessandro",
+		
+		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
+		attacked:"Ad essere onesto, mi sono stancato di starmene impalato."
+		defeated:"Sei diventato la mia rovina! Quale genere di bestia sei tu?"
+		introduction:"Saluti, straniero! Sono Alexandros, figlio di re e nipote degli dei!"
+		
+		neutralHello:"Saluti!"
+		neutralLetsHearIt:["Ti ascolto.","Avanti.","Sì?","Parla."]
+		neutralNo:["Rifiutiamo.","Certo che no.","Non reputo saggio accettarlo."]
+		neutralYes:["Ma certo.","Molto bene.","Accettabile!"]
+
+		hateHello:"Cosa?"
+		hateLetsHearIt:["Dimmi.","Dunque?","Avanti."]
+		hateNo:["Ciò non è gradito!","Niente da fare!","Scusami?"]
+		hateYes:["Oh, benissimo.","Se proprio devo.","Ben fatto."]
+		
+		afterPeace:"Devo congratularmi con te per la tua vittoria sbalorditiva."
+		tradeRequest:"Amico mio, dimmi: questo ti sembra ragionevole?"
+				
+		mainColor:[181, 232, 232],
+		secondaryColor:[68,142,249],
+		cities:["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
+			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tiryns","Samo","Mitilene","Chio",
+			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos"]
+	},
+	{
+		name:"China",
+		leaderName:"Wu Zetian",
+		
+		declaringWar:"Non ti permetterò più di infastidirmi. Preparati a incontrare Yama."
+		attacked:"Folle! Ti costringerò a guardare il tuo popolo venire massacrato!"
+		defeated:"Ti sei dimostrato un avversario astuto e competente. Mi congratulo per la tua vittoria."
+		introduction:"Saluti! Sono l'imperatrice Wu Zetian. La Cina desidera pace e prosperità. Se ci lasci in pace, noi lasceremo voi in pace."
+		
+		neutralHello:"Bella giornata, oggi, vero?"
+		neutralLetsHearIt:["Continua.","Ebbene?","Dunque?"]
+		neutralNo:["No.","No di certo.","Certo che no."]
+		neutralYes:["Certo.","D'accordo.","Eccellente!"]
+
+		hateHello:" Oh, sei tu. Che vuoi?"
+		hateLetsHearIt:["C'è altro?","Continua a parlare."]
+		hateNo:["Non posso accettarlo.","Scusami, non basta.","Sparisci dal mio volto!"]
+		hateYes:["Credo dovrò accettare.","Ah. Molto bene."]
+		
+		afterPeace:"Che le benedizioni del Cielo scendano su di te e sul tuo popolo."
+		tradeRequest:"Amico mio, pensi di poter accettare questa proposta?"
+				
+		mainColor:[9, 112, 84],
+		secondaryColor:[255,255,255],
+		unique:"Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta."
+		cities:["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
+			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
+			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+	},
+	{
+		name:"Egitto",
+		leaderName:"Ramesse II",
+		
+		declaringWar:"Sei solo una peste sulla Terra! Preparati a essere eliminato!",
+		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà!"
+		defeated:"Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno."
+		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
+		
+		neutralHello:"Buongiorno."
+		neutralLetsHearIt:["Avanti.","Parla.","Sono tutto orecchi."]
+		neutralNo:["No.","No di certo."]
+		neutralYes:["Va bene.","Molto bene."]
+		
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["E allora?","Concludi il tuo discorso."]
+		hateNo:["Ciò è inaccettabile.","La tua richiesta dev'essere uno scherzo."]
+		hateYes:["Oh, molto bene.","Credo dovrò accettare."]
+		
+		afterPeace:"Sai che avrei potuto distruggerti, ma oggi mi trattiene un'anima generosa."
+		tradeRequest:"Il generoso Egitto ti fa quest'offerta."
+		
+		mainColor:[ 231, 213, 0],
+		secondaryColor:[98,10,210],
+		unique:"+20% Production durante la costruzione di una Meraviglia"
+		cities:["Tebe","Menfi","ELiopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
+			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi",
+			"Mendes","Elashmunein","Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+	},
+	{
+		name:"Inghilterra",
+		leaderName:"Elisabetta",
+		
+		declaringWar:"Per grazia di Dio, i tuoi giorni sono contati."
+		attacked:"Mai ci arrenderemo all'invasore!"
+		defeated:"Sei riuscito a trionfare sull'impero su cui il Sole non tramonta mai. La vittoria è tua."
+		introduction:"Io sono Elisabetta d'Inghilterra. È un piacere fare la vostra conoscenza"
+		
+		neutralHello:"Salve di nuovo."
+		neutralLetsHearIt:["Avanti.","Continua."]
+		neutralNo:["Scusami?","È inaccettabile!"]
+		neutralYes:["Certamente!","Molto bene!"]
+
+		hateHello:"Oh, sei tu!"
+		hateLetsHearIt:["Ti ascolto.","Che dicevi?"]
+		hateNo:["Stai scherzando, spero!","Certo che no!"]
+		hateYes:["Oh, molto bene!","Se proprio devo..."]
+		
+		afterPeace:"Molto bene. Finiamola."
+		tradeRequest:"Ti interessa un accordo commerciale con il regno inglese?"
+		
+		mainColor:[ 114, 0, 0],
+		secondaryColor:[255,255,255],
+		unique:"+2 movimento per tutte le unità navali"
+		cities:["Londra","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
+			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
+			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+	},
+	{
+		name:"Francia",
+		leaderName:"Napoleone",
+		
+		declaringWar:"Come osi disturbare la tranquillità del mio impero? Preparati a morire!",
+		attacked:"Sei caduto dritto nella mia trappola. Preparati a essere seppellito!",
+		defeated:"Mi congratulo per la tua vittoria. Sei riuscito a superarmi, impresa in cui altri avevano fallito."
+		introduction:"Benvenuto. Sono Napoleone, Imperatore di Francia, il generale più intelligente della storia."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Continua.","Ti ascolto.","Avanti.","Stavi dicendo?"]
+		neutralNo:["Mi rifiuto.","Certo che no.","No."]
+		neutralYes:["Eccellente.","Molto bene.","Perché no?"]
+
+		hateHello:"Sei tu..."
+		hateLetsHearIt:["Parla."]
+		hateNo:["Vuoi scherzare?","Certo che no.","Inaccettabile."]
+		hateYes:["Va bene.","Credo di non avere altra scelta.","Certamente.","Molto bene."]
+		
+		afterPeace:"Sembra che ti abbia sottovalutato. Ti prometto che non ripeterò un simile errore."
+		tradeRequest:"La Francia ti offre questa proposta eccezionale."
+		
+		mainColor:[ 38, 98, 255],
+		secondaryColor:[239,236,148],
+		unique:"+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
+		cities:["Parigi","Orleans","Lyon","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
+			"Dijon","Amiens","Cherbourg","Poitiers","Tolosa","Bayonne","Strasburgo","Brest","Bordeaux","Rennes",
+			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen"]
+	},
+	{
+		name:"Russia",
+		leaderName:"Caterina",
+		
+		declaringWar:"Ti sei comportato molto male, sai? Adesso è ora della vendetta.",
+		attacked:"Hai confuso la mia passione per una debolezza... la pagherai cara."
+		defeated:"Ci hai sconfitti, e ciò mi rende prigioniera. Direi che ci sono destini peggiori."
+		introduction:"Ti saluto, straniero! Se sei intelligente e tattico tanto quanto sei attraente, saremo buoni amici."
+		
+		neutralHello:"Salve!"
+		neutralLetsHearIt:["Avanti.","Parla."]
+		neutralNo:["Rifiutiamo.","Ha! Certo che no!","No di certo."]
+		neutralYes:["Certo.","D'accordo.","Eccellente!"]
+
+		hateHello:"Che cosa vuoi?!"
+		hateLetsHearIt:["Ebbene?","Avanti...","COntinua."]
+		hateNo:["Stai scherzando?!","Scusami?!","Ciò è inaccettabile."]
+		hateYes:["Credo... che accetterò.","Oh... molto bene.","Ci sto."]
+		
+		afterPeace:"Ora è il momento di godersi i frutti della pace."
+		tradeRequest:"Ti piacerebbe se ti proponessi questo scambio?"
+				
+		mainColor:[ 236, 178, 0],
+		secondaryColor:[0,0,0],
+		unique:"+1 Produzione dalle risorse strategiche, e doppia quantità da Cavalli, Ferro e Uranio.",
+		cities:["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
+			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
+			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+	},
+	{
+		name:"Roma",
+		leaderName:"Augusto Cesare",
+		
+		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, dovrò muoverti guerra."
+		attacked:"Coraggioso, ma anche stupido! Se solo avessi un cervello simile al tuo coraggio."
+		defeated:"Gli dei hanno privato Roma del loro favore. Siamo stati sconfitti."
+		introduction:"Ti saluto. Sono sono Augusto, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei benvenuto."
+		
+		neutralHello:"Saluti."
+		neutralLetsHearIt:["Comincia pure.","Continua."]
+		neutralNo:["No.","Certo che no!"]
+		neutralYes:["Good.","I agree."]
+
+		hateHello:"Che cosa vuoi?"
+		hateLetsHearIt:["E...?","Continua."]
+		hateNo:["Questo è spiacevole.","Stai scherzando, spero!"]
+		hateYes:["Bene.","Oh. Bene."]
+		
+		afterPeace:"I tuoi soldati hanno combattuto bene. Mi congratulo per la tua vittoria."
+		tradeRequest:"Ti offro questo, per la tua considerazione."
+				
+		mainColor:[ 53,0,87],
+		secondaryColor:[238,201,9],
+		unique:"+25% Produzione verso qualunque edificio già esistente nella Capitale.",
+		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arezzo","Milano","Arpinum","Circei","Setia",
+			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
+			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+	},
+	{
+		name:"Arabia",
+		leaderName:"Harun al-Rashid",
+		
+		declaringWar:"Il mondo sarebbe più bello senza di te. Preparati alla guerra!"
+		attacked:"Stolto! Giuro sul mio onore che te ne pentirai amaramente!"
+		defeated:"Hai vinto. Complimenti. Ora il palazzo è nelle tue mani. Ti prego di prenderti cura del mio pavone."
+		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli arabi. Vieni, raccontami del tuo impero."
+		
+		neutralHello:"Pace a te."
+		neutralLetsHearIt:["Cos'é questo?","Cosa stavi dicendo?"]
+		neutralNo:["Certamente no.","Certo che no."]
+		neutralYes:["Va bene.","Eccellente."]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Cos'é questo?!","Finisci il tuo discorso."]
+		hateNo:["Questa richiesta è inaccettabile.","Non puoi essere serio a riguardo."]
+		hateYes:["Molto bene.","Se devo."]
+		
+		afterPeace:"Vi ringraziamo per questi termini generosi. Non dimenticheremo il favore che ci hai mostrati."
+		tradeRequest:"Avanti, facciamo un affare."
+				
+		mainColor:[ 41,83,42],
+		secondaryColor:[146,221,9],
+    unique:"Dona una copia extra di ogni risorsa di lusso sfruttata vicino alla città. +2 Oro da ogni fonte di Petrolio e casella Oasi.",
+		cities:["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
+			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
+			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+	},
+	{
+		name:"Stati Uniti",
+		leaderName:"Washington",
+		
+		declaringWar:"La tua sfrenata aggressività non ci lascia altra scelta. Preparati alla guerra!"
+		attacked:"Hai confuso il nostro amore per la pace per debolezza. Te ne pentirai!"
+		defeated:"La vittoria... è tua. Spero che ti dimostrerai misericordioso nel tuo trionfo."
+		introduction:"Il popolo degli Stati Uniti d'America vi da il benvenuto."
+		
+		neutralHello:"Buongiorno."
+		neutralLetsHearIt:["Procedi.","Va avanti.","Sto ascoltando."]
+		neutralNo:["Certo che no!","No."]
+		neutralYes:["Molto bene.","D'accordo.","Certamente!"]
+
+		hateHello:"Ebbene?"
+		hateLetsHearIt:["Và avanti.","Stavi dicendo?"]
+		hateNo:["Certamente no.","Mi rifiuto!","Non puoi essere serio."]
+		hateYes:["Oh, molto bene.","Se proprio devo.","Va bene.","D'accordo."]
+		
+		afterPeace:"Accogliamo la pace con la vostra grande nazione. Preghiamo che non vi siano altri futuri malintesi tra di noi."
+		tradeRequest:"Ti interessa forse questo accordo commerciale?"
+				
+		mainColor:[ 28,51,119],
+		secondaryColor:[255,255,255],
+		unique:"+1 Visione per tutte le unità militari terrestri. 50% di sconto per l'acquisto delle caselle",
+		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
+			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
+			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+	},
+	{
+		name:"Barbarians",
+		mainColor:[0,0,0],
+		secondaryColor:[182,0,0]
+	}
+]
