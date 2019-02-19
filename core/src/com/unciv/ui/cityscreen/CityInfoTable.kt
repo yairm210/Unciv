@@ -12,7 +12,6 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
 import java.util.*
-import kotlin.collections.HashMap
 
 
 class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin) {
@@ -28,25 +27,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         addStatInfo()
 
-        val greatPersonPoints = cityInfo.getGreatPersonMap()
-        val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
-        for(stat in Stat.values()){
-            if(!statToGreatPerson.containsKey(stat)) continue
-            val expanderName = "["+statToGreatPerson[stat]!!+"] points"
-            val expanderTab = ExpanderTab(expanderName.tr(),skin)
-            expanderTab.innerTable.defaults().pad(3f)
-            for(entry in greatPersonPoints){
-                val value = entry.value.toHashMap()[stat]!!
-                if(value==0f) continue
-                expanderTab.innerTable.add(entry.key.toLabel())
-                expanderTab.innerTable.add(DecimalFormat("0.#").format(value).toLabel()).row()
-            }
-            if(expanderTab.innerTable.hasChildren())
-                add(expanderTab).row()
-        }
+        addGreatPersonPointInfo(cityInfo)
 
         pack()
     }
+
 
     private fun addBuildingInfo(cityInfo: CityInfo) {
         val wonders = mutableListOf<Building>()
@@ -102,35 +87,57 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
     private fun addStatInfo() {
         val cityStats = cityScreen.city.cityStats
         val unifiedStatList = LinkedHashMap<String, Stats>(cityStats.baseStatList)
-        for(entry in cityStats.happinessList.filter { it.value!=0f }){
-            if(!unifiedStatList.containsKey(entry.key)) unifiedStatList[entry.key]= Stats()
+
+        for(stats in unifiedStatList.values) stats.happiness=0f
+
+
+        // add happiness to stat list
+        for(entry in cityStats.getCityHappiness().filter { it.value!=0f }){
+            if(!unifiedStatList.containsKey(entry.key))
+                unifiedStatList[entry.key]= Stats()
             unifiedStatList[entry.key]!!.happiness=entry.value
         }
 
-        val statToCauses = HashMap<Stat,HashMap<String,Float>>()
-        for(stat in Stat.values()) statToCauses[stat] = hashMapOf()
-
-        for(cause in unifiedStatList) {
-            val statHashmap = cause.value.toHashMap()
-            for (statEntry in statHashmap.filter { it.value != 0f })
-                statToCauses[statEntry.key]!![cause.key] = statEntry.value
-        }
-
-        for(stat in statToCauses){
-            val expander = ExpanderTab(stat.key.name.tr(),skin)
+        for(stat in Stat.values()){
+            val expander = ExpanderTab(stat.name.tr(),skin)
             expander.innerTable.defaults().pad(2f)
 
-            for(entry in stat.value) {
+            for(entry in unifiedStatList) {
+                val specificStatValue = entry.value.toHashMap()[stat]!!
+                if(specificStatValue==0f) continue
                 expander.innerTable.add(entry.key.toLabel())
-                expander.innerTable.add(DecimalFormat("0.#").format(entry.value).toLabel()).row()
+                expander.innerTable.add(DecimalFormat("0.#").format(specificStatValue).toLabel()).row()
             }
-            if(stat.value.isNotEmpty()){
-                expander.innerTable.add("Total".toLabel())
-                expander.innerTable.add(DecimalFormat("0.#").format(stat.value.values.sum()).toLabel())
-                add(expander).row()
+            for(entry in cityStats.statPercentBonusList){
+                val specificStatValue = entry.value.toHashMap()[stat]!!
+                if(specificStatValue==0f) continue
+                expander.innerTable.add(entry.key.toLabel())
+                val decimal = DecimalFormat("0.#").format(specificStatValue)
+                expander.innerTable.add("+$decimal%".toLabel()).row()
             }
-        }
 
+            if(expander.innerTable.hasChildren())
+                add(expander).row()
+        }
+    }
+
+    private fun addGreatPersonPointInfo(cityInfo: CityInfo) {
+        val greatPersonPoints = cityInfo.getGreatPersonMap()
+        val statToGreatPerson = GreatPersonManager().statToGreatPersonMapping
+        for (stat in Stat.values()) {
+            if (!statToGreatPerson.containsKey(stat)) continue
+            val expanderName = "[" + statToGreatPerson[stat]!! + "] points"
+            val expanderTab = ExpanderTab(expanderName.tr(), skin)
+            expanderTab.innerTable.defaults().pad(3f)
+            for (entry in greatPersonPoints) {
+                val value = entry.value.toHashMap()[stat]!!
+                if (value == 0f) continue
+                expanderTab.innerTable.add(entry.key.toLabel())
+                expanderTab.innerTable.add(DecimalFormat("0.#").format(value).toLabel()).row()
+            }
+            if (expanderTab.innerTable.hasChildren())
+                add(expanderTab).row()
+        }
     }
 
     private fun addSpecialistAllocation(skin: Skin, cityInfo: CityInfo) {

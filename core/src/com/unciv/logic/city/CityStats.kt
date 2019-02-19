@@ -163,7 +163,7 @@ class CityStats {
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
 
-        newHappinessList ["Population"] = -unhappinessFromCitizens * unhappinessModifier
+        newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
         var happinessFromPolicies = 0f
         if (civInfo.policies.isAdopted("Aristocracy"))
@@ -318,7 +318,6 @@ class CityStats {
         val newStatPercentBonusList = LinkedHashMap<String,Stats>()
         newStatPercentBonusList["Golden Age"]=getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
         newStatPercentBonusList["Policies"]=getStatPercentBonusesFromPolicies(civInfo.policies.adoptedPolicies, cityInfo.cityConstructions)
-        // from wonders - Culture in all cities increased by 25%
         newStatPercentBonusList["Buildings"]=getStatPercentBonusesFromBuildings()
         newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
