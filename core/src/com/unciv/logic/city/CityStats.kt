@@ -16,6 +16,8 @@ class CityStats {
     @Transient var baseStatList = LinkedHashMap<String, Stats>()
     @Transient var statPercentBonusList = LinkedHashMap<String, Stats>()
     @Transient var happinessList = LinkedHashMap<String, Float>()
+    @Transient var foodEaten=0f
+
     @Transient var currentCityStats: Stats = Stats()  // This is so we won't have to calculate this multiple times - takes a lot of time, especially on phones
     @Transient lateinit var cityInfo: CityInfo
 
@@ -134,7 +136,7 @@ class CityStats {
     }
 
 
-    private fun getGrowthBonusFromPolicies(): Float {
+    fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
         if (cityInfo.civInfo.policies.isAdopted("Landed Elite") && cityInfo.isCapital())
             bonus += 0.1f
@@ -302,7 +304,7 @@ class CityStats {
     }
     //endregion
 
-    fun update() {
+    fun updateBaseStatList(){
         val newBaseStatList = LinkedHashMap<String, Stats>() // we don't edit the existing baseStatList directly, in order to avoid concurrency exceptions
         val civInfo = cityInfo.civInfo
 
@@ -315,9 +317,13 @@ class CityStats {
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
         newBaseStatList["National ability"] = getStatsFromNationUnique()
 
+        baseStatList = newBaseStatList
+    }
+
+    fun updateStatPercentBonusList(){
         val newStatPercentBonusList = LinkedHashMap<String,Stats>()
         newStatPercentBonusList["Golden Age"]=getStatPercentBonusesFromGoldenAge(cityInfo.civInfo.goldenAges.isGoldenAge())
-        newStatPercentBonusList["Policies"]=getStatPercentBonusesFromPolicies(civInfo.policies.adoptedPolicies, cityInfo.cityConstructions)
+        newStatPercentBonusList["Policies"]=getStatPercentBonusesFromPolicies(cityInfo.civInfo.policies.adoptedPolicies, cityInfo.cityConstructions)
         newStatPercentBonusList["Buildings"]=getStatPercentBonusesFromBuildings()
         newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
@@ -332,50 +338,70 @@ class CityStats {
         }
 
         statPercentBonusList=newStatPercentBonusList
+    }
 
-        val statPercentBonuses = Stats()
-        for(bonus in statPercentBonusList.values) statPercentBonuses.add(bonus)
-
-        for (stat in newBaseStatList.values) stat.production *= 1 + statPercentBonuses.production / 100
-
-        val statsFromProduction = getStatsFromProduction(newBaseStatList.values.map { it.production }.sum())
-        newBaseStatList["Construction"] = statsFromProduction
-
-        for (stat in newBaseStatList.values) {
-            stat.gold *= 1 + statPercentBonuses.gold / 100
-            stat.science *= 1 + statPercentBonuses.science / 100
-            stat.culture *= 1 + statPercentBonuses.culture / 100
-        }
-
-
-        val isUnhappy = civInfo.happiness < 0
-        if (isUnhappy) // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
-            for (stat in newBaseStatList.values) stat.food *= 1 + statPercentBonuses.food / 100
-
-        var foodEaten = (cityInfo.population.population * 2).toFloat()
-        if (civInfo.policies.isAdopted("Civil Society"))
-            foodEaten -= cityInfo.population.getNumberOfSpecialists()
-        newBaseStatList["Population"]!!.food -= foodEaten // to display it to the user
-
-        val excessFood = newBaseStatList.values.sumByDouble { it.food.toDouble() }.toFloat()
-
-        if (isUnhappy && excessFood > 0) // Reduce excess food to 1/4 per the same
-            newBaseStatList["Unhappiness"] = Stats().apply { food = -excessFood * (3 / 4f) }
-
-        if (!newBaseStatList.containsKey("Policies")) newBaseStatList["Policies"] = Stats()
-        newBaseStatList["Policies"]!!.food += getGrowthBonusFromPolicies() * excessFood
-
-        val buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
-        newBaseStatList["Maintenance"] = Stats().apply { gold = -buildingsMaintenance }
-
-        baseStatList = newBaseStatList
+    fun update() {
+        updateBaseStatList()
+        updateStatPercentBonusList()
 
         val newCurrentCityStats = Stats() // again, we don't edit the existing currentCityStats directly, in order to avoid concurrency exceptions
-        if (cityInfo.resistanceCounter <= 0)
-            for (stat in baseStatList.values) newCurrentCityStats.add(stat)
+        for(stat in baseStatList.values) newCurrentCityStats.add(stat)
+
+        val statPercentBonusesSum = Stats()
+        for(bonus in statPercentBonusList.values) statPercentBonusesSum.add(bonus)
+
+
+        newCurrentCityStats.production *= 1 + statPercentBonusesSum.production / 100
+
+        val statsFromProduction = getStatsFromProduction(newCurrentCityStats.production)
+        newCurrentCityStats.add(statsFromProduction)
+        baseStatList = LinkedHashMap(baseStatList).apply { put("Construction",statsFromProduction) } // concurrency-safe addition
+
+        newCurrentCityStats.gold *= 1 + statPercentBonusesSum.gold / 100
+        newCurrentCityStats.science *= 1 + statPercentBonusesSum.science / 100
+        newCurrentCityStats.culture *= 1 + statPercentBonusesSum.culture / 100
+
+        val isUnhappy = cityInfo.civInfo.happiness < 0
+        if (!isUnhappy) // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
+            newCurrentCityStats.food *= 1 + statPercentBonusesSum.food / 100
+
+        //
+        /* Okay, food calculation is complicated.
+        First we see how much food we generate. Then we apply production bonuses to it.
+        Up till here, business as usual.
+        Then, we deduct food eaten (from the total produced).
+        Now we have the excess food, whih has its own things. If we're unhappy, cut it by 1/4.
+        Some policies have bonuses for excess food only, not general food production.
+         */
+
+        updateFoodEaten()
+        newCurrentCityStats.food -= foodEaten
+
+        if (isUnhappy && newCurrentCityStats.food > 0) { // Reduce excess food to 1/4 per the same
+            val foodReducedByUnhappiness = Stats().add(Stat.Food,newCurrentCityStats.food * (-3/4f))
+            baseStatList = LinkedHashMap(baseStatList).apply { put("Unhappiness", foodReducedByUnhappiness) } // concurrency-safe addition
+            newCurrentCityStats.add(foodReducedByUnhappiness)
+        }
+
+        // Since growth bonuses are special, (applied afterwards) they will be displayed separately in the user interface as well.
+        val foodFromGrowthBonuses = getGrowthBonusFromPolicies() * newCurrentCityStats.food
+        newCurrentCityStats.food += foodFromGrowthBonuses
+
+        // Same here - will have a different UI display.
+        val buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts() // this is AFTER the bonus calculation!
+        newCurrentCityStats.gold -= buildingsMaintenance
 
         if(newCurrentCityStats.production<1) newCurrentCityStats.production=1f
-        currentCityStats = newCurrentCityStats
+
+        if (cityInfo.resistanceCounter > 0)
+            currentCityStats = Stats().add(Stat.Production,1f) // You get nothing, Jon Snow
+        else currentCityStats = newCurrentCityStats
+    }
+
+    private fun updateFoodEaten() {
+        foodEaten = (cityInfo.population.population * 2).toFloat()
+        if (cityInfo.civInfo.policies.isAdopted("Civil Society"))
+            foodEaten -= cityInfo.population.getNumberOfSpecialists()
     }
 
 }

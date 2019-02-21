@@ -115,6 +115,22 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 val decimal = DecimalFormat("0.#").format(specificStatValue)
                 expander.innerTable.add("+$decimal%".toLabel()).row()
             }
+            if(stat==Stat.Gold){
+                val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
+                if(maintenance>0){
+                    expander.innerTable.add("Maintenance".toLabel())
+                    expander.innerTable.add("-$maintenance".toLabel())
+                }
+            }
+            if(stat==Stat.Food){
+                expander.innerTable.add("Food eaten".toLabel())
+                expander.innerTable.add(DecimalFormat("0.#").format(cityStats.foodEaten).toLabel()).row()
+                val growthBonus = cityStats.getGrowthBonusFromPolicies()
+                if(growthBonus>0){
+                    expander.innerTable.add("Growth bonus".toLabel())
+                    expander.innerTable.add((growthBonus*100).toInt().toString().toLabel())
+                }
+            }
 
             if(expander.innerTable.hasChildren())
                 add(expander).row()
