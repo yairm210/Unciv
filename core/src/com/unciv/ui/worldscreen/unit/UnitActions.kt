@@ -181,7 +181,10 @@ class UnitActions {
                             tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building &&
                             (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder
             ) {
-                tile.getCity()!!.cityConstructions.addProduction(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                tile.getCity()!!.cityConstructions.apply {
+                    addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
+                    constructIfEnough()
+                }
                 unit.destroy()
             }.sound("chimes")
         }

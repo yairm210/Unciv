@@ -336,11 +336,17 @@ class CivilizationInfo {
     }
 
     fun startTurn(){
+        // Generate great people at the start of the turn,
+        // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
+        if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
+            val greatPerson = greatPeople.getNewGreatPerson()
+            if (greatPerson != null) addGreatPerson(greatPerson)
+        }
+
         updateViewableTiles() // adds explored tiles so that the units will be able to perform automated actions better
         setCitiesConnectedToCapitalTransients()
-        for (city in cities){
-            city.startTurn()
-        }
+        for (city in cities) city.startTurn()
+
         happiness = getHappinessForNextTurn().values.sum().roundToInt()
         getCivUnits().toList().forEach { it.startTurn() }
     }
@@ -374,15 +380,6 @@ class CivilizationInfo {
         for (city in cities.toList()) { // a city can be removed while iterating (if it's being razed) so we need to iterate over a copy
             city.endTurn()
         }
-
-        //if no city available, addGreatPerson will throw exception
-        if (cities.isNotEmpty()) {
-            val greatPerson = greatPeople.getNewGreatPerson()
-            if (greatPerson != null) {
-                addGreatPerson(greatPerson)
-            }
-        }
-
 
         goldenAges.endTurn(happiness)
         getCivUnits().forEach { it.endTurn() }

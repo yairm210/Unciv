@@ -66,11 +66,6 @@ class CityConstructions {
         return result
     }
 
-    fun getAmountConstructedText(): String =
-            if (SpecialConstruction.getSpecialConstructions().any { it.name== currentConstruction}) ""
-            else " (" + getWorkDone(currentConstruction) + "/" +
-                getCurrentConstruction().getProductionCost(cityInfo.civInfo.policies.adoptedPolicies) + ")"
-
     fun getCurrentConstruction(): IConstruction = getConstruction(currentConstruction)
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
@@ -120,10 +115,12 @@ class CityConstructions {
         builtBuildingObjects = ArrayList(builtBuildings.map { GameBasics.Buildings[it]!! })
     }
 
-    fun addProduction(productionToAdd: Int) {
+    fun addProductionPoints(productionToAdd: Int) {
         if (!inProgressConstructions.containsKey(currentConstruction)) inProgressConstructions[currentConstruction] = 0
         inProgressConstructions[currentConstruction] = inProgressConstructions[currentConstruction]!! + productionToAdd
+    }
 
+    fun constructIfEnough(){
         val construction = getConstruction(currentConstruction)
         val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
         if (inProgressConstructions[currentConstruction]!! >= productionCost) {
@@ -131,7 +128,7 @@ class CityConstructions {
         }
     }
 
-    fun nextTurn(cityStats: Stats) {
+    fun endTurn(cityStats: Stats) {
         val construction = getConstruction(currentConstruction)
         if(construction is SpecialConstruction) return
 
@@ -145,7 +142,7 @@ class CityConstructions {
         } else
             currentConstruction = saveCurrentConstruction
 
-        addProduction(Math.round(cityStats.production))
+        addProductionPoints(Math.round(cityStats.production))
     }
 
     fun constructionComplete(construction: IConstruction) {

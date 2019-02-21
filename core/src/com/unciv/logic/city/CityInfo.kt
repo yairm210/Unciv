@@ -189,6 +189,9 @@ class CityInfo {
     }
 
     fun startTurn(){
+        // Construct units at the beginning of the turn,
+        // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
+        cityConstructions.constructIfEnough()
         cityStats.update()
         tryUpdateRoadStatus()
         attackedThisTurn = false
@@ -202,7 +205,7 @@ class CityInfo {
             stats.food = 0f
         }
 
-        cityConstructions.nextTurn(stats)
+        cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
         if(isBeingRazed){
             population.population--
