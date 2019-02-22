@@ -591,6 +591,19 @@
 		uniques:["Bonus vs Armor 100%"]
 		hurryCostModifier:20,
 	},
+	/*
+	{
+		name:"Modern Armor",
+		unitType:"Armor",
+		movement:5,
+		strength:100,
+		cost: 425,
+		requiredTech:"Robotics",
+		requiredResource:"Aluminum",
+		uniques:["Can move after attacking","No defensive terrain bonus"]
+		hurryCostModifier:20,
+	},
+	*/
 	
 	
 	/* Great people */
