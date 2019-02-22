@@ -15,7 +15,7 @@ class WorldScreenOptionsTable(val worldScreen: WorldScreen) : PopupTable(worldSc
 
     init {
         addButton("Map editor".tr()){
-            UnCivGame.Current.screen = MapEditorScreen()
+            UnCivGame.Current.screen = MapEditorScreen(null)
             remove()
         }
 

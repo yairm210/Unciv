@@ -22,7 +22,7 @@ import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileGroupMap
 
-class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
+class MapEditorScreen(): CameraStageBaseScreen(){
     var clearTerrainFeature=false
     var selectedTerrain : Terrain?=null
     var clearResource=false
@@ -56,17 +56,27 @@ class MapEditorScreen(var mapToLoad:String?=null): CameraStageBaseScreen(){
         return group
     }
 
-    init{
+    constructor(mapNameToLoad:String?):this(){
+        var mapToLoad = mapNameToLoad
         if (mapToLoad == null) {
             val existingSaves = GameSaver().getMaps()
             if(existingSaves.isNotEmpty())
                 mapToLoad = existingSaves.first()
         }
         if(mapToLoad!=null){
-            mapName=mapToLoad!!
+            mapName=mapToLoad
             tileMap=GameSaver().loadMap(mapName)
-            tileMap.setTransients()
         }
+        initialize()
+    }
+
+    constructor(map: TileMap):this(){
+        tileMap = map
+        initialize()
+    }
+
+    fun initialize(){
+        tileMap.setTransients()
         val mapHolder = getMapHolder(tileMap)
 
         stage.addActor(mapHolder)
