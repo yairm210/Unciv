@@ -577,6 +577,13 @@
 		uniques:["Culture cost of adopting new Policies reduced by 10%"],
 		requiredTech:"Flight"
 	},
+	{
+		name:"Kremlin",
+		culture:3,
+		isWonder:true,
+		uniques:["Defensive buildings in all cities are 25% more effective"],
+		requiredTech:"Railroad"
+	},
 	
 	// Information Era
 	

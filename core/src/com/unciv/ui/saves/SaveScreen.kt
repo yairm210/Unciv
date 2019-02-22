@@ -47,7 +47,7 @@ class SaveScreen : PickerScreen() {
         newSave.add("Saved game name".toLabel()).row()
         newSave.add(textField).width(300f).pad(10f).row()
 
-        val copyJsonButton = TextButton("Copy game info".tr(),skin)
+        val copyJsonButton = TextButton("Copy to clipboard".tr(),skin)
         copyJsonButton.onClick {
             val json = Json().toJson(game.gameInfo)
             val base64Gzip = Gzip.zip(json)

@@ -1324,16 +1324,7 @@
         Portuguese:"Nome do jogo salvo"
 	}
 
-	"Copy game info":{
-		Italian:"Copia le informazioni sul gioco"
-		Russian:"Копировать информацию об игре"
-		French:"Copier les données de la partie"
-		Romanian:"Copiază informațiile jocului"
-		German:"Spielinfo kopieren"
-		Dutch:"Spelinformatie kopiëren"
-		Spanish:"Copiar información de partida"
-        Simplified_Chinese:"复制游戏信息"
-        Portuguese:"Copiar informação do jogo"
+	"Copy to clipboard":{
 	}
 
 	"Could not load game":{
@@ -5237,6 +5228,11 @@
 		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
         Simplified_Chinese:"采用新政策的文化成本 -10%"
         Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
+	}
+	
+	"Kremlin":{
+	}
+	"Defensive buildings in all cities are 25% more effective":{
 	}
 	
 	"Military Academy":{	
