@@ -597,7 +597,7 @@
 	}
 	
 	"worked tiles":{
-		Italian:"celle lavorate"
+		Italian:"celle sfruttate"
 		Russian:"обработанные клетки"
 		French:"cases exploités"
 		Romanian:"celule lucrate"
@@ -1027,7 +1027,7 @@
 	}
 	
 	"You have entered a golden age!":{
-		Italian:"Sei entrato in un'età dell'oro!"
+		Italian:"Sei entrato in un'Età dell'Oro!"
 		Russian:"Вы вошли в золотой век!"
 		French:"Vous êtes entré dans un âge d'or!"
 		Romanian:"Ai intrat într-o epocă de aur!"
@@ -1111,7 +1111,7 @@
 	}
 	
 	"An enemy [unit] has attacked our [ourUnit]":{
-		Italian:"[unit] dei nostri nemici ha attaccato [ourUnit]"
+		Italian:"Un'unità nemica [unit] ha attaccato [ourUnit]"
 		Russian:"Вражеский [unit] атаковал нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a attaqué [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic ne-a atacat un [ourUnit]"
@@ -1122,7 +1122,7 @@
     	Portuguese:"Um(a) [unit] inimigo(a) atacout nossa [ourUnit]"
 	}
 	"An enemy [unit] has captured [cityname]":{
-		Italian:"[unit] dei nostri nemici ha catturato [cityname]"
+		Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
 		Russian:"Вражеский [unit] захватил [cityname]"
 		French:"Un(e) [unit] ennemi(e) a capturé [cityname]" // Gender sensitive
 		Romanian:"Un [unit] inamic a capturat [cityname]"
@@ -1134,7 +1134,7 @@
 	}
 	
 	"An enemy [unit] has captured our [ourUnit]":{
-		Italian:"[unit] dei nostri nemici ha catturato [ourUnit]"
+		Italian:"Un'unità nemica [unit] ha catturato [ourUnit]"
 		Russian:"Вражеский [unit] захватил нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a capturé [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic ne-a capturat un [ourUnit]"
@@ -1146,7 +1146,7 @@
 	}
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
-		Italian:"[unit] dei nostri nemici ha distrutto [ourUnit]"
+		Italian:"Un'unità nemica [unit] ha distrutto [ourUnit]"
 		Russian:"Вражеский [unit] уничтожил нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a détruit [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic ne-a distrus un [ourUnit]"
@@ -1170,7 +1170,7 @@
 	}
 	
 	"An enemy [unit] was destroyed while attacking our [ourUnit]":{
-		Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava il nostro [ourUnit]"
+		Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava la nostra unità [ourUnit]"
 		Russian:"Вражеский [unit] был уничтожен, атакуя нашего [ourUnit]"
 		French:"Un(e) [unit] ennemi(e) a été détruit(e) en attaquant [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic a fost distrus în timp ce ne ataca un [ourUnit]"
@@ -1207,7 +1207,7 @@
 	
 	
 	"revealed near":{ // As in "Coal revealed near London"
-		Italian:"rivelato vicino a"
+		Italian:"scoperto vicino a"
 		Russian:"обнаружен вблизи "
 		French:"est dévoilé près de"
 		Romanian:"dezvăluit lângă"
@@ -1325,10 +1325,11 @@
 	}
 
 	"Copy to clipboard":{
+		Italian:"Copia su appunti"
 	}
 
 	"Could not load game":{
-		Italian:"Impossibile caricare il gioco"
+		Italian:"Impossibile caricare partita"
 		Russian:"Не удалось загрузить игру"
 		French:"Impossible de charger la partie"
 		Romanian:"Jocul nu a putut fi încărcat"
@@ -1352,7 +1353,7 @@
 	}
 
 	"Delete save":{
-		Italian:"Elimina Salvataggio"
+		Italian:"Elimina salvataggio"
 		Russian:"Удалить сохранение"
 		French:"Supprimer la sauvegarde"
 		Romanian:"Șterge jocul salvat"
@@ -1364,7 +1365,7 @@
 	}
 
 	"Saved at":{
-		Italian:"Salvato a"
+		Italian:"Salvato su"
 		Russian:"Сохранено в"
 		French:"Enregistré sous"
 		Romanian:"Salvat la"
@@ -1918,6 +1919,7 @@
         Simplified_Chinese:"农场"
         Portuguese:"Fazenda"
 	}
+
 	"Lumber mill":{
 		Italian:"Segheria"
 		Russian:"Лесопилка"
@@ -1929,6 +1931,7 @@
         Simplified_Chinese:"伐木场"
         Portuguese:"Serralheria"
 	}
+
 	"Mine":{
 		Italian:"Miniera"
 		Russian:"Шахта"
@@ -1940,6 +1943,7 @@
         Simplified_Chinese:"矿"
         Portuguese:"Mina"
 	}
+
 	"Trading post":{
 		Italian:"Base commerciale"
 		Russian:"Торговый пост"
@@ -1951,6 +1955,7 @@
         Simplified_Chinese:"交易站"
         Portuguese:"Posto de comércio"
 	}
+
 	"Camp":{
 		Italian:"Campo"
 		Russian:"Лагерь"
@@ -2108,7 +2113,7 @@
 		Romanian:"Reper"
 		//as it is more of a cultural building this makes sense
 		German:"Sehenswürdigkeit" 
-		// Dutch translation not sure
+		Dutch:"Mijlpaal"
 		Spanish:"Edificio emblemático"
         Simplified_Chinese:"里程碑"
         Portuguese:"Edificio emblemático"
@@ -2162,6 +2167,7 @@
         Simplified_Chinese:"陶器"
         Portuguese:"Cerâmica"
 	}
+
 	"Animal Husbandry":{
 		Italian:"Allevamento di animali"
 		Russian:"Животноводство"
@@ -2548,6 +2554,9 @@
         Simplified_Chinese:"航海术"
         Portuguese:"Navegação"
 	}
+	"Architecture":{
+		Italian:"Architettura"
+	}
 	"Archaeology":{
 		Italian:"Archeologia"
 		Russian:"Aрхеология"
@@ -2665,7 +2674,7 @@
         Portuguese:"Biologia"
 	}
 	"Electricity":{
-		Italian:"Electricità"
+		Italian:"Elettricità"
 		Russian:"Электричество"
 		French:"Électricité"
 		Romanian:"Electricitate"
@@ -2713,8 +2722,9 @@
         Simplified_Chinese:"制冷"
         Portuguese:"Refrigeração"
 	}
+
 	"Replaceable Parts":{
-		Italian:"Parti ricomponibili"
+		Italian:"Parti ricomponibili"//Smashfanful says "you missed to translate this one"
 		Romanian:"Piese de schimb"
 		Spanish:"Produccion En Serie"
 		Simplified_Chinese:"可替换零件"
@@ -2755,6 +2765,7 @@
         Simplified_Chinese:"塑料"
         Portuguese:"Plásticos"
 	}
+
 	"Electronics":{
 		Italian:"Elettronica"
 		Russian:"Электроника"
@@ -2807,6 +2818,17 @@
         Simplified_Chinese:"制药"
         Portuguese:"Farmacêuticas"
 	}
+	"Atomic Theory":{
+		Italian:"Teoria atomca"
+		Russian:"Атомная Теория"
+		French:"Théorie atomique"
+		Romanian:"Teoria atomică"
+		German:"Atomtheorie"
+		Dutch:"Atoom theorie"
+		Spanish:"Teoría atómica"
+        Simplified_Chinese:"原子理论"
+        Portuguese:"Teoria atômica"
+	}
 	"Computers":{
 		Italian:"Computer"
 		Russian:"Kомпьютеры"
@@ -2817,6 +2839,11 @@
 		Spanish:"Ordenadores"
         Simplified_Chinese:"计算机"
         Portuguese:"Computadores"
+	}
+	"Combined arms":{
+		Italian:"Armi combinate"
+		Russian:"Комбинированные руки"
+		French:"Armes combinés"
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
@@ -2997,7 +3024,7 @@
 	// In case of foreign languages it becomes gender sensitive words
 	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
 	"Ancient era":{
-		Italian:"Antichità" //one word translation
+		Italian:"Antichità" //one word translation, as in "Sei entrato in una era, l'Antichità"
 		Russian:"Древнейший мир"
 		French:"Antiquité"
 		Romanian:"Antichitate"
@@ -3019,7 +3046,7 @@
 		German:"Klassik"
 	}
 	"Medieval era":{
-		Italian:"Medioevo" //one word translation
+		Italian:"Medioevo"  //one word translation, as in "Sei entrato in una era, il Medioevo"
 		Russian:"Средневековье" //one word translation
 		French:"Moyen Âge"
 		Romanian:"Evul mediu"
@@ -3030,7 +3057,7 @@
 		German:"Mittelalter"
 	}
 	"Renaissance era":{
-		Italian:"Rinascimento" //one word translation
+		Italian:"Rinascimento"  //one word translation, as in "Sei entrato in una era, il Rinascimento"
 		Russian:"Новое время" //one word translation
 		French:"Renaissance" //one word translation
 		Romanian:"Renaştere"
@@ -3088,7 +3115,7 @@
 	
 	// Unit types
 	"Civilian":{
-		Italian:"Civile"
+		Italian:"civile" 
 		Russian:"Мирный"
 		French:"Civile"
 		Romanian:"Civil"
@@ -3099,7 +3126,7 @@
         Portuguese:"Cidadão"
 	}
 	"Melee":{
-		Italian:"Da mischia"
+		Italian:"da mischia"
 		Russian:"Ближний бой"
 		French:"Mêlée"
 		Romanian:"Luptător de contact"
@@ -3110,7 +3137,7 @@
         Portuguese:"Corpo a corpo"
 	}
 	"Ranged":{
-		Italian:"A distanza"
+		Italian:"a distanza"
 		Russian:"Дальний бой"
 		French:"À distance"
 		Romanian:"Luptător la distanță"
@@ -3121,7 +3148,7 @@
         Portuguese:"Ataque a distancia"
 	}
 	"Siege":{
-		Italian:"D'assedio"
+		Italian:"d'assedio"
 		Russian:"Осадный"
 		French:"Siège"
 		Romanian:"Dispozitiv de asediu"
@@ -3132,7 +3159,7 @@
         Portuguese:"Cerco"
 	}
 	"Mounted":{
-		Italian:"A cavallo"
+		Italian:"a cavallo"
 		Russian:"Конный"
 		French:"Montée"
 		Romanian:"Luptător călare"
@@ -3143,7 +3170,7 @@
         Portuguese:"Montado(a)"
 	}
 	"Scout":{
-		Italian:"D'esplorazione"
+		Italian:"d'esplorazione"
 		Russian:"Разведчик"
 		French:"Éclaireur"
 		Romanian:"Cercetaș"
@@ -3179,7 +3206,7 @@
         Portuguese:"Pode construir melhorias em terrenos"
 	}
 	"Founds a new city":{
-		Italian:"Fonda una nuova città"
+		Italian:"Può fondare una nuova città"
 		Russian:"Основывает новый город"
 		French:"Fonder une nouvelle ville"
 		Romanian:"Fondează un oraș nou"
@@ -3190,7 +3217,7 @@
         Portuguese:"Funda uma nova cidade"
 	}
 	"Ignores terrain cost":{
-		Italian:"Ignora il costo del terreno"
+		Italian:"Ignora il costo di movimento su terreno"
 		Russian:"Игнорирует стоимость местности"
 		French:"Ignore le coût du terrain"
 		Romanian:"Ignoră costul terenului"
@@ -3201,7 +3228,7 @@
         Portuguese:"Ignora custo de movimento em terrennos díficeis"
 	}
 	"No defensive terrain bonus":{
-		Italian:"Nessun bonus sul terreno difensivo"
+		Italian:"Nessun bonus difensivo su terreno"
 		Russian:"Нет бонуса защиты от ландшафта"
 		French:"Aucun bonus de terrain défensif"
 		Romanian:"Niciun bonus defensiv de teren"
@@ -3212,7 +3239,7 @@
         Portuguese:"Nenhum bonus de defesa do terreno"
 	}
 	"Rough terrain penalty":{
-		Italian:"Penalità su terreno grezzo"
+		Italian:"Penalità su terreno accidentato"
 		Russian:"Штраф грубой местности"
 		French:"Pénalité de terrain difficile"
 		Romanian:"Penalizare pentru teren accidentat"
@@ -3223,7 +3250,7 @@
         Portuguese:"Penalidade de terreno díficil"
 	}
 	"Bonus vs [unitType]":{
-		Italian:"Bonus contro [unitType]"
+		Italian:"Bonus contro unità [unitType]"
 		Russian:"Бонус против [unitType]"
 		French:"Bonus contre [unitType]"
 		Romanian:"Bonus contra [unitType]"
@@ -3234,7 +3261,7 @@
         Portuguese:"Bonus contra [unitType]"
 	}
 	"Penalty vs [unitType]":{
-		Italian:"Penalità contro [unitType]"
+		Italian:"Penalità contro unità [unitType]"
 		Russian:"Штраф против [unitType]"
 		French:"Pénalité contre [unitType]"
 		Romanian:"Penalizare contra [unitType]"
@@ -3245,7 +3272,7 @@
         Portuguese:"Penalização contra [unitType]"
 	}
 	"Must set up to ranged attack":{
-		Italian:"Deve montare per attaccare a distanza"
+		Italian:"Deve allestirsi per attaccare a distanza"
 		Russian:"Необходимо подготовится к дальнобойной атаке"
 		French:"Doit être installé pour attaquer à distance"
 		Romanian:"Trebuie să fie montat pentru a putea ataca"
@@ -3280,7 +3307,7 @@
 	
 	/* Old Great Person translations (for reference only)
 	"Can start an 8-turn golden age or construct a Landmark (+6 culture)":{
-		Italian:"Può iniziare un'Età dell'Oro da 8 turni o costruire un Gran Monumento (+6 cultura)"
+		Italian:"Può iniziare un'Età dell'Oro di 8 turni o costruire un Gran Monumento (+6 cultura)"
 		Russian:"Может начать золотой век на 8 ходов или построить памятник (+6 культура)"
 		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 culture)"
 		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (cultura + 6)"
@@ -3327,7 +3354,7 @@
 	}
 	
 	"Create [improvementName]":{ // for unit action button - also used for "create fishing boats" and "create oil well"
-		Italian:"Crea [improvementName]"
+		Italian:"Costruisci [improvementName]"
 		Romanian:"Crează [improvementName]"
 		Spanish:"Crear [improvmentName]"
 		Simplified_Chinese:"创建 [improvementName]"
@@ -3457,7 +3484,7 @@
 	
 	"Cannot enter ocean tiles":{
 		Spanish:"No puede entrar al oceanó"
-		Italian:"Può entrare nell'oceano"
+		Italian:"Non può entrare nelle caselle oceaniche"
 		French:"Ne peut pas aller sur les tuiles océan"
 		Romanian:"Nu poate accesa celule ocean"
         Simplified_Chinese:"不能进入海洋"
@@ -3466,7 +3493,7 @@
 	}
 	"Cannot enter ocean tiles until Astronomy":{
 		Spanish:"No puede entrar al oceanó hasta investigar astronomia"
-		Italian:"Può entrare nell'oceano solo dopo Astronomia"
+		Italian:"Può entrare nell'oceano solo dopo aver scoperto l'Astronomia"
 		French:"Ne peut pas aller sur les tuiles océan avant la découverte de l'Astronomie"
 		Romanian:"Nu poate accesa celule ocean înainte de descoperirea Astronomiei"
         Simplified_Chinese:"不能进入海洋直到掌握天文学"
@@ -3671,6 +3698,23 @@
 		German:"Gold pro Runde"
 	}
 
+	"Cities":{
+		Italian:"Città"
+	}
+
+	"Technologies":{
+		Italian:"Tecnologie"
+	}
+
+	"Declarations of war":{
+		Italian:"Dichiarazione di guerra"
+	}
+	"Luxury resources":{
+		Italian:"Risorse di lusso"
+	}
+	"Strategic resources":{
+		Italian:"Risorse strategiche"
+	}
 
 	// Civilisations and uniques
 	"replaces":{// As in "Camel Archer replaces Knight", "Krepost replaces Barracks"
@@ -3728,7 +3772,7 @@
 		German:"China"
 	}
 	"Great general provides double combat bonus, and spawns 50% faster":{
-		Italian:"Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta"
+		Italian:"I Grandi Generali concedono nascono il 50% più in fretta e il loro bonus è raddoppiato"
 		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
 		Simplified_Chinese:"大军事家提供双倍战斗加成，出生速率+50%"
 		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
@@ -3746,7 +3790,7 @@
 		German:"Ägypten"
 	}
 	"+20% production towards Wonder construction":{
-		Italian:"+20% Produzione mentre costruisci una Meraviglia"
+		Italian:"+20% Produzione per la costruzione di Meraviglie"
 		German:"20% erhöhte Produktion beim Errichten von Wundern"
 		French:"+20% vitesse de construction des merveilles"
 	}
@@ -3762,7 +3806,7 @@
 		German:"England"
 	}
 	"+2 movement for all naval units":{
-		Italian:"+2 movimento per le unità navali"
+		Italian:"+2 movimento per tutte le unità navali"
 		Romanian:"+2 deplasare pentru toate unitățile navale"
 		Spanish:"+2 de movimiento a las unidades navales"
 		Simplified_Chinese:"所有有海军+2行动力"
@@ -3795,7 +3839,7 @@
 		French:"Russie"
 	}
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
-		Italian:"+1 Produzione dalle Risorse, e doppia quantità di Cavalli, Ferro e Uranio"
+		Italian:"+1 Produzione dalle Risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
 		Romanian:"Resursele strategice oferă +1 Producție, resursele Cai, Fier și Uraniu oferind cantitate dublă"
 		Spanish:"Los recursos estrategicos proporcionan +1 de produccion y los caballos, uranio y hierro proporcionan 4 envez de 2 recursos"
 		Simplified_Chinese:"所有战略资源+1生产力, 并且马 铁和铀 提供双份"
@@ -3843,6 +3887,12 @@
 		Simplified_Chinese:"所有陆军 +1 视野, 购买地块打五折"
 		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
 		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
+	}
+	"Uniques:":{
+		Italian:"Abilità unica"
+	}
+	"units in rough terrain:":{
+		Italian:"unità in terreno accidentato"
 	}
 	
 	"Barbarians":{
@@ -4002,8 +4052,18 @@
 		Portuguese:"Tamanho do mundo"
 		German:"Kartengröße"
 	}
+	"Number of human players":{	//feels like duplicate
+		Italian:"Numero di giocatori"
+		Russian:"Количество врагов"
+		French:"Nombre d'ennemies"
+		Romanian:"Număr de inamici"
+		Spanish:"Número de enemigos"
+        Simplified_Chinese:"敌人数量"
+		Portuguese:"Número de inimigos"
+		German:"Anzahl der Gegner"
+	}
 	"Number of enemies":{	//feels like duplicate
-		Italian:"Numero di nemici"
+		Italian:"Numero di avversari"
 		Russian:"Количество врагов"
 		French:"Nombre d'ennemies"
 		Romanian:"Număr de inamici"
@@ -4021,6 +4081,9 @@
         Simplified_Chinese:"难度"
 		Portuguese:"Dificuldade"
 		German:"Schwierigkeitsgrad"
+	}
+	"Map type":{	
+		Italian:"Tipo di mappa"
 	}
 	
 	// Diplomacy!
@@ -4232,7 +4295,7 @@
 		German:"Wartung"
 	}
 	"Transportation upkeep":{	
-		Italian:"Manutenzione dei trasporti"
+		Italian:"Mantenimento dei trasporti"
 		Russian:"Транспортировка"
 		French:"Entretien des transports"
 		Romanian:"Întreținere trasporturi"
@@ -4242,7 +4305,7 @@
 		German:"Unterhalt für Transport"
 	}
 	"Unit upkeep":{	
-		Italian:"Manutenzione dell'unità"
+		Italian:"Mantenimento dell'unità"
 		Russian:"Поддержание содержания"
 		French:"Entretien des unités"
 		Romanian:"Întreținere unități"
@@ -4253,7 +4316,7 @@
 	}
 	
 	"Trades":{	
-		Italian:"Trades"
+		Italian:"Commercio"
 		Russian:"Соглашения"
 		French:"Échanges"
 		Romanian:"Tranzacții"
@@ -4501,7 +4564,7 @@
 	}
 	
 	"The Oracle":{	
-		Italian:"Ooracolo"
+		Italian:"Oracolo"
 		Russian:"Оракул"
 		French:"L'oracle"
 		Romanian:"Oracolul"
@@ -4511,7 +4574,7 @@
 		German:"Das Orakel"
 	}
 	"Free Social Policy":{
-		Italian:"Politica sociale gratuita"
+		Italian:"Ricevi una politica sociale gratuita"
 		Russian:"Бесплатный общественный институт"
 		French:"Doctrine gratuite"
 		Romanian:"Politică socială gratuită"
@@ -4581,7 +4644,7 @@
 	
 	"The Great Lighthouse":{
 		Spanish:"El Faro Del Fin Del Mundo"
-		Italian:"Grande Faro"
+		Italian:"Grande Faro" //you missed this translation, said Smashfanful
 		French:"le Grand Phare"
 		Romanian:"Marele Far"
         Simplified_Chinese:"大灯塔"
@@ -5231,8 +5294,10 @@
 	}
 	
 	"Kremlin":{
+		Italian:"Kremlino"
 	}
 	"Defensive buildings in all cities are 25% more effective":{
+		Italian:"+25% efficacia delle strutture difensive in tutte le città"
 	}
 	
 	"Military Academy":{	
@@ -6182,6 +6247,7 @@
 		German:"Großer Ingenieur"
 	}
 	"Great General":{
+		Italian:"Grande Generale"
 		Romanian:"Mare General"
 		Spanish:"Gran General"
 		Simplified_Chinese:"大军事家"
@@ -6498,7 +6564,7 @@
 		French:"Liberté complète"
 	}
 	"Free Great Person of choice near capital":{
-		Italian:"Un Grande Personaggio gratuito nella capitale"
+		Italian:"Appare Grande Personaggio gratuito a scelta nella capitale"
 		Russian:"Бесплатный Великий Человек по выбору рядом со столицей"
 		Romanian:"Om Mare la alegere gratuit lângă capitală"
 		Spanish:"Gran Persona gratis a elegir cerca de la capital"
@@ -6541,7 +6607,7 @@
 	}
 	"+20% production when training melee units":{ //it's +15% in the original game
 		Spanish:"+20% a la produccion de unidades cuerpo a cuerpo "
-		Italian:"+20% Produzione per unità da mischia"
+		Italian:"+20% Produzione per le unità da mischia"
 		Romanian:"+20% producție la antrenarea luptătorilor de contact"
         Simplified_Chinese:"当训练近战单位时，产量增加20%"
         Portuguese:"+20% Produção ao treinar unidades militares"
@@ -6814,7 +6880,7 @@
 		French:"Unions commerciales"
 	}
 	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
-		Italian:"-33% manutenzioni su strade e ferrovie, +2 oro per ogni rotta commerciale"
+		Italian:"-33% mantenimento su strade e ferrovie, +2 oro per ogni rotta commerciale"
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Romanian:"Întreținerea drumurilor și a căilor ferate redusă cu 33%, +2 aur din toate rutele comerciale"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"
@@ -7391,60 +7457,172 @@
 	}	
 	
 	// Unit Promotions
-	"Accuracy I":{}
-	"Accuracy II":{}
-	"Accuracy III":{}
-	"Bonus vs units in open terrain 15%":{}
-	"Barrage I":{}
-	"Barrage II":{}
-	"Barrage III":{}
-	"Bonus vs units in rough terrain 15%":{}
-	"Shock I":{}
-	"Shock II":{}
-	"Shock III":{}
-	"Drill I":{}
-	"Drill II":{}
-	"Drill III":{}
-	"Scouting I":{}
-	"Scouting II":{}
-	"Scouting III":{}
-	"+1 Movement":{}
-	"Cover I":{}
-	"Cover II":{}
-	"+25% Defence against ranged attacks":{}
-	"March":{}
-	"Unit will heal every turn, even if it performs an action":{}
-	"Charge":{}
-	"Bonus vs wounded units 33%":{}
-	"Mobility":{}
-	"Siege":{}
-	"Volley":{}
-	"Sentry":{}
-	"Range":{}
-	"+1 Range":{}
-	"Indirect Fire":{}
-	"Ranged attacks may be performed over obstacles":{}
-	"Formation I":{}
-	"Formation II":{}
-	"Blitz":{}
-	"1 additional attack per turn":{}
-	"Logistics":{}
-	"Bombardment I":{}
-	"Bombardment II":{}
-	"Bombardment III":{}
-	"Bonus vs land units 33%":{}
-	"Bonus vs land units 34%":{}
-	"Boarding Party I":{}
-	"Boarding Party II":{}
-	"Boarding Party III":{}
-	"Bonus vs water units 15%":{}
-	"Coastal Raider I":{}
-	"Coastal Raider II":{}
-	"Coastal Raider III":{}
-	"Targeting I":{}
-	"Targeting II":{}
-	"Targeting III":{}
-	"Wolfpack I":{}
-	"Wolfpack II":{}
-	"Wolfpack III":{}
+	"Accuracy I":{
+		Italian:"Precisione I"
+	}
+	"Accuracy II":{
+		Italian:"Precisione II"
+	}
+	"Accuracy III":{
+		Italian:"Precisione III"
+	}
+	"Bonus vs units in open terrain 15%":{
+		Italian:"+15% forza contro unità in terreno aperto"
+	}
+	"Barrage I":{
+		Italian:"Fuoco di Fila I"
+	}
+	"Barrage II":{
+		Italian:"Fuoco di Fila II"
+	}
+	"Barrage III":{
+		Italian:"Fuoco di Fila III"
+	}
+	"Bonus vs units in rough terrain 15%":{
+		Italian:"+15% forza contro unità in terreno accidentato"
+	}
+	"Shock I":{
+		Italian:"Assalto I"
+	}
+	"Shock II":{
+		Italian:"Assalto II"
+	}
+	"Shock III":{
+		Italian:"Assalto III"
+	}
+	"Drill I":{
+		Italian:"Addestramento I"
+	}
+	"Drill II":{
+		Italian:"Addestramento II"
+	}
+	"Drill III":{
+		Italian:"Addestramento III"
+	}
+	"Scouting I":{
+		Italian:"Esplorazione I"
+	}
+	"Scouting II":{
+		Italian:"Esplorazione II"
+	}
+	"Scouting III":{
+		Italian:"Esplorazione III"
+	}
+	"+1 Movement":{
+		Italian:"+1 Movimento"
+	}
+	"Cover I":{
+		Italian:"Copertura I"
+	}
+	"Cover II":{
+		Italian:"Copertura II"
+	}
+	"+25% Defence against ranged attacks":{
+		Italian:"+25 difesa contro gli attacchi a distanza"
+	}
+	"March":{
+		Italian:"Marcia"
+	}
+	"Unit will heal every turn, even if it performs an action":{
+		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
+	}
+	"Charge":{
+		Italian:"Carica"
+	}
+	"Bonus vs wounded units 33%":{
+		Italian:"+33% forza contro unità ferite"
+	}
+	"Mobility":{
+		Italian:"Mobilità"
+	}
+	"Siege":{
+		Italian:"Assedio"
+	}
+	"Volley":{
+		Italian:"Raffica"
+	}
+	"Sentry":{
+		Italian:"Sentinella"
+	}
+	"Range":{
+		Italian:"Raggio di tiro ampliato"
+	}
+	"+1 Range":{
+		Italian:"+1 raggio"
+	}
+	"Indirect Fire":{
+		Italian:"Fuoco indiretto"
+	}
+	"Ranged attacks may be performed over obstacles":{
+		Italian:"Permette di sparare a distanza superando gli ostacoli"
+	}
+	"Formation I":{
+		Italian:"Formazione I"
+	}
+	"Formation II":{
+		Italian:"Formazione II"
+	}
+	"Blitz":{
+		Italian:"Incursione"
+	}
+	"1 additional attack per turn":{
+		Italian:"L'unità ottiene può attaccare due volte ogni turno"
+	}
+	"Logistics":{
+		Italian:"Logistica"
+	}
+	"Bombardment I":{
+		Italian:"Bombardamento I"
+	}
+	"Bombardment II":{
+		Italian:"Bombardamento II"
+	}
+	"Bombardment III":{
+		Italian:"Bombardamento III"
+	}
+	"Bonus vs land units 33%":{
+		Italian:"+33% forza contro unità terrestri"
+	}
+	"Bonus vs land units 34%":{
+		Italian:"+34% forza contro unità terrestri"
+	}
+	"Boarding Party I":{
+		Italian:"Abbordaggio I"
+	}
+	"Boarding Party II":{
+		Italian:"Abbordaggio II"
+	}
+	"Boarding Party III":{
+		Italian:"Abbordaggio III"
+	}
+	"Bonus vs water units 15%":{
+		Italian:"+15% forza contro unità anfibie"
+	}
+	"Coastal Raider I":{
+		Italian:"Incursione costiera I"
+	}
+	"Coastal Raider II":{
+		Italian:"Incursione costiera II"
+	}
+	"Coastal Raider III":{
+		Italian:"Incursione costiera III"
+	}
+	"Targeting I":{
+		Italian:"Puntamento I"
+	}
+	"Targeting II":{
+		Italian:"Puntamento II"
+	}
+	"Targeting III":{
+		Italian:"Puntamento III"
+	}
+	"Wolfpack I":{
+		Italian:"Attacco in massa I"
+	}
+	"Wolfpack II":{
+		Italian:"Attacco in massa II"
+	}
+	"Wolfpack III":{
+		Italian:"Attacco in massa III"
+	}
 }
