@@ -212,7 +212,7 @@
 			"Hai ottenuto la tua prima risorsa di lusso!",
 			"Ogni risorsa unica di lusso posseduta frutta 5 punti felicità alla civiltà,",
 			"  ma risorse extra dello stesso tipo non fruttano niente, ",
-			"  quindi usale per commerciare con le altre civiltà."
+			"  quindi usale per commerciare con le altre civiltà, magari in cambio di oro."
 		]
 	]
 	
@@ -221,7 +221,7 @@
 			"Hai ottenuto la tua prima risorsa strategica!",
 			"Le risorse strategiche ti permettono di addestrare unità e costruire edifici",
 			"  che richiedono tali risorse specifiche (ad esempio, lo Spadaccino richiede Ferro)."
-			"Ogni unità 'consuma' una copia di quella risorsa, ma se quell'unità muore recuperi quella "copia" della risorsa, ",
+			"Ogni unità "consuma" una copia di quella risorsa, ma se quell'unità muore recuperi quella "copia" della risorsa, ",
 			"  e puoi quindi costruire una nuova unità con quella risorsa ora non utilizzata.",
 			"La barra superiore tiene conto di quante risorse strategiche non usate possiedi."
 		]
@@ -230,7 +230,7 @@
 	EnemyCityNeedsConqueringWithMeleeUnit:  [
 		[
 			"La città ha esaurito la sua resistenza!",
-			"Ricordati che per conquistarla devi farvi entrare un'unità da mischi."
+			"Ricordati che per conquistarla devi farvi entrare un'unità da mischia."
 		]
 	]
 	
@@ -253,7 +253,7 @@
 	GameCrashed:  [
 		[
 			"Santi numi! Pare che qualcosa sia andato disastrosamente storto!",
-			"Questo non doveva assolutamente accadere!",
+			"Quello che è successo non doveva assolutamente accadere!",
 			"Mandami un'email all'indirizzo yairm210@hotmail.com con l'info della partita",
 			"   (menu -> salva partita -> copia info partita -> incolla in email)",
 			"   e proverò a riparare il guasto il più in fretta possibile!"
@@ -289,8 +289,8 @@
 	SiegeUnitTrained:[
 		[
 			"Hai addestrato un'unità d'assedio!",
-			"Le unità d'assedio sono estremamente potenti contro le città, ma devono essere montate prima di attaccare.",
-			"Una volta montata, l'unità d'assedio può attaccare dalla sua casella presente,",
+			"Le unità d'assedio sono estremamente potenti contro le città, ma vanno allestite prima di attaccare.",
+			"Una volta montata, l'unità d'assedio può attaccare dalla sua casella attuale,",
 			"  ma una volta spostatasi a un'altra casella, dovrà essere montata di nuovo."
 		]
 	]
@@ -299,7 +299,7 @@
 		[
 			"Ora le tue unità terrestri possono imbarcarsi e attraversare caselle acquatiche!",
 			"Entrare o abbandonare una casella acquatica impiega un intero turno.",
-			"Fà attenzione, perché le unità imbarcate sono indifese!"
+			"Inoltre, le unità imbarcate sono indifese, quindi fai attenzione!"
 		]
 	]
 
