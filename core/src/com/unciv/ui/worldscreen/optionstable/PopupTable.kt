@@ -40,8 +40,8 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
 class YesNoPopupTable(question:String, action:()->Unit,
                       screen: CameraStageBaseScreen = UnCivGame.Current.worldScreen) : PopupTable(screen){
     init{
-        if(!isOpen) {
-            isOpen=true
+        if(!screen.hasPopupOpen) {
+            screen.hasPopupOpen=true
             add(question.toLabel()).colspan(2).row()
 
             add(TextButton("No".tr(), skin).onClick { close() })
@@ -52,10 +52,6 @@ class YesNoPopupTable(question:String, action:()->Unit,
 
     fun close(){
         remove()
-        isOpen=false
-    }
-
-    companion object {
-        var isOpen=false
+        screen.hasPopupOpen=false
     }
 }

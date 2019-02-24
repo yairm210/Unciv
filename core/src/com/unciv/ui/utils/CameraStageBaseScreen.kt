@@ -19,6 +19,7 @@ open class CameraStageBaseScreen : Screen {
     var game: UnCivGame = UnCivGame.Current
     var stage: Stage
     var tutorials = Tutorials()
+    var hasPopupOpen = false
 
     init {
         val resolutions: List<Float> = game.settings.resolution.split("x").map { it.toInt().toFloat() }
