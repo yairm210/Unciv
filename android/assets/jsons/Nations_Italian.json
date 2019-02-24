@@ -7,7 +7,7 @@
 		declaringWar:"Il demone vuole il sangue dei soldati!"
 		attacked:"Oh, bene... spero tu sappia cosa stai facendo."
 		defeated:"È finita. Forse ora almeno io avrò la mia pace."
-		introduction:"Io sono Nabucodonosor, re di Babilonia. Sei reale o forse uno spettro?"
+		introduction:"Io sono Nabucodonosor, re di Babilonia. Quegli sciocchi là fuori dicono che sono un dio, ma la cosa mi pare improbabile. E tu cosa sei?"
 		
 		neutralHello:"Salute."
 		neutralLetsHearIt:["Ti ascolto.","E dunque?"]
@@ -37,7 +37,7 @@
 		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
 		attacked:"Ad essere onesto, mi sono stancato di starmene impalato."
 		defeated:"Sei diventato la mia rovina! Quale genere di bestia sei tu?"
-		introduction:"Saluti, straniero! Sono Alexandros, figlio di re e nipote degli dei!"
+		introduction:"Benvenuto, straniero! Sono Alexandros, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
 		
 		neutralHello:"Saluti!"
 		neutralLetsHearIt:["Ti ascolto.","Avanti.","Sì?","Parla."]
@@ -60,12 +60,13 @@
 	},
 	{
 		name:"China",
+		translatedName:"Cina",
 		leaderName:"Wu Zetian",
 		
 		declaringWar:"Non ti permetterò più di infastidirmi. Preparati a incontrare Yama."
 		attacked:"Folle! Ti costringerò a guardare il tuo popolo venire massacrato!"
 		defeated:"Ti sei dimostrato un avversario astuto e competente. Mi congratulo per la tua vittoria."
-		introduction:"Saluti! Sono l'imperatrice Wu Zetian. La Cina desidera pace e prosperità. Se ci lasci in pace, noi lasceremo voi in pace."
+		introduction:"Saluti! Sono l'imperatrice della Cina Wu Zetian. La Cina desidera solo una coesistenza pacifica e un commercio equo, ma risponderà con la forza a ogni aggressione. Spero che condividiate la nostra visione."
 		
 		neutralHello:"Bella giornata, oggi, vero?"
 		neutralLetsHearIt:["Continua.","Ebbene?","Dunque?"]
@@ -90,7 +91,7 @@
 	{
 		name:"Egypt",
 		translatedName:"Egitto",
-		leaderName:"Ramesse II",
+		leaderName:"Ramses II",
 		
 		declaringWar:"Sei solo una peste sulla Terra! Preparati a essere eliminato!",
 		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà!"
@@ -125,7 +126,7 @@
 		declaringWar:"Per grazia di Dio, i tuoi giorni sono contati."
 		attacked:"Mai ci arrenderemo all'invasore!"
 		defeated:"Sei riuscito a trionfare sull'impero su cui il Sole non tramonta mai. La vittoria è tua."
-		introduction:"Io sono Elisabetta d'Inghilterra. È un piacere fare la vostra conoscenza"
+		introduction:"Io sono Elisabetta d'Inghilterra. Siamo lieti di incontrarvi."
 		
 		neutralHello:"Salve di nuovo."
 		neutralLetsHearIt:["Avanti.","Continua."]
@@ -155,7 +156,7 @@
 		declaringWar:"Come osi disturbare la tranquillità del mio impero? Preparati a morire!",
 		attacked:"Sei caduto dritto nella mia trappola. Preparati a essere seppellito!",
 		defeated:"Mi congratulo per la tua vittoria. Sei riuscito a superarmi, impresa in cui altri avevano fallito."
-		introduction:"Benvenuto. Sono Napoleone, Imperatore di Francia, il generale più intelligente della storia."
+		introduction:"Benvenuto, straniero. Sono Napoleone, Imperatore di Francia. Sono leale con gli amici, ma mortale con i nemici. Voi cosa vi dichiarate?"
 		
 		neutralHello:"Salve."
 		neutralLetsHearIt:["Continua.","Ti ascolto.","Avanti.","Stavi dicendo?"]
@@ -179,12 +180,13 @@
 	},
 	{
 		name:"Russia",
+		translatedName:"Russia",
 		leaderName:"Caterina",
 		
 		declaringWar:"Ti sei comportato molto male, sai? Adesso è ora della vendetta.",
 		attacked:"Hai confuso la mia passione per una debolezza... la pagherai cara."
 		defeated:"Ci hai sconfitti, e ciò mi rende prigioniera. Direi che ci sono destini peggiori."
-		introduction:"Ti saluto, straniero! Se sei intelligente e tattico tanto quanto sei attraente, saremo buoni amici."
+		introduction:"Ti saluto, straniero! Se sei intelligente e saggio tanto quanto sei bello, andremo d'accordo alla grande!"
 		
 		neutralHello:"Salve!"
 		neutralLetsHearIt:["Avanti.","Parla."]
@@ -238,12 +240,13 @@
 	},
 	{
 		name:"Arabia",
+		translatedName:"Arabia",
 		leaderName:"Harun al-Rashid",
 		
 		declaringWar:"Il mondo sarebbe più bello senza di te. Preparati alla guerra!"
 		attacked:"Stolto! Giuro sul mio onore che te ne pentirai amaramente!"
 		defeated:"Hai vinto. Complimenti. Ora il palazzo è nelle tue mani. Ti prego di prenderti cura del mio pavone."
-		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli arabi. Vieni, raccontami del tuo impero."
+		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli Arabi. Vieni, raccontami del tuo impero."
 		
 		neutralHello:"Pace a te."
 		neutralLetsHearIt:["Cos'é questo?","Cosa stavi dicendo?"]
@@ -260,7 +263,7 @@
 				
 		mainColor:[ 41,83,42],
 		secondaryColor:[146,221,9],
-    unique:"Dona una copia extra di ogni risorsa di lusso sfruttata vicino alla città. +2 Oro da ogni fonte di Petrolio e casella Oasi.",
+    		unique:"Dona una copia extra di ogni risorsa di lusso sfruttata vicino alla città. +2 Oro da ogni fonte di Petrolio e casella Oasi.",
 		cities:["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
@@ -268,12 +271,12 @@
 	{
 		name:"America",
 		translatedName:"Stati Uniti",
-		leaderName:"Washington",
+		leaderName:"George Washington",
 		
 		declaringWar:"La tua sfrenata aggressività non ci lascia altra scelta. Preparati alla guerra!"
 		attacked:"Hai confuso il nostro amore per la pace per debolezza. Te ne pentirai!"
 		defeated:"La vittoria... è tua. Spero che ti dimostrerai misericordioso nel tuo trionfo."
-		introduction:"Il popolo degli Stati Uniti d'America vi da il benvenuto."
+		introduction:"Vi dò il benvenuto da parte dei cittadini degli Stati Uniti d'America."
 		
 		neutralHello:"Buongiorno."
 		neutralLetsHearIt:["Procedi.","Va avanti.","Sto ascoltando."]
