@@ -1,10 +1,12 @@
 package com.unciv.ui
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.ui.List
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
+import com.unciv.models.gamebasics.BasicHelp
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -36,7 +38,11 @@ class CivilopediaScreen : CameraStageBaseScreen() {
 
         val map = LinkedHashMap<String, Collection<ICivilopedia>>()
 
-        map["Basics"] = GameBasics.Helps.values
+        val language = UnCivGame.Current.settings.language
+        val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp_$language.json").exists())"BasicHelp_$language"
+        else "BasicHelp"
+
+        map["Basics"] = GameBasics.getFromJson(kotlin.Array<BasicHelp>::class.java, basicHelpFileName).toList()
         map["Buildings"] = GameBasics.Buildings.values
         map["Resources"] = GameBasics.TileResources.values
         map["Terrains"] = GameBasics.Terrains.values

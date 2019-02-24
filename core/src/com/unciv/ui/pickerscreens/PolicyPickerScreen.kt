@@ -87,7 +87,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             if(policy.requires!!.isNotEmpty())
                 policyText += "{Requires} ".tr() + policy.requires!!.joinToString { it.tr() }
             else
-                policyText += "{Unlocked at} ".tr()+(policy.getBranch().era.toString()+" era").tr()
+                policyText += ("{Unlocked at} {"+policy.getBranch().era.toString()+" era}").tr()
         }
         descriptionLabel.setText(policyText)
     }

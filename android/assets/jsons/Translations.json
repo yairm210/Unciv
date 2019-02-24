@@ -6258,7 +6258,7 @@
 	
 	// Social policies
 	"Requires":{
-		Italian:"Politiche sociali"//is some kind of mistake, seems to translate "social policies"
+		Italian:"Richiede"
 		Russian:"Требует"
 		French:"Requiert"
 		Romanian:"necesită"
@@ -6267,6 +6267,7 @@
 		Portuguese:"Requer"
 		German:"Benötigt"
 	}
+	
 	"Adopt policy":{
 		Italian:"Adotta politica"
 		Russian:"Принять общественный институт"
@@ -7457,6 +7458,13 @@
 	}	
 	
 	// Unit Promotions
+	"Pick promotion":{
+		
+	}
+	
+	" OR ":{ // as in "Requires Accuracy I OR Barrage I
+	}
+	
 	"Accuracy I":{
 		Italian:"Precisione I"
 	}

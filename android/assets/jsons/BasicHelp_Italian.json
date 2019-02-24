@@ -1,7 +1,7 @@
 [
 	{
 		name:"Città",
-		description: "Le città sono le basi di un impero. Ogni città possiede un certo numero di abitanti e caselle, e può sfruttare una casella ad ogni abitante.\nLa casella centrale di una città è sempre sfruttata e non richiede abitanti.\È possibile fondare nuove città con i Coloni.\nOgni città nel tuo impero rimuove 3 punti Felicità dall'impero, e ogni abitante un punto felicità, quindi pianifica con cautela!"
+		description: "Le città sono le basi di un impero. Ogni città possiede un certo numero di abitanti e caselle, e può sfruttare una casella ad ogni abitante.\nLa casella centrale di una città è sempre sfruttata e non richiede abitanti.\nÈ possibile fondare nuove città con i Coloni.\nOgni città nel tuo impero rimuove 3 punti Felicità dall'impero, e ogni abitante un punto felicità, quindi pianifica con cautela!"
 	},
 	{
 		name:"Caselle",
@@ -22,11 +22,11 @@
 	{
 		name:"Produzione",
 		description: "Un altra risorsa base, la Produzione si usa per costruire strutture e reclutare unità nella città.\r\nOgni abitante a riposo (cioè che non sta sfruttando una casella) produce un punto Popolazione."
-  },
+	},
 	{
 		name:"Scienza",
 		description: "Un'altra risorsa base. Rappresenta l'avanzamento scientifico del tuo impero.\nOgni tecnologia richiede una certa quantità di Scienza, che incrementa col numero di tecnologie scoperte.\nOgni abitante produce 1 punto Scienza."	
-  },
+	},
 	{
 		name:"Gold",
 		description: "Un'altra risorsa base. Rappresenta la ricchezza dell'imperp.\nLa maggior parte degli edifici hanno costi di mantenimento, che richiedono oro per turno.\nAd ogni turno in cui ti trovi in deficit di Oro, perdi punti Scienza uguali al tuo debito, il che può arrestare del tutto le tue ricerche!\nLe città connesse alla capitale tramite le strade generano oro dalle rotte commerciali, quindi ti conviene collegare grandi città alla capitale!"

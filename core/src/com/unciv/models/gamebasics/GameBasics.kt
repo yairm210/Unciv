@@ -18,7 +18,6 @@ object GameBasics {
     val TileResources = LinkedHashMap<String, TileResource>()
     val TileImprovements = LinkedHashMap<String, TileImprovement>()
     val Technologies = LinkedHashMap<String, Technology>()
-    val Helps = LinkedHashMap<String, BasicHelp>()
     val Units = LinkedHashMap<String, BaseUnit>()
     val UnitPromotions = LinkedHashMap<String, Promotion>()
     val Nations = LinkedHashMap<String, Nation>()
@@ -31,7 +30,7 @@ object GameBasics {
         return Json().apply { ignoreUnknownFields=true }.fromJson(tClass, jsonText)
     }
 
-    private fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
+    fun <T : INamed> createHashmap(items: Array<T>): LinkedHashMap<String, T> {
         val hashMap = LinkedHashMap<String, T>()
         for (item in items)
             hashMap[item.name] = item
@@ -43,7 +42,6 @@ object GameBasics {
             Terrains += createHashmap(getFromJson(Array<Terrain>::class.java, "Terrains"))
             TileResources += createHashmap(getFromJson(Array<TileResource>::class.java, "TileResources"))
             TileImprovements += createHashmap(getFromJson(Array<TileImprovement>::class.java, "TileImprovements"))
-            Helps += createHashmap(getFromJson(Array<BasicHelp>::class.java, "BasicHelp"))
             Units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "Units"))
             UnitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "UnitPromotions"))
             PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))

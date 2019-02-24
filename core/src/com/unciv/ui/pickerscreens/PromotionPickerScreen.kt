@@ -6,6 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.Translations
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.Promotion
 import com.unciv.ui.utils.*
 
@@ -16,7 +18,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
         setDefaultCloseAction()
-        rightSideButton.setText("Pick promotion")
+        rightSideButton.setText("Pick promotion".tr())
         rightSideButton.onClick("promote") {
             mapUnit.promotions.addPromotion(selectedPromotion!!.name)
             if(mapUnit.promotions.canBePromoted()) game.screen = PromotionPickerScreen(mapUnit)
@@ -42,13 +44,16 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
             promotionButton.onClick {
                 selectedPromotion = promotion
-                rightSideButton.setText(promotion.name)
+                rightSideButton.setText(promotion.name.tr())
                 if(isPromotionAvailable && !unitHasPromotion) rightSideButton.enable()
                 else rightSideButton.disable()
-                var descriptionText = promotion.effect
-                if(promotion.prerequisites.isNotEmpty()) descriptionText +="\nRequires: "+
+
+                // we translate it before it goes in to get uniques like "vs units in rough terrain" and after to get "vs city
+                var descriptionText = Translations.translateBonusOrPenalty(promotion.effect.tr())
+
+                if(promotion.prerequisites.isNotEmpty()) descriptionText +="\n{Requires}: ".tr()+
                         promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }
-                                .joinToString(" OR ")
+                                .joinToString(" OR ".tr())
                 descriptionLabel.setText(descriptionText)
             }
             availablePromotionsGroup.addActor(promotionButton)

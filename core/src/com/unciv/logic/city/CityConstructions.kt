@@ -122,8 +122,11 @@ class CityConstructions {
 
     fun constructIfEnough(){
         val construction = getConstruction(currentConstruction)
+        if(construction is SpecialConstruction) return
+        
         val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
-        if (inProgressConstructions[currentConstruction]!! >= productionCost) {
+        if (inProgressConstructions.containsKey(currentConstruction)
+                && inProgressConstructions[currentConstruction]!! >= productionCost) {
             constructionComplete(construction)
         }
     }
