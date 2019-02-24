@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
@@ -15,6 +17,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.Counter
 import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
@@ -98,6 +101,16 @@ class CivilizationInfo {
     }
 
     fun getNation() = GameBasics.Nations[civName]!!
+    fun getTranslatedNation(): Nation {
+        val language = UnCivGame.Current.settings.language.replace(" ","_")
+        if(!Gdx.files.internal("jsons/Nations_$language.json").exists()) return getNation()
+        val translatedNation = GameBasics.getFromJson(Array<Nation>::class.java, "Nations_$language")
+                .firstOrNull { it.name==civName}
+        if(translatedNation==null)  // this language's trnslation doesn't contain this nation yet,
+            return getNation()      // default to english
+        return translatedNation
+    }
+
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this

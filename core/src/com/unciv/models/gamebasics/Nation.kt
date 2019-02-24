@@ -6,6 +6,12 @@ import com.unciv.ui.utils.colorFromRGB
 
 class Nation : INamed {
     override lateinit var name: String
+    var translatedName=""
+    fun getNameTranslation(): String {
+        if(translatedName!="") return translatedName
+        else return name
+    }
+
     lateinit var leaderName: String
 
     lateinit var declaringWar:String

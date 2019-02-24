@@ -4145,6 +4145,9 @@
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
 	
+	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
+	}
+	
 	"You'll pay for this!":{
 		Italian:"Pagherai caro questo affronto!"
 	}
@@ -4154,6 +4157,7 @@
 	"Farewell.":{
 		Italian:"Addio."
 	}
+	"A pleasure to meet you.":{}
 	
 	// Overview screen
 	"Overview":{	

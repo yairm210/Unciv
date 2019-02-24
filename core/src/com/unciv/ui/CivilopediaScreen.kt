@@ -38,7 +38,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
 
         val map = LinkedHashMap<String, Collection<ICivilopedia>>()
 
-        val language = UnCivGame.Current.settings.language
+        val language = UnCivGame.Current.settings.language.replace(" ","_")
         val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp_$language.json").exists())"BasicHelp_$language"
         else "BasicHelp"
 

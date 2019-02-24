@@ -1,6 +1,7 @@
 [
 	{
-		name:"Babilonia",
+		name:"Babylon",
+		translatedName:"Babilonia",
 		leaderName:"Nabucodonosor II",
 		
 		declaringWar:"Il demone vuole il sangue dei soldati!"
@@ -29,7 +30,8 @@
 			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
 	},
 	{
-		name:"Grecia",
+		name:"Greece",
+		translatedName:"Grecia",
 		leaderName:"Alessandro",
 		
 		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
@@ -86,13 +88,14 @@
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
 	},
 	{
-		name:"Egitto",
+		name:"Egypt",
+		translatedName:"Egitto",
 		leaderName:"Ramesse II",
 		
 		declaringWar:"Sei solo una peste sulla Terra! Preparati a essere eliminato!",
 		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà!"
 		defeated:"Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno."
-		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
+		introduction:"Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
 		
 		neutralHello:"Buongiorno."
 		neutralLetsHearIt:["Avanti.","Parla.","Sono tutto orecchi."]
@@ -115,7 +118,8 @@
 			"Mendes","Elashmunein","Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
 	},
 	{
-		name:"Inghilterra",
+		name:"England",
+		translatedName:"Inghilterra",
 		leaderName:"Elisabetta",
 		
 		declaringWar:"Per grazia di Dio, i tuoi giorni sono contati."
@@ -144,7 +148,8 @@
 			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
 	},
 	{
-		name:"Francia",
+		name:"France",
+		translatedName:"Francia",
 		leaderName:"Napoleone",
 		
 		declaringWar:"Come osi disturbare la tranquillità del mio impero? Preparati a morire!",
@@ -202,7 +207,8 @@
 			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
 	},
 	{
-		name:"Roma",
+		name:"Rome",
+		translatedName:"Roma",
 		leaderName:"Augusto Cesare",
 		
 		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, dovrò muoverti guerra."
@@ -260,7 +266,8 @@
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
 	},
 	{
-		name:"Stati Uniti",
+		name:"America",
+		translatedName:"Stati Uniti",
 		leaderName:"Washington",
 		
 		declaringWar:"La tua sfrenata aggressività non ci lascia altra scelta. Preparati alla guerra!"

@@ -98,7 +98,7 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     // This is private so that we will set the shouldUpdate to true instead.
-    // That way, not only do we save a lot of unneccesary updates, we also ensure that all updates are called from the main GL thread
+    // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
     private fun update() {
         // many of the display functions will be called with the game clone and not the actual game,
@@ -330,24 +330,25 @@ class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncide
 
     init {
         val otherCiv = worldScreen.gameInfo.getCivilization(diplomaticIncident.civName)
-        val otherCivLeaderName = otherCiv.getNation().leaderName+" of "+otherCiv.civName
+        val translatedNation = otherCiv.getTranslatedNation()
+        val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
         add(otherCivLeaderName.toLabel())
         addSeparator()
 
         when(diplomaticIncident.type){
             DiplomaticIncidentType.WarDeclaration -> {
-                addGoodSizedLabel(otherCiv.getNation().declaringWar).row()
+                addGoodSizedLabel(translatedNation.declaringWar).row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
                 add(responseTable)
             }
             DiplomaticIncidentType.Defeated -> {
-                addGoodSizedLabel(otherCiv.getNation().defeated).row()
+                addGoodSizedLabel(translatedNation.defeated).row()
                 add(getCloseButton("Farewell."))
             }
             DiplomaticIncidentType.FirstContact -> {
-                addGoodSizedLabel(otherCiv.getNation().introduction).row()
+                addGoodSizedLabel(translatedNation.introduction).row()
                 add(getCloseButton("A pleasure to meet you."))
             }
         }
