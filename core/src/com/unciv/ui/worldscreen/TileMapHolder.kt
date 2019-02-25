@@ -44,9 +44,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
 
         actor = allTiles
-        setFillParent(true)
-        setOrigin(worldScreen.stage.width/2,worldScreen.stage.height/2)
-        setSize(worldScreen.stage.width, worldScreen.stage.height)
+
+        setSize(worldScreen.stage.width*2, worldScreen.stage.height*2)
+        setOrigin(width/2,height/2)
+        center(worldScreen.stage)
         addZoomListener()
         layout() // Fit the scroll pane to the contents - otherwise, setScroll won't work!
     }
@@ -62,7 +63,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     lastScale = scaleX
                 }
                 val scale: Float = Math.sqrt((distance / initialDistance).toDouble()).toFloat() * lastScale
-                if (scale < 1) return
+                if (scale < 0.5f) return
                 setScale(scale)
                 for (tilegroup in tileGroups.values.filter { it.cityButton != null })
                     tilegroup.cityButton!!.setScale(1 / scale)
