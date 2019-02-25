@@ -32,9 +32,10 @@ class UnitAutomation{
 
         if (unit.name == "Great General")
             return SpecificUnitAutomation().automateGeneral(unit)
+
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
-            return SpecificUnitAutomation().automateGreatPerson(unit)// I don't know what to do with you yet.
+            return SpecificUnitAutomation().automateGreatPerson(unit)
         }
 
         val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
@@ -48,7 +49,7 @@ class UnitAutomation{
         if (tryUpgradeUnit(unit, unitActions)) return
 
         // Accompany settlers
-        if (tryAccompanySettler(unit)) return
+        if (tryAccompanySettlerOrGreatPerson(unit)) return
 
         if (unit.health < 50) {
             healUnit(unit,unitDistanceToTiles)
@@ -193,13 +194,13 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryAccompanySettler(unit: MapUnit): Boolean {
-        val settlerToAccompany = unit.civInfo.getCivUnits()
+    private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
+        val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull { val tile = it.currentTile
-                    it.name=="Settler" && tile.militaryUnit==null
-                        && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
-        if(settlerToAccompany==null) return false
-        unit.movementAlgs().headTowards(settlerToAccompany.currentTile)
+                    (it.name=="Settler" || it.name.startsWith("Great") && it.type.isCivilian())
+                            && tile.militaryUnit==null && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
+        if(settlerOrGreatPersonToAccompany==null) return false
+        unit.movementAlgs().headTowards(settlerOrGreatPersonToAccompany.currentTile)
         return true
     }
 
@@ -536,6 +537,8 @@ class SpecificUnitAutomation{
     }
 
     fun automateGreatPerson(unit: MapUnit) {
+        if(unit.getTile().militaryUnit==null) return // Don't move until you're accompanied by a military unit
+        
         val relatedStat = GreatPersonManager().statToGreatPersonMapping.entries.first { it.value==unit.name }.key
 
         val citiesByStatBoost = unit.civInfo.cities.sortedByDescending{
