@@ -37,7 +37,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         for(tileGroup in daTileGroups) tileGroups[tileGroup.tileInfo]=tileGroup
 
-        val allTiles = TileGroupMap(daTileGroups,600f)
+        val allTiles = TileGroupMap(daTileGroups,worldScreen.stage.width)
 
         for(tileGroup in tileGroups.values){
             tileGroup.onClick{ onTileClicked(tileGroup.tileInfo)}
@@ -123,7 +123,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             moveHereButton.onClick(""){onMoveButtonClick(dto)}
 
         else moveHereButton.color.a = 0.5f
-        addOverlayOnTileGroup(tileGroup, moveHereButton).apply { width = size; height = size }
+        addOverlayOnTileGroup(tileGroup, moveHereButton)
         moveHereButton.y += tileGroup.height
         moveToOverlay = moveHereButton
     }
@@ -252,12 +252,12 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val originalScrollX = scrollX
         val originalScrollY = scrollY
 
-        // We want to center on the middle of TG (TG.getX()+TG.getWidth()/2)
-        // and so the scroll position (== filter the screen starts) needs to be half a screen away
-        val finalScrollX = tileGroup.x + tileGroup.width / 2 - worldScreen.stage.width / 2
+        // We want to center on the middle of the tilegroup (TG.getX()+TG.getWidth()/2)
+        // and so the scroll position (== filter the screen starts) needs to be half the ScrollMap away
+        val finalScrollX = tileGroup.x + tileGroup.width / 2 - width / 2
         
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
-        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - worldScreen.stage.height / 2)
+        val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
 
         addAction(object : FloatAction(0f,1f,0.4f){
             override fun update(percent: Float) {
