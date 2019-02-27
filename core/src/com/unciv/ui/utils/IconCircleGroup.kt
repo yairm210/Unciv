@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 class IconCircleGroup(size:Float, val image: Actor): Group(){
     val circle = ImageGetter.getCircle().apply { setSize(size, size) }
     init {
+        isTransform=false // performance helper - nothing here is rotated or scaled
         setSize(size, size)
         addActor(circle)
         image.setSize(size * 0.75f, size * 0.75f)

@@ -1,6 +1,7 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -51,7 +52,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         addCircleImage()
         addFogImage(groupSize)
         addCrosshairImage()
-        isTransform = false
+        isTransform=false // performance helper - nothing here is rotated or scaled
     }
 
 
@@ -287,6 +288,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             addActor(image)
         }
 
+
+    }
+
+    override fun draw(batch: Batch?, parentAlpha: Float) {
+        super.draw(batch, parentAlpha)
     }
 
     private fun updateTileColor(isViewable: Boolean) {

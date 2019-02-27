@@ -13,6 +13,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
 
 
     init {
+        isTransform=false // performance helper - nothing here is rotated or scaled
         addActor(yieldGroup)
         if (city.location == tileInfo.position) {
             populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6).png")

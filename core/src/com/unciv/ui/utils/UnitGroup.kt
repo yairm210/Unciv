@@ -28,6 +28,8 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
         if (unit.health < 100) { // add health bar
             addActor(ImageGetter.getHealthBar(unit.health.toFloat(), 100f, size))
         }
+
+        isTransform=false // performance helper - nothing here is rotated or scaled
     }
 
     fun getBackgroundImageForUnit(unit: MapUnit): Image {
