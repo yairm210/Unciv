@@ -291,7 +291,7 @@
 		name:"America",
 		leaderName:"Washington",
 		
-	    startIntroPart1: "Welcome President Washington! You lead the industrious American civilization! Formed in the conflagration of revolution in the 18th century, within a hundred years, the young nation became embroiled in a terrible civil war that nearly tore the country apart, but it was just a few short years later in the 20th century that the United States reached the height of its power, emerging triumphant and mighty from the two terrible wars that destroyed so many other great nations. The United States is a nation of immigrants, filled with optimism and determination. They lack only a leader to help them fulfill their promise."
+	    	startIntroPart1: "Welcome President Washington! You lead the industrious American civilization! Formed in the conflagration of revolution in the 18th century, within a hundred years, the young nation became embroiled in a terrible civil war that nearly tore the country apart, but it was just a few short years later in the 20th century that the United States reached the height of its power, emerging triumphant and mighty from the two terrible wars that destroyed so many other great nations. The United States is a nation of immigrants, filled with optimism and determination. They lack only a leader to help them fulfill their promise."
 		startIntroPart2: "President Washington, can you lead the American people to greatness? Can you build a civilization that will stand the test of time?"
 
 		declaringWar:"Your wanton aggression leaves us no choice. Prepare for war!"
@@ -324,6 +324,9 @@
 	name:"Germany",
 		leaderName:"Otto von Bismark",
 		
+		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
+		startIntroPart2: "Great Prince Bismark, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rile and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?"
+		
 		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!"
 		attacked:"Corrupted villain! We will bring you into the ground!"
 		defeated:"Germany has been destroyed. I weep for the future generations."
@@ -342,8 +345,8 @@
 		afterPeace:"What do ye think about calling it a draw?"
 		tradeRequest:"We do not accept."
 				
-		mainColor:[],
-		secondaryColor:[],
+		mainColor:[224,224,224],
+		secondaryColor:[64,64,64],
 		unique:"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Also, land unit manteinance is reduced by 25%.",
 		cities:["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
 			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
@@ -356,6 +359,9 @@
 		name:"India",
 		leaderName:"Gandhi",
 		
+		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
+		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
+		
 		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
 		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
 		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
@@ -364,7 +370,7 @@
 		neutralHello:"I wish you peace."
 		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
 		neutralNo:["Absolutely not.","No.","This is unacceptable"]
-		neutralYes:["Okay.","We can cooperate on this","Fine."]
+		neutralYes:["Okay.","We agree.","Fine."]
 
 		hateHello:"What do you want?"
 		hateLetsHearIt:["Continue.","And?","Go on."]
@@ -374,8 +380,8 @@
 		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
 		tradeRequest:"My friend, are you interested in this arrangement?"
 				
-		mainColor:[],
-		secondaryColor:[],
+		mainColor:[0,255,0],
+		secondaryColor:[255,153,51],
 		unique:"Cities only provide 1 Unhappiness instead of 3.",
 		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
@@ -384,6 +390,9 @@
 	{
 		name:"Aztecs",
 		leaderName:"Montezuma I",
+		
+		startIntroPart1: "Welcome, o divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
+		startIntroPart2: "O great king Mintezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Die, die, die!)"
 		attacked:"Excellent! Let the blood flow in raging torrents!"
@@ -403,14 +412,17 @@
 		afterPeace:"Curses! I will sacrifice ten thousand citizens to expiate this humiliation!"
 		tradeRequest:" Accept this agreement or suffer the consequences."
 				
-		mainColor:[],
-		secondaryColor:[],
+		mainColor:[255,51,51],
+		secondaryColor:[153,255,255],
 		unique:"Gain Culture for the empire from each enemy unit killed.",
 		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
 	},
 	{
 		name:"Zulu",
 		leaderName:"Shaka Zulu",
+		
+		startIntroPart1: "Your people kneel before you, great warrior Shaka of the Zulu Kingdom. As you rose from a place of exile to become the true leader of the Zulus, you ushered in changes throughout the Zulu society, implementing new laws and cultural reforms that strenghtened the position of your people. However, it was your tenacity in the art of war that truly established your reputation, as your tactics and strategies on the battlefield forever changed the face of combat across the plains of southern Africa."
+		startIntroPart2: "Most formidable king, your people once again long for the unity and strenght your leadership afforded them. Can you return the Zulu Kingdom to such great prominence? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"None will slow our progress, not even you! Prepare for war!"
 		attacked:"Your arrogance will only lead you to defeat!"
@@ -430,14 +442,17 @@
 		afterPeace:"It seems that the Gods of War were against our dispute..."
 		tradeRequest:"You might accept this offer."
 				
-		mainColor:[],
-		secondaryColor:[],
+		mainColor:[153,76,0],
+		secondaryColor:[255,255,255],
 		unique:"Melee units cost 50% less maintenance, and all units require 25% less experience to earn their next promotion.",
 		cities:["Ulundi","Umugungundlovu","Nobamba","Bulawayo","KwaDukuza","Nongoma","oNdini","Nodwengu","Ndonakusuka","Babanango","Khangela","KwaHlomendlini","Hlobane","eThekwini","Mlambongwenya","Eziqwaqweni","eMangweni","Isiphezi","Masotsheni","Mtunzini","Nyakamubi","Dumazulu","Hlatikulu","Mthonjaneni","Empangeni","Pongola","Tugela","Kwamashi","Ingwavuma","Hluhluwe","Matubatuba","Mhlahlandlela","Mthatha","Maseru","Lobamba","Qunu"]
 	},
 	{
 		name:"Japan",
 		leaderName:"Oda Nobunaga",
+		
+		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the frield of battle, your people are also immensely industious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
+		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
 		attacked:"Pitiful fool! Now we shall destroy you!"
@@ -457,14 +472,17 @@
 		afterPeace:"It was an honor to fight you."
 		tradeRequest:"I would be grateful if you agreed on the following proposal."
 				
-		mainColor:[],
-		secondaryColor:[],
+		mainColor:[255,255,255],
+		secondaryColor:[255,0,0],
 		unique:"Units fight as though they were at full strength even when damaged. You gain +1 Culture from each Fishing Boat, and +2 Culture from each Atoll.",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
 	},
 	{
-		name:"Inca",
+		name:"Incan",
 		leaderName:"Pachacuti",
+		
+		startIntroPart1: "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today."
+		startIntroPart2: "Oh King Pachacuti, truly are you called "Earth Shaker"! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
 		
 		declaringWar:"Resistance is futile! You cannot hope to stand against the mighty Incan empire. If you will not surrender immediately, then prepare for war!"
 		attacked:"Declare war on me?!? You can't, because I declare war on you first!"
@@ -484,8 +502,8 @@
 		afterPeace:"Viracocha has frowned upon our war, and has agreed to our peace agreements."
 		tradeRequest:"The Incan people offer this fair trade."
 				
-		mainColor:[],
-		secondaryColor:[],
+		mainColor:[255,255,51],
+		secondaryColor:[0,204,102],
 		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
 		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
