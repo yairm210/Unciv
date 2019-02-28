@@ -1099,7 +1099,7 @@
 	}
 	
 	"An enemy [unit] has attacked [cityname]":{
-		Italian:"[unit], una nostra unità, ha attaccato [cityname]"
+		Italian:"L'unità nemica [unit] ha attaccato [cityname]"
 		Russian:"Вражеский [unit] атаковал [cityname]"
 		French:"Un(e) [unit] ennemi(e) a attaqué [cityname]" // Gender sensitive
 		Romanian:"Un [unit] inamic a atacat [cityname]"
@@ -2191,7 +2191,7 @@
         Portuguese:"Arquearia"
 	}
 	"Mining":{
-		Italian:"Estrazione minerarie"
+		Italian:"Estrazione mineraria"
 		Russian:"Добыча руды"
 		French:"Exploitation minière"
 		Romanian:"Exploatare minieră"
@@ -3035,7 +3035,7 @@
 		German:"Altertum"
 	}
 	"Classical era":{
-		Italian:"Classica"
+		Italian:"l'era Classica"
 		Russian:"Античность" //one word translation
 		French:"Âge classique"
 		Romanian:"Era clasică"
@@ -3068,7 +3068,7 @@
 		German:"Renaissance"
 	}
 	"Industrial era":{
-		Italian:"Industriale"
+		Italian:"l'era Industriale"
 		Russian:"Новейшее время"
 		French:"Ère industrielle"
 		Romanian:"Epoca industrială"
@@ -3079,7 +3079,7 @@
 		German:"Industrielle Revolution"
 	}
 	"Modern era":{
-		Italian:"Moderna"
+		Italian:"l'era Moderna"
 		Russian:"Современность" //one word translation
 		French:"Ère contemporaine"
 		Romanian:"Epoca modernă"
@@ -3090,7 +3090,7 @@
 		German:"Moderne"
 	}
 	"Information era":{
-		Italian:"Informatica"     //[newEra] +translation
+		Italian:"l'era Informatica"     //[newEra] +translation
 		Russian:"Информационная эра" //translation+ [newEra]
 		French:"Ère médiatique"
 		Romanian:"Era informațională"
@@ -3101,7 +3101,7 @@
 		German:"Informationszeitalter"
 	}
 	"Future era":{
-		Italian:"Futura"
+		Italian:"l'era Futura"
 		Russian:"Будущее" //all one word translation
 		French:"Ère du futur" 
 		Romanian:"Era viitorului"
@@ -4146,6 +4146,7 @@
 	}
 	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
+		Italian:"[leaderName] di [nation]" //es. Ramses II d'Egitto, Napoleone di Francia, Washington degli Stati Uniti
 	}
 	
 	"You'll pay for this!":{
@@ -4157,7 +4158,9 @@
 	"Farewell.":{
 		Italian:"Addio."
 	}
-	"A pleasure to meet you.":{}
+	"A pleasure to meet you.":{
+		Italian:"Lieto di incontrarvi."
+	}
 	
 	// Overview screen
 	"Overview":{	
@@ -5298,7 +5301,7 @@
 	}
 	
 	"Kremlin":{
-		Italian:"Kremlino"
+		Italian:"Cremlino"
 	}
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
@@ -6569,7 +6572,7 @@
 		French:"Liberté complète"
 	}
 	"Free Great Person of choice near capital":{
-		Italian:"Appare Grande Personaggio gratuito a scelta nella capitale"
+		Italian:"Appare un Grande Personaggio gratuito a scelta nella capitale"
 		Russian:"Бесплатный Великий Человек по выбору рядом со столицей"
 		Romanian:"Om Mare la alegere gratuit lângă capitală"
 		Spanish:"Gran Persona gratis a elegir cerca de la capital"
@@ -6885,7 +6888,7 @@
 		French:"Unions commerciales"
 	}
 	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
-		Italian:"-33% mantenimento su strade e ferrovie, +2 oro per ogni rotta commerciale"
+		Italian:"-33% mantenimento su strade e ferrovie, +2 oro per ogni rotta commerciale"//you forgot to translate this
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Romanian:"Întreținerea drumurilor și a căilor ferate redusă cu 33%, +2 aur din toate rutele comerciale"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"
@@ -7169,7 +7172,7 @@
 		French:"Constitution"
 	}
 	"+2 culture from each wonder":{
-		Italian:"+2 Cultura per ogni Meravigli"
+		Italian:"+2 Cultura per ogni Meraviglia"
 		Russian:"+2 культуры от каждого чуда"
 		Romanian:"+2 cultură din fiecare minune"
 		Spanish:"+2 cultura por cada Maravilla"
@@ -7398,6 +7401,12 @@
 		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (XP)"
 		French:"+15% production lors de la construction d'unités militaires, les nouvelles unités apparaissent avec +15 EXP"
 	}
+	"Autocracy Complete":{
+		Italian:"Autocrazia Completa"
+	}
+	"+1 happiness from each Walls, Castle and Arsenal":{
+		Italian:"+1 Felicità per ogni Mura, Castello e Arsenale"
+	}
 	
 	// Victory Screen
 	"Science victory":{
@@ -7421,7 +7430,7 @@
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagné !"
 	}
 	"Complete 4 policy branches\n to win!":{
-		Italian:"Completa quattro rami \n della politica per vincere!"
+		Italian:"Completa quattro rami \n politici per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner !"
 	}
@@ -7431,17 +7440,17 @@
 		French:"Eliminer tous vos adversaires pour gagner !"
 	}
 	"You have won a scientific victory!":{
-		Italian:"Hai ottenuto una vittoria scientifica!"
+		Italian:"Hai ottenuto una Vittoria Scientifica!"
 		German:"Sie haben den Wissenschaftssieg errungen!"
 		French:"Vous avez fait une victoire scientifique !"
 	}
 	"You have won a cultural victory!":{
-		Italian:"Hai ottenuto una vittoria culturale!"
+		Italian:"Hai ottenuto una Vittoria Culturale!"
 		German:"Sie haben den Kultursieg errungen!"
 		French:"Vous avez fait une victoire culturelle !"
 	}
 	"You have won a conquest victory!":{
-		Italian:"Hai ottenuto una vittoria per dominazione!"
+		Italian:"Hai ottenuto una Vittoria per Dominazione!"
 		German:"Sie haben den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
 	}
@@ -7463,10 +7472,11 @@
 	
 	// Unit Promotions
 	"Pick promotion":{
-		
+		Italian:"Scegli promozione"
 	}
 	
-	" OR ":{ // as in "Requires Accuracy I OR Barrage I
+	" OR ":{// as in "Requires Accuracy I OR Barrage I
+		Italian:"O"
 	}
 	
 	"Accuracy I":{
