@@ -1,0 +1,27 @@
+//Endgamemessages
+
+[
+    {
+      name:"Conquest victory"
+      messagename:"Hai ottenuto una Vittoria per Dominazione!" 
+      message:"Il modno è stato straziato dalla guerra. Molte civiltà grandi e potenti sono cadute, ma tu sei sopravvissuto e sei emerso vittorioso! Il mondo ricorderà a lungo il tuo glorioso trionfo!"
+    }
+
+    {
+		name:"Cultural victory"
+		messagename:"Hai ottenuto una Vittoria Culturale!" 
+		message:"Hai raggiunto la vittoria attraverso il grandioso potere della tua Cultura. La grandezza della tua civiltà - la magnificenza dei suoi monumenti e il potere dei suoi artisti - ha stupito il mondo! I poeti ti ononeranno fin quando la bellezza porterà sollievo a un cuore fiacco."
+    }
+
+    {
+		name:"Scientific victory"
+		messagename:"Hai ottenuto una Vittoria SCientifica!"
+		message:"Hai trionfato grazie alla maestria della scienza! Hai conquistato i misteri della natura e portato il tuo popolo in un viaggio verso un nuovo mondo! Il tuo trionfo verrà ricordato fin quando le stelle bruciano nel cielo notturno!"
+    }
+    
+    {
+      name:"Defeat"
+      messagename:"Sei stato sconfitto!"
+      message:"Sei stato sconfitto. La tua civiltà è stata sopraffatta dai suoi tanti nemici. Ma il tuo popolo non dispera, perché sa che un giorno ritornerai... e lo condurrai alla vittoria!!"
+    }
+]
