@@ -591,7 +591,29 @@
 		uniques:["Bonus vs Armor 100%"]
 		hurryCostModifier:20,
 	},
-	/*
+	{
+		name:"Rocket Artillery",
+		unitType:"Siege",
+		movement:2,
+		strength:45,
+		rangedStrength:60,
+		range:3,
+		cost: 425,
+		requiredTech:"Rocketry",
+		requiredResource:"Aluminum",
+		uniques:["Bonus vs City 200%","No defensive terrain bonus",
+			"Limited Visibility","Indirect Fire"],
+		hurryCostModifier:20
+	},
+	{
+		name:"Mechanized Infantry",
+		unitType:"Melee",
+		movement:3,
+		strength:90,
+		cost: 375,
+		requiredTech:"Nuclear Fission",
+		hurryCostModifier:20,
+	},
 	{
 		name:"Modern Armor",
 		unitType:"Armor",
@@ -603,7 +625,6 @@
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
-	*/
 	
 	
 	/* Great people */

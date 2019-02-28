@@ -68,6 +68,8 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira
 * [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
 * [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
+* [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
+* [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
 * [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
 
 ### Great People
