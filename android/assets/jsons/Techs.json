@@ -84,7 +84,7 @@
 	{
 		columnNumber: 3,
 		era:"Classical",
-		techCost: 115, 
+		techCost: 105, 
 		buildingCost:100,
 		wonderCost:250,
 		techs:[
@@ -115,7 +115,7 @@
 	{
 		columnNumber: 4,
 		era:"Classical",
-		techCost: 305, 
+		techCost: 175, 
 		buildingCost:120,
 		wonderCost:300,
 		techs:[
@@ -144,7 +144,7 @@
 	{
 		columnNumber: 5,
 		era:"Medieval",
-		techCost: 535,
+		techCost: 250,
 		buildingCost:160,
 		wonderCost:400,
 		techs:[
@@ -174,7 +174,7 @@
 	{
 		columnNumber: 6,
 		era:"Medieval",
-		techCost: 855, 
+		techCost: 440, 
 		buildingCost:200,
 		wonderCost:500,
 		techs:[
@@ -215,7 +215,7 @@
 	{
 		columnNumber: 7,
 		era:"Renaissance",
-		techCost: 1265, 
+		techCost: 650, 
 		buildingCost:250,
 		wonderCost:625,
 		techs:[
@@ -250,7 +250,7 @@
 	{
 		columnNumber: 8,
 		era:"Renaissance",
-		techCost: 1755, 
+		techCost: 900, 
 		buildingCost:300,
 		wonderCost:750,
 		techs:[
@@ -284,7 +284,7 @@
 	{
 		columnNumber: 9,
 		era:"Industrial",
-		techCost: 2585,
+		techCost: 1300,
 		buildingCost:360,
 		wonderCost:920,
 		techs:[
@@ -323,7 +323,7 @@
 	{
 		columnNumber: 10,
 		era:"Industrial",
-		techCost: 3405,
+		techCost: 1680,
 		buildingCost:500,
 		wonderCost:1060,
 		techs:[
@@ -353,7 +353,7 @@
 	{
 		columnNumber: 11,
 		era:"Modern",
-		techCost: 4505,
+		techCost: 3000,
 		buildingCost:500,
 		wonderCost:1250,
 		techs:[
@@ -387,7 +387,7 @@
 	{
 		columnNumber: 12,
 		era:"Modern",
-		techCost: 5605,
+		techCost: 4100,
 		buildingCost:500,
 		wonderCost:1250,
 		techs:[
@@ -416,7 +416,7 @@
 	{
 		columnNumber: 13,
 		era:"Information",
-		techCost: 7035,
+		techCost: 5330,
 		buildingCost:500,
 		wonderCost:1250,
 		techs:[
@@ -446,7 +446,7 @@
 	{
 		columnNumber: 14,
 		era:"Information",
-		techCost: 8465,
+		techCost: 6850,
 		buildingCost:750,
 		wonderCost:2000,
 		techs:[
@@ -475,7 +475,7 @@
 	{
 		columnNumber: 15,
 		era:"Future",
-		techCost: 9675,
+		techCost: 8182,
 		buildingCost:750,
 		wonderCost:1250,
 		techs:[
@@ -499,7 +499,7 @@
 	{
 		columnNumber: 16,
 		era:"Future",
-		techCost: 9675,
+		techCost: 9500,
 		buildingCost:750,
 		wonderCost:1250,
 		techs:[
