@@ -75,6 +75,18 @@
 		Simplified_Chinese:"回合"
 		Portuguese:"turnos"
 	}
+	
+	"Turn":{ // for e.g. turns to technology
+		Italian:"Turno"
+		Russian:"Ходов"
+		French:"Tours"
+		Romanian:"Runde"
+		German:"Runden"
+		Dutch:"Beurten"
+		Spanish:"turnos"
+		Simplified_Chinese:"回合"
+		Portuguese:"turnos"
+	}
 
 	// Unit
 	"Movement":{
@@ -609,7 +621,7 @@
 	}
 
 	"resources and improvements":{
-		Italian:"risorse e miglioramenti"
+		Italian:"Risorse e miglioramenti"
 		Russian:"ресурсы и улучшения"
 		French:"ressources et améliorations"
 		Romanian:"resurse și îmbunătățiri"
@@ -1075,7 +1087,7 @@
 	}
 	
 	"Cannot continue work on [construction]":{
-		Italian:"Impossibile produrre [construction]"
+		Italian:"Impossibile costruire [construction]"
 		Russian:"Не удается продолжить работу над [construction]"
 		French:"Impossible de continuer à travailler sur [construction]"
 		Romanian:"Nu se poate continua munca pentru [construction]"
@@ -1242,7 +1254,7 @@
 	}
 	
 	"We have encountered [civName]!":{
-		Italian:"Abbiamo incontrato [civName]!"
+		Italian:"Abbiamo incontrato la civiltà [civName]!"
 		Russian:"Мы встретились с цивилизацией [civName]!"
 		Spanish:"¡Hemos encontrado [civName]!"
 		French:"Nous sommes entrés en contact avec [civName]!"
@@ -1292,7 +1304,7 @@
 	}
 	
 	"We have found a stash of [amount] gold in the ruins!":{
-		Italian:"Abbiamo trovato [amount] monete d'oro nelle rovine!"
+		Italian:"Abbiamo trovato un tesoro di [amount] pezzi d'oro nelle rovine!"
 		Romanian:"Am descoperit un depozit de [amount] aur printre ruine!"
 		German:"Wir haben [amount] Gold in einem Versteck in den Ruinen gefunden!"
 		French:"Nous avons trouvés un tas de [amount] ors dans les ruines!"
@@ -5289,7 +5301,7 @@
 		//same in German
 	}
 	"Culture cost of adopting new Policies reduced by 10%":{
-		Italian:"-10% costo in cultura per nuove politiche"
+		Italian:"-10% costo in Cultura per ogni nuova politiche"
 		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
 		French:"Coût culturel de l'adoption de nouvelles Doctrines réduit de 10%"
 		Romanian:"Costul în cultură de adoptare a noilor politici a scăzut cu 10%"
@@ -5339,7 +5351,7 @@
 		German:"Eiffel-Turm"
 	}
 	"Provides 1 happiness per social policy":{
-		Italian:"Fornisce 1 felicità per politica sociale"
+		Italian:"+1 Felicità per ogni politica sociale"
 		Russian:"Обеспечивает 1 счастье за каждый общественный институт"
 		French:"Fournit 1 de bonheur par Doctrines"
 		Romanian:"Oferă 1 fericire per politică socială"
@@ -5382,7 +5394,7 @@
 		German:"Forschungslabor"
 	}
 	"Hydro Plant":{	
-		Italian:"Impianto Idroelettrico"
+		Italian:"Impianto idroelettrico"
 		Russian:"ГЭС"
 		French:"Centrale hydroélectrique"
 		Romanian:"Hidrocentrală"
@@ -5413,7 +5425,7 @@
 		German:"Solarkraftwerk"
 	}
 	"Must be next to desert":{
-		Italian:"Deve trovarsi vicino al deserto"
+		Italian:"Deve rasentare deserto"
 		Russian:"Должно быть рядом с пустыней"
 		French:"Doit être à côté d'un désert"
 		Romanian:"Trebuie să fie lângă deșert"
@@ -6298,7 +6310,7 @@
 	
 	// Tradition branch
 	"Tradition":{
-		Italian:"Tradizione"
+		Italian:"Tradizionalismo"
 		Russian:"Традиция"
 		French:"Tradition"
 		Romanian:"Tradiție"
@@ -6328,7 +6340,7 @@
 		French:"Aristocratie"
 	}
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
-		Italian: "+15% produzione quando costruisci una Meraviglia, +1 Felicità ogni 10 cittadini in una città"
+		Italian: "+15% produzione quando costruisci una Meraviglia, e +1 Felicità ogni 10 cittadini in una città"
 		Russian:"+15% производства при создании чудес, +1 счастье за каждые 10 жителей в городе"
 		Romanian:"+15% producție la construcția de minuni, +1 fericire pentru fiecare 10 cetățeni ai unui oraș"
 		Spanish:"+15% producción al construir maravillas, +1 felicidad cada 10 habitantes in una ciudad"
@@ -6348,7 +6360,7 @@
 		French:"Légalisme"
 	}
 	"Free culture building in your first 4 cities":{
-		Italian:"Un edificio culturale gratuito nelle prime 4 città"
+		Italian:"Fornisce un edificio culturale gratuito nelle tue prime 4 città"
 		Russian:"Бесплатное культурное здание в первых 4 городах"
 		Romanian:"Construcție de cultură gratuită pentru primele 4 orașe"
 		Spanish:"Edificio de cultura gratis en las primeras 4 ciudades"
@@ -6368,7 +6380,7 @@
 		French:"Oligarchie"
 	}
 	"Units in cities cost no maintainance":{
-		Italian:"Nessuna manutenzione per le unità nelle città"
+		Italian:"Nessun mantenimento per le unità nelle città"
 		Russian:"Юниты в городах содержаться бесплатно"
 		Romanian:"Unitățile din orașe nu necesită costuri de întreținere"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento"
@@ -6388,7 +6400,7 @@
 		French:"Élite terrienne"
 	}
 	"+10% food growth and +2 food in capital":{
-		Italian:"+10% crescita e +2 cibo nella capitale"
+		Italian:"+10% Crescita e +2 Ccibo nella capitale"
 		Russian:"+10% прироста еды и +2 еды в столице"
 		Romanian:"+10% creștere hrană și +2 hrană în capitală"
 		Spanish:"+10% crecimiento de comida y +2 comida en la capital"
@@ -6418,7 +6430,7 @@
 		French:"Or +1 et mécontentement -1 tous les 2 citoyens dans la capitale"
 	}
 	"Tradition Complete":{
-		Italian:"Tradizione Completa"
+		Italian:"Tradizionalismo Completo"
 		Russian:"Традиция Завершена"
 		Romanian:"Tradiție realizată"
 		Spanish:"Tradición Completa"
@@ -6472,7 +6484,7 @@
 
 	//typo here!
 	"Training of settlers increaed +50% in capital, recieve a new settler near capital":{ 
-		Italian:"+50% produzione di coloni nella capitale, più un colono gratuito nella capitale"
+		Italian:"La Capitale riceve un Colono gratuito nella Capitale, e produce Coloni il 50% più in fretta"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Romanian:"Antrenamentul colonizatorilor crescut +50% în capitală, se obține un colonizator nou lângă capitală"
 		Spanish:"Entrenamiento de colonos incrementado +50% en la capital y un colono gratis cerca de la capital"
@@ -6492,7 +6504,7 @@
 		French:"Citoyenneté"
 	}
 	"+25% construction rate of workers, recieve free worker near the capital":{
-		Italian:"+25% produzione su lavoratori, più un lavoratore gratuito vicino alla capitale"
+		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
 		Spanish:"+25% ritmo de construcción de trabajadores y un trabajador gratis cerca de la capital"
@@ -6512,7 +6524,7 @@
 		French:"République"
 	}
 	"+1 construction in every city, +5% construction when constructing buildings":{
-		Italian:"+1 Produzione in ogni città, +5% Produzione quando costruisci una struttura"
+		Italian:"+1 Produzione in ogni città, e +5% Produzione quando costruisci un edificio"
 		Russian:"Увеличивает н 1% производство во всех городах и на 5% производство при строительстве зданий"
 		Romanian:"+1 construcție în fiecare oraș, +5% construcție clădiri"
 		Spanish:"+1 construcción en cada ciudad, +5% al construir edificios"
@@ -6522,7 +6534,7 @@
 		French:"production +1, et production +5% dans les villes lors de la construction de bâtiments"
 	}
 	"Representation":{
-		Italian:"Rappresentazione"
+		Italian:"Rappresentanza"
 		Russian:"Представительство"
 		Romanian:"Reprezentanță"
 		Spanish:"Representación"
@@ -6552,7 +6564,7 @@
 		French:"Méritocratie"
 	}
 	"+1 happiness for every city connected to capital, -5% unhappiness from citizens":{
-		Italian:"+1 Felicità per ogni città connessa alla capitale, -5% Infelicità dai cittadini"
+		Italian:"+1 Felicità per ogni città connessa alla capitale, e -5% Infelicità dai cittadini nelle città non occupate"
 		Russian:"Улучшает на 1 настроение каждого города свзяанного со столицей. Уменьшает недовольство от граждан на 5%"
 		Romanian:"+1 fericire pentru fiecare oraș legat de capitală, -5% nefericire a cetățenilor"
 		Spanish:"+1 felicidad por cada ciudad conectada a la capital, -5% infelicdad de ciudadanos"
@@ -7110,7 +7122,7 @@
 		French:"Révolution scientifique"
 	}
 	"Gain 2 free technologies":{
-		Italian:"Due Tecnologie gratuite"
+		Italian:"Scopri due Tecnologie gratuite"
 		Russian:"Даёт 2 бесплатные технологии"
 		Romanian:"Obține 2 tehnologii gratuite"
 		Spanish:"Ganas 2 tecnologías gratis"
@@ -7142,7 +7154,7 @@
 	
 	// Freedom branch
 	"Freedom":{
-		Italian:"Libertà"
+		Italian:"Autonomia"
 		Russian:"Свобода"
 		Romanian:"Libertate"
 		Spanish:"Libertad"
@@ -7262,7 +7274,7 @@
 		French:"Les spécialistes produisent moitié moins de mécontentement"
 	}
 	"Freedom Complete":{
-		Italian:"Libertà Completa"
+		Italian:"Autonomia Completa"
 		Russian:"Свобода завершена"
 		Romanian:"Libertate realizată"
 		Spanish:"Libertad Completa"
