@@ -45,17 +45,17 @@
 	{
 		name:"Liberty",
 		era:"Ancient",
-		description:"+1 culture in evey city",
+		description:"+1 culture in every city",
 		policies:[
 			{
 				name:"Collective Rule",
-				description:"Training of settlers increased +50% in capital, recieve a new settler near capital",
+				description:"Training of settlers increased +50% in capital, receive a new settler near capital",
 				row:1,
 				column:1
 			},
 			{
 				name:"Citizenship",
-				description:"+25% construction rate of workers, recieve free worker near the capital",
+				description:"+25% construction rate of workers, receive free worker near the capital",
 				row:1,
 				column:4
 			},
