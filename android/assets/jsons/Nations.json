@@ -507,6 +507,194 @@
 		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
 		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
+		{
+		name:"Persian",
+		leaderName:"Darius I",
+		
+		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
+		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!"
+		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!"
+		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!"
+		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
+		
+		neutralHello:"Good day to you!"
+		neutralLetsHearIt:["Go on.","You said?"]
+		neutralNo:["You are not serious!","Not good enough."]
+		neutralYes:["Good!","Certainly.","Agreed!"]
+
+		hateHello:"Ahh... you..."
+		hateLetsHearIt:["I'm listening.","Go on!"]
+		hateNo:["We say... no!","Of course not!"]
+		hateYes:["Alright!","Agreed."]
+		
+		afterPeace:"It appears we should call it a tie..."
+		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
+				
+		mainColor:[255,0,0],
+		secondaryColor:[255,255,0],
+		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
+		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir","Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz","Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube","Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada","Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava","Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka","Paishiyauvada","Patigrbana","Phrada"]
+	},
+
+	{
+		name:"Polynesian",
+		leaderName:"Kamehameha I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome."
+		attacked:"It is obvious now that I misjudged you and your true intentions."
+		defeated:"The hard-shelled crab yields, and the lion lies down to sleep. Kanaloa comes for me now."
+		introduction:"Aloha! Greetings and blessings upon you, friend. I am Kamehameha, Great King of this strand of islands."
+		
+		neutralHello:"Welcome, friend!"
+		neutralLetsHearIt:["Proceed.","And?","What is it?"]
+		hateNo:["Certainly not.","We will have to decline."]
+		hateYes:["It is agreed, then.","Excellent!"]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["Proceed.","I'm listening","What is it?"]
+		hateNo:["Certainly not!","That's not acceptable!"]
+		hateYes:["Yes, I suppost I must.","Yes, so be it."]
+		
+		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
+		tradeRequest:"Come, let our people feast together!"
+				
+		mainColor:[255,128,0],
+		secondaryColor:[255,255,0],
+		unique:"Can embark and move over Costs and Oceans immediately. +1 Sight when embarked",
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui","Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu","Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia","Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+	},
+
+	{
+		name:"Korean",
+		leaderName:"Sejong",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
+		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
+		defeated:"Now the question is who will protect my people. A dark age has come."
+		introduction:"Welcome to the palace of Choson, stanger. I am the learned King Sejong, who looks after his great people."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["I will hear it.","Go on","Continue."]
+		neutralNo:["I cannot do that."Apologies, but I will not accept it."]
+		neutralYes:["That is good.","I understand.","Of course!"]
+
+		hateHello:"Oh, it's you"
+		hateLetsHearIt:["What do you wish to say?","So?","Continue your speech."]
+		hateNo:["Heaven forbid","That is crazy talk!","I cannot do that."]
+		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
+		
+		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
+		tradeRequest:"We have many thinkgs to discuss and have much to benefit from each other."
+				
+		mainColor:[0,0,255],
+		secondaryColor:[255,0,0],
+		unique:"+2 Science for all Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean capital.",
+		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+	},
+
+
+	{
+		name:"Songhai",
+		leaderName:"Askia",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!"
+		attacked:"Fool! You have doomed your people to fire and destruction!"
+		defeated:"We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!"
+		introduction:"I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past."
+		
+		neutralHello:"Greetings."
+		neutralLetsHearIt:["Yes?","Proceed."]
+		neutralNo:["No","Of course not."]
+		neutralYes:["Very well.","Yes.","Fine."]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["And?","Continue."]
+		hateNo:["You cannot be serious!","That's unacceptable!","We decline."]
+		hateYes:["Oh, very well.","Alright."]
+		
+		afterPeace:"We thank you for bringing an end to this pointless war."
+		tradeRequest:"Can I interest you in this deal?"
+				
+		mainColor:[204,102,0],
+		secondaryColor:[255,0,0],
+		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
+		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+	},
+
+
+	{
+		name:"Ottoman",
+		leaderName:"Suleiman I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Your continued insolence and failure to recognize and preeminence leads us to war."
+		attacked:"Good. The world shall witness the incontestable might of my armies and the glory of the Empire."
+		defeated:"Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melancholy poets."
+		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!"
+		
+		neutralHello:"Greetings!"
+		neutralLetsHearIt:["I'm listening.","Go on."]
+		neutralNo:["No.","Of course not!","We decline."]
+		neutralYes:["Very good.","Fine.","We accept!"]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["So you say!","Go on!"]
+		hateNo:["Excuse me?","This is unacceptable!","You can't be serious!"]
+		hateYes:["Ah, very good!","Very good.","I assume we must come to an agreement."]
+		
+		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
+		tradeRequest:"Let us do business! Would you be interested?"
+				
+		mainColor:[204,255,229],
+		secondaryColor:[0,102,0],
+		unique:"Pay only one.third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
+		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
+	},
+
+
+	{
+		name:"Iroquois",
+		leaderName:"Hiawatha",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"You are a plague upon Mother Earth! Prepare for battle!"
+		attacked:"You evil creature! My braves will slaughter you!"
+		defeated:"You have defeated us... but our spirits will never be vanquished! We shall return!"
+		introduction:"Greetings, stranger. I am Hiawatha, speaker for the Iroquois. We seek peace with all, but we do not shrink from war."
+		
+		neutralHello:"Good day."
+		neutralLetsHearIt:["Yes?","I'm listening"]
+		neutralNo:["No.","Certainly not."]
+		neutralYes:["Very well.","Alright."]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["I'm listening.","Speak."]
+		hateNo:["That's unacceptable","You cannot be serious!"]
+		hateYes:["I suppose I must.","Very well."]
+		
+		afterPeace:"I thank you for your mercy. I pray that we can now be friends."
+		tradeRequest:"Does this trade work for you, my friend?"
+				
+		mainColor:[0,25,51],
+		secondaryColor:[255,255,102],
+		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
+		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River","Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle","Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
+	},
 	*/
 	{
 		name:"Barbarians",
