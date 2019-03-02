@@ -49,9 +49,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
-                defender.getCivilization()==worldScreen.currentPlayerCiv
+                defender.getCivInfo()==worldScreen.currentPlayerCiv
                 || !(UnCivGame.Current.viewEntireMapForDebug
-                        || attacker.getCivilization().exploredTiles.contains(selectedTile.position))) {
+                        || attacker.getCivInfo().exploredTiles.contains(selectedTile.position))) {
             hide()
             return
         }

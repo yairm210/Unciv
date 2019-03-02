@@ -124,8 +124,8 @@ class UnitAutomation{
 
         val tileCombatant = Battle(combatant.getCivInfo().gameInfo).getMapCombatantOfTile(tile)
         if(tileCombatant==null) return false
-        if(tileCombatant.getCivilization()==combatant.getCivInfo() ) return false
-        if(!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivilization())) return false
+        if(tileCombatant.getCivInfo()==combatant.getCivInfo() ) return false
+        if(!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         //only submarine and destroyer can attack submarine
         //garisoned submarine can be attacked by anyone, or the city will be in invincible

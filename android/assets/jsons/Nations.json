@@ -319,6 +319,36 @@
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
 			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
 	},
+	{
+		name:"Japan",
+		leaderName:"Oda Nobunaga",
+		
+		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the frield of battle, your people are also immensely industious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
+		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
+		attacked:"Pitiful fool! Now we shall destroy you!"
+		defeated:"You were much wiser than I thought."
+		introduction:"We hope for a fair and just relationship with you, who are renowned for military bravery."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
+		neutralNo:["Sorry.","No.","Maybe another time."]
+		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
+
+		hateHello:"Oh, it's you..."
+		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
+		hateNo:["Hya. (No)","Excuse me?","Maybe another time"]
+		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
+		
+		afterPeace:"It was an honor to fight you."
+		tradeRequest:"I would be grateful if you agreed on the following proposal."
+				
+		mainColor:[215,225,225],
+		secondaryColor:[185,0,0],
+		unique: "Units fight as though they were at full strength even when damaged",
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
+	},
 	/*
 	{
 	name:"Germany",
@@ -446,36 +476,6 @@
 		secondaryColor:[255,255,255],
 		unique:"Melee units cost 50% less maintenance, and all units require 25% less experience to earn their next promotion.",
 		cities:["Ulundi","Umugungundlovu","Nobamba","Bulawayo","KwaDukuza","Nongoma","oNdini","Nodwengu","Ndonakusuka","Babanango","Khangela","KwaHlomendlini","Hlobane","eThekwini","Mlambongwenya","Eziqwaqweni","eMangweni","Isiphezi","Masotsheni","Mtunzini","Nyakamubi","Dumazulu","Hlatikulu","Mthonjaneni","Empangeni","Pongola","Tugela","Kwamashi","Ingwavuma","Hluhluwe","Matubatuba","Mhlahlandlela","Mthatha","Maseru","Lobamba","Qunu"]
-	},
-	{
-		name:"Japan",
-		leaderName:"Oda Nobunaga",
-		
-		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the frield of battle, your people are also immensely industious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
-		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
-		
-		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
-		attacked:"Pitiful fool! Now we shall destroy you!"
-		defeated:"You were much wiser than I thought."
-		introduction:"We hope for a fair and just relationship with you, who are renowned for military bravery."
-		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
-		neutralNo:["Sorry.","No.","Maybe another time."]
-		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
-
-		hateHello:"Oh, it's you..."
-		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
-		hateNo:["Hya. (No)","Excuse me?","Maybe another time"]
-		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
-		
-		afterPeace:"It was an honor to fight you."
-		tradeRequest:"I would be grateful if you agreed on the following proposal."
-				
-		mainColor:[255,255,255],
-		secondaryColor:[255,0,0],
-		unique:"Units fight as though they were at full strength even when damaged. You gain +1 Culture from each Fishing Boat, and +2 Culture from each Atoll.",
-		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
 	},
 	{
 		name:"Incan",

@@ -86,6 +86,10 @@ class TileMap {
             // only once we know the unit can be placed do we add it to the civ's unit list
             unit.putInTile(unitToPlaceTile)
             unit.currentMovement = unit.getMaxMovement().toFloat()
+
+            // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
+            for(promotion in unit.baseUnit.promotions)
+                unit.promotions.addPromotion(promotion,true)
         }
         else civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
 

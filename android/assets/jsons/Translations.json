@@ -3872,6 +3872,7 @@
 		French:"Arabie"
 	}
 	
+	
 	"America":{
 		Italian:"Stati Uniti"
 		Romanian:"Statele Unite"
@@ -3888,9 +3889,15 @@
 		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
 		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
 	}
-	"Uniques:":{
+	
+	"Japan":{}
+	"Units fight as though they were at full strength even when damaged":{}
+	
+	"Uniques":{ // unit uniques, displayed on the new game screen when choosing a civ
 		Italian:"Abilità unica"
 	}
+	"Promotions":{}
+	
 	"units in rough terrain:":{
 		Italian:"unità in terreno accidentato"
 	}
@@ -7476,7 +7483,7 @@
 	}
 	
 	" OR ":{// as in "Requires Accuracy I OR Barrage I
-		Italian:"O"
+		Italian:" O "
 	}
 	
 	"Accuracy I":{

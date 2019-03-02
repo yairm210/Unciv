@@ -37,6 +37,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish for Longbowman
 * [Trebuchet](https://thenounproject.com/search/?q=Trebuchet&i=827987) By Ben Davis
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1432662) By uzeir syarief for Longswordsman
+* [Samurai](https://thenounproject.com/search/?q=samurai&i=1683729) By Chanut is Industries
 * [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera for Pikeman
 * [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
 

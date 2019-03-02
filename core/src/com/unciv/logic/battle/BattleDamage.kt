@@ -46,19 +46,19 @@ class BattleDamage{
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            if (combatant.getCivilization().happiness < 0)
-                modifiers["Unhappiness"] = max(0.02f * combatant.getCivilization().happiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
+            if (combatant.getCivInfo().happiness < 0)
+                modifiers["Unhappiness"] = max(0.02f * combatant.getCivInfo().happiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
-            if(combatant.getCivilization().policies.isAdopted("Populism"))
+            if(combatant.getCivInfo().policies.isAdopted("Populism"))
                 modifiers["Populism"] = 0.25f
 
-            if(combatant.getCivilization().policies.isAdopted("Discipline") && combatant.isMelee()
+            if(combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                            .any { it.civInfo==combatant.getCivilization() && !it.type.isCivilian()})
+                            .any { it.civInfo==combatant.getCivInfo() && !it.type.isCivilian()})
                 modifiers["Discipline"] = 0.15f
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
-            if(requiredResource!=null && combatant.getCivilization().getCivResourcesByName()[requiredResource]!!<0){
+            if(requiredResource!=null && combatant.getCivInfo().getCivResourcesByName()[requiredResource]!!<0){
                 modifiers["Missing resource"]=-0.25f
             }
 
@@ -76,7 +76,7 @@ class BattleDamage{
             }
         }
 
-        if (combatant.getCivilization().policies.isAdopted("Honor") && enemy.getCivilization().isBarbarianCivilization())
+        if (combatant.getCivInfo().policies.isAdopted("Honor") && enemy.getCivInfo().isBarbarianCivilization())
             modifiers["vs Barbarians"] = 0.25f
 
         return modifiers
@@ -119,7 +119,7 @@ class BattleDamage{
         if (attacker.isMelee()) {
             val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
                 it.militaryUnit != null
-                        && it.militaryUnit!!.owner == attacker.getCivilization().civName
+                        && it.militaryUnit!!.owner == attacker.getCivInfo().civName
                         && MapUnitCombatant(it.militaryUnit!!).isMelee()
             }
             if (numberOfAttackersSurroundingDefender > 1)
@@ -172,13 +172,15 @@ class BattleDamage{
 
     private fun modifiersToMultiplicationBonus(modifiers: HashMap<String, Float>): Float {
         // modifiers are like 0.1 for a 10% bonus, -0.1 for a 10% loss
-        var modifier = 1f
-        for (m in modifiers.values) modifier *= (1 + m)
-        return modifier
+        var finalModifier = 1f
+        for (modifierValue in modifiers.values) finalModifier *= (1 + modifierValue)
+        return finalModifier
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        if (combatant.getUnitType() == UnitType.City) return 1f
+        if (combatant.getUnitType() == UnitType.City
+                || combatant.getCivInfo().getNation().unique == "Units fight as though they were at full strength even when damaged")
+            return 1f
         return 1/2f + combatant.getHealth()/200f // Each point of health reduces damage dealt by 0.5%
     }
 

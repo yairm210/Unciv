@@ -226,7 +226,7 @@
 	{
 		name:"Longbowman",
 		unitType:"Ranged",
-		range:3,
+		range:2,
 		movement:2,
 		strength:13,
 		rangedStrength:18,
@@ -236,6 +236,7 @@
 		requiredTech:"Machinery",
 		upgradesTo:"Gatling Gun",
 		obsoleteTech:"Industrialization",
+		promotions:["Range"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
@@ -263,6 +264,23 @@
 		upgradesTo:"Musketman",
 		obsoleteTech:"Gunpowder",
 		requiredResource:"Iron",
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+	},
+	{
+		name:"Samurai",
+		replaces:"Longswordsman",
+		uniqueTo:"Japan",
+		unitType:"Melee",
+		movement:2,
+		strength:21,
+		cost: 120,
+		requiredTech:"Steel",
+		upgradesTo:"Musketman",
+		obsoleteTech:"Gunpowder",
+		requiredResource:"Iron",
+		uniques:["Combat very likely to create Great Generals"]
+		promotions:["Shock I"]
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
@@ -390,7 +408,8 @@
 		requiredTech:"Gunpowder",
 		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
-		uniques:["Bonus vs units in rough terrain 15%","Ignores terrain cost"]
+		uniques:["Ignores terrain cost"]
+		promotions:["Drill I"],
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},

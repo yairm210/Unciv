@@ -47,7 +47,7 @@ class Battle(val gameInfo:GameInfo) {
 
     private fun postBattleAction(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo){
 
-        if(attacker.getCivilization()!=defender.getCivilization()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
+        if(attacker.getCivInfo()!=defender.getCivInfo()) { // If what happened was that a civilian unit was captures, that's dealt with in the CaptureCilvilianUnit function
             val whatHappenedString =
                     if (attacker !is CityCombatant && attacker.isDefeated()) " {was destroyed while attacking}"
                     else " has " + (if (defender.isDefeated()) "destroyed" else "attacked")
@@ -58,7 +58,7 @@ class Battle(val gameInfo:GameInfo) {
                     if (defender.getUnitType() == UnitType.City) " [" + defender.getName()+"]"
                     else " our [" + defender.getName()+"]"
             val notificationString = attackerString + whatHappenedString + defenderString
-            defender.getCivilization().addNotification(notificationString, attackedTile.position, Color.RED)
+            defender.getCivInfo().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
 
@@ -71,11 +71,11 @@ class Battle(val gameInfo:GameInfo) {
 
         // we're a melee unit and we destroyed\captured an enemy unit
         else if (attacker.isMelee()
-                && (defender.isDefeated() || defender.getCivilization()==attacker.getCivilization() )
+                && (defender.isDefeated() || defender.getCivInfo()==attacker.getCivInfo() )
                 // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
                 && (attacker as MapUnitCombatant).unit.canMoveTo(attackedTile)) {
             // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
-            if(attackedTile.civilianUnit!=null && attackedTile.civilianUnit!!.civInfo != attacker.getCivilization())
+            if(attackedTile.civilianUnit!=null && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo())
                 captureCivilianUnit(attacker,MapUnitCombatant(attackedTile.civilianUnit!!))
             attacker.unit.moveToTile(attackedTile)
         }
@@ -98,16 +98,19 @@ class Battle(val gameInfo:GameInfo) {
         // XP!
         fun addXp(thisCombatant:ICombatant, amount:Int, otherCombatant:ICombatant){
             if(thisCombatant !is MapUnitCombatant) return
-            if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivilization().isBarbarianCivilization())
+            if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarianCivilization())
                 return
             var amountToAdd = amount
-            if(thisCombatant.getCivilization().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
+            if(thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
             thisCombatant.unit.promotions.XP += amountToAdd
 
-            if(thisCombatant.getCivilization().getNation().unique
+            if(thisCombatant.getCivInfo().getNation().unique
                     == "Great general provides double combat bonus, and spawns 50% faster")
                 amountToAdd = (amountToAdd * 1.5f).toInt()
-            thisCombatant.getCivilization().greatPeople.greatGeneralPoints += amountToAdd
+            if(thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
+                amountToAdd *= 2
+
+            thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += amountToAdd
         }
 
         if(attacker.isMelee()){
@@ -123,8 +126,8 @@ class Battle(val gameInfo:GameInfo) {
         }
 
         if(defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
-                && attacker.getCivilization().policies.isAdopted("Honor Complete"))
-            attacker.getCivilization().gold += defender.unit.baseUnit.getGoldCost(hashSetOf()) / 10
+                && attacker.getCivInfo().policies.isAdopted("Honor Complete"))
+            attacker.getCivInfo().gold += defender.unit.baseUnit.getGoldCost(hashSetOf()) / 10
 
         if(attacker is MapUnitCombatant && attacker.unit.action!=null && attacker.unit.action!!.startsWith("moveTo"))
             attacker.unit.action=null
@@ -132,14 +135,14 @@ class Battle(val gameInfo:GameInfo) {
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
-        attacker.getCivilization().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
+        attacker.getCivInfo().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
 
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
         }
 
-        if (attacker.getCivilization().isBarbarianCivilization()){
+        if (attacker.getCivInfo().isBarbarianCivilization()){
             city.destroyCity()
         }
         else {
@@ -149,12 +152,12 @@ class Battle(val gameInfo:GameInfo) {
 
             city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
 
-            if(!attacker.getCivilization().policies.isAdopted("Police State")) {
+            if(!attacker.getCivInfo().policies.isAdopted("Police State")) {
                 city.expansion.cultureStored = 0
                 city.expansion.reset()
             }
 
-            city.moveToCiv(attacker.getCivilization())
+            city.moveToCiv(attacker.getCivInfo())
             city.resistanceCounter = city.population.population
             city.cityStats.update()
         }
@@ -183,7 +186,7 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     fun captureCivilianUnit(attacker: ICombatant, defender: ICombatant){
-        if(attacker.getCivilization().isBarbarianCivilization()){
+        if(attacker.getCivInfo().isBarbarianCivilization()){
             defender.takeDamage(100)
             return
         } // barbarians don't capture civilians!
@@ -192,6 +195,6 @@ class Battle(val gameInfo:GameInfo) {
                 defender.getTile().position, Color.RED)
 
         capturedUnit.civInfo.removeUnit(capturedUnit)
-        capturedUnit.assignOwner(attacker.getCivilization())
+        capturedUnit.assignOwner(attacker.getCivInfo())
     }
 }

@@ -8,12 +8,11 @@ import com.unciv.models.gamebasics.unit.UnitType
 class MapUnitCombatant(val unit: MapUnit) : ICombatant {
     override fun getHealth(): Int = unit.health
     override fun getMaxHealth() = 100
-    override fun getCivilization(): CivilizationInfo = unit.civInfo
+    override fun getCivInfo(): CivilizationInfo = unit.civInfo
     override fun getTile(): TileInfo = unit.getTile()
     override fun getName(): String = unit.name
     override fun isDefeated(): Boolean = unit.health <= 0
     override fun isInvisible(): Boolean = unit.isInvisible()
-    override fun getCivInfo(): CivilizationInfo = unit.civInfo
     override fun canAttack(): Boolean = unit.canAttack()
 
     override fun takeDamage(damage: Int) {

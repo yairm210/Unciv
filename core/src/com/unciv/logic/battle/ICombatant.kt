@@ -13,10 +13,9 @@ interface ICombatant{
     fun getDefendingStrength(): Int
     fun takeDamage(damage:Int)
     fun isDefeated():Boolean
-    fun getCivilization(): CivilizationInfo
+    fun getCivInfo(): CivilizationInfo
     fun getTile(): TileInfo
     fun isInvisible(): Boolean
-    fun getCivInfo(): CivilizationInfo
     fun canAttack(): Boolean
 
     fun isMelee(): Boolean {

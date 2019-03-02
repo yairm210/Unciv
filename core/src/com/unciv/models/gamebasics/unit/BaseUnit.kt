@@ -11,6 +11,9 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.INamed
 
 // This is BaseUnit because Unit is already a base Kotlin class and to avoid mixing the two up
+
+/** This is the basic info of the units, as specified in Units.json,
+ in contrast to MapUnit, which is a specific unit of a certain type that appears on the map */
 class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override lateinit var name: String
@@ -25,6 +28,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     var requiredTech:String? = null
     var requiredResource:String? = null
     var uniques =HashSet<String>()
+    var promotions =HashSet<String>()
     var obsoleteTech:String?=null
     var upgradesTo:String? = null
     var replaces:String?=null
@@ -40,9 +44,10 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     fun getShortDescription(): String {
         val infoList= mutableListOf<String>()
-        for(unique in uniques){
+        for(unique in uniques)
             infoList+=Translations.translateBonusOrPenalty(unique)
-        }
+        for(promotion in promotions)
+            infoList += promotion.tr()
         if(strength!=0) infoList += "{Strength}: $strength".tr()
         if(rangedStrength!=0) infoList += "{Ranged strength}: $rangedStrength".tr()
         if(movement!=2) infoList+="{Movement}: $movement".tr()
@@ -67,9 +72,12 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
             sb.appendln()
         }
 
-        for(unique in uniques) {
+        for(unique in uniques)
             sb.appendln(unique.tr())
-        }
+
+        for(promotion in promotions)
+            sb.appendln(promotion.tr())
+
         sb.appendln("{Movement}: $movement".tr())
         return sb.toString()
     }
@@ -77,7 +85,9 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     fun getMapUnit(): MapUnit {
         val unit = MapUnit()
         unit.name = name
+
         unit.setTransients() // must be after setting name because it sets the baseUnit according to the name
+
         return unit
     }
 
