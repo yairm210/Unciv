@@ -108,16 +108,16 @@
 		declaringWar:"Sei solo una peste sulla Terra! Preparati a essere eliminato!",
 		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà!"
 		defeated:"Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno."
-		introduction:"Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
+		introduction:"Saluti. Io sono Ramses, Faraone e incarnazione vivente dell'Egitto, madre e padre di ogni civiltà."
 		
 		neutralHello:"Buongiorno."
-		neutralLetsHearIt:["Avanti.","Parla.","Sono tutto orecchi."]
+		neutralLetsHearIt:["Avanti, parla.","Parla.","Sono tutto orecchi."]
 		neutralNo:["No.","No di certo."]
 		neutralYes:["Va bene.","Molto bene."]
 		
 		hateHello:"Oh, sei tu."
 		hateLetsHearIt:["E allora?","Concludi il tuo discorso."]
-		hateNo:["Ciò è inaccettabile.","La tua richiesta dev'essere uno scherzo."]
+		hateNo:["Ciò è inaccettabile.","La tua richiesta dev'essere uno scherzo di cattivo gusto."]
 		hateYes:["Oh, molto bene.","Credo dovrò accettare."]
 		
 		afterPeace:"Sai che avrei potuto distruggerti, ma oggi mi trattiene un'anima generosa."
@@ -125,7 +125,7 @@
 		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
-		unique:"+20% Production durante la costruzione di una Meraviglia"
+		unique:"+20% Produzione durante la costruzione di una Meraviglia"
 		cities:["Tebe","Menfi","ELiopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
 			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi",
 			"Mendes","Elashmunein","Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
@@ -240,7 +240,7 @@
 		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, dovrò muoverti guerra."
 		attacked:"Coraggioso, ma anche stupido! Se solo avessi un cervello simile al tuo coraggio."
 		defeated:"Gli dei hanno privato Roma del loro favore. Siamo stati sconfitti."
-		introduction:"Ti saluto. Sono sono Augusto, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei benvenuto."
+		introduction:"Ti saluto. Sono sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei benvenuto."
 		
 		neutralHello:"Saluti."
 		neutralLetsHearIt:["Comincia pure.","Continua."]
@@ -257,7 +257,7 @@
 				
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
-		unique:"+25% Produzione verso qualunque edificio già esistente nella Capitale.",
+		unique:"+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
 		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arezzo","Milano","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
@@ -315,8 +315,8 @@
 
 		hateHello:"Ebbene?"
 		hateLetsHearIt:["Và avanti.","Stavi dicendo?"]
-		hateNo:["Certamente no.","Mi rifiuto!","Non puoi essere serio."]
-		hateYes:["Oh, molto bene.","Se proprio devo.","Va bene.","D'accordo."]
+		hateNo:["Certamente no.","Mi rifiuto!","Non dirai sul serio."]
+		hateYes:["Se proprio devo.","Va bene.","D'accordo."]
 		
 		afterPeace:"Accogliamo la pace con la vostra grande nazione. Preghiamo che non vi siano altri futuri malintesi tra di noi."
 		tradeRequest:"Ti interessa forse questo accordo commerciale?"
