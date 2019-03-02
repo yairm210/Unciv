@@ -31,7 +31,7 @@ class UnitAutomation{
         }
 
         if (unit.name == "Great General")
-            return SpecificUnitAutomation().automateGeneral(unit)
+            return SpecificUnitAutomation().automateGreatGeneral(unit)
 
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
@@ -463,28 +463,33 @@ class SpecificUnitAutomation{
         else UnitAutomation().explore(unit, unit.getDistanceToTiles())
     }
 
-    fun automateGeneral(unit: MapUnit){
+    fun automateGreatGeneral(unit: MapUnit){
         //try to follow nearby units. Do not garrison in city if possible
-        val militantToCompany = unit.getDistanceToTiles().map { it.key }
-                .firstOrNull {val militant = it.militaryUnit
+        val militaryUnitTilesInDistance = unit.getDistanceToTiles().map { it.key }
+                .filter {val militant = it.militaryUnit
             militant != null && militant.civInfo == unit.civInfo
                 && (it.civilianUnit == null || it.civilianUnit == unit)
-                && militant.getMaxMovement() <= 2.0f && !it.isCityCenter()}
+                && militant.getMaxMovement() <= 2 && !it.isCityCenter()}
 
-        if(militantToCompany!=null) {
-            unit.movementAlgs().headTowards(militantToCompany)
+        if(militaryUnitTilesInDistance.isNotEmpty()) {
+            val tilesSortedByAffectedTroops = militaryUnitTilesInDistance
+                    .sortedByDescending { it.getTilesInDistance(2).count {
+                val militaryUnit = it.militaryUnit
+                militaryUnit!=null && militaryUnit.civInfo==unit.civInfo
+            } }
+            unit.movementAlgs().headTowards(tilesSortedByAffectedTroops.first())
             return
         }
 
         //if no unit to follow, take refuge in city.
-        val cityToGarison = unit.civInfo.cities.map {it.getCenterTile()}
-                .filter {it.civilianUnit == null && unit.canMoveTo(it) && unit.movementAlgs().canReach(it)}
-                .minBy { it.arialDistanceTo(unit.currentTile) }
-        if (cityToGarison != null) {
-            unit.movementAlgs().headTowards(cityToGarison)
+        val cityToGarrison = unit.civInfo.cities.map {it.getCenterTile()}
+                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                .firstOrNull { it.civilianUnit == null && unit.canMoveTo(it) && unit.movementAlgs().canReach(it)}
+
+        if (cityToGarrison != null) {
+            unit.movementAlgs().headTowards(cityToGarrison)
             return
         }
-        return
     }
 
     fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
