@@ -451,7 +451,7 @@ open class RandomMapGenerator {
         var resource: TileResource? = null
         when {
             Math.random() < 1 / 5f  -> resource = getRandomResource(tileResources, ResourceType.Bonus)
-            Math.random() < 1 / 7f  -> resource = getRandomResource(tileResources, ResourceType.Strategic)
+            Math.random() < 1 / 15f  -> resource = getRandomResource(tileResources, ResourceType.Strategic)
             Math.random() < 1 / 15f -> resource = getRandomResource(tileResources, ResourceType.Luxury)
         }
         if (resource != null) tileInfo.resource = resource.name
