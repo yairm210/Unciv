@@ -210,6 +210,7 @@ class NextTurnAutomation{
     }
 
     private fun trainSettler(civInfo: CivilizationInfo) {
+        if(civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.cities.any()
                 && civInfo.happiness > civInfo.cities.size + 5
                 && civInfo.getCivUnits().none { it.name == "Settler" }
