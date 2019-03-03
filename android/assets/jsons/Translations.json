@@ -6620,7 +6620,7 @@
 		German:"Ehre"
 		French:"Honneur"
 	}
-	"+25% bonus vs Barbarians":{ //it's 33% in the original game
+	"+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit":{ //25% in Vanilla, 33% in G&K
 		Spanish:"+25% bonus al luchar contra Barbaros"
 		Italian:"+25% forza contro Barbari"
 		Romanian:"+25% bonus contra Barbarilor"

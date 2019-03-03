@@ -89,7 +89,7 @@
 	{
 		name:"Honor",
 		era:"Ancient",
-		description:"+25% bonus vs Barbarians",
+		description:"+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit",
 		policies:[
 			{
 				name:"Warrior Code",

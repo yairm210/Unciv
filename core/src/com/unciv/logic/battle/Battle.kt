@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
+import kotlin.math.max
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -124,6 +125,18 @@ class Battle(val gameInfo:GameInfo) {
             addXp(attacker,2,defender)
             addXp(defender,2,attacker)
         }
+
+        // Add culture when defeating a barbarian when Honor policy is adopted (can be either attacker or defender!)
+        fun tryGetCultureFromHonor(civUnit:ICombatant, barbarianUnit:ICombatant){
+            if(barbarianUnit.isDefeated() && barbarianUnit is MapUnitCombatant
+                    && barbarianUnit.getCivInfo().isBarbarianCivilization()
+                    && civUnit.getCivInfo().policies.isAdopted("Honor"))
+                civUnit.getCivInfo().policies.storedCulture +=
+                        max(barbarianUnit.unit.baseUnit.strength,barbarianUnit.unit.baseUnit.rangedStrength)
+        }
+
+        tryGetCultureFromHonor(attacker,defender)
+        tryGetCultureFromHonor(defender,attacker)
 
         if(defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
                 && attacker.getCivInfo().policies.isAdopted("Honor Complete"))
