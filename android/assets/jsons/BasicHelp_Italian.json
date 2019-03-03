@@ -40,7 +40,7 @@
 		description:"Puoi muovere su tutta la mappa delle icone che rappresentano le forze militari e civili. Ogni unità costa 1 Oro in mantenimento al turno.\nOgni unità possiede 100 punti salute, che si riducono mentre l'unità combatte. Le unità militari possono attaccare altre unità e città causando perdite a seconda della loro forza.\nUnità d'assedio e da tiro possono attaccare da lontano, mentre altre unità possono farlo solo da una casella vicina.\nUn'unità ferita guarirà lentamente se lasciata inattiva."
 	},
 	{
-		name:"Conquistare città",
+		name:"Conquista di una città",
 		description: "È possibile conquistare le città riducendo a 1 la loro salute, ed entrandovi con un'unità da mischia.\nVisto che le città guariscono ad ogni turno, conviene attaccare con unità da tiro (ancora meglio se d'assedio) e usare quelle da mischia per difenderle finché la città non viene sconfitta."
 	}
 ]
