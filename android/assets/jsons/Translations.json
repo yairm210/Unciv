@@ -787,7 +787,7 @@
 	} // as in "Free population: 2/13
 
 	"[turnsToExpansion] turns to expansion":{
-		Italian:"[turnsToExpansion] turni per espandersi"
+		Italian:"La città si espanderà tra [turnsToExpansion] turni"
 	}
 
 	"Stopped expansion":{
@@ -795,23 +795,23 @@
 	} // if culture is 0
 
 	"[turnsToPopulation] turns to new population":{
-		Italian:"[turnsToPopulation] turni per un nuovo abitante"
+		Italian:"La città avrà un nuovo abitante tra [turnsToPopulation] turni"
 	}
 
 	"[turnsToStarvation] turns to lose population":{
-		Italian:"[turnsToStarvation] turni e perderà un abitante"
+		Italian:"La città perderà un abitante tra [turnsToStarvation]"
 	}
 
 	"Stopped population growth":{
-		Italian:"Crescita popolazione arrestata"
+		Italian:"Crescita della popolazione arrestata"
 	}
 
 	"In resistance for another [numberOfTurns] turns":{
-		Italian:"La resistenza derà per altri [numberOfTurns] turni"
+		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
 	}
 	
 	"[greatPerson] points":{ // e.g "Great Scientist points"
-		Italian:"Punti [greatPerson]"
+		Italian:"Punti [greatPerson]" //es. "Punti Grande Scienziato"
 	}
 	
 	// Tech picker
@@ -1578,6 +1578,14 @@
 		Dutch:"Oase"
 		Simplified_Chinese:"绿洲"
 		Spanish:"Oasis"
+	}
+
+	"Coast":{
+		Italian:"Costa"
+	}
+
+	"Ocean":{
+		Italian:"Oceano"
 	}
 
 	"Flood plains":{ // Possible typo. Changed from "food" to "flood". Need to change all languages
