@@ -583,7 +583,7 @@
 		
 		neutralHello:"Hello."
 		neutralLetsHearIt:["I will hear it.","Go on","Continue."]
-		neutralNo:["I cannot do that."Apologies, but I will not accept it."]
+		neutralNo:["I cannot do that.","Apologies, but I will not accept it."]
 		neutralYes:["That is good.","I understand.","Of course!"]
 
 		hateHello:"Oh, it's you"
