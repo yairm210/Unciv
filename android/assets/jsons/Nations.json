@@ -373,7 +373,7 @@
 		hateYes:["Well, okay.","Gut.","It seems I can't refuse."]
 		
 		afterPeace:"What do ye think about calling it a draw?"
-		tradeRequest:"We do not accept."
+		tradeRequest:"It would be in your best interest, to carefully consider this proposal."
 				
 		mainColor:[224,224,224],
 		secondaryColor:[64,64,64],
