@@ -7674,4 +7674,19 @@
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 	}
+	
+	// Civilopedia texts
+	"Basics":{}
+	"Resources":{}
+	"Terrains":{}
+	"Tile improvements":{}
+	
+	"Unique to [civName], replaces [unitName]":{}
+	"Requires [buildingName] to be built in the city":{}
+	"Requires [buildingName] to be built in all cities":{}
+	"Provides a free [buildingName] in the city":{}
+	"Requires worked [resource] near city":{}
+	"Required tech: [requiredTech]":{}
+	"Upgrades to [upgradedUnit]":{}
+	"Obsolete with [obsoleteTech]":{}
 }

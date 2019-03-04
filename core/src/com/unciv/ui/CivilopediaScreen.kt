@@ -9,6 +9,7 @@ import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.BasicHelp
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
@@ -29,26 +30,26 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val label = "".toLabel()
         label.setWrap(true)
 
-        val goToGameButton = TextButton("Return \r\nto game", CameraStageBaseScreen.skin)
+        val goToGameButton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
         goToGameButton.onClick {
                 game.setWorldScreen()
                 dispose()
             }
         buttonTable.add(goToGameButton)
 
-        val map = LinkedHashMap<String, Collection<ICivilopedia>>()
+        val categoryToInfos = LinkedHashMap<String, Collection<ICivilopedia>>()
 
         val language = UnCivGame.Current.settings.language.replace(" ","_")
         val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp_$language.json").exists())"BasicHelp_$language"
         else "BasicHelp"
 
-        map["Basics"] = GameBasics.getFromJson(kotlin.Array<BasicHelp>::class.java, basicHelpFileName).toList()
-        map["Buildings"] = GameBasics.Buildings.values
-        map["Resources"] = GameBasics.TileResources.values
-        map["Terrains"] = GameBasics.Terrains.values
-        map["Tile Improvements"] = GameBasics.TileImprovements.values
-        map["Units"] = GameBasics.Units.values
-        map["Technologies"] = GameBasics.Technologies.values
+        categoryToInfos["Basics"] = GameBasics.getFromJson(kotlin.Array<BasicHelp>::class.java, basicHelpFileName).toList()
+        categoryToInfos["Buildings"] = GameBasics.Buildings.values
+        categoryToInfos["Resources"] = GameBasics.TileResources.values
+        categoryToInfos["Terrains"] = GameBasics.Terrains.values
+        categoryToInfos["Tile Improvements"] = GameBasics.TileImprovements.values
+        categoryToInfos["Units"] = GameBasics.Units.values
+        categoryToInfos["Technologies"] = GameBasics.Technologies.values
 
         val nameList = List<ICivilopedia>(CameraStageBaseScreen.skin)
 
@@ -62,14 +63,14 @@ class CivilopediaScreen : CameraStageBaseScreen() {
 
         val buttons = ArrayList<Button>()
         var first = true
-        for (str in map.keys) {
-            val button = TextButton(str, CameraStageBaseScreen.skin)
+        for (str in categoryToInfos.keys) {
+            val button = TextButton(str.tr(), CameraStageBaseScreen.skin)
             button.style = TextButton.TextButtonStyle(button.style)
             button.style.checkedFontColor = Color.BLACK
             buttons.add(button)
             val buttonClicked = {
                 val newArray = Array<ICivilopedia>()
-                for (civilopediaEntry in map[str]!!.sortedBy { it.toString() })  // Alphabetical order
+                for (civilopediaEntry in categoryToInfos[str]!!.sortedBy { it.toString() })  // Alphabetical order
                     newArray.add(civilopediaEntry)
                 nameList.setItems(newArray)
                 nameList.selected = nameList.items.get(0)

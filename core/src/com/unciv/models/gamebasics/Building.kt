@@ -61,7 +61,7 @@ class Building : NamedStats(), IConstruction{
             infoList += improvedResources.joinToString()+ " {provide} ".tr()+ resourceBonusStats.toString()
         }
         if(requiredNearbyImprovedResources!=null)
-            infoList += "requires worked "+requiredNearbyImprovedResources!!.joinToString("/")+" near city"
+            infoList += ("Requires worked ["+requiredNearbyImprovedResources!!.joinToString("/"){it.tr()}+"] near city").tr()
         if(uniques.isNotEmpty()) infoList += uniques.joinToString { it.tr() }
         if(cityStrength!=0) infoList+="{City strength} +".tr()+cityStrength
         if(cityHealth!=0) infoList+="{City health} +".tr()+cityHealth
@@ -72,17 +72,17 @@ class Building : NamedStats(), IConstruction{
     fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: HashSet<String>): String {
         val stats = getStats(adoptedPolicies)
         val stringBuilder = StringBuilder()
-        if(uniqueTo!=null) stringBuilder.appendln("Unique to $uniqueTo, replaces $replaces")
+        if(uniqueTo!=null) stringBuilder.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
         if (!forBuildingPickerScreen) stringBuilder.appendln("{Cost}: $cost".tr())
         if (isWonder) stringBuilder.appendln("Wonder".tr())
         if (!forBuildingPickerScreen && requiredTech != null)
-            stringBuilder.appendln("Requires {$requiredTech} to be researched".tr())
+            stringBuilder.appendln("Required tech: [$requiredTech]".tr())
         if (!forBuildingPickerScreen && requiredBuilding != null)
-            stringBuilder.appendln("Requires a $requiredBuilding to be built in this city")
+            stringBuilder.appendln("Requires [$requiredBuilding] to be built in the city".tr())
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
-            stringBuilder.appendln("Requires a $requiredBuildingInAllCities to be built in all cities")
+            stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
         if (providesFreeBuilding != null)
-            stringBuilder.appendln("Provides a free $providesFreeBuilding in this city")
+            stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
@@ -95,10 +95,10 @@ class Building : NamedStats(), IConstruction{
         }
         if (this.greatPersonPoints != null) {
             val gpp = this.greatPersonPoints!!
-            if (gpp.production != 0f) stringBuilder.appendln("+" + gpp.production.toInt() + " Great Engineer points")
-            if (gpp.gold != 0f) stringBuilder.appendln("+" + gpp.gold.toInt() + " Great Merchant points")
-            if (gpp.science != 0f) stringBuilder.appendln("+" + gpp.science.toInt() + " Great Scientist points")
-            if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " Great Artist points")
+            if (gpp.production != 0f) stringBuilder.appendln("+" + gpp.production.toInt()+" " + "[Great Engineer] points".tr())
+            if (gpp.gold != 0f) stringBuilder.appendln("+" + gpp.gold.toInt() + " "+"[Great Merchant] points".tr())
+            if (gpp.science != 0f) stringBuilder.appendln("+" + gpp.science.toInt() + " "+"[Great Scientist] points".tr())
+            if (gpp.culture != 0f) stringBuilder.appendln("+" + gpp.culture.toInt() + " "+"[Great Artist] points".tr())
         }
         if (resourceBonusStats != null) {
             val resources = GameBasics.TileResources.values.filter { name == it.building }.joinToString { it.name.tr() }
@@ -106,7 +106,7 @@ class Building : NamedStats(), IConstruction{
         }
 
         if(requiredNearbyImprovedResources!=null)
-            stringBuilder.appendln("Requires worked "+requiredNearbyImprovedResources!!.joinToString("/")+" near city")
+            stringBuilder.appendln(("Requires worked ["+requiredNearbyImprovedResources!!.joinToString("/"){it.tr()}+"] near city").tr())
 
         if(cityStrength!=0) stringBuilder.appendln("{City strength} +".tr() + cityStrength)
         if(cityHealth!=0) stringBuilder.appendln("{City health} +".tr() + cityHealth)
