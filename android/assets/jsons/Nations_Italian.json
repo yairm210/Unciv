@@ -24,7 +24,7 @@
 		
 		afterPeace:"Sciocco, sciocco errore, lasciarmi vivere..."
 		tradeRequest:"Sembra che la tua ragione di esistere è fare un accordo con me..."
-				
+	
 		mainColor:[27,53,63],
 		secondaryColor:[213,249,255],
 		unique:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura. I Grandi Scienziati nascono il 50% più in fretta.",
@@ -41,7 +41,7 @@
 		startIntroPart2:"Alessandro, il tuo popolo è pronto a marciare in guerra per diffondere la cultura greca tra le genti del mondo e donarti gloria imperitura. Sei pronto ad accettare il tuo destino, re Alessandro? Guiderai il tuo popolo verso il trionfo e la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
-		attacked:"Ad essere onesto, mi sono stancato di starmene impalato."
+		attacked:"Ad essere onesto, mi sono stancato di starmene impalato e di riposare sugli allori."
 		defeated:"Così come in fretta era iniziata, così ora la mia lunga marcia giunge alla fine."
 		introduction:"Benvenuto, straniero! Sono Alexandros, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
 		
@@ -53,11 +53,11 @@
 		hateHello:"Cosa?"
 		hateLetsHearIt:["Dimmi.","Dunque?","Avanti."]
 		hateNo:["Ciò non è gradito!","Niente da fare!","Scusami?"]
-		hateYes:["Oh, benissimo.","Se proprio devo.","Ben fatto."]
+		hateYes:["Oh, benissimo.","Se proprio devo.","Affare fatto."]
 		
-		afterPeace:"Devo congratularmi con te per la tua vittoria sbalorditiva."
+		afterPeace:"Devo congratularmi con te per la tua vittoria sbalorditiva. Forse mio padre Zeus non era dalla mia parte..."
 		tradeRequest:"Amico mio, dimmi: questo ti sembra ragionevole?"
-				
+		
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
 		cities:["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
@@ -327,6 +327,37 @@
 		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
 			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+	},
+	{
+		name:"Japan",
+		translatedName:"Giappone",
+		leaderName:"Oda Nobunaga",
+		
+		startIntroPart1: "Tu sia benedetto, nobile Oda Nobunga, signore del Giappone, la terra del Sol Levante! Possa tu camminare a lungo in mezzo ai suoi meravigliosi boccioli di ciliegio. I giapponesi sono un popolo isolano, fiero e pio con una ricca cultura artistica e letteraria. La tua civiltà esiste per migliaia di anni, anni di sanguinose lotte, espansioni ed isolazioni, di grandi ricchezze e povertà. Oltre alla loro prodezza sul campo di battaglia, il tuo popolo è abile anche nell'industria, e le loro innovazioni tecnologiche e le loro grandi fabbriche sono l'invidia degli altri popoli in tutto il globo."
+		startIntroPart2: "Leggendario damiyo, prenderai le redini del destino? Porterai alla tua famiglia e al tuo popolo l'onore e la gloria che meritano? Alzerai di nuovo la tua spada e marcerai verso il trionfo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Come samurai siamo gente onesta, e noi troviamo onesto volerti esprimere la nostra intenzione di cancellarti dalla faccia della terra con questo messaggio."
+		attacked:"Fatti pure avanti! Il kamikaze (vento divino) ci proteggerà, e tu cadrai, come altri prima di te!"
+		defeated:"Poni fine al disonore che è caduto sulla mia famiglia... sul mio popolo."
+		introduction:"Io sono Oda Nobunaga, capo del grande clan Oda. Mi auguro una relazione giusta e leale nei vostri confronti."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Vai avanti.","Procedi.","Ti ascolto."]
+		neutralNo:["Spiacente, ma non basta.","No.","Forse in seguito."]
+		neutralYes:["Molto bene.","Va bene.","Hai. (Sì)"]
+
+		hateHello:"Oh, sei tu..."
+		hateLetsHearIt:["Sentiamo.","Continua.","Procedi."]
+		hateNo:["Hya. (No)","Scusami?","Forse non ora"]
+		hateYes:["D'accordo.","Oh... benissimo.","Certo non v'è altro modo."]
+		
+		afterPeace:"Combatterti è stato un onore, ma adesso è il momento di terminare questo spargimento di sangue."
+		tradeRequest:"Sarei grato se accettassi questa mia proposta."
+		
+		mainColor:[215,225,225],
+		secondaryColor:[185,0,0],
+		unique: "Le unità combattono come se fossero perfettamente sane. +1 Cultura dai Pescherecci.",
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
 	},
 	{
 		name:"Barbarians",
