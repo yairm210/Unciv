@@ -42,7 +42,7 @@
 		
 		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
 		attacked:"Ad essere onesto, mi sono stancato di starmene impalato."
-		defeated:"Sei diventato la mia rovina! Quale genere di bestia sei tu?"
+		defeated:"Così come in fretta era iniziata, così ora la mia lunga marcia giunge alla fine."
 		introduction:"Benvenuto, straniero! Sono Alexandros, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
 		
 		neutralHello:"Saluti!"
@@ -61,7 +61,7 @@
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
 		cities:["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
-			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tiryns","Samo","Mitilene","Chio",
+			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tirinto","Samo","Mitilene","Chio",
 			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos"]
 	},
 	{
@@ -105,8 +105,8 @@
 		startIntroPart1:"Salute a te, o grande Ramses, Faraone d'Egitto, che fai sorgere il sole e scorrere il Nilo, e che benedici il suo popolo con ogni cosa buona della vita! O grande capo, da tempo immemore il tuo popolo ha vissuto lungo le sponde del fiume Nilo, dove ha concepito la scrittura e approfondito la matematica, la scultura e l'architettura, creando migliaia di anni fa i grandi monumenti che ancora oggi si erigono alti e fieri."
 		startIntroPart2:"O Ramses, il tuo popolo è sopravvissuto al tempo, mentre altre insignificanti nazioni sono cresciute e sono morte. Adesso il tuo popolo vuole che lo guidi verso la grandezza. Riuscirai a onorare gli dei e a ridare all'Egitto il ruolo che merita, quello di centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"Sei solo una peste sulla Terra! Preparati a essere eliminato!",
-		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà!"
+		declaringWar:"Sei solo una peste sulla Terra! Possa Amon-Ra guidare le mie armate!",
+		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà! Osiride sarà lieto di dare il suo benvenuto ai miei nemici!"
 		defeated:"Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno."
 		introduction:"Saluti. Io sono Ramses, Faraone e incarnazione vivente dell'Egitto, madre e padre di ogni civiltà."
 		
@@ -120,8 +120,8 @@
 		hateNo:["Ciò è inaccettabile.","La tua richiesta dev'essere uno scherzo di cattivo gusto."]
 		hateYes:["Oh, molto bene.","Credo dovrò accettare."]
 		
-		afterPeace:"Sai che avrei potuto distruggerti, ma oggi mi trattiene un'anima generosa."
-		tradeRequest:"Il generoso Egitto ti fa quest'offerta."
+		afterPeace:"Sai che avrei potuto distruggerti, ma oggi mi trattiene un'anima generosa, e mi sento magnanimo."
+		tradeRequest:"Il generoso regno d'Egitto ti fa quest'offerta."
 		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
@@ -138,9 +138,9 @@
 		startIntroPart1:"Lode a Sua Serena Altezza, regina Elisabetta Gloriana, che guida e protegge la celebre nazione marittima d'Inghilterra. L'Inghilterra è una terra antica, con insediamenti risalenti fino a 35.000 anni fa e oggetto di innumerevoli ondate di invasioni, ciascuna delle quali ha poi contribuito a definire il carattere della popolazione. Anche se l'Inghilterra è un'isola poco estesa, per anni la sua gente ha dominato la scena mondiale: la sua flotta ineguagliabile, i suoi brilanti artisti e l'astuzia dei suoi mercanti le hanno conferito un potere e un'influenza che andavano ben al di là dei semplici numeri."
 		startIntroPart2:"Regina Elisabetta, farai tornare il suo popolo inglese alla sua età dell'oro? Esso si rivolge a te per ritrovare la pace e la prosperità di un tempo. Accetterai di indossare il mantello della grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"Per grazia di Dio, i tuoi giorni sono contati."
+		declaringWar:"Per grazia di Dio, i tuoi giorni sono contati!"
 		attacked:"Mai ci arrenderemo all'invasore!"
-		defeated:"Sei riuscito a trionfare sull'impero su cui il Sole non tramonta mai. La vittoria è tua."
+		defeated:"Sei riuscito a trionfare sull'impero su cui il Sole non tramonta mai. La vittoria è tua, ma non credere durerà a lungo, perché grazie alla provvidenza, l'Inghilterra risorgerà dalle ceneri."
 		introduction:"Io sono Elisabetta d'Inghilterra. Siamo lieti di incontrarvi."
 		
 		neutralHello:"Salve di nuovo."
@@ -204,9 +204,9 @@
 		startIntroPart1:"Salute, Vostra Maestà Imperiale Caterina, meravigliosa imperatrice di tutte le Russie. Al vostro comando si muove il più grande paese del mondo. La potente Russia si estende dall'Oceano Pacifico a est al Mar Baltico a ovest. Nonostante guerre, siccità e ogni altro genere di disastro, il popolo russo sopravvive e prospera e i suoi artisti e scienziati sono tra i migliori al mondo. Ancora oggi il paese è annoverabile come uno tra i più potenti della storia umana, una vera superpotenza, dotata per di più della forza più distruttiva mai concepita."
 		startIntroPart2:"Caterina, il tuo popolo vuole tornare ai gloriosi giorni della grande Russia, vuole rivitalizzarne la terra e rivivere la meraviglia dell'Illuminismo. Tornerai a guidare la tua gente verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"Ti sei comportato molto male, sai? Adesso è ora della vendetta.",
-		attacked:"Hai confuso la mia passione per una debolezza... la pagherai cara."
-		defeated:"Ci hai sconfitti, e ciò mi rende prigioniera. Direi che ci sono destini peggiori."
+		declaringWar:"Ti sei comportato molto male, lo sai? Adesso è l'ora della vendetta.",
+		attacked:"Hai confuso la mia passione per una debolezza... temo che la pagherai assai cara."
+		defeated:"Ci hai sconfitti, e ciò mi rende prigioniera. Ma direi che ci sono destini peggiori, giusto?"
 		introduction:"Ti saluto, straniero! Se sei intelligente e saggio tanto quanto sei bello, andremo d'accordo alla grande!"
 		
 		neutralHello:"Salve!"
@@ -237,8 +237,8 @@
 		startIntroPart1:"Che la benedizione degli dei scenda su di te, Cesare Augusto, imperatore di Roma e di tutte le sue terre. Il tuo impero fu il più vasto e duraturo di tutto l'emisfero occidentale, di cui il tuo popolo ha modellato cutura, leggi, arti e tecnica militare come mai altri prima o dopo. Anno dopo anno di gloriose conquiste, Roma giunse a dominare tutto il bacino del Medirettaneo, dalla Spagna a ovest alla Siria a est, espandendosi a nord fino all'Inghilterra e alla Germania settentrionale. L'arte e l'architettura romana ancora oggi meravigliano e stupiscono il mondo facendo di Roma un modello per le civiltà che seguirono."
 		startIntroPart2:"O potente imperatore, il tuo popolo si rivolge a te a gran voce per riconquistare la sua antica gloria. Farai in modo che il tuo impero risorga, portando pace e ordine a tutti? Renderai Roma nuovamente il centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, dovrò muoverti guerra."
-		attacked:"Coraggioso, ma anche stupido! Se solo avessi un cervello simile al tuo coraggio."
+		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, credo proprio che dovrò muoverti guerra. Alea jacta eat - il dado è tratto!"
+		attacked:"Coraggioso, ma anche stupido e sciocco... chissà se tu avessi un cervello simile al tuo coraggio. D'altro canto, nessuno può sconfiggere Roma."
 		defeated:"Gli dei hanno privato Roma del loro favore. Siamo stati sconfitti."
 		introduction:"Ti saluto. Sono sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei benvenuto."
 		
@@ -271,7 +271,7 @@
 		startIntroPart2:"Gran califfo Harun al-Rashid, la tua gente si rivolge a te per tornare alla grandezza di un tempo. Per far tornare l'Arabia una terra illuminata da arti e conoscenza, una nazione potente che non debba temere nessuno. O califfo, raccoglierai la sfida? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Il mondo sarebbe più bello senza di te. Preparati alla guerra!"
-		attacked:"Stolto! Giuro sul mio onore che te ne pentirai amaramente!"
+		attacked:"Invero, è un peccato che dobbiamo passare alle maniere forti... non è tradizione per un re uccidere un altro re, né per un regno uccidere un altro regno."
 		defeated:"Hai vinto. Complimenti. Ora il palazzo è nelle tue mani. Ti prego di prenderti cura del mio pavone."
 		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli Arabi. Vieni, raccontami del tuo impero."
 		
@@ -303,9 +303,9 @@
 		startIntroPart1:"Benvenuto, presidente Washington! Tu guidi l'industriosa civiltà americana, costrituitasi in seguito allo scoppio della rivoluzione nel XVIII secolo e finita, ancora giovane nazione di appena un centinaio d'anni, nella terribile morsa di una guerra civile che rischiò di dividerla per sempre. Ma poco tempo dopo, nel XX secolo, gli Stati Uniti raggiunsero l'apice della loro potenza, emergendo trionfanti e sempre più potenti dalle due terribili guerre che video la fine di tante altre grandi nazioni."
 		startIntroPart2:"Gli Stati Uniti sono una nazione di immigrati, pieni di ottimismo e determinazione. Quello che manca loro è soltanto un leader che li aiuti a realizzare il loro potenziale. Presidente Washington, saprai guidare l'America verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"La tua sfrenata aggressività non ci lascia altra scelta. Preparati alla guerra!"
-		attacked:"Hai confuso il nostro amore per la pace per debolezza. Te ne pentirai!"
-		defeated:"La vittoria... è tua. Spero che ti dimostrerai misericordioso nel tuo trionfo."
+		declaringWar:"Speravo di non arrivare a questo punto... ma la tua idea di pace non mi da' altra scelta!"
+		attacked:"Hai confuso il nostro amore per la pace per debolezza. Se devo scegliere tra giustizia e pace... scelgo la giustizia!"
+		defeated:"Complimenti. Al posto degli Stati Uniti d'America, sarà la tua nazione ad andare lontano. Spero che ti dimostrerai misericordioso nel tuo trionfo."
 		introduction:"Vi dò il benvenuto da parte dei cittadini degli Stati Uniti d'America."
 		
 		neutralHello:"Buongiorno."
