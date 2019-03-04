@@ -58,7 +58,8 @@ class BattleDamage{
                 modifiers["Discipline"] = 0.15f
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
-            if(requiredResource!=null && combatant.getCivInfo().getCivResourcesByName()[requiredResource]!!<0){
+            if(requiredResource!=null && combatant.getCivInfo().getCivResourcesByName()[requiredResource]!!<0
+                    && !combatant.getCivInfo().isBarbarianCivilization()){
                 modifiers["Missing resource"]=-0.25f
             }
 
