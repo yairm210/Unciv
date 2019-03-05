@@ -338,7 +338,7 @@
 
 		hateHello:"Oh, it's you..."
 		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
-		hateNo:["Hya. (No)","Excuse me?","Maybe another time"]
+		hateNo:["Ie. (No)","Excuse me?","Maybe another time"]
 		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
 		
 		afterPeace:"It was an honor to fight you."
@@ -507,7 +507,7 @@
 		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
 		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
-		{
+	{
 		name:"Persian",
 		leaderName:"Darius I",
 		
@@ -694,6 +694,130 @@
 		secondaryColor:[255,255,102],
 		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
 		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River","Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle","Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
+	},
+
+	{
+		name:"Phoenicia",
+		leaderName:"Dido",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Tell me, do you-all know how numerous my armies, elephands and warships are? No? Today, you-all shall find out!"
+		attacked:"Fate is against you! I will see all your worthless cities in ruin - and you amongs it!"
+		defeated:"Do not bask in the glory of your conquest. One day, you, too, may see your capital bathed in flames."
+		introduction:"I, Dido, queen and mother of Carthage and of everything that is hers, greet you on behalf of the Phoenicians."
+		
+		neutralHello:"Good day."
+		neutralLetsHearIt:["Yes?","I'm listening"]
+		neutralNo:["No.","That is not enough.","Certainly not."]
+		neutralYes:["Very well.","Alright.","Fine."]
+
+		hateHello:"What is it now?"
+		hateLetsHearIt:["I'm listening.","Speak.","Go on."]
+		hateNo:["What?!","You cannot be serious!"]
+		hateYes:["I suppose I must.","Very well."]
+		
+		afterPeace:"It seems you realized that war is an horrible enemy for the business that is trade."
+		tradeRequest:"Hello, there, friend. Are you interested in this deal?"
+				
+		mainColor:[255,0,127],
+		secondaryColor:[51,255,255],
+		unique:"All coastal Cities get a free Harbor. Units may cross mountains after the first Great General is earned.",
+		cities:["Carthage","Utique","Hippo Regius", "Gades","Saguntum","Carthago Nova", "Panormus","Lilybaeum","Hadrumetum","Zama Regia", "Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Tharros","Leptis Parva", "Soluntum","Lixus","Odea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula","Saldae","Tas-Silg","Sala","Iol"]
+	},
+
+	{
+		name:"Danish",
+		leaderName:"Harald Bluetooth",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"If I am to be honest, I tire of those pointless charades. Why don't we settle our disputes on the field of battle, like true men? Perhaps the skalds will sing of your valor... or mine!"
+		attacked:"Ahahah! You seem to show some skills of a true Viking! Too bad that I'll probably kill you!"
+		defeated:"Loki must have stood by you, for a common man alone could not have defeated me... Oh well! I will join the einherjar in Valhalla and feast, while you toil away here."
+		introduction:"Harad Bluetooth bids you welcome to his lands, a Viking unlike any the seas and lands have ever known! Hah, are you afraid?"
+		
+		neutralHello:"Hail to you."
+		neutralLetsHearIt:["Let us hear it.","Go ahead.","I'm listening"]
+		neutralNo:["No.","Not today, I'm afraid.","I must decline."]
+		neutralYes:["Very well.","Of course, my friend!","That's a deal!"]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["What is it?.","And?","Go on"]
+		hateNo:["Don't be silly!","That is unacceptable."]
+		hateYes:["I guess I have to.","Oh, very well."]
+		
+		afterPeace:"By the hammer of Thor, you have proven yourself a worthy opponent today. I congratulate you!"
+		tradeRequest:"This is a fine deal! Even a drunk beggar would agree!"
+				
+		mainColor:[51,25,0],
+		secondaryColor:[255,255,102],
+		unique:"+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa.",
+		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso","Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore","Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers","Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen","Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
+	},
+
+	{
+		name:"Mayan",
+		leaderName:"Pacal",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"A sacrifice unlike all others must be made! Prepare for destruction!"
+		attacked:"Come! Your warriors shall make great sacrifices in the name of the Sun God!"
+		defeated:"We stood to the last man... but all was in vain. If you are either a man or a God, I know not... nor do I care."
+		introduction:"Greetings, foreigner! I am knows as Pacal, ruler of the great Mayan empire!"
+		
+		neutralHello:"A fine day, is it not?"
+		neutralLetsHearIt:["Let us hear it.","Go ahead.","I'm listening..."]
+		neutralNo:["No.","Not today, I'm afraid.","I must decline."]
+		neutralYes:["Very well.","If I must...","Fine."]
+
+		hateHello:"You..."
+		hateLetsHearIt:["Speak now!.","Talk!","Well?"]
+		hateNo:["No!","Absolutely not!","There is no way, no deal!"]
+		hateYes:["Fine!","Okay, you win."]
+		
+		afterPeace:"Great Sun God, accept our peace!"
+		tradeRequest:"Friend, I believe I may have found a way to save us all! Look, look and accept our offer!"
+				
+		mainColor:[255,255,153],
+		secondaryColor:[0,51,0],
+		unique:"After researching Theology, you gain a free Great Person (each can only be chosen once) at the end of every Mayan Long Cound calendar cycle (every 394 years).",
+		cities:["Palenque","Tikal","Chichen Itza","Uxmal","Tulum","Copan","Coba","El Mirador","Calakmul","Edzna","Lamanai","Izapa","Uaxactun","Comalcalco","Piedras Negras","Cancuen","Yaxha","Quirigua","Q'umarkaj","Nakbe","Cerros","Xunantunich","Takalik Abaj","Cival","San Bartolo","Altar de Sacrificios","Seibal","Caracol","Naranjo","Dos Pilas","Mayapan","Ixinche","Zaculeu","Kabah"]
+	},
+
+	{
+		name:"Shoshone",
+		leaderName:"Pocatello",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"I have tried so many times to give you the benefit of the dubt... no more! I wish you a swift ending."
+		attacked:"So be it! I will do what I must to make the foreigner go away!"
+		defeated:"Sprits of the ancestors... be merciful to my soul... be merciful to my people..."
+		introduction:"I am chief Pocatello. You have arrived in the thick of Shoshone land."
+		
+		neutralHello:"Ah, you've arrived!"
+		neutralLetsHearIt:["Yes?","What is it?","I'm listening."]
+		neutralNo:["No.","Perhaps no.","I must decline."]
+		neutralYes:["Very well.","It shall be that way.","Deal."]
+
+		hateHello:"Be alert, foreigner!"
+		hateLetsHearIt:["Talk!.","And?","Go on"]
+		hateNo:["NO!","There is no way I could accept this!"]
+		hateYes:["If I must...","Fine!"]
+		
+		afterPeace:"It seems you, at least, have the goodness of considering peace..."
+		tradeRequest:"Listen our words, and consider!"
+				
+		mainColor:[32,32,32],
+		secondaryColor:[0,128,255],
+		unique:"Founded cities start with additional territory. Units receive a combat bonus when fighting within their own territory.",
+		cities:["Moson Kahni","Te-Moak","Agaidika","Goshute","Pohokwi","Washakie","Timbisha","Hukandeka","Duckwater","Tukudeka","Kuchundeka","Yomba","Kamudeka","Ely","Yambadeka","Tetadeka","Deheyaeka","Pengwideka","Winnemucca","Skull Valley","Big Pine","Duck Valley","Nampa","Bannock","Yahandeka"]
 	},
 	*/
 	{
