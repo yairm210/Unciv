@@ -348,7 +348,7 @@
 
 		hateHello:"Oh, sei tu..."
 		hateLetsHearIt:["Sentiamo.","Continua.","Procedi."]
-		hateNo:["Hya. (No)","Scusami?","Forse non ora"]
+		hateNo:["Ie. (No)","Scusami?","Forse non ora"]
 		hateYes:["D'accordo.","Oh... benissimo.","Certo non v'è altro modo."]
 		
 		afterPeace:"Combatterti è stato un onore, ma adesso è il momento di terminare questo spargimento di sangue."
