@@ -338,7 +338,7 @@
 
 		hateHello:"Oh, it's you..."
 		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
-		hateNo:["Hya. (No)","Excuse me?","Maybe another time"]
+		hateNo:["Ie. (No)","Excuse me?","Maybe another time"]
 		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
 		
 		afterPeace:"It was an honor to fight you."
@@ -507,7 +507,7 @@
 		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
 		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
-		{
+	{
 		name:"Persian",
 		leaderName:"Darius I",
 		
