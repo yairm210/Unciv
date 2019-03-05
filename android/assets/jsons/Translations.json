@@ -349,7 +349,7 @@
 		French:"Dissoudre cette unité pour [goldAmount] gold?"
 		German:"Diese Einheit für [goldAmount] Gold auflösen?"
 		Spanish:"¿Disolver esta unidad para [goldAmount] gold?"
-		Simplfied_Chinese:"解散[goldAmount]黄金的单位？"
+		Simplified_Chinese:"解散[goldAmount]黄金的单位？"
 		Japanese:"このユニットを[goldAmount]ゴールドに解散させますか？"
 		Romanian:"Dezactivați această unitate pentru aurul [goldAmount]?"
 		Dutch:"Deze eenheid ontbinden voor [goldAmount] goud?"
@@ -374,7 +374,7 @@
 		Romanian:"Nu"
 		Dutch:"Nee"
 		Spanish:"No"
-    		Simplified_Chinese:"不"
+    	Simplified_Chinese:"不"
 		Portuguese:"Sim"
 		German:"Nein"
 		Japanese:"いいえ"
@@ -389,8 +389,8 @@
 		German:"Gold"
 		Dutch:"Goud"
 		Spanish:"Oro"
-    		Simplified_Chinese:"金钱"
-    		Portuguese:"Ouro"
+    	Simplified_Chinese:"金钱"
+    	Portuguese:"Ouro"
 		Japanese:"ゴールド"
 	}
 
@@ -1718,7 +1718,7 @@
 		Italian:"Oceano"
 	}
 
-	"Flood plains":{ // Possible typo. Changed from "food" to "flood". Need to change all languages
+	"Flood plains":{
 		Italian:"Pianure allagate"
 		Russian:"Пищевые равнины"
 		French:"Plaines inondables"
@@ -2873,7 +2873,7 @@
         Portuguese:"Refrigeração"
 	}
 
-	"Replaceable Parts":{
+	"Replacable Parts":{
 		Italian:"Parti ricomponibili" //Smashfanful says "you missed to translate this one"
 		Romanian:"Piese de schimb"
 		Spanish:"Produccion En Serie"
@@ -2990,8 +2990,8 @@
         Simplified_Chinese:"计算机"
         Portuguese:"Computadores"
 	}
-	"Combined arms":{
-		Italian:"Armi combinate" //Smashfanful says "you missed to translate this one"
+	"Combined Arms":{
+		Italian:"Armi combinate"
 		Russian:"Комбинированные руки"
 		French:"Armes combinés"
 	}
@@ -4814,7 +4814,7 @@
 	
 	"The Great Lighthouse":{
 		Spanish:"El Faro Del Fin Del Mundo"
-		Italian:"Grande Faro" //you missed this translation, said Smashfanful
+		Italian:"Grande Faro"
 		French:"le Grand Phare"
 		Romanian:"Marele Far"
         Simplified_Chinese:"大灯塔"
@@ -6530,7 +6530,7 @@
 		German:"Oligarchie"
 		French:"Oligarchie"
 	}
-	"Units in cities cost no maintainance":{
+	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
 		Italian:"Nessun mantenimento per le unità nelle città"
 		Russian:"Юниты в городах содержаться бесплатно"
 		Romanian:"Unitățile din orașe nu necesită costuri de întreținere"
@@ -6630,11 +6630,10 @@
         Simplified_Chinese:"集体统治"
 		Portuguese:"Governo Coletivo"
 		German:"Kollektivherrschaft"
-		French:"Pouvoir collectif" //officiel translation, but "règles collectives" is more accurate
+		French:"Pouvoir collectif" //official translation, but "règles collectives" is more accurate
 	}
 
-	//typo here!
-	"Training of settlers increaed +50% in capital, recieve a new settler near capital":{ 
+	"Training of settlers increased +50% in capital, receive a new settler near capital":{ 
 		Italian:"La Capitale riceve un Colono gratuito nella Capitale, e produce Coloni il 50% più in fretta"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Romanian:"Antrenamentul colonizatorilor crescut +50% în capitală, se obține un colonizator nou lângă capitală"
@@ -7309,7 +7308,7 @@
 		Russian:"Свобода"
 		Romanian:"Libertate"
 		Spanish:"Libertad"
-        	Simplified_Chinese:"自由"
+        Simplified_Chinese:"自由"
 		Portuguese:"Liberdade"
 		German:"Freiheit"
 		French:"Liberté"
@@ -7821,7 +7820,7 @@
 	"Terrains":{
 		Italian:"Terreni"
 	}
-	"Tile improvements":{
+	"Tile Improvements":{
 		Italian:"Miglioramenti"
 	}
 	
@@ -7849,4 +7848,8 @@
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 	}
+	"May contain [listOfResources]":{}
+	"Occurs on [listOfTerrains]":{}
+	"Defence bonus":{}
+	"Movement cost":{}
 }

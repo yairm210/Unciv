@@ -3,6 +3,7 @@ package com.unciv.models.gamebasics.tile
 import com.badlogic.gdx.graphics.Color
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.utils.colorFromRGB
 
@@ -13,14 +14,14 @@ class Terrain : NamedStats(), ICivilopedia {
             sb.appendln(this.clone().toString())
 
             if(occursOn!=null)
-                sb.appendln("Occurs on: "+occursOn!!.joinToString())
+                sb.appendln("Occurs on [${occursOn!!.joinToString()}]".tr())
 
             val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}.joinToString()
             if(resourcesFound.isNotEmpty())
-                sb.appendln("May contain: $resourcesFound")
-            sb.appendln("Movement cost: $movementCost")
+                sb.appendln("May contain [$resourcesFound]".tr())
+            sb.appendln("{Movement cost}: $movementCost".tr())
             if(defenceBonus!=0f){
-                sb.appendln("Defence bonus: "+(defenceBonus*100).toInt()+"%")
+                sb.appendln("{Defence bonus}: ".tr()+(defenceBonus*100).toInt()+"%")
             }
 
             return sb.toString()
