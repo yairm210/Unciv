@@ -1343,8 +1343,8 @@
 		German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt" // Gender sensitive
 		Dutch:"Een vijandige [unit] is gezien buiten onze grenzen"
 		Spanish:"Se ha avistado un [unit] enemigo cerca de nuestro territorio"
-        Simplified_Chinese:"在我们的领土附近发现了一个敌人的 [unit]"
-        Portuguese:"Um(a) [unit] foi visto perto de nosso território"
+        	Simplified_Chinese:"在我们的领土附近发现了一个敌人的 [unit]"
+        	Portuguese:"Um(a) [unit] foi visto perto de nosso território"
 		Japanese:"私たちの領土の近くに敵[unit]が発見されました"
 	}
 	
@@ -1356,8 +1356,8 @@
 		German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt" // Gender sensitive
 		Dutch:"Een vijandige [unit] is binnen onze grenzen gezien"
 		Spanish:"Se ha avistado un [unit] enemigo en nuestro territorio"
-        Simplified_Chinese:"在我们的领土附近发现了一个敌人的 [unit]"
-        Portuguese:"Um(a) [unit] inimigo(a) foi vista dentro de nosso território"
+        	Simplified_Chinese:"在我们的领土附近发现了一个敌人的 [unit]"
+        	Portuguese:"Um(a) [unit] inimigo(a) foi vista dentro de nosso território"
 		Japanese:"私たちの領土に敵[unit]が発見されました"
 	}
 	
@@ -1370,8 +1370,8 @@
 		German:"gefunden in der Nähe von"
 		Dutch:"Ontdekt: in de buurt van"
 		Spanish:"descubierto cerca de"
-        Simplified_Chinese:"被发现在"
-        Portuguese:"revelado perto de"
+        	Simplified_Chinese:"被发现在"
+        	Portuguese:"revelado perto de"
 		Japanese:"付近で明らかに"
 	}
 	
@@ -1383,8 +1383,8 @@
 		German:"Die Zivilisation [civName] wurde besiegt!"
 		Dutch:"De [civName] beschaving is vernietigt!" //civname has to be an adjective
 		Spanish:"¡La civilización de [civName] ha sido destruida!"
-        Simplified_Chinese:"文明 [civName] 被毁灭"
-        Portuguese:"A civilização de [civName] foi destruida!"
+        	Simplified_Chinese:"文明 [civName] 被毁灭"
+        	Portuguese:"A civilização de [civName] foi destruida!"
 		Japanese:"[civName]の文明は破壊されました！"
 	}
 	
@@ -1394,7 +1394,7 @@
 		French:"Un [greatPerson] est né!"
 		Romanian:"S-a născut un [greatPerson]!"
 		Spanish:"¡Un [greatPerson] ha nacido!"
-        Simplified_Chinese:"一个 [greatPerson] 已经出现!"
+        	Simplified_Chinese:"一个 [greatPerson] 已经出现!"
 		Portuguese:"Um [greatPerson] nasceu!"
 		German:"Ein [greatPerson] wurde geboren!"
 		Japanese:"[greatPerson]が誕生しました！"
@@ -1406,7 +1406,7 @@
 		Spanish:"¡Hemos encontrado [civName]!"
 		French:"Nous sommes entrés en contact avec [civName]!"
 		Romanian:"Am descoperit [civName]!"
-        Simplified_Chinese:"我们遇到过 [civName]!"
+        	Simplified_Chinese:"我们遇到过 [civName]!"
 		Portuguese:"Nós encontramos [civName]!"
 		German:"Wir sind auf [civName] getroffen!"
 		Japanese:"[civName]に遭遇しました。"
@@ -1474,8 +1474,8 @@
 		German:"Gespeicherte Spiele"
 		Dutch:"Huidige spellen"
 		Spanish:"Partidas guardadas"
-        Simplified_Chinese:"保存当前"
-        Portuguese:"Partidas salvas"
+        	Simplified_Chinese:"保存当前"
+        	Portuguese:"Partidas salvas"
 	}
 
 	"Saved game name":{
@@ -1486,8 +1486,8 @@
 		German:"Name des gespeicherten Spiels"
 		Dutch:"Naam van opgeslagen spellen"
 		Spanish:"Nombre de partida guardada"
-        Simplified_Chinese:"储存游戏名称"
-        Portuguese:"Nome do jogo salvo"
+        	Simplified_Chinese:"储存游戏名称"
+        	Portuguese:"Nome do jogo salvo"
 	}
 
 	"Copy to clipboard":{
@@ -1502,8 +1502,8 @@
 		German:"Spiel konnte nicht geladen werden"
 		Dutch:"Spel kon niet geladen worden"
 		Spanish:"Imposible cargar partida"
-        Simplified_Chinese:"无法读档"
-        Portuguese:"Não foi possivel carregar a partida"
+        	Simplified_Chinese:"无法读档"
+        	Portuguese:"Não foi possivel carregar a partida"
 	}
 
 	"Load [saveFileName]":{ // as in "Load SaveFile2"
@@ -1514,8 +1514,8 @@
 		German:"[saveFileName] laden"
 		Dutch:"[saveFileName] laden"
 		Spanish:"Cargar [saveFileName]"
-        Simplified_Chinese:"读取 [saveFileName]"
-        Portuguese:"Carregar [saveFileName]"
+        	Simplified_Chinese:"读取 [saveFileName]"
+        	Portuguese:"Carregar [saveFileName]"
 	}
 
 	"Delete save":{
@@ -1734,6 +1734,12 @@
 		Spanish:"Oasis"
 	}
 
+	"Snow":{
+		Italian:"Neve"
+	}
+
+	}
+
 	"Coast":{
 		Italian:"Costa"
 	}
@@ -1847,6 +1853,10 @@
         Simplified_Chinese:"鱼"
 		Portuguese:"Peixes"
 		German:"Fisch"
+	}
+
+	"Bison":{
+		Italian:"Bisonti"
 	}
 	
 	// Strategic Resources
@@ -2079,6 +2089,26 @@
         Simplified_Chinese:"鲸鱼"
         Portuguese:"Baleias"
 	}
+
+	"Copper":{
+		Italian:"Rame"
+	}
+
+	"Cocoa":{
+		Italian:"Cacao"
+	}
+
+	"Crab":{
+		Italian:"Granchi"
+	}
+
+	"Citrus":{
+		Italian:"Agrumi"
+	}
+
+	"Truffles":{
+		Italian:"Tartufi"
+	}
 	
 	// Tile improvements
 	
@@ -2102,8 +2132,8 @@
 		German:"Sägewerk"
 		Dutch:"Houtzagerij"
 		Spanish:"Serrería"
-        Simplified_Chinese:"伐木场"
-        Portuguese:"Serralheria"
+        	Simplified_Chinese:"伐木场"
+        	Portuguese:"Serralheria"
 	}
 
 	"Mine":{
@@ -2114,8 +2144,8 @@
 		German:"Mine"
 		Dutch:"Mijn"
 		Spanish:"Mina"
-        Simplified_Chinese:"矿"
-        Portuguese:"Mina"
+        	Simplified_Chinese:"矿"
+        	Portuguese:"Mina"
 	}
 
 	"Trading post":{
@@ -2126,8 +2156,8 @@
 		German:"Handelsposten"
 		Dutch:"Handelspost"
 		Spanish:"Puesto comercial"
-        Simplified_Chinese:"交易站"
-        Portuguese:"Posto de comércio"
+        	Simplified_Chinese:"交易站"
+        	Portuguese:"Posto de comércio"
 	}
 
 	"Camp":{
@@ -2138,8 +2168,8 @@
 		German:"Lager"
 		Dutch:"Kamp"
 		Spanish:"Campamento"
-        Simplified_Chinese:"营地"
-        Portuguese:"Campo"
+        	Simplified_Chinese:"营地"
+        	Portuguese:"Campo"
 	}
 	"Oil well":{
 		Italian:"Pozzo di petrolio"
@@ -2160,8 +2190,8 @@
 		German:"Weide"
 		Dutch:"Weide"
 		Spanish:"Pastizal"
-        Simplified_Chinese:"牧场"
-        Portuguese:"Pasto"
+        	Simplified_Chinese:"牧场"
+        	Portuguese:"Pasto"
 	}
 	"Plantation":{
 		Italian:"Piantagione"
@@ -2171,8 +2201,8 @@
 		German:"Plantage"
 		Dutch:"Plantage"
 		Spanish:"Plantación"
-        Simplified_Chinese:"种植园"
-        Portuguese:"Plantação"
+        	Simplified_Chinese:"种植园"
+        	Portuguese:"Plantação"
 	}
 	"Quarry":{
 		Italian:"Cava"
@@ -2182,8 +2212,8 @@
 		German:"Steinbruch"
 		Dutch:"Steengroeve"
 		Spanish:"Cantera"
-        Simplified_Chinese:"采石场"
-        Portuguese:"Pedreira"
+        	Simplified_Chinese:"采石场"
+        	Portuguese:"Pedreira"
 	}
 	"Fishing Boats":{
 		Italian:"Chiatta"
@@ -2191,7 +2221,7 @@
 		Italian:"Peschereccio"
 		French: "Bateaux de pêche"
 		Romanian:"Bărci de pescuit"
-        Simplified_Chinese:"渔船"
+        	Simplified_Chinese:"渔船"
 		Portuguese:"Barcos de pesca"
 		German:"Fischerboote"
 	}
@@ -2204,8 +2234,8 @@
 		German:"Straße"
 		Dutch:"Weg"
 		Spanish:"Carretera"
-        Simplified_Chinese:"道路"
-        Portuguese:"Estrada"
+        	Simplified_Chinese:"道路"
+        	Portuguese:"Estrada"
 	}
 	"Railroad":{
 		Italian:"Ferrovia"
@@ -2215,8 +2245,8 @@
 		German:"Schienen"
 		Dutch:"Spoorweg"
 		Spanish:"Línea de ferrocarril"
-        Simplified_Chinese:"铁路"
-        Portuguese:"Estrada de ferro"
+        	Simplified_Chinese:"铁路"
+        	Portuguese:"Estrada de ferro"
 	}
 	
 	"Remove Forest":{
@@ -2225,7 +2255,7 @@
 		French: "Couper la forêt"
 		Romanian:"Defrișează pădurea"
 		Spanish:"Quitar bosque"
-        Simplified_Chinese:"砍伐森林"
+        	Simplified_Chinese:"砍伐森林"
 		Portuguese:"Cortar floresta"
 		German:"Wald abholzen"
 	}
@@ -2235,7 +2265,7 @@
 		French: "Défricher la jungle"
 		Romanian:"Defrișează jungla"
 		Spanish:"Quitar selva"
-        Simplified_Chinese:"砍伐丛林"
+        	Simplified_Chinese:"砍伐丛林"
 		Portuguese:"Cortar selva"
 		German:"Dschungel abholzen"
 	}
@@ -2277,8 +2307,8 @@
 		German:"Akademie"
 		Dutch:"Academie"
 		Spanish:"Academia"
-        Simplified_Chinese:"学院"
-        Portuguese:"Academia"
+        	Simplified_Chinese:"学院"
+        	Portuguese:"Academia"
 	}
 	"Landmark":{
 		Italian:"Capolavoro"
@@ -2289,8 +2319,8 @@
 		German:"Sehenswürdigkeit" 
 		Dutch:"Mijlpaal"
 		Spanish:"Edificio emblemático"
-        Simplified_Chinese:"里程碑"
-        Portuguese:"Edificio emblemático"
+        	Simplified_Chinese:"里程碑"
+        	Portuguese:"Edificio emblemático"
 	}
 	"Manufactory":{
 		Italian:"Fabbrica"
