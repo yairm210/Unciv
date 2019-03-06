@@ -64,6 +64,11 @@ class UnitAutomation{
         // if there is an attackable unit in the vicinity, attack!
         if (tryAttackNearbyEnemy(unit,unitDistanceToTiles)) return
 
+        // Barbarians try to pillage improvements if no targets reachable
+        if (unit.civInfo.isBarbarianCivilization()) {
+            if (pillageImprovement(unit, unitDistanceToTiles)) return
+        }
+
         if (tryGarrisoningUnit(unit)) return
 
         if (unit.health < 80) {
@@ -101,6 +106,8 @@ class UnitAutomation{
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.canMoveTo(it) }
         val unitTile = unit.getTile()
 
+        if (pillageImprovement(unit, unitDistanceToTiles)) return
+
         val tilesByHealingRate = tilesInDistance.groupBy { rankTileForHealing(it,unit) }
         if(tilesByHealingRate.isEmpty()) return
         val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
@@ -111,6 +118,20 @@ class UnitAutomation{
         if(unit.currentMovement>0 && unit.canFortify()){
             unit.action="Fortify 0"
         }
+    }
+
+    fun pillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
+        val tilesInDistance = unitDistanceToTiles.filter {it.value < unit.currentMovement}.keys
+                .filter { unit.canMoveTo(it) && it.improvement != null }
+
+        if (tilesInDistance.isEmpty()) return false
+        val tileToPillage = tilesInDistance.maxBy { it.getDefensiveBonus() }!!
+        if (unit.getTile()!=tileToPillage)
+            unit.moveToTile(tileToPillage)
+
+        UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
+                .first { it.name=="Pillage" }.action()
+        return true
     }
 
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
