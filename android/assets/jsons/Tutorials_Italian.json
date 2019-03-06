@@ -27,7 +27,7 @@
 		],
 		[
 			"Ogni abitante nella tua città può sfruttare una singola casella, dando alla città gli introiti della casella.",
-			"Puoi assegnare e togliere lavoro agli abitanti cliccando sulle caselle - ",
+			"Puoi assegnare e togliere lavoro agli abitanti cliccando sulle caselle, ",
 			"  ma, ovviamente, puoi dare lavoro solo se hai ancora abitanti non attivi."
 		],
 		[
@@ -86,12 +86,12 @@
 		[
 			"Salve. Benvenuto su UnCiv!",
 			"I giochi di civiltà tipo appunto Civilization possono essere complessi,",
-      " quindi ti guideremo nel tuo primo viaggio.",
+      			" quindi ti guideremo nel tuo primo viaggio.",
 			"Prima di iniziare, rivediamo i concetti base del gioco."
 		],
 		[
 			"Cominci con tre sole unità: ",
-      " un Colono, che può fondare una città; ",
+      			" un Colono, che può fondare una città; ",
 			" un Guerriero, la primissima unità militare; ",
 			" un Esploratore, per appunto esplorare i dintorni.",
 			"Clicca su una casella per dare ordini all'unità."
@@ -140,7 +140,7 @@
 		[
 			"Nei tuoi primi turni, avrai ben poche opzioni, ",
 			"  ma con il crescere della tua civiltà, lo stesso accadrà ",
-			"  alla quantità di cose che richiedono la tua attenzione"
+			"  alla quantità di cose che richiedono la tua attenzione."
 		]
 	]
 	
@@ -263,8 +263,8 @@
 	ApolloProgram:  [
 		[
 			"Hai completato il Programma Apollo!",
-			"Ora puoi iniziare a costruire le parti dell'astronave nelle tue città",
-			"  (con le apposite tecnologie) e cercare di ottenere una vittoria scientifica!"
+			"Ora puoi iniziare a costruire le parti dell'astronave nelle tue città (con le apposite tecnologie)",
+			"  e cercare di ottenere una vittoria scientifica!"
 		]
 	]
 	
@@ -280,7 +280,7 @@
 	WorkerTrained:[
 		[
 			"Hai addestrato un lavoratore!",
-			"I lavoratori sono vitali per la crescita dellecittà, perché solo loro possono costruire miglioramenti nelle caselle.",
+			"I lavoratori sono vitali per la crescita delle città, perché solo loro possono costruire miglioramenti nelle caselle.",
 			"I miglioramenti incrementano la resa delle caselle, permettendo alle città di produrre di più",
 			"  e crescere più in fretta, senza dover espandersi a forza!"
 		]
@@ -298,16 +298,16 @@
 	CanEmbark:[
 		[
 			"Ora le tue unità terrestri possono imbarcarsi e attraversare caselle acquatiche!",
-			"Entrare o abbandonare una casella acquatica impiega un intero turno.",
+			"Entrare o uscire da una casella acquatica impiega un intero turno.",
 			"Inoltre, le unità imbarcate sono indifese, quindi fai attenzione!"
 		]
 	]
 
 	CityRange:[
 		[
-			"Your citizens can work 3 tiles away from city center.",
-			"The city border will keep expanding,",
-			"but citizen cannot be assigned to a tile too far."
+			"I tuoi cittadini possono sfruttare fino a tre caselle di distanza dal centro città.",
+			"Ricorda che i confini della città continueranno ad espandersi,",
+			"ma nessun abitante potrà essere assegnato ad una casella citizen che si trova troppo lontano."
 		]
 	]
 	
