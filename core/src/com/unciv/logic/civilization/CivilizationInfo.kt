@@ -301,7 +301,8 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    fun isDefeated()= cities.isEmpty() && !getCivUnits().any{it.name=="Settler"}
+    fun isDefeated()= cities.isEmpty() && citiesCreated > 0
+
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
                 .asSequence()
