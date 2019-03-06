@@ -63,6 +63,17 @@
 		improvementStats:{food:1},
 		building:"Lighthouse"
 	},
+	/*
+	{
+		name:"Bison",
+		resourceType:"Bonus",
+		terrainsCanBeFoundOn:["Plains","Grassland"],
+		food:1,
+		improvement:"Camp",
+		improvementStats:{food:1},
+		building:"Granary"
+	},
+	*/
 	
 	// Strategic resources
 	{
@@ -249,4 +260,50 @@
 		improvement:"Fishing Boats",
 		improvementStats:{food:1}
 	}
+	/*
+	{
+		name:"Citrus",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Plains","Grassland"],
+		food:1,
+		gold:1,
+		improvement:"Plantation",
+		improvementStats:{food:1,gold:1},
+		building:"Granary"
+	},
+	{
+		name:"Copper",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Plains","Grassland","Desert","Tundra","Snow"],
+		gold:2,
+		improvement:"Mine",
+		improvementStats:{gold:2}
+	},
+	{
+		name:"Cocoa",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Jungle"],
+		food:1,
+		gold:1,
+		improvement:"Plantation",
+		improvementStats:{food:1,gold:1}
+	},
+	{
+		name:"Crab",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Coast"],
+		food:1,
+		gold:1,
+		improvement:"Fishing Boats",
+		improvementStats:{food:1,gold:1},
+	},
+	{
+		name:"Truffles",
+		resourceType:"Luxury",
+		terrainsCanBeFoundOn:["Forest","Marsh","Jungle"],
+		gold:2,
+		improvement:"Camp",
+		improvementStats:{gold:2}
+	},
+	*/
 ]
