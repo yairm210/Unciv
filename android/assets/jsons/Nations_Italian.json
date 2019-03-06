@@ -153,7 +153,7 @@
 		hateNo:["Stai scherzando, spero!","Certo che no!"]
 		hateYes:["Oh, molto bene!","Se proprio devo..."]
 		
-		afterPeace:"Molto bene. Finiamola."
+		afterPeace:"Hai combattuto con onore. Finiamola qui."
 		tradeRequest:"Ti interessa un accordo commerciale con il regno inglese?"
 		
 		mainColor:[ 114, 0, 0],
@@ -249,7 +249,7 @@
 
 		hateHello:"Che cosa vuoi?"
 		hateLetsHearIt:["E...?","Continua."]
-		hateNo:["Questo è spiacevole.","Stai scherzando, spero!"]
+		hateNo:["Spiacente.","Stai scherzando, spero!"]
 		hateYes:["Bene.","Oh. Bene."]
 		
 		afterPeace:"I tuoi soldati hanno combattuto bene. Mi congratulo per la tua vittoria."
@@ -258,7 +258,7 @@
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
 		unique:"+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
-		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arezzo","Milano","Arpinum","Circei","Setia",
+		cities:["Roma","Antium","Cumae","Neapolis","Ravenna","Arretium","Milano","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
 	},
@@ -348,7 +348,7 @@
 
 		hateHello:"Oh, sei tu..."
 		hateLetsHearIt:["Sentiamo.","Continua.","Procedi."]
-		hateNo:["Ie. (No)","Scusami?","Forse non ora"]
+		hateNo:["Ie. (No)","Scusami?","Forse non ora."]
 		hateYes:["D'accordo.","Oh... benissimo.","Certo non v'è altro modo."]
 		
 		afterPeace:"Combatterti è stato un onore, ma adesso è il momento di terminare questo spargimento di sangue."
@@ -358,7 +358,44 @@
 		secondaryColor:[185,0,0],
 		unique: "Le unità combattono come se fossero perfettamente sane. +1 Cultura dai Pescherecci.",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
+	},	/*
+	{
+		name:"Germany",
+		translatedName:"Germania",
+		leaderName:"Otto von Bismark",
+		
+		startIntroPart1: "Salve, potente Bismarck, primo cancelliere della Germania e del suo impero! La germania è una delle nazioni più giovani, sorta dalle ceneri del Sacro Romano Impero e poi unificata nel 1871, poco più di un secolo fa. Il popolo tedesco si è rivelato creativo, industrioso e feroce in guerra. Nonostante le catastrofi subite nella prima metà del XX secolo, la Germania è riuscita a imporsi come una delle nazioni più importanti dal punto di vista economico, artistico e tecnologico.."
+		startIntroPart2: "Grande principe Bismarck, il popolo tedesco guarda a te per vivere nuovi giorni di gloria. Forte è la sua determinazione affinché tu, l'amato Cancelliere di Ferro, torni a guidare la nazione ancora una volta. Sceglierai di dominare con il suangue e l'acciaio o patrocinerai le arti e l'industria? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Lascia che tu lo sappia: tu sei un nemico della Germania e come tale vai combattuto. Che Dio abbia pietà di te, perché io non ne avrò."
+		attacked:"Ho sconfitto nemici dieci volte più potennti di te. Tu ne sarai solo un altro per gli storici!"
+		defeated:"Eravamo gli augusti e i gloriosi... ma no, non importa. Hai vinto. Possa il tuo regno essere più pacifico di quanto fosse il mio."
+		introduction:"Guten tag. Nel nome del grande popolo tedesco, vi diamo il benvenuto."
+		
+		neutralHello:"E dunque?"
+		neutralLetsHearIt:["Cos'hai da dire?","Sì?","Ja?"]
+		neutralNo:["Non lo accetto.","Nein.","Impossibile."]
+		neutralYes:["D'accordo.","Benissimo, allora.","Ja."]
+
+		hateHello:"Sputa il rospo!"
+		hateLetsHearIt:["E...?!","Avanti!","Beh, dimmelo!"]
+		hateNo:["Ciò non è accettabile!","Stai scherzando, spero!","Nein!"]
+		hateYes:["Va bene.","Gut.","Non credo possa rifiutare."]
+		
+		afterPeace:"Che ne pensi di metterci una pietra sopra?"
+		tradeRequest:"Considerare con cautela questa proposta sarebbe nei nostri migliori interessi."
+				
+		mainColor:[224,224,224],
+		secondaryColor:[64,64,64],
+		unique:"Quando sconfiggi un'unità barbara, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri.",
+		cities:["Berlino","Amburgo","Monaco","Colonia","Francoforte","Essen","Dortmund","Stoccarta","Dusseldorf","Bremen",
+			"Hannover","Duisburg","Lipsia","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
+			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
+			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrucken","Krefeld","Pirmasens","Potsdam","Solingen",
+			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
+			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
+	*/
 	{
 		name:"Barbarians",
 		mainColor:[0,0,0],
