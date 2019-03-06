@@ -28,7 +28,7 @@
 		description: "Un'altra risorsa base. Rappresenta l'avanzamento scientifico del tuo impero.\nOgni tecnologia richiede una certa quantità di Scienza, che incrementa col numero di tecnologie scoperte.\nOgni abitante produce 1 punto Scienza."	
 	},
 	{
-		name:"Gold",
+		name:"Oro",
 		description: "Un'altra risorsa base. Rappresenta la ricchezza dell'imperp.\nLa maggior parte degli edifici hanno costi di mantenimento, che richiedono oro per turno.\nAd ogni turno in cui ti trovi in deficit di Oro, perdi punti Scienza uguali al tuo debito, il che può arrestare del tutto le tue ricerche!\nLe città connesse alla capitale tramite le strade generano oro dalle rotte commerciali, quindi ti conviene collegare grandi città alla capitale!"
 	},
 	{
