@@ -27,6 +27,14 @@
 		Simplified_Chinese:"下一回合"
 		Portuguese:"Proximo turno"
 		Japanese:"次のターン"
+		Polish:"Następna tura"
+		Indonesian:"Giliran berikutnya"
+		Philippino:"Susunod na pagliko"
+		Czech:"Další otočení"
+		Slovak:"Ďalšie otočenie"
+		Sloven:"Naslednji zavoj"
+		Croatian:"Sljedeći red"
+		Danish:"Næste tur"
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
@@ -91,6 +99,7 @@
 		Spanish:"turnos"
 		Simplified_Chinese:"回合"
 		Portuguese:"turnos"
+		Japanese:"順番"
 	}
 
 	// Unit
@@ -135,6 +144,14 @@
 	
 	"Bombard strength":{ // for displaying city info
 		Italian:"Forza bombardamento"
+		Russian:"Бомбардная сила"
+		French:"Force de bombardement"
+		Romanian:"Puterea bombardamentului"
+		German:"Bombardieren Sie die Stärke"
+		Dutch:"Bombard sterkte"
+		Spanish:"Fuerza de bombardeo"
+		Simplified_Chinese:"轰炸力量"
+		Portuguese:"Força Bombard"
 		Japanese:"爆撃力"
 	}
 
@@ -764,6 +781,13 @@
 	"Buy":{ // for when the construction is a wonder/special and can't be bought, the button is disabled but still displays text
 		Italian:"Acquista"
 		French:"Acheter"
+		Romanian:"A cumpara"
+		German:"Kaufen"
+		Russian:"купить"
+		Dutch:"Kopen"
+		Spanish:"Comprar"
+		Portuguese:"Comprar"
+		Simplified_Chinese:"购买"
 		Japanese:"購入"
 	}
 	
@@ -5912,7 +5936,7 @@
 		French:"Légion"
 	} // Rome unique
 	"Horseman":{	
-		Italian:"Cavaliere"
+		Italian:"Guerriero a cavallo" //wrong translation by Smashfanful
 		Russian:"Всадник"
 		French:"Cavalier"
 		Romanian:"Călăreţ"
@@ -6531,14 +6555,15 @@
 		French:"Oligarchie"
 	}
 	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
-		Italian:"Nessun mantenimento per le unità nelle città"
-		Russian:"Юниты в городах содержаться бесплатно"
-		Romanian:"Unitățile din orașe nu necesită costuri de întreținere"
-		Spanish:"Unidades en las ciudades no cuestan mantenimiento"
-        Simplified_Chinese:"城市里的单位不需要维护费"
-		Portuguese:"Unidades em cidades não custam manutenção"
-		German:"Einheiten in Städten Kosten keinen Unterhalt"
-		French:"Les unités en garnison n'ont plus de coût d'entretien"
+		Italian:"+50% forza d'attacco per le città, e nessun mantenimento per le loro guarnigioni"
+		Russian:"Юниты в городах содержаться бесплатно, гарнизонный город + 50% силы атаки"
+		Romanian:"Unitățile din orașe nu necesită costuri de întreținere, orașul înarmat + 50% atac"
+		Spanish:"Unidades en las ciudades no cuestan mantenimiento, y +50% de fuerza de ataque"
+        Simplified_Chinese:"城市里的单位不需要维护费,驻守城市+ 50％的攻击强度"
+		Portuguese:"Unidades em cidades não custam manutenção, +50% de força de ataque"
+		German:"Einheiten in Städten Kosten keinen Unterhalt, +50% Angriffsstärke"
+		French:"Les unités en garnison n'ont plus de coût d'entretien, +50% de la force d'attaque"
+		Japanese:"都市のユニットは維持費、駐屯地の都市+ 50％の攻撃力"
 	}
 	"Landed Elite":{
 		Italian:"Nobiltà terriera"
@@ -6551,7 +6576,7 @@
 		French:"Élite terrienne"
 	}
 	"+10% food growth and +2 food in capital":{
-		Italian:"+10% Crescita e +2 Ccibo nella capitale"
+		Italian:"+10% Crescita e +2 Cibo nella capitale"
 		Russian:"+10% прироста еды и +2 еды в столице"
 		Romanian:"+10% creștere hrană și +2 hrană în capitală"
 		Spanish:"+10% crecimiento de comida y +2 comida en la capital"
@@ -7848,8 +7873,16 @@
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 	}
-	"May contain [listOfResources]":{}
-	"Occurs on [listOfTerrains]":{}
-	"Defence bonus":{}
-	"Movement cost":{}
+	"May contain [listOfResources]":{
+		Italian:"Può contenere [listOfResources]"
+	}
+	"Occurs on [listOfTerrains]":{
+		Italian:"Può avvenire/avviene su [listOfTerrains]"
+	}
+	"Defence bonus":{
+		Italian:"Bonus Difesa"
+	}
+	"Movement cost":{
+		Italian:"Costi movimento"
+	}
 }
