@@ -104,6 +104,25 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
+	/*
+	{
+		name:"War Chariot",
+		unitType:"Ranged",
+		uniqueTo:"Egypt",
+		replaces:"Chariot Archer",
+		movement:5,
+		strength:6,
+		rangedStrength:10,
+		cost: 56,
+		requiredTech:"The Wheel",
+		upgradesTo:"Knight",
+		obsoleteTech:"Chivalry",
+		uniques:["No defensive terrain bonus","Rough terrain penalty"],
+		hurryCostModifier:20,
+		attackSound:"arrow"
+		//This is the Egyptian unique unit. It replaces Chariot Archer, moves faster and needs no horses.
+	},
+	*/
 	{
 		name:"Spearman",
 		unitType:"Melee",
@@ -178,6 +197,24 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
+	/*
+	{
+		name:"Legion",
+		unitType:"Melee",
+		uniqueTo:"Rome",
+		replaces:"Swordsman",
+		movement:2,
+		strength:17,
+		cost: 75,
+		requiredTech:"Iron Working",
+		upgradesTo:"Longswordsman",
+		obsoleteTech:"Steel",
+		requiredResource:"Iron",
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+		//Roman unique unit. It is stronger than Swordsman. It should also build roads (maybe railroads, too). It takes more to Steel to make it obsolete.
+	},
+	*/
 	{
 		name:"Horseman",
 		unitType:"Mounted",
@@ -223,6 +260,24 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
+	/*
+	{
+		name:"Chu-ko-nu",
+		unitType:"Ranged",
+		uniqueTo:"China",
+		movement:2,
+		strength:13,
+		rangedStrength:14,
+		replaces:"Crossbowman",
+		cost: 120,
+		requiredTech:"Machinery",
+		upgradesTo:"Gatling Gun",
+		obsoleteTech:"Industrialization",
+		hurryCostModifier:20,
+		attackSound:"arrow"
+		//Chinese unique unit. It is weaker than Crossbowman but can attack twice.
+	},
+	*/
 	{
 		name:"Longbowman",
 		unitType:"Ranged",
@@ -283,6 +338,7 @@
 		promotions:["Shock I"]
 		hurryCostModifier:20,
 		attackSound:"metalhit"
+		//Aside from the Great Generals II promotion, Samurai should also create Fishing Boats (not now, surely)
 	},
 	{
 		name:"Pikeman",
@@ -341,6 +397,7 @@
 		uniques:["Can move after attacking","No defensive terrain bonus"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
+		//Camel Archer should have no penalty attacking cities
 	},
 	
 	// Rennaisance Era
@@ -426,6 +483,24 @@
 		upgradesTo:"Battleship",
 		hurryCostModifier:20
 	},
+	/*
+	{
+		name:"Ship of the Line",
+		unitType:"WaterRanged",
+		replaces:"Frigate",
+		uniqueTo:"England",
+		movement:5,
+		strength:30,
+		rangedStrength:35,
+		cost: 185,
+		requiredResource:"Iron",
+		uniques:["Extra sight 1"]
+		requiredTech:"Navigation",
+		obsoleteTech:"Electronics",
+		upgradesTo:"Battleship",
+		hurryCostModifier:20
+	},
+	*/
 	{
 		name:"Lancer",
 		unitType:"Mounted",
@@ -481,6 +556,24 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 	},
+	/*
+	{
+		name:"Cossack",
+		unitType:"Mounted",
+		replaces:"Cavalry",
+		uniqueTo:"Russia",
+		movement:4,
+		strength:34,
+		cost: 225,
+		requiredTech:"Military Science",
+		requiredResource:"Horses",
+		upgradesTo:"Landship",
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Damaged Enemy Bonus 33%" ],
+		hurryCostModifier:20,
+		attackSound:"horse"
+		//This Russian unique unit should replace Cavalry and also deal +33% damage to damaged units.
+	},
+	*/
 	{
 		name:"Artillery",
 		unitType:"Siege",
@@ -600,6 +693,7 @@
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
+	
 	{
 		name:"Anti-Tank Gun",
 		unitType:"Melee",
