@@ -27,7 +27,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
     private var razeCityButtonHolder = Table() // sits on the top
 
-    /** Displays buildings, specialists and stats drilldown - sits on the top left of the city screen */
+    /** Displays buildings, specialists and stats drilldown - sits on the top right of the city screen */
     private var cityInfoTable = CityInfoTable(this)
 
     /** Displays tile info, sits on the bottom right */
@@ -53,7 +53,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         cityInfoTable.update()
         val buildingsScroll = ScrollPane(cityInfoTable)
         buildingsTableContainer.add(buildingsScroll)
-                .height(stage.height / 2)
+                .size(stage.width/4,stage.height / 2)
 
         buildingsTableContainer = buildingsTableContainer.addBorder(2f, Color.WHITE)
         buildingsTableContainer.setPosition(stage.width - buildingsTableContainer.width-5,

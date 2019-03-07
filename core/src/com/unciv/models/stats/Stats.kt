@@ -74,6 +74,10 @@ open class Stats() {
                 Stat.Science to science)
     }
 
+    fun get(stat:Stat):Float{
+        return this.toHashMap()[stat]!!
+    }
+
     private fun setStats(hashMap:HashMap<Stat, Float>){
         culture=hashMap[Stat.Culture]!!
         gold=hashMap[Stat.Gold]!!
