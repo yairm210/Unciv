@@ -41,7 +41,7 @@
 		startIntroPart2:"Alessandro, il tuo popolo è pronto a marciare in guerra per diffondere la cultura greca tra le genti del mondo e donarti gloria imperitura. Sei pronto ad accettare il tuo destino, re Alessandro? Guiderai il tuo popolo verso il trionfo e la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
-		attacked:"Ad essere onesto, mi sono stancato di starmene impalato e di riposare sugli allori."
+		attacked:"Ad essere onesto, mi sono stancato di starmene impalato e di riposare sugli allori. Vieni, le mie armate ti accoglieranno a braccia aperte!"
 		defeated:"Così come in fretta era iniziata, così ora la mia lunga marcia giunge alla fine."
 		introduction:"Benvenuto, straniero! Sono Alexandros, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
 		
@@ -204,7 +204,7 @@
 		startIntroPart1:"Salute, Vostra Maestà Imperiale Caterina, meravigliosa imperatrice di tutte le Russie. Al vostro comando si muove il più grande paese del mondo. La potente Russia si estende dall'Oceano Pacifico a est al Mar Baltico a ovest. Nonostante guerre, siccità e ogni altro genere di disastro, il popolo russo sopravvive e prospera e i suoi artisti e scienziati sono tra i migliori al mondo. Ancora oggi il paese è annoverabile come uno tra i più potenti della storia umana, una vera superpotenza, dotata per di più della forza più distruttiva mai concepita."
 		startIntroPart2:"Caterina, il tuo popolo vuole tornare ai gloriosi giorni della grande Russia, vuole rivitalizzarne la terra e rivivere la meraviglia dell'Illuminismo. Tornerai a guidare la tua gente verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"Ti sei comportato molto male, lo sai? Adesso è l'ora della vendetta.",
+		declaringWar:"Ti sei comportato molto male, lo sai? Credo che adesso sia l'ora della vendetta.",
 		attacked:"Hai confuso la mia passione per una debolezza... temo che la pagherai assai cara."
 		defeated:"Ci hai sconfitti, e ciò mi rende prigioniera. Ma direi che ci sono destini peggiori, giusto?"
 		introduction:"Ti saluto, straniero! Se sei intelligente e saggio tanto quanto sei bello, andremo d'accordo alla grande!"
@@ -215,7 +215,7 @@
 		neutralYes:["Certo.","D'accordo.","Eccellente!"]
 
 		hateHello:"Che cosa vuoi?!"
-		hateLetsHearIt:["Ebbene?","Avanti...","COntinua."]
+		hateLetsHearIt:["Ebbene?","Avanti...","Continua."]
 		hateNo:["Stai scherzando?!","Scusami?!","Ciò è inaccettabile."]
 		hateYes:["Credo... che accetterò.","Oh... molto bene.","Ci sto."]
 		
@@ -238,9 +238,9 @@
 		startIntroPart2:"O potente imperatore, il tuo popolo si rivolge a te a gran voce per riconquistare la sua antica gloria. Farai in modo che il tuo impero risorga, portando pace e ordine a tutti? Renderai Roma nuovamente il centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, credo proprio che dovrò muoverti guerra. Alea jacta eat - il dado è tratto!"
-		attacked:"Coraggioso, ma anche stupido e sciocco... chissà se tu avessi un cervello simile al tuo coraggio. D'altro canto, nessuno può sconfiggere Roma."
+		attacked:"La tua arroganza sarà la tua rovina! Nessun potere, per quanto prode o forte, può sconfiggere Roma!"
 		defeated:"Gli dei hanno privato Roma del loro favore. Siamo stati sconfitti."
-		introduction:"Ti saluto. Sono sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei benvenuto."
+		introduction:"Ave. Sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei il benvenuto."
 		
 		neutralHello:"Saluti."
 		neutralLetsHearIt:["Comincia pure.","Continua."]
@@ -270,8 +270,8 @@
 		startIntroPart1:"Che la benedizione di Allah scenda su di te, grande califfo Harun al-Rashid, capo del pio popolo arabo! L'impero musulmano del Califfato nacquie negli anni turbolenti che seguirono la morte del profeta Maometto nel 632 d.C.; i suoi seguaci intendevano estendere il regno di Allah a tutti i  popoli della Terra. E il Califfato in effetti divenne sempre più potente, giungendo a controllare, al proprio apice, la Spagna, l'Africa settentrionale, il Medio Oriente, l'Anatolia, i Balcani e la Persia; un impero esteso quanto quello romano, se non di più. Nel Medio Evo, mentre le nazioni d'Europa sprofondavano nell'ignoranza e nel caos, in Arabia le arti e le scienze fiorivano. Il Califfato durò per 600 anni, finché non cedette all'assalto dei Mongoli, quei maledetti distruttori di imperi altrui."
 		startIntroPart2:"Gran califfo Harun al-Rashid, la tua gente si rivolge a te per tornare alla grandezza di un tempo. Per far tornare l'Arabia una terra illuminata da arti e conoscenza, una nazione potente che non debba temere nessuno. O califfo, raccoglierai la sfida? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"Il mondo sarebbe più bello senza di te. Preparati alla guerra!"
-		attacked:"Invero, è un peccato che dobbiamo passare alle maniere forti... non è tradizione per un re uccidere un altro re, né per un regno uccidere un altro regno."
+		declaringWar:"Invero, è un peccato che dobbiamo passare alle maniere forti... non è tradizione per un re uccidere un altro re, né per un regno uccidere un altro regno."
+		attacked:"Ti avverto almeno di non farti un'abitudine di spargere sangue. Il sangue non dorme mai."
 		defeated:"Hai vinto. Complimenti. Ora il palazzo è nelle tue mani. Ti prego di prenderti cura del mio pavone."
 		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli Arabi. Vieni, raccontami del tuo impero."
 		
@@ -333,7 +333,7 @@
 		translatedName:"Giappone",
 		leaderName:"Oda Nobunaga",
 		
-		startIntroPart1: "Tu sia benedetto, nobile Oda Nobunga, signore del Giappone, la terra del Sol Levante! Possa tu camminare a lungo in mezzo ai suoi meravigliosi boccioli di ciliegio. I giapponesi sono un popolo isolano, fiero e pio con una ricca cultura artistica e letteraria. La tua civiltà esiste per migliaia di anni, anni di sanguinose lotte, espansioni ed isolazioni, di grandi ricchezze e povertà. Oltre alla loro prodezza sul campo di battaglia, il tuo popolo è abile anche nell'industria, e le loro innovazioni tecnologiche e le loro grandi fabbriche sono l'invidia degli altri popoli in tutto il globo."
+		startIntroPart1: "Tu sia benedetto, nobile Oda Nobunaga, signore del Giappone, la terra del Sol Levante! Possa tu camminare a lungo in mezzo ai suoi meravigliosi boccioli di ciliegio. I giapponesi sono un popolo isolano, fiero e pio con una ricca cultura artistica e letteraria. La tua civiltà esiste per migliaia di anni, anni di sanguinose lotte, espansioni ed isolazioni, di grandi ricchezze e povertà. Oltre alla loro prodezza sul campo di battaglia, il tuo popolo è abile anche nell'industria, e le loro innovazioni tecnologiche e le loro grandi fabbriche sono l'invidia degli altri popoli in tutto il globo."
 		startIntroPart2: "Leggendario damiyo, prenderai le redini del destino? Porterai alla tua famiglia e al tuo popolo l'onore e la gloria che meritano? Alzerai di nuovo la tua spada e marcerai verso il trionfo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Come samurai siamo gente onesta, e noi troviamo onesto volerti esprimere la nostra intenzione di cancellarti dalla faccia della terra con questo messaggio."
