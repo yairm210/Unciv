@@ -210,10 +210,16 @@
 	}
 	
 	"Stop automation":{
-		Italian:"Ferma automatizzazione"
+		Italian:"Arresta automazione"
 		Spanish:"Parar automatización"
 		Romanian:"Oprește automatizarea"
 		German:"Automatisieren anhalten"
+		French:"Arrêtez automatisation"
+		Portuguese:"Pare a automação"
+		Simplified_Chinese:"停止自动化"
+		Romanian:"Opriți automatizarea"
+		Russian:"Стоп автоматизации"
+		Japanese:"自動化を停止"
 	}
 
 	"Fortify":{
