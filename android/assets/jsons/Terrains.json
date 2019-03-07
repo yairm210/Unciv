@@ -35,12 +35,14 @@
 		type:"Land",
 		food:1,
 		movementCost:1,
+		defenceBonus: -0.1,
 		RGB: [125,122,113]
 	},
 	{
 		name:"Desert",
 		type:"Land",
 		movementCost:1,
+		defenceBonus: -0.1,
 		RGB: [ 255, 255, 102]
 	},
 	{
@@ -64,6 +66,13 @@
 		type:"Land",
 		impassable:true,
 		RGB: [89, 45, 0]
+	},
+	{
+		name:"Snow",
+		type:"Land",
+		movementCost:1,
+		defenceBonus: -0.1,
+		RGB: [153, 255, 255]
 	},
 	
 	// Terrain features
