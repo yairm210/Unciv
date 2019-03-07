@@ -65,6 +65,18 @@
 		impassable:true,
 		RGB: [89, 45, 0]
 	},
+	/*
+	{
+		name:"Snow",
+		type:"Land",
+		movementCost:1,
+		defenceBonus: -0.1,
+		RGB: [253, 255, 255]
+		//Notes by Smashfanful
+	 	//Adding in snow would mean adding in random patches of snowy land. This requires more complex map generation than the game currently has.
+		//It perhaps would be wise if it was placed, for starters, in the poles.
+	},
+	*/
 	
 	// Terrain features
 	{
