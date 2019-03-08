@@ -79,6 +79,8 @@ class Automation {
             val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }.sortedBy { it.maintenance }
             val zeroMaintenanceBuildings = buildableNotWonders.filter { it.maintenance == 0 && it !in wartimeBuildings }
             val productionBuildings = buildableNotWonders.filter { it.production>0 }
+            val happinessBuildings = buildableNotWonders.filter { it.happiness>0 }
+            val cultureBuildings = buildableNotWonders.filter { it.culture>0 }
             val isAtWar = cityInfo.civInfo.isAtWar()
 
             when {
@@ -89,17 +91,22 @@ class Automation {
                 currentConstruction!="" -> return
                 buildableNotWonders.any { it.name=="Monument"} -> currentConstruction = "Monument"
                 buildableNotWonders.any { it.name=="Granary"} -> currentConstruction = "Granary"
+                militaryUnits<cities -> trainCombatUnit(cityInfo)
+                workers==0 -> currentConstruction = CityConstructions.Worker
+                cityInfo.civInfo.happiness<0 && happinessBuildings.isNotEmpty() -> currentConstruction = happinessBuildings.minBy{ it.cost }!!.name
                 buildableNotWonders.any { it.name=="Library"} -> currentConstruction = "Library"
                 buildableNotWonders.any { it.name=="Market"} -> currentConstruction = "Market"
-                militaryUnits==0 -> trainCombatUnit(cityInfo)
-                workers==0 -> currentConstruction = CityConstructions.Worker
+                buildableNotWonders.any { it.name=="Forge"} -> currentConstruction = "Forge"
+                cityInfo.civInfo.happiness>cities && buildableNotWonders.any { it.name=="Aqueduct"} -> currentConstruction = "Aqueduct"
+                isAtWar && militaryUnits<cities * 2 + 3 -> trainCombatUnit(cityInfo)
+                isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.minBy { it.cost }!!.name
+                //build culture buildings before border expands to half of second ring
+                cityInfo.tiles.size < 13 && cultureBuildings.isNotEmpty() -> currentConstruction = cultureBuildings.minBy { it.cost }!!.name
                 productionBuildings.isNotEmpty() -> currentConstruction = productionBuildings.minBy { it.cost }!!.name
                 zeroMaintenanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintenanceBuildings.minBy { it.cost }!!.name
-                isAtWar && militaryUnits<cities -> trainCombatUnit(cityInfo)
-                isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.minBy { it.cost }!!.name
                 needWorkboat -> currentConstruction = "Work Boats"
                 workers<cities/2 -> currentConstruction = CityConstructions.Worker
-                militaryUnits<cities -> trainCombatUnit(cityInfo)
+                militaryUnits<cities * 2 + 3 -> trainCombatUnit(cityInfo)
                 buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.minBy { it.maintenance }!!.name
                 buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.minBy { it.cost }!!.name
                 else -> trainCombatUnit(cityInfo)
@@ -115,7 +122,7 @@ class Automation {
         fun square(x:Int) = x*x
         val unitStrength =  civInfo.getCivUnits().map { square(max(it.baseUnit().strength, it.baseUnit().rangedStrength)) }.sum()
         val cityStrength = civInfo.cities.map { square(CityCombatant(it).getCityStrength()) }.sum()
-        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt()
+        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt() + 1 //avoid 0
     }
 
     fun threatAssessment(assessor:CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {
