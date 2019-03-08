@@ -279,6 +279,7 @@ class CityInfo {
         cityConstructions.builtBuildings.remove(buildingName)
         cityConstructions.removeBuilding(buildingName)
         civInfo.gold += getGoldForSellingBuilding(buildingName)
+        hasSoldBuildingThisTurn=true
     }
     //endregion
 }

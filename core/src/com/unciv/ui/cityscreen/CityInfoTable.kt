@@ -10,9 +10,11 @@ import com.badlogic.gdx.utils.Align
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.Building
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.text.DecimalFormat
 import java.util.*
 
@@ -60,7 +62,22 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 val detailsString = building.getDescription(true,
                         cityScreen.city.civInfo.policies.adoptedPolicies)
                 wonderDetailsTable.add(detailsString.toLabel().apply { setWrap(true)})
-                        .width(cityScreen.stage.width/4 - 2*pad ) // when you set wrap, then you need to manually set the size of the label
+                        .width(cityScreen.stage.width/4 - 2*pad ).row() // when you set wrap, then you need to manually set the size of the label
+                if(!building.isWonder) {
+                    val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
+                    val sellBuildingButton = TextButton("Sell for [$sellAmount] gold".tr(),skin)
+                    wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
+                    sellBuildingButton.onClick {
+                        YesNoPopupTable("Are you sure you want to sell this [${building.name}]?".tr(),
+                            {
+                                cityScreen.city.sellBuilding(building.name)
+                                cityScreen.city.cityStats.update()
+                                cityScreen.update()
+                            }, cityScreen)
+                    }
+                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold)
+                        sellBuildingButton.disable()
+                }
                 wonderDetailsTable.addSeparator()
             }
         }
