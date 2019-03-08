@@ -91,6 +91,7 @@ class CivilizationInfo {
         toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
         toReturn.notifications.addAll(notifications)
+        toReturn.citiesCreated = citiesCreated
         return toReturn
     }
 
