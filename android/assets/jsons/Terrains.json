@@ -67,6 +67,7 @@
 		impassable:true,
 		RGB: [89, 45, 0]
 	},
+	/*
 	{
 		name:"Snow",
 		type:"Land",
@@ -74,6 +75,7 @@
 		defenceBonus: -0.1,
 		RGB: [153, 255, 255]
 	},
+	*/
 	
 	// Terrain features
 	{

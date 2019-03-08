@@ -15,7 +15,7 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
 import com.unciv.ui.EmpireOverviewScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.WorldScreenOptionsTable
+import com.unciv.ui.worldscreen.optionstable.WorldScreenMenuTable
 import kotlin.math.abs
 import kotlin.math.ceil
 
@@ -95,8 +95,8 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.onClick {
-            if(screen.stage.actors.none { it is WorldScreenOptionsTable })
-                WorldScreenOptionsTable(screen)
+            if(screen.stage.actors.none { it is WorldScreenMenuTable })
+                WorldScreenMenuTable(screen)
         }
         menuButton.centerY(this)
         menuButton.x = menuButton.y

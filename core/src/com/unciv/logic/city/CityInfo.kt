@@ -17,7 +17,7 @@ import kotlin.math.min
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
     @Transient var isConnectedToCapital = false
-    @Transient lateinit var ccenterTile:TileInfo  // 'cached' for better performance
+    @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
     @Transient val range = 2
 
     var location: Vector2 = Vector2.Zero
@@ -48,8 +48,8 @@ class CityInfo {
 
         val cityNameRounds = civInfo.citiesCreated / nationCities.size
         val cityNamePrefix = if(cityNameRounds==0) ""
-        else if(cityNameRounds==2) "New "
-        else "Newer "
+        else if(cityNameRounds==1) "New "
+        else "Neo "
 
         name = cityNamePrefix + cityName
 
