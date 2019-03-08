@@ -930,6 +930,11 @@
 		Japanese:"[greatPerson]ポイント"
 	}
 	
+	"Sell for [sellAmount] gold":{ // when selling a building
+		
+	}
+	"Are you sure you want to sell this [building]?":{}
+	
 	// Tech picker
 	"Pick a tech":{
 		Italian:"Scegli una tecnologia"
