@@ -28,6 +28,21 @@
 		uniques:["Ignores terrain cost"],
 		attackSound:"nonmetalhit"
 	},
+	/*
+	{
+		name:"Pathfinder",
+		uniqueTo:"Shoshone",
+		replaces:"Scout",
+		unitType:"Scout",
+		movement:2,
+		strength:8,
+		cost:45,
+		obsoleteTech:"Scientific Theory",
+		uniques:["Ignores terrain cost","Native tongue"],
+		attackSound:"nonmetalhit"
+		//Shoshone unique unit. May choose benefit when discovering ancient ruins.
+	},
+	*/
 	{
 		name:"Warrior",
 		unitType:"Melee",
@@ -39,6 +54,38 @@
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
 	},
+	/*
+	{
+		name:"Jaguar",
+		unitType:"Melee",
+		uniqueTo:"Aztec",
+		replaces:"Warrior",
+		movement:2,
+		strength:8,
+		cost: 40,
+		hurryCostModifier:20,
+		obsoleteTech:"Metal Casting",
+		uniques:["Combat Bonus in Forest/Jungle 33%","Woodsmah","Heals 25 damage if it kills an Unit"],
+		upgradesTo:"Swordsman",
+		attackSound:"nonmetalhit"
+		//Aztec unique unit, moves faster and fights better in Forest and Jungle. He also heals 25 if he kills an enemy.
+	},
+	{
+		name:"Maori Warrior",
+		unitType:"Melee",
+		uniqueTo:"Aztec",
+		replaces:"Polynesia",
+		movement:2,
+		strength:8,
+		cost: 40,
+		hurryCostModifier:20,
+		obsoleteTech:"Metal Casting",
+		uniques:["Haka War Dance"],
+		upgradesTo:"Swordsman",
+		attackSound:"nonmetalhit"
+		//Polynesian unique unit. All Units near him have -10% strenght
+	},
+	*/
 	{
 		name:"Archer",
 		unitType:"Ranged",
@@ -67,6 +114,42 @@
 		upgradesTo:"Crossbowman",
 		attackSound:"arrow"
 	},
+	/*
+	{
+		name:"Slinger",
+		unitType:"Ranged",
+		replaces:"Archer",
+		uniqueTo:"Inca",
+		movement:2,
+		strength:4,
+		rangedStrength:7,
+		cost: 40,
+		hurryCostModifier:20,
+		requiredTech:"Archery",
+		obsoleteTech:"Machinery",
+		uniques:["May withdraw before melee"],
+		upgradesTo:"Crossbowman",
+		attackSound:"arrow"
+		//Incan unique unit
+	},
+	{
+		name:"Atl Atl Warrior",
+		unitType:"Ranged",
+		replaces:"Archer",
+		uniqueTo:"Maya",
+		movement:2,
+		strength:5,
+		rangedStrength:7,
+		cost: 36,
+		hurryCostModifier:20,
+		requiredTech:"Agriculture",
+		obsoleteTech:"Machinery",
+		uniques:["May withdraw before melee"],
+		upgradesTo:"Crossbowman",
+		attackSound:"arrow"
+		//Mayan unique unit. Already available. Maybe you should put it as one of the Mayan Turn 1 units in game XD
+	},
+	*/
 	{
 		name:"Work Boats",
 		unitType:"WaterCivilian",
@@ -89,6 +172,24 @@
 		hurryCostModifier:20,
 		attackSound:"nonmetalhit"
 	},
+	/*
+	{
+		name:"Quinquereme",
+		unitType:"WaterMelee",
+		uniqueTo:"Phoenicia",
+		replaces:"Trireme",
+		movement:4,
+		strength:13,
+		cost: 45,
+		requiredTech:"Sailing",
+		uniques:["Cannot enter ocean tiles"]
+		upgradesTo:"Caravel",
+		obsoleteTech:"Astronomy",
+		hurryCostModifier:20,
+		attackSound:"nonmetalhit"
+		//Phoenician unique naval unit, stronger than Trireme.
+	},
+	*/
 	{
 		name:"Chariot Archer",
 		unitType:"Ranged",
@@ -122,6 +223,23 @@
 		attackSound:"arrow"
 		//This is the Egyptian unique unit. It replaces Chariot Archer, moves faster and needs no horses.
 	},
+	{
+		name:"War Elephant",
+		unitType:"Ranged",
+		uniqueTo:"India",
+		replaces:"Chariot Archer",
+		movement:3,
+		strength:9,
+		rangedStrength:11,
+		cost:70,
+		requiredTech:"The Wheel",
+		upgradesTo:"Knight",
+		obsoleteTech:"Chivalry",
+		uniques:["No defensive terrain bonus"],
+		hurryCostModifier:20,
+		attackSound:"horse"
+		//This is the Indian unique unit. It replaces Chariot Archer, moves slower, has no rough terrain penalty and needs no horses.
+	},
 	*/
 	{
 		name:"Spearman",
@@ -151,6 +269,24 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
+	/*
+	{
+		name:"Immortal",
+		replaces:"Spearman",
+		uniqueTo:"Persian",
+		unitType:"Melee",
+		movement:2,
+		strength:12,
+		cost: 56,
+		requiredTech:"Bronze Working",
+		obsoleteTech:"Civil Service",
+		upgradesTo: "Pikeman",
+		uniques:["Bonus vs Mounted 50%","Heals at double rate"],
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+		//Persian unique unit
+	},
+	*/
 	
 	
 	/* Classical Era */
@@ -214,6 +350,23 @@
 		attackSound:"metalhit"
 		//Roman unique unit. It is stronger than Swordsman. It should also build roads (maybe railroads, too). It takes more to Steel to make it obsolete.
 	},
+	{
+		name:"Mohawk Warrior",
+		unitType:"Melee",
+		uniqueTo:"Rome",
+		replaces:"Swordsman",
+		movement:2,
+		strength:14,
+		cost: 75,
+		requiredTech:"Iron Working",
+		upgradesTo:"Longswordsman",
+		obsoleteTech:"Gunpowder",
+		requiredResource:"Iron",
+		hurryCostModifier:20,
+		uniques:["Combat Bonus in Forest/Jungle 33%"],
+		attackSound:"metalhit"
+		//Iroquese unique unit. Bonus when fighting in Jungles and Forests.
+	},
 	*/
 	{
 		name:"Horseman",
@@ -245,6 +398,24 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 	},
+	/*
+	{
+		name:"African Elephant",
+		unitType:"Mounted",
+		uniqueTo:"Phoenicia",
+		replaces:"Horseman",
+		movement:3,
+		strength:14,
+		cost: 100,
+		requiredTech:"Horseback Riding",
+		upgradesTo:"Knight",
+		obsoleteTech:"Chivalry",
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Feared Elephant","Great Generals II"],
+		hurryCostModifier:20,
+		attackSound:"horse"
+		//A Phoenician unique unit. It needs no Horses
+	},
+	*/
 	
 	// Medieval Era
 	{
@@ -309,6 +480,24 @@
 		hurryCostModifier:20,
 		attackSound:"throw"
 	},
+	/*
+	{
+		name:"Hwach'a",
+		unitType:"Siege",
+		replaces:"Trebuchet",
+		uniqueTo:"Korea",
+		movement:2,
+		strength:11,
+		rangedStrength:26,
+		cost: 120,
+		requiredTech:"Physics",
+		obsoleteTech:"Chemistry",
+		upgradesTo:"Cannon",
+		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
+		hurryCostModifier:20,
+		attackSound:"throw"
+	},
+	*/
 	{
 		name:"Longswordsman",
 		unitType:"Melee",
@@ -340,6 +529,26 @@
 		attackSound:"metalhit"
 		//Aside from the Great Generals II promotion, Samurai should also create Fishing Boats (not now, surely)
 	},
+	/*
+	{
+		name:"Berserker",
+		replaces:"Longswordsman",
+		uniqueTo:"Denmark",
+		unitType:"Melee",
+		movement:3,
+		strength:21,
+		cost: 120,
+		requiredTech:"Steel",
+		upgradesTo:"Musketman",
+		obsoleteTech:"Metallurgy",
+		requiredResource:"Iron",
+		uniques:["Amphibious"]
+		promotions:["Shock I"]
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+		//Danish unique unit. Can attack from the sea without any penalty, and moves faster.
+	},
+	*/
 	{
 		name:"Pikeman",
 		unitType:"Melee",
@@ -352,7 +561,25 @@
 		obsoleteTech:"Gunpowder",
 		hurryCostModifier:20,
 		attackSound:"metalhit"
+		//Pikeman should upgrade not only to Musketman but also to Lancer
 	},
+	/*
+	{
+		name:"Impi",
+		unitType:"Melee",
+		replaces:"Pikeman",
+		uniqueTo:"Zulu",
+		movement:2,
+		strength:16,
+		cost: 90,
+		requiredTech:"Civil Service",
+		uniques:["Bonus vs Mounted 50%","Spear Throw"],
+		upgradesTo:"Rifleman",
+		obsoleteTech:"Gunpowder",
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+	},
+	*/
 	{
 		name:"Galleass",
 		unitType:"WaterRanged",
@@ -399,6 +626,25 @@
 		attackSound:"arrow"
 		//Camel Archer should have no penalty attacking cities
 	},
+	/*
+	{
+		name:"Mandekalu Cavalry",
+		replaces:"Knight",
+		uniqueTo:"Songhai",
+		unitType:"Mounted",
+		movement:4,
+		strength:20,
+		cost: 110,
+		requiredTech:"Chivalry",
+		requiredResource:"Horses",
+		upgradesTo:"Cavalry",
+		obsoleteTech:"Military science",
+		uniques:["Can move after attacking","No defensive terrain bonus"],
+		hurryCostModifier:20,
+		attackSound:"arrow"
+		//Songhai unique unit. Costs slightly less and is more powerful than a Knight
+	},
+	*/
 	
 	// Rennaisance Era
 
@@ -415,6 +661,22 @@
 		uniques:["+1 Visibility Range"],
 		hurryCostModifier:20
 	},
+	/*
+	{
+		name:"Turtle Ship",
+		unitType:"WaterMelee",
+		replaces:"Caravel",
+		uniqueTo:"Korea",
+		movement:4,
+		strength:36,
+		cost: 120,
+		requiredTech:"Astronomy",
+		upgradesTo:"Ironclad",
+		obsoleteTech:"Combustion",
+		uniques:["+1 Visibility Range"],
+		hurryCostModifier:20
+	},
+	*/
 	{
 		name:"Cannon",
 		unitType:"Siege",
@@ -454,6 +716,24 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
+	/*
+	{
+		name:"Jannissary",
+		unitType:"Melee",
+		replaces:"Musketman",
+		uniqueTo:"Ottoman",
+		movement:2,
+		strength:24,
+		cost: 150,
+		requiredTech:"Gunpowder",
+		upgradesTo:"Rifleman"
+		obsoleteTech:"Rifling",
+		hurryCostModifier:20,
+		uniques:["Heal 50 if it kills an Unit","Combat bonus when attacking 25%"],
+		attackSound:"shot"
+		//Ottoman unique unit, slightly weaker than Musketman, but heals 50 HP when it kills an units, and +25% Strenght when attacking
+	},
+	*/
 	{
 		name:"Minuteman",
 		unitType:"Melee",
@@ -510,12 +790,30 @@
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20,
-		uniques:["Can move after attacking","No defensive terrain bonus",
-			"Penalty vs City 33%","Bonus vs Mounted 33%" ],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%"],
 		upgradesTo:"Anti-Tank Gun",
 		obsoleteTech:"Combined Arms",
 		attackSound:"horse"
 	},
+	/*
+	{
+		name:"Sipahi",
+		unitType:"Mounted",
+		replaces:"Lancer",
+		uniqueTo:"Ottoman",
+		movement:5,
+		strength:25,
+		cost: 185,
+		requiredTech:"Metallurgy",
+		requiredResource:"Horses",
+		hurryCostModifier:20,
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%","Formation I","+1 Visibility"],
+		upgradesTo:"Anti-Tank Gun",
+		obsoleteTech:"Combined Arms",
+		attackSound:"horse"
+		//Another Ottoman unique attack.
+	},
+	*/
 	
 	// Industrial Era
 	
@@ -538,11 +836,28 @@
 		strength:34,
 		cost: 225,
 		requiredTech:"Rifling",
-		obsoleteTech:"Replacable Parts",
+		obsoleteTech:"Repleacable Parts", //Should be Replaceable Parts
 		upgradesTo:"Great War Infantry",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
+	/*
+	{
+		name:"Norvegian Ski Infantry",
+		unitType:"Melee",
+		replaces:"Rifleman",
+		uniqueTo:"Denmark",
+		movement:2,
+		strength:34,
+		cost: 225,
+		requiredTech:"Rifling",
+		obsoleteTech:"Replaceable Parts",
+		upgradesTo:"Great War Infantry",
+		uniques:["Bonus in Snow, Tundra and Hills"],
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
+	*/
 	{
 		name:"Cavalry",
 		unitType:"Mounted",
@@ -572,6 +887,22 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 		//This Russian unique unit should replace Cavalry and also deal +33% damage to damaged units.
+	},
+	{
+		name:"Comanche Rider",
+		unitType:"Mounted",
+		replaces:"Cavalry",
+		uniqueTo:"Shoshone",
+		movement:4,
+		strength:34,
+		cost: 200,
+		requiredTech:"Military Science",
+		requiredResource:"Horses",
+		upgradesTo:"Landship",
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Damaged Enemy Bonus 33%","Full Moon Striker"],
+		hurryCostModifier:20,
+		attackSound:"horse"
+		//Shoshone unique unit that should replace Cavalry, take less to build and also deal +33% damage to damaged unit. +1 Movement due to Full Moon Striker.
 	},
 	*/
 	{
@@ -693,7 +1024,22 @@
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
-	
+	/*
+	{
+		name:"Panzer",
+		unitType:"Armor",
+		uniqueTo:"Germany",
+		replaces:"Tank",
+		movement:6,
+		strength:80,
+		cost: 375,
+		requiredTech:"Combined Arms",
+		requiredResource:"Oil",
+		uniques:["Can move after attacking","No defensive terrain bonus"]
+		hurryCostModifier:20,
+		//German unique unit, stronger than Tank
+	},
+	*/
 	{
 		name:"Anti-Tank Gun",
 		unitType:"Melee",
