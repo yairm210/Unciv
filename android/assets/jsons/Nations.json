@@ -2,30 +2,33 @@
 	{
 		name:"Babylon",
 		leaderName:"Nebuchadnezzar II",
+		adjective:["Babylonian"],
+		startBias:["Avoid Tundra"],
 		
-		startIntroPart1: "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC."
-		startIntroPart2: "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?"
+		startIntroPart1: "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
+		startIntroPart2: "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?",
 		
-		declaringWar:"The demon wants the blood of soldiers!"
-		attacked:"Oh well, I presume you know what you're doing."
-		defeated:"It is over. Perhaps now I shall have peace, at last."
-		introduction:"Are you real or a phantom?"
+		declaringWar:"The demon wants the blood of soldiers!",
+		attacked:"Oh well, I presume you know what you're doing.",
+		defeated:"It is over. Perhaps now I shall have peace, at last.",
+		introduction:"Are you real or a phantom?",
 		
-		neutralHello:"Greetings."
-		neutralLetsHearIt:["I'm listening.","What do you want?"]
-		neutralNo:["No!","Certainly not.","Unacceptable!"]
-		neutralYes:["Completed!","Yes!","Agreed!"]
+		neutralHello:"Greetings.",
+		neutralLetsHearIt:["I'm listening.","What do you want?"],
+		neutralNo:["No!","Certainly not.","Unacceptable!"],
+		neutralYes:["Completed!","Yes!","Agreed!"],
 
-		hateHello:"What do YOU want?!"
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"]
-		hateNo:["No!","Certainly not!","Unacceptable!"]
-		hateYes:["Yes!"]
+		hateHello:"What do YOU want?!",
+		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
+		hateNo:["No!","Certainly not!","Unacceptable!"],
+		hateYes:["Yes!"],
 		
-		afterPeace:"Foolish, foolish – letting me live."
-		tradeRequest:" It appears that you do have a reason for existing – to make this deal with me."
+		afterPeace:"Foolish, foolish – letting me live.",
+		tradeRequest:" It appears that you do have a reason for existing – to make this deal with me.",
 				
 		mainColor:[27,53,63],
 		secondaryColor:[213,249,255],
+		uniqueName:"Ingenuity",
 		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
 		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
@@ -34,10 +37,11 @@
 	{
 		name:"Greece",
 		leaderName:"Alexander",
+		adjective:["Greek"],
+		startBias:["Coast"],
 		
-	    startIntroPart1: "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea."
+	    	startIntroPart1: "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea."
 		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Grek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
-
 		
 		declaringWar:"You are in my way, you must be destroyed."
 		attacked:"As a matter of fact I too grow weary of peace."
@@ -66,8 +70,9 @@
 	{
 		name:"China",
 		leaderName:"Wu Zetian",
+		adjective:["Chinese"],
 		
-	    startIntroPart1: "The Blessings of Heaven be upon you. Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!"
+	    	startIntroPart1: "The Blessings of Heaven be upon you. Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!"
 		startIntroPart2: "You, great Queen, who, with cunning and beauty, rose from the position of lowly concubine to that of Divine Empress - your people call out to you to lead them! Great China is once again beset on all sides by barbarians. Can you defeat all your many foes and return your country to greatness? Can you build a civilization to stand the test of time?"
 
 		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
@@ -90,6 +95,7 @@
 				
 		mainColor:[9, 112, 84],
 		secondaryColor:[255,255,255],
+		uniqueName:"Art of War",
 		unique:"Great general provides double combat bonus, and spawns 50% faster"
 		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
@@ -98,14 +104,15 @@
 	{
 		name:"Egypt",
 		leaderName:"Ramesses II",
+		adjective:["Egyptian"],
+		startBias:["Avoid Jungle","Avoid Forest"],
 		
-	    startIntroPart1: "We greet thee, oh great Ramesses, Pharaoh of Egypt, who causes the sun to rise and the Nile to flow, and who blesses his fortunate people with all the good things of life! Oh great lord, from time immemorial your people lived on the banks of the Nile river, where they brought writing to the world, and advanced mathematics, sculpture, and architecture. Thousands of years ago they created the great monuments which still stand tall and proud."
-		startIntroPart2: "Oh, Ramesses, for uncounted years your people endured, as other petty nations around them have risen and then fallen into dust. They look to you to lead them once more into greatness. Can you honor the gods and bring Egypt back to her rightful place at the very center of the world? Can you build a civilization that will stand the test of time?"
-
+	    	startIntroPart1: "We greet thee, oh great Ramesses, Pharaoh of Egypt, who causes the sun to rise and the Nile to flow, and who blesses his fortunate people with all the good things of life! Oh great lord, from time immemorial your people lived on the banks of the Nile river, where they brought writing to the world, and advanced mathematics, sculpture, and architecture. Thousands of years ago they created the great monuments which still stand tall and proud.",
+		startIntroPart2: "Oh, Ramesses, for uncounted years your people endured, as other petty nations around them have risen and then fallen into dust. They look to you to lead them once more into greatness. Can you honor the gods and bring Egypt back to her rightful place at the very center of the world? Can you build a civilization that will stand the test of time?",
 		
 		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
-		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!"
-		defeated:"Strike me down and my soul will torment yours forever – you have won nothing."
+		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
+		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
 		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
 		
 		neutralHello:"Good day."
@@ -123,6 +130,7 @@
 		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
+		uniqueName:"Monument Builders"
 		unique:"+20% production towards Wonder construction"
 		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
 			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
@@ -131,6 +139,8 @@
 	{
 		name:"England",
 		leaderName:"Elizabeth",
+		adjective:["English"],
+		startBias:["Coast"],
 	
 		startIntroPart1: "Praises upon her serene highness, Queen Elizabeth Gloriana. You lead and protect the celebrated maritime nation of England. England is an ancient land, settled as early as 35,000 years ago. The island has seen countless waves of invaders, each in turn becoming a part of the fabric of the people. Although England is a small island, for many years your people dominated the world stage. Their matchless navy, brilliant artists and shrewd merchants, giving them power and influence far in excess of their mere numbers."
 		startIntroPart2: "Queen Elizabeth, will you bring about a new golden age for the English people? They look to you once more to return peace and prosperity to the nation. Will you take up the mantle of greatness? Can you build a civilization that will stand the test of time?"
@@ -155,6 +165,7 @@
 		
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
+		uniqueName:"Sun Never Sets"
 		unique:"+2 movement for all naval units"
 		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
@@ -163,8 +174,9 @@
 	{
 		name:"France",
 		leaderName:"Napoleon",
+		adjective:["French"],
 		
-	    startIntroPart1: "Long life and triumph to you, First Consul and Emperor of France, Napoleon I, ruler of the French people. France lies at the heart of Europe. Long has Paris been the world center of culture, arts and letters. Although surrounded by competitors - and often enemies - France has endured as a great nation. Its armies have marched triumphantly into battle from one end of the world to the other, its soldiers and generals among the best in history."
+	    	startIntroPart1: "Long life and triumph to you, First Consul and Emperor of France, Napoleon I, ruler of the French people. France lies at the heart of Europe. Long has Paris been the world center of culture, arts and letters. Although surrounded by competitors - and often enemies - France has endured as a great nation. Its armies have marched triumphantly into battle from one end of the world to the other, its soldiers and generals among the best in history."
 		startIntroPart2: "Napoleon Bonaparte, France yearns for you to rebuild your empire, to lead her once more to glory and greatness, to make France once more the epicenter of culture and refinement. Emperor, will you ride once more against your foes? Can you build a civilization that will stand the test of time?"
 
 		declaringWar:"You're disturbing us, prepare for war.",
@@ -187,6 +199,7 @@
 		
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
+		uniqueName:"Ancien Régime"
 		unique:"+2 Culture per turn from cities before discovering Steam Power",
 		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
@@ -195,6 +208,8 @@
 	{
 		name:"Russia",
 		leaderName:"Catherine",
+		adjective:["Russian"],
+		startBias:["Tundra"],
 	
 		startIntroPart1: "Greetings upon thee, Your Imperial Majesty Catherine, wondrous Empress of all the Russias. At your command lies the largest country in the world. Mighty Russia stretches from the Pacific Ocean in the east to the Baltic Sea in the west. Despite wars, droughts, and every manner of disaster the heroic Russian people survive and prosper, their artists and scientists among the best in the world. The Empire today remains one of the strongest ever seen in human history - a true superpower, with the greatest destructive force ever devised at her command."
 		startIntroPart2: "Catherine, your people look to you to bring forth glorious days for Russia and her people, to revitalize the land and recapture the wonder of the Enlightenment. Will you lead your people once more into greatness? Can you build a civilization that will stand the test of time?"
@@ -219,6 +234,7 @@
 				
 		mainColor:[ 236, 178, 0],
 		secondaryColor:[0,0,0],
+		uniqueName:"Siberian Riches"
 		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
 		cities:["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
@@ -227,8 +243,9 @@
 	{
 		name:"Rome",
 		leaderName:"Augustus Caesar",
+		adjective:["Roman"],
 		
-	    startIntroPart1: "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed."
+	    	startIntroPart1: "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed."
 		startIntroPart2: "O mighty emperor, your people turn to you to once more reclaim the glory of Rome! Will you see to it that your empire rises again, bringing peace and order to all? Will you make Rome once again center of the world? Can you build a civilization that will stand the test of time?"
 		
 		declaringWar:"My treasury contains little and my soldiers are getting impatient... <sigh> ...therefore you must die."
@@ -251,6 +268,7 @@
 				
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
+		uniqueName:"The Glory of Rome"
 		unique:"+25% Production towards any buildings that already exist in the Capital",
 		cities:["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
@@ -259,8 +277,10 @@
 	{
 		name:"Arabia",
 		leaderName:"Harun al-Rashid",
+		adjective:["Arabian"],
+		startBias:["Desert"],
 		
-	    startIntroPart1: "Blessings of God be upon you oh great caliph Harun al-Rashid, leader of the pious Arabian people! The Muslim empire, the Caliphate was born in the turbulent years after the death of the prophet Muhammad in 632 AD, as his followers sought to extend the rule of God to all of the people of the earth. The caliphate grew mighty indeed at the height of its power, ruling Spain, North Africa, the Middle East, Anatolia, the Balkans and Persia. An empire as great as or even greater than that of Rome. The arts and sciences flourished in Arabia during the Middle Ages, even as the countries of Europe descended into ignorance and chaos. The Caliphate survived for six hundred years, until finally succumbing to attack from the Mongols, those destroyers of Empires."
+	    	startIntroPart1: "Blessings of God be upon you oh great caliph Harun al-Rashid, leader of the pious Arabian people! The Muslim empire, the Caliphate was born in the turbulent years after the death of the prophet Muhammad in 632 AD, as his followers sought to extend the rule of God to all of the people of the earth. The caliphate grew mighty indeed at the height of its power, ruling Spain, North Africa, the Middle East, Anatolia, the Balkans and Persia. An empire as great as or even greater than that of Rome. The arts and sciences flourished in Arabia during the Middle Ages, even as the countries of Europe descended into ignorance and chaos. The Caliphate survived for six hundred years, until finally succumbing to attack from the Mongols, those destroyers of Empires."
 		startIntroPart2: "Great Caliph Harun al Rashid, your people look to you to return them to greatness! To make Arabia once again an enlightened land of arts and knowledge, a powerful nation who needs fear no enemy! Oh Caliph, will you take up the challenge? Can you build a civilization that will stand the test of time?"
 		
 		declaringWar:"The world will be more beautiful without you. Prepare for war."
@@ -290,6 +310,7 @@
 	{
 		name:"America",
 		leaderName:"Washington",
+		adjective:["American"],
 		
 	    	startIntroPart1: "Welcome President Washington! You lead the industrious American civilization! Formed in the conflagration of revolution in the 18th century, within a hundred years, the young nation became embroiled in a terrible civil war that nearly tore the country apart, but it was just a few short years later in the 20th century that the United States reached the height of its power, emerging triumphant and mighty from the two terrible wars that destroyed so many other great nations. The United States is a nation of immigrants, filled with optimism and determination. They lack only a leader to help them fulfill their promise."
 		startIntroPart2: "President Washington, can you lead the American people to greatness? Can you build a civilization that will stand the test of time?"
@@ -314,6 +335,7 @@
 				
 		mainColor:[ 28,51,119],
 		secondaryColor:[255,255,255],
+		uniqueName:"Manifest Destiny"
 		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",
 		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
@@ -322,6 +344,8 @@
 	{
 		name:"Japan",
 		leaderName:"Oda Nobunaga",
+		adjective:["Japanese"],
+		startBias:["Coast"],
 		
 		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the frield of battle, your people are also immensely industious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
 		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
@@ -346,13 +370,15 @@
 				
 		mainColor:[215,225,225],
 		secondaryColor:[185,0,0],
+		uniqueName:"Ingenuity"
 		unique: "Units fight as though they were at full strength even when damaged",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
 	},
 	/*
 	{
-	name:"Germany",
+		name:"Germany",
 		leaderName:"Otto von Bismark",
+		adjective:["German"],
 		
 		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
 		startIntroPart2: "Great Prince Bismark, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rile and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?"
@@ -377,6 +403,7 @@
 				
 		mainColor:[224,224,224],
 		secondaryColor:[64,64,64],
+		uniqueName:"Furor Teutonicus"
 		unique:"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Also, land unit manteinance is reduced by 25%.",
 		cities:["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
 			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
