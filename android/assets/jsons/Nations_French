@@ -1,0 +1,355 @@
+[
+	{
+		name:"Babylone",
+		leaderName:"Nabuchodonosor II",
+	
+		startIntroPart1: ""
+		startIntroPart2: ""
+	
+		declaringWar:"",
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[27,53,63],
+		secondaryColor:[213,249,255],
+		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
+		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
+			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
+			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+	},
+	{
+		name:"Grèce",
+		leaderName:"Alexandre",
+	
+		startIntroPart1: ""
+		startIntroPart2: ""
+	
+		declaringWar:"",
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[181, 232, 232],
+		secondaryColor:[68,142,249],
+		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
+			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
+			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
+	},
+	{
+		name:"Chine",
+		leaderName:"Wu Zetian",
+	
+		startIntroPart1: ""
+		startIntroPart2: ""
+	
+		declaringWar:"",
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[9, 112, 84],
+		secondaryColor:[255,255,255],
+		unique:"Great general provides double combat bonus, and spawns 50% faster"
+		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
+			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
+			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+	},
+	{
+		name:"Ègypte",
+		leaderName:"Ramsès II",
+	
+		startIntroPart1: ""
+		startIntroPart2: ""
+	
+		declaringWar:"",
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+		
+		mainColor:[ 231, 213, 0],
+		secondaryColor:[98,10,210],
+		unique:"+20% production towards Wonder construction"
+		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
+			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
+			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+	},
+	{
+		name:"Angleterre",
+		leaderName:"Èlizabeth",
+	
+		startIntroPart1: ""
+		startIntroPart2: ""
+	
+		declaringWar:"",
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+		
+		mainColor:[ 114, 0, 0],
+		secondaryColor:[255,255,255],
+		unique:"+2 movement for all naval units"
+		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
+			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
+			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+	},
+	{
+		name:"Françe",
+		leaderName:"Napoléon",
+	
+		startIntroPart1: ""
+		startIntroPart2: ""
+    
+		declaringWar:"Tu nous déranges, prépare-toi à la guerre.",
+		attacked:"Tu es tombé dans mon piège. Je vais t'enterrer!"
+		defeated:"Je me suis battu... Fais ce que tu veux de moi."
+		introduction:"Bienvenue. Je suis Napoléon, de France; le militaire le plus intelligent de l'histoire mondiale."
+    
+		neutralHello:"Bonjour."
+		neutralLetsHearIt:["Tu disais?","Vas-y.","J'écoute.","Continue."]
+		neutralNo:["Non.","Bien sûr que non.","Nous refusons."]
+		neutralYes:["Très bien.","Excellent.","Entendu."]
+    
+		hateHello:"C'est-toi"
+		hateLetsHearIt:["Parle."]
+		hateNo:["Certainement pas.","C'est inacceptable.","Ce n'est pas sérieux."]
+		hateYes:["D'accord.","J'imagine que he n'ai pas le choix","Certainement.","C'est d'accord.","Excellent."]
+    
+		afterPeace:"Il semblerait que he t'aie sous-estimé. Je ne referai pas cette erreur, je te le promets."
+		tradeRequest:"Voici ce qu'exige la France, ta survie dépend de ta réponse."
+    
+		mainColor:[ 38, 98, 255],
+		secondaryColor:[239,236,148],
+		unique:"Culture par tour +2 pour chaque ville avant la découverte du moteur à vapeur.",
+		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
+			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
+			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]
+	},
+	{
+		name:"Russie",
+		leaderName:"Catherine",
+	
+		startIntroPart1: ""
+		startIntroPart2: ""
+	
+		declaringWar:"",
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[ 236, 178, 0],
+		secondaryColor:[0,0,0],
+		unique:"",
+		cities:["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
+			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
+			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+	},
+	{
+		name:"Rome",
+		leaderName:"Auguste César",
+		
+	  startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:""
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:"."
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[ 53,0,87],
+		secondaryColor:[238,201,9],
+		unique:"",
+		cities:["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
+			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
+			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+	},
+	{
+		name:"Arabie",
+		leaderName:"Harun al-Rachid",
+		
+	    startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"" 
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:""
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[ 41,83,42],
+		secondaryColor:[146,221,9],
+		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
+			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
+			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+	},
+	{
+		name:"Amérique",
+		leaderName:"Washington",
+		
+	  startIntroPart1: ""
+		startIntroPart2: ""
+
+		declaringWar:""
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:[""]
+		neutralNo:[""]
+		neutralYes:[""]
+
+		hateHello:"?"
+		hateLetsHearIt:[""]
+		hateNo:[""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[ 28,51,119],
+		secondaryColor:[255,255,255],
+		unique:"",
+		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
+			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
+			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+	},
+	{
+		name:"Japon",
+		leaderName:"Nobunaga Oda",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:""
+		attacked:""
+		defeated:""
+		introduction:""
+		
+		neutralHello:""
+		neutralLetsHearIt:["","",""]
+		neutralNo:[".","Non.",""]
+		neutralYes:["","","Hai. (Oui)"]
+
+		hateHello:""
+		hateLetsHearIt:["","",""]
+		hateNo:["Ie. (Non)","",""]
+		hateYes:[""]
+		
+		afterPeace:""
+		tradeRequest:""
+				
+		mainColor:[215,225,225],
+		secondaryColor:[185,0,0],
+		unique:"Units fight as though they were at full strength even when damaged",
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
+	},
+	{
+		name:"Barbarians",
+		mainColor:[0,0,0],
+		secondaryColor:[182,0,0]
+	}
+]
