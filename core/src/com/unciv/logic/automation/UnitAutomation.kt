@@ -326,13 +326,7 @@ class UnitAutomation{
         val enemyTileToAttack = chooseAttackTarget(unit, attackableEnemies)
 
         if (enemyTileToAttack != null) {
-            val enemy = Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(enemyTileToAttack.tileToAttack)!!
-            unit.moveToTile(enemyTileToAttack.tileToAttackFrom)
-            val setupAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
-                    .firstOrNull { it.name == "Set up" }
-            if (setupAction != null) setupAction.action()
-            if (unit.currentMovement > 0) // This can be 0, if the set up action took away what action points we had left...
-                Battle(unit.civInfo.gameInfo).attack(MapUnitCombatant(unit), enemy)
+            Battle(unit.civInfo.gameInfo).moveAndAttack(MapUnitCombatant(unit), enemyTileToAttack)
             return true
         }
         return false

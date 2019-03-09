@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
@@ -23,15 +25,14 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     internal var selectedTile: TileInfo? = null
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
-    var moveToOverlay :Actor?=null
-    var removeMoveToOverlay=false
+    var unitActionOverlay :Actor?=null
+    var removeUnitActionOverlay=false
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
     class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
     var moveHereButtonDto :MoveHereButtonDto?=null
 
     internal fun addTiles() {
-
 
         val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it) }
 
@@ -74,7 +75,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     private fun onTileClicked(tileInfo: TileInfo) {
         worldScreen.displayTutorials("TileClicked")
-        if (moveToOverlay != null) moveToOverlay!!.remove()
+        if (unitActionOverlay != null) unitActionOverlay!!.remove()
         selectedTile = tileInfo
 
         val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
@@ -83,9 +84,39 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             queueAddMoveHereButton(selectedUnit, tileInfo)
         }
+        if(selectedUnit!=null && selectedUnit.canAttack()
+                && UnitAutomation().getAttackableEnemies(selectedUnit, selectedUnit.getDistanceToTiles())
+                        .map { it.tileToAttack }.contains(tileInfo))
+            addAttackButton(selectedUnit, tileInfo)
 
         worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
         worldScreen.shouldUpdate = true
+    }
+
+    private fun addAttackButton(attacker: MapUnit, tileInfo: TileInfo) {
+        val size = 60f
+        val attackButton = Group().apply { width = size;height = size; }
+        attackButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
+        attackButton.addActor(ImageGetter.getUnitIcon("Swordsman")
+                .apply { width = size / 2; height = size / 2; center(attackButton) })
+
+        val unitIcon = UnitGroup(attacker, size / 2)
+        unitIcon.y = size - unitIcon.height
+        attackButton.addActor(unitIcon)
+
+        val tileGroup = tileGroups[tileInfo]!!
+        addOverlayOnTileGroup(tileGroup, attackButton)
+        attackButton.y += tileGroup.height
+
+        val battlePlan = UnitAutomation().getAttackableEnemies(attacker, attacker.getDistanceToTiles())
+                .first { it.tileToAttack==tileInfo }
+        attackButton.onClick {
+            val battle = Battle(worldScreen.gameInfo)
+            battle.moveAndAttack(MapUnitCombatant(attacker), battlePlan)
+            worldScreen.shouldUpdate=true
+            removeUnitActionOverlay=true
+        }
+        unitActionOverlay = attackButton
     }
 
     private fun queueAddMoveHereButton(selectedUnit: MapUnit, tileInfo: TileInfo) {
@@ -125,7 +156,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         else moveHereButton.color.a = 0.5f
         addOverlayOnTileGroup(tileGroup, moveHereButton)
         moveHereButton.y += tileGroup.height
-        moveToOverlay = moveHereButton
+        unitActionOverlay = moveHereButton
     }
 
     private fun onMoveButtonClick(dto: MoveHereButtonDto) {
@@ -149,7 +180,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             // we don't update it directly because we're on a different thread; instead, we tell it to update itself
             worldScreen.shouldUpdate = true
 
-            removeMoveToOverlay=true
+            removeUnitActionOverlay=true
         }
     }
 
@@ -162,9 +193,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     internal fun updateTiles(civInfo: CivilizationInfo) {
-        if(removeMoveToOverlay){
-            removeMoveToOverlay=false
-            moveToOverlay?.remove()
+        if(removeUnitActionOverlay){
+            removeUnitActionOverlay=false
+            unitActionOverlay?.remove()
         }
 
         val playerViewableTilePositions = civInfo.viewableTiles.map { it.position }.toHashSet()
@@ -198,9 +229,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
             updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
         }
-        else if(moveToOverlay!=null){
-            moveToOverlay!!.remove()
-            moveToOverlay=null
+        else if(unitActionOverlay!=null){
+            unitActionOverlay!!.remove()
+            unitActionOverlay=null
         }
 
         if(selectedTile!=null)

@@ -2,6 +2,7 @@ package com.unciv.logic.battle
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.GameInfo
+import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
 import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
@@ -14,6 +15,18 @@ import kotlin.math.max
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
  */
 class Battle(val gameInfo:GameInfo) {
+
+    fun moveAndAttack(attacker: ICombatant, attackableTile: UnitAutomation.AttackableTile){
+        if (attacker is MapUnitCombatant) {
+            attacker.unit.moveToTile(attackableTile.tileToAttackFrom)
+            if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != "Set Up") {
+                attacker.unit.action = "Set Up"
+                attacker.unit.useMovementPoints(1f)
+            }
+        }
+        attack(attacker,getMapCombatantOfTile(attackableTile.tileToAttack)!!)
+    }
+
     fun attack(attacker: ICombatant, defender: ICombatant) {
         println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+defender.getCivInfo().civName+" "+defender.getName())
         val attackedTile = defender.getTile()

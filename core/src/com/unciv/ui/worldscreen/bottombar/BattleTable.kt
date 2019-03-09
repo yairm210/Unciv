@@ -149,18 +149,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if(!canAttack) attackButton.disable()
         else {
-            //var attackSound = attacker.unit.baseUnit.attackSound
-            //if(attackSound==null) attackSound="click"`
-            //attackButton.onClick(attackSound) {
             attackButton.onClick {
-                if (attacker is MapUnitCombatant) {
-                    attacker.unit.moveToTile(attackableEnemy!!.tileToAttackFrom)
-                    if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != "Set Up") {
-                        attacker.unit.action = "Set Up"
-                        attacker.unit.useMovementPoints(1f)
-                    }
-                }
-                battle.attack(attacker, defender)
+                battle.moveAndAttack(attacker,attackableEnemy!!)
+                worldScreen.tileMapHolder.removeUnitActionOverlay=true // the overlay was one of attacking
                 worldScreen.shouldUpdate=true
             }
         }
