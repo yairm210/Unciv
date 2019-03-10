@@ -987,12 +987,12 @@
 
 	"[turnsToStarvation] turns to lose population":{
 		Italian:"La città perderà un abitante tra [turnsToStarvation] turni"
-		Russian:""
-		French:""
-		Romanian:""
+		Russian:"Город потеряет жителя в 15 смен"
+		French:"La ville perdra un habitant 15 tours"
+		Romanian:"Orașul va pierde un locuitor în 15 schimburi"
 		German:"Die Stadt wird einen Einwohner in [TurnToStarvation]-Runden verlieren"
-		Dutch:""
-		Spanish:""
+		Dutch:"De stad verliest een bewoner in [turnsToStarvation] ploegen"
+		Spanish:"La ciudad pierde un habitante en [turnsToStarvation] turnos"
 		Simplified_Chinese:"这个城市将在[turnsToStarvation]轮中失去一个居民"
 		Portuguese:"A cidade perderá um habitante entre [turnsToStarvation] turnos"
 		Japanese:"[turnsToStarvation]人口を減らす"
@@ -1039,25 +1039,25 @@
 	
 	"Sell for [sellAmount] gold":{ // when selling a building
 		Italian:"Vendi per [sellAmount] Oro" //es.
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:"Vender por ouro [sellAmount]"
+		Russian:"Продам за 50 золотых"
+		French:"Vendre pour 50 or"
+		Romanian:"Vindem 50 de aur"
+		German:"Verkaufen Sie für [sellAmount] Gold"
+		Dutch:"Verkopen voor [sellAmount] goud"
+		Spanish:"Vender por [sellAmount] oro"
+		Simplified_Chinese:"卖[sellAmount]黄金"
+		Portuguese:"Vender por [sellAmount] ouro"
 	}
 	"Are you sure you want to sell this [building]?":{
 		Italian:"Vuoi davvero vendere [building]?" //es.
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"Вы действительно хотите продать [building]?"
+		French:"Voulez-vous vraiment vendre [building]?"
+		Romanian:"Chiar vrei să vinzi [building]?"
+		German:"Wollen Sie wirklich [building] verkaufen?"
+		Dutch:"Wil je echt [building] verkopen?"
+		Spanish:"¿Realmente quieres vender [building]?"
+		Simplified_Chinese:"你真的想卖[building]吗？"
+		Portuguese:"Você realmente quer vender [building]?"
 	}
 	
 	// Tech picker
@@ -1227,7 +1227,6 @@
 		Dutch:"genereert"
 		Spanish:"proporciona"
 		Simplified_Chinese:"提供"
-		Japanese:""
 		Portuguese:"Proporciona"
 		Japanese:"提供する"
 	}
@@ -1567,10 +1566,10 @@
 		German:"Wir haben überlebende in den Ruinen gefunden - Einwohner zu [cityName] hinzugefügt"
 		French:"Des survivants ont été trouvés dans les ruines - ils ont rejoins [cityName]"
 		Japanese:"遺跡で生存者が見つかりました - 人口は[cityName]に追加されました"
-		Russian:""
-		Dutch:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"Мы нашли выживших в руинах - население добавлено в [cityName]"
+		Dutch:"We hebben overlevenden gevonden in de ruïnes - populatie toegevoegd aan [cityName]"
+		Simplified_Chinese:"我们在废墟中找到幸存者 - 人口被添加到[cityName]"
+		Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]"
 	}
 	"We have discovered the lost technology of [techName] in the ruins!":{
 		Italian:"Abbiamo scoperto tra le rovine la tecnologia perduta [techName]]!"
@@ -1578,11 +1577,11 @@
 		German:"Wir haben die vergessene Technologie [techName] in den Ruinen wiederentdeckt!"
 		French:"Nous avons découvert la technologie perdu [techName] dans les ruines!"
 		Japanese:"遺跡で[techName]の失われた技術を発見しました！"
-		Russian:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"Мы обнаружили потерянную технологию [techName] в руинах!"
+		Dutch:"We hebben de verloren technologie van [techName] in de ruïnes ontdekt!"
+		Spanish:"¡Hemos descubierto la tecnología perdida de [techName] en las ruinas!"
+		Simplified_Chinese:"我们在废墟中发现了[techName]丢失的技术！"
+		Portuguese:"Nós descobrimos a tecnologia perdida de [techName] nas ruínas!"
 	}
 	
 	"A [unitName] has joined us!":{
@@ -1591,11 +1590,11 @@
 		German:"Ein(e) [unitName] ist uns beigetreten!" //Gender sensitive
 		French:"Un(e) [unitName] nous a rejoint!" //Gender sensitive
 		Japanese:"[unitName]が参加しました。"
-		Russian:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"[unitName] присоединился к нам!"
+		Dutch:"Een [unitName] heeft zich bij ons aangesloten!"
+		Spanish:"¡Un [unitName] se ha unido a nosotros!" //Gender sensitive
+		Simplified_Chinese:"[unitName]加入了我们！"
+		Portuguese:"Um [unitName] se juntou a nós!" //Gender sensitive
 	}
 	
 	"An ancient tribe trains our [unitName] in their ways of combat!":{
@@ -1604,11 +1603,11 @@
 		German:"Ein antiker Stamm bringt unserer(em) [unitName] dessen Kampftechniken bei!" //Gender sensitive
 		French:"Une tribue ancienne a entrainée notre [unitName] au combat" //Gender sensitive
 		Japanese:"古代の部族が彼らの戦闘方法で私たちの[unitName]を訓練します！"
-		Russian:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"Древнее племя обучает наших [unitName] своим способам ведения боя!"
+		Dutch:"Een oude stam traint onze [unitName] in hun manier van vechten!"
+		Spanish:"¡Una antigua tribu entrena a nuestros [unitName] en sus formas de combate!"
+		Simplified_Chinese:"一个古老的部落以他们的战斗方式训练我们的[unitName]！"
+		Portuguese:"Uma antiga tribo treina nosso [unitName] em suas formas de combate!"
 	}
 	
 	"We have found a stash of [amount] gold in the ruins!":{
@@ -1617,11 +1616,11 @@
 		German:"Wir haben [amount] Gold in einem Versteck in den Ruinen gefunden!"
 		French:"Nous avons trouvés un tas de [amount] ors dans les ruines!"
 		Japanese:"私たちは廃墟の中に[amount]金の隠し場所を見つけました！"
-		Russian:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"Мы нашли сундук с [amount] золота в руинах!"
+		Dutch:"We hebben een voorraad [amount] Goud gevonden in de ruïnes!"
+		Spanish:"¡Hemos encontrado un alijo de [amount] de oro en las ruinas!"
+		Simplified_Chinese:"我们在废墟中找到了[amount]藏金！"
+		Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
 	}
 
 	// Save and load game
@@ -1906,38 +1905,38 @@
 
 	"Snow":{
 		Italian:"Neve"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"снег"
+		French:"Neige"
+		Romanian:"Zăpadă"
+		German:"Schnee"
+		Dutch:"Sneeuw"
+		Spanish:"Nieve"
+		Simplified_Chinese:"雪"
+		Portuguese:"Neve"
 	}
 
 	"Coast":{
 		Italian:"Costa"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"побережье"
+		French:"Côte"
+		Romanian:"Costa"
+		German:"Küste"
+		Dutch:"Costa"
+		Spanish:"Costa"
+		Simplified_Chinese:"哥斯达黎加"
+		Portuguese:"Costa"
 	}
 
 	"Ocean":{
 		Italian:"Oceano"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"океан"
+		French:"Océan"
+		Romanian:"Ocean"
+		German:"Ozean"
+		Dutch:"Oceaan"
+		Spanish:"Océano"
+		Simplified_Chinese:"海洋"
+		Portuguese:"Oceano"
 	}
 
 	"Flood plains":{
@@ -2050,14 +2049,15 @@
 
 	"Bison":{
 		Italian:"Bisonti"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"бизоны"
+		French:"Bison"
+		Romanian:"Bizonii"
+		German:"Bison"
+		Dutch:"Bisons"
+		Spanish:"Bisonte"
+		Simplified_Chinese:"野牛"
+		Portuguese:"Bisontes"
+		Japanese:"バイソン"
 	}
 	
 	// Strategic Resources
@@ -2293,62 +2293,62 @@
 
 	"Copper":{
 		Italian:"Rame"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"медь"
+		French:"Cuivre"
+		Romanian:"Cupru"
+		German:"Kupfer"
+		Dutch:"Koperen"
+		Spanish:"Cobre"
+		Simplified_Chinese:"铜"
+		Portuguese:"Cobre"
 	}
 
 	"Cocoa":{
 		Italian:"Cacao"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"какао"
+		French:"Cacao"
+		Romanian:"Cacao"
+		German:"Kakao"
+		Dutch:"Cacao"
+		Spanish:"Cacao"
+		Simplified_Chinese:"可可"
+		Portuguese:"Cacau"
 	}
 
 	"Crab":{
 		Italian:"Granchi"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"Крабы"
+		French:"Crabe"
+		Romanian:"Crabi"
+		German:"Crabs"
+		Dutch:"Krabben"
+		Spanish:"Cangrejos"
+		Simplified_Chinese:"螃蟹"
+		Portuguese:"Caranguejos"
 	}
 
 	"Citrus":{
 		Italian:"Agrumi"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"цитрусовый"
+		French:"Agrumes"
+		Romanian:"Citrus"
+		German:"Zitrusgewächs"
+		Dutch:"Citrus"
+		Spanish:"Cítricos"
+		Simplified_Chinese:"柑橘"
+		Portuguese:"Cítrico"
 	}
 
 	"Truffles":{
 		Italian:"Tartufi"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
+		Russian:"Трюфели"
+		French:"Truffe"
+		Romanian:"Trufe"
+		German:"Trüffel"
+		Dutch:"Truffles"
+		Spanish:"Trufas"
+		Simplified_Chinese:"松露"
+		Portuguese:"Trufas"
 	}
 	
 	// Tile improvements
@@ -4212,13 +4212,14 @@
 
 	"Cities":{ //You misses this translation, said Smashfanful
 		Italian:"Città"
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		German:""
-		French:""
-		Portuguese:""
-		Russian:""
+		Romanian:"Orase"
+		Spanish:"Ciudades"
+		Simplified_Chinese:"城市"
+		German:"Städte"
+		Dutch:"Cities"
+		French:"Villes"
+		Portuguese:"Cidades"
+		Russian:"Города"
 	}
 
 	"Technologies":{ //You misses this translation, said Smashfanful
