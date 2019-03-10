@@ -16,6 +16,7 @@ import java.util.*
 
 class LoadScreen : PickerScreen() {
     lateinit var selectedSave:String
+    val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard",skin)
 
     init {
         setDefaultCloseAction()
@@ -36,7 +37,7 @@ class LoadScreen : PickerScreen() {
             val textButton = TextButton(save,skin)
             textButton.onClick {
                 selectedSave=save
-
+                copySavedGameToClipboardButton.enable()
                 var textToSet = save
 
                 val savedAt = Date(GameSaver().getSave(save).lastModified())
@@ -59,8 +60,10 @@ class LoadScreen : PickerScreen() {
         }
 
         val rightSideTable = Table()
-        val loadFromClipboardButton = TextButton("Load copied data".tr(),skin)
+
         val errorLabel = "".toLabel().setFontColor(Color.RED)
+
+        val loadFromClipboardButton = TextButton("Load copied data".tr(),skin)
         loadFromClipboardButton.onClick {
             try{
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
@@ -75,7 +78,16 @@ class LoadScreen : PickerScreen() {
 
         rightSideTable.add(loadFromClipboardButton).row()
         rightSideTable.add(errorLabel).row()
-        rightSideTable.add(deleteSaveButton)
+        rightSideTable.add(deleteSaveButton).row()
+
+        copySavedGameToClipboardButton.disable()
+        copySavedGameToClipboardButton.onClick {
+            val gameText = GameSaver().getSave(selectedSave).readString()
+            val gzippedGameText = Gzip.zip(gameText)
+            Gdx.app.clipboard.contents = gzippedGameText
+        }
+        rightSideTable.add(copySavedGameToClipboardButton)
+
         topTable.add(rightSideTable)
 
         rightSideButton.onClick {

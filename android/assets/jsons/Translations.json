@@ -1000,12 +1000,7 @@
 
 	"Stopped population growth":{
 		Italian:"Crescita della popolazione arrestata"
-		Russian:""
-		French:""
-		Romanian:""
 		German:"Bevölkerungswachstum gestoppt"
-		Dutch:""
-		Spanish:""
 		Simplified_Chinese:"人口增长停止"
 		Portuguese:"Crescimento populacional interrompido"
 		Japanese:"人口増加の阻止"
@@ -1013,12 +1008,6 @@
 
 	"In resistance for another [numberOfTurns] turns":{
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
 		Simplified_Chinese:"阻力将持续其他[numberOfTurns]转变"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
@@ -1026,13 +1015,6 @@
 	
 	"[greatPerson] points":{ // e.g "Great Scientist points"
 		Italian:"Punti [greatPerson]" //es. "Punti Grande Scienziato"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
 		Portuguese:"[greatPerson] aponta"
 		Japanese:"[greatPerson]ポイント"
 	}
@@ -1651,14 +1633,6 @@
 
 	"Copy to clipboard":{
 		Italian:"Copia su appunti"
-		Russian:""
-		French:""
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
 	}
 
 	"Could not load game":{
@@ -3309,12 +3283,6 @@
 		Italian:"Armi combinate"
 		Russian:"Комбинированные руки"
 		French:"Armes combinés"
-		Romanian:""
-		German:""
-		Dutch:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
@@ -4224,44 +4192,16 @@
 
 	"Technologies":{ //You misses this translation, said Smashfanful
 		Italian:"Tecnologie"
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		German:""
-		French:""
-		Portuguese:""
-		Russian:""
 	}
 
 	"Declarations of war":{ //You misses this translation, said Smashfanful
 		Italian:"Dichiarazione di guerra"
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		German:""
-		French:""
-		Portuguese:""
-		Russian:""
 	}
 	"Luxury resources":{
 		Italian:"Risorse di lusso" //You misses this translation, said Smashfanful
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		German:""
-		French:""
-		Portuguese:""
-		Russian:""
 	}
 	"Strategic resources":{
 		Italian:"Risorse strategiche" //You misses this translation, said Smashfanful
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		German:""
-		French:""
-		Portuguese:""
-		Russian:""
 	}
 
 	// Civilisations and uniques
@@ -4787,14 +4727,6 @@
 	}
 	"Declare war on [civName]?":{
 		Italian:"Dichiarare guerra alla civiltà [civName]?"
-		Russian:""
-		French:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		German:""
-		Dutch:""
 	}
 	
 	"[civName] has declared war on us!":{
@@ -4831,36 +4763,12 @@
 	}
 	"Very well.":{
 		Italian:"Molto bene."
-		Russian:""
-		French:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		German:""
-		Dutch:""
 	}
 	"Farewell.":{
 		Italian:"Addio."
-		Russian:""
-		French:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		German:""
-		Dutch:""
 	}
 	"A pleasure to meet you.":{
 		Italian:"Lieto di incontrarvi."
-		Russian:""
-		French:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		German:""
-		Dutch:""
 	}
 	
 	// Overview screen
@@ -4940,10 +4848,6 @@
 		Spanish:"Maravillas"
 		German:"Wunder"
 		French:"Merveilles"
-		Russian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
@@ -4951,10 +4855,6 @@
 		Spanish:"Edificios Ocupables"
 		German:"Gebäude der Spezialisten"
 		French:"Batiments spéciaux" //not sure
-		Russian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
 		Italian:"Altro"
@@ -5100,7 +5000,6 @@
 		Simplified_Chinese:"宫殿"
 		Portuguese:"Palácio"
 		German:"Palast"
-		Dutch:""
 	}
 	"Indicates the capital city":{
 		Italian:"Indica la città capitale"
@@ -5109,9 +5008,6 @@
 		Simplified_Chinese:"表示首都"
 		German:"Gibt die Hauptstadt an"
 		French:"Indique la capitale"
-		Dutch:""
-		Portuguese:""
-		Russian:""
 	}
 	
 	"Monument":{	
@@ -5182,8 +5078,6 @@
 		Simplified_Chinese:"造纸坊"
 		German:"Papiermacher"
 		French:"Fabricant de papier"
-		Russian:""
-		Portuguese:""
 	}
 	
 	"The Great Library":{	
@@ -5259,7 +5153,6 @@
 		Simplified_Chinese:"兵营"
 		Portuguese:"Quartéis"
 		German:"Baracken"
-		Dutch:""
 	}
 	
 	"Krepost":{
@@ -5270,8 +5163,6 @@
 		German:"Krepost"
 		Russian:"Krepost"
 		French:"Krepost"
-		Dutch:""
-		Portuguese:""
 	} // russian uique, transliterate this probably, this is a russian word
 	
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
@@ -5281,9 +5172,6 @@
 		Simplified_Chinese:"在这个城市，购买新地块的文化和黄金成本降低了25%"
 		German:"Kultur- und Goldkosten für den Erwerb neuer Felder in dieser Stadt sind um 25% reduziert"
 		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
-		Russian:""
-		Dutch:""
-		Portuguese:""
 	}
 	
 	"Temple":{	
@@ -5295,7 +5183,6 @@
 		Simplified_Chinese:"寺院"
 		Portuguese:"Templo"
 		German:"Tempel"
-		Dutch:""
 	}
 	"Burial Tomb":{
 		Italian:"Sepolcro"
@@ -5304,9 +5191,6 @@
 		Simplified_Chinese:"神庙"
 		German:"Grabstätte"
 		French:"Tombeau"
-		Russian:""
-		Dutch:""
-		Portuguese:""
 	}
 	
 	"The Oracle":{	
@@ -5372,9 +5256,6 @@
 		Simplified_Chinese:"灯塔"
 		Portuguese:"Farol" // farol also means that thing wich has a red ligh (i do not remember it's name) so if deemed nescessarry can add costeira to the beggining
 		German:"Leuchtturm"
-		Dutch:""
-		Spanish:""
-		Russian:""
 	}
 	"Can only be built in coastal cities":{
 		Italian:"Disponibile solo nelle città costiere"
@@ -5383,20 +5264,12 @@
 		Simplified_Chinese:"只能建在沿海城市"
 		Portuguese:"Só pode ser construido em cidades costeiras"
 		German:"Kann nur in Küstenstädten gebaut werden"
-		Dutch:""
-		Russian:""
-		Spanish:""
 	}
 	"+1 food from Ocean and Coast tiles":{
 		Italian:"+1 Cibo da caselle Oceano e costiere"
 		Romanian:"+1 hrană din celule ocean și de țărm"
 		German:"+1 Nahrung von Ozean und Küsten Feldern"
 		French:"+1 nourriture des cases océans et côtes"
-		Russian:""
-		French:""
-		Portuguese:""
-		Dutch:""
-		Simplified_Chinese:""
 	}
 	
 	"The Great Lighthouse":{
@@ -5407,8 +5280,6 @@
 		Simplified_Chinese:"大灯塔"
 		Portuguese:"O Grande Farol"
 		German:"Der Große Leuchtturm"
-		Russian:""
-		Dutch:""
 	}
 	"All military naval units receive +1 movement and +1 sight":{
 		Spanish:"Todas las unidades militares navales reciben +1de movimiento y +1 de vision"
@@ -5418,8 +5289,6 @@
 		Simplified_Chinese:"所有海军军事单位+1移动力和+1视野"
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
-		Dutch:""
-		Russian:""
 	}
 
 	"Stable":{	
@@ -5436,11 +5305,6 @@
 		Italian:"+15% Produzione nella città nel reclutare unità a cavallo"
 		German:"+15% Produktion beim Ausbilden von berittenen Einheiten in dieser Stadt"
 		French:"+15% Production lorsqu'une unité montée est produite dans cette ville"
-		Spanish:""
-		Portuguese:""
-		Romanian:""
-		Russian:""
-		Simplified_Chinese:""
 	}
 	
 	"Circus Maximus":{	
@@ -5491,9 +5355,7 @@
 		Simplified_Chinese:"集市"
 		German:"Basar"
 		French:"Bazar"
-		Dutch:""
 		Russian:"базар"
-		Portuguese:""
 	}// Arabian unique - transliterate?
 	
 	"Provides 1 extra copy of each improved luxury resource near this City":{
@@ -5503,9 +5365,6 @@
 		Simplified_Chinese:"提供靠近城市每个奢侈资源额外的一份"
 		German:"Gibt 1 extra Einheit jeder verbesserten Luxusresource in der Nähe dieser Stadt"
 		French:"Produit un exemplaire supplémentaire de chaque ressources de luxe à côté de cette ville"
-		Russian:""
-		Portuguese:""
-		Dutch:""
 	}
 
 	"+2 Gold for each source of Oil and oasis":{
@@ -5515,9 +5374,6 @@
 		Simplified_Chinese:"石油和绿洲每个来源 +2 金钱"
 		German:"+2 Gold für jede Ölquelle oder Oase"
 		French:"+2 or pour chaque ressources de pétrole et d'oasis"
-		Russian:""
-		Portuguese:""
-		Dutch:""
 	}
 			
 	"Monastery":{	
@@ -5573,7 +5429,6 @@
 		Simplified_Chinese:"铸造厂"
 		Portuguese:"Casa da moeda"
 		German:"Prägerei"
-		Dutch:""
 	}
 	
 	"Machu Pichu":{	
@@ -5716,23 +5571,11 @@
 		Italian:"Alhambra"
 		German:"Alhambra"
 		French:"Alhambra"
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		German:""
-		Dutch:""
 	}
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
 		Italian:"Ogni unità da mischia, a cavallo e con armatura appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		German:""
-		Dutch:""
 	}
 	
 	"Angkor Wat":{	
@@ -5890,10 +5733,6 @@
 		Spanish:"La Torre Inclinada De Pizza"
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		Dutch:""
 	}
 	
 	"Free Great Person":{
@@ -5902,10 +5741,7 @@
 		Spanish:"Gran Persona gratis"
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
-		Simplified_Chinese:""
-		Portuguese:""
 		Russin:""
-		Dutch:""
 	}
 	
 	"Taj Mahal":{	
@@ -5993,7 +5829,6 @@
 		Simplified_Chinese:"海港"
 		Portuguese:"Port"
 		German:"Seehafen"
-		Russian:""
 	}
 	"+1 production and gold from all sea resources worked by the city":{
 		Spanish:"+1 de produccion y oro por todos los recursos acuaticos trabajados por la ciudad"
@@ -6003,7 +5838,6 @@
 		Simplified_Chinese:"+1 生产和金钱来自全市所有海洋资源"
 		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
 		German:"+1 Produktion und Gold von allen Meeresressourcen die von der Stadt bewirtschaftet werden"
-		Russian:""
 	}
 	"+15% production of naval units":{
 		Spanish:"+15% A la produccion de unidades navales"
@@ -6011,7 +5845,6 @@
 		French:"+15% à la production d'unités maritimes"
 		Romanian:"+15% producție de unități navale"
 		Simplified_Chinese:"+15%的海军单位生产"
-		Russian:""
 		Portuguese:"15% na produção de unidades marítimas"
 		German:"+15% Produktion für Marineeinheiten"
 	}
@@ -6098,21 +5931,9 @@
 		German:"Kreml"
 		Spanish:"Kremlin"
 		Russian:"Кремль"
-		Portuguese:""
-		Simplified_Chinese:""
-		Dutch:""
-		Romanian:""
 	}
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
-		French:""
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		German:""
-		Dutch:""
 	}
 	
 	"Military Academy":{	
@@ -6162,23 +5983,11 @@
 		Italian:"Statua della Libertà"
 		German:"Freiheitsstatue"
 		French:"Statue de la Liberté"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"+1 Production from specialists":{
 		Italian:"+1 Produzione dagli Specialisti"
 		German:"+1 Produktion von Spezialisten"
 		French:"+1 Production par spécialiste"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	
 	"Medical Lab":{	
@@ -6258,46 +6067,22 @@
 		Italian:"CN Tower" //same in Italian
 		//same in German
 		French:"Tour du CN"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"+1 population in each city":{
 		Italian:"+1 Popolazione in ogni città"
 		German:"+1 Einwohner in jeder Stadt"
 		French:"+1 population dans chaque villes"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"+1 happiness in each city":{
 		Italian:"+1 Felicità in ogni città"
 		German:"+1 Zufriedenheit in jeder Stadt"
 		French:"+1 bonheur dans chaque villes"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	
 	"Pentagon":{
 		Italian:"Pentagono"
 		//same in German
 		//same in French
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"Gold cost of upgrading military units reduced by 33%":{
 		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
@@ -6380,34 +6165,16 @@
 		Italian:"Telescopio spaziale Hubble"
 		German:"Hubble Weltraumteleskop"
 		French:"Téléscope de Hubble"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"2 free great scientists appear":{
 		Italian:"Appaiono 2 grandi scenziati gratuiti"
 		German:"2 kostenlose Große Wissenschaftler erscheinen"
 		French:"2 scientifiques illustres apparaissent"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	"Increases production of spaceship parts by 25%":{
 		Italian:"+25% Produzione per le parti dell'astronave"
 		German:"Erhöht die Produktion von Raumschiffteilen um 25%"
 		French:"Améliore la production de pièces de vaisseau spatial de 25%"
-		Russian:""
-		Romanian:""
-		Spanish:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Dutch:""
 	}
 	
 	"SS Booster":{	//no translation that I know of
@@ -6515,7 +6282,6 @@
 		Simplified_Chinese:"工船"
 		Portuguese:"Barcos de trabalho"
 		German:"Arbeitsboote"
-		Russian:""
 	}
 	"Trireme":{
 		Spanish:"Trirreme"
@@ -6525,7 +6291,6 @@
 		Simplified_Chinese:"三列桨战船"
 		Portuguese:"Trireme"
 		//same in German
-		Russian:""
 	}
 	"Chariot Archer":{	
 		Italian:"Arciere su carro"
@@ -6574,8 +6339,6 @@
 		Simplified_Chinese:"复合弓兵"
 		German:"Kompositbogenschütze"
 		French:"Archer composite"
-		Portuguese:""
-		Russian:""
 	}
 	"Catapult":{	
 		Italian:"Catapulta"
@@ -6593,7 +6356,6 @@
 		French:"Balliste"
 		Romanian:"Balistă"
 		Simplified_Chinese:"弩炮"
-		Russian:""
 		Portuguese:"Balista"
 		German:"Balliste"
 	}
@@ -6612,8 +6374,6 @@
 		Romanian:"Legionar"
 		Spanish:"Legionario"
 		Simplified_Chinese:"古罗马军团"
-		Russian:""
-		Portuguese:""
 		German:"Legionär"
 		French:"Légion"
 	} // Rome unique
@@ -6645,7 +6405,6 @@
 		French:"Galléasse"
 		Romanian:"Galeră"
 		Simplified_Chinese:"三桅帆装军舰"
-		Russian:""
 		Portuguese:"Galleass"
 		German:"Galeere"
 	}
@@ -6665,7 +6424,6 @@
 		French:"Archer long"
 		Romanian:"Arcaș cu arc lung"
 		Spanish:"Arquero de arco largo"
-		Russian:""
 		Simplified_Chinese:"长弓手"
 		Portuguese:"Arqueiro de arco longo"
 		German:"Langbogenschütze"
@@ -6677,8 +6435,6 @@
 		Simplified_Chinese:"诸葛弩"
 		//same in German
 		//same in French
-		Russian:""
-		Portuguese:""
 	} // Chinese unique, can transliterate
 	
 	"Trebuchet":{	
@@ -6727,7 +6483,6 @@
 		Spanish:"Arquero a camello"
 		Simplified_Chinese:"骆驼骑射手"
 		Russian:"Лучник на верблюде"
-		Portuguese:""
 		German:"Kamel-Bogenschütze"
 		French:"Archer méhariste"
 	}
@@ -6782,7 +6537,6 @@
 		Russian:"Минитмэн"
 		//same in German
 		//same in French
-		Portuguese:""
 	} // American unique
 
 	"Frigate":{
@@ -6803,7 +6557,6 @@
 		Russian:"Линейный корабль"
 		German:"Linienschiff"
 		French:"Navire de ligne"
-		Portuguese:""
 	} // English unique
 	"Lancer":{	
 		Italian:"Lanciere a cavallo"
@@ -6826,7 +6579,6 @@
 		Russian:"Пулемёт Гатлинга"
 		German:"Gatling Kanone"
 		French:"Mitrailleuse Gatling"
-		Portuguese:""
 	}
 	"Rifleman":{	
 		Italian:"Fuciliere"
@@ -6856,7 +6608,6 @@
 		Russian:"Казаки"
 		German:"Kosak"
 		French:"Cosaque"
-		Portuguese:""
 	} // Russia unique
 	
 	"Artillery":{	
@@ -6878,7 +6629,6 @@
 		// iron clad has 3 different tranlations to portuguese but i am not sure wich one to use
 		Russian:"Броненосец"
 		German:"Panzerschiff"
-		Portuguese:""
 	}
 	
 	// Modern units (do these, yes)
@@ -6889,7 +6639,6 @@
 		Simplified_Chinese:"履带战车"
 		Russian:"Танкетка"
 		German:"Landschiff"
-		Portuguese:""
 		French:"Véhicule terrestre" //official translation but ugly
 	}
 	"Great War Infantry":{
@@ -6899,7 +6648,6 @@
 		Simplified_Chinese:"一战装甲舰"
 		Russian:"Стрелок"
 		German:"Weltkriegs Infanterie"
-		Portuguese:""
 		French:"Infanterie de la grande guerre"
 	}
 	"Destroyer":{
@@ -6910,7 +6658,6 @@
 		Russian:"УНИЧТОЖИТЕЛЬ ВСЕГО И ВСЕЯ ЖИВОГО"
 		German:"Zerstörer"
 		French:"Destroyer"
-		Portuguese:""
 	}
 	"Machine Gun":{
 		Italian:"Mitragliatrice"
@@ -6920,7 +6667,6 @@
 		Russian:"Пулемёт"
 		German:"Maschienengewehr"
 		French:"Mitrailleuse"
-		Portuguese:""
 	}
 	"Anti-aircraft Gun":{
 		Italian:"Cannone antiaereo"
@@ -6929,7 +6675,6 @@
 		Simplified_Chinese:"高射炮"
 		Russian:"Зенитка"
 		German:"FLAK"
-		Portuguese:""
 		French:"Canon anti-aérien"
 	}
 	"Infantry":{
@@ -6940,7 +6685,6 @@
 		Russian:"Пехота"
 		German:"Infanterie"
 		French:"Infanterie"
-		Portuguese:""
 	}
 	"Foreign Legion":{
 		Italian:"Legione straniera"
@@ -6950,7 +6694,6 @@
 		Russian:"Иностранный легион"
 		German:"Fremdenlegion"
 		French:"Légion étrangère"
-		Portuguese:""
 	} // French Unique
 	"Battleship":{
 		Italian:"Corazzata"
@@ -6960,7 +6703,6 @@
 		Russian:"Линкор"
 		German:"Schlachtschiff"
 		French:"cuirassé"
-		Portuguese:""
 	}
 	"Submarine":{
 		Italian:"Sottomarino"
@@ -6970,7 +6712,6 @@
 		Russian:"Подводная Лодка"
 		German:"U-Boot"
 		French:"Sous-marin"
-		Portuguese:""
 	}
 	"Carrier":{
 		Italian:"Portaerei"
@@ -6980,7 +6721,6 @@
 		Russian:"Авианосец"
 		German:"Flugzeugträger"
 		French:"Porte-avions"
-		Portuguese:""
 	} // aircrat carrier
 	
 	"Great War Bomber":{
@@ -6991,7 +6731,6 @@
 		Russian:"великий бомбардировщик0_0"
 		German:"Weltkriegsbomber"
 		French:"Bombardier de la grande guerre"
-		Portuguese:""
 	}
 	"Triplane":{
 		Italian:"Triplano"
@@ -7001,7 +6740,6 @@
 		Russian:"ТРИПЛАН"
 		German:"Dreidecker"
 		French:"Triplan"
-		Portuguese:""
 	}
 	
 	// Atomic units (not in game yet but will be, not super important but why not)
@@ -7013,7 +6751,6 @@
 		Russian:"Ракетная Артиллерия"
 		German:"Raketenartillerie"
 		French:"Lance-roquettes"
-		Portuguese:""
 	}
 	"Anti-Tank Gun":{
 		Italian:"Cannone anticarro"
@@ -7023,7 +6760,6 @@
 		Russian:"противотанковое оружие"
 		German:"Panzerabwehr-Kanone"
 		French:"Canon antichar"
-		Portuguese:""
 	}
 	"Marine":{
 		Italian:"Marine"
@@ -7033,7 +6769,6 @@
 		Russian:"Морской пехотинец"
 		German:"Marine" //not sure if this is correct here
 		French:"Fusillier marin"
-		Portuguese:""
 	}
 	"Mobile SAM":{
 		Italian:"SAM mobile"
@@ -7042,7 +6777,6 @@
 		Simplified_Chinese:"防空导弹车"
 		Russian:"Мобильный СЭМ хуй знвет что это"
 		German:"Mobile Flugabwehrrakte"
-		Portuguese:""
 		French:"Lance-missiles SAM mobile"
 	}
 	"Paratrooper":{
@@ -7053,7 +6787,6 @@
 		Russian:"Парашютист"
 		German:"Fallschirmjäger"
 		French:"Parachutiste"
-		Portuguese:""
 	}
 	"Tank":{
 		Italian:"Carro armato"
@@ -7063,7 +6796,6 @@
 		Russian:"ТАНК"
 		German:"Panzer"
 		French:"Char"
-		Portuguese:""
 	}
 	"Panzer":{
 		Italian:"Panzer" //same in Italian
@@ -7073,7 +6805,6 @@
 		Russian:"Панзэр"
 		German:"Tiger II Panzer" //I used a more late WW2 panzer name here to destinguish 
 		French:"Panzer"
-		Portuguese:""
 	} // german unique
 	"Bomber":{
 		Italian:"Bombardiere"
@@ -7081,9 +6812,7 @@
 		Spanish:"Bombardero"
 		Simplified_Chinese:"轰炸机"
 		Russian:"Бомбардировщик"
-		Portuguese:""
 		French:"Bombardier"
-		German:""
 	}
 	"B17":{
 		Italian:"B-17"
@@ -7091,9 +6820,6 @@
 		Spanish:"B-17"
 		Simplified_Chinese:"B17轰炸机"
 		French:"B-17"
-		Russian:""
-		Portuguese:""
-		German:""
 	} // american unique
 	"Fighter":{
 		Italian:"Caccia"
@@ -7102,8 +6828,6 @@
 		Simplified_Chinese:"战斗机"
 		German:"Jäger"
 		French:"Chasseur"
-		Portuguese:""
-		Russian:""
 	}
 	"Helicopter Gunship":{
 		Italian:"Elicottero da guerra"
@@ -7113,7 +6837,6 @@
 		Russian:"Боевой вертолёт"
 		German:"Angriffshelikopter"
 		French:"Hélicoptère de combat"
-		Portuguese:""
 	}
 	
 	// Information era - not even putting here, too far off
@@ -7166,7 +6889,6 @@
 		Simplified_Chinese:"大军事家"
 		Russian:"Великий полководец"
 		German:"Großer General"
-		Portuguese:""
 		French:"Général illustre"
 	}
 	
@@ -8311,23 +8033,9 @@
 	}
 	"Autocracy Complete":{
 		Italian:"Autocrazia Completa"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"+1 happiness from each Walls, Castle and Arsenal":{
 		Italian:"+1 Felicità per ogni Mura, Castello e Arsenale"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	
 	// Victory Screen
@@ -8335,19 +8043,9 @@
 		Italian:"Vittoria Scientifica"
 		German:"Wissenschaftssieg"
 		French:"Victoire scientifique"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"Cultural victory":{
 		Italian:"Vittoria Culturale"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Kultursieg"
 		French:"Victoire Culturelle"
 	}
@@ -8355,113 +8053,56 @@
 		Italian:"Vittoria per Dominazione"
 		German:"Dominanzsieg"
 		French:"Victoire militaire"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"Complete all the spaceship parts\n to win!":{
 		Italian:"Completa tutte le parti\n  dell'astronave per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"Complete 4 policy branches\n to win!":{
 		Italian:"Completa quattro rami\n  politici per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"Destroy all enemies\n to win!":{
 		Italian:"Distruggi tutti gli avversari \n per vincere!"
 		German:"Um zu gewinnen besiegen Sie alle Gegner!"
 		French:"Eliminer tous vos adversaires pour gagner!"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"You have won a scientific victory!":{
 		Italian:"Hai ottenuto una Vittoria Scientifica!"
 		German:"Sie haben den Wissenschaftssieg errungen!"
 		French:"Vous avez fait une victoire scientifique!"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"You have won a cultural victory!":{
 		Italian:"Hai ottenuto una Vittoria Culturale!"
 		German:"Sie haben den Kultursieg errungen!"
 		French:"Vous avez fait une victoire culturelle!"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"You have won a conquest victory!":{
 		Italian:"Hai ottenuto una Vittoria per Dominazione!"
 		German:"Sie haben den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"One more turn...!":{
 		Italian:"Solo un altro turno..."
 		German:"Nur noch eine Runde..."
 		French:"Un autre tour... !"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"Built Apollo Program":{
 		Italian:"Programma Apollo costruito"
 		German:"Vollendete das Apollo-Programm" //not sure about the context here
 		French:"Construiser le programme Apollo" //same, it could be "construire"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}
 	"Destroy [civName]":{
 		Italian:"Distruggi [civName]"
 		German:"Zerstöre [civName]"
 		French:"Détruiser [civName]"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 	}	
 	
 	// Unit Promotions
 	"Pick promotion":{
 		Italian:"Scegli promozione"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	
 	" OR ":{// as in "Requires Accuracy I OR Barrage I
@@ -8477,605 +8118,236 @@
 	
 	"Accuracy I":{
 		Italian:"Precisione I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Genauigkeit I"
-		French:""
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Genauigkeit II"
-		French:""
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Genauigkeit III"
-		French:""
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Sperrfeuer I"
-		French:""
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Sperrfeuer II"
-		French:""
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Sperrfeuer III"
-		French:""
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Shock I":{
 		Italian:"Assalto I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Schock I"
-		French:""
 	}
 	"Shock II":{
 		Italian:"Assalto II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Schock II"
-		French:""
 	}
 	"Shock III":{
 		Italian:"Assalto III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Schock III"
-		French:""
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Drill I"
-		French:""
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Drill II"
-		French:""
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Drill III"
-		French:""
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Spähen I"
-		French:""
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Spähen II"
-		French:""
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Spähen II"
-		French:""
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"+1 Sichtweite"
-		French:""
 	}
 	"Cover I":{
 		Italian:"Copertura I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Deckung I"
-		French:""
 	}
 	"Cover II":{
 		Italian:"Copertura II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Deckung I"
-		French:""
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"+25% Verteidigung gegen alle Fernangriffe"
-		French:""
 	}
 	"March":{
 		Italian:"Marcia"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Marschieren"
-		French:""
 	}
 	"Unit will heal every turn, even if it performs an action":{
 		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Charge":{
 		Italian:"Carica"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Angriff"
-		French:""
 	}
 	"Bonus vs wounded units 33%":{
 		Italian:"+33% forza contro unità ferite"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Mobility":{
 		Italian:"Mobilità"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Mobilität"
-		French:""
 	}
 	"Siege":{
 		Italian:"Assedio"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Belagerung"
-		French:""
 	}
 	"Volley":{
 		Italian:"Raffica"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Salve"
-		French:""
 	}
 	"Sentry":{
 		Italian:"Sentinella"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Wache"
-		French:""
 	}
 	"Range":{
 		Italian:"Raggio di tiro ampliato"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Reichweite"
-		French:""
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"+1 Reichweite"
-		French:""
 	}
 	"Indirect Fire":{
 		Italian:"Fuoco indiretto"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Indirektes Feuer"
-		French:""
 	}
 	"Ranged attacks may be performed over obstacles":{
 		Italian:"Permette di sparare a distanza superando gli ostacoli"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Formation I":{
 		Italian:"Formazione I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Formation I"
-		French:""
 	}
 	"Formation II":{
 		Italian:"Formazione II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Formation II"
-		French:""
 	}
 	"Blitz":{
 		Italian:"Incursione"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Formation III"
-		French:""
 	}
 	"1 additional attack per turn":{
 		Italian:"L'unità ottiene può attaccare due volte ogni turno"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Logistics":{
 		Italian:"Logistica"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Logistick"
-		French:""
 	}
 	"Bombardment I":{
 		Italian:"Bombardamento I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Bombardierung I"
-		French:""
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Bombardierung II"
-		French:""
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Bombardierung III"
-		French:""
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Bonus vs land units 34%":{
 		Italian:"+34% forza contro unità terrestri"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Entermannschaft I"
-		French:""
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Entermannschaft II"
-		French:""
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Entermannschaft III"
-		French:""
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Küstenräuber I"
-		French:""
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Küstenräuber II"
-		French:""
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Küstenräuber III"
-		French:""
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Gezielter Schlag I"
-		French:""
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Gezielter Schlag II"
-		French:""
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Gezielter Schlag III"
-		French:""
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Rudeltaktik I"
-		French:""
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Rudeltaktik II"
-		French:""
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Rudeltaktik III"
-		French:""
 	}
 	
 	// Civilopedia texts
 	"Basics":{
 		Italian:"Basi"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Spielkonzepte"
-		French:""
 	}
 	"Resources":{
 		Italian:"Risorse"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Ressourcen"
-		French:""
 	}
 	"Terrains":{
 		Italian:"Terreni e caratteristiche"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Gelände und Geländearten"
-		French:""
 	}
 	"Tile Improvements":{
 		Italian:"Miglioramenti"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
 		German:"Modernisierungen"
-		French:""
 	}
 	
 	"Unique to [civName], replaces [unitName]":{
@@ -9090,112 +8362,35 @@
 	}
 	"Requires [buildingName] to be built in the city":{
 		Italian:"Richiede la costruzione di [buildingName] nella città"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Requires [buildingName] to be built in all cities":{
 		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"May contain [listOfResources]":{
 		Italian:"Può contenere [listOfResources]"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Occurs on [listOfTerrains]":{
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 	"Movement cost":{
 		Italian:"Costi di movimento"
-		Spanish:""
-		Romanian:""
-		Simplified_Chinese:""
-		Portuguese:""
-		Russian:""
-		German:""
-		French:""
 	}
 }
