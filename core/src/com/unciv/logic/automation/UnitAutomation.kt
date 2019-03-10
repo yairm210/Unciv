@@ -439,7 +439,13 @@ class UnitAutomation{
     }
 
     fun automatedExplore(unit:MapUnit){
-        if(tryGoToRuin(unit,unit.getDistanceToTiles()) && unit.currentMovement==0f) return
+        val unitDistanceToTiles = unit.getDistanceToTiles()
+        if(tryGoToRuin(unit, unitDistanceToTiles) && unit.currentMovement==0f) return
+
+        if (unit.health < 80) {
+            healUnit(unit,unitDistanceToTiles)
+            return
+        }
 
         for(i in 1..10){
             val unexploredTilesAtDistance = unit.getTile().getTilesAtDistance(i)
