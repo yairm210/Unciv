@@ -10,6 +10,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.getRandom
 import java.util.*
+import kotlin.math.min
 
 
 class GameParameters{
@@ -77,7 +78,7 @@ class GameStarter{
     fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
         for(minimumDistanceBetweenStartingLocations in 7 downTo 0){
             val freeTiles = tileMap.values
-                    .filter { it.isLand() && vectorIsWithinNTilesOfEdge(it.position,3,tileMap)}
+                    .filter { it.isLand() && vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
                     .toMutableList()
 
             val startingLocations = ArrayList<TileInfo>()
