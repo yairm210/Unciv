@@ -10,8 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
-import com.unciv.logic.battle.Battle
-import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
@@ -84,39 +82,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             queueAddMoveHereButton(selectedUnit, tileInfo)
         }
-        if(selectedUnit!=null && selectedUnit.canAttack()
-                && UnitAutomation().getAttackableEnemies(selectedUnit, selectedUnit.getDistanceToTiles())
-                        .map { it.tileToAttack }.contains(tileInfo))
-            addAttackButton(selectedUnit, tileInfo)
 
         worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
         worldScreen.shouldUpdate = true
-    }
-
-    private fun addAttackButton(attacker: MapUnit, tileInfo: TileInfo) {
-        val size = 60f
-        val attackButton = Group().apply { width = size;height = size; }
-        attackButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
-        attackButton.addActor(ImageGetter.getUnitIcon("Swordsman")
-                .apply { width = size / 2; height = size / 2; center(attackButton) })
-
-        val unitIcon = UnitGroup(attacker, size / 2)
-        unitIcon.y = size - unitIcon.height
-        attackButton.addActor(unitIcon)
-
-        val tileGroup = tileGroups[tileInfo]!!
-        addOverlayOnTileGroup(tileGroup, attackButton)
-        attackButton.y += tileGroup.height
-
-        val battlePlan = UnitAutomation().getAttackableEnemies(attacker, attacker.getDistanceToTiles())
-                .first { it.tileToAttack==tileInfo }
-        attackButton.onClick {
-            val battle = Battle(worldScreen.gameInfo)
-            battle.moveAndAttack(MapUnitCombatant(attacker), battlePlan)
-            worldScreen.shouldUpdate=true
-            removeUnitActionOverlay=true
-        }
-        unitActionOverlay = attackButton
     }
 
     private fun queueAddMoveHereButton(selectedUnit: MapUnit, tileInfo: TileInfo) {
