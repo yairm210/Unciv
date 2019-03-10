@@ -11,6 +11,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -91,7 +92,16 @@ class LoadScreen : PickerScreen() {
         topTable.add(rightSideTable)
 
         rightSideButton.onClick {
-            UnCivGame.Current.loadGame(selectedSave)
+            try {
+                UnCivGame.Current.loadGame(selectedSave)
+            }
+            catch (ex:Exception){
+                val popup = PopupTable(this)
+                popup.addGoodSizedLabel("It looks like your saved game can't be loaded!")
+                popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - paste into an email to yairm210@hotmail.com)")
+                popup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!")
+                popup.open()
+            }
         }
 
     }

@@ -96,7 +96,7 @@ class CityExpansionManager {
     }
 
     fun takeOwnership(tileInfo: TileInfo){
-        if(tileInfo.isCityCenter()) throw Exception("What?")
+        if(tileInfo.isCityCenter()) throw Exception("What?!")
         if(tileInfo.getCity()!=null) tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
 
         cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)

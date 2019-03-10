@@ -29,7 +29,7 @@ class IdleUnitButton (internal val unitTable: UnitTable,
         enable()
         onClick {
             val tilesWithIdleUnits = getTilesWithIdleUnits()
-
+            if(tilesWithIdleUnits.isEmpty()) return@onClick
             val tileToSelect: TileInfo
             if (unitTable.selectedUnit==null || !tilesWithIdleUnits.contains(unitTable.selectedUnit!!.getTile()))
                 tileToSelect = tilesWithIdleUnits[0]
