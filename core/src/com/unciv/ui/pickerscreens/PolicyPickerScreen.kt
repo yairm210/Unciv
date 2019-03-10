@@ -27,7 +27,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             rightSideButton.setText("Adopt free policy".tr())
             closeButton.disable()
         }
-        else onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
+        else onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick("policy") {
             civInfo.policies.adopt(pickedPolicy!!)

@@ -17,7 +17,7 @@ import java.util.*
 
 class CivilopediaScreen : CameraStageBaseScreen() {
     init {
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         val buttonTable = Table()
         buttonTable.pad(15f)
         val entryTable = Table()

@@ -16,7 +16,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
 
     init {
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         setDefaultCloseAction()
         rightSideButton.setText("Pick promotion".tr())
         rightSideButton.onClick("promote") {

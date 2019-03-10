@@ -14,7 +14,7 @@ class DiplomacyScreen:CameraStageBaseScreen(){
     val rightSideTable = Table()
 
     init{
-        onBackButtonClicked { UnCivGame.Current.setWorldScreen(); dispose() }
+        onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         val splitPane = SplitPane(ScrollPane(leftSideTable),rightSideTable,false, skin)
         splitPane.splitAmount = 0.2f
 

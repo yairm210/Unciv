@@ -42,7 +42,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private var tileGroups = ArrayList<CityTileGroup>()
 
     init {
-        onBackButtonClicked { game.setWorldScreen(); dispose() }
+        onBackButtonClicked { game.setWorldScreen() }
         addTiles()
 
         val tableBackgroundColor = ImageGetter.getBlue().lerp(Color.BLACK,0.5f)
