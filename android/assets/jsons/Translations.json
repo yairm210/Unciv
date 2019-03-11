@@ -5327,6 +5327,22 @@
 		Portuguese:"Jardins Suspensos"
 		German:"Hängende Gärten"
 	}
+	/*
+	//New Wonder: Statue of Zeus! Suggested by Smashfanful
+	"Statue of Zeus":{	
+		Italian:"Statua di Zeus"
+	}
+	"+15% Combat Strenght when attacking Cities":{
+		Italian:"+15% Forza quando attacchi le Città"
+	}
+	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
+	"Mausoleum of Halicarnassus":{	
+		Italian:"Mausoleo di Alicarnasso"
+	}
+	"+2 Gold from every source of Marble and Stone":{
+		Italian:"+2 Oro da ogni fonte di Marmo e Pietra"
+	}
+	*/
 	"Colloseum":{	
 		Italian:"Colosseo"
 		Russian:"Колизей"
@@ -5359,7 +5375,7 @@
 	}// Arabian unique - transliterate?
 	
 	"Provides 1 extra copy of each improved luxury resource near this City":{
-		Italian:"Concede 1 copia extra di ogni risorsa di lusso migliorata vicino alla città"
+		Italian:"Concede 1 copia aggiuntiva di ogni risorsa di lusso migliorata vicino alla città"
 		Romanian:"Oferă o copie în plus pentru fiecare resursă de lux din apropierea acestui oraș"
 		Spanish:"Proporciona una copia extra de los recursos de lujo de la ciudad"
 		Simplified_Chinese:"提供靠近城市每个奢侈资源额外的一份"
@@ -5573,7 +5589,7 @@
 		French:"Alhambra"
 	}
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
-		Italian:"Ogni unità da mischia, a cavallo e con armatura appena reclutata nella città riceve la promozione Addestramento I"
+		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
 	}
@@ -5599,6 +5615,17 @@
 		Simplified_Chinese:"购买新地块的成本降低了25%"
 		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
 	}
+	/*
+	//New Wonder projected: Himeji Castle! Free Castle in City which possessed it, and +15% Strenght for units in friendly territory
+	//Also, +1 Culture and +2 Great Engineer Points. Requires Gunpowder
+	"Himeji Castle":{
+		Italian:"Castello di Himeji"
+	}
+	
+	"+15% Combat Strenght for units fighting in friendly territory":{
+		Italian:"+15% Forza per le unità che combattono in territorio amico"
+	}
+	*/
 	
 	"Porcelain Tower":{	
 		Italian:"Torre di Porcellana"
@@ -8331,6 +8358,13 @@
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 	}
+	/*
+	//Air units promotions (suggested by Smashfanful)
+	"Wolfpack III":{
+		Italian:"Attacco in massa III"
+		German:"Rudeltaktik III"
+	}
+	+/
 	
 	// Civilopedia texts
 	"Basics":{
