@@ -368,7 +368,7 @@
 				prerequisites:["Electricity"]
 			},
 			{
-				name:"Replacable Parts",
+				name:"Replaceable Parts",
 				row:4,
 				prerequisites:["Electricity","Steam Power"]
 			},
@@ -399,7 +399,7 @@
 			{
 				name:"Electronics",
 				row:5,
-				prerequisites:["Replacable Parts", "Flight"],
+				prerequisites:["Replaceable Parts", "Flight"],
 			},
 			{
 				name:"Ballistics",
