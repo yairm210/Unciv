@@ -1,0 +1,46 @@
+[
+	{
+		name:"Villes",
+		description: "Vos villes sont la base de votre empire. Chaque ville a une certaine quantité de population et de nombreuses tuiles, et peut travailler autant de tuiles que sa population.\nLa tuile centrale d'une ville est toujours travaillée et ne nécessite pas de population. \ NNouvelles villes peuvent être construites en construisant un colon.\nChaque ville de votre empire supprime 3 le bonheur de l'empire et chaque population en élimine un autre, alors planifiez avec soin!"
+	},
+	{
+		name:"Tuiles",
+		description: "Les tuiles sont des zones où votre population peut travailler la terre.\nChaque tuile a un terrain de base, tel que Prairies, Toundra, etc.\nChaque tuile peut avoir une amélioration à un moment donné."
+	},
+	{
+		name:"Population",
+		description: "Représente le nombre de personnes dans votre ville qui peuvent travailler les tuiles de la ville. La population croît avec suffisamment de surplus de nourriture et diminue si il n'y a pas assez de nourriture pour tout le monde.\nChaque population consomme 2 aliments par tour. Quand une nouvelle population est ajoutée, la tuile produisant le plus de nourriture sera automatiquement travaillée.\nVous pouvez attribuer manuellement une population à des tuiles en cliquant sur l'icône de population d'une tuile.\nVous devrez supprimer une population d'une tuile pour l'assigner ailleurs!"
+	},
+	{
+		name:"Ressources de base",
+		description: "Il existe 6 ressources de base dans Civ: Alimentation, Production, Or, Science, Bonheur et Culture.\nLa production et la nourriture sont calculées par ville, tandis que les autres ressources couvrent l’empire.\nLes ressources de base sont produites par des tuiles de ville et des bâtiments."
+	},
+	{
+		name:"Aliments",
+		description: "Une ressource de base. Chaque ville peut stocker un surplus de nourriture.\nLorsque l'excédent alimentaire atteint un certain montant en fonction de la population, il est consommé et la ville gagne une autre population.\n Si toute la nourriture excédentaire est épuisée et qu'il y a une pénurie de nourriture, la ville perdra une population."
+	},
+	{
+		name:"Production",
+		description: "Une ressource de base. La production est utilisée pour construire des bâtiments et des unités dans la ville.\nChaque population inactive (ne travaillant pas une tuile) produit 1 production."
+	},
+	{
+		name:"Science",
+		description: "Une ressource de base. Représente l'avancement scientifique de votre empire.\nChaque technologie nécessite une certaine quantité de science, qui augmente à mesure que les technologies deviennent plus avancées.\nChaque population produit 1 science."
+	},
+	{
+		name:"Or",
+		description: "A basic resource. Represents the wealth of your empire.\nMost buildings have mainainance costs, which require Gold per turn.\nEvery turn you are in a gold deficit, you will lose science points equal to your debt, which can halt your scientific advancement entirely!\nCities connected to the capital by roads will generate gold from the trade route, so connect your large cities to the capital!"
+	},
+	{
+		name:"Bonheur",
+		description: "Une ressource de base.\nChaque ville diminue le bonheur de votre empire de 3 et chaque population de 1.\nVous pouvez augmenter votre bonheur en bâtissant un bâtiment ou en exploitant des ressources de luxe.\nEn cas de malheur, votre surplus de nourriture ajouté est réduit à un quart, ce qui ralentit considérablement la croissance de votre ville.\nQuand il y aura assez de bonheur, votre empire entrera dans un Âge d'Or!"
+	},
+	{
+		name:"Unités et combat",
+		description:"Vous pouvez déplacer les icônes de la carte représentant les forces civiles et militaires. L'entretien de chaque unité coûte 1 or par tour.\nChaque unité dispose de 100 points de vie pouvant être réduits en combat. Les unités militaires peuvent attaquer d'autres unités et villes et causer des pertes qui dépendent de leur force.\nLes unités d'attaque de siège et d'attaque à distance peuvent attaquer à distance, tandis que les autres unités ne peuvent provenir que d'une tuile voisine.\nUne unité blessée guérira lentement à chaque tour seulement si elle reste inactive."
+	},
+	{
+		name:"Capture de villes",
+		description: "Les villes peuvent être conquises en réduisant leur santé à 1 et en entrant dans la ville avec une unité de mêlée.\nComme les villes guérissent à chaque tour, il est préférable d’attaquer avec des unités à distance et d’utiliser vos unités de mêlée pour les défendre jusqu’à ce que la ville soit vaincue!"
+	}
+]
