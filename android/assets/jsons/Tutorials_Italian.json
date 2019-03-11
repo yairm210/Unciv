@@ -63,6 +63,12 @@
 			"  ma puoi scegliere a quale tecnologia aspiri, e la tua civiltà",
 			"  ricercherà le tecnologie necessarie per arrivarci."
 		]
+		[
+			"Ricorda di restare competitivo nella corsa tecnologica, perché se rimani ",
+			"  troppo indietro in tale campo ti ritroverai nella stessa situazione degli Aztechi, che ",
+			"  dovettero affrontare i moschetti e i cannoni spagnoli armati solo di fionde e spade in ossidiana."
+			" La storia ci insegna che in casi come questo vince sempre chi possiede la tecnologia più avanzata"
+		]
 	],
 	
 	
@@ -110,10 +116,10 @@
 	
 	TileClicked : [
 		[
-			"Cliccando su una casella, non solo la selezioni,",
-			"  ma ne visualizzi le informazioni in basso a destra.",
-			"Se una casella contiene un'unità, questa verrà selezionata,"
-			"  e in basso a sinistra saranno visualizzate informazioni e azioni."
+			"Cliccando su una casella, non solo la selezioni, ",
+			" ma ne visualizzi le informazioni in basso a destra.",
+			"Se una casella contiene un'unità, questa verrà selezionata, "
+			" e in basso a sinistra saranno visualizzate informazioni e azioni."
 		]
 	],
 	
@@ -142,6 +148,12 @@
 			"  ma con il crescere della tua civiltà, lo stesso accadrà ",
 			"  alla quantità di cose che richiedono la tua attenzione."
 		]
+		[
+			"Ah, dimenticavo! Qualsiasi cosa tu faccia, nelle prime fasi del gioco ricordati sempre ",
+			" di inviare qualche unità (il tuo scout, ad esempio) ad esplorare il mondo (se non l'hai già fatto). ",
+			"Se non sai cosa ti succede intorno, qualche vicino avido ti tirerà certamente "
+			" qualche tiro mancino, e l'esperienza potrebbe esserti fatale!
+		]
 	]
 	
 	ContactMe:  [
@@ -166,34 +178,34 @@
 		[
 			"Sembra che i tuoi cittadini siano insoddisfatti!",
 			"Se il tuo impero non è felice, le città cresceranno a 1/4 della loro velocità,",
-			"  e le tue unità saranno penalizzate del 2% ad ogni punto infelicità"
+			"  e le tue unità saranno penalizzate del 2% ad ogni punto infelicità."
 		],
 		[
-			"L'infelicità possiede due cause: abitanti e città.",
+			"L'Infelicità possiede due cause: abitanti e città.",
 			"  Ogni città dona 3 punti infelicità, e ogni abitante ne dona 1."
 		],
 		[
-			"Vi sono due modi per combattere la felicità:",
-			"  o costruisci edifici che migliorano la felicità della tua popolazione,",
-			"  o sfrutti delle caselle contenenti risorse di lusso entro i tuoi confini."
+			"Vi sono due modi per combattere l'Infelicità: ",
+			" o costruisci edifici che migliorano la felicità della tua popolazione, ",
+			" o sfrutti delle caselle contenenti risorse di lusso entro i tuoi confini."
 		]
 	],
 	
 	GoldenAge:  [
 		[
-			"Sei entrato in un'Età dell'Oro!",
+			"Sei entrato in un'Età dell'Oro! Che fortuna!",
 			"I punti Età dell'Oro si accumulano ad ogni turno dalla felicità totale della tua civiltà.",
-			"Durante l'Età dell'Oro, generi Cultura e Produzione il 20% in più,",
-			"  e ogni casella che frutta minimo un punto Oro ne frutta uno aggiuntivo."
+			"Durante l'Età dell'Oro, generi Cultura e Produzione il 20% in più, ",
+			" e ogni casella che frutta minimo un punto Oro ne frutta uno aggiuntivo."
 		]
 	],
 	
 	SecondCity:  [
 		[
-			"Hai fondato la tua seconda città!",
+			"Ben fatto! Hai fondato la tua seconda città!",
 			"Se connetti le tua città alla capitale con le strade, le rotte commerciali ti frutteranno oro.",
-			"Nota che ogni strada costa 1 Oro di manutenzione al turno, quindi attendi di avere una forte economia "
-			"  finché le città crescono!"
+			"Nota che ogni strada costa 1 Oro di manutenzione al turno, quindi attendi di "
+			" possedere una forte economia finché le città crescono!"
 		]
 	]
 	
@@ -229,7 +241,7 @@
 	
 	EnemyCityNeedsConqueringWithMeleeUnit:  [
 		[
-			"La città ha esaurito la sua resistenza!",
+			"La città ha esaurito del tutto la sua resistenza! È giunto il momento di conquistarla!",
 			"Ricordati che per conquistarla devi farvi entrare un'unità da mischia."
 		]
 	]
@@ -238,15 +250,15 @@
 		[
 			"Hai incontrato un'unità barbarica!",
 			"I barbari attaccano chiunque indiscriminatamente, quindi tieni le tue unità civili ",
-			"  lontane dalla loro vista, e stai attento col tuo esploratore!"
+			" lontane dalla loro vista, e stai attento col tuo esploratore!"
 		]
 	]
 	
 	OtherCivEncountered:  [
 		[
 			"Hai incontrato un'altra civiltà!",
-			"Le altre civiltà cominciamo come pacifiche, e tu puoi commerciare con loro,",
-			"  ma ben presto potrebbero dichiararti guerra!"
+			"Le altre civiltà cominciamo come pacifiche, e tu potrai commerciare con loro,",
+			" ma ben presto potrebbero dichiararti guerra!"
 		]
 	]
 	
@@ -255,8 +267,8 @@
 			"Santi numi! Pare che qualcosa sia andato disastrosamente storto!",
 			"Quello che è successo non doveva assolutamente accadere!",
 			"Mandami un'email all'indirizzo yairm210@hotmail.com con l'info della partita",
-			"   (menu -> salva partita -> copia info partita -> incolla in email)",
-			"   e proverò a riparare il guasto il più in fretta possibile!"
+			" (menu -> salva partita -> copia info partita -> incolla in email)",
+			" e proverò a riparare il guasto il più in fretta possibile!"
 		]
 	]
 	
@@ -264,7 +276,7 @@
 		[
 			"Hai completato il Programma Apollo!",
 			"Ora puoi iniziare a costruire le parti dell'astronave nelle tue città (con le apposite tecnologie)",
-			"  e cercare di ottenere una vittoria scientifica!"
+			" e cercare di ottenere una vittoria scientifica!"
 		]
 	]
 	
@@ -273,7 +285,7 @@
 			"Una delle tue unità ha subito danni!",
 			"Le unità ferite infliggono meno dani, ma recuperano salute finché rimangono inattive",
 			"Le unità recuperano 5 punti salute in territorio nemico, 10 in terra neutrale,"
-			"  15 nel tuo territorio o in territorio amico e 20 nelle tue città"
+			" 15 nel tuo territorio o in territorio amico e 20 nelle tue città"
 		]
 	]
 	
@@ -282,7 +294,7 @@
 			"Hai addestrato un lavoratore!",
 			"I lavoratori sono vitali per la crescita delle città, perché solo loro possono costruire miglioramenti nelle caselle.",
 			"I miglioramenti incrementano la resa delle caselle, permettendo alle città di produrre di più",
-			"  e crescere più in fretta, senza dover espandersi a forza!"
+			" e crescere più in fretta, senza dover espandersi a forza!"
 		]
 	]
 	
@@ -291,7 +303,7 @@
 			"Hai addestrato un'unità d'assedio!",
 			"Le unità d'assedio sono estremamente potenti contro le città, ma vanno allestite prima di attaccare.",
 			"Una volta montata, l'unità d'assedio può attaccare dalla sua casella attuale,",
-			"  ma una volta spostatasi a un'altra casella, dovrà essere montata di nuovo."
+			" ma una volta spostatasi a un'altra casella, dovrà essere montata di nuovo."
 		]
 	]
 	
@@ -307,7 +319,7 @@
 		[
 			"I tuoi cittadini possono sfruttare fino a tre caselle di distanza dal centro città.",
 			"Ricorda che i confini della città continueranno ad espandersi,",
-			"ma nessun abitante potrà essere assegnato ad una casella citizen che si trova troppo lontano."
+			"ma nessun abitante potrà essere assegnato ad una casella che si trova troppo lontano."
 		]
 	]
 	
