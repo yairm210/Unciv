@@ -144,6 +144,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             else if (attacker is CityCombatant)
             {
                 canAttack = UnitAutomation().getBombardTargets(attacker.city).contains(defender.getTile())
+                if (canAttack) {
+                    attackableEnemy = AttackableTile(attacker.getTile(), defender.getTile())
+                }    
             }
         }
 
