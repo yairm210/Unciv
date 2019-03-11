@@ -52,6 +52,17 @@
 		freeTechs:1,
 		requiredTech:"Writing"
 	},
+	/*
+	{
+		//New Wonder! Suggested by Smashfanful
+		//Production Costs 185
+		name:"Statue of Zeus",
+		culture:1,
+		isWonder:true,
+		uniques:["+15% Combat Strenght when attacking Cities"],
+		requiredTech:"Bronze Working"
+	},
+	*/
 	{
 		name:"Library",
 		hurryCostModifier:25,
@@ -92,6 +103,16 @@
 		hurryCostModifier:25,
 		requiredTech:"Masonry"
 		//Babylonian unique building that replaces Walls.
+	},
+	{
+		//New Wonder! Suggested by Smashfanful
+		//Production Costs 185
+		name:"Mausoleum of Halicarnassus",
+		culture:1,
+		isWonder:true,
+		greatPersonPoints:{gold:1},
+		uniques:["+2 Gold from every source of Marble and Stone"],
+		requiredTech:"Masonry"
 	},
 	*/
 	{
@@ -386,6 +407,19 @@
 		uniques:["Must be next to mountain"],
 		requiredTech:"Astronomy"
 	},
+	/*
+	{
+		//New Wonder! Suggested by Smashfanful
+		//Production Costs 500
+		name:"Himeji Castle",
+		culture:1,
+		isWonder:true,
+		greatPersonPoints:{production:2},
+		uniques:["+15% Combat Strenght for units fighting in friendly territory"],
+		providesFreeBuilding: "Castle",
+		requiredTech:"Gunpowder"
+	},
+	*/
 	{
 		name:"Opera House",
 		culture:4,
