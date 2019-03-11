@@ -1,7 +1,7 @@
 [
 	{
 		name:"City",
-		description: "Your cities are the basis of your empire. Each city has a certain amount of population and many tiles, and can work as many tiles as it has population.\nThe center tile of a city is always worked and does not require population.\nNew Cities can be constructed by building a Settler.\nEach city in your empire removes 3 Happiness from the empire, and each population - another 1 Happiness, so plan carefully!"
+		description: "Your cities are the basis of your empire. Each city has a certain amount of population and many tiles, and can work as many tiles as it has population.\nThe center tile of a city is always worked and does not require population.\nNew Cities can be constructed by building a Settler.\nEach city in your empire removes 3 Happiness from the empire, and each population removes another 1 Happiness, so plan carefully!"
 	},
 	{
 		name:"Tile",
@@ -29,7 +29,7 @@
 	},
 	{
 		name:"Gold",
-		description: "A basic resource. Represents the wealth of your empire.\nMost buildings have mainainance costs, which require Gold per turn.\nEvery turn you are in a gold deficit, you will lose science points equal to your debt, which can halt your scientific advancement entirely!\nCities connected to the capital by roads will generate gold from the trade route, so connect your larg cities to the capital!"
+		description: "A basic resource. Represents the wealth of your empire.\nMost buildings have mainainance costs, which require Gold per turn.\nEvery turn you are in a gold deficit, you will lose science points equal to your debt, which can halt your scientific advancement entirely!\nCities connected to the capital by roads will generate gold from the trade route, so connect your large cities to the capital!"
 	},
 	{
 		name:"Happiness",
@@ -41,6 +41,6 @@
 	},
 	{
 		name:"Capturing Cities",
-		description: "Cities can be conquered by reducing their health to 1, and entering the city with a melee unit.\nSince cities heal each turn, it is best to attack with ranged units  and use your melee units to defend them until the city has been defeated!"
+		description: "Cities can be conquered by reducing their health to 1, and entering the city with a melee unit.\nSince cities heal each turn, it is best to attack with ranged units, and use your melee units to defend them until the city has been defeated!"
 	}
 ]
