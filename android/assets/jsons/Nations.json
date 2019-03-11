@@ -113,25 +113,25 @@
 		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
 		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
 		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
-		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations."
+		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
 		
-		neutralHello:"Good day."
-		neutralLetsHearIt:["Go on.","Speak.","I am all ears."]
-		neutralNo:["No.","Definitely not."]
-		neutralYes:["Okay.","Very well."]
+		neutralHello:"Good day.",
+		neutralLetsHearIt:["Go on.","Speak.","I am all ears."],
+		neutralNo:["No.","Definitely not."],
+		neutralYes:["Okay.","Very well."],
 		
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["Then?","Finish your speech."]
-		hateNo:["This is unacceptable.","You cannot be serious about your request."]
-		hateYes:["Oh, very well.","I think I should agree."]
+		hateHello:"Oh, it's you.",
+		hateLetsHearIt:["Then?","Finish your speech."],
+		hateNo:["This is unacceptable.","You cannot be serious about your request."],
+		hateYes:["Oh, very well.","I think I should agree."],
 		
-		afterPeace:"You know I could have destroyed you, but the feeling of generosity perfumes me today."
-		tradeRequest:"Generous Egypt makes you this offer."
+		afterPeace:"You know I could have destroyed you, but the feeling of generosity perfumes me today.",
+		tradeRequest:"Generous Egypt makes you this offer.",
 		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
-		uniqueName:"Monument Builders"
-		unique:"+20% production towards Wonder construction"
+		uniqueName:"Monument Builders",
+		unique:"+20% production towards Wonder construction",
 		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
 			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
 			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
