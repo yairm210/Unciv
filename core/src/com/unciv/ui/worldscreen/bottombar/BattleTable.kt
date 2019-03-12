@@ -135,7 +135,6 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
 
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
-                attacker.unit.getDistanceToTiles()
                 attackableEnemy = UnitAutomation()
                         .getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
