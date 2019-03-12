@@ -5,10 +5,12 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 import kotlin.concurrent.thread
@@ -47,12 +49,39 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             addButton("{Hide} {resources and improvements}") { settings.showResourcesAndImprovements = false; update() }
         else addButton("{Show} {resources and improvements}") { settings.showResourcesAndImprovements = true; update() }
 
-
         addLanguageSelectBox()
 
-        val resolutionSelectBox= SelectBox<String>(skin)
-        val resolutionArray = com.badlogic.gdx.utils.Array<String>()
-        resolutionArray.addAll("900x600","1050x700","1200x800","1500x1000")
+        addResolutionSelectBox()
+
+        addAutosaveTurnsSelectBox()
+
+        addSoundEffectsVolumeSlider()
+
+        addButton("Close"){ remove() }
+
+        pack() // Needed to show the background.
+        center(UnCivGame.Current.worldScreen.stage)
+        UnCivGame.Current.worldScreen.shouldUpdate=true
+    }
+
+    private fun addSoundEffectsVolumeSlider() {
+        val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
+        soundEffectsVolumeSlider.value = UnCivGame.Current.settings.soundEffectsVolume
+        soundEffectsVolumeSlider.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UnCivGame.Current.settings.soundEffectsVolume = soundEffectsVolumeSlider.value
+                UnCivGame.Current.settings.save()
+                Sounds.play("click")
+            }
+        })
+        add("Sound effects volume".tr()).row()
+        add(soundEffectsVolumeSlider).row()
+    }
+
+    private fun addResolutionSelectBox() {
+        val resolutionSelectBox = SelectBox<String>(skin)
+        val resolutionArray = Array<String>()
+        resolutionArray.addAll("900x600", "1050x700", "1200x800", "1500x1000")
         resolutionSelectBox.items = resolutionArray
         resolutionSelectBox.selected = UnCivGame.Current.settings.resolution
         add(resolutionSelectBox).pad(10f).row()
@@ -66,24 +95,27 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
                 WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
             }
         })
+    }
 
-        val soundEffectsVolumeSlider = Slider(0f,1.0f,0.1f,false,skin)
-        soundEffectsVolumeSlider.value = UnCivGame.Current.settings.soundEffectsVolume
-        soundEffectsVolumeSlider.addListener(object: ChangeListener(){
+    private fun addAutosaveTurnsSelectBox() {
+        val autosaveTurnsSelectBox = SelectBox<Int>(skin)
+        val autosaveTurnsArray = Array<Int>()
+        autosaveTurnsArray.addAll(1,2,5,10)
+        autosaveTurnsSelectBox.items = autosaveTurnsArray
+        autosaveTurnsSelectBox.selected = UnCivGame.Current.settings.turnsBetweenAutosaves
+
+        val table = Table()
+        table.add("Turns between autosaves:".toLabel())
+        table.add(autosaveTurnsSelectBox).pad(10f)
+        add(table).row()
+
+        autosaveTurnsSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UnCivGame.Current.settings.soundEffectsVolume= soundEffectsVolumeSlider.value
+                UnCivGame.Current.settings.turnsBetweenAutosaves= autosaveTurnsSelectBox.selected
                 UnCivGame.Current.settings.save()
-                Sounds.play("click")
+                update()
             }
         })
-        add("Sound effects volume").row()
-        add(soundEffectsVolumeSlider).row()
-
-        addButton("Close"){ remove() }
-
-        pack() // Needed to show the background.
-        center(UnCivGame.Current.worldScreen.stage)
-        UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
     private fun addLanguageSelectBox() {

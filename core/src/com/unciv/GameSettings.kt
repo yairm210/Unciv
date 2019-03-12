@@ -10,6 +10,7 @@ class GameSettings {
     var tutorialsShown = ArrayList<String>()
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f
+    var turnsBetweenAutosaves = 1
 
     fun save(){
         GameSaver().setGeneralSettings(this)

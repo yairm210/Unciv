@@ -253,7 +253,8 @@ class WorldScreen : CameraStageBaseScreen() {
                     // the save takes a long time( up to a second!) and we can do it while the player continues his game.
                     // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
                     // So what we do is we clone all the game data and serialize the clone.
-                    GameSaver().saveGame(gameInfoClone, "Autosave")
+                    if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0)
+                        GameSaver().saveGame(gameInfoClone, "Autosave")
                     nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
                 }
 

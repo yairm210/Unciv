@@ -87,7 +87,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
                     var value = 50*min(offer.amount,civsWithLuxToTrade.size) // they'll buy at 50 each only, and that's so they can trade it away
                     if(!theirAvailableOffers.any { it.name==offer.name })
-                        value+=300 // only if they're lacking will they buy the first one at 300
+                        value+=200 // only if they're lacking will they buy the first one at 240 (Civ V standard, see https://www.reddit.com/r/civ/comments/1go7i9/luxury_and_strategic_resource_pricing/ & others)
                     return value
                 }
             }

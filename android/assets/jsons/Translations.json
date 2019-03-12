@@ -685,6 +685,10 @@
 		Japanese:"表示オプション"
 	}
 	
+	"Turns between autosaves:":{}
+	
+	"Sound effects volume":{}
+	
 	"Show":{
 		Italian:"Mostra"
 		Russian:"Показать"
