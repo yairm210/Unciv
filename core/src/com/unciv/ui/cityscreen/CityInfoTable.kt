@@ -122,7 +122,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         if (!otherBuildings.isEmpty()) {
 
             addTitle("Buildings")
-            for (building in wonders) addBuildingInfo(building)
+            for (building in otherBuildings) addBuildingInfo(building)
         }
     }
 
