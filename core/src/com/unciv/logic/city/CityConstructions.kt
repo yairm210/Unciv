@@ -70,7 +70,7 @@ class CityConstructions {
 
     fun isBuilt(buildingName: String): Boolean = builtBuildings.contains(buildingName)
 
-    fun isBuilding(buildingName: String): Boolean = currentConstruction == buildingName
+    fun isBeingConstructed(constructionName: String): Boolean = currentConstruction == constructionName
 
     internal fun getConstruction(constructionName: String): IConstruction {
         if (GameBasics.Buildings.containsKey(constructionName))

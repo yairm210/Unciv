@@ -34,6 +34,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
         pickProductionButton.onClick {
             cityScreen.city.cityConstructions.currentConstruction = construction
+            cityScreen.city.cityStats.update()
             cityScreen.update()
         }
         if(construction==cityScreen.city.cityConstructions.currentConstruction)

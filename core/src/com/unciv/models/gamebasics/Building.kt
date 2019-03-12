@@ -179,7 +179,7 @@ class Building : NamedStats(), IConstruction{
                             .any {it.cityConstructions.isBuilt(name)})
                 return false
             
-            if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBuilding(name) })
+            if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return false
         }
 
@@ -187,7 +187,7 @@ class Building : NamedStats(), IConstruction{
         if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
             return false
         if(requiredBuildingInAllCities!=null && civInfo.cities.any {
-                    it.cityConstructions.isBuilding(name) || it.cityConstructions.isBuilt(name)
+                    it.cityConstructions.isBeingConstructed(name) || it.cityConstructions.isBuilt(name)
                 })
             return false
 
