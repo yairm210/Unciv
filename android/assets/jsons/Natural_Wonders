@@ -1,0 +1,69 @@
+[
+
+    {
+    name:"Barringer Crater"
+    gold:2
+    science:3
+    },
+    
+    {
+    name:"Grand Mesa"
+    gold:3
+    production:2
+    },
+    
+    {
+    name:"Great Barrier Reef"
+    food:2
+    gold:1
+    science:2
+    production:1
+    uniques:["Should come in a pair of two tiles"]
+    },
+    
+    {
+    name:"Krakatoa"
+    science:5
+    },
+    
+    {
+    name:"Mt. Fuji"
+    food:
+    gold:1
+    science:
+    production:
+    happiness:
+    culture:5
+    },
+    
+    {
+    name:"Old Faithful"
+    science:2
+    happiness:3
+    },
+    
+    {
+    name:"Rock of Gibraltar"
+    food:2
+    gold:5
+    },
+    
+    {
+    name:"El Dorado"
+    gold:5
+    culture:5
+    uniques:["It should give 500 gold to the first civilization to discover it"]
+    },
+    
+    {
+    name:"Fountain of Youth"
+    happiness:10
+    uniques:["Adjacent military land units heal at double rate every turn"]
+    },
+    
+    {
+    name:"Cerro de Potosi"
+    gold:10
+    },
+
+]
