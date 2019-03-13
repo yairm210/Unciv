@@ -36,7 +36,7 @@ class DiplomacyManager() {
         return 0
     }
 
-    fun canDeclareWar() = turnsToPeaceTreaty()==0
+    fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
 
     fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
 

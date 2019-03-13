@@ -6,6 +6,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -15,6 +16,7 @@ import kotlin.math.min
 class NextTurnAutomation{
 
     fun automateCivMoves(civInfo: CivilizationInfo) {
+        peaceTreaty(civInfo)
         exchangeTechs(civInfo)
         chooseTechToResearch(civInfo)
         adoptPolicy(civInfo)
@@ -143,22 +145,57 @@ class NextTurnAutomation{
         return civ1.cities.map { city -> civ2.cities.map { it.getCenterTile().arialDistanceTo(city.getCenterTile()) }.min()!! }.min()!!
     }
 
-    private fun declareWar(civInfo: CivilizationInfo) {
-        if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()
-                && !civInfo.isAtWar()
-                && civInfo.getCivUnits().filter { !it.type.isCivilian() }.size > civInfo.cities.size * 2) {
-
-            val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
-                    .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
-                    .groupBy { getMinDistanceBetweenCities(civInfo, it) }
-                    .toSortedMap()
+    private fun peaceTreaty(civInfo: CivilizationInfo) {
+        if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
+            val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
             val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
-            for (group in enemyCivsByDistanceToOurs) {
-                if (group.key > 7) break
-                for (otherCiv in group.value) {
-                    if (Automation().evaluteCombatStrength(otherCiv) * 2 < ourCombatStrength) {
-                        civInfo.diplomacy[otherCiv.civName]!!.declareWar()
-                        break
+            if (civInfo.isAtWar()) { //evaluate peace
+                val enemiesCiv = civInfo.diplomacy.filter{ it.value.diplomaticStatus == DiplomaticStatus.War }
+                        .map{ it.value.otherCiv() }
+                        .filterNot{ it == civInfo || it.isPlayerCivilization() || it.isBarbarianCivilization() || it.cities.isEmpty() }
+                for (enemy in enemiesCiv) {
+                    val enemiesStrength = Automation().evaluteCombatStrength(enemy)
+                    if (enemiesStrength < ourCombatStrength * 2) {
+                        continue //Loser can still fight. Refuse peace.
+                    }
+                    if (enemy.getCivUnits().filter { !it.type.isCivilian() }.size > enemy.cities.size
+                            && enemy.happiness > 0) {
+                        continue //Winner has too large army and happiness. Continue to fight for profit.
+                    }
+
+                    //pay for peace
+                    val tradeLogic = TradeLogic(civInfo, enemy)
+                    var moneyWeNeedToPay = -tradeLogic.evaluatePeaceCostForThem()
+                    if (moneyWeNeedToPay > tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }.amount) {
+                        moneyWeNeedToPay = tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }.amount
+                    }
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+                    tradeLogic.currentTrade.theirOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, moneyWeNeedToPay))
+                    tradeLogic.acceptTrade()
+                }
+            }
+        }
+    }
+
+    private fun declareWar(civInfo: CivilizationInfo) {
+        if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
+            val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
+            if (!civInfo.isAtWar() && civInfo.happiness > 5
+                    && ourMilitaryUnits >= civInfo.cities.size * 2) { //evaluate war
+                val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
+                val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
+                        .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
+                        .groupBy { getMinDistanceBetweenCities(civInfo, it) }
+                        .toSortedMap()
+
+                for (group in enemyCivsByDistanceToOurs) {
+                    if (group.key > 7) break
+                    for (otherCiv in group.value) {
+                        if (Automation().evaluteCombatStrength(otherCiv) * 2 < ourCombatStrength) {
+                            civInfo.diplomacy[otherCiv.civName]!!.declareWar()
+                            return
+                        }
                     }
                 }
             }
