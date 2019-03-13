@@ -382,6 +382,21 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 	},
+	/*
+	{
+		name:"Composite Bowman",
+		unitType:"Ranged",
+		movement:2,
+		strength:7,
+		rangedStrength:11,
+		cost: 75,
+		hurryCostModifier:20,
+		requiredTech:"Construction",
+		obsoleteTech:"Machinery",
+		upgradesTo:"Crossbowman",
+		attackSound:"arrow"
+	},
+	*/
 	{
 		name:"Companion Cavalry",
 		unitType:"Mounted",
