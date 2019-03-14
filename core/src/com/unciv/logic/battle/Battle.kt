@@ -77,15 +77,15 @@ class Battle(val gameInfo:GameInfo) {
 
 
         if(defender.isDefeated()
-                && defender.getUnitType() == UnitType.City
+                && defender is CityCombatant
                 && attacker.isMelee()
                 && attacker.getUnitType().isLandUnit()){
-            conquerCity((defender as CityCombatant).city, attacker)
+            conquerCity(defender.city, attacker)
         }
 
         // we're a melee unit and we destroyed\captured an enemy unit
         else if (attacker.isMelee()
-                && (defender.isDefeated() || defender.getCivInfo()==attacker.getCivInfo() )
+                && (defender.isDefeated() || defender.getCivInfo()==attacker.getCivInfo())
                 // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
                 && (attacker as MapUnitCombatant).unit.canMoveTo(attackedTile)) {
             // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
