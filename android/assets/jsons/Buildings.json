@@ -564,7 +564,7 @@
 		culture:1,
 		isWonder:true,
 		uniques:["+1 Production from specialists"],
-		requiredTech:"Replacable Parts"
+		requiredTech:"Replaceable Parts"
 	},
 	{
 		name:"Research Lab",
