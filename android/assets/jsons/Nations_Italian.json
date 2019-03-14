@@ -28,6 +28,7 @@
 	
 		mainColor:[27,53,63],
 		secondaryColor:[213,249,255],
+		uniqueName:"Ingenuità",
 		unique:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura. I Grandi Scienziati nascono il 50% più in fretta.",
 		cities:["Babilonia","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
 			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninive","Nimrud","Arbela","Nuzi",
@@ -95,6 +96,7 @@
 				
 		mainColor:[9, 112, 84],
 		secondaryColor:[255,255,255],
+		uniqueName:"L'Arte della Guerra",
 		unique:"Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta."
 		cities:["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
@@ -129,6 +131,7 @@
 		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
+		uniqueName:"Costruttori di Monumenti",
 		unique:"+20% Produzione durante la costruzione di una Meraviglia"
 		cities:["Tebe","Menfi","ELiopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
 			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi",
@@ -163,6 +166,7 @@
 		
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
+		uniqueName:"Il Sole non tramonta mai",
 		unique:"+2 movimento per tutte le unità navali"
 		cities:["Londra","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
 			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
@@ -197,6 +201,7 @@
 		
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
+		uniqueName:"Ancien Régime",
 		unique:"+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
 		cities:["Parigi","Orleans","Lyon","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Tolosa","Bayonne","Strasburgo","Brest","Bordeaux","Rennes",
@@ -231,6 +236,7 @@
 				
 		mainColor:[ 236, 178, 0],
 		secondaryColor:[0,0,0],
+		uniqueName:"Ricchezze Siberiane",
 		unique:"+1 Produzione dalle risorse strategiche, e doppia quantità da Cavalli, Ferro e Uranio.",
 		cities:["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
 			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
@@ -265,6 +271,7 @@
 				
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
+		uniqueName:"La Gloria di Roma",
 		unique:"+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
 		cities:["Roma","Antium","Cumae","Neapolis","Ravenna","Arretium","Milano","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
@@ -333,6 +340,7 @@
 				
 		mainColor:[ 28,51,119],
 		secondaryColor:[255,255,255],
+		uniqueName:"Destino Manifesto",
 		unique:"+1 Visione per tutte le unità militari terrestri. 50% di sconto per l'acquisto delle caselle",
 		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
 			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
@@ -367,6 +375,7 @@
 		
 		mainColor:[215,225,225],
 		secondaryColor:[185,0,0],
+		uniqueName:"Bushido",
 		unique: "Le unità combattono come se fossero perfettamente sane. +1 Cultura dai Pescherecci.",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
 	},	/*
@@ -399,6 +408,7 @@
 				
 		mainColor:[224,224,224],
 		secondaryColor:[64,64,64],
+		uniqueName:"Furor Teutonicus",
 		unique:"Quando sconfiggi un'unità barbara, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri.",
 		cities:["Berlino","Amburgo","Monaco","Colonia","Francoforte","Essen","Dortmund","Stoccarta","Dusseldorf","Bremen",
 			"Hannover","Duisburg","Lipsia","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
