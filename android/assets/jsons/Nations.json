@@ -504,6 +504,68 @@
 		unique:"Melee units cost 50% less maintenance, and all units require 25% less experience to earn their next promotion.",
 		cities:["Ulundi","Umugungundlovu","Nobamba","Bulawayo","KwaDukuza","Nongoma","oNdini","Nodwengu","Ndonakusuka","Babanango","Khangela","KwaHlomendlini","Hlobane","eThekwini","Mlambongwenya","Eziqwaqweni","eMangweni","Isiphezi","Masotsheni","Mtunzini","Nyakamubi","Dumazulu","Hlatikulu","Mthonjaneni","Empangeni","Pongola","Tugela","Kwamashi","Ingwavuma","Hluhluwe","Matubatuba","Mhlahlandlela","Mthatha","Maseru","Lobamba","Qunu"]
 	},
+
+	{
+		name:"Mongolia",
+		leaderName:"Genghis Khan",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"You stand in the way of my armies. Let us solve this like warriors!"
+		attacked:"No more words. Today, Mongolia charges toward your defeat."
+		defeated:"You have hobbled the Mongolian clans. My respect for you nearly matches the loathing. I am waiting for my execution."
+		introduction:"I am Temuujin, conqueror of cities and countries. Before me lie future Mongolian lands. Behind me is the only cavalry that matters."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["I'm listening.","What?"]
+		neutralNo:["No.","Of course not!"]
+		neutralYes:["Good.","That works.","Of course!"]
+
+		hateHello:"So what now?"
+		hateLetsHearIt:["And then?","Continue..."]
+		hateNo:["Stop playing around.","This is not to be tolerated!"]
+		hateYes:["Very well...","Fine!"]
+		
+		afterPeace:"It seems I have underestimate you. Very well... I won't take you head for now."
+		tradeRequest:"I am not always this generous, but we hope you take this rare opportunity we give you."
+				
+		mainColor:[51,0,0],
+		secondaryColor:[0,204,102],
+		unique:"All mounted units have +1 Movement. +30% when assaulting cities,",
+		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan","Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
+	},
+
+	{
+		name:"Celts",
+		leaderName:"Boudicca",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"How dare you?! I will be the one owning your head!"
+		attacked:"I have been preparing for war for a long time! To arms, patriots! We march to war!"
+		defeated:"You, awful king! You realized that you "won" this war in mane only?"
+		introduction:"I am Boudicca, Queen of the Celts. Let no-one underestimate me!"
+		
+		neutralHello:"The Heavens have given good to you."
+		neutralLetsHearIt:["We are all ears...","Well?"]
+		neutralNo:["We must decline.","No.","We refuse."]
+		neutralYes:["Sure, it shall be so.","Fine...","Acceptable."]
+
+		hateHello:"Well?"
+		hateLetsHearIt:["Speak!","And?"]
+		hateNo:["Unacceptable!","A thousand times no!","Never!"]
+		hateYes:["Disgusting... Fine!","If I have to..."]
+		
+		afterPeace:"Well played, fellow warrior."
+		tradeRequest:"Let us unite our armies, and profit from the reaping of the rewards."
+				
+		mainColor:[0,51,25],
+		secondaryColor:[255,255,255],
+		unique:"+1 Culture per city with an adjacent unimproved Forest. Bonus increased to +2 Culture in Cities with 3 or more adjacent unimproved Forest tiles.",
+		cities:["Edinburgh","Dublin","Cardiff","Truro","Nantes","Douglas","Glasgow","Cork","Aberystwyth","Penzance","Rennes","Ramsey","Inverness","Limerick","Swansea","St. Ives","Brest","Peel","Aberdeen","Belfast","Caernarfon","Newquay","Saint- Nazaire","Castletown","Stirling","Galway","Conwy","St. Austell","Saint-Malo","Onchan","Dundee","Londonberry","Llanfairpwllgwyngyll","Falmouth","Lorient","St. John's"]
+	},
 	{
 		name:"Incan",
 		leaderName:"Pachacuti",
