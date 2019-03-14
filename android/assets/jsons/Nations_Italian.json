@@ -3,6 +3,7 @@
 		name:"Babylon",
 		translatedName:"Babilonia",
 		leaderName:"Nabucodonosor II",
+		adjective:["babilonese"],
 		
 		startIntroPart1:"Che la benedizione del cielo scenda su di te, o grande Nabucodonosor, padre dell'antica e potente Babilonia! Giovane era il mondo quando Sargon eresse Babilonia, quasi cinquemila anni fa. A lungo crebbe e prosperò, dando vita al suo primo impero nel XVIII secolo a.C. sotto il divino Hammurabi, il legiferatore. Anche se conquistata prima dai Cassiti e poi dagli Assiri, Babilonia resistette, riemergendo come una fenice dalle ceneri della distruzione e riguadagnando la propria indipendenza nonostante i suoi molti nemici. Babilonia era davvero il centro delle arti e della conoscenza nel mondo antico!"
 		startIntroPart2:"O Nabucodonosor, il tuo impero non durò molto dopo la tua dipartita, cadendo preda dei potenti Persiani prima e dei Greci dopo, finché la tua grande città non venne distrutta nel 141 a.C. Ma davvero Babilonia è sparita per sempre, o grande Nabucodonosor? Il tuo popolo desidera che tu riporti in vita l'impero ancora una volta! Accetterai la sfida? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -36,6 +37,7 @@
 		name:"Greece",
 		translatedName:"Grecia",
 		leaderName:"Alessandro",
+		adjective:["greco"],
 		
 		startIntroPart1:"Che le benedizioni degli dei scendano su di te, o grande re Alessandro! Tu sei a capo della potente nazione greca. Il tuo popolo a lungo ha vissuto diviso in numerose città-stato, come le leggendarie Atene, Sparta e Tebe, dove cose meravigliose hanno visto la luce: la democrazia, la filosofia, la tragedia, l'arte e l'architettura, ponendo le basi dell'intera civiltà occidentale. Sebbene poco numerosi e spesso in conflitto tra di loro, nel V secolo a.C. i greci riuscirono a sconfiggere la vicina e vastissima nazione della Persia, a terra come in mare."
 		startIntroPart2:"Alessandro, il tuo popolo è pronto a marciare in guerra per diffondere la cultura greca tra le genti del mondo e donarti gloria imperitura. Sei pronto ad accettare il tuo destino, re Alessandro? Guiderai il tuo popolo verso il trionfo e la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -68,6 +70,7 @@
 		name:"China",
 		translatedName:"Cina",
 		leaderName:"Wu Zetian",
+		adjective:["cinese"],
 		
 		startIntroPart1:"Che la benedizione del cielo scenda su di te, imperatrice Wu Zetian, la più bella e la più fiera tra tutti i sovrani della Cina! O grande imperatrice, la cui sola ombra è sufficiente a far sbocciare i fiori e a far scorrere i fiumi! Tu sei a capo della civiltà cinese, la più antica e grandiosa mai prodotta dall'uomo. La storia della Cina si perde nelle nebbie del tempo e il suo popolo ha goduto di molte scoperte e invenzioni prima ancora che altre imberbi civiltà nascessero. Il contributo cinese alle arti e alle scienze è tale da non potervi rendere giustizia: la stampa, la polvere da sparo, le opere di Confucio... questi non sono che alcuni dei doni che la Cina ha offerto a questo mondo ingrato!"
 		startIntroPart2:"O grande imperatrice, tu che, con astuzia e bellezza, da semplice concubina ascendesti al rango di divina imperatrice, ascolta il popolo che vuole essere guidato da te! La grande Cina è ancora una volta circondata dai barbari. Riuscirai a sconfiggere i tuoi numerosi nemici e a riportare il tuo paese alla grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -101,6 +104,7 @@
 		name:"Egypt",
 		translatedName:"Egitto",
 		leaderName:"Ramses II",
+		adjective:["egiziano"],
 		
 		startIntroPart1:"Salute a te, o grande Ramses, Faraone d'Egitto, che fai sorgere il sole e scorrere il Nilo, e che benedici il suo popolo con ogni cosa buona della vita! O grande capo, da tempo immemore il tuo popolo ha vissuto lungo le sponde del fiume Nilo, dove ha concepito la scrittura e approfondito la matematica, la scultura e l'architettura, creando migliaia di anni fa i grandi monumenti che ancora oggi si erigono alti e fieri."
 		startIntroPart2:"O Ramses, il tuo popolo è sopravvissuto al tempo, mentre altre insignificanti nazioni sono cresciute e sono morte. Adesso il tuo popolo vuole che lo guidi verso la grandezza. Riuscirai a onorare gli dei e a ridare all'Egitto il ruolo che merita, quello di centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -134,6 +138,7 @@
 		name:"England",
 		translatedName:"Inghilterra",
 		leaderName:"Elisabetta",
+		adjective:["inglese"],
 		
 		startIntroPart1:"Lode a Sua Serena Altezza, regina Elisabetta Gloriana, che guida e protegge la celebre nazione marittima d'Inghilterra. L'Inghilterra è una terra antica, con insediamenti risalenti fino a 35.000 anni fa e oggetto di innumerevoli ondate di invasioni, ciascuna delle quali ha poi contribuito a definire il carattere della popolazione. Anche se l'Inghilterra è un'isola poco estesa, per anni la sua gente ha dominato la scena mondiale: la sua flotta ineguagliabile, i suoi brilanti artisti e l'astuzia dei suoi mercanti le hanno conferito un potere e un'influenza che andavano ben al di là dei semplici numeri."
 		startIntroPart2:"Regina Elisabetta, farai tornare il suo popolo inglese alla sua età dell'oro? Esso si rivolge a te per ritrovare la pace e la prosperità di un tempo. Accetterai di indossare il mantello della grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -167,6 +172,7 @@
 		name:"France",
 		translatedName:"Francia",
 		leaderName:"Napoleone",
+		adjective:["francese"],
 		
 		startIntroPart1:"Lunga vita e trionfi a te, primo console e imperatore di Francia, Napoleone I, capo del popolo francese. La Francia giace nel cuore dell'Europa. Per lungo tempo Parigi è stata al centro del mondo in fatto di cultura, arti e letteratura. Anche se circondata da nazioni concorrenti, e spesso nemiche, la Francia è sempre emersa a testa alta. I suoi eserciti hanno marciati trionfalmente da un capo all'altro del mondo e i suoi soldati e i suoi generali si sono rivelati tra i migliori della storia."
 		startIntroPart2:"Napoleone Bonaparte, la Francia vuole che ti ricostruisca il tuo impero, che la guidi nuovamente verso la gloria e la grandezza, facendola tornare ad essere il centro della cultura e della raffinatezza. Imperatore, tornerai a cavalcare contro i tuoi nemici? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -200,6 +206,7 @@
 		name:"Russia",
 		translatedName:"Russia",
 		leaderName:"Caterina",
+		adjective:["russo"],
 		
 		startIntroPart1:"Salute, Vostra Maestà Imperiale Caterina, meravigliosa imperatrice di tutte le Russie. Al vostro comando si muove il più grande paese del mondo. La potente Russia si estende dall'Oceano Pacifico a est al Mar Baltico a ovest. Nonostante guerre, siccità e ogni altro genere di disastro, il popolo russo sopravvive e prospera e i suoi artisti e scienziati sono tra i migliori al mondo. Ancora oggi il paese è annoverabile come uno tra i più potenti della storia umana, una vera superpotenza, dotata per di più della forza più distruttiva mai concepita."
 		startIntroPart2:"Caterina, il tuo popolo vuole tornare ai gloriosi giorni della grande Russia, vuole rivitalizzarne la terra e rivivere la meraviglia dell'Illuminismo. Tornerai a guidare la tua gente verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -233,6 +240,7 @@
 		name:"Rome",
 		translatedName:"Roma",
 		leaderName:"Augusto Cesare",
+		adjective:["romano"],
 		
 		startIntroPart1:"Che la benedizione degli dei scenda su di te, Cesare Augusto, imperatore di Roma e di tutte le sue terre. Il tuo impero fu il più vasto e duraturo di tutto l'emisfero occidentale, di cui il tuo popolo ha modellato cutura, leggi, arti e tecnica militare come mai altri prima o dopo. Anno dopo anno di gloriose conquiste, Roma giunse a dominare tutto il bacino del Medirettaneo, dalla Spagna a ovest alla Siria a est, espandendosi a nord fino all'Inghilterra e alla Germania settentrionale. L'arte e l'architettura romana ancora oggi meravigliano e stupiscono il mondo facendo di Roma un modello per le civiltà che seguirono."
 		startIntroPart2:"O potente imperatore, il tuo popolo si rivolge a te a gran voce per riconquistare la sua antica gloria. Farai in modo che il tuo impero risorga, portando pace e ordine a tutti? Renderai Roma nuovamente il centro del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -266,6 +274,7 @@
 		name:"Arabia",
 		translatedName:"Arabia",
 		leaderName:"Harun al-Rashid",
+		adjective:["arabo"],
 		
 		startIntroPart1:"Che la benedizione di Allah scenda su di te, grande califfo Harun al-Rashid, capo del pio popolo arabo! L'impero musulmano del Califfato nacquie negli anni turbolenti che seguirono la morte del profeta Maometto nel 632 d.C.; i suoi seguaci intendevano estendere il regno di Allah a tutti i  popoli della Terra. E il Califfato in effetti divenne sempre più potente, giungendo a controllare, al proprio apice, la Spagna, l'Africa settentrionale, il Medio Oriente, l'Anatolia, i Balcani e la Persia; un impero esteso quanto quello romano, se non di più. Nel Medio Evo, mentre le nazioni d'Europa sprofondavano nell'ignoranza e nel caos, in Arabia le arti e le scienze fiorivano. Il Califfato durò per 600 anni, finché non cedette all'assalto dei Mongoli, quei maledetti distruttori di imperi altrui."
 		startIntroPart2:"Gran califfo Harun al-Rashid, la tua gente si rivolge a te per tornare alla grandezza di un tempo. Per far tornare l'Arabia una terra illuminata da arti e conoscenza, una nazione potente che non debba temere nessuno. O califfo, raccoglierai la sfida? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -299,6 +308,7 @@
 		name:"America",
 		translatedName:"Stati Uniti",
 		leaderName:"George Washington",
+		adjective:["americano"],
 		
 		startIntroPart1:"Benvenuto, presidente Washington! Tu guidi l'industriosa civiltà americana, costrituitasi in seguito allo scoppio della rivoluzione nel XVIII secolo e finita, ancora giovane nazione di appena un centinaio d'anni, nella terribile morsa di una guerra civile che rischiò di dividerla per sempre. Ma poco tempo dopo, nel XX secolo, gli Stati Uniti raggiunsero l'apice della loro potenza, emergendo trionfanti e sempre più potenti dalle due terribili guerre che video la fine di tante altre grandi nazioni."
 		startIntroPart2:"Gli Stati Uniti sono una nazione di immigrati, pieni di ottimismo e determinazione. Quello che manca loro è soltanto un leader che li aiuti a realizzare il loro potenziale. Presidente Washington, saprai guidare l'America verso la grandezza? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -332,6 +342,7 @@
 		name:"Japan",
 		translatedName:"Giappone",
 		leaderName:"Oda Nobunaga",
+		adjective:["giapponese"],
 		
 		startIntroPart1: "Tu sia benedetto, nobile Oda Nobunaga, signore del Giappone, la terra del Sol Levante! Possa tu camminare a lungo in mezzo ai suoi meravigliosi boccioli di ciliegio. I giapponesi sono un popolo isolano, fiero e pio con una ricca cultura artistica e letteraria. La tua civiltà esiste per migliaia di anni, anni di sanguinose lotte, espansioni ed isolazioni, di grandi ricchezze e povertà. Oltre alla loro prodezza sul campo di battaglia, il tuo popolo è abile anche nell'industria, e le loro innovazioni tecnologiche e le loro grandi fabbriche sono l'invidia degli altri popoli in tutto il globo."
 		startIntroPart2: "Leggendario damiyo, prenderai le redini del destino? Porterai alla tua famiglia e al tuo popolo l'onore e la gloria che meritano? Alzerai di nuovo la tua spada e marcerai verso il trionfo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
@@ -363,6 +374,7 @@
 		name:"Germany",
 		translatedName:"Germania",
 		leaderName:"Otto von Bismark",
+		adjective:["tedesco"],
 		
 		startIntroPart1: "Salve, potente Bismarck, primo cancelliere della Germania e del suo impero! La germania è una delle nazioni più giovani, sorta dalle ceneri del Sacro Romano Impero e poi unificata nel 1871, poco più di un secolo fa. Il popolo tedesco si è rivelato creativo, industrioso e feroce in guerra. Nonostante le catastrofi subite nella prima metà del XX secolo, la Germania è riuscita a imporsi come una delle nazioni più importanti dal punto di vista economico, artistico e tecnologico.."
 		startIntroPart2: "Grande principe Bismarck, il popolo tedesco guarda a te per vivere nuovi giorni di gloria. Forte è la sua determinazione affinché tu, l'amato Cancelliere di Ferro, torni a guidare la nazione ancora una volta. Sceglierai di dominare con il suangue e l'acciaio o patrocinerai le arti e l'industria? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
