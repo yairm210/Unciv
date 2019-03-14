@@ -294,7 +294,7 @@
 		German:"Stadt gründen"
 		Dutch:"Stad stichten"
 		Spanish:"Fundar ciudad"
-       	Simplified_Chinese:"建立城市"
+       		Simplified_Chinese:"建立城市"
 		Portuguese:"Fundar Cidade"
 		Japanese:"見つかった市"
 	}
@@ -377,7 +377,7 @@
 		Japanese:"あなたは本当にこのユニットを解散したいですか？"
 	}
 	"Disband this unit for [goldAmount] gold?":{
-		Italian:"Vuoi sciolgiere questa unità per [goldAmount] Oro?"
+		Italian:"Vuoi sciogliere questa unità per [goldAmount] Oro?"
 		Portuguese:"Desative esta unidade para ouro [goldAmount]?"
 		French:"Dissoudre cette unité pour [goldAmount] gold?"
 		German:"Diese Einheit für [goldAmount] Gold auflösen?"
@@ -493,7 +493,7 @@
 	}
 	
 	"GOLDEN AGE":{
-		Italian:"ETÀ DELL'ORO"
+		Italian:"ETÀ DELL'ORO" //You didn't translate it
 		Russian:"ЗОЛОТОЙ ВЕК"
 		French:"ÂGE D'OR"
 		Romanian:"EPOCA DE AUR"
@@ -685,9 +685,13 @@
 		Japanese:"表示オプション"
 	}
 	
-	"Turns between autosaves:":{}
+	"Turns between autosaves:":{
+		Italian:"Turni tra autosalvataggi"
+	}
 	
-	"Sound effects volume":{}
+	"Sound effects volume":{
+		Italian:"Volume effetti"
+	}
 	
 	"Show":{
 		Italian:"Mostra"
@@ -1737,6 +1741,20 @@
 		Simplified_Chinese:"攻击"
 		Portuguese:"Ataque"
 	}
+
+	/*
+	"Attack":{ //As an order
+		Italian:"Attacca"
+		Russian:"Атака"
+		French:"Attaque"
+		Romanian:"Atac"
+		German:"Angreifen"
+		Dutch:"Aanvallen"
+		Spanish:"Ataque"
+		Simplified_Chinese:"攻击"
+		Portuguese:"Ataque"
+	}
+	*/
 	
 	"[percentage] to unit defence":{
 		Italian:"[percentage] di difesa dell'unità"
@@ -2815,7 +2833,7 @@
 		Portuguese:"Teologia"
 	}
 	"Civil Service":{
-		Italian:"Servizio civile"
+		Italian:"Pubblica amministrazione"
 		Russian:"Госслужба"
 		French:"Administration" //official translate, but not very accurate
 		Romanian:"Servicii civile"
@@ -2848,7 +2866,7 @@
 		Portuguese:"Física"
 	}
 	"Metal Casting":{
-		Italian:"Colata di metallo"
+		Italian:"Fusione del metallo"
 		Russian:"Литье"
 		French:"Moulage" //official translate
 		Romanian:"Turnarea metalului"
@@ -2881,7 +2899,7 @@
 		Portuguese:"Bússola"
 	}
 	"Education":{
-		Italian:"Istruzione"
+		Italian:"Educazione"
 		Russian:"Образование"
 		French:"Éducation"
 		Romanian:"Educaţie"
@@ -2994,8 +3012,8 @@
 		Simplified_Chinese:"建筑"
 		Portuguese:"Arquitetura"
 	}
-	"Archaeology":{
-		Italian:"Archeologia"
+	"Archaeology":{ // Shouldn't it be in Industrial Age?
+		Italian:"Archeologia" 
 		Russian:"Aрхеология"
 		French:"Archéologie"
 		Romanian:"Arheologie"
@@ -3067,7 +3085,7 @@
 		German:"Industrialisierung"
 	}
 	"Rifling":{
-		Italian:"Rigatura"
+		Italian:"Rigatura delle canne"
 		Russian:"Нарезные стволы"
 		French:"Fusil"
 		Romanian:"Ghintuire"
@@ -3161,7 +3179,7 @@
 	}
 
 	"Replaceable Parts":{
-		Italian:"Parti ricomponibili" //Smashfanful says "you missed to translate this one"
+		Italian:"Parti ricomponibili"
 		Romanian:"Piese de schimb"
 		Spanish:"Produccion En Serie"
 		Simplified_Chinese:"可替换零件"
@@ -3216,7 +3234,7 @@
 		Portuguese:"Eletronicos"
 	}
 	"Ballistics":{
-		Italian:"Ballistica"
+		Italian:"Balistica"
 		German:"Ballistik"
 		French:"Balistique"
 		Spanish:"Balística"
@@ -3262,7 +3280,7 @@
 		Portuguese:"Farmacêuticas"
 	}
 	"Atomic Theory":{
-		Italian:"Teoria atomca"
+		Italian:"Teoria atomica"
 		Russian:"Атомная Теория"
 		French:"Théorie atomique"
 		Romanian:"Teoria atomică"
@@ -3287,6 +3305,8 @@
 		Italian:"Armi combinate"
 		Russian:"Комбинированные руки"
 		French:"Armes combinés"
+		German:"Verbundene Waffen"
+		Spanish:"Fuerzas combinadas"
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
@@ -3368,7 +3388,7 @@
 		Portuguese:"Física de particulas"
 	}
 	"Future Tech":{
-		Italian:"Tecnologia del futuro"
+		Italian:"Tecnologia futura"
 		Russian:"Технология будущчего"
 		French:"Technologie future"
 		Romanian:"Tehnologia viitorului"
@@ -3381,7 +3401,7 @@
 	
 	
 	"Who knows what the future holds?":{
-		Italian:"Chi sa cosa riserva il futuro?"
+		Italian:"Chi sa cosa riservano i prossimi anni?"
 		Russian:"Кто знает, что ждет в будущем?"
 		French:"Qui sait ce que l'avenir réserve?"
 		Romanian:"Cine poate ști ce ne rezervă viitorul?"
@@ -3391,6 +3411,12 @@
 		Portuguese:"Quem sabe o que o futuro reserva?"
 		German:"Wer weiß was die Zukunft für uns bereithält?"
 	}
+	
+	/*
+	"A repeating technology that will increase your score each time it is researched.":{ //Future Tech description
+		Italian:"Questa tecnologia si può sempre ricercare; il tuo punteggio aumenterà ogni volta che viene scoperta."
+	}
+	*/
 	
 	// Tech uniques
 	"+10% science and production in all cities":{
@@ -3415,7 +3441,7 @@
 		German:"Erhöht die Bewegungsgeschwindigkeit auf Straßen"
 	}
 	"Enables conversion of city production to science":{
-		Italian:"Consente la conversione della produzione di città in scienza"
+		Italian:"Consente di convertire la Produzione nelle città in Scienza"
 		Russian:"Разрешает конверсию производства в науку"
 		French:"Permet la conversion de la production des villes en science"
 		Romanian:"Permite conversia producției orașului la știință"
@@ -3425,7 +3451,7 @@
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Wissenschaft"
 	}
 	"Enables conversion of city production to gold":{
-		Italian:"Consente la conversione della produzione di città in oro"
+		Italian:"Consente di convertire la Produzione nelle città in Oro"
 		Russian:"Разрешает конверсию производства в золото"
 		French:"Permet la conversion de la production des villes en or"
 		Romanian:"Permite conversia producției orașului la aur"
@@ -3436,7 +3462,7 @@
 	}
 	
 	"Enables embarkation for land units":{
-		Italian:"Permette l'imbarcazione delle unità terrestri"
+		Italian:"Permette alle unità terrestri di imbarcarsi e attraversare le caselle acquatiche."
 		Romanian:"Permite îmbarcarea unităților terestre"
 		Spanish:"Habilita la embarcacion a las unidades de tierra"
 		German:"Ermöglicht das Einbooten von Landeinheiten"
@@ -3448,7 +3474,7 @@
 	
 	
 	"Enables embarked units to enter ocean tiles":{
-		Italian:"Permette alle unità imbarcate di entrare nelle caselle oceaniche"
+		Italian:"Permette alle unità di imbarcarsi nelle caselle oceaniche"
 		Romanian:"Permite unităților îmbarcate să meargă în celulele ocean"
 		Spanish:"Habilita a las unidades embarcadas a entrar en oceanós"
 		German:"Erlaubt es eingebooteten Einheiten Ozeanfelder zu überqueren"
@@ -3459,7 +3485,7 @@
 	}
 	
 	"Increases embarked movement +1":{
-		Italian:"+1 velocità di movimento per le unità imbarcate"
+		Italian:"+1 Movimento per le unità imbarcate"
 		Spanish:"+1 a la velocidad de movimiento a las embarcaciones"
 		Italian:"+1 movimento delle unità imbarcate"
 		French:"Améliore le déplacement embarqué +1"
@@ -3644,7 +3670,7 @@
 	
 	// Unit uniques
 	"Can build improvements on tiles":{
-		Italian:"Può migliorare le celle"
+		Italian:"Può costruire miglioramenti sulle caselle"
 		Russian:"Может создавать улучшения на клетках"
 		French:"Peut construire des améliorations sur les cases"
 		Romanian:"Poate construi îmbunătățiri pe celule"
@@ -3666,7 +3692,7 @@
 		Portuguese:"Funda uma nova cidade"
 	}
 	"Ignores terrain cost":{
-		Italian:"Ignora il costo di movimento su terreno"
+		Italian:"Ignora i costi di movimento su terreno"
 		Russian:"Игнорирует стоимость местности"
 		French:"Ignore le coût du terrain"
 		Romanian:"Ignoră costul terenului"
@@ -3699,7 +3725,7 @@
 		Portuguese:"Penalidade de terreno díficil"
 	}
 	"Bonus vs [unitType]":{
-		Italian:"Bonus contro unità [unitType]"
+		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
 		Russian:"Бонус против [unitType]"
 		French:"Bonus contre [unitType]"
 		Romanian:"Bonus contra [unitType]"
@@ -3710,7 +3736,7 @@
 		Portuguese:"Bonus contra [unitType]"
 	}
 	"Penalty vs [unitType]":{
-		Italian:"Penalità contro unità [unitType]"
+		Italian:"Malus contro unità [unitType]"
 		Russian:"Штраф против [unitType]"
 		French:"Pénalité contre [unitType]"
 		Romanian:"Penalizare contra [unitType]"
@@ -3846,7 +3872,7 @@
 	// for unit action button
 	"Can build improvement: Landmark":{
 		Spanish:"Puede construir mejora: Edificio Emblematico"
-		Italian:"Può costruire il miglioramento: Capolavoro"
+		Italian:"Può costruire il miglioramento: Gran Monumento"
 		French:"Peut construire l'amélioration suivante: Monument culturel"
 		Romanian:"Poate construi îmbunătățire: Reper"
 		Simplified_Chinese:"可以建设改良设施:里程碑"
@@ -4442,6 +4468,11 @@
 		Portuguese:"Unidades lutam como se estivessem em força total, mesmo quando danificadas"
 		Russian:"Юниты сражаются, как будто они в полной силе, даже когда повреждены"
 	}
+	/*
+	"Germany":{
+		Italian:"Germania"
+	}
+	*/
 	
 	"Uniques":{ // unit uniques, displayed on the new game screen when choosing a civ
 		Italian:"Abilità unica"
@@ -4745,7 +4776,7 @@
 	}
 	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
-		Italian:"[leaderName] di [nation]" //es. Ramses II d'Egitto, Napoleone di Francia, Washington degli Stati Uniti
+		Italian:"[leaderName] dell'Impero [nation]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese (so it should be [adjective] instead of [nation]
 		German:"[leaderName] von [nation]"
 		Spanish:"[leaderName] de [nation]"
 		Portuguese:"[leaderName] do [nation]"
@@ -4754,6 +4785,12 @@
 		Russian:"[leaderName] из [nation]"
 		Romanian:"[leaderName] de [nation]"
 	}
+	
+	/*
+	"[leaderName] of [adjective] Empire":{ // e.g. Ramesses of Egyptian Empire, Napoleon of French Empire (so it should be [adjective] instead of [nation]
+		Italian:"[leaderName] dell'Impero [adjective]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese
+	}
+	*/
 	
 	"You'll pay for this!":{
 		Italian:"Pagherai caro questo affronto!"
@@ -6871,6 +6908,11 @@
 	}
 	
 	// Information era - not even putting here, too far off
+	/*
+	"Giant Death Robot":{
+		Italian:"Robot Gigante della Morte"
+	}
+	*/
 	
 	// Great units
 	"Great Artist":{	
@@ -6968,7 +7010,7 @@
 		//same in German
 	}
 	"+3 culture in capital and increased rate of border expansion":{
-		Italian: "+3 Cultura nella capitale, e maggior tasso di espansione dei confini"
+		Italian: "+3 Cultura nella Capitale, e maggior tasso di espansione dei confini"
 		Russian:"+3 культуры в столице и увеличивается скорость расширения границ"
 		Romanian:"+3 cultură în capitală și rata de extindere a granițelor mărită"
 		Spanish:"+3 cultura en la capital e incremento del ritmo de expansión de fronteras"
@@ -7028,7 +7070,7 @@
 		French:"Oligarchie"
 	}
 	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
-		Italian:"+50% forza d'attacco per le città, e nessun mantenimento per le loro guarnigioni"
+		Italian:"+50% forza d'attacco per le città con guarnigione, e nessun mantenimento per le loro guarnigioni"
 		Russian:"Юниты в городах содержаться бесплатно, гарнизонный город + 50% силы атаки"
 		Romanian:"Unitățile din orașe nu necesită costuri de întreținere, orașul înarmat + 50% atac"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento, y +50% de fuerza de ataque"
@@ -7088,7 +7130,7 @@
 		German:"Tradition vollständig"
 		French:"Tradition complète"
 	}
-	"+15% growth and +2 food in all cities":{
+	"+15% growth and +2 food in all cities":{ //You should add an Acqueduct in the first 4 cities
 		Italian:"+15% crescita e +2 cibo in tutte le città"
 		Russian:"+15% роста и +2 еды во всех городах"
 		Romanian:"+15% creștere și +2 hrană în toate orașele"
@@ -7806,7 +7848,7 @@
 		Russian:"Свобода"
 		Romanian:"Libertate"
 		Spanish:"Libertad"
-        Simplified_Chinese:"自由"
+        	Simplified_Chinese:"自由"
 		Portuguese:"Liberdade"
 		German:"Freiheit"
 		French:"Liberté"
@@ -7862,7 +7904,7 @@
 		French:"+1 production par tranches de 5 habitants"
 	}
 	"Civil Society":{
-		Italian:"Società Civile"
+		Italian:"Società civile"
 		Russian:"Гражданское общество"
 		Romanian:"Societate civilă"
 		Spanish:"Sociedad Civil"
