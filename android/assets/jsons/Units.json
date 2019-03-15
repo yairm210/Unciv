@@ -985,7 +985,7 @@
 		movement:2,
 		strength:50,
 		cost: 320,
-		requiredTech:"Replacable Parts",
+		requiredTech:"Replaceable Parts",
 		hurryCostModifier:20,
 		upgradesTo:"Infantry",
 		obsoleteTech:"Plastics"

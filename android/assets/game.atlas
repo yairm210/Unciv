@@ -1894,7 +1894,7 @@ TechIcons/Refrigeration
   orig: 100, 100
   offset: 0, 0
   index: -1
-TechIcons/Replacable Parts
+TechIcons/Replaceable Parts
   rotate: false
   xy: 234, 101
   size: 100, 100
