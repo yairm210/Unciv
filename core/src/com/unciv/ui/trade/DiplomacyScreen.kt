@@ -1,21 +1,25 @@
 package com.unciv.ui.trade
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
-class DiplomacyScreen:CameraStageBaseScreen(){
+class DiplomacyScreen:CameraStageBaseScreen() {
 
     val leftSideTable = Table().apply { defaults().pad(10f) }
     val rightSideTable = Table()
 
-    init{
+    init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
-        val splitPane = SplitPane(ScrollPane(leftSideTable),rightSideTable,false, skin)
+        val splitPane = SplitPane(ScrollPane(leftSideTable), rightSideTable, false, skin)
         splitPane.splitAmount = 0.2f
 
         updateLeftSideTable()
@@ -37,49 +41,66 @@ class DiplomacyScreen:CameraStageBaseScreen(){
         for (civ in UnCivGame.Current.gameInfo.civilizations
                 .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }) {
             if (!currentPlayerCiv.diplomacy.containsKey(civ.civName)) continue
-            val civDiplomacy = currentPlayerCiv.diplomacy[civ.civName]!!
 
-            val civTable = Table().apply { background = ImageGetter.getBackground(civ.getNation().getColor()) }
-            civTable.pad(10f)
-            civTable.defaults().pad(10f)
-            val peaceWarStatus = civDiplomacy.diplomaticStatus.toString()
-            civTable.add(Label(civ.civName.tr() + " ({$peaceWarStatus})".tr(), skin)
-                    .setFontSize(22).setFontColor(civ.getNation().getSecondaryColor())).row()
-            civTable.addSeparator()
+            val civIndicator = ImageGetter.getCircle().apply { color = civ.getNation().getSecondaryColor() }
+                    .surroundWithCircle(100f).apply { circle.color = civ.getNation().getColor() }
+            val relationship = ImageGetter.getCircle()
+            if(currentPlayerCiv.isAtWarWith(civ)) relationship.color = Color.RED
+            else relationship.color = Color.GREEN
+            relationship.setSize(30f,30f)
+            civIndicator.addActor(relationship)
 
-            val tradeButton = TextButton("Trade".tr(), skin)
-            tradeButton.onClick {
+            leftSideTable.add(civIndicator).row()
+
+            civIndicator.onClick {
                 rightSideTable.clear()
-                rightSideTable.add(TradeTable(civ, stage){updateLeftSideTable()})
+                rightSideTable.add(getDiplomacyTable(civ))
             }
-            civTable.add(tradeButton).row()
-
-            if (!currentPlayerCiv.isAtWarWith(civ)) {
-                val declareWarButton = TextButton("Declare war".tr(), skin)
-                declareWarButton.color = Color.RED
-                val turnsToPeaceTreaty = civDiplomacy.turnsToPeaceTreaty()
-                if(turnsToPeaceTreaty>0){
-                    declareWarButton.disable()
-                    declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
-                }
-                declareWarButton.onClick {
-                    YesNoPopupTable("Declare war on [${civ.civName}]?".tr(), {
-                        civDiplomacy.declareWar()
-
-                        val responsePopup = PopupTable(this)
-                        val otherCivLeaderName = civ.getNation().leaderName + " of " + civ.civName
-                        responsePopup.add(otherCivLeaderName.toLabel())
-                        responsePopup.addSeparator()
-                        responsePopup.addGoodSizedLabel(civ.getNation().attacked).row()
-                        responsePopup.addButton("Very well.".tr()) { responsePopup.remove() }
-                        responsePopup.open()
-
-                        updateLeftSideTable()
-                    }, this)
-                }
-                civTable.add(declareWarButton).row()
-            }
-            leftSideTable.add(civTable).row()
         }
+    }
+
+    private fun getDiplomacyTable(civ: CivilizationInfo): Table {
+        val diplomacyTable = Table()
+        diplomacyTable.defaults().pad(10f)
+        val leaderName = "[" + civ.getNation().leaderName + "] of [" + civ.civName + "]"
+        diplomacyTable.add(leaderName.toLabel())
+        diplomacyTable.addSeparator()
+
+        val tradeButton = TextButton("Trade".tr(), skin)
+        tradeButton.onClick {
+            rightSideTable.clear()
+            rightSideTable.add(TradeTable(civ, stage) { updateLeftSideTable() })
+        }
+        diplomacyTable.add(tradeButton).row()
+
+        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        val civDiplomacy = currentPlayerCiv.diplomacy[civ.civName]!!
+
+        if (!currentPlayerCiv.isAtWarWith(civ)) {
+            val declareWarButton = TextButton("Declare war".tr(), skin)
+            declareWarButton.color = Color.RED
+            val turnsToPeaceTreaty = civDiplomacy.turnsToPeaceTreaty()
+            if (turnsToPeaceTreaty > 0) {
+                declareWarButton.disable()
+                declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
+            }
+            declareWarButton.onClick {
+                YesNoPopupTable("Declare war on [${civ.civName}]?".tr(), {
+                    civDiplomacy.declareWar()
+
+                    val responsePopup = PopupTable(this)
+                    val otherCivLeaderName = civ.getNation().leaderName + " of " + civ.civName
+                    responsePopup.add(otherCivLeaderName.toLabel())
+                    responsePopup.addSeparator()
+                    responsePopup.addGoodSizedLabel(civ.getNation().attacked).row()
+                    responsePopup.addButton("Very well.".tr()) { responsePopup.remove() }
+                    responsePopup.open()
+
+                    updateLeftSideTable()
+                }, this)
+            }
+            diplomacyTable.add(declareWarButton).row()
+        }
+        return diplomacyTable
     }
 }
