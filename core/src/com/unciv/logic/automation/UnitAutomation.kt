@@ -51,10 +51,7 @@ class UnitAutomation{
         // Accompany settlers
         if (tryAccompanySettlerOrGreatPerson(unit)) return
 
-        if (unit.health < 50) {
-            healUnit(unit,unitDistanceToTiles)
-            return
-        } // do nothing but heal
+        if (unit.health < 50 && tryHealUnit(unit,unitDistanceToTiles)) return // do nothing but heal
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (unit.type.isLandUnit() && unit.type.isMelee() && unit.isEmbarked()) {
@@ -65,24 +62,16 @@ class UnitAutomation{
         if (tryAttackNearbyEnemy(unit,unitDistanceToTiles)) return
 
         // Barbarians try to pillage improvements if no targets reachable
-        if (unit.civInfo.isBarbarianCivilization()) {
-            if (pillageImprovement(unit, unitDistanceToTiles)) return
-        }
+        if (unit.civInfo.isBarbarianCivilization() && pillageImprovement(unit, unitDistanceToTiles)) return
 
         if (tryGarrisoningUnit(unit)) return
 
-        if (unit.health < 80) {
-            healUnit(unit, unitDistanceToTiles)
-            return
-        } // do nothing but heal until 80 health
+        if (unit.health < 80 && tryHealUnit(unit, unitDistanceToTiles)) return
 
         // find the closest enemy unit that we know of within 5 spaces and advance towards it
         if (tryAdvanceTowardsCloseEnemy(unit)) return
 
-        if (unit.health < 100) {
-            healUnit(unit, unitDistanceToTiles)
-            return
-        }
+        if (unit.health < 100 && tryHealUnit(unit, unitDistanceToTiles)) return
 
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
@@ -93,24 +82,28 @@ class UnitAutomation{
     }
 
 
-    fun healUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+    fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>):Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.canMoveTo(it) }
         val unitTile = unit.getTile()
 
-        if (pillageImprovement(unit, unitDistanceToTiles)) return
+        if (pillageImprovement(unit, unitDistanceToTiles)) return true
 
         val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
-        if(tilesByHealingRate.isEmpty()) return
+        if(tilesByHealingRate.isEmpty()) return false
+
         val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         // within the tiles with best healing rate, we'll prefer one which has defensive bonuses
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
+        val bestTileForHealingRank = unit.rankTileForHealing(bestTileForHealing)
+        if(bestTileForHealingRank == 0) return false // can't actually heal here...
 
-        if(unitTile!=bestTileForHealing && unit.rankTileForHealing(bestTileForHealing)>unit.rankTileForHealing(unitTile))
+        if(unitTile!=bestTileForHealing && bestTileForHealingRank > unit.rankTileForHealing(unitTile))
             unit.moveToTile(bestTileForHealing)
 
         if(unit.currentMovement>0 && unit.canFortify()){
             unit.action="Fortify 0"
         }
+        return true
     }
 
     fun pillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
@@ -436,7 +429,7 @@ class UnitAutomation{
         if(tryGoToRuin(unit, unitDistanceToTiles) && unit.currentMovement==0f) return
 
         if (unit.health < 80) {
-            healUnit(unit,unitDistanceToTiles)
+            tryHealUnit(unit,unitDistanceToTiles)
             return
         }
 
