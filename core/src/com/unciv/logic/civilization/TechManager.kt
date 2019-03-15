@@ -156,6 +156,22 @@ class TechManager {
         // As of 2.10.16, removed mass media, since our tech tree is like G&K
         techsResearched.remove("Mass Media")
         techsToResearch.remove("Mass Media")
+        techsInProgress.remove("Mass Media")
+
+        // As of 2.13.15, "Replacable parts" is renamed to "Replaceable Parts"
+        val badTechName = "Replacable Parts"
+        val goodTechName = "Replaceable Parts"
+        if(techsResearched.contains(badTechName)){
+            techsResearched.remove(badTechName)
+            techsResearched.add(goodTechName)
+        }
+        if(techsInProgress.containsKey(badTechName)){
+            techsInProgress[goodTechName] = techsInProgress[badTechName]!!
+            techsInProgress.remove(badTechName)
+        }
+        if(techsToResearch.contains(badTechName)){
+            techsToResearch.replaceAll { if(it!=badTechName) it else goodTechName }
+        }
 
         researchedTechnologies.addAll(techsResearched.map { GameBasics.Technologies[it]!! })
         researchedTechUniques.addAll(researchedTechnologies.flatMap { it.uniques })
