@@ -330,14 +330,18 @@ class MapUnit {
     }
 
     private fun heal(){
-        val tile = getTile()
-        health += when{
-            tile.isCityCenter() -> 20
-            tile.getOwner()?.civName == owner -> 15 // home territory
-            tile.getOwner() == null -> 10 // no man's land (neutral)
+        health += rankTileForHealing(getTile())
+        if(health>100) health=100
+    }
+
+    fun rankTileForHealing(tileInfo:TileInfo): Int {
+        if(isEmbarked()) return 0 // embarked units can't heal
+        return when{
+            tileInfo.getOwner() == null -> 10 // no man's land (neutral)
+            tileInfo.isCityCenter() -> 20
+            !civInfo.isAtWarWith(tileInfo.getOwner()!!) -> 15 // home or allied territory
             else -> 5 // enemy territory
         }
-        if(health>100) health=100
     }
 
     /**

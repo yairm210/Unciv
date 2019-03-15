@@ -92,15 +92,6 @@ class UnitAutomation{
         // if both failed, then... there aren't any reachable tiles. Which is possible.
     }
 
-    fun rankTileForHealing(tileInfo: TileInfo, unit: MapUnit): Int {
-        val tileOwner = tileInfo.getOwner()
-        when{
-            tileInfo.isCityCenter() -> return 3
-            tileOwner!=null && !unit.civInfo.isAtWarWith(tileOwner)-> return 2
-            tileOwner==null -> return 1
-            else -> return 0
-        }
-    }
 
     fun healUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.canMoveTo(it) }
@@ -108,13 +99,15 @@ class UnitAutomation{
 
         if (pillageImprovement(unit, unitDistanceToTiles)) return
 
-        val tilesByHealingRate = tilesInDistance.groupBy { rankTileForHealing(it,unit) }
+        val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
         if(tilesByHealingRate.isEmpty()) return
         val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         // within the tiles with best healing rate, we'll prefer one which has defensive bonuses
         val bestTileForHealing = bestTilesForHealing.maxBy { it.getDefensiveBonus() }!!
-        if(unitTile!=bestTileForHealing && rankTileForHealing(bestTileForHealing,unit)>rankTileForHealing(unitTile,unit))
+
+        if(unitTile!=bestTileForHealing && unit.rankTileForHealing(bestTileForHealing)>unit.rankTileForHealing(unitTile))
             unit.moveToTile(bestTileForHealing)
+
         if(unit.currentMovement>0 && unit.canFortify()){
             unit.action="Fortify 0"
         }
