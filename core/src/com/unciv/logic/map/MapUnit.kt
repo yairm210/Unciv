@@ -214,12 +214,12 @@ class MapUnit {
     }
 
     fun getUnitToUpgradeTo(): BaseUnit {
-        var upgradedUnit = baseUnit().getUpgradeUnit(civInfo)
+        var unit = baseUnit()
 
-        // Go up the upgrade tree until you find the first one which isn't obsolete
-        while (upgradedUnit.obsoleteTech!=null && civInfo.tech.isResearched(upgradedUnit.obsoleteTech!!))
-            upgradedUnit = upgradedUnit.getUpgradeUnit(civInfo)
-        return upgradedUnit
+        // Go up the upgrade tree until you find the last one which is buildable
+        while (unit.upgradesTo!=null && civInfo.tech.isResearched(unit.getDirectUpgradeUnit(civInfo).requiredTech!!))
+            unit = unit.getDirectUpgradeUnit(civInfo)
+        return unit
     }
 
     fun canUpgrade(): Boolean {

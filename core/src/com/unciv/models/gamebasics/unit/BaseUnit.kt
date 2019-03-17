@@ -138,7 +138,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
             unit.promotions.addPromotion("Drill I", isFree = true)
     }
 
-    fun getUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
+    fun getDirectUpgradeUnit(civInfo: CivilizationInfo):BaseUnit{
         val uniqueUnitReplacesUpgrade: BaseUnit? = GameBasics.Units.values
                 .firstOrNull{it.uniqueTo==civInfo.civName && it.replaces == upgradesTo}
         if(uniqueUnitReplacesUpgrade!=null) return uniqueUnitReplacesUpgrade
