@@ -46,6 +46,11 @@ class Automation {
     }
 
     fun trainCombatUnit(city: CityInfo) {
+        val name = chooseCombatUnit(city)
+        city.cityConstructions.currentConstruction = name
+    }
+
+    fun chooseCombatUnit(city: CityInfo) : String {
         val combatUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
         val chosenUnit: BaseUnit
         if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
@@ -56,15 +61,16 @@ class Automation {
             val chosenUnitType = combatUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.getRandom()
             chosenUnit = combatUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
         }
-
-        city.cityConstructions.currentConstruction = chosenUnit.name
+        return chosenUnit.name
     }
 
 
     fun chooseNextConstruction(cityConstructions: CityConstructions) {
         cityConstructions.run {
+            if (currentConstruction!="") return
             val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder }
             val buildableWonders = getBuildableBuildings().filter { it.isWonder }
+            val buildableUnits = getConstructableUnits()
 
             val civUnits = cityInfo.civInfo.getCivUnits()
             val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size
@@ -75,43 +81,94 @@ class Automation {
             val needWorkboat = canBuildWorkboat
                     && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
-            val goldBuildings = buildableNotWonders.filter { it.gold>0 }
-            val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }.sortedBy { it.maintenance }
-            val zeroMaintenanceBuildings = buildableNotWonders.filter { it.maintenance == 0 && it !in wartimeBuildings }
-            val productionBuildings = buildableNotWonders.filter { it.production>0 }
-            val happinessBuildings = buildableNotWonders.filter { it.happiness>0 }
-            val cultureBuildings = buildableNotWonders.filter { it.culture>0 }
             val isAtWar = cityInfo.civInfo.isAtWar()
+            val cityProduction = cityInfo.cityStats.currentCityStats.production.toFloat()
 
-            when {
-                buildableNotWonders.isNotEmpty() // if the civ is in the gold red-zone, build markets or somesuch
-                        && cityInfo.civInfo.getStatsForNextTurn().gold <0
-                        && goldBuildings.isNotEmpty()
-                        -> currentConstruction = goldBuildings.first().name
-                currentConstruction!="" -> return
-                buildableNotWonders.any { it.name=="Monument"} -> currentConstruction = "Monument"
-                buildableNotWonders.any { it.name=="Granary"} -> currentConstruction = "Granary"
-                militaryUnits<cities -> trainCombatUnit(cityInfo)
-                workers==0 -> currentConstruction = CityConstructions.Worker
-                cityInfo.civInfo.happiness<0 && happinessBuildings.isNotEmpty() -> currentConstruction = happinessBuildings.minBy{ it.cost }!!.name
-                buildableNotWonders.any { it.name=="Library"} -> currentConstruction = "Library"
-                buildableNotWonders.any { it.name=="Market"} -> currentConstruction = "Market"
-                buildableNotWonders.any { it.name=="Forge"} -> currentConstruction = "Forge"
-                cityInfo.civInfo.happiness>cities && buildableNotWonders.any { it.name=="Aqueduct"} -> currentConstruction = "Aqueduct"
-                isAtWar && militaryUnits<cities * 2 + 3 -> trainCombatUnit(cityInfo)
-                isAtWar && wartimeBuildings.isNotEmpty() -> currentConstruction = wartimeBuildings.minBy { it.cost }!!.name
-                //build culture buildings before border expands to half of second ring
-                cityInfo.tiles.size < 13 && cultureBuildings.isNotEmpty() -> currentConstruction = cultureBuildings.minBy { it.cost }!!.name
-                productionBuildings.isNotEmpty() -> currentConstruction = productionBuildings.minBy { it.cost }!!.name
-                zeroMaintenanceBuildings.isNotEmpty() -> currentConstruction = zeroMaintenanceBuildings.minBy { it.cost }!!.name
-                needWorkboat -> currentConstruction = "Work Boats"
-                workers<cities/2 -> currentConstruction = CityConstructions.Worker
-                militaryUnits<cities * 2 + 3 -> trainCombatUnit(cityInfo)
-                buildableNotWonders.isNotEmpty() -> currentConstruction = buildableNotWonders.minBy { it.maintenance }!!.name
-                buildableWonders.isNotEmpty() -> currentConstruction = buildableWonders.minBy { it.cost }!!.name
-                else -> trainCombatUnit(cityInfo)
+            var buildingValues = HashMap<String, Float>()
+            //Food buildings : Ganary and lighthouse and hospital
+            val foodBuilding = buildableNotWonders.filter { it.food>0
+                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.food>0) }
+                    .minBy{it.cost}
+            if (foodBuilding!=null) {
+                buildingValues[foodBuilding.name] = foodBuilding.cost / cityProduction
+                if (cityInfo.population.population < buildingValues[foodBuilding.name]!!.toInt()) {
+                    buildingValues[foodBuilding.name] = buildingValues[foodBuilding.name]!! / 2.0f
+                }
             }
 
+            //Production buildings : Workshop, factory
+            val productionBuilding = buildableNotWonders.filter { it.production>0
+                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.production>0) }
+                    .minBy{it.cost}
+            if (productionBuilding!=null) {
+                buildingValues[productionBuilding.name] = productionBuilding.cost / cityProduction / 1.5f
+            }
+
+            //Gold buildings : Market, bank
+            val goldBuilding = buildableNotWonders.filter { it.gold>0
+                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.gold>0) }
+                    .minBy{it.cost}
+            if (goldBuilding!=null) {
+                buildingValues[goldBuilding.name] = goldBuilding.cost / cityProduction / 1.2f
+                if (cityInfo.civInfo.getStatsForNextTurn().gold<0) {
+                    buildingValues[goldBuilding.name] = buildingValues[goldBuilding.name]!! / 3.0f
+                }
+            }
+
+            //Happiness
+            val happinessBuilding = buildableNotWonders.filter { it.happiness>0
+                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.happiness>0) }
+                    .minBy{it.cost}
+            if (happinessBuilding!=null) {
+                buildingValues[happinessBuilding.name] = happinessBuilding.cost / cityProduction
+                if (cityInfo.civInfo.happiness < 0) {
+                    buildingValues[happinessBuilding.name] = buildingValues[happinessBuilding.name]!! / 3.0f
+                }
+            }
+
+            //War buildings
+            val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
+                    .minBy { it.cost }
+            if (wartimeBuildings!=null) {
+                buildingValues[wartimeBuildings.name] = wartimeBuildings.cost / cityProduction
+            }
+
+            //Wonders
+            val wonder = buildableWonders.minBy { it.cost }
+            if (wonder!=null) {
+                buildingValues[wonder.name] = wonder.cost / cityProduction / 4.0f
+            }
+
+            //other buildings
+            val other = buildableNotWonders.minBy{it.cost}
+            if (other!=null) {
+                buildingValues[other.name] = other.cost / cityProduction * 1.2f
+            }
+
+            //worker
+            if (workers<(cities+1)/2) {
+                buildingValues[CityConstructions.Worker] =
+                        buildableUnits.first{ it.name == CityConstructions.Worker }!!.cost / cityProduction *
+                                (workers/(cities+1))
+            }
+
+            //Work boat
+            if (needWorkboat) {
+                buildingValues["Work Boats"] =
+                        buildableUnits.first{ it.name == "Work Boats" }!!.cost / cityProduction
+            }
+
+            //Army
+            val militaryUnit = chooseCombatUnit(cityInfo)
+            buildingValues[militaryUnit] =
+                    buildableUnits.first{ it.name == militaryUnit }!!.cost / cityProduction * 2.0f *
+                            (militaryUnits/(cities+1))
+            if (isAtWar) {
+                buildingValues[militaryUnit] = buildingValues[militaryUnit]!! / 3.0f
+            }
+
+            val name = buildingValues.minBy{it.value}!!.key
+            currentConstruction = name
             cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
         }
     }
