@@ -493,7 +493,7 @@
 	}
 	
 	"GOLDEN AGE":{
-		Italian:"ETÀ DELL'ORO" //You didn't translate it
+		Italian:"ETÀ DELL'ORO"
 		Russian:"ЗОЛОТОЙ ВЕК"
 		French:"ÂGE D'OR"
 		Romanian:"EPOCA DE AUR"
@@ -808,7 +808,7 @@
 		Spanish:"Comprar por [amount] de oro"
 		Simplified_Chinese:"购买花费 [amount] 钱"
 		Portuguese:"Comprar por [amount] peças de ouro"
-		Japanese:"[金額]ゴールドで購入する"
+		Japanese:"[amount]ゴールドで購入する"
 	}
 	
 	"Buy":{ // for when the construction is a wonder/special and can't be bought, the button is disabled but still displays text
@@ -873,7 +873,6 @@
 		Spanish:"Construir [building]"
 		Simplified_Chinese:"建造 [building]"
 		Portuguese:"Construir [building]"
-		Japanese:"構築する"
 	}
 	
 	"Train [unit]":{ // eg Train Scout
@@ -886,7 +885,7 @@
 		Spanish:"Entrenar [unit]"
 		Simplified_Chinese:"训练 [unit]"
 		Portuguese:"Treinar [unit]"
-		Japanese:"電車[ユニット]"
+		Japanese:"電車[unit]"
 	}
 	
 	"Produce [thingToProduce]":{ // eg Produce gold
@@ -956,12 +955,12 @@
 
 	"[turnsToExpansion] turns to expansion":{
 		Italian:"La città si espanderà tra [turnsToExpansion] turni"
-		Russian:"Город будет расширяться между раундами [turnToExpansion]"
-		French:"La ville se développera entre [toursToExpansion] tours"
-		Romanian:"Orașul se va extinde între rundă [turnToExpansion]"
-		German:"Die Stadt wird sich zwischen [TurnToExpansion]-Runden erweitern"
+		Russian:"Город будет расширяться между раундами [turnsToExpansion]"
+		French:"La ville se développera entre [turnsToExpansion] tours"
+		Romanian:"Orașul se va extinde între rundă [turnsToExpansion]"
+		German:"Die Stadt wird sich zwischen [turnsToExpansion]-Runden erweitern"
 		Dutch:"De stad breidt zich uit tussen [turnsToExpansion]-rondes"
-		Spanish:"La ciudad se expandirá entre [turno a la expansión] rondas"
+		Spanish:"La ciudad se expandirá entre [turnsToExpansion] rondas"
 		Simplified_Chinese:"该城市将在[turnsToExpansion]轮次之间扩展"
 		Portuguese:"A cidade se expandirá entre [turnsToExpansion] turnos"
 		Japanese:"[turnsToExpansion]が拡大に変わります"
@@ -982,23 +981,23 @@
 
 	"[turnsToPopulation] turns to new population":{
 		Italian:"La città avrà un nuovo abitante tra [turnsToPopulation] turni"
-		Russian:"В городе будет новый житель в раундах [turnToPopulation]"
-		French:"La ville aura un nouveau résident dans [toursToPopulation]"
-		Romanian:"Orașul va avea un nou rezident în runde [turnToPopulation]"
-		German:"Die Stadt wird einen neuen Einwohner in [Turnes-To-Population]-Runden haben"
+		Russian:"В городе будет новый житель в раундах [turnsToPopulation]"
+		French:"La ville aura un nouveau résident dans [turnsToPopulation]"
+		Romanian:"Orașul va avea un nou rezident în runde [turnsToPopulation]"
+		German:"Die Stadt wird einen neuen Einwohner in [turnsToPopulation]-Runden haben"
 		Dutch:"De stad krijgt een nieuwe inwoner in [turnsToPopulation]-rondes"
-		Spanish:"La ciudad tendrá un nuevo residente en las rondas de [TurnToPopulation]"
+		Spanish:"La ciudad tendrá un nuevo residente en las rondas de [turnsToPopulation]"
 		Simplified_Chinese:"这个城市将在[turnsToPopulation]轮中有一个新的居民"
-		Portuguese:"A cidade terá um novo residente nas [turnosPopulação] turnos"
+		Portuguese:"A cidade terá um novo residente nas [turnsToPopulation] turnos"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
 	}
 
 	"[turnsToStarvation] turns to lose population":{
 		Italian:"La città perderà un abitante tra [turnsToStarvation] turni"
-		Russian:"Город потеряет жителя в 15 смен"
-		French:"La ville perdra un habitant 15 tours"
-		Romanian:"Orașul va pierde un locuitor în 15 schimburi"
-		German:"Die Stadt wird einen Einwohner in [TurnToStarvation]-Runden verlieren"
+		Russian:"Город потеряет жителя в [turnsToStarvation] смен"
+		French:"La ville perdra un habitant [turnsToStarvation] tours"
+		Romanian:"Orașul va pierde un locuitor în [turnsToStarvation] schimburi"
+		German:"Die Stadt wird einen Einwohner in [turnsToStarvation]-Runden verlieren"
 		Dutch:"De stad verliest een bewoner in [turnsToStarvation] ploegen"
 		Spanish:"La ciudad pierde un habitante en [turnsToStarvation] turnos"
 		Simplified_Chinese:"这个城市将在[turnsToStarvation]轮中失去一个居民"
@@ -1029,9 +1028,9 @@
 	
 	"Sell for [sellAmount] gold":{ // when selling a building
 		Italian:"Vendi per [sellAmount] Oro" //es.
-		Russian:"Продам за 50 золотых"
-		French:"Vendre pour 50 or"
-		Romanian:"Vindem 50 de aur"
+		Russian:"Продам за [sellAmount] золотых"
+		French:"Vendre pour [sellAmount] or"
+		Romanian:"Vindem [sellAmount] de aur"
 		German:"Verkaufen Sie für [sellAmount] Gold"
 		Dutch:"Verkopen voor [sellAmount] goud"
 		Spanish:"Vender por [sellAmount] oro"
@@ -1083,11 +1082,11 @@
 		French:"Rechercher [technology]"
 		Romanian:"Cercetează [technology]"
 		German:"[technology] erforschen"
-		Dutch:"[technologie] onderzoeken"
+		Dutch:"[technology] onderzoeken"
 		Spanish:"Investigar [technology]"
 		Simplified_Chinese:"研究 [technology]"
 		Portuguese:"Investigar [technology]"
-		Japanese:"研究[テクノロジー]"
+		Japanese:"研究[technology]"
 	}
 	
 	
@@ -1096,7 +1095,7 @@
 		Russian:"Выбрать [technology] как бесплатную технологию"
 		French:"Choisir [technology] comme technologie gratuite"
 		Romanian:"Alege [technology] ca tehnologie gratuită"
-		Dutch:"[technologie] kiezen als gratis technologie"
+		Dutch:"[technology] kiezen als gratis technologie"
 		Spanish:"Elegir [technology] como tecnología gratis"
 		Simplified_Chinese:"选 [technology] 作为免费科技"
 		Portuguese:"Escolher [technology] como tecnologia gratuita"
@@ -1175,7 +1174,7 @@
 		French:"Révèle [resource] sur la carte"
 		Romanian:"Dezvăluie [resource] pe hartă"
 		German:"Zeigt [resource] auf der Karte an"
-		Dutch:"Onthuld [recource] op de kaart"
+		Dutch:"Onthuld [resource] op de kaart"
 		Spanish:"Descubre [resource] en el mapa"
 		Simplified_Chinese:"显示 [resource] 在地图上"
 		Portuguese:"Revela [resource] no mapa"
