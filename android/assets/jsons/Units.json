@@ -946,7 +946,7 @@
 		requiredTech:"Combustion",
 		requiredResource:"Oil",
 		upgradesTo:"Tank",
-		obsoleteTech:"Combustion",
+		obsoleteTech:"Combined Arms",
 		uniques:["Can move after attacking","No defensive terrain bonus"],
 		hurryCostModifier:20
 	},
