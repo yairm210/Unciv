@@ -826,6 +826,8 @@
 		rangedStrength:30,
 		cost: 225,
 		requiredTech:"Industrialization",
+		upgradesTo:"Machine Gun",
+		obsoleteTech:"Ballistics",
 		hurryCostModifier:20,
 		attackSound:"machinegun"
 	},
@@ -914,6 +916,7 @@
 		range:3,
 		cost: 320,
 		requiredTech:"Dynamite",
+		upgradesTo:"Rocket Artillery",
 		uniques:["Bonus vs City 200%","No defensive terrain bonus",
 			"Must set up to ranged attack","Limited Visibility","Indirect Fire"],
 		hurryCostModifier:20
@@ -942,6 +945,8 @@
 		cost: 350,
 		requiredTech:"Combustion",
 		requiredResource:"Oil",
+		upgradesTo:"Tank",
+		obsoleteTech:"Combined Arms",
 		uniques:["Can move after attacking","No defensive terrain bonus"],
 		hurryCostModifier:20
 	},
@@ -998,6 +1003,8 @@
 		strength:70,
 		cost: 375,
 		requiredTech:"Plastics",
+		upgradesTo:"Mechanized Infantry",
+		obsoleteTech:"Nuclear Fission",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
@@ -1021,6 +1028,8 @@
 		cost: 375,
 		requiredTech:"Combined Arms",
 		requiredResource:"Oil",
+		upgradesTo:"Modern Armor",
+		//obsoleteTech:"Robotics",
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
