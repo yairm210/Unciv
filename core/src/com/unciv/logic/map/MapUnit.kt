@@ -229,6 +229,7 @@ class MapUnit {
         // if we don't remove the unit before the check it's return false!
 
         val unitToUpgradeTo = getUnitToUpgradeTo()
+        if (name == unitToUpgradeTo.name) return false
         civInfo.removeUnit(this)
         val canUpgrade = unitToUpgradeTo.isBuildable(civInfo)
         civInfo.addUnit(this)
