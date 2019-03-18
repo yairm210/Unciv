@@ -85,13 +85,13 @@ class Automation {
             val cityProduction = cityInfo.cityStats.currentCityStats.production.toFloat()
 
             var buildingValues = HashMap<String, Float>()
-            //Food buildings : Ganary and lighthouse and hospital
+            //Food buildings : Granary and lighthouse and hospital
             val foodBuilding = buildableNotWonders.filter { it.food>0
                     || (it.resourceBonusStats!=null && it.resourceBonusStats!!.food>0) }
-                    .minBy{it.cost}
+                    .minBy{ it.cost }
             if (foodBuilding!=null) {
                 buildingValues[foodBuilding.name] = foodBuilding.cost / cityProduction
-                if (cityInfo.population.population < buildingValues[foodBuilding.name]!!.toInt()) {
+                if (cityInfo.population.population < foodBuilding.food + 5) {
                     buildingValues[foodBuilding.name] = buildingValues[foodBuilding.name]!! / 2.0f
                 }
             }
@@ -134,8 +134,8 @@ class Automation {
             }
 
             //Wonders
-            val wonder = buildableWonders.minBy { it.cost }
-            if (wonder!=null) {
+            if (buildableWonders.isNotEmpty()) {
+                val wonder = buildableWonders.getRandom()
                 buildingValues[wonder.name] = wonder.cost / cityProduction / 4.0f
             }
 
@@ -148,20 +148,20 @@ class Automation {
             //worker
             if (workers<(cities+1)/2) {
                 buildingValues[CityConstructions.Worker] =
-                        buildableUnits.first{ it.name == CityConstructions.Worker }!!.cost / cityProduction *
+                        buildableUnits.first{ it.name == CityConstructions.Worker }.cost / cityProduction *
                                 (workers/(cities+1))
             }
 
             //Work boat
             if (needWorkboat) {
                 buildingValues["Work Boats"] =
-                        buildableUnits.first{ it.name == "Work Boats" }!!.cost / cityProduction
+                        buildableUnits.first{ it.name == "Work Boats" }.cost / cityProduction * 1.5f
             }
 
             //Army
             val militaryUnit = chooseCombatUnit(cityInfo)
             buildingValues[militaryUnit] =
-                    buildableUnits.first{ it.name == militaryUnit }!!.cost / cityProduction * 2.0f *
+                    buildableUnits.first{ it.name == militaryUnit }.cost / cityProduction * 2.0f *
                             (militaryUnits/(cities+1))
             if (isAtWar) {
                 buildingValues[militaryUnit] = buildingValues[militaryUnit]!! / 3.0f
