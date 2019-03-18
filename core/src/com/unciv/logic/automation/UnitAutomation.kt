@@ -57,7 +57,7 @@ class UnitAutomation{
         }
 
         // if there is an attackable unit in the vicinity, attack!
-        if (tryAttackNearbyEnemy(unit,unitDistanceToTiles)) return
+        if (tryAttackNearbyEnemy(unit)) return
 
         // Barbarians try to pillage improvements if no targets reachable
         if (unit.civInfo.isBarbarianCivilization() && pillageImprovement(unit, unitDistanceToTiles)) return
@@ -166,7 +166,7 @@ class UnitAutomation{
                     val movementPointsToExpendAfterMovement = if(unitMustBeSetUp) 1 else 0
                     val movementPointsToExpendHere = if(unitMustBeSetUp && unit.action != "Set Up") 1 else 0
                     val movementPointsToExpendBeforeAttack = if(it.key==unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                    unit.currentMovement - it.value - movementPointsToExpendBeforeAttack > 0 } // still got leftover movement points after all that, to attack
+                    unit.currentMovement - it.value - movementPointsToExpendBeforeAttack > 0.1 } // still got leftover movement points after all that, to attack (0.1 is because of Float nensense, see MapUnit.moveToTile(...)
                 .map { it.key }
                 .filter { unit.canMoveTo(it) || it==unit.getTile() }
 
@@ -298,8 +298,8 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryAttackNearbyEnemy(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
-        val attackableEnemies = getAttackableEnemies(unit, unitDistanceToTiles)
+    private fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
+        val attackableEnemies = getAttackableEnemies(unit, unit.getDistanceToTiles())
                 // Only take enemies we can fight without dying
                 .filter {
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
