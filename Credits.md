@@ -172,7 +172,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov for Ironworks
 * [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi
 * [Bullets](https://thenounproject.com/term/bullets/810156/) By Aldric Rodriguez for Armory 
-* [Machu Pichu](https://thenounproject.com/term/machu-picchu/1569706/) By Carpe Diem
+* [Machu Picchu](https://thenounproject.com/term/machu-picchu/1569706/) By Carpe Diem
 
 ### Renaissance Era
 
