@@ -5805,16 +5805,17 @@
 	}
 	
 	"Free Great Person":{
-		Italian:"Grande Personaggio gratuito"
+		Italian:"Ottieni un Grande Personaggio gratuito"
 		Romanian:"Persoană mare gratuită"
 		Spanish:"Gran Persona gratis"
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
 		Russin:""
+		//Also, all Great People should be generated +25% faster
 	}
 	
 	"Taj Mahal":{	
-		Italian:"Taj Mahal"
+		Italian:"Taj Mahal" //same in Italian
 		Russian:"Тадж-Махал"
 		French:"Taj Mahal"
 		Romanian:"Taj Mahal"
@@ -6006,7 +6007,7 @@
 	}
 	
 	"Military Academy":{	
-		Italian:"Accademia Militare"
+		Italian:"Accademia militare"
 		Russian:"Военная академия"
 		French:"Académie militaire"
 		Romanian:"Academie militară"
@@ -6016,7 +6017,7 @@
 		German:"Militärakademie"
 	}
 	"Broadcast Tower":{	
-		Italian:"Torre di trasmissione"
+		Italian:"Ripetitore"
 		Russian:"Широковещательная башня"
 		French:"Tour de diffusion"
 		Romanian:"Turn radio"
@@ -6080,7 +6081,7 @@
 		German:"Forschungslabor"
 	}
 	"Hydro Plant":{	
-		Italian:"Impianto idroelettrico"
+		Italian:"Centrale idroelettrica"
 		Russian:"ГЭС"
 		French:"Centrale hydroélectrique"
 		Romanian:"Hidrocentrală"
@@ -6101,7 +6102,7 @@
 	}
 	
 	"Solar Plant":{	
-		Italian:"Impianto solare"
+		Italian:"Centrale ad energia solare"
 		Russian:"Солнечный завод"
 		French:"Centrale solaire"
 		Romanian:"Centrală solară"
@@ -6136,6 +6137,7 @@
 		Italian:"CN Tower" //same in Italian
 		//same in German
 		French:"Tour du CN"
+		Spanish:"Torre CN"
 	}
 	"+1 population in each city":{
 		Italian:"+1 Popolazione in ogni città"
@@ -6197,7 +6199,7 @@
 	}
 	
 	"Spaceship Factory":{	
-		Italian:"Fabbrica di astronave"
+		Italian:"Fabbrica di astronavi"
 		Russian:"Завод космических кораблей"
 		French:"Chantier spatial"
 		Romanian:"Fabrică de nave spațiale"
@@ -6207,7 +6209,7 @@
 		German:"Raumschiff-Fabrik"
 	}
 	"Increases production of spaceship parts by 50%":{
-		Italian:"+50% produzione di parti di navi spaziali"
+		Italian:"+50% produzione di parti dell'astronave"
 		Russian:"Ускоряет производство частей космического корабля на 50%"
 		French:"Augmente la production de pièces de Vaisseau Spatial de 50%"
 		Romanian:"Crește producția de piese pentru nave spațiale cu 50%"
@@ -6219,7 +6221,7 @@
 	}
 	
 	"Spaceship part":{
-		Italian:"Parte della nave spaziale"
+		Italian:"Parte dell'astronave"
 		Russian:"Часть космического корабля"
 		French:"Pièce de Vaisseau Spatial"
 		Romanian:"piesă de nave spațiale"
@@ -6402,7 +6404,7 @@
 	
 	// Classical Era Units
 	"Composite Bowman":{
-		Italian:"Arciere compostio"
+		Italian:"Arciere composito"
 		Romanian:"Arcaș cu arc compozit"
 		Spanish:"Arcos Compuestos"
 		Simplified_Chinese:"复合弓兵"
@@ -6498,7 +6500,7 @@
 		German:"Langbogenschütze"
 	}
 	"Chu-ko-nu":{
-		Italian:"Chu-ko-nu"
+		Italian:"Chu-ko-nu"//same in Italian
 		Romanian:"Chu-ko-nu"
 		Spanish:"Chu-ko-nu"
 		Simplified_Chinese:"诸葛弩"
@@ -7031,7 +7033,7 @@
 		French:"Aristocratie"
 	}
 	"+15% production when constructing wonders, +1 happiness for every 10 citizens in a city":{
-		Italian: "+15% produzione quando costruisci una Meraviglia, e +1 Felicità ogni 10 cittadini in una città"
+		Italian: "+15% Produzione quando costruisci una Meraviglia, e +1 Felicità ogni 10 cittadini in una città"
 		Russian:"+15% производства при создании чудес, +1 счастье за каждые 10 жителей в городе"
 		Romanian:"+15% producție la construcția de minuni, +1 fericire pentru fiecare 10 cetățeni ai unui oraș"
 		Spanish:"+15% producción al construir maravillas, +1 felicidad cada 10 habitantes in una ciudad"
@@ -7051,7 +7053,7 @@
 		French:"Légalisme"
 	}
 	"Free culture building in your first 4 cities":{
-		Italian:"Fornisce un edificio culturale gratuito nelle tue prime 4 città"
+		Italian:"Le prime 4 città sono fornite di un edificio culturale gratuito"
 		Russian:"Бесплатное культурное здание в первых 4 городах"
 		Romanian:"Construcție de cultură gratuită pentru primele 4 orașe"
 		Spanish:"Edificio de cultura gratis en las primeras 4 ciudades"
@@ -7071,7 +7073,7 @@
 		French:"Oligarchie"
 	}
 	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
-		Italian:"+50% forza d'attacco per le città con guarnigione, e nessun mantenimento per le loro guarnigioni"
+		Italian:"+50% Forza d'attacco per le città con guarnigione, e nessun mantenimento per le loro guarnigioni"
 		Russian:"Юниты в городах содержаться бесплатно, гарнизонный город + 50% силы атаки"
 		Romanian:"Unitățile din orașe nu necesită costuri de întreținere, orașul înarmat + 50% atac"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento, y +50% de fuerza de ataque"
@@ -7132,7 +7134,7 @@
 		French:"Tradition complète"
 	}
 	"+15% growth and +2 food in all cities":{ //You should add an Acqueduct in the first 4 cities
-		Italian:"+15% crescita e +2 cibo in tutte le città"
+		Italian:"+15% crescita e +2 Cibo in tutte le città"
 		Russian:"+15% роста и +2 еды во всех городах"
 		Romanian:"+15% creștere și +2 hrană în toate orașele"
 		Spanish:"+15% crecimiento y +2 comida en todas las ciudades"
@@ -7298,7 +7300,7 @@
 	}
 	"+25% bonus vs Barbarians; gain Culture when you kill a barbarian unit":{ //25% in Vanilla, 33% in G&K
 		Spanish:"+25% bonus al luchar contra Barbaros"
-		Italian:"+25% forza contro Barbari"
+		Italian:"+25% Forza contro i Barbari; ottieni Cultura quando uccidi unità barbariche"
 		Romanian:"+25% bonus contra Barbarilor"
 		Simplified_Chinese:"对野蛮人+25%奖励"
 		Portuguese:"+25% Força ao lutar contra Barbáros"
@@ -7408,7 +7410,7 @@
 	}
 	"Gain gold for each unit killed":{
 		Spanish:"Ganas oro cada vez que destruyas una unidad enemiga"
-		Italian:"Ottieni oro per ogni unità eliminata"
+		Italian:"Ottieni Oro ogni volta che elimini un'unità nemica"
 		Romanian:"Obține aur pentru fiecare unitate ucisă"
 		Simplified_Chinese:"每杀死一个单位获得金钱"
 		Portuguese:"Ganhe ouro por cada unidade morta"
@@ -7429,7 +7431,7 @@
 		French:"Piété"
 	}
 	"Building time of culture buildings reduced by 15%":{
-		Italian:"-15% tempi di costruzione per strutture religiose"
+		Italian:"-15% tempi di costruzione per le strutture religiose"
 		Russian:"Время строительства культурных зданий уменьшена на 15%"
 		Romanian:"Timpul de construcție pentru clădirile de cultură redus cu 15%"
 		Spanish:"Tiempo de construcción de edificios de cultura reducido un 15%"
@@ -7489,7 +7491,7 @@
 		French:"Théocratie"
 	}
 	"Temples give +10% gold":{
-		Italian:"+10% Oro dai Templi"
+		Italian:"+10% Oro dai Templi (Sepolcri per gli Egizi)"
 		Russian:"Храмы увеличивают на 10% приток золота в городах"
 		Romanian:"Templele oferă +10% aur"
 		Spanish:"Templos dan +10% oro"
@@ -7549,7 +7551,7 @@
 		French:"Piété complète"
 	}
 	"Reduce culture cost of future policies by 10%":{
-		Italian:"-10% costi un Cultura per le Politiche future"
+		Italian:"-10% costi in Cultura per le Politiche future"
 		Russian:"Уменьшает цену будущих общественных институтов на 10%"
 		Romanian:"Reduce costul în cultură pentru politicile viitoare cu 10%"
 		Spanish:"Reduce el coste de cultura de políticas futuras un 10%"
@@ -7591,7 +7593,7 @@
 		French:"Unions commerciales"
 	}
 	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
-		Italian:"-33% mantenimento su strade e ferrovie, +2 oro per ogni rotta commerciale"//you forgot to translate this
+		Italian:"-33% mantenimento in Oro su strade e ferrovie, +2 oro per ogni rotta commerciale"//you forgot to translate this
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Romanian:"Întreținerea drumurilor și a căilor ferate redusă cu 33%, +2 aur din toate rutele comerciale"
 		Spanish:"Mantenimiento de carreteras y líneas de ferrocarril reducido un 33%, +2 oro de todas las rutas comerciales"
@@ -7611,7 +7613,7 @@
 		French:"Mercantilisme"
 	}
 	"-25% to purchasing items in cities":{
-		Italian:"-25% costi d'acquisto nelle città"
+		Italian:"-25% costi d'acquisto in Oro nelle città"
 		Russian:"-25% цены покупок в городах"
 		Romanian:"-25% la cumpărarea obiectelor în orașe"
 		Spanish:"-25% a la compra de ítems en ciudades"
@@ -7631,7 +7633,7 @@
 		French:"Entreprenariat"
 	}
 	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{
-		Italian:"+25% velocità di produzione Grandi Mercanti, +1 Scienza da ogni Zecca, Mercato, Banca e Borsa"
+		Italian:"+25% tasso di nascita dei Grandi Mercanti, +1 Scienza da ogni Zecca, Mercato, Banca e Borsa"
 		Russian:"Великие торговцы появляют на 25% быстрее, +1 наука от каждого Монетного двора, Рынка, Банка и Биржи"
 		Romanian:"Marii Comercianți sunt obținuți 25% mai repede, +1 știință din fiecare fabrică de bani, piață. bancă sau bursă de valori"
 		Spanish:"Grandes Mercantes son ganados 25% más rápido, +1 ciencia por cada casa de la moneda, mercado, banco y Bolsa de Valores"
@@ -7651,7 +7653,7 @@
 		French:"Patronat"
 	}
 	"Cost of purchasing culture buildings reduced by 50%":{
-		Italian:"-50% costi di acquistare strutture culturali"
+		Italian:"-50% costi di per l'acquisto delle strutture culturali"
 		Russian:"Цена покупки культурных строений уменьшена на 50%"
 		Romanian:"Costul clădirilor de cultură redus cu 50%"
 		Spanish:"Coste de comprar edificios de cultura reducido un 50%"
@@ -7773,7 +7775,7 @@
 		French:"Liberté de pensée"
 	}
 	"+1 science from every trading post, +17% science from universities":{
-		Italian:"+1 Scienza per ogni base commerciale, +17% scienza per ogni Università"
+		Italian:"+1 Scienza per ogni base commerciale, +17% scienza dalle Università"
 		Russian:"+1 наука от каждого торгового поста, +17% науки от университетов"
 		Romanian:"+1 știință de la fiecare punct comercial, +17% știință de la universități"
 		Spanish:"+1 ciencia por cada puesto comercial, +17% ciencia de las universidades"
@@ -7793,7 +7795,7 @@
 		French:"Souveraineté"
 	}
 	"+15% science while empire is happy":{
-		Italian:"+15% Scienza quando l'Impero è felice"
+		Italian:"+15% Scienza quando l'Impero è felice (ovvero la Felicità è al di sopra dello 0)"
 		Russian:"+15% науки, когда империя счастлива"
 		Romanian:"+15% știință cât timp imperiul este fericit"
 		Spanish:"+15% ciencia mientras el imperio esté feliz"
@@ -7813,7 +7815,7 @@
 		French:"Révolution scientifique"
 	}
 	"Gain 2 free technologies":{
-		Italian:"Scopri due Tecnologie gratuite"
+		Italian:"Consente di scoprite due Tecnologie gratuite"
 		Russian:"Даёт 2 бесплатные технологии"
 		Romanian:"Obține 2 tehnologii gratuite"
 		Spanish:"Ganas 2 tecnologías gratis"
@@ -7833,7 +7835,7 @@
 		French:"Rationalisme complet"
 	}
 	"+1 gold from all science buildings":{
-		Italian:"+1 Oro per ogni edificio scientifico"
+		Italian:"+1 Oro per ogni edificio scientifico costruito"
 		Russian:"+1 золото от всех научных зданий"
 		Romanian:"+1 aur de la toate clădirile științifice"
 		Spanish:"+1 oro de todos los edificios de ciencia"
@@ -7855,7 +7857,7 @@
 		French:"Liberté"
 	}
 	"+25% great people rate":{
-		Italian:"+25% generazione Grandi Personaggi"
+		Italian:"+25% tasso di generazione per i Grandi Personaggi"
 		Russian:"+25% к скорости появления великих людей"
 		Romanian:"+25% rată Oameni Mari"
 		Spanish:"+25% generación de Grandes Personas"
@@ -7955,7 +7957,7 @@
 		French:"Démocratie"
 	}
 	"Specialists produce half normal unhappiness":{
-		Italian:"Gli Specialisti dimezzano l'infelicità prodotta"
+		Italian:"Gli Specialisti dimezzano l'Infelicità prodotta"
 		Russian:"Специалисты производят в половину меньше недовольства"
 		Romanian:"Specialiștii produc jumătate din nefericire"
 		Spanish:"Especialistas producen la mitad de infelicidad"
@@ -7975,7 +7977,7 @@
 		French:"Liberté complète"
 	}
 	"Tile yield from great improvement +100%, golden ages increase by 50%":{
-		Italian:"Doppia resa dai miglioramenti, +50% durata da Età dell'Oro"
+		Italian:"Doppia resa (+100%) dai miglioramenti, e +50% durata da Età dell'Oro"
 		Russian:"Доход клетки от великих улучшений +100%, золотые века увеличены на 50%"
 		Romanian:"Producția celulelor din îmbunătățiri majore +100%, durata epocilor de aur crește cu 50%"
 		Spanish:"Rendimiento de casilla por gran mejora aumenta en 100%, Edades de Oro incrementan 50%"
@@ -7998,7 +8000,7 @@
 	}
 	"-33% unit upkeep costs":{
 		Spanish:"Coste de mantenimiento de unidades reducido en 33%"
-		Italian:"-33% mantenimento delle unità"
+		Italian:"-33% mantenimento delle unità in Oro"
 		Romanian:"-33% la costurile de întreținere pentru unități"
 		Simplified_Chinese:"-33%的单位维护成本"
 		Portuguese:"-33% Manutenção de unidades"
@@ -8038,7 +8040,7 @@
 	}
 	"Gold cost of purchasing units -33%":{
 		Spanish:"Coste de comprar oro reducido a -33%"
-		Italian:"-33% costi d'acquisto per le unità"
+		Italian:"-33% costi d'acquisto in Oro per le unità"
 		Romanian:"Costul cumpărării de unități -33%"
 		Simplified_Chinese:"购买单位金钱成本-33%"
 		Portuguese:"-33% custo de comprar unidades"
@@ -8058,7 +8060,7 @@
 	}
 	"Quantity of strategic resources produced by the empire increased by 100%":{
 		Spanish:"El imperio produce un +100% de recursos estrategicos"
-		Italian:"Doppia produzione di risorse strategiche nell'impero"
+		Italian:"L'impero incrementa del 100% la quantità delle risorse strategiche possedute, raddoppiandole"
 		Romanian:"Resursele strategice produse de imperiu crescute cu 100%"
 		Simplified_Chinese:"帝国生产的战略资源数量增加了100%"
 		Portuguese:"Quantidade de recursos estratégicos produzidos pelo império incrementado em 100%"
@@ -8078,7 +8080,7 @@
 	}
 	"Captured cities retain their previous borders":{
 		Spanish:"Las ciudades capturadas retienen sus fronteras"
-		Italian:"Le città catturate mantengono i loro confini precedenti"
+		Italian:"Le città conquistate mantengono i loro confini precedenti"
 		Romanian:"Orașele cucerite își păstrează vechile hotare"
 		Simplified_Chinese:"被占领的城市保留了以前的边界"
 		Portuguese:"Cidades capturadas retem suas antigas frontieras"
@@ -8097,7 +8099,7 @@
 	}
 	"+15% production when building military units and new military units start with 15 Experience":{
 		Spanish:"+15% a la produccion cuando se esta construyendo unidades militares, las unidades militares comienzan con 15 de PX"
-		Italian:"+15% Produzione per le unità militari, +15 esperienza per le nuove unità militari"
+		Italian:"+15% Produzione per le unità militari, e +15 esperienza per le nuove unità militari"
 		Romanian:"+15% producție când se construiesc unități militare, iar noile unități militare au 15 experiență din start"
 		Simplified_Chinese:"+15%的生产当建造军事单位和新的军事单位开始有15个经验"
 		Portuguese:"+15% produção ao construir unidades militares e novas unidades militares começam com 15 experiencia"
