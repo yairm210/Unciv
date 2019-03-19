@@ -1992,16 +1992,114 @@ TerrainIcons/CrosshatchHexagon
   orig: 273, 236
   offset: 0, 0
   index: -1
-TerrainIcons/Flood plains
+TerrainIcons/Default/Flood plainsOverlay
   rotate: false
   xy: 1150, 1438
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-TerrainIcons/Forest
+TerrainIcons/Test/Flood plainsOverlay
+  rotate: false
+  xy: 1150, 1438
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Default/ForestOverlay
   rotate: false
   xy: 844, 1030
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Test/ForestOverlay
+  rotate: false
+  xy: 844, 1030
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Default/HillOverlay
+  rotate: false
+  xy: 714, 724
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Test/HillOverlay
+  rotate: false
+  xy: 714, 724
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Default/JungleOverlay
+  rotate: false
+  xy: 1224, 826
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Test/JungleOverlay
+  rotate: false
+  xy: 1224, 826
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Default/LakesOverlay
+  rotate: false
+  xy: 1603, 1640
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Test/LakesOverlay
+  rotate: false
+  xy: 1603, 1640
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Default/MarshOverlay
+  rotate: false
+  xy: 1456, 1238
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Test/MarshOverlay
+  rotate: false
+  xy: 1456, 1238
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Default/MountainOverlay
+  rotate: false
+  xy: 1864, 1436
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Test/MountainOverlay
+  rotate: false
+  xy: 1864, 1436
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Default/OasisOverlay
+  rotate: false
+  xy: 1864, 1130
+  size: 100, 100
+  orig: 100, 100
+  offset: 0, 0
+  index: -1
+TerrainIcons/Test/OasisOverlay
+  rotate: false
+  xy: 1864, 1130
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2020,46 +2118,11 @@ TerrainIcons/HexagonBorder
   orig: 139, 120
   offset: 0, 0
   index: -1
-TerrainIcons/Hill
+TerrainIcons/Test/Grasslands
   rotate: false
-  xy: 714, 724
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TerrainIcons/Jungle
-  rotate: false
-  xy: 1224, 826
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TerrainIcons/Lakes
-  rotate: false
-  xy: 1603, 1640
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TerrainIcons/Marsh
-  rotate: false
-  xy: 1456, 1238
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TerrainIcons/Mountain
-  rotate: false
-  xy: 1864, 1436
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TerrainIcons/Oasis
-  rotate: false
-  xy: 1864, 1130
-  size: 100, 100
-  orig: 100, 100
+  xy: 1531, 1964
+  size: 32, 30
+  orig: 32, 30
   offset: 0, 0
   index: -1
 TerrainIcons/road
@@ -2491,273 +2554,273 @@ UnitPromotionIcons/Barrage_II_(Civ5)
   index: -1
 UnitPromotionIcons/Barrage_I_(Civ5)
   rotate: false
-  xy: 1531, 1974
+  xy: 234, 79
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Blitz_(Civ5)
   rotate: false
-  xy: 234, 79
+  xy: 2018, 700
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Boarding_Party_III_(Civ5)
   rotate: false
-  xy: 2018, 700
+  xy: 1979, 598
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Boarding_Party_II_(Civ5)
   rotate: false
-  xy: 1979, 598
+  xy: 1981, 1974
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Boarding_Party_I_(Civ5)
   rotate: false
-  xy: 1981, 1974
+  xy: 106, 46
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Bombardment_III_(Civ5)
   rotate: false
-  xy: 106, 46
+  xy: 1425, 294
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Bombardment_II_(Civ5)
   rotate: false
-  xy: 1425, 294
+  xy: 1447, 294
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Bombardment_I_(Civ5)
   rotate: false
-  xy: 1447, 294
+  xy: 2015, 1822
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Charge_(Civ5)
   rotate: false
-  xy: 2015, 1822
+  xy: 1966, 942
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Coastal_Raider_III_(Civ5)
   rotate: false
-  xy: 1966, 942
+  xy: 852, 192
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Coastal_Raider_II_(Civ5)
   rotate: false
-  xy: 852, 192
+  xy: 256, 79
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Coastal_Raider_I_(Civ5)
   rotate: false
-  xy: 1531, 1952
+  xy: 2018, 678
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Cover_II_(Civ5)
   rotate: false
-  xy: 256, 79
+  xy: 1979, 576
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Cover_I_(Civ5)
   rotate: false
-  xy: 2018, 678
+  xy: 1981, 1952
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Drill_III_(Civ5)
   rotate: false
-  xy: 1979, 576
+  xy: 2003, 1974
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Drill_II_(Civ5)
   rotate: false
-  xy: 1981, 1952
+  xy: 106, 24
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Drill_I_(Civ5)
   rotate: false
-  xy: 2003, 1974
+  xy: 106, 2
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Formation_II_(Civ5)
   rotate: false
-  xy: 106, 24
+  xy: 1425, 272
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Formation_I_(Civ5)
   rotate: false
-  xy: 106, 2
+  xy: 2015, 1800
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Indirect_Fire_(Civ5)
   rotate: false
-  xy: 1425, 272
+  xy: 1988, 942
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Logistics_(Civ5)
   rotate: false
-  xy: 2015, 1800
+  xy: 852, 170
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/March_(Civ5)
   rotate: false
-  xy: 1988, 942
+  xy: 874, 192
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Mobility_(Civ5)
   rotate: false
-  xy: 852, 170
+  xy: 278, 79
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Range_(Civ5)
   rotate: false
-  xy: 874, 192
+  xy: 2018, 656
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Scouting_III_(Civ5)
   rotate: false
-  xy: 278, 79
+  xy: 1979, 554
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Scouting_II_(Civ5)
   rotate: false
-  xy: 2018, 656
+  xy: 2003, 1952
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Scouting_I_(Civ5)
   rotate: false
-  xy: 1979, 554
+  xy: 1425, 250
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Sentry_(Civ5)
   rotate: false
-  xy: 2003, 1952
+  xy: 1447, 272
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock_III_(Civ5)
   rotate: false
-  xy: 1425, 250
+  xy: 1469, 293
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock_II_(Civ5)
   rotate: false
-  xy: 1447, 272
+  xy: 2015, 1778
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock_I_(Civ5)
   rotate: false
-  xy: 1469, 293
+  xy: 852, 148
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Siege_(Civ5)
   rotate: false
-  xy: 2015, 1778
+  xy: 874, 170
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_III_(Civ5)
   rotate: false
-  xy: 852, 148
+  xy: 896, 192
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_II_(Civ5)
   rotate: false
-  xy: 874, 170
+  xy: 300, 79
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_I_(Civ5)
   rotate: false
-  xy: 896, 192
+  xy: 2018, 634
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Volley_(Civ5)
   rotate: false
-  xy: 300, 79
+  xy: 1979, 532
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_III_(Civ5)
   rotate: false
-  xy: 2018, 634
+  xy: 1425, 228
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_II_(Civ5)
   rotate: false
-  xy: 1979, 532
+  xy: 1447, 250
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_I_(Civ5)
   rotate: false
-  xy: 1425, 228
+  xy: 1469, 271
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

@@ -1,7 +1,6 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -18,7 +17,9 @@ import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
-    protected val hexagon = ImageGetter.getImage("TerrainIcons/Hexagon.png")
+    val tileSetLocation = "TerrainIcons/"+UnCivGame.Current.settings.tileSet +"/"
+
+    protected var hexagon :Image= ImageGetter.getImage("TerrainIcons/Hexagon.png")
     protected var baseTerrainImage: Image? = null
     protected var baseTerrain:String=""
     protected var terrainFeatureImage: Image? = null
@@ -48,7 +49,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     init {
         val groupSize = 54f
         this.setSize(groupSize, groupSize)
+
         addHexagon(groupSize)
+
         addCircleImage()
         addFogImage(groupSize)
         addCrosshairImage()
@@ -87,6 +90,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun addHexagon(groupSize: Float) {
+        val terrainTileLocation = tileSetLocation+tileInfo.baseTerrain
+        if(ImageGetter.imageExists(terrainTileLocation))
+            hexagon = ImageGetter.getImage(terrainTileLocation)
+
         val imageScale = groupSize * 1.5f / hexagon.width
         hexagon.setScale(imageScale)
         hexagon.setOrigin(Align.center)
@@ -135,8 +142,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             return
         }
 
-        updateTerrainFeatureImage()
         updateTerrainBaseImage()
+        updateTerrainFeatureImage()
         updateCityImage()
         updateTileColor(isViewable)
 
@@ -165,7 +172,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             baseTerrainImage=null
         }
 
-        val imagePath = "TerrainIcons/" + tileInfo.baseTerrain
+        val imagePath = tileSetLocation + tileInfo.baseTerrain + "Overlay"
         if (!ImageGetter.imageExists(imagePath)) return
         baseTerrainImage = ImageGetter.getImage(imagePath)
         baseTerrainImage!!.run {
@@ -291,13 +298,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     }
 
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        super.draw(batch, parentAlpha)
-    }
-
     private fun updateTileColor(isViewable: Boolean) {
-        hexagon.color = tileInfo.getBaseTerrain().getColor()
         if (!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK, 0.6f)
+        else if(ImageGetter.imageExists(tileSetLocation+tileInfo.baseTerrain)) return // no need to color it, it's already colored
+        else hexagon.color = tileInfo.getBaseTerrain().getColor()
     }
 
     private fun updateTerrainFeatureImage() {
@@ -307,7 +311,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             terrainFeatureImage = null
 
             if(terrainFeature!=null) {
-                terrainFeatureImage = ImageGetter.getImage("TerrainIcons/$terrainFeature.png")
+                terrainFeatureImage = ImageGetter.getImage(tileSetLocation +"$terrainFeature"+"Overlay")
                 addActor(terrainFeatureImage)
                 terrainFeatureImage!!.run {
                     setSize(30f, 30f)

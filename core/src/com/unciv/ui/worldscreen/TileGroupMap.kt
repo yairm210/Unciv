@@ -28,6 +28,9 @@ class TileGroupMap<T: TileGroup>(tileGroups:Collection<T>, padding:Float): Group
             group.moveBy(-bottomX + padding, -bottomY + padding)
         }
 
+        for(group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y })
+            group.toFront()
+
         // there are tiles "below the zero",
         // so we zero out the starting position of the whole board so they will be displayed as well
         setSize(topX - bottomX + padding*2, topY - bottomY + padding*2)

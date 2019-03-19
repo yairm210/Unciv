@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Slider
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
@@ -42,12 +41,14 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         settings.save()
         clear()
 
-        if (settings.showWorkedTiles) addButton("{Hide} {worked tiles}") { settings.showWorkedTiles = false; update() }
-        else addButton("{Show} {worked tiles}") { settings.showWorkedTiles = true; update() }
+        add("Worked tiles".toLabel())
+        if (settings.showWorkedTiles) addButton("Hide") { settings.showWorkedTiles = false; update() }
+        else addButton("Show") { settings.showWorkedTiles = true; update() }
 
+        add("Resources and improvements".toLabel())
         if (settings.showResourcesAndImprovements)
-            addButton("{Hide} {resources and improvements}") { settings.showResourcesAndImprovements = false; update() }
-        else addButton("{Show} {resources and improvements}") { settings.showResourcesAndImprovements = true; update() }
+            addButton("Hide") { settings.showResourcesAndImprovements = false; update() }
+        else addButton("Show") { settings.showResourcesAndImprovements = true; update() }
 
         addLanguageSelectBox()
 
@@ -65,6 +66,8 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
     }
 
     private fun addSoundEffectsVolumeSlider() {
+        add("Sound effects volume".tr())
+
         val soundEffectsVolumeSlider = Slider(0f, 1.0f, 0.1f, false, skin)
         soundEffectsVolumeSlider.value = UnCivGame.Current.settings.soundEffectsVolume
         soundEffectsVolumeSlider.addListener(object : ChangeListener() {
@@ -74,11 +77,12 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
                 Sounds.play("click")
             }
         })
-        add("Sound effects volume".tr()).row()
         add(soundEffectsVolumeSlider).row()
     }
 
     private fun addResolutionSelectBox() {
+        add("Resolution".toLabel())
+
         val resolutionSelectBox = SelectBox<String>(skin)
         val resolutionArray = Array<String>()
         resolutionArray.addAll("900x600", "1050x700", "1200x800", "1500x1000")
@@ -98,16 +102,15 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
     }
 
     private fun addAutosaveTurnsSelectBox() {
+        add("Turns between autosaves".toLabel())
+
         val autosaveTurnsSelectBox = SelectBox<Int>(skin)
         val autosaveTurnsArray = Array<Int>()
         autosaveTurnsArray.addAll(1,2,5,10)
         autosaveTurnsSelectBox.items = autosaveTurnsArray
         autosaveTurnsSelectBox.selected = UnCivGame.Current.settings.turnsBetweenAutosaves
 
-        val table = Table()
-        table.add("Turns between autosaves:".toLabel())
-        table.add(autosaveTurnsSelectBox).pad(10f)
-        add(table).row()
+        add(autosaveTurnsSelectBox).pad(10f).row()
 
         autosaveTurnsSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -119,6 +122,8 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
     }
 
     private fun addLanguageSelectBox() {
+        add("Language".toLabel())
+
         val languageArray = Array<Language>()
         GameBasics.Translations.getLanguages().map { Language(it) }.sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }

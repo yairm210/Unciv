@@ -687,7 +687,7 @@
 		Japanese:"表示オプション"
 	}
 	
-	"Turns between autosaves:":{
+	"Turns between autosaves":{
 		Italian:"Turni tra autosalvataggi"
 	}
 	
@@ -721,7 +721,7 @@
 		Japanese:"隠す"
 	}
 	
-	"worked tiles":{
+	"Worked tiles":{
 		Italian:"celle sfruttate"
 		Russian:"обработанные клетки"
 		French:"cases exploités"
@@ -734,7 +734,7 @@
 		Japanese:"働いたタイル"
 	}
 
-	"resources and improvements":{
+	"Resources and improvements":{
 		Italian:"Risorse e miglioramenti"
 		Russian:"ресурсы и улучшения"
 		French:"ressources et améliorations"

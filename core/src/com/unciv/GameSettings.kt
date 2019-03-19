@@ -11,6 +11,7 @@ class GameSettings {
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f
     var turnsBetweenAutosaves = 1
+    var tileSet:String = "Default"
 
     fun save(){
         GameSaver().setGeneralSettings(this)
