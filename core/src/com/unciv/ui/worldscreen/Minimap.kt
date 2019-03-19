@@ -33,7 +33,7 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
         var bottomY = 0f
 
         for (tileInfo in tileMapHolder.tileMap.values) {
-            val hex = ImageGetter.getImage("TerrainIcons/Hexagon.png")
+            val hex = ImageGetter.getImage("OtherIcons/Hexagon")
 
             val positionalVector = HexMath().hex2WorldCoords(tileInfo.position)
             val groupSize = 10f

@@ -17,14 +17,15 @@ import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
-    val tileSetLocation = "TerrainIcons/"+UnCivGame.Current.settings.tileSet +"/"
+    val tileSetLocation = "TileSets/"+UnCivGame.Current.settings.tileSet +"/"
 
-    protected var hexagon :Image= ImageGetter.getImage("TerrainIcons/Hexagon.png")
+    protected var hexagon :Image= ImageGetter.getImage(tileSetLocation+"Hexagon.png")
     protected var baseTerrainImage: Image? = null
     protected var baseTerrain:String=""
     protected var terrainFeatureImage: Image? = null
     protected var terrainFeature:String?=null
     protected var cityImage: Image? = null
+
 
     var resourceImage: Actor? = null
     var resource:String?=null
@@ -36,8 +37,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var militaryUnitImage: UnitGroup? = null
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targeted
-    protected val fogImage = ImageGetter.getImage("TerrainIcons/CrosshatchHexagon")
+    protected val fogImage = ImageGetter.getImage(tileSetLocation+"CrosshatchHexagon")
     var yieldGroup = YieldGroup()
+    var lastIsRevealed = false
 
     var showEntireMap = UnCivGame.Current.viewEntireMapForDebug
 
@@ -46,11 +48,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         var image: Image? = null
     }
 
+    val groupSize = 54f
     init {
-        val groupSize = 54f
         this.setSize(groupSize, groupSize)
 
-        addHexagon(groupSize)
+        updateTileImage(false)
 
         addCircleImage()
         addFogImage(groupSize)
@@ -68,6 +70,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun addFogImage(groupSize: Float) {
+        print("Adding fog image")
         val imageScale = groupSize * 1.5f / fogImage.width
         fogImage.setScale(imageScale)
         fogImage.setOrigin(Align.center)
@@ -89,9 +92,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         crosshairImage.isVisible = true
     }
 
-    private fun addHexagon(groupSize: Float) {
+    private fun updateTileImage(isRevealed: Boolean) {
+        hexagon.remove()
         val terrainTileLocation = tileSetLocation+tileInfo.baseTerrain
-        if(ImageGetter.imageExists(terrainTileLocation))
+        if(!lastIsRevealed && isRevealed && ImageGetter.imageExists(terrainTileLocation))
             hexagon = ImageGetter.getImage(terrainTileLocation)
 
         val imageScale = groupSize * 1.5f / hexagon.width
@@ -142,6 +146,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             return
         }
 
+        updateTileImage(true)
         updateTerrainBaseImage()
         updateTerrainFeatureImage()
         updateCityImage()
@@ -162,6 +167,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         fogImage.toFront()
         fogImage.isVisible = !(isViewable || showEntireMap)
+        circleImage.toFront()
+        for(borderImage in borderImages.flatMap { it.value })
+            borderImage.toFront()
+
+        lastIsRevealed = true
     }
 
     private fun updateTerrainBaseImage() {
@@ -299,9 +309,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateTileColor(isViewable: Boolean) {
+        hexagon.color =
+                if (ImageGetter.imageExists(tileSetLocation + tileInfo.baseTerrain)) Color.WHITE // no need to color it, it's already colored
+                else tileInfo.getBaseTerrain().getColor()
+
         if (!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK, 0.6f)
-        else if(ImageGetter.imageExists(tileSetLocation+tileInfo.baseTerrain)) return // no need to color it, it's already colored
-        else hexagon.color = tileInfo.getBaseTerrain().getColor()
     }
 
     private fun updateTerrainFeatureImage() {

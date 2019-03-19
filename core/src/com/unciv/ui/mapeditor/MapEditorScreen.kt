@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.GameParameters
+import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
@@ -23,6 +24,8 @@ import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileGroupMap
 
 class MapEditorScreen(): CameraStageBaseScreen(){
+    val tileSetLocation = "TileSets/"+UnCivGame.Current.settings.tileSet +"/"
+
     var clearTerrainFeature=false
     var selectedTerrain : Terrain?=null
     var clearResource=false
@@ -39,7 +42,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     }
 
     fun getHex(color: Color, image: Actor?=null): Group {
-        val hex = ImageGetter.getImage("TerrainIcons/Hexagon.png")
+        val hex = ImageGetter.getImage(tileSetLocation + "Hexagon")
         hex.color = color
         hex.width*=0.3f
         hex.height*=0.3f
@@ -149,10 +152,10 @@ class MapEditorScreen(): CameraStageBaseScreen(){
             var color = Color.WHITE
 
             if (terrain.type == TerrainType.TerrainFeature)
-                iconPath = "TerrainIcons/${terrain.name}.png"
+                iconPath = tileSetLocation + terrain.name+"Overlay"
             else {
                 color = terrain.getColor()
-                val imagePath = "TerrainIcons/" + terrain.name
+                val imagePath = tileSetLocation + terrain.name+"Overlay"
                 if (ImageGetter.imageExists(imagePath)) {
                     iconPath = imagePath
                 }

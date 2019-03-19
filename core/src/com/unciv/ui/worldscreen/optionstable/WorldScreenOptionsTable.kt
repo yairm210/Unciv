@@ -56,6 +56,8 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
         addAutosaveTurnsSelectBox()
 
+        addTileSetSelectBox()
+
         addSoundEffectsVolumeSlider()
 
         addButton("Close"){ remove() }
@@ -93,6 +95,29 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         resolutionSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.resolution = resolutionSelectBox.selected
+                UnCivGame.Current.settings.save()
+                UnCivGame.Current.worldScreen = WorldScreen()
+                UnCivGame.Current.setWorldScreen()
+                WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
+            }
+        })
+    }
+
+    private fun addTileSetSelectBox() {
+        add("Tileset".toLabel())
+
+        val tileSetSelectBox = SelectBox<String>(skin)
+        val tileSetArray = Array<String>()
+        val tileSets = ImageGetter.atlas.regions.filter { it.name.startsWith("TileSets") }
+                .map { it.name.split("/")[1] }.distinct()
+        for(tileset in tileSets) tileSetArray.add(tileset)
+        tileSetSelectBox.items = tileSetArray
+        tileSetSelectBox.selected = UnCivGame.Current.settings.tileSet
+        add(tileSetSelectBox).pad(10f).row()
+
+        tileSetSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UnCivGame.Current.settings.tileSet = tileSetSelectBox.selected
                 UnCivGame.Current.settings.save()
                 UnCivGame.Current.worldScreen = WorldScreen()
                 UnCivGame.Current.setWorldScreen()

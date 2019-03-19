@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.Json
 import com.unciv.GameSettings
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.saves.Gzip
+import com.unciv.ui.utils.ImageGetter
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
@@ -54,7 +55,12 @@ class GameSaver {
     fun getGeneralSettings(): GameSettings {
         val settingsFile = getGeneralSettingsFile()
         if(!settingsFile.exists()) return GameSettings()
-        return json().fromJson(GameSettings::class.java, settingsFile)
+        val settings = json().fromJson(GameSettings::class.java, settingsFile)
+
+        val currentTileSets = ImageGetter.atlas.regions.filter { it.name.startsWith("TileSets") }
+                .map { it.name.split("/")[1] }.distinct()
+        if(settings.tileSet !in currentTileSets) settings.tileSet = "Default"
+        return settings
     }
 
     fun setGeneralSettings(gameSettings: GameSettings){
