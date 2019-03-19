@@ -157,11 +157,34 @@ class TechManager {
         techsResearched.remove("Mass Media")
         techsToResearch.remove("Mass Media")
 
+        for (technology in researchedTechnologies)
+            if (technology.name == "Replacable Parts")
+                technology.name = "Replaceable Parts"
+
+        if ("Replacable Parts" in techsToResearch) {
+            techsToResearch.remove("Replacable Parts")
+            techsToResearch.add("Replaceable Parts")
+        }
+
+        if ("Replacable Parts" in researchedTechUniques) {
+            researchedTechUniques.remove("Replacable Parts")
+            researchedTechUniques.add("Replaceable Parts")
+        }
+
+        if ("Replacable Parts" in techsResearched) {
+            techsResearched.remove("Replacable Parts")
+            techsResearched.add("Replaceable Parts")
+        }
+
         researchedTechnologies.addAll(techsResearched.map { GameBasics.Technologies[it]!! })
         researchedTechUniques.addAll(researchedTechnologies.flatMap { it.uniques })
         updateTransientBooleans()
-    }
 
+        if (techsInProgress.containsKey("Replacable Parts")) {
+            techsInProgress.put("Replaceable Parts", techsInProgress.get("Replacable Parts")!!)
+            techsInProgress.remove("Replacable Parts")
+        }
+    }
     fun updateTransientBooleans(){
         if(researchedTechUniques.contains("Enables embarkation for land units")) unitsCanEmbark=true
         if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")) embarkedUnitsCanEnterOcean=true
