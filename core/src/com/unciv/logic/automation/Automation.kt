@@ -135,8 +135,10 @@ class Automation {
 
             //Wonders
             if (buildableWonders.isNotEmpty()) {
+                val citiesBuildingWonders = cityInfo.civInfo.cities
+                        .filter { it.cityConstructions.isBuildingWonder() }.size
                 val wonder = buildableWonders.getRandom()
-                buildingValues[wonder.name] = wonder.cost / cityProduction / 5.0f
+                buildingValues[wonder.name] = wonder.cost / cityProduction * (citiesBuildingWonders + 1) / 5.0f
             }
 
             //other buildings
