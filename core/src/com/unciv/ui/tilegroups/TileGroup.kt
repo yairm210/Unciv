@@ -114,7 +114,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     fun getTileBaseImageLocation(isRevealed: Boolean): String {
         if(!isRevealed) return tileSetLocation+"Hexagon"
-
+        if(tileInfo.isCityCenter() && ImageGetter.imageExists(tileSetLocation+"City"))
+            return tileSetLocation+"City"
         val baseTerrainTileLocation = tileSetLocation+tileInfo.baseTerrain
         val baseTerrainAndFeatureTileLocation = baseTerrainTileLocation+"+"+tileInfo.terrainFeature
         if(tileInfo.terrainFeature!=null && ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
@@ -226,6 +227,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateCityImage() {
+        if(currentTileBaseImageLocation == tileSetLocation+"City") // have a city tile, don't need an overlay
+            return
+        
         if (cityImage == null && tileInfo.isCityCenter()) {
             cityImage = ImageGetter.getImage("OtherIcons/City.png")
             featureLayerGroup.addActor(cityImage)
