@@ -1281,7 +1281,7 @@
 	}
 	
 	"Research of [technologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
-		Italian:"Ricerca di [technologyName] completata!"
+		Italian:"Abbiamo scoperto la tecnologia [technologyName]!"
 		Russian:"Исследование [technologyName] завершено!"
 		French:"Recherche de [technologyName] est completée!"
 		Romanian:"Cercetarea [technologyName] s-a încheiat!"
@@ -1346,7 +1346,7 @@
 	}
 	
 	"Cannot continue work on [construction]":{
-		Italian:"Impossibile costruire [construction]"
+		Italian:"Impossibile costruire [construction]" //You didn't translate this, said Smashfanful
 		Russian:"Не удается продолжить работу над [construction]"
 		French:"Impossible de continuer à travailler sur [construction]"
 		Romanian:"Nu se poate continua munca pentru [construction]"
@@ -1514,7 +1514,7 @@
 		Japanese:"[civName]の文明は破壊されました！"
 	}
 	
-	"A [greatPerson] has been born!":{	
+	"A [greatPerson] has been born!":{	//Smashfanful sayd: "You should add WHERE the Great Person is born, so it should be "A [greatPerson] is born in [cityName]""
 		Italian:"È nato un [greatPerson]!"
 		Russian:"[greatPerson] родился!!"
 		French:"Un [greatPerson] est né!"
@@ -1613,6 +1613,8 @@
 		Simplified_Chinese:"我们在废墟中找到了[amount]藏金！"
 		Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
 	}
+
+//Smashfanful said: "You missed the messages "Enemy city has attacked our unit" and "Enemy city has destroyed our unit""
 
 	// Save and load game
 	
@@ -3936,7 +3938,7 @@
 
 	// for unit action button
 	"Your trade mission has earned you [goldGained] gold!":{
-		Italian:"La tua missione commerciale ti ha fruttato [goldDained] Oro!"
+		Italian:"La tua missione commerciale ti ha fruttato [goldGained] Oro!"//Smashfanful, you translated it wrong
 		Romanian:"Misuiunea comercială ți-a adus [goldGained] aur!"
 		Spanish:"¡La mision de comercio ha generado [goldGained] de oro!"
 		Simplified_Chinese:"您承担贸易任务已经赚了 [goldGained] 钱"
@@ -4066,7 +4068,7 @@
 	
 	// Trade	
 	"Trade":{	
-		Italian:"Scambia"
+		Italian:"Negozia"
 		Russian:"Торговля"
 		French:"Échanges"
 		Romanian:"Comerț"
@@ -4106,7 +4108,7 @@
 		German:"Unsere Gegenstände"
 	}
 	"Our trade offer":{	
-		Italian:"La nostra\n  offerta commerciale"
+		Italian:"La nostra offerta\n  commerciale"
 		Russian:"Наше предложение\n  обмена"
 		French:"Notre offre d'échange"
 		Romanian:"Oferta noastră"
@@ -4116,7 +4118,7 @@
 		German:"Unser Handelsangebot"
 	}
 	"[otherCiv]'s trade offer":{
-		Italian:"Offerta commerciale\n  di [otherCiv]"
+		Italian:"Offerta \n di [otherCiv]"
 		Russian:"Предложение обмена \n цивилизации [otherCiv]"
 		French:"L'offre d'échange de [otherCiv]"
 		Romanian:"Ofertă de schimb a [otherCiv]"
@@ -5300,7 +5302,7 @@
 		German:"Leuchtturm"
 	}
 	"Can only be built in coastal cities":{
-		Italian:"Disponibile solo nelle città costiere"
+		Italian:"La città deve trovarsi sulla costa"
 		French:"Peut seulement être construit dans les villes côtières"
 		Romanian:"Poate fi construit doar în orașe de pe țărm"
 		Simplified_Chinese:"只能建在沿海城市"
@@ -5690,7 +5692,7 @@
 	}
 	
 	"Ironworks":{	
-		Italian:"Lavori in ferro"
+		Italian:"Ferriera"
 		Russian:"Металлургический завод"
 		French:"Atelier métallurgique"
 		Romanian:"Fierărie"
@@ -5810,8 +5812,6 @@
 		Spanish:"Gran Persona gratis"
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
-		Russin:""
-		//Also, all Great People should be generated +25% faster
 	}
 	
 	"Taj Mahal":{	
@@ -7451,7 +7451,7 @@
 		French:"Religion organisée"
 	}
 	"+1 happiness for each monument, temple and monastery":{
-		Italian:"+1 felicità per ogni Monumento, Tempio e Monastero"
+		Italian:"+1 felicità per ogni Monumento, Tempio e Monastero costruito"
 		Russian:"+1 счастья за каждый монумент, храм и монастырь"
 		Romanian:"+1 fericire pentru fiecare monument, templu sau mănăstire"
 		Spanish:"+1 felicidad por cada monumento, templo y monasterio"
@@ -7471,7 +7471,7 @@
 		French:"Mandat du Ciel"
 	}
 	"50% of excess happiness added to culture towards policies":{
-		Italian:"Il 50% di Felicità in eccesso si converte in Cultura per le Politiche"
+		Italian:"Il 50% di Felicità in eccesso si converte in Cultura per le future Politiche sociali"
 		Russian:"50% избытка счатья прибавляется к культуре для попкупки общественных институтов"
 		Romanian:"50% din fericirea în exces adăugată la cultură pentru politici"
 		Spanish:"50% de exceso de felicidad añadido a la cultura para políticas"
