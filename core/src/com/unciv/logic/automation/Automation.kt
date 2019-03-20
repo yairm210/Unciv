@@ -136,7 +136,7 @@ class Automation {
             //Wonders
             if (buildableWonders.isNotEmpty()) {
                 val wonder = buildableWonders.getRandom()
-                buildingValues[wonder.name] = wonder.cost / cityProduction / 4.0f
+                buildingValues[wonder.name] = wonder.cost / cityProduction / 5.0f
             }
 
             //other buildings
@@ -161,8 +161,7 @@ class Automation {
             //Army
             val militaryUnit = chooseCombatUnit(cityInfo)
             buildingValues[militaryUnit] =
-                    buildableUnits.first{ it.name == militaryUnit }.cost / cityProduction * 2.0f *
-                            (militaryUnits/(cities+1))
+                    buildableUnits.first{ it.name == militaryUnit }.cost / cityProduction * 1.5f * militaryUnits / (cities+1)
             if (isAtWar) {
                 buildingValues[militaryUnit] = buildingValues[militaryUnit]!! / 3.0f
             }
