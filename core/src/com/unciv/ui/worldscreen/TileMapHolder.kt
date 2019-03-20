@@ -179,7 +179,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             tileGroup.update(canSeeTile, showSubmarine)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
-            val canSeeEnemy = unitsInTile.isNotEmpty() && !unitsInTile.first().civInfo.isPlayerCivilization()
+            val canSeeEnemy = unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(civInfo)
                     && (showSubmarine || unitsInTile.firstOrNull {!it.isInvisible()}!=null)
             if(canSeeTile && canSeeEnemy)
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units

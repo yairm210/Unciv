@@ -11,7 +11,7 @@ class GameSettings {
     var hasCrashedRecently = false
     var soundEffectsVolume = 0.5f
     var turnsBetweenAutosaves = 1
-    var tileSet:String = "Default"
+    var tileSet:String = "FantasyHex"
 
     fun save(){
         GameSaver().setGeneralSettings(this)

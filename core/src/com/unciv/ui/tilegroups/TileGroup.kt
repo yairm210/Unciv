@@ -26,7 +26,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     Layers:
     Base image + overlay
     Feature overlay / city overlay
-    Units, improvements, resources, border
+    Misc: Units, improvements, resources, border
     Circle, Crosshair, Fog layer
     City name
      */
@@ -51,7 +51,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var civilianUnitImage: UnitGroup? = null
     protected var militaryUnitImage: UnitGroup? = null
 
-
+    val circleCrosshairFogLayerGroup = Group().apply { isTransform=false }
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targete
     protected val fogImage = ImageGetter.getImage(tileSetLocation+"CrosshatchHexagon")
@@ -68,6 +68,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     val groupSize = 54f
     init {
         this.setSize(groupSize, groupSize)
+        this.addActor(baseLayerGroup)
+        this.addActor(featureLayerGroup)
+        this.addActor(miscLayerGroup)
+        this.addActor(circleCrosshairFogLayerGroup)
 
         updateTileImage(false)
 
@@ -82,7 +86,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         circleImage.width = 50f
         circleImage.height = 50f
         circleImage.center(this)
-        addActor(circleImage)
+        circleCrosshairFogLayerGroup.addActor(circleImage)
         circleImage.isVisible = false
     }
 
@@ -92,7 +96,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         fogImage.setOrigin(Align.center)
         fogImage.center(this)
         fogImage.color = Color.WHITE.cpy().apply { a = 0.2f }
-        addActor(fogImage)
+        circleCrosshairFogLayerGroup.addActor(fogImage)
     }
 
     private fun addCrosshairImage() {
@@ -101,7 +105,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         crosshairImage.center(this)
         crosshairImage.isVisible = false
         crosshairImage.color = Color.WHITE.cpy().apply { a = 0.5f }
-        addActor(crosshairImage)
+        circleCrosshairFogLayerGroup.addActor(crosshairImage)
     }
 
     fun showCrosshair() {
@@ -134,11 +138,10 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         tileBaseImage.y = -groupSize/6
         tileBaseImage.toBack()
-        addActor(tileBaseImage)
+        baseLayerGroup.addActor(tileBaseImage)
     }
 
     fun addAcquirableIcon(){
-        this.
         populationImage = ImageGetter.getStatIcon("Acquire")
         populationImage!!.run {
             color = Color.GREEN.cpy().lerp(Color.BLACK, 0.5f)
@@ -146,7 +149,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             center(this@TileGroup)
             x += 20 // right
         }
-        addActor(populationImage)
+        miscLayerGroup.addActor(populationImage)
     }
 
     fun addPopulationIcon() {
@@ -158,7 +161,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             center(this@TileGroup)
             x += 20 // right
         }
-        addActor(populationImage)
+        miscLayerGroup.addActor(populationImage)
     }
 
     protected fun removePopulationIcon() {
@@ -219,13 +222,13 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             setSize(40f, 40f)
             center(this@TileGroup)
         }
-        addActor(baseTerrainOverlayImage)
+        baseLayerGroup.addActor(baseTerrainOverlayImage)
     }
 
     private fun updateCityImage() {
         if (cityImage == null && tileInfo.isCityCenter()) {
             cityImage = ImageGetter.getImage("OtherIcons/City.png")
-            addActor(cityImage)
+            featureLayerGroup.addActor(cityImage)
             cityImage!!.run {
                 setSize(60f, 60f)
                 center(this@TileGroup)
@@ -287,7 +290,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     image.moveBy(relativeWorldPosition.y * i * 4, -relativeWorldPosition.x * i * 4)
 
                     image.color = civColor
-                    addActor(image)
+                    miscLayerGroup.addActor(image)
                     images.add(image)
                 }
             }
@@ -331,7 +334,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             image.setOrigin(0f, 1f) // This is so that the rotation is calculated from the middle of the road and not the edge
 
             image.rotation = (180 / Math.PI * Math.atan2(relativeWorldPosition.y.toDouble(), relativeWorldPosition.x.toDouble())).toFloat()
-            addActor(image)
+            featureLayerGroup.addActor(image)
         }
 
 
@@ -355,7 +358,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 val terrainFeatureOverlayLocation = tileSetLocation +"$terrainFeature"+"Overlay"
                 if(!ImageGetter.imageExists(terrainFeatureOverlayLocation)) return
                 terrainFeatureOverlayImage = ImageGetter.getImage(terrainFeatureOverlayLocation)
-                addActor(terrainFeatureOverlayImage)
+                featureLayerGroup.addActor(terrainFeatureOverlayImage)
                 terrainFeatureOverlayImage!!.run {
                     setSize(30f, 30f)
                     setColor(1f, 1f, 1f, 0.5f)
@@ -373,7 +376,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
         if (tileInfo.improvement != null && showResourcesAndImprovements) {
             improvementImage = ImageGetter.getImprovementIcon(tileInfo.improvement!!)
-            addActor(improvementImage)
+            miscLayerGroup.addActor(improvementImage)
             improvementImage!!.run {
                 setSize(20f, 20f)
                 center(this@TileGroup)
@@ -403,7 +406,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             resourceImage!!.center(this)
             resourceImage!!.x = resourceImage!!.x - 22 // left
             resourceImage!!.y = resourceImage!!.y + 10 // top
-            addActor(resourceImage!!)
+            miscLayerGroup.addActor(resourceImage!!)
         }
     }
 
@@ -419,7 +422,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 newImage.blackSpinningCircle = ImageGetter.getCircle()
                         .apply { rotation= oldUnitGroup.blackSpinningCircle!!.rotation}
             }
-            addActor(newImage)
+            miscLayerGroup.addActor(newImage)
             newImage.center(this)
             newImage.y += yFromCenter
 
