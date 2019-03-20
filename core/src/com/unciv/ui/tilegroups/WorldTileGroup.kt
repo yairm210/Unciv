@@ -10,6 +10,7 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 
 class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) : TileGroup(tileInfo) {
+
     var cityButton: CityButton? = null
 
     fun selectUnit(unit: MapUnit) {
@@ -67,12 +68,10 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
             if (cityButton == null) {
                 cityButton = CityButton(city, this, CameraStageBaseScreen.skin)
                 addActor(cityButton)
-                toFront() // so this tile is rendered over neighboring tiles
             }
 
             cityButton!!.update(viewable)
             cityButton!!.center(this)
-
         }
     }
 

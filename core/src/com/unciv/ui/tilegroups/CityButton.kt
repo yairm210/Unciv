@@ -19,7 +19,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
                 .tint(city.civInfo.getNation().getColor())
         isTransform = true // If this is not set then the city button won't scale!
-        touchable= Touchable.enabled // So you can click anywhere on the button to go to the city
+        touchable= Touchable.disabled
     }
 
     fun update(isCityViewable:Boolean) {
@@ -30,7 +30,8 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         label.setFontColor(city.civInfo.getNation().getSecondaryColor())
 
         clear()
-        if (city.civInfo.isPlayerCivilization()) {
+        if (city.civInfo.isCurrentPlayer()) {
+            Touchable.enabled // So you can click anywhere on the button to go to the city
             onClick {
                 if (!tileGroup.selectCity(city)) {
                     UnCivGame.Current.screen = CityScreen(city)

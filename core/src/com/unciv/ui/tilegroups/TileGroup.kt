@@ -20,6 +20,7 @@ import com.unciv.ui.utils.centerX
 
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
+    val groupSize = 54f
     val tileSetLocation = "TileSets/"+UnCivGame.Current.settings.tileSet +"/"
 
     /*
@@ -30,18 +31,18 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     Circle, Crosshair, Fog layer
     City name
      */
-    val baseLayerGroup = Group().apply { isTransform=false }
+    val baseLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     protected var tileBaseImage :Image= ImageGetter.getImage(tileSetLocation+"Hexagon")
     var currentTileBaseImageLocation = ""
     protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain:String=""
 
-    val featureLayerGroup = Group().apply { isTransform=false }
+    val featureLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     protected var terrainFeatureOverlayImage: Image? = null
     protected var terrainFeature:String?=null
     protected var cityImage: Image? = null
 
-    val miscLayerGroup = Group().apply { isTransform=false }
+    val miscLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     var resourceImage: Actor? = null
     var resource:String?=null
     var improvementImage: Actor? = null
@@ -51,7 +52,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var civilianUnitImage: UnitGroup? = null
     protected var militaryUnitImage: UnitGroup? = null
 
-    val circleCrosshairFogLayerGroup = Group().apply { isTransform=false }
+    val circleCrosshairFogLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targete
     protected val fogImage = ImageGetter.getImage(tileSetLocation+"CrosshatchHexagon")
@@ -65,7 +66,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         var image: Image? = null
     }
 
-    val groupSize = 54f
     init {
         this.setSize(groupSize, groupSize)
         this.addActor(baseLayerGroup)
@@ -114,8 +114,12 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     fun getTileBaseImageLocation(isRevealed: Boolean): String {
         if(!isRevealed) return tileSetLocation+"Hexagon"
-        if(tileInfo.isCityCenter() && ImageGetter.imageExists(tileSetLocation+"City"))
-            return tileSetLocation+"City"
+        if(tileInfo.isCityCenter()){
+            if(ImageGetter.imageExists(tileSetLocation+tileInfo.baseTerrain+"+City"))
+                return tileSetLocation+tileInfo.baseTerrain+"+City"
+            if(ImageGetter.imageExists(tileSetLocation+"City"))
+                return tileSetLocation+"City"
+        }
         val baseTerrainTileLocation = tileSetLocation+tileInfo.baseTerrain
         val baseTerrainAndFeatureTileLocation = baseTerrainTileLocation+"+"+tileInfo.terrainFeature
         if(tileInfo.terrainFeature!=null && ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
@@ -197,14 +201,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         updateRoadImages()
         updateBorderImages()
 
-        crosshairImage.toFront()
         crosshairImage.isVisible = false
-
-        fogImage.toFront()
         fogImage.isVisible = !(isViewable || showEntireMap)
-        circleImage.toFront()
-        for(borderImage in borderImages.flatMap { it.value })
-            borderImage.toFront()
     }
 
     private fun updateTerrainBaseImage() {
@@ -227,11 +225,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateCityImage() {
-        if(currentTileBaseImageLocation == tileSetLocation+"City") // have a city tile, don't need an overlay
+        if(!ImageGetter.imageExists(tileSetLocation+"City")) // have a city tile, don't need an overlay
             return
-        
+
         if (cityImage == null && tileInfo.isCityCenter()) {
-            cityImage = ImageGetter.getImage("OtherIcons/City.png")
+            cityImage = ImageGetter.getImage(tileSetLocation+"City")
             featureLayerGroup.addActor(cityImage)
             cityImage!!.run {
                 setSize(60f, 60f)
@@ -322,7 +320,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             if (roadStatus == RoadStatus.None) continue // no road image
 
             val image = if (roadStatus == RoadStatus.Road) ImageGetter.getDot(Color.BROWN)
-            else ImageGetter.getImage("OtherIcons/Railroad.png")
+            else ImageGetter.getImage(tileSetLocation+"Railroad.png")
             roadImage.image = image
 
             val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)

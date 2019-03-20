@@ -43,8 +43,7 @@ class TileGroupMap<T: TileGroup>(tileGroups:Collection<T>, padding:Float): Group
         for(group in featureLayers) addActor(group)
         for(group in miscLayers) addActor(group)
         for(group in circleCrosshairFogLayers) addActor(group)
-
-        for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clicks
+        for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the cli
 
 
         // there are tiles "below the zero",

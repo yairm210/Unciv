@@ -114,6 +114,7 @@ class CivilizationInfo {
 
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
+    fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
 
     fun getStatsForNextTurn():Stats{
