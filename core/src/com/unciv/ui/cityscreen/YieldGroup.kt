@@ -8,10 +8,13 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.surroundWithCircle
 
 class YieldGroup : HorizontalGroup() {
+    init {
+        isTransform = false // performance helper - nothing here is rotated or scaled
+    }
 
     fun setStats(stats: Stats) {
         clearChildren()
-        for (entry in stats.toHashMap().filter { it.value>0 }) {
+        for (entry in stats.toHashMap().filter { it.value > 0 }) {
             addActor(getStatIconsTable(entry.key.toString(), entry.value.toInt()))
         }
         pack()
@@ -19,7 +22,7 @@ class YieldGroup : HorizontalGroup() {
 
     fun getIcon(statName: String) =
             ImageGetter.getStatIcon(statName).surroundWithCircle(20f)
-                    .apply { circle.color= Color.BLACK;circle.color.a=0.5f }
+                    .apply { circle.color = Color.BLACK;circle.color.a = 0.5f }
 
     private fun getStatIconsTable(statName: String, number: Int): Table {
         val table = Table()

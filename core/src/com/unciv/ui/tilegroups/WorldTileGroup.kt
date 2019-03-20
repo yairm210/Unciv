@@ -46,7 +46,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
 
         // order by z index!
         cityImage?.toFront()
-        terrainFeatureImage?.toFront()
+        terrainFeatureOverlayImage?.toFront()
         yieldGroup.toFront()
         improvementImage?.toFront()
         resourceImage?.toFront()

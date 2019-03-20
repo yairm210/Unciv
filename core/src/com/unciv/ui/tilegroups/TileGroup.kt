@@ -15,18 +15,33 @@ import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
+import com.unciv.ui.utils.centerX
+
+
 
 open class TileGroup(var tileInfo: TileInfo) : Group() {
     val tileSetLocation = "TileSets/"+UnCivGame.Current.settings.tileSet +"/"
 
-    protected var hexagon :Image= ImageGetter.getImage(tileSetLocation+"Hexagon.png")
-    protected var baseTerrainImage: Image? = null
+    /*
+    Layers:
+    Base image + overlay
+    Feature overlay / city overlay
+    Units, improvements, resources, border
+    Circle, Crosshair, Fog layer
+    City name
+     */
+    val baseLayerGroup = Group().apply { isTransform=false }
+    protected var tileBaseImage :Image= ImageGetter.getImage(tileSetLocation+"Hexagon")
+    var currentTileBaseImageLocation = ""
+    protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain:String=""
-    protected var terrainFeatureImage: Image? = null
+
+    val featureLayerGroup = Group().apply { isTransform=false }
+    protected var terrainFeatureOverlayImage: Image? = null
     protected var terrainFeature:String?=null
     protected var cityImage: Image? = null
 
-
+    val miscLayerGroup = Group().apply { isTransform=false }
     var resourceImage: Actor? = null
     var resource:String?=null
     var improvementImage: Actor? = null
@@ -35,11 +50,13 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
     protected var civilianUnitImage: UnitGroup? = null
     protected var militaryUnitImage: UnitGroup? = null
+
+
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
-    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targeted
+    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targete
     protected val fogImage = ImageGetter.getImage(tileSetLocation+"CrosshatchHexagon")
+
     var yieldGroup = YieldGroup()
-    var lastIsRevealed = false
 
     var showEntireMap = UnCivGame.Current.viewEntireMapForDebug
 
@@ -70,7 +87,6 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun addFogImage(groupSize: Float) {
-        print("Adding fog image")
         val imageScale = groupSize * 1.5f / fogImage.width
         fogImage.setScale(imageScale)
         fogImage.setOrigin(Align.center)
@@ -92,18 +108,33 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         crosshairImage.isVisible = true
     }
 
-    private fun updateTileImage(isRevealed: Boolean) {
-        hexagon.remove()
-        val terrainTileLocation = tileSetLocation+tileInfo.baseTerrain
-        if(!lastIsRevealed && isRevealed && ImageGetter.imageExists(terrainTileLocation))
-            hexagon = ImageGetter.getImage(terrainTileLocation)
+    fun getTileBaseImageLocation(isRevealed: Boolean): String {
+        if(!isRevealed) return tileSetLocation+"Hexagon"
 
-        val imageScale = groupSize * 1.5f / hexagon.width
-        hexagon.setScale(imageScale)
-        hexagon.setOrigin(Align.center)
-        hexagon.center(this)
-        hexagon.zIndex = 0
-        addActor(hexagon)
+        val baseTerrainTileLocation = tileSetLocation+tileInfo.baseTerrain
+        val baseTerrainAndFeatureTileLocation = baseTerrainTileLocation+"+"+tileInfo.terrainFeature
+        if(tileInfo.terrainFeature!=null && ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
+            return baseTerrainAndFeatureTileLocation
+        if(ImageGetter.imageExists(baseTerrainTileLocation)) return baseTerrainTileLocation
+        return tileSetLocation+"Hexagon"
+    }
+
+    private fun updateTileImage(isRevealed: Boolean) {
+        val tileBaseImageLocation = getTileBaseImageLocation(isRevealed)
+        if(tileBaseImageLocation==currentTileBaseImageLocation) return
+
+        tileBaseImage.remove()
+        tileBaseImage = ImageGetter.getImage(tileBaseImageLocation)
+        currentTileBaseImageLocation = tileBaseImageLocation
+
+        val imageScale = groupSize * 1.5f / tileBaseImage.width
+        // Using "scale" can get really confusing when positioning, how about no
+        tileBaseImage.setSize(tileBaseImage.width*imageScale, tileBaseImage.height*imageScale)
+        tileBaseImage.centerX(this)
+
+        tileBaseImage.y = -groupSize/6
+        tileBaseImage.toBack()
+        addActor(tileBaseImage)
     }
 
     fun addAcquirableIcon(){
@@ -142,7 +173,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         hideCircle()
         if (!showEntireMap
                 && !tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
-            hexagon.color = Color.BLACK
+            tileBaseImage.color = Color.BLACK
             return
         }
 
@@ -170,27 +201,25 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         circleImage.toFront()
         for(borderImage in borderImages.flatMap { it.value })
             borderImage.toFront()
-
-        lastIsRevealed = true
     }
 
     private fun updateTerrainBaseImage() {
         if (tileInfo.baseTerrain == baseTerrain) return
 
-        if(baseTerrainImage!=null){
-            baseTerrainImage!!.remove()
-            baseTerrainImage=null
+        if(baseTerrainOverlayImage!=null){
+            baseTerrainOverlayImage!!.remove()
+            baseTerrainOverlayImage=null
         }
 
         val imagePath = tileSetLocation + tileInfo.baseTerrain + "Overlay"
         if (!ImageGetter.imageExists(imagePath)) return
-        baseTerrainImage = ImageGetter.getImage(imagePath)
-        baseTerrainImage!!.run {
+        baseTerrainOverlayImage = ImageGetter.getImage(imagePath)
+        baseTerrainOverlayImage!!.run {
             color.a = 0.25f
             setSize(40f, 40f)
             center(this@TileGroup)
         }
-        addActor(baseTerrainImage)
+        addActor(baseTerrainOverlayImage)
     }
 
     private fun updateCityImage() {
@@ -251,7 +280,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                     // So we set it to 0.75
                     image.moveBy(-relativeWorldPosition.x * 0.75f * 25f, -relativeWorldPosition.y * 0.75f * 25f)
 
-                    // And now, move it within the hexagon side according to i.
+                    // And now, move it within the tileBaseImage side according to i.
                     // Remember, if from the center of the heagon to the middle of the side is an (a,b) vecctor,
                     // Then within the side, which is of course perpendicular to the (a,b) vector,
                     // we can move with multiples of (b,-a) which is perpendicular to (a,b)
@@ -309,23 +338,25 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateTileColor(isViewable: Boolean) {
-        hexagon.color =
+        tileBaseImage.color =
                 if (ImageGetter.imageExists(tileSetLocation + tileInfo.baseTerrain)) Color.WHITE // no need to color it, it's already colored
                 else tileInfo.getBaseTerrain().getColor()
 
-        if (!isViewable) hexagon.color = hexagon.color.lerp(Color.BLACK, 0.6f)
+        if (!isViewable) tileBaseImage.color = tileBaseImage.color.lerp(Color.BLACK, 0.6f)
     }
 
     private fun updateTerrainFeatureImage() {
         if (tileInfo.terrainFeature != terrainFeature) {
             terrainFeature = tileInfo.terrainFeature
-            if(terrainFeatureImage!=null) terrainFeatureImage!!.remove()
-            terrainFeatureImage = null
+            if(terrainFeatureOverlayImage!=null) terrainFeatureOverlayImage!!.remove()
+            terrainFeatureOverlayImage = null
 
             if(terrainFeature!=null) {
-                terrainFeatureImage = ImageGetter.getImage(tileSetLocation +"$terrainFeature"+"Overlay")
-                addActor(terrainFeatureImage)
-                terrainFeatureImage!!.run {
+                val terrainFeatureOverlayLocation = tileSetLocation +"$terrainFeature"+"Overlay"
+                if(!ImageGetter.imageExists(terrainFeatureOverlayLocation)) return
+                terrainFeatureOverlayImage = ImageGetter.getImage(terrainFeatureOverlayLocation)
+                addActor(terrainFeatureOverlayImage)
+                terrainFeatureOverlayImage!!.run {
                     setSize(30f, 30f)
                     setColor(1f, 1f, 1f, 0.5f)
                     center(this@TileGroup)
@@ -402,9 +433,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     fun showCircle(color: Color) {
         circleImage.isVisible = true
-        val colorCopy = color.cpy()
-        colorCopy.a = 0.3f
-        circleImage.color = colorCopy
+        circleImage.color = color.cpy().apply { a=0.3f }
     }
 
     fun hideCircle() {
