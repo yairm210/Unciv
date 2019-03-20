@@ -2041,13 +2041,6 @@ TileSets/Default/Flood plainsOverlay
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/Flood plainsOverlay
-  rotate: false
-  xy: 844, 1132
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 TileSets/ThorfMaps/Flood plainsOverlay
   rotate: false
   xy: 844, 1132
@@ -2083,13 +2076,6 @@ TileSets/Default/JungleOverlay
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/FantasyHex/JungleOverlay
-  rotate: false
-  xy: 1762, 1436
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
 TileSets/ThorfMaps/JungleOverlay
   rotate: false
   xy: 1762, 1436
@@ -2098,13 +2084,6 @@ TileSets/ThorfMaps/JungleOverlay
   offset: 0, 0
   index: -1
 TileSets/Default/LakesOverlay
-  rotate: false
-  xy: 1864, 1436
-  size: 100, 100
-  orig: 100, 100
-  offset: 0, 0
-  index: -1
-TileSets/FantasyHex/LakesOverlay
   rotate: false
   xy: 1864, 1436
   size: 100, 100
@@ -2204,14 +2183,14 @@ TileSets/FantasyHex/Desert+Flood plains
   index: -1
 TileSets/FantasyHex/Desert+Oasis
   rotate: false
-  xy: 878, 30
+  xy: 1560, 591
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Grassland
   rotate: false
-  xy: 1458, 335
+  xy: 878, 30
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2223,6 +2202,13 @@ TileSets/FantasyHex/Grassland+Forest
   orig: 31, 29
   offset: 0, 0
   index: -1
+TileSets/FantasyHex/Grassland+Jungle
+  rotate: false
+  xy: 1492, 585
+  size: 32, 34
+  orig: 32, 34
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Grassland+Marsh
   rotate: false
   xy: 488, 539
@@ -2232,7 +2218,7 @@ TileSets/FantasyHex/Grassland+Marsh
   index: -1
 TileSets/FantasyHex/Hill
   rotate: false
-  xy: 810, 26
+  xy: 1458, 395
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -2246,7 +2232,7 @@ TileSets/FantasyHex/Hill+Forest
   index: -1
 TileSets/FantasyHex/Lakes
   rotate: false
-  xy: 912, 30
+  xy: 1458, 335
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2260,28 +2246,35 @@ TileSets/FantasyHex/Mountain
   index: -1
 TileSets/FantasyHex/Ocean
   rotate: false
-  xy: 946, 30
+  xy: 912, 30
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains
   rotate: false
-  xy: 980, 30
+  xy: 946, 30
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains+Forest
   rotate: false
-  xy: 1966, 1137
+  xy: 810, 25
   size: 32, 33
   orig: 32, 33
   offset: 0, 0
   index: -1
+TileSets/FantasyHex/Plains+Jungle
+  rotate: false
+  xy: 1966, 1135
+  size: 32, 35
+  orig: 32, 35
+  offset: 0, 0
+  index: -1
 TileSets/FantasyHex/Tundra
   rotate: false
-  xy: 1458, 395
+  xy: 1526, 587
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -2806,7 +2799,7 @@ UnitPromotionIcons/Boarding_Party_I_(Civ5)
   index: -1
 UnitPromotionIcons/Bombardment_III_(Civ5)
   rotate: false
-  xy: 1014, 38
+  xy: 980, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2841,7 +2834,7 @@ UnitPromotionIcons/Coastal_Raider_III_(Civ5)
   index: -1
 UnitPromotionIcons/Coastal_Raider_II_(Civ5)
   rotate: false
-  xy: 1036, 38
+  xy: 1002, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2862,7 +2855,7 @@ UnitPromotionIcons/Cover_II_(Civ5)
   index: -1
 UnitPromotionIcons/Cover_I_(Civ5)
   rotate: false
-  xy: 1058, 38
+  xy: 1024, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2876,7 +2869,7 @@ UnitPromotionIcons/Drill_III_(Civ5)
   index: -1
 UnitPromotionIcons/Drill_II_(Civ5)
   rotate: false
-  xy: 1080, 38
+  xy: 1046, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2890,7 +2883,7 @@ UnitPromotionIcons/Drill_I_(Civ5)
   index: -1
 UnitPromotionIcons/Formation_II_(Civ5)
   rotate: false
-  xy: 1102, 38
+  xy: 1068, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2904,7 +2897,7 @@ UnitPromotionIcons/Formation_I_(Civ5)
   index: -1
 UnitPromotionIcons/Indirect_Fire_(Civ5)
   rotate: false
-  xy: 1124, 38
+  xy: 1090, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2918,7 +2911,7 @@ UnitPromotionIcons/Logistics_(Civ5)
   index: -1
 UnitPromotionIcons/March_(Civ5)
   rotate: false
-  xy: 1146, 38
+  xy: 1112, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2932,7 +2925,7 @@ UnitPromotionIcons/Mobility_(Civ5)
   index: -1
 UnitPromotionIcons/Range_(Civ5)
   rotate: false
-  xy: 1168, 38
+  xy: 1134, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -2946,98 +2939,98 @@ UnitPromotionIcons/Scouting_III_(Civ5)
   index: -1
 UnitPromotionIcons/Scouting_II_(Civ5)
   rotate: false
-  xy: 1190, 38
+  xy: 1156, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Scouting_I_(Civ5)
   rotate: false
-  xy: 1212, 38
+  xy: 1178, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Sentry_(Civ5)
   rotate: false
-  xy: 1234, 38
+  xy: 1200, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock_III_(Civ5)
   rotate: false
-  xy: 1256, 38
+  xy: 1222, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock_II_(Civ5)
   rotate: false
-  xy: 1278, 38
+  xy: 1244, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock_I_(Civ5)
   rotate: false
-  xy: 1300, 38
+  xy: 1266, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Siege_(Civ5)
   rotate: false
-  xy: 1322, 38
+  xy: 1288, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_III_(Civ5)
   rotate: false
-  xy: 1344, 38
+  xy: 1310, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_II_(Civ5)
   rotate: false
-  xy: 2000, 1150
+  xy: 1332, 38
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_I_(Civ5)
   rotate: false
-  xy: 1492, 407
+  xy: 2000, 1150
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Volley_(Civ5)
   rotate: false
-  xy: 1492, 385
+  xy: 1492, 407
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_III_(Civ5)
   rotate: false
-  xy: 1492, 363
+  xy: 1492, 385
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_II_(Civ5)
   rotate: false
-  xy: 1492, 341
+  xy: 1492, 363
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_I_(Civ5)
   rotate: false
-  xy: 442, 752
+  xy: 1492, 341
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
