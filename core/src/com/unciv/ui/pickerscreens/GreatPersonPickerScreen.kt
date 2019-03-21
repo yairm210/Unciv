@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick

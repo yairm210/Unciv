@@ -60,6 +60,9 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
         addSoundEffectsVolumeSlider()
 
+        add("Version".toLabel())
+        add(UnCivGame.Current.version.toLabel()).row()
+
         addButton("Close"){ remove() }
 
         pack() // Needed to show the background.

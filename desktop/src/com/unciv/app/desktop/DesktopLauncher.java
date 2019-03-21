@@ -20,6 +20,6 @@ class DesktopLauncher {
 		TexturePacker.process(settings, "../images", ".", "game");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
-		new LwjglApplication(new UnCivGame(), config);
+		new LwjglApplication(new UnCivGame("Desktop"), config);
 	}
 }

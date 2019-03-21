@@ -9,7 +9,7 @@ import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 
-class UnCivGame : Game() {
+class UnCivGame(val version: String) : Game() {
     var gameInfo: GameInfo = GameInfo()
     lateinit var settings : GameSettings
 

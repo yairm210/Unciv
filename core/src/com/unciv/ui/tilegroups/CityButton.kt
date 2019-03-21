@@ -68,7 +68,6 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         }
         pack()
         setOrigin(Align.center)
-        toFront()
         touchable = Touchable.enabled
 
     }

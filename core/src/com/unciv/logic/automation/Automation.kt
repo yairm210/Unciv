@@ -82,7 +82,7 @@ class Automation {
                     && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
             val isAtWar = cityInfo.civInfo.isAtWar()
-            val cityProduction = cityInfo.cityStats.currentCityStats.production.toFloat()
+            val cityProduction = cityInfo.cityStats.currentCityStats.production
 
             var buildingValues = HashMap<String, Float>()
             //Food buildings : Granary and lighthouse and hospital
@@ -136,7 +136,7 @@ class Automation {
             //Wonders
             if (buildableWonders.isNotEmpty()) {
                 val citiesBuildingWonders = cityInfo.civInfo.cities
-                        .filter { it.cityConstructions.isBuildingWonder() }.size
+                        .count { it.cityConstructions.isBuildingWonder() }
                 val wonder = buildableWonders.getRandom()
                 buildingValues[wonder.name] = wonder.cost / cityProduction * (citiesBuildingWonders + 1) / 5.0f
             }
