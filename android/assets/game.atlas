@@ -1182,21 +1182,21 @@ PolicyIcons/Total War
   index: -1
 PolicyIcons/Trade Unions
   rotate: false
-  xy: 1458, 532
+  xy: 1458, 533
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Universal Suffrage
   rotate: false
-  xy: 1458, 480
+  xy: 1458, 481
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Warrior Code
   rotate: false
-  xy: 1458, 428
+  xy: 1458, 429
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -2176,21 +2176,21 @@ TileSets/ThorfMaps/road
   index: -1
 TileSets/FantasyHex/City
   rotate: false
-  xy: 1492, 584
+  xy: 1458, 585
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Grassland+City
   rotate: false
-  xy: 1492, 584
+  xy: 1458, 585
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Hill+City
   rotate: false
-  xy: 1492, 584
+  xy: 1458, 585
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
@@ -2211,14 +2211,14 @@ TileSets/FantasyHex/Desert
   index: -1
 TileSets/FantasyHex/Desert+City
   rotate: false
-  xy: 1966, 1135
-  size: 32, 35
-  orig: 32, 35
+  xy: 1526, 586
+  size: 32, 33
+  orig: 32, 33
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Desert+Flood plains
   rotate: false
-  xy: 1458, 327
+  xy: 1458, 328
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2246,7 +2246,7 @@ TileSets/FantasyHex/Grassland+Forest
   index: -1
 TileSets/FantasyHex/Grassland+Jungle
   rotate: false
-  xy: 1526, 585
+  xy: 1492, 585
   size: 32, 34
   orig: 32, 34
   offset: 0, 0
@@ -2260,7 +2260,7 @@ TileSets/FantasyHex/Grassland+Marsh
   index: -1
 TileSets/FantasyHex/Hill
   rotate: false
-  xy: 1458, 357
+  xy: 1458, 358
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -2281,7 +2281,7 @@ TileSets/FantasyHex/Lakes
   index: -1
 TileSets/FantasyHex/Mountain
   rotate: false
-  xy: 1458, 584
+  xy: 132, 542
   size: 32, 36
   orig: 32, 36
   offset: 0, 0
@@ -2302,7 +2302,7 @@ TileSets/FantasyHex/Plains
   index: -1
 TileSets/FantasyHex/Plains+City
   rotate: false
-  xy: 810, 23
+  xy: 1966, 1135
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
@@ -2316,7 +2316,7 @@ TileSets/FantasyHex/Plains+Forest
   index: -1
 TileSets/FantasyHex/Plains+Jungle
   rotate: false
-  xy: 1458, 391
+  xy: 810, 23
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
@@ -2330,9 +2330,9 @@ TileSets/FantasyHex/Tundra
   index: -1
 TileSets/FantasyHex/Tundra+City
   rotate: false
-  xy: 132, 541
-  size: 32, 37
-  orig: 32, 37
+  xy: 1458, 392
+  size: 32, 35
+  orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tundra+Forest
@@ -3037,28 +3037,28 @@ UnitPromotionIcons/Shock_I_(Civ5)
   index: -1
 UnitPromotionIcons/Siege_(Civ5)
   rotate: false
-  xy: 1492, 406
+  xy: 1492, 407
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_III_(Civ5)
   rotate: false
-  xy: 1492, 384
+  xy: 1492, 385
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_II_(Civ5)
   rotate: false
-  xy: 1492, 362
+  xy: 1492, 363
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Targeting_I_(Civ5)
   rotate: false
-  xy: 1492, 340
+  xy: 1492, 341
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
@@ -3072,21 +3072,21 @@ UnitPromotionIcons/Volley_(Civ5)
   index: -1
 UnitPromotionIcons/Wolfpack_III_(Civ5)
   rotate: false
-  xy: 1510, 562
+  xy: 1510, 563
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_II_(Civ5)
   rotate: false
-  xy: 1510, 540
+  xy: 1510, 541
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Wolfpack_I_(Civ5)
   rotate: false
-  xy: 1510, 518
+  xy: 1510, 519
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
