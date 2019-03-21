@@ -105,10 +105,11 @@ class CityConstructions {
         else return 0
     }
 
-    fun turnsToConstruction(constructionName: String): Int {
-        val productionCost = getConstruction(constructionName).getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
+    fun getRemainingWork(constructionName: String) = getConstruction(constructionName)
+            .getProductionCost(cityInfo.civInfo.policies.adoptedPolicies) - getWorkDone(constructionName)
 
-        val workLeft = (productionCost - getWorkDone(constructionName)).toFloat() // needs to be float so that we get the cieling properly ;)
+    fun turnsToConstruction(constructionName: String): Int {
+        val workLeft = getRemainingWork(constructionName)
 
         val cityStats = cityInfo.cityStats.currentCityStats
         var production = Math.round(cityStats.production)
@@ -149,7 +150,7 @@ class CityConstructions {
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
             cityInfo.civInfo.addNotification("[${cityInfo.name}] Cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
-            Automation().chooseNextConstruction(this)
+            chooseNextConstruction()
         } else
             currentConstruction = saveCurrentConstruction
 
@@ -169,7 +170,7 @@ class CityConstructions {
             cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
 
         currentConstruction = ""
-        Automation().chooseNextConstruction(this)
+        chooseNextConstruction()
     }
 
     fun addBuilding(buildingName:String){
@@ -189,7 +190,7 @@ class CityConstructions {
         getConstruction(buildingName).postBuildEvent(this)
         if (currentConstruction == buildingName) {
             currentConstruction=""
-            Automation().chooseNextConstruction(this)
+            chooseNextConstruction()
         }
         cityInfo.cityStats.update()
     }
@@ -200,7 +201,7 @@ class CityConstructions {
         addBuilding(cultureBuildingToBuild)
         if (currentConstruction == cultureBuildingToBuild) {
             currentConstruction=""
-            Automation().chooseNextConstruction(this)
+            chooseNextConstruction()
         }
     }
 

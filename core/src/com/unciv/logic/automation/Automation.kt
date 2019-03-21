@@ -74,7 +74,7 @@ class Automation {
 
             val civUnits = cityInfo.civInfo.getCivUnits()
             val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size
-            val workers = civUnits.filter { it.name == CityConstructions.Worker }.size
+            val workers = civUnits.filter { it.name == CityConstructions.Worker }.size.toFloat()
             val cities = cityInfo.civInfo.cities.size
             val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
                     && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
@@ -82,18 +82,21 @@ class Automation {
                     && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
             val isAtWar = cityInfo.civInfo.isAtWar()
-            val cityProduction = cityInfo.cityStats.currentCityStats.production
 
-            var buildingValues = HashMap<String, Float>()
+            data class ConstructionChoice(val choice:String, var choiceModifier:Float){
+                val remainingWork:Int = getRemainingWork(choice)
+            }
+
+            val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
+
             //Food buildings : Granary and lighthouse and hospital
             val foodBuilding = buildableNotWonders.filter { it.food>0
                     || (it.resourceBonusStats!=null && it.resourceBonusStats!!.food>0) }
                     .minBy{ it.cost }
             if (foodBuilding!=null) {
-                buildingValues[foodBuilding.name] = foodBuilding.cost / cityProduction
-                if (cityInfo.population.population < foodBuilding.food + 5) {
-                    buildingValues[foodBuilding.name] = buildingValues[foodBuilding.name]!! / 2.0f
-                }
+                val choice = ConstructionChoice(foodBuilding.name,1f)
+                if (cityInfo.population.population < foodBuilding.food + 5) choice.choiceModifier=2f
+                relativeCostEffectiveness.add(choice)
             }
 
             //Production buildings : Workshop, factory
@@ -101,7 +104,7 @@ class Automation {
                     || (it.resourceBonusStats!=null && it.resourceBonusStats!!.production>0) }
                     .minBy{it.cost}
             if (productionBuilding!=null) {
-                buildingValues[productionBuilding.name] = productionBuilding.cost / cityProduction / 1.5f
+                relativeCostEffectiveness.add(ConstructionChoice(productionBuilding.name, 1.5f))
             }
 
             //Gold buildings : Market, bank
@@ -109,10 +112,11 @@ class Automation {
                     || (it.resourceBonusStats!=null && it.resourceBonusStats!!.gold>0) }
                     .minBy{it.cost}
             if (goldBuilding!=null) {
-                buildingValues[goldBuilding.name] = goldBuilding.cost / cityProduction / 1.2f
+                val choice = ConstructionChoice(goldBuilding.name,1.2f)
                 if (cityInfo.civInfo.getStatsForNextTurn().gold<0) {
-                    buildingValues[goldBuilding.name] = buildingValues[goldBuilding.name]!! / 3.0f
+                    choice.choiceModifier=3f
                 }
+                relativeCostEffectiveness.add(choice)
             }
 
             //Happiness
@@ -120,17 +124,17 @@ class Automation {
                     || (it.resourceBonusStats!=null && it.resourceBonusStats!!.happiness>0) }
                     .minBy{it.cost}
             if (happinessBuilding!=null) {
-                buildingValues[happinessBuilding.name] = happinessBuilding.cost / cityProduction
-                if (cityInfo.civInfo.happiness < 0) {
-                    buildingValues[happinessBuilding.name] = buildingValues[happinessBuilding.name]!! / 3.0f
-                }
+                val choice = ConstructionChoice(happinessBuilding.name,1f)
+                if (cityInfo.civInfo.happiness > 5) choice.choiceModifier = 1/2f // less desperate
+                if (cityInfo.civInfo.happiness < 0) choice.choiceModifier = 3f // more desperate
+                relativeCostEffectiveness.add(choice)
             }
 
             //War buildings
-            val wartimeBuildings = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
+            val wartimeBuilding = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
                     .minBy { it.cost }
-            if (wartimeBuildings!=null) {
-                buildingValues[wartimeBuildings.name] = wartimeBuildings.cost / cityProduction
+            if (wartimeBuilding!=null) {
+                relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,1f))
             }
 
             //Wonders
@@ -138,38 +142,47 @@ class Automation {
                 val citiesBuildingWonders = cityInfo.civInfo.cities
                         .count { it.cityConstructions.isBuildingWonder() }
                 val wonder = buildableWonders.getRandom()
-                buildingValues[wonder.name] = wonder.cost / cityProduction * (citiesBuildingWonders + 1) / 5.0f
+                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,3f / (citiesBuildingWonders + 1)))
             }
 
             //other buildings
             val other = buildableNotWonders.minBy{it.cost}
             if (other!=null) {
-                buildingValues[other.name] = other.cost / cityProduction * 1.2f
+                relativeCostEffectiveness.add(ConstructionChoice(other.name,1.2f))
             }
 
             //worker
-            if (workers<(cities+1)/2) {
-                buildingValues[CityConstructions.Worker] =
-                        buildableUnits.first{ it.name == CityConstructions.Worker }.cost / cityProduction *
-                                (workers/(cities+1))
+            if (workers < cities) {
+                relativeCostEffectiveness.add(ConstructionChoice(CityConstructions.Worker,workers/(cities+1)))
             }
 
             //Work boat
             if (needWorkboat) {
-                buildingValues["Work Boats"] =
-                        buildableUnits.first{ it.name == "Work Boats" }.cost / cityProduction * 1.5f
+                relativeCostEffectiveness.add(ConstructionChoice("Work Boats",1.5f))
             }
 
             //Army
             val militaryUnit = chooseCombatUnit(cityInfo)
-            buildingValues[militaryUnit] =
-                    buildableUnits.first{ it.name == militaryUnit }.cost / cityProduction * 1.5f * militaryUnits / (cities+1)
+            val unitsToCitiesRatio = militaryUnits / cities.toFloat()
+            // most buildings and civ units contribute the the civ's growth, military units are anti-growth
+            val militaryChoice = ConstructionChoice(militaryUnit,unitsToCitiesRatio/5)
             if (isAtWar) {
-                buildingValues[militaryUnit] = buildingValues[militaryUnit]!! / 3.0f
+                militaryChoice.choiceModifier=unitsToCitiesRatio
             }
+            relativeCostEffectiveness.add(militaryChoice)
 
-            val name = buildingValues.minBy{it.value}!!.key
-            currentConstruction = name
+            val production = cityInfo.cityStats.currentCityStats.production
+
+            // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
+
+            val theChosenOne:String
+            if(relativeCostEffectiveness.any { it.remainingWork < production*30 }) { // it's possible that this is a new city and EVERYTHING is way expensive.
+                relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
+                theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork/it.choiceModifier }!!.choice
+            }
+            else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice // ignore modifiers, go for the cheapest.
+
+            currentConstruction = theChosenOne
             cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
         }
     }
