@@ -30,7 +30,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         label.setFontColor(city.civInfo.getNation().getSecondaryColor())
 
         clear()
-        if (city.civInfo.isCurrentPlayer()) {
+        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
             Touchable.enabled // So you can click anywhere on the button to go to the city
             onClick {
                 if (!tileGroup.selectCity(city)) {
@@ -63,7 +63,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             add()
         } // this is so the health bar is always 2 columns wide
         add(label).pad(10f)
-        if (city.civInfo.isPlayerCivilization()) {
+        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isPlayerCivilization()) {
             add(getConstructionGroup(city.cityConstructions)).padRight(5f)
         }
         pack()
