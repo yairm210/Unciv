@@ -11,6 +11,7 @@ import com.unciv.ui.utils.centerX
 
 class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(tileInfo) {
 
+    var isWorkable = false
 
     init {
         isTransform=false // performance helper - nothing here is rotated or scaled
@@ -19,7 +20,6 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
             populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6).png")
             addActor(populationImage)
         }
-
 
     }
 
@@ -31,12 +31,33 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
                 || (!tileInfo.hasEnemySubmarine())
         super.update(canSeeTile,true, showSubmarine)
 
-        updatePopulationImage()
+        // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
+        when {
+            tileInfo.getCity()!=city -> { // outside of city
+                baseLayerGroup.color.a = 0.3f
+                yieldGroup.isVisible = false
+                if (city.canAcquireTile(tileInfo))
+                    addAcquirableIcon()
+            }
+
+            tileInfo !in city.getTilesInRange() -> { // within city but not close enough to be workable
+                yieldGroup.isVisible = false
+                baseLayerGroup.color.a = 0.5f
+            }
+
+            !tileInfo.isCityCenter() && populationImage==null -> { // workable
+                addPopulationIcon()
+                isWorkable=true
+            }
+        }
+
+        featureLayerGroup.color.a=0.5f
         if (improvementImage != null) improvementImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (resourceImage != null) resourceImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (cityImage != null) cityImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (civilianUnitImage != null) civilianUnitImage!!.setColor(1f, 1f, 1f, 0.5f)
         if (militaryUnitImage!= null) militaryUnitImage!!.setColor(1f, 1f, 1f, 0.5f)
+        updatePopulationImage()
         updateYieldGroup()
     }
 
@@ -47,6 +68,13 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
         yieldGroup.toFront()
         yieldGroup.centerX(this)
         yieldGroup.y= height * 0.25f - yieldGroup.height / 2
+
+        if (tileInfo.isWorked() || city.canAcquireTile(tileInfo)) {
+            yieldGroup.color = Color.WHITE
+        }
+        else if(!tileInfo.isCityCenter()){
+            yieldGroup.color = Color.GRAY.cpy().apply { a=0.5f }
+        }
     }
 
     private fun updatePopulationImage() {
@@ -59,12 +87,11 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
                 populationImage!!.color = Color.WHITE
             }
             else if(!tileInfo.isCityCenter()){
-                populationImage!!.color = Color.GRAY.cpy().apply { a=0.5f }
+                populationImage!!.color = Color.GRAY.cpy()
             }
 
             populationImage!!.toFront()
         }
     }
-
 
 }

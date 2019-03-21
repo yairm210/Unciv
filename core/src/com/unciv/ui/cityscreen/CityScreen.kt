@@ -186,30 +186,9 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         for (tileGroup in cityTileGroups) {
             val tileInfo = tileGroup.tileInfo
 
-            // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
-            var shouldToggleTilesWorked = false
-            when {
-                tileInfo.getCity()!=city -> // outside of city
-                    if(city.canAcquireTile(tileInfo)){
-                        tileGroup.addAcquirableIcon()
-                        tileGroup.yieldGroup.isVisible = false
-                    } else {
-                        tileGroup.setColor(0f, 0f, 0f, 0.3f)
-                        tileGroup.yieldGroup.isVisible = false
-                    }
-
-                tileInfo !in tilesInRange -> // within city but not close enough to be workable
-                    tileGroup.yieldGroup.isVisible = false
-
-                !tileInfo.isCityCenter() && tileGroup.populationImage==null -> { // workable
-                    tileGroup.addPopulationIcon()
-                    shouldToggleTilesWorked=true
-                }
-            }
-
             tileGroup.onClick {
                 selectedTile = tileInfo
-                if (shouldToggleTilesWorked) {
+                if (tileGroup.isWorkable) {
                     if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
                         city.workedTiles.add(tileInfo.position)
                     else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
