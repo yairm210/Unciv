@@ -94,7 +94,7 @@ class WorldScreen : CameraStageBaseScreen() {
                     currentPlayerCiv.getCivUnits().isNotEmpty() -> currentPlayerCiv.getCivUnits().first().getTile().position
                     else -> Vector2.Zero
                 }
-        tileMapHolder.setCenterPosition(tileToCenterOn)
+        tileMapHolder.setCenterPosition(tileToCenterOn,true)
     }
 
     // This is private so that we will set the shouldUpdate to true instead.

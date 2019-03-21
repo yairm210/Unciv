@@ -243,7 +243,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
     }
 
-    fun setCenterPosition(vector: Vector2) {
+    fun setCenterPosition(vector: Vector2, immediately: Boolean =false) {
         val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
         selectedTile = tileGroup.tileInfo
         worldScreen.bottomBar.unitTable.tileSelected(selectedTile!!)
@@ -258,13 +258,20 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         // Here it's the same, only the Y axis is inverted - when at 0 we're at the top, not bottom - so we invert it back.
         val finalScrollY = maxY - (tileGroup.y + tileGroup.width / 2 - height / 2)
 
-        addAction(object : FloatAction(0f,1f,0.4f){
-            override fun update(percent: Float) {
-                scrollX = finalScrollX*percent + originalScrollX * (1-percent)
-                scrollY = finalScrollY*percent + originalScrollY*(1-percent)
-                updateVisualScroll()
-            }
-        })
+        if(immediately){
+            scrollX = finalScrollX
+            scrollY = finalScrollY
+            updateVisualScroll()
+        }
+        else {
+            addAction(object : FloatAction(0f, 1f, 0.4f) {
+                override fun update(percent: Float) {
+                    scrollX = finalScrollX * percent + originalScrollX * (1 - percent)
+                    scrollY = finalScrollY * percent + originalScrollY * (1 - percent)
+                    updateVisualScroll()
+                }
+            })
+        }
 
         worldScreen.shouldUpdate=true
     }
