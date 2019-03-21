@@ -17,7 +17,7 @@ class CityConstructions {
     @Transient private var builtBuildingObjects=ArrayList<Building>()
 
     var builtBuildings = ArrayList<String>()
-    private val inProgressConstructions = HashMap<String, Int>()
+    val inProgressConstructions = HashMap<String, Int>()
     var currentConstruction: String = "Monument" // default starting building!
 
     //region pure functions

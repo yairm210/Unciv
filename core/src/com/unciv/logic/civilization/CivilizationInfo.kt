@@ -339,6 +339,8 @@ class CivilizationInfo {
         diplomacy.values.forEach { it.civInfo=this}
 
         victoryManager.civInfo=this
+
+        // As of 2.11.3 scienceVictory is deprecated
         if(victoryManager.currentsSpaceshipParts.values.sum() == 0
                 && scienceVictory.currentParts.values.sum()>0)
             victoryManager.currentsSpaceshipParts = scienceVictory.currentParts

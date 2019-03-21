@@ -74,10 +74,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                             selectTechnology(tech)
                         }catch (ex:Exception){
                             val popup = PopupTable(this)
-                            popup.addGoodSizedLabel("You've encountered an error that I've been trying to pin down for a while.")
-                            popup.addGoodSizedLabel("If you could copy your game data (menu-save game-copy to clipboard - paste into an email to yairm210@hotmail.com)")
-                            popup.addGoodSizedLabel("That would be really helpful to me, thanks!")
-                            popup.addGoodSizedLabel("If you also add what tech you clicked on to get this error that would be even better!")
+                            popup.addGoodSizedLabel("You've encountered an error that I've been trying to pin down for a while.").row()
+                            popup.addGoodSizedLabel("If you could copy your game data (menu-save game-copy to clipboard - paste into an email to yairm210@hotmail.com)").row()
+                            popup.addGoodSizedLabel("That would be really helpful to me, thanks!").row()
+                            popup.addGoodSizedLabel("If you also add what tech you clicked on to get this error that would be even better!").row()
                             popup.open()
                         }
                     }

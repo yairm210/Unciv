@@ -106,6 +106,8 @@ class GameInfo {
         tileMap.placeUnitNearTile(tile!!.position, unit, getBarbarianCivilization())
     }
 
+    // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
+    // will be done here, and not in CivInfo.setTransients or CityInfo
     fun setTransients() {
         tileMap.gameInfo = this
         tileMap.setTransients()
@@ -122,15 +124,14 @@ class GameInfo {
         if(getCurrentPlayerCivilization().difficulty!="Chieftain")
             difficulty= getCurrentPlayerCivilization().difficulty
 
-        for (civInfo in civilizations) civInfo.setTransients()
-
+        // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
+        // because updating leads to getting the building uniques from the civ info,
+        // which in turn leads to us trying to get info on all the building in all the cities...
+        // which can fail if there's an "unregistered" building anywhere
         for (civInfo in civilizations) {
-            // we have to remove hydro plants from all cities BEFORE we update a single one,
-            // because updating leads to getting the building uniques from the civ info,
-            // which in turn leads to us trying to get info on all the building in all the cities...
-            // which can fail i there's an "unregistered" building anywhere
             for (cityInfo in civInfo.cities) {
                 val cityConstructions = cityInfo.cityConstructions
+
                 // As of 2.9.6, removed hydro plant, since it requires rivers, which we do not yet have
                 if ("Hydro Plant" in cityConstructions.builtBuildings)
                     cityConstructions.builtBuildings.remove("Hydro Plant")
@@ -138,8 +139,22 @@ class GameInfo {
                     cityConstructions.currentConstruction = ""
                     cityConstructions.chooseNextConstruction()
                 }
-            }
 
+                // As of 2.14.1, changed Machu Pichu to Machu Picchu
+                val oldMachuName = "Machu Pichu"
+                val newMachuName = "Machu Picchu"
+                cityConstructions.builtBuildings.replaceAll { if (it == oldMachuName) newMachuName else it }
+                if (cityConstructions.currentConstruction == oldMachuName)
+                    cityConstructions.currentConstruction = newMachuName
+                if (cityConstructions.inProgressConstructions.containsKey(oldMachuName)) {
+                    cityConstructions.inProgressConstructions[newMachuName] = cityConstructions.inProgressConstructions[oldMachuName]!!
+                    cityConstructions.inProgressConstructions.remove(oldMachuName)
+                }
+            }
+        }
+
+        for (civInfo in civilizations) civInfo.setTransients()
+        for (civInfo in civilizations){
             for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
         }
     }

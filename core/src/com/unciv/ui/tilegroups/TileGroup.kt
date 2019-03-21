@@ -225,11 +225,11 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateCityImage() {
-        if(!ImageGetter.imageExists(tileSetLocation+"City")) // have a city tile, don't need an overlay
+        if(!ImageGetter.imageExists(tileSetLocation+"CityOverlay")) // have a city tile, don't need an overlay
             return
 
         if (cityImage == null && tileInfo.isCityCenter()) {
-            cityImage = ImageGetter.getImage(tileSetLocation+"City")
+            cityImage = ImageGetter.getImage(tileSetLocation+"CityOverlay")
             featureLayerGroup.addActor(cityImage)
             cityImage!!.run {
                 setSize(60f, 60f)

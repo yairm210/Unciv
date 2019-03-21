@@ -249,7 +249,7 @@ BuildingIcons/Lighthouse
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/Machu Pichu
+BuildingIcons/Machu Picchu
   rotate: false
   xy: 336, 231
   size: 100, 100
@@ -664,7 +664,7 @@ ImprovementIcons/Camp
   index: -1
 ImprovementIcons/City ruins
   rotate: false
-  xy: 306, 844
+  xy: 306, 946
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1406,7 +1406,7 @@ StatIcons/Acquire
   index: -1
 StatIcons/CityConnection
   rotate: false
-  xy: 306, 742
+  xy: 306, 844
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2020,16 +2020,16 @@ TechIcons/Writing
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/Default/City
+TileSets/Default/CityOverlay
   rotate: false
-  xy: 306, 946
+  xy: 306, 742
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
   index: -1
-TileSets/ThorfMaps/City
+TileSets/ThorfMaps/CityOverlay
   rotate: false
-  xy: 306, 946
+  xy: 306, 742
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
