@@ -271,7 +271,7 @@
 		requiredTech:"Civil Service"
 	},
 	{
-		name:"Machu Pichu",
+		name:"Machu Picchu",
 		gold:5,
 		greatPersonPoints:{gold:1},
 		culture:1,
