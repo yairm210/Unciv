@@ -72,6 +72,14 @@ class CityConstructions {
 
     fun isBeingConstructed(constructionName: String): Boolean = currentConstruction == constructionName
 
+    fun isBuildingWonder(): Boolean {
+        val currentConstruction = getCurrentConstruction()
+        if (currentConstruction is Building) {
+            return currentConstruction.isWonder
+        }
+        return false
+    }
+
     internal fun getConstruction(constructionName: String): IConstruction {
         if (GameBasics.Buildings.containsKey(constructionName))
             return GameBasics.Buildings[constructionName]!!
