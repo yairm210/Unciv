@@ -392,23 +392,25 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateResourceImage(showResourcesAndImprovements: Boolean) {
-        val shouldDisplayResource =
-            if(showEntireMap) tileInfo.resource!=null
-            else showResourcesAndImprovements
-                && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization())
-
         if(resource!=tileInfo.resource){
             resource=tileInfo.resource
             if (resourceImage != null) resourceImage!!.remove()
-            resourceImage=null
+            if (resource==null) resourceImage=null
+            else {
+                resourceImage = ImageGetter.getResourceImage(tileInfo.resource!!, 20f)
+                resourceImage!!.center(this)
+                resourceImage!!.x = resourceImage!!.x - 22 // left
+                resourceImage!!.y = resourceImage!!.y + 10 // top
+                miscLayerGroup.addActor(resourceImage!!)
+            }
         }
 
-        if (resourceImage == null && shouldDisplayResource) { // This could happen on any turn, since resources need certain techs to reveal them
-            resourceImage = ImageGetter.getResourceImage(tileInfo.resource!!, 20f)
-            resourceImage!!.center(this)
-            resourceImage!!.x = resourceImage!!.x - 22 // left
-            resourceImage!!.y = resourceImage!!.y + 10 // top
-            miscLayerGroup.addActor(resourceImage!!)
+        if (resourceImage != null) { // This could happen on any turn, since resources need certain techs to reveal them
+            val shouldDisplayResource =
+                    if(showEntireMap) tileInfo.resource!=null
+                    else showResourcesAndImprovements
+                            && tileInfo.hasViewableResource(tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization())
+            resourceImage!!.isVisible = shouldDisplayResource
         }
     }
 
