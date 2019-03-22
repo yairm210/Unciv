@@ -158,7 +158,7 @@ class Automation {
 
             //Work boat
             if (needWorkboat) {
-                relativeCostEffectiveness.add(ConstructionChoice("Work Boats",1.5f))
+                relativeCostEffectiveness.add(ConstructionChoice("Work Boats",0.6f))
             }
 
             //Army
