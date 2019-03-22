@@ -142,7 +142,7 @@ class Automation {
                 val citiesBuildingWonders = cityInfo.civInfo.cities
                         .count { it.cityConstructions.isBuildingWonder() }
                 val wonder = buildableWonders.getRandom()
-                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,3f / (citiesBuildingWonders + 1)))
+                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,5f / (citiesBuildingWonders + 1)))
             }
 
             //other buildings
