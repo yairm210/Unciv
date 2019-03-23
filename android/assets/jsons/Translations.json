@@ -1615,11 +1615,11 @@
 	}
 
 //Smashfanful said: "You missed the messages "Enemy city has attacked our unit" and "Enemy city has destroyed our unit""
-
+//Also, you forgot "[construction] has been built in a faraway land"
 	// Save and load game
 	
 	"Current saves":{
-		Italian:"Salvataggio attuale"
+		Italian:"Salvataggi attuali"
 		Russian:"Текущие сохранения"
 		French:"Sauvegardes présentes"
 		Romanian:"Salvări curente"
@@ -6910,8 +6910,49 @@
 		French:"Hélicoptère de combat"
 	}
 	
+	"Mechanized Infantry":{
+		Italian:"Fanteria meccanizzata"
+	}
+
 	// Information era - not even putting here, too far off
 	/*
+	
+	"Stealth Bomber":{
+		Italian:"Bombardiere invisibile"
+	}
+	
+	"Modern Armor":{
+		Italian:"Unità corazzata"
+	}
+	
+	"Nuclear Submarine":{
+		Italian:"Sottomarino nucleare"
+	}
+	
+	"XCOM Squad":{
+		Italian:"Squadra XCOM"
+	}
+	
+	"Missile Cruiser":{
+		Italian:"Incrociatore lanciamissili"
+	}
+	
+	"Nuclear Missile":{
+		Italian:"Missile nucleare"
+	}
+	
+	"Atomic Bomb":{
+		Italian:"Bomba atomica"
+	}
+	
+	"Guided Missile":{
+		Italian:"Missile teleguidato"
+	}
+	
+	"Jet Fighter":{
+		Italian:"Jet da combattimento"
+	}
+	
 	"Giant Death Robot":{
 		Italian:"Robot Gigante della Morte"
 	}
@@ -7053,7 +7094,7 @@
 		French:"Légalisme"
 	}
 	"Free culture building in your first 4 cities":{
-		Italian:"Le prime 4 città sono fornite di un edificio culturale gratuito"
+		Italian:"Le tue prime 4 città sono fornite di un edificio culturale gratuito"
 		Russian:"Бесплатное культурное здание в первых 4 городах"
 		Romanian:"Construcție de cultură gratuită pentru primele 4 orașe"
 		Spanish:"Edificio de cultura gratis en las primeras 4 ciudades"
@@ -7177,7 +7218,7 @@
 	}
 
 	"Training of settlers increased +50% in capital, receive a new settler near capital":{ 
-		Italian:"La Capitale riceve un Colono gratuito nella Capitale, e produce Coloni il 50% più in fretta"
+		Italian:"La Capitale riceve un Colono gratuito, e produce Coloni il 50% più in fretta"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Romanian:"Antrenamentul colonizatorilor crescut +50% în capitală, se obține un colonizator nou lângă capitală"
 		Spanish:"Entrenamiento de colonos incrementado +50% en la capital y un colono gratis cerca de la capital"
@@ -7197,7 +7238,7 @@
 		French:"Citoyenneté"
 	}
 	"+25% construction rate of workers, recieve free worker near the capital":{
-		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
+		Italian:"I miglioramenti si costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
 		Spanish:"+25% ritmo de construcción de trabajadores y un trabajador gratis cerca de la capital"
@@ -7431,7 +7472,7 @@
 		French:"Piété"
 	}
 	"Building time of culture buildings reduced by 15%":{
-		Italian:"-15% tempi di costruzione per le strutture religiose"
+		Italian:"-15% tempi di costruzione per gli edifici religiosi"
 		Russian:"Время строительства культурных зданий уменьшена на 15%"
 		Romanian:"Timpul de construcție pentru clădirile de cultură redus cu 15%"
 		Spanish:"Tiempo de construcción de edificios de cultura reducido un 15%"
@@ -8020,7 +8061,7 @@
 	}
 	"Wounded military units deal +25% damage":{
 		Spanish:"Las unidades militares hacen un +25% de daño cuando estan heridas"
-		Italian:"+25% danno per le unità militari ferite"
+		Italian:"Le unità militari ferite infliggono +25% danno"
 		Romanian:"Unitățile militare rănite fac distrugeri +25%"
 		Simplified_Chinese:"受伤的军队单位造成+25%的伤害"
 		Portuguese:"+25% dano para unidades militares feridas"
@@ -8455,7 +8496,7 @@
 		Italian:"Aggiorna a [upgradedUnit]"
 	}
 	"Obsolete with [obsoleteTech]":{
-		Italian:"Diventa obsoleta con [obsoleteTech]"
+		Italian:"Diventa obsoleto/a con [obsoleteTech]"
 	}
 	"May contain [listOfResources]":{
 		Italian:"Può contenere [listOfResources]"
