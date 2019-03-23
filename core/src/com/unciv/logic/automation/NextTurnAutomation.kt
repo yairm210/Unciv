@@ -242,7 +242,7 @@ class NextTurnAutomation{
 
             Automation().chooseNextConstruction(city.cityConstructions)
             if (city.health < city.getMaxHealth())
-                Automation().trainCombatUnit(city) // override previous decision if city is under attack
+                Automation().trainMilitaryUnit(city) // override previous decision if city is under attack
         }
     }
 
