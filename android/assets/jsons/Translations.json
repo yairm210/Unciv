@@ -2685,7 +2685,7 @@
 		Portuguese:"Literatura"
 	}
 	"Trapping":{
-		Italian:"Caccia"
+		Italian:"Trappole per animali"
 		Russian:"Охота"
 		French:"Piège" //official translate
 		Romanian:"Vânătoare"
@@ -3182,7 +3182,7 @@
 	}
 
 	"Replaceable Parts":{
-		Italian:"Parti ricomponibili"
+		Italian:"Pezzi indipendenti"
 		Romanian:"Piese de schimb"
 		Spanish:"Produccion En Serie"
 		Simplified_Chinese:"可替换零件"
@@ -8466,7 +8466,21 @@
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 	}
-	"Movement cost":{
-		Italian:"Costi di movimento"
+	
+	//Options menu, pointed out by Smashfanful
+	"Missing translations":{
+		Italian:"Traduzioni mancanti"
+	}
+	"Version":{
+		Italian:"Versione"
+	}
+	"Resolution":{
+		Italian:"Risoluzione"
+	}
+	"Tileset":{
+		Italian:"Set celle"
+	}
+	"Map editor":{
+		Italian:"Editor mappe"
 	}
 }
