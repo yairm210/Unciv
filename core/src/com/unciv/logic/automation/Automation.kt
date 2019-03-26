@@ -45,21 +45,21 @@ class Automation {
         return rank
     }
 
-    fun trainCombatUnit(city: CityInfo) {
-        val name = chooseCombatUnit(city)
+    fun trainMilitaryUnit(city: CityInfo) {
+        val name = chooseMilitaryUnit(city)
         city.cityConstructions.currentConstruction = name
     }
 
-    fun chooseCombatUnit(city: CityInfo) : String {
-        val combatUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
+    fun chooseMilitaryUnit(city: CityInfo) : String {
+        val militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
         val chosenUnit: BaseUnit
         if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
-                && combatUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
-            chosenUnit = combatUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
+                && militaryUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
+            chosenUnit = militaryUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
 
         else{ // randomize type of unit and take the most expensive of its kind
-            val chosenUnitType = combatUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.getRandom()
-            chosenUnit = combatUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
+            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.getRandom()
+            chosenUnit = militaryUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
         }
         return chosenUnit.name
     }
@@ -162,7 +162,7 @@ class Automation {
             }
 
             //Army
-            val militaryUnit = chooseCombatUnit(cityInfo)
+            val militaryUnit = chooseMilitaryUnit(cityInfo)
             val unitsToCitiesRatio = militaryUnits / cities.toFloat()
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
             val militaryChoice = ConstructionChoice(militaryUnit,unitsToCitiesRatio/5)

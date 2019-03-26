@@ -143,7 +143,10 @@ class GameInfo {
                 // As of 2.14.1, changed Machu Pichu to Machu Picchu
                 val oldMachuName = "Machu Pichu"
                 val newMachuName = "Machu Picchu"
-                cityConstructions.builtBuildings.replaceAll { if (it == oldMachuName) newMachuName else it }
+                if(cityConstructions.builtBuildings.contains(oldMachuName)){
+                    cityConstructions.builtBuildings.remove(oldMachuName)
+                    cityConstructions.builtBuildings.add(newMachuName)
+                }
                 if (cityConstructions.currentConstruction == oldMachuName)
                     cityConstructions.currentConstruction = newMachuName
                 if (cityConstructions.inProgressConstructions.containsKey(oldMachuName)) {
