@@ -1,5 +1,13 @@
 [
 
+	/*
+	{
+		name:"Instant Heal",
+		effect:"Heals the unit 50 HP, but also consumes opportunity to choose a promotion",
+		unitTypes:["Melee","Siege","Ranged","Mounted","Armor","WaterRanged","WaterMelee","WaterSubmarine"]
+	}
+	*/
+	
 	{
 		name:"Accuracy I",
 		effect:"Bonus vs units in open terrain 15%",
@@ -131,6 +139,15 @@
 		unitTypes:["Melee"]
 	}
 	
+	/*
+	{
+		name:"Woodsman",
+		prerequisites:["Shock III","Drill III"],
+		effect:"Double movement rate through Forest and Jungle",
+		unitTypes:["Melee"]
+	}
+	*/
+	
 	{
 		name:"Volley",
 		prerequisites:["Accuracy I","Barrage I"],
@@ -178,6 +195,21 @@
 		effect:"1 additional attack per turn",
 		unitTypes:["Melee","Mounted","Armor"]
 	}
+
+	/*
+	{
+		name:"Medic I",
+		prerequisites:["Shock I","Drill I","Scouting II","Survivalism II"],
+		effect:"All adjacent units heal 5 HP per turn.",
+		unitTypes:["Melee","Mounted"]
+	}
+	{
+		name:"Medic II",
+		prerequisites:["Medic I"],
+		effect:"All adjacent units heal 5 HP per turn. This unit heals 5 HP per turn when outside friendly territory.",
+		unitTypes:["Melee","Mounted"]
+	}
+	*/
 	
 	{
 		name:"Logistics",
