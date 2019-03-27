@@ -623,7 +623,7 @@
 		Japanese:"ワールドサイズ"
 	}
 	"Number of enemies:":{
-		Italian:"Numero di nemici:"
+		Italian:"Numero di giocatori IA:"
 		Russian:"Количество врагов:"
 		French:"Nombre d'ennemies:"
 		Romanian:"Număr inamici:"
@@ -8435,6 +8435,9 @@
 		Russian:"Уникальный для цивилизации [civName], заменяет [unitName]"
 		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
 		French:"Unique à la civilisation [civName], remplace [unitName]"
+	}
+	"Cost":{
+		Italian:"Costo"
 	}
 	"Requires [buildingName] to be built in the city":{
 		Italian:"Richiede la costruzione di [buildingName] nella città"
