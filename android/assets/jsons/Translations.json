@@ -94,7 +94,7 @@
 	"Turn":{ // for e.g. turns to technology
 		Italian:"Turno"
 		Russian:"Ходов"
-		French:"Tours"
+		French:"Tour"
 		Romanian:"Runde"
 		German:"Runden"
 		Dutch:"Beurten"
@@ -622,10 +622,11 @@
 		German:"Weltgröße"
 		Japanese:"ワールドサイズ"
 	}
-	"Number of enemies:":{
-		Italian:"Numero di giocatori IA:"
+
+	"Number of enemies:":{ //nummber of AI should be more accurate
+		Italian:"Numero di nemici:"
 		Russian:"Количество врагов:"
-		French:"Nombre d'ennemies:"
+		French:"Nombre d'ennemies (AI):"
 		Romanian:"Număr inamici:"
 		Spanish:"Número de enemigos:"
 		Simplified_Chinese:"敌人数量"
@@ -689,10 +690,12 @@
 	
 	"Turns between autosaves":{
 		Italian:"Turni tra autosalvataggi"
+		French:"Tours avant sauvegarde automatique"
 	}
 	
 	"Sound effects volume":{
 		Italian:"Volume effetti"
+		French:"Volume sonore"
 	}
 	
 	"Show":{
@@ -1009,6 +1012,7 @@
 
 	"Stopped population growth":{
 		Italian:"Crescita della popolazione arrestata"
+		French:"accroissement de la population arrêtée"
 		German:"Bevölkerungswachstum gestoppt"
 		Simplified_Chinese:"人口增长停止"
 		Portuguese:"Crescimento populacional interrompido"
@@ -1020,12 +1024,14 @@
 		Simplified_Chinese:"阻力将持续其他[numberOfTurns]转变"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
+		French:"En révolte pour [numberOfTurns] tours"
 	}
 	
 	"[greatPerson] points":{ // e.g "Great Scientist points"
 		Italian:"Punti [greatPerson]" //es. "Punti Grande Scienziato"
 		Portuguese:"[greatPerson] aponta"
 		Japanese:"[greatPerson]ポイント"
+		French:"[greatPerson] points"
 	}
 	
 	"Sell for [sellAmount] gold":{ // when selling a building
@@ -1644,6 +1650,7 @@
 
 	"Copy to clipboard":{
 		Italian:"Copia su appunti"
+		French:"Copier dans le presse-papier"
 	}
 
 	"Could not load game":{
@@ -3418,6 +3425,7 @@
 	/*
 	"A repeating technology that will increase your score each time it is researched.":{ //Future Tech description
 		Italian:"Questa tecnologia si può sempre ricercare; il tuo punteggio aumenterà ogni volta che viene scoperta."
+		French:"Une technologie qui augmente le score et qui peut être fait indéfiniment."
 	}
 	*/
 	
@@ -3515,7 +3523,7 @@
 	"Classical era":{
 		Italian:"Epoca Classica"
 		Russian:"Античность" //one word translation
-		French:"Âge classique"
+		French:"Âge classique" //means nothing in french
 		Romanian:"Era clasică"
 		Dutch:"Klasieke"
 		Spanish:"Edad clásica"
@@ -3899,9 +3907,9 @@
 		Simplified_Chinese:"发现科技"
 		Italian:"Scopri tecnologia"
 		German:"Entdecke Technologie"
-		Portuguese:"Découvrez technologie"
+		Portuguese:"Descubra a tecnologia"
 		Russian:"Откройте для себя технологию"
-		French:"Descubra a tecnologia"
+		French:"Découvrir une technologie"
 	}
 
 	// for unit action button
@@ -4225,16 +4233,20 @@
 
 	"Technologies":{ //You misses this translation, said Smashfanful
 		Italian:"Tecnologie"
+		French:"Technologies"
 	}
 
 	"Declarations of war":{ //You misses this translation, said Smashfanful
 		Italian:"Dichiarazione di guerra"
+		French:"Déclarations de guerre"
 	}
 	"Luxury resources":{
 		Italian:"Risorse di lusso" //You misses this translation, said Smashfanful
+		French:"Ressources de luxes"
 	}
 	"Strategic resources":{
 		Italian:"Risorse strategiche" //You misses this translation, said Smashfanful
+		French:"Ressources stratégiques"
 	}
 
 	// Civilisations and uniques
@@ -4274,7 +4286,7 @@
 		Italian:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura, e ricevi i Grandi scenziati il 50% più in fretta"
 		Romanian:"La descoperirea abilității Scriere primești un Mare om de știință gratuit, următorii fiind obținuți cu 50% mai repede"
 		German:"Ein kostenloser Großer Wissenschaftler erscheint, wenn Schrift erforscht wurde; Große Wissenschaftler erscheinen 50% häufiger"
-		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres sont découverts 50% plus vite"
+		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres apparaissent 50% plus vite"
 		Portuguese:"Receba gratuitamente o Grande Cientista quando você descobrir Escrevendo, Ganhe Grandes Cientistas 50% mais rápido"
 		Russian:"Получите бесплатно великого ученого, когда откроете для себя написание, заработайте великих ученых на 50% быстрее"
 		Simplified_Chinese:"当你发现写作，获得免费的伟大科学家，获得50％的速度获得伟大的科学家"
@@ -4306,7 +4318,7 @@
 		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
 		Simplified_Chinese:"大军事家提供双倍战斗加成，出生速率+50%"
 		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
-		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait deux fois plus vite"
+		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait 50% plus vite"
 		Portuguese:"Grande general fornece bônus de combate duplo e gera 50% mais rápido"
 		Russian:"Великий полководец дает двойной боевой бонус и появляется на 50% быстрее"
 		Spanish:"El gran general proporciona bonificación de combate doble y genera un 50% más rápido."
@@ -4474,6 +4486,7 @@
 	/*
 	"Germany":{
 		Italian:"Germania"
+		French:"Allemagne"
 	}
 	*/
 	
@@ -4765,6 +4778,7 @@
 	}
 	"Declare war on [civName]?":{
 		Italian:"Dichiarare guerra alla civiltà [civName]?"
+		French:"Déclarer la guerre à [civName]?"
 	}
 	
 	"[civName] has declared war on us!":{
@@ -4792,6 +4806,7 @@
 	/*
 	"[leaderName] of [adjective] Empire":{ // e.g. Ramesses of Egyptian Empire, Napoleon of French Empire (so it should be [adjective] instead of [nation]
 		Italian:"[leaderName] dell'Impero [adjective]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese
+		French:"[leaderName] de l'Empire [adjective]"
 	}
 	*/
 	
@@ -4807,12 +4822,15 @@
 	}
 	"Very well.":{
 		Italian:"Molto bene."
+		French:"Très bien."
 	}
 	"Farewell.":{
 		Italian:"Addio."
+		French:"Adieu."
 	}
 	"A pleasure to meet you.":{
 		Italian:"Lieto di incontrarvi."
+		French:"Un plaisir de vous rencontrez"
 	}
 	
 	// Overview screen
@@ -5375,16 +5393,20 @@
 	//New Wonder: Statue of Zeus! Suggested by Smashfanful
 	"Statue of Zeus":{	
 		Italian:"Statua di Zeus"
+		French:"Statue de Zeus"
 	}
 	"+15% Combat Strenght when attacking Cities":{
 		Italian:"+15% Forza quando attacchi le Città"
+		French:"+15% force lors d'attaque de villes"
 	}
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
 	"Mausoleum of Halicarnassus":{	
 		Italian:"Mausoleo di Alicarnasso"
+		French:"Mausolé d'Halicarnasse"
 	}
 	"+2 Gold from every source of Marble and Stone":{
 		Italian:"+2 Oro da ogni fonte di Marmo e Pietra"
+		French:"+2 or pour chaque ressources de marbre et de pierre"
 	}
 	*/
 	"Colloseum":{	
@@ -5664,10 +5686,12 @@
 	//Also, +1 Culture and +2 Great Engineer Points. Requires Gunpowder
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
+		French:"Château d'Himeji"
 	}
 	
 	"+15% Combat Strenght for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
+		French:"+15% force pour toutes les unités dans un territoire allié"
 	}
 	*/
 	
@@ -6152,8 +6176,8 @@
 	
 	"Pentagon":{
 		Italian:"Pentagono"
+		French:"Pentagone"
 		//same in German
-		//same in French
 	}
 	"Gold cost of upgrading military units reduced by 33%":{
 		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
@@ -6914,6 +6938,7 @@
 	/*
 	"Giant Death Robot":{
 		Italian:"Robot Gigante della Morte"
+		French:"Robot géant Mortel" //The most accurate should be "Robot géant de la mort" but it sound really ridiculous
 	}
 	*/
 	
@@ -8109,9 +8134,11 @@
 	}
 	"Autocracy Complete":{
 		Italian:"Autocrazia Completa"
+		French:"Autocratie complète"
 	}
 	"+1 happiness from each Walls, Castle and Arsenal":{
 		Italian:"+1 Felicità per ogni Mura, Castello e Arsenale"
+		French:"+1 de bonheur pour chaque Murs, Châteaux et Arsenal"
 	}
 	
 	// Victory Screen
@@ -8179,6 +8206,7 @@
 	// Unit Promotions
 	"Pick promotion":{
 		Italian:"Scegli promozione"
+		French:"Choisissez une promotion"
 	}
 	
 	" OR ":{// as in "Requires Accuracy I OR Barrage I
@@ -8195,235 +8223,295 @@
 	"Accuracy I":{
 		Italian:"Precisione I"
 		German:"Genauigkeit I"
+		French:"Précision I"
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
 		German:"Genauigkeit II"
+		French:"Précision II"
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
 		German:"Genauigkeit III"
+		French:"Précision III"
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
+		French:"15% force contre les unités en terrain découvert"
 	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
 		German:"Sperrfeuer I"
+		French:"Barrage I"
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
 		German:"Sperrfeuer II"
+		French:"Barrage II"
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
 		German:"Sperrfeuer III"
+		French:"Barrage III"
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
+		French:"+15% force contre les unités en terrain accidenté"
 	}
 	"Shock I":{
 		Italian:"Assalto I"
 		German:"Schock I"
+		French:"Choc I"
 	}
 	"Shock II":{
 		Italian:"Assalto II"
 		German:"Schock II"
+		French:"Choc II"
 	}
 	"Shock III":{
 		Italian:"Assalto III"
 		German:"Schock III"
+		French:"Choc III"
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
 		German:"Drill I"
+		French:"Percée I"
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
 		German:"Drill II"
+		French:"Percée II"
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
 		German:"Drill III"
+		French:"Percée III"
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
 		German:"Spähen I"
+		French:"Eclaireur I"
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
 		German:"Spähen II"
+		French:"Eclaireur II"
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
-		German:"Spähen II"
+		German:"Spähen III"
+		French:"Eclaireur III"
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
 		German:"+1 Sichtweite"
+		French:"+1 Mouvement"
 	}
 	"Cover I":{
 		Italian:"Copertura I"
 		German:"Deckung I"
+		French:"Protection I"
 	}
 	"Cover II":{
 		Italian:"Copertura II"
-		German:"Deckung I"
+		German:"Deckung II"
+		French:"Protection II"
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
 		German:"+25% Verteidigung gegen alle Fernangriffe"
+		French:"+25% défence contre les attaques à distance"
 	}
 	"March":{
 		Italian:"Marcia"
 		German:"Marschieren"
+		French:"Marche"
 	}
 	"Unit will heal every turn, even if it performs an action":{
 		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
+		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
 	}
 	"Charge":{
 		Italian:"Carica"
 		German:"Angriff"
+		French:"Charge"
 	}
 	"Bonus vs wounded units 33%":{
 		Italian:"+33% forza contro unità ferite"
+		French:"+33% force contre les unités montées"
 	}
 	"Mobility":{
 		Italian:"Mobilità"
 		German:"Mobilität"
+		French:"Mobilité"
 	}
 	"Siege":{
 		Italian:"Assedio"
 		German:"Belagerung"
+		French:"Siège"
 	}
 	"Volley":{
 		Italian:"Raffica"
 		German:"Salve"
+		French:"Volée"
 	}
 	"Sentry":{
 		Italian:"Sentinella"
 		German:"Wache"
+		French:"Sentinel"
 	}
 	"Range":{
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
+		French:"Portée"
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
 		German:"+1 Reichweite"
+		French:"+1 portée d'attaque"
 	}
 	"Indirect Fire":{
 		Italian:"Fuoco indiretto"
 		German:"Indirektes Feuer"
+		French:"Attaque indirecte" //not sure 
 	}
 	"Ranged attacks may be performed over obstacles":{
 		Italian:"Permette di sparare a distanza superando gli ostacoli"
+		French:"Les attaques à distances peuvent être effectués à travers des obstacles"
 	}
 	"Formation I":{
 		Italian:"Formazione I"
 		German:"Formation I"
+		French:"Formation I"
 	}
 	"Formation II":{
 		Italian:"Formazione II"
 		German:"Formation II"
+		French:"Formation II"
 	}
 	"Blitz":{
 		Italian:"Incursione"
-		German:"Formation III"
+		German:"Blitz"
+		French:"Guerre éclair"
 	}
 	"1 additional attack per turn":{
 		Italian:"L'unità ottiene può attaccare due volte ogni turno"
+		French:"1 attaque supplémentaire par tour"
 	}
 	"Logistics":{
 		Italian:"Logistica"
 		German:"Logistick"
+		French:"Logistique"
 	}
 	"Bombardment I":{
 		Italian:"Bombardamento I"
 		German:"Bombardierung I"
+		French:"Bombardement I"
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
 		German:"Bombardierung II"
+		French:"Bombardement II"
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
 		German:"Bombardierung III"
+		French:"Bombardement III"
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
+		French:"+33% force contre les unités terrestres"
 	}
 	"Bonus vs land units 34%":{
 		Italian:"+34% forza contro unità terrestri"
+		French:"+34% force contre les unités terrestres"
 	}
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
 		German:"Entermannschaft I"
+		French:"Embarquement I"
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
 		German:"Entermannschaft II"
+		French:"Embarquement II"
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
 		German:"Entermannschaft III"
+		French:"Embarquement III"
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
+		French:"+15% force contre les unités navales"
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
+		French:"Commando Côtier I" //not very accurate
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
+		French:"Commando Côtier II"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
+		French:"Commando Côtier III"
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
 		German:"Gezielter Schlag I"
+		French:"Ciblage I"
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
 		German:"Gezielter Schlag II"
+		French:"Ciblage II"
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
 		German:"Gezielter Schlag III"
+		French:"Ciblage III"
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
 		German:"Rudeltaktik I"
+		French:"Meute I"
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
+		French:"Meute II"
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
+		French:"Meute III"
 	}
 	
 	// Civilopedia texts
 	"Basics":{
 		Italian:"Basi"
 		German:"Spielkonzepte"
+		French:"Basiques"
 	}
 	"Resources":{
 		Italian:"Risorse"
 		German:"Ressourcen"
+		French:"Ressources"
 	}
 	"Terrains":{
 		Italian:"Terreni e caratteristiche"
 		German:"Gelände und Geländearten"
+		French:"Terrains"
 	}
 	"Tile Improvements":{
 		Italian:"Miglioramenti"
 		German:"Modernisierungen"
+		French:"Améliorations de cases"
 	}
 	
 	"Unique to [civName], replaces [unitName]":{
@@ -8441,34 +8529,48 @@
 	}
 	"Requires [buildingName] to be built in the city":{
 		Italian:"Richiede la costruzione di [buildingName] nella città"
+		French:"Requiert la construction de [buildingName] dans la ville"
 	}
 	"Requires [buildingName] to be built in all cities":{
 		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
+		French:"Requiert la construction de [buildingName] dans toutes les villes"
 	}
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
+		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
+		French:"Nécessite l'exploitation de [resource] près de la ville"
 	}
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
+		French:"Nécessite la technologie: [requiredTech]"
 	}
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
+		French:"Améliorer en [upgradedUnit]"
 	}
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
+		French:"Obsolète avec [obsoleteTech]"
 	}
 	"May contain [listOfResources]":{
 		Italian:"Può contenere [listOfResources]"
+		French:""
 	}
 	"Occurs on [listOfTerrains]":{
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
+		French:"Doit possèder [listOfResources]"
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
+		French:"Bonus de défence"
 	}
+	"Movement cost":{
+		Italian:"Costi di movimento"
+		French:"Coût de mouvement"
+  }
 	
 	//Options menu, pointed out by Smashfanful
 	"Missing translations":{
