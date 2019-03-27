@@ -111,9 +111,19 @@ class CityConstructions {
     fun turnsToConstruction(constructionName: String): Int {
         val workLeft = getRemainingWork(constructionName)
 
-        val cityStats = cityInfo.cityStats.currentCityStats
-        var production = Math.round(cityStats.production)
-        if (constructionName == Settler) production += cityStats.food.toInt()
+        // The ol' Switcharoo - what would our stats be if that was our current construction?
+        // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
+        //   and recalculating the entire city stats
+        val currConstruction = currentConstruction
+        currentConstruction = constructionName
+        cityInfo.cityStats.update()
+        val cityStatsForConstruction = cityInfo.cityStats.currentCityStats
+        // revert!
+        currentConstruction = currConstruction
+        cityInfo.cityStats.update()
+
+        var production = Math.round(cityStatsForConstruction.production)
+        if (constructionName == Settler) production += cityStatsForConstruction.food.toInt()
 
         return Math.ceil((workLeft / production.toDouble())).toInt()
     }

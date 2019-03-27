@@ -622,10 +622,11 @@
 		German:"Weltgröße"
 		Japanese:"ワールドサイズ"
 	}
-	"Number of enemies:":{ //nummber of IA should be more accurate
+
+	"Number of enemies:":{ //nummber of AI should be more accurate
 		Italian:"Numero di nemici:"
 		Russian:"Количество врагов:"
-		French:"Nombre d'ennemies (IA):"
+		French:"Nombre d'ennemies (AI):"
 		Romanian:"Număr inamici:"
 		Spanish:"Número de enemigos:"
 		Simplified_Chinese:"敌人数量"
@@ -2691,7 +2692,7 @@
 		Portuguese:"Literatura"
 	}
 	"Trapping":{
-		Italian:"Caccia"
+		Italian:"Trappole per animali"
 		Russian:"Охота"
 		French:"Piège" //official translate
 		Romanian:"Vânătoare"
@@ -3188,7 +3189,7 @@
 	}
 
 	"Replaceable Parts":{
-		Italian:"Parti ricomponibili"
+		Italian:"Pezzi indipendenti"
 		Romanian:"Piese de schimb"
 		Spanish:"Produccion En Serie"
 		Simplified_Chinese:"可替换零件"
@@ -8523,6 +8524,9 @@
 		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
 		French:"Unique à la civilisation [civName], remplace [unitName]"
 	}
+	"Cost":{
+		Italian:"Costo"
+	}
 	"Requires [buildingName] to be built in the city":{
 		Italian:"Richiede la costruzione di [buildingName] nella città"
 		French:"Requiert la construction de [buildingName] dans la ville"
@@ -8566,5 +8570,22 @@
 	"Movement cost":{
 		Italian:"Costi di movimento"
 		French:"Coût de mouvement"
+  }
+	
+	//Options menu, pointed out by Smashfanful
+	"Missing translations":{
+		Italian:"Traduzioni mancanti"
+	}
+	"Version":{
+		Italian:"Versione"
+	}
+	"Resolution":{
+		Italian:"Risoluzione"
+	}
+	"Tileset":{
+		Italian:"Set celle"
+	}
+	"Map editor":{
+		Italian:"Editor mappe"
 	}
 }
