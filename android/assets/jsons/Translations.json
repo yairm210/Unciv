@@ -158,7 +158,7 @@
 	}
 
 
-// Unit actions
+	// Unit actions
 	"Move unit":{
 		Italian:"Sposta unità"
 		Russian:"Переместить юнит"
@@ -830,7 +830,7 @@
 	}
 	
 	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
-		Italian:"Vorresti acquistare [constructionName] per [buildingGoldCost] oro?"
+		Italian:"Vuoi acquistare [constructionName] per [buildingGoldCost] oro?"
 		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золото?"
 		French:"Souhaitez-vous acheter [constructionName] pour [buildingGoldCost] gold?"
 		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
@@ -1620,12 +1620,12 @@
 		Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
 	}
 
-//Smashfanful said: "You missed the messages "Enemy city has attacked our unit" and "Enemy city has destroyed our unit""
+	//Smashfanful said: "You missed the messages "Enemy city has attacked our unit", "Enemy city has destroyed our unit" and "[construction] has been built in a faraway land". They all should be translated"
 
 	// Save and load game
 	
 	"Current saves":{
-		Italian:"Salvataggio attuale"
+		Italian:"Salvataggi attuali"
 		Russian:"Текущие сохранения"
 		French:"Sauvegardes présentes"
 		Romanian:"Salvări curente"
@@ -1776,6 +1776,29 @@
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
 	} // e.g. +25% to unit defence
+
+	"Unhappiness":{
+		Italian:"Infelicità"
+	}
+	"Great general":{
+		Italian:"Grande Generale"
+	}
+	"Terrain":{
+		Italian:"Terreno"
+	}
+	"Oligarchy":{
+		Italian:"Oligarchia"
+	}
+	"vs units in open terrain":{
+		Italian:"contro unità su terreno aperto"
+	}
+	"vs units in open terrain":{
+		Italian:"contro unità su terreno accidentato"
+	}
+	"vs City":{
+		Italian:"contro Città"
+	}
+	//And there are other various parts missing in the battle table, as in "roguh terrain", "vs. cavalry", etcetera
 	
 	// Terrains
 	
