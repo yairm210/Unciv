@@ -15,7 +15,6 @@ import kotlin.math.min
 
 class GameParameters{
     var difficulty="Prince"
-    var nation="Babylon"
     var mapRadius=20
     var numberOfHumanPlayers=1
     var humanNations=ArrayList<String>().apply { add("Babylon") }

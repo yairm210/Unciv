@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Json
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -69,7 +68,7 @@ class LoadScreen : PickerScreen() {
             try{
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
-                val loadedGame = Json().fromJson(GameInfo::class.java, decoded)
+                val loadedGame = GameSaver().json().fromJson(GameInfo::class.java, decoded)
                 loadedGame.setTransients()
                 UnCivGame.Current.loadGame(loadedGame)
             }catch (ex:Exception){

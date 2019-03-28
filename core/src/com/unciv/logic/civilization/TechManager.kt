@@ -73,7 +73,10 @@ class TechManager {
 
         while (!checkPrerequisites.isEmpty()) {
             val techNameToCheck = checkPrerequisites.pop()
-            if (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck))
+            // future tech can have been researched even when we're researching it,
+            // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have annything to research. Yeah.
+            if (techNameToCheck!="Future Tech" &&
+                    (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck)) )
                 continue //no need to add or check prerequisites
             val techToCheck = GameBasics.Technologies[techNameToCheck]
             for (str in techToCheck!!.prerequisites)
