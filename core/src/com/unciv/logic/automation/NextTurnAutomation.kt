@@ -2,11 +2,12 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -55,9 +56,9 @@ class NextTurnAutomation{
                     .filter { it.type == TradeType.Technology }
 
             for (theirOffer in theirTradableTechs) {
-                val theirValue = tradeLogic.evaluateOffer(theirOffer, false)
+                val theirValue = TradeEvaluation().evaluateBuyCost(theirOffer, civInfo, otherCiv)
                 val ourOfferList = ourTradableTechs.filter{
-                            tradeLogic.evaluateOffer(it, false) == theirValue
+                    TradeEvaluation().evaluateBuyCost(it, otherCiv, civInfo) == theirValue
                             && !tradeLogic.currentTrade.ourOffers.contains(it) }
 
                 if (ourOfferList.isNotEmpty()) {
@@ -165,7 +166,7 @@ class NextTurnAutomation{
 
                     //pay for peace
                     val tradeLogic = TradeLogic(civInfo, enemy)
-                    var moneyWeNeedToPay = -tradeLogic.evaluatePeaceCostForThem()
+                    var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo,enemy)
                     if (moneyWeNeedToPay > tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }.amount) {
                         moneyWeNeedToPay = tradeLogic.ourAvailableOffers.first { it.type == TradeType.Gold }.amount
                     }

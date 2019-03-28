@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -32,7 +33,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
                 if(tradeLogic.currentTrade.theirOffers.size==0 && tradeLogic.currentTrade.ourOffers.size==0){
                     tradeText.setText(otherCivilization.getTranslatedNation().neutralLetsHearIt.random().tr())
                 }
-                else if (tradeLogic.isTradeAcceptable()){
+                else if (TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade.reverse(),otherCivilization,currentPlayerCiv)){
                     tradeText.setText(otherCivilization.getTranslatedNation().neutralYes.random().tr())
                     offerButton.setText("Accept".tr())
                 }
