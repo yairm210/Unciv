@@ -8644,5 +8644,15 @@
 		Italian:"Giapponese"
 	}
 	
+	//Map editor menu
+	"Save":{
+		Italian:"Salva"
+	}
+	"Load":{
+		Italian:"Carica"
+	}
+	"Exit map editor":{
+		Italian:"Esci dall'editor"
+	}
 
 }
