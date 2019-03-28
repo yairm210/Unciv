@@ -5184,7 +5184,7 @@
 		German:"Die Pyramiden"
 	}
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
-		Italian:"+25% velocità costruzione lavoratori"
+		Italian:"+25% velocità di costruzione per i lavoratori"
 		Russian:"Увеличивает на 25% скорость создания улучшений на клетках"
 		French:"La vitesse de construction des travailleurs a augmenté de 25%"
 		Romanian:"Construirea de muncitori a crescut cu 25%"
@@ -5228,7 +5228,7 @@
 	} // russian uique, transliterate this probably, this is a russian word
 	
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
-		Italian:"-25% costi in Cultura e Oro nell'acquistare nuove celle nella città"
+		Italian:"-25% costi in Cultura e Oro nell'acquisto di nuove celle nella città"
 		Romanian:"Costurile în Cultură și Aur pentru cumpărarea noilor celule în acest oraș sunt reduse cu 25%"
 		Spanish:"El coste de comprar terrenos en esta ciudad se reduce un 25%"
 		Simplified_Chinese:"在这个城市，购买新地块的文化和黄金成本降低了25%"
@@ -7222,7 +7222,7 @@
 		French:"Citoyenneté"
 	}
 	"+25% construction rate of workers, recieve free worker near the capital":{
-		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
+		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"//you missed this translation, said Smashfanful
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
 		Spanish:"+25% ritmo de construcción de trabajadores y un trabajador gratis cerca de la capital"
@@ -8570,7 +8570,7 @@
 	"Movement cost":{
 		Italian:"Costi di movimento"
 		French:"Coût de mouvement"
-  }
+  	}
 	
 	//Options menu, pointed out by Smashfanful
 	"Missing translations":{
@@ -8588,4 +8588,38 @@
 	"Map editor":{
 		Italian:"Editor mappe"
 	}
+
+	//Languages
+	"English":{
+		Italian:"Inglese"
+	}
+	"Italian":{
+		Italian:"Italiano"
+	}
+	"German":{
+		Italian:"Tedesci"
+	}
+	"French":{
+		Italian:"Francese"
+	}
+	"Spanish":{
+		Italian:"Spagnolo"
+	}
+	"Portuguese":{
+		Italian:"Portoghese"
+	}
+	"Russian":{
+		Italian:"Russo"
+	}
+	"Simplified Chinese":{
+		Italian:"Cinese semplificato"
+	}
+	"Dutch":{
+		Italian:"Olandese"
+	}
+	"Japanese":{
+		Italian:"Giapponese"
+	}
+	
+
 }
