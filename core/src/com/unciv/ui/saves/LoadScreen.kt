@@ -97,7 +97,8 @@ class LoadScreen : PickerScreen() {
             catch (ex:Exception){
                 val popup = PopupTable(this)
                 popup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - paste into an email to yairm210@hotmail.com)").row()
+                popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
                 popup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
                 popup.open()
             }

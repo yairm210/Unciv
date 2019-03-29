@@ -14,6 +14,7 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.optionstable.PopupTable
 import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
@@ -151,9 +152,21 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if(attackableEnemy == null) attackButton.disable()
         else {
             attackButton.onClick {
-                battle.moveAndAttack(attacker,attackableEnemy!!)
-                worldScreen.tileMapHolder.removeUnitActionOverlay=true // the overlay was one of attacking
-                worldScreen.shouldUpdate=true
+                try {
+                    battle.moveAndAttack(attacker, attackableEnemy)
+                    worldScreen.tileMapHolder.removeUnitActionOverlay = true // the overlay was one of attacking
+                    worldScreen.shouldUpdate = true
+                }
+                catch (ex:Exception){
+                    val popup = PopupTable(worldScreen)
+                    popup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
+                    popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                    popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                    popup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
+                    popup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
+                    popup.addGoodSizedLabel("  that would be even better!").row()
+                    popup.open()
+                }
             }
         }
 
