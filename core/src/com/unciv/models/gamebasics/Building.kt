@@ -265,6 +265,8 @@ class Building : NamedStats(), IConstruction{
                     city.population.autoAssignPopulation()
                 }
             }
+            "Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)" in uniques ->
+                civInfo.updateHasActiveGreatWall()
         }
 
         if (freeTechs != 0) civInfo.tech.freeTechs += freeTechs

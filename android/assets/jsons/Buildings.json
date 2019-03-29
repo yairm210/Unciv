@@ -43,6 +43,13 @@
 		requiredTech:"Calendar"
 	},
 	{
+		name:"Library",
+		hurryCostModifier:25,
+		maintenance:1,
+		uniques:["+1 Science Per 2 Population"],
+		requiredTech:"Writing"
+	},
+	{
 		name:"The Great Library",
 		science:3,
 		culture:1,
@@ -50,13 +57,6 @@
 		isWonder:true,
 		providesFreeBuilding: "Library",
 		freeTechs:1,
-		requiredTech:"Writing"
-	},
-	{
-		name:"Library",
-		hurryCostModifier:25,
-		maintenance:1,
-		uniques:["+1 Science Per 2 Population"],
 		requiredTech:"Writing"
 	},
 	{
@@ -232,6 +232,16 @@
 		maintenance:1,
 		hurryCostModifier:25,
 		uniques:["40% of food is carried over after a new citizen is born"]
+		requiredTech:"Engineering"
+	},
+	{
+		name:"Great Wall",
+		culture:1,
+		greatPersonPoints:{production:1},
+		isWonder:true,
+		providesFreeBuilding: "Walls",
+		freeTechs:1,
+		uniques:["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"]
 		requiredTech:"Engineering"
 	},
 	

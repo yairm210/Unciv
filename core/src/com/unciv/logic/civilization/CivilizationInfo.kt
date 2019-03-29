@@ -47,6 +47,9 @@ class CivilizationInfo {
     @Transient var viewableTiles = HashSet<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = HashSet<TileInfo>()
 
+    // This is for performance since every movement calculation depends on this, see MapUnit comment
+    @Transient var hasActiveGreatWall = false
+
     var gold = 0
     var happiness = 15
     @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
@@ -351,6 +354,12 @@ class CivilizationInfo {
         }
         setCitiesConnectedToCapitalTransients()
         updateViewableTiles()
+        updateHasActiveGreatWall()
+    }
+
+    fun updateHasActiveGreatWall(){
+        hasActiveGreatWall = !tech.isResearched("Dynamite") &&
+                getBuildingUniques().contains("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
     }
 
     fun startTurn(){
@@ -402,6 +411,7 @@ class CivilizationInfo {
         goldenAges.endTurn(happiness)
         getCivUnits().forEach { it.endTurn() }
         diplomacy.values.forEach{it.nextTurn()}
+        updateHasActiveGreatWall()
     }
 
     fun getGreatPersonPointsForNextTurn(): Stats {
