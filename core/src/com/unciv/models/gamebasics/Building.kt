@@ -8,6 +8,7 @@ import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.getRandom
 
 class Building : NamedStats(), IConstruction{
+
     override val description: String
         get() = getDescription(false, hashSetOf())
 
@@ -167,43 +168,63 @@ class Building : NamedStats(), IConstruction{
         return (cost / 10).toInt() * 10
     }
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        if (construction.isBuilt(name)) return false
+
+    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
+        val rejectionReason = getRejectionReason(construction)
+        return rejectionReason==""
+                || rejectionReason.startsWith("Requires")
+                || rejectionReason == "Wonder is being built elsewhere"
+    }
+
+    fun getRejectionReason(construction: CityConstructions):String{
+        if (construction.isBuilt(name)) return "Already built"
 
         val civInfo = construction.cityInfo.civInfo
-        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
-        if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
-        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return false
+        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
+        if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
+        if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+
+        // Regular wonders
         if (isWonder && requiredBuildingInAllCities==null){
             if(civInfo.gameInfo.civilizations.flatMap { it.cities }
                             .any {it.cityConstructions.isBuilt(name)})
-                return false
-            
+                return "Wonder is already built"
+
             if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
-                return false
+                return "Wonder is being built elsewhere"
         }
 
-        if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!)) return false
-        if (requiredBuildingInAllCities != null && civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
-            return false
-        if(requiredBuildingInAllCities!=null && civInfo.cities.any {
-                    it.cityConstructions.isBeingConstructed(name) || it.cityConstructions.isBuilt(name)
-                })
-            return false
 
-        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!)) return false
+        // National wonders
+        if(requiredBuildingInAllCities!=null) {
+            if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
+                return "Requires a $requiredBuildingInAllCities in all cities"
+
+            if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
+                return "Wonder is already built"
+            if (civInfo.cities.any {it.cityConstructions.isBeingConstructed(name) })
+                return "Wonder is being built elsewhere"
+        }
+
+        if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
+            return "Requires a $requiredBuilding in this city"
+        if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
+            return "Cannot be built with $cannotBeBuiltWith"
+
         if ("Must be next to desert" in uniques
                 && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
-            return false
+            return "Must be next to desert"
+
         if ("Must be next to mountain" in uniques
                 && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Mountain" })
-            return false
+            return "Must be next to mountain"
+
         if("Can only be built in coastal cities" in uniques
                 && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
-            return false
-        if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
-            return false
+            return "Can only be built in coastal cities"
 
+        if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
+            return "Requires $requiredResource"
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getTilesInRange()
@@ -213,14 +234,18 @@ class Building : NamedStats(), IConstruction{
                                 && it.getTileResource().improvement == it.improvement
                                 && it.getOwner() == civInfo
                     }
-            if (!containsResourceWithImprovement) return false
+            if (!containsResourceWithImprovement) return "Nearby $requiredNearbyImprovedResources required"
         }
 
         if ("Spaceship part" in uniques) {
-            if (!civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts")) return false
-            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return false // Don't need to build any more of these!
+            if (!civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts")) return "Apollo project not built!"
+            if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
-        return true
+        return ""
+    }
+
+    override fun isBuildable(construction: CityConstructions): Boolean {
+        return getRejectionReason(construction)==""
     }
 
     override fun postBuildEvent(construction: CityConstructions) {
