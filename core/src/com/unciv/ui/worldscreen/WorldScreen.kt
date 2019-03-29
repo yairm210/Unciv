@@ -219,6 +219,9 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton(): TextButton {
         val nextTurnButton = TextButton("Next turn".tr(), CameraStageBaseScreen.skin)
         nextTurnButton.onClick {
+            if(currentPlayerCiv.policies.shouldOpenPolicyPicker && !currentPlayerCiv.policies.canAdoptPolicy())
+                currentPlayerCiv.policies.shouldOpenPolicyPicker = false // something has chanhed and we can no longer adopt the policy, e.g. we conquered another city
+
             if (currentPlayerCiv.tech.freeTechs != 0) {
                 game.screen = TechPickerScreen(true, currentPlayerCiv)
                 return@onClick
