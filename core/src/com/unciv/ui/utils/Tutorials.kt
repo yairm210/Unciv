@@ -27,8 +27,6 @@ class Tutorials{
 
     fun displayTutorials(name: String, stage: Stage) {
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
-        UnCivGame.Current.settings.tutorialsShown.add(name)
-        UnCivGame.Current.settings.save()
         val texts = getTutorials(name, UnCivGame.Current.settings.language)
         tutorialTexts.add(Tutorial(name,texts))
         if (!isTutorialShowing) displayTutorial(stage)
@@ -74,6 +72,10 @@ class Tutorials{
 
         button.onClick {
             tutorialTable.remove()
+            if(!UnCivGame.Current.settings.tutorialsShown.contains(currentTutorial.name)) {
+                UnCivGame.Current.settings.tutorialsShown.add(currentTutorial.name)
+                UnCivGame.Current.settings.save()
+            }
             if (!tutorialTexts.isEmpty())
                 displayTutorial(stage)
             else
