@@ -75,7 +75,7 @@ class GameStarter{
     }
 
     fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
-        for(minimumDistanceBetweenStartingLocations in 7 downTo 0){
+        for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/2 downTo 0){
             val freeTiles = tileMap.values
                     .filter { it.isLand() && vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
                     .toMutableList()
