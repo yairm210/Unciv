@@ -624,7 +624,7 @@
 	}
 
 	"Number of enemies:":{ //nummber of AI should be more accurate
-		Italian:"Numero di nemici:"
+		Italian:"Numero di giocatori IA:"
 		Russian:"Количество врагов:"
 		French:"Nombre d'ennemies (AI):"
 		Romanian:"Număr inamici:"
@@ -725,7 +725,7 @@
 	}
 	
 	"Worked tiles":{
-		Italian:"celle sfruttate"
+		Italian:"Celle sfruttate"
 		Russian:"обработанные клетки"
 		French:"cases exploités"
 		Romanian:"celule lucrate"
@@ -5351,7 +5351,7 @@
 		German:"Kann nur in Küstenstädten gebaut werden"
 	}
 	"+1 food from Ocean and Coast tiles":{
-		Italian:"+1 Cibo da caselle Oceano e costiere"
+		Italian:"+1 Cibo da caselle oceaniche e costiere"
 		Romanian:"+1 hrană din celule ocean și de țărm"
 		German:"+1 Nahrung von Ozean und Küsten Feldern"
 		French:"+1 nourriture des cases océans et côtes"
@@ -5525,6 +5525,13 @@
 		Portuguese:"+33% de geração de grandes pessoas em todas as cidades"
 	}
 	
+	"Great Wall":{	
+		Italian:"Grande Muraglia"
+	}
+	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
+		Italian:"Le unità terrestri nemiche spendono 1 punto Movimento extra quando si trovano nel tuo territorio (diventa obsoleta con la Dinamite)"
+	}
+	
 	"Mint":{ 
 		Italian:"Zecca"
 		Russian:"Монетный двор"
@@ -5640,7 +5647,7 @@
 		German:"Universität"
 	}
 	"Jungles provide +2 science":{
-		Italian:"+2 scienza da giungle"
+		Italian:"+2 scienza da Giungle"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă +2 știință"
@@ -5694,7 +5701,7 @@
 		German:"Angkor Wat"
 	}
 	"Cost of acquiring new tiles reduced by 25%":{
-		Italian:"-25% costo di acquisto di nuove celle"
+		Italian:"-25% costo per l'acquisto di nuove celle"
 		Russian:"Сокращает стоимость приобретения новых клеток на 25%"
 		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
 		Romanian:"Costul de achiziționare a celulelor noi redus cu 25%"
@@ -6051,7 +6058,8 @@
 	}
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
-	}
+	}//Kremlin should boost armored units Production by 50%, as well as providing a Free Social Policy
+	//Unless the effects you gave to the Kremlin were already in the original Civ V
 	
 	"Military Academy":{	
 		Italian:"Accademia militare"
@@ -8559,7 +8567,7 @@
 		French:"Requiert la construction de [buildingName] dans toutes les villes"
 	}
 	"Provides a free [buildingName] in the city":{
-		Italian:"Dona l'edificio gratuito [buildingName] nella città"
+		Italian:"Fornisce l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
 	}
 	"Requires worked [resource] near city":{
@@ -8575,7 +8583,7 @@
 		French:"Améliorer en [upgradedUnit]"
 	}
 	"Obsolete with [obsoleteTech]":{
-		Italian:"Diventa obsoleta con [obsoleteTech]"
+		Italian:"Diventa obsoleta con la tecnologia [obsoleteTech]"
 		French:"Obsolète avec [obsoleteTech]"
 	}
 	"May contain [listOfResources]":{
@@ -8602,6 +8610,9 @@
 	"Version":{
 		Italian:"Versione"
 	}
+	"Languages":{
+		Italian:"Lingue"
+	}
 	"Resolution":{
 		Italian:"Risoluzione"
 	}
@@ -8624,6 +8635,7 @@
 	}
 	"French":{
 		Italian:"Francese"
+		French:"Français"
 	}
 	"Spanish":{
 		Italian:"Spagnolo"
@@ -8642,6 +8654,34 @@
 	}
 	"Japanese":{
 		Italian:"Giapponese"
+	}
+	"Romanian":{
+		Italian:"Rumeno"
+	}
+	"Danish":{
+		Italian:"Danese"
+	}
+	"Slovak":{
+		Italian:"Slovacco"
+	}
+	"Czech":{
+		Italian:"Ceco"
+	}
+	"Croatian":{
+		Italian:"Croato"
+	}
+	"Polish":{
+		Italian:"Polacco"
+		Polish:"Polski"
+	}
+	"Philippino":{
+		Italian:"Filippino"
+	}
+	"Sloven":{
+		Italian:"Sloveno"
+	}
+	"Indonesian":{
+		Italian:"Indonesiano"
 	}
 	
 	//Map editor menu
