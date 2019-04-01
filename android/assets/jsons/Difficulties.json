@@ -88,3 +88,7 @@
 		aiUnhappinessModifier:0.6
 	}
 ]
+
+//Smashfanful points out:
+//"I think you should also add Policy costs and Research costs both for player and AI, as well as a Declare War Probability for AI"
+//"and a chance for Barbarians to enter player territory"
