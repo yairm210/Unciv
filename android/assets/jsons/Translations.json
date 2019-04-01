@@ -4545,6 +4545,10 @@
 		Russian:"юниты на пересеченной местности"
 	}
 	
+	"units in open terrain:":{
+		Italian:"unità su terreno aperto"
+	}
+	
 	"Barbarians":{
 		Italian:"Barbari"
 		Romanian:"Barbari"
@@ -8522,6 +8526,33 @@
 		German:"Rudeltaktik III"
 		French:"Meute III"
 	}
+	"Bonus as Attacker 25%":{
+		Italian:"+25% Forza in attacco"
+	}
+	"Instant Heal":{
+		Italian:"Cura instantanea"
+	}
+	"Heals the unit 50 HP, but also consumes opportunity to choose a promotion":{
+		Italian:"Cura l'unità di 50 punti vita, rinunciando all'opportunità di scegliere una promozione"
+	}
+	"Woodsman":{
+		Italian:"Forestali"
+	}
+	"Double movement rate through Forest and Jungle":{
+		Italian:"Movimento raddoppiato su Foreste e Giungle"
+	}
+	"Medic I":{
+		Italian:"Medico I"
+	}
+	"All adjacent units heal 5 HP per turn.":{
+		Italian:"Tutte le unità adiacenti recuperano 5 punti vita al turno"
+	}
+	"Medic II":{
+		Italian:"Medico II"
+	}
+	"All adjacent units heal 5 HP per turn. This unit heals 5 HP per turn when outside friendly territory.":{
+		Italian:"Tutte le unità adiacenti recuperano 5 punti vita al turno, e l'unità presente guarisce 5 punti vita al turno quando fuori dal territorio amico"
+	}
 	
 	// Civilopedia texts
 	"Basics":{
@@ -8571,7 +8602,7 @@
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
 	}
 	"Requires worked [resource] near city":{
-		Italian:"Richiede che la città sfrutti [resource]"
+		Italian:"Richiede che la città sfrutti la risorsa [resource]"
 		French:"Nécessite l'exploitation de [resource] près de la ville"
 	}
 	"Required tech: [requiredTech]":{
@@ -8587,7 +8618,7 @@
 		French:"Obsolète avec [obsoleteTech]"
 	}
 	"May contain [listOfResources]":{
-		Italian:"Può contenere [listOfResources]"
+		Italian:"Risorse fornite: [listOfResources]"
 		French:""
 	}
 	"Occurs on [listOfTerrains]":{
@@ -8682,6 +8713,9 @@
 	}
 	"Indonesian":{
 		Italian:"Indonesiano"
+	}
+	"Korean":{
+		Italian:"Coreano"
 	}
 	
 	//Map editor menu
