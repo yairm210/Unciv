@@ -43,7 +43,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         else {
             pickProductionButton.color = Color.GRAY
             pickProductionButton.row()
-            pickProductionButton.add(rejectionReason.toLabel().setFontColor(Color.RED))
+            pickProductionButton.add(rejectionReason.toLabel().setFontColor(Color.RED)).colspan(pickProductionButton.columns)
         }
 
         if(construction==cityScreen.city.cityConstructions.currentConstruction)

@@ -76,7 +76,9 @@ class CityExpansionManager {
         for(tile in cityInfo.tiles.map { cityInfo.tileMap[it] })
             relinquishOwnership(tile)
 
-        cityInfo.getCenterTile().getTilesInDistance(1).forEach { takeOwnership(it) }
+        cityInfo.getCenterTile().getTilesInDistance(1)
+                .filter { it.getCity()!=null } // can't take ownership of owned tiles
+                .forEach { takeOwnership(it) }
     }
 
     private fun addNewTileWithCulture() {
@@ -97,7 +99,8 @@ class CityExpansionManager {
 
     fun takeOwnership(tileInfo: TileInfo){
         if(tileInfo.isCityCenter()) throw Exception("What?!")
-        if(tileInfo.getCity()!=null) tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
+        if(tileInfo.getCity()!=null)
+            tileInfo.getCity()!!.expansion.relinquishOwnership(tileInfo)
 
         cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
         tileInfo.owningCity = cityInfo
