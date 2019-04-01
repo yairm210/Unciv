@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
 import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
@@ -191,8 +192,11 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private fun updateTechButton(civInfo: CivilizationInfo) {
         techButton.isVisible = civInfo.cities.isNotEmpty()
-
         techButton.clearChildren()
+
+        val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+        if (civInfo.tech.currentTechnology() == null && researchableTechs.isEmpty())
+            civInfo.tech.techsToResearch.add("Future Tech")
 
         if (civInfo.tech.currentTechnology() == null) {
             val buttonPic = Table()
