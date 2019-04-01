@@ -49,8 +49,9 @@ class BattleDamage{
             if (combatant.getCivInfo().happiness < 0)
                 modifiers["Unhappiness"] = max(0.02f * combatant.getCivInfo().happiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
-            if(combatant.getCivInfo().policies.isAdopted("Populism"))
+            if(combatant.getCivInfo().policies.isAdopted("Populism") && combatant.getHealth() < 100){
                 modifiers["Populism"] = 0.25f
+            }
 
             if(combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
