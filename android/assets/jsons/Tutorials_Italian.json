@@ -67,7 +67,7 @@
 			"Ricorda di restare competitivo nella corsa tecnologica, perché se rimani ",
 			"  troppo indietro in tale campo ti ritroverai nella stessa situazione degli Aztechi, che ",
 			"  dovettero affrontare i moschetti e i cannoni spagnoli armati solo di fionde e spade in ossidiana."
-			" La storia ci insegna che in casi come questo vince sempre chi possiede la tecnologia più avanzata"
+			" La storia ci insegna che in casi come questo vince sempre chi possiede la tecnologia più avanzata."
 		]
 	],
 	
@@ -145,14 +145,14 @@
 	NextTurn: [
 		[
 			"Nei tuoi primi turni, avrai ben poche opzioni, ",
-			"  ma con il crescere della tua civiltà, lo stesso accadrà ",
-			"  alla quantità di cose che richiedono la tua attenzione."
+			" ma con il crescere della tua civiltà, lo stesso accadrà ",
+			" alla quantità di cose che richiedono la tua attenzione."
 		]
 		[
 			"Ah, dimenticavo! Qualsiasi cosa tu faccia, nelle prime fasi del gioco ricordati sempre ",
-			" di inviare qualche unità (il tuo scout, ad esempio) ad esplorare il mondo (se non l'hai già fatto). ",
+			" di inviare qualche unità (il tuo Scout, ad esempio) ad esplorare il mondo (se non l'hai già fatto). ",
 			"Se non sai cosa ti succede intorno, qualche vicino avido ti tirerà certamente "
-			" qualche tiro mancino, e l'esperienza potrebbe esserti fatale!
+			" qualche tiro mancino, e l'esperienza potrebbe esserti fatale!"
 		]
 	]
 	
@@ -176,9 +176,9 @@
 	
 	Unhappiness:  [
 		[
-			"Sembra che i tuoi cittadini siano insoddisfatti!",
-			"Se il tuo impero non è felice, le città cresceranno a 1/4 della loro velocità,",
-			"  e le tue unità saranno penalizzate del 2% ad ogni punto infelicità."
+			"Sembra che i tuoi cittadini siano insoddisfatti dal tuo goveron.",
+			"Se il tuo impero è infelice, le città cresceranno a 1/4 della loro velocità, ",
+			" e la Forza delle tue unità saranno penalizzate del 2% ad ogni punto infelicità."
 		],
 		[
 			"L'Infelicità possiede due cause: abitanti e città.",
@@ -231,10 +231,10 @@
 	StrategicResource:  [
 		[
 			"Hai ottenuto la tua prima risorsa strategica!",
-			"Le risorse strategiche ti permettono di addestrare unità e costruire edifici",
-			"  che richiedono tali risorse specifiche (ad esempio, lo Spadaccino richiede Ferro)."
+			"Le risorse strategiche ti permettono di addestrare unità e costruire edifici ",
+			" che richiedono tali risorse specifiche (ad esempio, lo Spadaccino richiede Ferro)."
 			"Ogni unità 'consuma' una copia di quella risorsa, ma se quell'unità muore recuperi quella 'copia' della risorsa, ",
-			"  e puoi quindi costruire una nuova unità con quella risorsa ora non utilizzata.",
+			" e puoi quindi costruire una nuova unità con quella risorsa ora non utilizzata.",
 			"La barra superiore tiene conto di quante risorse strategiche non usate possiedi."
 		]
 	]
@@ -284,7 +284,7 @@
 		[
 			"Una delle tue unità ha subito danni!",
 			"Le unità ferite infliggono meno dani, ma recuperano salute finché rimangono inattive",
-			"Le unità recuperano 5 punti salute in territorio nemico, 10 in terra neutrale,"
+			"Le unità recuperano 5 punti salute in territorio nemico, 10 in terra neutrale, "
 			" 15 nel tuo territorio o in territorio amico e 20 nelle tue città"
 		]
 	]
@@ -293,7 +293,7 @@
 		[
 			"Hai addestrato un lavoratore!",
 			"I lavoratori sono vitali per la crescita delle città, perché solo loro possono costruire miglioramenti nelle caselle.",
-			"I miglioramenti incrementano la resa delle caselle, permettendo alle città di produrre di più",
+			"I miglioramenti incrementano la resa delle caselle, permettendo alle città di produrre di più ",
 			" e crescere più in fretta, senza dover espandersi a forza!"
 		]
 	]
@@ -302,7 +302,7 @@
 		[
 			"Hai addestrato un'unità d'assedio!",
 			"Le unità d'assedio sono estremamente potenti contro le città, ma vanno allestite prima di attaccare.",
-			"Una volta montata, l'unità d'assedio può attaccare dalla sua casella attuale,",
+			"Una volta montata, l'unità d'assedio può attaccare dalla sua casella in cui è presente, ",
 			" ma una volta spostatasi a un'altra casella, dovrà essere montata di nuovo."
 		]
 	]
