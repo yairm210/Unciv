@@ -34,8 +34,13 @@ class TechButton(techName:String, val techManager: TechManager) : Table(CameraSt
         val techEnabledIcons = Table()
         techEnabledIcons.defaults().pad(5f)
 
-        for(unit in GameBasics.Units.values.filter { it.requiredTech==techName
-                && (it.uniqueTo==null || it.uniqueTo==techManager.civInfo.civName) })
+        val techEnabledUnits = GameBasics.Units.values.filter { it.requiredTech==techName }
+        val ourUniqueUnits = techEnabledUnits.filter { it.uniqueTo == techManager.civInfo.civName }
+        val replacedUnits = ourUniqueUnits.map { it.replaces!! }
+        val ourEnabledUnits = techEnabledUnits.filter { it.uniqueTo == null && !replacedUnits.contains(it.name) }
+                .union(ourUniqueUnits)
+
+        for(unit in ourEnabledUnits)
             techEnabledIcons.add(ImageGetter.getConstructionImage(unit.name).surroundWithCircle(30f))
 
         for(building in GameBasics.Buildings.values.filter { it.requiredTech==techName
