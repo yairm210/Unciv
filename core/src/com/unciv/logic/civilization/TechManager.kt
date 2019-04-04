@@ -8,6 +8,7 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
+import kotlin.collections.ArrayList
 
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -173,7 +174,10 @@ class TechManager {
             techsInProgress.remove(badTechName)
         }
         if(techsToResearch.contains(badTechName)){
-            techsToResearch.replaceAll { if(it!=badTechName) it else goodTechName }
+            val newTechToReseach= ArrayList<String>()
+            for(tech in techsToResearch)
+                newTechToReseach.add(if(tech!=badTechName) tech else goodTechName)
+            techsToResearch = newTechToReseach
         }
 
         researchedTechnologies.addAll(techsResearched.map { GameBasics.Technologies[it]!! })
