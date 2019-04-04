@@ -110,6 +110,15 @@
 		requiredTech:"Bronze Working"
 	},
 	{
+		name:"Colossus",
+		culture:1,
+		gold:5,
+		greatPersonPoints:{gold:1},
+		isWonder:true,
+		uniques:["Can only be built in coastal cities", "+1 gold from worked water tiles in city"],
+		requiredTech:"Mathematics"
+	},
+	{
 		name:"Krepost",
 		replaces:"Barracks",
 		uniqueTo:"Russia"

@@ -10,7 +10,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         var cost = getMovementCostBetweenAdjacentTiles(from,to)
 
         val toOwner = to.getOwner()
-        if(toOwner!=null && civInfo.isAtWarWith(toOwner) && toOwner.hasActiveGreatWall) cost += 1
+        if(toOwner!=null &&  to.isLand() && civInfo.isAtWarWith(toOwner) && toOwner.hasActiveGreatWall)
+            cost += 1
         return cost
     }
 
