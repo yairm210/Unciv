@@ -453,6 +453,15 @@
 		requiredTech:"Printing Press"
 	},
 	{
+		name:"Himeji Castle",
+		culture:1,
+		isWonder:true,
+		greatPersonPoints:{production:2}
+		providesFreeBuilding:"Castle",
+		uniques:["+15% combat strength for units fighting in friendly territory"] // todo
+		requiredTech:"Gunpowder"
+	},
+	{
 		name:"Museum",
 		culture:5,
 		specialistSlots:{culture:1},

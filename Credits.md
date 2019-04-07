@@ -187,6 +187,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Forbidden City](https://thenounproject.com/term/forbidden-city/1797540/) By 1516
 * [Theatre](https://thenounproject.com/term/theatre/1780401/) By b farias
 * [Tower of Pisa](https://thenounproject.com/search/?q=leaning%20tower%20of%20pisa&i=1002578) By Pedro Santos
+* [Himeji Castle](https://thenounproject.com/search/?q=himeji&i=1125277) By Chanut is Industries
 * [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
 * [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
 * [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell

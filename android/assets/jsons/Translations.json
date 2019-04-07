@@ -5834,8 +5834,7 @@
 		Spanish:"La Torre Inclinada De Pizza"
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
-	}
-	
+	}	
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
 		Romanian:"Persoană mare gratuită"
@@ -5843,6 +5842,9 @@
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
 	}
+	
+	"Himeji Castle":{}
+	"+15% combat strength for units fighting in friendly territory":{}
 	
 	"Taj Mahal":{	
 		Italian:"Taj Mahal" //same in Italian
