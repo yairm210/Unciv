@@ -5236,8 +5236,12 @@
 		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
 	}
 	
-	"Colossus":{}
-	"+1 gold from worked water tiles in city":{}
+	"Colossus":{
+		Italian:"Colosso"
+	}
+	"+1 gold from worked water tiles in city":{
+		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
+	}
 	
 	"Temple":{	
 		Italian:"Tempio"
@@ -5560,8 +5564,12 @@
 		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
 	}
 	
-	"Great Wall":{}
-	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{}
+	"Great Wall":{
+		Italian:"Grande Muraglia"
+	}
+	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
+		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
+	}
 	
 	"Workshop":{	
 		Italian:"Bottega"
@@ -8595,5 +8603,8 @@
 	}
 	"Map editor":{
 		Italian:"Editor mappe"
+	}
+	"Language":{
+		Italian:"Lingua"
 	}
 }
