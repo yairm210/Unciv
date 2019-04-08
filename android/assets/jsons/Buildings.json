@@ -181,6 +181,12 @@
 		requiredTech:"Construction"
 	},
 	{
+		name:"Terracotta Army",
+		culture:6,
+		isWonder:true,
+		requiredTech:"Construction"
+	},
+	{
 		name:"Temple",
 		culture:3,
 		specialistSlots:{culture:1},

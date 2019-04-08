@@ -153,6 +153,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
 * [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle
 * [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra for Colloseum
+* [Terracotta Army](https://thenounproject.com/search/?q=terracotta&i=2306346) By Supalerk Laipawat
 * [Stadium](https://thenounproject.com/term/stadium/1152530/) By Creaticca Creative Agency for Circus Maximus
 * [Market](https://thenounproject.com/term/market/1723050/) By sofi
 * [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
