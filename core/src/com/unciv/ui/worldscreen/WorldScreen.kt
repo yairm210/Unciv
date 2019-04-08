@@ -13,6 +13,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
@@ -336,15 +337,18 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert):Popup
         return button
     }
 
-    init {
-        val otherCiv = worldScreen.gameInfo.getCivilization(popupAlert.value)
-        val translatedNation = otherCiv.getTranslatedNation()
+    fun addLeaderName(translatedNation:Nation){
         val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
         add(otherCivLeaderName.toLabel())
         addSeparator()
+    }
+
+    init {
 
         when(popupAlert.type){
             AlertType.WarDeclaration -> {
+                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
+                addLeaderName(translatedNation)
                 addGoodSizedLabel(translatedNation.declaringWar).row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("You'll pay for this!"))
@@ -352,12 +356,25 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert):Popup
                 add(responseTable)
             }
             AlertType.Defeated -> {
+                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
+                addLeaderName(translatedNation)
                 addGoodSizedLabel(translatedNation.defeated).row()
                 add(getCloseButton("Farewell."))
             }
             AlertType.FirstContact -> {
+                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
+                addLeaderName(translatedNation)
                 addGoodSizedLabel(translatedNation.introduction).row()
                 add(getCloseButton("A pleasure to meet you."))
+            }
+            AlertType.CityConquered -> {
+                addGoodSizedLabel("What would you like to do with the city?").row()
+                add(getCloseButton("Annex")).row()
+                add(TextButton("Raze",skin).onClick {
+                    worldScreen.currentPlayerCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
+                    worldScreen.shouldUpdate=true
+                    close()
+                })
             }
         }
         open()

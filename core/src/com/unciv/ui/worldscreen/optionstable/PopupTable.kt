@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
@@ -27,6 +28,7 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
     fun addGoodSizedLabel(text: String): Cell<Label> {
         val label = text.toLabel()
         label.setWrap(true)
+        label.setAlignment(Align.center)
         return add(label).width(screen.stage.width/2)
     }
 
@@ -43,7 +45,6 @@ class YesNoPopupTable(question:String, action:()->Unit,
         if(!screen.hasPopupOpen) {
             screen.hasPopupOpen=true
             add(question.toLabel()).colspan(2).row()
-
             add(TextButton("No".tr(), skin).onClick { close() })
             add(TextButton("Yes".tr(), skin).onClick { close(); action() })
             open()

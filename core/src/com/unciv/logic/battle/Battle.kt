@@ -162,6 +162,7 @@ class Battle(val gameInfo:GameInfo) {
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
         attacker.getCivInfo().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
+        attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.CityConquered,city.name))
 
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
