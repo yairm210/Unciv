@@ -8,9 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -171,8 +171,8 @@ class WorldScreen : CameraStageBaseScreen() {
         else if(currentPlayerCiv.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
 
         if(game.screen==this && !tutorials.isTutorialShowing
-                && currentPlayerCiv.diplomaticIncidents.any() && !DiplomaticIncidentPopup.isOpen){
-            DiplomaticIncidentPopup(this,currentPlayerCiv.diplomaticIncidents.first())
+                && currentPlayerCiv.popupAlerts.any() && !AlertPopup.isOpen){
+            AlertPopup(this,currentPlayerCiv.popupAlerts.first())
         }
     }
 
@@ -329,7 +329,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
 }
 
-class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncident: DiplomaticIncident):PopupTable(worldScreen){
+class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert):PopupTable(worldScreen){
     fun getCloseButton(text:String): TextButton {
         val button = TextButton(text.tr(), skin)
         button.onClick { close() }
@@ -337,25 +337,25 @@ class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncide
     }
 
     init {
-        val otherCiv = worldScreen.gameInfo.getCivilization(diplomaticIncident.civName)
+        val otherCiv = worldScreen.gameInfo.getCivilization(popupAlert.value)
         val translatedNation = otherCiv.getTranslatedNation()
         val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
         add(otherCivLeaderName.toLabel())
         addSeparator()
 
-        when(diplomaticIncident.type){
-            DiplomaticIncidentType.WarDeclaration -> {
+        when(popupAlert.type){
+            AlertType.WarDeclaration -> {
                 addGoodSizedLabel(translatedNation.declaringWar).row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
                 add(responseTable)
             }
-            DiplomaticIncidentType.Defeated -> {
+            AlertType.Defeated -> {
                 addGoodSizedLabel(translatedNation.defeated).row()
                 add(getCloseButton("Farewell."))
             }
-            DiplomaticIncidentType.FirstContact -> {
+            AlertType.FirstContact -> {
                 addGoodSizedLabel(translatedNation.introduction).row()
                 add(getCloseButton("A pleasure to meet you."))
             }
@@ -365,7 +365,7 @@ class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncide
     }
 
     fun close(){
-        worldScreen.currentPlayerCiv.diplomaticIncidents.remove(diplomaticIncident)
+        worldScreen.currentPlayerCiv.popupAlerts.remove(popupAlert)
         isOpen = false
         remove()
     }

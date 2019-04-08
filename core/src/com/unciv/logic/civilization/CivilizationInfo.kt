@@ -7,8 +7,6 @@ import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
@@ -63,7 +61,7 @@ class CivilizationInfo {
     var victoryManager=VictoryManager()
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
-    val diplomaticIncidents = ArrayList<DiplomaticIncident>()
+    val popupAlerts = ArrayList<PopupAlert>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -296,12 +294,13 @@ class CivilizationInfo {
     fun meetCivilization(otherCiv: CivilizationInfo) {
         diplomacy[otherCiv.civName] = DiplomacyManager(this, otherCiv.civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
-        otherCiv.diplomaticIncidents.add(DiplomaticIncident(civName, DiplomaticIncidentType.FirstContact))
+
+        otherCiv.popupAlerts.add(PopupAlert(AlertType.FirstContact,civName))
 
         otherCiv.diplomacy[civName] = DiplomacyManager(otherCiv, civName)
                 .apply { diplomaticStatus = DiplomaticStatus.Peace }
 
-        diplomaticIncidents.add(DiplomaticIncident(otherCiv.civName, DiplomaticIncidentType.FirstContact))
+        popupAlerts.add(PopupAlert(AlertType.FirstContact,otherCiv.civName))
     }
 
     override fun toString(): String {return civName} // for debug

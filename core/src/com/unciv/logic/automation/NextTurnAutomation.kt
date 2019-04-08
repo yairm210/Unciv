@@ -28,7 +28,7 @@ class NextTurnAutomation{
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
-        civInfo.diplomaticIncidents.clear()
+        civInfo.popupAlerts.clear()
     }
 
     private fun buyBuildingOrUnit(civInfo: CivilizationInfo) {

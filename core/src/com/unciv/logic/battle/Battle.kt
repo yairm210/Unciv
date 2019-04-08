@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
@@ -194,7 +194,7 @@ class Battle(val gameInfo:GameInfo) {
                 for(civ in gameInfo.civilizations)
                     civ.addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
                 enemyCiv.getCivUnits().forEach { it.destroy() }
-                attacker.getCivInfo().diplomaticIncidents.add(DiplomaticIncident(enemyCiv.civName,DiplomaticIncidentType.Defeated))
+                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,enemyCiv.civName))
             }
             else if(enemyCiv.cities.isNotEmpty()){
                 enemyCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
