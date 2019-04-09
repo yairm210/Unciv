@@ -630,6 +630,15 @@
 		uniques:["Defensive buildings in all cities are 25% more effective"],
 		requiredTech:"Railroad"
 	},
+	{
+		name:"Neuschwanstein",
+		happiness:2,
+		culture:4,
+		gold:6,
+		isWonder:true,
+		uniques:["+1 happiness, +2 culture and +3 gold from every Castle"],
+		requiredTech:"Railroad"
+	},
 	
 	// Information Era
 	

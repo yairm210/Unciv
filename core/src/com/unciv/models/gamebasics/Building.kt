@@ -2,6 +2,7 @@ package com.unciv.models.gamebasics
 
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
@@ -10,7 +11,7 @@ import com.unciv.ui.utils.getRandom
 class Building : NamedStats(), IConstruction{
 
     override val description: String
-        get() = getDescription(false, hashSetOf())
+        get() = getDescription(false, null)
 
     var requiredTech: String? = null
 
@@ -50,7 +51,7 @@ class Building : NamedStats(), IConstruction{
 
     fun getShortDescription(): String { // should fit in one line
         val infoList= mutableListOf<String>()
-        val str = getStats(hashSetOf()).toString()
+        val str = getStats(null).toString()
         if(str.isNotEmpty()) infoList += str
         if(percentStatBonus!=null){
             for(stat in percentStatBonus!!.toHashMap())
@@ -70,8 +71,8 @@ class Building : NamedStats(), IConstruction{
         return infoList.joinToString()
     }
 
-    fun getDescription(forBuildingPickerScreen: Boolean, adoptedPolicies: HashSet<String>): String {
-        val stats = getStats(adoptedPolicies)
+    fun getDescription(forBuildingPickerScreen: Boolean, civInfo: CivilizationInfo?): String {
+        val stats = getStats(civInfo)
         val stringBuilder = StringBuilder()
         if(uniqueTo!=null) stringBuilder.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
         if (!forBuildingPickerScreen) stringBuilder.appendln("{Cost}: $cost".tr())
@@ -118,35 +119,44 @@ class Building : NamedStats(), IConstruction{
     }
 
     val cultureBuildings = hashSetOf("Monument", "Temple", "Monastery")
-    fun getStats(adoptedPolicies: HashSet<String>): Stats {
+
+    fun getStats(civInfo: CivilizationInfo?): Stats {
         val stats = this.clone()
-        if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(name))
-            stats.happiness += 1
+        if(civInfo != null) {
+            val adoptedPolicies = civInfo.policies.adoptedPolicies
+            if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(name))
+                stats.happiness += 1
 
-        if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(name))
-            stats.culture += 1f
+            if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(name))
+                stats.culture += 1f
 
-        if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(name))
-            stats.science += 1f
+            if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(name))
+                stats.science += 1f
 
-        if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(name))
-            stats.happiness += 1f
+            if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(name))
+                stats.happiness += 1f
 
-        if (adoptedPolicies.contains("Theocracy") && name == "Temple")
-            percentStatBonus = Stats().apply { gold=10f }
+            if (adoptedPolicies.contains("Theocracy") && name == "Temple")
+                percentStatBonus = Stats().apply { gold = 10f }
 
-        if (adoptedPolicies.contains("Free Thought") && name == "University")
-            percentStatBonus!!.science = 50f
+            if (adoptedPolicies.contains("Free Thought") && name == "University")
+                percentStatBonus!!.science = 50f
 
-        if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
-            stats.gold += 1f
+            if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
+                stats.gold += 1f
 
-        if (adoptedPolicies.contains("Constitution") && isWonder)
-            stats.culture += 2f
+            if (adoptedPolicies.contains("Constitution") && isWonder)
+                stats.culture += 2f
 
-        if(adoptedPolicies.contains("Autocracy Complete") && cityStrength>0)
-            stats.happiness+=1
+            if (adoptedPolicies.contains("Autocracy Complete") && cityStrength > 0)
+                stats.happiness += 1
 
+            if (name == "Castle" && civInfo.getBuildingUniques().contains("+1 happiness, +2 culture and +3 gold from every Castle")){
+                stats.happiness+=1
+                stats.culture+=2
+                stats.gold+=3
+            }
+        }
         return stats
     }
 

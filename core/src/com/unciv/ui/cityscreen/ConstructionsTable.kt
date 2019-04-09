@@ -170,7 +170,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (currentConstruction is BaseUnit)
             description = currentConstruction.getDescription(true)
         else if (currentConstruction is Building)
-            description = currentConstruction.getDescription(true, city.civInfo.policies.adoptedPolicies)
+            description = currentConstruction.getDescription(true, city.civInfo)
         else description = currentConstruction.description.tr()
 
         val descriptionLabel = description.toLabel()

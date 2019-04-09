@@ -213,6 +213,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Statue of Liberty](https://thenounproject.com/search/?q=statue%20of%20liberty&i=1801199) By 1516
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
 * [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
+* [Neuschwanstein](https://thenounproject.com/search/?q=Neuschwanstein&i=2107683) By Vectors Market
 
 ### Information Era
 
