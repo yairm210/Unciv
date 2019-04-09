@@ -5427,7 +5427,9 @@
 		German:"Collosseum"
 	}
 	
-	"Terracotta Army":{}
+	"Terracotta Army":{
+		Italian:"Esercito di terracotta"
+	}
 	
 	"Market":{	
 		Italian:"Mercato"
@@ -5854,8 +5856,12 @@
 		French:"Personnage illustre gratuit"
 	}
 	
-	"Himeji Castle":{}
-	"+15% combat strength for units fighting in friendly territory":{}
+	"Himeji Castle":{
+		Italian:"Castello di Himeji"
+	}
+	"+15% combat strength for units fighting in friendly territory":{
+		Italian:"+15% Forza per le unità che combattono in territorio amico"
+	}
 	
 	"Taj Mahal":{	
 		Italian:"Taj Mahal" //same in Italian
@@ -6049,8 +6055,12 @@
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
 	}
 	
-	"Neuschwanstein":{}
-	"+1 happiness, +2 culture and +3 gold from every Castle":{}
+	"Neuschwanstein":{
+		Italian:"Castello di Neuschwanstein"
+	}
+	"+1 happiness, +2 culture and +3 gold from every Castle":{
+		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
+	}
 	
 	"Military Academy":{	
 		Italian:"Accademia militare"
