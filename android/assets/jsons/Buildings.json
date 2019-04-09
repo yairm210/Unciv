@@ -43,6 +43,13 @@
 		requiredTech:"Calendar"
 	},
 	{
+		name:"Library",
+		hurryCostModifier:25,
+		maintenance:1,
+		uniques:["+1 Science Per 2 Population"],
+		requiredTech:"Writing"
+	},
+	{
 		name:"The Great Library",
 		science:3,
 		culture:1,
@@ -50,13 +57,6 @@
 		isWonder:true,
 		providesFreeBuilding: "Library",
 		freeTechs:1,
-		requiredTech:"Writing"
-	},
-	{
-		name:"Library",
-		hurryCostModifier:25,
-		maintenance:1,
-		uniques:["+1 Science Per 2 Population"],
 		requiredTech:"Writing"
 	},
 	{
@@ -108,6 +108,15 @@
 		hurryCostModifier:25,
 		maintenance:1,
 		requiredTech:"Bronze Working"
+	},
+	{
+		name:"Colossus",
+		culture:1,
+		gold:5,
+		greatPersonPoints:{gold:1},
+		isWonder:true,
+		uniques:["Can only be built in coastal cities", "+1 gold from worked water tiles in city"],
+		requiredTech:"Mathematics"
 	},
 	{
 		name:"Krepost",
@@ -172,6 +181,12 @@
 		requiredTech:"Construction"
 	},
 	{
+		name:"Terracotta Army",
+		culture:6,
+		isWonder:true,
+		requiredTech:"Construction"
+	},
+	{
 		name:"Temple",
 		culture:3,
 		specialistSlots:{culture:1},
@@ -232,6 +247,16 @@
 		maintenance:1,
 		hurryCostModifier:25,
 		uniques:["40% of food is carried over after a new citizen is born"]
+		requiredTech:"Engineering"
+	},
+	{
+		name:"Great Wall",
+		culture:1,
+		greatPersonPoints:{production:1},
+		isWonder:true,
+		providesFreeBuilding: "Walls",
+		freeTechs:1,
+		uniques:["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"]
 		requiredTech:"Engineering"
 	},
 	
@@ -434,6 +459,15 @@
 		requiredTech:"Printing Press"
 	},
 	{
+		name:"Himeji Castle",
+		culture:1,
+		isWonder:true,
+		greatPersonPoints:{production:2}
+		providesFreeBuilding:"Castle",
+		uniques:["+15% combat strength for units fighting in friendly territory"] // todo
+		requiredTech:"Gunpowder"
+	},
+	{
 		name:"Museum",
 		culture:5,
 		specialistSlots:{culture:1},
@@ -594,6 +628,15 @@
 		culture:3,
 		isWonder:true,
 		uniques:["Defensive buildings in all cities are 25% more effective"],
+		requiredTech:"Railroad"
+	},
+	{
+		name:"Neuschwanstein",
+		happiness:2,
+		culture:4,
+		gold:6,
+		isWonder:true,
+		uniques:["+1 happiness, +2 culture and +3 gold from every Castle"],
 		requiredTech:"Railroad"
 	},
 	

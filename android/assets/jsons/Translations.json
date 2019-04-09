@@ -5263,6 +5263,13 @@
 		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
 	}
 	
+	"Colossus":{
+		Italian:"Colosso"
+	}
+	"+1 gold from worked water tiles in city":{
+		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
+	}
+	
 	"Temple":{	
 		Italian:"Tempio"
 		Russian:"Храм"
@@ -5446,6 +5453,9 @@
 		Portuguese:"Coliseu"
 		German:"Collosseum"
 	}
+	
+	"Terracotta Army":{}
+	
 	"Market":{	
 		Italian:"Mercato"
 		Russian:"Рынок"
@@ -5589,6 +5599,13 @@
 		Spanish:"40% de comida es arrastrada cada vez que nace un nuevo habitante"
 		Simplified_Chinese:"40%的食物是在新公民出生后留下来的"
 		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
+	}
+	
+	"Great Wall":{
+		Italian:"Grande Muraglia"
+	}
+	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
+		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
 	}
 	
 	"Workshop":{	
@@ -5862,8 +5879,7 @@
 		Spanish:"La Torre Inclinada De Pizza"
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
-	}
-	
+	}	
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
 		Romanian:"Persoană mare gratuită"
@@ -5871,6 +5887,9 @@
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
 	}
+	
+	"Himeji Castle":{}
+	"+15% combat strength for units fighting in friendly territory":{}
 	
 	"Taj Mahal":{	
 		Italian:"Taj Mahal" //same in Italian
@@ -6064,6 +6083,9 @@
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
 	}//Kremlin should boost armored units Production by 50%, as well as providing a Free Social Policy
 	//Unless the effects you gave to the Kremlin were already in the original Civ V
+	
+	"Neuschwanstein":{}
+	"+1 happiness, +2 culture and +3 gold from every Castle":{}
 	
 	"Military Academy":{	
 		Italian:"Accademia militare"
@@ -8662,7 +8684,7 @@
 		Italian:"Italiano"
 	}
 	"German":{
-		Italian:"Tedesci"
+		Italian:"Tedesco"
 	}
 	"French":{
 		Italian:"Francese"
@@ -8729,4 +8751,7 @@
 		Italian:"Esci dall'editor"
 	}
 
+	"Language":{
+		Italian:"Lingua"
+	}
 }

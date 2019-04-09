@@ -175,6 +175,9 @@ open class TileInfo {
                 stats.add(improvement) // again, for the double effect
         }
 
+        if(city!=null && isWater() && city.getBuildingUniques().contains("+1 gold from worked water tiles in city"))
+            stats.gold += 1
+
         if (isCityCenter()) {
             if (stats.food < 2) stats.food = 2f
             if (stats.production < 1) stats.production = 1f

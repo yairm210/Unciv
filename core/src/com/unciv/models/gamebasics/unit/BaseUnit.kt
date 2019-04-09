@@ -108,22 +108,33 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     fun getDisbandGold() = getBaseGoldCost().toInt()/20
 
-    fun isBuildable(civInfo:CivilizationInfo): Boolean {
-        if (unbuildable) return false
-        if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return false
-        if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return false
-        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return false
-        if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return false
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return false
-        return true
+    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
+        val rejectionReason = getRejectionReason(construction)
+        return rejectionReason=="" || rejectionReason.startsWith("Requires")
     }
 
-    override fun isBuildable(construction: CityConstructions): Boolean {
-        if(!isBuildable(construction.cityInfo.civInfo)) return false
+    fun getRejectionReason(construction: CityConstructions): String {
+        val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
+        if(civRejectionReason!="") return civRejectionReason
         if(unitType.isWaterUnit() && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
-            return false
-        return true
+            return "Can't build water units by the coast"
+        return ""
+    }
 
+    fun getRejectionReason(civInfo: CivilizationInfo): String {
+        if (unbuildable) return "Unbuildable"
+        if (requiredTech!=null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
+        if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
+        if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
+        if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
+        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires $requiredResource"
+        return ""
+    }
+
+    fun isBuildable(civInfo: CivilizationInfo) = getRejectionReason(civInfo)==""
+
+    override fun isBuildable(construction: CityConstructions): Boolean {
+        return getRejectionReason(construction) == ""
     }
 
     override fun postBuildEvent(construction: CityConstructions) {

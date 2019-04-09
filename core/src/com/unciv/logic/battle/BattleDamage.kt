@@ -49,8 +49,9 @@ class BattleDamage{
             if (combatant.getCivInfo().happiness < 0)
                 modifiers["Unhappiness"] = max(0.02f * combatant.getCivInfo().happiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
-            if(combatant.getCivInfo().policies.isAdopted("Populism"))
+            if(combatant.getCivInfo().policies.isAdopted("Populism") && combatant.getHealth() < 100){
                 modifiers["Populism"] = 0.25f
+            }
 
             if(combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
@@ -111,6 +112,10 @@ class BattleDamage{
                     modifiers["Attacker Bonus"] =modifiers["Attacker Bonus"]!! + bonus
                 else modifiers["Attacker Bonus"] = bonus
             }
+
+            if(defenderTile.getOwner()!=null && !attacker.getCivInfo().isAtWarWith(defenderTile.getOwner()!!)
+                    && attacker.getCivInfo().getBuildingUniques().contains("+15% combat strength for units fighting in friendly territory"))
+                modifiers["Himeji Castle"] = 0.15f
         }
         else if (attacker is CityCombatant) {
             if (attacker.getCivInfo().policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
@@ -139,7 +144,7 @@ class BattleDamage{
 
         val modifiers = getGeneralModifiers(defender, attacker)
 
-        if (!(defender.unit.hasUnique("No defensive terrain bonus"))) {
+        if (!defender.unit.hasUnique("No defensive terrain bonus")) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
@@ -164,6 +169,10 @@ class BattleDamage{
                 else modifiers[text] = BDM.modificationAmount
             }
         }
+
+        if(defenderTile.getOwner()!=null && !defender.getCivInfo().isAtWarWith(defenderTile.getOwner()!!)
+                && defender.getCivInfo().getBuildingUniques().contains("+15% combat strength for units fighting in friendly territory"))
+            modifiers["Himeji Castle"] = 0.15f
 
         if (defender.unit.isFortified())
             modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()

@@ -8,10 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
@@ -170,8 +172,8 @@ class WorldScreen : CameraStageBaseScreen() {
         else if(currentPlayerCiv.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
 
         if(game.screen==this && !tutorials.isTutorialShowing
-                && currentPlayerCiv.diplomaticIncidents.any() && !DiplomaticIncidentPopup.isOpen){
-            DiplomaticIncidentPopup(this,currentPlayerCiv.diplomaticIncidents.first())
+                && currentPlayerCiv.popupAlerts.any() && !AlertPopup.isOpen){
+            AlertPopup(this,currentPlayerCiv.popupAlerts.first())
         }
     }
 
@@ -191,8 +193,11 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private fun updateTechButton(civInfo: CivilizationInfo) {
         techButton.isVisible = civInfo.cities.isNotEmpty()
-
         techButton.clearChildren()
+
+        val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
+        if (civInfo.tech.currentTechnology() == null && researchableTechs.isEmpty())
+            civInfo.tech.techsToResearch.add("Future Tech")
 
         if (civInfo.tech.currentTechnology() == null) {
             val buttonPic = Table()
@@ -219,6 +224,9 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton(): TextButton {
         val nextTurnButton = TextButton("Next turn".tr(), CameraStageBaseScreen.skin)
         nextTurnButton.onClick {
+            if(currentPlayerCiv.policies.shouldOpenPolicyPicker && !currentPlayerCiv.policies.canAdoptPolicy())
+                currentPlayerCiv.policies.shouldOpenPolicyPicker = false // something has chanhed and we can no longer adopt the policy, e.g. we conquered another city
+
             if (currentPlayerCiv.tech.freeTechs != 0) {
                 game.screen = TechPickerScreen(true, currentPlayerCiv)
                 return@onClick
@@ -322,35 +330,51 @@ class WorldScreen : CameraStageBaseScreen() {
 
 }
 
-class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncident: DiplomaticIncident):PopupTable(worldScreen){
+class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert):PopupTable(worldScreen){
     fun getCloseButton(text:String): TextButton {
         val button = TextButton(text.tr(), skin)
         button.onClick { close() }
         return button
     }
 
-    init {
-        val otherCiv = worldScreen.gameInfo.getCivilization(diplomaticIncident.civName)
-        val translatedNation = otherCiv.getTranslatedNation()
+    fun addLeaderName(translatedNation:Nation){
         val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
         add(otherCivLeaderName.toLabel())
         addSeparator()
+    }
 
-        when(diplomaticIncident.type){
-            DiplomaticIncidentType.WarDeclaration -> {
+    init {
+
+        when(popupAlert.type){
+            AlertType.WarDeclaration -> {
+                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
+                addLeaderName(translatedNation)
                 addGoodSizedLabel(translatedNation.declaringWar).row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
                 add(responseTable)
             }
-            DiplomaticIncidentType.Defeated -> {
+            AlertType.Defeated -> {
+                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
+                addLeaderName(translatedNation)
                 addGoodSizedLabel(translatedNation.defeated).row()
                 add(getCloseButton("Farewell."))
             }
-            DiplomaticIncidentType.FirstContact -> {
+            AlertType.FirstContact -> {
+                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
+                addLeaderName(translatedNation)
                 addGoodSizedLabel(translatedNation.introduction).row()
                 add(getCloseButton("A pleasure to meet you."))
+            }
+            AlertType.CityConquered -> {
+                addGoodSizedLabel("What would you like to do with the city?").row()
+                add(getCloseButton("Annex")).row()
+                add(TextButton("Raze",skin).onClick {
+                    worldScreen.currentPlayerCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
+                    worldScreen.shouldUpdate=true
+                    close()
+                })
             }
         }
         open()
@@ -358,7 +382,7 @@ class DiplomaticIncidentPopup(val worldScreen: WorldScreen, val diplomaticIncide
     }
 
     fun close(){
-        worldScreen.currentPlayerCiv.diplomaticIncidents.remove(diplomaticIncident)
+        worldScreen.currentPlayerCiv.popupAlerts.remove(popupAlert)
         isOpen = false
         remove()
     }

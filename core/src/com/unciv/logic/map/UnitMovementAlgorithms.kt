@@ -1,9 +1,19 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
     val tileMap = unit.getTile().tileMap
+
+    private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
+        var cost = getMovementCostBetweenAdjacentTiles(from,to)
+
+        val toOwner = to.getOwner()
+        if(toOwner!=null &&  to.isLand() && civInfo.isAtWarWith(toOwner) && toOwner.hasActiveGreatWall)
+            cost += 1
+        return cost
+    }
 
     private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo): Float {
 
@@ -50,7 +60,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     // cities and units goes kaput.
 
                     else {
-                        val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor)
+                        val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civInfo)
                         totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
                     }
 
@@ -169,12 +179,12 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             reversedList.add(currentTile)
             val distanceToCurrentTile = distanceToTiles[currentTile]!!
             if(currentUnitTile in currentTile.neighbors
-                    && getMovementCostBetweenAdjacentTiles(currentUnitTile,currentTile) == distanceToCurrentTile)
+                    && getMovementCostBetweenAdjacentTiles(currentUnitTile,currentTile,unit.civInfo) == distanceToCurrentTile)
                 return reversedList.reversed()
 
             for(tile in currentTile.neighbors)
                 currentTile = currentTile.neighbors.first{it in distanceToTiles
-                    && getMovementCostBetweenAdjacentTiles(it,currentTile) == distanceToCurrentTile - distanceToTiles[it]!!}
+                    && getMovementCostBetweenAdjacentTiles(it,currentTile,unit.civInfo) == distanceToCurrentTile - distanceToTiles[it]!!}
         }
         throw Exception("We couldn't get the path between the two tiles")
     }

@@ -19,7 +19,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
     var constructionScrollPane:ScrollPane?=null
 
-    private fun getProductionButton(construction: String, buttonText: String): Table {
+    private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String=""): Table {
         val pickProductionButton = Table()
         pickProductionButton.touchable = Touchable.enabled
         pickProductionButton.align(Align.left)
@@ -32,11 +32,20 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
         pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
-        pickProductionButton.onClick {
-            cityScreen.city.cityConstructions.currentConstruction = construction
-            cityScreen.city.cityStats.update()
-            cityScreen.update()
+
+        if(rejectionReason=="") {
+            pickProductionButton.onClick {
+                cityScreen.city.cityConstructions.currentConstruction = construction
+                cityScreen.city.cityStats.update()
+                cityScreen.update()
+            }
         }
+        else {
+            pickProductionButton.color = Color.GRAY
+            pickProductionButton.row()
+            pickProductionButton.add(rejectionReason.toLabel().setFontColor(Color.RED)).colspan(pickProductionButton.columns)
+        }
+
         if(construction==cityScreen.city.cityConstructions.currentConstruction)
             pickProductionButton.color= Color.GREEN
         return pickProductionButton
@@ -77,18 +86,21 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionPickerTable.background = ImageGetter.getBackground(Color.BLACK)
 
         val units = ArrayList<Table>()
-        for (unit in GameBasics.Units.values.filter { it.isBuildable(cityConstructions) })
+        for (unit in GameBasics.Units.values.filter { it.shouldBeDisplayed(cityConstructions) })
             units += getProductionButton(unit.name,
-                    unit.name.tr() + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr())
+                    unit.name.tr() + "\r\n" + cityConstructions.turnsToConstruction(unit.name) + " {turns}".tr(),
+                    unit.getRejectionReason(cityConstructions))
 
         constructionPickerTable.addCategory("Units",units)
 
         val buildableWonders = ArrayList<Table>()
         val buildableBuildings = ArrayList<Table>()
         for (building in GameBasics.Buildings.values) {
-            if (!building.isBuildable(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
+            if (!building.shouldBeDisplayed(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
-                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr())
+                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
+                    building.getRejectionReason(cityConstructions)
+                    )
             if (building.isWonder)
                 buildableWonders += productionTextButton
             else
@@ -99,7 +111,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionPickerTable.addCategory("Buildings",buildableBuildings)
 
         val specialConstructions = ArrayList<Table>()
-        for (specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.isBuildable(cityConstructions) }) {
+        for (specialConstruction in SpecialConstruction.getSpecialConstructions().filter { it.shouldBeDisplayed(cityConstructions) }) {
             specialConstructions += getProductionButton(specialConstruction.name,
                     "Produce [${specialConstruction.name}]".tr())
         }
@@ -158,7 +170,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (currentConstruction is BaseUnit)
             description = currentConstruction.getDescription(true)
         else if (currentConstruction is Building)
-            description = currentConstruction.getDescription(true, city.civInfo.policies.adoptedPolicies)
+            description = currentConstruction.getDescription(true, city.civInfo)
         else description = currentConstruction.description.tr()
 
         val descriptionLabel = description.toLabel()

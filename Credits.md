@@ -153,11 +153,13 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
 * [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle
 * [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra for Colloseum
+* [Terracotta Army](https://thenounproject.com/search/?q=terracotta&i=2306346) By Supalerk Laipawat
 * [Stadium](https://thenounproject.com/term/stadium/1152530/) By Creaticca Creative Agency for Circus Maximus
 * [Market](https://thenounproject.com/term/market/1723050/) By sofi
 * [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
 * [Shekel Coin](https://thenounproject.com/term/shekel-coin/204154/) By Till Teenck for Mint
 * [Aqueduct](https://thenounproject.com/term/aqueduct/24639/) By Arthur Shlain
+* [Great Wall](https://thenounproject.com/search/?q=great%20wall&i=545909) By icon 54
  
 ### Medieval Era
 
@@ -186,6 +188,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Forbidden City](https://thenounproject.com/term/forbidden-city/1797540/) By 1516
 * [Theatre](https://thenounproject.com/term/theatre/1780401/) By b farias
 * [Tower of Pisa](https://thenounproject.com/search/?q=leaning%20tower%20of%20pisa&i=1002578) By Pedro Santos
+* [Himeji Castle](https://thenounproject.com/search/?q=himeji&i=1125277) By Chanut is Industries
 * [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
 * [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
 * [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell
@@ -210,6 +213,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Statue of Liberty](https://thenounproject.com/search/?q=statue%20of%20liberty&i=1801199) By 1516
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
 * [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
+* [Neuschwanstein](https://thenounproject.com/search/?q=Neuschwanstein&i=2107683) By Vectors Market
 
 ### Information Era
 

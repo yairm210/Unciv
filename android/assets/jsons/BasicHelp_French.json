@@ -1,0 +1,46 @@
+[
+	{
+		name:"Ville",
+		description: "Vos villes sont la base de votre empire. Chaque ville a des habitants, une population et plusieurs cases exploitables. Chaque habitant peut exploiter une case.\nLa case centrale d'une ville est toujours exploitée et ne requiert pas d'habitant.\nDe nouvelles villes peuvent être construites par des colons.\nChaque ville dans votre empire fait perdre 3 de bonheur, et chaque habitant enlève un autre point de bonheur, donc faites attention!"
+	},
+	{
+		name:"Cases",
+		description: "Les cases sont des zones sur lesquels vos habitants peuvent travailler.\nChaque case a un terrain de base, tel que Prairie, Tundra etc, et certaines ont un sous-terrain superposé, comme Colline, Forêt, etc.\nEn fonction du terrain, les cases peuvent contenir des ressources.\nChaque case peut être améliorée, par un Ouvrier par exemple."
+	},
+	{
+		name:"Population",
+		description: "La population est le nombre d'habitant dans votre ville, qui peuvent exploiter les cases alentours.\nLa Population augmente en ayant de la nourriture excédentaire, et descend si il n'y a pas assez de nourritures exploitées.\nChaque habitant consomme 2 de nourriture par tour.\nQuand un habitant apparait, Il va automatiquement exploité la case qui produit le plus de nourriture.\nVous pouvez assigner manuellement les habitants sur les cases que vous voulez exploiter en cliquant sur l'icon Habitant d'une case - Il faudra préalablement enlever un habitant d'une case pour l'assigner ailleurs!"
+	},
+	{
+		name:"Resources de bases",
+		description: "Il y a 6 ressources de bases dans UnCiv: Nourriture, Production, Or, Science, Bonheur et Culture.\rLa Production et la Nourriture sont indépendant entre les villes, tandis que les autres ressources sont partagées entre toutes.\rLes ressources de bases sont produites en exploitant les cases des villes et via les batiments."
+	},
+	{
+		name:"Nourriture",
+		description: "Une ressource de base. Chaque villes peut stoker de la Nourriture excédentaire.\nQuand ce surplus atteint un certain nombre, dépendant de la population, il est consommé et la ville gagne un nouvel habitant.\nSi il n'y a plus de Nourriture excédentaire, et que le stock de surplus est vide, alors la ville perd un habitant (elle ne peut pas le nourrire)."
+	},
+	{
+		name:"Production",
+		description: "Une ressource de base. La Production est utilisée pour construire des batiments et des unités dans la ville.\r\nChaque habitant qui n'exploite pas de case fournit 1 de Production."
+	},
+	{
+		name:"Science",
+		description: "Une ressource de base. représente l'avancée technologique de votre empire.\nChaque technologie requiert un certain nombre de points de Science, qui est proportionnel à l'avancée technologique qu'elle représente (par exemple : découvrir la technologie Roue coute moins de point de science que découvrir la technologie Ordinateurs).\nChaque habitant produit 1 point de Science."
+	},
+	{
+		name:"Or",
+		description: "Une ressource de base. représente la richesse de votre empire.\nLa plupart des batiments coute de l'or, à chaque tour, à entretenir.\nChaque tour que vous passez en déficit d'or, vous perdez un nombre de points de science égale à votre dette (-5 or/tour équivaut à -5 science/tour), ce qui peut complêtement arrêter votre production de Science!\nChaque villes connectées à votre capitale par des routes vous feront gagner de l'or, donc connectez vos villes à votre capital!"
+	},
+	{
+		name:"Bonheur",
+		description: "Une ressource de base.\nChaque ville vous fait perdre 3 points de Bonheur, et chaque habitants 1 points.\nVous pouvez augmenter vos points de bonheur via les batiments, ou avec les ressources de luxes.\nQuand votre empire est mécontent (Bonheur négatif), votre production de nourriture excédentaire est réduite de 75%! Ce qui va considérablement ralentir l'agrandissement de vos villes.\nAvec suffisament de Bonheur excédentaire, votre empire entrera dans un Age d'Or!"
+	},
+	{
+		name:"Unités et Combat",
+		description:"Vous pouvez produire des unités pour explorer la carte, améliorer vos cases, construire des villes (Colon), et vous battre. Chaque unité vous coute 1 Or d'entretien par tour.\nChaque unité à 100 points de vie, les unités perdent des points de vies lors des combats. Les unités militaires peuvent attaquer les autres unités et les villes, causant des pertes en fonction de leurs force.\nLes unités de siège et les unités à distance peuvent attaquer à distance, tandis que les autres unités ne peuvent se battre que sur les cases qui leurs sont adjacentes.\nLes unités blessées peuvent être soignés en restant inactive, elle récupereront alors des points de vies à chaque tour."
+	},
+	{
+		name:"Capturer des villes",
+		description: "Les villes peuvent être conquises en réduisant leurs points de vies à 1, puis en attaquant la ville avec une unité de corps-à-corps.\nLes villes se soignent à chaque tour et peuvent se défendre en bombardant leurs assaillant, donc il vaut mieux les attaquer avec des unités à distance, utiliser vos unités de corps-à-corps pour défendre vos unités à distance et conquérir les villes!"
+	}
+]

@@ -8,6 +8,7 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.withItem
 import java.util.*
+import kotlin.collections.ArrayList
 
 class TechManager {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -73,7 +74,10 @@ class TechManager {
 
         while (!checkPrerequisites.isEmpty()) {
             val techNameToCheck = checkPrerequisites.pop()
-            if (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck))
+            // future tech can have been researched even when we're researching it,
+            // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have annything to research. Yeah.
+            if (techNameToCheck!="Future Tech" &&
+                    (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck)) )
                 continue //no need to add or check prerequisites
             val techToCheck = GameBasics.Technologies[techNameToCheck]
             for (str in techToCheck!!.prerequisites)
@@ -170,7 +174,10 @@ class TechManager {
             techsInProgress.remove(badTechName)
         }
         if(techsToResearch.contains(badTechName)){
-            techsToResearch.replaceAll { if(it!=badTechName) it else goodTechName }
+            val newTechToReseach= ArrayList<String>()
+            for(tech in techsToResearch)
+                newTechToReseach.add(if(tech!=badTechName) tech else goodTechName)
+            techsToResearch = newTechToReseach
         }
 
         researchedTechnologies.addAll(techsResearched.map { GameBasics.Technologies[it]!! })

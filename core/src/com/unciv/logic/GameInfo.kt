@@ -12,7 +12,7 @@ import com.unciv.ui.utils.getRandom
 
 class GameInfo {
     var civilizations = mutableListOf<CivilizationInfo>()
-    var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on diffferent difficulties?
+    var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
     var gameParameters=GameParameters()
     var turns = 0

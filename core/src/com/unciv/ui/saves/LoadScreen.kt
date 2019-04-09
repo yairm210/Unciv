@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.badlogic.gdx.utils.Json
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
@@ -69,7 +68,7 @@ class LoadScreen : PickerScreen() {
             try{
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
-                val loadedGame = Json().fromJson(GameInfo::class.java, decoded)
+                val loadedGame = GameSaver().json().fromJson(GameInfo::class.java, decoded)
                 loadedGame.setTransients()
                 UnCivGame.Current.loadGame(loadedGame)
             }catch (ex:Exception){
@@ -98,7 +97,8 @@ class LoadScreen : PickerScreen() {
             catch (ex:Exception){
                 val popup = PopupTable(this)
                 popup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - paste into an email to yairm210@hotmail.com)").row()
+                popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
                 popup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
                 popup.open()
             }

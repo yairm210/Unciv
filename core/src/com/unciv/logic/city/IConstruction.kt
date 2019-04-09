@@ -7,6 +7,7 @@ interface IConstruction : INamed, ICivilopedia {
     fun getProductionCost(adoptedPolicies: HashSet<String>): Int
     fun getGoldCost(adoptedPolicies: HashSet<String>): Int
     fun isBuildable(construction: CityConstructions): Boolean
+    fun shouldBeDisplayed(construction: CityConstructions): Boolean
     fun postBuildEvent(construction: CityConstructions)  // Yes I'm hilarious.
     fun canBePurchased(): Boolean
 }
@@ -14,6 +15,9 @@ interface IConstruction : INamed, ICivilopedia {
 
 
 open class SpecialConstruction(override var name: String, override val description: String) : IConstruction{
+    override fun shouldBeDisplayed(construction: CityConstructions): Boolean {
+        return isBuildable(construction)
+    }
 
     companion object {
         fun getSpecialConstructions(): List<SpecialConstruction> {

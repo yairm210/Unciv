@@ -3,6 +3,7 @@ package com.unciv.ui.tilegroups
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Image
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
@@ -49,6 +50,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     var populationImage: Image? = null //reuse for acquire icon
     private val roadImages = HashMap<TileInfo, RoadImage>()
     private val borderImages = HashMap<TileInfo, List<Image>>() // map of neighboring tile to border images
+
+    val unitLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize);touchable=Touchable.disabled }
     protected var civilianUnitImage: UnitGroup? = null
     protected var militaryUnitImage: UnitGroup? = null
 
@@ -71,6 +74,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         this.addActor(baseLayerGroup)
         this.addActor(featureLayerGroup)
         this.addActor(miscLayerGroup)
+        this.addActor(unitLayerGroup)
         this.addActor(circleCrosshairFogLayerGroup)
 
         updateTileImage(false)
@@ -426,7 +430,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
                 newImage.blackSpinningCircle = ImageGetter.getCircle()
                         .apply { rotation= oldUnitGroup.blackSpinningCircle!!.rotation}
             }
-            miscLayerGroup.addActor(newImage)
+            unitLayerGroup.addActor(newImage)
             newImage.center(this)
             newImage.y += yFromCenter
 

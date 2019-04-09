@@ -9,7 +9,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
 import kotlin.collections.HashSet
 
@@ -69,18 +68,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
                     val techButton = TechButton(tech.name,civTech)
 
                     techNameToButton[tech.name] = techButton
-                    techButton.onClick {
-                        try {
-                            selectTechnology(tech)
-                        }catch (ex:Exception){
-                            val popup = PopupTable(this)
-                            popup.addGoodSizedLabel("You've encountered an error that I've been trying to pin down for a while.").row()
-                            popup.addGoodSizedLabel("If you could copy your game data (menu-save game-copy to clipboard - paste into an email to yairm210@hotmail.com)").row()
-                            popup.addGoodSizedLabel("That would be really helpful to me, thanks!").row()
-                            popup.addGoodSizedLabel("If you also add what tech you clicked on to get this error that would be even better!").row()
-                            popup.open()
-                        }
-                    }
+                    techButton.onClick { selectTechnology(tech) }
                     topTable.add(techButton)
                 }
             }

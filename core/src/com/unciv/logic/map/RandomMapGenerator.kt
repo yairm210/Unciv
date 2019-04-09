@@ -21,6 +21,7 @@ enum class MapType {
     File
 }
 
+
 class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
     var landProb = 0.55f
     var numSmooth = 4
@@ -28,7 +29,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
 
     constructor(type: MapType): this() {
         mapType = type
-        if (mapType < MapType.Default) {
+        if (mapType != MapType.Default && mapType !=MapType.Pangaea) {
             mapType = MapType.Default
         }
     }
@@ -76,6 +77,8 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
         setWaterTiles(mapToReturn)
 
         for(tile in mapToReturn.values) randomizeTile(tile,mapToReturn)
+
+        randomizeStrategicResources(mapToReturn,distance)
 
         return mapToReturn
     }
@@ -227,6 +230,8 @@ class PerlinNoiseRandomMapGenerator:SeedRandomMapGenerator(){
 
         for(tile in mapToReturn.values) randomizeTile(tile,mapToReturn)
 
+        randomizeStrategicResources(mapToReturn,distance)
+
         return mapToReturn
     }
 
@@ -333,6 +338,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
         for (entry in map) randomizeTile(entry.value, mapToReturn)
 
         setWaterTiles(mapToReturn)
+        randomizeStrategicResources(mapToReturn,distance)
         return mapToReturn
     }
 
@@ -357,15 +363,6 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
             }
 
             expandAreas(areas, map)
-
-//             After we've assigned all the tiles, there will be some areas that contain only 1 or 2 tiles.
-//             So, we kill those areas, and have the world expand on and cover them too
-//            for (area in areas.toList()) {
-//                if (area.locations.size < 3) {
-//                    areas -= area
-//                    for (location in area.locations) map[location]!!.baseTerrain = ""
-//                }
-//            }
             expandAreas(areas, map)
         }
 
@@ -450,7 +447,7 @@ open class RandomMapGenerator {
 
         var resource: TileResource? = null
         when {
-            Math.random() < 1 / 5f  -> resource = getRandomResource(tileResources, ResourceType.Bonus)
+            Math.random() < 1 / 15f  -> resource = getRandomResource(tileResources, ResourceType.Bonus)
             Math.random() < 1 / 15f  -> resource = getRandomResource(tileResources, ResourceType.Strategic)
             Math.random() < 1 / 15f -> resource = getRandomResource(tileResources, ResourceType.Luxury)
         }
@@ -504,4 +501,40 @@ open class RandomMapGenerator {
         addRandomResourceToTile(tileInfo)
         maybeAddAncientRuins(tileInfo)
     }
+
+
+    fun randomizeStrategicResources(mapToReturn: HashMap<String, TileInfo>,distance: Int) {
+        for(tile in mapToReturn.values)
+            if(tile.resource!=null && tile.getTileResource().resourceType==ResourceType.Strategic)
+                tile.resource=null
+
+        for(resource in GameBasics.TileResources.values.filter { it.resourceType==ResourceType.Strategic }){
+            val suitableTiles = mapToReturn.values
+                    .filter { it.resource==null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
+
+            val numberOfResources = mapToReturn.count() / 100
+
+            val locations = chooseSpreadOutLocations(numberOfResources,suitableTiles, distance)
+
+            for(location in locations) location.resource = resource.name
+        }
+    }
+
+    fun chooseSpreadOutLocations(numberOfResources: Int, suitableTiles: List<TileInfo>, initialDistance:Int): ArrayList<TileInfo> {
+
+        for(distanceBetweenResources in initialDistance downTo 1){
+            var availableTiles = suitableTiles.toList()
+            val chosenTiles = ArrayList<TileInfo>()
+
+            for(i in 1..numberOfResources){
+                if(availableTiles.isEmpty()) break
+                val chosenTile = availableTiles.random()
+                availableTiles = availableTiles.filter { it.arialDistanceTo(chosenTile)>distanceBetweenResources }
+                chosenTiles.add(chosenTile)
+            }
+            if(chosenTiles.size == numberOfResources) return chosenTiles
+        }
+        throw Exception("ArgleBargle")
+    }
+
 }
