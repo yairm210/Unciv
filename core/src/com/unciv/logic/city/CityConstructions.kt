@@ -199,7 +199,7 @@ class CityConstructions {
         cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo.policies.adoptedPolicies)
         getConstruction(buildingName).postBuildEvent(this)
         if (currentConstruction == buildingName) {
-            currentConstruction=""
+            currentConstruction = ""
             chooseNextConstruction()
         }
         cityInfo.cityStats.update()
