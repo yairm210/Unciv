@@ -431,9 +431,8 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
-	/*
 	{
-		name:"Chu-ko-nu",
+		name:"Chu-Ko-Nu",
 		unitType:"Ranged",
 		uniqueTo:"China",
 		movement:2,
@@ -444,11 +443,10 @@
 		requiredTech:"Machinery",
 		upgradesTo:"Gatling Gun",
 		obsoleteTech:"Industrialization",
+		promotions:["Logistics"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
-		//Chinese unique unit. It is weaker than Crossbowman but can attack twice.
 	},
-	*/
 	{
 		name:"Longbowman",
 		unitType:"Ranged",

@@ -60,6 +60,12 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
                     textList += "  "+unique.tr()
                 if (building.maintenance != originalBuilding.maintenance)
                     textList += "  {Maintenance} " + building.maintenance + " vs " + originalBuilding.maintenance
+                if(building.cost != originalBuilding.cost)
+                    textList += "  {Cost} " + building.cost + " vs " + originalBuilding.cost
+                if(building.cityStrength != originalBuilding.cityStrength)
+                    textList += "  {City strength} " + building.cityStrength+ " vs " + originalBuilding.cityStrength
+                if(building.cityHealth!= originalBuilding.cityHealth)
+                    textList += "  {City health} " + building.cityHealth+ " vs " + originalBuilding.cityHealth
                 textList+=""
             }
 
@@ -78,8 +84,9 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
                     textList+= "  {Movement} " + unit.movement+ " vs " + originalUnit.movement
                 for(unique in unit.uniques.filterNot { it in originalUnit.uniques })
                     textList += "  "+Translations.translateBonusOrPenalty(unique)
-                for(promotions in unit.promotions.filter { it !in originalUnit.promotions})
-                    textList += "  "+promotions.tr()
+                for(promotion in unit.promotions.filter { it !in originalUnit.promotions})
+                    textList += "  "+promotion.tr()+ " ("+Translations.translateBonusOrPenalty(GameBasics.UnitPromotions[promotion]!!.effect)+")"
+                textList+=""
             }
 
 

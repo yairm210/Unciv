@@ -136,6 +136,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 * [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos for Granary
 * [Great Wall Of China](https://thenounproject.com/term/great-wall-of-china/146039/) By Arthur Shlain for Walls
+* [Markadan Tower](https://thenounproject.com/search/?q=fortification&i=2107694) by Vectors Market for Walls of Babylon
 * [Block](https://thenounproject.com/term/block/1711553/) By Monjin Friends for Stone Works
 * [korean palace](https://thenounproject.com/term/korean-palace/1797542/) By 1516 for Palace
 * [Obelisk](https://thenounproject.com/term/obelisk/749104/) By Eliricon for Monument

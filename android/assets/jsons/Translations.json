@@ -29,14 +29,6 @@
 		Simplified_Chinese:"下一回合"
 		Portuguese:"Proximo turno"
 		Japanese:"次のターン"
-		Polish:"Następna tura"
-		Indonesian:"Giliran berikutnya"
-		Philippino:"Susunod na pagliko"
-		Czech:"Další otočení"
-		Slovak:"Ďalšie otočenie"
-		Sloven:"Naslednji zavoj"
-		Croatian:"Sljedeći red"
-		Danish:"Næste tur"
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
@@ -5172,6 +5164,7 @@
 		Portuguese:"Muralhas"
 		German:"Mauern"
 	}
+	"Walls of Babylon":{}
 	
 	"The Pyramids":{	
 		Italian:"Grandi Piramidi"
@@ -6613,6 +6606,9 @@
 		German:"Kamel-Bogenschütze"
 		French:"Archer méhariste"
 	}
+	"Samurai":{}
+	"Combat very likely to create Great Generals":{}
+	
 	
 	// Renaissance units
 	"Caravel":{
