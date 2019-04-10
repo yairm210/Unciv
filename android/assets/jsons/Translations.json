@@ -5164,7 +5164,9 @@
 		Portuguese:"Muralhas"
 		German:"Mauern"
 	}
-	"Walls of Babylon":{}
+	"Walls of Babylon":{
+		Italian:"Mura di Babilonia"
+	}
 	
 	"The Pyramids":{	
 		Italian:"Grandi Piramidi"
@@ -6606,8 +6608,13 @@
 		German:"Kamel-Bogenschütze"
 		French:"Archer méhariste"
 	}
-	"Samurai":{}
-	"Combat very likely to create Great Generals":{}
+	"Samurai":{
+		Italian:"Samurai" //Same as in Italian
+	}
+
+	"Combat very likely to create Great Generals":{
+		Italian:"Può generare un Grande Generale combattendo"
+	}
 	
 	
 	// Renaissance units
