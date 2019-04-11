@@ -205,7 +205,6 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
-	/*
 	{
 		name:"War Chariot",
 		unitType:"Ranged",
@@ -221,8 +220,8 @@
 		uniques:["No defensive terrain bonus","Rough terrain penalty"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
-		//This is the Egyptian unique unit. It replaces Chariot Archer, moves faster and needs no horses.
 	},
+	/*
 	{
 		name:"War Elephant",
 		unitType:"Ranged",

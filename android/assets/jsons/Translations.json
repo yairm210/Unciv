@@ -4253,6 +4253,8 @@
 		Russian:"заменяет"
 	}
 	
+	"[resourceName] not required":{}
+	
 	"National ability":{ // the unique ability that each nation has
 		Italian:"Abilità della civiltà"
 		Romanian:"Abilitate a națiunii"

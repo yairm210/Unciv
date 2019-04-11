@@ -114,7 +114,7 @@
 		greatPersonPoints:{gold:1},
 		isWonder:true,
 		uniques:["Can only be built in coastal cities", "+1 gold from worked water tiles in city"],
-		requiredTech:"Mathematics"
+		requiredTech:"Iron Working"
 	},
 	{
 		name:"Krepost",
