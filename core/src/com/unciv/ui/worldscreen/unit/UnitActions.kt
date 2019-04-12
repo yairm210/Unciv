@@ -5,6 +5,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -139,6 +140,14 @@ class UnitActions {
                 }
             }
         }
+
+        if(unit.hasUnique("Can construct roads") && tile.roadStatus==RoadStatus.None
+                && tile.improvementInProgress != "Road"
+                && unit.civInfo.tech.isResearched(GameBasics.TileImprovements["Road"]!!.techRequired!!))
+            actionList+=UnitAction("Construct road", unit.currentMovement >0){
+                tile.improvementInProgress="Road"
+                tile.turnsToImprovement=4
+            }
 
         for(improvement in listOf("Fishing Boats","Oil well")) {
             if (unit.hasUnique("May create improvements on water resources") && tile.resource != null

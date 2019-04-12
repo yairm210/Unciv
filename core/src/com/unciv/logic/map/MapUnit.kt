@@ -176,6 +176,7 @@ class MapUnit {
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
         if (name == "Worker" && getTile().improvementInProgress != null) return false
+        if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
         if (action=="Sleep") return false
         return true
@@ -301,6 +302,7 @@ class MapUnit {
 
     private fun doPostTurnAction() {
         if (name == "Worker" && getTile().improvementInProgress != null) workOnImprovement()
+        if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
         if(currentMovement== getMaxMovement().toFloat()
                 && isFortified()){
             val currentTurnsFortified = getFortificationTurns()

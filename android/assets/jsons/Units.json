@@ -332,7 +332,6 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	/*
 	{
 		name:"Legion",
 		unitType:"Melee",
@@ -345,10 +344,11 @@
 		upgradesTo:"Longswordsman",
 		obsoleteTech:"Steel",
 		requiredResource:"Iron",
+		uniques:["Can construct roads"]
 		hurryCostModifier:20,
 		attackSound:"metalhit"
-		//Roman unique unit. It is stronger than Swordsman. It should also build roads (maybe railroads, too). It takes more to Steel to make it obsolete.
 	},
+	/*
 	{
 		name:"Mohawk Warrior",
 		unitType:"Melee",

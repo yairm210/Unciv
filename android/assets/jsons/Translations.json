@@ -6482,6 +6482,7 @@
 		Portuguese:"Espadachin" // may replace with guerreiro com espada if nescessary
 		German:"Schwertkämpfer"
 	}
+	
 	"Legion":{
 		Italian:"Legionario"
 		Romanian:"Legionar"
@@ -6489,7 +6490,10 @@
 		Simplified_Chinese:"古罗马军团"
 		German:"Legionär"
 		French:"Légion"
-	} // Rome unique
+	}
+	"Can construct roads":{}
+	"Construct road":{} // for unit action button
+	
 	"Horseman":{	
 		Italian:"Guerriero a cavallo" //wrong translation by Smashfanful
 		Russian:"Всадник"

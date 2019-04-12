@@ -20,7 +20,7 @@ class UnCivGame(val version: String) : Game() {
     val viewEntireMapForDebug = false
 
     // For when you need to test something in an advanced game and don't have time to faff around
-    val superchargedForDebug = false
+    val superchargedForDebug = true
 
     lateinit var worldScreen: WorldScreen
 
