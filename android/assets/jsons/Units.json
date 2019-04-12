@@ -868,7 +868,6 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 	},
-	/*
 	{
 		name:"Cossack",
 		unitType:"Mounted",
@@ -880,11 +879,11 @@
 		requiredTech:"Military Science",
 		requiredResource:"Horses",
 		upgradesTo:"Landship",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Damaged Enemy Bonus 33%" ],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs wounded units 33%" ],
 		hurryCostModifier:20,
 		attackSound:"horse"
-		//This Russian unique unit should replace Cavalry and also deal +33% damage to damaged units.
 	},
+	/*
 	{
 		name:"Comanche Rider",
 		unitType:"Mounted",
@@ -1002,7 +1001,8 @@
 		requiredTech:"Replaceable Parts",
 		hurryCostModifier:20,
 		upgradesTo:"Infantry",
-		obsoleteTech:"Plastics"
+		obsoleteTech:"Plastics",
+		uniques:["+20% bonus outside friendly territory"],
 		attackSound:"shot"
 	},
 	{

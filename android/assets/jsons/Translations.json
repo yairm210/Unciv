@@ -6721,6 +6721,7 @@
 		Portuguese:"Cavalaria"
 		German:"Kavallerie"
 	}
+	
 	"Cossack":{
 		Italian:"Cosacco"
 		Romanian:"Cazac"
@@ -6729,7 +6730,7 @@
 		Russian:"Казаки"
 		German:"Kosak"
 		French:"Cosaque"
-	} // Russia unique
+	}
 	
 	"Artillery":{	
 		Italian:"Artiglieria"
@@ -8371,9 +8372,9 @@
 		German:"Angriff"
 		French:"Charge"
 	}
-	"Bonus vs wounded units 33%":{
-		Italian:"+33% forza contro unità ferite"
-		French:"+33% force contre les unités montées"
+	"wounded units":{
+		Italian:"unità ferite"
+		French:"unités montées"
 	}
 	"Mobility":{
 		Italian:"Mobilità"
