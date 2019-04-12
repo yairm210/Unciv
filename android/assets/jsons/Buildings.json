@@ -98,7 +98,7 @@
 		greatPersonPoints:{production:1},
 		isWonder:true,
 		uniques:["Worker construction increased 25%","Provides 2 free workers"],
-		requiredTech:"Mathematics"
+		requiredTech:"Masonry"
 	},
 	{
 		name:"Barracks",
