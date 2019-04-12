@@ -303,6 +303,7 @@
 				
 		mainColor:[ 41,83,42],
 		secondaryColor:[146,221,9],
+		unique:"+1 Gold from each Trade Route, Oil resources provide double quantity"
 		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
