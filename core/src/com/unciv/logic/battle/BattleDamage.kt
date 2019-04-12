@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import kotlin.math.max
 
@@ -88,6 +89,8 @@ class BattleDamage{
         val modifiers = getGeneralModifiers(attacker, defender)
 
         if(attacker is MapUnitCombatant) {
+            modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
+
             val defenderTile = defender.getTile()
             val isDefenderInRoughTerrain = defenderTile.baseTerrain=="Hill" || defenderTile.terrainFeature == "Forest" || defenderTile.terrainFeature == "Jungle"
             for (BDM in getBattleDamageModifiersOfUnit(attacker.unit)) {
@@ -112,11 +115,8 @@ class BattleDamage{
                     modifiers["Attacker Bonus"] =modifiers["Attacker Bonus"]!! + bonus
                 else modifiers["Attacker Bonus"] = bonus
             }
-
-            if(defenderTile.getOwner()!=null && !attacker.getCivInfo().isAtWarWith(defenderTile.getOwner()!!)
-                    && attacker.getCivInfo().getBuildingUniques().contains("+15% combat strength for units fighting in friendly territory"))
-                modifiers["Himeji Castle"] = 0.15f
         }
+
         else if (attacker is CityCombatant) {
             if (attacker.getCivInfo().policies.isAdopted("Oligarchy") && attacker.city.getCenterTile().militaryUnit != null)
                 modifiers["Oligarchy"] = 0.5f
@@ -144,6 +144,8 @@ class BattleDamage{
 
         val modifiers = getGeneralModifiers(defender, attacker)
 
+        modifiers.putAll(getTileSpecificModifiers(defender, defender.getTile()))
+
         if (!defender.unit.hasUnique("No defensive terrain bonus")) {
             val tileDefenceBonus = defender.getTile().getDefensiveBonus()
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
@@ -170,12 +172,19 @@ class BattleDamage{
             }
         }
 
-        if(defenderTile.getOwner()!=null && !defender.getCivInfo().isAtWarWith(defenderTile.getOwner()!!)
-                && defender.getCivInfo().getBuildingUniques().contains("+15% combat strength for units fighting in friendly territory"))
-            modifiers["Himeji Castle"] = 0.15f
-
         if (defender.unit.isFortified())
             modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()
+
+        return modifiers
+    }
+
+    private fun getTileSpecificModifiers(unit: MapUnitCombatant, tile: TileInfo): HashMap<String,Float> {
+        val modifiers = HashMap<String,Float>()
+        val isFriendlyTerritory = tile.getOwner()!=null && !unit.getCivInfo().isAtWarWith(tile.getOwner()!!)
+        if(isFriendlyTerritory && unit.getCivInfo().getBuildingUniques().contains("+15% combat strength for units fighting in friendly territory"))
+            modifiers["Himeji Castle"] = 0.15f
+        if(!isFriendlyTerritory && unit.unit.hasUnique("+20% bonus outside friendly territory"))
+            modifiers["Foreign Land"] = 0.2f
 
         return modifiers
     }

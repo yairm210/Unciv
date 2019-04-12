@@ -6763,7 +6763,7 @@
 		German:"Panzerschiff"
 	}
 	
-	// Modern units (do these, yes)
+	// Modern units
 	"Landship":{
 		Italian:"Nave di terra"
 		Romanian:"Vehicul terestru"
@@ -6773,6 +6773,7 @@
 		German:"Landschiff"
 		French:"Véhicule terrestre" //official translation but ugly
 	}
+	
 	"Great War Infantry":{
 		Italian:"Fante della Grande Guerra"
 		Romanian:"Infanteria Marelui Război"
@@ -6782,6 +6783,13 @@
 		German:"Weltkriegs Infanterie"
 		French:"Infanterie de la grande guerre"
 	}
+	
+	"Foreign Legion":{}
+	"+20% bonus outside friendly territory":{}
+	"Foreign Land":{ // for battle table combat percentage
+	}
+	
+	
 	"Destroyer":{
 		Italian:"Cacciatorpediniere"
 		Romanian:"Distrugător"

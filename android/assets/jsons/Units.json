@@ -992,6 +992,20 @@
 		attackSound:"shot"
 	},
 	{
+		name:"Foreign Legion",
+		unitType:"Melee",
+		replaces:"Great War Infantry",
+		uniqueTo:"France",
+		movement:2,
+		strength:50,
+		cost: 320,
+		requiredTech:"Replaceable Parts",
+		hurryCostModifier:20,
+		upgradesTo:"Infantry",
+		obsoleteTech:"Plastics"
+		attackSound:"shot"
+	},
+	{
 		name:"Infantry",
 		unitType:"Melee",
 		movement:2,
