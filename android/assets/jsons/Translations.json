@@ -6491,8 +6491,12 @@
 		German:"Legionär"
 		French:"Légion"
 	}
-	"Can construct roads":{}
-	"Construct road":{} // for unit action button
+	"Can construct roads":{
+		Italian:"Può costruire Strade"
+	}
+	"Construct road":{
+		Italian:"Costruisci Strada"
+	} // for unit action button
 	
 	"Horseman":{	
 		Italian:"Guerriero a cavallo" //wrong translation by Smashfanful
@@ -6778,9 +6782,15 @@
 		French:"Infanterie de la grande guerre"
 	}
 	
-	"Foreign Legion":{}
-	"+20% bonus outside friendly territory":{}
+	"Foreign Legion":{
+		Italian:"Legione Straniera"
+	}
+	"+20% bonus outside friendly territory":{
+		Italian:"+20% Forza fuori da territorio amico"
+	}
 	"Foreign Land":{ // for battle table combat percentage
+		Italian:"Terra Straniera"
+	
 	}
 	
 	
