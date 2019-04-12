@@ -760,7 +760,6 @@
 		upgradesTo:"Battleship",
 		hurryCostModifier:20
 	},
-	/*
 	{
 		name:"Ship of the Line",
 		unitType:"WaterRanged",
@@ -771,13 +770,12 @@
 		rangedStrength:35,
 		cost: 185,
 		requiredResource:"Iron",
-		uniques:["Extra sight 1"]
+		uniques:["+1 Visibility Range"]
 		requiredTech:"Navigation",
 		obsoleteTech:"Electronics",
 		upgradesTo:"Battleship",
 		hurryCostModifier:20
 	},
-	*/
 	{
 		name:"Lancer",
 		unitType:"Mounted",

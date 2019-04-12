@@ -55,6 +55,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Black powder musket](https://thenounproject.com/term/black-powder-musket/1202078/) By Jarem Fyre for Minuteman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
+* [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 
 ### Industrial
