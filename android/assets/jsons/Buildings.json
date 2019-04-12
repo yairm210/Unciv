@@ -25,6 +25,16 @@
 		hurryCostModifier:25,
 		requiredTech:"Pottery"
 	},
+	/*
+	{
+		name:"Temple of Artemis",
+		culture:1,
+		greatPersonPoints:{production:1},
+		isWonder:true,
+		uniques:["+10% Growth in all Cities","+15% Production for ranged units"],
+		requiredTech:"Archery"
+	},
+	*/
 	{
 		name:"Stone Works", 
 		happiness:1,
@@ -100,6 +110,16 @@
 		uniques:["Worker construction increased 25%","Provides 2 free workers"],
 		requiredTech:"Masonry"
 	},
+	/*
+	{
+		name:"Mausoleum of Halicarnassus",
+		culture:1,
+		greatPersonPoints:{gold:1},
+		isWonder:true,
+		uniques:["Gain 100 Gold for each Great Person expended","+2 Gold for each source of Marble or Stone stored in this City"],
+		requiredTech:"Masonry"
+	},
+	*/
 	{
 		name:"Barracks",
 		xpForNewUnits:15,
@@ -107,6 +127,15 @@
 		maintenance:1,
 		requiredTech:"Bronze Working"
 	},
+	/*
+	{
+		name:"Statue of Zeus",
+		culture:1,
+		isWonder:true,
+		uniques:["+15% Strenght when attacking Cities"],
+		requiredTech:"Bronze Working"
+	},
+	*/
 	{
 		name:"Colossus",
 		culture:1,
@@ -547,6 +576,17 @@
 		requiredResource:"Coal",
 		requiredTech:"Industrialization"
 	},
+	/*
+	{
+		name:"Big Ben",
+		culture:1,
+		gold:4,
+		greatPersonPoints:{gold:2},
+		isWonder:true,
+		uniques:["-15% Gold costs purchasing City tiles"],
+		requiredTech:"Industrialization"
+	},
+	*/
 	{
 		name:"Military Academy",
 		xpForNewUnits:15,
@@ -555,6 +595,16 @@
 		requiredBuilding:"Armory",
 		requiredTech:"Military Science"
 	},
+	/*
+	{
+		name:"Eiffel Tower",
+		culture:1,
+		greatPersonPoints:{science:2},
+		isWonder:true,
+		uniques:["Free Great General","+15 XP for all new units built in the City"],
+		requiredTech:"Military Science"
+	},
+	*/
 	{
 		name:"Hospital",
 		food:5,
