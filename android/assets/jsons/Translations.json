@@ -186,7 +186,7 @@
 		Dutch:"Verbetering bouwen"
 		Spanish:"Construir mejora"
 		Simplified_Chinese:"建造建筑"
-        Portuguese:"Construir melhoria"
+        	Portuguese:"Construir melhoria"
 		Japanese:"構造改善"
 	}
 
@@ -717,7 +717,7 @@
 	}
 	
 	"Worked tiles":{
-		Italian:"celle sfruttate"
+		Italian:"Celle sfruttate"
 		Russian:"обработанные клетки"
 		French:"cases exploités"
 		Romanian:"celule lucrate"
@@ -2509,7 +2509,7 @@
 		German:"Dschungel abholzen"
 	}
 	"Remove Marsh":{
-		Italian:"Rimuovi palude"
+		Italian:"Bonifica palude"
 		Russian:"Осушить болото"
 		French:"Assécher le marais"
 		Romanian:"Asanează mlaștina"
@@ -4044,7 +4044,7 @@
 	
 	// Policy picker screen
 	"You have entered the [newEra] era!":{
-		Italian:"Sei entrato in una nuova era, [newEra]!"
+		Italian:"Sei entrato in una nuova era, l'[newEra]!" //[newEra] not translated in Italian
 		Russian:"Вы вошли в эпоху [newEra]!"
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ai intrat în epoca [newEra]!"
@@ -4253,7 +4253,9 @@
 		Russian:"заменяет"
 	}
 	
-	"[resourceName] not required":{}
+	"[resourceName] not required":{
+		Italian:"Risorsa [resourceName] non richiesta"
+	}
 	
 	"National ability":{ // the unique ability that each nation has
 		Italian:"Abilità della civiltà"
@@ -5024,7 +5026,7 @@
 		German:"Name"
 	}
 	"Closest city":{	
-		Italian:"La città più vicina"
+		Italian:"Città più vicina"
 		Russian:"Ближайший город"
 		French:"Ville la plus proche"
 		Romanian:"Cel mai apropiat oraș"
@@ -5697,19 +5699,6 @@
 		Simplified_Chinese:"购买新地块的成本降低了25%"
 		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
 	}
-	/*
-	//New Wonder projected: Himeji Castle! Free Castle in City which possessed it, and +15% Strenght for units in friendly territory
-	//Also, +1 Culture and +2 Great Engineer Points. Requires Gunpowder
-	"Himeji Castle":{
-		Italian:"Castello di Himeji"
-		French:"Château d'Himeji"
-	}
-	
-	"+15% Combat Strenght for units fighting in friendly territory":{
-		Italian:"+15% Forza per le unità che combattono in territorio amico"
-		French:"+15% force pour toutes les unités dans un territoire allié"
-	}
-	*/
 	
 	"Porcelain Tower":{	
 		Italian:"Torre di Porcellana"
@@ -8233,7 +8222,7 @@
 		French:"Vous avez fait une victoire militaire !"
 	}
 	"One more turn...!":{
-		Italian:"Solo un altro turno..."
+		Italian:"Aspetta! Solo un altro turno..."
 		German:"Nur noch eine Runde..."
 		French:"Un autre tour... !"
 	}
