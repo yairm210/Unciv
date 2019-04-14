@@ -77,7 +77,7 @@ class NewGameScreen: PickerScreen(){
 
         addDifficultySelectBox(newGameOptionsTable)
 
-        val noBarbariansCheckbox = CheckBox("No barbarians",skin)
+        val noBarbariansCheckbox = CheckBox("No barbarians".tr(),skin)
         noBarbariansCheckbox.isChecked=newGameParameters.noBarbarians
         noBarbariansCheckbox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {

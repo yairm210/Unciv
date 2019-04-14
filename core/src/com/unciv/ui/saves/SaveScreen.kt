@@ -10,7 +10,6 @@ import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.getRandom
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 
@@ -41,7 +40,7 @@ class SaveScreen : PickerScreen() {
                 "Fluffy","Magical","Invisible")
         val nouns = listOf("Moose","Pigeon","Weasel","Ferret","Onion","Marshmallow","Crocodile","Unicorn",
                 "Sandwich","Elephant","Kangaroo","Marmot","Beagle","Dolphin","Fish","Tomato","Duck","Dinosaur")
-        val defaultSaveName = adjectives.getRandom()+" "+nouns.getRandom()
+        val defaultSaveName = adjectives.random()+" "+nouns.random()
         textField.text = defaultSaveName
 
         newSave.add("Saved game name".toLabel()).row()

@@ -2,7 +2,6 @@ package com.unciv.logic.civilization
 
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
-import com.unciv.ui.utils.getRandom
 
 
 class PolicyManager {
@@ -75,7 +74,7 @@ class PolicyManager {
             "Free Religion" -> freePolicies++
             "Liberty Complete" -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.getRandom())
+                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.random())
             }
         }
 

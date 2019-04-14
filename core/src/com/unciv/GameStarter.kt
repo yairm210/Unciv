@@ -8,10 +8,9 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.getRandom
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.min
-
 
 class GameParameters{
     var difficulty="Prince"
@@ -76,15 +75,18 @@ class GameStarter{
     }
 
     fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
+        val landTiles = tileMap.values
+                .filter { it.isLand() && !it.getBaseTerrain().impassable}
+
         for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/2 downTo 0){
-            val freeTiles = tileMap.values
-                    .filter { it.isLand() && vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
+            val freeTiles = landTiles
+                    .filter {  vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
                     .toMutableList()
 
             val startingLocations = ArrayList<TileInfo>()
             for(player in 0..numberOfPlayers){
                 if(freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
-                val randomLocation = freeTiles.getRandom()
+                val randomLocation = freeTiles.random()
                 startingLocations.add(randomLocation)
                 freeTiles.removeAll(tileMap.getTilesInDistance(randomLocation.position,minimumDistanceBetweenStartingLocations))
             }

@@ -6,7 +6,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.ui.utils.getRandom
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.abs
@@ -113,13 +112,13 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
         val tilesInArea = ArrayList<Vector2>()
         val tilesToCheck = ArrayList<Vector2>()
         while (waterTiles.isNotEmpty()) {
-            val initialWaterTile = waterTiles.getRandom()
+            val initialWaterTile = waterTiles.random()
             tilesInArea += initialWaterTile
             tilesToCheck += initialWaterTile
             waterTiles -= initialWaterTile
 
             while (tilesToCheck.isNotEmpty()) {
-                val tileChecking = tilesToCheck.getRandom()
+                val tileChecking = tilesToCheck.random()
                 for (vector in HexMath().getVectorsAtDistance(tileChecking,1)
                         .filter { !tilesInArea.contains(it) and waterTiles.contains(it) }) {
                     tilesInArea += vector
@@ -175,9 +174,9 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
             val maxLatitude = abs(getLatitude(Vector2(distance.toFloat(), distance.toFloat())))
 
             for (i in 0 until numberOfSeeds) {
-                var terrain = if (Math.random() > waterPercent) terrains.getRandom().name
+                var terrain = if (Math.random() > waterPercent) terrains.random().name
                 else "Ocean"
-                val tile = emptyTiles.getRandom()
+                val tile = emptyTiles.random()
 
                 //change grassland to desert or tundra based on y
                 if (abs(getLatitude(tile.position)) < maxLatitude * 0.1) {
@@ -266,13 +265,13 @@ class AlexanderRandomMapGenerator:RandomMapGenerator(){
         val grassland = "Grassland"
         val ocean = "Ocean"
         for(i in 0..distance*distance/6){
-            val location = map.filter { it.value==null }.map { it.key }.getRandom()
+            val location = map.filter { it.value==null }.map { it.key }.random()
             map[location] = TileInfo().apply { baseTerrain= grassland}
             sparkList.add(location)
         }
 
         while(sparkList.any()){
-            val currentSpark = sparkList.getRandom()
+            val currentSpark = sparkList.random()
             val emptyTilesAroundSpark = HexMath().getAdjacentVectors(currentSpark)
                     .filter { map.containsKey(it) && map[it]==null }
             if(map[currentSpark]!!.baseTerrain==grassland){
@@ -353,10 +352,10 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
             val numberOfSeeds = ceil(emptyTiles.size / averageTilesPerArea.toFloat()).toInt()
 
             for (i in 0 until numberOfSeeds) {
-                val terrain = if (Math.random() > waterPercent) terrains.getRandom().name
+                val terrain = if (Math.random() > waterPercent) terrains.random().name
                 else "Ocean"
                 val area = Area(terrain)
-                val tile = emptyTiles.getRandom()
+                val tile = emptyTiles.random()
                 emptyTiles -= tile
                 area.addTile(tile)
                 areas += area
@@ -377,7 +376,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
     fun expandAreas(areas: ArrayList<Area>, map: HashMap<Vector2, TileInfo>) {
         val expandableAreas = ArrayList<Area>(areas)
         while (expandableAreas.isNotEmpty()) {
-            val areaToExpand = expandableAreas.getRandom()
+            val areaToExpand = expandableAreas.random()
             if(areaToExpand.locations.size>=20){
                 expandableAreas -= areaToExpand
                 continue
@@ -387,7 +386,7 @@ open class SeedRandomMapGenerator : RandomMapGenerator() {
                     .filter { map.containsKey(it) && map[it]!!.baseTerrain=="" }.toList()
             if (availableExpansionVectors.isEmpty()) expandableAreas -= areaToExpand
             else {
-                val expansionVector = availableExpansionVectors.getRandom()
+                val expansionVector = availableExpansionVectors.random()
                 areaToExpand.addTile(map[expansionVector]!!)
 
                 val neighbors = HexMath().getAdjacentVectors(expansionVector)
@@ -420,7 +419,7 @@ open class RandomMapGenerator {
         tileInfo.position = position
         val terrains = GameBasics.Terrains.values
 
-        val baseTerrain = terrains.filter { it.type === TerrainType.Land && it.name != "Lakes" }.getRandom()
+        val baseTerrain = terrains.filter { it.type === TerrainType.Land && it.name != "Lakes" }.random()
         tileInfo.baseTerrain = baseTerrain.name
 
         addRandomTerrainFeature(tileInfo)
@@ -433,7 +432,7 @@ open class RandomMapGenerator {
         if (tileInfo.getBaseTerrain().canHaveOverlay && Math.random() > 0.7f) {
             val secondaryTerrains = GameBasics.Terrains.values
                     .filter { it.type === TerrainType.TerrainFeature && it.occursOn!!.contains(tileInfo.baseTerrain) }
-            if (secondaryTerrains.any()) tileInfo.terrainFeature = secondaryTerrains.getRandom().name
+            if (secondaryTerrains.any()) tileInfo.terrainFeature = secondaryTerrains.random().name
         }
     }
 
@@ -457,7 +456,7 @@ open class RandomMapGenerator {
     private fun getRandomResource(resources: List<TileResource>, resourceType: ResourceType): TileResource? {
         val filtered = resources.filter { it.resourceType == resourceType }
         if (filtered.isEmpty()) return null
-        else return filtered.getRandom()
+        else return filtered.random()
     }
 
     open fun generateMap(distance: Int): HashMap<String, TileInfo> {

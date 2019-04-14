@@ -11,7 +11,6 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.getRandom
 import kotlin.math.min
 
 class NextTurnAutomation{
@@ -62,7 +61,7 @@ class NextTurnAutomation{
                             && !tradeLogic.currentTrade.ourOffers.contains(it) }
 
                 if (ourOfferList.isNotEmpty()) {
-                    tradeLogic.currentTrade.ourOffers.add(ourOfferList.getRandom())
+                    tradeLogic.currentTrade.ourOffers.add(ourOfferList.random())
                     tradeLogic.currentTrade.theirOffers.add(theirOffer)
                 } else {
                     //try to buy tech with money, not spending more than 1/3 of treasury
@@ -96,11 +95,11 @@ class NextTurnAutomation{
             val techsCheapest = techsGroups[costs[0]]!!
             //Do not consider advanced techs if only one tech left in cheapest groupe
             if (techsCheapest.size == 1 || costs.size == 1) {
-                tech = techsCheapest.getRandom()
+                tech = techsCheapest.random()
             } else {
                 //Choose randomly between cheapest and second cheapest groupe
                 val techsAdvanced = techsGroups[costs[1]]!!
-                tech = (techsCheapest + techsAdvanced).getRandom()
+                tech = (techsCheapest + techsAdvanced).random()
             }
 
             civInfo.tech.techsToResearch.add(tech.name)
@@ -111,7 +110,7 @@ class NextTurnAutomation{
         while (civInfo.policies.canAdoptPolicy()) {
             val adoptablePolicies = GameBasics.PolicyBranches.values.flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
-            val policyToAdopt = adoptablePolicies.getRandom()
+            val policyToAdopt = adoptablePolicies.random()
             civInfo.policies.adopt(policyToAdopt)
         }
     }
@@ -213,7 +212,7 @@ class NextTurnAutomation{
             if (unit.promotions.canBePromoted()) {
                 val availablePromotions = unit.promotions.getAvailablePromotions()
                 if (availablePromotions.isNotEmpty())
-                    unit.promotions.addPromotion(availablePromotions.getRandom().name)
+                    unit.promotions.addPromotion(availablePromotions.random().name)
             }
 
             when {
