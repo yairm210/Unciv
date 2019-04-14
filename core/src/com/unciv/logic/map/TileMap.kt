@@ -43,7 +43,6 @@ class TileMap {
             mapValues = CelluarAutomataRandomMapGenerator(newGameParameters.mapType).generateMap(newGameParameters.mapRadius).values
 
         tileList.addAll(mapValues)
-//        tileList.addAll(AlexanderRandomMapGenerator().generateMap(distance,0.8f).values)
 
         setTransients()
     }

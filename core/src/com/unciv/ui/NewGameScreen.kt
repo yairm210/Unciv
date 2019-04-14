@@ -2,10 +2,7 @@ package com.unciv.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.GameStarter
@@ -74,17 +71,50 @@ class NewGameScreen: PickerScreen(){
         val newGameOptionsTable = Table()
         newGameOptionsTable.skin = skin
 
+        addMapTypeSizeAndFile(newGameOptionsTable)
+
+        addNumberOfHumansAndEnemies(newGameOptionsTable)
+
+        addDifficultySelectBox(newGameOptionsTable)
+
+        val noBarbariansCheckbox = CheckBox("No barbarians",skin)
+        noBarbariansCheckbox.isChecked=newGameParameters.noBarbarians
+        noBarbariansCheckbox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.noBarbarians = noBarbariansCheckbox.isChecked
+            }
+        })
+        newGameOptionsTable.add(noBarbariansCheckbox).colspan(2).row()
+
+
+        rightSideButton.enable()
+        rightSideButton.setText("Start game!".tr())
+        rightSideButton.onClick {
+            Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
+            rightSideButton.disable()
+            rightSideButton.setText("Working...".tr())
+
+            thread { // Creating a new game can take a while and we don't want ANRs
+                newGame = GameStarter().startNewGame(newGameParameters)
+            }
+        }
+
+        newGameOptionsTable.pack()
+        return newGameOptionsTable
+    }
+
+    private fun addMapTypeSizeAndFile(newGameOptionsTable: Table) {
         newGameOptionsTable.add("{Map type}:".tr())
         val mapTypes = LinkedHashMap<String, MapType>()
         for (type in MapType.values()) {
-            if(type==MapType.File && GameSaver().getMaps().isEmpty()) continue
+            if (type == MapType.File && GameSaver().getMaps().isEmpty()) continue
             mapTypes[type.toString()] = type
         }
 
         val mapFileLabel = "{Map file}:".toLabel()
         val mapFileSelectBox = getMapFileSelectBox()
-        mapFileLabel.isVisible=false
-        mapFileSelectBox.isVisible=false
+        mapFileLabel.isVisible = false
+        mapFileSelectBox.isVisible = false
 
         val mapTypeSelectBox = TranslatedSelectBox(mapTypes.keys, newGameParameters.mapType.toString(), skin)
 
@@ -98,13 +128,13 @@ class NewGameScreen: PickerScreen(){
                     worldSizeSelectBox.isVisible = false
                     worldSizeLabel.isVisible = false
                     mapFileSelectBox.isVisible = true
-                    mapFileLabel.isVisible=true
+                    mapFileLabel.isVisible = true
                     newGameParameters.mapFileName = mapFileSelectBox.selected
                 } else {
                     worldSizeSelectBox.isVisible = true
                     worldSizeLabel.isVisible = true
                     mapFileSelectBox.isVisible = false
-                    mapFileLabel.isVisible=false
+                    mapFileLabel.isVisible = false
                     newGameParameters.mapFileName = null
                 }
             }
@@ -117,8 +147,9 @@ class NewGameScreen: PickerScreen(){
 
         newGameOptionsTable.add(mapFileLabel)
         newGameOptionsTable.add(mapFileSelectBox).pad(10f).row()
+    }
 
-
+    private fun addNumberOfHumansAndEnemies(newGameOptionsTable: Table) {
         newGameOptionsTable.add("{Number of human players}:".tr())
         val humanPlayers = SelectBox<Int>(skin)
         val humanPlayersArray = Array<Int>()
@@ -131,7 +162,7 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray = Array<Int>()
-        (0..GameBasics.Nations.size-1).forEach { enemiesArray.add(it) }
+        (0..GameBasics.Nations.size - 1).forEach { enemiesArray.add(it) }
         enemiesSelectBox.items = enemiesArray
         enemiesSelectBox.selected = newGameParameters.numberOfEnemies
         newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
@@ -153,32 +184,17 @@ class NewGameScreen: PickerScreen(){
                 removeExtraHumanNations(humanPlayers)
             }
         })
+    }
 
+    private fun addDifficultySelectBox(newGameOptionsTable: Table) {
         newGameOptionsTable.add("{Difficulty}:".tr())
-        val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, newGameParameters.difficulty , skin)
+        val difficultySelectBox = TranslatedSelectBox(GameBasics.Difficulties.keys, newGameParameters.difficulty, skin)
         difficultySelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 newGameParameters.difficulty = difficultySelectBox.selected.value
             }
         })
         newGameOptionsTable.add(difficultySelectBox).pad(10f).row()
-
-
-        rightSideButton.enable()
-        rightSideButton.setText("Start game!".tr())
-        rightSideButton.onClick {
-            Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
-            rightSideButton.disable()
-            rightSideButton.setText("Working...".tr())
-
-            thread {
-                // Creating a new game can tke a while and we don't want ANRs
-                newGame = GameStarter().startNewGame(newGameParameters)
-            }
-        }
-
-        newGameOptionsTable.pack()
-        return newGameOptionsTable
     }
 
     private fun getMapFileSelectBox(): SelectBox<String> {

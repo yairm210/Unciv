@@ -18,6 +18,7 @@ import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScreen.skin){
 
     var constructionScrollPane:ScrollPane?=null
+    var lastConstruction = ""
 
     private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String=""): Table {
         val pickProductionButton = Table()
@@ -35,6 +36,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         if(rejectionReason=="") {
             pickProductionButton.onClick {
+                lastConstruction = cityScreen.city.cityConstructions.currentConstruction
                 cityScreen.city.cityConstructions.currentConstruction = construction
                 cityScreen.city.cityStats.update()
                 cityScreen.update()
@@ -131,7 +133,8 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     }
 
     private fun addCurrentConstructionTable(city: CityInfo) {
-        val construction = city.cityConstructions.getCurrentConstruction()
+        val cityConstructions = city.cityConstructions
+        val construction = cityConstructions.getCurrentConstruction()
 
         row()
         val purchaseConstructionButton: TextButton
@@ -140,7 +143,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
                 YesNoPopupTable("Would you like to purchase [${construction.name}] for [$buildingGoldCost] gold?".tr(), {
-                    city.cityConstructions.purchaseBuilding(construction.name)
+                    cityConstructions.purchaseBuilding(construction.name)
+                    if(lastConstruction!="" && cityConstructions.getConstruction(lastConstruction).isBuildable(cityConstructions))
+                        city.cityConstructions.currentConstruction = lastConstruction
                     update()
                 }, cityScreen)
             }
@@ -170,7 +175,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (currentConstruction is BaseUnit)
             description = currentConstruction.getDescription(true)
         else if (currentConstruction is Building)
-            description = currentConstruction.getDescription(true, city.civInfo.policies.adoptedPolicies)
+            description = currentConstruction.getDescription(true, city.civInfo)
         else description = currentConstruction.description.tr()
 
         val descriptionLabel = description.toLabel()

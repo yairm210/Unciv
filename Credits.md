@@ -33,6 +33,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
 * [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish as Ballista
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado for Swordsman
+* [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
 
@@ -55,6 +56,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Black powder musket](https://thenounproject.com/term/black-powder-musket/1202078/) By Jarem Fyre for Minuteman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
+* [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 
 ### Industrial
@@ -67,6 +69,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ### Modern
 
 * [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
+* [Cap](https://thenounproject.com/search/?q=kepi&i=950267) By Creative Mania for Foreign Legion
 * [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
 * [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
 * [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
@@ -136,6 +139,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 * [Storehouse](https://thenounproject.com/term/storehouse/966786/) By Pedro Santos for Granary
 * [Great Wall Of China](https://thenounproject.com/term/great-wall-of-china/146039/) By Arthur Shlain for Walls
+* [Markadan Tower](https://thenounproject.com/search/?q=fortification&i=2107694) by Vectors Market for Walls of Babylon
 * [Block](https://thenounproject.com/term/block/1711553/) By Monjin Friends for Stone Works
 * [korean palace](https://thenounproject.com/term/korean-palace/1797542/) By 1516 for Palace
 * [Obelisk](https://thenounproject.com/term/obelisk/749104/) By Eliricon for Monument
@@ -153,6 +157,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
 * [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle
 * [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra for Colloseum
+* [Terracotta Army](https://thenounproject.com/search/?q=terracotta&i=2306346) By Supalerk Laipawat
 * [Stadium](https://thenounproject.com/term/stadium/1152530/) By Creaticca Creative Agency for Circus Maximus
 * [Market](https://thenounproject.com/term/market/1723050/) By sofi
 * [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
@@ -187,6 +192,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Forbidden City](https://thenounproject.com/term/forbidden-city/1797540/) By 1516
 * [Theatre](https://thenounproject.com/term/theatre/1780401/) By b farias
 * [Tower of Pisa](https://thenounproject.com/search/?q=leaning%20tower%20of%20pisa&i=1002578) By Pedro Santos
+* [Himeji Castle](https://thenounproject.com/search/?q=himeji&i=1125277) By Chanut is Industries
 * [Windmill](https://thenounproject.com/term/windmill/1705107/) By corpus delicti
 * [Taj Mahal](https://thenounproject.com/term/taj-mahal/1907755/) By Felipe Alvarado
 * [Observatory](https://thenounproject.com/term/observatory/1259/) By Nathan Driskell
@@ -211,6 +217,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Statue of Liberty](https://thenounproject.com/search/?q=statue%20of%20liberty&i=1801199) By 1516
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
 * [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
+* [Neuschwanstein](https://thenounproject.com/search/?q=Neuschwanstein&i=2107683) By Vectors Market
 
 ### Information Era
 

@@ -45,6 +45,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
             "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
             "Pillage" -> return ImageGetter.getImage("OtherIcons/Pillage")
+            "Construct road" -> return ImageGetter.getImprovementIcon("Road")
             else -> return ImageGetter.getImage("OtherIcons/Star")
         }
     }

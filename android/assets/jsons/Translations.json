@@ -29,14 +29,6 @@
 		Simplified_Chinese:"下一回合"
 		Portuguese:"Proximo turno"
 		Japanese:"次のターン"
-		Polish:"Następna tura"
-		Indonesian:"Giliran berikutnya"
-		Philippino:"Susunod na pagliko"
-		Czech:"Další otočení"
-		Slovak:"Ďalšie otočenie"
-		Sloven:"Naslednji zavoj"
-		Croatian:"Sljedeći red"
-		Danish:"Næste tur"
 	}
 	
 	"Working...":{ // Displayed when next turn is being...turned
@@ -194,7 +186,7 @@
 		Dutch:"Verbetering bouwen"
 		Spanish:"Construir mejora"
 		Simplified_Chinese:"建造建筑"
-        Portuguese:"Construir melhoria"
+        	Portuguese:"Construir melhoria"
 		Japanese:"構造改善"
 	}
 
@@ -725,7 +717,7 @@
 	}
 	
 	"Worked tiles":{
-		Italian:"celle sfruttate"
+		Italian:"Celle sfruttate"
 		Russian:"обработанные клетки"
 		French:"cases exploités"
 		Romanian:"celule lucrate"
@@ -2517,7 +2509,7 @@
 		German:"Dschungel abholzen"
 	}
 	"Remove Marsh":{
-		Italian:"Rimuovi palude"
+		Italian:"Bonifica palude"
 		Russian:"Осушить болото"
 		French:"Assécher le marais"
 		Romanian:"Asanează mlaștina"
@@ -4052,7 +4044,7 @@
 	
 	// Policy picker screen
 	"You have entered the [newEra] era!":{
-		Italian:"Sei entrato in una nuova era, [newEra]!"
+		Italian:"Sei entrato in una nuova era, l'[newEra]!" //[newEra] not translated in Italian
 		Russian:"Вы вошли в эпоху [newEra]!"
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ai intrat în epoca [newEra]!"
@@ -4259,6 +4251,10 @@
 		French:"remplace"
 		Portuguese:"substitui"
 		Russian:"заменяет"
+	}
+	
+	"[resourceName] not required":{
+		Italian:"Risorsa [resourceName] non richiesta"
 	}
 	
 	"National ability":{ // the unique ability that each nation has
@@ -5030,7 +5026,7 @@
 		German:"Name"
 	}
 	"Closest city":{	
-		Italian:"La città più vicina"
+		Italian:"Città più vicina"
 		Russian:"Ближайший город"
 		French:"Ville la plus proche"
 		Romanian:"Cel mai apropiat oraș"
@@ -5172,6 +5168,9 @@
 		Portuguese:"Muralhas"
 		German:"Mauern"
 	}
+	"Walls of Babylon":{
+		Italian:"Mura di Babilonia"
+	}
 	
 	"The Pyramids":{	
 		Italian:"Grandi Piramidi"
@@ -5236,8 +5235,12 @@
 		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
 	}
 	
-	"Colossus":{}
-	"+1 gold from worked water tiles in city":{}
+	"Colossus":{
+		Italian:"Colosso"
+	}
+	"+1 gold from worked water tiles in city":{
+		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
+	}
 	
 	"Temple":{	
 		Italian:"Tempio"
@@ -5422,6 +5425,11 @@
 		Portuguese:"Coliseu"
 		German:"Collosseum"
 	}
+	
+	"Terracotta Army":{
+		Italian:"Esercito di terracotta"
+	}
+	
 	"Market":{	
 		Italian:"Mercato"
 		Russian:"Рынок"
@@ -5560,8 +5568,12 @@
 		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
 	}
 	
-	"Great Wall":{}
-	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{}
+	"Great Wall":{
+		Italian:"Grande Muraglia"
+	}
+	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
+		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
+	}
 	
 	"Workshop":{	
 		Italian:"Bottega"
@@ -5687,19 +5699,6 @@
 		Simplified_Chinese:"购买新地块的成本降低了25%"
 		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
 	}
-	/*
-	//New Wonder projected: Himeji Castle! Free Castle in City which possessed it, and +15% Strenght for units in friendly territory
-	//Also, +1 Culture and +2 Great Engineer Points. Requires Gunpowder
-	"Himeji Castle":{
-		Italian:"Castello di Himeji"
-		French:"Château d'Himeji"
-	}
-	
-	"+15% Combat Strenght for units fighting in friendly territory":{
-		Italian:"+15% Forza per le unità che combattono in territorio amico"
-		French:"+15% force pour toutes les unités dans un territoire allié"
-	}
-	*/
 	
 	"Porcelain Tower":{	
 		Italian:"Torre di Porcellana"
@@ -5834,14 +5833,20 @@
 		Spanish:"La Torre Inclinada De Pizza"
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
-	}
-	
+	}	
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
 		Romanian:"Persoană mare gratuită"
 		Spanish:"Gran Persona gratis"
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
+	}
+	
+	"Himeji Castle":{
+		Italian:"Castello di Himeji"
+	}
+	"+15% combat strength for units fighting in friendly territory":{
+		Italian:"+15% Forza per le unità che combattono in territorio amico"
 	}
 	
 	"Taj Mahal":{	
@@ -6034,6 +6039,13 @@
 	}
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
+	}
+	
+	"Neuschwanstein":{
+		Italian:"Castello di Neuschwanstein"
+	}
+	"+1 happiness, +2 culture and +3 gold from every Castle":{
+		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
 	}
 	
 	"Military Academy":{	
@@ -6470,6 +6482,7 @@
 		Portuguese:"Espadachin" // may replace with guerreiro com espada if nescessary
 		German:"Schwertkämpfer"
 	}
+	
 	"Legion":{
 		Italian:"Legionario"
 		Romanian:"Legionar"
@@ -6477,7 +6490,14 @@
 		Simplified_Chinese:"古罗马军团"
 		German:"Legionär"
 		French:"Légion"
-	} // Rome unique
+	}
+	"Can construct roads":{
+		Italian:"Può costruire Strade"
+	}
+	"Construct road":{
+		Italian:"Costruisci Strada"
+	} // for unit action button
+	
 	"Horseman":{	
 		Italian:"Guerriero a cavallo" //wrong translation by Smashfanful
 		Russian:"Всадник"
@@ -6587,6 +6607,14 @@
 		German:"Kamel-Bogenschütze"
 		French:"Archer méhariste"
 	}
+	"Samurai":{
+		Italian:"Samurai" //Same as in Italian
+	}
+
+	"Combat very likely to create Great Generals":{
+		Italian:"Può generare un Grande Generale combattendo"
+	}
+	
 	
 	// Renaissance units
 	"Caravel":{
@@ -6701,6 +6729,7 @@
 		Portuguese:"Cavalaria"
 		German:"Kavallerie"
 	}
+	
 	"Cossack":{
 		Italian:"Cosacco"
 		Romanian:"Cazac"
@@ -6709,7 +6738,7 @@
 		Russian:"Казаки"
 		German:"Kosak"
 		French:"Cosaque"
-	} // Russia unique
+	}
 	
 	"Artillery":{	
 		Italian:"Artiglieria"
@@ -6732,7 +6761,7 @@
 		German:"Panzerschiff"
 	}
 	
-	// Modern units (do these, yes)
+	// Modern units
 	"Landship":{
 		Italian:"Nave di terra"
 		Romanian:"Vehicul terestru"
@@ -6742,6 +6771,7 @@
 		German:"Landschiff"
 		French:"Véhicule terrestre" //official translation but ugly
 	}
+	
 	"Great War Infantry":{
 		Italian:"Fante della Grande Guerra"
 		Romanian:"Infanteria Marelui Război"
@@ -6751,6 +6781,19 @@
 		German:"Weltkriegs Infanterie"
 		French:"Infanterie de la grande guerre"
 	}
+	
+	"Foreign Legion":{
+		Italian:"Legione Straniera"
+	}
+	"+20% bonus outside friendly territory":{
+		Italian:"+20% Forza fuori da territorio amico"
+	}
+	"Foreign Land":{ // for battle table combat percentage
+		Italian:"Terra Straniera"
+	
+	}
+	
+	
 	"Destroyer":{
 		Italian:"Cacciatorpediniere"
 		Romanian:"Distrugător"
@@ -8202,7 +8245,7 @@
 		Russian:"Вы одержали победу завоевания!"
 	}
 	"One more turn...!":{
-		Italian:"Solo un altro turno..."
+		Italian:"Aspetta! Solo un altro turno..."
 		German:"Nur noch eine Runde..."
 		French:"Un autre tour... !"
 		Russian:"Еще один ход...!"
@@ -8376,10 +8419,17 @@
 		German:"Angriff"
 		French:"Charge"
 	}
+
 	"Bonus vs wounded units 33%":{
 		Italian:"+33% forza contro unità ferite"
 		French:"+33% force contre les unités montées"
 		Russian:"Бонус против раненых 33%"
+  }
+
+	"wounded units":{
+		Italian:"unità ferite"
+		French:"unités montées"
+
 	}
 	"Mobility":{
 		Italian:"Mobilità"
@@ -8662,5 +8712,8 @@
 	"Map editor":{
 		Italian:"Editor mappe"
 		Russian:"Редактор карт"
+	}
+	"Language":{
+		Italian:"Lingua"
 	}
 }

@@ -28,11 +28,11 @@ class NextTurnAutomation{
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
-        civInfo.diplomaticIncidents.clear()
+        civInfo.popupAlerts.clear()
     }
 
     private fun buyBuildingOrUnit(civInfo: CivilizationInfo) {
-        //allow ai spending money to purchase building & unit. Buying staff has slightly lower priority than buying tech.
+        //allow AI spending money to purchase building & unit. Buying staff has slightly lower priority than buying tech.
         for (city in civInfo.cities.sortedByDescending{ it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction.canBePurchased()

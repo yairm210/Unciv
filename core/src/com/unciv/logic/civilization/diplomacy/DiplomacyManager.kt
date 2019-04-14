@@ -1,7 +1,9 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.Counter
@@ -97,9 +99,11 @@ class DiplomacyManager() {
 
     fun declareWar(){
         diplomaticStatus = DiplomaticStatus.War
-        otherCiv().diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
-        otherCiv().addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
-        otherCiv().diplomaticIncidents.add(DiplomaticIncident(civInfo.civName,DiplomaticIncidentType.WarDeclaration))
+        val otherCiv = otherCiv()
+
+        otherCiv.diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
+        otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
+        otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
     }
     //endregion
 }

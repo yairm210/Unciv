@@ -93,8 +93,9 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         group.addActor(image)
 
         val secondaryColor = cityConstructions.cityInfo.civInfo.getNation().getSecondaryColor()
-        if(cityConstructions.getCurrentConstruction() !is SpecialConstruction) {
-            val turnsToConstruction = cityConstructions.turnsToConstruction(cityConstructions.currentConstruction)
+        val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
+        if(cityCurrentConstruction !is SpecialConstruction) {
+            val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
             val label = turnsToConstruction.toString().toLabel()
             label.setFontColor(secondaryColor)
             label.setFontSize(10)

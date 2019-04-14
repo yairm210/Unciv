@@ -20,6 +20,7 @@ class GameParameters{
     var humanNations=ArrayList<String>().apply { add("Babylon") }
     var numberOfEnemies=3
     var mapType= MapType.Perlin
+    var noBarbarians=false
     var mapFileName :String?=null
 }
 

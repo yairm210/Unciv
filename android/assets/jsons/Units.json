@@ -73,8 +73,8 @@
 	{
 		name:"Maori Warrior",
 		unitType:"Melee",
-		uniqueTo:"Aztec",
-		replaces:"Polynesia",
+		uniqueTo:"Polynesia",
+		replaces:"Warrior",
 		movement:2,
 		strength:8,
 		cost: 40,
@@ -84,6 +84,19 @@
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
 		//Polynesian unique unit. All Units near him have -10% strenght
+	},
+	{
+		name:"Brute",
+		unitType:"Melee",
+		uniqueTo:"Barbarian",
+		replaces:"Warrior",
+		movement:2,
+		strength:8,
+		cost: 20,
+		obsoleteTech:"Metal Casting",
+		upgradesTo:"Swordsman",
+		attackSound:"nonmetalhit"
+		//Barbarian unique unit
 	},
 	*/
 	{
@@ -205,7 +218,6 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
-	/*
 	{
 		name:"War Chariot",
 		unitType:"Ranged",
@@ -221,8 +233,8 @@
 		uniques:["No defensive terrain bonus","Rough terrain penalty"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
-		//This is the Egyptian unique unit. It replaces Chariot Archer, moves faster and needs no horses.
 	},
+	/*
 	{
 		name:"War Elephant",
 		unitType:"Ranged",
@@ -333,7 +345,6 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	/*
 	{
 		name:"Legion",
 		unitType:"Melee",
@@ -346,10 +357,11 @@
 		upgradesTo:"Longswordsman",
 		obsoleteTech:"Steel",
 		requiredResource:"Iron",
+		uniques:["Can construct roads"]
 		hurryCostModifier:20,
 		attackSound:"metalhit"
-		//Roman unique unit. It is stronger than Swordsman. It should also build roads (maybe railroads, too). It takes more to Steel to make it obsolete.
 	},
+	/*
 	{
 		name:"Mohawk Warrior",
 		unitType:"Melee",
@@ -431,9 +443,8 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
-	/*
 	{
-		name:"Chu-ko-nu",
+		name:"Chu-Ko-Nu",
 		unitType:"Ranged",
 		uniqueTo:"China",
 		movement:2,
@@ -444,11 +455,10 @@
 		requiredTech:"Machinery",
 		upgradesTo:"Gatling Gun",
 		obsoleteTech:"Industrialization",
+		promotions:["Logistics"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
-		//Chinese unique unit. It is weaker than Crossbowman but can attack twice.
 	},
-	*/
 	{
 		name:"Longbowman",
 		unitType:"Ranged",
@@ -763,7 +773,6 @@
 		upgradesTo:"Battleship",
 		hurryCostModifier:20
 	},
-	/*
 	{
 		name:"Ship of the Line",
 		unitType:"WaterRanged",
@@ -774,13 +783,12 @@
 		rangedStrength:35,
 		cost: 185,
 		requiredResource:"Iron",
-		uniques:["Extra sight 1"]
+		uniques:["+1 Visibility Range"]
 		requiredTech:"Navigation",
 		obsoleteTech:"Electronics",
 		upgradesTo:"Battleship",
 		hurryCostModifier:20
 	},
-	*/
 	{
 		name:"Lancer",
 		unitType:"Mounted",
@@ -873,7 +881,6 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 	},
-	/*
 	{
 		name:"Cossack",
 		unitType:"Mounted",
@@ -885,11 +892,11 @@
 		requiredTech:"Military Science",
 		requiredResource:"Horses",
 		upgradesTo:"Landship",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Damaged Enemy Bonus 33%" ],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs wounded units 33%" ],
 		hurryCostModifier:20,
 		attackSound:"horse"
-		//This Russian unique unit should replace Cavalry and also deal +33% damage to damaged units.
 	},
+	/*
 	{
 		name:"Comanche Rider",
 		unitType:"Mounted",
@@ -994,6 +1001,21 @@
 		hurryCostModifier:20,
 		upgradesTo:"Infantry",
 		obsoleteTech:"Plastics"
+		attackSound:"shot"
+	},
+	{
+		name:"Foreign Legion",
+		unitType:"Melee",
+		replaces:"Great War Infantry",
+		uniqueTo:"France",
+		movement:2,
+		strength:50,
+		cost: 320,
+		requiredTech:"Replaceable Parts",
+		hurryCostModifier:20,
+		upgradesTo:"Infantry",
+		obsoleteTech:"Plastics",
+		uniques:["+20% bonus outside friendly territory"],
 		attackSound:"shot"
 	},
 	{

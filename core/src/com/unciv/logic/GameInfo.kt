@@ -47,7 +47,7 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0){
                 turns++
-                if (turns % 10 == 0) { // every 10 turns add a barbarian in a random place
+                if (turns % 10 == 0 && !gameParameters.noBarbarians) { // every 10 turns add a barbarian in a random place
                     placeBarbarianUnit(null)
                 }
             }

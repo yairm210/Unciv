@@ -38,7 +38,7 @@ class CityConstructions {
     fun getStats(): Stats {
         val stats = Stats()
         for (building in getBuiltBuildings())
-            stats.add(building.getStats(cityInfo.civInfo.policies.adoptedPolicies))
+            stats.add(building.getStats(cityInfo.civInfo))
         stats.science += (cityInfo.getBuildingUniques().count { it == "+1 Science Per 2 Population" } * cityInfo.population.population / 2).toFloat()
         return stats
     }
@@ -199,7 +199,7 @@ class CityConstructions {
         cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo.policies.adoptedPolicies)
         getConstruction(buildingName).postBuildEvent(this)
         if (currentConstruction == buildingName) {
-            currentConstruction=""
+            currentConstruction = ""
             chooseNextConstruction()
         }
         cityInfo.cityStats.update()

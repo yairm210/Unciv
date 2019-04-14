@@ -4,8 +4,8 @@ import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncident
-import com.unciv.logic.civilization.diplomacy.DiplomaticIncidentType
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
@@ -162,6 +162,7 @@ class Battle(val gameInfo:GameInfo) {
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
         val enemyCiv = city.civInfo
         attacker.getCivInfo().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
+        attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.CityConquered,city.name))
 
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
@@ -185,6 +186,9 @@ class Battle(val gameInfo:GameInfo) {
 
             city.moveToCiv(attacker.getCivInfo())
             city.resistanceCounter = city.population.population
+            city.workedTiles = hashSetOf() //reassign 1st working tile
+            city.population.specialists.clear()
+            city.population.autoAssignPopulation()
             city.cityStats.update()
         }
 
@@ -194,7 +198,7 @@ class Battle(val gameInfo:GameInfo) {
                 for(civ in gameInfo.civilizations)
                     civ.addNotification("The civilization of [${enemyCiv.civName}] has been destroyed!", null, Color.RED)
                 enemyCiv.getCivUnits().forEach { it.destroy() }
-                attacker.getCivInfo().diplomaticIncidents.add(DiplomaticIncident(enemyCiv.civName,DiplomaticIncidentType.Defeated))
+                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,enemyCiv.civName))
             }
             else if(enemyCiv.cities.isNotEmpty()){
                 enemyCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
