@@ -73,8 +73,8 @@
 	{
 		name:"Maori Warrior",
 		unitType:"Melee",
-		uniqueTo:"Aztec",
-		replaces:"Polynesia",
+		uniqueTo:"Polynesia",
+		replaces:"Warrior",
 		movement:2,
 		strength:8,
 		cost: 40,
@@ -84,6 +84,19 @@
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
 		//Polynesian unique unit. All Units near him have -10% strenght
+	},
+	{
+		name:"Brute",
+		unitType:"Melee",
+		uniqueTo:"Barbarian",
+		replaces:"Warrior",
+		movement:2,
+		strength:8,
+		cost: 20,
+		obsoleteTech:"Metal Casting",
+		upgradesTo:"Swordsman",
+		attackSound:"nonmetalhit"
+		//Barbarian unique unit
 	},
 	*/
 	{
