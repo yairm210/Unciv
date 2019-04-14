@@ -4,6 +4,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -75,11 +76,21 @@ class GameStarter{
     }
 
     fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
-        val landTiles = tileMap.values
-                .filter { it.isLand() && !it.getBaseTerrain().impassable}
+        var landTiles = tileMap.values
+                .filter { it.isLand() && !it.getBaseTerrain().impassable }
+
+        val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
+        while(landTiles.any()){
+            val bfs = BFS(landTiles.random()){it.isLand() && !it.getBaseTerrain().impassable}
+            bfs.stepToEnd()
+            val tilesInGroup = bfs.tilesReached.keys
+            landTiles = landTiles.filter { it !in tilesInGroup }
+            if(tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
+                landTilesInBigEnoughGroup.addAll(tilesInGroup)
+        }
 
         for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/2 downTo 0){
-            val freeTiles = landTiles
+            val freeTiles = landTilesInBigEnoughGroup
                     .filter {  vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
                     .toMutableList()
 

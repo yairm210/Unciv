@@ -5,7 +5,8 @@ package com.unciv.logic.map
  */
 class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
     var tilesToCheck = ArrayList<TileInfo>()
-    val tilesReached = HashMap<TileInfo, TileInfo>() // each tile reached points to its parent tile, where we got to it from
+    /** each tile reached points to its parent tile, where we got to it from */
+    val tilesReached = HashMap<TileInfo, TileInfo>()
 
     init{
         tilesToCheck.add(startingPoint)
