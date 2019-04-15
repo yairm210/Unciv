@@ -58,7 +58,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         }
 
         if(defender.isInvisible()
-                && attacker.getCivInfo().viewableInvisibleUnitsTiles.contains(selectedTile)) {
+                && !attacker.getCivInfo().viewableInvisibleUnitsTiles.contains(selectedTile)) {
             hide()
             return
         }

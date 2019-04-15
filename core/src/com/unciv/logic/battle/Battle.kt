@@ -188,7 +188,8 @@ class Battle(val gameInfo:GameInfo) {
             city.resistanceCounter = city.population.population
             city.workedTiles = hashSetOf() //reassign 1st working tile
             city.population.specialists.clear()
-            city.population.autoAssignPopulation()
+            for (i in 0..city.population.population)
+                city.population.autoAssignPopulation()
             city.cityStats.update()
         }
 

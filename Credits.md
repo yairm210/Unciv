@@ -33,6 +33,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
 * [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish as Ballista
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado for Swordsman
+* [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
 
@@ -55,6 +56,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Black powder musket](https://thenounproject.com/term/black-powder-musket/1202078/) By Jarem Fyre for Minuteman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
+* [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
 
 ### Industrial
@@ -67,6 +69,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 ### Modern
 
 * [Helmet](https://thenounproject.com/term/helmet/25216/) By Daniel Turner for Great War Infantry
+* [Cap](https://thenounproject.com/search/?q=kepi&i=950267) By Creative Mania for Foreign Legion
 * [Tank](https://thenounproject.com/term/tank/1287510/) By corpus delicti for Landship
 * [Warship](https://thenounproject.com/term/warship/1597474/) By zidney for Destroyer
 * [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship

@@ -9,7 +9,6 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.getRandom
 import kotlin.math.max
 import kotlin.math.sqrt
 
@@ -58,7 +57,7 @@ class Automation {
             chosenUnit = militaryUnits.filter { it.unitType== UnitType.Ranged }.maxBy { it.cost }!!
 
         else{ // randomize type of unit and take the most expensive of its kind
-            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.getRandom()
+            val chosenUnitType = militaryUnits.map { it.unitType }.distinct().filterNot{it==UnitType.Scout}.random()
             chosenUnit = militaryUnits.filter { it.unitType==chosenUnitType }.maxBy { it.cost }!!
         }
         return chosenUnit.name
@@ -141,7 +140,7 @@ class Automation {
             if (buildableWonders.isNotEmpty()) {
                 val citiesBuildingWonders = cityInfo.civInfo.cities
                         .count { it.cityConstructions.isBuildingWonder() }
-                val wonder = buildableWonders.getRandom()
+                val wonder = buildableWonders.random()
                 relativeCostEffectiveness.add(ConstructionChoice(wonder.name,5f / (citiesBuildingWonders + 1)))
             }
 

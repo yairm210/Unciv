@@ -21,7 +21,6 @@ import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.getRandom
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -430,7 +429,7 @@ class CivilizationInfo {
         notifications.add(Notification(text, location,color))
     }
 
-    fun addGreatPerson(greatPerson: String, city:CityInfo = cities.getRandom()) {
+    fun addGreatPerson(greatPerson: String, city:CityInfo = cities.random()) {
         placeUnitNearTile(city.location, greatPerson)
         addNotification("A [$greatPerson] has been born!".tr(), city.location, Color.GOLD)
     }

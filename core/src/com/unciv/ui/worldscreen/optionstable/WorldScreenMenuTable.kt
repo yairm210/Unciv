@@ -15,7 +15,12 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
 
     init {
         addButton("Map editor".tr()){
-            UnCivGame.Current.screen = MapEditorScreen(null)
+            val tileMapClone = worldScreen.gameInfo.tileMap.clone()
+            for(tile in tileMapClone.values){
+                tile.militaryUnit=null
+                tile.civilianUnit=null
+            }
+            UnCivGame.Current.screen = MapEditorScreen(tileMapClone)
             remove()
         }
 

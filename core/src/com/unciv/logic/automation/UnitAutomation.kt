@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.getRandom
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -417,8 +416,8 @@ class UnitAutomation{
                 .filter { unit.canMoveTo(it.key) && unit.movementAlgs().canReach(it.key) }
 
         val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
-        if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().getRandom().first)
-        else if (reachableTiles.any()) unit.moveToTile(reachableTiles.toList().getRandom().first)
+        if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
+        else if (reachableTiles.any()) unit.moveToTile(reachableTiles.toList().random().first)
     }
 
     fun automatedExplore(unit:MapUnit){
@@ -435,7 +434,7 @@ class UnitAutomation{
                     .filter { unit.canMoveTo(it)  && it.position !in unit.civInfo.exploredTiles
                             && unit.movementAlgs().canReach(it) }
             if(unexploredTilesAtDistance.isNotEmpty()){
-                unit.movementAlgs().headTowards(unexploredTilesAtDistance.getRandom())
+                unit.movementAlgs().headTowards(unexploredTilesAtDistance.random())
                 return
             }
         }

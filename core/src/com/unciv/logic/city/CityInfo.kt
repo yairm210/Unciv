@@ -115,7 +115,9 @@ class CityInfo {
                     if(civInfo.policies.isAdopted("Facism")) amountToAdd*=2
                     if(civInfo.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
                         && resource.name in listOf("Horses","Iron","Uranium"))
-                        amountToAdd*=2
+                        amountToAdd *= 2
+                    if(resource.name=="Oil" && civInfo.getNation().unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
+                        amountToAdd *= 2
                 }
                 if(resource.resourceType == ResourceType.Luxury
                         && getBuildingUniques().contains("Provides 1 extra copy of each improved luxury resource near this City"))

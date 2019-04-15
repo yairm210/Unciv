@@ -6,7 +6,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
-import com.unciv.ui.utils.getRandom
 
 class Building : NamedStats(), IConstruction{
 
@@ -299,7 +298,7 @@ class Building : NamedStats(), IConstruction{
             "Free Social Policy" in uniques -> civInfo.policies.freePolicies++
             "Free Great Person" in uniques -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.getRandom())
+                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.random())
             }
             "+1 population in each city" in uniques -> {
                 for(city in civInfo.cities){

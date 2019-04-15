@@ -10,7 +10,6 @@ import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
-import com.unciv.ui.utils.getRandom
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -176,6 +175,7 @@ class MapUnit {
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
         if (name == "Worker" && getTile().improvementInProgress != null) return false
+        if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
         if (action=="Sleep") return false
         return true
@@ -301,6 +301,7 @@ class MapUnit {
 
     private fun doPostTurnAction() {
         if (name == "Worker" && getTile().improvementInProgress != null) workOnImprovement()
+        if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
         if(currentMovement== getMaxMovement().toFloat()
                 && isFortified()){
             val currentTurnsFortified = getFortificationTurns()
@@ -417,7 +418,7 @@ class MapUnit {
         currentTile.improvement=null
         val actions: ArrayList<() -> Unit> = ArrayList()
         if(civInfo.cities.isNotEmpty()) actions.add {
-            val city = civInfo.cities.getRandom()
+            val city = civInfo.cities.random()
             city.population.population++
             city.population.autoAssignPopulation()
             civInfo.addNotification("We have found survivors the ruins - population added to ["+city.name+"]",currentTile.position, Color.GREEN)
@@ -430,13 +431,13 @@ class MapUnit {
                 }
         if(researchableAncientEraTechs.isNotEmpty())
             actions.add {
-                val tech = researchableAncientEraTechs.getRandom().name
+                val tech = researchableAncientEraTechs.random().name
                 civInfo.tech.addTechnology(tech)
                 civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",currentTile.position, Color.BLUE)
             }
 
         actions.add {
-            val chosenUnit = listOf("Settler","Worker","Warrior").getRandom()
+            val chosenUnit = listOf("Settler","Worker","Warrior").random()
             civInfo.placeUnitNearTile(currentTile.position,chosenUnit)
             civInfo.addNotification("A [$chosenUnit] has joined us!",currentTile.position, Color.BROWN)
         }
@@ -448,12 +449,12 @@ class MapUnit {
             }
 
         actions.add {
-            val amount = listOf(25,60,100).getRandom()
+            val amount = listOf(25,60,100).random()
             civInfo.gold+=amount
             civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",currentTile.position, Color.GOLD)
         }
 
-        (actions.getRandom())()
+        (actions.random())()
     }
 
     fun assignOwner(civInfo:CivilizationInfo){

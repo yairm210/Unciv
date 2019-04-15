@@ -4,14 +4,14 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.getRandom
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.min
-
 
 class GameParameters{
     var difficulty="Prince"
@@ -20,6 +20,7 @@ class GameParameters{
     var humanNations=ArrayList<String>().apply { add("Babylon") }
     var numberOfEnemies=3
     var mapType= MapType.Perlin
+    var noBarbarians=false
     var mapFileName :String?=null
 }
 
@@ -75,15 +76,28 @@ class GameStarter{
     }
 
     fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
+        var landTiles = tileMap.values
+                .filter { it.isLand() && !it.getBaseTerrain().impassable }
+
+        val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
+        while(landTiles.any()){
+            val bfs = BFS(landTiles.random()){it.isLand() && !it.getBaseTerrain().impassable}
+            bfs.stepToEnd()
+            val tilesInGroup = bfs.tilesReached.keys
+            landTiles = landTiles.filter { it !in tilesInGroup }
+            if(tilesInGroup.size > 20) // is this a good number? I dunno, but it's easy enough to change later on
+                landTilesInBigEnoughGroup.addAll(tilesInGroup)
+        }
+
         for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/2 downTo 0){
-            val freeTiles = tileMap.values
-                    .filter { it.isLand() && vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
+            val freeTiles = landTilesInBigEnoughGroup
+                    .filter {  vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
                     .toMutableList()
 
             val startingLocations = ArrayList<TileInfo>()
             for(player in 0..numberOfPlayers){
                 if(freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
-                val randomLocation = freeTiles.getRandom()
+                val randomLocation = freeTiles.random()
                 startingLocations.add(randomLocation)
                 freeTiles.removeAll(tileMap.getTilesInDistance(randomLocation.position,minimumDistanceBetweenStartingLocations))
             }

@@ -34,7 +34,8 @@ class CityStats {
         if (!cityInfo.isCapital() && isConnectedToCapital(RoadStatus.Road)) {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
-            if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2.0
+            if(civInfo.getNation().unique=="+1 Gold from each Trade Route, Oil resources provide double quantity") goldFromTradeRoute += 1
+            if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2
             if (civInfo.getBuildingUniques().contains("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
         }

@@ -186,7 +186,7 @@
 		Dutch:"Verbetering bouwen"
 		Spanish:"Construir mejora"
 		Simplified_Chinese:"建造建筑"
-        Portuguese:"Construir melhoria"
+        	Portuguese:"Construir melhoria"
 		Japanese:"構造改善"
 	}
 
@@ -717,7 +717,7 @@
 	}
 	
 	"Worked tiles":{
-		Italian:"celle sfruttate"
+		Italian:"Celle sfruttate"
 		Russian:"обработанные клетки"
 		French:"cases exploités"
 		Romanian:"celule lucrate"
@@ -2509,7 +2509,7 @@
 		German:"Dschungel abholzen"
 	}
 	"Remove Marsh":{
-		Italian:"Rimuovi palude"
+		Italian:"Bonifica palude"
 		Russian:"Осушить болото"
 		French:"Assécher le marais"
 		Romanian:"Asanează mlaștina"
@@ -4044,7 +4044,7 @@
 	
 	// Policy picker screen
 	"You have entered the [newEra] era!":{
-		Italian:"Sei entrato in una nuova era, [newEra]!"
+		Italian:"Sei entrato in una nuova era, l'[newEra]!" //[newEra] not translated in Italian
 		Russian:"Вы вошли в эпоху [newEra]!"
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ai intrat în epoca [newEra]!"
@@ -4251,6 +4251,10 @@
 		French:"remplace"
 		Portuguese:"substitui"
 		Russian:"заменяет"
+	}
+	
+	"[resourceName] not required":{
+		Italian:"Risorsa [resourceName] non richiesta"
 	}
 	
 	"National ability":{ // the unique ability that each nation has
@@ -4723,6 +4727,7 @@
 		German:"Kartentyp"
 		Dutch:"Kaarttype"
 	}
+	"No barbarians":{}
 	
 	// Diplomacy!
 	
@@ -5022,7 +5027,7 @@
 		German:"Name"
 	}
 	"Closest city":{	
-		Italian:"La città più vicina"
+		Italian:"Città più vicina"
 		Russian:"Ближайший город"
 		French:"Ville la plus proche"
 		Romanian:"Cel mai apropiat oraș"
@@ -5695,19 +5700,6 @@
 		Simplified_Chinese:"购买新地块的成本降低了25%"
 		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
 	}
-	/*
-	//New Wonder projected: Himeji Castle! Free Castle in City which possessed it, and +15% Strenght for units in friendly territory
-	//Also, +1 Culture and +2 Great Engineer Points. Requires Gunpowder
-	"Himeji Castle":{
-		Italian:"Castello di Himeji"
-		French:"Château d'Himeji"
-	}
-	
-	"+15% Combat Strenght for units fighting in friendly territory":{
-		Italian:"+15% Forza per le unità che combattono in territorio amico"
-		French:"+15% force pour toutes les unités dans un territoire allié"
-	}
-	*/
 	
 	"Porcelain Tower":{	
 		Italian:"Torre di Porcellana"
@@ -6491,6 +6483,7 @@
 		Portuguese:"Espadachin" // may replace with guerreiro com espada if nescessary
 		German:"Schwertkämpfer"
 	}
+	
 	"Legion":{
 		Italian:"Legionario"
 		Romanian:"Legionar"
@@ -6498,7 +6491,14 @@
 		Simplified_Chinese:"古罗马军团"
 		German:"Legionär"
 		French:"Légion"
-	} // Rome unique
+	}
+	"Can construct roads":{
+		Italian:"Può costruire Strade"
+	}
+	"Construct road":{
+		Italian:"Costruisci Strada"
+	} // for unit action button
+	
 	"Horseman":{	
 		Italian:"Guerriero a cavallo" //wrong translation by Smashfanful
 		Russian:"Всадник"
@@ -6730,6 +6730,7 @@
 		Portuguese:"Cavalaria"
 		German:"Kavallerie"
 	}
+	
 	"Cossack":{
 		Italian:"Cosacco"
 		Romanian:"Cazac"
@@ -6738,7 +6739,7 @@
 		Russian:"Казаки"
 		German:"Kosak"
 		French:"Cosaque"
-	} // Russia unique
+	}
 	
 	"Artillery":{	
 		Italian:"Artiglieria"
@@ -6761,7 +6762,7 @@
 		German:"Panzerschiff"
 	}
 	
-	// Modern units (do these, yes)
+	// Modern units
 	"Landship":{
 		Italian:"Nave di terra"
 		Romanian:"Vehicul terestru"
@@ -6771,6 +6772,7 @@
 		German:"Landschiff"
 		French:"Véhicule terrestre" //official translation but ugly
 	}
+	
 	"Great War Infantry":{
 		Italian:"Fante della Grande Guerra"
 		Romanian:"Infanteria Marelui Război"
@@ -6780,6 +6782,19 @@
 		German:"Weltkriegs Infanterie"
 		French:"Infanterie de la grande guerre"
 	}
+	
+	"Foreign Legion":{
+		Italian:"Legione Straniera"
+	}
+	"+20% bonus outside friendly territory":{
+		Italian:"+20% Forza fuori da territorio amico"
+	}
+	"Foreign Land":{ // for battle table combat percentage
+		Italian:"Terra Straniera"
+	
+	}
+	
+	
 	"Destroyer":{
 		Italian:"Cacciatorpediniere"
 		Romanian:"Distrugător"
@@ -8054,7 +8069,7 @@
 		Romanian:"Autocrație"
 		Simplified_Chinese:"独裁"
 		Portuguese:"Autocracia"
-		Russian:"автократия"
+		Russian:"Автократия"
 		German:"Autokratie"
 		French:"Autocratie"
 	}
@@ -8170,10 +8185,12 @@
 	"Autocracy Complete":{
 		Italian:"Autocrazia Completa"
 		French:"Autocratie complète"
+		Russian:"Автократия завершена"
 	}
 	"+1 happiness from each Walls, Castle and Arsenal":{
 		Italian:"+1 Felicità per ogni Mura, Castello e Arsenale"
 		French:"+1 de bonheur pour chaque Murs, Châteaux et Arsenal"
+		Russian:"+1 счастье за каждую стену, замок и арсенал"
 	}
 	
 	// Victory Screen
@@ -8196,36 +8213,43 @@
 		Italian:"Completa tutte le parti\n  dell'astronave per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
+		Russian:"Для победы\n завершите все части космического коробля"
 	}
 	"Complete 4 policy branches\n to win!":{
 		Italian:"Completa quattro rami\n  politici per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
+		Russian:"Для победы\n завершите 4 ветви общественных инстутов"
 	}
 	"Destroy all enemies\n to win!":{
 		Italian:"Distruggi tutti gli avversari \n per vincere!"
 		German:"Um zu gewinnen besiegen Sie alle Gegner!"
 		French:"Eliminer tous vos adversaires pour gagner!"
+		Russian:"Для победы, \n уничтожьте всех врагов"
 	}
 	"You have won a scientific victory!":{
 		Italian:"Hai ottenuto una Vittoria Scientifica!"
 		German:"Sie haben den Wissenschaftssieg errungen!"
 		French:"Vous avez fait une victoire scientifique!"
+		Russian:"Вы одержали научную победу!"
 	}
 	"You have won a cultural victory!":{
 		Italian:"Hai ottenuto una Vittoria Culturale!"
 		German:"Sie haben den Kultursieg errungen!"
 		French:"Vous avez fait une victoire culturelle!"
+		Russian:"Вы одержали культурную победу!"
 	}
 	"You have won a conquest victory!":{
 		Italian:"Hai ottenuto una Vittoria per Dominazione!"
 		German:"Sie haben den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
+		Russian:"Вы одержали победу завоевания!"
 	}
 	"One more turn...!":{
-		Italian:"Solo un altro turno..."
+		Italian:"Aspetta! Solo un altro turno..."
 		German:"Nur noch eine Runde..."
 		French:"Un autre tour... !"
+		Russian:"Еще один ход...!"
 	}
 	"Built Apollo Program":{
 		Italian:"Programma Apollo costruito"
@@ -8236,6 +8260,7 @@
 		Italian:"Distruggi [civName]"
 		German:"Zerstöre [civName]"
 		French:"Détruiser [civName]"
+		Russian:"Уничтожить [civName]"
 	}	
 	
 	// Unit Promotions
@@ -8259,272 +8284,334 @@
 		Italian:"Precisione I"
 		German:"Genauigkeit I"
 		French:"Précision I"
+		Russian:"Точность I"
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
 		German:"Genauigkeit II"
 		French:"Précision II"
+		Russian:"Точность II"
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
 		German:"Genauigkeit III"
 		French:"Précision III"
+		Russian:"Точность III"
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
 		French:"15% force contre les unités en terrain découvert"
+		Russian:"Бонус против юнитов на открытой местности 15%"
 	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
 		German:"Sperrfeuer I"
 		French:"Barrage I"
+		Russian:"Преграда I"
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
 		German:"Sperrfeuer II"
 		French:"Barrage II"
+		Russian:"Преграда II"
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
 		German:"Sperrfeuer III"
 		French:"Barrage III"
+		Russian:"Преграда III"
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
 		French:"+15% force contre les unités en terrain accidenté"
+		Russian:"Бонус против юнитов в пересеченной местности 15%"
 	}
 	"Shock I":{
 		Italian:"Assalto I"
 		German:"Schock I"
 		French:"Choc I"
+		Russian:"Натиск I"
 	}
 	"Shock II":{
 		Italian:"Assalto II"
 		German:"Schock II"
 		French:"Choc II"
+		Russian:"Натиск II"
 	}
 	"Shock III":{
 		Italian:"Assalto III"
 		German:"Schock III"
 		French:"Choc III"
+		Russian:"Натиск III"
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
 		German:"Drill I"
 		French:"Percée I"
+		Russian: "Прорыв I"
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
 		German:"Drill II"
 		French:"Percée II"
+		Russian: "Прорыв II"
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
 		German:"Drill III"
 		French:"Percée III"
+		Russian: "Прорыв III"
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
 		German:"Spähen I"
 		French:"Eclaireur I"
+		Russian:"Разведка I"
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
 		German:"Spähen II"
 		French:"Eclaireur II"
+		Russian:"Разведка II"
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
 		German:"Spähen III"
 		French:"Eclaireur III"
+		Russian:"Разведка III"
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
 		German:"+1 Sichtweite"
 		French:"+1 Mouvement"
+		Russian:"+1 Передвижение"
 	}
 	"Cover I":{
 		Italian:"Copertura I"
 		German:"Deckung I"
 		French:"Protection I"
+		Russian:"Укрытие I"
 	}
 	"Cover II":{
 		Italian:"Copertura II"
 		German:"Deckung II"
 		French:"Protection II"
+		Russian:"Укрытие II"
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
 		German:"+25% Verteidigung gegen alle Fernangriffe"
 		French:"+25% défence contre les attaques à distance"
+		Russian:"+25% защиты от дальних атак"
 	}
 	"March":{
 		Italian:"Marcia"
 		German:"Marschieren"
 		French:"Marche"
+		Russian:"Марш"
 	}
 	"Unit will heal every turn, even if it performs an action":{
 		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
 		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
+		Russian:"Юнит лечится каждый ход, даже если совершает действие"
 	}
 	"Charge":{
 		Italian:"Carica"
 		German:"Angriff"
 		French:"Charge"
 	}
+
 	"Bonus vs wounded units 33%":{
 		Italian:"+33% forza contro unità ferite"
 		French:"+33% force contre les unités montées"
+		Russian:"Бонус против раненых 33%"
+  }
+
+	"wounded units":{
+		Italian:"unità ferite"
+		French:"unités montées"
+
 	}
 	"Mobility":{
 		Italian:"Mobilità"
 		German:"Mobilität"
 		French:"Mobilité"
+		Russian:"Мобильность"
 	}
 	"Siege":{
 		Italian:"Assedio"
 		German:"Belagerung"
 		French:"Siège"
+		Russian:"Осада"
 	}
 	"Volley":{
 		Italian:"Raffica"
 		German:"Salve"
 		French:"Volée"
+		Russian:"Залп"
 	}
 	"Sentry":{
 		Italian:"Sentinella"
 		German:"Wache"
 		French:"Sentinel"
+		Rusian:"Караул"
 	}
 	"Range":{
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
 		French:"Portée"
+		Russian:"Расширенный радиус"
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
 		German:"+1 Reichweite"
 		French:"+1 portée d'attaque"
+		Russian:"+1 радиус"
 	}
 	"Indirect Fire":{
 		Italian:"Fuoco indiretto"
 		German:"Indirektes Feuer"
-		French:"Attaque indirecte" //not sure 
+		French:"Attaque indirecte" //not sure
+		Russian:"Непрямой Огонь"
 	}
 	"Ranged attacks may be performed over obstacles":{
 		Italian:"Permette di sparare a distanza superando gli ostacoli"
 		French:"Les attaques à distances peuvent être effectués à travers des obstacles"
+		Russian:"Дальнобойные атаки могут выполняться над препятствиями"
 	}
 	"Formation I":{
 		Italian:"Formazione I"
 		German:"Formation I"
 		French:"Formation I"
+		Russian:"Формация I"
 	}
 	"Formation II":{
 		Italian:"Formazione II"
 		German:"Formation II"
 		French:"Formation II"
+		Russian:"Формация II"
 	}
 	"Blitz":{
 		Italian:"Incursione"
 		German:"Blitz"
 		French:"Guerre éclair"
+		Russian:"Блиц"
 	}
 	"1 additional attack per turn":{
 		Italian:"L'unità ottiene può attaccare due volte ogni turno"
 		French:"1 attaque supplémentaire par tour"
+		Russian:"Дополнительная атака за ход"
 	}
 	"Logistics":{
 		Italian:"Logistica"
 		German:"Logistick"
 		French:"Logistique"
+		Russian:"Логистика"
 	}
 	"Bombardment I":{
 		Italian:"Bombardamento I"
 		German:"Bombardierung I"
 		French:"Bombardement I"
+		Russian:"Бомбардировка I"
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
 		German:"Bombardierung II"
 		French:"Bombardement II"
+		Russian:"Бомбардировка II"
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
 		German:"Bombardierung III"
 		French:"Bombardement III"
+		Russian:"Бомбардировка III"
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
 		French:"+33% force contre les unités terrestres"
+		Russian:"Бонус против наземных юнитов 33%"
 	}
 	"Bonus vs land units 34%":{
 		Italian:"+34% forza contro unità terrestri"
 		French:"+34% force contre les unités terrestres"
+		Russian:"Бонус против наземных юнитов 34%"
 	}
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
 		German:"Entermannschaft I"
 		French:"Embarquement I"
+		Russian:"Абордаж I"
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
 		German:"Entermannschaft II"
 		French:"Embarquement II"
+		Russian:"Абордаж II"
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
 		German:"Entermannschaft III"
 		French:"Embarquement III"
+		Russian:"Абордаж III"
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
 		French:"+15% force contre les unités navales"
+		Russian:"Бонус против водных юнитов +15%"
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
+		Russain:"Береговой налетчик I"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
+		Russain:"Береговой налетчик II"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
+		Russain:"Береговой налетчик III"
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
 		German:"Gezielter Schlag I"
 		French:"Ciblage I"
+		Russian:"Прицеливание I"
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
 		German:"Gezielter Schlag II"
 		French:"Ciblage II"
+		Russian:"Прицеливание II"
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
 		German:"Gezielter Schlag III"
 		French:"Ciblage III"
+		Russian:"Прицеливание III"
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
 		German:"Rudeltaktik I"
 		French:"Meute I"
+		Russian:"Массовая атака I"
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
 		French:"Meute II"
+		Russian:"Массовая атака II"
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 		French:"Meute III"
+		Russian:"Массовая атака III"
 	}
 	
 	// Civilopedia texts
@@ -8610,18 +8697,22 @@
 	//Options menu, pointed out by Smashfanful
 	"Missing translations":{
 		Italian:"Traduzioni mancanti"
+		Russian:"Отсутствующие переводы"
 	}
 	"Version":{
 		Italian:"Versione"
+		Russian:"Версия"
 	}
 	"Resolution":{
 		Italian:"Risoluzione"
+		Russian:"Разрешения"
 	}
 	"Tileset":{
 		Italian:"Set celle"
 	}
 	"Map editor":{
 		Italian:"Editor mappe"
+		Russian:"Редактор карт"
 	}
 	"Language":{
 		Italian:"Lingua"

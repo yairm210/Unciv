@@ -82,6 +82,8 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
                     textList+= "  {Range} " + unit.range+ " vs " + originalUnit.range
                 if (unit.movement!= originalUnit.movement)
                     textList+= "  {Movement} " + unit.movement+ " vs " + originalUnit.movement
+                if(originalUnit.requiredResource!=null && unit.requiredResource==null)
+                    textList+= "  "+"[${originalUnit.requiredResource}] not required".tr()
                 for(unique in unit.uniques.filterNot { it in originalUnit.uniques })
                     textList += "  "+Translations.translateBonusOrPenalty(unique)
                 for(promotion in unit.promotions.filter { it !in originalUnit.promotions})

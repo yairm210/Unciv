@@ -8,7 +8,6 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.getRandom
 
 class GameInfo {
     var civilizations = mutableListOf<CivilizationInfo>()
@@ -47,7 +46,7 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0){
                 turns++
-                if (turns % 10 == 0) { // every 10 turns add a barbarian in a random place
+                if (turns % 10 == 0 && !gameParameters.noBarbarians) { // every 10 turns add a barbarian in a random place
                     placeBarbarianUnit(null)
                 }
             }
@@ -89,7 +88,7 @@ class GameInfo {
                     .flatMap { it.viewableTiles }.toHashSet()
             val viableTiles = tileMap.values.filterNot { allViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit != null }
             if (viableTiles.isEmpty()) return // no place for more barbs =(
-            tile = viableTiles.getRandom()
+            tile = viableTiles.random()
         }
 
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
@@ -101,7 +100,7 @@ class GameInfo {
         val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() && it.uniqueTo == null }
                 .filter{ allResearchedTechs.contains(it.requiredTech)
                         && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
-        val unit = if (unitList.isEmpty()) "Warrior" else unitList.getRandom().name
+        val unit = if (unitList.isEmpty()) "Warrior" else unitList.random().name
 
         tileMap.placeUnitNearTile(tile!!.position, unit, getBarbarianCivilization())
     }
