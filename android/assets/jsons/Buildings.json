@@ -572,6 +572,14 @@
 		requiredBuilding:"Bank",
 		requiredTech:"Electricity"
 	},
+	{
+		name:"Big Ben",
+		culture:1,
+		gold:4,
+		isWonder:true,
+		uniques:["-15% to purchasing items in cities"],
+		requiredTech:"Industrialization"
+	},
 	
 	// Modern Era
 	
