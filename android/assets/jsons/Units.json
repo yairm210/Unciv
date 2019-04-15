@@ -202,6 +202,21 @@
 		attackSound:"nonmetalhit"
 		//Phoenician unique naval unit, stronger than Trireme.
 	},
+	{
+		name:"Galley",
+		unitType:"WaterMelee",
+		uniqueTo:"Barbarian",
+		movement:3,
+		strength:7,
+		cost: 40,
+		requiredTech:"Sailing",
+		uniques:["Cannot enter ocean tiles"]
+		upgradesTo:"Trireme",
+		obsoleteTech:"Astronomy",
+		hurryCostModifier:20,
+		attackSound:"nonmetalhit"
+		//Barbarian naval unit
+	},
 	*/
 	{
 		name:"Chariot Archer",
@@ -1112,9 +1127,23 @@
 		cost: 425,
 		requiredTech:"Robotics",
 		requiredResource:"Aluminum",
+		//upgradesTo:"Giant Death Robot",
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
+	/*
+	{
+		name:"Giant Death Robot",
+		unitType:"Armor",
+		movement:5,
+		strength:160,
+		cost: 425,
+		requiredTech:"Nuclear Fusion",
+		requiredResource:"Uranium",
+		uniques:["Can move after attacking","No defensive terrain bonus"]
+		hurryCostModifier:20,
+	},
+	*/
 	
 	
 	/* Great people */
@@ -1151,8 +1180,19 @@
 		name:"Great General",
 		unbuildable:true,
 		unitType:"Civilian",
-		uniques:["Can start an 8-turn golden age","Bonus for land units in 2 radius 15%"] //to do : should be able to build mega-fort
+		uniques:["Can start an 8-turn golden age","Bonus for land units in 2 radius 15%"] //to do : should be able to build Citadel
 		movement:2
 	},
+	/*
+	{
+		name:"Khan",
+		unbuildable:true,
+		unitType:"Civilian",
+		uniqueTo:"Mongolia",
+		replaces:"Great General",
+		uniques:["Can start an 8-turn golden age","Bonus for land units in 2 radius 15%"] //to do : should be able to build Citadel
+		movement:5
+	},
+	*/
 	
 ]
