@@ -215,6 +215,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Christ the redeemer](https://thenounproject.com/term/christ-the-redeemer/56112/) By Stefan Spieler for Cristo Redentor
 * [St. Petersburg](https://thenounproject.com/search/?q=kremlin&i=1569704) By Carpe Diem for Kremlin
 * [Neuschwanstein](https://thenounproject.com/search/?q=Neuschwanstein&i=2107683) By Vectors Market
+* [BugBen](https://thenounproject.com/search/?q=Big%20Ben&i=443690) By Ben Davis, RO
 
 ### Information Era
 

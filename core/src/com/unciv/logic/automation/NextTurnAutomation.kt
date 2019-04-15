@@ -36,7 +36,7 @@ class NextTurnAutomation{
         for (city in civInfo.cities.sortedByDescending{ it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction.canBePurchased()
-                    && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo.policies.getAdoptedPolicies()) ) {
+                    && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo) ) {
                 city.cityConstructions.purchaseBuilding(construction.name)
             }
         }

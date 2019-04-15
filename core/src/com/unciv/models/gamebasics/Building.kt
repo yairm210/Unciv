@@ -169,12 +169,19 @@ class Building : NamedStats(), IConstruction{
         else cost
     }
 
-    override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
+    override fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        var cost = Math.pow((30 * getProductionCost(adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
-        if (adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-        if (adoptedPolicies.contains("Patronage")
-                && listOf("Monument", "Temple", "Opera House", "Museum").contains(name) ) cost *= 0.5
+        var cost: Double
+        if (baseCost) {
+            cost = Math.pow((30 * getProductionCost(hashSetOf())).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+        } else {
+            cost = Math.pow((30 * getProductionCost(civInfo.policies.adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+            if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
+            if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
+            if (civInfo.policies.adoptedPolicies.contains("Patronage")
+                    && listOf("Monument", "Temple", "Opera House", "Museum").contains(name)) cost *= 0.5
+        }
+
         return (cost / 10).toInt() * 10
     }
 

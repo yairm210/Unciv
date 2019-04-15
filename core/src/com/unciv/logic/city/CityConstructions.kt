@@ -196,7 +196,7 @@ class CityConstructions {
     }
 
     fun purchaseBuilding(buildingName: String) {
-        cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo.policies.adoptedPolicies)
+        cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo)
         getConstruction(buildingName).postBuildEvent(this)
         if (currentConstruction == buildingName) {
             currentConstruction = ""

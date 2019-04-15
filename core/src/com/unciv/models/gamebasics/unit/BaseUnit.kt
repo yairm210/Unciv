@@ -99,10 +99,13 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
 
-    override fun getGoldCost(adoptedPolicies: HashSet<String>): Int {
+    override fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean): Int {
         var cost = getBaseGoldCost()
-        if(adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-        if(adoptedPolicies.contains("Militarism")) cost *= 0.66f
+        if (!baseCost) {
+            if(civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
+            if(civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
+            if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
+        }
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
