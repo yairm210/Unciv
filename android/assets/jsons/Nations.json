@@ -417,6 +417,8 @@
 	{
 		name:"India",
 		leaderName:"Gandhi",
+		adjective:["Indian"],
+		startBias:["Grassland"],
 		
 		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
 		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
@@ -441,7 +443,7 @@
 				
 		mainColor:[0,255,0],
 		secondaryColor:[255,153,51],
-		unique:"Cities only provide 1 Unhappiness instead of 3.",
+		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
 		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
@@ -449,6 +451,8 @@
 	{
 		name:"Aztecs",
 		leaderName:"Montezuma I",
+		adjective:["Aztec"],
+		startBias:["Jungle"],
 		
 		startIntroPart1: "Welcome, o divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
 		startIntroPart2: "O great king Mintezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
@@ -470,7 +474,7 @@
 		
 		afterPeace:"Curses! I will sacrifice ten thousand citizens to expiate this humiliation!"
 		tradeRequest:" Accept this agreement or suffer the consequences."
-				
+		
 		mainColor:[255,51,51],
 		secondaryColor:[153,255,255],
 		unique:"Gain Culture for the empire from each enemy unit killed.",
@@ -479,6 +483,8 @@
 	{
 		name:"Zulu",
 		leaderName:"Shaka Zulu",
+		adjective:["Zulu"],
+		startBias:["Avoid Jungle"],
 		
 		startIntroPart1: "Your people kneel before you, great warrior Shaka of the Zulu Kingdom. As you rose from a place of exile to become the true leader of the Zulus, you ushered in changes throughout the Zulu society, implementing new laws and cultural reforms that strenghtened the position of your people. However, it was your tenacity in the art of war that truly established your reputation, as your tactics and strategies on the battlefield forever changed the face of combat across the plains of southern Africa."
 		startIntroPart2: "Most formidable king, your people once again long for the unity and strenght your leadership afforded them. Can you return the Zulu Kingdom to such great prominence? Will you build a civilization that stands the test of time?"
@@ -510,9 +516,11 @@
 	{
 		name:"Mongolia",
 		leaderName:"Genghis Khan",
+		adjective:["Mongolian"],
+		startBias:["Plains"],
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Greetings, o great Temujin, immortal emperor of the mighty Mongol Empire! Your fists shatter walls of cities and your voice brings despair to your enemies. O Khan! You united the warring tribes of Northern Asia into a mighty people, creating the greatest cavalry force the world has ever witnessed. Your people's cunning diplomacy divided their enemies, making them weak and helpless before Mongolia's conquering armies. In a few short years, your people soldiers conquered most of China and Eastern Asia, and the empire continued to grow until it reached west into Europe and south to Korea. Indeed, it was the greatest empire ever seen, dwarfing those pathetic conquests of the Romans of the Greeks."
+		startIntroPart2: "Temujin, your people cann upon you once more to lead them to battle and conquest. Will the world once again trembe at the thunderous sound of your cavalry, sweeping down from the steppes? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"You stand in the way of my armies. Let us solve this like warriors!"
 		attacked:"No more words. Today, Mongolia charges toward your defeat."
