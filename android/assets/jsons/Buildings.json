@@ -261,6 +261,18 @@
 			"+2 Gold for each source of Oil and oasis"],
 		requiredTech:"Currency"
 	},
+	/*
+	{
+		name:"Petra",
+		greatPersonPoints:{production:1},
+		culture:1,
+		isWonder:true,
+		uniques:["+1 Food and Production for all Desert tiles worked by the City (except Flood Plains)",
+			"Must be built near Desert",
+			"+6 Culture after Archeology"],
+		requiredTech:"Currency"
+	},
+	*/
 	{
 		name:"Mint",
 		maintenance:0,
@@ -286,6 +298,16 @@
 		uniques:["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"]
 		requiredTech:"Engineering"
 	},
+	/*
+	{
+		name:"Heroic Epic",
+		culture:1,
+		isWonder:true,
+		requiredBuildingInAllCities:"Barracks",
+		requiredTech:"Iron Working"
+		uniques:["All new units in the City receive the Morale promotion"]
+	},
+	*/
 	
 	// Medieval Era
 	
@@ -375,7 +397,7 @@
 		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"University",
 		requiredTech:"Education"
-	},
+	}, 
 	{
 		name:"Castle",
 		cityStrength:7,
