@@ -86,7 +86,9 @@ class GameInfo {
             // Barbarians will only spawn in places that no one can see
             val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
                     .flatMap { it.viewableTiles }.toHashSet()
-            val viableTiles = tileMap.values.filterNot { allViewableTiles.contains(it) || it.militaryUnit != null || it.civilianUnit != null }
+            val viableTiles = tileMap.values.filter { it.militaryUnit == null
+                    && it.civilianUnit == null && !it.getBaseTerrain().impassable && it.baseTerrain!="Lakes"
+                    && !allViewableTiles.contains(it)}
             if (viableTiles.isEmpty()) return // no place for more barbs =(
             tile = viableTiles.random()
         }
