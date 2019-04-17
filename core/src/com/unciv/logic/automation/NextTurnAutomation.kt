@@ -181,8 +181,8 @@ class NextTurnAutomation{
     private fun declareWar(civInfo: CivilizationInfo) {
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
             val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
-            if (!civInfo.isAtWar() && civInfo.happiness > 5
-                    && ourMilitaryUnits >= civInfo.cities.size * 2) { //evaluate war
+            if (!civInfo.isAtWar() && civInfo.happiness > 0
+                    && ourMilitaryUnits >= civInfo.cities.size) { //evaluate war
                 val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
                 val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
                         .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }

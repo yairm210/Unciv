@@ -94,7 +94,7 @@ class Automation {
                     .minBy{ it.cost }
             if (foodBuilding!=null) {
                 val choice = ConstructionChoice(foodBuilding.name,1f)
-                if (cityInfo.population.population < foodBuilding.food + 5) choice.choiceModifier=2f
+                if (cityInfo.population.population < 5) choice.choiceModifier=1.3f
                 relativeCostEffectiveness.add(choice)
             }
 
@@ -147,12 +147,12 @@ class Automation {
             //other buildings
             val other = buildableNotWonders.minBy{it.cost}
             if (other!=null) {
-                relativeCostEffectiveness.add(ConstructionChoice(other.name,1.2f))
+                relativeCostEffectiveness.add(ConstructionChoice(other.name,0.8f))
             }
 
             //worker
             if (workers < cities) {
-                relativeCostEffectiveness.add(ConstructionChoice(CityConstructions.Worker,workers/(cities+1)))
+                relativeCostEffectiveness.add(ConstructionChoice(CityConstructions.Worker,cities.toFloat()/(workers+0.1f)))
             }
 
             //Work boat
@@ -162,11 +162,11 @@ class Automation {
 
             //Army
             val militaryUnit = chooseMilitaryUnit(cityInfo)
-            val unitsToCitiesRatio = militaryUnits / cities.toFloat()
+            val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
-            val militaryChoice = ConstructionChoice(militaryUnit,unitsToCitiesRatio/5)
+            val militaryChoice = ConstructionChoice(militaryUnit,unitsToCitiesRatio/2)
             if (isAtWar) {
-                militaryChoice.choiceModifier=unitsToCitiesRatio
+                militaryChoice.choiceModifier=unitsToCitiesRatio*2
             }
             relativeCostEffectiveness.add(militaryChoice)
 
