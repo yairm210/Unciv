@@ -275,6 +275,9 @@ class CityStats {
             stats.production += 5f
         if(policies.contains("Warrior Code") && currentConstruction is BaseUnit && currentConstruction.unitType.isMelee())
             stats.production += 20
+        if (policies.contains("Piety")
+            && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower").contains(currentConstruction.name)) 
+            stats.production += 15f
         if (policies.contains("Reformation") && cityConstructions.getBuiltBuildings().any { it.isWonder })
             stats.culture += 33f
         if (policies.contains("Commerce") && cityInfo.isCapital())
