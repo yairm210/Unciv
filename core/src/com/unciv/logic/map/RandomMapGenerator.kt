@@ -507,11 +507,12 @@ open class RandomMapGenerator {
             if(tile.resource!=null && tile.getTileResource().resourceType==ResourceType.Strategic)
                 tile.resource=null
 
-        for(resource in GameBasics.TileResources.values.filter { it.resourceType==ResourceType.Strategic }){
+        val strategicResources = GameBasics.TileResources.values.filter { it.resourceType==ResourceType.Strategic }
+        for(resource in strategicResources){
             val suitableTiles = mapToReturn.values
                     .filter { it.resource==null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
 
-            val numberOfResources = mapToReturn.count() / 100
+            val numberOfResources = mapToReturn.values.count{it.isLand() && !it.getBaseTerrain().impassable} / 50
 
             val locations = chooseSpreadOutLocations(numberOfResources,suitableTiles, distance)
 
