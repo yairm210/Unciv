@@ -71,7 +71,7 @@
 	}
 	
 	"turns":{ // for e.g. turns to technology
-		Italian:"Turni"
+		Italian:"turni"
 		Russian:"Ходов"
 		French:"Tours"
 		Romanian:"Runde"
@@ -1721,7 +1721,7 @@
 	}
 	
 	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
-		Italian:"Catturato"
+		Italian:"Cattura"
 		Russian:"Захвачен"
 		French:"Capturé"
 		Romanian:"Capturat"
@@ -1733,19 +1733,6 @@
 	}
 	
 	"Attack":{
-		Italian:"Attacco"
-		Russian:"Атака"
-		French:"Attaque"
-		Romanian:"Atac"
-		German:"Angreifen"
-		Dutch:"Aanvallen"
-		Spanish:"Ataque"
-		Simplified_Chinese:"攻击"
-		Portuguese:"Ataque"
-	}
-
-	/*
-	"Attack":{ //As an order
 		Italian:"Attacca"
 		Russian:"Атака"
 		French:"Attaque"
@@ -1756,7 +1743,6 @@
 		Simplified_Chinese:"攻击"
 		Portuguese:"Ataque"
 	}
-	*/
 	
 	"[percentage] to unit defence":{
 		Italian:"[percentage] di difesa dell'unità"
@@ -4727,7 +4713,9 @@
 		German:"Kartentyp"
 		Dutch:"Kaarttype"
 	}
-	"No barbarians":{}
+	"No barbarians":{
+		Italian:"Niente barbari"
+	}
 	
 	// Diplomacy!
 	
@@ -6046,7 +6034,7 @@
 		Italian:"Castello di Neuschwanstein"
 	}
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
-		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
+		Italian:"+1 Felicità, +2 Cultura e +3 Oro per ogni Castello"
 	}
 	
 	"Military Academy":{	
