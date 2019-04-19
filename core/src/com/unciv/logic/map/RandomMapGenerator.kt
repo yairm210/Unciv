@@ -13,8 +13,8 @@ import kotlin.math.*
 enum class MapType {
     Perlin,
     Default,
-    Pangaea,
     Continents,
+    Pangaea,
     File
 }
 
@@ -26,7 +26,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
 
     constructor(type: MapType): this() {
         mapType = type
-        if (mapType != MapType.Default && mapType !=MapType.Pangaea) {
+        if (mapType != MapType.Default && mapType !=MapType.Pangaea && mapType !=MapType.Continents) {
             mapType = MapType.Default
         }
     }
@@ -59,9 +59,8 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
             }
             if (mapType == MapType.Continents) { //keep a ocean column in the middle
                 for (y in -distance..distance) {
-                    landscape[Vector2(0f, y.toFloat())] = TerrainType.Water
-                    landscape[Vector2(1f, y.toFloat())] = TerrainType.Water
-                    landscape[Vector2(-1f, y.toFloat())] = TerrainType.Water
+                    landscape[Vector2((y/2).toFloat(), y.toFloat())] = TerrainType.Water
+                    landscape[Vector2((y/2+1).toFloat(), y.toFloat())] = TerrainType.Water
                 }
             }
         }
