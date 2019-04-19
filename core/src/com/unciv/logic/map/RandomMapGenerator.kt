@@ -8,15 +8,13 @@ import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileResource
 import java.util.*
 import kotlin.collections.HashMap
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.pow
-import kotlin.math.sin
+import kotlin.math.*
 
 enum class MapType {
     Perlin,
     Default,
     Pangaea,
+    Continents,
     File
 }
 
@@ -59,6 +57,13 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
                     landscape[vector] = TerrainType.Water
                 }
             }
+            if (mapType == MapType.Continents) { //keep a ocean column in the middle
+                for (y in -distance..distance) {
+                    landscape[Vector2(0f, y.toFloat())] = TerrainType.Water
+                    landscape[Vector2(1f, y.toFloat())] = TerrainType.Water
+                    landscape[Vector2(-1f, y.toFloat())] = TerrainType.Water
+                }
+            }
         }
 
         val map = HashMap<Vector2, TileInfo>()
@@ -82,10 +87,24 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
         return mapToReturn
     }
 
+    private fun getDistanceWeightForContinents(origin: Vector2, destination: Vector2): Float {
+        val relative_x = 2*(origin.x-destination.x)
+        val relative_y = origin.y-destination.y
+        if (relative_x * relative_y >= 0)
+            return max(abs(relative_x),abs(relative_y))
+        else
+            return (abs(relative_x) + abs(relative_y))
+    }
+
     private fun generateInitTerrain(vector: Vector2, distance: Int): TerrainType {
         val type: TerrainType
         if (mapType == MapType.Pangaea) {
             val distanceFactor = (HexMath().getDistance(Vector2.Zero, vector) * 1.8 / distance).toFloat()
+            type = if (Random().nextDouble() < landProb.pow(distanceFactor)) TerrainType.Land else TerrainType.Water
+        } else if (mapType == MapType.Continents) {
+            val distanceWeight = min(getDistanceWeightForContinents(Vector2(distance.toFloat()/2, 0f), vector),
+                    getDistanceWeightForContinents(Vector2(-distance.toFloat()/2, 0f), vector))
+            val distanceFactor = (distanceWeight * 1.8 / distance).toFloat()
             type = if (Random().nextDouble() < landProb.pow(distanceFactor)) TerrainType.Land else TerrainType.Water
         } else { //default
             if (HexMath().getDistance(Vector2.Zero, vector) > 0.9f * distance)
