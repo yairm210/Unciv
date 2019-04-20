@@ -5672,6 +5672,7 @@
 		Italian:"Alhambra"
 		German:"Alhambra"
 		French:"Alhambra"
+                Simplified_Chinese:"阿尔罕布拉宫"
 	}
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
@@ -5900,7 +5901,7 @@
 		French:"Ermitage"
 		Romanian:"Schit"
 		Spanish:"Ermita"
-		Simplified_Chinese:"埃米塔日"
+		Simplified_Chinese:"冬宫"
 		Portuguese:"Eremitério"
 		German:"Eremitage"
 	}
