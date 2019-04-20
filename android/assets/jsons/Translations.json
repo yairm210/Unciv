@@ -301,7 +301,7 @@
 		German:"Befördern"
 		Dutch:"Promoveren"
 		Spanish:"Ascender"
-       	 	Simplified_Chinese:"提升"
+       	 	Simplified_Chinese:"晋升"
 		Portuguese:"Promover"
 		Japanese:"促進する"
 	}
@@ -2842,7 +2842,7 @@
 		German:"Zivildienst"
 		Dutch:"Overheidsdienst"
 		Spanish:"Servicio civil"
-		Simplified_Chinese:"行政部门"
+		Simplified_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
 	}
 	"Guilds":{
@@ -4015,7 +4015,7 @@
 		Italian:"+1 raggio di Visione"
 		French:"+1 à la Portée de Vision"
 		Romanian:"+1 Rază vizuală"
-		Simplified_Chinese:"+1 可见范围"
+		Simplified_Chinese:"+1 视野"
 		Portuguese:"+1 de alcançe ao campo de visão"
 		German:"+1 Sichtweite"
 		Russian:"+1 Диапазон видимости"
@@ -4025,7 +4025,7 @@
 		Italian:"Doppio movimento sulla costa"
 		French:"Double mouvement le long des côtes"
 		Romanian:"Deplasare dublă pe țărm"
-		Simplified_Chinese:"在海岸双倍移动力"
+		Simplified_Chinese:"海岸边移动时双倍移动力"
 		Portuguese:"Movimento em dobro nas costas"
 		German:"Doppelte Bewegungsgeschwindigkeit an der Küste"
 		Russian:"Двойное движение на побережье"
@@ -4452,7 +4452,7 @@
 		Italian:"+1 Visione per le unità militari terrestri, e -50% costi in Oro quando acquisti una casella"
 		Romanian:"Toate unitățile militare terestre au raza vizuală +1, 50% reducere la cumpărarea celulelor"
 		Spanish:"Todas las unidades militares de tierra obtienen +1 de vision, 50% de descuento al comprar terrenos"
-		Simplified_Chinese:"所有陆军 +1 视野, 购买地块打五折"
+		Simplified_Chinese:"所有陆军 +1 视野, 购买地块时花费减半"
 		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
 		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
 		Portuguese:"Todas as unidades militares terrestres têm uma vista, 50% de desconto na compra de telhas"
@@ -5171,6 +5171,7 @@
 	}
 	"Walls of Babylon":{
 		Italian:"Mura di Babilonia"
+                Simplified_Chinese:"巴比伦城墙"
 	}
 	
 	"The Pyramids":{	
@@ -5355,7 +5356,7 @@
 		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
 		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
 		Romanian:"Toate unitățile militare navale primesc +1 deplasare și +1 raza vizuală"
-		Simplified_Chinese:"所有海军军事单位+1移动力和+1视野"
+		Simplified_Chinese:"所有海军军事单位 +1 移动力和 +1 视野"
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
 	}
@@ -5401,6 +5402,7 @@
 	"Statue of Zeus":{	
 		Italian:"Statua di Zeus"
 		French:"Statue de Zeus"
+                Simplified_Chinese:"宙斯神像"
 	}
 	"+15% Combat Strenght when attacking Cities":{
 		Italian:"+15% Forza quando attacchi le Città"
@@ -5429,6 +5431,7 @@
 	
 	"Terracotta Army":{
 		Italian:"Esercito di terracotta"
+                Simplified_Chinese:"兵马俑"
 	}
 	
 	"Market":{	
@@ -5571,6 +5574,7 @@
 	
 	"Great Wall":{
 		Italian:"Grande Muraglia"
+                Simplified_Chinese:"长城"
 	}
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
 		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
@@ -5708,7 +5712,7 @@
 		French:"Tour de Porcelaine"
 		Romanian:"Turnul de Porțelan"
 		Spanish:"Torre de Porcelana"
-		Simplified_Chinese:"报恩寺"
+		Simplified_Chinese:"大报恩寺塔"
 		Portuguese:"Torre de Porcelana"
 		German:"Porzellan Turm"
 	}
@@ -5835,6 +5839,7 @@
 		Spanish:"La Torre Inclinada De Pizza"
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
+                Simplified_Chinese:"比萨斜塔"
 	}	
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
@@ -5846,6 +5851,7 @@
 	
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
+                Simplified_Chinese:"姬路城"
 	}
 	"+15% combat strength for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
@@ -6038,6 +6044,7 @@
 		German:"Kreml"
 		Spanish:"Kremlin"
 		Russian:"Кремль"
+                Simplified_Chinese:"克里姆林宫"
 	}
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
@@ -6045,6 +6052,7 @@
 	
 	"Neuschwanstein":{
 		Italian:"Castello di Neuschwanstein"
+                Simplified_Chinese:"新天鹅堡"
 	}
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
 		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
@@ -6097,6 +6105,7 @@
 		Italian:"Statua della Libertà"
 		German:"Freiheitsstatue"
 		French:"Statue de la Liberté"
+                Simplified_Chinese:"自由女神像"
 	}
 	"+1 Production from specialists":{
 		Italian:"+1 Produzione dagli Specialisti"
@@ -6198,6 +6207,7 @@
 		Italian:"Pentagono"
 		French:"Pentagone"
 		//same in German
+                Simplified_Chinese:"五角大楼"
 	}
 	"Gold cost of upgrading military units reduced by 33%":{
 		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
@@ -6280,6 +6290,7 @@
 		Italian:"Telescopio spaziale Hubble"
 		German:"Hubble Weltraumteleskop"
 		French:"Téléscope de Hubble"
+                Simplified_Chinese:"哈勃太空望远镜"
 	}
 	"2 free great scientists appear":{
 		Italian:"Appaiono 2 grandi scenziati gratuiti"
@@ -8268,6 +8279,7 @@
 	"Pick promotion":{
 		Italian:"Scegli promozione"
 		French:"Choisissez une promotion"
+                Simplified_Chinese:"选择晋升项"
 	}
 	
 	" OR ":{// as in "Requires Accuracy I OR Barrage I
@@ -8286,151 +8298,177 @@
 		German:"Genauigkeit I"
 		French:"Précision I"
 		Russian:"Точность I"
+                Simplified_Chinese:"精准一级"
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
 		German:"Genauigkeit II"
 		French:"Précision II"
 		Russian:"Точность II"
+                Simplified_Chinese:"精准二级"
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
 		German:"Genauigkeit III"
 		French:"Précision III"
 		Russian:"Точность III"
+                Simplified_Chinese:"精准三级"
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
 		French:"15% force contre les unités en terrain découvert"
 		Russian:"Бонус против юнитов на открытой местности 15%"
+                Simplified_Chinese:"对战开阔地形中的单位时 +15% 战斗力"
 	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
 		German:"Sperrfeuer I"
 		French:"Barrage I"
 		Russian:"Преграда I"
+                Simplified_Chinese:"弹幕一级"
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
 		German:"Sperrfeuer II"
 		French:"Barrage II"
 		Russian:"Преграда II"
+                Simplified_Chinese:"弹幕二级"
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
 		German:"Sperrfeuer III"
 		French:"Barrage III"
 		Russian:"Преграда III"
+                Simplified_Chinese:"弹幕三级"
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
 		French:"+15% force contre les unités en terrain accidenté"
 		Russian:"Бонус против юнитов в пересеченной местности 15%"
+                Simplified_Chinese:"对战复杂地形中的单位时 +15% 战斗力"
 	}
 	"Shock I":{
 		Italian:"Assalto I"
 		German:"Schock I"
 		French:"Choc I"
 		Russian:"Натиск I"
+                Simplified_Chinese:"冲击一级"
 	}
 	"Shock II":{
 		Italian:"Assalto II"
 		German:"Schock II"
 		French:"Choc II"
 		Russian:"Натиск II"
+                Simplified_Chinese:"冲击二级"
 	}
 	"Shock III":{
 		Italian:"Assalto III"
 		German:"Schock III"
 		French:"Choc III"
 		Russian:"Натиск III"
+                Simplified_Chinese:"冲击三级"
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
 		German:"Drill I"
 		French:"Percée I"
 		Russian: "Прорыв I"
+                Simplified_Chinese:"操练一级"
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
 		German:"Drill II"
 		French:"Percée II"
 		Russian: "Прорыв II"
+                Simplified_Chinese:"操练二级"
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
 		German:"Drill III"
 		French:"Percée III"
 		Russian: "Прорыв III"
+                Simplified_Chinese:"操练三级"
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
 		German:"Spähen I"
 		French:"Eclaireur I"
 		Russian:"Разведка I"
+                Simplified_Chinese:"侦察一级"
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
 		German:"Spähen II"
 		French:"Eclaireur II"
 		Russian:"Разведка II"
+                Simplified_Chinese:"侦察二级"
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
 		German:"Spähen III"
 		French:"Eclaireur III"
 		Russian:"Разведка III"
+                Simplified_Chinese:"侦察三级"
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
 		German:"+1 Sichtweite"
 		French:"+1 Mouvement"
 		Russian:"+1 Передвижение"
+                Simplified_Chinese:"+1 移动力"
 	}
 	"Cover I":{
 		Italian:"Copertura I"
 		German:"Deckung I"
 		French:"Protection I"
 		Russian:"Укрытие I"
+                Simplified_Chinese:"隐蔽一级"
 	}
 	"Cover II":{
 		Italian:"Copertura II"
 		German:"Deckung II"
 		French:"Protection II"
 		Russian:"Укрытие II"
+                Simplified_Chinese:"隐蔽二级"
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
 		German:"+25% Verteidigung gegen alle Fernangriffe"
 		French:"+25% défence contre les attaques à distance"
-		Russian:"+25% защиты от дальних атак"
+		Russian:"+25% защиты от дальних атак" 
+                Simplified_Chinese:"+25% 防御对远程攻击"
 	}
 	"March":{
 		Italian:"Marcia"
 		German:"Marschieren"
 		French:"Marche"
 		Russian:"Марш"
+                Simplified_Chinese:"长途行军"
 	}
 	"Unit will heal every turn, even if it performs an action":{
 		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
 		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
 		Russian:"Юнит лечится каждый ход, даже если совершает действие"
+                Simplified_Chinese:"每回合恢复 (包括执行指令后)"
 	}
 	"Charge":{
 		Italian:"Carica"
 		German:"Angriff"
 		French:"Charge"
+                Simplified_Chinese:"猛烈冲锋"
 	}
 
 	"Bonus vs wounded units 33%":{
 		Italian:"+33% forza contro unità ferite"
 		French:"+33% force contre les unités montées"
 		Russian:"Бонус против раненых 33%"
+                Simplified_Chinese:"对战受伤单位时 +33% 战斗力"
   }
 
 	"wounded units":{
 		Italian:"unità ferite"
 		French:"unités montées"
+                Simplified_Chinese:"受伤单位"
 
 	}
 	"Mobility":{
@@ -8438,181 +8476,212 @@
 		German:"Mobilität"
 		French:"Mobilité"
 		Russian:"Мобильность"
+                Simplified_Chinese:"机动能力"
 	}
 	"Siege":{
 		Italian:"Assedio"
 		German:"Belagerung"
 		French:"Siège"
 		Russian:"Осада"
+                Simplified_Chinese:"攻坚能力"
 	}
 	"Volley":{
 		Italian:"Raffica"
 		German:"Salve"
 		French:"Volée"
 		Russian:"Залп"
+                Simplified_Chinese:"齐射能力"
 	}
 	"Sentry":{
 		Italian:"Sentinella"
 		German:"Wache"
 		French:"Sentinel"
 		Rusian:"Караул"
+                Simplified_Chinese:"警戒能力"
 	}
 	"Range":{
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
 		French:"Portée"
 		Russian:"Расширенный радиус"
+                Simplified_Chinese:"射程拓展"
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
 		German:"+1 Reichweite"
 		French:"+1 portée d'attaque"
 		Russian:"+1 радиус"
+                Simplified_Chinese:"+1 射程"
 	}
 	"Indirect Fire":{
 		Italian:"Fuoco indiretto"
 		German:"Indirektes Feuer"
 		French:"Attaque indirecte" //not sure
 		Russian:"Непрямой Огонь"
+                Simplified_Chinese:"间接火力"
 	}
 	"Ranged attacks may be performed over obstacles":{
 		Italian:"Permette di sparare a distanza superando gli ostacoli"
 		French:"Les attaques à distances peuvent être effectués à travers des obstacles"
 		Russian:"Дальнобойные атаки могут выполняться над препятствиями"
+                Simplified_Chinese:"越过障碍进行远程攻击"
 	}
 	"Formation I":{
 		Italian:"Formazione I"
 		German:"Formation I"
 		French:"Formation I"
 		Russian:"Формация I"
+                Simplified_Chinese:"列阵一级"
 	}
 	"Formation II":{
 		Italian:"Formazione II"
 		German:"Formation II"
 		French:"Formation II"
 		Russian:"Формация II"
+                Simplified_Chinese:"列阵二级"
 	}
 	"Blitz":{
 		Italian:"Incursione"
 		German:"Blitz"
 		French:"Guerre éclair"
 		Russian:"Блиц"
+                Simplified_Chinese:"闪击战术"
 	}
 	"1 additional attack per turn":{
 		Italian:"L'unità ottiene può attaccare due volte ogni turno"
 		French:"1 attaque supplémentaire par tour"
 		Russian:"Дополнительная атака за ход"
+                Simplified_Chinese:"每回合有一次额外的攻击机会"
 	}
 	"Logistics":{
 		Italian:"Logistica"
 		German:"Logistick"
 		French:"Logistique"
 		Russian:"Логистика"
+                Simplified_Chinese:"后勤补给"
 	}
 	"Bombardment I":{
 		Italian:"Bombardamento I"
 		German:"Bombardierung I"
 		French:"Bombardement I"
 		Russian:"Бомбардировка I"
+                Simplified_Chinese:"轰炸一级"
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
 		German:"Bombardierung II"
 		French:"Bombardement II"
 		Russian:"Бомбардировка II"
+                Simplified_Chinese:"轰炸二级"
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
 		German:"Bombardierung III"
 		French:"Bombardement III"
 		Russian:"Бомбардировка III"
+                Simplified_Chinese:"轰炸三级"
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
 		French:"+33% force contre les unités terrestres"
 		Russian:"Бонус против наземных юнитов 33%"
+                Simplified_Chinese:"对战陆军单位时 +33% 战斗力"
 	}
 	"Bonus vs land units 34%":{
 		Italian:"+34% forza contro unità terrestri"
 		French:"+34% force contre les unités terrestres"
 		Russian:"Бонус против наземных юнитов 34%"
+                Simplified_Chinese:"对战陆军单位时 +34% 战斗力"
 	}
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
 		German:"Entermannschaft I"
 		French:"Embarquement I"
 		Russian:"Абордаж I"
+                Simplified_Chinese:"接舷一级"
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
 		German:"Entermannschaft II"
 		French:"Embarquement II"
 		Russian:"Абордаж II"
+                Simplified_Chinese:"接舷二级"
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
 		German:"Entermannschaft III"
 		French:"Embarquement III"
 		Russian:"Абордаж III"
+                Simplified_Chinese:"接舷三级"
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
 		French:"+15% force contre les unités navales"
 		Russian:"Бонус против водных юнитов +15%"
+                Simplified_Chinese:"对战海军单位时 +15% 战斗力"
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
 		Russain:"Береговой налетчик I"
+                Simplified_Chinese:"海掠一级"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
 		Russain:"Береговой налетчик II"
+                Simplified_Chinese:"海掠二级"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
 		Russain:"Береговой налетчик III"
+                Simplified_Chinese:"海掠三级"
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
 		German:"Gezielter Schlag I"
 		French:"Ciblage I"
 		Russian:"Прицеливание I"
+                Simplified_Chinese:"定位一级"
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
 		German:"Gezielter Schlag II"
 		French:"Ciblage II"
 		Russian:"Прицеливание II"
+                Simplified_Chinese:"定位二级"
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
 		German:"Gezielter Schlag III"
 		French:"Ciblage III"
 		Russian:"Прицеливание III"
+                Simplified_Chinese:"定位三级"
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
 		German:"Rudeltaktik I"
 		French:"Meute I"
 		Russian:"Массовая атака I"
+                Simplified_Chinese:"狼群一级"
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
 		French:"Meute II"
 		Russian:"Массовая атака II"
+                Simplified_Chinese:"狼群二级"
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 		French:"Meute III"
 		Russian:"Массовая атака III"
+                Simplified_Chinese:"狼群三级"
 	}
 	
 	// Civilopedia texts
