@@ -3,6 +3,7 @@ package com.unciv.ui.trade
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.logic.trade.TradeType.*
@@ -13,16 +14,17 @@ import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.onClick
 import kotlin.math.min
 
-class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffersList,
-                 val otherCivOffers: TradeOffersList, val otherCivCorrespondingOffers: TradeOffersList,
-                 val onChange: () -> Unit) : ScrollPane(null) {
+class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
     val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
     val tradesToNotHaveNumbers = listOf(Technology, City,
             Introduction, Treaty, WarDeclaration)
 
     val expanderTabs = HashMap<TradeType, ExpanderTab>()
 
-    init {
+    fun update(offersToDisplay:TradeOffersList) {
+        table.clear()
+        expanderTabs.clear()
+
         for (offertype in values()) {
             val labelName = when(offertype){
                 Gold, Gold_Per_Turn, Treaty,Introduction -> ""
@@ -32,21 +34,15 @@ class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffe
                 WarDeclaration -> "Declarations of war"
                 City -> "Cities"
             }
-            val offersOfType = offers.filter { it.type == offertype }
+            val offersOfType = offersToDisplay.filter { it.type == offertype }
             if (labelName!="" && offersOfType.any()) {
                 expanderTabs[offertype] = ExpanderTab(labelName, CameraStageBaseScreen.skin)
-                expanderTabs[offertype]!!.close()
                 expanderTabs[offertype]!!.innerTable.defaults().pad(5f)
             }
         }
-        update()
-    }
 
-
-    fun update() {
-        table.clear()
         for (offertype in values()) {
-            val offersOfType = offers.filter { it.type == offertype }
+            val offersOfType = offersToDisplay.filter { it.type == offertype }
 
             if (expanderTabs.containsKey(offertype)) {
                 expanderTabs[offertype]!!.innerTable.clear()
@@ -64,15 +60,7 @@ class OffersList(val offers: TradeOffersList, val correspondingOffers: TradeOffe
                 if (offer.amount > 0)
                     tradeButton.onClick {
                         val amountTransferred = min(amountPerClick, offer.amount)
-                        offers += offer.copy(amount = -amountTransferred)
-                        correspondingOffers += offer.copy(amount = amountTransferred)
-                        if (offer.type == Treaty) { // this goes both ways, so it doesn't matter which side you click
-                            otherCivOffers += offer.copy(amount = -amountTransferred)
-                            otherCivCorrespondingOffers += offer.copy(amount = amountTransferred)
-                        }
-
-                        onChange()
-                        update()
+                        onOfferClicked(offer.copy(amount = amountTransferred))
                     }
                 else tradeButton.disable()  // for instance we have negative gold
 

@@ -7,6 +7,7 @@ import com.unciv.models.gamebasics.tr
 
 class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo){
 
+    /** Contains everything we could offer the other player, whether we've actually offered it or not */
     val ourAvailableOffers = getAvailableOffers(ourCivilization,otherCivilization)
     val theirAvailableOffers = getAvailableOffers(otherCivilization,ourCivilization)
     val currentTrade = Trade()

@@ -15,7 +15,7 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
     val currentPlayerCiv = otherCivilization.gameInfo.getCurrentPlayerCivilization()
     var tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
     var offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
-    var offerColumnsTableWrapper = Table() // This is so that after a trade has been traded, we can switch out the offers to start anew - this is the easiest way
+    var offerColumnsTableWrapper = Table() // This is so that after a trade has been traded, we can switch out the offersToDisplay to start anew - this is the easiest way
     val tradeText = Label(otherCivilization.getTranslatedNation().neutralLetsHearIt.random().tr(), CameraStageBaseScreen.skin)
     val offerButton = TextButton("Offer trade".tr(), CameraStageBaseScreen.skin)
 

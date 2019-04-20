@@ -14,4 +14,10 @@ class TradeOffersList: ArrayList<TradeOffer>(){
         return true
     }
 
+    fun without(otherTradeOffersList: TradeOffersList): TradeOffersList {
+        val tradeOffersListCopy = TradeOffersList()
+        for(offer in this) tradeOffersListCopy.add(offer.copy())
+        for(offer in otherTradeOffersList) tradeOffersListCopy.add(offer.copy(amount=-offer.amount))
+        return tradeOffersListCopy
+    }
 }

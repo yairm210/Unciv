@@ -7,16 +7,13 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addSeparator
 
-class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit): Table(CameraStageBaseScreen.skin) {
+/** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
+class OfferColumnsTable(val tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit): Table(CameraStageBaseScreen.skin) {
 
-    val ourAvailableOffersTable = OffersList(tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers,
-            tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers) { onChange() }
-    val ourOffersTable = OffersList(tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers,
-            tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers) { onChange() }
-    val theirOffersTable = OffersList(tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers,
-            tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers) { onChange() }
-    val theirAvailableOffersTable = OffersList(tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers,
-            tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers) { onChange() }
+    val ourAvailableOffersTable = OffersListScroll { tradeLogic.currentTrade.ourOffers.add(it); onChange() }
+    val ourOffersTable = OffersListScroll { tradeLogic.currentTrade.ourOffers.add(it.copy(amount = -it.amount)); onChange() }
+    val theirOffersTable = OffersListScroll { tradeLogic.currentTrade.theirOffers.add(it.copy(amount = -it.amount)); onChange() }
+    val theirAvailableOffersTable = OffersListScroll { tradeLogic.currentTrade.theirOffers.add(it); onChange() }
 
     init {
         defaults().pad(5f)
@@ -35,13 +32,13 @@ class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit
         add(ourOffersTable).size(columnWidth,stage.height/5)
         add(theirOffersTable).size(columnWidth,stage.height/5)
         pack()
+        update()
     }
 
     fun update() {
-        ourAvailableOffersTable.update()
-        ourOffersTable.update()
-        theirAvailableOffersTable.update()
-        theirOffersTable.update()
-
+        ourAvailableOffersTable.update(tradeLogic.ourAvailableOffers.without(tradeLogic.currentTrade.ourOffers))
+        ourOffersTable.update(tradeLogic.currentTrade.ourOffers)
+        theirOffersTable.update(tradeLogic.currentTrade.theirOffers)
+        theirAvailableOffersTable.update(tradeLogic.theirAvailableOffers.without(tradeLogic.currentTrade.theirOffers))
     }
 }
