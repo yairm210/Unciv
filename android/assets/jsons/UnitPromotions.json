@@ -140,7 +140,7 @@
 	
 	{
 		name:"Sentry",
-		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II","Bombardment I","Targeting I"],
+		prerequisites:["Accuracy I","Barrage I","Shock II","Drill II","Bombardment I","Targeting I","Boarding Party I","Coastal Raider I"],
 		effect:"+1 Visibility Range",
 		unitTypes:["Melee","Mounted","WaterRanged","Armor","WaterMelee"]
 	}
