@@ -301,7 +301,7 @@
 		German:"Befördern"
 		Dutch:"Promoveren"
 		Spanish:"Ascender"
-       	 	Simplified_Chinese:"提升"
+       	 	Simplified_Chinese:"晋升"
 		Portuguese:"Promover"
 		Japanese:"促進する"
 	}
@@ -2842,7 +2842,7 @@
 		German:"Zivildienst"
 		Dutch:"Overheidsdienst"
 		Spanish:"Servicio civil"
-		Simplified_Chinese:"行政部门"
+		Simplified_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
 	}
 	"Guilds":{
@@ -3427,7 +3427,7 @@
 		Russian:"+10% науки и производства во всех городах"
 		Romanian:"+10% știință și producție în toate orașele"
 		Spanish:"+10% de ciencia y producción en todas las ciudades"
-		Simplified_Chinese:"+所有城市10%的科学和生产"
+		Simplified_Chinese:"所有城市 +10% 的科学和生产"
 		Portuguese:"+10% de produção de ciência em todas as cidades"
 		German:"+10% Wissenschaft und Produktion in allen Städten"
 		French:"+10% science et production dans toutes les villes"
@@ -3459,7 +3459,7 @@
 		French:"Permet la conversion de la production des villes en or"
 		Romanian:"Permite conversia producției orașului la aur"
 		Spanish:"Habilita la conversión de producción a oro"
-		Simplified_Chinese:"使城市生产转化为金钱"
+		Simplified_Chinese:"使城市生产力转化为金钱"
 		Portuguese:"Habilita a conversão da produção das cidades para ouro"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Gold"
 	}
@@ -3471,7 +3471,7 @@
 		German:"Ermöglicht das Einbooten von Landeinheiten"
 		French:"Permet d'embarquer les unités terrestres"
 		Russian:"Позволяет посадку для наземных единиц"
-		Simplified_Chinese:"允许登陆陆地单位"
+		Simplified_Chinese:"陆军单位拥有海运能力"
 		Portuguese:"Permite o embarque de unidades terrestres"
 	}
 	
@@ -3483,7 +3483,7 @@
 		German:"Erlaubt es eingebooteten Einheiten Ozeanfelder zu überqueren"
 		French:"Permet aux unités embarqués de traverser les cases d'océan"
 		Russian:"Позволяет отправленным юнитам входить в тайлы океана"
-		Simplified_Chinese:"允许已登记的单位进入海洋瓷砖"
+		Simplified_Chinese:"海运的单位能够进入海洋"
 		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
 	}
 	
@@ -3622,7 +3622,7 @@
 		German:"Fernkämpfer"
 		Dutch:"Afstands"
 		Spanish:"A distancia"
-		Simplified_Chinese:"远战"
+		Simplified_Chinese:"远程攻击"
 		Portuguese:"Ataque a distancia"
 	}
 	"Siege":{
@@ -3779,7 +3779,7 @@
 		German:"Begrenzte Sichtweite"
 		Dutch:"Gelimiteerd zicht"
 		Spanish:"Visibilidad limitada"
-		Simplified_Chinese:"有限的能见度"
+		Simplified_Chinese:"视野受限"
 		Portuguese:"Visibilidade limitada"
 	}
 	
@@ -3793,7 +3793,7 @@
 		Dutch:"Kan een gouden periode van acht beurten starten of een oriëntatiepunt bouwen (+6 Cultuur)"// Dutch translation not sure
 		Spanish:"Puede comenzar una Edad de Oro de 8 turnos o construir un Edificio Emblemático (+6 cultura)"
 		Portuguese:"Pode iniciar uma idade de ouro de 8 voltas ou construir um marco (+6 Cultura)"
-		Simplified_Chinese:"可以开始8转黄金时代或建立一个地标（+6文化）"
+		Simplified_Chinese:"开启8回合黄金时代或建立一个地标（+6文化）"
 	}
 	"Can discover a technology, or construct an Academy (+4 Science)" :{
 		Italian:"Può scoprire una tecnologia o costruire un'Accademia (+4 Scienza)"
@@ -3804,7 +3804,7 @@
 		Dutch:"Kan een technologie ontdekken, of een Academie (+4wetenschap) bouwen"
 		Spanish:"Puede descubrir una tecnología o construir una Academia (+4 ciencia)"
 		Portuguese:"Pode descobrir uma tecnologia ou construir uma academia (+4 Ciência)"
-		Simplified_Chinese:"可以发现技术，或建立一个学院（+4科学）"
+		Simplified_Chinese:"获得一项免费科技或建立一个学院（+4科学）"
 	}
 	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 Gold)":{
 		Italian:"Può intraprendere una missione commerciale, dare una grande somma di oro, o costruire una Dogana (+4 Oro)"
@@ -3815,7 +3815,7 @@
 		Dutch:"Kan een handelsmissie ondergaan, levert veel goud op, of bouwt een Douanekantoor (+4 goud) bouwen"
 		Portuguese:"Pode realizar uma missão comercial, dando uma grande soma de ouro, ou construir uma Alfândega (+4 de Ouro)"
 		Spanish:"Puede emprender una misión de comercio que proporciona una gran suma de oro, o construir una Aduana (+4 oro)"
-		Simplified_Chinese:"可以承担贸易任务，提供大笔黄金，或建造海关大楼（+4金）"
+		Simplified_Chinese:"通过贸易获得大笔黄金或建造一个海关大楼（+4金）"
 	}
 	"Can speed up construction of a wonder, or construct a Manufactory (+4 Production)":{
 		Italian:"Può velocizzare la costruzione di una meraviglia, o costruire una Manifattura (+4 Produzione)"
@@ -3826,7 +3826,7 @@
 		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
 		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
 		Portuguese:"Pode acelerar a construção de uma maravilha ou construir um Manufactory (+4 de Produção)"
-		Simplified_Chinese:"可以加快奇迹的建设，或建造一个工厂（+4生产）"
+		Simplified_Chinese:"加快奇迹的建设速度或建造一个工厂（+4生产）"
 	}
 	
 	"May create improvements on water resources":{
@@ -4015,7 +4015,7 @@
 		Italian:"+1 raggio di Visione"
 		French:"+1 à la Portée de Vision"
 		Romanian:"+1 Rază vizuală"
-		Simplified_Chinese:"+1 可见范围"
+		Simplified_Chinese:"+1 视野"
 		Portuguese:"+1 de alcançe ao campo de visão"
 		German:"+1 Sichtweite"
 		Russian:"+1 Диапазон видимости"
@@ -4025,7 +4025,7 @@
 		Italian:"Doppio movimento sulla costa"
 		French:"Double mouvement le long des côtes"
 		Romanian:"Deplasare dublă pe țărm"
-		Simplified_Chinese:"在海岸双倍移动力"
+		Simplified_Chinese:"海岸边移动时双倍移动力"
 		Portuguese:"Movimento em dobro nas costas"
 		German:"Doppelte Bewegungsgeschwindigkeit an der Küste"
 		Russian:"Двойное движение на побережье"
@@ -4452,7 +4452,7 @@
 		Italian:"+1 Visione per le unità militari terrestri, e -50% costi in Oro quando acquisti una casella"
 		Romanian:"Toate unitățile militare terestre au raza vizuală +1, 50% reducere la cumpărarea celulelor"
 		Spanish:"Todas las unidades militares de tierra obtienen +1 de vision, 50% de descuento al comprar terrenos"
-		Simplified_Chinese:"所有陆军 +1 视野, 购买地块打五折"
+		Simplified_Chinese:"所有陆军 +1 视野, 购买地块时花费减半"
 		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
 		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
 		Portuguese:"Todas as unidades militares terrestres têm uma vista, 50% de desconto na compra de telhas"
@@ -5171,6 +5171,7 @@
 	}
 	"Walls of Babylon":{
 		Italian:"Mura di Babilonia"
+                Simplified_Chinese:"巴比伦城墙"
 	}
 	
 	"The Pyramids":{	
@@ -5268,7 +5269,7 @@
 		French:"L'oracle"
 		Romanian:"Oracolul"
 		Spanish:"El Oráculo"
-		Simplified_Chinese:"神谕"
+		Simplified_Chinese:"神谕所"
 		Portuguese:"O Oráculo"
 		German:"Das Orakel"
 	}
@@ -5313,7 +5314,7 @@
 		German:"Länge Goldener Zeitalter um 50% erhöht"
 		Dutch:"Gouden eeuw lengte neem toe met +50%"
 		Spanish:"La Edad Dorada dura 50% más"
-		Simplified_Chinese:"黄金时代长度+50%"
+		Simplified_Chinese:"黄金时代持续时间 +50%"
 		Portuguese:"Duração de idade dourada aumentada em 50%"
 	}
 	
@@ -5355,7 +5356,7 @@
 		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
 		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
 		Romanian:"Toate unitățile militare navale primesc +1 deplasare și +1 raza vizuală"
-		Simplified_Chinese:"所有海军军事单位+1移动力和+1视野"
+		Simplified_Chinese:"所有海军军事单位 +1 移动力和 +1 视野"
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
 	}
@@ -5401,6 +5402,7 @@
 	"Statue of Zeus":{	
 		Italian:"Statua di Zeus"
 		French:"Statue de Zeus"
+                Simplified_Chinese:"宙斯神像"
 	}
 	"+15% Combat Strenght when attacking Cities":{
 		Italian:"+15% Forza quando attacchi le Città"
@@ -5429,6 +5431,7 @@
 	
 	"Terracotta Army":{
 		Italian:"Esercito di terracotta"
+                Simplified_Chinese:"兵马俑"
 	}
 	
 	"Market":{	
@@ -5571,6 +5574,7 @@
 	
 	"Great Wall":{
 		Italian:"Grande Muraglia"
+                Simplified_Chinese:"长城"
 	}
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
 		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
@@ -5672,6 +5676,7 @@
 		Italian:"Alhambra"
 		German:"Alhambra"
 		French:"Alhambra"
+                Simplified_Chinese:"阿尔罕布拉宫"
 	}
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
@@ -5707,7 +5712,7 @@
 		French:"Tour de Porcelaine"
 		Romanian:"Turnul de Porțelan"
 		Spanish:"Torre de Porcelana"
-		Simplified_Chinese:"报恩寺"
+		Simplified_Chinese:"大报恩寺塔"
 		Portuguese:"Torre de Porcelana"
 		German:"Porzellan Turm"
 	}
@@ -5834,6 +5839,7 @@
 		Spanish:"La Torre Inclinada De Pizza"
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
+                Simplified_Chinese:"比萨斜塔"
 	}	
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
@@ -5845,6 +5851,7 @@
 	
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
+                Simplified_Chinese:"姬路城"
 	}
 	"+15% combat strength for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
@@ -5900,7 +5907,7 @@
 		French:"Ermitage"
 		Romanian:"Schit"
 		Spanish:"Ermita"
-		Simplified_Chinese:"埃米塔日"
+		Simplified_Chinese:"冬宫"
 		Portuguese:"Eremitério"
 		German:"Eremitage"
 	}
@@ -6037,6 +6044,7 @@
 		German:"Kreml"
 		Spanish:"Kremlin"
 		Russian:"Кремль"
+                Simplified_Chinese:"克里姆林宫"
 	}
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
@@ -6044,6 +6052,7 @@
 	
 	"Neuschwanstein":{
 		Italian:"Castello di Neuschwanstein"
+                Simplified_Chinese:"新天鹅堡"
 	}
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
 		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
@@ -6096,6 +6105,7 @@
 		Italian:"Statua della Libertà"
 		German:"Freiheitsstatue"
 		French:"Statue de la Liberté"
+                Simplified_Chinese:"自由女神像"
 	}
 	"+1 Production from specialists":{
 		Italian:"+1 Produzione dagli Specialisti"
@@ -6197,6 +6207,7 @@
 		Italian:"Pentagono"
 		French:"Pentagone"
 		//same in German
+                Simplified_Chinese:"五角大楼"
 	}
 	"Gold cost of upgrading military units reduced by 33%":{
 		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
@@ -6279,6 +6290,7 @@
 		Italian:"Telescopio spaziale Hubble"
 		German:"Hubble Weltraumteleskop"
 		French:"Téléscope de Hubble"
+                Simplified_Chinese:"哈勃太空望远镜"
 	}
 	"2 free great scientists appear":{
 		Italian:"Appaiono 2 grandi scenziati gratuiti"
@@ -6349,7 +6361,7 @@
 		French:"Éclaireur"
 		Romanian:"Explorator"
 		Spanish:"Explorador"
-		Simplified_Chinese:"侦察兵"
+		Simplified_Chinese:"斥候"
 		Portuguese:"Explorador"
 		German:"Kundschafter"
 	}
@@ -6526,7 +6538,7 @@
 		Italian:"Galeazza"
 		French:"Galléasse"
 		Romanian:"Galeră"
-		Simplified_Chinese:"三桅帆装军舰"
+		Simplified_Chinese:"桨帆战舰"
 		Portuguese:"Galleass"
 		German:"Galeere"
 	}
@@ -6610,10 +6622,12 @@
 	}
 	"Samurai":{
 		Italian:"Samurai" //Same as in Italian
+                Simplified_Chinese:"日本武士"
 	}
 
 	"Combat very likely to create Great Generals":{
 		Italian:"Può generare un Grande Generale combattendo"
+                Simplified_Chinese:"战争能更快地锤炼出大军事家"
 	}
 	
 	
@@ -6623,7 +6637,7 @@
 		Italian:"Caravella"
 		French:"Caravelle"
 		Romanian:"Caravelă"
-		Simplified_Chinese:"轻快帆船"
+		Simplified_Chinese:"轻帆船"
 		Portuguese:"Caravela"
 		Russian:"Каравелла"
 		German:"Karavelle"
@@ -6663,7 +6677,7 @@
 		Italian:"Minuteman" //same in Italian
 		Romanian:"Rezervist"
 		Spanish:"Milicia Revolucionaria"
-		Simplified_Chinese:"应召民兵"
+		Simplified_Chinese:"快速民兵"
 		Russian:"Минитмэн"
 		//same in German
 		//same in French
@@ -6716,7 +6730,7 @@
 		French:"Fusilier"
 		Romanian:"Carabinier"
 		Spanish:"Fusilero"
-		Simplified_Chinese:"步枪兵"
+		Simplified_Chinese:"来复枪兵"
 		Portuguese:"Fuzileiro"
 		German:"Gewehrschütze"
 	}
@@ -6726,7 +6740,7 @@
 		French:"Cavalerie"
 		Romanian:"Cavalerie"
 		Spanish:"Cavallería"
-		Simplified_Chinese:"装甲兵"
+		Simplified_Chinese:"近代骑兵"
 		Portuguese:"Cavalaria"
 		German:"Kavallerie"
 	}
@@ -6777,7 +6791,7 @@
 		Italian:"Fante della Grande Guerra"
 		Romanian:"Infanteria Marelui Război"
 		Spanish:"Infanteria de la Gran Guerra"
-		Simplified_Chinese:"一战装甲舰"
+		Simplified_Chinese:"早期现代步兵"
 		Russian:"Стрелок"
 		German:"Weltkriegs Infanterie"
 		French:"Infanterie de la grande guerre"
@@ -6785,12 +6799,15 @@
 	
 	"Foreign Legion":{
 		Italian:"Legione Straniera"
+                Simplified_Chinese:"外籍军团"
 	}
 	"+20% bonus outside friendly territory":{
 		Italian:"+20% Forza fuori da territorio amico"
+                Simplified_Chinese:"境外作战时战斗力 +20%"
 	}
 	"Foreign Land":{ // for battle table combat percentage
 		Italian:"Terra Straniera"
+                Simplified_Chinese:"他国领土"
 	
 	}
 	
@@ -6826,7 +6843,7 @@
 		Italian:"Fanteria"
 		Romanian:"Infanterie"
 		Spanish:"Infanteria"
-		Simplified_Chinese:"步兵团"
+		Simplified_Chinese:"现代步兵"
 		Russian:"Пехота"
 		German:"Infanterie"
 		French:"Infanterie"
@@ -6839,7 +6856,7 @@
 		Russian:"Иностранный легион"
 		German:"Fremdenlegion"
 		French:"Légion étrangère"
-	} // French Unique
+	} // French Unique， this can be deleted, above this it already exists. 
 	"Battleship":{
 		Italian:"Corazzata"
 		Romanian:"Navă de luptă"
@@ -6862,7 +6879,7 @@
 		Italian:"Portaerei"
 		Romanian:"Portavion"
 		Spanish:"Porta Aviones"
-		Simplified_Chinese:"航母"
+		Simplified_Chinese:"航空母舰"
 		Russian:"Авианосец"
 		German:"Flugzeugträger"
 		French:"Porte-avions"
@@ -6872,7 +6889,7 @@
 		Italian:"Bombardiere della Grande Guerra"
 		Romanian:"Bombardier din Marele Război"
 		Spanish:"Bombardero de la Gran Guerra"
-		Simplified_Chinese:"一战轰炸机"
+		Simplified_Chinese:"早期轰炸机"
 		Russian:"великий бомбардировщик0_0"
 		German:"Weltkriegsbomber"
 		French:"Bombardier de la grande guerre"
@@ -6881,7 +6898,7 @@
 		Italian:"Triplano"
 		Romanian:"Triplan"
 		Spanish:"Triplano"
-		Simplified_Chinese:"三翼飞机"
+		Simplified_Chinese:"三翼机"
 		Russian:"ТРИПЛАН"
 		German:"Dreidecker"
 		French:"Triplan"
@@ -6946,7 +6963,7 @@
 		Italian:"Panzer" //same in Italian
 		Romanian:"Panzer"
 		Spanish:"Panzer"
-		Simplified_Chinese:"虎式坦克"
+		Simplified_Chinese:"德国坦克"
 		Russian:"Панзэр"
 		German:"Tiger II Panzer" //I used a more late WW2 panzer name here to destinguish 
 		French:"Panzer"
@@ -6963,7 +6980,7 @@
 		Italian:"B-17"
 		Romanian:"B17"
 		Spanish:"B-17"
-		Simplified_Chinese:"B17轰炸机"
+		Simplified_Chinese:"B-17“空中堡垒”"
 		French:"B-17"
 	} // american unique
 	"Fighter":{
@@ -6989,6 +7006,7 @@
 	"Giant Death Robot":{
 		Italian:"Robot Gigante della Morte"
 		French:"Robot géant Mortel" //The most accurate should be "Robot géant de la mort" but it sound really ridiculous
+                Simplified_Chinese:"末日机甲"
 	}
 	*/
 	
@@ -7019,7 +7037,7 @@
 		French:"Marchand illustre"
 		Romanian:"Mare Comerciant"
 		Spanish:"Gran Mercader"
-		Simplified_Chinese:"大商人"
+		Simplified_Chinese:"大商业家"
 		Portuguese:"Grande Mercador"
 		German:"Großer Händler"
 	}
@@ -7083,7 +7101,7 @@
 		French:"Tradition"
 		Romanian:"Tradiție"
 		Spanish:"Tradición"
-		Simplified_Chinese:"传统"
+		Simplified_Chinese:"传统政策"
 		Portuguese:"Tradição"
 		//same in German
 	}
@@ -7092,7 +7110,7 @@
 		Russian:"+3 культуры в столице и увеличивается скорость расширения границ"
 		Romanian:"+3 cultură în capitală și rata de extindere a granițelor mărită"
 		Spanish:"+3 cultura en la capital e incremento del ritmo de expansión de fronteras"
-		Simplified_Chinese:"+3 首都文化和边境扩张速度"
+		Simplified_Chinese:"+3 首都文化，边界扩张速度加快"
 		Portuguese:"+3 cultura na capital e taxa de expansão de fronteiras"
 		German:"+3 Kultur in der Hauptstadt und erhöhte Grenzerweiterungsrate"
 		French:"+3 culture dans la capitale and accélère la vitesse d'expension du territoire"
@@ -7102,7 +7120,7 @@
 		Russian:"Аристократия"
 		Romanian:"Aristocrație"
 		Spanish:"Aristocracia"
-		Simplified_Chinese:"贵族制"
+		Simplified_Chinese:"贵族政治"
 		Portuguese:"Aristocracia"
 		German:"Aristokratie"
 		French:"Aristocratie"
@@ -7112,7 +7130,7 @@
 		Russian:"+15% производства при создании чудес, +1 счастье за каждые 10 жителей в городе"
 		Romanian:"+15% producție la construcția de minuni, +1 fericire pentru fiecare 10 cetățeni ai unui oraș"
 		Spanish:"+15% producción al construir maravillas, +1 felicidad cada 10 habitantes in una ciudad"
-		Simplified_Chinese:"当建造奇迹 +15% 的生产, 在一个城市每10个市民 +1 幸福"
+		Simplified_Chinese:"建造奇迹时 +15% 的生产, 在一个城市每10个市民 +1 幸福"
 		Portuguese:"+15 de produção ao construir maravilhas, +1 felicidade a cada 10 em uma cidade"
 		German:"+15% Produktion beim Errichten von Wundern; +1 Zufriedenheit für jeden 10. Einwohner in einer Stadt"
 		French:"+15% production lors de la construction de merveilles, +1 de bonheur pour chaque tranche de 10 citoyens dans chaques villes"
@@ -7122,7 +7140,7 @@
 		Russian:"Легализм"
 		Romanian:"Legalitate"
 		Spanish:"Legalismo"
-		Simplified_Chinese:"守法"
+		Simplified_Chinese:"律法统治"
 		Portuguese:"Legalismo"
 		German:"Legalismus"
 		French:"Légalisme"
@@ -7132,7 +7150,7 @@
 		Russian:"Бесплатное культурное здание в первых 4 городах"
 		Romanian:"Construcție de cultură gratuită pentru primele 4 orașe"
 		Spanish:"Edificio de cultura gratis en las primeras 4 ciudades"
-		Simplified_Chinese:"前4个城市给予免费的文化设施"
+		Simplified_Chinese:"前4个城市免费获得1个文化设施"
 		Portuguese:"Edificio de cultura grátis em suas primeiras 4 cidades (monumento)"
 		German:"Kostenloses Kulturgebäude in den ersten 4 Städten"
 		French:"Un monument culturel gratuit dans vos 4 premières villes"
@@ -7152,7 +7170,7 @@
 		Russian:"Юниты в городах содержаться бесплатно, гарнизонный город + 50% силы атаки"
 		Romanian:"Unitățile din orașe nu necesită costuri de întreținere, orașul înarmat + 50% atac"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento, y +50% de fuerza de ataque"
-		Simplified_Chinese:"城市里的单位不需要维护费,驻守城市+ 50％的攻击强度"
+		Simplified_Chinese:"驻守城市的单位无需维护费，有单位驻守的城市 +50% 远程攻击力"
 		Portuguese:"Unidades em cidades não custam manutenção, +50% de força de ataque"
 		German:"Einheiten in Städten Kosten keinen Unterhalt, +50% Angriffsstärke"
 		French:"Les unités en garnison n'ont plus de coût d'entretien, +50% de la force d'attaque"
@@ -7163,7 +7181,7 @@
 		Russian:"Землевладельческая Элита"
 		Romanian:"Elita terestră"
 		Spanish:"Élite terrateniente"
-		Simplified_Chinese:"精英主义"
+		Simplified_Chinese:"绅缙阶层"
 		Portuguese:"Elite aterrisada"
 		German:"Landjunkerschaft" //according to: https://en.wikipedia.org/wiki/Landed_nobility
 		French:"Élite terrienne"
@@ -7173,7 +7191,7 @@
 		Russian:"+10% прироста еды и +2 еды в столице"
 		Romanian:"+10% creștere hrană și +2 hrană în capitală"
 		Spanish:"+10% crecimiento de comida y +2 comida en la capital"
-		Simplified_Chinese:"在首都 粮食增长 +10%, 粮食 +2 "
+		Simplified_Chinese:"首都食物增长速度 +10%, 食物 +2"
 		Portuguese:"+10% adicionado ao crescimente de comida e +2 comida na capital"
 		German:"+10% Nahrungswachstum und +2 Nahrung in der Hauptstadt"
 		French:"Croissance +10% et Nourriture +2 dans la capitale"
@@ -7183,7 +7201,7 @@
 		Russian:"Монархия"
 		Romanian:"Monarhie"
 		Spanish:"Monarquía"
-		Simplified_Chinese:"君主制"
+		Simplified_Chinese:"君主政体"
 		Portuguese:"Monarquia"
 		German:"Monarchie"
 		French:"Monarchie"
@@ -7193,7 +7211,7 @@
 		Russian:"+1 золто и -1 недовольство за каждых двух жителей в столице"
 		Romanian:"+1 aur și -1 nefericire pentru fiecare 2 cetățeni din capitală"
 		Spanish:"+1 oro y -1 infelicidad cada 2 habitantes en la capital"
-		Simplified_Chinese:"在首都，每两个公民拥有1金钱和-1不幸福度"
+		Simplified_Chinese:"首都每两个公民 +1 金钱， -1 不满"
 		Portuguese:"+1 ouro e -1 de infelicidade para cada 2 habitantes na capital"
 		German:"+1 Gold und -1 Unzufriedenheit für jeden 2. Einwohner in der Hauptstadt"
 		French:"Or +1 et mécontentement -1 tous les 2 citoyens dans la capitale"
@@ -7203,7 +7221,7 @@
 		Russian:"Традиция Завершена"
 		Romanian:"Tradiție realizată"
 		Spanish:"Tradición Completa"
-		Simplified_Chinese:"完整的传统主义"
+		Simplified_Chinese:"完整的传统政策"
 		Portuguese:"Tradição Completa"
 		German:"Tradition vollständig"
 		French:"Tradition complète"
@@ -7213,7 +7231,7 @@
 		Russian:"+15% роста и +2 еды во всех городах"
 		Romanian:"+15% creștere și +2 hrană în toate orașele"
 		Spanish:"+15% crecimiento y +2 comida en todas las ciudades"
-		Simplified_Chinese:"所有城市增长 +15%, 食品 +2"
+		Simplified_Chinese:"所有城市食物增长速度 +15%, 食物 +2"
 		Portuguese:"+15% crescimento e +2 de comida na capital"
 		German:"+15% Wachstum und +2 Nahrung in allen Städten"
 		French:"+15% de croissance et +2 nourriture dans toutes les villes"
@@ -7225,7 +7243,7 @@
 		Russian:"Воля"
 		Romanian:"Libertate"
 		Spanish:"Liberación"
-		Simplified_Chinese:"自主"
+		Simplified_Chinese:"自主政策"
 		Portuguese:"Liberdade"
 		German:"Unabhängigkeit"
 		French:"Liberté"
@@ -7235,7 +7253,7 @@
 		Russian:"+1 культура во всех городах"
 		Romanian:"+1 cultură în fiecare oraș"
 		Spanish:"+1 cultura en cada ciudad"
-		Simplified_Chinese:"在每个城市 +1文化"
+		Simplified_Chinese:"每个城市 +1 文化"
 		Portuguese:"+1 cultura em todas as cidades"
 		German:"+1 Kultur in jeder Stadt"
 		French:"+1 Culture dans toutes les villes"
@@ -7256,7 +7274,7 @@
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Romanian:"Antrenamentul colonizatorilor crescut +50% în capitală, se obține un colonizator nou lângă capitală"
 		Spanish:"Entrenamiento de colonos incrementado +50% en la capital y un colono gratis cerca de la capital"
-		Simplified_Chinese:"在首都+50% 移民的生产能力，在首都附近出现1个新移民"
+		Simplified_Chinese:"首都 +50% 移民的生产速度，首都附近出现1个新移民"
 		Portuguese:"Treinamento em de colonos +50% mais rapido na capital, receba um novo colono próximo a capital"
 		German:"Ausbildung von Siedlern in der Hauptstadt ist um 50% erhöht; ein kostenloser Siedler erscheint in der Hauptstadt."
 		French:"La vitesse de formation des colons augmente de 50% dans la capital capitale et un colon gratuit apparaît à proximité"
@@ -7266,7 +7284,7 @@
 		Russian:"Гражданство"
 		Romanian:"Cetățenie"
 		Spanish:"Ciudadanía"
-		Simplified_Chinese:"公民权"
+		Simplified_Chinese:"公民制度"
 		Portuguese:"Cidadania"
 		German:"Staatsbürgerschaft"
 		French:"Citoyenneté"
@@ -7276,7 +7294,7 @@
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
 		Spanish:"+25% ritmo de construcción de trabajadores y un trabajador gratis cerca de la capital"
-		Simplified_Chinese:"+25%的工人建造能力，在首都附近获得免费工人"
+		Simplified_Chinese:"+25% 工人建造设施的速度，首都附近出现1个免费工人"
 		Portuguese:"+25% tava de construção de trabalhadores, receber trabalhador perto da capital"
 		German:"+25% Baugeschwindigkeit für Felderverbesserungen bei Arbeitern; ein kostenloser Arbeiter erscheint in der Hauptstadt"
 		French:"La vitesse de construction des ouvriers augmente de 25% et un ouvrier apparaît près de la capitale"
@@ -7296,7 +7314,7 @@
 		Russian:"Увеличивает н 1% производство во всех городах и на 5% производство при строительстве зданий"
 		Romanian:"+1 construcție în fiecare oraș, +5% construcție clădiri"
 		Spanish:"+1 construcción en cada ciudad, +5% al construir edificios"
-		Simplified_Chinese:"+1 每个城市生产力，+5%建筑生产速度"
+		Simplified_Chinese:"每个城市生产力 +1，设施建造速度 +5%"
 		Portuguese:"+1 de produção em todas as cidades,+5% construção quando construindo edificios"
 		German:"+1 Produktion in jeder Stadt; +5% Produktion beim Bau von Gebäuden in Städten"
 		French:"production +1, et production +5% dans les villes lors de la construction de bâtiments"
@@ -7306,7 +7324,7 @@
 		Russian:"Представительство"
 		Romanian:"Reprezentanță"
 		Spanish:"Representación"
-		Simplified_Chinese:"代表"
+		Simplified_Chinese:"代议制度"
 		Portuguese:"Representação"
 		German:"Repräsentation"
 		French:"Représentation"
@@ -7316,7 +7334,7 @@
 		Russian:"Каждый основанный город на 33% меньше увеличивает цену общественных институтов. Начинает в державе золотой век."
 		Romanian:"Fiecare oraș fondat crește costul în cultură al politicilor 33% sub normal. Începe o epocă de aur."
 		Spanish:"Cada ciudad fundada incrementa el coste cultural de las políticas 33% menos de lo normal. Comienza una Edad de Oro"
-		Simplified_Chinese:"每个城市所建立的政策文化成本比正常增长33%. 并开启一个黄金时代。"
+		Simplified_Chinese:"每新建城市导致推行政策所需文化成本的增幅低于正常值33%，立即开启一次黄金时代"
 		Portuguese:"Toda cidade fundada aumenta o custo de políticas 33% a menos que o normal, aciona uma Idade Dourada"
 		German:"Jede gegründete Stadt erhöht die Kulturkosten von Grundsätzen um 33% weniger als üblich. Es beginnt ein Goldenes Zeitalter."
 		French:"Pour chaque ville fondée, le coût en culture des doctrines augmentera 33% moins vite. Déclenche également un âge d'or"
@@ -7326,7 +7344,7 @@
 		Russian:"Меритократия"
 		Romanian:"Meritocrație"
 		Spanish:"Meritocracia"
-		Simplified_Chinese:"英才教育"
+		Simplified_Chinese:"精英政治"
 		Portuguese:"Meritocracia"
 		German:"Meritokratie"
 		French:"Méritocratie"
@@ -7336,7 +7354,7 @@
 		Russian:"Улучшает на 1 настроение каждого города свзяанного со столицей. Уменьшает недовольство от граждан на 5%"
 		Romanian:"+1 fericire pentru fiecare oraș legat de capitală, -5% nefericire a cetățenilor"
 		Spanish:"+1 felicidad por cada ciudad conectada a la capital, -5% infelicdad de ciudadanos"
-		Simplified_Chinese:"每个与首都相连的城市都有+1个幸福度, 而城市居民的不幸福指数为-5%"
+		Simplified_Chinese:"每个与首都相连的城市 +1个幸福度, 而城市居民的不满 -5%"
 		Portuguese:"+1 felicade por cada cidade conectada a capital (estradas),-5% infelicidade de habitantes"
 		German:"+1 Zufriedenheit für jede mit der Hauptstadt verbundenen Stadt; -5% Unzufriedenheit von Einwohnern"
 		French:"Ville nationale reliée à la capitale : bonheur +1, et mécontentement -5% grâce aux citoyens des villes non occupées"
@@ -7346,7 +7364,7 @@
 		Russian:"Воля Завершена"
 		Romanian:"Libertate realizată"
 		Spanish:"Liberación Completa"
-		Simplified_Chinese:"完整的自主主义"
+		Simplified_Chinese:"完整的自主政策"
 		Portuguese:"Liberade Completa"
 		German:"Unabhängigkeit vollständig"
 		French:"Liberté complète"
@@ -7356,7 +7374,7 @@
 		Russian:"Бесплатный Великий Человек по выбору рядом со столицей"
 		Romanian:"Om Mare la alegere gratuit lângă capitală"
 		Spanish:"Gran Persona gratis a elegir cerca de la capital"
-		Simplified_Chinese:"选择出现在在首都附近免费的伟人"
+		Simplified_Chinese:"选择出现在首都附近免费的伟人类型"
 		Portuguese:"Grande Pessoa de sua escolha (grátis) na capital" 
 		German:"Kostenlose Große Persönlichkeit der Wahl erscheint in der Hauptstadt"
 		French:"personnage illustre gratuit près de votre capitale"
@@ -7367,7 +7385,7 @@
 		Spanish:"Honor"
 		Italian:"Onore"
 		Romanian:"Onoare"
-		Simplified_Chinese:"荣誉"
+		Simplified_Chinese:"荣誉政策"
 		Portuguese:"Honra"
 		Russian:"Честь"
 		German:"Ehre"
@@ -7377,7 +7395,7 @@
 		Spanish:"+25% bonus al luchar contra Barbaros"
 		Italian:"+25% Forza contro i Barbari; ottieni Cultura quando uccidi unità barbariche"
 		Romanian:"+25% bonus contra Barbarilor"
-		Simplified_Chinese:"对野蛮人+25%奖励"
+		Simplified_Chinese:"对野蛮人作战时 +25% 战斗力"
 		Portuguese:"+25% Força ao lutar contra Barbáros"
 		Russian:"+25% к силе атаки против варваров"
 		German:"+25% Bonus gegen Barbaren"
@@ -7397,7 +7415,7 @@
 		Spanish:"+20% a la produccion de unidades cuerpo a cuerpo "
 		Italian:"+20% Produzione per le unità da mischia"
 		Romanian:"+20% producție la antrenarea luptătorilor de contact"
-		Simplified_Chinese:"当训练近战单位时，产量增加20%"
+		Simplified_Chinese:"训练近战单位时生产 +20%"
 		Portuguese:"+20% Produção ao treinar unidades militares"
 		Russian:"+20% к производству при создании военных юнитов"
 		German:"+20% Produktion beim Rekrutieren von Nahkampfeinheiten"
@@ -7407,7 +7425,7 @@
 		Spanish:"Diciplina"
 		Italian:"Disciplina"
 		Romanian:"Disciplină"
-		Simplified_Chinese:"纪律"
+		Simplified_Chinese:"军事纪律"
 		Portuguese:"Disciplina"
 		Russian:"Дисциплина"
 		German:"Disziplin"
@@ -7417,7 +7435,7 @@
 		Spanish:"+15% a la fuerza de combate de las unidades cuerpo a cuerpo cuando tienen una unidad militar adyacente"
 		Italian:"+15% forza di combattimento alle unità da mischia vicine a un'altra unità militare"
 		Romanian:"+15% putere de luptă pentru luptători de contact care au o altă unitate militară într-o celulă adiacentă"
-		Simplified_Chinese:"近战单位在相邻区域内有另一个军事单位时, 增加15%的战斗力"
+		Simplified_Chinese:"近战单位在相邻区域内有另一个军事单位时,战斗力 +15%"
 		Portuguese:"+15% força para unidadaes corpo a corpo que tem outra unidade militar em um terreno adjacente"
 		Russian:"+15% к силе за дружественный юнит на соседней клетке"
 		German:"+15% Kampfstärke für Nahkampfeinheiten, die eine andere Militäreinheit in einem anliegenden Feld haben"
@@ -7447,7 +7465,7 @@
 		Spanish:"Casta militar"
 		Italian:"Casta Militare"
 		Romanian:"Castă militară"
-		Simplified_Chinese:"军权社会"
+		Simplified_Chinese:"军人阶层"
 		Portuguese:"Casta Militar"
 		Russian:"военная каста"
 		German:"Militarisierte Burg"
@@ -7477,7 +7495,7 @@
 		Spanish:"Honor completado"
 		Italian:"Onore Completo"
 		Romanian:"Onoare realizată"
-		Simplified_Chinese:"完整的荣誉主义"
+		Simplified_Chinese:"完整的荣誉政策"
 		Portuguese:"Honra Completa"
 		Russian:"институт чести изучен"
 		German:"Ehre vollständig"
@@ -7500,7 +7518,7 @@
 		Russian:"Набожность"
 		Romanian:"Credință"
 		Spanish:"Piedad"
-		Simplified_Chinese:"虔信"
+		Simplified_Chinese:"虔信政策"
 		Portuguese:"Piedade"
 		German:"Frömmigkeit"
 		French:"Piété"
@@ -7520,7 +7538,7 @@
 		Russian:"Организованная религия"
 		Romanian:"Religie organizată"
 		Spanish:"Religión Organizada"
-		Simplified_Chinese:"宗教组织"
+		Simplified_Chinese:"教会组织"
 		Portuguese:"Religião Organizada"
 		German:"Organisierte Religion"
 		French:"Religion organisée"
@@ -7540,7 +7558,7 @@
 		Russian:"Небесный мандат"
 		Romanian:"Mandat ceresc"
 		Spanish:"Mandato del Cielo"
-		Simplified_Chinese:"天命"
+		Simplified_Chinese:"天命观念"
 		Portuguese:"Mandato do Céu"
 		German:"Mandat des Himmels"
 		French:"Mandat du Ciel"
@@ -7600,7 +7618,7 @@
 		Russian:"Веротерпимость"
 		Romanian:"Religie liberă"
 		Spanish:"Libertad de Culto"
-		Simplified_Chinese:"宗教自由"
+		Simplified_Chinese:"信仰自由"
 		Portuguese:"Liberdade de Religião"
 		German:"Religionsfreiheit"
 		French:"Tolérance religieuse" //official, or "Religion libre"
@@ -7620,7 +7638,7 @@
 		Russian:"Набожность завершена"
 		Romanian:"Credință realizată"
 		Spanish:"Piedad Completa"
-		Simplified_Chinese:"完整的虔信主义"
+		Simplified_Chinese:"完整的虔信政策"
 		Portuguese:"Piedade Completa"
 		German:"Frömmigkeit vollständig"
 		French:"Piété complète"
@@ -7642,7 +7660,7 @@
 		Russian:"Коммерция"
 		Romanian:"Comerț"
 		Spanish:"Comercio"
-		Simplified_Chinese:"商业"
+		Simplified_Chinese:"商业政策"
 		Portuguese:"Comércio"
 		German:"Kommerz"
 		French:"Commerce"
@@ -7662,7 +7680,7 @@
 		Russian:"Караваны фургонов"
 		Romanian:"Uniuni comerciale"
 		Spanish:"Sindicatos"
-		Simplified_Chinese:"商会"
+		Simplified_Chinese:"联合公会"
 		Portuguese:"Sindicatos"
 		German:"Handelsunion"
 		French:"Unions commerciales"
@@ -7702,7 +7720,7 @@
 		Russian:"Предпринимательство"
 		Romanian:"Antreprenoriat"
 		Spanish:"Emprendimiento"
-		Simplified_Chinese:"企业家精神"
+		Simplified_Chinese:"创业精神"
 		Portuguese:"Empreendimento"
 		//same in German
 		French:"Entreprenariat"
@@ -7722,7 +7740,7 @@
 		Russian:"Меценатство"
 		Romanian:"Clientelă"
 		Spanish:"Mecenazgo"
-		Simplified_Chinese:"赞助"
+		Simplified_Chinese:"赞助政策"
 		Portuguese:"Patrocínio" // not sure so double check yourself if deemed nescessary
 		German:"Mäzenatentum" //according to https://en.wikipedia.org/wiki/Patronage --> click on German language post
 		French:"Patronat"
@@ -7742,7 +7760,7 @@
 		Russian:"Протекционизм"
 		Romanian:"Protecționism"
 		Spanish:"Proteccionismo"
-		Simplified_Chinese:"贸易保护主义"
+		Simplified_Chinese:"贸易保护"
 		Portuguese:"Protecionismo"
 		German:"Protektionismus"
 		French:"Protectionnisme"
@@ -7762,7 +7780,7 @@
 		Russian:"Коммерция завершена"
 		Romanian:"Comerț realizat"
 		Spanish:"Comercio Completo"
-		Simplified_Chinese:"完整的商业主义"
+		Simplified_Chinese:"完整的商业政策"
 		Portuguese:"Comércio Completo"
 		German:"Kommerz vollständig"
 		French:"Commerce complet"
@@ -7784,7 +7802,7 @@
 		Russian:"Рационализм"
 		Romanian:"Raționalism"
 		Spanish:"Racionalismo"
-		Simplified_Chinese:"理性"
+		Simplified_Chinese:"理性政策"
 		Portuguese:"Racionalismo"
 		German:"Rationalismus"
 		French:"Rationalisme"
@@ -7844,7 +7862,7 @@
 		Russian:"Свободомыслие"
 		Romanian:"Gândire liberă"
 		Spanish:"Pensamiento Libre"
-		Simplified_Chinese:"自由思想"
+		Simplified_Chinese:"思想自由"
 		Portuguese:"Pensamento Livre"
 		German:"Freies Denken"
 		French:"Liberté de pensée"
@@ -7864,7 +7882,7 @@
 		Russian:"Суверинетет"
 		Romanian:"Suveranitate"
 		Spanish:"Soberanía"
-		Simplified_Chinese:"主权"
+		Simplified_Chinese:"主权在民"
 		Portuguese:"Soberania"
 		German:"Souveränität"
 		French:"Souveraineté"
@@ -7904,7 +7922,7 @@
 		Russian:"Рационализм завершён"
 		Romanian:"Raționalism realizat"
 		Spanish:"Racionalismo Completo"
-		Simplified_Chinese:"完整的理性主义"
+		Simplified_Chinese:"完整的理性政策"
 		Portuguese:"Racionalismo Completo"
 		German:"Rationalismus vollständig"
 		French:"Rationalisme complet"
@@ -7926,7 +7944,7 @@
 		Russian:"Свобода"
 		Romanian:"Libertate"
 		Spanish:"Libertad"
-        	Simplified_Chinese:"自由"
+        	Simplified_Chinese:"自由政策"
 		Portuguese:"Liberdade"
 		German:"Freiheit"
 		French:"Liberté"
@@ -7946,7 +7964,7 @@
 		Russian:"Конституция"
 		Romanian:"Constituție"
 		Spanish:"Constitución"
-		Simplified_Chinese:"宪法"
+		Simplified_Chinese:"宪政主义"
 		Portuguese:"Constituição"
 		German:"Verfassung"
 		French:"Constitution"
@@ -7966,7 +7984,7 @@
 		Russian:"Всеобщее избирательное право"
 		Romanian:"Vot universal"
 		Spanish:"Sufragio Universal"
-		Simplified_Chinese:"普选"
+		Simplified_Chinese:"普选制度"
 		Portuguese:"Sufrágio Universal"
 		German:"Allgemeines Wahlrecht"
 		French:"Suffrage universel"
@@ -7986,7 +8004,7 @@
 		Russian:"Гражданское общество"
 		Romanian:"Societate civilă"
 		Spanish:"Sociedad Civil"
-		Simplified_Chinese:"民间团体"
+		Simplified_Chinese:"公民社会"
 		Portuguese:"Sociedade Civil"
 		German:"Zivilgesellschaft"
 		French:"Société civile"
@@ -8046,7 +8064,7 @@
 		Russian:"Свобода завершена"
 		Romanian:"Libertate realizată"
 		Spanish:"Libertad Completa"
-		Simplified_Chinese:"完整的自由主义"
+		Simplified_Chinese:"完整的自由政策"
 		Portuguese:"Liberdade Completa"
 		German:"Freiheit vollständig"
 		French:"Liberté complète"
@@ -8067,7 +8085,7 @@
 		Spanish:"Autocracia"
 		Italian:"Autocrazia"
 		Romanian:"Autocrație"
-		Simplified_Chinese:"独裁"
+		Simplified_Chinese:"独裁政策"
 		Portuguese:"Autocracia"
 		Russian:"Автократия"
 		German:"Autokratie"
@@ -8147,7 +8165,7 @@
 		Spanish:"Estado de policias"
 		Italian:"Stato di polizia"
 		Romanian:"Stat polițienesc"
-		Simplified_Chinese:"极权国家"
+		Simplified_Chinese:"警察国家"
 		Portuguese:"Estado de Polícia"
 		Russian:"полицейский участок"
 		German:"Polizeistaat"
@@ -8191,6 +8209,7 @@
 		Italian:"+1 Felicità per ogni Mura, Castello e Arsenale"
 		French:"+1 de bonheur pour chaque Murs, Châteaux et Arsenal"
 		Russian:"+1 счастье за каждую стену, замок и арсенал"
+                Simplified_Chinese:"完整的独裁政策"
 	}
 	
 	// Victory Screen
@@ -8267,6 +8286,7 @@
 	"Pick promotion":{
 		Italian:"Scegli promozione"
 		French:"Choisissez une promotion"
+                Simplified_Chinese:"选择晋升项"
 	}
 	
 	" OR ":{// as in "Requires Accuracy I OR Barrage I
@@ -8285,151 +8305,177 @@
 		German:"Genauigkeit I"
 		French:"Précision I"
 		Russian:"Точность I"
+                Simplified_Chinese:"精准一级"
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
 		German:"Genauigkeit II"
 		French:"Précision II"
 		Russian:"Точность II"
+                Simplified_Chinese:"精准二级"
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
 		German:"Genauigkeit III"
 		French:"Précision III"
 		Russian:"Точность III"
+                Simplified_Chinese:"精准三级"
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
 		French:"15% force contre les unités en terrain découvert"
 		Russian:"Бонус против юнитов на открытой местности 15%"
+                Simplified_Chinese:"对战开阔地形中的单位时 +15% 战斗力"
 	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
 		German:"Sperrfeuer I"
 		French:"Barrage I"
 		Russian:"Преграда I"
+                Simplified_Chinese:"弹幕一级"
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
 		German:"Sperrfeuer II"
 		French:"Barrage II"
 		Russian:"Преграда II"
+                Simplified_Chinese:"弹幕二级"
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
 		German:"Sperrfeuer III"
 		French:"Barrage III"
 		Russian:"Преграда III"
+                Simplified_Chinese:"弹幕三级"
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
 		French:"+15% force contre les unités en terrain accidenté"
 		Russian:"Бонус против юнитов в пересеченной местности 15%"
+                Simplified_Chinese:"对战复杂地形中的单位时 +15% 战斗力"
 	}
 	"Shock I":{
 		Italian:"Assalto I"
 		German:"Schock I"
 		French:"Choc I"
 		Russian:"Натиск I"
+                Simplified_Chinese:"冲击一级"
 	}
 	"Shock II":{
 		Italian:"Assalto II"
 		German:"Schock II"
 		French:"Choc II"
 		Russian:"Натиск II"
+                Simplified_Chinese:"冲击二级"
 	}
 	"Shock III":{
 		Italian:"Assalto III"
 		German:"Schock III"
 		French:"Choc III"
 		Russian:"Натиск III"
+                Simplified_Chinese:"冲击三级"
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
 		German:"Drill I"
 		French:"Percée I"
 		Russian: "Прорыв I"
+                Simplified_Chinese:"操练一级"
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
 		German:"Drill II"
 		French:"Percée II"
 		Russian: "Прорыв II"
+                Simplified_Chinese:"操练二级"
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
 		German:"Drill III"
 		French:"Percée III"
 		Russian: "Прорыв III"
+                Simplified_Chinese:"操练三级"
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
 		German:"Spähen I"
 		French:"Eclaireur I"
 		Russian:"Разведка I"
+                Simplified_Chinese:"侦察一级"
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
 		German:"Spähen II"
 		French:"Eclaireur II"
 		Russian:"Разведка II"
+                Simplified_Chinese:"侦察二级"
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
 		German:"Spähen III"
 		French:"Eclaireur III"
 		Russian:"Разведка III"
+                Simplified_Chinese:"侦察三级"
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
 		German:"+1 Sichtweite"
 		French:"+1 Mouvement"
 		Russian:"+1 Передвижение"
+                Simplified_Chinese:"+1 移动力"
 	}
 	"Cover I":{
 		Italian:"Copertura I"
 		German:"Deckung I"
 		French:"Protection I"
 		Russian:"Укрытие I"
+                Simplified_Chinese:"隐蔽一级"
 	}
 	"Cover II":{
 		Italian:"Copertura II"
 		German:"Deckung II"
 		French:"Protection II"
 		Russian:"Укрытие II"
+                Simplified_Chinese:"隐蔽二级"
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
 		German:"+25% Verteidigung gegen alle Fernangriffe"
 		French:"+25% défence contre les attaques à distance"
-		Russian:"+25% защиты от дальних атак"
+		Russian:"+25% защиты от дальних атак" 
+                Simplified_Chinese:"对战远程单位时 +25% 防御"
 	}
 	"March":{
 		Italian:"Marcia"
 		German:"Marschieren"
 		French:"Marche"
 		Russian:"Марш"
+                Simplified_Chinese:"长途行军"
 	}
 	"Unit will heal every turn, even if it performs an action":{
 		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
 		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
 		Russian:"Юнит лечится каждый ход, даже если совершает действие"
+                Simplified_Chinese:"每回合恢复 (包括执行指令后)"
 	}
 	"Charge":{
 		Italian:"Carica"
 		German:"Angriff"
 		French:"Charge"
+                Simplified_Chinese:"猛烈冲锋"
 	}
 
 	"Bonus vs wounded units 33%":{
 		Italian:"+33% forza contro unità ferite"
 		French:"+33% force contre les unités montées"
 		Russian:"Бонус против раненых 33%"
+                Simplified_Chinese:"对战受伤单位时 +33% 战斗力"
   }
 
 	"wounded units":{
 		Italian:"unità ferite"
 		French:"unités montées"
+                Simplified_Chinese:"受伤单位"
 
 	}
 	"Mobility":{
@@ -8437,181 +8483,212 @@
 		German:"Mobilität"
 		French:"Mobilité"
 		Russian:"Мобильность"
+                Simplified_Chinese:"机动能力"
 	}
 	"Siege":{
 		Italian:"Assedio"
 		German:"Belagerung"
 		French:"Siège"
 		Russian:"Осада"
+                Simplified_Chinese:"攻坚能力"
 	}
 	"Volley":{
 		Italian:"Raffica"
 		German:"Salve"
 		French:"Volée"
 		Russian:"Залп"
+                Simplified_Chinese:"齐射能力"
 	}
 	"Sentry":{
 		Italian:"Sentinella"
 		German:"Wache"
 		French:"Sentinel"
 		Rusian:"Караул"
+                Simplified_Chinese:"警戒能力"
 	}
 	"Range":{
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
 		French:"Portée"
 		Russian:"Расширенный радиус"
+                Simplified_Chinese:"射程拓展"
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
 		German:"+1 Reichweite"
 		French:"+1 portée d'attaque"
 		Russian:"+1 радиус"
+                Simplified_Chinese:"+1 射程"
 	}
 	"Indirect Fire":{
 		Italian:"Fuoco indiretto"
 		German:"Indirektes Feuer"
 		French:"Attaque indirecte" //not sure
 		Russian:"Непрямой Огонь"
+                Simplified_Chinese:"间接火力"
 	}
 	"Ranged attacks may be performed over obstacles":{
 		Italian:"Permette di sparare a distanza superando gli ostacoli"
 		French:"Les attaques à distances peuvent être effectués à travers des obstacles"
 		Russian:"Дальнобойные атаки могут выполняться над препятствиями"
+                Simplified_Chinese:"越过障碍进行远程攻击"
 	}
 	"Formation I":{
 		Italian:"Formazione I"
 		German:"Formation I"
 		French:"Formation I"
 		Russian:"Формация I"
+                Simplified_Chinese:"列阵一级"
 	}
 	"Formation II":{
 		Italian:"Formazione II"
 		German:"Formation II"
 		French:"Formation II"
 		Russian:"Формация II"
+                Simplified_Chinese:"列阵二级"
 	}
 	"Blitz":{
 		Italian:"Incursione"
 		German:"Blitz"
 		French:"Guerre éclair"
 		Russian:"Блиц"
+                Simplified_Chinese:"闪击战术"
 	}
 	"1 additional attack per turn":{
 		Italian:"L'unità ottiene può attaccare due volte ogni turno"
 		French:"1 attaque supplémentaire par tour"
 		Russian:"Дополнительная атака за ход"
+                Simplified_Chinese:"每回合有一次额外的攻击机会"
 	}
 	"Logistics":{
 		Italian:"Logistica"
 		German:"Logistick"
 		French:"Logistique"
 		Russian:"Логистика"
+                Simplified_Chinese:"后勤补给"
 	}
 	"Bombardment I":{
 		Italian:"Bombardamento I"
 		German:"Bombardierung I"
 		French:"Bombardement I"
 		Russian:"Бомбардировка I"
+                Simplified_Chinese:"轰炸一级"
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
 		German:"Bombardierung II"
 		French:"Bombardement II"
 		Russian:"Бомбардировка II"
+                Simplified_Chinese:"轰炸二级"
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
 		German:"Bombardierung III"
 		French:"Bombardement III"
 		Russian:"Бомбардировка III"
+                Simplified_Chinese:"轰炸三级"
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
 		French:"+33% force contre les unités terrestres"
 		Russian:"Бонус против наземных юнитов 33%"
+                Simplified_Chinese:"对战陆军单位时 +33% 战斗力"
 	}
 	"Bonus vs land units 34%":{
 		Italian:"+34% forza contro unità terrestri"
 		French:"+34% force contre les unités terrestres"
 		Russian:"Бонус против наземных юнитов 34%"
+                Simplified_Chinese:"对战陆军单位时 +34% 战斗力"
 	}
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
 		German:"Entermannschaft I"
 		French:"Embarquement I"
 		Russian:"Абордаж I"
+                Simplified_Chinese:"接舷一级"
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
 		German:"Entermannschaft II"
 		French:"Embarquement II"
 		Russian:"Абордаж II"
+                Simplified_Chinese:"接舷二级"
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
 		German:"Entermannschaft III"
 		French:"Embarquement III"
 		Russian:"Абордаж III"
+                Simplified_Chinese:"接舷三级"
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
 		French:"+15% force contre les unités navales"
 		Russian:"Бонус против водных юнитов +15%"
+                Simplified_Chinese:"对战海军单位时 +15% 战斗力"
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
 		Russain:"Береговой налетчик I"
+                Simplified_Chinese:"海掠一级"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
 		Russain:"Береговой налетчик II"
+                Simplified_Chinese:"海掠二级"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
 		Russain:"Береговой налетчик III"
+                Simplified_Chinese:"海掠三级"
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
 		German:"Gezielter Schlag I"
 		French:"Ciblage I"
 		Russian:"Прицеливание I"
+                Simplified_Chinese:"定位一级"
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
 		German:"Gezielter Schlag II"
 		French:"Ciblage II"
 		Russian:"Прицеливание II"
+                Simplified_Chinese:"定位二级"
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
 		German:"Gezielter Schlag III"
 		French:"Ciblage III"
 		Russian:"Прицеливание III"
+                Simplified_Chinese:"定位三级"
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
 		German:"Rudeltaktik I"
 		French:"Meute I"
 		Russian:"Массовая атака I"
+                Simplified_Chinese:"狼群一级"
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
 		French:"Meute II"
 		Russian:"Массовая атака II"
+                Simplified_Chinese:"狼群二级"
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 		French:"Meute III"
 		Russian:"Массовая атака III"
+                Simplified_Chinese:"狼群三级"
 	}
 	
 	// Civilopedia texts
