@@ -92,13 +92,13 @@ class UnitActions {
         if(!unit.type.isCivilian() && tile.improvement !=null){
             actionList += UnitAction("Pillage", unit.currentMovement>0)
             {
-                tile.improvement = null
                 // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
                 //    and I can't find any other sources so I'll go with that
                 if(tile.isLand()) {
                     tile.improvementInProgress = tile.improvement
                     tile.turnsToImprovement = 2
                 }
+                tile.improvement = null
                 unit.useMovementPoints(1f)
                 unit.health = min(100,unit.health+25)
             }
