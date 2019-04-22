@@ -466,6 +466,11 @@
 				prerequisites:["Computers"]
 			},
 			{
+				name:"Lasers",
+				row:5,
+				prerequisites:["Combined Arms"]
+			},				
+			{
 				name:"Rocketry",
 				row:6,
 				prerequisites:["Combined Arms","Computers"]
