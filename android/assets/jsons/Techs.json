@@ -273,7 +273,7 @@
 				name:"Metallurgy",
 				row:9,
 				prerequisites:["Printing Press","Gunpowder"]
-			}
+			},
 			{
 				name:"Chemistry",
 				row:10,
@@ -376,7 +376,7 @@
 				name:"Flight",
 				row:6,
 				prerequisites:["Steam Power"]
-			}
+			},
 			{
 				name:"Railroad",
 				row:8,
@@ -465,6 +465,11 @@
 				row:4,
 				prerequisites:["Computers"]
 			},
+			{
+				name:"Lasers",
+				row:5,
+				prerequisites:["Combined Arms"]
+			},			
 			{
 				name:"Rocketry",
 				row:6,
