@@ -224,7 +224,7 @@
 		German:"Befestigen"
 		Dutch:"Versterken"
 		Spanish:"Fortificar"
-		Simplified_Chinese:"镇守"
+		Simplified_Chinese:"驻守"
 		Portuguese:"Fortificar"
 		Japanese:"要塞化"
 	}
@@ -237,7 +237,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"城市攻防"
+		Simplified_Chinese:"防御加成"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -274,7 +274,7 @@
 		French:"Mise à niveau vers [unitType] ([goldCost] or)"
 		Romanian:"Avansare [unitType] ([goldCost] aur)"
 		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
-		Simplified_Chinese:"升级到[unitType]需要([goldCost]金钱)"
+		Simplified_Chinese:"升级到[unitType](需要[goldCost]金钱)"
 		Portuguese:"Melhoria a [unitType] custará ([goldCost] ouro)"
 		German:"Verbessere [unitType] ([goldCost] Gold)"
 		Japanese:"[unitType]（[goldCost] gold）にアップグレードする"
@@ -986,7 +986,7 @@
 		German:"Die Stadt wird einen neuen Einwohner in [turnsToPopulation]-Runden haben"
 		Dutch:"De stad krijgt een nieuwe inwoner in [turnsToPopulation]-rondes"
 		Spanish:"La ciudad tendrá un nuevo residente en las rondas de [turnsToPopulation]"
-		Simplified_Chinese:"这个城市将在[turnsToPopulation]轮后有1个新市民"
+		Simplified_Chinese:"这座城市将在[turnsToPopulation]轮后有1个新市民"
 		Portuguese:"A cidade terá um novo residente nas [turnsToPopulation] turnos"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
 	}
@@ -999,7 +999,7 @@
 		German:"Die Stadt wird einen Einwohner in [turnsToStarvation]-Runden verlieren"
 		Dutch:"De stad verliest een bewoner in [turnsToStarvation] ploegen"
 		Spanish:"La ciudad pierde un habitante en [turnsToStarvation] turnos"
-		Simplified_Chinese:"这个城市将在[turnsToStarvation]轮后失去1个市民"
+		Simplified_Chinese:"这座城市将在[turnsToStarvation]轮后失去1个市民"
 		Portuguese:"A cidade perderá um habitante entre [turnsToStarvation] turnos"
 		Japanese:"[turnsToStarvation]人口を減らす"
 	}
@@ -1167,7 +1167,7 @@
 		German:"Freigschaltete Feldverbesserungen"
 		Dutch:"Verbeteringen vrijgespeeld"
 		Spanish:"Mejoras de casilla habilitadas"
-		Simplified_Chinese:"地块建造已启用"
+		Simplified_Chinese:"地块设施已启用"
 		Portuguese:"Melhorias de solo habilitadas"
 		Japanese:"タイルの改善"
 	}
@@ -3478,7 +3478,7 @@
 		German:"Ermöglicht das Einbooten von Landeinheiten"
 		French:"Permet d'embarquer les unités terrestres"
 		Russian:"Позволяет посадку для наземных единиц"
-		Simplified_Chinese:"陆军单位拥有海运能力"
+		Simplified_Chinese:"陆军单位拥有船运能力"
 		Portuguese:"Permite o embarque de unidades terrestres"
 	}
 	
@@ -3490,7 +3490,7 @@
 		German:"Erlaubt es eingebooteten Einheiten Ozeanfelder zu überqueren"
 		French:"Permet aux unités embarqués de traverser les cases d'océan"
 		Russian:"Позволяет отправленным юнитам входить в тайлы океана"
-		Simplified_Chinese:"海运的单位能够进入海洋"
+		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"
 		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
 	}
 	
@@ -3500,7 +3500,7 @@
 		Italian:"+1 movimento delle unità imbarcate"
 		French:"Améliore le déplacement embarqué +1"
 		Romanian:"Crește mișcarea ambarcațiunilor +1"
-		Simplified_Chinese:"海运的移动力+1"
+		Simplified_Chinese:"陆军单位处于船运状态时的移动力+1"
 		Portuguese:"Aumenta movimento enquanto embarcado em +1"
 		German:"+1 für Bewegungen eingebooteter Einheiten"
 	}
@@ -3687,7 +3687,7 @@
 		German:"Kann Verbesserungen auf Feldern bauen"
 		Dutch:"Kan verbeteringen op velden bouwen"
 		Spanish:"Puede construir mejoras en casillas"
-		Simplified_Chinese:"可以在地块上进行建造"
+		Simplified_Chinese:"可以在地块上建造设施"
 		Portuguese:"Pode construir melhorias em terrenos"
 	}
 	"Founds a new city":{
@@ -3833,7 +3833,7 @@
 		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
 		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
 		Portuguese:"Pode acelerar a construção de uma maravilha ou construir um Manufactory (+4 de Produção)"
-		Simplified_Chinese:"加快奇迹的建造速度或建造1个工厂(+4生产)"
+		Simplified_Chinese:"加快奇观的建造速度或建造1个工厂(+4生产)"
 	}
 	
 	"May create improvements on water resources":{
@@ -4392,7 +4392,7 @@
 		Romanian:"+2 Cultură pe turn de la orașe înainte de a descoperi puterea de abur"
 		Portuguese:"+2 Cultura por turno das cidades antes de descobrir o poder do vapor"
 		Russian:"+2 Культура за ход из городов, прежде чем открыть для себя силу пара"
-		Simplified_Chinese:"在发明蒸汽机之前，每个城市的文化+2"
+		Simplified_Chinese:"在发明蒸汽机之前，每座城市的文化+2"
 	}
 	
 	"Russia":{
