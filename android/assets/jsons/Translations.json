@@ -3349,6 +3349,17 @@
 		Simplified_Chinese:"机器人学"
 		Portuguese:"Robótica"
 	}
+	"Lasers":{
+		Italian:"Laser"
+		Russian:"Лазеры"
+		French:"Laser"
+		Romanian:"Laser"
+		German:"Laser"
+		Dutch:"Laser"
+		Spanish:"Laser"
+		Simplified_Chinese:"激光"
+		Portuguese:"Laser"
+	}
 	"Rocketry":{
 		Italian:"Missilistica"
 		Russian:"Ракетостроение"
