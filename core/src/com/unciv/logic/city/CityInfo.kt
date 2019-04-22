@@ -217,7 +217,10 @@ class CityInfo {
                 destroyCity()
                 if(isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
                     civInfo.cities.first().cityConstructions.addBuilding("Palace")
-            }
+            }else{//if not razed yet:
+                if(population.foodStored>=population.getFoodToNextPopulation()) {//if surplus in the granary...
+                    population.foodStored=population.getFoodToNextPopulation()-1//...reduce below the new growth treshold
+                }
         }
         else population.nextTurn(stats.food)
 
