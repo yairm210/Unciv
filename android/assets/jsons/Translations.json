@@ -7016,7 +7016,7 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 		Russian:"Бомбардировщик"
 		French:"Bombardier"
 	}
-        "Mechanized Infantry"{
+        "Mechanized Infantry":{
 		Simplified_Chinese:"机械化步兵"
 	}
 	"B17":{
