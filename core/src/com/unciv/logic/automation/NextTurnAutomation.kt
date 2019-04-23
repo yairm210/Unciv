@@ -3,6 +3,7 @@ package com.unciv.logic.automation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.TradeRequest
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
@@ -150,7 +151,7 @@ class NextTurnAutomation{
         // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
 
         for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo)
-                && !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey("DeclinedLuxExchange")}) {
+                && !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey(DiplomacyFlags.DeclinedLuxExchange)}) {
             val trades = potentialLuxuryTrades(civInfo,otherCiv)
             for(trade in trades){
                 val tradeRequest = TradeRequest(civInfo.civName, trade.reverse())
@@ -184,15 +185,15 @@ class NextTurnAutomation{
                 val enemiesCiv = civInfo.diplomacy.filter{ it.value.diplomaticStatus == DiplomaticStatus.War }
                         .map{ it.value.otherCiv() }
                         .filterNot{ it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
-                        .filter { !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey("DeclinedPeace") }
+                        .filter { !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey(DiplomacyFlags.DeclinedPeace) }
 
                 for (enemy in enemiesCiv) {
                     val enemiesStrength = Automation().evaluteCombatStrength(enemy)
                     if (enemiesStrength < ourCombatStrength * 2) {
-                        continue //Loser can still fight. Refuse peace.
+                        continue //We're losing, but can still fight. Refuse peace.
                     }
 
-                    //pay for peace
+                    // pay for peace
                     val tradeLogic = TradeLogic(civInfo, enemy)
 
                     tradeLogic.currentTrade.ourOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))

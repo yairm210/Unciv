@@ -1,6 +1,7 @@
 package com.unciv.logic.trade
 
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr

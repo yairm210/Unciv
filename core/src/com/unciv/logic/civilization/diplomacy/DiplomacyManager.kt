@@ -11,13 +11,18 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
 
+enum class DiplomacyFlags{
+    DeclinedLuxExchange,
+    DeclinedPeace
+}
+
 class DiplomacyManager() {
     @Transient lateinit var civInfo: CivilizationInfo
     lateinit var otherCivName:String
     var trades = ArrayList<Trade>()
     var diplomaticStatus = DiplomaticStatus.War
     /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire */
-    var flagsCountdown = HashMap<String,Int>()
+    var flagsCountdown = HashMap<DiplomacyFlags,Int>()
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
@@ -117,6 +122,10 @@ class DiplomacyManager() {
         otherCiv.diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
+
+        /// AI won't propose peace for 10 turns
+        flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
+        otherCiv.diplomacy[civInfo.civName]!!.flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
     }
     //endregion
 }
