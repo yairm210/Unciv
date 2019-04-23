@@ -218,7 +218,7 @@ class Building : NamedStats(), IConstruction{
 
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "Wonder is already built"
-            if (civInfo.cities.any {it.cityConstructions.isBeingConstructed(name) })
+            if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "Wonder is being built elsewhere"
         }
 
