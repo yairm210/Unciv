@@ -1016,7 +1016,7 @@
 	"In resistance for another [numberOfTurns] turns":{
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
 		//can't understand
-                Simplified_Chinese:"阻力将持续额外[numberOfTurns]回合"
+                Simplified_Chinese:"反叛将持续额外[numberOfTurns]回合"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
 		French:"En révolte pour [numberOfTurns] tours"
@@ -1115,7 +1115,7 @@
 		German:"Freigeschaltete Einheiten"
 		Dutch:"Eenheden vrijgespeeld"
 		Spanish:"Unidades habilitadas"
-		Simplified_Chinese:"单位已启用"
+		Simplified_Chinese:"解锁单位"
 		Portuguese:"Unidades ativadas"
 		Japanese:"有効な単位"
 	}
@@ -1128,7 +1128,7 @@
 		German:"Freigeschaltete Bauwerke"
 		Dutch:"Gebouwen vreijgespeeld"
 		Spanish:"Edificios habilitados"
-		Simplified_Chinese:"建筑已启用"
+		Simplified_Chinese:"解锁建筑"
 		Portuguese:"Construções habilitadas"
 		Japanese:"有効な建物"
 	}
@@ -1154,7 +1154,7 @@
 		German:"Freigeschaltete Wunder"
 		Dutch:"Wonders vrijgespeeld"
 		Spanish:"Maravillas habilitadas"
-		Simplified_Chinese:"奇观已启用"
+		Simplified_Chinese:"解锁奇观"
 		Portuguese:"Maravilhas habilitadas"
 		Japanese:"有効不思議"
 	}
@@ -1167,7 +1167,7 @@
 		German:"Freigschaltete Feldverbesserungen"
 		Dutch:"Verbeteringen vrijgespeeld"
 		Spanish:"Mejoras de casilla habilitadas"
-		Simplified_Chinese:"地块设施已启用"
+		Simplified_Chinese:"解锁地块设施"
 		Portuguese:"Melhorias de solo habilitadas"
 		Japanese:"タイルの改善"
 	}
@@ -1192,7 +1192,7 @@
 		Romanian:"XP pentru unități noi"
 		Dutch:"XP voor nieuwe eenheden"
 		Spanish:"PX para unidades nuevas"
-		Simplified_Chinese:"新组建单位获得的经验值"
+		Simplified_Chinese:"新组建单位的初始经验值"
 		Portuguese:"Experiencia para novas unidades"
 		German:"XP für neue Einheiten"
 		Japanese:"新しいユニット用のXP"
