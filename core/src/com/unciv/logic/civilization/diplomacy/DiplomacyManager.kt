@@ -16,6 +16,8 @@ class DiplomacyManager() {
     lateinit var otherCivName:String
     var trades = ArrayList<Trade>()
     var diplomaticStatus = DiplomaticStatus.War
+    /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire */
+    var flagsCountdown = HashMap<String,Int>()
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
@@ -63,6 +65,11 @@ class DiplomacyManager() {
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
                     counter.add(GameBasics.TileResources[offer.name]!!,offer.amount)
         }
+        for(tradeRequest in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
+            for(offer in tradeRequest.trade.theirOffers) // "theirOffers" in the other civ's trade request, is actually out civ's offers
+                if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
+                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount)
+        }
         return counter
     }
     //endregion
@@ -95,6 +102,12 @@ class DiplomacyManager() {
             }
         }
         removeUntenebleTrades()
+
+        for(flag in flagsCountdown.keys.toList()) {
+            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+            if(flagsCountdown[flag]==0) flagsCountdown.remove(flag)
+        }
+
     }
 
     fun declareWar(){

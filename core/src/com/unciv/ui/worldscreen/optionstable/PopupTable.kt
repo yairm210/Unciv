@@ -32,10 +32,10 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         return add(label).width(screen.stage.width/2)
     }
 
-    fun addButton(text:String, action:()->Unit){
+    fun addButton(text:String, action:()->Unit): Cell<TextButton> {
         val button = TextButton(text.tr(), skin).apply { color= ImageGetter.getBlue() }
         button.onClick(action)
-        add(button).row()
+        return add(button).apply { row() }
     }
 }
 

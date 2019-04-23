@@ -7,7 +7,6 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.logic.trade.TradeType.*
-import com.unciv.models.gamebasics.tr
 import com.unciv.ui.cityscreen.ExpanderTab
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
@@ -16,8 +15,7 @@ import kotlin.math.min
 
 class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(null) {
     val table = Table(CameraStageBaseScreen.skin).apply { defaults().pad(5f) }
-    val tradesToNotHaveNumbers = listOf(Technology, City,
-            Introduction, Treaty, WarDeclaration)
+
 
     val expanderTabs = HashMap<TradeType, ExpanderTab>()
 
@@ -50,10 +48,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
 
             for (offer in offersOfType) {
-                var buttonText = offer.name.tr()
-                if (offer.type !in tradesToNotHaveNumbers) buttonText += " (" + offer.amount + ")"
-                if (offer.duration > 1) buttonText += "\n" + offer.duration + " {turns}".tr()
-                val tradeButton = TextButton(buttonText, CameraStageBaseScreen.skin)
+                val tradeButton = TextButton(offer.getOfferText(), CameraStageBaseScreen.skin)
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1

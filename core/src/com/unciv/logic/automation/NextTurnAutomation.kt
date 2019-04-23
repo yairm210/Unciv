@@ -2,12 +2,10 @@ package com.unciv.logic.automation
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
+import com.unciv.logic.civilization.TradeRequest
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.trade.TradeEvaluation
-import com.unciv.logic.trade.TradeLogic
-import com.unciv.logic.trade.TradeOffer
-import com.unciv.logic.trade.TradeType
+import com.unciv.logic.trade.*
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -115,30 +113,62 @@ class NextTurnAutomation{
         }
     }
 
+    fun potentialLuxuryTrades(civInfo:CivilizationInfo, otherCivInfo:CivilizationInfo): ArrayList<Trade> {
+        val tradeLogic = TradeLogic(civInfo, otherCivInfo)
+        val ourTradableLuxuryResources = tradeLogic.ourAvailableOffers
+                .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
+        val theirTradableLuxuryResources = tradeLogic.theirAvailableOffers
+                .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
+        val weHaveTheyDont = ourTradableLuxuryResources
+                .filter { resource ->
+                    tradeLogic.theirAvailableOffers
+                            .none { it.name == resource.name && it.type == TradeType.Luxury_Resource }
+                }
+        val theyHaveWeDont = theirTradableLuxuryResources
+                .filter { resource ->
+                    tradeLogic.ourAvailableOffers
+                            .none { it.name == resource.name && it.type == TradeType.Luxury_Resource }
+                }
+        val trades = ArrayList<Trade>()
+        for(i in 0..min(weHaveTheyDont.lastIndex, theyHaveWeDont.lastIndex)){
+            val trade = Trade()
+            trade.ourOffers.add(weHaveTheyDont[i].copy(amount = 1))
+            trade.theirOffers.add(theyHaveWeDont[i].copy(amount = 1))
+            trades.add(trade)
+        }
+        return trades
+    }
+
     private fun exchangeLuxuries(civInfo: CivilizationInfo) {
-        for (otherCiv in civInfo.diplomacy.values.map { it.otherCiv() }.filterNot { it.isPlayerCivilization() }) {
-            val tradeLogic = TradeLogic(civInfo, otherCiv)
-            val ourTradableLuxuryResources = tradeLogic.ourAvailableOffers
-                    .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
-            val theirTradableLuxuryResources = tradeLogic.theirAvailableOffers
-                    .filter { it.type == TradeType.Luxury_Resource && it.amount > 1 }
-            val weHaveTheyDont = ourTradableLuxuryResources
-                    .filter { resource ->
-                        tradeLogic.theirAvailableOffers
-                                .none { it.name == resource.name && it.type == TradeType.Luxury_Resource }
-                    }
-            val theyHaveWeDont = theirTradableLuxuryResources
-                    .filter { resource ->
-                        tradeLogic.ourAvailableOffers
-                                .none { it.name == resource.name && it.type == TradeType.Luxury_Resource }
-                    }
-            val numberOfTrades = min(weHaveTheyDont.size, theyHaveWeDont.size)
-            if (numberOfTrades > 0) {
-                tradeLogic.currentTrade.ourOffers.addAll(weHaveTheyDont.take(numberOfTrades).map { it.copy(amount = 1) })
-                tradeLogic.currentTrade.theirOffers.addAll(theyHaveWeDont.take(numberOfTrades).map { it.copy(amount = 1) })
+        val knownCivs = civInfo.diplomacy.values.map { it.otherCiv() }
+
+        // Player trades are... more complicated.
+        // When the AI offers a trade, it's not immediately accepted,
+        // so what if it thinks that it has a spare luxury and offers it to two human players?
+        // What's to stop the AI "nagging" the player to accept a luxury trade?
+        // We should A. add some sort of timer (20? 30 turns?) between luxury trade requests if they're denied
+        // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
+
+        for (otherCiv in knownCivs.filter { it.isPlayerCivilization() }) {
+            val trades = potentialLuxuryTrades(civInfo,otherCiv)
+            for(trade in trades){
+                val tradeRequest = TradeRequest(civInfo.civName, trade.reverse())
+                otherCiv.tradeRequests.add(tradeRequest)
+            }
+        }
+
+        // AI trades are automatically accepted
+        for (otherCiv in knownCivs.filterNot { it.isPlayerCivilization() }) {
+            val trades = potentialLuxuryTrades(civInfo,otherCiv)
+            for(trade in trades){
+                val tradeLogic = TradeLogic(civInfo,otherCiv)
+                tradeLogic.currentTrade.ourOffers.addAll(trade.ourOffers)
+                tradeLogic.currentTrade.theirOffers.addAll(trade.theirOffers)
                 tradeLogic.acceptTrade()
             }
         }
+
+
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
