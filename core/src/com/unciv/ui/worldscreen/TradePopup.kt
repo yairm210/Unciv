@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.addSeparator
@@ -55,6 +56,13 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
         }
         addButton("Not this time.".tr()){
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
+
+            if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
+                requestingCiv.diplomacy[currentPlayerCiv.civName]!!.flagsCountdown["DeclinedLuxExchange"]=20 // offer again in 20 turns
+
+            if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name=="Peace Treaty" })
+                requestingCiv.diplomacy[currentPlayerCiv.civName]!!.flagsCountdown["DeclinedPeace"]=5 // offer again in 20 turns
+
             remove()
             worldScreen.shouldUpdate=true
         }

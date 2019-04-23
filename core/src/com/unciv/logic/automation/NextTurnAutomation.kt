@@ -149,7 +149,8 @@ class NextTurnAutomation{
         // We should A. add some sort of timer (20? 30 turns?) between luxury trade requests if they're denied
         // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
 
-        for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo) }) {
+        for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo)
+                && !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey("DeclinedLuxExchange")}) {
             val trades = potentialLuxuryTrades(civInfo,otherCiv)
             for(trade in trades){
                 val tradeRequest = TradeRequest(civInfo.civName, trade.reverse())
@@ -177,12 +178,14 @@ class NextTurnAutomation{
 
     private fun offerPeaceTreaty(civInfo: CivilizationInfo) {
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
-            val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
+
             val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
             if (civInfo.isAtWar()) { //evaluate peace
                 val enemiesCiv = civInfo.diplomacy.filter{ it.value.diplomaticStatus == DiplomaticStatus.War }
                         .map{ it.value.otherCiv() }
                         .filterNot{ it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
+                        .filter { !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey("DeclinedPeace") }
+
                 for (enemy in enemiesCiv) {
                     val enemiesStrength = Automation().evaluteCombatStrength(enemy)
                     if (enemiesStrength < ourCombatStrength * 2) {
