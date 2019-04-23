@@ -779,7 +779,7 @@
 		German:"Stadt zerstören"
 		Dutch:"Stad vernietigen"
 		Spanish:"Arrasar ciudad"
-		Simplified_Chinese:"焚城"
+		Simplified_Chinese:"摧毁城市"
 		Portuguese:"Saquear cidade"
 		Japanese:"ラゼ市"
 	}
@@ -3800,7 +3800,7 @@
 		Dutch:"Kan een gouden periode van acht beurten starten of een oriëntatiepunt bouwen (+6 Cultuur)"// Dutch translation not sure
 		Spanish:"Puede comenzar una Edad de Oro de 8 turnos o construir un Edificio Emblemático (+6 cultura)"
 		Portuguese:"Pode iniciar uma idade de ouro de 8 voltas ou construir um marco (+6 Cultura)"
-		Simplified_Chinese:"开启8回合黄金时代或建立1个地标(+6文化)"
+		Simplified_Chinese:"开启8回合黄金时代或建造1个地标(+6文化)"
 	}
 	"Can discover a technology, or construct an Academy (+4 Science)" :{
 		Italian:"Può scoprire una tecnologia o costruire un'Accademia (+4 Scienza)"
@@ -3811,7 +3811,7 @@
 		Dutch:"Kan een technologie ontdekken, of een Academie (+4wetenschap) bouwen"
 		Spanish:"Puede descubrir una tecnología o construir una Academia (+4 ciencia)"
 		Portuguese:"Pode descobrir uma tecnologia ou construir uma academia (+4 Ciência)"
-		Simplified_Chinese:"获得一项免费科技或建立1个学院(+4科研)"
+		Simplified_Chinese:"获得一项免费科技或建造1个学院(+4科研)"
 	}
 	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 Gold)":{
 		Italian:"Può intraprendere una missione commerciale, dare una grande somma di oro, o costruire una Dogana (+4 Oro)"
@@ -3959,7 +3959,7 @@
 		Italian:"Può costruire il miglioramento: Dogana"
 		French:"Peut construire l'amélioration suivante: Douanes"
 		Romanian:"Poate construi îmbunătățire: Punct vamal"
-		Simplified_Chinese:"可以建造海关"
+		Simplified_Chinese:"可以建造设施：海关"
 		Portuguese:"Pode criar melhoria: Alfândega"
 		Russian:"Можно построить улучшение: таможня"
 		German:"Kann Verbesserung errichten: Zollhaus"
@@ -3969,7 +3969,7 @@
 		Italian:"Può accelerare la costruzione di una Meraviglia"
 		French:"Peut accélérer la construction d'une Merveille"
 		Romanian:"Poate accelera construirea unei minuni"
-		Simplified_Chinese:"可以加速建设一个奇观"
+		Simplified_Chinese:"可以加快一个奇观的建造速度"
 		Portuguese:"Pode acelerar a construção de uma maravilha"
 		German:"Kann die Produktion eines Wunders beschleunigen"
 		Russian:"Может ускорить строительство чудо"
@@ -5711,7 +5711,7 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
-                Simplified_Chinese:"当前城市新建非飞行单位获得操练一级晋升"
+                Simplified_Chinese:"当前城市新组建的非飞行单位获得操练一级晋升"
 	}
 	
 	"Angkor Wat":{	
@@ -5751,7 +5751,7 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 		Italian:"Appare un Grande Scienziato"
 		French:"Un scientifique illustre gratuit apparaît"
 		Romanian:"Apare un mare om de știință gratuit"
-		Simplified_Chinese:"建成奇观的城市附近出现1位大科学家"
+		Simplified_Chinese:"免费的大科学家出现"
 		Portuguese:"Aparece um Grande Cientista grátis"
 		German:"Ein kostenloser Großer Wissenschaftler erscheint"
 	}
@@ -7334,7 +7334,7 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
 		Spanish:"+25% ritmo de construcción de trabajadores y un trabajador gratis cerca de la capital"
-		Simplified_Chinese:"区域设施建造速度增加25%，首都附近获得1个工人"
+		Simplified_Chinese:"区域设施建造速度+25%，首都附近获得1个工人"
 		Portuguese:"+25% tava de construção de trabalhadores, receber trabalhador perto da capital"
 		German:"+25% Baugeschwindigkeit für Felderverbesserungen bei Arbeitern; ein kostenloser Arbeiter erscheint in der Hauptstadt"
 		French:"La vitesse de construction des ouvriers augmente de 25% et un ouvrier apparaît près de la capitale"
@@ -8797,7 +8797,7 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
-                Simplified_Chinese:"城市获得一个免费的建筑：[buildingName]"
+                Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
