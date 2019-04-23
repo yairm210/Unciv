@@ -221,6 +221,7 @@ class CityInfo {
                 if(population.foodStored>=population.getFoodToNextPopulation()) {//if surplus in the granary...
                     population.foodStored=population.getFoodToNextPopulation()-1//...reduce below the new growth treshold
                 }
+            }
         }
         else population.nextTurn(stats.food)
 
