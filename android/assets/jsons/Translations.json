@@ -4808,6 +4808,8 @@
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
 	
+	"[tradeOffer] from [otherCivName] has ended":{}
+	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
 		Italian:"[leaderName] dell'Impero [nation]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese (so it should be [adjective] instead of [nation]
 		German:"[leaderName] von [nation]"
