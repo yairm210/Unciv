@@ -14,6 +14,7 @@ import kotlin.math.min
 
 class NextTurnAutomation{
 
+    /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
         offerPeaceTreaty(civInfo)
         exchangeTechs(civInfo)
@@ -42,6 +43,8 @@ class NextTurnAutomation{
     }
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
+        if(!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
+
         val otherCivList = civInfo.getKnownCivs()
                 .filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }
                 .sortedBy { it.tech.techsResearched.size }

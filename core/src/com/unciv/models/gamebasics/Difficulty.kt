@@ -13,4 +13,5 @@ class Difficulty: INamed {
     var aiYieldModifier = 1f
     var aiFreeTechs = ArrayList<String>()
     var aiUnhappinessModifier = 1f
+    var aisExchangeTechs = false
 }
