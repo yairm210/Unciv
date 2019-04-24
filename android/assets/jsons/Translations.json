@@ -2850,6 +2850,8 @@
 		Simplified_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
 	}
+	"Enables Open Borders agreements":{}
+	
 	"Guilds":{
 		Italian:"Gilde"
 		Russian:"Гильдии"
@@ -4815,13 +4817,6 @@
 		Romanian:"[leaderName] de [nation]"
 	}
 	
-	/*
-	"[leaderName] of [adjective] Empire":{ // e.g. Ramesses of Egyptian Empire, Napoleon of French Empire (so it should be [adjective] instead of [nation]
-		Italian:"[leaderName] dell'Impero [adjective]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese
-		French:"[leaderName] de l'Empire [adjective]"
-Simplified_Chinese:"[adjective]帝国的[leaderName]"
-	}
-	*/
 	
 	"You'll pay for this!":{
 		Italian:"Pagherai caro questo affronto!"
@@ -4836,17 +4831,22 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 	"Very well.":{
 		Italian:"Molto bene."
 		French:"Très bien."
-                Simplified_Chinese:"很好."
+		Simplified_Chinese:"很好."
 	}
 	"Farewell.":{
 		Italian:"Addio."
 		French:"Adieu."
-                Simplified_Chinese:"再见."
+		Simplified_Chinese:"再见."
 	}
+	
+	"Not this time.":{} // declining trade text
+	"Excellent!":{} // AI statement after we accept a trade they proposed
+	"How about something else...":{} // Counteroffer to AI offer
+	
 	"A pleasure to meet you.":{
 		Italian:"Lieto di incontrarvi."
 		French:"Un plaisir de vous rencontrez"
-                Simplified_Chinese:"很高兴见到你."
+		Simplified_Chinese:"很高兴见到你."
 	}
 	
 	// Overview screen

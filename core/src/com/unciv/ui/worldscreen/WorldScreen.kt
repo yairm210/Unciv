@@ -324,7 +324,7 @@ class WorldScreen : CameraStageBaseScreen() {
             displayTutorials("ApolloProgram")
         if(currentPlayerCiv.getCivUnits().any { it.type == UnitType.Siege })
             displayTutorials("SiegeUnitTrained")
-        if(currentPlayerCiv.tech.getUniques().contains("Enables embarkation for land units"))
+        if(currentPlayerCiv.tech.getTechUniques().contains("Enables embarkation for land units"))
             displayTutorials("CanEmbark")
     }
 

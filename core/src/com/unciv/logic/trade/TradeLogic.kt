@@ -16,8 +16,12 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val offers = TradeOffersList()
         if(civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
-        if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders())
+
+        if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders()
+                && civInfo.tech.getTechUniques().contains("Enables Open Borders agreements")
+                && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements"))
             offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
+
         for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
             val resourceTradeType = if(entry.key.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource

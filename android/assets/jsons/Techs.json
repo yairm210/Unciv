@@ -156,7 +156,8 @@
 			{
 				name:"Civil Service",
 				row:5,
-				prerequisites:["Currency","Horseback Riding","Philosophy"]
+				prerequisites:["Currency","Horseback Riding","Philosophy"],
+				uniques:["Enables Open Borders agreements"]
 			},
 			{
 				name:"Guilds",

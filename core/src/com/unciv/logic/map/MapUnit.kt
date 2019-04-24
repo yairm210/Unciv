@@ -209,7 +209,7 @@ class MapUnit {
 
     fun getEmbarkedMovement(): Int {
         var movement=2
-        movement += civInfo.tech.getUniques().count { it == "Increases embarked movement +1" }
+        movement += civInfo.tech.getTechUniques().count { it == "Increases embarked movement +1" }
         return movement
     }
 
