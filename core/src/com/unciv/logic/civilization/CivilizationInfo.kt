@@ -508,5 +508,18 @@ class CivilizationInfo {
         }
     }
 
+    fun destroy(){
+        for(civ in gameInfo.civilizations)
+            civ.addNotification("The civilization of [$civName] has been destroyed!", null, Color.RED)
+        getCivUnits().forEach { it.destroy() }
+        tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
+        for(diplomacyManager in diplomacy.values){
+            diplomacyManager.trades.clear()
+            diplomacyManager.otherCiv().getDiplomacyManager(this).trades.clear()
+            for(tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv==civName })
+                diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
+        }
+    }
+
     //endregion
 }
