@@ -19,6 +19,7 @@ class GameParameters{
     var numberOfHumanPlayers=1
     var humanNations=ArrayList<String>().apply { add("Babylon") }
     var numberOfEnemies=3
+    var numberOfCityStates=1
     var mapType= MapType.Perlin
     var noBarbarians=false
     var mapFileName :String?=null
@@ -35,9 +36,11 @@ class GameStarter{
                 newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers, gameInfo.tileMap)
 
         val availableCivNames = Stack<String>()
-        availableCivNames.addAll(GameBasics.Nations.keys.shuffled())
+        availableCivNames.addAll(GameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.humanNations)
         availableCivNames.remove("Barbarians")
+        val availableCityStatesNames = Stack<String>()
+        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys.shuffled())
 
         for(nation in newGameParameters.humanNations) {
             val playerCiv = CivilizationInfo(nation)
@@ -54,6 +57,10 @@ class GameStarter{
             gameInfo.civilizations.add(civ)
         }
 
+        for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
+            val civ = CivilizationInfo(cityStateName)
+            gameInfo.civilizations.add(civ)
+        }
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 

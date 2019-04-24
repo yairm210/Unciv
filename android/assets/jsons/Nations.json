@@ -1,5 +1,6 @@
 [
 	{
+		//nations
 		name:"Babylon",
 		leaderName:"Nebuchadnezzar II",
 		adjective:["Babylonian"],
@@ -919,6 +920,39 @@
 		cities:["Moson Kahni","Te-Moak","Agaidika","Goshute","Pohokwi","Washakie","Timbisha","Hukandeka","Duckwater","Tukudeka","Kuchundeka","Yomba","Kamudeka","Ely","Yambadeka","Tetadeka","Deheyaeka","Pengwideka","Winnemucca","Skull Valley","Big Pine","Duck Valley","Nampa","Bannock","Yahandeka"]
 	},
 	*/
+
+	//City states
+	{
+		name:"Milan",
+		adjective:["Milan"],
+		cityStateType:"Cultured",
+		startBias:["Coast"],
+		
+		//TO DO : better dialogs
+		declaringWar:"The demon wants the blood of soldiers!",
+		attacked:"Oh well, I presume you know what you're doing.",
+		defeated:"It is over. Perhaps now I shall have peace, at last.",
+		introduction:"Are you real or a phantom?",
+		
+		neutralHello:"Greetings.",
+		neutralLetsHearIt:["I'm listening.","What do you want?"],
+		neutralNo:["No!","Certainly not.","Unacceptable!"],
+		neutralYes:["Completed!","Yes!","Agreed!"],
+
+		hateHello:"What do YOU want?!",
+		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
+		hateNo:["No!","Certainly not!","Unacceptable!"],
+		hateYes:["Yes!"],
+		
+		afterPeace:"Foolish, foolish – letting me live.",
+		tradeRequest:" It appears that you do have a reason for existing – to make this deal with me.",
+				
+		mainColor:[27,53,63],
+		secondaryColor:[213,249,255],
+		cities:["Milan"]
+	}
+
+	//Barbarian
 	{
 		name:"Barbarians",
 		mainColor:[0,0,0],

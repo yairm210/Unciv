@@ -34,7 +34,7 @@ class NewGameScreen: PickerScreen(){
         val mainTable = Table()
         mainTable.add(getOptionsTable())
 
-        for(nation in GameBasics.Nations.values.filterNot { it.name == "Barbarians" }){
+        for(nation in GameBasics.Nations.values.filterNot { it.name == "Barbarians" || it.isCityState() }){
             val nationTable = NationTable(nation,newGameParameters,skin,stage.width/3 ){updateNationTables()}
             nationTables.add(nationTable)
             civPickerTable.add(nationTable).row()
@@ -153,7 +153,7 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Number of human players}:".tr())
         val humanPlayers = SelectBox<Int>(skin)
         val humanPlayersArray = Array<Int>()
-        (1..GameBasics.Nations.size).forEach { humanPlayersArray.add(it) }
+        (1..GameBasics.Nations.filter{ !it.value.isCityState() }.size).forEach { humanPlayersArray.add(it) }
         humanPlayers.items = humanPlayersArray
         humanPlayers.selected = newGameParameters.numberOfHumanPlayers
         newGameOptionsTable.add(humanPlayers).pad(10f).row()
@@ -162,10 +162,18 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray = Array<Int>()
-        (0..GameBasics.Nations.size - 1).forEach { enemiesArray.add(it) }
+        (0..GameBasics.Nations.filter{ !it.value.isCityState() }.size - 1).forEach { enemiesArray.add(it) }
         enemiesSelectBox.items = enemiesArray
         enemiesSelectBox.selected = newGameParameters.numberOfEnemies
         newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
+
+        newGameOptionsTable.add("{Number of city states}:".tr())
+        val cityStatesSelectBox = SelectBox<Int>(skin)
+        val cityStatesArray = Array<Int>()
+        (0..GameBasics.Nations.filter{ it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
+        cityStatesSelectBox.items = cityStatesArray
+        cityStatesSelectBox.selected = newGameParameters.numberOfCityStates
+        newGameOptionsTable.add(cityStatesSelectBox).pad(10f).row()
 
         humanPlayers.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
