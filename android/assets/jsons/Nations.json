@@ -947,7 +947,7 @@
 		afterPeace:"Foolish, foolish – letting me live.",
 		tradeRequest:" It appears that you do have a reason for existing – to make this deal with me.",
 				
-		mainColor:[27,53,63],
+		mainColor:[0,100,0],
 		secondaryColor:[213,249,255],
 		cities:["Milan"]
 	}
