@@ -21,6 +21,7 @@ import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
@@ -139,6 +140,18 @@ class CivilizationInfo {
                 if(statMap.containsKey(entry.key))
                     statMap[entry.key] = statMap[entry.key]!! + entry.value
                 else statMap[entry.key] = entry.value
+            }
+        }
+
+        //City states culture bonus
+        for (otherCivName in diplomacy.keys) {
+            if (gameInfo.getCivilization(otherCivName).diplomacy[civName]!!.attitude > 60) {
+                var cultureBonus = Stats()
+                cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
+                if (statMap.containsKey("City States"))
+                    statMap["City States"] = statMap["City States"]!! + cultureBonus
+                else
+                    statMap["City States"] = cultureBonus
             }
         }
 

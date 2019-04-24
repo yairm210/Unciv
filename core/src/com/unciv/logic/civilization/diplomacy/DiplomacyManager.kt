@@ -122,10 +122,10 @@ class DiplomacyManager() {
             if(flagsCountdown[flag]==0) flagsCountdown.remove(flag)
         }
 
-        if (attitude > 0.3f) {
-            attitude -= 0.3f
-        } else if (attitude < -0.3f) {
-            attitude += 0.3f
+        if (attitude > 1f) {
+            attitude -= 1f
+        } else if (attitude < -1f) {
+            attitude += 1f
         } else {
             attitude = 0f
         }
