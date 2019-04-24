@@ -14,10 +14,12 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
     fun getAvailableOffers(civInfo: CivilizationInfo, otherCivilization: CivilizationInfo): TradeOffersList {
         val offers = TradeOffersList()
+        if (civInfo.isCityState() && otherCivilization.isCityState()) return offers
         if(civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
 
         if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
+                && !otherCivilization.isCityState()
                 && civInfo.tech.getTechUniques().contains("Enables Open Borders agreements")
                 && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements"))
             offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
@@ -27,30 +29,40 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
             else TradeType.Strategic_Resource
             offers.add(TradeOffer(entry.key.name, resourceTradeType, 30, entry.value))
         }
-        for(entry in civInfo.tech.techsResearched
-                .filterNot { otherCivilization.tech.isResearched(it) }
-                .filter { otherCivilization.tech.canBeResearched(it) }){
-            offers.add(TradeOffer(entry, TradeType.Technology, 0))
+        if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
+            for (entry in civInfo.tech.techsResearched
+                    .filterNot { otherCivilization.tech.isResearched(it) }
+                    .filter { otherCivilization.tech.canBeResearched(it) }) {
+                offers.add(TradeOffer(entry, TradeType.Technology, 0))
+            }
         }
+
         offers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, civInfo.gold))
         offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, 30, civInfo.getStatsForNextTurn().gold.toInt()))
-        for(city in civInfo.cities.filterNot { it.isCapital() })
-            offers.add(TradeOffer(city.name, TradeType.City, 0))
+        if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
+            for (city in civInfo.cities.filterNot { it.isCapital() })
+                offers.add(TradeOffer(city.name, TradeType.City, 0))
+        }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
                 .filter { it != otherCivilization && !it.isBarbarianCivilization() && !it.isDefeated() }
         val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
-        for(thirdCiv in civsWeKnowAndTheyDont){
-            offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0))
+
+        if (!otherCivilization.isCityState()) {
+            for (thirdCiv in civsWeKnowAndTheyDont) {
+                offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0))
+            }
         }
 
-        val civsWeBothKnow = otherCivsWeKnow
-                .filter { otherCivilization.diplomacy.containsKey(it.civName) }
-        val civsWeArentAtWarWith = civsWeBothKnow
-                .filter { civInfo.getDiplomacyManager(it).diplomaticStatus== DiplomaticStatus.Peace }
-        for(thirdCiv in civsWeArentAtWarWith){
-            offers.add(TradeOffer("Declare war on "+thirdCiv.civName,TradeType.WarDeclaration,0))
+        if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
+            val civsWeBothKnow = otherCivsWeKnow
+                    .filter { otherCivilization.diplomacy.containsKey(it.civName) }
+            val civsWeArentAtWarWith = civsWeBothKnow
+                    .filter { civInfo.getDiplomacyManager(it).diplomaticStatus == DiplomaticStatus.Peace }
+            for (thirdCiv in civsWeArentAtWarWith) {
+                offers.add(TradeOffer("Declare war on " + thirdCiv.civName, TradeType.WarDeclaration, 0))
+            }
         }
 
         return offers

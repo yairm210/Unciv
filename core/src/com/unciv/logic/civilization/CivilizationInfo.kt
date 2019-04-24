@@ -123,7 +123,7 @@ class CivilizationInfo {
         return translatedNation
     }
 
-    fun isCityState(): Boolean = (cityStateType.isNullOrEmpty())
+    fun isCityState(): Boolean = (cityStateType != "")
     fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
 
@@ -145,7 +145,8 @@ class CivilizationInfo {
 
         //City states culture bonus
         for (otherCivName in diplomacy.keys) {
-            if (gameInfo.getCivilization(otherCivName).diplomacy[civName]!!.attitude > 60) {
+            val otherCiv = gameInfo.getCivilization(otherCivName)
+            if (otherCiv.isCityState() && otherCiv.diplomacy[civName]!!.attitude > 60) {
                 var cultureBonus = Stats()
                 cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
                 if (statMap.containsKey("City States"))
