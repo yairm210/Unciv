@@ -16,6 +16,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
 import java.util.*
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
