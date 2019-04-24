@@ -146,7 +146,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     cityConstructions.purchaseBuilding(construction.name)
                     if(lastConstruction!="" && cityConstructions.getConstruction(lastConstruction).isBuildable(cityConstructions))
                         city.cityConstructions.currentConstruction = lastConstruction
-                    update()
+                    cityScreen.update() // since the list of available buildings needs to be updated too, so we can "see" that the building we bought now exists in the city
                 }, cityScreen)
             }
             if (buildingGoldCost > city.civInfo.gold) {
