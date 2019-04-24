@@ -178,7 +178,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
-        if(civInfo.diplomacy.values.map { it.otherCiv() }
+        if(civInfo.getKnownCivs()
                         .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
                         .any()) {
             displayTutorials("OtherCivEncountered")

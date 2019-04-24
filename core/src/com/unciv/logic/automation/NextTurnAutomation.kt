@@ -41,9 +41,9 @@ class NextTurnAutomation{
     }
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
-        val otherCivList = civInfo.diplomacy.values.map { it.otherCiv() }.
-                filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }.
-                sortedBy { it.tech.techsResearched.size }
+        val otherCivList = civInfo.getKnownCivs()
+                .filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }
+                .sortedBy { it.tech.techsResearched.size }
 
         for (otherCiv in otherCivList) {
             val tradeLogic = TradeLogic(civInfo, otherCiv)
@@ -141,7 +141,7 @@ class NextTurnAutomation{
     }
 
     private fun exchangeLuxuries(civInfo: CivilizationInfo) {
-        val knownCivs = civInfo.diplomacy.values.map { it.otherCiv() }
+        val knownCivs = civInfo.getKnownCivs()
 
         // Player trades are... more complicated.
         // When the AI offers a trade, it's not immediately accepted,
@@ -151,7 +151,7 @@ class NextTurnAutomation{
         // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
 
         for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo)
-                && !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey(DiplomacyFlags.DeclinedLuxExchange)}) {
+                && !civInfo.getDiplomacyManager(it).flagsCountdown.containsKey(DiplomacyFlags.DeclinedLuxExchange)}) {
             val trades = potentialLuxuryTrades(civInfo,otherCiv)
             for(trade in trades){
                 val tradeRequest = TradeRequest(civInfo.civName, trade.reverse())
@@ -185,7 +185,7 @@ class NextTurnAutomation{
                 val enemiesCiv = civInfo.diplomacy.filter{ it.value.diplomaticStatus == DiplomaticStatus.War }
                         .map{ it.value.otherCiv() }
                         .filterNot{ it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
-                        .filter { !civInfo.diplomacy[it.civName]!!.flagsCountdown.containsKey(DiplomacyFlags.DeclinedPeace) }
+                        .filter { !civInfo.getDiplomacyManager(it).flagsCountdown.containsKey(DiplomacyFlags.DeclinedPeace) }
 
                 for (enemy in enemiesCiv) {
                     val enemiesStrength = Automation().evaluteCombatStrength(enemy)
@@ -228,8 +228,8 @@ class NextTurnAutomation{
             if (!civInfo.isAtWar() && civInfo.happiness > 0
                     && ourMilitaryUnits >= civInfo.cities.size) { //evaluate war
                 val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
-                val enemyCivsByDistanceToOurs = civInfo.diplomacy.values.map { it.otherCiv() }
-                        .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.diplomacy[it.civName]!!.canDeclareWar() }
+                val enemyCivsByDistanceToOurs = civInfo.getKnownCivs()
+                        .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar() }
                         .groupBy { getMinDistanceBetweenCities(civInfo, it) }
                         .toSortedMap()
 
@@ -237,7 +237,7 @@ class NextTurnAutomation{
                     if (group.key > 7) break
                     for (otherCiv in group.value) {
                         if (Automation().evaluteCombatStrength(otherCiv) * 2 < ourCombatStrength) {
-                            civInfo.diplomacy[otherCiv.civName]!!.declareWar()
+                            civInfo.getDiplomacyManager(otherCiv).declareWar()
                             return
                         }
                     }

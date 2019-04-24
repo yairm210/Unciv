@@ -11,7 +11,6 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.math.min
 
 class GameParameters{
     var difficulty="Prince"
@@ -91,7 +90,7 @@ class GameStarter{
 
         for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/2 downTo 0){
             val freeTiles = landTilesInBigEnoughGroup
-                    .filter {  vectorIsWithinNTilesOfEdge(it.position,min(3,minimumDistanceBetweenStartingLocations),tileMap)}
+                    .filter {  vectorIsAtLeastNTilesAwayFromEdge(it.position,minimumDistanceBetweenStartingLocations,tileMap)}
                     .toMutableList()
 
             val startingLocations = ArrayList<TileInfo>()
@@ -109,7 +108,7 @@ class GameStarter{
         throw Exception("Didn't manage to get starting locations even with distance of 1?")
     }
 
-    fun vectorIsWithinNTilesOfEdge(vector: Vector2,n:Int, tileMap: TileMap): Boolean {
+    fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n:Int, tileMap: TileMap): Boolean {
         val arrayXIndex = vector.x.toInt()-tileMap.leftX
         val arrayYIndex = vector.y.toInt()-tileMap.bottomY
 
