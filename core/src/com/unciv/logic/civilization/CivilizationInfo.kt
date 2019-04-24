@@ -96,7 +96,7 @@ class CivilizationInfo {
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
-        toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
+        toReturn.diplomacy.putAll(diplomacy)
         toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
         toReturn.notifications.addAll(notifications)
@@ -123,6 +123,9 @@ class CivilizationInfo {
     }
 
     fun isCityState(): Boolean = (cityStateType.isNullOrEmpty())
+    fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
+    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
+
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
@@ -327,7 +330,7 @@ class CivilizationInfo {
         if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
         if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
-        return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
+        return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus== DiplomaticStatus.War && !it.otherCiv().isDefeated() }
@@ -429,6 +432,7 @@ class CivilizationInfo {
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
         if(otherCiv==this) return true
         if(isAtWarWith(otherCiv)) return true
+        if(getDiplomacyManager(otherCiv).hasOpenBorders()) return true
         return false
     }
 

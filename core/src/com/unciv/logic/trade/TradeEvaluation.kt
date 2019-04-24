@@ -82,7 +82,7 @@ class TradeEvaluation{
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(nameOfCivToDeclareWarOn)
                 val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
 
-                if(civInfo.diplomacy[nameOfCivToDeclareWarOn]!!.diplomaticStatus== DiplomaticStatus.War){
+                if(civInfo.getDiplomacyManager(civToDeclareWarOn).diplomaticStatus== DiplomaticStatus.War){
                     when (threatToThem) {
                         ThreatLevel.VeryLow -> return 0
                         ThreatLevel.Low -> return 0
@@ -100,6 +100,10 @@ class TradeEvaluation{
                     return 0 // we can't really afford to go into negative happiness because of buying a city
                 val sumOfStats = stats.culture+stats.gold+stats.science+stats.production+stats.happiness+stats.food
                 return sumOfStats.toInt() * 100
+            }
+            TradeType.Agreement -> {
+                if(offer.name=="Open Borders") return 100
+                throw Exception("Invalid agreement type!")
             }
         }
     }
@@ -140,6 +144,10 @@ class TradeEvaluation{
                 val stats = city.cityStats.currentCityStats
                 val sumOfStats = stats.culture+stats.gold+stats.science+stats.production+stats.happiness+stats.food
                 return sumOfStats.toInt() * 100
+            }
+            TradeType.Agreement -> {
+                if(offer.name=="Open Borders") return 100
+                throw Exception("Invalid agreement type!")
             }
         }
     }

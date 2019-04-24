@@ -45,6 +45,13 @@ class DiplomacyManager() {
         return 0
     }
 
+    fun hasOpenBorders(): Boolean {
+        for(trade in trades)
+            for(offer in trade.theirOffers)
+                if(offer.name=="Open Borders" && offer.duration > 0) return true
+        return false
+    }
+
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
 
     fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
@@ -87,7 +94,7 @@ class DiplomacyManager() {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
                     && offer.name in negativeCivResources){
                     trades.remove(trade)
-                    val otherCivTrades = otherCiv().diplomacy[civInfo.civName]!!.trades
+                    val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll{ it.equals(trade.reverse()) }
                     civInfo.addNotification("One of our trades with [$otherCivName] has been cut short!".tr(),null, Color.GOLD)
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short!".tr(),null, Color.GOLD)
@@ -119,13 +126,13 @@ class DiplomacyManager() {
         diplomaticStatus = DiplomaticStatus.War
         val otherCiv = otherCiv()
 
-        otherCiv.diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
+        otherCiv.getDiplomacyManager(civInfo).diplomaticStatus = DiplomaticStatus.War
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
 
         /// AI won't propose peace for 10 turns
         flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
-        otherCiv.diplomacy[civInfo.civName]!!.flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
+        otherCiv.getDiplomacyManager(civInfo).flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
     }
     //endregion
 }

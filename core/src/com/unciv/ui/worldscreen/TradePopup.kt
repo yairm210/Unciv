@@ -59,10 +59,10 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
 
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
-                requestingCiv.diplomacy[currentPlayerCiv.civName]!!.flagsCountdown[DiplomacyFlags.DeclinedLuxExchange]=20 // offer again in 20 turns
+                requestingCiv.getDiplomacyManager(currentPlayerCiv).flagsCountdown[DiplomacyFlags.DeclinedLuxExchange]=20 // offer again in 20 turns
 
             if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name=="Peace Treaty" })
-                requestingCiv.diplomacy[currentPlayerCiv.civName]!!.flagsCountdown[DiplomacyFlags.DeclinedPeace]=5 // offer again in 20 turns
+                requestingCiv.getDiplomacyManager(currentPlayerCiv).flagsCountdown[DiplomacyFlags.DeclinedPeace]=5 // offer again in 20 turns
 
             remove()
             worldScreen.shouldUpdate=true

@@ -79,7 +79,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.add(tradeButton).row()
 
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        val civDiplomacy = currentPlayerCiv.diplomacy[civ.civName]!!
+        val civDiplomacy = currentPlayerCiv.getDiplomacyManager(civ)
 
         if (!currentPlayerCiv.isAtWarWith(civ)) {
             val declareWarButton = TextButton("Declare war".tr(), skin)
