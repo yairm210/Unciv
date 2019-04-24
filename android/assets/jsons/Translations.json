@@ -144,7 +144,7 @@
 		German:"Bombardieren Sie die Stärke"
 		Dutch:"Bombard sterkte"
 		Spanish:"Fuerza de bombardeo"
-		Simplified_Chinese:"轰炸力量"
+		Simplified_Chinese:"轰击力量"
 		Portuguese:"Força Bombard"
 		Japanese:"爆撃力"
 	}
@@ -3618,7 +3618,7 @@
 		German:"Nahkämpfer"
 		Dutch:"Melee"
 		Spanish:"Cuerpo a cuerpo"
-		Simplified_Chinese:"近战"
+		Simplified_Chinese:"近战单位"
 		Portuguese:"Corpo a corpo"
 	}
 	"Ranged":{
@@ -3629,7 +3629,7 @@
 		German:"Fernkämpfer"
 		Dutch:"Afstands"
 		Spanish:"A distancia"
-		Simplified_Chinese:"远程攻击"
+		Simplified_Chinese:"远程单位"
 		Portuguese:"Ataque a distancia"
 	}
 	"Siege":{
@@ -3640,7 +3640,7 @@
 		German:"Belagerungsmaschiene"
 		Dutch:"Belegering"
 		Spanish:"Asedio"
-		Simplified_Chinese:"攻城"
+		Simplified_Chinese:"攻城单位"
 		Portuguese:"Cerco"
 	}
 	"Mounted":{
@@ -3651,7 +3651,7 @@
 		German:"Beritten"
 		Dutch:"Bereden"
 		Spanish:"Montado"
-		Simplified_Chinese:"骑兵"
+		Simplified_Chinese:"骑乘单位"
 		Portuguese:"Montado(a)"
 	}
 	"Scout":{
@@ -3698,7 +3698,7 @@
 		German:"Gründet eine neue Stadt"
 		Dutch:"Sticht een nieuwe stad"
 		Spanish:"Funda una nueva ciudad"
-		Simplified_Chinese:"建立一座新城"
+		Simplified_Chinese:"建立一座城市"
 		Portuguese:"Funda uma nova cidade"
 	}
 	"Ignores terrain cost":{
@@ -3709,7 +3709,7 @@
 		German:"Ignoriert Geländekosten"
 		Dutch:"Negeert terreinskosten"
 		Spanish:"Ignora el coste del terreno"
-		Simplified_Chinese:"无视地形消耗"
+		Simplified_Chinese:"所有地形都只消耗1点移动力"
 		Portuguese:"Ignora custo de movimento em terrennos díficeis"
 	}
 	"No defensive terrain bonus":{
@@ -8847,7 +8847,7 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	"Missing translations":{
 		Italian:"Traduzioni mancanti"
 		Russian:"Отсутствующие переводы"
-                Simplified_Chinese:"缺少的翻译"
+                Simplified_Chinese:"缺少的翻译项"
 	}
 	"Version":{
 		Italian:"Versione"
