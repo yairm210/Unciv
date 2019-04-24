@@ -5,7 +5,7 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.Stats
+import com.unciv.models.stats.*
 
 class Building : NamedStats(), IConstruction{
 
@@ -311,5 +311,12 @@ class Building : NamedStats(), IConstruction{
         }
 
         if (freeTechs != 0) civInfo.tech.freeTechs += freeTechs
+    }
+
+    fun isStatRelated(stat: Stat): Boolean {
+        if (get(stat) > 0) return true
+        if (percentStatBonus!=null && percentStatBonus!!.get(stat)>0) return true
+        if (specialistSlots!=null && specialistSlots!!.get(stat)>0) return true
+        return false
     }
 }
