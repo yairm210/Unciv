@@ -136,6 +136,21 @@ class DiplomacyManager() {
     fun declareWar(){
         diplomaticStatus = DiplomaticStatus.War
         val otherCiv = otherCiv()
+        val otherCivDiplomacy = otherCiv.getDiplomacyManager(civInfo)
+
+        // Cancel all trades.
+        for(trade in trades)
+            for(offer in trade.theirOffers.filter { it.duration>0 })
+                civInfo.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+        trades.clear()
+        updateHasOpenBorders()
+
+        for(trade in otherCivDiplomacy.trades)
+            for(offer in trade.theirOffers.filter { it.duration>0 })
+                otherCiv.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+        otherCivDiplomacy.trades.clear()
+        otherCivDiplomacy.updateHasOpenBorders()
+
 
         otherCiv.getDiplomacyManager(civInfo).diplomaticStatus = DiplomaticStatus.War
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
