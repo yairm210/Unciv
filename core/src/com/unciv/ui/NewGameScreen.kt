@@ -192,6 +192,12 @@ class NewGameScreen: PickerScreen(){
                 removeExtraHumanNations(humanPlayers)
             }
         })
+
+        cityStatesSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.numberOfCityStates = cityStatesSelectBox.selected
+            }
+        })
     }
 
     private fun addDifficultySelectBox(newGameOptionsTable: Table) {

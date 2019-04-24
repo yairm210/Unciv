@@ -32,7 +32,8 @@ class GameStarter{
         gameInfo.tileMap = TileMap(newGameParameters)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         val startingLocations = getStartingLocations(
-                newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers, gameInfo.tileMap)
+                newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers+newGameParameters.numberOfCityStates,
+                gameInfo.tileMap)
 
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(GameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
