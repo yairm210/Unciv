@@ -92,6 +92,18 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         transferTrade(ourCivilization,otherCivilization,currentTrade)
         transferTrade(otherCivilization,ourCivilization,currentTrade.reverse())
+
+        //Buy friendship with gold.
+        if (currentTrade.theirOffers.isEmpty()) {
+            for (trade in currentTrade.ourOffers) {
+                if (trade.type == TradeType.Gold) {
+                    otherCivilization.getDiplomacyManager(ourCivilization).attitude += trade.amount / 10
+                }
+                if (trade.type == TradeType.Gold_Per_Turn) {
+                    otherCivilization.getDiplomacyManager(ourCivilization).attitude += trade.amount * trade.duration / 10
+                }
+            }
+        }
     }
 }
 

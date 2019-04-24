@@ -23,12 +23,14 @@ class DiplomacyManager() {
     var diplomaticStatus = DiplomaticStatus.War
     /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire */
     var flagsCountdown = HashMap<DiplomacyFlags,Int>()
+    var attitude: Float = 0f //positive means our civ is friendly to the other civ
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
         toReturn.diplomaticStatus=diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
+        toReturn.attitude = attitude
         return toReturn
     }
 
@@ -118,6 +120,14 @@ class DiplomacyManager() {
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) flagsCountdown.remove(flag)
+        }
+
+        if (attitude > 0.3f) {
+            attitude -= 0.3f
+        } else if (attitude < -0.3f) {
+            attitude += 0.3f
+        } else {
+            attitude = 0f
         }
 
     }

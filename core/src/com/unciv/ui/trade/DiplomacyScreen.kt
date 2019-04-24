@@ -68,9 +68,11 @@ class DiplomacyScreen:CameraStageBaseScreen() {
     }
 
     private fun getDiplomacyTable(civ: CivilizationInfo): Table {
+        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        val leaderName = "[" + civ.getNation().leaderName + "] of [" + civ.civName + "]"
+        var leaderName = "[" + civ.getNation().leaderName + "] of [" + civ.civName + "]"
+        leaderName = leaderName + " : Attitude " + civ.getDiplomacyManager(currentPlayerCiv).attitude.toInt().toString()
         diplomacyTable.add(leaderName.toLabel())
         diplomacyTable.addSeparator()
 
@@ -78,7 +80,6 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         tradeButton.onClick { setTrade(civ)  }
         diplomacyTable.add(tradeButton).row()
 
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         val civDiplomacy = currentPlayerCiv.getDiplomacyManager(civ)
 
         if (!currentPlayerCiv.isAtWarWith(civ)) {
