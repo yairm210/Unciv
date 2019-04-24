@@ -428,7 +428,7 @@ class CivilizationInfo {
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
         if(otherCiv==this) return true
         if(isAtWarWith(otherCiv)) return true
-        if(getDiplomacyManager(otherCiv).hasOpenBorders()) return true
+        if(getDiplomacyManager(otherCiv).hasOpenBorders) return true
         return false
     }
 

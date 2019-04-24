@@ -17,7 +17,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         if(civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
 
-        if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders()
+        if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
                 && civInfo.tech.getTechUniques().contains("Enables Open Borders agreements")
                 && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements"))
             offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
@@ -57,8 +57,14 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
     }
 
     fun acceptTrade() {
-        ourCivilization.getDiplomacyManager(otherCivilization).trades.add(currentTrade)
-        otherCivilization.getDiplomacyManager(ourCivilization).trades.add(currentTrade.reverse())
+        ourCivilization.getDiplomacyManager(otherCivilization).apply {
+            trades.add(currentTrade)
+            updateHasOpenBorders()
+        }
+        otherCivilization.getDiplomacyManager(ourCivilization).apply {
+            trades.add(currentTrade.reverse())
+            updateHasOpenBorders()
+        }
 
         // instant transfers
         fun transferTrade(to: CivilizationInfo, from: CivilizationInfo, trade: Trade) {
@@ -96,6 +102,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         transferTrade(ourCivilization,otherCivilization,currentTrade)
         transferTrade(otherCivilization,ourCivilization,currentTrade.reverse())
+
     }
 }
 

@@ -25,13 +25,12 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
 
         for (offertype in values()) {
             val labelName = when(offertype){
-                Gold, Gold_Per_Turn, Treaty,Introduction -> ""
+                Gold, Gold_Per_Turn, Treaty,Agreement,Introduction -> ""
                 Luxury_Resource -> "Luxury resources"
                 Strategic_Resource -> "Strategic resources"
                 Technology -> "Technologies"
                 WarDeclaration -> "Declarations of war"
                 City -> "Cities"
-                Agreement -> "Agreements"
             }
             val offersOfType = offersToDisplay.filter { it.type == offertype }
             if (labelName!="" && offersOfType.any()) {

@@ -683,13 +683,13 @@
 	"Turns between autosaves":{
 		Italian:"Turni tra autosalvataggi"
 		French:"Tours avant sauvegarde automatique"
-                Simplified_Chinese:"自动存档回合数"
+		Simplified_Chinese:"自动存档回合数"
 	}
 	
 	"Sound effects volume":{
 		Italian:"Volume effetti"
 		French:"Volume sonore"
-                Simplified_Chinese:"声效大小"
+		Simplified_Chinese:"声效大小"
 	}
 	
 	"Show":{
@@ -1016,7 +1016,7 @@
 	"In resistance for another [numberOfTurns] turns":{
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
 		//can't understand
-                Simplified_Chinese:"阻力将持续额外[numberOfTurns]回合"
+		Simplified_Chinese:"阻力将持续额外[numberOfTurns]回合"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
 		French:"En révolte pour [numberOfTurns] tours"
@@ -1027,7 +1027,7 @@
 		Portuguese:"[greatPerson] aponta"
 		Japanese:"[greatPerson]ポイント"
 		French:"[greatPerson] points"
-                Simplified_Chinese:"伟人点数"
+		Simplified_Chinese:"伟人点数"
 	}
 	
 	"Sell for [sellAmount] gold":{ // when selling a building
@@ -1647,7 +1647,7 @@
 	"Copy to clipboard":{
 		Italian:"Copia su appunti"
 		French:"Copier dans le presse-papier"
-                Simplified_Chinese:"复制到剪贴板"
+		Simplified_Chinese:"复制到剪贴板"
 	}
 
 	"Could not load game":{
@@ -3316,7 +3316,7 @@
 		French:"Armes combinés"
 		German:"Verbundene Waffen"
 		Spanish:"Fuerzas combinadas"
-                Simplified_Chinese:"协同作战"
+		Simplified_Chinese:"协同作战"
 	}
 	"Nuclear Fission":{
 		Italian:"Fissione nucleare"
@@ -3426,7 +3426,7 @@
 	"A repeating technology that will increase your score each time it is researched.":{ //Future Tech description
 		Italian:"Questa tecnologia si può sempre ricercare; il tuo punteggio aumenterà ogni volta che viene scoperta."
 		French:"Une technologie qui augmente le score et qui peut être fait indéfiniment."
-                Simplified_Chinese:"一项可以重复研究的科技，每次研究完成时都会增加你的积分"
+		Simplified_Chinese:"一项可以重复研究的科技，每次研究完成时都会增加你的积分"
 	}
 	*/
 	
@@ -4209,6 +4209,8 @@
 		Portuguese:"Tratado de paz"
 		German:"Friedensabkommen"
 	}
+	"Agreements":{}
+	"Open Borders":{}
 	"Gold per turn":{
 		Italian:"Oro per turno"
 		Russian:"Золота за ход"
@@ -4235,23 +4237,23 @@
 	"Technologies":{ //You misses this translation, said Smashfanful
 		Italian:"Tecnologie"
 		French:"Technologies"
-                Simplified_Chinese:"科技"
+		Simplified_Chinese:"科技"
 	}
 
 	"Declarations of war":{ //You misses this translation, said Smashfanful
 		Italian:"Dichiarazione di guerra"
 		French:"Déclarations de guerre"
-                Simplified_Chinese:"宣战"
+		Simplified_Chinese:"宣战"
 	}
 	"Luxury resources":{
 		Italian:"Risorse di lusso" //You misses this translation, said Smashfanful
 		French:"Ressources de luxes"
-                Simplified_Chinese:"奢侈资源"
+		Simplified_Chinese:"奢侈资源"
 	}
 	"Strategic resources":{
 		Italian:"Risorse strategiche" //You misses this translation, said Smashfanful
 		French:"Ressources stratégiques"
-                Simplified_Chinese:"战略资源"
+		Simplified_Chinese:"战略资源"
 	}
 
 	// Civilisations and uniques
@@ -4268,7 +4270,7 @@
 	
 	"[resourceName] not required":{
 		Italian:"Risorsa [resourceName] non richiesta"
-                Simplified_Chinese:"不需要[resourceName]"
+		Simplified_Chinese:"不需要[resourceName]"
 	}
 	
 	"National ability":{ // the unique ability that each nation has
@@ -4792,7 +4794,7 @@
 	"Declare war on [civName]?":{
 		Italian:"Dichiarare guerra alla civiltà [civName]?"
 		French:"Déclarer la guerre à [civName]?"
-                Simplified_Chinese:"向[civName]宣战吗？"
+		Simplified_Chinese:"向[civName]宣战吗？"
 	}
 	
 	"[civName] has declared war on us!":{
@@ -4926,7 +4928,7 @@
 		Spanish:"Maravillas"
 		German:"Wunder"
 		French:"Merveilles"
-                Simplified_Chinese:"奇观"
+		Simplified_Chinese:"奇观"
 	}
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
@@ -4934,7 +4936,7 @@
 		Spanish:"Edificios Ocupables"
 		German:"Gebäude der Spezialisten"
 		French:"Batiments spéciaux" //not sure
-                Simplified_Chinese:"专业建筑"
+		Simplified_Chinese:"专业建筑"
 	}
 	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
 		Italian:"Altro"
@@ -5192,7 +5194,7 @@
 	}
 	"Walls of Babylon":{
 		Italian:"Mura di Babilonia"
-                Simplified_Chinese:"巴比伦城墙"
+		Simplified_Chinese:"巴比伦城墙"
 	}
 	
 	"The Pyramids":{	
@@ -5260,11 +5262,11 @@
 	
 	"Colossus":{
 		Italian:"Colosso"
-                Simplified_Chinese:"太阳神巨像"
+		Simplified_Chinese:"太阳神巨像"
 	}
 	"+1 gold from worked water tiles in city":{
 		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
-                Simplified_Chinese:"所在城市每个水上地块+1金钱"
+		Simplified_Chinese:"所在城市每个水上地块+1金钱"
 	}
 	
 	"Temple":{	
@@ -5363,7 +5365,7 @@
 		Romanian:"+1 hrană din celule ocean și de țărm"
 		German:"+1 Nahrung von Ozean und Küsten Feldern"
 		French:"+1 nourriture des cases océans et côtes"
-                Simplified_Chinese:"每个海滨地块和海洋地块+1食物"
+		Simplified_Chinese:"每个海滨地块和海洋地块+1食物"
 	}
 	
 	"The Great Lighthouse":{
@@ -5399,7 +5401,7 @@
 		Italian:"+15% Produzione nella città nel reclutare unità a cavallo"
 		German:"+15% Produktion beim Ausbilden von berittenen Einheiten in dieser Stadt"
 		French:"+15% Production lorsqu'une unité montée est produite dans cette ville"
-                Simplified_Chinese:"组建骑乘单位时产能积累速率+15%"
+		Simplified_Chinese:"组建骑乘单位时产能积累速率+15%"
 	}
 	
 	"Circus Maximus":{	
@@ -5427,23 +5429,23 @@
 	"Statue of Zeus":{	
 		Italian:"Statua di Zeus"
 		French:"Statue de Zeus"
-                Simplified_Chinese:"宙斯神像"
+		Simplified_Chinese:"宙斯神像"
 	}
 	"+15% Combat Strenght when attacking Cities":{
 		Italian:"+15% Forza quando attacchi le Città"
 		French:"+15% force lors d'attaque de villes"
-                Simplified_Chinese:"在攻击城市时所有单位+15%战斗力"
+		Simplified_Chinese:"在攻击城市时所有单位+15%战斗力"
 	}
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
 	"Mausoleum of Halicarnassus":{	
 		Italian:"Mausoleo di Alicarnasso"
 		French:"Mausolé d'Halicarnasse"
-                Simplified_Chinese:"摩索拉斯陵墓"
+		Simplified_Chinese:"摩索拉斯陵墓"
 	}
 	"+2 Gold from every source of Marble and Stone":{
 		Italian:"+2 Oro da ogni fonte di Marmo e Pietra"
 		French:"+2 or pour chaque ressources de marbre et de pierre"
-                Simplified_Chinese:"所在城市开发的每处大理石或花岗石资源额外+2金钱"
+		Simplified_Chinese:"所在城市开发的每处大理石或花岗石资源额外+2金钱"
 	}
 	*/
 	"Colloseum":{	
@@ -5459,7 +5461,7 @@
 	
 	"Terracotta Army":{
 		Italian:"Esercito di terracotta"
-                Simplified_Chinese:"兵马俑"
+		Simplified_Chinese:"兵马俑"
 	}
 	
 	"Market":{	
@@ -5602,11 +5604,11 @@
 	
 	"Great Wall":{
 		Italian:"Grande Muraglia"
-                Simplified_Chinese:"长城"
+		Simplified_Chinese:"长城"
 	}
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
 		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
-                Simplified_Chinese:"境内敌方陆军单位在任何地块额外消耗1移动力"
+		Simplified_Chinese:"境内敌方陆军单位在任何地块额外消耗1移动力"
 	}
 	
 	"Workshop":{	
@@ -5705,13 +5707,13 @@
 		Italian:"Alhambra"
 		German:"Alhambra"
 		French:"Alhambra"
-                Simplified_Chinese:"阿尔罕布拉宫"
+		Simplified_Chinese:"阿尔罕布拉宫"
 	}
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
-                Simplified_Chinese:"所在城市新组建的非飞行单位获得操练一级晋升"
+		Simplified_Chinese:"所在城市新组建的非飞行单位获得操练一级晋升"
 	}
 	
 	"Angkor Wat":{	
@@ -5869,7 +5871,7 @@
 		Spanish:"La Torre Inclinada De Pizza"
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
-                Simplified_Chinese:"比萨斜塔"
+		Simplified_Chinese:"比萨斜塔"
 	}	
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
@@ -5877,16 +5879,16 @@
 		Spanish:"Gran Persona gratis"
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
-                Simplified_Chinese:"免费的伟人"
+		Simplified_Chinese:"免费的伟人"
 	}
 	
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
-                Simplified_Chinese:"姬路城"
+		Simplified_Chinese:"姬路城"
 	}
 	"+15% combat strength for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
-                Simplified_Chinese:"单位在境内+15%战斗力"
+		Simplified_Chinese:"单位在境内+15%战斗力"
 	}
 	
 	"Taj Mahal":{	
@@ -6076,20 +6078,20 @@
 		German:"Kreml"
 		Spanish:"Kremlin"
 		Russian:"Кремль"
-                Simplified_Chinese:"克里姆林宫"
+		Simplified_Chinese:"克里姆林宫"
 	}
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
-                Simplified_Chinese:"所有城市防御建筑建造速度+25%"
+		Simplified_Chinese:"所有城市防御建筑建造速度+25%"
 	}
 	
 	"Neuschwanstein":{
 		Italian:"Castello di Neuschwanstein"
-                Simplified_Chinese:"新天鹅堡"
+		Simplified_Chinese:"新天鹅堡"
 	}
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
 		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
-                Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
+		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
 	}
 	
 	"Military Academy":{	
@@ -6139,13 +6141,13 @@
 		Italian:"Statua della Libertà"
 		German:"Freiheitsstatue"
 		French:"Statue de la Liberté"
-                Simplified_Chinese:"自由女神像"
+		Simplified_Chinese:"自由女神像"
 	}
 	"+1 Production from specialists":{
 		Italian:"+1 Produzione dagli Specialisti"
 		German:"+1 Produktion von Spezialisten"
 		French:"+1 Production par spécialiste"
-                Simplified_Chinese:"每位专业人员+1产能"
+		Simplified_Chinese:"每位专业人员+1产能"
 	}
 	
 	"Medical Lab":{	
@@ -6226,26 +6228,26 @@
 		//same in German
 		French:"Tour du CN"
 		Spanish:"Torre CN"
-                Simplified_Chinese:"西恩塔"
+		Simplified_Chinese:"西恩塔"
 	}
 	"+1 population in each city":{
 		Italian:"+1 Popolazione in ogni città"
 		German:"+1 Einwohner in jeder Stadt"
 		French:"+1 population dans chaque villes"
-                Simplified_Chinese:"每座城市+1人口"
+		Simplified_Chinese:"每座城市+1人口"
 	}
 	"+1 happiness in each city":{
 		Italian:"+1 Felicità in ogni città"
 		German:"+1 Zufriedenheit in jeder Stadt"
 		French:"+1 bonheur dans chaque villes"
-                Simplified_Chinese:"每座城市+1快乐"
+		Simplified_Chinese:"每座城市+1快乐"
 	}
 	
 	"Pentagon":{
 		Italian:"Pentagono"
 		French:"Pentagone"
 		//same in German
-                Simplified_Chinese:"五角大楼"
+		Simplified_Chinese:"五角大楼"
 	}
 	"Gold cost of upgrading military units reduced by 33%":{
 		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
@@ -6328,19 +6330,19 @@
 		Italian:"Telescopio spaziale Hubble"
 		German:"Hubble Weltraumteleskop"
 		French:"Téléscope de Hubble"
-                Simplified_Chinese:"哈勃太空望远镜"
+		Simplified_Chinese:"哈勃太空望远镜"
 	}
 	"2 free great scientists appear":{
 		Italian:"Appaiono 2 grandi scenziati gratuiti"
 		German:"2 kostenlose Große Wissenschaftler erscheinen"
 		French:"2 scientifiques illustres apparaissent"
-                Simplified_Chinese:"2个免费的大科学家出现"
+		Simplified_Chinese:"2个免费的大科学家出现"
 	}
 	"Increases production of spaceship parts by 25%":{
 		Italian:"+25% Produzione per le parti dell'astronave"
 		German:"Erhöht die Produktion von Raumschiffteilen um 25%"
 		French:"Améliore la production de pièces de vaisseau spatial de 25%"
-                Simplified_Chinese:"建造太空船部件时+25%产能"
+		Simplified_Chinese:"建造太空船部件时+25%产能"
 	}
 	
 	"SS Booster":{	//no translation that I know of
@@ -6662,12 +6664,12 @@
 	}
 	"Samurai":{
 		Italian:"Samurai" //Same as in Italian
-                Simplified_Chinese:"日本武士"
+		Simplified_Chinese:"日本武士"
 	}
 
 	"Combat very likely to create Great Generals":{
 		Italian:"Può generare un Grande Generale combattendo"
-                Simplified_Chinese:"战斗能更快地产生出大军事家"
+		Simplified_Chinese:"战斗能更快地产生出大军事家"
 	}
 	
 	
@@ -6839,15 +6841,15 @@
 	
 	"Foreign Legion":{
 		Italian:"Legione Straniera"
-                Simplified_Chinese:"外籍军团"
+		Simplified_Chinese:"外籍军团"
 	}
 	"+20% bonus outside friendly territory":{
 		Italian:"+20% Forza fuori da territorio amico"
-                Simplified_Chinese:"境外作战时战斗力+20%"
+		Simplified_Chinese:"境外作战时战斗力+20%"
 	}
 	"Foreign Land":{ // for battle table combat percentage
 		Italian:"Terra Straniera"
-                Simplified_Chinese:"他国领土"
+		Simplified_Chinese:"他国领土"
 	
 	}
 	
@@ -7049,7 +7051,7 @@
 	"Giant Death Robot":{
 		Italian:"Robot Gigante della Morte"
 		French:"Robot géant Mortel" //The most accurate should be "Robot géant de la mort" but it sound really ridiculous
-                Simplified_Chinese:"末日机甲"
+		Simplified_Chinese:"末日机甲"
 	}
 	*/
 	
@@ -8247,13 +8249,13 @@
 		Italian:"Autocrazia Completa"
 		French:"Autocratie complète"
 		Russian:"Автократия завершена"
-                Simplified_Chinese:"完整的独裁政策"
+		Simplified_Chinese:"完整的独裁政策"
 	}
 	"+1 happiness from each Walls, Castle and Arsenal":{
 		Italian:"+1 Felicità per ogni Mura, Castello e Arsenale"
 		French:"+1 de bonheur pour chaque Murs, Châteaux et Arsenal"
 		Russian:"+1 счастье за каждую стену, замок и арсенал"
-                Simplified_Chinese:"每座城墙、城堡和兵工厂+1快乐"
+		Simplified_Chinese:"每座城墙、城堡和兵工厂+1快乐"
 	}
 	
 	// Victory Screen
@@ -8261,88 +8263,88 @@
 		Italian:"Vittoria Scientifica"
 		German:"Wissenschaftssieg"
 		French:"Victoire scientifique"
-                Simplified_Chinese:"科技胜利"
+		Simplified_Chinese:"科技胜利"
 	}
 	"Cultural victory":{
 		Italian:"Vittoria Culturale"
 		German:"Kultursieg"
 		French:"Victoire Culturelle"
-                Simplified_Chinese:"文化胜利"
+		Simplified_Chinese:"文化胜利"
 	}
 	"Conquest victory":{
 		Italian:"Vittoria per Dominazione"
 		German:"Dominanzsieg"
 		French:"Victoire militaire"
-                Simplified_Chinese:"征服胜利"
+		Simplified_Chinese:"征服胜利"
 	}
 	"Complete all the spaceship parts\n to win!":{
 		Italian:"Completa tutte le parti\n  dell'astronave per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Для победы\n завершите все части космического коробля"
-                Simplified_Chinese:"完成建造太空飞船胜利！"
+		Simplified_Chinese:"完成建造太空飞船胜利！"
 	}
 	"Complete 4 policy branches\n to win!":{
 		Italian:"Completa quattro rami\n  politici per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
 		Russian:"Для победы\n завершите 4 ветви общественных инстутов"
-                Simplified_Chinese:"完全推行4项社会政策胜利！"
+		Simplified_Chinese:"完全推行4项社会政策胜利！"
 	}
 	"Destroy all enemies\n to win!":{
 		Italian:"Distruggi tutti gli avversari \n per vincere!"
 		German:"Um zu gewinnen besiegen Sie alle Gegner!"
 		French:"Eliminer tous vos adversaires pour gagner!"
 		Russian:"Для победы, \n уничтожьте всех врагов"
-                Simplified_Chinese:"消灭所有敌人胜利!"
+		Simplified_Chinese:"消灭所有敌人胜利!"
 	}
 	"You have won a scientific victory!":{
 		Italian:"Hai ottenuto una Vittoria Scientifica!"
 		German:"Sie haben den Wissenschaftssieg errungen!"
 		French:"Vous avez fait une victoire scientifique!"
 		Russian:"Вы одержали научную победу!"
-                Simplified_Chinese:"恭喜！你赢得了科技胜利！"
+		Simplified_Chinese:"恭喜！你赢得了科技胜利！"
 	}
 	"You have won a cultural victory!":{
 		Italian:"Hai ottenuto una Vittoria Culturale!"
 		German:"Sie haben den Kultursieg errungen!"
 		French:"Vous avez fait une victoire culturelle!"
 		Russian:"Вы одержали культурную победу!"
-                Simplified_Chinese:"恭喜！你赢得了文化胜利！"
+		Simplified_Chinese:"恭喜！你赢得了文化胜利！"
 	}
 	"You have won a conquest victory!":{
 		Italian:"Hai ottenuto una Vittoria per Dominazione!"
 		German:"Sie haben den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
 		Russian:"Вы одержали победу завоевания!"
-                Simplified_Chinese:"恭喜！你赢得了征服胜利！"
+		Simplified_Chinese:"恭喜！你赢得了征服胜利！"
 	}
 	"One more turn...!":{
 		Italian:"Aspetta! Solo un altro turno..."
 		German:"Nur noch eine Runde..."
 		French:"Un autre tour... !"
 		Russian:"Еще один ход...!"
-                Simplified_Chinese:"再来一回合...！"
+		Simplified_Chinese:"再来一回合...！"
 	}
 	"Built Apollo Program":{
 		Italian:"Programma Apollo costruito"
 		German:"Vollendete das Apollo-Programm" //not sure about the context here
 		French:"Construiser le programme Apollo" //same, it could be "construire"
-                Simplified_Chinese:"建造阿波罗计划"
+		Simplified_Chinese:"建造阿波罗计划"
 	}
 	"Destroy [civName]":{
 		Italian:"Distruggi [civName]"
 		German:"Zerstöre [civName]"
 		French:"Détruiser [civName]"
 		Russian:"Уничтожить [civName]"
-                Simplified_Chinese:"摧毁[civName]文明"
+		Simplified_Chinese:"摧毁[civName]文明"
 	}	
 	
 	// Unit Promotions
 	"Pick promotion":{
 		Italian:"Scegli promozione"
 		French:"Choisissez une promotion"
-                Simplified_Chinese:"选择晋升项"
+		Simplified_Chinese:"选择晋升项"
 	}
 	
 	" OR ":{// as in "Requires Accuracy I OR Barrage I
@@ -8361,177 +8363,177 @@
 		German:"Genauigkeit I"
 		French:"Précision I"
 		Russian:"Точность I"
-                Simplified_Chinese:"精准一级"
+		Simplified_Chinese:"精准一级"
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
 		German:"Genauigkeit II"
 		French:"Précision II"
 		Russian:"Точность II"
-                Simplified_Chinese:"精准二级"
+		Simplified_Chinese:"精准二级"
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
 		German:"Genauigkeit III"
 		French:"Précision III"
 		Russian:"Точность III"
-                Simplified_Chinese:"精准三级"
+		Simplified_Chinese:"精准三级"
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
 		French:"15% force contre les unités en terrain découvert"
 		Russian:"Бонус против юнитов на открытой местности 15%"
-                Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
+		Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
 	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
 		German:"Sperrfeuer I"
 		French:"Barrage I"
 		Russian:"Преграда I"
-                Simplified_Chinese:"弹幕一级"
+		Simplified_Chinese:"弹幕一级"
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
 		German:"Sperrfeuer II"
 		French:"Barrage II"
 		Russian:"Преграда II"
-                Simplified_Chinese:"弹幕二级"
+		Simplified_Chinese:"弹幕二级"
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
 		German:"Sperrfeuer III"
 		French:"Barrage III"
 		Russian:"Преграда III"
-                Simplified_Chinese:"弹幕三级"
+		Simplified_Chinese:"弹幕三级"
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
 		French:"+15% force contre les unités en terrain accidenté"
 		Russian:"Бонус против юнитов в пересеченной местности 15%"
-                Simplified_Chinese:"对战复杂地形中的单位时+15%战斗力"
+		Simplified_Chinese:"对战复杂地形中的单位时+15%战斗力"
 	}
 	"Shock I":{
 		Italian:"Assalto I"
 		German:"Schock I"
 		French:"Choc I"
 		Russian:"Натиск I"
-                Simplified_Chinese:"冲击一级"
+		Simplified_Chinese:"冲击一级"
 	}
 	"Shock II":{
 		Italian:"Assalto II"
 		German:"Schock II"
 		French:"Choc II"
 		Russian:"Натиск II"
-                Simplified_Chinese:"冲击二级"
+		Simplified_Chinese:"冲击二级"
 	}
 	"Shock III":{
 		Italian:"Assalto III"
 		German:"Schock III"
 		French:"Choc III"
 		Russian:"Натиск III"
-                Simplified_Chinese:"冲击三级"
+		Simplified_Chinese:"冲击三级"
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
 		German:"Drill I"
 		French:"Percée I"
 		Russian: "Прорыв I"
-                Simplified_Chinese:"操练一级"
+		Simplified_Chinese:"操练一级"
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
 		German:"Drill II"
 		French:"Percée II"
 		Russian: "Прорыв II"
-                Simplified_Chinese:"操练二级"
+		Simplified_Chinese:"操练二级"
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
 		German:"Drill III"
 		French:"Percée III"
 		Russian: "Прорыв III"
-                Simplified_Chinese:"操练三级"
+		Simplified_Chinese:"操练三级"
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
 		German:"Spähen I"
 		French:"Eclaireur I"
 		Russian:"Разведка I"
-                Simplified_Chinese:"侦察一级"
+		Simplified_Chinese:"侦察一级"
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
 		German:"Spähen II"
 		French:"Eclaireur II"
 		Russian:"Разведка II"
-                Simplified_Chinese:"侦察二级"
+		Simplified_Chinese:"侦察二级"
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
 		German:"Spähen III"
 		French:"Eclaireur III"
 		Russian:"Разведка III"
-                Simplified_Chinese:"侦察三级"
+		Simplified_Chinese:"侦察三级"
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
 		German:"+1 Sichtweite"
 		French:"+1 Mouvement"
 		Russian:"+1 Передвижение"
-                Simplified_Chinese:"+1移动力"
+		Simplified_Chinese:"+1移动力"
 	}
 	"Cover I":{
 		Italian:"Copertura I"
 		German:"Deckung I"
 		French:"Protection I"
 		Russian:"Укрытие I"
-                Simplified_Chinese:"隐蔽一级"
+		Simplified_Chinese:"隐蔽一级"
 	}
 	"Cover II":{
 		Italian:"Copertura II"
 		German:"Deckung II"
 		French:"Protection II"
 		Russian:"Укрытие II"
-                Simplified_Chinese:"隐蔽二级"
+		Simplified_Chinese:"隐蔽二级"
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
 		German:"+25% Verteidigung gegen alle Fernangriffe"
 		French:"+25% défence contre les attaques à distance"
 		Russian:"+25% защиты от дальних атак" 
-                Simplified_Chinese:"对战远程单位时+25%防御"
+		Simplified_Chinese:"对战远程单位时+25%防御"
 	}
 	"March":{
 		Italian:"Marcia"
 		German:"Marschieren"
 		French:"Marche"
 		Russian:"Марш"
-                Simplified_Chinese:"长途行军"
+		Simplified_Chinese:"长途行军"
 	}
 	"Unit will heal every turn, even if it performs an action":{
 		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
 		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
 		Russian:"Юнит лечится каждый ход, даже если совершает действие"
-                Simplified_Chinese:"每回合回复(包括执行指令后)"
+		Simplified_Chinese:"每回合回复(包括执行指令后)"
 	}
 	"Charge":{
 		Italian:"Carica"
 		German:"Angriff"
 		French:"Charge"
-                Simplified_Chinese:"猛烈冲锋"
+		Simplified_Chinese:"猛烈冲锋"
 	}
 
 	"Bonus vs wounded units 33%":{
 		Italian:"+33% forza contro unità ferite"
 		French:"+33% force contre les unités montées"
 		Russian:"Бонус против раненых 33%"
-                Simplified_Chinese:"对战受伤单位时+33%战斗力"
+		Simplified_Chinese:"对战受伤单位时+33%战斗力"
   }
 
 	"wounded units":{
 		Italian:"unità ferite"
 		French:"unités montées"
-                Simplified_Chinese:"受伤单位"
+		Simplified_Chinese:"受伤单位"
 
 	}
 	"Mobility":{
@@ -8539,212 +8541,212 @@
 		German:"Mobilität"
 		French:"Mobilité"
 		Russian:"Мобильность"
-                Simplified_Chinese:"机动能力"
+		Simplified_Chinese:"机动能力"
 	}
 	"Siege":{
 		Italian:"Assedio"
 		German:"Belagerung"
 		French:"Siège"
 		Russian:"Осада"
-                Simplified_Chinese:"攻坚能力"
+		Simplified_Chinese:"攻坚能力"
 	}
 	"Volley":{
 		Italian:"Raffica"
 		German:"Salve"
 		French:"Volée"
 		Russian:"Залп"
-                Simplified_Chinese:"齐射能力"
+		Simplified_Chinese:"齐射能力"
 	}
 	"Sentry":{
 		Italian:"Sentinella"
 		German:"Wache"
 		French:"Sentinel"
 		Rusian:"Караул"
-                Simplified_Chinese:"警戒能力"
+		Simplified_Chinese:"警戒能力"
 	}
 	"Range":{
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
 		French:"Portée"
 		Russian:"Расширенный радиус"
-                Simplified_Chinese:"射程拓展"
+		Simplified_Chinese:"射程拓展"
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
 		German:"+1 Reichweite"
 		French:"+1 portée d'attaque"
 		Russian:"+1 радиус"
-                Simplified_Chinese:"+1射程"
+		Simplified_Chinese:"+1射程"
 	}
 	"Indirect Fire":{
 		Italian:"Fuoco indiretto"
 		German:"Indirektes Feuer"
 		French:"Attaque indirecte" //not sure
 		Russian:"Непрямой Огонь"
-                Simplified_Chinese:"间接火力"
+		Simplified_Chinese:"间接火力"
 	}
 	"Ranged attacks may be performed over obstacles":{
 		Italian:"Permette di sparare a distanza superando gli ostacoli"
 		French:"Les attaques à distances peuvent être effectués à travers des obstacles"
 		Russian:"Дальнобойные атаки могут выполняться над препятствиями"
-                Simplified_Chinese:"越过障碍进行远程攻击"
+		Simplified_Chinese:"越过障碍进行远程攻击"
 	}
 	"Formation I":{
 		Italian:"Formazione I"
 		German:"Formation I"
 		French:"Formation I"
 		Russian:"Формация I"
-                Simplified_Chinese:"列阵一级"
+		Simplified_Chinese:"列阵一级"
 	}
 	"Formation II":{
 		Italian:"Formazione II"
 		German:"Formation II"
 		French:"Formation II"
 		Russian:"Формация II"
-                Simplified_Chinese:"列阵二级"
+		Simplified_Chinese:"列阵二级"
 	}
 	"Blitz":{
 		Italian:"Incursione"
 		German:"Blitz"
 		French:"Guerre éclair"
 		Russian:"Блиц"
-                Simplified_Chinese:"闪击战术"
+		Simplified_Chinese:"闪击战术"
 	}
 	"1 additional attack per turn":{
 		Italian:"L'unità ottiene può attaccare due volte ogni turno"
 		French:"1 attaque supplémentaire par tour"
 		Russian:"Дополнительная атака за ход"
-                Simplified_Chinese:"每回合有一次额外的攻击机会"
+		Simplified_Chinese:"每回合有一次额外的攻击机会"
 	}
 	"Logistics":{
 		Italian:"Logistica"
 		German:"Logistick"
 		French:"Logistique"
 		Russian:"Логистика"
-                Simplified_Chinese:"后勤补给"
+		Simplified_Chinese:"后勤补给"
 	}
 	"Bombardment I":{
 		Italian:"Bombardamento I"
 		German:"Bombardierung I"
 		French:"Bombardement I"
 		Russian:"Бомбардировка I"
-                Simplified_Chinese:"轰炸一级"
+		Simplified_Chinese:"轰炸一级"
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
 		German:"Bombardierung II"
 		French:"Bombardement II"
 		Russian:"Бомбардировка II"
-                Simplified_Chinese:"轰炸二级"
+		Simplified_Chinese:"轰炸二级"
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
 		German:"Bombardierung III"
 		French:"Bombardement III"
 		Russian:"Бомбардировка III"
-                Simplified_Chinese:"轰炸三级"
+		Simplified_Chinese:"轰炸三级"
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
 		French:"+33% force contre les unités terrestres"
 		Russian:"Бонус против наземных юнитов 33%"
-                Simplified_Chinese:"对战陆军单位时+33%战斗力"
+		Simplified_Chinese:"对战陆军单位时+33%战斗力"
 	}
 	"Bonus vs land units 34%":{
 		Italian:"+34% forza contro unità terrestri"
 		French:"+34% force contre les unités terrestres"
 		Russian:"Бонус против наземных юнитов 34%"
-                Simplified_Chinese:"对战陆军单位时+34%战斗力"
+		Simplified_Chinese:"对战陆军单位时+34%战斗力"
 	}
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
 		German:"Entermannschaft I"
 		French:"Embarquement I"
 		Russian:"Абордаж I"
-                Simplified_Chinese:"接舷一级"
+		Simplified_Chinese:"接舷一级"
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
 		German:"Entermannschaft II"
 		French:"Embarquement II"
 		Russian:"Абордаж II"
-                Simplified_Chinese:"接舷二级"
+		Simplified_Chinese:"接舷二级"
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
 		German:"Entermannschaft III"
 		French:"Embarquement III"
 		Russian:"Абордаж III"
-                Simplified_Chinese:"接舷三级"
+		Simplified_Chinese:"接舷三级"
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
 		French:"+15% force contre les unités navales"
 		Russian:"Бонус против водных юнитов +15%"
-                Simplified_Chinese:"对战海军单位时+15%战斗力"
+		Simplified_Chinese:"对战海军单位时+15%战斗力"
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
 		Russain:"Береговой налетчик I"
-                Simplified_Chinese:"海掠一级"
+		Simplified_Chinese:"海掠一级"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
 		Russain:"Береговой налетчик II"
-                Simplified_Chinese:"海掠二级"
+		Simplified_Chinese:"海掠二级"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
 		Russain:"Береговой налетчик III"
-                Simplified_Chinese:"海掠三级"
+		Simplified_Chinese:"海掠三级"
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
 		German:"Gezielter Schlag I"
 		French:"Ciblage I"
 		Russian:"Прицеливание I"
-                Simplified_Chinese:"定位一级"
+		Simplified_Chinese:"定位一级"
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
 		German:"Gezielter Schlag II"
 		French:"Ciblage II"
 		Russian:"Прицеливание II"
-                Simplified_Chinese:"定位二级"
+		Simplified_Chinese:"定位二级"
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
 		German:"Gezielter Schlag III"
 		French:"Ciblage III"
 		Russian:"Прицеливание III"
-                Simplified_Chinese:"定位三级"
+		Simplified_Chinese:"定位三级"
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
 		German:"Rudeltaktik I"
 		French:"Meute I"
 		Russian:"Массовая атака I"
-                Simplified_Chinese:"狼群一级"
+		Simplified_Chinese:"狼群一级"
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
 		French:"Meute II"
 		Russian:"Массовая атака II"
-                Simplified_Chinese:"狼群二级"
+		Simplified_Chinese:"狼群二级"
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 		French:"Meute III"
 		Russian:"Массовая атака III"
-                Simplified_Chinese:"狼群三级"
+		Simplified_Chinese:"狼群三级"
 	}
 	
 	// Civilopedia texts
@@ -8752,25 +8754,25 @@
 		Italian:"Basi"
 		German:"Spielkonzepte"
 		French:"Basiques"
-                Simplified_Chinese:"基础"
+		Simplified_Chinese:"基础"
 	}
 	"Resources":{
 		Italian:"Risorse"
 		German:"Ressourcen"
 		French:"Ressources"
-                Simplified_Chinese:"资源"
+		Simplified_Chinese:"资源"
 	}
 	"Terrains":{
 		Italian:"Terreni e caratteristiche"
 		German:"Gelände und Geländearten"
 		French:"Terrains"
-                Simplified_Chinese:"地形"
+		Simplified_Chinese:"地形"
 	}
 	"Tile Improvements":{
 		Italian:"Miglioramenti"
 		German:"Modernisierungen"
 		French:"Améliorations de cases" 
-                Simplified_Chinese:"地块设施"
+		Simplified_Chinese:"地块设施"
 	}
 	
 	"Unique to [civName], replaces [unitName]":{
@@ -8785,27 +8787,27 @@
 	}
 	"Cost":{
 		Italian:"Costo"
-                Simplified_Chinese:"花费"
+		Simplified_Chinese:"花费"
 	}
 	"Requires [buildingName] to be built in the city":{
 		Italian:"Richiede la costruzione di [buildingName] nella città"
 		French:"Requiert la construction de [buildingName] dans la ville"
-                Simplified_Chinese:"需要城市建有[buildingName]"
+		Simplified_Chinese:"需要城市建有[buildingName]"
 	}
 	"Requires [buildingName] to be built in all cities":{
 		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
 		French:"Requiert la construction de [buildingName] dans toutes les villes"
-                Simplified_Chinese:"需要所有城市建有[buildingName]"
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
 	}
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
-                Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
 		French:"Nécessite l'exploitation de [resource] près de la ville"
-                Simplified_Chinese:"需要城市附近有可供利用的[resource]资源"
+		Simplified_Chinese:"需要城市附近有可供利用的[resource]资源"
 	}
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
@@ -8815,61 +8817,61 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
 		French:"Améliorer en [upgradedUnit]"
-                Simplified_Chinese:"升级为[upgradedUnit]"
+		Simplified_Chinese:"升级为[upgradedUnit]"
 	}
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 		French:"Obsolète avec [obsoleteTech]"
-                Simplified_Chinese:"[obsoleteTech]技术已过时"
+		Simplified_Chinese:"[obsoleteTech]技术已过时"
 	}
 	"May contain [listOfResources]":{
 		Italian:"Può contenere [listOfResources]"
 		French:""
-                Simplified_Chinese:"可以包含[listOfResources]"
+		Simplified_Chinese:"可以包含[listOfResources]"
 	}
 	"Occurs on [listOfTerrains]":{
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
 		French:"Doit possèder [listOfTerrains]"
-                Simplified_Chinese:"出现在[listOfTerrains]"
+		Simplified_Chinese:"出现在[listOfTerrains]"
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
-                Simplified_Chinese:"防御加成"
+		Simplified_Chinese:"防御加成"
 	}
 	"Movement cost":{
 		Italian:"Costi di movimento"
 		French:"Coût de mouvement"
-                Simplified_Chinese:"移动力消耗"
+		Simplified_Chinese:"移动力消耗"
   }
 	
 	//Options menu, pointed out by Smashfanful
 	"Missing translations":{
 		Italian:"Traduzioni mancanti"
 		Russian:"Отсутствующие переводы"
-                Simplified_Chinese:"缺少的翻译"
+		Simplified_Chinese:"缺少的翻译"
 	}
 	"Version":{
 		Italian:"Versione"
 		Russian:"Версия"
-                Simplified_Chinese:"版本号"
+		Simplified_Chinese:"版本号"
 	}
 	"Resolution":{
 		Italian:"Risoluzione"
 		Russian:"Разрешения"
-                Simplified_Chinese:"分辨率"
+		Simplified_Chinese:"分辨率"
 	}
 	"Tileset":{
 		Italian:"Set celle"
-                Simplified_Chinese:"地块设置"
+		Simplified_Chinese:"地块设置"
 	}
 	"Map editor":{
 		Italian:"Editor mappe"
 		Russian:"Редактор карт"
-                Simplified_Chinese:"地图编辑器"
+		Simplified_Chinese:"地图编辑器"
 	}
 	"Language":{
 		Italian:"Lingua"
-                Simplified_Chinese:"简体中文"
+		Simplified_Chinese:"简体中文"
 	}
 }
