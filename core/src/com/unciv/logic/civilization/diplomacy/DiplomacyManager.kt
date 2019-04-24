@@ -18,6 +18,9 @@ enum class DiplomacyFlags{
 
 class DiplomacyManager() {
     @Transient lateinit var civInfo: CivilizationInfo
+    // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
+    @Transient var hasOpenBorders=false
+
     lateinit var otherCivName:String
     var trades = ArrayList<Trade>()
     var diplomaticStatus = DiplomaticStatus.War
@@ -31,12 +34,15 @@ class DiplomacyManager() {
         toReturn.diplomaticStatus=diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
         toReturn.attitude = attitude
+        toReturn.flagsCountdown.putAll(flagsCountdown)
+        toReturn.hasOpenBorders=hasOpenBorders
         return toReturn
     }
 
     constructor(civilizationInfo: CivilizationInfo, OtherCivName:String) : this() {
         civInfo=civilizationInfo
         otherCivName=OtherCivName
+        updateHasOpenBorders()
     }
 
     //region pure functions
@@ -45,13 +51,6 @@ class DiplomacyManager() {
             for(offer in trade.ourOffers)
                 if(offer.name=="Peace Treaty" && offer.duration > 0) return offer.duration
         return 0
-    }
-
-    fun hasOpenBorders(): Boolean {
-        for(trade in trades)
-            for(offer in trade.theirOffers)
-                if(offer.name=="Open Borders" && offer.duration > 0) return true
-        return false
     }
 
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
@@ -105,6 +104,17 @@ class DiplomacyManager() {
         }
     }
 
+    // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
+    fun updateHasOpenBorders(){
+        hasOpenBorders=false
+        for(trade in trades)
+            for(offer in trade.theirOffers)
+                if(offer.name=="Open Borders" && offer.duration > 0){
+                    hasOpenBorders=true
+                    return
+                }
+    }
+
     fun nextTurn(){
         for(trade in trades.toList()){
             for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 })
@@ -116,6 +126,7 @@ class DiplomacyManager() {
             }
         }
         removeUntenebleTrades()
+        updateHasOpenBorders()
 
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
@@ -135,6 +146,21 @@ class DiplomacyManager() {
     fun declareWar(){
         diplomaticStatus = DiplomaticStatus.War
         val otherCiv = otherCiv()
+        val otherCivDiplomacy = otherCiv.getDiplomacyManager(civInfo)
+
+        // Cancel all trades.
+        for(trade in trades)
+            for(offer in trade.theirOffers.filter { it.duration>0 })
+                civInfo.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+        trades.clear()
+        updateHasOpenBorders()
+
+        for(trade in otherCivDiplomacy.trades)
+            for(offer in trade.theirOffers.filter { it.duration>0 })
+                otherCiv.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+        otherCivDiplomacy.trades.clear()
+        otherCivDiplomacy.updateHasOpenBorders()
+
 
         otherCiv.getDiplomacyManager(civInfo).diplomaticStatus = DiplomaticStatus.War
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)

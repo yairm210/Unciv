@@ -17,16 +17,17 @@ class NextTurnAutomation{
     fun automateCivMoves(civInfo: CivilizationInfo) {
         offerPeaceTreaty(civInfo)
         exchangeTechs(civInfo)
+        exchangeLuxuries(civInfo)
+
         chooseTechToResearch(civInfo)
         adoptPolicy(civInfo)
-        exchangeLuxuries(civInfo)
         declareWar(civInfo)
         automateCityBombardment(civInfo)
         buyBuildingOrUnit(civInfo)
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
-        civInfo.popupAlerts.clear()
+        civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
     private fun buyBuildingOrUnit(civInfo: CivilizationInfo) {

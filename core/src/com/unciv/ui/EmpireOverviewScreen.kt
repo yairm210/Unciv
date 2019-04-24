@@ -112,8 +112,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add(civ.civName.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
         table.addSeparator()
         for(offer in offersList){
-            var offerText = offer.amount.toString()+" "+offer.name.tr()
-            if(offer.duration>0)offerText += " ("+offer.duration+" {turns})".tr()
+            val offerText = offer.getOfferText()
             table.add(offerText.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
         }
         for(i in 1..numberOfOtherSidesOffers - offersList.size)

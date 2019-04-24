@@ -46,7 +46,7 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
                 add(otherCivLeaderName.toLabel()).colspan(2)
                 addSeparator()
                 addGoodSizedLabel("Excellent!").row()
-                addButton("Goodbye."){
+                addButton("Farewell."){
                     this.remove()
                     worldScreen.shouldUpdate=true
                     // in all cases, worldScreen.shouldUpdate should be set to true when we remove the last of the popups
