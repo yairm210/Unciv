@@ -71,7 +71,12 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        var leaderName = "[" + civ.getNation().leaderName + "] of [" + civ.civName + "]"
+        var leaderName: String
+        if (civ.isCityState()) {
+            leaderName = "City State [" + civ.civName + "]"
+        } else {
+            leaderName = "[" + civ.getNation().leaderName + "] of [" + civ.civName + "]"
+        }
         leaderName = leaderName + " : Attitude " + civ.getDiplomacyManager(currentPlayerCiv).attitude.toInt().toString()
         diplomacyTable.add(leaderName.toLabel())
         diplomacyTable.addSeparator()

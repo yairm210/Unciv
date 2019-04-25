@@ -289,15 +289,13 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             currentPlayerCivInfo.diplomacy.containsKey(civ.civName)
 
     fun createDiplomacyGroup(): Group {
-        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() }
+        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() && !it.isCityState() }
         val groupSize = 500f
         val group = Group()
         group.setSize(groupSize,groupSize)
-        val civGroups = HashMap<CivilizationInfo,Actor>()
+        val civGroups = HashMap<String,Actor>()
         for(i in 0 until relevantCivs.size){
             val civ = relevantCivs[i]
-
-
             val civGroup = Table()
             val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
 
@@ -324,15 +322,14 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             civGroup.center(group)
             civGroup.moveBy(vector.x*groupSize/3, vector.y*groupSize/3)
 
-            civGroups[civ]=civGroup
+            civGroups[civ.civName]=civGroup
             group.addActor(civGroup)
         }
 
-
         for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
-            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
-                val civGroup = civGroups[civ]!!
-                val otherCivGroup = civGroups[diplomacy.otherCiv()]!!
+            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated() && !it.otherCiv().isCityState()}){
+                val civGroup = civGroups[civ.civName]!!
+                val otherCivGroup = civGroups[diplomacy.otherCiv().civName]!!
 
                 val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
@@ -343,7 +340,6 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 group.addActor(statusLine)
                 statusLine.toBack()
             }
-
 
         return group
     }
