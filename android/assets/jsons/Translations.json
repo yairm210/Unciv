@@ -2049,19 +2049,6 @@
 		Portuguese:"Peixes"
 		German:"Fisch"
 	}
-
-	"Bison":{
-		Italian:"Bisonti"
-		Russian:"бизоны"
-		French:"Bison"
-		Romanian:"Bizonii"
-		German:"Bison"
-		Dutch:"Bisons"
-		Spanish:"Bisonte"
-		Simplified_Chinese:"野牛"
-		Portuguese:"Bisontes"
-		Japanese:"バイソン"
-	}
 	
 	// Strategic Resources
 	
@@ -2294,30 +2281,6 @@
 		Portuguese:"Baleias"
 	}
 
-	"Copper":{
-		Italian:"Rame"
-		Russian:"медь"
-		French:"Cuivre"
-		Romanian:"Cupru"
-		German:"Kupfer"
-		Dutch:"Koperen"
-		Spanish:"Cobre"
-		Simplified_Chinese:"赤铜"
-		Portuguese:"Cobre"
-	}
-
-	"Cocoa":{
-		Italian:"Cacao"
-		Russian:"какао"
-		French:"Cacao"
-		Romanian:"Cacao"
-		German:"Kakao"
-		Dutch:"Cacao"
-		Spanish:"Cacao"
-		Simplified_Chinese:"可可"
-		Portuguese:"Cacau"
-	}
-
 	"Crab":{
 		Italian:"Granchi"
 		Russian:"Крабы"
@@ -2328,30 +2291,6 @@
 		Spanish:"Cangrejos"
 		Simplified_Chinese:"螃蟹"
 		Portuguese:"Caranguejos"
-	}
-
-	"Citrus":{
-		Italian:"Agrumi"
-		Russian:"цитрусовый"
-		French:"Agrumes"
-		Romanian:"Citrus"
-		German:"Zitrusgewächs"
-		Dutch:"Citrus"
-		Spanish:"Cítricos"
-		Simplified_Chinese:"柑橘"
-		Portuguese:"Cítrico"
-	}
-
-	"Truffles":{
-		Italian:"Tartufi"
-		Russian:"Трюфели"
-		French:"Truffe"
-		Romanian:"Trufe"
-		German:"Trüffel"
-		Dutch:"Truffles"
-		Spanish:"Trufas"
-		Simplified_Chinese:"松露"
-		Portuguese:"Trufas"
 	}
 	
 	// Tile improvements
@@ -2561,7 +2500,7 @@
 		Portuguese:"Academia"
 	}
 	"Landmark":{
-		Italian:"Capolavoro"
+		Italian:"Punto di riferimento"
 		Russian:"Достопримечательность"
 		French:"Monument culturel" //more accurate than "point de repère"
 		Romanian:"Reper"
@@ -3511,7 +3450,7 @@
 	// In case of foreign languages it becomes gender sensitive words
 	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
 	"Ancient era":{
-		Italian:"Antichità" //one word translation, as in "Sei entrato in una era, l'Antichità"
+		Italian:"Epoca Antica"
 		Russian:"Древнейший мир"
 		French:"Antiquité"
 		Romanian:"Antichitate"
@@ -3533,7 +3472,7 @@
 		German:"Klassik"
 	}
 	"Medieval era":{
-		Italian:"Medioevo"  //one word translation, as in "Sei entrato in una era, il Medioevo"
+		Italian:"Epoca Medievale" 
 		Russian:"Средневековье" //one word translation
 		French:"Moyen Âge"
 		Romanian:"Evul mediu"
@@ -3544,7 +3483,7 @@
 		German:"Mittelalter"
 	}
 	"Renaissance era":{
-		Italian:"Rinascimento"  //one word translation, as in "Sei entrato in una era, il Rinascimento"
+		Italian:"Epoca Rinascimentale"
 		Russian:"Новое время" //one word translation
 		French:"Renaissance" //one word translation
 		Romanian:"Renaştere"
@@ -4209,8 +4148,12 @@
 		Portuguese:"Tratado de paz"
 		German:"Friedensabkommen"
 	}
-	"Agreements":{}
-	"Open Borders":{}
+	"Agreements":{
+		Italian:"Accordi"
+	}
+	"Open Borders":{
+		Italian:"Diritto di passaggio"
+	}
 	"Gold per turn":{
 		Italian:"Oro per turno"
 		Russian:"Золота за ход"
@@ -4808,7 +4751,9 @@
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
 	
-	"[tradeOffer] from [otherCivName] has ended":{}
+	"[tradeOffer] from [otherCivName] has ended":{
+		Italian:"[tradeOffer] da [otherCivName] terminato"
+	}
 	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
 		Italian:"[leaderName] dell'Impero [nation]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese (so it should be [adjective] instead of [nation]
@@ -4843,9 +4788,15 @@
 		Simplified_Chinese:"再见."
 	}
 	
-	"Not this time.":{} // declining trade text
-	"Excellent!":{} // AI statement after we accept a trade they proposed
-	"How about something else...":{} // Counteroffer to AI offer
+	"Not this time.":{
+		Italian:"Non oggi."
+	} // declining trade text
+	"Excellent!":{
+		Italian:"Eccellente!"
+	} // AI statement after we accept a trade they proposed
+	"How about something else...":{
+		Italian:"Che ne diresti di quest'altra offerta?"
+	} // Counteroffer to AI offer
 	
 	"A pleasure to meet you.":{
 		Italian:"Lieto di incontrarvi."
@@ -6092,7 +6043,7 @@
 		Simplified_Chinese:"新天鹅堡"
 	}
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
-		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
+		Italian:"+1 Felicità, +2 Cultura e +3 Oro per ogni Castello"
 		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
 	}
 	
@@ -8814,7 +8765,7 @@
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
 		French:"Nécessite la technologie: [requiredTech]"
-Simplified_Chinese:"需要科技：[requiredTech]"
+		Simplified_Chinese:"需要科技：[requiredTech]"
 	}
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
