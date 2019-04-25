@@ -6546,9 +6546,11 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 	}
 	"Can construct roads":{
 		Italian:"Può costruire Strade"
+                Simplified_Chinese:"可以建设道路"
 	}
 	"Construct road":{
 		Italian:"Costruisci Strada"
+                Simplified_Chinese:"建设道路"
 	} // for unit action button
 	
 	"Horseman":{	
@@ -7003,7 +7005,7 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 		Italian:"Panzer" //same in Italian
 		Romanian:"Panzer"
 		Spanish:"Panzer"
-		Simplified_Chinese:"德国坦克"
+		Simplified_Chinese:"“虎II”坦克"
 		Russian:"Панзэр"
 		German:"Tiger II Panzer" //I used a more late WW2 panzer name here to destinguish 
 		French:"Panzer"
@@ -7019,6 +7021,9 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
         "Mechanized Infantry":{
 		Simplified_Chinese:"机械化步兵"
 	}
+        "Modern Armor":{
+		Simplified_Chinese:"现代坦克"
+        }
 	"B17":{
 		Italian:"B-17"
 		Romanian:"B17"
