@@ -3607,7 +3607,7 @@
 		German:"Zivilist"
 		Dutch:"Burger"
 		Spanish:"Civil"
-		Simplified_Chinese:"非军事单位"
+		Simplified_Chinese:"平民单位"
 		Portuguese:"Cidadão"
 	}
 	"Melee":{
@@ -3662,7 +3662,7 @@
 		German:"Kundschafter"
 		Dutch:"Verkening"
 		Spanish:"Explorador"
-		Simplified_Chinese:"侦察"
+		Simplified_Chinese:"侦察单位"
 		Portuguese:"Explorador"
 	}
 	"City":{
@@ -3698,7 +3698,7 @@
 		German:"Gründet eine neue Stadt"
 		Dutch:"Sticht een nieuwe stad"
 		Spanish:"Funda una nueva ciudad"
-		Simplified_Chinese:"建立一座城市"
+		Simplified_Chinese:"建立一座城市，组建此单位时城市的食物积累停止"
 		Portuguese:"Funda uma nova cidade"
 	}
 	"Ignores terrain cost":{
