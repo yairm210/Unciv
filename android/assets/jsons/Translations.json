@@ -1016,7 +1016,7 @@
 	"In resistance for another [numberOfTurns] turns":{
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
 		//can't understand
-    Simplified_Chinese:"反叛将持续额外[numberOfTurns]回合"
+                Simplified_Chinese:"反叛将持续额外[numberOfTurns]回合"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
 		French:"En révolte pour [numberOfTurns] tours"
@@ -8814,7 +8814,7 @@
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
-    Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+                Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
@@ -8861,7 +8861,7 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	"Missing translations":{
 		Italian:"Traduzioni mancanti"
 		Russian:"Отсутствующие переводы"
-    Simplified_Chinese:"缺少的翻译项"
+                Simplified_Chinese:"缺少的翻译项"
 	}
 	"Version":{
 		Italian:"Versione"
