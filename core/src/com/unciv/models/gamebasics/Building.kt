@@ -208,6 +208,9 @@ class Building : NamedStats(), IConstruction{
 
             if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "Wonder is being built elsewhere"
+
+            if(civInfo.isCityState())
+                return "No world wonders for city state"
         }
 
 
