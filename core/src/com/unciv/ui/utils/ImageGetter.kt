@@ -62,7 +62,7 @@ object ImageGetter {
     }
 
     fun getStatIcon(statName: String): Image {
-        return ImageGetter.getImage("StatIcons/$statName")
+        return getImage("StatIcons/$statName")
                 .apply { setSize(20f,20f)}
     }
 
@@ -152,13 +152,13 @@ object ImageGetter {
     fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
         val healthPercent = currentHealth / maxHealth
         val healthBar = Table()
-        val healthPartOfBar = ImageGetter.getWhiteDot()
+        val healthPartOfBar = getWhiteDot()
         healthPartOfBar.color = when {
             healthPercent > 2 / 3f -> Color.GREEN
             healthPercent > 1 / 3f -> Color.ORANGE
             else -> Color.RED
         }
-        val emptyPartOfBar = ImageGetter.getDot(Color.BLACK)
+        val emptyPartOfBar = getDot(Color.BLACK)
         healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
         healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
         healthBar.pack()

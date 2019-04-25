@@ -12,12 +12,13 @@ class Nation : INamed {
         else return name
     }
 
-    lateinit var leaderName: String
+    var leaderName=""
 
-    lateinit var declaringWar:String
-    lateinit var attacked:String
-    lateinit var defeated:String
-    lateinit var introduction:String
+    var declaringWar=""
+    var attacked=""
+    var defeated=""
+    var introduction=""
+    var tradeRequest=""
 
     var neutralLetsHearIt = ArrayList<String>()
     var neutralYes = ArrayList<String>()

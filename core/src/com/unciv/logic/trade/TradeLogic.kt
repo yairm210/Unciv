@@ -7,6 +7,7 @@ import com.unciv.models.gamebasics.tr
 
 class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: CivilizationInfo){
 
+    /** Contains everything we could offer the other player, whether we've actually offered it or not */
     val ourAvailableOffers = getAvailableOffers(ourCivilization,otherCivilization)
     val theirAvailableOffers = getAvailableOffers(otherCivilization,ourCivilization)
     val currentTrade = Trade()
@@ -15,6 +16,12 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val offers = TradeOffersList()
         if(civInfo.isAtWarWith(otherCivilization))
             offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+
+        if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
+                && civInfo.tech.getTechUniques().contains("Enables Open Borders agreements")
+                && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements"))
+            offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
+
         for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
             val resourceTradeType = if(entry.key.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
@@ -30,7 +37,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         for(city in civInfo.cities.filterNot { it.isCapital() })
             offers.add(TradeOffer(city.name, TradeType.City, 0))
 
-        val otherCivsWeKnow = civInfo.diplomacy.values.map { it.otherCiv() }
+        val otherCivsWeKnow = civInfo.getKnownCivs()
                 .filter { it != otherCivilization && !it.isBarbarianCivilization() && !it.isDefeated() }
         val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
@@ -41,7 +48,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val civsWeBothKnow = otherCivsWeKnow
                 .filter { otherCivilization.diplomacy.containsKey(it.civName) }
         val civsWeArentAtWarWith = civsWeBothKnow
-                .filter { civInfo.diplomacy[it.civName]!!.diplomaticStatus== DiplomaticStatus.Peace }
+                .filter { civInfo.getDiplomacyManager(it).diplomaticStatus== DiplomaticStatus.Peace }
         for(thirdCiv in civsWeArentAtWarWith){
             offers.add(TradeOffer("Declare war on "+thirdCiv.civName,TradeType.WarDeclaration,0))
         }
@@ -50,8 +57,14 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
     }
 
     fun acceptTrade() {
-        ourCivilization.diplomacy[otherCivilization.civName]!!.trades.add(currentTrade)
-        otherCivilization.diplomacy[ourCivilization.civName]!!.trades.add(currentTrade.reverse())
+        ourCivilization.getDiplomacyManager(otherCivilization).apply {
+            trades.add(currentTrade)
+            updateHasOpenBorders()
+        }
+        otherCivilization.getDiplomacyManager(ourCivilization).apply {
+            trades.add(currentTrade.reverse())
+            updateHasOpenBorders()
+        }
 
         // instant transfers
         fun transferTrade(to: CivilizationInfo, from: CivilizationInfo, trade: Trade) {
@@ -72,7 +85,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 }
                 if(offer.type== TradeType.Treaty){
                     if(offer.name=="Peace Treaty"){
-                        to.diplomacy[from.civName]!!.diplomaticStatus= DiplomaticStatus.Peace
+                        to.getDiplomacyManager(from).diplomaticStatus= DiplomaticStatus.Peace
                         for(unit in to.getCivUnits().filter { it.getTile().getOwner()==from })
                             unit.movementAlgs().teleportToClosestMoveableTile()
                     }
@@ -89,6 +102,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
 
         transferTrade(ourCivilization,otherCivilization,currentTrade)
         transferTrade(otherCivilization,ourCivilization,currentTrade.reverse())
+
     }
 }
 

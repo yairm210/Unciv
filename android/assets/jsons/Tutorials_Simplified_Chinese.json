@@ -2,8 +2,7 @@
 	// so for example:
 	PolicyPickerScreen: [ // Activated when entering policy picker screen
 		[ // This is simply a more comfortable format than "all in one line with \n".
-			"文化可以通过建设文化建筑或奇观、推行社会政策等方式获得，",
-			"文化每回合都会积累。",
+			"文化可以通过建设文化建筑或奇观、推行社会政策等积累。"
 			"当您有足够的文化时, 可以推行一项社会政策，",
 			"每项社会政策都给您一定的奖励。"
 		],  // this will be displayed as 4 lines of text in-game as well
@@ -21,8 +20,8 @@
 	CityEntered: [
 		[
 			"欢迎来到您的第一座城市!",
-			"到目前为止，您只有1个市民。当您有足够的食物积累时，人口就会增长。",
-			"同样，当您有足够的文化积累时，您所在城市的边界也会扩张。",
+			"到目前为止，您只有1个市民。当您积累足够的食物时，人口就会增长。",
+			"同样，当您积累了足够的文化时，您所在城市的边界也会扩张。",
 			"文化不是由地块产出的，而是由城市内的建筑或奇观产生的。"
 		],
 		[

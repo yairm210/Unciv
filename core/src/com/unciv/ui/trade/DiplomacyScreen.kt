@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.trade.TradeLogic
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
@@ -59,6 +60,13 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         }
     }
 
+    fun setTrade(civ: CivilizationInfo): TradeTable {
+        rightSideTable.clear()
+        val tradeTable =TradeTable(civ, stage) { updateLeftSideTable() }
+        rightSideTable.add(tradeTable)
+        return tradeTable
+    }
+
     private fun getDiplomacyTable(civ: CivilizationInfo): Table {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
@@ -67,14 +75,11 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.addSeparator()
 
         val tradeButton = TextButton("Trade".tr(), skin)
-        tradeButton.onClick {
-            rightSideTable.clear()
-            rightSideTable.add(TradeTable(civ, stage) { updateLeftSideTable() })
-        }
+        tradeButton.onClick { setTrade(civ)  }
         diplomacyTable.add(tradeButton).row()
 
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        val civDiplomacy = currentPlayerCiv.diplomacy[civ.civName]!!
+        val civDiplomacy = currentPlayerCiv.getDiplomacyManager(civ)
 
         if (!currentPlayerCiv.isAtWarWith(civ)) {
             val declareWarButton = TextButton("Declare war".tr(), skin)

@@ -12,6 +12,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.trade.Trade
 import com.unciv.models.Counter
 import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
@@ -33,18 +34,22 @@ enum class PlayerType{
     Human
 }
 
+class TradeRequest(val requestingCiv:String,
+                   /** Their offers are what they offer us, and our offers are what they want in return */
+                   val trade: Trade)
+
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
     /**
-     * never add or remove from here directly, could cause comodification problems.
-     * Instead, create a copy list with the change, and replace this list.
+     * We never add or remove from here directly, could cause comodification problems.
+     * Instead, we create a copy list with the change, and replace this list.
      * The other solution, casting toList() every "get", has a performance cost
      */
-    @Transient private var units=ArrayList<MapUnit>()
-    @Transient var viewableTiles = HashSet<TileInfo>()
-    @Transient var viewableInvisibleUnitsTiles = HashSet<TileInfo>()
+    @Transient private var units=listOf<MapUnit>()
+    @Transient var viewableTiles = setOf<TileInfo>()
+    @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
-    // This is for performance since every movement calculation depends on this, see MapUnit comment
+    /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false
 
     var gold = 0
@@ -61,6 +66,7 @@ class CivilizationInfo {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
+    val tradeRequests = ArrayList<TradeRequest>()
 
     // if we only use lists, and change the list each time the cities are changed,
     // we won't get concurrent modification exceptions.
@@ -79,15 +85,15 @@ class CivilizationInfo {
     fun clone(): CivilizationInfo {
         val toReturn = CivilizationInfo()
         toReturn.gold = gold
-        toReturn.happiness=happiness
-        toReturn.playerType=playerType
-        toReturn.civName=civName
+        toReturn.happiness = happiness
+        toReturn.playerType = playerType
+        toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
         toReturn.goldenAges = goldenAges.clone()
-        toReturn.greatPeople=greatPeople.clone()
-        toReturn.victoryManager=victoryManager.clone()
-        toReturn.diplomacy.putAll(diplomacy.values.map { it.clone() }.associateBy { it.otherCivName })
+        toReturn.greatPeople = greatPeople.clone()
+        toReturn.victoryManager = victoryManager.clone()
+        toReturn.diplomacy.putAll(diplomacy)
         toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
         toReturn.notifications.addAll(notifications)
@@ -112,14 +118,14 @@ class CivilizationInfo {
         return translatedNation
     }
 
+    fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
+    fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
+
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
-
-    fun getStatsForNextTurn():Stats{
-        return getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
-    }
+    fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
 
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
         val statMap = HashMap<String,Stats>()
@@ -223,7 +229,7 @@ class CivilizationInfo {
         val civResources = Counter<TileResource>()
         for (city in cities) civResources.add(city.getCityResources())
         for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
-        for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it] })
+        for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
             civResources.add(resource,-1)
         return civResources
     }
@@ -319,7 +325,7 @@ class CivilizationInfo {
         if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
         if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
-        return diplomacy[otherCiv.civName]!!.diplomaticStatus == DiplomaticStatus.War
+        return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus== DiplomaticStatus.War && !it.otherCiv().isDefeated() }
@@ -421,6 +427,7 @@ class CivilizationInfo {
     fun canEnterTiles(otherCiv: CivilizationInfo): Boolean {
         if(otherCiv==this) return true
         if(isAtWarWith(otherCiv)) return true
+        if(getDiplomacyManager(otherCiv).hasOpenBorders) return true
         return false
     }
 
@@ -497,6 +504,19 @@ class CivilizationInfo {
 
         for(city in cities){
             city.isConnectedToCapital = citiesReachedToMediums.containsKey(city)
+        }
+    }
+
+    fun destroy(){
+        for(civ in gameInfo.civilizations)
+            civ.addNotification("The civilization of [$civName] has been destroyed!", null, Color.RED)
+        getCivUnits().forEach { it.destroy() }
+        tradeRequests.clear() // if we don't do this then there could be resources taken by "pending" trades forever
+        for(diplomacyManager in diplomacy.values){
+            diplomacyManager.trades.clear()
+            diplomacyManager.otherCiv().getDiplomacyManager(this).trades.clear()
+            for(tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv==civName })
+                diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
     }
 

@@ -84,7 +84,7 @@ class CityStats {
     private fun getStatPercentBonusesFromComputers(): Stats {
         val stats = Stats()
 
-        if (cityInfo.civInfo.tech.getUniques().contains("+10% science and production in all cities")) {
+        if (cityInfo.civInfo.tech.getTechUniques().contains("+10% science and production in all cities")) {
             stats.production += 10f
             stats.science += 10f
         }

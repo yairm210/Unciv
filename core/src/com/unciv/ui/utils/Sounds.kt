@@ -9,7 +9,7 @@ object Sounds{
 
     fun get(name:String):Sound{
         if(!soundMap.containsKey(name))
-            soundMap[name] = Gdx.audio.newSound(Gdx.files.internal("sounds/$name.mp3"));
+            soundMap[name] = Gdx.audio.newSound(Gdx.files.internal("sounds/$name.mp3"))
         return soundMap[name]!!
     }
 

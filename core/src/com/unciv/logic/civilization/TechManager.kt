@@ -63,7 +63,7 @@ class TechManager {
         return GameBasics.Technologies[TechName]!!.prerequisites.all { isResearched(it) }
     }
 
-    fun getUniques() = researchedTechUniques
+    fun getTechUniques() = researchedTechUniques
 
     //endregion
 

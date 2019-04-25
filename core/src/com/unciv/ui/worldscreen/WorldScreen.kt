@@ -8,12 +8,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
-import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
@@ -26,7 +23,6 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen : CameraStageBaseScreen() {
@@ -167,19 +163,22 @@ class WorldScreen : CameraStageBaseScreen() {
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
-        if(!gameInfo.oneMoreTurnMode && currentPlayerCiv.victoryManager.hasWon()) game.screen = VictoryScreen()
-        else if(currentPlayerCiv.policies.freePolicies>0) game.screen = PolicyPickerScreen(currentPlayerCiv)
-        else if(currentPlayerCiv.greatPeople.freeGreatPeople>0) game.screen = GreatPersonPickerScreen()
-
-        if(game.screen==this && !tutorials.isTutorialShowing
-                && currentPlayerCiv.popupAlerts.any() && !AlertPopup.isOpen){
-            AlertPopup(this,currentPlayerCiv.popupAlerts.first())
+        when {
+            !gameInfo.oneMoreTurnMode && currentPlayerCiv.victoryManager.hasWon() -> game.screen = VictoryScreen()
+            currentPlayerCiv.policies.freePolicies>0 -> game.screen = PolicyPickerScreen(currentPlayerCiv)
+            currentPlayerCiv.greatPeople.freeGreatPeople>0 -> game.screen = GreatPersonPickerScreen()
+            currentPlayerCiv.tradeRequests.isNotEmpty() ->{
+                TradePopup(this)
+            }
+            !tutorials.isTutorialShowing
+                    && currentPlayerCiv.popupAlerts.any() && !AlertPopup.isOpen ->
+                AlertPopup(this,currentPlayerCiv.popupAlerts.first())
         }
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
-        if(civInfo.diplomacy.values.map { it.otherCiv() }
+        if(civInfo.getKnownCivs()
                         .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
                         .any()) {
             displayTutorials("OtherCivEncountered")
@@ -222,10 +221,10 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     private fun createNextTurnButton(): TextButton {
-        val nextTurnButton = TextButton("Next turn".tr(), CameraStageBaseScreen.skin)
+        val nextTurnButton = TextButton("Next turn".tr(), skin)
         nextTurnButton.onClick {
             if(currentPlayerCiv.policies.shouldOpenPolicyPicker && !currentPlayerCiv.policies.canAdoptPolicy())
-                currentPlayerCiv.policies.shouldOpenPolicyPicker = false // something has chanhed and we can no longer adopt the policy, e.g. we conquered another city
+                currentPlayerCiv.policies.shouldOpenPolicyPicker = false // something has changed and we can no longer adopt the policy, e.g. we conquered another city
 
             if (currentPlayerCiv.tech.freeTechs != 0) {
                 game.screen = TechPickerScreen(true, currentPlayerCiv)
@@ -281,7 +280,6 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     override fun resize(width: Int, height: Int) {
-
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             super.resize(width, height)
             game.worldScreen = WorldScreen() // start over.
@@ -299,95 +297,35 @@ class WorldScreen : CameraStageBaseScreen() {
 
             // otherwise images will not load properly!
             update()
-
-            val shownTutorials = UnCivGame.Current.settings.tutorialsShown
-            displayTutorials("NextTurn")
-            if("BarbarianEncountered" !in shownTutorials
-                    && currentPlayerCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
-                displayTutorials("BarbarianEncountered")
-            if(currentPlayerCiv.cities.size > 2) displayTutorials("SecondCity")
-            if(currentPlayerCiv.happiness < 0) displayTutorials("Unhappiness")
-            if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
-            if(gameInfo.turns >= 100) displayTutorials("ContactMe")
-            val resources = currentPlayerCiv.getCivResources()
-            if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
-            if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
-            if("EnemyCity" !in shownTutorials
-                    && currentPlayerCiv.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
-                            .any { it.isCityCenter() && it.getOwner()!=currentPlayerCiv })
-                displayTutorials("EnemyCity")
-            if("Enables construction of Spaceship parts" in currentPlayerCiv.getBuildingUniques())
-                displayTutorials("ApolloProgram")
-            if(currentPlayerCiv.getCivUnits().any { it.type == UnitType.Siege })
-                displayTutorials("SiegeUnitTrained")
-            if(currentPlayerCiv.tech.getUniques().contains("Enables embarkation for land units"))
-                displayTutorials("CanEmbark")
-
+            showTutorialsOnNextTurn()
             shouldUpdate=false
         }
         super.render(delta)
     }
 
-}
-
-class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert):PopupTable(worldScreen){
-    fun getCloseButton(text:String): TextButton {
-        val button = TextButton(text.tr(), skin)
-        button.onClick { close() }
-        return button
+    private fun showTutorialsOnNextTurn(){
+        val shownTutorials = UnCivGame.Current.settings.tutorialsShown
+        displayTutorials("NextTurn")
+        if("BarbarianEncountered" !in shownTutorials
+                && currentPlayerCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
+            displayTutorials("BarbarianEncountered")
+        if(currentPlayerCiv.cities.size > 2) displayTutorials("SecondCity")
+        if(currentPlayerCiv.happiness < 0) displayTutorials("Unhappiness")
+        if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
+        if(gameInfo.turns >= 100) displayTutorials("ContactMe")
+        val resources = currentPlayerCiv.getCivResources()
+        if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
+        if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
+        if("EnemyCity" !in shownTutorials
+                && currentPlayerCiv.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
+                        .any { it.isCityCenter() && it.getOwner()!=currentPlayerCiv })
+            displayTutorials("EnemyCity")
+        if("Enables construction of Spaceship parts" in currentPlayerCiv.getBuildingUniques())
+            displayTutorials("ApolloProgram")
+        if(currentPlayerCiv.getCivUnits().any { it.type == UnitType.Siege })
+            displayTutorials("SiegeUnitTrained")
+        if(currentPlayerCiv.tech.getTechUniques().contains("Enables embarkation for land units"))
+            displayTutorials("CanEmbark")
     }
 
-    fun addLeaderName(translatedNation:Nation){
-        val otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
-        add(otherCivLeaderName.toLabel())
-        addSeparator()
-    }
-
-    init {
-
-        when(popupAlert.type){
-            AlertType.WarDeclaration -> {
-                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
-                addLeaderName(translatedNation)
-                addGoodSizedLabel(translatedNation.declaringWar).row()
-                val responseTable = Table()
-                responseTable.add(getCloseButton("You'll pay for this!"))
-                responseTable.add(getCloseButton("Very well."))
-                add(responseTable)
-            }
-            AlertType.Defeated -> {
-                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
-                addLeaderName(translatedNation)
-                addGoodSizedLabel(translatedNation.defeated).row()
-                add(getCloseButton("Farewell."))
-            }
-            AlertType.FirstContact -> {
-                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
-                addLeaderName(translatedNation)
-                addGoodSizedLabel(translatedNation.introduction).row()
-                add(getCloseButton("A pleasure to meet you."))
-            }
-            AlertType.CityConquered -> {
-                addGoodSizedLabel("What would you like to do with the city?").row()
-                add(getCloseButton("Annex")).row()
-                add(TextButton("Raze",skin).onClick {
-                    worldScreen.currentPlayerCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
-                    worldScreen.shouldUpdate=true
-                    close()
-                })
-            }
-        }
-        open()
-        isOpen = true
-    }
-
-    fun close(){
-        worldScreen.currentPlayerCiv.popupAlerts.remove(popupAlert)
-        isOpen = false
-        remove()
-    }
-
-    companion object {
-        var isOpen = false
-    }
 }

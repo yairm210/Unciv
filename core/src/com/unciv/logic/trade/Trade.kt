@@ -31,4 +31,11 @@ class Trade{
         toReturn.ourOffers.addAll(ourOffers)
         return toReturn
     }
+
+    fun set(trade: Trade) {
+        ourOffers.clear()
+        ourOffers.addAll(trade.ourOffers)
+        theirOffers.clear()
+        theirOffers.addAll(trade.theirOffers)
+    }
 }

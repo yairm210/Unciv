@@ -18,6 +18,7 @@ import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.optionstable.PopupTable
 import kotlin.concurrent.thread
 import kotlin.math.min
 
@@ -95,7 +96,15 @@ class NewGameScreen: PickerScreen(){
             rightSideButton.setText("Working...".tr())
 
             thread { // Creating a new game can take a while and we don't want ANRs
-                newGame = GameStarter().startNewGame(newGameParameters)
+                try {
+                    newGame = GameStarter().startNewGame(newGameParameters)
+                }
+                catch (exception:Exception){
+                    val popup = PopupTable(this)
+                    popup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!").row()
+                    popup.addGoodSizedLabel("Maybe you put too many players into too small a map?").row()
+                    popup.open()
+                }
             }
         }
 

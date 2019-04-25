@@ -22,7 +22,7 @@ class LoadScreen : PickerScreen() {
         setDefaultCloseAction()
         val saveTable = Table()
 
-        val deleteSaveButton = TextButton("Delete save".tr(), CameraStageBaseScreen.skin)
+        val deleteSaveButton = TextButton("Delete save".tr(), skin)
         deleteSaveButton .onClick {
             GameSaver().deleteSave(selectedSave)
             UnCivGame.Current.screen = LoadScreen()

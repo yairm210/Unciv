@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import kotlin.math.max
 import kotlin.math.sqrt
@@ -89,8 +90,7 @@ class Automation {
             val relativeCostEffectiveness = ArrayList<ConstructionChoice>()
 
             //Food buildings : Granary and lighthouse and hospital
-            val foodBuilding = buildableNotWonders.filter { it.food>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.food>0) }
+            val foodBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Food) }
                     .minBy{ it.cost }
             if (foodBuilding!=null) {
                 val choice = ConstructionChoice(foodBuilding.name,1f)
@@ -99,16 +99,14 @@ class Automation {
             }
 
             //Production buildings : Workshop, factory
-            val productionBuilding = buildableNotWonders.filter { it.production>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.production>0) }
+            val productionBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Production) }
                     .minBy{it.cost}
             if (productionBuilding!=null) {
                 relativeCostEffectiveness.add(ConstructionChoice(productionBuilding.name, 1.5f))
             }
 
             //Gold buildings : Market, bank
-            val goldBuilding = buildableNotWonders.filter { it.gold>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.gold>0) }
+            val goldBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Gold) }
                     .minBy{it.cost}
             if (goldBuilding!=null) {
                 val choice = ConstructionChoice(goldBuilding.name,1.2f)
@@ -118,9 +116,16 @@ class Automation {
                 relativeCostEffectiveness.add(choice)
             }
 
+            //Science
+            val scienceBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Science) }
+                    .minBy{it.cost}
+            if (scienceBuilding!=null) {
+                val choice = ConstructionChoice(scienceBuilding.name,1.1f)
+                relativeCostEffectiveness.add(choice)
+            }
+
             //Happiness
-            val happinessBuilding = buildableNotWonders.filter { it.happiness>0
-                    || (it.resourceBonusStats!=null && it.resourceBonusStats!!.happiness>0) }
+            val happinessBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Happiness) }
                     .minBy{it.cost}
             if (happinessBuilding!=null) {
                 val choice = ConstructionChoice(happinessBuilding.name,1f)
@@ -133,7 +138,7 @@ class Automation {
             val wartimeBuilding = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
                     .minBy { it.cost }
             if (wartimeBuilding!=null) {
-                relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,1f))
+                relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,0.9f))
             }
 
             //Wonders
@@ -141,7 +146,7 @@ class Automation {
                 val citiesBuildingWonders = cityInfo.civInfo.cities
                         .count { it.cityConstructions.isBuildingWonder() }
                 val wonder = buildableWonders.random()
-                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,5f / (citiesBuildingWonders + 1)))
+                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,3.5f / (citiesBuildingWonders + 1)))
             }
 
             //other buildings
@@ -151,7 +156,7 @@ class Automation {
             }
 
             //worker
-            if (workers < cities) {
+            if (workers < cities * 0.6f) {
                 relativeCostEffectiveness.add(ConstructionChoice(CityConstructions.Worker,cities.toFloat()/(workers+0.1f)))
             }
 

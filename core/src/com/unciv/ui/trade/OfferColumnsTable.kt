@@ -3,20 +3,27 @@ package com.unciv.ui.trade
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeOffersList
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.addSeparator
 
-class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit): Table(CameraStageBaseScreen.skin) {
+/** This is the class that holds the 4 columns of the offers (ours/theirs/ offered/available) in trade */
+class OfferColumnsTable(val tradeLogic: TradeLogic, stage: Stage, val onChange: ()->Unit): Table(CameraStageBaseScreen.skin) {
 
-    val ourAvailableOffersTable = OffersList(tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers,
-            tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers) { onChange() }
-    val ourOffersTable = OffersList(tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers,
-            tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers) { onChange() }
-    val theirOffersTable = OffersList(tradeLogic.currentTrade.theirOffers, tradeLogic.theirAvailableOffers,
-            tradeLogic.currentTrade.ourOffers, tradeLogic.ourAvailableOffers) { onChange() }
-    val theirAvailableOffersTable = OffersList(tradeLogic.theirAvailableOffers, tradeLogic.currentTrade.theirOffers,
-            tradeLogic.ourAvailableOffers, tradeLogic.currentTrade.ourOffers) { onChange() }
+    fun addOffer(offer:TradeOffer, offerList:TradeOffersList, correspondingOfferList:TradeOffersList){
+        offerList.add(offer.copy())
+        if(offer.type==TradeType.Treaty) correspondingOfferList.add(offer.copy())
+        onChange()
+    }
+
+    // todo - add logic that treaties are added and removed from both sides of the table
+    val ourAvailableOffersTable = OffersListScroll { addOffer(it,tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers) }
+    val ourOffersTable = OffersListScroll { addOffer(it.copy(amount=-it.amount),tradeLogic.currentTrade.ourOffers, tradeLogic.currentTrade.theirOffers) }
+    val theirOffersTable = OffersListScroll { addOffer(it.copy(amount=-it.amount),tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers) }
+    val theirAvailableOffersTable = OffersListScroll { addOffer(it,tradeLogic.currentTrade.theirOffers, tradeLogic.currentTrade.ourOffers) }
 
     init {
         defaults().pad(5f)
@@ -35,13 +42,13 @@ class OfferColumnsTable(tradeLogic: TradeLogic, stage: Stage, onChange: ()->Unit
         add(ourOffersTable).size(columnWidth,stage.height/5)
         add(theirOffersTable).size(columnWidth,stage.height/5)
         pack()
+        update()
     }
 
     fun update() {
-        ourAvailableOffersTable.update()
-        ourOffersTable.update()
-        theirAvailableOffersTable.update()
-        theirOffersTable.update()
-
+        ourAvailableOffersTable.update(tradeLogic.ourAvailableOffers.without(tradeLogic.currentTrade.ourOffers))
+        ourOffersTable.update(tradeLogic.currentTrade.ourOffers)
+        theirOffersTable.update(tradeLogic.currentTrade.theirOffers)
+        theirAvailableOffersTable.update(tradeLogic.theirAvailableOffers.without(tradeLogic.currentTrade.theirOffers))
     }
 }

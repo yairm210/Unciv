@@ -5,7 +5,7 @@ import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.Stats
+import com.unciv.models.stats.*
 
 class Building : NamedStats(), IConstruction{
 
@@ -178,7 +178,7 @@ class Building : NamedStats(), IConstruction{
             if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
             if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
             if (civInfo.policies.adoptedPolicies.contains("Patronage")
-                    && listOf("Monument", "Temple", "Opera House", "Museum").contains(name)) cost *= 0.5
+                    && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower").contains(name)) cost *= 0.5
         }
 
         return (cost / 10).toInt() * 10
@@ -218,7 +218,7 @@ class Building : NamedStats(), IConstruction{
 
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "Wonder is already built"
-            if (civInfo.cities.any {it.cityConstructions.isBeingConstructed(name) })
+            if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "Wonder is being built elsewhere"
         }
 
@@ -311,5 +311,12 @@ class Building : NamedStats(), IConstruction{
         }
 
         if (freeTechs != 0) civInfo.tech.freeTechs += freeTechs
+    }
+
+    fun isStatRelated(stat: Stat): Boolean {
+        if (get(stat) > 0) return true
+        if (percentStatBonus!=null && percentStatBonus!!.get(stat)>0) return true
+        if (specialistSlots!=null && specialistSlots!!.get(stat)>0) return true
+        return false
     }
 }

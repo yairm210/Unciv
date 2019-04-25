@@ -11,23 +11,36 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
 
+enum class DiplomacyFlags{
+    DeclinedLuxExchange,
+    DeclinedPeace
+}
+
 class DiplomacyManager() {
     @Transient lateinit var civInfo: CivilizationInfo
+    // since this needs to be checked a lot during travel, putting it in a transient is a good performance booster
+    @Transient var hasOpenBorders=false
+
     lateinit var otherCivName:String
     var trades = ArrayList<Trade>()
     var diplomaticStatus = DiplomaticStatus.War
+    /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire */
+    var flagsCountdown = HashMap<DiplomacyFlags,Int>()
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
         toReturn.diplomaticStatus=diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
+        toReturn.flagsCountdown.putAll(flagsCountdown)
+        toReturn.hasOpenBorders=hasOpenBorders
         return toReturn
     }
 
     constructor(civilizationInfo: CivilizationInfo, OtherCivName:String) : this() {
         civInfo=civilizationInfo
         otherCivName=OtherCivName
+        updateHasOpenBorders()
     }
 
     //region pure functions
@@ -63,6 +76,11 @@ class DiplomacyManager() {
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
                     counter.add(GameBasics.TileResources[offer.name]!!,offer.amount)
         }
+        for(tradeRequest in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
+            for(offer in tradeRequest.trade.theirOffers) // "theirOffers" in the other civ's trade request, is actually out civ's offers
+                if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
+                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount)
+        }
         return counter
     }
     //endregion
@@ -75,13 +93,24 @@ class DiplomacyManager() {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
                     && offer.name in negativeCivResources){
                     trades.remove(trade)
-                    val otherCivTrades = otherCiv().diplomacy[civInfo.civName]!!.trades
+                    val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll{ it.equals(trade.reverse()) }
                     civInfo.addNotification("One of our trades with [$otherCivName] has been cut short!".tr(),null, Color.GOLD)
                     otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short!".tr(),null, Color.GOLD)
                 }
             }
         }
+    }
+
+    // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
+    fun updateHasOpenBorders(){
+        hasOpenBorders=false
+        for(trade in trades)
+            for(offer in trade.theirOffers)
+                if(offer.name=="Open Borders" && offer.duration > 0){
+                    hasOpenBorders=true
+                    return
+                }
     }
 
     fun nextTurn(){
@@ -95,15 +124,41 @@ class DiplomacyManager() {
             }
         }
         removeUntenebleTrades()
+        updateHasOpenBorders()
+
+        for(flag in flagsCountdown.keys.toList()) {
+            flagsCountdown[flag] = flagsCountdown[flag]!! - 1
+            if(flagsCountdown[flag]==0) flagsCountdown.remove(flag)
+        }
+
     }
 
     fun declareWar(){
         diplomaticStatus = DiplomaticStatus.War
         val otherCiv = otherCiv()
+        val otherCivDiplomacy = otherCiv.getDiplomacyManager(civInfo)
 
-        otherCiv.diplomacy[civInfo.civName]!!.diplomaticStatus = DiplomaticStatus.War
+        // Cancel all trades.
+        for(trade in trades)
+            for(offer in trade.theirOffers.filter { it.duration>0 })
+                civInfo.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+        trades.clear()
+        updateHasOpenBorders()
+
+        for(trade in otherCivDiplomacy.trades)
+            for(offer in trade.theirOffers.filter { it.duration>0 })
+                otherCiv.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+        otherCivDiplomacy.trades.clear()
+        otherCivDiplomacy.updateHasOpenBorders()
+
+
+        otherCiv.getDiplomacyManager(civInfo).diplomaticStatus = DiplomaticStatus.War
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
+
+        /// AI won't propose peace for 10 turns
+        flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
+        otherCiv.getDiplomacyManager(civInfo).flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
     }
     //endregion
 }

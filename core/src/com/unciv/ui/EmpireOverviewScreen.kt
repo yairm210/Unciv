@@ -112,8 +112,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add(civ.civName.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
         table.addSeparator()
         for(offer in offersList){
-            var offerText = offer.amount.toString()+" "+offer.name.tr()
-            if(offer.duration>0)offerText += " ("+offer.duration+" {turns})".tr()
+            val offerText = offer.getOfferText()
             table.add(offerText.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
         }
         for(i in 1..numberOfOtherSidesOffers - offersList.size)
@@ -176,8 +175,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             greatPeopleTable.add(greatPersonPoints[entry.key]!!.toInt().toString()+"/"+pointsToGreatPerson)
             greatPeopleTable.add(greatPersonPointsPerTurn[entry.key]!!.toInt().toString()).row()
         }
-        val pointsForGreatGeneral = currentPlayerCivInfo.greatPeople.greatGeneralPoints.toInt().toString()
-        val pointsForNextGreatGeneral = currentPlayerCivInfo.greatPeople.pointsForNextGreatGeneral.toInt().toString()
+        val pointsForGreatGeneral = currentPlayerCivInfo.greatPeople.greatGeneralPoints.toString()
+        val pointsForNextGreatGeneral = currentPlayerCivInfo.greatPeople.pointsForNextGreatGeneral.toString()
         greatPeopleTable.add("Great General".tr())
         greatPeopleTable.add("$pointsForGreatGeneral/$pointsForNextGreatGeneral").row()
         greatPeopleTable.pack()

@@ -21,7 +21,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val buttonTable = Table()
         buttonTable.pad(15f)
         val entryTable = Table()
-        val splitPane = SplitPane(buttonTable, entryTable, true, CameraStageBaseScreen.skin)
+        val splitPane = SplitPane(buttonTable, entryTable, true, skin)
         splitPane.splitAmount = 0.2f
         splitPane.setFillParent(true)
 
@@ -30,7 +30,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val label = "".toLabel()
         label.setWrap(true)
 
-        val goToGameButton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
+        val goToGameButton = TextButton("Close".tr(), skin)
         goToGameButton.onClick {
                 game.setWorldScreen()
                 dispose()
@@ -51,7 +51,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         categoryToInfos["Units"] = GameBasics.Units.values
         categoryToInfos["Technologies"] = GameBasics.Technologies.values
 
-        val nameList = List<ICivilopedia>(CameraStageBaseScreen.skin)
+        val nameList = List<ICivilopedia>(skin)
 
         val nameListClickListener = {
             if(nameList.selected!=null) label.setText(nameList.selected.description)
@@ -64,7 +64,7 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val buttons = ArrayList<Button>()
         var first = true
         for (str in categoryToInfos.keys) {
-            val button = TextButton(str.tr(), CameraStageBaseScreen.skin)
+            val button = TextButton(str.tr(), skin)
             button.style = TextButton.TextButtonStyle(button.style)
             button.style.checkedFontColor = Color.BLACK
             buttons.add(button)

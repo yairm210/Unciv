@@ -21,8 +21,6 @@ import kotlin.math.ceil
 
 class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
-    val labelSkin = CameraStageBaseScreen.skin
-
     private val turnsLabel = "Turns: 0/400".toLabel().setFontColor(Color.WHITE)
     private val goldLabel = "Gold:".toLabel().setFontColor(colorFromRGB(225, 217, 71) )
     private val scienceLabel = "Science:".toLabel().setFontColor(colorFromRGB(78, 140, 151) )

@@ -24,12 +24,12 @@ open class SpecialConstruction(override var name: String, override val descripti
         fun getSpecialConstructions(): List<SpecialConstruction> {
             val science =  object:SpecialConstruction("Science", "Convert production to science at a rate of 4 to 1"){
                 override fun isBuildable(construction: CityConstructions): Boolean {
-                    return construction.cityInfo.civInfo.tech.getUniques().contains("Enables conversion of city production to science")
+                    return construction.cityInfo.civInfo.tech.getTechUniques().contains("Enables conversion of city production to science")
                 }
             }
             val gold =  object:SpecialConstruction("Gold", "Convert production to gold at a rate of 4 to 1"){
                 override fun isBuildable(construction: CityConstructions): Boolean {
-                    return construction.cityInfo.civInfo.tech.getUniques().contains("Enables conversion of city production to gold")
+                    return construction.cityInfo.civInfo.tech.getTechUniques().contains("Enables conversion of city production to gold")
                 }
             }
             val idle =  object:SpecialConstruction("Nothing", "The city will not produce anything."){

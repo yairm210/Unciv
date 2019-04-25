@@ -8,7 +8,8 @@
 		aiUnitMaintenanceModifier:1,
 		aiYieldModifier:0.6, // Replaces "Construction rate" and "Create rate" in original config
 		aiFreeTechs:[],
-		aiUnhappinessModifier:1
+		aiUnhappinessModifier:1,
+		aisExchangeTechs:false
 	},
 	{
 		name:"Chieftain",
@@ -19,7 +20,8 @@
 		aiUnitMaintenanceModifier:1,
 		aiYieldModifier:0.75,
 		aiFreeTechs:[],
-		aiUnhappinessModifier:1
+		aiUnhappinessModifier:1,
+		aisExchangeTechs:false
 	},
 	{
 		name:"Warlord",
@@ -30,7 +32,8 @@
 		aiUnitMaintenanceModifier:1,
 		aiYieldModifier:0.9,
 		aiFreeTechs:[],
-		aiUnhappinessModifier:1
+		aiUnhappinessModifier:1,
+		aisExchangeTechs:false
 	},
 	{
 		name:"Prince",
@@ -41,7 +44,8 @@
 		aiUnitMaintenanceModifier:0.85,
 		aiYieldModifier:1,
 		aiFreeTechs:[],
-		aiUnhappinessModifier:1
+		aiUnhappinessModifier:1,
+		aisExchangeTechs:true
 	},
 	{
 		name:"King",
@@ -52,7 +56,8 @@
 		aiUnitMaintenanceModifier:0.8,
 		aiYieldModifier:1.15,
 		aiFreeTechs:["Pottery"],
-		aiUnhappinessModifier:0.9
+		aiUnhappinessModifier:0.9,
+		aisExchangeTechs:true
 	},
 	{
 		name:"Emperor",
@@ -63,7 +68,8 @@
 		aiUnitMaintenanceModifier:0.75,
 		aiYieldModifier:1.25,
 		aiFreeTechs:["Pottery","Animal Husbandry"],
-		aiUnhappinessModifier:0.85
+		aiUnhappinessModifier:0.85,
+		aisExchangeTechs:true
 	},
 	{
 		name:"Immortal",
@@ -74,7 +80,8 @@
 		aiUnitMaintenanceModifier:0.65,
 		aiYieldModifier:1.5,
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining"],
-		aiUnhappinessModifier:0.75
+		aiUnhappinessModifier:0.75,
+		aisExchangeTechs:true
 	},
 	{
 		name:"Deity",
@@ -85,6 +92,7 @@
 		aiUnitMaintenanceModifier:0.5,
 		aiYieldModifier:2,
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining","The Wheel"],
-		aiUnhappinessModifier:0.6
+		aiUnhappinessModifier:0.6,
+		aisExchangeTechs:true
 	}
 ]
