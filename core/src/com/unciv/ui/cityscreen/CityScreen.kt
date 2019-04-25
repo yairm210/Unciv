@@ -16,7 +16,6 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
 import java.util.*
 import kotlin.math.ceil
-import kotlin.math.floor
 import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
@@ -132,7 +131,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     / city.cityStats.currentCityStats.food).toInt()
             turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
         } else if (city.cityStats.currentCityStats.food < 0) {
-            val turnsToStarvation = floor(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt()
+            //protects against 0 turns in case of 0 in foodStored
+            val turnsToStarvation = if (city.population.foodStored==0) 1 else ceil(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt()
             turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()
         } else {
             turnsToPopString = "Stopped population growth".tr()
