@@ -230,7 +230,7 @@ class CivilizationInfo {
         val civResources = Counter<TileResource>()
         for (city in cities) civResources.add(city.getCityResources())
         for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
-        for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it] })
+        for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
             civResources.add(resource,-1)
         return civResources
     }
