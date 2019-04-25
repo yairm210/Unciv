@@ -5002,7 +5002,7 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 		French:"Entretien des transports"
 		Romanian:"Întreținere trasporturi"
 		Spanish:"Mantenimiento de transporte"
-		Simplified_Chinese:"运输维护"
+		Simplified_Chinese:"道(铁)路维护"
 		Portuguese:"Manutenção de transporte"
 		German:"Unterhalt für Transport"
 	}
@@ -6546,11 +6546,11 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 	}
 	"Can construct roads":{
 		Italian:"Può costruire Strade"
-                Simplified_Chinese:"可以建设道路"
+                Simplified_Chinese:"可以建造道路"
 	}
 	"Construct road":{
 		Italian:"Costruisci Strada"
-                Simplified_Chinese:"建设道路"
+                Simplified_Chinese:"建造道路"
 	} // for unit action button
 	
 	"Horseman":{	
