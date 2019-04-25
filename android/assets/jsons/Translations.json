@@ -6047,7 +6047,12 @@ Simplified_Chinese:"[adjective]帝国的[leaderName]"
 		Portuguese:"Bolsa de valores"
 		German:"Börse"
 	}
-	
+        "Big Ben":{	
+		Simplified_Chinese:"大本钟"
+	}
+	"-15% to purchasing items in cities":{
+		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
+	}
 	"Cristo Redentor":{
 		Italian:"Cristo Redentor" //Same in Italian
 		Russian:"Кристо Редентор"
