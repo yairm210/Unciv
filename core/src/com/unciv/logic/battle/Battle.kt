@@ -169,7 +169,7 @@ class Battle(val gameInfo:GameInfo) {
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
         }
 
-        if (attacker.getCivInfo().isBarbarianCivilization()){
+        if (attacker.getCivInfo().isBarbarianCivilization() || attacker.getCivInfo().isCityState()){
             city.destroyCity()
         }
         else {
