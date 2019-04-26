@@ -44,7 +44,16 @@ class NextTurnAutomation{
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
         if(!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
-        if (civInfo.isCityState()) return
+        if (civInfo.isCityState()) { //City states automatically get all invented techs
+            for (otherCiv in civInfo.getKnownCivs().filterNot { it.isCityState() }) {
+                for (entry in otherCiv.tech.techsResearched
+                        .filterNot { civInfo.tech.isResearched(it) }
+                        .filter { civInfo.tech.canBeResearched(it) }) {
+                    civInfo.tech.addTechnology(entry)
+                }
+            }
+            return
+        }
 
         val otherCivList = civInfo.getKnownCivs()
                 .filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }
