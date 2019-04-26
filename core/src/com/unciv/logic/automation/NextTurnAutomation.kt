@@ -44,6 +44,7 @@ class NextTurnAutomation{
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
         if(!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
+        if (civInfo.isCityState()) return
 
         val otherCivList = civInfo.getKnownCivs()
                 .filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }
@@ -227,6 +228,7 @@ class NextTurnAutomation{
     }
 
     private fun declareWar(civInfo: CivilizationInfo) {
+        if (civInfo.isCityState()) return
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
             val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
             if (!civInfo.isAtWar() && civInfo.happiness > 0
