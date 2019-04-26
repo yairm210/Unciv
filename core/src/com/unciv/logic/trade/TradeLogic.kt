@@ -45,7 +45,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-                .filter { it != otherCivilization && !it.isBarbarianCivilization() && !it.isDefeated() }
+                .filter { it.civName != otherCivilization.civName && !it.isBarbarianCivilization() && !it.isDefeated() }
         val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
 
