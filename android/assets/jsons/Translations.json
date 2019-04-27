@@ -8293,21 +8293,21 @@
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Для победы\n завершите все части космического коробля"
-		Simplified_Chinese:"完成建造太空飞船胜利！"
+		Simplified_Chinese:"完成建造太空飞船\n胜利！"
 	}
 	"Complete 4 policy branches\n to win!":{
 		Italian:"Completa quattro rami\n  politici per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
 		Russian:"Для победы\n завершите 4 ветви общественных инстутов"
-		Simplified_Chinese:"完全推行4项社会政策胜利！"
+		Simplified_Chinese:"完全推行4项社会政策\n胜利！"
 	}
 	"Destroy all enemies\n to win!":{
 		Italian:"Distruggi tutti gli avversari \n per vincere!"
 		German:"Um zu gewinnen besiegen Sie alle Gegner!"
 		French:"Eliminer tous vos adversaires pour gagner!"
 		Russian:"Для победы, \n уничтожьте всех врагов"
-		Simplified_Chinese:"消灭所有敌人胜利!"
+		Simplified_Chinese:"消灭所有敌人\n胜利!"
 	}
 	"You have won a scientific victory!":{
 		Italian:"Hai ottenuto una Vittoria Scientifica!"
@@ -8341,7 +8341,7 @@
 		Italian:"Programma Apollo costruito"
 		German:"Vollendete das Apollo-Programm" //not sure about the context here
 		French:"Construiser le programme Apollo" //same, it could be "construire"
-		Simplified_Chinese:"建造阿波罗计划"
+		Simplified_Chinese:"开启阿波罗计划"
 	}
 	"Destroy [civName]":{
 		Italian:"Distruggi [civName]"
