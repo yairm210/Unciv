@@ -92,6 +92,7 @@ class CityInfo {
         toReturn.isBeingRazed=isBeingRazed
         toReturn.isConnectedToCapital = isConnectedToCapital
         toReturn.attackedThisTurn = attackedThisTurn
+        toReturn.resistanceCounter = resistanceCounter
         return toReturn
     }
 
