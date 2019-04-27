@@ -345,6 +345,9 @@
 		Dutch:"Onderzoeken"
 	}
 	
+	"Stop exploration":{
+		Simplified_Chinese:"停止探索"
+	}
 	"Pillage":{
 		Italian:"Saccheggia"
 		German:"Plündern"
@@ -2850,7 +2853,9 @@
 		Simplified_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
 	}
-	"Enables Open Borders agreements":{}
+	"Enables Open Borders agreements":{
+		Simplified_Chinese:"允许签订开放边境协定"
+	}
 	
 	"Guilds":{
 		Italian:"Gilde"
@@ -4209,8 +4214,12 @@
 		Portuguese:"Tratado de paz"
 		German:"Friedensabkommen"
 	}
-	"Agreements":{}
-	"Open Borders":{}
+	"Agreements":{
+		Simplified_Chinese:"协定"
+	}
+	"Open Borders":{
+		Simplified_Chinese:"开放边境"
+	}
 	"Gold per turn":{
 		Italian:"Oro per turno"
 		Russian:"Золота за ход"
@@ -4807,7 +4816,9 @@
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
 	
-	"[tradeOffer] from [otherCivName] has ended":{}
+	"[tradeOffer] from [otherCivName] has ended":{
+		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
+	}
 	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
 		Italian:"[leaderName] dell'Impero [nation]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese (so it should be [adjective] instead of [nation]
@@ -4842,9 +4853,15 @@
 		Simplified_Chinese:"再见."
 	}
 	
-	"Not this time.":{} // declining trade text
-	"Excellent!":{} // AI statement after we accept a trade they proposed
-	"How about something else...":{} // Counteroffer to AI offer
+	"Not this time.":{
+		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
+	} // declining trade text
+	"Excellent!":{
+		Simplified_Chinese:"好极了！和和气气才是生财之道。"
+	} // AI statement after we accept a trade they proposed
+	"How about something else...":{
+		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
+	} // Counteroffer to AI offer
 	
 	"A pleasure to meet you.":{
 		Italian:"Lieto di incontrarvi."
