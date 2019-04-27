@@ -7345,7 +7345,7 @@
 		German:"Staatsbürgerschaft"
 		French:"Citoyenneté"
 	}
-	"+25% construction rate of workers, recieve free worker near the capital":{
+	"+25% construction rate of workers, receive free worker near the capital":{
 		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
@@ -7477,7 +7477,7 @@
 		German:"+20% Produktion beim Rekrutieren von Nahkampfeinheiten"
 		French:"Production +20% lors de la formation d'unités de combat rapproché"
 	}
-	"Dicipline":{
+	"Discipline":{
 		Spanish:"Diciplina"
 		Italian:"Disciplina"
 		Romanian:"Disciplină"
@@ -7741,7 +7741,7 @@
 		German:"Handelsunion"
 		French:"Unions commerciales"
 	}
-	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
+	"Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
 		Italian:"-33% mantenimento in Oro su strade e ferrovie, +2 oro per ogni rotta commerciale"//you forgot to translate this
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Romanian:"Întreținerea drumurilor și a căilor ferate redusă cu 33%, +2 aur din toate rutele comerciale"
