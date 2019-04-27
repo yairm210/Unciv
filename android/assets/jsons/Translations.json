@@ -38,7 +38,7 @@
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
 		Spanish:"Trabajando..."
-		Simplified_Chinese:"工作中..."
+		Simplified_Chinese:"进行中..."
 		Portuguese:"Trabalhando..."
 		German:"Bitte warten..."
 		Japanese:"ワーキング..."
@@ -416,7 +416,7 @@
 		German:"Gold"
 		Dutch:"Goud"
 		Spanish:"Oro"
-		Simplified_Chinese:"金钱"
+		Simplified_Chinese:"金"
 		Portuguese:"Ouro"
 		Japanese:"ゴールド"
 	}
@@ -621,7 +621,7 @@
 		French:"Nombre d'ennemies (AI):"
 		Romanian:"Număr inamici:"
 		Spanish:"Número de enemigos:"
-		Simplified_Chinese:"敌人数量"
+		Simplified_Chinese:"AI智商："
 		Portuguese:"Numero de inimigos:"
 		German:"Anzahl der Gegner:"
 		Japanese:"敵の数"
@@ -792,7 +792,7 @@
 		German:"Zerstörung anhalten"
 		Dutch:"Stad vernieteging stoppen"
 		Spanish:"Dejar de arrasar ciudad"
-		Simplified_Chinese:"停止焚城"
+		Simplified_Chinese:"停止摧毁城市"
 		Portuguese:"Parar de Saquear cidade"
 		Japanese:"街をすくい止める"
 	}
@@ -895,7 +895,7 @@
 		German:"[thingToProduce] herstellen"
 		Dutch:"[thingToProduce] produceren"
 		Spanish:"Producir [thingToProduce]"
-		Simplified_Chinese:"生产[thingToProduce]"
+		Simplified_Chinese:"产能转化：[thingToProduce]"
 		Portuguese:"Produzir [thingToProduce]"
 		Japanese:"プロデュース[thingToProduce]"
 	} 
@@ -3458,7 +3458,7 @@
 		French:"Permet la conversion de la production des villes en science"
 		Romanian:"Permite conversia producției orașului la știință"
 		Spanish:"Habilita la conversión de producción a ciencia"
-		Simplified_Chinese:"将城市产能转化为科研"
+		Simplified_Chinese:"可将城市产能转化为科研"
 		Portuguese:"Habilita a conversão de produção das cidades para ciência"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Wissenschaft"
 	}
@@ -3468,7 +3468,7 @@
 		French:"Permet la conversion de la production des villes en or"
 		Romanian:"Permite conversia producției orașului la aur"
 		Spanish:"Habilita la conversión de producción a oro"
-		Simplified_Chinese:"将城市产能转化为金钱"
+		Simplified_Chinese:"可将城市产能转化为金钱"
 		Portuguese:"Habilita a conversão da produção das cidades para ouro"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Gold"
 	}
@@ -4452,7 +4452,9 @@
 		Russian:"Аравия"
 		Dutch:"Saudi"
 	}
-	
+	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
+		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
+	}
 	
 	"America":{
 		Italian:"Stati Uniti"
@@ -4553,7 +4555,7 @@
 		French:"Colon"
 		Romanian:"Colonist"
 		Spanish:"Colono"
-		Simplified_Chinese:"开拓"
+		Simplified_Chinese:"移民"
 		Portuguese:"Colonizador"
 		German:"Siedler"
 	}
@@ -4708,7 +4710,7 @@
 		French:"Nombre d'ennemies"
 		Romanian:"Număr de inamici"
 		Spanish:"Número de enemigos"
-		Simplified_Chinese:"人类玩家数量"
+		Simplified_Chinese:"人类玩家"
 		Portuguese:"Número de inimigos"
 		German:"Anzahl der Gegner"
 	}
@@ -4718,7 +4720,7 @@
 		French:"Nombre d'ennemies"
 		Romanian:"Număr de inamici"
 		Spanish:"Número de enemigos"
-		Simplified_Chinese:"敌人数量"
+		Simplified_Chinese:"电脑玩家"
 		Portuguese:"Número de inimigos"
 		German:"Anzahl der Gegner"
 	}
@@ -4743,9 +4745,6 @@
 		German:"Kartentyp"
 		Dutch:"Kaarttype"
 	}
-	"No barbarians":{
-               Simplified_Chinese:"无蛮族"
-}
 	
 	// Diplomacy!
 	
@@ -4759,7 +4758,7 @@
 		Portuguese:"Diplomacia"
 		German:"Diplomatie"
 	}
-	
+
 	"War":{
 		Italian:"Guerra"
 		Russian:"Война"
@@ -6284,7 +6283,7 @@
 		German:"Erlaubt die Produktion von Raumschiffteilen"
 		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
 		Spanish:"Habilita la construcción de partes de Nave Espacial"
-		Simplified_Chinese:"能够建造宇宙飞船的部件"
+		Simplified_Chinese:"允许建造太空飞船的部件"
 		Portuguese:"Habilita a construção de partes da nave espacial"
 	}
 	
@@ -7452,7 +7451,7 @@
 		Spanish:"+25% bonus al luchar contra Barbaros"
 		Italian:"+25% Forza contro i Barbari; ottieni Cultura quando uccidi unità barbariche"
 		Romanian:"+25% bonus contra Barbarilor"
-		Simplified_Chinese:"所有军事单位对蛮族的战斗力+25%"
+		Simplified_Chinese:"所有军事单位对蛮族的战斗力+25%，当杀死蛮族单位时可获得文化奖励"
 		Portuguese:"+25% Força ao lutar contra Barbáros"
 		Russian:"+25% к силе атаки против варваров"
 		German:"+25% Bonus gegen Barbaren"
@@ -7869,7 +7868,7 @@
 		Russian:"Перевод городского производства в науку увеличен на 33%"
 		Romanian:"Conversia producției la știință în orașe crescută cu 33%"
 		Spanish:"Conversión de producción a ciencia incrementado un 33% en todas las ciudades"
-		Simplified_Chinese:"城市产能向科研转化+33%"
+		Simplified_Chinese:"产能向科研转化收益+33%"
 		Portuguese:"Conversão de produção para ciência em cidades aumentada por 33%"
 		German:"Umwandlung von Produktion in Wissenschaft in Städten ist um 33% erhöht."
 		French:"+33% de production lors de conversion de la production en science"
@@ -8232,7 +8231,7 @@
 		Spanish:"Las ciudades capturadas retienen sus fronteras"
 		Italian:"Le città conquistate mantengono i loro confini precedenti"
 		Romanian:"Orașele cucerite își păstrează vechile hotare"
-		Simplified_Chinese:"被占领城市保留先前的边界"
+		Simplified_Chinese:"已占领城市保留先前的边界"
 		Portuguese:"Cidades capturadas retem suas antigas frontieras"
 		Russian:"Захваченные города сохраняют свои прежние границы"
 		German:"Eingenommene Städte behalten ihre vorherigen Grenzen"
@@ -8834,17 +8833,17 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 		French:"Obsolète avec [obsoleteTech]"
-		Simplified_Chinese:"[obsoleteTech]技术已过时"
+		Simplified_Chinese:"研发下列科技后过时：[obsoleteTech]"
 	}
 	"May contain [listOfResources]":{
 		Italian:"Può contenere [listOfResources]"
 		French:""
-		Simplified_Chinese:"可以包含[listOfResources]"
+		Simplified_Chinese:"可能拥有下列资源：[listOfResources]"
 	}
 	"Occurs on [listOfTerrains]":{
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
 		French:"Doit possèder [listOfTerrains]"
-		Simplified_Chinese:"出现在[listOfTerrains]"
+		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
@@ -8858,10 +8857,10 @@ Simplified_Chinese:"需要科技：[requiredTech]"
   }
 	
 	//Options menu, pointed out by Smashfanful
-	"Missing translations":{
-		Italian:"Traduzioni mancanti"
-		Russian:"Отсутствующие переводы"
-                Simplified_Chinese:"缺少的翻译项"
+	"Missing translations:":{
+		Italian:"Traduzioni mancanti:"
+		Russian:"Отсутствующие переводы:"
+        Simplified_Chinese:"未翻译的词条:"
 	}
 	"Version":{
 		Italian:"Versione"
@@ -8875,7 +8874,7 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	}
 	"Tileset":{
 		Italian:"Set celle"
-		Simplified_Chinese:"地块设置"
+		Simplified_Chinese:"地块显示设置"
 	}
 	"Map editor":{
 		Italian:"Editor mappe"
@@ -8884,6 +8883,10 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	}
 	"Language":{
 		Italian:"Lingua"
-		Simplified_Chinese:"简体中文"
+		Simplified_Chinese:"语言设置"
+	}
+	//If don't do this,when game runs in Chinese,it will be lost some font.
+	"missing Chinese font":{
+		Simplified_Chinese:"。、，：抵抗俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
 	}
 }
