@@ -20,7 +20,7 @@ class Fonts {
         else return "Arial"
     }
 
-    val chineseFont = "SimSun"
+    val chineseFont = "WenQuanYiMicroHei"
 
     fun getCharsForFont(font: String): String {
         val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
@@ -71,7 +71,7 @@ class Fonts {
 
         val localPath = "fonts/$font.ttf"
         if (font == chineseFont)
-            download("https://github.com/micmro/Stylify-Me/raw/master/.fonts/SimSun.ttf", localPath)
+            download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf", localPath)//This font is licensed under Apache2.0 or GPLv3
     }
 
     fun getFont(size: Int): BitmapFont {

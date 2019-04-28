@@ -65,7 +65,7 @@
 		German:"in"
 		Dutch:"in"
 		Spanish:"en"
-		Simplified_Chinese:"在"
+		Simplified_Chinese:"建造或组建完成还需"
 		Portuguese:"em"
 		Japanese:"に"
 	}
@@ -144,7 +144,7 @@
 		German:"Bombardieren Sie die Stärke"
 		Dutch:"Bombard sterkte"
 		Spanish:"Fuerza de bombardeo"
-		Simplified_Chinese:"轰击力量"
+		Simplified_Chinese:"远程轰击"
 		Portuguese:"Força Bombard"
 		Japanese:"爆撃力"
 	}
@@ -237,7 +237,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"防御加成"
+		Simplified_Chinese:"防御力加成"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -1170,7 +1170,7 @@
 		German:"Freigschaltete Feldverbesserungen"
 		Dutch:"Verbeteringen vrijgespeeld"
 		Spanish:"Mejoras de casilla habilitadas"
-		Simplified_Chinese:"地块设施已启用"
+		Simplified_Chinese:"解锁地块设施"
 		Portuguese:"Melhorias de solo habilitadas"
 		Japanese:"タイルの改善"
 	}
@@ -1771,7 +1771,7 @@
 		Spanish:"[percentage] A la defensa"
 		Italian:"[percentage] difesa dell'unità"
 		Romanian:"[percentage] la defensiva unității"
-		Simplified_Chinese:"[percentage]对单位的防御"
+		Simplified_Chinese:"[percentage]单位防御力"
 		Portuguese:"[percentage] a defesa da unidade"
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
@@ -3727,7 +3727,7 @@
 		German:"Kein geländeabhängiger Verteidigungsbonus"
 		Dutch:"Geen defensiefe terreinsbonussen"
 		Spanish:"Sin bonus de defensa de terreno"
-		Simplified_Chinese:"无地形防御加成"
+		Simplified_Chinese:"无地形防御力加成"
 		Portuguese:"Nenhum bonus de defesa do terreno"
 	}
 	"Rough terrain penalty":{
@@ -4337,7 +4337,7 @@
 	"Great general provides double combat bonus, and spawns 50% faster":{
 		Italian:"I Grandi Generali concedono nascono il 50% più in fretta e il loro bonus è raddoppiato"
 		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
-		Simplified_Chinese:"大军事家提供双倍战斗加成，大军事家产生速率+50%"
+		Simplified_Chinese:"大军事家提供双倍战斗力加成，大军事家产生速率+50%"
 		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
 		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait 50% plus vite"
 		Portuguese:"Grande general fornece bônus de combate duplo e gera 50% mais rápido"
@@ -8529,7 +8529,7 @@
 		German:"+25% Verteidigung gegen alle Fernangriffe"
 		French:"+25% défence contre les attaques à distance"
 		Russian:"+25% защиты от дальних атак" 
-		Simplified_Chinese:"对战远程单位时+25%防御"
+		Simplified_Chinese:"对战远程单位时+25%防御力"
 	}
 	"March":{
 		Italian:"Marcia"
@@ -8865,7 +8865,7 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
-		Simplified_Chinese:"防御加成"
+		Simplified_Chinese:"防御力加成"
 	}
 	"Movement cost":{
 		Italian:"Costi di movimento"
@@ -8904,6 +8904,6 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	}
 	//If don't do this,when game runs in Chinese,it will be lost some font.
 	"missing Chinese font":{
-		Simplified_Chinese:"。、，：抵抗俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
+		Simplified_Chinese:"。、，：查抵抗俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
 	}
 }
