@@ -306,7 +306,8 @@
 				
 		mainColor:[ 41,83,42],
 		secondaryColor:[146,221,9],
-    		unique:"Dona una copia extra di ogni risorsa di lusso sfruttata vicino alla città. +2 Oro da ogni fonte di Petrolio e casella Oasi.",
+		uniqueName:"Carovane Commerciali",
+    		unique:"+1 Oro per ogni rotta commerciale, e doppia quantita da Petrolio.",
 		cities:["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
 			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
 			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]

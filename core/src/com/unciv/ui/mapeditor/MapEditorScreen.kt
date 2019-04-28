@@ -15,7 +15,6 @@ import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
@@ -197,11 +196,5 @@ class MapEditorScreen(): CameraStageBaseScreen(){
         scrollTable.pack()
         scrollTable.setPosition(0f, stage.height - scrollTable.height)
         return scrollTable
-    }
-}
-
-class NewMapScreen:PickerScreen(){
-    init{
-
     }
 }

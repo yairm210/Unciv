@@ -7,7 +7,7 @@ import com.unciv.ui.utils.*
 
 open class PickerScreen : CameraStageBaseScreen() {
 
-    internal var closeButton: TextButton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
+    internal var closeButton: TextButton = TextButton("Close".tr(), skin)
     protected var descriptionLabel: Label
     protected var rightSideGroup = VerticalGroup()
     protected var rightSideButton: TextButton
@@ -24,7 +24,7 @@ open class PickerScreen : CameraStageBaseScreen() {
         val labelScroll = ScrollPane(descriptionLabel)
         bottomTable.add(labelScroll).pad(5f).width(stage.width / 2)
 
-        rightSideButton = TextButton("", CameraStageBaseScreen.skin)
+        rightSideButton = TextButton("", skin)
         rightSideButton.disable()
         rightSideGroup.addActor(rightSideButton)
 
@@ -37,7 +37,7 @@ open class PickerScreen : CameraStageBaseScreen() {
 
         scrollPane.setSize(stage.width, stage.height * screenSplit)
 
-        splitPane = SplitPane(scrollPane, bottomTable, true, CameraStageBaseScreen.skin)
+        splitPane = SplitPane(scrollPane, bottomTable, true, skin)
         splitPane.splitAmount = screenSplit
         splitPane.setFillParent(true)
         stage.addActor(splitPane)

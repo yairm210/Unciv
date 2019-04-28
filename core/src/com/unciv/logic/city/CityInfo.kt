@@ -92,6 +92,7 @@ class CityInfo {
         toReturn.isBeingRazed=isBeingRazed
         toReturn.isConnectedToCapital = isConnectedToCapital
         toReturn.attackedThisTurn = attackedThisTurn
+        toReturn.resistanceCounter = resistanceCounter
         return toReturn
     }
 
@@ -128,7 +129,7 @@ class CityInfo {
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
-            val resource = GameBasics.TileResources[building.requiredResource]
+            val resource = GameBasics.TileResources[building.requiredResource]!!
             cityResources.add(resource, -1)
         }
 

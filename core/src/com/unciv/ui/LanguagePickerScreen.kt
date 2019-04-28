@@ -101,7 +101,7 @@ class LanguagePickerScreen: PickerScreen(){
     fun pickLanguage(){
         UnCivGame.Current.settings.language = chosenLanguage
         UnCivGame.Current.settings.save()
-        CameraStageBaseScreen.resetFonts()
+        resetFonts()
         UnCivGame.Current.startNewGame()
         dispose()
     }
