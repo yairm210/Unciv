@@ -237,7 +237,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"防御加成"
+		Simplified_Chinese:"防御力加成"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -1771,7 +1771,7 @@
 		Spanish:"[percentage] A la defensa"
 		Italian:"[percentage] difesa dell'unità"
 		Romanian:"[percentage] la defensiva unității"
-		Simplified_Chinese:"[percentage]对单位的防御"
+		Simplified_Chinese:"[percentage]单位防御力"
 		Portuguese:"[percentage] a defesa da unidade"
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
@@ -3727,7 +3727,7 @@
 		German:"Kein geländeabhängiger Verteidigungsbonus"
 		Dutch:"Geen defensiefe terreinsbonussen"
 		Spanish:"Sin bonus de defensa de terreno"
-		Simplified_Chinese:"无地形防御加成"
+		Simplified_Chinese:"无地形防御力加成"
 		Portuguese:"Nenhum bonus de defesa do terreno"
 	}
 	"Rough terrain penalty":{
@@ -4337,7 +4337,7 @@
 	"Great general provides double combat bonus, and spawns 50% faster":{
 		Italian:"I Grandi Generali concedono nascono il 50% più in fretta e il loro bonus è raddoppiato"
 		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
-		Simplified_Chinese:"大军事家提供双倍战斗加成，大军事家产生速率+50%"
+		Simplified_Chinese:"大军事家提供双倍战斗力加成，大军事家产生速率+50%"
 		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
 		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait 50% plus vite"
 		Portuguese:"Grande general fornece bônus de combate duplo e gera 50% mais rápido"
@@ -8529,7 +8529,7 @@
 		German:"+25% Verteidigung gegen alle Fernangriffe"
 		French:"+25% défence contre les attaques à distance"
 		Russian:"+25% защиты от дальних атак" 
-		Simplified_Chinese:"对战远程单位时+25%防御"
+		Simplified_Chinese:"对战远程单位时+25%防御力"
 	}
 	"March":{
 		Italian:"Marcia"
@@ -8865,7 +8865,7 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
-		Simplified_Chinese:"防御加成"
+		Simplified_Chinese:"防御力加成"
 	}
 	"Movement cost":{
 		Italian:"Costi di movimento"
