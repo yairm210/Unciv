@@ -52,6 +52,8 @@ class Automation {
 
     fun chooseMilitaryUnit(city: CityInfo) : String {
         val militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
+        if (militaryUnits.map { it.name }.contains(city.cityConstructions.currentConstruction))
+            return city.cityConstructions.currentConstruction
         val chosenUnit: BaseUnit
         if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
                 && militaryUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
