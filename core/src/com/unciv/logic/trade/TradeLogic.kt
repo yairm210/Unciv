@@ -96,11 +96,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     from.updateViewableTiles()
                 }
                 if(offer.type== TradeType.Treaty){
-                    if(offer.name=="Peace Treaty"){
-                        to.getDiplomacyManager(from).diplomaticStatus= DiplomaticStatus.Peace
-                        for(unit in to.getCivUnits().filter { it.getTile().getOwner()==from })
-                            unit.movementAlgs().teleportToClosestMoveableTile()
-                    }
+                    if(offer.name=="Peace Treaty") to.getDiplomacyManager(from).makePeace()
                 }
                 if(offer.type==TradeType.Introduction)
                     to.meetCivilization(to.gameInfo.getCivilization(offer.name.split(" ")[2]))

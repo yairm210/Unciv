@@ -123,7 +123,6 @@ class CivilizationInfo {
         return translatedNation
     }
 
-    fun isCityState(): Boolean = getNation().isCityState()
     fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
 
@@ -131,6 +130,8 @@ class CivilizationInfo {
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
+    fun isCityState(): Boolean = getNation().isCityState()
+    fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
     fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
 
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
