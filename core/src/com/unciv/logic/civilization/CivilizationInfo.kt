@@ -147,7 +147,7 @@ class CivilizationInfo {
         for (otherCivName in diplomacy.keys) {
             val otherCiv = gameInfo.getCivilization(otherCivName)
             if (otherCiv.isCityState() && otherCiv.diplomacy[civName]!!.influence > 60) {
-                var cultureBonus = Stats()
+                val cultureBonus = Stats()
                 cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
                 if (statMap.containsKey("City States"))
                     statMap["City States"] = statMap["City States"]!! + cultureBonus

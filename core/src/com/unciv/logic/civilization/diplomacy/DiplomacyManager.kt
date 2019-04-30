@@ -28,7 +28,7 @@ class DiplomacyManager() {
      *  The JSON serialize/deserialize REFUSES to deserialize hashmap keys as Enums, so I'm forced to use strings instead =(
      *  This is so sad Alexa play Despacito */
     var flagsCountdown = HashMap<String,Int>()
-    var influence: Int = 0 // For city states
+    var influence = 0f // For city states
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
@@ -145,11 +145,11 @@ class DiplomacyManager() {
             if(flagsCountdown[flag]==0) flagsCountdown.remove(flag)
         }
 
-        if (influence > 0) {
+        if (influence > 1) {
             influence -= 1
-        } else if (influence < 0) {
+        } else if (influence < 1) {
             influence += 1
-        }
+        } else influence = 0f
 
     }
 
