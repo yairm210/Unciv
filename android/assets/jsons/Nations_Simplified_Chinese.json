@@ -43,9 +43,9 @@
 		startIntroPart1: "愿诸神赐福予您，亚历山大大帝，希腊民族的统治者。长久以来，您的人民居住在一个个独立的城邦里。雅典、斯巴达、底比斯，带给世界一份又一份伟大的献礼——民主、哲学、悲剧、艺术、建筑，这些都是西方文明的基石。城邦间时而友好、时而争战，人口亦不多，却在公元前5世纪击败了他们最强大的邻居——波斯帝国。"
 		startIntroPart2: "亚历山大，您的人民已经准备好踏上征途，去传扬伟大的希腊文化，并为您带来永恒的荣耀。我王，准备好迎接您的命运了吗？您有信心凯旋而归，成就伟业吗？您所打造的文明，能够长盛不衰吗？"
 		
-		declaringWar:"You are in my way, you must be destroyed."
-		attacked:"As a matter of fact I too grow weary of peace."
-		defeated:"You have somehow become my undoing! What kind of beast are you?"
+		declaringWar:"挡我路者,格杀勿论！"
+		attacked:"我也对和平感到厌倦了，就陪你玩玩吧！"
+		defeated:"你毁灭了我？是真的么？你到底属于什么族类？"
 		introduction:"幸会！我是亚历山大，列王的子嗣，神灵的后裔！你能这么介绍自己吗？"
 		
 		neutralHello:"Greetings!"
@@ -58,7 +58,7 @@
 		hateNo:["This is not pleasant!","You're not being earnest!","Pardon me?"]
 		hateYes:["Oh, very well.","I suppose I must.","Well done."]
 		
-		afterPeace:"I must congratulate you on your remarkable victory."
+		afterPeace:"祝贺你取得了标志性的胜利！"
 		tradeRequest:"My friend, does this seem reasonable to you?"
 				
 		mainColor:[181, 232, 232],
@@ -75,9 +75,9 @@
 		startIntroPart1: "皇天眷顾您，至尊至圣的华夏天子则天大帝！万岁！闭月羞花沉鱼落雁的女皇！您是自有人类以来最古老和最伟大的文明——中华文明的领袖。拨开时间的迷雾，回溯中国的历史，早在其他文明尚无踪迹的时代，华夏人民已经完成了无数伟大的业绩。任何公正的评论者都会承认中国在艺术和科学上的贡献太繁多、太奇妙——印刷术、火药、夫子之道——这仅仅是中华文明为这个蛮荒世界带来的无数珍礼中的沧海一粟！"
 		startIntroPart2: "您，从芸芸嫔妃中脱颖而出成为圣明的天后，并最终登上皇帝的宝座。当伟大的中央天朝再次面对四方戎狄侵扰之时，您的百姓呼唤您领导他们！您能战胜您所有的敌人并再造一个辉煌的盛世吗？您能建起一个万古长存的文明吗？"
 
-		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
-		attacked:"Fool! I will disembowel you all!"
-		defeated:"You have proven to be a cunning and competent adversary. I congratulate you on your victory."
+		declaringWar:"你们再也不能冒犯我了，见阎王去吧！"
+		attacked:"蠢货！我要把你们开膛破肚！"
+		defeated:"我们已经证明了你是一个狡猾称职的对手，我为你的胜利祝贺！"
 		introduction:"你好，我是女皇帝武则天。中国追求和平以谋求自身发展。人不犯我，我不犯人。"
 		
 		neutralHello:"How are you today?"
@@ -110,9 +110,9 @@
 		startIntroPart1: "恭迎埃及法老拉美西斯大王，太阳因您而升起、尼罗河水因您而流动、全埃及的人民因您而受到赐福！我主，在远古蒙昧之际，您的人民便住在尼罗河岸上。他们将文字带来世间，又善于计算，更创造了无数雕刻和建筑。数千年前，您的人民所建立的纪念碑，至今仍屹立不倒，仍然是人民的骄傲。",
 		startIntroPart2: "我主拉美西斯，无数年来，您的人民正在忍受苦难，目睹了一个又一个卑下民族的兴盛，然后一个接一个地归于尘土。您的人民引颈以待，等着您带领他们再一次成就伟大。我主，您能再一次为众神增光吗？您能将埃及带回世界的中心吗？您能建起一个流传万世的文明吗？ ",
 		
-		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
-		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
-		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
+		declaringWar:"小小蝼蚁般的可悲文明，去死吧。",
+		attacked:"可怜的蠢蛋。你在毁灭你自己和你可悲的文明。",
+		defeated:"你什么也没得到。就算把我打倒，我的灵魂也会将你永堕深渊。",
 		introduction:" 向你致意。我是拉美西斯神，我是所有其他文明的父母之邦——埃及的化身。",
 		
 		neutralHello:"Good day.",
@@ -125,8 +125,8 @@
 		hateNo:["This is unacceptable.","You cannot be serious about your request."],
 		hateYes:["Oh, very well.","I think I should agree."],
 		
-		afterPeace:"You know I could have destroyed you, but the feeling of generosity perfumes me today.",
-		tradeRequest:"Generous Egypt makes you this offer.",
+		afterPeace:"你知道我完全能够消灭你，但是我今天我选择宽容。",
+		tradeRequest:"慷慨的埃及向你提议以下交易。",
 		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
@@ -145,9 +145,9 @@
 		startIntroPart1: "歌颂尊贵的荣光的伊丽莎白女王陛下。您是海洋大国英格兰的领袖与守护者。英格兰是一片古老的土地，三万五千年前就有人居住。这座岛屿经历过一波又一波的入侵，每一次都增加了这个国家文化族群的多样性。英格兰并不大，但她的人民一直主宰着世界舞台。英格兰人并不多，但却拥有无与伦比的水手、才华横溢的艺人、精明干练的商人，英格兰人的影响力远超于想象。"
 		startIntroPart2: "伊丽莎白女王，期望您能为英格兰人民带来一个黄金时代。他们期待着和平与富裕。您能继承英格兰伟大的传统吗？您能够重建日不落帝国，并经受住时间的考验吗？"
 	
-		declaringWar:"By the grace of God, your days are numbered."
-		attacked:"We shall never surrender."
-		defeated:"You have triumphed over us. The day is yours."
+		declaringWar:"上帝作证，你的末日就要到了！"
+		attacked:"我们永不放弃抵抗！以血还血，以牙还牙！"
+		defeated:"你战胜了我们，这个时代将由你掌控。"
 		introduction:"很高兴见到你。我祈祷幸运的清风会将我们汇聚到一起。"
 		
 		neutralHello:"Hello, again."
@@ -161,7 +161,7 @@
 		hateYes:["Oh, very well!","I suppose I must!"]
 		
 		afterPeace:"Well then, that's settled."
-		tradeRequest:"Would you be interested in a trade agreement with England?"
+		tradeRequest:"我亲爱的朋友，你有兴趣与英格兰做一笔交易吗？"
 		
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
