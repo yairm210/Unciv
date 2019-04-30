@@ -1,0 +1,927 @@
+[
+	{
+		name:"巴比伦",
+		leaderName:"尼布甲尼撒二世",
+		adjective:["巴比伦的"],
+		startBias:["Avoid Tundra"],
+		
+		startIntroPart1: "愿上天祝福你，伟大的尼布甲尼撒，古老而强大的巴比伦之父！五千年前人类文明尚处幼年，萨尔贡已经建立了巴比伦城。此后的巴比伦持续成长繁荣，到公元前18世纪由神一般的“立法者”汉谟拉比开创了第一个帝国。虽然曾经一度被加喜特人和亚述人征服，巴比伦还是象浴火凤凰那样顽强地从灰烬中重生，再次从众多敌人手中赢得独立。巴比伦确实是远古世界的艺术与学术中心！",
+		startIntroPart2: "尼布甲尼撒啊，你的帝国在你去世后不久沦陷于波斯入侵者，然后又被希腊人占据，伟大的巴比伦城在公元前141年最终毁灭。但是巴比伦文明真的永远消逝了吗，伟大的尼布甲尼撒？你的人民期待你再次恢复帝国的生命！你愿意接受挑战吗？你能够开创一个历久弥新的文明吗？",
+		
+		declaringWar:"魔鬼们渴望着战士的鲜血。开战吧！",
+		attacked:"哦嗯。我想你明白你正在做什么。",
+		defeated:"都结束了。也许我终于想要和平了。",
+		introduction:"我是尼布甲尼撒。你是真人还是我胡思乱想出来的幽灵？",
+		
+		neutralHello:"欢迎您的到来！",
+		neutralLetsHearIt:["我正在听。","你想做什么？"],
+		neutralNo:["不行！","绝对不行。","这是不可接受的！"],
+		neutralYes:["成交！","好的！","同意！"],
+
+		hateHello:"你想做什么？！",
+		hateLetsHearIt:["我确实在听。","我在听！"],
+		hateNo:["不行！","绝对不行。","这是不可接受的！"],
+		hateYes:["同意！"],
+		
+		afterPeace:"愚蠢啊，愚蠢啊——让我活下去。对你的敌人一定要斩草除根。",
+		tradeRequest:"看来你确实有存在的理由——和我进行交易。",
+				
+		mainColor:[27,53,63],
+		secondaryColor:[213,249,255],
+		uniqueName:"智慧创新",
+		unique:"发明文字后立即获得一位大科学家。大科学家点数积累速率+50%",
+		cities:["B巴比伦","阿卡德","杜尔-库里加尔祖","尼普尔","博尔西帕","西帕尔","俄庇斯","马里","苏萨","埃什努那",
+			"以拉撒","乌鲁克","库塔","拉格什","内里布图","亚述","尼尼微","尼姆鲁德","埃尔比勒","努济",
+			"阿拉普哈","图图布","沙杜普姆","腊皮库姆","马什干-沙皮尔","图图尔","拉马迪","阿奈","哈拉杜姆","阿格拉布"]
+	},
+	{
+		name:"希腊",
+		leaderName:"亚历山大",
+		adjective:["希腊的"],
+		startBias:["Coast"],
+		
+		startIntroPart1: "愿诸神赐福予您，亚历山大大帝，希腊民族的统治者。长久以来，您的人民居住在一个个独立的城邦里。雅典、斯巴达、底比斯，带给世界一份又一份伟大的献礼——民主、哲学、悲剧、艺术、建筑，这些都是西方文明的基石。城邦间时而友好、时而争战，人口亦不多，却在公元前5世纪击败了他们最强大的邻居——波斯帝国。"
+		startIntroPart2: "亚历山大，您的人民已经准备好踏上征途，去传扬伟大的希腊文化，并为您带来永恒的荣耀。我王，准备好迎接您的命运了吗？您有信心凯旋而归，成就伟业吗？您所打造的文明，能够长盛不衰吗？"
+		
+		declaringWar:"You are in my way, you must be destroyed."
+		attacked:"As a matter of fact I too grow weary of peace."
+		defeated:"You have somehow become my undoing! What kind of beast are you?"
+		introduction:"幸会！我是亚历山大，列王的子嗣，神灵的后裔！你能这么介绍自己吗？"
+		
+		neutralHello:"Greetings!"
+		neutralLetsHearIt:["I'm listening.","Go on.","Yes?","Come."]
+		neutralNo:["We decline.","Certainly not.","It is necessary not to accept."]
+		neutralYes:["Certainly.","Very much.","The very best!"]
+
+		hateHello:"What?"
+		hateLetsHearIt:["You say.","And?","Come on."]
+		hateNo:["This is not pleasant!","You're not being earnest!","Pardon me?"]
+		hateYes:["Oh, very well.","I suppose I must.","Well done."]
+		
+		afterPeace:"I must congratulate you on your remarkable victory."
+		tradeRequest:"My friend, does this seem reasonable to you?"
+				
+		mainColor:[181, 232, 232],
+		secondaryColor:[68,142,249],
+		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
+			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
+			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
+	},
+	{
+		name:"中华",
+		leaderName:"武则天",
+		adjective:["中华的"],
+		
+		startIntroPart1: "皇天眷顾您，至尊至圣的华夏天子则天大帝！万岁！闭月羞花沉鱼落雁的女皇！您是自有人类以来最古老和最伟大的文明——中华文明的领袖。拨开时间的迷雾，回溯中国的历史，早在其他文明尚无踪迹的时代，华夏人民已经完成了无数伟大的业绩。任何公正的评论者都会承认中国在艺术和科学上的贡献太繁多、太奇妙——印刷术、火药、夫子之道——这仅仅是中华文明为这个蛮荒世界带来的无数珍礼中的沧海一粟！"
+		startIntroPart2: "您，从芸芸嫔妃中脱颖而出成为圣明的天后，并最终登上皇帝的宝座。当伟大的中央天朝再次面对四方戎狄侵扰之时，您的百姓呼唤您领导他们！您能战胜您所有的敌人并再造一个辉煌的盛世吗？您能建起一个万古长存的文明吗？"
+
+		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
+		attacked:"Fool! I will disembowel you all!"
+		defeated:"You have proven to be a cunning and competent adversary. I congratulate you on your victory."
+		introduction:"你好，我是女皇帝武则天。中国追求和平以谋求自身发展。人不犯我，我不犯人。"
+		
+		neutralHello:"How are you today?"
+		neutralLetsHearIt:["Continue.","What?","Keep going."]
+		neutralNo:["Nope.","Of course not.","Definitely not."]
+		neutralYes:["Of course.","I agree.","Excellent!"]
+
+		hateHello:" Oh. It's you?"
+		hateLetsHearIt:["And what else?","Keep talking."]
+		hateNo:["I cannot accept that.","Sorry, say that again.","Get out of my face!"]
+		hateYes:["I suppose I must accept.","Ah. Very good."]
+		
+		afterPeace:"The Blessings of Heaven be upon you."
+		tradeRequest:"My friend, do you think you can accept this request?"
+				
+		mainColor:[9, 112, 84],
+		secondaryColor:[255,255,255],
+		uniqueName:"Art of War",
+		unique:"Great general provides double combat bonus, and spawns 50% faster"
+		cities:["北京","上海","广州","南京","西安","成都","杭州","天津","澳门","山东",
+			"开封","宁波","保定","扬州","哈尔滨","重庆","洛阳","昆明","台北","沈阳",
+			"太原","台南","大连","丽江","无锡","苏州","茂名","韶关","阳江","河源"]
+	},
+	{
+		name:"埃及",
+		leaderName:"拉美西斯二世",
+		adjective:["埃及的"],
+		startBias:["Avoid Jungle","Avoid Forest"],
+		
+		startIntroPart1: "恭迎埃及法老拉美西斯大王，太阳因您而升起、尼罗河水因您而流动、全埃及的人民因您而受到赐福！我主，在远古蒙昧之际，您的人民便住在尼罗河岸上。他们将文字带来世间，又善于计算，更创造了无数雕刻和建筑。数千年前，您的人民所建立的纪念碑，至今仍屹立不倒，仍然是人民的骄傲。",
+		startIntroPart2: "我主拉美西斯，无数年来，您的人民正在忍受苦难，目睹了一个又一个卑下民族的兴盛，然后一个接一个地归于尘土。您的人民引颈以待，等着您带领他们再一次成就伟大。我主，您能再一次为众神增光吗？您能将埃及带回世界的中心吗？您能建起一个流传万世的文明吗？ ",
+		
+		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
+		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
+		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
+		introduction:" 向你致意。我是拉美西斯神，我是所有其他文明的父母之邦——埃及的化身。",
+		
+		neutralHello:"Good day.",
+		neutralLetsHearIt:["Go on.","Speak.","I am all ears."],
+		neutralNo:["No.","Definitely not."],
+		neutralYes:["Okay.","Very well."],
+		
+		hateHello:"Oh, it's you.",
+		hateLetsHearIt:["Then?","Finish your speech."],
+		hateNo:["This is unacceptable.","You cannot be serious about your request."],
+		hateYes:["Oh, very well.","I think I should agree."],
+		
+		afterPeace:"You know I could have destroyed you, but the feeling of generosity perfumes me today.",
+		tradeRequest:"Generous Egypt makes you this offer.",
+		
+		mainColor:[ 231, 213, 0],
+		secondaryColor:[98,10,210],
+		uniqueName:"Monument Builders",
+		unique:"+20% production towards Wonder construction",
+		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
+			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
+			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+	},
+	{
+		name:"英格兰",
+		leaderName:"伊丽莎白",
+		adjective:["英格兰的"],
+		startBias:["Coast"],
+	
+		startIntroPart1: "歌颂尊贵的荣光的伊丽莎白女王陛下。您是海洋大国英格兰的领袖与守护者。英格兰是一片古老的土地，三万五千年前就有人居住。这座岛屿经历过一波又一波的入侵，每一次都增加了这个国家文化族群的多样性。英格兰并不大，但她的人民一直主宰着世界舞台。英格兰人并不多，但却拥有无与伦比的水手、才华横溢的艺人、精明干练的商人，英格兰人的影响力远超于想象。"
+		startIntroPart2: "伊丽莎白女王，期望您能为英格兰人民带来一个黄金时代。他们期待着和平与富裕。您能继承英格兰伟大的传统吗？您能够重建日不落帝国，并经受住时间的考验吗？"
+	
+		declaringWar:"By the grace of God, your days are numbered."
+		attacked:"We shall never surrender."
+		defeated:"You have triumphed over us. The day is yours."
+		introduction:"很高兴见到你。我祈祷幸运的清风会将我们汇聚到一起。"
+		
+		neutralHello:"Hello, again."
+		neutralLetsHearIt:["Go on.","Go ahead."]
+		neutralNo:["I beg your pardon?","That's unacceptable!"]
+		neutralYes:["Certainly!","Very well!"]
+
+		hateHello:"Oh, it's you!"
+		hateLetsHearIt:["I'm listening.","You were saying?"]
+		hateNo:["You cannot be serious.","Of course not!"]
+		hateYes:["Oh, very well!","I suppose I must!"]
+		
+		afterPeace:"Well then, that's settled."
+		tradeRequest:"Would you be interested in a trade agreement with England?"
+		
+		mainColor:[ 114, 0, 0],
+		secondaryColor:[255,255,255],
+		uniqueName:"Sun Never Sets"
+		unique:"+2 movement for all naval units"
+		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
+			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
+			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+	},
+	{
+		name:"法兰西",
+		leaderName:"拿破仑",
+		adjective:["法兰西的"],
+		
+		startIntroPart1: "万岁！第一执政、法兰西人民的皇帝拿破仑陛下战无不胜！法国是欧洲的心脏，长久以来，巴黎是世界文化、艺术与文学的中心。纵使有不少对手一直虎视眈眈，摆出敌国的姿态，法国仍能成就她的伟大，长久不衰。法国有世上最优秀的将士，他们的凯歌，从世界的一端奏响至另一端。"
+		startIntroPart2: "拿破仑·波拿巴，法兰西渴望着您重建帝国的日子。法国向往着荣耀与伟大。法国期待再一次成为高雅文化的荟萃之地。皇帝陛下，您能再一次将仇敌踩在脚下吗？您所建立的法兰西帝国，能够长盛不衰吗？"
+
+		declaringWar:"You're disturbing us, prepare for war.",
+		attacked:"You've fallen into my trap. I'll bury you.",
+		defeated:"I congratulate you for your victory."
+		introduction:"欢迎你。我是法兰西帝国皇帝拿破仑，世界历史上最伟大的军事天才！"
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["Continue.","I'm listening.","Go on.","You were saying?"]
+		neutralNo:["We refuse.","Of course not.","No."]
+		neutralYes:["Excellent.","Very well.","I heard."]
+
+		hateHello:"It's you."
+		hateLetsHearIt:["Speak."]
+		hateNo:["You cannot be serious.","Certainly not.","That's unacceptable."]
+		hateYes:["All right.","I guess I've no choice.","Certainly.","It's all right."]
+		
+		afterPeace:"It seems I underestimated you. I won't make the same mistake again, I promise you."
+		tradeRequest:"France offers you this exceptional proposition."
+		
+		mainColor:[ 38, 98, 255],
+		secondaryColor:[239,236,148],
+		uniqueName:"Ancien Régime"
+		unique:"+2 Culture per turn from cities before discovering Steam Power",
+		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
+			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
+			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]
+	},
+	{
+		name:"俄罗斯",
+		leaderName:"叶卡捷琳娜",
+		adjective:["俄罗斯的"],
+		startBias:["Tundra"],
+	
+		startIntroPart1: "祝福您，至高无上的叶卡捷琳娜陛下，俄罗斯人民完美的女皇。在您治下的是一个世界上最庞大的国家。强大的俄罗斯帝国，拥有着东起太平洋、西至波罗的海之间的广袤土地。尽管受到战争、干旱和种种灾祸的威胁，英勇的俄罗斯人民成功地生存了下来，并走向兴旺发达，他们的艺术家和科学家们更是世界上数一数二的。时至今日，俄罗斯仍然是人类历史上最为强盛的国家之一，是一个真正的超级强权，驾驭着发明史上最为巨大的破坏性力量。"
+		startIntroPart2: "叶卡捷琳娜啊，您的人民期盼地看着您，带领他们迈向帝国和人民光辉的岁月，大地重新变得活力四射，文明的奇迹再次降临。您会引导您的人民走向辉煌吗？您能建立起一个经受得住时间考验的文明吗？"
+	
+		declaringWar:"You've behaved yourself very badly, you know it. Now it's payback time.",
+		attacked:"You've mistaken my passion for a weakness, you'll regret about this."
+		defeated:"We were defeated, so this makes me your prisoner. I suppose there are worse fates."
+		introduction:"你好，陌生人！如果你的智慧和理性能象你的相貌那样出众的话我们一定能合得来。"
+		
+		neutralHello:"Hello!"
+		neutralLetsHearIt:["Go on.","Speak."]
+		neutralNo:["We decline.","Ha! Of course not!","Certainly not."]
+		neutralYes:["Of course.","I agree.","Excellent!"]
+
+		hateHello:"What do you need?!"
+		hateLetsHearIt:["And?","Forward.","Go on."]
+		hateNo:["Are you joking?!","I beg your pardon?!","This is unacceptable."]
+		hateYes:["I think...I shall agree.","Oh... Very good.","Deal."]
+		
+		afterPeace:"Now it's the time to enjoy the fruits of peace."
+		tradeRequest:"How would you like it if I propose this kind of exchange?"
+				
+		mainColor:[ 236, 178, 0],
+		secondaryColor:[0,0,0],
+		uniqueName:"Siberian Riches"
+		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
+		cities:["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
+			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
+			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+	},
+	{
+		name:"罗马",
+		leaderName:"奥古斯都·恺撒",
+		adjective:["罗马的"],
+		
+		startIntroPart1: "愿众神赐福给您，罗马帝国及罗马公民的皇帝奥古斯都·恺撒。您的帝国是西方文明中最强大最持久的帝国，您的人民独立创造了罗马的文化、法律、艺术和军事成就，这样的伟业前无古人、后无来者。历年来光荣的征战，罗马掌控了整个地中海，领土西起西班牙，东至叙利亚。罗马的统治最终扩张至不列颠大部与日耳曼北部。罗马的艺术与建筑至今仍然使世人敬畏，赋予世人灵感。她仍然为一切后来者所憧憬和向往。"
+		startIntroPart2: "我全能的皇帝，您的人民求您重建罗马的荣光。您会否响应人民的愿望，使帝国再一次腾飞？您会否为世界重新带来和平与秩序？您能否让罗马再度成为世界的中心？您所建立的帝国，能否延绵万代？"
+		
+		declaringWar:"My treasury contains little and my soldiers are getting impatient... <sigh> ...therefore you must die."
+		attacked:"So brave, yet so stupid! If only you had a brain similar to your courage."
+		defeated:"The gods have deprived Rome of their favour. We have been defeated."
+		introduction:"欢迎你。我是奥古斯都，罗马帝国皇帝兼最高祭司。如果你是罗马的朋友，那么你将受到欢迎。"
+		
+		neutralHello:"Hail."
+		neutralLetsHearIt:["Begin.","Continue."]
+		neutralNo:["No.","Certainly not!"]
+		neutralYes:["Good.","I agree."]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["And?","Continue."]
+		hateNo:["That is unpleasant.","You can't be serious!"]
+		hateYes:["Good.","Oh. Good."]
+		
+		afterPeace:"Your soldiers fought well. I congratulate you on your victory."
+		tradeRequest:"I offer this, for your consideration."
+				
+		mainColor:[ 53,0,87],
+		secondaryColor:[238,201,9],
+		uniqueName:"The Glory of Rome"
+		unique:"+25% Production towards any buildings that already exist in the Capital",
+		cities:["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
+			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
+			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+	},
+	{
+		name:"阿拉伯",
+		leaderName:"哈伦·拉希德",
+		adjective:["阿拉伯的"],
+		startBias:["Desert"],
+		
+		startIntroPart1: "愿真主赐福与您，伟大的哈里发哈伦·拉希德，虔诚的阿拉伯人民的领袖！公元632年先知穆罕默德归真后不久，他的追随者们便发动了一系列的征服战争，以期将真主的统治带给大地上的每个人民。动荡过后，哈里发的穆斯林帝国建立了。之后，哈里发愈发强势，在其鼎盛时期，统治区域包括西班牙、北非、中东、安纳托利亚（小亚细亚）、巴尔干半岛和波斯，一个甚至比罗马还要大的帝国。当欧洲国家陷入愚昧和混乱的中世纪时，艺术与科学正在阿拉伯的土地上百花齐放。伊斯兰王权存在了600年，最后屈服于毁灭了数个帝国的蒙古人的武力。"
+		startIntroPart2: "伟大的哈里发哈伦·拉希德，您的人民企盼您带领他们重建丰功伟业，让阿拉伯再一次成为艺术与知识的开明之地，再一次成为无所畏惧的国家。哈里发啊，您愿意接受挑战吗？您能开创一个历久弥新的文明吗？"
+		
+		declaringWar:"The world will be more beautiful without you. Prepare for war."
+		attacked:"Fool! You will soon regret dearly! I swear it!"
+		defeated:"You have won, congratulations. My palace is now in your possession, and I beg that you care well for the peacock."
+		introduction:"欢迎你，陌生人！我是阿拉伯的统治者哈伦·拉希德。来吧——告诉我关于你们帝国的故事。"
+		
+		neutralHello:"Peace be upon you."
+		neutralLetsHearIt:["What is this?","What were you saying?"]
+		neutralNo:["Of course not.","Certainly not."]
+		neutralYes:["Okay.","Excellent."]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["What's this?!","Finish your speech."]
+		hateNo:["This matter is unacceptable.","You can't be serious about this request."]
+		hateYes:["Very well.","If I must."]
+		
+		afterPeace:"We thank you for your generous terms, we will not forget the favor you show us."
+		tradeRequest:"Come forth, let's do business."
+				
+		mainColor:[ 41,83,42],
+		secondaryColor:[146,221,9],
+		uniqueName:"Trade Caravans",
+		unique:"+1 Gold from each Trade Route, Oil resources provide double quantity"
+		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
+			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
+			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+	},
+	{
+		name:"美利坚",
+		leaderName:"华盛顿",
+		adjective:["美利坚的"],
+		
+		startIntroPart1: "欢迎，华盛顿总统！您所带领的是勤劳的美利坚文明。美国建立于18世纪的革命战争中，在一百年后联邦又卷入了几乎将其一分为二的可怕内战。但是，仅仅经过了数十年发展，到20世纪时美国达到了其力量的巅峰，以胜利的雄姿，屹立于毁灭了多个伟大国家的两次可怕的世界大战中。"
+		startIntroPart2: "美国是一个移民国家，充满了乐观与决心。人民只缺一个领袖来引领他们实现梦想。华盛顿总统，您能带领美国人民走向伟大吗？您能建立起一个经受得住时间考验的文明吗？"
+
+		declaringWar:"Your wanton aggression leaves us no choice. Prepare for war!"
+		attacked:"You have mistaken our love of peace for weakness. You shall regret this!"
+		defeated:"The day...is yours. I hope you will be merciful in your triumph."
+		introduction:"我谨代表美利坚合众国的公民向你表示欢迎。"
+		
+		neutralHello:"Good day."
+		neutralLetsHearIt:["Proceed!","Go ahead.","I'm listening."]
+		neutralNo:["Of course not!","No."]
+		neutralYes:["Very well.","Alright.","Certainly!"]
+
+		hateHello:"Well?"
+		hateLetsHearIt:["Go on.","You were saying?"]
+		hateNo:["Certainly not.","We decline!","You cannot be serious."]
+		hateYes:["Oh, very well.","I suppose I must.","Agreed.","Alright."]
+		
+		afterPeace:"We welcome peace with your great nation. I pray that no future misunderstanding will come between our two peoples."
+		tradeRequest:"Is the following trade of interest to you?"
+				
+		mainColor:[ 28,51,119],
+		secondaryColor:[255,255,255],
+		uniqueName:"Manifest Destiny"
+		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",
+		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
+			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
+			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+	},
+	{
+		name:"日本",
+		leaderName:"织田信长",
+		adjective:["日本的"],
+		startBias:["Coast"],
+		
+		startIntroPart1: "降福于您高贵的织田信长大人，日出之地的统治者，愿您永远行走于鲜花盛开之地。日本人居住在大地东边尽头的岛屿上，虔诚于他们的文学，自豪于他们的艺术。日本文明可以追溯上千年，有时默默无闻，有时血腥争霸；有时对外扩张，有时闭关锁国；有巨富豪商，也有饿殍遍地。他们在战场上勇猛无畏，同时在工厂里也是精力无限，而技术方面往往又能推陈出新，这样强大的工业力量，常叫人羡慕不已。"
+		startIntroPart2: "传奇的大名，信长阁下，您能够抓住命运的缰绳吗？您能为您的家族与人民带来荣耀吗？您能再一次拿起剑盾，走向胜利吗？天下布武，能够实现吗？"
+		
+		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
+		attacked:"Pitiful fool! Now we shall destroy you!"
+		defeated:"You were much wiser than I thought."
+		introduction:"卑贱的士兵向强大的勇士致敬，希望我们能缔结一份公平的盟约。"
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
+		neutralNo:["Sorry.","No.","Maybe another time."]
+		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
+
+		hateHello:"Oh, it's you..."
+		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
+		hateNo:["Ie. (No)","Excuse me?","Maybe another time"]
+		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
+		
+		afterPeace:"It was an honor to fight you."
+		tradeRequest:"I would be grateful if you agreed on the following proposal."
+				
+		mainColor:[215,225,225],
+		secondaryColor:[185,0,0],
+		uniqueName:"Bushido"
+		unique: "Units fight as though they were at full strength even when damaged",
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Hakodate","Ota","Tottori"]
+	},
+	/*
+	{
+		name:"Germany",
+		leaderName:"Otto von Bismark",
+		adjective:["German"],
+		
+		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
+		startIntroPart2: "Great Prince Bismark, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rile and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!"
+		attacked:"Corrupted villain! We will bring you into the ground!"
+		defeated:"Germany has been destroyed. I weep for the future generations."
+		introduction:"Guten tag. In the name of the great German people, I bid you welcome."
+		
+		neutralHello:"What now?"
+		neutralLetsHearIt:["What do ye say?","Yes?","Ja?"]
+		neutralNo:["We do not accept.","Nein.","Not a chance."]
+		neutralYes:["Agreed","Very well, then","Alright."]
+
+		hateHello:"So, out with it!"
+		hateLetsHearIt:["And?!","Come on!","Well, tell me!"]
+		hateNo:["That is unacceptable!","Ye can't be serious!","Nein!"]
+		hateYes:["Well, okay.","Gut.","It seems I can't refuse."]
+		
+		afterPeace:"What do ye think about calling it a draw?"
+		tradeRequest:"It would be in your best interest, to carefully consider this proposal."
+				
+		mainColor:[224,224,224],
+		secondaryColor:[64,64,64],
+		uniqueName:"Furor Teutonicus"
+		unique:"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Also, land unit manteinance is reduced by 25%.",
+		cities:["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
+			"Hannover","Duisburg","Leipzig","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
+			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
+			"Erfurt","Kaiserslautern","Kassel","Oberhausen","Hamm","Saarbrucken","Krefeld","Pirmasens","Potsdam","Solingen",
+			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
+			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
+	},
+	{
+		name:"India",
+		leaderName:"Gandhi",
+		adjective:["Indian"],
+		startBias:["Grassland"],
+		
+		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
+		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
+		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
+		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
+		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
+		
+		neutralHello:"I wish you peace."
+		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
+		neutralNo:["Absolutely not.","No.","This is unacceptable"]
+		neutralYes:["Okay.","We agree.","Fine."]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["Continue.","And?","Go on."]
+		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
+		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
+		
+		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
+		tradeRequest:"My friend, are you interested in this arrangement?"
+				
+		mainColor:[0,255,0],
+		secondaryColor:[255,153,51],
+		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
+		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
+			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
+			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
+	},
+	{
+		name:"Aztecs",
+		leaderName:"Montezuma I",
+		adjective:["Aztec"],
+		startBias:["Jungle"],
+		
+		startIntroPart1: "Welcome, o divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
+		startIntroPart2: "O great king Mintezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Die, die, die!)"
+		attacked:"Excellent! Let the blood flow in raging torrents!"
+		defeated:" Monster! Who are you to destroy my greatness?"
+		introduction:"What do I see before me? Another beating heart for my sacrificial fire."
+		
+		neutralHello:"Welcome, friend."
+		neutralLetsHearIt:["Go ahead.","Proceed.","I'm listening."]
+		neutralNo:["Certainly not!","No!","Unacceptable!"]
+		neutralYes:["Certainly.","Yes, it is good.","Agreed!"]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["What?","What do you say?","Go on."]
+		hateNo:["Are you crazy?","Certainly not!","I would rather pierce my bowels with hot skewers!"]
+		hateYes:["Oh, very well.","I suppose I must.","Yes, it is good!"]
+		
+		afterPeace:"Curses! I will sacrifice ten thousand citizens to expiate this humiliation!"
+		tradeRequest:" Accept this agreement or suffer the consequences."
+		
+		mainColor:[255,51,51],
+		secondaryColor:[153,255,255],
+		unique:"Gain Culture for the empire from each enemy unit killed.",
+		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
+	},
+	{
+		name:"Zulu",
+		leaderName:"Shaka Zulu",
+		adjective:["Zulu"],
+		startBias:["Avoid Jungle"],
+		
+		startIntroPart1: "Your people kneel before you, great warrior Shaka of the Zulu Kingdom. As you rose from a place of exile to become the true leader of the Zulus, you ushered in changes throughout the Zulu society, implementing new laws and cultural reforms that strenghtened the position of your people. However, it was your tenacity in the art of war that truly established your reputation, as your tactics and strategies on the battlefield forever changed the face of combat across the plains of southern Africa."
+		startIntroPart2: "Most formidable king, your people once again long for the unity and strenght your leadership afforded them. Can you return the Zulu Kingdom to such great prominence? Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"None will slow our progress, not even you! Prepare for war!"
+		attacked:"Your arrogance will only lead you to defeat!"
+		defeated:"My warriors have failed, and so I failed them."
+		introduction:"I'm Shaka of Zulu. Don't try to move, warrior, or I'll destroy you."
+		
+		neutralHello:"Hail your Majesty!"
+		neutralLetsHearIt:["Go ahead.","Proceed.","I'm listening."]
+		neutralNo:["Not a bit.","No!","Try again"]
+		neutralYes:["I accept","It is good.","Alright."]
+
+		hateHello:"What are you doing here?"
+		hateLetsHearIt:["Speak!","What do you say?","Go on."]
+		hateNo:["No way.","Certainly not!","Impossible!"]
+		hateYes:["Fine!","I suppose I must.","Very well..."]
+		
+		afterPeace:"It seems that the Gods of War were against our dispute..."
+		tradeRequest:"You might accept this offer."
+				
+		mainColor:[153,76,0],
+		secondaryColor:[255,255,255],
+		unique:"Melee units cost 50% less maintenance, and all units require 25% less experience to earn their next promotion.",
+		cities:["Ulundi","Umugungundlovu","Nobamba","Bulawayo","KwaDukuza","Nongoma","oNdini","Nodwengu","Ndonakusuka","Babanango","Khangela","KwaHlomendlini","Hlobane","eThekwini","Mlambongwenya","Eziqwaqweni","eMangweni","Isiphezi","Masotsheni","Mtunzini","Nyakamubi","Dumazulu","Hlatikulu","Mthonjaneni","Empangeni","Pongola","Tugela","Kwamashi","Ingwavuma","Hluhluwe","Matubatuba","Mhlahlandlela","Mthatha","Maseru","Lobamba","Qunu"]
+	},
+
+	{
+		name:"Mongolia",
+		leaderName:"Genghis Khan",
+		adjective:["Mongolian"],
+		startBias:["Plains"],
+		
+		startIntroPart1: "Greetings, o great Temujin, immortal emperor of the mighty Mongol Empire! Your fists shatter walls of cities and your voice brings despair to your enemies. O Khan! You united the warring tribes of Northern Asia into a mighty people, creating the greatest cavalry force the world has ever witnessed. Your people's cunning diplomacy divided their enemies, making them weak and helpless before Mongolia's conquering armies. In a few short years, your people soldiers conquered most of China and Eastern Asia, and the empire continued to grow until it reached west into Europe and south to Korea. Indeed, it was the greatest empire ever seen, dwarfing those pathetic conquests of the Romans of the Greeks."
+		startIntroPart2: "Temujin, your people cann upon you once more to lead them to battle and conquest. Will the world once again trembe at the thunderous sound of your cavalry, sweeping down from the steppes? Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"You stand in the way of my armies. Let us solve this like warriors!"
+		attacked:"No more words. Today, Mongolia charges toward your defeat."
+		defeated:"You have hobbled the Mongolian clans. My respect for you nearly matches the loathing. I am waiting for my execution."
+		introduction:"I am Temuujin, conqueror of cities and countries. Before me lie future Mongolian lands. Behind me is the only cavalry that matters."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["I'm listening.","What?"]
+		neutralNo:["No.","Of course not!"]
+		neutralYes:["Good.","That works.","Of course!"]
+
+		hateHello:"So what now?"
+		hateLetsHearIt:["And then?","Continue..."]
+		hateNo:["Stop playing around.","This is not to be tolerated!"]
+		hateYes:["Very well...","Fine!"]
+		
+		afterPeace:"It seems I have underestimate you. Very well... I won't take you head for now."
+		tradeRequest:"I am not always this generous, but we hope you take this rare opportunity we give you."
+				
+		mainColor:[51,0,0],
+		secondaryColor:[0,204,102],
+		unique:"All mounted units have +1 Movement. +30% when assaulting cities,",
+		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan","Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
+	},
+
+	{
+		name:"Celts",
+		leaderName:"Boudicca",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"How dare you?! I will be the one owning your head!"
+		attacked:"I have been preparing for war for a long time! To arms, patriots! We march to war!"
+		defeated:"You, awful king! You realized that you "won" this war in mane only?"
+		introduction:"I am Boudicca, Queen of the Celts. Let no-one underestimate me!"
+		
+		neutralHello:"The Heavens have given good to you."
+		neutralLetsHearIt:["We are all ears...","Well?"]
+		neutralNo:["We must decline.","No.","We refuse."]
+		neutralYes:["Sure, it shall be so.","Fine...","Acceptable."]
+
+		hateHello:"Well?"
+		hateLetsHearIt:["Speak!","And?"]
+		hateNo:["Unacceptable!","A thousand times no!","Never!"]
+		hateYes:["Disgusting... Fine!","If I have to..."]
+		
+		afterPeace:"Well played, fellow warrior."
+		tradeRequest:"Let us unite our armies, and profit from the reaping of the rewards."
+				
+		mainColor:[0,51,25],
+		secondaryColor:[255,255,255],
+		unique:"+1 Culture per city with an adjacent unimproved Forest. Bonus increased to +2 Culture in Cities with 3 or more adjacent unimproved Forest tiles.",
+		cities:["Edinburgh","Dublin","Cardiff","Truro","Nantes","Douglas","Glasgow","Cork","Aberystwyth","Penzance","Rennes","Ramsey","Inverness","Limerick","Swansea","St. Ives","Brest","Peel","Aberdeen","Belfast","Caernarfon","Newquay","Saint- Nazaire","Castletown","Stirling","Galway","Conwy","St. Austell","Saint-Malo","Onchan","Dundee","Londonberry","Llanfairpwllgwyngyll","Falmouth","Lorient","St. John's"]
+	},
+	{
+		name:"Incan",
+		leaderName:"Pachacuti",
+		
+		startIntroPart1: "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today."
+		startIntroPart2: "Oh King Pachacuti, truly are you called "Earth Shaker"! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Resistance is futile! You cannot hope to stand against the mighty Incan empire. If you will not surrender immediately, then prepare for war!"
+		attacked:"Declare war on me?!? You can't, because I declare war on you first!"
+		defeated:"How did you darken the sun? I ruled with diligence and mercy—see that you do so as well."
+		introduction:"How are you? You stand before Pachacuti Inca Yupanqui."
+		
+		neutralHello:"How are you doing?"
+		neutralLetsHearIt:["Go on.","What do you say?","You may begin."]
+		neutralNo:["We absolutely refuse.","No!","I refuse."]
+		neutralYes:["Very good.","Of course, yes","That is very good."]
+
+		hateHello:"What do you want now?"
+		hateLetsHearIt:["Speak!","What do you say?","Go on."]
+		hateNo:["That is not possible!","We are not agreeing to that!","I beg your pardon?"]
+		hateYes:["That is fine.","That is good enough.","Very well..."]
+		
+		afterPeace:"Viracocha has frowned upon our war, and has agreed to our peace agreements."
+		tradeRequest:"The Incan people offer this fair trade."
+				
+		mainColor:[255,255,51],
+		secondaryColor:[0,204,102],
+		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
+		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
+	}
+	{
+		name:"Persian",
+		leaderName:"Darius I",
+		
+		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
+		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!"
+		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!"
+		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!"
+		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
+		
+		neutralHello:"Good day to you!"
+		neutralLetsHearIt:["Go on.","You said?"]
+		neutralNo:["You are not serious!","Not good enough."]
+		neutralYes:["Good!","Certainly.","Agreed!"]
+
+		hateHello:"Ahh... you..."
+		hateLetsHearIt:["I'm listening.","Go on!"]
+		hateNo:["We say... no!","Of course not!"]
+		hateYes:["Alright!","Agreed."]
+		
+		afterPeace:"It appears we should call it a tie..."
+		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
+				
+		mainColor:[255,0,0],
+		secondaryColor:[255,255,0],
+		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
+		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir","Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz","Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube","Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada","Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava","Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka","Paishiyauvada","Patigrbana","Phrada"]
+	},
+
+	{
+		name:"Polynesian",
+		leaderName:"Kamehameha I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome."
+		attacked:"It is obvious now that I misjudged you and your true intentions."
+		defeated:"The hard-shelled crab yields, and the lion lies down to sleep. Kanaloa comes for me now."
+		introduction:"Aloha! Greetings and blessings upon you, friend. I am Kamehameha, Great King of this strand of islands."
+		
+		neutralHello:"Welcome, friend!"
+		neutralLetsHearIt:["Proceed.","And?","What is it?"]
+		hateNo:["Certainly not.","We will have to decline."]
+		hateYes:["It is agreed, then.","Excellent!"]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["Proceed.","I'm listening","What is it?"]
+		hateNo:["Certainly not!","That's not acceptable!"]
+		hateYes:["Yes, I suppost I must.","Yes, so be it."]
+		
+		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
+		tradeRequest:"Come, let our people feast together!"
+				
+		mainColor:[255,128,0],
+		secondaryColor:[255,255,0],
+		unique:"Can embark and move over Costs and Oceans immediately. +1 Sight when embarked",
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui","Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu","Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia","Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+	},
+
+	{
+		name:"Korean",
+		leaderName:"Sejong",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
+		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
+		defeated:"Now the question is who will protect my people. A dark age has come."
+		introduction:"Welcome to the palace of Choson, stanger. I am the learned King Sejong, who looks after his great people."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["I will hear it.","Go on","Continue."]
+		neutralNo:["I cannot do that.","Apologies, but I will not accept it."]
+		neutralYes:["That is good.","I understand.","Of course!"]
+
+		hateHello:"Oh, it's you"
+		hateLetsHearIt:["What do you wish to say?","So?","Continue your speech."]
+		hateNo:["Heaven forbid","That is crazy talk!","I cannot do that."]
+		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
+		
+		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
+		tradeRequest:"We have many thinkgs to discuss and have much to benefit from each other."
+				
+		mainColor:[0,0,255],
+		secondaryColor:[255,0,0],
+		unique:"+2 Science for all Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean capital.",
+		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+	},
+
+
+	{
+		name:"Songhai",
+		leaderName:"Askia",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!"
+		attacked:"Fool! You have doomed your people to fire and destruction!"
+		defeated:"We have been consumed by the fires of hatred and rage. Enjoy your victory in this world - you shall pay a heavy price in the next!"
+		introduction:"I am Askia of the Songhai. We are a fair people - but those who cross us will find only destruction. You would do well to avoid repeating the mistakes others have made in the past."
+		
+		neutralHello:"Greetings."
+		neutralLetsHearIt:["Yes?","Proceed."]
+		neutralNo:["No","Of course not."]
+		neutralYes:["Very well.","Yes.","Fine."]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["And?","Continue."]
+		hateNo:["You cannot be serious!","That's unacceptable!","We decline."]
+		hateYes:["Oh, very well.","Alright."]
+		
+		afterPeace:"We thank you for bringing an end to this pointless war."
+		tradeRequest:"Can I interest you in this deal?"
+				
+		mainColor:[204,102,0],
+		secondaryColor:[255,0,0],
+		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
+		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+	},
+
+
+	{
+		name:"Ottoman",
+		leaderName:"Suleiman I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Your continued insolence and failure to recognize and preeminence leads us to war."
+		attacked:"Good. The world shall witness the incontestable might of my armies and the glory of the Empire."
+		defeated:"Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melancholy poets."
+		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!"
+		
+		neutralHello:"Greetings!"
+		neutralLetsHearIt:["I'm listening.","Go on."]
+		neutralNo:["No.","Of course not!","We decline."]
+		neutralYes:["Very good.","Fine.","We accept!"]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["So you say!","Go on!"]
+		hateNo:["Excuse me?","This is unacceptable!","You can't be serious!"]
+		hateYes:["Ah, very good!","Very good.","I assume we must come to an agreement."]
+		
+		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
+		tradeRequest:"Let us do business! Would you be interested?"
+				
+		mainColor:[204,255,229],
+		secondaryColor:[0,102,0],
+		unique:"Pay only one.third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
+		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
+	},
+
+
+	{
+		name:"Iroquois",
+		leaderName:"Hiawatha",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"You are a plague upon Mother Earth! Prepare for battle!"
+		attacked:"You evil creature! My braves will slaughter you!"
+		defeated:"You have defeated us... but our spirits will never be vanquished! We shall return!"
+		introduction:"Greetings, stranger. I am Hiawatha, speaker for the Iroquois. We seek peace with all, but we do not shrink from war."
+		
+		neutralHello:"Good day."
+		neutralLetsHearIt:["Yes?","I'm listening"]
+		neutralNo:["No.","Certainly not."]
+		neutralYes:["Very well.","Alright."]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["I'm listening.","Speak."]
+		hateNo:["That's unacceptable","You cannot be serious!"]
+		hateYes:["I suppose I must.","Very well."]
+		
+		afterPeace:"I thank you for your mercy. I pray that we can now be friends."
+		tradeRequest:"Does this trade work for you, my friend?"
+				
+		mainColor:[0,25,51],
+		secondaryColor:[255,255,102],
+		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
+		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River","Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle","Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
+	},
+
+	{
+		name:"Phoenicia",
+		leaderName:"Dido",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Tell me, do you-all know how numerous my armies, elephands and warships are? No? Today, you-all shall find out!"
+		attacked:"Fate is against you! I will see all your worthless cities in ruin - and you amongs it!"
+		defeated:"Do not bask in the glory of your conquest. One day, you, too, may see your capital bathed in flames."
+		introduction:"I, Dido, queen and mother of Carthage and of everything that is hers, greet you on behalf of the Phoenicians."
+		
+		neutralHello:"Good day."
+		neutralLetsHearIt:["Yes?","I'm listening"]
+		neutralNo:["No.","That is not enough.","Certainly not."]
+		neutralYes:["Very well.","Alright.","Fine."]
+
+		hateHello:"What is it now?"
+		hateLetsHearIt:["I'm listening.","Speak.","Go on."]
+		hateNo:["What?!","You cannot be serious!"]
+		hateYes:["I suppose I must.","Very well."]
+		
+		afterPeace:"It seems you realized that war is an horrible enemy for the business that is trade."
+		tradeRequest:"Hello, there, friend. Are you interested in this deal?"
+				
+		mainColor:[255,0,127],
+		secondaryColor:[51,255,255],
+		unique:"All coastal Cities get a free Harbor. Units may cross mountains after the first Great General is earned.",
+		cities:["Carthage","Utique","Hippo Regius", "Gades","Saguntum","Carthago Nova", "Panormus","Lilybaeum","Hadrumetum","Zama Regia", "Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Tharros","Leptis Parva", "Soluntum","Lixus","Odea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula","Saldae","Tas-Silg","Sala","Iol"]
+	},
+
+	{
+		name:"Denmark",
+		leaderName:"Harald Bluetooth",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"If I am to be honest, I tire of those pointless charades. Why don't we settle our disputes on the field of battle, like true men? Perhaps the skalds will sing of your valor... or mine!"
+		attacked:"Ahahah! You seem to show some skills of a true Viking! Too bad that I'll probably kill you!"
+		defeated:"Loki must have stood by you, for a common man alone could not have defeated me... Oh well! I will join the einherjar in Valhalla and feast, while you toil away here."
+		introduction:"Harad Bluetooth bids you welcome to his lands, a Viking unlike any the seas and lands have ever known! Hah, are you afraid?"
+		
+		neutralHello:"Hail to you."
+		neutralLetsHearIt:["Let us hear it.","Go ahead.","I'm listening"]
+		neutralNo:["No.","Not today, I'm afraid.","I must decline."]
+		neutralYes:["Very well.","Of course, my friend!","That's a deal!"]
+
+		hateHello:"Oh, it's you."
+		hateLetsHearIt:["What is it?.","And?","Go on"]
+		hateNo:["Don't be silly!","That is unacceptable."]
+		hateYes:["I guess I have to.","Oh, very well."]
+		
+		afterPeace:"By the hammer of Thor, you have proven yourself a worthy opponent today. I congratulate you!"
+		tradeRequest:"This is a fine deal! Even a drunk beggar would agree!"
+				
+		mainColor:[51,25,0],
+		secondaryColor:[255,255,102],
+		unique:"+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa.",
+		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso","Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore","Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers","Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen","Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
+	},
+
+	{
+		name:"Maya",
+		leaderName:"Pacal",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"A sacrifice unlike all others must be made! Prepare for destruction!"
+		attacked:"Come! Your warriors shall make great sacrifices in the name of the Sun God!"
+		defeated:"We stood to the last man... but all was in vain. If you are either a man or a God, I know not... nor do I care."
+		introduction:"Greetings, foreigner! I am knows as Pacal, ruler of the great Mayan empire!"
+		
+		neutralHello:"A fine day, is it not?"
+		neutralLetsHearIt:["Let us hear it.","Go ahead.","I'm listening..."]
+		neutralNo:["No.","Not today, I'm afraid.","I must decline."]
+		neutralYes:["Very well.","If I must...","Fine."]
+
+		hateHello:"You..."
+		hateLetsHearIt:["Speak now!.","Talk!","Well?"]
+		hateNo:["No!","Absolutely not!","There is no way, no deal!"]
+		hateYes:["Fine!","Okay, you win."]
+		
+		afterPeace:"Great Sun God, accept our peace!"
+		tradeRequest:"Friend, I believe I may have found a way to save us all! Look, look and accept our offer!"
+				
+		mainColor:[255,255,153],
+		secondaryColor:[0,51,0],
+		unique:"After researching Theology, you gain a free Great Person (each can only be chosen once) at the end of every Mayan Long Cound calendar cycle (every 394 years).",
+		cities:["Palenque","Tikal","Chichen Itza","Uxmal","Tulum","Copan","Coba","El Mirador","Calakmul","Edzna","Lamanai","Izapa","Uaxactun","Comalcalco","Piedras Negras","Cancuen","Yaxha","Quirigua","Q'umarkaj","Nakbe","Cerros","Xunantunich","Takalik Abaj","Cival","San Bartolo","Altar de Sacrificios","Seibal","Caracol","Naranjo","Dos Pilas","Mayapan","Ixinche","Zaculeu","Kabah"]
+	},
+
+	{
+		name:"Shoshone",
+		leaderName:"Pocatello",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"I have tried so many times to give you the benefit of the dubt... no more! I wish you a swift ending."
+		attacked:"So be it! I will do what I must to make the foreigner go away!"
+		defeated:"Sprits of the ancestors... be merciful to my soul... be merciful to my people..."
+		introduction:"I am chief Pocatello. You have arrived in the thick of Shoshone land."
+		
+		neutralHello:"Ah, you've arrived!"
+		neutralLetsHearIt:["Yes?","What is it?","I'm listening."]
+		neutralNo:["No.","Perhaps no.","I must decline."]
+		neutralYes:["Very well.","It shall be that way.","Deal."]
+
+		hateHello:"Be alert, foreigner!"
+		hateLetsHearIt:["Talk!.","And?","Go on"]
+		hateNo:["NO!","There is no way I could accept this!"]
+		hateYes:["If I must...","Fine!"]
+		
+		afterPeace:"It seems you, at least, have the goodness of considering peace..."
+		tradeRequest:"Listen our words, and consider!"
+				
+		mainColor:[32,32,32],
+		secondaryColor:[0,128,255],
+		unique:"Founded cities start with additional territory. Units receive a combat bonus when fighting within their own territory.",
+		cities:["Moson Kahni","Te-Moak","Agaidika","Goshute","Pohokwi","Washakie","Timbisha","Hukandeka","Duckwater","Tukudeka","Kuchundeka","Yomba","Kamudeka","Ely","Yambadeka","Tetadeka","Deheyaeka","Pengwideka","Winnemucca","Skull Valley","Big Pine","Duck Valley","Nampa","Bannock","Yahandeka"]
+	},
+	*/
+	{
+		name:"蛮族",
+		mainColor:[0,0,0],
+		secondaryColor:[182,0,0]
+	}
+]
