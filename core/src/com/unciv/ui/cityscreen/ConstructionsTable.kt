@@ -100,7 +100,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         for (building in GameBasics.Buildings.values) {
             if (!building.shouldBeDisplayed(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
-                    building.name + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
+                    building.name.tr() + "\r\n" + cityConstructions.turnsToConstruction(building.name) + " {turns}".tr(),
                     building.getRejectionReason(cityConstructions)
                     )
             if (building.isWonder)

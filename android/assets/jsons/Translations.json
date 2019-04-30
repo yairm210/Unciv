@@ -38,7 +38,7 @@
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
 		Spanish:"Trabajando..."
-		Simplified_Chinese:"工作中..."
+		Simplified_Chinese:"进行中..."
 		Portuguese:"Trabalhando..."
 		German:"Bitte warten..."
 		Japanese:"ワーキング..."
@@ -65,7 +65,7 @@
 		German:"in"
 		Dutch:"in"
 		Spanish:"en"
-		Simplified_Chinese:"在"
+		Simplified_Chinese:"建造或组建完成还需"
 		Portuguese:"em"
 		Japanese:"に"
 	}
@@ -144,7 +144,7 @@
 		German:"Bombardieren Sie die Stärke"
 		Dutch:"Bombard sterkte"
 		Spanish:"Fuerza de bombardeo"
-		Simplified_Chinese:"轰炸力量"
+		Simplified_Chinese:"远程轰击"
 		Portuguese:"Força Bombard"
 		Japanese:"爆撃力"
 	}
@@ -237,7 +237,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"防御加成"
+		Simplified_Chinese:"防御力加成"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -345,6 +345,9 @@
 		Dutch:"Onderzoeken"
 	}
 	
+	"Stop exploration":{
+		Simplified_Chinese:"停止探索"
+	}
 	"Pillage":{
 		Italian:"Saccheggia"
 		German:"Plündern"
@@ -416,7 +419,7 @@
 		German:"Gold"
 		Dutch:"Goud"
 		Spanish:"Oro"
-		Simplified_Chinese:"金钱"
+		Simplified_Chinese:"金"
 		Portuguese:"Ouro"
 		Japanese:"ゴールド"
 	}
@@ -621,7 +624,7 @@
 		French:"Nombre d'ennemies (AI):"
 		Romanian:"Număr inamici:"
 		Spanish:"Número de enemigos:"
-		Simplified_Chinese:"敌人数量"
+		Simplified_Chinese:"AI智商："
 		Portuguese:"Numero de inimigos:"
 		German:"Anzahl der Gegner:"
 		Japanese:"敵の数"
@@ -792,7 +795,7 @@
 		German:"Zerstörung anhalten"
 		Dutch:"Stad vernieteging stoppen"
 		Spanish:"Dejar de arrasar ciudad"
-		Simplified_Chinese:"停止焚城"
+		Simplified_Chinese:"停止摧毁城市"
 		Portuguese:"Parar de Saquear cidade"
 		Japanese:"街をすくい止める"
 	}
@@ -895,7 +898,7 @@
 		German:"[thingToProduce] herstellen"
 		Dutch:"[thingToProduce] produceren"
 		Spanish:"Producir [thingToProduce]"
-		Simplified_Chinese:"生产[thingToProduce]"
+		Simplified_Chinese:"产能转化：[thingToProduce]"
 		Portuguese:"Produzir [thingToProduce]"
 		Japanese:"プロデュース[thingToProduce]"
 	} 
@@ -1016,7 +1019,7 @@
 	"In resistance for another [numberOfTurns] turns":{
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
 		//can't understand
-		Simplified_Chinese:"阻力将持续额外[numberOfTurns]回合"
+                Simplified_Chinese:"反叛将持续额外[numberOfTurns]回合"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
 		French:"En révolte pour [numberOfTurns] tours"
@@ -1115,7 +1118,7 @@
 		German:"Freigeschaltete Einheiten"
 		Dutch:"Eenheden vrijgespeeld"
 		Spanish:"Unidades habilitadas"
-		Simplified_Chinese:"单位已启用"
+		Simplified_Chinese:"解锁单位"
 		Portuguese:"Unidades ativadas"
 		Japanese:"有効な単位"
 	}
@@ -1128,7 +1131,7 @@
 		German:"Freigeschaltete Bauwerke"
 		Dutch:"Gebouwen vreijgespeeld"
 		Spanish:"Edificios habilitados"
-		Simplified_Chinese:"建筑已启用"
+		Simplified_Chinese:"解锁建筑"
 		Portuguese:"Construções habilitadas"
 		Japanese:"有効な建物"
 	}
@@ -1154,7 +1157,7 @@
 		German:"Freigeschaltete Wunder"
 		Dutch:"Wonders vrijgespeeld"
 		Spanish:"Maravillas habilitadas"
-		Simplified_Chinese:"奇观已启用"
+		Simplified_Chinese:"解锁奇观"
 		Portuguese:"Maravilhas habilitadas"
 		Japanese:"有効不思議"
 	}
@@ -1167,7 +1170,7 @@
 		German:"Freigschaltete Feldverbesserungen"
 		Dutch:"Verbeteringen vrijgespeeld"
 		Spanish:"Mejoras de casilla habilitadas"
-		Simplified_Chinese:"地块设施已启用"
+		Simplified_Chinese:"解锁地块设施"
 		Portuguese:"Melhorias de solo habilitadas"
 		Japanese:"タイルの改善"
 	}
@@ -1192,7 +1195,7 @@
 		Romanian:"XP pentru unități noi"
 		Dutch:"XP voor nieuwe eenheden"
 		Spanish:"PX para unidades nuevas"
-		Simplified_Chinese:"新组建单位获得的经验值"
+		Simplified_Chinese:"新组建单位的初始经验值"
 		Portuguese:"Experiencia para novas unidades"
 		German:"XP für neue Einheiten"
 		Japanese:"新しいユニット用のXP"
@@ -1768,7 +1771,7 @@
 		Spanish:"[percentage] A la defensa"
 		Italian:"[percentage] difesa dell'unità"
 		Romanian:"[percentage] la defensiva unității"
-		Simplified_Chinese:"[percentage]对单位的防御"
+		Simplified_Chinese:"[percentage]单位防御力"
 		Portuguese:"[percentage] a defesa da unidade"
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
@@ -2789,7 +2792,9 @@
 		Simplified_Chinese:"文官制度"
 		Portuguese:"Serviço cívil"
 	}
-	"Enables Open Borders agreements":{}
+	"Enables Open Borders agreements":{
+		Simplified_Chinese:"允许签订开放边境协定"
+	}
 	
 	"Guilds":{
 		Italian:"Gilde"
@@ -3397,7 +3402,7 @@
 		French:"Permet la conversion de la production des villes en science"
 		Romanian:"Permite conversia producției orașului la știință"
 		Spanish:"Habilita la conversión de producción a ciencia"
-		Simplified_Chinese:"将城市产能转化为科研"
+		Simplified_Chinese:"可将城市产能转化为科研"
 		Portuguese:"Habilita a conversão de produção das cidades para ciência"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Wissenschaft"
 	}
@@ -3407,7 +3412,7 @@
 		French:"Permet la conversion de la production des villes en or"
 		Romanian:"Permite conversia producției orașului la aur"
 		Spanish:"Habilita la conversión de producción a oro"
-		Simplified_Chinese:"将城市产能转化为金钱"
+		Simplified_Chinese:"可将城市产能转化为金钱"
 		Portuguese:"Habilita a conversão da produção das cidades para ouro"
 		German:"Erlaubt das Umwandeln von städtischer Produktion in Gold"
 	}
@@ -3548,7 +3553,7 @@
 		German:"Zivilist"
 		Dutch:"Burger"
 		Spanish:"Civil"
-		Simplified_Chinese:"平民"
+		Simplified_Chinese:"平民单位"
 		Portuguese:"Cidadão"
 	}
 	"Melee":{
@@ -3559,7 +3564,7 @@
 		German:"Nahkämpfer"
 		Dutch:"Melee"
 		Spanish:"Cuerpo a cuerpo"
-		Simplified_Chinese:"近战"
+		Simplified_Chinese:"近战单位"
 		Portuguese:"Corpo a corpo"
 	}
 	"Ranged":{
@@ -3570,7 +3575,7 @@
 		German:"Fernkämpfer"
 		Dutch:"Afstands"
 		Spanish:"A distancia"
-		Simplified_Chinese:"远程攻击"
+		Simplified_Chinese:"远程单位"
 		Portuguese:"Ataque a distancia"
 	}
 	"Siege":{
@@ -3581,7 +3586,7 @@
 		German:"Belagerungsmaschiene"
 		Dutch:"Belegering"
 		Spanish:"Asedio"
-		Simplified_Chinese:"攻城"
+		Simplified_Chinese:"攻城单位"
 		Portuguese:"Cerco"
 	}
 	"Mounted":{
@@ -3592,7 +3597,7 @@
 		German:"Beritten"
 		Dutch:"Bereden"
 		Spanish:"Montado"
-		Simplified_Chinese:"骑兵"
+		Simplified_Chinese:"骑乘单位"
 		Portuguese:"Montado(a)"
 	}
 	"Scout":{
@@ -3603,7 +3608,7 @@
 		German:"Kundschafter"
 		Dutch:"Verkening"
 		Spanish:"Explorador"
-		Simplified_Chinese:"侦察"
+		Simplified_Chinese:"侦察单位"
 		Portuguese:"Explorador"
 	}
 	"City":{
@@ -3639,7 +3644,7 @@
 		German:"Gründet eine neue Stadt"
 		Dutch:"Sticht een nieuwe stad"
 		Spanish:"Funda una nueva ciudad"
-		Simplified_Chinese:"建立一座新城"
+		Simplified_Chinese:"建立一座城市，组建此单位时城市的食物积累停止"
 		Portuguese:"Funda uma nova cidade"
 	}
 	"Ignores terrain cost":{
@@ -3650,7 +3655,7 @@
 		German:"Ignoriert Geländekosten"
 		Dutch:"Negeert terreinskosten"
 		Spanish:"Ignora el coste del terreno"
-		Simplified_Chinese:"无视地形消耗"
+		Simplified_Chinese:"所有地形都只消耗1点移动力"
 		Portuguese:"Ignora custo de movimento em terrennos díficeis"
 	}
 	"No defensive terrain bonus":{
@@ -3661,7 +3666,7 @@
 		German:"Kein geländeabhängiger Verteidigungsbonus"
 		Dutch:"Geen defensiefe terreinsbonussen"
 		Spanish:"Sin bonus de defensa de terreno"
-		Simplified_Chinese:"无地形防御加成"
+		Simplified_Chinese:"无地形防御力加成"
 		Portuguese:"Nenhum bonus de defesa do terreno"
 	}
 	"Rough terrain penalty":{
@@ -4149,10 +4154,17 @@
 		German:"Friedensabkommen"
 	}
 	"Agreements":{
+patch-99
 		Italian:"Accordi"
 	}
 	"Open Borders":{
 		Italian:"Diritto di passaggio"
+
+		Simplified_Chinese:"协定"
+	}
+	"Open Borders":{
+		Simplified_Chinese:"开放边境"
+master
 	}
 	"Gold per turn":{
 		Italian:"Oro per turno"
@@ -4271,7 +4283,7 @@
 	"Great general provides double combat bonus, and spawns 50% faster":{
 		Italian:"I Grandi Generali concedono nascono il 50% più in fretta e il loro bonus è raddoppiato"
 		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
-		Simplified_Chinese:"大军事家提供双倍战斗加成，大军事家产生速率+50%"
+		Simplified_Chinese:"大军事家提供双倍战斗力加成，大军事家产生速率+50%"
 		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
 		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait 50% plus vite"
 		Portuguese:"Grande general fornece bônus de combate duplo e gera 50% mais rápido"
@@ -4395,7 +4407,9 @@
 		Russian:"Аравия"
 		Dutch:"Saudi"
 	}
-	
+	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
+		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
+	}
 	
 	"America":{
 		Italian:"Stati Uniti"
@@ -4496,7 +4510,7 @@
 		French:"Colon"
 		Romanian:"Colonist"
 		Spanish:"Colono"
-		Simplified_Chinese:"开拓"
+		Simplified_Chinese:"移民"
 		Portuguese:"Colonizador"
 		German:"Siedler"
 	}
@@ -4651,7 +4665,7 @@
 		French:"Nombre d'ennemies"
 		Romanian:"Număr de inamici"
 		Spanish:"Número de enemigos"
-		Simplified_Chinese:"人类玩家数量"
+		Simplified_Chinese:"人类玩家"
 		Portuguese:"Número de inimigos"
 		German:"Anzahl der Gegner"
 	}
@@ -4661,7 +4675,7 @@
 		French:"Nombre d'ennemies"
 		Romanian:"Număr de inamici"
 		Spanish:"Número de enemigos"
-		Simplified_Chinese:"敌人数量"
+		Simplified_Chinese:"电脑玩家"
 		Portuguese:"Número de inimigos"
 		German:"Anzahl der Gegner"
 	}
@@ -4686,9 +4700,6 @@
 		German:"Kartentyp"
 		Dutch:"Kaarttype"
 	}
-	"No barbarians":{
-               Simplified_Chinese:"无蛮族"
-}
 	
 	// Diplomacy!
 	
@@ -4702,7 +4713,7 @@
 		Portuguese:"Diplomacia"
 		German:"Diplomatie"
 	}
-	
+
 	"War":{
 		Italian:"Guerra"
 		Russian:"Война"
@@ -4753,6 +4764,7 @@
 	
 	"[tradeOffer] from [otherCivName] has ended":{
 		Italian:"[tradeOffer] da [otherCivName] terminato"
+		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
 	}
 	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -4789,6 +4801,7 @@
 	}
 	
 	"Not this time.":{
+ patch-99
 		Italian:"Non oggi."
 	} // declining trade text
 	"Excellent!":{
@@ -4796,6 +4809,15 @@
 	} // AI statement after we accept a trade they proposed
 	"How about something else...":{
 		Italian:"Che ne diresti di quest'altra offerta?"
+
+		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
+	} // declining trade text
+	"Excellent!":{
+		Simplified_Chinese:"好极了！和和气气才是生财之道。"
+	} // AI statement after we accept a trade they proposed
+	"How about something else...":{
+		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
+ master
 	} // Counteroffer to AI offer
 	
 	"A pleasure to meet you.":{
@@ -4957,7 +4979,7 @@
 		French:"Entretien des transports"
 		Romanian:"Întreținere trasporturi"
 		Spanish:"Mantenimiento de transporte"
-		Simplified_Chinese:"运输维护"
+		Simplified_Chinese:"道(铁)路维护"
 		Portuguese:"Manutenção de transporte"
 		German:"Unterhalt für Transport"
 	}
@@ -6002,7 +6024,12 @@
 		Portuguese:"Bolsa de valores"
 		German:"Börse"
 	}
-	
+        "Big Ben":{	
+		Simplified_Chinese:"大本钟"
+	}
+	"-15% to purchasing items in cities":{
+		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
+	}
 	"Cristo Redentor":{
 		Italian:"Cristo Redentor" //Same in Italian
 		Russian:"Кристо Редентор"
@@ -6230,7 +6257,7 @@
 		German:"Erlaubt die Produktion von Raumschiffteilen"
 		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
 		Spanish:"Habilita la construcción de partes de Nave Espacial"
-		Simplified_Chinese:"能够建造宇宙飞船的部件"
+		Simplified_Chinese:"允许建造太空飞船的部件"
 		Portuguese:"Habilita a construção de partes da nave espacial"
 	}
 	
@@ -6501,9 +6528,11 @@
 	}
 	"Can construct roads":{
 		Italian:"Può costruire Strade"
+                Simplified_Chinese:"可以建造道路"
 	}
 	"Construct road":{
 		Italian:"Costruisci Strada"
+                Simplified_Chinese:"建造道路"
 	} // for unit action button
 	
 	"Horseman":{	
@@ -6958,7 +6987,7 @@
 		Italian:"Panzer" //same in Italian
 		Romanian:"Panzer"
 		Spanish:"Panzer"
-		Simplified_Chinese:"德国坦克"
+		Simplified_Chinese:"“虎II”坦克"
 		Russian:"Панзэр"
 		German:"Tiger II Panzer" //I used a more late WW2 panzer name here to destinguish 
 		French:"Panzer"
@@ -6974,6 +7003,9 @@
         "Mechanized Infantry":{
 		Simplified_Chinese:"机械化步兵"
 	}
+        "Modern Armor":{
+		Simplified_Chinese:"现代坦克"
+        }
 	"B17":{
 		Italian:"B-17"
 		Romanian:"B17"
@@ -7287,7 +7319,7 @@
 		German:"Staatsbürgerschaft"
 		French:"Citoyenneté"
 	}
-	"+25% construction rate of workers, recieve free worker near the capital":{
+	"+25% construction rate of workers, receive free worker near the capital":{
 		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
@@ -7393,7 +7425,7 @@
 		Spanish:"+25% bonus al luchar contra Barbaros"
 		Italian:"+25% Forza contro i Barbari; ottieni Cultura quando uccidi unità barbariche"
 		Romanian:"+25% bonus contra Barbarilor"
-		Simplified_Chinese:"所有军事单位对蛮族的战斗力+25%"
+		Simplified_Chinese:"所有军事单位对蛮族的战斗力+25%，当杀死蛮族单位时可获得文化奖励"
 		Portuguese:"+25% Força ao lutar contra Barbáros"
 		Russian:"+25% к силе атаки против варваров"
 		German:"+25% Bonus gegen Barbaren"
@@ -7419,7 +7451,7 @@
 		German:"+20% Produktion beim Rekrutieren von Nahkampfeinheiten"
 		French:"Production +20% lors de la formation d'unités de combat rapproché"
 	}
-	"Dicipline":{
+	"Discipline":{
 		Spanish:"Diciplina"
 		Italian:"Disciplina"
 		Romanian:"Disciplină"
@@ -7683,7 +7715,7 @@
 		German:"Handelsunion"
 		French:"Unions commerciales"
 	}
-	"Maintainance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
+	"Maintenance on roads & railroads reduced by 33%, +2 gold from all trade routes":{
 		Italian:"-33% mantenimento in Oro su strade e ferrovie, +2 oro per ogni rotta commerciale"//you forgot to translate this
 		Russian:"Стоимость содержания дорог и железных дорог уменьшена на 33%, +2 золота от всех торговых маршрутов"
 		Romanian:"Întreținerea drumurilor și a căilor ferate redusă cu 33%, +2 aur din toate rutele comerciale"
@@ -7810,7 +7842,7 @@
 		Russian:"Перевод городского производства в науку увеличен на 33%"
 		Romanian:"Conversia producției la știință în orașe crescută cu 33%"
 		Spanish:"Conversión de producción a ciencia incrementado un 33% en todas las ciudades"
-		Simplified_Chinese:"城市产能向科研转化+33%"
+		Simplified_Chinese:"产能向科研转化收益+33%"
 		Portuguese:"Conversão de produção para ciência em cidades aumentada por 33%"
 		German:"Umwandlung von Produktion in Wissenschaft in Städten ist um 33% erhöht."
 		French:"+33% de production lors de conversion de la production en science"
@@ -8173,7 +8205,7 @@
 		Spanish:"Las ciudades capturadas retienen sus fronteras"
 		Italian:"Le città conquistate mantengono i loro confini precedenti"
 		Romanian:"Orașele cucerite își păstrează vechile hotare"
-		Simplified_Chinese:"被占领城市保留先前的边界"
+		Simplified_Chinese:"已占领城市保留先前的边界"
 		Portuguese:"Cidades capturadas retem suas antigas frontieras"
 		Russian:"Захваченные города сохраняют свои прежние границы"
 		German:"Eingenommene Städte behalten ihre vorherigen Grenzen"
@@ -8235,21 +8267,21 @@
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Для победы\n завершите все части космического коробля"
-		Simplified_Chinese:"完成建造太空飞船胜利！"
+		Simplified_Chinese:"完成建造太空飞船\n胜利！"
 	}
 	"Complete 4 policy branches\n to win!":{
 		Italian:"Completa quattro rami\n  politici per vincere!"
 		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
 		French:"Completer 4 Doctrines pour gagner!"
 		Russian:"Для победы\n завершите 4 ветви общественных инстутов"
-		Simplified_Chinese:"完全推行4项社会政策胜利！"
+		Simplified_Chinese:"完全推行4项社会政策\n胜利！"
 	}
 	"Destroy all enemies\n to win!":{
 		Italian:"Distruggi tutti gli avversari \n per vincere!"
 		German:"Um zu gewinnen besiegen Sie alle Gegner!"
 		French:"Eliminer tous vos adversaires pour gagner!"
 		Russian:"Для победы, \n уничтожьте всех врагов"
-		Simplified_Chinese:"消灭所有敌人胜利!"
+		Simplified_Chinese:"消灭所有敌人\n胜利!"
 	}
 	"You have won a scientific victory!":{
 		Italian:"Hai ottenuto una Vittoria Scientifica!"
@@ -8283,7 +8315,7 @@
 		Italian:"Programma Apollo costruito"
 		German:"Vollendete das Apollo-Programm" //not sure about the context here
 		French:"Construiser le programme Apollo" //same, it could be "construire"
-		Simplified_Chinese:"建造阿波罗计划"
+		Simplified_Chinese:"开启阿波罗计划"
 	}
 	"Destroy [civName]":{
 		Italian:"Distruggi [civName]"
@@ -8454,7 +8486,7 @@
 		German:"+25% Verteidigung gegen alle Fernangriffe"
 		French:"+25% défence contre les attaques à distance"
 		Russian:"+25% защиты от дальних атак" 
-		Simplified_Chinese:"对战远程单位时+25%防御"
+		Simplified_Chinese:"对战远程单位时+25%防御力"
 	}
 	"March":{
 		Italian:"Marcia"
@@ -8514,7 +8546,7 @@
 		Italian:"Sentinella"
 		German:"Wache"
 		French:"Sentinel"
-		Rusian:"Караул"
+		Russian:"Караул"
 		Simplified_Chinese:"警戒能力"
 	}
 	"Range":{
@@ -8642,21 +8674,21 @@
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
-		Russain:"Береговой налетчик I"
+		Russian:"Береговой налетчик I"
 		Simplified_Chinese:"海掠一级"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
-		Russain:"Береговой налетчик II"
+		Russian:"Береговой налетчик II"
 		Simplified_Chinese:"海掠二级"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
-		Russain:"Береговой налетчик III"
+		Russian:"Береговой налетчик III"
 		Simplified_Chinese:"海掠三级"
 	}
 	"Targeting I":{
@@ -8755,7 +8787,7 @@
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
-		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+                Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
@@ -8775,22 +8807,22 @@
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 		French:"Obsolète avec [obsoleteTech]"
-		Simplified_Chinese:"[obsoleteTech]技术已过时"
+		Simplified_Chinese:"研发下列科技后过时：[obsoleteTech]"
 	}
 	"May contain [listOfResources]":{
 		Italian:"Può contenere [listOfResources]"
 		French:""
-		Simplified_Chinese:"可以包含[listOfResources]"
+		Simplified_Chinese:"可能拥有下列资源：[listOfResources]"
 	}
 	"Occurs on [listOfTerrains]":{
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
 		French:"Doit possèder [listOfTerrains]"
-		Simplified_Chinese:"出现在[listOfTerrains]"
+		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
-		Simplified_Chinese:"防御加成"
+		Simplified_Chinese:"防御力加成"
 	}
 	"Movement cost":{
 		Italian:"Costi di movimento"
@@ -8799,10 +8831,10 @@
   }
 	
 	//Options menu, pointed out by Smashfanful
-	"Missing translations":{
-		Italian:"Traduzioni mancanti"
-		Russian:"Отсутствующие переводы"
-		Simplified_Chinese:"缺少的翻译"
+	"Missing translations:":{
+		Italian:"Traduzioni mancanti:"
+		Russian:"Отсутствующие переводы:"
+        Simplified_Chinese:"未翻译的词条:"
 	}
 	"Version":{
 		Italian:"Versione"
@@ -8816,7 +8848,7 @@
 	}
 	"Tileset":{
 		Italian:"Set celle"
-		Simplified_Chinese:"地块设置"
+		Simplified_Chinese:"地块显示设置"
 	}
 	"Map editor":{
 		Italian:"Editor mappe"
@@ -8825,6 +8857,10 @@
 	}
 	"Language":{
 		Italian:"Lingua"
-		Simplified_Chinese:"简体中文"
+		Simplified_Chinese:"语言设置"
+	}
+	//If don't do this,when game runs in Chinese,it will be lost some font.
+	"missing Chinese font":{
+		Simplified_Chinese:"。、，：查抵抗俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
 	}
 }

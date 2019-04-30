@@ -58,11 +58,12 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
         addButton("Not this time.".tr()){
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
 
+            val flagsCountdown = requestingCiv.getDiplomacyManager(currentPlayerCiv).flagsCountdown
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
-                requestingCiv.getDiplomacyManager(currentPlayerCiv).flagsCountdown[DiplomacyFlags.DeclinedLuxExchange]=20 // offer again in 20 turns
+                flagsCountdown[DiplomacyFlags.DeclinedLuxExchange.toString()]=20 // offer again in 20 turns
 
             if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name=="Peace Treaty" })
-                requestingCiv.getDiplomacyManager(currentPlayerCiv).flagsCountdown[DiplomacyFlags.DeclinedPeace]=5 // offer again in 20 turns
+                flagsCountdown[DiplomacyFlags.DeclinedPeace.toString()]=5 // offer again in 20 turns
 
             remove()
             worldScreen.shouldUpdate=true

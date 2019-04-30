@@ -56,14 +56,14 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (city.isCapital()) {
             val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
             add(starImage).size(20f).pad(2f).padLeft(5f)
-        } else if (city.civInfo.isPlayerCivilization() && city.cityStats.isConnectedToCapital(RoadStatus.Road)) {
+        } else if (city.civInfo.isCurrentPlayer() && city.cityStats.isConnectedToCapital(RoadStatus.Road)) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             add(connectionImage).size(20f).pad(2f).padLeft(5f)
         } else {
             add()
         } // this is so the health bar is always 2 columns wide
         add(label).pad(10f)
-        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isPlayerCivilization()) {
+        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
             add(getConstructionGroup(city.cityConstructions)).padRight(5f)
         }
         pack()
