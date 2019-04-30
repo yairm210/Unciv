@@ -7,7 +7,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.trade.TradeLogic
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
@@ -71,19 +70,20 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        var leaderName: String
+        val leaderName: String
         if (civ.isCityState()) {
             leaderName = "City State [" + civ.civName + "]"
         } else {
             leaderName = "[" + civ.getNation().leaderName + "] of [" + civ.civName + "]"
         }
-        leaderName = leaderName + " : Attitude " + civ.getDiplomacyManager(currentPlayerCiv).attitude.toInt().toString()
         diplomacyTable.add(leaderName.toLabel())
         diplomacyTable.addSeparator()
 
-        val tradeButton = TextButton("Trade".tr(), skin)
-        tradeButton.onClick { setTrade(civ)  }
-        diplomacyTable.add(tradeButton).row()
+        if(!civ.isCityState()) {
+            val tradeButton = TextButton("Trade".tr(), skin)
+            tradeButton.onClick { setTrade(civ) }
+            diplomacyTable.add(tradeButton).row()
+        }
 
         val civDiplomacy = currentPlayerCiv.getDiplomacyManager(civ)
 

@@ -119,10 +119,10 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         if (currentTrade.theirOffers.isEmpty()) {
             for (trade in currentTrade.ourOffers) {
                 if (trade.type == TradeType.Gold) {
-                    otherCivilization.getDiplomacyManager(ourCivilization).attitude += trade.amount / 10
+                    otherCivilization.getDiplomacyManager(ourCivilization).influence += trade.amount / 10
                 }
                 if (trade.type == TradeType.Gold_Per_Turn) {
-                    otherCivilization.getDiplomacyManager(ourCivilization).attitude += trade.amount * trade.duration / 10
+                    otherCivilization.getDiplomacyManager(ourCivilization).influence += trade.amount * trade.duration / 10
                 }
             }
         }
