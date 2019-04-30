@@ -24,8 +24,10 @@ class DiplomacyManager() {
     lateinit var otherCivName:String
     var trades = ArrayList<Trade>()
     var diplomaticStatus = DiplomaticStatus.War
-    /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire */
-    var flagsCountdown = HashMap<DiplomacyFlags,Int>()
+    /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire.
+     *  The JSON serialize/deserialize REFUSES to deserialize hashmap keys as Enums, so I'm forced to use strings instead =(
+     *  This is so sad Alexa play Despacito */
+    var flagsCountdown = HashMap<String,Int>()
     var attitude: Float = 0f //positive means our civ is friendly to the other civ
 
     fun clone(): DiplomacyManager {
@@ -106,13 +108,23 @@ class DiplomacyManager() {
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders(){
-        hasOpenBorders=false
-        for(trade in trades)
-            for(offer in trade.theirOffers)
-                if(offer.name=="Open Borders" && offer.duration > 0){
-                    hasOpenBorders=true
-                    return
+        var newHasOpenBorders = false
+        for(trade in trades) {
+            for (offer in trade.theirOffers)
+                if (offer.name == "Open Borders" && offer.duration > 0) {
+                    newHasOpenBorders = true
+                    break
                 }
+            if(newHasOpenBorders) break
+        }
+
+        if(hasOpenBorders && !newHasOpenBorders){ // borders were closed, get out!
+            for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName== otherCivName }){
+                unit.movementAlgs().teleportToClosestMoveableTile()
+            }
+        }
+
+        hasOpenBorders=newHasOpenBorders
     }
 
     fun nextTurn(){
@@ -167,8 +179,8 @@ class DiplomacyManager() {
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
 
         /// AI won't propose peace for 10 turns
-        flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
-        otherCiv.getDiplomacyManager(civInfo).flagsCountdown[DiplomacyFlags.DeclinedPeace]=10
+        flagsCountdown[DiplomacyFlags.DeclinedPeace.toString()]=10
+        otherCiv.getDiplomacyManager(civInfo).flagsCountdown[DiplomacyFlags.DeclinedPeace.toString()]=10
     }
     //endregion
 }
