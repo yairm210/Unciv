@@ -21,6 +21,7 @@ import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
@@ -57,6 +58,7 @@ class CivilizationInfo {
     @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
     var playerType = PlayerType.AI
     var civName = ""
+    var cityStateType = ""
     var tech = TechManager()
     var policies = PolicyManager()
     var goldenAges = GoldenAgeManager()
@@ -80,6 +82,7 @@ class CivilizationInfo {
     constructor(civName: String) {
         this.civName = civName
         tech.techsResearched.add("Agriculture") // can't be .addTechnology because the civInfo isn't assigned yet
+        cityStateType = GameBasics.Nations[civName]!!.cityStateType
     }
 
     fun clone(): CivilizationInfo {
@@ -98,6 +101,7 @@ class CivilizationInfo {
         toReturn.exploredTiles.addAll(exploredTiles)
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
+        toReturn.cityStateType = cityStateType
         return toReturn
     }
 
@@ -118,6 +122,7 @@ class CivilizationInfo {
         return translatedNation
     }
 
+    fun isCityState(): Boolean = (cityStateType != "")
     fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
 
@@ -134,6 +139,19 @@ class CivilizationInfo {
                 if(statMap.containsKey(entry.key))
                     statMap[entry.key] = statMap[entry.key]!! + entry.value
                 else statMap[entry.key] = entry.value
+            }
+        }
+
+        //City states culture bonus
+        for (otherCivName in diplomacy.keys) {
+            val otherCiv = gameInfo.getCivilization(otherCivName)
+            if (otherCiv.isCityState() && otherCiv.diplomacy[civName]!!.attitude > 60) {
+                var cultureBonus = Stats()
+                cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
+                if (statMap.containsKey("City States"))
+                    statMap["City States"] = statMap["City States"]!! + cultureBonus
+                else
+                    statMap["City States"] = cultureBonus
             }
         }
 

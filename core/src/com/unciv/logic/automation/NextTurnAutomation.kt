@@ -44,6 +44,16 @@ class NextTurnAutomation{
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
         if(!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
+        if (civInfo.isCityState()) { //City states automatically get all invented techs
+            for (otherCiv in civInfo.getKnownCivs().filterNot { it.isCityState() }) {
+                for (entry in otherCiv.tech.techsResearched
+                        .filterNot { civInfo.tech.isResearched(it) }
+                        .filter { civInfo.tech.canBeResearched(it) }) {
+                    civInfo.tech.addTechnology(entry)
+                }
+            }
+            return
+        }
 
         val otherCivList = civInfo.getKnownCivs()
                 .filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }
@@ -227,6 +237,7 @@ class NextTurnAutomation{
     }
 
     private fun declareWar(civInfo: CivilizationInfo) {
+        if (civInfo.isCityState()) return
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
             val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
             if (!civInfo.isAtWar() && civInfo.happiness > 0
@@ -295,6 +306,7 @@ class NextTurnAutomation{
     }
 
     private fun trainSettler(civInfo: CivilizationInfo) {
+        if(civInfo.isCityState()) return
         if(civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.cities.any()
                 && civInfo.happiness > civInfo.cities.size + 5

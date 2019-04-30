@@ -13,7 +13,7 @@ class Nation : INamed {
     }
 
     var leaderName=""
-
+    var cityStateType=""
     var declaringWar=""
     var attacked=""
     var defeated=""
@@ -34,5 +34,6 @@ class Nation : INamed {
         if(secondaryColor==null) return Color.BLACK
         return colorFromRGB(secondaryColor!![0], secondaryColor!![1], secondaryColor!![2])
     }
+    fun isCityState(): Boolean = (cityStateType != "")
     lateinit var cities: List<String>
 }

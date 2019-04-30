@@ -169,7 +169,7 @@ class Battle(val gameInfo:GameInfo) {
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
         }
 
-        if (attacker.getCivInfo().isBarbarianCivilization()){
+        if (attacker.getCivInfo().isBarbarianCivilization() || attacker.getCivInfo().isCityState()){
             city.destroyCity()
         }
         else {
@@ -219,7 +219,10 @@ class Battle(val gameInfo:GameInfo) {
             defender.takeDamage(100)
             return
         } // barbarians don't capture civilians!
-
+        if (attacker.getCivInfo().isCityState() && defender.getName() == "Settler") {
+            defender.takeDamage(100)
+            return
+        }
         if (defender.getCivInfo().isDefeated()) {//Last settler captured
             defender.getCivInfo().destroy()
             attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,defender.getCivInfo().civName))

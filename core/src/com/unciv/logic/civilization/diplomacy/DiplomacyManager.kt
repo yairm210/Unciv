@@ -28,12 +28,14 @@ class DiplomacyManager() {
      *  The JSON serialize/deserialize REFUSES to deserialize hashmap keys as Enums, so I'm forced to use strings instead =(
      *  This is so sad Alexa play Despacito */
     var flagsCountdown = HashMap<String,Int>()
+    var attitude: Float = 0f //positive means our civ is friendly to the other civ
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
         toReturn.diplomaticStatus=diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
+        toReturn.attitude = attitude
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.hasOpenBorders=hasOpenBorders
         return toReturn
@@ -141,6 +143,14 @@ class DiplomacyManager() {
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) flagsCountdown.remove(flag)
+        }
+
+        if (attitude > 1f) {
+            attitude -= 1f
+        } else if (attitude < -1f) {
+            attitude += 1f
+        } else {
+            attitude = 0f
         }
 
     }

@@ -438,8 +438,10 @@ class MapUnit {
 
         actions.add {
             val chosenUnit = listOf("Settler","Worker","Warrior").random()
-            civInfo.placeUnitNearTile(currentTile.position,chosenUnit)
-            civInfo.addNotification("A [$chosenUnit] has joined us!",currentTile.position, Color.BROWN)
+            if (!civInfo.isCityState() || chosenUnit != "Settler") { //City states don't get settler from ruins
+                civInfo.placeUnitNearTile(currentTile.position, chosenUnit)
+                civInfo.addNotification("A [$chosenUnit] has joined us!", currentTile.position, Color.BROWN)
+            }
         }
 
         if(!type.isCivilian())
