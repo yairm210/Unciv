@@ -116,7 +116,8 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         if(!otherCiv.isCityState()){
             val diplomacyModifiersTable = Table()
             val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
-            diplomacyModifiersTable.add(("Current opinion: "+otherCivDiplomacyManager.opinionOfOtherCiv()).toLabel()).row()
+            val relationshipText = "Our relationship: "+otherCivDiplomacyManager.relationshipLevel()+" ("+otherCivDiplomacyManager.opinionOfOtherCiv()+")"
+            diplomacyModifiersTable.add(relationshipText.toLabel()).row()
             for(modifier in otherCivDiplomacyManager.diplomaticModifiers){
                 diplomacyModifiersTable.add((modifier.key+" "+modifier.value).toLabel()).row()
             }

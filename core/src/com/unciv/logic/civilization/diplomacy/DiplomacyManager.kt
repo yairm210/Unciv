@@ -11,6 +11,16 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
 
+enum class RelationshipLevel{
+    Unforgivable,
+    Enemy,
+    Competitor,
+    Neutral,
+    Favorable,
+    Friend,
+    Ally
+}
+
 enum class DiplomacyFlags{
     DeclinedLuxExchange,
     DeclinedPeace
@@ -74,6 +84,17 @@ class DiplomacyManager() {
     }
 
     fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
+
+    fun relationshipLevel(): RelationshipLevel {
+        val opinion = opinionOfOtherCiv()
+        if(opinion>80) return RelationshipLevel.Ally
+        if(opinion>40) return RelationshipLevel.Friend
+        if(opinion>15) return RelationshipLevel.Favorable
+        if(opinion<-80) return RelationshipLevel.Unforgivable
+        if(opinion<-40) return RelationshipLevel.Enemy
+        if(opinion<-15) return RelationshipLevel.Competitor
+        return RelationshipLevel.Neutral
+    }
 
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
 
