@@ -8589,7 +8589,7 @@
 		Italian:"Sentinella"
 		German:"Wache"
 		French:"Sentinel"
-		Rusian:"Караул"
+		Russian:"Караул"
 		Simplified_Chinese:"警戒能力"
 	}
 	"Range":{
@@ -8717,21 +8717,21 @@
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
-		Russain:"Береговой налетчик I"
+		Russian:"Береговой налетчик I"
 		Simplified_Chinese:"海掠一级"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
-		Russain:"Береговой налетчик II"
+		Russian:"Береговой налетчик II"
 		Simplified_Chinese:"海掠二级"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
-		Russain:"Береговой налетчик III"
+		Russian:"Береговой налетчик III"
 		Simplified_Chinese:"海掠三级"
 	}
 	"Targeting I":{
