@@ -4534,7 +4534,7 @@
 		Russian:"промо акции"
 	}
 	
-	"units in rough terrain:":{
+	"units in rough terrain":{
 		Italian:"unità su terreno accidentato"
 		Romanian:"unități în teren accidentat"
 		Spanish:"unidades en terreno accidentado"
@@ -6620,6 +6620,9 @@
 		Portuguese:"Besteiro"
 		German:"Armbrustschütze"
 	}
+	"Chu-Ko-Nu":{	
+		Simplified_Chinese:"诸葛弩"
+	}
 	"Longbowman":{	
 		Italian:"Arciere con arco lungo"
 		French:"Archer long"
@@ -8413,6 +8416,9 @@
 		Russian:"Бонус против юнитов на открытой местности 15%"
 		Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
 	}
+	"units in open terrain":{
+		Simplified_Chinese:"位于开阔地形的单位"
+	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
 		German:"Sperrfeuer I"
@@ -8807,7 +8813,7 @@
 		Italian:"Unico per la civiltà [civName], sostituisce [unitName]"
 		Spanish:"Único a la civilización [civName], reemplaza [unitName]"
 		Romanian:"Unic pentru civilizație [civName], înlocuiește [unitName]"
-		Simplified_Chinese:"文明独有[civName]取代[unitName]"
+		Simplified_Chinese:"文明独有单位[civName]取代[unitName]"
 		Portuguese:"Exclusivo da civilização [civName], substitui [unitName]"
 		Russian:"Уникальный для цивилизации [civName], заменяет [unitName]"
 		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
