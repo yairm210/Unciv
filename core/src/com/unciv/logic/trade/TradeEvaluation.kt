@@ -4,6 +4,7 @@ import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import kotlin.math.min
@@ -11,9 +12,14 @@ import kotlin.math.sqrt
 
 class TradeEvaluation{
     fun isTradeAcceptable(trade: Trade, evaluator: CivilizationInfo, tradePartner: CivilizationInfo): Boolean {
-        val sumOfTheirOffers = trade.theirOffers.asSequence()
+        var sumOfTheirOffers = trade.theirOffers.asSequence()
                 .filter { it.type!= TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateBuyCost(it,evaluator,tradePartner) }.sum()
+
+        val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipLevel()
+        if(relationshipLevel==RelationshipLevel.Enemy) sumOfTheirOffers = (sumOfTheirOffers*1.5).toInt()
+        else if(relationshipLevel==RelationshipLevel.Unforgivable) sumOfTheirOffers *= 2
+
         val sumOfOurOffers = trade.ourOffers.map { evaluateSellCost(it, evaluator, tradePartner)}.sum()
         return sumOfOurOffers <= sumOfTheirOffers
     }

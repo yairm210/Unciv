@@ -2,6 +2,7 @@ package com.unciv.logic.trade
 
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 
@@ -21,8 +22,12 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
                 && !otherCivilization.isCityState()
                 && civInfo.tech.getTechUniques().contains("Enables Open Borders agreements")
-                && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements"))
-            offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
+                && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements")) {
+            val relationshipLevel = otherCivilization.getDiplomacyManager(civInfo).relationshipLevel()
+
+            if(relationshipLevel!=RelationshipLevel.Enemy && relationshipLevel!=RelationshipLevel.Unforgivable)
+                offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
+        }
 
         for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
             val resourceTradeType = if(entry.key.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource

@@ -188,7 +188,7 @@ class Battle(val gameInfo:GameInfo) {
                 val aggroGeneratedForOtherCivs = (aggroGenerated/10).roundToInt().toFloat()
                 if(thirdPartyCiv.isAtWarWith(cityCiv)) // You annoyed our enemy?
                     thirdPartyCiv.getDiplomacyManager(attackerCiv)
-                            .addModifier(DiplomaticModifiers.CapturedOurEnemiesCities,aggroGeneratedForOtherCivs) // Cool, keep at at! =D
+                            .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
                 else thirdPartyCiv.getDiplomacyManager(attackerCiv)
                         .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
             }

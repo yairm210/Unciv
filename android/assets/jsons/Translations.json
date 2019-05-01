@@ -4869,6 +4869,23 @@
 		Simplified_Chinese:"很高兴见到你."
 	}
 	
+	"Our relationship: ":{}
+	
+    "Unforgivable":{}
+    "Enemy":{}
+    "Competitor":{}
+    "Neutral":{}
+    "Favorable":{}
+    "Friend":{}
+    "Ally":{}
+	
+	// Diplomatic modifiers
+	"You declared war on us!":{}
+	"Your warmongering ways are unacceptable to us.":{}
+	"You have captured our cities!":{}
+	"Years of peace have strengthened our relations.":{}
+	"Our mutual military struggle brings us closer together.":{}
+	
 	// Overview screen
 	"Overview":{	
 		Italian:"Panoramica"
@@ -8830,7 +8847,7 @@
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
-                Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
@@ -8840,7 +8857,7 @@
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
 		French:"Nécessite la technologie: [requiredTech]"
-Simplified_Chinese:"需要科技：[requiredTech]"
+		Simplified_Chinese:"需要科技：[requiredTech]"
 	}
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"

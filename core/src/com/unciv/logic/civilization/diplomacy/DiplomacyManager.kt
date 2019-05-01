@@ -31,7 +31,7 @@ enum class DiplomaticModifiers{
     WarMongerer,
     CapturedOurCities,
     YearsOfPeace,
-    CapturedOurEnemiesCities
+    SharedEnemy
 }
 
 class DiplomacyManager() {
@@ -86,6 +86,15 @@ class DiplomacyManager() {
     fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
 
     fun relationshipLevel(): RelationshipLevel {
+        if(civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
+            return RelationshipLevel.Neutral // People make their own choices.
+
+        if(civInfo.isPlayerCivilization())
+            return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
+
+        // not entirely sure what to do between AI civs, because they probably have different views of each other,
+        // maybe we need to average their views of each other? That makes sense to me.
+
         val opinion = opinionOfOtherCiv()
         if(opinion>80) return RelationshipLevel.Ally
         if(opinion>40) return RelationshipLevel.Friend
@@ -227,7 +236,9 @@ class DiplomacyManager() {
 
         otherCivDiplomacy.diplomaticModifiers[DiplomaticModifiers.DeclaredWarOnUs.toString()] = -20f
         for(thirdCiv in civInfo.getKnownCivs()){
-            thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
+            if(thirdCiv.isAtWarWith(otherCiv))
+                thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,5f)
+            else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
         }
     }
 

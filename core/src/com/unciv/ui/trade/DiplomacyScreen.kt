@@ -7,6 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
@@ -116,10 +118,34 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         if(!otherCiv.isCityState()){
             val diplomacyModifiersTable = Table()
             val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
-            val relationshipText = "Our relationship: "+otherCivDiplomacyManager.relationshipLevel()+" ("+otherCivDiplomacyManager.opinionOfOtherCiv()+")"
+
+            val relationshipTable = Table()
+            relationshipTable.add("Our relationship: ".toLabel())
+            val relationshipLevel = otherCivDiplomacyManager.relationshipLevel()
+            val relationshipText = otherCivDiplomacyManager.relationshipLevel().toString().tr()+" ("+otherCivDiplomacyManager.opinionOfOtherCiv().toInt()+")"
+            val relationshipColor = when{
+                relationshipLevel==RelationshipLevel.Neutral -> Color.WHITE
+                relationshipLevel==RelationshipLevel.Favorable || relationshipLevel==RelationshipLevel.Friend
+                        || relationshipLevel==RelationshipLevel.Ally -> Color.GREEN
+                else -> Color.RED
+            }
+            relationshipTable.add(relationshipText.toLabel().setFontColor(relationshipColor))
             diplomacyModifiersTable.add(relationshipText.toLabel()).row()
+
             for(modifier in otherCivDiplomacyManager.diplomaticModifiers){
-                diplomacyModifiersTable.add((modifier.key+" "+modifier.value).toLabel()).row()
+                var text = when(DiplomaticModifiers.valueOf(modifier.key)){
+                    DiplomaticModifiers.DeclaredWarOnUs -> "You declared war on us!"
+                    DiplomaticModifiers.WarMongerer -> "Your warmongering ways are unacceptable to us."
+                    DiplomaticModifiers.CapturedOurCities -> "You have captured our cities!"
+                    DiplomaticModifiers.YearsOfPeace -> "Years of peace have strengthened our relations."
+                    DiplomaticModifiers.SharedEnemy -> "Our mutual military struggle brings us closer together."
+                }
+                text = text.tr()
+                text += " "
+                if(modifier.value>0) text += "+"
+                text += modifier.value.toInt()
+                val color = if(modifier.value<0) Color.RED else Color.GREEN
+                diplomacyModifiersTable.add(text.toLabel().setFontColor(color)).row()
             }
             diplomacyTable.add(diplomacyModifiersTable).row()
         }

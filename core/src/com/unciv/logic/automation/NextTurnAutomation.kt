@@ -5,6 +5,7 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.TradeRequest
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
 import com.unciv.models.gamebasics.GameBasics
@@ -166,6 +167,11 @@ class NextTurnAutomation{
 
         for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo)
                 && !civInfo.getDiplomacyManager(it).flagsCountdown.containsKey(DiplomacyFlags.DeclinedLuxExchange.toString())}) {
+
+            val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
+            if(relationshipLevel==RelationshipLevel.Enemy || relationshipLevel == RelationshipLevel.Unforgivable)
+                continue
+
             val trades = potentialLuxuryTrades(civInfo,otherCiv)
             for(trade in trades){
                 val tradeRequest = TradeRequest(civInfo.civName, trade.reverse())
