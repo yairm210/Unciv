@@ -98,7 +98,8 @@ class CivilizationInfo {
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
-        toReturn.diplomacy.putAll(diplomacy)
+        for(diplomacyManager in diplomacy.values.map { it.clone() })
+            toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
         toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
         toReturn.notifications.addAll(notifications)

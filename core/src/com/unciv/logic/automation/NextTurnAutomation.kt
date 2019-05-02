@@ -57,7 +57,7 @@ class NextTurnAutomation{
         }
 
         val otherCivList = civInfo.getKnownCivs()
-                .filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }
+                .filter { it.playerType == PlayerType.AI && it.isMajorCiv() }
                 .sortedBy { it.tech.techsResearched.size }
 
         for (otherCiv in otherCivList) {

@@ -19,6 +19,7 @@ class CityInfo {
     @Transient var isConnectedToCapital = false
     @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
     @Transient val range = 2
+    @Transient lateinit var tileMap: TileMap
 
     var location: Vector2 = Vector2.Zero
     var name: String = ""
@@ -96,8 +97,7 @@ class CityInfo {
         return toReturn
     }
 
-    internal val tileMap: TileMap
-        get() = civInfo.gameInfo.tileMap
+
 
     fun getCenterTile(): TileInfo = ccenterTile
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
@@ -183,6 +183,7 @@ class CityInfo {
 
     //region state-changing functions
     fun setTransients() {
+        tileMap = civInfo.gameInfo.tileMap
         ccenterTile = tileMap[location]
         population.cityInfo = this
         expansion.cityInfo = this
