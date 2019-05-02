@@ -15,6 +15,10 @@ open class TileInfo {
     @Transient var owningCity:CityInfo?=null
     @Transient private lateinit var baseTerrainObject:Terrain
 
+    // These are for performance - checked with every tile movement and "canEnter" check, which makes them performance-critical
+    @Transient var isLand = false
+    @Transient var isWater = false
+
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
 
@@ -110,9 +114,6 @@ open class TileInfo {
         return city!=null && city.workedTiles.contains(position)
     }
 
-    fun isLand() = getBaseTerrain().type==TerrainType.Land
-    fun isWater() = getBaseTerrain().type==TerrainType.Water
-
     fun getTileStats(observingCiv: CivilizationInfo): Stats {
         return getTileStats(getCity(), observingCiv)
     }
@@ -151,7 +152,7 @@ open class TileInfo {
             if(resource.name=="Oil" && city!=null
                     && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
-            if(city!=null && isWater()){
+            if(city!=null && isWater){
                 if(city.getBuildingUniques().contains("+1 production from all sea resources worked by the city"))
                     stats.production+=1
                 if(city.getBuildingUniques().contains("+1 production and gold from all sea resources worked by the city")){
@@ -175,7 +176,7 @@ open class TileInfo {
                 stats.add(improvement) // again, for the double effect
         }
 
-        if(city!=null && isWater() && city.getBuildingUniques().contains("+1 gold from worked water tiles in city"))
+        if(city!=null && isWater && city.getBuildingUniques().contains("+1 gold from worked water tiles in city"))
             stats.gold += 1
 
         if (isCityCenter()) {
@@ -279,6 +280,8 @@ open class TileInfo {
     //region state-changing functions
     fun setTransients(){
         baseTerrainObject = GameBasics.Terrains[baseTerrain]!!
+        isWater = getBaseTerrain().type==TerrainType.Water
+        isLand = getBaseTerrain().type==TerrainType.Land
 
         if(militaryUnit!=null) militaryUnit!!.currentTile = this
         if(civilianUnit!=null) civilianUnit!!.currentTile = this

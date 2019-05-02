@@ -84,11 +84,11 @@ class GameStarter{
 
     fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
         var landTiles = tileMap.values
-                .filter { it.isLand() && !it.getBaseTerrain().impassable }
+                .filter { it.isLand && !it.getBaseTerrain().impassable }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
         while(landTiles.any()){
-            val bfs = BFS(landTiles.random()){it.isLand() && !it.getBaseTerrain().impassable}
+            val bfs = BFS(landTiles.random()){it.isLand && !it.getBaseTerrain().impassable}
             bfs.stepToEnd()
             val tilesInGroup = bfs.tilesReached.keys
             landTiles = landTiles.filter { it !in tilesInGroup }

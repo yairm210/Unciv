@@ -133,11 +133,11 @@ class MapUnit {
     fun canPassThrough(tile: TileInfo):Boolean{
 
         if(tile.getBaseTerrain().impassable) return false
-        if(tile.isLand() && type.isWaterUnit() && !tile.isCityCenter())
+        if(tile.isLand && type.isWaterUnit() && !tile.isCityCenter())
             return false
 
         val isOcean = tile.baseTerrain == "Ocean"
-        if(tile.isWater() && type.isLandUnit()){
+        if(tile.isWater && type.isLandUnit()){
             if(!civInfo.tech.unitsCanEmbark) return false
             if(isOcean && !civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false

@@ -94,7 +94,7 @@ class UnitActions {
             {
                 // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
                 //    and I can't find any other sources so I'll go with that
-                if(tile.isLand()) {
+                if(tile.isLand) {
                     tile.improvementInProgress = tile.improvement
                     tile.turnsToImprovement = 2
                 }

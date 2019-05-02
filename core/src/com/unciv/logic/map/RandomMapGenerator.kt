@@ -126,7 +126,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
 
     override fun setWaterTiles(map: HashMap<String, TileInfo>) {
         //define lakes
-        var waterTiles = map.values.filter { it.isWater() }.map { it.position }
+        var waterTiles = map.values.filter { it.isWater }.map { it.position }
         val tilesInArea = ArrayList<Vector2>()
         val tilesToCheck = ArrayList<Vector2>()
         while (waterTiles.isNotEmpty()) {
@@ -530,7 +530,7 @@ open class RandomMapGenerator {
             val suitableTiles = mapToReturn.values
                     .filter { it.resource==null && resource.terrainsCanBeFoundOn.contains(it.getLastTerrain().name) }
 
-            val numberOfResources = mapToReturn.values.count{it.isLand() && !it.getBaseTerrain().impassable} / 50
+            val numberOfResources = mapToReturn.values.count{it.isLand && !it.getBaseTerrain().impassable} / 50
 
             val locations = chooseSpreadOutLocations(numberOfResources,suitableTiles, distance)
 

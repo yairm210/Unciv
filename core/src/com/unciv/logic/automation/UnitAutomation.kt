@@ -121,9 +121,9 @@ class UnitAutomation{
         if(combatant is MapUnitCombatant){
             if (combatant.unit.isEmbarked()) {
                 if (combatant.isRanged()) return false
-                if (tile.isWater()) return false // can't attack water units while embarked, only land
+                if (tile.isWater) return false // can't attack water units while embarked, only land
             }
-            if (combatant.unit.hasUnique("Can only attack water") && tile.isLand()) return false
+            if (combatant.unit.hasUnique("Can only attack water") && tile.isLand) return false
         }
 
         val tileCombatant = Battle(combatant.getCivInfo().gameInfo).getMapCombatantOfTile(tile)
@@ -286,7 +286,7 @@ class UnitAutomation{
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
                             Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
-                .filter {it.tileToAttackFrom.isLand()}
+                .filter {it.tileToAttackFrom.isLand}
 
         val enemyTileToAttackNextTurn = chooseAttackTarget(unit, attackableEnemiesNextTurn)
 

@@ -81,7 +81,7 @@ class Automation {
             val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
                     && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
             val needWorkboat = canBuildWorkboat
-                    && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
+                    && cityInfo.getTiles().any { it.isWater && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
             val isAtWar = cityInfo.civInfo.isAtWar()
 

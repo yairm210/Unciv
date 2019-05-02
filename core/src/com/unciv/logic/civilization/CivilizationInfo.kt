@@ -130,7 +130,7 @@ class CivilizationInfo {
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
-    fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
+    fun isBarbarianCivilization() =  civName=="Barbarians"
     fun isCityState(): Boolean = getNation().isCityState()
     fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
     fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
@@ -507,7 +507,7 @@ class CivilizationInfo {
 
                 if(!reachedMediums.contains("Harbor")
                         && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent("Harbor")){
-                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()){it.isWater() || it.isCityCenter()}
+                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()){it.isWater || it.isCityCenter()}
                     seaBfs.stepToEnd()
                     val reachedCities = cities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
                     for(reachedCity in reachedCities){

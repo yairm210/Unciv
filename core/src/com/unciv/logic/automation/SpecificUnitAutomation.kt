@@ -11,7 +11,7 @@ import com.unciv.ui.worldscreen.unit.UnitActions
 class SpecificUnitAutomation{
 
     private fun hasWorkableSeaResource(tileInfo: TileInfo, civInfo: CivilizationInfo): Boolean {
-        return tileInfo.hasViewableResource(civInfo) && tileInfo.isWater() && tileInfo.improvement==null
+        return tileInfo.hasViewableResource(civInfo) && tileInfo.isWater && tileInfo.improvement==null
     }
 
     fun automateWorkBoats(unit: MapUnit) {
@@ -88,7 +88,7 @@ class SpecificUnitAutomation{
                 .associateBy ( {it},{ Automation().rankTile(it,unit.civInfo) })
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(5)
-                .filter { (unit.canMoveTo(it) || unit.currentTile==it) && it !in tilesNearCities && it.isLand() }
+                .filter { (unit.canMoveTo(it) || unit.currentTile==it) && it !in tilesNearCities && it.isLand }
 
         val bestCityLocation: TileInfo? = possibleCityLocations
                 .asSequence()
@@ -131,7 +131,7 @@ class SpecificUnitAutomation{
             // if we got here, we're pretty close, start looking!
             val tiles = city.getTiles().asSequence()
                     .filter { (unit.canMoveTo(it) || unit.currentTile==it)
-                            && it.isLand()
+                            && it.isLand
                             && !it.isCityCenter()
                             && it.resource==null }
                     .sortedByDescending { Automation().rankTile(it,unit.civInfo) }.toList()
