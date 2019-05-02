@@ -2854,6 +2854,7 @@
 		Portuguese:"Serviço cívil"
 	}
 	"Enables Open Borders agreements":{
+		Italian:"Consente accordi su Diritti di Passaggio"
 		Simplified_Chinese:"允许签订开放边境协定"
 	}
 	
@@ -4215,9 +4216,11 @@
 		German:"Friedensabkommen"
 	}
 	"Agreements":{
+		Italian:"Accordi"
 		Simplified_Chinese:"协定"
 	}
 	"Open Borders":{
+		Italian:"Diritto di passaggio"
 		Simplified_Chinese:"开放边境"
 	}
 	"Gold per turn":{
@@ -4462,6 +4465,7 @@
 		Dutch:"Saudi"
 	}
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
+		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
 	}
 	
@@ -4817,6 +4821,7 @@
 	}
 	
 	"[tradeOffer] from [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
 		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
 	}
 	
@@ -4854,12 +4859,15 @@
 	}
 	
 	"Not this time.":{
+		Italian:"Non questa volta."
 		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
 	} // declining trade text
 	"Excellent!":{
+		Italian:"Eccellente!"
 		Simplified_Chinese:"好极了！和和气气才是生财之道。"
 	} // AI statement after we accept a trade they proposed
 	"How about something else...":{
+		Italian:"Che ne dici di questa offerta?"
 		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
 	} // Counteroffer to AI offer
 	
@@ -4869,22 +4877,48 @@
 		Simplified_Chinese:"很高兴见到你."
 	}
 	
-	"Our relationship: ":{}
+	"Our relationship: ":{
+		Italian:"I nostri rapporti: "
+	}
 	
-    "Unforgivable":{}
-    "Enemy":{}
-    "Competitor":{}
-    "Neutral":{}
-    "Favorable":{}
-    "Friend":{}
-    "Ally":{}
+    "Unforgivable":{
+		Italian:"Imperdonabile"
+    }
+    "Enemy":{
+		Italian:"Nemico"
+    }
+    "Competitor":{
+		Italian:"Avversario"
+    }
+    "Neutral":{
+		Italian:"Neutrale"
+    }
+    "Favorable":{
+		Italian:"Favorevole"
+    }
+    "Friend":{
+		Italian:"Amichevole"
+    }
+    "Ally":{
+		Italian:"Alleato"
+    }
 	
 	// Diplomatic modifiers
-	"You declared war on us!":{}
-	"Your warmongering ways are unacceptable to us.":{}
-	"You have captured our cities!":{}
-	"Years of peace have strengthened our relations.":{}
-	"Our mutual military struggle brings us closer together.":{}
+	"You declared war on us!":{
+		Italian:"Ci hai dichiarato guerra!"
+	}
+	"Your warmongering ways are unacceptable to us.":{
+		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
+	}
+	"You have captured our cities!":{
+		Italian:"Hai preso una delle nostre città!"
+	}
+	"Years of peace have strengthened our relations.":{
+		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
+	}
+	"Our mutual military struggle brings us closer together.":{
+		Italian:"I nostri nemici in comune ci hanno legati."
+	}
 	
 	// Overview screen
 	"Overview":{	
@@ -6085,9 +6119,11 @@
 		German:"Börse"
 	}
         "Big Ben":{	
+		Italian:"Big Ben"
 		Simplified_Chinese:"大本钟"
 	}
 	"-15% to purchasing items in cities":{
+		Italian:"-15% costo in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
 	}
 	"Cristo Redentor":{
@@ -7061,9 +7097,11 @@
 		French:"Bombardier"
 	}
         "Mechanized Infantry":{
+		Italian:"Fanteria meccanizzata"
 		Simplified_Chinese:"机械化步兵"
 	}
         "Modern Armor":{
+		Italian:"Armatura moderna"
 		Simplified_Chinese:"现代坦克"
         }
 	"B17":{
