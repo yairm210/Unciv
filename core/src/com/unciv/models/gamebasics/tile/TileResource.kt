@@ -5,16 +5,17 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
+import com.unciv.models.gamebasics.tr
 
 class TileResource : NamedStats(), ICivilopedia {
     override val description: String
         get(){
             val stringBuilder = StringBuilder()
             stringBuilder.appendln(this.clone().toString())
-            stringBuilder.appendln("Can be found on " + terrainsCanBeFoundOn.joinToString())
+            stringBuilder.appendln("Can be found on ".tr() + terrainsCanBeFoundOn.joinToString())
             stringBuilder.appendln()
-            stringBuilder.appendln("Improved by $improvement")
-            stringBuilder.appendln("Bonus stats for improvement: $improvementStats")
+            stringBuilder.appendln("Improved by ".tr()+"$improvement".tr())
+            stringBuilder.appendln("Bonus stats for improvement: ".tr()+"$improvementStats".tr())
             return stringBuilder.toString()
         }
 

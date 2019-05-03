@@ -8821,7 +8821,7 @@
 		Italian:"Unico per la civiltà [civName], sostituisce [unitName]"
 		Spanish:"Único a la civilización [civName], reemplaza [unitName]"
 		Romanian:"Unic pentru civilizație [civName], înlocuiește [unitName]"
-		Simplified_Chinese:"文明独有单位[civName]取代[unitName]"
+		Simplified_Chinese:"[civName]文明独有，取代[unitName]"
 		Portuguese:"Exclusivo da civilização [civName], substitui [unitName]"
 		Russian:"Уникальный для цивилизации [civName], заменяет [unitName]"
 		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
@@ -8876,8 +8876,14 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 		French:"Doit possèder [listOfTerrains]"
 		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 	}
-	"Can be found on "::{
-		Simplified_Chinese:"可能在下列地形地貌发现:"
+	"Can be found on ":{
+		Simplified_Chinese:"可能发现该资源的地形地貌："
+	}
+	"Improved by ":{
+		Simplified_Chinese:"开发该资源所需要的设施："
+	}
+	"Bonus stats for improvement: ":{
+		Simplified_Chinese:"开发该资源后设施所获奖励效果："
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
