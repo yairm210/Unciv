@@ -8876,6 +8876,9 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 		French:"Doit possèder [listOfTerrains]"
 		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 	}
+	"Can be found on "::{
+		Simplified_Chinese:"可能在下列地形地貌发现:"
+	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
