@@ -217,11 +217,11 @@ class Building : NamedStats(), IConstruction{
 
         // National wonders
         if(requiredBuildingInAllCities!=null) {
-            if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
-                return "Requires a $requiredBuildingInAllCities in all cities"
 
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "Wonder is already built"
+            if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
+                return "Requires a $requiredBuildingInAllCities in all cities"
             if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "Wonder is being built elsewhere"
         }
