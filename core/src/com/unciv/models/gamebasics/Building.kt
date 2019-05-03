@@ -3,6 +3,7 @@ package com.unciv.models.gamebasics
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.Constants
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.*
@@ -295,8 +296,8 @@ class Building : NamedStats(), IConstruction{
                 civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
             }
             "Provides 2 free workers" in uniques -> {
-                civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
-                civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
+                civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
+                civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
             }
             "Free Social Policy" in uniques -> civInfo.policies.freePolicies++
             "Free Great Person" in uniques -> {

@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
+import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -316,12 +317,12 @@ class NextTurnAutomation{
         if(civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.cities.any()
                 && civInfo.happiness > civInfo.cities.size + 5
-                && civInfo.getCivUnits().none { it.name == "Settler" }
-                && civInfo.cities.none { it.cityConstructions.currentConstruction == "Settler" }) {
+                && civInfo.getCivUnits().none { it.name == Constants.settler }
+                && civInfo.cities.none { it.cityConstructions.currentConstruction == Constants.settler }) {
 
             val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstruction = "Settler"
+                bestCity.cityConstructions.currentConstruction = Constants.settler
         }
     }
 

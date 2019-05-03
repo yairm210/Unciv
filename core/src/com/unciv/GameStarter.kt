@@ -74,7 +74,7 @@ class GameStarter{
         for (civ in gameInfo.civilizations.filter { !it.isBarbarianCivilization() }) {
             val startingLocation = startingLocations.pop()!!
 
-            civ.placeUnitNearTile(startingLocation.position, "Settler")
+            civ.placeUnitNearTile(startingLocation.position, Constants.settler)
             civ.placeUnitNearTile(startingLocation.position, "Warrior")
             civ.placeUnitNearTile(startingLocation.position, "Scout")
         }

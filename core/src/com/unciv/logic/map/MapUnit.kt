@@ -2,6 +2,7 @@ package com.unciv.logic.map
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
@@ -136,14 +137,13 @@ class MapUnit {
         if(tile.isLand && type.isWaterUnit() && !tile.isCityCenter())
             return false
 
-        val isOcean = tile.baseTerrain == "Ocean"
         if(tile.isWater && type.isLandUnit()){
             if(!civInfo.tech.unitsCanEmbark) return false
-            if(isOcean && !civInfo.tech.embarkedUnitsCanEnterOcean)
+            if(tile.isOcean && !civInfo.tech.embarkedUnitsCanEnterOcean)
                 return false
         }
-        if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
-        if(isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+        if(tile.isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
+        if(tile.isOcean && baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
                 && !civInfo.tech.isResearched("Astronomy"))
             return false
 
@@ -174,7 +174,7 @@ class MapUnit {
 
     fun isIdle(): Boolean {
         if (currentMovement == 0f) return false
-        if (name == "Worker" && getTile().improvementInProgress != null) return false
+        if (name == Constants.worker && getTile().improvementInProgress != null) return false
         if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
         if (action=="Sleep") return false
@@ -271,6 +271,7 @@ class MapUnit {
     }
 
     fun doPreTurnAction() {
+        if(action==null) return
         val currentTile = getTile()
         if (currentMovement == 0f) return  // We've already done stuff this turn, and can't do any more stuff
 
@@ -300,7 +301,7 @@ class MapUnit {
     }
 
     private fun doPostTurnAction() {
-        if (name == "Worker" && getTile().improvementInProgress != null) workOnImprovement()
+        if (name == Constants.worker && getTile().improvementInProgress != null) workOnImprovement()
         if(hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") workOnImprovement()
         if(currentMovement== getMaxMovement().toFloat()
                 && isFortified()){
@@ -437,8 +438,8 @@ class MapUnit {
             }
 
         actions.add {
-            val chosenUnit = listOf("Settler","Worker","Warrior").random()
-            if (!civInfo.isCityState() || chosenUnit != "Settler") { //City states don't get settler from ruins
+            val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random()
+            if (!civInfo.isCityState() || chosenUnit != Constants.settler) { //City states don't get settler from ruins
                 civInfo.placeUnitNearTile(currentTile.position, chosenUnit)
                 civInfo.addNotification("A [$chosenUnit] has joined us!", currentTile.position, Color.BROWN)
             }

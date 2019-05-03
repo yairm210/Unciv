@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
@@ -331,7 +332,7 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any{it.name=="Settler"})
+    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any{it.name== Constants.settler})
 
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies

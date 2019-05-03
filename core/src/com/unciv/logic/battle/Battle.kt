@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.TileInfo
+import com.unciv.Constants
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
 import kotlin.math.max
@@ -238,7 +239,7 @@ class Battle(val gameInfo:GameInfo) {
             defender.takeDamage(100)
             return
         } // barbarians don't capture civilians!
-        if (attacker.getCivInfo().isCityState() && defender.getName() == "Settler") {
+        if (attacker.getCivInfo().isCityState() && defender.getName() == Constants.settler) {
             defender.takeDamage(100)
             return
         }

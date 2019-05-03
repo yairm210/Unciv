@@ -19,6 +19,8 @@ class TechManager {
     @Transient var unitsCanEmbark=false
     @Transient var embarkedUnitsCanEnterOcean=false
 
+    // UnitMovementAlgorithms.getMovementCostBetweenAdjacentTiles is a close second =)
+    @Transient var movementSpeedOnRoadsImproved=false
 
     var freeTechs = 0
     var techsResearched = HashSet<String>()
@@ -188,6 +190,6 @@ class TechManager {
     fun updateTransientBooleans(){
         if(researchedTechUniques.contains("Enables embarkation for land units")) unitsCanEmbark=true
         if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")) embarkedUnitsCanEnterOcean=true
-
+        if(researchedTechUniques.contains("Improves movement speed on roads")) movementSpeedOnRoadsImproved = true
     }
 }

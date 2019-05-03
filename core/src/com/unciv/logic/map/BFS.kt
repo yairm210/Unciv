@@ -28,9 +28,8 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         for(tileInfo in tilesToCheck){
             val fitNeighbors = tileInfo.neighbors.asSequence()
                     .filter(predicate)
-                    .filter{!tilesReached.containsKey(it)}.toList()
-            fitNeighbors.forEach { tilesReached[it] = tileInfo }
-            newTilesToCheck.addAll(fitNeighbors)
+                    .filter{!tilesReached.containsKey(it)}
+            fitNeighbors.forEach { tilesReached[it] = tileInfo; newTilesToCheck.add(it) }
         }
         tilesToCheck = newTilesToCheck
     }

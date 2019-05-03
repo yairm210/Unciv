@@ -70,7 +70,6 @@ class TileMap {
     fun getTilesAtDistance(origin: Vector2, distance: Int): List<TileInfo> {
         return HexMath().getVectorsAtDistance(origin, distance).asSequence()
                 .filter {contains(it)}.map { get(it) }.toList()
-
     }
 
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit {

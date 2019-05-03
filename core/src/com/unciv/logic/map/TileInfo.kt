@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
@@ -18,6 +19,7 @@ open class TileInfo {
     // These are for performance - checked with every tile movement and "canEnter" check, which makes them performance-critical
     @Transient var isLand = false
     @Transient var isWater = false
+    @Transient var isOcean = false
 
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
@@ -91,9 +93,9 @@ open class TileInfo {
         }
 
     fun getHeight(): Int {
-        if (baseTerrain=="Mountain") return 4
+        if (baseTerrain==Constants.mountain) return 4
         if (baseTerrain == "Hill") return 2
-        if (listOf("Forest", "Jungle").contains(terrainFeature)) return 1
+        if (baseTerrain=="Forest" || baseTerrain=="Jungle") return 1
         return 0
     }
 
@@ -121,7 +123,7 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if((baseTerrain=="Ocean"||baseTerrain=="Coast") && city!=null
+        if((baseTerrain== Constants.ocean||baseTerrain=="Coast") && city!=null
                 && city.getBuildingUniques().contains("+1 food from Ocean and Coast tiles"))
             stats.food += 1
 
@@ -282,6 +284,7 @@ open class TileInfo {
         baseTerrainObject = GameBasics.Terrains[baseTerrain]!!
         isWater = getBaseTerrain().type==TerrainType.Water
         isLand = getBaseTerrain().type==TerrainType.Land
+        isOcean = baseTerrain == Constants.ocean
 
         if(militaryUnit!=null) militaryUnit!!.currentTile = this
         if(civilianUnit!=null) civilianUnit!!.currentTile = this

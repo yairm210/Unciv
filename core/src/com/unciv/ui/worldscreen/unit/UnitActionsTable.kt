@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
+import com.unciv.Constants
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -25,10 +26,10 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Stop movement"-> return ImageGetter.getStatIcon("Movement").apply { color= Color.RED }
             "Fortify" -> return ImageGetter.getImage("OtherIcons/Shield").apply { color= Color.BLACK }
             "Promote" -> return ImageGetter.getImage("OtherIcons/Star").apply { color= Color.GOLD }
-            "Construct improvement" -> return ImageGetter.getUnitIcon("Worker")
+            "Construct improvement" -> return ImageGetter.getUnitIcon(Constants.worker)
             "Automate" -> return ImageGetter.getUnitIcon("Great Engineer")
             "Stop automation" -> return ImageGetter.getImage("OtherIcons/Stop")
-            "Found city" -> return ImageGetter.getUnitIcon("Settler")
+            "Found city" -> return ImageGetter.getUnitIcon(Constants.settler)
             "Discover Technology" -> return ImageGetter.getUnitIcon("Great Scientist")
             "Construct Academy" -> return ImageGetter.getImprovementIcon("Academy")
             "Start Golden Age" -> return ImageGetter.getUnitIcon("Great Artist")

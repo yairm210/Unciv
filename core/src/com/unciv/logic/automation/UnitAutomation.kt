@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
@@ -15,11 +16,11 @@ class UnitAutomation{
 
     fun automateUnitMoves(unit: MapUnit) {
 
-        if (unit.name == "Settler") {
+        if (unit.name == Constants.settler) {
             return SpecificUnitAutomation().automateSettlerActions(unit)
         }
 
-        if (unit.name == "Worker") {
+        if (unit.name == Constants.worker) {
             return WorkerAutomation(unit).automateWorkerAction()
         }
 
@@ -201,7 +202,7 @@ class UnitAutomation{
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull { val tile = it.currentTile
-                    (it.name=="Settler" || it.name.startsWith("Great") && it.type.isCivilian())
+                    (it.name== Constants.settler || it.name.startsWith("Great") && it.type.isCivilian())
                             && tile.militaryUnit==null && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
         if(settlerOrGreatPersonToAccompany==null) return false
         unit.movementAlgs().headTowards(settlerOrGreatPersonToAccompany.currentTile)

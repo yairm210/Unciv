@@ -25,7 +25,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (from.roadStatus !== RoadStatus.None && to.roadStatus !== RoadStatus.None) //Road
         {
-            if (unit.civInfo.tech.getTechUniques().contains("Improves movement speed on roads")) return 1 / 3f
+            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f
             else return 1 / 2f
         }
         if (unit.ignoresTerrainCost) return 1f
