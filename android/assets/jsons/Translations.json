@@ -7273,7 +7273,7 @@
 		German:"Legalismus"
 		French:"Légalisme"
 	}
-	"Free culture building in your first 4 cities":{
+	"Immediately creates a cheapest available cultural building in each of your first 4 cities for free":{
 		Italian:"Le prime 4 città sono fornite di un edificio culturale gratuito"
 		Russian:"Бесплатное культурное здание в первых 4 городах"
 		Romanian:"Construcție de cultură gratuită pentru primele 4 orașe"
@@ -7397,7 +7397,7 @@
 		French:"Pouvoir collectif" //official translation, but "règles collectives" is more accurate
 	}
 
-	"Training of settlers increased +50% in capital, receive a new settler near capital":{ 
+	"Training of settlers increased +50% in capital, receive a new settler near the capital":{
 		Italian:"La Capitale riceve un Colono gratuito nella Capitale, e produce Coloni il 50% più in fretta"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Romanian:"Antrenamentul colonizatorilor crescut +50% în capitală, se obține un colonizator nou lângă capitală"
@@ -7417,7 +7417,7 @@
 		German:"Staatsbürgerschaft"
 		French:"Citoyenneté"
 	}
-	"+25% construction rate of workers, receive free worker near the capital":{
+	"Tile improvement speed +25%, receive a free worker near the capital":{
 		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
