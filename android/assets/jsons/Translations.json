@@ -1030,9 +1030,17 @@
 		Portuguese:"[greatPerson] aponta"
 		Japanese:"[greatPerson]ポイント"
 		French:"[greatPerson] points"
+		Simplified_Chinese:"[greatPerson]点数"
+	}
+	"Great person points":{ 
 		Simplified_Chinese:"伟人点数"
 	}
-	
+	"Current points":{ 
+		Simplified_Chinese:"当前点数"
+	}
+	"Points per turn":{ 
+		Simplified_Chinese:"获得点数/回合"
+	}
 	"Sell for [sellAmount] gold":{ // when selling a building
 		Italian:"Vendi per [sellAmount] Oro" //es.
 		Russian:"Продам за [sellAmount] золотых"
