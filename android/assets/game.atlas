@@ -116,7 +116,7 @@ BuildingIcons/Circus Maximus
   orig: 100, 100
   offset: 0, 0
   index: -1
-BuildingIcons/Colloseum
+BuildingIcons/Colosseum
   rotate: false
   xy: 640, 1540
   size: 100, 100
