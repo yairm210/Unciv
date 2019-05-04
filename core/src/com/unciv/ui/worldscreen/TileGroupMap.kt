@@ -4,7 +4,7 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.unciv.logic.HexMath
 import com.unciv.ui.tilegroups.TileGroup
 
-class TileGroupMap<T: TileGroup>(tileGroups:Collection<T>, padding:Float): Group(){
+class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): Group(){
     init{
         var topX = -Float.MAX_VALUE
         var topY = -Float.MAX_VALUE

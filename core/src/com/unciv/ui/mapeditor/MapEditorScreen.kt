@@ -32,6 +32,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     var tileMap = TileMap(GameParameters())
     var mapName = "My first map"
     var currentHex=Group()
+    lateinit var mapHolder: TileGroupMap<TileGroup>
 
     fun clearSelection(){
         clearTerrainFeature=false
@@ -116,7 +117,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
             }
         }
 
-        val mapHolder = TileGroupMap(tileGroups, 300f)
+        mapHolder = TileGroupMap(tileGroups, 300f)
         val scrollPane = ScrollPane(mapHolder)
         scrollPane.setSize(stage.width, stage.height)
         scrollPane.layout()
