@@ -1,381 +1,380 @@
 [
 	{
-		//nations
-		name:"Babylon",
-		leaderName:"Nebuchadnezzar II",
-		adjective:["Babylonian"],
+		name:"巴比伦",
+		leaderName:"尼布甲尼撒二世",
+		adjective:["巴比伦的"],
 		startBias:["Avoid Tundra"],
 		
-		startIntroPart1: "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
-		startIntroPart2: "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?",
+		startIntroPart1: "愿上天祝福你，伟大的尼布甲尼撒，古老而强大的巴比伦之父！五千年前人类文明尚处幼年，萨尔贡已经建立了巴比伦城。此后的巴比伦持续成长繁荣，到公元前18世纪由神一般的“立法者”汉谟拉比开创了第一个帝国。虽然曾经一度被加喜特人和亚述人征服，巴比伦还是象浴火凤凰那样顽强地从灰烬中重生，再次从众多敌人手中赢得独立。巴比伦确实是远古世界的艺术与学术中心！",
+		startIntroPart2: "尼布甲尼撒啊，你的帝国在你去世后不久沦陷于波斯入侵者，然后又被希腊人占据，伟大的巴比伦城在公元前141年最终毁灭。但是巴比伦文明真的永远消逝了吗，伟大的尼布甲尼撒？你的人民期待你再次恢复帝国的生命！你愿意接受挑战吗？你能够开创一个历久弥新的文明吗？",
 		
-		declaringWar:"The demon wants the blood of soldiers!",
-		attacked:"Oh well, I presume you know what you're doing.",
-		defeated:"It is over. Perhaps now I shall have peace, at last.",
-		introduction:"Are you real or a phantom?",
+		declaringWar:"魔鬼们渴望着战士的鲜血。来开始这场杀戮之舞吧！",
+		attacked:"寻找死亡的人们啊，我会满足你的要求。",
+		defeated:"都结束了。也许我终于想要和平了。",
+		introduction:"我是尼布甲尼撒。你是真人还是我胡思乱想出来的幽灵？",
 		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
+		neutralHello:"欢迎您的到来！",
+		neutralLetsHearIt:["我正在听。","你想做什么？"],
+		neutralNo:["不行！","绝对不行。","这是不可接受的！"],
+		neutralYes:["成交！","好的！","同意！"],
 
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
+		hateHello:"你想做什么？！",
+		hateLetsHearIt:["我确实在听。","我在听！"],
+		hateNo:["不行！","绝对不行。","这是不可接受的！"],
+		hateYes:["同意！"],
 		
-		afterPeace:"Foolish, foolish – letting me live.",
-		tradeRequest:"It appears that you do have a reason for existing – to make this deal with me.",
+		afterPeace:"愚蠢啊，愚蠢啊——让我活下去。对敌人的仁慈是一剂自杀的毒药。",
+		tradeRequest:"看来你确实有存在的理由—给我提供些有价值的东西吧。",
 				
 		mainColor:[27,53,63],
 		secondaryColor:[213,249,255],
-		uniqueName:"Ingenuity",
-		unique:"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster",
-		cities:["Babylon","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
-			"Ellasar","Erech","Kutha","Sirpurla","Neribtum","Ashur","Ninveh","Nimrud","Arbela","Nuzi",
-			"Arrapkha","Tutub","Shaduppum","Rapiqum","Mashkan Shapir","Tuttul","Ramad","Ana","Haradum","Agrab"]
+		uniqueName:"智慧创新",
+		unique:"发明文字后立即获得一位大科学家，大科学家点数积累速率+50%",
+		cities:["巴比伦","阿卡德","杜尔-库里加尔祖","尼普尔","博尔西帕","西帕尔","俄庇斯","马里","苏萨","埃什努那",
+			"以拉撒","乌鲁克","库塔","拉格什","内里布图","亚述","尼尼微","尼姆鲁德","埃尔比勒","努济",
+			"阿拉普哈","图图布","沙杜普姆","腊皮库姆","马什干-沙皮尔","图图尔","拉马迪","阿奈","哈拉杜姆","阿格拉布"]
 	},
 	{
-		name:"Greece",
-		leaderName:"Alexander",
-		adjective:["Greek"],
+		name:"希腊",
+		leaderName:"亚历山大",
+		adjective:["希腊的"],
 		startBias:["Coast"],
 		
-		startIntroPart1: "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea."
-		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Grek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "愿诸神赐福予您，亚历山大大帝，希腊民族的统治者。长久以来，您的人民居住在一个个独立的城邦里。雅典、斯巴达、底比斯，带给世界一份又一份伟大的献礼——民主、哲学、悲剧、艺术、建筑，这些都是西方文明的基石。城邦间时而友好、时而争战，人口亦不多，却在公元前5世纪击败了他们最强大的邻居——波斯帝国。",
+		startIntroPart2: "亚历山大，您的人民已经准备好踏上征途，去传扬伟大的希腊文化，并为您带来永恒的荣耀。我王，准备好迎接您的命运了吗？您有信心凯旋而归，成就伟业吗？您所打造的文明，能够长盛不衰吗？",
 		
-		declaringWar:"You are in my way, you must be destroyed."
-		attacked:"As a matter of fact I too grow weary of peace."
-		defeated:"You have somehow become my undoing! What kind of beast are you?"
-		introduction:"Hello stranger! I am Alexandros, son of kings and grandson of the gods!"
+		declaringWar:"果敢无战不胜，刚毅无征不服。拿起长剑与我一决高下吧！",
+		attacked:"能够战胜恐惧就能战胜死亡。你只不过是我通向胜利道路上的一块垫脚石。",
+		defeated:"世界是我的故乡，我将长眠于此，并用双眼亲自见证你的神话。努力去征服吧！",
+		introduction:"幸会！我是亚历山大，列王的子嗣，神灵的后裔！你能这么介绍自己吗？",
 		
-		neutralHello:"Greetings!"
-		neutralLetsHearIt:["I'm listening.","Go on.","Yes?","Come."]
-		neutralNo:["We decline.","Certainly not.","It is necessary not to accept."]
-		neutralYes:["Certainly.","Very much.","The very best!"]
+		neutralHello:"欢迎您的到来！",
+		neutralLetsHearIt:["我听着呢。","请继续。","可以了吗？","继续说。"],
+		neutralNo:["我拒绝。","绝对不行。","这事绝对不能接受的。"],
+		neutralYes:["当然！","非常好！","真是绝佳的安排啊！"],
 
-		hateHello:"What?"
-		hateLetsHearIt:["You say.","And?","Come on."]
-		hateNo:["This is not pleasant!","You're not being earnest!","Pardon me?"]
-		hateYes:["Oh, very well.","I suppose I must.","Well done."]
+		hateHello:"什么？",
+		hateLetsHearIt:["废话快说。","还有呢？","继续。"],
+		hateNo:["这并不令人愉快。","可不可以坦诚一些，少装模作样！","哼哼，如此做作我恕难奉陪！"],
+		hateYes:["不错的交易。","既然如此我就投桃报李了。","非常好！但愿下次也如这般。"],
 		
-		afterPeace:"I must congratulate you on your remarkable victory."
-		tradeRequest:"My friend, does this seem reasonable to you?"
+		afterPeace:"在通向胜利前偶尔也可以停下来欣赏风景。",
+		tradeRequest:"我的朋友，这笔交易对你还算公平吧？",
 				
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
-		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
-			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
-			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
+		cities:["雅典","斯巴达","科林斯","阿尔戈斯","克诺索斯","迈锡尼","法萨卢斯","以弗所","哈利卡纳苏斯","罗德",
+			"埃雷特里亚","帕加马","米勒斯","迈加拉","福西亚","西锡安","梯林斯","萨摩斯","米提利尼","希俄斯",
+			"帕洛斯","埃利斯","锡拉库萨","赫拉克莱娅","格尔腾","加尔西斯","皮洛斯","佩拉","纳克索斯"]
 	},
 	{
-		name:"China",
-		leaderName:"Wu Zetian",
-		adjective:["Chinese"],
+		name:"中华",
+		leaderName:"武则天",
+		adjective:["中华的"],
 		
-		startIntroPart1: "The Blessings of Heaven be upon you. Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!"
-		startIntroPart2: "You, great Queen, who, with cunning and beauty, rose from the position of lowly concubine to that of Divine Empress - your people call out to you to lead them! Great China is once again beset on all sides by barbarians. Can you defeat all your many foes and return your country to greatness? Can you build a civilization to stand the test of time?"
+		startIntroPart1: "皇天眷顾您，至尊至圣的华夏天子则天大帝！万岁！闭月羞花沉鱼落雁的女皇！您是自有人类以来最古老和最伟大的文明——中华文明的领袖。拨开时间的迷雾，回溯中国的历史，早在其他文明尚无踪迹的时代，华夏人民已经完成了无数伟大的业绩。任何公正的评论者都会承认中国在艺术和科学上的贡献太繁多、太奇妙——印刷术、火药、夫子之道——这仅仅是中华文明为这个蛮荒世界带来的无数珍礼中的沧海一粟！",
+		startIntroPart2: "您，从芸芸嫔妃中脱颖而出成为圣明的天后，并最终登上皇帝的宝座。当伟大的中央天朝再次面对四方戎狄侵扰之时，您的百姓呼唤您领导他们！您能战胜您所有的敌人并再造一个辉煌的盛世吗？您能建起一个万古长存的文明吗？",
 
-		declaringWar:"You won't ever be able to bother me again. Go meet Yama."
-		attacked:"Fool! I will disembowel you all!"
-		defeated:"You have proven to be a cunning and competent adversary. I congratulate you on your victory."
-		introduction:"Greetings, I am Empress Wu Zetian. China desires peace and development. You leave us alone, we'll leave you alone."
+		declaringWar:"朕目之所及，皆为唐土，不沐教化者必成齑粉！",
+		attacked:"无知蛮夷，犯我强汉者，虽远必诛！",
+		defeated:"胜败乃兵家常事。九世犹可以复仇乎？虽百世可也。阁下好自为之。",
+		introduction:"你好，我是女皇帝武则天。中国追求和平以谋求自身发展。人不犯我，我不犯人。",
 		
-		neutralHello:"How are you today?"
-		neutralLetsHearIt:["Continue.","What?","Keep going."]
-		neutralNo:["Nope.","Of course not.","Definitely not."]
-		neutralYes:["Of course.","I agree.","Excellent!"]
+		neutralHello:"今日天朗气清，惠风和畅，阁下所为何来？",
+		neutralLetsHearIt:["请仔细道来。","所为何事?","朕姑且听之。"],
+		neutralNo:["不可。","不可行。","此事断不可行。"],
+		neutralYes:["朕允了。","此事就依阁下所请。","好的，阁下真是快人快语。"],
 
-		hateHello:" Oh. It's you?"
-		hateLetsHearIt:["And what else?","Keep talking."]
-		hateNo:["I cannot accept that.","Sorry, say that again.","Get out of my face!"]
-		hateYes:["I suppose I must accept.","Ah. Very good."]
+		hateHello:"阁下别来无恙？",
+		hateLetsHearIt:["阁下还有何事？","请详细道来。"],
+		hateNo:["此事断不可行。","住口。竟说出如此粗鄙之语。","无耻之徒，还不快滚。"],
+		hateYes:["纵然有亏，朕勉强受之。","好。就勉强依你所请，望好自珍重。"],
 		
-		afterPeace:"The Blessings of Heaven be upon you."
-		tradeRequest:"My friend, do you think you can accept this request?"
+		afterPeace:"昊天上帝在上，愿阁下天命长存霸业永延。",
+		tradeRequest:"朕之决断阁下以为如何？",
 				
 		mainColor:[9, 112, 84],
 		secondaryColor:[255,255,255],
-		uniqueName:"Art of War",
-		unique:"Great general provides double combat bonus, and spawns 50% faster"
-		cities:["Beijing","Shanghai","Guangzhou","Nanjing","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
-			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
-			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
+		uniqueName:"兵法韬略",
+		unique:"大军事家提供双倍战斗力加成，大军事家产生速率+50%",
+		cities:["北京","上海","广州","南京","西安","成都","杭州","天津","澳门","山东",
+			"开封","宁波","保定","扬州","哈尔滨","重庆","洛阳","昆明","台北","沈阳",
+			"太原","台南","大连","丽江","无锡","苏州","茂名","韶关","阳江","河源"]
 	},
 	{
-		name:"Egypt",
-		leaderName:"Ramesses II",
-		adjective:["Egyptian"],
+		name:"埃及",
+		leaderName:"拉美西斯二世",
+		adjective:["埃及的"],
 		startBias:["Avoid Jungle","Avoid Forest"],
 		
-		startIntroPart1: "We greet thee, oh great Ramesses, Pharaoh of Egypt, who causes the sun to rise and the Nile to flow, and who blesses his fortunate people with all the good things of life! Oh great lord, from time immemorial your people lived on the banks of the Nile river, where they brought writing to the world, and advanced mathematics, sculpture, and architecture. Thousands of years ago they created the great monuments which still stand tall and proud.",
-		startIntroPart2: "Oh, Ramesses, for uncounted years your people endured, as other petty nations around them have risen and then fallen into dust. They look to you to lead them once more into greatness. Can you honor the gods and bring Egypt back to her rightful place at the very center of the world? Can you build a civilization that will stand the test of time?",
+		startIntroPart1: "恭迎埃及法老拉美西斯大王，太阳因您而升起、尼罗河水因您而流动、全埃及的人民因您而受到赐福！我主，在远古蒙昧之际，您的人民便住在尼罗河岸上。他们将文字带来世间，又善于计算，更创造了无数雕刻和建筑。数千年前，您的人民所建立的纪念碑，至今仍屹立不倒，仍然是人民的骄傲。",
+		startIntroPart2: "我主拉美西斯，无数年来，您的人民正在忍受苦难，目睹了一个又一个卑下民族的兴盛，然后一个接一个地归于尘土。您的人民引颈以待，等着您带领他们再一次成就伟大。我主，您能再一次为众神增光吗？您能将埃及带回世界的中心吗？您能建起一个流传万世的文明吗？ ",
 		
-		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
-		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
-		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
-		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
+		declaringWar:"小小蝼蚁般的可悲文明，去死吧。",
+		attacked:"可怜的蠢蛋。你在毁灭你自己和你可悲的文明。",
+		defeated:"你什么也没得到。就算把我打倒，我的灵魂也会将你永堕深渊。",
+		introduction:" 向你致意。我是拉美西斯神，我是所有其他文明的父母之邦——埃及的化身。",
 		
-		neutralHello:"Good day.",
-		neutralLetsHearIt:["Go on.","Speak.","I am all ears."],
-		neutralNo:["No.","Definitely not."],
-		neutralYes:["Okay.","Very well."],
+		neutralHello:"真是美好的一天。",
+		neutralLetsHearIt:["继续。","请讲。","我正倾耳听之。"],
+		neutralNo:["不可。","绝对不可行。"],
+		neutralYes:["可以。","很好。"],
 		
-		hateHello:"Oh, it's you.",
-		hateLetsHearIt:["Then?","Finish your speech."],
-		hateNo:["This is unacceptable.","You cannot be serious about your request."],
-		hateYes:["Oh, very well.","I think I should agree."],
+		hateHello:"是你啊，有何贵干？",
+		hateLetsHearIt:["现在吗？","请将你的请求和盘托出。"],
+		hateNo:["这不可接受。","你能认真点吗？"],
+		hateYes:["很好。","我可以同意。"],
 		
-		afterPeace:"You know I could have destroyed you, but the feeling of generosity perfumes me today.",
-		tradeRequest:"Generous Egypt makes you this offer.",
+		afterPeace:"你知道我完全能够消灭你，但是我今天我选择宽容。",
+		tradeRequest:"慷慨的埃及向你提议以下交易。",
 		
 		mainColor:[ 231, 213, 0],
 		secondaryColor:[98,10,210],
-		uniqueName:"Monument Builders",
-		unique:"+20% production towards Wonder construction",
-		cities:["Thebes","Memphis","Heliopolis","Elephantine","Alexandria","Pi-Ramesses","Giza","Byblos","Akhetaten","Hieraconpolis",
-			"Abydos","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiris","Kahun","Athribis",
-			"Mendes","Elashmunein","Tanis","Bubastis","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+		uniqueName:"永恒建筑",
+		unique:"建造奇观时+20%产能积累速率",
+		cities:["底比斯","孟斐斯","赫利奥波利斯","埃勒凡他尼","亚历山大","塔尔-拉美西斯","吉萨","比布鲁斯","阿肯塔顿","希拉孔波利斯",
+			"奥比都斯","艾斯尤特","阿瓦瑞斯","利斯特","布托","伊徳夫","皮索姆","布西里斯","卡洪","阿斯比斯",
+			"门迭斯","阿什穆嫩","塔尼斯","布巴斯提斯","奥里克斯","塞苯尼陀斯","阿赫姆","卡纳克","卢克索","艾尔卡布"]
 	},
 	{
-		name:"England",
-		leaderName:"Elizabeth",
-		adjective:["English"],
+		name:"英格兰",
+		leaderName:"伊丽莎白",
+		adjective:["英格兰的"],
 		startBias:["Coast"],
 	
-		startIntroPart1: "Praises upon her serene highness, Queen Elizabeth Gloriana. You lead and protect the celebrated maritime nation of England. England is an ancient land, settled as early as 35,000 years ago. The island has seen countless waves of invaders, each in turn becoming a part of the fabric of the people. Although England is a small island, for many years your people dominated the world stage. Their matchless navy, brilliant artists and shrewd merchants, giving them power and influence far in excess of their mere numbers."
-		startIntroPart2: "Queen Elizabeth, will you bring about a new golden age for the English people? They look to you once more to return peace and prosperity to the nation. Will you take up the mantle of greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "歌颂尊贵的荣光的伊丽莎白女王陛下。您是海洋大国英格兰的领袖与守护者。英格兰是一片古老的土地，三万五千年前就有人居住。这座岛屿经历过一波又一波的入侵，每一次都增加了这个国家文化族群的多样性。英格兰并不大，但她的人民一直主宰着世界舞台。英格兰人并不多，但却拥有无与伦比的水手、才华横溢的艺人、精明干练的商人，英格兰人的影响力远超于想象。",
+		startIntroPart2: "伊丽莎白女王，期望您能为英格兰人民带来一个黄金时代。他们期待着和平与富裕。您能继承英格兰伟大的传统吗？您能够重建日不落帝国，并经受住时间的考验吗？",
 	
-		declaringWar:"By the grace of God, your days are numbered."
-		attacked:"We shall never surrender."
-		defeated:"You have triumphed over us. The day is yours."
-		introduction:"We are pleased to meet you."
+		declaringWar:"太阳照耀之地，皆应为我王道所御！",
+		attacked:"英格兰永不屈服！我们要在天空、大地、海洋上碾碎你们！",
+		defeated:"这不是结束，甚至不是结束的开始，而可能是开始的结束。别太得意了！",
+		introduction:"当你最需要我时，一定会发现我最盛情的友谊。我为你所做的付出，一定会比我能说的还要多。",
 		
-		neutralHello:"Hello, again."
-		neutralLetsHearIt:["Go on.","Go ahead."]
-		neutralNo:["I beg your pardon?","That's unacceptable!"]
-		neutralYes:["Certainly!","Very well!"]
+		neutralHello:"你好，又见面了。",
+		neutralLetsHearIt:["继续。","请讲。"],
+		neutralNo:["虽然很失礼，但这不可接受。","接受与不接受之间，我选择拒绝。"],
+		neutralYes:["当然可以。","很好。"],
 
-		hateHello:"Oh, it's you!"
-		hateLetsHearIt:["I'm listening.","You were saying?"]
-		hateNo:["You cannot be serious.","Of course not!"]
-		hateYes:["Oh, very well!","I suppose I must!"]
+		hateHello:"是你啊，你好。",
+		hateLetsHearIt:["我在听。","你在说什么？"],
+		hateNo:["你不会是认真的吧。","如果一定要接受，我宁愿与撒旦交易。"],
+		hateYes:["嗯，还不错。","我决定接受。"],
 		
-		afterPeace:"Well then, that's settled."
-		tradeRequest:"Would you be interested in a trade agreement with England?"
+		afterPeace:"忍耐和时间，往往比力量和愤怒更有效，姑且待之。",
+		tradeRequest:"我亲爱的朋友，你有兴趣与英格兰做一笔交易吗？",
 		
 		mainColor:[ 114, 0, 0],
 		secondaryColor:[255,255,255],
-		uniqueName:"Sun Never Sets"
-		unique:"+2 movement for all naval units"
-		cities:["London","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
-			"Dover","Brighton","Norwich","Leeds","Reading","Birmingham","Richmond","Exeter","Cambridge","Gloucester",
-			"Manchester","Bristol","Leicester","Carlisle","Ipswich","Portsmouth","Berwick","Bath","Mumbles","Southampton"]
+		uniqueName:"日不落",
+		unique:"所有海军单位+2移动力",
+		cities:["伦敦","约克","诺丁汉","海斯汀","坎特伯雷","考文垂","华威","纽卡斯尔","牛津","利物浦",
+			"多佛","博尔顿","诺维奇","利兹","雷丁","伯明翰","里士满(北约克)","埃克塞特","剑桥","格洛斯特",
+			"曼彻斯特","布里斯托","莱斯特","卡莱尔","伊普斯维奇","朴茨茅斯","贝里克","巴斯","马姆波利斯","南安普顿"]
 	},
 	{
-		name:"France",
-		leaderName:"Napoleon",
-		adjective:["French"],
+		name:"法兰西",
+		leaderName:"拿破仑",
+		adjective:["法兰西的"],
 		
-		startIntroPart1: "Long life and triumph to you, First Consul and Emperor of France, Napoleon I, ruler of the French people. France lies at the heart of Europe. Long has Paris been the world center of culture, arts and letters. Although surrounded by competitors - and often enemies - France has endured as a great nation. Its armies have marched triumphantly into battle from one end of the world to the other, its soldiers and generals among the best in history."
-		startIntroPart2: "Napoleon Bonaparte, France yearns for you to rebuild your empire, to lead her once more to glory and greatness, to make France once more the epicenter of culture and refinement. Emperor, will you ride once more against your foes? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "万岁！第一执政、法兰西人民的皇帝拿破仑陛下战无不胜！法国是欧洲的心脏，长久以来，巴黎是世界文化、艺术与文学的中心。纵使有不少对手一直虎视眈眈，摆出敌国的姿态，法国仍能成就她的伟大，长久不衰。法国有世上最优秀的将士，他们的凯歌，从世界的一端奏响至另一端。",
+		startIntroPart2: "拿破仑·波拿巴，法兰西渴望着您重建帝国的日子。法国向往着荣耀与伟大。法国期待再一次成为高雅文化的荟萃之地。皇帝陛下，您能再一次将仇敌踩在脚下吗？您所建立的法兰西帝国，能够长盛不衰吗？",
 
-		declaringWar:"You're disturbing us, prepare for war.",
-		attacked:"You've fallen into my trap. I'll bury you.",
-		defeated:"I congratulate you for your victory."
-		introduction:"Welcome. I'm Napoleon, of France; the smartest military man in world history."
+		declaringWar:"我志在成功，未尝踌躇，来与我大战一场吧。",
+		attacked:"小小蝼蚁，用吾之手埋汝之骨。",
+		defeated:"从伟大崇高到荒谬可笑，其间只相差一步。",
+		introduction:"欢迎你。我是法兰西帝国皇帝拿破仑，世界历史上最伟大的军事天才！",
 		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["Continue.","I'm listening.","Go on.","You were saying?"]
-		neutralNo:["We refuse.","Of course not.","No."]
-		neutralYes:["Excellent.","Very well.","I heard."]
+		neutralHello:"你好。",
+		neutralLetsHearIt:["继续。","我在听。","请讲。","你说什么？"],
+		neutralNo:["我拒绝。","绝对不行。","不行"],
+		neutralYes:["这是极好的。","很好。","我接受了。"],
 
-		hateHello:"It's you."
-		hateLetsHearIt:["Speak."]
-		hateNo:["You cannot be serious.","Certainly not.","That's unacceptable."]
-		hateYes:["All right.","I guess I've no choice.","Certainly.","It's all right."]
+		hateHello:"是你啊。",
+		hateLetsHearIt:["请讲。"],
+		hateNo:["我们不与撒旦交易。","绝对不行。","不可接受。"],
+		hateYes:["好吧。","唉，无法选择之下也只好如此了。","当然。","很好。"],
 		
-		afterPeace:"It seems I underestimated you. I won't make the same mistake again, I promise you."
-		tradeRequest:"France offers you this exceptional proposition."
+		afterPeace:"没有人能逃脱自己的命运。人不会两次踏进同一条河流，祝你好运。",
+		tradeRequest:"我的朋友，法兰西有一个卑微的提议。",
 		
 		mainColor:[ 38, 98, 255],
 		secondaryColor:[239,236,148],
-		uniqueName:"Ancien Régime"
-		unique:"+2 Culture per turn from cities before discovering Steam Power",
-		cities:["Paris","Orleans","Lyon","Troyes","Tours","Marseille","Chartres","Avignon","Rouen","Grenoble",
-			"Dijon","Amiens","Cherbourg","Poitiers","Toulouse","Bayonne","Strasbourg","Brest","Bordeaux","Rennes",
-			"Nice","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lille","Caen"]
+		uniqueName:"传统制度",
+		unique:"获得蒸汽机科技前每个城市每回合+2文化",
+		cities:["巴黎","奥尔良","里昂","特鲁瓦","图尔","马赛","沙特尔","阿维尼翁","卢昂","格勒诺布尔",
+			"第戎","亚眠","瑟堡","普瓦捷","图卢兹","巴约纳","斯特拉斯堡","布雷斯特","波尔多","雷恩",
+			"尼斯","圣埃蒂安","南特","兰斯","勒芒","蒙彼利埃","利摩日","南锡","里尔","卡昂"]
 	},
 	{
-		name:"Russia",
-		leaderName:"Catherine",
-		adjective:["Russian"],
+		name:"俄罗斯",
+		leaderName:"叶卡捷琳娜",
+		adjective:["俄罗斯的"],
 		startBias:["Tundra"],
 	
-		startIntroPart1: "Greetings upon thee, Your Imperial Majesty Catherine, wondrous Empress of all the Russias. At your command lies the largest country in the world. Mighty Russia stretches from the Pacific Ocean in the east to the Baltic Sea in the west. Despite wars, droughts, and every manner of disaster the heroic Russian people survive and prosper, their artists and scientists among the best in the world. The Empire today remains one of the strongest ever seen in human history - a true superpower, with the greatest destructive force ever devised at her command."
-		startIntroPart2: "Catherine, your people look to you to bring forth glorious days for Russia and her people, to revitalize the land and recapture the wonder of the Enlightenment. Will you lead your people once more into greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "祝福您，至高无上的叶卡捷琳娜陛下，俄罗斯人民完美的女皇。在您治下的是一个世界上最庞大的国家。强大的俄罗斯帝国，拥有着东起太平洋、西至波罗的海之间的广袤土地。尽管受到战争、干旱和种种灾祸的威胁，英勇的俄罗斯人民成功地生存了下来，并走向兴旺发达，他们的艺术家和科学家们更是世界上数一数二的。时至今日，俄罗斯仍然是人类历史上最为强盛的国家之一，是一个真正的超级强权，驾驭着发明史上最为巨大的破坏性力量。",
+		startIntroPart2: "叶卡捷琳娜啊，您的人民期盼地看着您，带领他们迈向帝国和人民光辉的岁月，大地重新变得活力四射，文明的奇迹再次降临。您会引导您的人民走向辉煌吗？您能建立起一个经受得住时间考验的文明吗？",
 	
-		declaringWar:"You've behaved yourself very badly, you know it. Now it's payback time.",
-		attacked:"You've mistaken my passion for a weakness, you'll regret about this."
-		defeated:"We were defeated, so this makes me your prisoner. I suppose there are worse fates."
-		introduction:"I greet you, stranger! If you are as intelligent and tactful as you are attractive, we'll get along just fine."
+		declaringWar:"如果我可以活到两百岁，整个世界都将匍匐在我脚下，现在首先从你开始！。",
+		attacked:"运气为而备，一旦遭受欺辱，我们绝不放弃还击。",
+		defeated:"没有实力的愤怒毫无意义，一旦可能，我们会血债血偿！",
+		introduction:"如果你的智慧和理性能像你的相貌那样出众，我们可以谈谈人生哲理。",
 		
-		neutralHello:"Hello!"
-		neutralLetsHearIt:["Go on.","Speak."]
-		neutralNo:["We decline.","Ha! Of course not!","Certainly not."]
-		neutralYes:["Of course.","I agree.","Excellent!"]
+		neutralHello:"你好！",
+		neutralLetsHearIt:["继续。","请讲。"],
+		neutralNo:["我们拒绝。","哈，你在搞笑么？","绝对不可接受。"],
+		neutralYes:["当然可以。","同意。","非常好。"],
 
-		hateHello:"What do you need?!"
-		hateLetsHearIt:["And?","Forward.","Go on."]
-		hateNo:["Are you joking?!","I beg your pardon?!","This is unacceptable."]
-		hateYes:["I think...I shall agree.","Oh... Very good.","Deal."]
+		hateHello:"你究竟需要什么？",
+		hateLetsHearIt:["还有呢？","继续说。","请讲。"],
+		hateNo:["你在搞笑么？","抱歉，这不可接受。","完全不行。"],
+		hateYes:["我想想……暂且同意吧","很好。","成交。"],
 		
-		afterPeace:"Now it's the time to enjoy the fruits of peace."
-		tradeRequest:"How would you like it if I propose this kind of exchange?"
+		afterPeace:"战争的终点就是和平。",
+		tradeRequest:"这份交易你认为如何？",
 				
 		mainColor:[ 236, 178, 0],
 		secondaryColor:[0,0,0],
-		uniqueName:"Siberian Riches"
-		unique:"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity",
-		cities:["Moscow","St. Petersburg","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
-			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
-			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+		uniqueName:"自然财富",
+		unique:"每处战略资源+1产能，每处马、铁和铀资源储量加倍",
+		cities:["莫斯科","圣彼得堡","诺夫哥罗德","罗斯托夫","雅罗斯拉夫尔","叶卡捷琳堡","雅库茨克","符拉迪沃斯托克","斯摩棱斯克","奥伦堡",
+			"克亚斯诺亚尔斯克","哈巴罗夫斯克","布良斯克","特维尔","新西伯利亚","马加丹","摩尔曼斯克","伊尔库兹克","赤塔","萨马拉",
+			"阿尔汉格尔斯克","车里雅宾斯克","托博尔斯克","沃洛格达","鄂木斯克","阿斯特拉罕","库尔斯克","萨拉托夫","图拉","弗拉基米尔"]
 	},
 	{
-		name:"Rome",
-		leaderName:"Augustus Caesar",
-		adjective:["Roman"],
+		name:"罗马",
+		leaderName:"奥古斯都·恺撒",
+		adjective:["罗马的"],
 		
-		startIntroPart1: "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed."
-		startIntroPart2: "O mighty emperor, your people turn to you to once more reclaim the glory of Rome! Will you see to it that your empire rises again, bringing peace and order to all? Will you make Rome once again center of the world? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "愿众神赐福给您，罗马帝国及罗马公民的皇帝奥古斯都·恺撒。您的帝国是西方文明中最强大最持久的帝国，您的人民独立创造了罗马的文化、法律、艺术和军事成就，这样的伟业前无古人、后无来者。历年来光荣的征战，罗马掌控了整个地中海，领土西起西班牙，东至叙利亚。罗马的统治最终扩张至不列颠大部与日耳曼北部。罗马的艺术与建筑至今仍然使世人敬畏，赋予世人灵感。她仍然为一切后来者所憧憬和向往。",
+		startIntroPart2: "我全能的皇帝，您的人民求您重建罗马的荣光。您会否响应人民的愿望，使帝国再一次腾飞？您会否为世界重新带来和平与秩序？您能否让罗马再度成为世界的中心？您所建立的帝国，能否延绵万代？",
 		
-		declaringWar:"My treasury contains little and my soldiers are getting impatient... <sigh> ...therefore you must die."
-		attacked:"So brave, yet so stupid! If only you had a brain similar to your courage."
-		defeated:"The gods have deprived Rome of their favour. We have been defeated."
-		introduction:"I greet you. I am Augustus, Imperator and Pontifex Maximus of Rome. If you are a friend of Rome, you are welcome."
+		declaringWar:"我来！我见！我征服！吾剑所指，皆是目标！",
+		attacked:"蠢货，是愚昧给了你挑衅的勇气！厄运如密布的箭弩落下，而你终将无处躲避。",
+		defeated:"你即使征服了全世界，如果没有人分享，终将倍感凄凉。罗马荣耀永存！",
+		introduction:"欢迎你。我是奥古斯都，罗马帝国皇帝兼最高祭司。如果你是罗马的朋友，那么你将受到欢迎。",
 		
-		neutralHello:"Hail."
-		neutralLetsHearIt:["Begin.","Continue."]
-		neutralNo:["No.","Certainly not!"]
-		neutralYes:["Good.","I agree."]
+		neutralHello:"你好。",
+		neutralLetsHearIt:["说吧。","继续。"],
+		neutralNo:["不行。","绝对不行。"],
+		neutralYes:["好的。","同意。"],
 
-		hateHello:"What do you want?"
-		hateLetsHearIt:["And?","Continue."]
-		hateNo:["That is unpleasant.","You can't be serious!"]
-		hateYes:["Good.","Oh. Good."]
+		hateHello:"你想做什么？",
+		hateLetsHearIt:["然后呢。","继续。"],
+		hateNo:["这项提议让人恼火。","你是认真的吗？"],
+		hateYes:["好的。","嗯，这样也好。"],
 		
-		afterPeace:"Your soldiers fought well. I congratulate you on your victory."
-		tradeRequest:"I offer this, for your consideration."
+		afterPeace:"这不是和平，只是短暂的休战。祝你好运！",
+		tradeRequest:"我有项提议，希望你能考虑。",
 				
 		mainColor:[ 53,0,87],
 		secondaryColor:[238,201,9],
-		uniqueName:"The Glory of Rome"
-		unique:"+25% Production towards any buildings that already exist in the Capital",
-		cities:["Rome","Antium","Cumae","Neapolis","Ravenna","Arretium","Mediolanum","Arpinum","Circei","Setia",
-			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
-			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+		uniqueName:"罗马荣耀",
+		unique:"在其他城市建造首都已有建筑时+25%产能积累",
+		cities:["罗马","阿提乌姆","库迈","那不勒斯","拉维纳","亚雷提乌姆","米兰","阿尔庇努姆","科尔切伊","赛提亚",
+			"赛崔克穆","阿尔黛雅","奥斯提亚","维丽特莱","韦洛克尼姆","塔伦图姆","布林迪西姆","凯撒奥古斯塔","凯撒利亚","帕尔米拉",
+			"锡耶纳","阿奎莱亚","克鲁西姆","苏特留姆","克雷莫纳","普拉什提亚","斯帕里斯","阿萨克塔萨","奥瑞拉诺茹姆","尼科波利斯"]
 	},
 	{
-		name:"Arabia",
-		leaderName:"Harun al-Rashid",
-		adjective:["Arabian"],
+		name:"阿拉伯",
+		leaderName:"哈伦·拉希德",
+		adjective:["阿拉伯的"],
 		startBias:["Desert"],
 		
-		startIntroPart1: "Blessings of God be upon you oh great caliph Harun al-Rashid, leader of the pious Arabian people! The Muslim empire, the Caliphate was born in the turbulent years after the death of the prophet Muhammad in 632 AD, as his followers sought to extend the rule of God to all of the people of the earth. The caliphate grew mighty indeed at the height of its power, ruling Spain, North Africa, the Middle East, Anatolia, the Balkans and Persia. An empire as great as or even greater than that of Rome. The arts and sciences flourished in Arabia during the Middle Ages, even as the countries of Europe descended into ignorance and chaos. The Caliphate survived for six hundred years, until finally succumbing to attack from the Mongols, those destroyers of Empires."
-		startIntroPart2: "Great Caliph Harun al Rashid, your people look to you to return them to greatness! To make Arabia once again an enlightened land of arts and knowledge, a powerful nation who needs fear no enemy! Oh Caliph, will you take up the challenge? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "愿真主赐福与您，伟大的哈里发哈伦·拉希德，虔诚的阿拉伯人民的领袖！公元632年先知穆罕默德归真后不久，他的追随者们便发动了一系列的征服战争，以期将真主的统治带给大地上的每个人民。动荡过后，哈里发的穆斯林帝国建立了。之后，哈里发愈发强势，在其鼎盛时期，统治区域包括西班牙、北非、中东、安纳托利亚（小亚细亚）、巴尔干半岛和波斯，一个甚至比罗马还要大的帝国。当欧洲国家陷入愚昧和混乱的中世纪时，艺术与科学正在阿拉伯的土地上百花齐放。伊斯兰王权存在了600年，最后屈服于毁灭了数个帝国的蒙古人的武力。",
+		startIntroPart2: "伟大的哈里发哈伦·拉希德，您的人民企盼您带领他们重建丰功伟业，让阿拉伯再一次成为艺术与知识的开明之地，再一次成为无所畏惧的国家。哈里发啊，您愿意接受挑战吗？您能开创一个历久弥新的文明吗？",
 		
-		declaringWar:"The world will be more beautiful without you. Prepare for war."
-		attacked:"Fool! You will soon regret dearly! I swear it!"
-		defeated:"You have won, congratulations. My palace is now in your possession, and I beg that you care well for the peacock."
-		introduction:"Welcome foreigner, I am Harun Al-Rashid, Caliph of the Arabs. Come and tell me about your empire."
+		declaringWar:"哈里发的天空不允许有两轮太阳。弯刀所至，皆为吾土。",
+		attacked:"蠢货！有一天你会后悔今天的所为！以汝之血拭我之刃！",
+		defeated:"你胜利了，我现在把宫殿托付于你，不过别太得意，我会在地狱盯着你的！",
+		introduction:"欢迎你，陌生人！我是阿拉伯的统治者哈伦·拉希德。来吧——告诉我关于你们帝国的故事。",
 		
-		neutralHello:"Peace be upon you."
-		neutralLetsHearIt:["What is this?","What were you saying?"]
-		neutralNo:["Of course not.","Certainly not."]
-		neutralYes:["Okay.","Excellent."]
+		neutralHello:"你好，希望你平安幸福。",
+		neutralLetsHearIt:["这是什么？","你在说什么？"],
+		neutralNo:["当然不行。","绝对不行。"],
+		neutralYes:["好吧。","非常好。"],
 
-		hateHello:"Oh, it's you."
-		hateLetsHearIt:["What's this?!","Finish your speech."]
-		hateNo:["This matter is unacceptable.","You can't be serious about this request."]
-		hateYes:["Very well.","If I must."]
+		hateHello:"原来是你啊。",
+		hateLetsHearIt:["这是什么？！","请把话讲明白些。"],
+		hateNo:["不可接受。","如果没有诚意的话，请滚开。"],
+		hateYes:["很好。","如果是这样的话我就接受。"],
 		
-		afterPeace:"We thank you for your generous terms, we will not forget the favor you show us."
-		tradeRequest:"Come forth, let's do business."
+		afterPeace:"感谢你的慷慨和仁慈，我们将永远铭记。",
+		tradeRequest:"请上前来，让我们做成这笔买卖。",
 				
 		mainColor:[ 41,83,42],
 		secondaryColor:[146,221,9],
-		uniqueName:"Trade Caravans",
-		unique:"+1 Gold from each Trade Route, Oil resources provide double quantity"
-		cities:["Mecca","Medina","Damascus","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
-			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
-			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+		uniqueName:"沙漠之舟",
+		unique:"每条贸易路线+1金钱，石油资源储量加倍",
+		cities:["麦加","麦地那","大马士革","巴格达","那基兰","库费","巴士拉","呼罗珊","安嘉尔","福斯塔",
+			"亚丁","叶麻默","马斯喀特","曼苏拉","布哈拉","菲斯","西拉兹","梅尔维","巴尔赫","摩苏尔",
+			"艾达布","贝特","苏哈尔","塔伊夫","哈玛","塔布克","萨纳","斯遏","的黎波里","突尼斯"]
 	},
 	{
-		name:"America",
-		leaderName:"Washington",
-		adjective:["American"],
+		name:"美利坚",
+		leaderName:"华盛顿",
+		adjective:["美利坚的"],
 		
-		startIntroPart1: "Welcome President Washington! You lead the industrious American civilization! Formed in the conflagration of revolution in the 18th century, within a hundred years, the young nation became embroiled in a terrible civil war that nearly tore the country apart, but it was just a few short years later in the 20th century that the United States reached the height of its power, emerging triumphant and mighty from the two terrible wars that destroyed so many other great nations. The United States is a nation of immigrants, filled with optimism and determination. They lack only a leader to help them fulfill their promise."
-		startIntroPart2: "President Washington, can you lead the American people to greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: "欢迎，华盛顿总统！您所带领的是勤劳的美利坚文明。美国建立于18世纪的革命战争中，在一百年后联邦又卷入了几乎将其一分为二的可怕内战。但是，仅仅经过了数十年发展，到20世纪时美国达到了其力量的巅峰，以胜利的雄姿，屹立于毁灭了多个伟大国家的两次可怕的世界大战中。",
+		startIntroPart2: "美国是一个移民国家，充满了乐观与决心。人民只缺一个领袖来引领他们实现梦想。华盛顿总统，您能带领美国人民走向伟大吗？您能建立起一个经受得住时间考验的文明吗？",
 
-		declaringWar:"Your wanton aggression leaves us no choice. Prepare for war!"
-		attacked:"You have mistaken our love of peace for weakness. You shall regret this!"
-		defeated:"The day...is yours. I hope you will be merciful in your triumph."
-		introduction:"The people of the United States of America welcome you."
+		declaringWar:"强大的国家有一种法律，弱小的国家则有另一种。要么与我们一样，要么选择毁灭，你接受还是反对？",
+		attacked:"剑是我们维护自由的最后手段。自由绝不屈服于暴力！",
+		defeated:"力量虽能征服一切，不过是短暂的。祝你好运！",
+		introduction:"真正的友谊，是一株成长缓慢的植物，美利坚合众国人民欢迎您。",
 		
-		neutralHello:"Good day."
-		neutralLetsHearIt:["Proceed!","Go ahead.","I'm listening."]
-		neutralNo:["Of course not!","No."]
-		neutralYes:["Very well.","Alright.","Certainly!"]
+		neutralHello:"真是美好的一天啊。",
+		neutralLetsHearIt:["请讲。","继续。","我在听。"],
+		neutralNo:["当然不行。","不行。"],
+		neutralYes:["很好。","好的。","当然可以。"],
 
-		hateHello:"Well?"
-		hateLetsHearIt:["Go on.","You were saying?"]
-		hateNo:["Certainly not.","We decline!","You cannot be serious."]
-		hateYes:["Oh, very well.","I suppose I must.","Agreed.","Alright."]
+		hateHello:"你好。",
+		hateLetsHearIt:["继续。","你说什么?"],
+		hateNo:["绝对不行。","我拒绝。","我想你不是认真的。"],
+		hateYes:["很好。","我决定接受。","成交。","好的。"],
 		
-		afterPeace:"We welcome peace with your great nation. I pray that no future misunderstanding will come between our two peoples."
-		tradeRequest:"Is the following trade of interest to you?"
+		afterPeace:"不论用何方法获得名誉，如没有品格来维持，终将会失去，请好自为之！",
+		tradeRequest:"我们来做笔交易你感兴趣吗？",
 				
 		mainColor:[ 28,51,119],
 		secondaryColor:[255,255,255],
-		uniqueName:"Manifest Destiny"
-		unique:"All land military units have +1 sight, 50% discount when purchasing tiles",
-		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
-			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
-			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+		uniqueName:"昭昭天命",
+		unique:"陆军单位+1视野，购买地块费用-50%",
+		cities:["华盛顿","纽约","波士顿","费城","亚特兰大","芝加哥","西雅图","旧金山","洛杉矶","休斯敦",
+			"波特兰","圣路易斯","迈阿密","布法罗","底特律","新奥尔良","巴尔的摩","丹佛","辛辛那提","达拉斯","孟菲斯",
+			"克里夫兰","肯萨斯城","圣地亚哥","里士满","拉斯维加斯","菲尼克斯","阿尔伯克基","明尼阿波丽斯","匹兹堡"]
 	},
 	{
-		name:"Japan",
-		leaderName:"Oda Nobunaga",
-		adjective:["Japanese"],
+		name:"日本",
+		leaderName:"织田信长",
+		adjective:["日本的"],
 		startBias:["Coast"],
 		
-		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the frield of battle, your people are also immensely industious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
-		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
+		startIntroPart1: "降福于您高贵的织田信长大人，日出之地的统治者，愿您永远行走于鲜花盛开之地。日本人居住在大地东边尽头的岛屿上，虔诚于他们的文学，自豪于他们的艺术。日本文明可以追溯上千年，有时默默无闻，有时血腥争霸；有时对外扩张，有时闭关锁国；有巨富豪商，也有饿殍遍地。他们在战场上勇猛无畏，同时在工厂里也是精力无限，而技术方面往往又能推陈出新，这样强大的工业力量，常叫人羡慕不已。",
+		startIntroPart2: "传奇的大名，信长阁下，您能够抓住命运的缰绳吗？您能为您的家族与人民带来荣耀吗？您能再一次拿起剑盾，走向胜利吗？天下布武，能够实现吗？",
 		
-		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
-		attacked:"Pitiful fool! Now we shall destroy you!"
-		defeated:"You were much wiser than I thought."
-		introduction:"We hope for a fair and just relationship with you, who are renowned for military bravery."
+		declaringWar:"顺我者昌，逆我者亡。洗净脖子甘心就戮吧。",
+		attacked:"凡触怒我者我必践之。",
+		defeated:"人生五十载，去事恍如梦幻，天下之内，岂有长生不灭者。",
+		introduction:"非为我友，即为我敌。阁下请慎行，好自为之。",
 		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["Go on.","Proceed.","I'm listening."]
-		neutralNo:["Sorry.","No.","Maybe another time."]
-		neutralYes:["Very well.","Agreed.","Hai. (Yes)"]
+		neutralHello:"请赐教。",
+		neutralLetsHearIt:["请说。","请坦率言之。","请讲，不必王顾左右而言他。"],
+		neutralNo:["请恕难以从命。","不行。","恕不奉陪。"],
+		neutralYes:["姑且允之。","成交。","与阁下做事真是爽快。"],
 
-		hateHello:"Oh, it's you..."
-		hateLetsHearIt:["Let me hear it.","Go on","Proceed"]
-		hateNo:["Ie. (No)","Excuse me?","Maybe another time"]
-		hateYes:["I agree.","Oh... very well.","There is probably no other way."]
+		hateHello:"今日前来，不知有何见教。",
+		hateLetsHearIt:["姑妄听之。","细细道来。","请说。"],
+		hateNo:["不可。","阴行诡计，绝不可为。","如此行事，概不奉陪。"],
+		hateYes:["姑且允之。","吾暂且答应了。","舍此之外，别无他途。"],
 		
-		afterPeace:"It was an honor to fight you."
-		tradeRequest:"I would be grateful if you agreed on the following proposal."
+		afterPeace:"光阴如露，梦幻似水，岂有长生不灭者？愿阁下武运昌隆。",
+		tradeRequest:"吾之珍宝阁下是否有兴致？",
 				
 		mainColor:[215,225,225],
 		secondaryColor:[185,0,0],
-		uniqueName:"Bushido"
-		unique: "Units fight as though they were at full strength even when damaged",
-		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
+		uniqueName:"武士道",
+		unique: "受伤单位战斗力不减",
+		cities:["京都","大阪","东京","萨摩","鹿儿岛","奈良","名古屋","出云","长崎","横滨","下关","松山","札幌","函馆","伊势","富山","福岛","周防","备前","越前","和泉","近江","越后","高崎","佐渡","神户","长野","广岛","高山","秋田","福冈","青森","镰仓","高知","那霸","仙台","岐阜","山口","大田","鸟取"]
 	},
 	/*
 	{
@@ -920,70 +919,8 @@
 		cities:["Moson Kahni","Te-Moak","Agaidika","Goshute","Pohokwi","Washakie","Timbisha","Hukandeka","Duckwater","Tukudeka","Kuchundeka","Yomba","Kamudeka","Ely","Yambadeka","Tetadeka","Deheyaeka","Pengwideka","Winnemucca","Skull Valley","Big Pine","Duck Valley","Nampa","Bannock","Yahandeka"]
 	},
 	*/
-
-	//City states
 	{
-		name:"Milan",
-		adjective:["Milan"],
-		cityStateType:"Cultured",
-		startBias:["Coast"],
-		
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
-		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-		
-		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-				
-		mainColor:[0,100,0],
-		secondaryColor:[213,249,255],
-		cities:["Milan"]
-	},
-	{
-		name:"Florence",
-		adjective:["Florence"],
-		cityStateType:"Cultured",
-		startBias:["Coast"],
-		
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
-		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-		
-		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-				
-		mainColor:[255, 250, 240],
-		secondaryColor:[238, 44, 44],
-		cities:["Florence"]
-	}
-
-	//Barbarian
-	{
-		name:"Barbarians",
+		name:"蛮族",
 		mainColor:[0,0,0],
 		secondaryColor:[182,0,0]
 	}

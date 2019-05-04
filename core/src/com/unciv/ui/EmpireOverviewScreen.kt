@@ -166,8 +166,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         greatPeopleTable.add("Great person points".toLabel().setFontSize(24)).colspan(3).row()
         greatPeopleTable.addSeparator()
         greatPeopleTable.add()
-        greatPeopleTable.add("Current points")
-        greatPeopleTable.add("Points per turn").row()
+        greatPeopleTable.add("Current points".tr())
+        greatPeopleTable.add("Points per turn".tr()).row()
 
         val mapping = currentPlayerCivInfo.greatPeople.statToGreatPersonMapping
         for(entry in mapping){

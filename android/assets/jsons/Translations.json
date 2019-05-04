@@ -1019,7 +1019,7 @@
 	"In resistance for another [numberOfTurns] turns":{
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
 		//can't understand
-                Simplified_Chinese:"反叛将持续额外[numberOfTurns]回合"
+                Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
 		French:"En révolte pour [numberOfTurns] tours"
@@ -1030,9 +1030,17 @@
 		Portuguese:"[greatPerson] aponta"
 		Japanese:"[greatPerson]ポイント"
 		French:"[greatPerson] points"
+		Simplified_Chinese:"[greatPerson]点数"
+	}
+	"Great person points":{ 
 		Simplified_Chinese:"伟人点数"
 	}
-	
+	"Current points":{ 
+		Simplified_Chinese:"当前点数"
+	}
+	"Points per turn":{ 
+		Simplified_Chinese:"获得点数/回合"
+	}
 	"Sell for [sellAmount] gold":{ // when selling a building
 		Italian:"Vendi per [sellAmount] Oro" //es.
 		Russian:"Продам за [sellAmount] золотых"
@@ -2213,6 +2221,9 @@
 		Portuguese:"Incenso"
 	}
 
+	"Ivory":{
+		Simplified_Chinese:"象牙"
+	}
 	"Silk":{
 		Italian:"Seta"
 		Russian:"Шёлк"
@@ -4538,7 +4549,7 @@
 		Russian:"промо акции"
 	}
 	
-	"units in rough terrain:":{
+	"units in rough terrain":{
 		Italian:"unità su terreno accidentato"
 		Romanian:"unități în teren accidentat"
 		Spanish:"unidades en terreno accidentado"
@@ -6288,7 +6299,9 @@
 		Simplified_Chinese:"必须紧邻沙漠"
 		Portuguese:"Nescessário que esteja proximo ao deserto"
 	}
-	
+	"Must be next to mountain":{
+		Simplified_Chinese:"必须紧邻山脉"
+	}
 	"Sydney Opera House":{
 		Spanish:"Casa De La Opera De Sidney"
 		Italian:"Teatro dell'Opera di Sidney"
@@ -6672,6 +6685,9 @@
 		Simplified_Chinese:"弩手"
 		Portuguese:"Besteiro"
 		German:"Armbrustschütze"
+	}
+	"Chu-Ko-Nu":{	
+		Simplified_Chinese:"诸葛弩"
 	}
 	"Longbowman":{	
 		Italian:"Arciere con arco lungo"
@@ -8468,6 +8484,9 @@
 		Russian:"Бонус против юнитов на открытой местности 15%"
 		Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
 	}
+	"units in open terrain":{
+		Simplified_Chinese:"位于开阔地形的单位"
+	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
 		German:"Sperrfeuer I"
@@ -8862,7 +8881,7 @@
 		Italian:"Unico per la civiltà [civName], sostituisce [unitName]"
 		Spanish:"Único a la civilización [civName], reemplaza [unitName]"
 		Romanian:"Unic pentru civilizație [civName], înlocuiește [unitName]"
-		Simplified_Chinese:"文明独有[civName]取代[unitName]"
+		Simplified_Chinese:"[civName]文明独有，取代[unitName]"
 		Portuguese:"Exclusivo da civilização [civName], substitui [unitName]"
 		Russian:"Уникальный для цивилизации [civName], заменяет [unitName]"
 		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
@@ -8917,6 +8936,21 @@
 		French:"Doit possèder [listOfTerrains]"
 		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 	}
+	"Can be found on ":{
+		Simplified_Chinese:"可能发现该资源的地形地貌："
+	}
+	"Improved by ":{
+		Simplified_Chinese:"开发该资源所需要的设施："
+	}
+	"Bonus stats for improvement: ":{
+		Simplified_Chinese:"开发该资源后设施所获奖励效果："
+	}
+	"Can be built on ":{
+		Simplified_Chinese:"可以建造的地形地貌："
+	}
+	"Tech required: ":{
+		Simplified_Chinese:"需要科技："
+	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
@@ -8927,7 +8961,10 @@
 		French:"Coût de mouvement"
 		Simplified_Chinese:"移动力消耗"
   }
-	
+  " for ":{//for example:+1Gold for Gems,Gold,Silver
+	Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
+}
+
 	//Options menu, pointed out by Smashfanful
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"
@@ -8959,6 +8996,6 @@
 	}
 	//If don't do this,when game runs in Chinese,it will be lost some font.
 	"missing Chinese font":{
-		Simplified_Chinese:"。、，：查抵抗俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
+		Simplified_Chinese:"。、，：查俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
 	}
 }
