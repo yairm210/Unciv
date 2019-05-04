@@ -6,6 +6,7 @@ import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.ui.utils.colorFromRGB
+import com.unciv.models.gamebasics.tr
 
 class Terrain : NamedStats(), ICivilopedia {
     override val description: String
@@ -20,9 +21,15 @@ class Terrain : NamedStats(), ICivilopedia {
                 }
                 sb.appendln("Occurs on [${terrainsCanBeBuiltOnString!!.joinToString(", ")}]".tr())
             }
-            val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}.joinToString()
-            if(resourcesFound.isNotEmpty())
-                sb.appendln("May contain [$resourcesFound]".tr())
+            val tresourcesFoundString:ArrayList<String>
+            tresourcesFoundString= arrayListOf()
+            val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}
+            if(resourcesFound.isNotEmpty()) {
+                for (i in resourcesFound) {
+                    tresourcesFoundString.add(i.toString().tr())
+                }
+                sb.appendln("May contain [${tresourcesFoundString!!.joinToString(", ")}]".tr())
+            }
             sb.appendln("{Movement cost}: $movementCost".tr())
             if(defenceBonus!=0f){
                 sb.appendln("{Defence bonus}: ".tr()+(defenceBonus*100).toInt()+"%")
