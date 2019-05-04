@@ -20,8 +20,7 @@ class Terrain : NamedStats(), ICivilopedia {
                 }
                 sb.appendln("Occurs on [${terrainsCanBeBuiltOnString!!.joinToString(", ")}]".tr())
             }
-            val tresourcesFoundString:ArrayList<String>
-            tresourcesFoundString= arrayListOf()
+            val resourcesFoundString:ArrayList<String> = arrayListOf()
             val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}
             if(resourcesFound.isNotEmpty()) {
                 for (i in resourcesFound) {
