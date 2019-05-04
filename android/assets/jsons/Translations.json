@@ -8907,7 +8907,7 @@
 		Simplified_Chinese:"移动力消耗"
   }
   " for ":{//for example:+1Gold for Gems,Gold,Silver
-	Simplified_Chinese:"额外奖励当建造在拥有下列资源的地块上时："
+	Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
 }
 
 	//Options menu, pointed out by Smashfanful

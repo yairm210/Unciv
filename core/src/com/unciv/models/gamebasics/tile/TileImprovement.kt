@@ -37,7 +37,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
                 val statsString = tr.improvementStats.toString()
                 if (!statsToResourceNames.containsKey(statsString))
                     statsToResourceNames[statsString] = ArrayList()
-                statsToResourceNames[statsString]!!.add(tr.name)
+                statsToResourceNames[statsString]!!.add(tr.name.tr())
             }
             statsToResourceNames.forEach {
                 stringBuilder.appendln(it.key + " for ".tr() + it.value.joinToString(", "))
