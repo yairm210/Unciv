@@ -12,10 +12,14 @@ class Terrain : NamedStats(), ICivilopedia {
         get(){
             val sb = StringBuilder()
             sb.appendln(this.clone().toString())
-
-            if(occursOn!=null)
-                sb.appendln("Occurs on [${occursOn!!.joinToString()}]".tr())
-
+            var terrainsCanBeBuiltOnString:ArrayList<String>
+            terrainsCanBeBuiltOnString= arrayListOf()
+            if(occursOn!=null) {
+                occursOn.forEach {
+                    terrainsCanBeBuiltOnString.add(it.tr())
+                }
+                sb.appendln("Occurs on [${terrainsCanBeBuiltOnString!!.joinToString(", ")}]".tr())
+            }
             val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}.joinToString()
             if(resourcesFound.isNotEmpty())
                 sb.appendln("May contain [$resourcesFound]".tr())
@@ -44,7 +48,7 @@ class Terrain : NamedStats(), ICivilopedia {
     /***
      * For terrain features
      */
-    var occursOn: Collection<String>? = null
+    val occursOn: Collection<String>? = null
 
     /**
      * RGB color of base terrain
