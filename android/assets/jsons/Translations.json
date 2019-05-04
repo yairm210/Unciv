@@ -2221,6 +2221,9 @@
 		Portuguese:"Incenso"
 	}
 
+	"Ivory":{
+		Simplified_Chinese:"象牙"
+	}
 	"Silk":{
 		Italian:"Seta"
 		Russian:"Шёлк"
@@ -6243,7 +6246,9 @@
 		Simplified_Chinese:"必须紧邻沙漠"
 		Portuguese:"Nescessário que esteja proximo ao deserto"
 	}
-	
+	"Must be next to mountain":{
+		Simplified_Chinese:"必须紧邻山脉"
+	}
 	"Sydney Opera House":{
 		Spanish:"Casa De La Opera De Sidney"
 		Italian:"Teatro dell'Opera di Sidney"
@@ -8854,7 +8859,7 @@
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
 		French:"Nécessite la technologie: [requiredTech]"
-Simplified_Chinese:"需要科技：[requiredTech]"
+        Simplified_Chinese:"需要科技：[requiredTech]"
 	}
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
@@ -8885,6 +8890,12 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 	"Bonus stats for improvement: ":{
 		Simplified_Chinese:"开发该资源后设施所获奖励效果："
 	}
+	"Can be built on ":{
+		Simplified_Chinese:"可以建造的地形地貌："
+	}
+	"Tech required: ":{
+		Simplified_Chinese:"需要科技："
+	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
 		French:"Bonus de défence"
@@ -8895,7 +8906,10 @@ Simplified_Chinese:"需要科技：[requiredTech]"
 		French:"Coût de mouvement"
 		Simplified_Chinese:"移动力消耗"
   }
-	
+  " for ":{//for example:+1Gold for Gems,Gold,Silver
+	Simplified_Chinese:"额外奖励当建造在拥有下列资源的地块上时："
+}
+
 	//Options menu, pointed out by Smashfanful
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"

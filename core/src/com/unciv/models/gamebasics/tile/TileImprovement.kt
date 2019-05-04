@@ -6,6 +6,7 @@ import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import java.util.*
+import com.unciv.models.gamebasics.tr
 
 class TileImprovement : NamedStats(), ICivilopedia {
 
@@ -29,7 +30,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
         get() {
             val stringBuilder = StringBuilder()
             if (!this.clone().toString().isEmpty()) stringBuilder.appendln(this.clone().toString())
-            if (!terrainsCanBeBuiltOn.isEmpty()) stringBuilder.appendln("Can be built on " + terrainsCanBeBuiltOn.joinToString(", "))
+            if (!terrainsCanBeBuiltOn.isEmpty()) stringBuilder.appendln("Can be built on ".tr() + terrainsCanBeBuiltOn.joinToString(", "))
 
             val statsToResourceNames = HashMap<String, ArrayList<String>>()
             for (tr: TileResource in GameBasics.TileResources.values.filter { it.improvement == name }) {
@@ -39,10 +40,10 @@ class TileImprovement : NamedStats(), ICivilopedia {
                 statsToResourceNames[statsString]!!.add(tr.name)
             }
             statsToResourceNames.forEach {
-                stringBuilder.appendln(it.key + " for " + it.value.joinToString(", "))
+                stringBuilder.appendln(it.key + " for ".tr() + it.value.joinToString(", "))
             }
 
-            if (techRequired != null) stringBuilder.appendln("Tech required: $techRequired")
+            if (techRequired != null) stringBuilder.appendln("Tech required: ".tr()+"$techRequired".tr())
 
             return stringBuilder.toString()
         }
