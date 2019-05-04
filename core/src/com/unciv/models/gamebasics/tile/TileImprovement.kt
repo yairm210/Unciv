@@ -30,8 +30,14 @@ class TileImprovement : NamedStats(), ICivilopedia {
         get() {
             val stringBuilder = StringBuilder()
             if (!this.clone().toString().isEmpty()) stringBuilder.appendln(this.clone().toString())
-            if (!terrainsCanBeBuiltOn.isEmpty()) stringBuilder.appendln("Can be built on ".tr() + terrainsCanBeBuiltOn.joinToString(", "))
-
+            if (!terrainsCanBeBuiltOn.isEmpty()) {
+                val terrainsCanBeBuiltOnString: Collection<String>
+                terrainsCanBeBuiltOnString= ArrayList()
+                for (i in terrainsCanBeBuiltOn) {
+                    terrainsCanBeBuiltOnString.add(i.tr())
+                }
+                stringBuilder.appendln("Can be built on ".tr() +  terrainsCanBeBuiltOnString.joinToString(", "))//language can be changed when setting changes.
+            }
             val statsToResourceNames = HashMap<String, ArrayList<String>>()
             for (tr: TileResource in GameBasics.TileResources.values.filter { it.improvement == name }) {
                 val statsString = tr.improvementStats.toString()
