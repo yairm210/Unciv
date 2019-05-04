@@ -78,9 +78,9 @@ class Minimap(val tileMapHolder: TileMapHolder) : ScrollPane(null){
             val hex = tileImages[tileInfo]!!
             if (!(UnCivGame.Current.viewEntireMapForDebug || exploredTiles.contains(tileInfo.position)))
                 hex.color = Color.BLACK
-            else if (tileInfo.isCityCenter() && !tileInfo.isWater())
+            else if (tileInfo.isCityCenter() && !tileInfo.isWater)
                 hex.color = tileInfo.getOwner()!!.getNation().getSecondaryColor()
-            else if (tileInfo.getCity() != null && !tileInfo.isWater())
+            else if (tileInfo.getCity() != null && !tileInfo.isWater)
                 hex.color = tileInfo.getOwner()!!.getNation().getColor()
             else hex.color = tileInfo.getBaseTerrain().getColor().lerp(Color.GRAY, 0.5f)
         }

@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
@@ -21,6 +22,7 @@ import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
+import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
@@ -32,6 +34,10 @@ import kotlin.math.roundToInt
 enum class PlayerType{
     AI,
     Human
+}
+
+enum class CityStateType{
+    Cultured
 }
 
 class TradeRequest(val requestingCiv:String,
@@ -93,7 +99,8 @@ class CivilizationInfo {
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
-        toReturn.diplomacy.putAll(diplomacy)
+        for(diplomacyManager in diplomacy.values.map { it.clone() })
+            toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
         toReturn.cities = cities.map { it.clone() }
         toReturn.exploredTiles.addAll(exploredTiles)
         toReturn.notifications.addAll(notifications)
@@ -124,7 +131,9 @@ class CivilizationInfo {
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
-    fun isBarbarianCivilization() =  gameInfo.getBarbarianCivilization()==this
+    fun isBarbarianCivilization() =  civName=="Barbarians"
+    fun isCityState(): Boolean = getNation().isCityState()
+    fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
     fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
 
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
@@ -134,6 +143,19 @@ class CivilizationInfo {
                 if(statMap.containsKey(entry.key))
                     statMap[entry.key] = statMap[entry.key]!! + entry.value
                 else statMap[entry.key] = entry.value
+            }
+        }
+
+        //City states culture bonus
+        for (otherCivName in diplomacy.keys) {
+            val otherCiv = gameInfo.getCivilization(otherCivName)
+            if (otherCiv.isCityState() && otherCiv.diplomacy[civName]!!.influence > 60) {
+                val cultureBonus = Stats()
+                cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
+                if (statMap.containsKey("City States"))
+                    statMap["City States"] = statMap["City States"]!! + cultureBonus
+                else
+                    statMap["City States"] = cultureBonus
             }
         }
 
@@ -310,7 +332,7 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any{it.name=="Settler"})
+    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any{it.name== Constants.settler})
 
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
@@ -486,7 +508,7 @@ class CivilizationInfo {
 
                 if(!reachedMediums.contains("Harbor")
                         && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent("Harbor")){
-                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()){it.isWater() || it.isCityCenter()}
+                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()){it.isWater || it.isCityCenter()}
                     seaBfs.stepToEnd()
                     val reachedCities = cities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
                     for(reachedCity in reachedCities){

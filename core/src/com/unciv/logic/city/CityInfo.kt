@@ -6,6 +6,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.Constants
 import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -19,6 +20,7 @@ class CityInfo {
     @Transient var isConnectedToCapital = false
     @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
     @Transient val range = 2
+    @Transient lateinit var tileMap: TileMap
 
     var location: Vector2 = Vector2.Zero
     var name: String = ""
@@ -61,7 +63,7 @@ class CityInfo {
         if (civInfo.policies.isAdopted("Legalism") && civInfo.cities.size <= 4) cityConstructions.addCultureBuilding()
         if (civInfo.cities.size == 1) {
             cityConstructions.addBuilding("Palace")
-            cityConstructions.currentConstruction = "Worker" // Default for first city only!
+            cityConstructions.currentConstruction = Constants.worker // Default for first city only!
         }
 
         expansion.reset()
@@ -96,8 +98,7 @@ class CityInfo {
         return toReturn
     }
 
-    internal val tileMap: TileMap
-        get() = civInfo.gameInfo.tileMap
+
 
     fun getCenterTile(): TileInfo = ccenterTile
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
@@ -183,6 +184,7 @@ class CityInfo {
 
     //region state-changing functions
     fun setTransients() {
+        tileMap = civInfo.gameInfo.tileMap
         ccenterTile = tileMap[location]
         population.cityInfo = this
         expansion.cityInfo = this
@@ -204,7 +206,7 @@ class CityInfo {
 
     fun endTurn() {
         val stats = cityStats.currentCityStats
-        if (cityConstructions.currentConstruction == CityConstructions.Settler && stats.food > 0) {
+        if (cityConstructions.currentConstruction == Constants.settler && stats.food > 0) {
             stats.production += stats.food
             stats.food = 0f
         }

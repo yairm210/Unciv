@@ -5,8 +5,10 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.civilization.TradeRequest
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
+import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -44,9 +46,19 @@ class NextTurnAutomation{
 
     private fun exchangeTechs(civInfo: CivilizationInfo) {
         if(!civInfo.gameInfo.getDifficulty().aisExchangeTechs) return
+        if (civInfo.isCityState()) { //City states automatically get all invented techs
+            for (otherCiv in civInfo.getKnownCivs().filterNot { it.isCityState() }) {
+                for (entry in otherCiv.tech.techsResearched
+                        .filterNot { civInfo.tech.isResearched(it) }
+                        .filter { civInfo.tech.canBeResearched(it) }) {
+                    civInfo.tech.addTechnology(entry)
+                }
+            }
+            return
+        }
 
         val otherCivList = civInfo.getKnownCivs()
-                .filter { it.playerType == PlayerType.AI && !it.isBarbarianCivilization() }
+                .filter { it.playerType == PlayerType.AI && it.isMajorCiv() }
                 .sortedBy { it.tech.techsResearched.size }
 
         for (otherCiv in otherCivList) {
@@ -156,6 +168,11 @@ class NextTurnAutomation{
 
         for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo)
                 && !civInfo.getDiplomacyManager(it).flagsCountdown.containsKey(DiplomacyFlags.DeclinedLuxExchange.toString())}) {
+
+            val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
+            if(relationshipLevel==RelationshipLevel.Enemy || relationshipLevel == RelationshipLevel.Unforgivable)
+                continue
+
             val trades = potentialLuxuryTrades(civInfo,otherCiv)
             for(trade in trades){
                 val tradeRequest = TradeRequest(civInfo.civName, trade.reverse())
@@ -227,6 +244,7 @@ class NextTurnAutomation{
     }
 
     private fun declareWar(civInfo: CivilizationInfo) {
+        if (civInfo.isCityState()) return
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
             val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
             if (!civInfo.isAtWar() && civInfo.happiness > 0
@@ -295,15 +313,16 @@ class NextTurnAutomation{
     }
 
     private fun trainSettler(civInfo: CivilizationInfo) {
+        if(civInfo.isCityState()) return
         if(civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if (civInfo.cities.any()
                 && civInfo.happiness > civInfo.cities.size + 5
-                && civInfo.getCivUnits().none { it.name == "Settler" }
-                && civInfo.cities.none { it.cityConstructions.currentConstruction == "Settler" }) {
+                && civInfo.getCivUnits().none { it.name == Constants.settler }
+                && civInfo.cities.none { it.cityConstructions.currentConstruction == Constants.settler }) {
 
             val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
-                bestCity.cityConstructions.currentConstruction = "Settler"
+                bestCity.cityConstructions.currentConstruction = Constants.settler
         }
     }
 

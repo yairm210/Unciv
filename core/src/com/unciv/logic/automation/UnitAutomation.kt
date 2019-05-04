@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.*
 import com.unciv.logic.city.CityInfo
@@ -15,11 +16,11 @@ class UnitAutomation{
 
     fun automateUnitMoves(unit: MapUnit) {
 
-        if (unit.name == "Settler") {
+        if (unit.name == Constants.settler) {
             return SpecificUnitAutomation().automateSettlerActions(unit)
         }
 
-        if (unit.name == "Worker") {
+        if (unit.name == Constants.worker) {
             return WorkerAutomation(unit).automateWorkerAction()
         }
 
@@ -121,9 +122,9 @@ class UnitAutomation{
         if(combatant is MapUnitCombatant){
             if (combatant.unit.isEmbarked()) {
                 if (combatant.isRanged()) return false
-                if (tile.isWater()) return false // can't attack water units while embarked, only land
+                if (tile.isWater) return false // can't attack water units while embarked, only land
             }
-            if (combatant.unit.hasUnique("Can only attack water") && tile.isLand()) return false
+            if (combatant.unit.hasUnique("Can only attack water") && tile.isLand) return false
         }
 
         val tileCombatant = Battle(combatant.getCivInfo().gameInfo).getMapCombatantOfTile(tile)
@@ -201,7 +202,7 @@ class UnitAutomation{
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull { val tile = it.currentTile
-                    (it.name=="Settler" || it.name.startsWith("Great") && it.type.isCivilian())
+                    (it.name== Constants.settler || it.name.startsWith("Great") && it.type.isCivilian())
                             && tile.militaryUnit==null && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
         if(settlerOrGreatPersonToAccompany==null) return false
         unit.movementAlgs().headTowards(settlerOrGreatPersonToAccompany.currentTile)
@@ -286,7 +287,7 @@ class UnitAutomation{
                     BattleDamage().calculateDamageToAttacker(MapUnitCombatant(unit),
                             Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!) < unit.health
                 }
-                .filter {it.tileToAttackFrom.isLand()}
+                .filter {it.tileToAttackFrom.isLand}
 
         val enemyTileToAttackNextTurn = chooseAttackTarget(unit, attackableEnemiesNextTurn)
 

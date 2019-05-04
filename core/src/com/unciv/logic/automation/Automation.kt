@@ -1,6 +1,7 @@
 package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
@@ -76,12 +77,12 @@ class Automation {
 
             val civUnits = cityInfo.civInfo.getCivUnits()
             val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size
-            val workers = civUnits.filter { it.name == CityConstructions.Worker }.size.toFloat()
+            val workers = civUnits.filter { it.name == Constants.worker }.size.toFloat()
             val cities = cityInfo.civInfo.cities.size
             val canBuildWorkboat = cityInfo.cityConstructions.getConstructableUnits().map { it.name }.contains("Work Boats")
                     && !cityInfo.getTiles().any { it.civilianUnit?.name == "Work Boats" }
             val needWorkboat = canBuildWorkboat
-                    && cityInfo.getTiles().any { it.isWater() && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
+                    && cityInfo.getTiles().any { it.isWater && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
             val isAtWar = cityInfo.civInfo.isAtWar()
 
@@ -159,7 +160,7 @@ class Automation {
 
             //worker
             if (workers < cities * 0.6f) {
-                relativeCostEffectiveness.add(ConstructionChoice(CityConstructions.Worker,cities.toFloat()/(workers+0.1f)))
+                relativeCostEffectiveness.add(ConstructionChoice(Constants.worker,cities.toFloat()/(workers+0.1f)))
             }
 
             //Work boat

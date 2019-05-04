@@ -36,3 +36,4 @@ class Counter<K> : LinkedHashMap<K, Int>() {
         return newCounter
     }
 }
+

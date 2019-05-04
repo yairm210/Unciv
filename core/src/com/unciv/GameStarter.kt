@@ -18,6 +18,7 @@ class GameParameters{
     var numberOfHumanPlayers=1
     var humanNations=ArrayList<String>().apply { add("Babylon") }
     var numberOfEnemies=3
+    var numberOfCityStates=0
     var mapType= MapType.Perlin
     var noBarbarians=false
     var mapFileName :String?=null
@@ -31,12 +32,15 @@ class GameStarter{
         gameInfo.tileMap = TileMap(newGameParameters)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
         val startingLocations = getStartingLocations(
-                newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers, gameInfo.tileMap)
+                newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers+newGameParameters.numberOfCityStates,
+                gameInfo.tileMap)
 
         val availableCivNames = Stack<String>()
-        availableCivNames.addAll(GameBasics.Nations.keys.shuffled())
+        availableCivNames.addAll(GameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
         availableCivNames.removeAll(newGameParameters.humanNations)
         availableCivNames.remove("Barbarians")
+        val availableCityStatesNames = Stack<String>()
+        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys.shuffled())
 
         for(nation in newGameParameters.humanNations) {
             val playerCiv = CivilizationInfo(nation)
@@ -53,6 +57,10 @@ class GameStarter{
             gameInfo.civilizations.add(civ)
         }
 
+        for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
+            val civ = CivilizationInfo(cityStateName)
+            gameInfo.civilizations.add(civ)
+        }
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
@@ -66,7 +74,7 @@ class GameStarter{
         for (civ in gameInfo.civilizations.filter { !it.isBarbarianCivilization() }) {
             val startingLocation = startingLocations.pop()!!
 
-            civ.placeUnitNearTile(startingLocation.position, "Settler")
+            civ.placeUnitNearTile(startingLocation.position, Constants.settler)
             civ.placeUnitNearTile(startingLocation.position, "Warrior")
             civ.placeUnitNearTile(startingLocation.position, "Scout")
         }
@@ -76,11 +84,11 @@ class GameStarter{
 
     fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
         var landTiles = tileMap.values
-                .filter { it.isLand() && !it.getBaseTerrain().impassable }
+                .filter { it.isLand && !it.getBaseTerrain().impassable }
 
         val landTilesInBigEnoughGroup = ArrayList<TileInfo>()
         while(landTiles.any()){
-            val bfs = BFS(landTiles.random()){it.isLand() && !it.getBaseTerrain().impassable}
+            val bfs = BFS(landTiles.random()){it.isLand && !it.getBaseTerrain().impassable}
             bfs.stepToEnd()
             val tilesInGroup = bfs.tilesReached.keys
             landTiles = landTiles.filter { it !in tilesInGroup }

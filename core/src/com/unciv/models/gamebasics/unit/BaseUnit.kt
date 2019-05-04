@@ -4,6 +4,7 @@ import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
+import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.Translations
@@ -131,6 +132,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
         if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires $requiredResource"
+        if (name == Constants.settler && civInfo.isCityState()) return "No settler for city state"
         return ""
     }
 

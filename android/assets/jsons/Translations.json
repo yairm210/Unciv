@@ -2865,6 +2865,7 @@
 		Portuguese:"Serviço cívil"
 	}
 	"Enables Open Borders agreements":{
+		Italian:"Consente accordi su Diritti di Passaggio"
 		Simplified_Chinese:"允许签订开放边境协定"
 	}
 	
@@ -4226,9 +4227,11 @@
 		German:"Friedensabkommen"
 	}
 	"Agreements":{
+		Italian:"Accordi"
 		Simplified_Chinese:"协定"
 	}
 	"Open Borders":{
+		Italian:"Diritto di passaggio"
 		Simplified_Chinese:"开放边境"
 	}
 	"Gold per turn":{
@@ -4473,6 +4476,7 @@
 		Dutch:"Saudi"
 	}
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
+		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
 	}
 	
@@ -4828,6 +4832,7 @@
 	}
 	
 	"[tradeOffer] from [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
 		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
 	}
 	
@@ -4865,12 +4870,15 @@
 	}
 	
 	"Not this time.":{
+		Italian:"Non questa volta."
 		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
 	} // declining trade text
 	"Excellent!":{
+		Italian:"Eccellente!"
 		Simplified_Chinese:"好极了！和和气气才是生财之道。"
 	} // AI statement after we accept a trade they proposed
 	"How about something else...":{
+		Italian:"Che ne dici di questa offerta?"
 		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
 	} // Counteroffer to AI offer
 	
@@ -4878,6 +4886,49 @@
 		Italian:"Lieto di incontrarvi."
 		French:"Un plaisir de vous rencontrez"
 		Simplified_Chinese:"很高兴见到你."
+	}
+	
+	"Our relationship: ":{
+		Italian:"I nostri rapporti: "
+	}
+	
+    "Unforgivable":{
+		Italian:"Imperdonabile"
+    }
+    "Enemy":{
+		Italian:"Nemico"
+    }
+    "Competitor":{
+		Italian:"Avversario"
+    }
+    "Neutral":{
+		Italian:"Neutrale"
+    }
+    "Favorable":{
+		Italian:"Favorevole"
+    }
+    "Friend":{
+		Italian:"Amichevole"
+    }
+    "Ally":{
+		Italian:"Alleato"
+    }
+	
+	// Diplomatic modifiers
+	"You declared war on us!":{
+		Italian:"Ci hai dichiarato guerra!"
+	}
+	"Your warmongering ways are unacceptable to us.":{
+		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
+	}
+	"You have captured our cities!":{
+		Italian:"Hai preso una delle nostre città!"
+	}
+	"Years of peace have strengthened our relations.":{
+		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
+	}
+	"Our mutual military struggle brings us closer together.":{
+		Italian:"I nostri nemici in comune ci hanno legati."
 	}
 	
 	// Overview screen
@@ -6079,9 +6130,11 @@
 		German:"Börse"
 	}
         "Big Ben":{	
+		Italian:"Big Ben"
 		Simplified_Chinese:"大本钟"
 	}
 	"-15% to purchasing items in cities":{
+		Italian:"-15% costo in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
 	}
 	"Cristo Redentor":{
@@ -7060,9 +7113,11 @@
 		French:"Bombardier"
 	}
         "Mechanized Infantry":{
+		Italian:"Fanteria meccanizzata"
 		Simplified_Chinese:"机械化步兵"
 	}
         "Modern Armor":{
+		Italian:"Armatura moderna"
 		Simplified_Chinese:"现代坦克"
         }
 	"B17":{
@@ -7234,7 +7289,7 @@
 		German:"Legalismus"
 		French:"Légalisme"
 	}
-	"Free culture building in your first 4 cities":{
+	"Immediately creates a cheapest available cultural building in each of your first 4 cities for free":{
 		Italian:"Le prime 4 città sono fornite di un edificio culturale gratuito"
 		Russian:"Бесплатное культурное здание в первых 4 городах"
 		Romanian:"Construcție de cultură gratuită pentru primele 4 orașe"
@@ -7358,7 +7413,7 @@
 		French:"Pouvoir collectif" //official translation, but "règles collectives" is more accurate
 	}
 
-	"Training of settlers increased +50% in capital, receive a new settler near capital":{ 
+	"Training of settlers increased +50% in capital, receive a new settler near the capital":{
 		Italian:"La Capitale riceve un Colono gratuito nella Capitale, e produce Coloni il 50% più in fretta"
 		Russian:"Увеличивает на 50% скорость создания поселенцев в столице. Также возле столицы бесплатно появляется посленец"
 		Romanian:"Antrenamentul colonizatorilor crescut +50% în capitală, se obține un colonizator nou lângă capitală"
@@ -7378,7 +7433,7 @@
 		German:"Staatsbürgerschaft"
 		French:"Citoyenneté"
 	}
-	"+25% construction rate of workers, receive free worker near the capital":{
+	"Tile improvement speed +25%, receive a free worker near the capital":{
 		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
 		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
@@ -8849,7 +8904,7 @@
 	"Provides a free [buildingName] in the city":{
 		Italian:"Dona l'edificio gratuito [buildingName] nella città"
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
-                Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 	}
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
@@ -8859,7 +8914,7 @@
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"
 		French:"Nécessite la technologie: [requiredTech]"
-        Simplified_Chinese:"需要科技：[requiredTech]"
+		Simplified_Chinese:"需要科技：[requiredTech]"
 	}
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"

@@ -1,5 +1,6 @@
 package com.unciv.logic.civilization
 
+import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
 
@@ -64,8 +65,8 @@ class PolicyManager {
 
         val hasCapital = civInfo.cities.any{it.isCapital()}
         when (policy.name) {
-            "Collective Rule" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, "Settler")
-            "Citizenship" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, "Worker")
+            "Collective Rule" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.settler)
+            "Citizenship" -> if(hasCapital) civInfo.placeUnitNearTile(civInfo.getCapital().location, Constants.worker)
             "Representation", "Reformation" -> civInfo.goldenAges.enterGoldenAge()
             "Scientific Revolution" -> civInfo.tech.freeTechs += 2
             "Legalism" ->

@@ -29,7 +29,7 @@ class WorkerAutomation(val unit: MapUnit) {
             if(reachedTile!=tile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
-        if (tile.improvementInProgress == null && tile.isLand()) {
+        if (tile.improvementInProgress == null && tile.isLand) {
             val improvement = chooseImprovement(tile, unit.civInfo)
             if (improvement != null && tile.canBuildImprovement(improvement, unit.civInfo)) {
                 // What if we're stuck on this tile but can't build there?
@@ -56,7 +56,7 @@ class WorkerAutomation(val unit: MapUnit) {
         if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
-                .map { city -> BFS(city.getCenterTile()){it.isLand() && unit.canPassThrough(it)} }
+                .map { city -> BFS(city.getCenterTile()){it.isLand && unit.canPassThrough(it)} }
                 .toMutableList()
 
         val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetStatus) }
@@ -100,7 +100,7 @@ class WorkerAutomation(val unit: MapUnit) {
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
                             && (it.improvement == null || (it.hasViewableResource(unit.civInfo) && !it.containsGreatImprovement() && it.getTileResource().improvement != it.improvement))
-                            && it.isLand()
+                            && it.isLand
                             && !it.getBaseTerrain().impassable
                             && (it.containsUnfinishedGreatImprovement() || it.canBuildImprovement(chooseImprovement(it, unit.civInfo), unit.civInfo))
                             && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ

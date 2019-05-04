@@ -10,6 +10,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
@@ -137,7 +138,7 @@ class WorldScreen : CameraStageBaseScreen() {
         if(gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.health<100 })
             displayTutorials("InjuredUnits")
 
-        if(gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.name=="Worker" })
+        if(gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.name== Constants.worker })
             displayTutorials("WorkerTrained")
 
         updateTechButton(cloneCivilization)

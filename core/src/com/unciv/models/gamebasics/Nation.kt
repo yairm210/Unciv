@@ -1,6 +1,7 @@
 package com.unciv.models.gamebasics
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
@@ -13,7 +14,7 @@ class Nation : INamed {
     }
 
     var leaderName=""
-
+    var cityStateType: CityStateType?=null
     var declaringWar=""
     var attacked=""
     var defeated=""
@@ -34,5 +35,8 @@ class Nation : INamed {
         if(secondaryColor==null) return Color.BLACK
         return colorFromRGB(secondaryColor!![0], secondaryColor!![1], secondaryColor!![2])
     }
+
+    fun isCityState()=cityStateType != null
+
     lateinit var cities: List<String>
 }

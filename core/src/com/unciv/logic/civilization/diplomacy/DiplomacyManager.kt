@@ -11,9 +11,27 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.gamebasics.tr
 
+enum class RelationshipLevel{
+    Unforgivable,
+    Enemy,
+    Competitor,
+    Neutral,
+    Favorable,
+    Friend,
+    Ally
+}
+
 enum class DiplomacyFlags{
     DeclinedLuxExchange,
     DeclinedPeace
+}
+
+enum class DiplomaticModifiers{
+    DeclaredWarOnUs,
+    WarMongerer,
+    CapturedOurCities,
+    YearsOfPeace,
+    SharedEnemy
 }
 
 class DiplomacyManager() {
@@ -24,16 +42,26 @@ class DiplomacyManager() {
     lateinit var otherCivName:String
     var trades = ArrayList<Trade>()
     var diplomaticStatus = DiplomaticStatus.War
+
     /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire.
      *  The JSON serialize/deserialize REFUSES to deserialize hashmap keys as Enums, so I'm forced to use strings instead =(
      *  This is so sad Alexa play Despacito */
     var flagsCountdown = HashMap<String,Int>()
+
+    /** For AI. Positive is good relations, negative is bad.
+     * Baseline is 1 point for each turn of peace - so declaring a war upends 40 years of peace, and e.g. capturing a city can be another 30 or 40.
+     * As for why it's String and not DiplomaticModifier see FlagsCountdown comment */
+    var diplomaticModifiers = HashMap<String,Float>()
+
+    /** For city states */
+    var influence = 0f
 
     fun clone(): DiplomacyManager {
         val toReturn = DiplomacyManager()
         toReturn.otherCivName=otherCivName
         toReturn.diplomaticStatus=diplomaticStatus
         toReturn.trades.addAll(trades.map { it.clone() })
+        toReturn.influence = influence
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.hasOpenBorders=hasOpenBorders
         return toReturn
@@ -46,6 +74,8 @@ class DiplomacyManager() {
     }
 
     //region pure functions
+    fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
+
     fun turnsToPeaceTreaty(): Int {
         for(trade in trades)
             for(offer in trade.ourOffers)
@@ -53,9 +83,30 @@ class DiplomacyManager() {
         return 0
     }
 
+    fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
+
+    fun relationshipLevel(): RelationshipLevel {
+        if(civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
+            return RelationshipLevel.Neutral // People make their own choices.
+
+        if(civInfo.isPlayerCivilization())
+            return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
+
+        // not entirely sure what to do between AI civs, because they probably have different views of each other,
+        // maybe we need to average their views of each other? That makes sense to me.
+
+        val opinion = opinionOfOtherCiv()
+        if(opinion>80) return RelationshipLevel.Ally
+        if(opinion>40) return RelationshipLevel.Friend
+        if(opinion>15) return RelationshipLevel.Favorable
+        if(opinion<-80) return RelationshipLevel.Unforgivable
+        if(opinion<-40) return RelationshipLevel.Enemy
+        if(opinion<-15) return RelationshipLevel.Competitor
+        return RelationshipLevel.Neutral
+    }
+
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
 
-    fun otherCiv() = civInfo.gameInfo.getCivilization(otherCivName)
 
     fun goldPerTurn():Int{
         var goldPerTurnForUs = 0
@@ -138,10 +189,21 @@ class DiplomacyManager() {
         removeUntenebleTrades()
         updateHasOpenBorders()
 
+        if(diplomaticStatus==DiplomaticStatus.Peace)
+            addModifier(DiplomaticModifiers.YearsOfPeace,1f)
+
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
-            if(flagsCountdown[flag]==0) flagsCountdown.remove(flag)
+            if(flagsCountdown[flag]==0) {
+                flagsCountdown.remove(flag)
+            }
         }
+
+        if (influence > 1) {
+            influence -= 1
+        } else if (influence < 1) {
+            influence += 1
+        } else influence = 0f
 
     }
 
@@ -171,6 +233,31 @@ class DiplomacyManager() {
         /// AI won't propose peace for 10 turns
         flagsCountdown[DiplomacyFlags.DeclinedPeace.toString()]=10
         otherCiv.getDiplomacyManager(civInfo).flagsCountdown[DiplomacyFlags.DeclinedPeace.toString()]=10
+
+        otherCivDiplomacy.diplomaticModifiers[DiplomaticModifiers.DeclaredWarOnUs.toString()] = -20f
+        for(thirdCiv in civInfo.getKnownCivs()){
+            if(thirdCiv.isAtWarWith(otherCiv))
+                thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,5f)
+            else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
+        }
+    }
+
+    fun makePeace(){
+        diplomaticStatus= DiplomaticStatus.Peace
+        val otherCiv = otherCiv()
+        // We get out of their territory
+        for(unit in civInfo.getCivUnits().filter { it.getTile().getOwner()== otherCiv})
+            unit.movementAlgs().teleportToClosestMoveableTile()
+
+        // And we get out of theirs
+        for(unit in otherCiv.getCivUnits().filter { it.getTile().getOwner()== civInfo})
+            unit.movementAlgs().teleportToClosestMoveableTile()
+    }
+
+    fun addModifier(modifier: DiplomaticModifiers, amount:Float){
+        val modifierString = modifier.toString()
+        if(!diplomaticModifiers.containsKey(modifierString)) diplomaticModifiers[modifierString]=0f
+        diplomaticModifiers[modifierString] = diplomaticModifiers[modifierString]!!+amount
     }
     //endregion
 }

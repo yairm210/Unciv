@@ -6,10 +6,13 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.TileInfo
+import com.unciv.Constants
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -160,20 +163,37 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
-        val enemyCiv = city.civInfo
-        attacker.getCivInfo().addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
-        attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.CityConquered,city.name))
+        val cityCiv = city.civInfo
+        val attackerCiv = attacker.getCivInfo()
+
+        attackerCiv.addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
+        attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered,city.name))
 
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
         }
 
-        if (attacker.getCivInfo().isBarbarianCivilization()){
+        if (!attackerCiv.isMajorCiv()){
             city.destroyCity()
         }
         else {
             val currentPopulation = city.population.population
+
+            val percentageOfCivPopulationInThatCity = currentPopulation*100f / cityCiv.cities.sumBy { it.population.population }
+            val aggroGenerated = 10f+percentageOfCivPopulationInThatCity.roundToInt()
+            cityCiv.getDiplomacyManager(attacker.getCivInfo())
+                    .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
+
+            for(thirdPartyCiv in attackerCiv.getKnownCivs().filter { it.isMajorCiv() }){
+                val aggroGeneratedForOtherCivs = (aggroGenerated/10).roundToInt().toFloat()
+                if(thirdPartyCiv.isAtWarWith(cityCiv)) // You annoyed our enemy?
+                    thirdPartyCiv.getDiplomacyManager(attackerCiv)
+                            .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
+                else thirdPartyCiv.getDiplomacyManager(attackerCiv)
+                        .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
+            }
+
             if(currentPopulation>1) city.population.population -= 1 + currentPopulation/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
             city.population.unassignExtraPopulation()
 
@@ -195,12 +215,12 @@ class Battle(val gameInfo:GameInfo) {
 
         if(city.cityConstructions.isBuilt("Palace")){
             city.cityConstructions.removeBuilding("Palace")
-            if(enemyCiv.isDefeated()) {
-                enemyCiv.destroy()
-                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,enemyCiv.civName))
+            if(cityCiv.isDefeated()) {
+                cityCiv.destroy()
+                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,cityCiv.civName))
             }
-            else if(enemyCiv.cities.isNotEmpty()){
-                enemyCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
+            else if(cityCiv.cities.isNotEmpty()){
+                cityCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
             }
         }
 
@@ -219,7 +239,10 @@ class Battle(val gameInfo:GameInfo) {
             defender.takeDamage(100)
             return
         } // barbarians don't capture civilians!
-
+        if (attacker.getCivInfo().isCityState() && defender.getName() == Constants.settler) {
+            defender.takeDamage(100)
+            return
+        }
         if (defender.getCivInfo().isDefeated()) {//Last settler captured
             defender.getCivInfo().destroy()
             attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,defender.getCivInfo().civName))

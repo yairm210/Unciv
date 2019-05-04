@@ -2,6 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.automation.Automation
+import com.unciv.Constants
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -125,7 +126,7 @@ class CityConstructions {
         cityInfo.cityStats.update()
 
         var production = Math.round(cityStatsForConstruction.production)
-        if (constructionName == Settler) production += cityStatsForConstruction.food.toInt()
+        if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
 
         return Math.ceil((workLeft / production.toDouble())).toInt()
     }
@@ -221,10 +222,5 @@ class CityConstructions {
         Automation().chooseNextConstruction(this)
     }
     //endregion
-
-    companion object {
-        internal const val Worker = "Worker"
-        internal const val Settler = "Settler"
-    }
 
 } // for json parsing, we need to have a default constructor

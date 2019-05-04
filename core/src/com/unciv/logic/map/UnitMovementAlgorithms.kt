@@ -10,14 +10,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         var cost = getMovementCostBetweenAdjacentTiles(from,to)
 
         val toOwner = to.getOwner()
-        if(toOwner!=null &&  to.isLand() && civInfo.isAtWarWith(toOwner) && toOwner.hasActiveGreatWall)
+        if(toOwner!=null &&  to.isLand && civInfo.isAtWarWith(toOwner) && toOwner.hasActiveGreatWall)
             cost += 1
         return cost
     }
 
     private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo): Float {
 
-        if(unit.type.isLandUnit() && (from.isLand() != to.isLand()))
+        if(unit.type.isLandUnit() && (from.isLand != to.isLand))
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
         if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
@@ -25,7 +25,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         if (from.roadStatus !== RoadStatus.None && to.roadStatus !== RoadStatus.None) //Road
         {
-            if (unit.civInfo.tech.getTechUniques().contains("Improves movement speed on roads")) return 1 / 3f
+            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f
             else return 1 / 2f
         }
         if (unit.ignoresTerrainCost) return 1f

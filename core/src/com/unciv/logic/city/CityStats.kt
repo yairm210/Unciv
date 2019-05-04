@@ -3,6 +3,7 @@ package com.unciv.logic.city
 import com.unciv.UnCivGame
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
+import com.unciv.Constants
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
@@ -269,7 +270,7 @@ class CityStats {
 
         val currentConstruction = cityConstructions.getCurrentConstruction()
         if (policies.contains("Collective Rule") && cityInfo.isCapital()
-                && currentConstruction.name == "Settler")
+                && currentConstruction.name == Constants.settler)
             stats.production += 50f
         if (policies.contains("Republic") && currentConstruction is Building)
             stats.production += 5f

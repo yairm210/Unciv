@@ -1,5 +1,6 @@
 [
 	{
+		//nations
 		name:"Babylon",
 		leaderName:"Nebuchadnezzar II",
 		adjective:["Babylonian"],
@@ -919,6 +920,68 @@
 		cities:["Moson Kahni","Te-Moak","Agaidika","Goshute","Pohokwi","Washakie","Timbisha","Hukandeka","Duckwater","Tukudeka","Kuchundeka","Yomba","Kamudeka","Ely","Yambadeka","Tetadeka","Deheyaeka","Pengwideka","Winnemucca","Skull Valley","Big Pine","Duck Valley","Nampa","Bannock","Yahandeka"]
 	},
 	*/
+
+	//City states
+	{
+		name:"Milan",
+		adjective:["Milan"],
+		cityStateType:"Cultured",
+		startBias:["Coast"],
+		
+		//TO DO : better dialogs
+		declaringWar:"Declare war.",
+		attacked:"Let's fight.",
+		defeated:"GoodBye.",
+		introduction:"Hi.",
+		
+		neutralHello:"Greetings.",
+		neutralLetsHearIt:["I'm listening.","What do you want?"],
+		neutralNo:["No!","Certainly not.","Unacceptable!"],
+		neutralYes:["Completed!","Yes!","Agreed!"],
+
+		hateHello:"What do YOU want?!",
+		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
+		hateNo:["No!","Certainly not!","Unacceptable!"],
+		hateYes:["Yes!"],
+		
+		afterPeace:"Peace then.",
+		tradeRequest:"Trade?",
+				
+		mainColor:[0,100,0],
+		secondaryColor:[213,249,255],
+		cities:["Milan"]
+	},
+	{
+		name:"Florence",
+		adjective:["Florence"],
+		cityStateType:"Cultured",
+		startBias:["Coast"],
+		
+		//TO DO : better dialogs
+		declaringWar:"Declare war.",
+		attacked:"Let's fight.",
+		defeated:"GoodBye.",
+		introduction:"Hi.",
+		
+		neutralHello:"Greetings.",
+		neutralLetsHearIt:["I'm listening.","What do you want?"],
+		neutralNo:["No!","Certainly not.","Unacceptable!"],
+		neutralYes:["Completed!","Yes!","Agreed!"],
+
+		hateHello:"What do YOU want?!",
+		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
+		hateNo:["No!","Certainly not!","Unacceptable!"],
+		hateYes:["Yes!"],
+		
+		afterPeace:"Peace then.",
+		tradeRequest:"Trade?",
+				
+		mainColor:[255, 250, 240],
+		secondaryColor:[238, 44, 44],
+		cities:["Florence"]
+	}
+
+	//Barbarian
 	{
 		name:"Barbarians",
 		mainColor:[0,0,0],
