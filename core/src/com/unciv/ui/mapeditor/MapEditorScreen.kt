@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.GameParameters
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
+import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.Terrain
@@ -31,7 +32,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     var selectedResource:TileResource?=null
     var tileMap = TileMap(GameParameters())
     var mapName = "My first map"
-    var currentHex=Group()
+    private var currentHex:Actor=Group()
     lateinit var mapHolder: TileGroupMap<TileGroup>
 
     fun clearSelection(){
@@ -128,44 +129,49 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     }
 
 
-    fun setCurrentHex(color: Color, image: Actor?=null){
+    fun setCurrentHex(tileInfo: TileInfo?){
         currentHex.remove()
-        currentHex=getHex(color,image)
+        if(tileInfo!=null)currentHex=TileGroup(tileInfo)
+                .apply {
+                    showEntireMap=true
+                    forMapEditorIcon=true
+                    update(true,true,true)
+                }
+        else currentHex = ImageGetter.getCircle()
         currentHex.setPosition(stage.width-currentHex.width-10, 10f)
         stage.addActor(currentHex)
     }
 
     private fun getTileEditorOptions(): Table {
 
-        val baseTerrainHolder = Table()
-        val terrainFeatureHolder = Table()
+        val baseTerrainHolder = Table().apply { defaults().padRight(10f) }
+        val terrainFeatureHolder = Table().apply { defaults().padRight(10f) }
         terrainFeatureHolder.add(getHex(Color.WHITE).apply {
             onClick {
                 clearSelection()
                 clearTerrainFeature = true
-                setCurrentHex(Color.WHITE)
+                setCurrentHex(null)
             }
         })
 
         for (terrain in GameBasics.Terrains.values) {
-            var iconPath: String? = null
-            var color = Color.WHITE
-
-            if (terrain.type == TerrainType.TerrainFeature)
-                iconPath = tileSetLocation + terrain.name+"Overlay"
-            else {
-                color = terrain.getColor()
-                val imagePath = tileSetLocation + terrain.name+"Overlay"
-                if (ImageGetter.imageExists(imagePath)) {
-                    iconPath = imagePath
-                }
+            val tileInfo = TileInfo()
+            if (terrain.type == TerrainType.TerrainFeature) {
+                tileInfo.baseTerrain = terrain.occursOn!!.first()
+                tileInfo.terrainFeature=terrain.name
             }
+            else tileInfo.baseTerrain=terrain.name
 
-            val group = getHex(color, if(iconPath==null) null else ImageGetter.getImage(iconPath))
+            tileInfo.setTransients()
+            val group = TileGroup(tileInfo)
+            group.showEntireMap=true
+            group.forMapEditorIcon=true
+            group.update(true,true,true)
+
             group.onClick {
                 clearSelection()
                 selectedTerrain = terrain
-                setCurrentHex(color, if(iconPath==null) null else ImageGetter.getImage(iconPath))
+                setCurrentHex(tileInfo)
             }
 
             if (terrain.type == TerrainType.TerrainFeature)
@@ -184,7 +190,19 @@ class MapEditorScreen(): CameraStageBaseScreen(){
             resourceHex.onClick {
                 clearSelection()
                 selectedResource = resource
-                setCurrentHex(Color.WHITE, ImageGetter.getResourceImage(resource.name, 40f))
+                val tileInfo = TileInfo()
+
+                val terrain = resource.terrainsCanBeFoundOn.first()
+                val terrainObject = GameBasics.Terrains[terrain]!!
+                if(terrainObject.type==TerrainType.TerrainFeature){
+                    tileInfo.baseTerrain=terrainObject.occursOn!!.first()
+                    tileInfo.terrainFeature=terrain
+                }
+                else tileInfo.baseTerrain=terrain
+
+                tileInfo.resource = resource.name
+                tileInfo.setTransients()
+                setCurrentHex(tileInfo)
             }
             resourcesHolder.add(resourceHex)
         }
