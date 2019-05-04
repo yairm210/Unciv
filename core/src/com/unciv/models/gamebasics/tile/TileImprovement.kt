@@ -31,8 +31,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
             val stringBuilder = StringBuilder()
             if (!this.clone().toString().isEmpty()) stringBuilder.appendln(this.clone().toString())
             if (!terrainsCanBeBuiltOn.isEmpty()) {
-                val terrainsCanBeBuiltOnString: Collection<String>
-                terrainsCanBeBuiltOnString= ArrayList()
+                val terrainsCanBeBuiltOnString:ArrayList<String> = arrayListOf()
                 for (i in terrainsCanBeBuiltOn) {
                     terrainsCanBeBuiltOnString.add(i.tr())
                 }

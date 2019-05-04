@@ -13,8 +13,7 @@ class TileResource : NamedStats(), ICivilopedia {
         get(){
             val stringBuilder = StringBuilder()
             stringBuilder.appendln(this.clone().toString())
-            var terrainsCanBeBuiltOnString:ArrayList<String>
-            terrainsCanBeBuiltOnString= arrayListOf()
+            val terrainsCanBeBuiltOnString:ArrayList<String> = arrayListOf()
             for (i in terrainsCanBeFoundOn) {
                 terrainsCanBeBuiltOnString.add(i.tr())
             }

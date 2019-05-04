@@ -13,8 +13,7 @@ class Terrain : NamedStats(), ICivilopedia {
         get(){
             val sb = StringBuilder()
             sb.appendln(this.clone().toString())
-            var terrainsCanBeBuiltOnString:ArrayList<String>
-            terrainsCanBeBuiltOnString= arrayListOf()
+            val terrainsCanBeBuiltOnString:ArrayList<String> = arrayListOf()
             if(occursOn!=null) {
                 occursOn.forEach {
                     terrainsCanBeBuiltOnString.add(it.tr())
@@ -26,9 +25,9 @@ class Terrain : NamedStats(), ICivilopedia {
             val resourcesFound = GameBasics.TileResources.values.filter { it.terrainsCanBeFoundOn.contains(name)}
             if(resourcesFound.isNotEmpty()) {
                 for (i in resourcesFound) {
-                    tresourcesFoundString.add(i.toString().tr())
+                    resourcesFoundString.add(i.toString().tr())
                 }
-                sb.appendln("May contain [${tresourcesFoundString!!.joinToString(", ")}]".tr())
+                sb.appendln("May contain [${resourcesFoundString!!.joinToString(", ")}]".tr())
             }
             sb.appendln("{Movement cost}: $movementCost".tr())
             if(defenceBonus!=0f){
