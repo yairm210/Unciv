@@ -51,9 +51,13 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
                 // we translate it before it goes in to get uniques like "vs units in rough terrain" and after to get "vs city
                 var descriptionText = Translations.translateBonusOrPenalty(promotion.effect.tr())
 
-                if(promotion.prerequisites.isNotEmpty()) descriptionText +="\n{Requires}: ".tr()+
-                        promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }
-                                .joinToString(" OR ".tr())
+                if(promotion.prerequisites.isNotEmpty()) {
+                    val prerequisitesString:ArrayList<String> = arrayListOf()
+                   for (i in promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }){
+                       prerequisitesString.add(i.tr())
+                   }
+                    descriptionText +="\n{Requires}: ".tr()+prerequisitesString.joinToString(" OR ".tr())
+                }
                 descriptionLabel.setText(descriptionText)
             }
             availablePromotionsGroup.addActor(promotionButton)

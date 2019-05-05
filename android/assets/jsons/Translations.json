@@ -2500,6 +2500,9 @@
 		Simplified_Chinese:"道路"
 		Portuguese:"Estrada"
 	}
+	"Remove Road":{
+		Simplified_Chinese:"拆毁道路"
+	}
 	"Railroad":{
 		Italian:"Ferrovia"
 		Russian:"Железная дорога"
@@ -2511,7 +2514,9 @@
 		Simplified_Chinese:"铁路"
 		Portuguese:"Estrada de ferro"
 	}
-	
+	"Remove Railroad":{
+		Simplified_Chinese:"拆除铁路"
+	}
 	"Remove Forest":{
 		Italian:"Rimuovi foresta"
 		Russian:"Вырубить лес"
@@ -2555,7 +2560,7 @@
 		Dutch:"Oude ruïnes"
 	}
 	
-	"City Ruins":{
+	"City ruins":{
 		Italian:"Rovine cittadine"
 		Romanian:"Oraș în ruină"
 		Spanish:"Ciudad en ruinas"
@@ -3639,6 +3644,9 @@
 		Simplified_Chinese:"平民单位"
 		Portuguese:"Cidadão"
 	}
+	"WaterCivilian":{
+		Simplified_Chinese:"海上平民单位"
+	}
 	"Melee":{
 		Italian:"da mischia" //Unità da mischia
 		Russian:"Ближний бой"
@@ -3650,6 +3658,9 @@
 		Simplified_Chinese:"近战单位"
 		Portuguese:"Corpo a corpo"
 	}
+	"WaterMelee":{
+		Simplified_Chinese:"海军近战单位"
+	}
 	"Ranged":{
 		Italian:"da tiro" //Unità da tiro
 		Russian:"Дальний бой"
@@ -3660,6 +3671,12 @@
 		Spanish:"A distancia"
 		Simplified_Chinese:"远程单位"
 		Portuguese:"Ataque a distancia"
+	}
+	"WaterRanged":{
+		Simplified_Chinese:"海军远程单位"
+	}
+	"WaterSubmarine":{
+		Simplified_Chinese:"海军潜艇单位"
 	}
 	"Siege":{
 		Italian:"d'assedio" //Unità d'assedio
@@ -3693,6 +3710,9 @@
 		Spanish:"Explorador"
 		Simplified_Chinese:"侦察单位"
 		Portuguese:"Explorador"
+	}
+	"Armor":{
+		Simplified_Chinese:"装甲单位"
 	}
 	"City":{
 		Italian:"Città"
@@ -3738,7 +3758,7 @@
 		German:"Ignoriert Geländekosten"
 		Dutch:"Negeert terreinskosten"
 		Spanish:"Ignora el coste del terreno"
-		Simplified_Chinese:"所有地形都只消耗1点移动力"
+		Simplified_Chinese:"所有地形都只消耗1移动力"
 		Portuguese:"Ignora custo de movimento em terrennos díficeis"
 	}
 	"No defensive terrain bonus":{
@@ -3771,7 +3791,7 @@
 		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Voordeel tegen [unitType]"
 		Spanish:"Bonus contra [unitType]"
-		Simplified_Chinese:"战斗有利 vs [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力加成："
 		Portuguese:"Bonus contra [unitType]"
 	}
 	"Penalty vs [unitType]":{
@@ -3782,7 +3802,7 @@
 		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Nadeel tegen [unitType]"
 		Spanish:"Penalización contra [unitType]"
-		Simplified_Chinese:"战斗不利 vs [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力减成："
 		Portuguese:"Penalização contra [unitType]"
 	}
 	"Must set up to ranged attack":{
@@ -3818,7 +3838,20 @@
 		Simplified_Chinese:"视野受限"
 		Portuguese:"Visibilidade limitada"
 	}
-	//Smashfanful said: "You didn't translate these in Italian"
+
+	"Bonus as Attacker 75%":{
+		Simplified_Chinese:"主动攻击时+75%战斗力"
+	}
+	"Invisible to others":{
+		Simplified_Chinese:"对其他单位隐形"
+	}
+	"Can only attack water":{
+		Simplified_Chinese:"只能攻击海上目标"
+	}
+	"Can attack submarines":{
+		Simplified_Chinese:"能够发现和攻击潜艇单位"
+	}
+
 	// Old Great Person translations (for reference only)
 	"Can start an 8-turn golden age or construct a Landmark (+6 Culture)":{
 		Italian:"Può iniziare un'Età dell'Oro di 8 turni o costruire un Punto di riferimento (+6 Cultura)"
@@ -3907,14 +3940,16 @@
 		Russian:"Начать золотой век"
 		Portuguese:"Comece a Idade de Ouro"
 	}
-
+	"Bonus for land units in 2 radius 15%" :{
+		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
+	}
 	// for unit action button
 	"Can build improvement: Landmark":{
 		Spanish:"Puede construir mejora: Edificio Emblematico"
 		Italian:"Può costruire il miglioramento: Punto di riferimento"
 		French:"Peut construire l'amélioration suivante: Monument culturel"
 		Romanian:"Poate construi îmbunătățire: Reper"
-		Simplified_Chinese:"可以建造设施:风景地标"
+		Simplified_Chinese:"可以建造设施：风景地标"
 		Russian:"Можно построить улучшение: ориентир"
 		Portuguese:"Pode construir melhoria: ponto de refêrencia"
 		German:"Kann Verbesserung errichten: Sehenswürdigkeit"
@@ -3946,7 +3981,7 @@
 		Italian:"Può costruire il miglioramento: Accademia"
 		French:"Peut construire l'amélioration suivante: Académie"
 		Romanian:"Poate construi îmbunătățire: Academie"
-		Simplified_Chinese:"可以建造设施:学院"
+		Simplified_Chinese:"可以建造设施：学院"
 		Portuguese:"Pode construir melhoria: Academia"
 		German:"Kann Verbesserung errichten: Akademie"
 		Russian:"Можно построить улучшение: Академия"
@@ -3983,7 +4018,7 @@
 		French:"Votre mission commerciale vous a rapporté [goldGained] ors"
 		Russian:"Ваша торговая миссия принесла вам [goldGained] золота!"
 	}
-	"Can build improvement: Customs House":{
+	"Can build improvement: Customs house":{
 		Spanish:"Puede construir mejora: Aduana"
 		Italian:"Può costruire il miglioramento: Dogana"
 		French:"Peut construire l'amélioration suivante: Douanes"
@@ -3993,7 +4028,7 @@
 		Russian:"Можно построить улучшение: таможня"
 		German:"Kann Verbesserung errichten: Zollhaus"
 	}
-	"Can speed up construction of a Wonder":{
+	"Can speed up construction of a wonder":{
 		Spanish:"Puede acelerar la construccion de una maravilla"
 		Italian:"Può accelerare la costruzione di una Meraviglia"
 		French:"Peut accélérer la construction d'une Merveille"
@@ -4013,13 +4048,15 @@
 		Russian:"Спешите, чудо"
 		Portuguese:"Apresse-se Maravilha"
 	} 
-
+	"Unbuildable":{
+		Simplified_Chinese:"不可组建单位"
+	} 
 	// for unit action button
 	"Can build improvement: Manufactory":{
 		Italian:"Può costruire il miglioramento: Manifattura"
 		French:"Peut construire l'amélioration suivante: Manufacture"
 		Romanian:"Poate construi îmbunătățire: fabrică"
-   		Simplified_Chinese:"可以建造设施:制造中心"
+		Simplified_Chinese:"可以建造设施：制造中心"
 		Portuguese:"Pode construir melhoria: Fábrica"
 		German:"Kann Verbesserung errichten: Manufaktur"
 		Russian:"Можно построить улучшение: мануфактура"
@@ -5839,7 +5876,7 @@
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
-		Simplified_Chinese:"所在城市新组建的非飞行单位获得操练一级晋升"
+		Simplified_Chinese:"所在城市新组建的近战、骑乘和装甲单位获得“操练I级”晋升"
 	}
 	
 	"Angkor Wat":{	
@@ -8510,21 +8547,21 @@
 		German:"Genauigkeit I"
 		French:"Précision I"
 		Russian:"Точность I"
-		Simplified_Chinese:"精准一级"
+		Simplified_Chinese:"精准I级"
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
 		German:"Genauigkeit II"
 		French:"Précision II"
 		Russian:"Точность II"
-		Simplified_Chinese:"精准二级"
+		Simplified_Chinese:"精准II级"
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
 		German:"Genauigkeit III"
 		French:"Précision III"
 		Russian:"Точность III"
-		Simplified_Chinese:"精准三级"
+		Simplified_Chinese:"精准III级"
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
@@ -8541,21 +8578,21 @@
 		German:"Sperrfeuer I"
 		French:"Barrage I"
 		Russian:"Преграда I"
-		Simplified_Chinese:"弹幕一级"
+		Simplified_Chinese:"弹幕I级"
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
 		German:"Sperrfeuer II"
 		French:"Barrage II"
 		Russian:"Преграда II"
-		Simplified_Chinese:"弹幕二级"
+		Simplified_Chinese:"弹幕II级"
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
 		German:"Sperrfeuer III"
 		French:"Barrage III"
 		Russian:"Преграда III"
-		Simplified_Chinese:"弹幕三级"
+		Simplified_Chinese:"弹幕III级"
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
@@ -8568,63 +8605,63 @@
 		German:"Schock I"
 		French:"Choc I"
 		Russian:"Натиск I"
-		Simplified_Chinese:"冲击一级"
+		Simplified_Chinese:"冲击I级"
 	}
 	"Shock II":{
 		Italian:"Assalto II"
 		German:"Schock II"
 		French:"Choc II"
 		Russian:"Натиск II"
-		Simplified_Chinese:"冲击二级"
+		Simplified_Chinese:"冲击II级"
 	}
 	"Shock III":{
 		Italian:"Assalto III"
 		German:"Schock III"
 		French:"Choc III"
 		Russian:"Натиск III"
-		Simplified_Chinese:"冲击三级"
+		Simplified_Chinese:"冲击III级"
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
 		German:"Drill I"
 		French:"Percée I"
 		Russian: "Прорыв I"
-		Simplified_Chinese:"操练一级"
+		Simplified_Chinese:"操练I级"
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
 		German:"Drill II"
 		French:"Percée II"
 		Russian: "Прорыв II"
-		Simplified_Chinese:"操练二级"
+		Simplified_Chinese:"操练II级"
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
 		German:"Drill III"
 		French:"Percée III"
 		Russian: "Прорыв III"
-		Simplified_Chinese:"操练三级"
+		Simplified_Chinese:"操练III级"
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
 		German:"Spähen I"
 		French:"Eclaireur I"
 		Russian:"Разведка I"
-		Simplified_Chinese:"侦察一级"
+		Simplified_Chinese:"侦察I级"
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
 		German:"Spähen II"
 		French:"Eclaireur II"
 		Russian:"Разведка II"
-		Simplified_Chinese:"侦察二级"
+		Simplified_Chinese:"侦察II级"
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
 		German:"Spähen III"
 		French:"Eclaireur III"
 		Russian:"Разведка III"
-		Simplified_Chinese:"侦察三级"
+		Simplified_Chinese:"侦察III级"
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
@@ -8638,14 +8675,14 @@
 		German:"Deckung I"
 		French:"Protection I"
 		Russian:"Укрытие I"
-		Simplified_Chinese:"隐蔽一级"
+		Simplified_Chinese:"隐蔽I级"
 	}
 	"Cover II":{
 		Italian:"Copertura II"
 		German:"Deckung II"
 		French:"Protection II"
 		Russian:"Укрытие II"
-		Simplified_Chinese:"隐蔽二级"
+		Simplified_Chinese:"隐蔽II级"
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
@@ -8680,12 +8717,28 @@
 		Russian:"Бонус против раненых 33%"
 		Simplified_Chinese:"对战受伤单位时+33%战斗力"
   }
-
+	"Bonus vs City 50%":{
+		Simplified_Chinese:"攻击城市时+50%战斗力"
+	}
+	"Bonus vs City 15%":{
+		Simplified_Chinese:"攻击城市时+15%战斗力"
+	}
+	"Bonus vs City 200%":{
+		Simplified_Chinese:"攻击城市时+200%战斗力"
+	}
+	"Bonus vs City 30%":{
+		Simplified_Chinese:"攻击城市时+30%战斗力"
+	}
+	"Bonus vs City 33%":{
+		Simplified_Chinese:"攻击城市时+33%战斗力"
+	}
+	"Penalty vs City 33%":{
+		Simplified_Chinese:"攻击城市时-33%战斗力"
+	}
 	"wounded units":{
 		Italian:"unità ferite"
 		French:"unités montées"
 		Simplified_Chinese:"受伤单位"
-
 	}
 	"Mobility":{
 		Italian:"Mobilità"
@@ -8747,14 +8800,14 @@
 		German:"Formation I"
 		French:"Formation I"
 		Russian:"Формация I"
-		Simplified_Chinese:"列阵一级"
+		Simplified_Chinese:"列阵I级"
 	}
 	"Formation II":{
 		Italian:"Formazione II"
 		German:"Formation II"
 		French:"Formation II"
 		Russian:"Формация II"
-		Simplified_Chinese:"列阵二级"
+		Simplified_Chinese:"列阵II级"
 	}
 	"Blitz":{
 		Italian:"Incursione"
@@ -8781,21 +8834,21 @@
 		German:"Bombardierung I"
 		French:"Bombardement I"
 		Russian:"Бомбардировка I"
-		Simplified_Chinese:"轰炸一级"
+		Simplified_Chinese:"轰炸I级"
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
 		German:"Bombardierung II"
 		French:"Bombardement II"
 		Russian:"Бомбардировка II"
-		Simplified_Chinese:"轰炸二级"
+		Simplified_Chinese:"轰炸II级"
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
 		German:"Bombardierung III"
 		French:"Bombardement III"
 		Russian:"Бомбардировка III"
-		Simplified_Chinese:"轰炸三级"
+		Simplified_Chinese:"轰炸III级"
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
@@ -8814,21 +8867,21 @@
 		German:"Entermannschaft I"
 		French:"Embarquement I"
 		Russian:"Абордаж I"
-		Simplified_Chinese:"接舷一级"
+		Simplified_Chinese:"接舷I级"
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
 		German:"Entermannschaft II"
 		French:"Embarquement II"
 		Russian:"Абордаж II"
-		Simplified_Chinese:"接舷二级"
+		Simplified_Chinese:"接舷II级"
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
 		German:"Entermannschaft III"
 		French:"Embarquement III"
 		Russian:"Абордаж III"
-		Simplified_Chinese:"接舷三级"
+		Simplified_Chinese:"接舷III级"
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
@@ -8836,68 +8889,77 @@
 		Russian:"Бонус против водных юнитов +15%"
 		Simplified_Chinese:"对战海军单位时+15%战斗力"
 	}
+	"Bonus vs Mounted 50%":{
+		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
+	}
+	"Bonus vs Mounted 33%":{
+		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
+	}
+	"Bonus vs Armor 100%":{
+		Simplified_Chinese:"对战装甲单位时+100%战斗力"
+	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
 		Russian:"Береговой налетчик I"
-		Simplified_Chinese:"海掠一级"
+		Simplified_Chinese:"海掠I级"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
 		Russian:"Береговой налетчик II"
-		Simplified_Chinese:"海掠二级"
+		Simplified_Chinese:"海掠II级"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
 		Russian:"Береговой налетчик III"
-		Simplified_Chinese:"海掠三级"
+		Simplified_Chinese:"海掠III级"
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
 		German:"Gezielter Schlag I"
 		French:"Ciblage I"
 		Russian:"Прицеливание I"
-		Simplified_Chinese:"定位一级"
+		Simplified_Chinese:"定位I级"
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
 		German:"Gezielter Schlag II"
 		French:"Ciblage II"
 		Russian:"Прицеливание II"
-		Simplified_Chinese:"定位二级"
+		Simplified_Chinese:"定位II级"
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
 		German:"Gezielter Schlag III"
 		French:"Ciblage III"
 		Russian:"Прицеливание III"
-		Simplified_Chinese:"定位三级"
+		Simplified_Chinese:"定位III级"
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
 		German:"Rudeltaktik I"
 		French:"Meute I"
 		Russian:"Массовая атака I"
-		Simplified_Chinese:"狼群一级"
+		Simplified_Chinese:"狼群I级"
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
 		French:"Meute II"
 		Russian:"Массовая атака II"
-		Simplified_Chinese:"狼群二级"
+		Simplified_Chinese:"狼群II级"
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 		French:"Meute III"
 		Russian:"Массовая атака III"
-		Simplified_Chinese:"狼群三级"
+		Simplified_Chinese:"狼群III级"
 	}
 	
 	// Civilopedia texts
@@ -8968,7 +9030,7 @@
 	"Upgrades to [upgradedUnit]":{
 		Italian:"Aggiorna a [upgradedUnit]"
 		French:"Améliorer en [upgradedUnit]"
-		Simplified_Chinese:"升级为[upgradedUnit]"
+		Simplified_Chinese:"可升级为[upgradedUnit]"
 	}
 	"Obsolete with [obsoleteTech]":{
 		Italian:"Diventa obsoleta con [obsoleteTech]"

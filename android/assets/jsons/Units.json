@@ -611,7 +611,7 @@
 		strength:20,
 		cost: 120,
 		requiredTech:"Chivalry",
-		obsoleteTech:"Military science",
+		obsoleteTech:"Military Science",
 		upgradesTo:"Cavalry",
 		requiredResource:"Horses",
 		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%" ],
@@ -630,7 +630,7 @@
 		requiredTech:"Chivalry",
 		requiredResource:"Horses",
 		upgradesTo:"Cavalry",
-		obsoleteTech:"Military science",
+		obsoleteTech:"Military Science",
 		uniques:["Can move after attacking","No defensive terrain bonus"],
 		hurryCostModifier:20,
 		attackSound:"arrow"
@@ -846,7 +846,7 @@
 		strength:34,
 		cost: 225,
 		requiredTech:"Rifling",
-		obsoleteTech:"Repleacable Parts", //Should be Replaceable Parts
+		obsoleteTech:"Replaceable Parts", //Should be Replaceable Parts
 		upgradesTo:"Great War Infantry",
 		hurryCostModifier:20,
 		attackSound:"shot"
