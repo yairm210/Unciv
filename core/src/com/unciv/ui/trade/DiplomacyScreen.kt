@@ -74,7 +74,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
         val leaderName: String
         if (otherCiv.isCityState()) {
-            leaderName = otherCiv.civName
+            leaderName = "City state [" + otherCiv.civName + "]"
         } else {
             leaderName = "[" + otherCiv.getNation().leaderName + "] of [" + otherCiv.civName + "]"
         }
@@ -102,7 +102,12 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                     diplomacyManager.declareWar()
 
                     val responsePopup = PopupTable(this)
-                    val otherCivLeaderName = otherCiv.getNation().leaderName + " of " + otherCiv.civName
+                    val otherCivLeaderName: String
+                    if (otherCiv.isCityState()) {
+                        otherCivLeaderName = "City state [" + otherCiv.civName + "]"
+                    } else {
+                        otherCivLeaderName = "[" + otherCiv.getNation().leaderName + "] of [" + otherCiv.civName + "]"
+                    }
                     responsePopup.add(otherCivLeaderName.toLabel())
                     responsePopup.addSeparator()
                     responsePopup.addGoodSizedLabel(otherCiv.getNation().attacked).row()
