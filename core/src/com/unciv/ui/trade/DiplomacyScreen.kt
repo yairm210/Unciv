@@ -6,13 +6,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.gamebasics.tr
+import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
+import javax.xml.soap.Text
 
 class DiplomacyScreen:CameraStageBaseScreen() {
 
@@ -68,20 +71,41 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         return tradeTable
     }
 
+    fun giveGoldGift(otherCiv: CivilizationInfo) {
+        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        currentPlayerCiv.gold -= 50
+        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += 5
+        rightSideTable.clear()
+        rightSideTable.add(getDiplomacyTable(otherCiv))
+    }
+
     private fun getDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         val leaderName: String
         if (otherCiv.isCityState()) {
-            leaderName = "City state [" + otherCiv.civName + "]"
+            leaderName = "City-state of [" + otherCiv.civName + "]"
+            diplomacyTable.add(leaderName.toLabel()).row()
+            diplomacyTable.add(("Type : " + otherCiv.getCityStateType().toString()).toLabel()).row()
+            diplomacyTable.add(("Influence : " + otherCiv.getDiplomacyManager(currentPlayerCiv).influence.toInt().toString()).toLabel()).row()
+            if (otherCiv.getDiplomacyManager(currentPlayerCiv).influence > 60) {
+                if (otherCiv.getCityStateType() == CityStateType.Cultured) {
+                    diplomacyTable.add(("Providing " + (5.0f * currentPlayerCiv.getEra().ordinal).toString() + " culture each turn").toLabel())
+                }
+            }
         } else {
             leaderName = "[" + otherCiv.getNation().leaderName + "] of [" + otherCiv.civName + "]"
+            diplomacyTable.add(leaderName.toLabel())
         }
-        diplomacyTable.add(leaderName.toLabel())
         diplomacyTable.addSeparator()
 
-        if(!otherCiv.isCityState()) {
+        if(otherCiv.isCityState()) {
+            val giftButton = TextButton("Give 50 gold".tr(), skin)
+            giftButton.onClick{ giveGoldGift(otherCiv) }
+            diplomacyTable.add(giftButton).row()
+            if (currentPlayerCiv.gold < 1) giftButton.disable()
+        } else {
             val tradeButton = TextButton("Trade".tr(), skin)
             tradeButton.onClick { setTrade(otherCiv) }
             diplomacyTable.add(tradeButton).row()
@@ -104,7 +128,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                     val responsePopup = PopupTable(this)
                     val otherCivLeaderName: String
                     if (otherCiv.isCityState()) {
-                        otherCivLeaderName = "City state [" + otherCiv.civName + "]"
+                        otherCivLeaderName = "City-state [" + otherCiv.civName + "]"
                     } else {
                         otherCivLeaderName = "[" + otherCiv.getNation().leaderName + "] of [" + otherCiv.civName + "]"
                     }
