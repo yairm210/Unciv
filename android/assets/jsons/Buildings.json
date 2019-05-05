@@ -160,7 +160,7 @@
 		happiness:5,
 		culture:1,
 		isWonder:true,
-		requiredBuildingInAllCities:"Colloseum",
+		requiredBuildingInAllCities:"Colosseum",
 		requiredTech:"Horseback Riding"
 	},
 	{
@@ -172,7 +172,7 @@
 		requiredTech:"Mathematics"
 	},
 	{
-		name:"Colloseum", 
+		name:"Colosseum", 
 		maintenance:1,
 		happiness:2,
 		hurryCostModifier:25,
@@ -446,7 +446,7 @@
 		happiness:3,
 		hurryCostModifier:10,
 		maintenance:2,
-		requiredBuilding:"Colloseum",
+		requiredBuilding:"Colosseum",
 		requiredTech:"Printing Press"
 	},
 	{

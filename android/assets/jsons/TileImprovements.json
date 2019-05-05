@@ -111,6 +111,16 @@
 		techRequired:"Bronze Working"
 	},
 	
+	// These are unique and have unique in-game checks related to them
+	{
+		name:"Remove Road",
+		turnsToBuild:2
+	},
+	{
+		name:"Remove Railroad",
+		turnsToBuild:2
+	},
+	
 	// Great Person improvements
 	{
 		name:"Academy",

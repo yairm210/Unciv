@@ -3,6 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.graphics.Color
 import com.unciv.GameParameters
 import com.unciv.logic.automation.NextTurnAutomation
+import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
@@ -142,24 +143,28 @@ class GameInfo {
                 }
 
                 // As of 2.14.1, changed Machu Pichu to Machu Picchu
-                val oldMachuName = "Machu Pichu"
-                val newMachuName = "Machu Picchu"
-                if(cityConstructions.builtBuildings.contains(oldMachuName)){
-                    cityConstructions.builtBuildings.remove(oldMachuName)
-                    cityConstructions.builtBuildings.add(newMachuName)
-                }
-                if (cityConstructions.currentConstruction == oldMachuName)
-                    cityConstructions.currentConstruction = newMachuName
-                if (cityConstructions.inProgressConstructions.containsKey(oldMachuName)) {
-                    cityConstructions.inProgressConstructions[newMachuName] = cityConstructions.inProgressConstructions[oldMachuName]!!
-                    cityConstructions.inProgressConstructions.remove(oldMachuName)
-                }
+                changeBuildingName(cityConstructions, "Machu Pichu", "Machu Picchu")
+                // As of 2.16.1, changed Colloseum to Colosseum
+                changeBuildingName(cityConstructions, "Colloseum", "Colosseum")
             }
         }
 
         for (civInfo in civilizations) civInfo.setTransients()
         for (civInfo in civilizations){
             for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
+        }
+    }
+
+    private fun changeBuildingName(cityConstructions: CityConstructions, oldBuildingName: String, newBuildingName: String) {
+        if (cityConstructions.builtBuildings.contains(oldBuildingName)) {
+            cityConstructions.builtBuildings.remove(oldBuildingName)
+            cityConstructions.builtBuildings.add(newBuildingName)
+        }
+        if (cityConstructions.currentConstruction == oldBuildingName)
+            cityConstructions.currentConstruction = newBuildingName
+        if (cityConstructions.inProgressConstructions.containsKey(oldBuildingName)) {
+            cityConstructions.inProgressConstructions[newBuildingName] = cityConstructions.inProgressConstructions[oldBuildingName]!!
+            cityConstructions.inProgressConstructions.remove(oldBuildingName)
         }
     }
 

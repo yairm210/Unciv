@@ -63,6 +63,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     var yieldGroup = YieldGroup()
 
     var showEntireMap = UnCivGame.Current.viewEntireMapForDebug
+    var forMapEditorIcon = false
 
     class RoadImage {
         var roadStatus: RoadStatus = RoadStatus.None
@@ -304,6 +305,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateRoadImages() {
+        if(forMapEditorIcon) return
         for (neighbor in tileInfo.neighbors) {
             if (!roadImages.containsKey(neighbor)) roadImages[neighbor] = RoadImage()
             val roadImage = roadImages[neighbor]!!

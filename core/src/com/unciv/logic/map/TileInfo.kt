@@ -202,6 +202,8 @@ open class TileInfo {
         if (improvement.terrainsCanBeBuiltOn.contains(topTerrain!!.name)) return true
         if (improvement.name == "Road" && this.roadStatus === RoadStatus.None) return true
         if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
+        if(improvement.name == "Remove Road" && this.roadStatus===RoadStatus.Road) return true
+        if(improvement.name == "Remove Railroad" && this.roadStatus===RoadStatus.Railroad) return true
         if (topTerrain.unbuildable && !(topTerrain.name=="Forest" && improvement.name=="Camp")) return false
         return hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
 

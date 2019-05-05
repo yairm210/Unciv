@@ -322,8 +322,9 @@ class MapUnit {
                         && !tileImprovement.terrainsCanBeBuiltOn.contains(tile.baseTerrain)) {
                     tile.improvement = null // We removed a terrain (e.g. Forest) and the improvement (e.g. Lumber mill) requires it!
                 }
-
-                tile.terrainFeature = null
+                if(tile.improvementInProgress=="Remove Road" || tile.improvementInProgress=="Remove Railroad")
+                    tile.roadStatus = RoadStatus.None
+                else tile.terrainFeature = null
             }
             tile.improvementInProgress == "Road" -> tile.roadStatus = RoadStatus.Road
             tile.improvementInProgress == "Railroad" -> tile.roadStatus = RoadStatus.Railroad
