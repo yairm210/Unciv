@@ -346,6 +346,7 @@
 	}
 	
 	"Stop exploration":{
+		Italian:"Smetti di esplorare"
 		Simplified_Chinese:"停止探索"
 	}
 	"Pillage":{
@@ -585,7 +586,7 @@
 	// New game screen
 	
 	"Start game!":{
-		Italian:"Inizia partita!"
+		Italian:"Comincia la tua avventura!"
 		Russian:"Начать игру!"
 		French:"Démarrer la partie!"
 		Romanian:"Începe jocul!"
@@ -1033,12 +1034,15 @@
 		Simplified_Chinese:"[greatPerson]点数"
 	}
 	"Great person points":{ 
+		Italian:"Punti Grande Personaggio"
 		Simplified_Chinese:"伟人点数"
 	}
 	"Current points":{ 
+		Italian:"Punti attuali"
 		Simplified_Chinese:"当前点数"
 	}
 	"Points per turn":{ 
+		Italian:"Punti per turno"
 		Simplified_Chinese:"获得点数/回合"
 	}
 	"Sell for [sellAmount] gold":{ // when selling a building
@@ -2222,6 +2226,7 @@
 	}
 
 	"Ivory":{
+		Italian:"Avorio"
 		Simplified_Chinese:"象牙"
 	}
 	"Silk":{
@@ -2580,7 +2585,7 @@
 		Portuguese:"Academia"
 	}
 	"Landmark":{
-		Italian:"Capolavoro"
+		Italian:"Punto di riferimento"
 		Russian:"Достопримечательность"
 		French:"Monument culturel" //more accurate than "point de repère"
 		Romanian:"Reper"
@@ -3386,6 +3391,11 @@
 	}
 	
 	// Technologies (Future Era)
+	/*
+	"Lasers":{
+		Italian:"Laser"
+	}
+	*/
 	"Nanotechnology":{
 		Italian:"Nanotecnologia"
 		Russian:"Нанотехнологии"
@@ -3544,7 +3554,7 @@
 		German:"Altertum"
 	}
 	"Classical era":{
-		Italian:"Epoca Classica"
+		Italian:"Classica"
 		Russian:"Античность" //one word translation
 		French:"Âge classique" //means nothing in french
 		Romanian:"Era clasică"
@@ -3555,7 +3565,7 @@
 		German:"Klassik"
 	}
 	"Medieval era":{
-		Italian:"Medioevo"  //one word translation, as in "Sei entrato in una era, il Medioevo"
+		Italian:"Medievale"
 		Russian:"Средневековье" //one word translation
 		French:"Moyen Âge"
 		Romanian:"Evul mediu"
@@ -3566,7 +3576,7 @@
 		German:"Mittelalter"
 	}
 	"Renaissance era":{
-		Italian:"Rinascimento"  //one word translation, as in "Sei entrato in una era, il Rinascimento"
+		Italian:"Rinascimentale"
 		Russian:"Новое время" //one word translation
 		French:"Renaissance" //one word translation
 		Romanian:"Renaştere"
@@ -3577,7 +3587,7 @@
 		German:"Renaissance"
 	}
 	"Industrial era":{
-		Italian:"Epoca Industriale"
+		Italian:"Industriale"
 		Russian:"Новейшее время"
 		French:"Ère industrielle"
 		Romanian:"Epoca industrială"
@@ -3588,7 +3598,7 @@
 		German:"Industrielle Revolution"
 	}
 	"Modern era":{
-		Italian:"Epoca Moderna"
+		Italian:"Moderna"
 		Russian:"Современность" //one word translation
 		French:"Ère contemporaine"
 		Romanian:"Epoca modernă"
@@ -3599,7 +3609,7 @@
 		German:"Moderne"
 	}
 	"Information era":{
-		Italian:"Epoca Informatica"     //[newEra] +translation
+		Italian:"Informatica"     //[newEra] +translation
 		Russian:"Информационная эра" //translation+ [newEra]
 		French:"Ère médiatique"
 		Romanian:"Era informațională"
@@ -3610,7 +3620,7 @@
 		German:"Informationszeitalter"
 	}
 	"Future era":{
-		Italian:"Epoca Futura"
+		Italian:"Futura"
 		Russian:"Будущее" //all one word translation
 		French:"Ère du futur" 
 		Romanian:"Era viitorului"
@@ -3828,6 +3838,7 @@
 		Simplified_Chinese:"视野受限"
 		Portuguese:"Visibilidade limitada"
 	}
+
 	"Bonus as Attacker 75%":{
 		Simplified_Chinese:"主动攻击时+75%战斗力"
 	}
@@ -3843,7 +3854,7 @@
 
 	// Old Great Person translations (for reference only)
 	"Can start an 8-turn golden age or construct a Landmark (+6 Culture)":{
-		Italian:"Può iniziare un'Età dell'Oro di 8 turni o costruire un Gran Monumento (+6 Cultura)"
+		Italian:"Può iniziare un'Età dell'Oro di 8 turni o costruire un Punto di riferimento (+6 Cultura)"
 		Russian:"Может начать золотой век на 8 ходов или построить памятник (+6 культура)"
 		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 Culture)"
 		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (Cultura + 6)"
@@ -3935,7 +3946,7 @@
 	// for unit action button
 	"Can build improvement: Landmark":{
 		Spanish:"Puede construir mejora: Edificio Emblematico"
-		Italian:"Può costruire il miglioramento: Gran Monumento"
+		Italian:"Può costruire il miglioramento: Punto di riferimento"
 		French:"Peut construire l'amélioration suivante: Monument culturel"
 		Romanian:"Poate construi îmbunătățire: Reper"
 		Simplified_Chinese:"可以建造设施：风景地标"
@@ -3998,7 +4009,7 @@
 
 	// for unit action button
 	"Your trade mission has earned you [goldGained] gold!":{
-		Italian:"La tua missione commerciale ti ha fruttato [goldGained] Oro!"//Smashfanful, you translated it wrong
+		Italian:"La tua missione commerciale ti ha fruttato [goldGained] Oro!"
 		Romanian:"Misuiunea comercială ți-a adus [goldGained] aur!"
 		Spanish:"¡La mision de comercio ha generado [goldGained] de oro!"
 		Simplified_Chinese:"您开展贸易赚了[goldGained]金钱"
@@ -4045,7 +4056,7 @@
 		Italian:"Può costruire il miglioramento: Manifattura"
 		French:"Peut construire l'amélioration suivante: Manufacture"
 		Romanian:"Poate construi îmbunătățire: fabrică"
-   		Simplified_Chinese:"可以建造设施：制造中心"
+		Simplified_Chinese:"可以建造设施：制造中心"
 		Portuguese:"Pode construir melhoria: Fábrica"
 		German:"Kann Verbesserung errichten: Manufaktur"
 		Russian:"Можно построить улучшение: мануфактура"
@@ -4106,7 +4117,7 @@
 	
 	// Policy picker screen
 	"You have entered the [newEra] era!":{
-		Italian:"Sei entrato in una nuova era, l'[newEra]!" //[newEra] not translated in Italian
+		Italian:"Sei entrato in una nuova era, l'Epoca [newEra]!" //[newEra] not translated in Italian
 		Russian:"Вы вошли в эпоху [newEra]!"
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ai intrat în epoca [newEra]!"
@@ -4561,6 +4572,42 @@
 	"Germany":{
 		Italian:"Germania"
 		French:"Allemagne"
+	}
+	"India":{
+		Italian:"India"
+	}
+	"Irochese":{
+		Italian:"Irochese"
+	}
+	"Aztecs":{
+		Italian:"Azteca"
+	}
+	"Denmark":{
+		Italian:"Danimarca"
+	}
+	"Inca":{
+		Italian:"Inca"
+	}
+	"Mongolia":{
+		Italian:"Mongolia"
+	}
+	"Korea":{
+		Italian:"Corea"
+	}
+	"Turkey":{
+		Italian:"Turchia"
+	}
+	"Siam":{
+		Italian:"Siam"
+	}
+	"Songhai":{
+		Italian:"Songhai"
+	}
+	"Polynesia":{
+		Italian:"Polinesia"
+	}
+	"Persia":{
+		Italian:"Persia"
 	}
 	*/
 	
@@ -6213,7 +6260,7 @@
 		Simplified_Chinese:"新天鹅堡"
 	}
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
-		Italian:"+1 Felicitù, +2 Cultura e +3 Oro per ogni Castello"
+		Italian:"+1 Felicità, +2 Cultura e +3 Oro per ogni Castello posseduto"
 		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
 	}
 	
@@ -6325,7 +6372,7 @@
 		German:"Solarkraftwerk"
 	}
 	"Must be next to desert":{
-		Italian:"Deve rasentare deserto"
+		Italian:"Deve rasentare Deserto"
 		Russian:"Должно быть рядом с пустыней"
 		French:"Doit être à côté d'un désert"
 		Romanian:"Trebuie să fie lângă deșert"
@@ -6336,6 +6383,7 @@
 		Portuguese:"Nescessário que esteja proximo ao deserto"
 	}
 	"Must be next to mountain":{
+		Italian:"Deve rasentare Montagna"
 		Simplified_Chinese:"必须紧邻山脉"
 	}
 	"Sydney Opera House":{
@@ -6723,6 +6771,7 @@
 		German:"Armbrustschütze"
 	}
 	"Chu-Ko-Nu":{	
+		//Same as in Italian
 		Simplified_Chinese:"诸葛弩"
 	}
 	"Longbowman":{	
@@ -8521,6 +8570,7 @@
 		Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
 	}
 	"units in open terrain":{
+		Italian:"unità in terreno aperto
 		Simplified_Chinese:"位于开阔地形的单位"
 	}
 	"Barrage I":{
@@ -8767,7 +8817,7 @@
 		Simplified_Chinese:"闪击战术"
 	}
 	"1 additional attack per turn":{
-		Italian:"L'unità ottiene può attaccare due volte ogni turno"
+		Italian:"L'unità può attaccare due volte ogni turno"
 		French:"1 attaque supplémentaire par tour"
 		Russian:"Дополнительная атака за ход"
 		Simplified_Chinese:"每回合有一次额外的攻击机会"
@@ -8998,18 +9048,23 @@
 		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 	}
 	"Can be found on ":{
+		Italian:"Può trovarsi su"
 		Simplified_Chinese:"可能发现该资源的地形地貌："
 	}
 	"Improved by ":{
+		Italian:"Può essere migliorato/a da"
 		Simplified_Chinese:"开发该资源所需要的设施："
 	}
 	"Bonus stats for improvement: ":{
+		Italian:"Bonus per miglioramento: "
 		Simplified_Chinese:"开发该资源后设施所获奖励效果："
 	}
 	"Can be built on ":{
+		Italian:"Può essere costruito/a su"
 		Simplified_Chinese:"可以建造的地形地貌："
 	}
 	"Tech required: ":{
+		Italian:"Tecnologie propedeutiche"
 		Simplified_Chinese:"需要科技："
 	}
 	"Defence bonus":{
@@ -9023,6 +9078,7 @@
 		Simplified_Chinese:"移动力消耗"
   }
   " for ":{//for example:+1Gold for Gems,Gold,Silver
+		Italian:" per "
 	Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
 }
 

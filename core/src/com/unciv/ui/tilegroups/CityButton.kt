@@ -54,8 +54,13 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             add(fireImage).size(20f).pad(2f).padLeft(5f)
         }
         if (city.isCapital()) {
-            val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
-            add(starImage).size(20f).pad(2f).padLeft(5f)
+            if (city.civInfo.isCityState()) {
+                val cityStateImage = ImageGetter.getImage("OtherIcons/CityState.png").apply { color = Color.LIGHT_GRAY }
+                add(cityStateImage).size(20f).pad(2f).padLeft(5f)
+            } else {
+                val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
+                add(starImage).size(20f).pad(2f).padLeft(5f)
+            }
         } else if (city.civInfo.isCurrentPlayer() && city.cityStats.isConnectedToCapital(RoadStatus.Road)) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             add(connectionImage).size(20f).pad(2f).padLeft(5f)
