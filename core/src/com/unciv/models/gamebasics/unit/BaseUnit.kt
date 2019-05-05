@@ -59,15 +59,15 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         val sb = StringBuilder()
         if(requiredResource!=null) sb.appendln("{Requires} {$requiredResource}".tr())
         if(!forPickerScreen) {
-            if(uniqueTo!=null) sb.appendln("Unique to $uniqueTo, replaces $replaces")
+            if(uniqueTo!=null) sb.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
             if (unbuildable) sb.appendln("Unbuildable".tr())
-            else sb.appendln("Cost: $cost")
+            else sb.appendln("{Cost}: $cost".tr())
             if(requiredTech!=null) sb.appendln("Required tech: [$requiredTech]".tr())
             if(upgradesTo!=null) sb.appendln("Upgrades to [$upgradesTo]".tr())
             if(obsoleteTech!=null) sb.appendln("Obsolete with [$obsoleteTech]".tr())
         }
         if(strength!=0){
-            sb.append("{Strength} $strength".tr())
+            sb.append("{Strength}: $strength".tr())
             if(rangedStrength!=0)  sb.append(", {Ranged strength}: $rangedStrength".tr())
             if(rangedStrength!=0)  sb.append(", {Range}: $range".tr())
             sb.appendln()
