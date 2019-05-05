@@ -5829,7 +5829,7 @@
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
-		Simplified_Chinese:"所在城市新组建的近战、骑乘和装甲单位获得操练一级晋升"
+		Simplified_Chinese:"所在城市新组建的近战、骑乘和装甲单位获得“操练I级”晋升"
 	}
 	
 	"Angkor Wat":{	
@@ -8498,21 +8498,21 @@
 		German:"Genauigkeit I"
 		French:"Précision I"
 		Russian:"Точность I"
-		Simplified_Chinese:"精准一级"
+		Simplified_Chinese:"精准I级"
 	}
 	"Accuracy II":{
 		Italian:"Precisione II"
 		German:"Genauigkeit II"
 		French:"Précision II"
 		Russian:"Точность II"
-		Simplified_Chinese:"精准二级"
+		Simplified_Chinese:"精准II级"
 	}
 	"Accuracy III":{
 		Italian:"Precisione III"
 		German:"Genauigkeit III"
 		French:"Précision III"
 		Russian:"Точность III"
-		Simplified_Chinese:"精准三级"
+		Simplified_Chinese:"精准III级"
 	}
 	"Bonus vs units in open terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno aperto"
@@ -8528,21 +8528,21 @@
 		German:"Sperrfeuer I"
 		French:"Barrage I"
 		Russian:"Преграда I"
-		Simplified_Chinese:"弹幕一级"
+		Simplified_Chinese:"弹幕I级"
 	}
 	"Barrage II":{
 		Italian:"Fuoco di Fila II"
 		German:"Sperrfeuer II"
 		French:"Barrage II"
 		Russian:"Преграда II"
-		Simplified_Chinese:"弹幕二级"
+		Simplified_Chinese:"弹幕II级"
 	}
 	"Barrage III":{
 		Italian:"Fuoco di Fila III"
 		German:"Sperrfeuer III"
 		French:"Barrage III"
 		Russian:"Преграда III"
-		Simplified_Chinese:"弹幕三级"
+		Simplified_Chinese:"弹幕III级"
 	}
 	"Bonus vs units in rough terrain 15%":{
 		Italian:"+15% Forza contro unità in terreno accidentato"
@@ -8555,63 +8555,63 @@
 		German:"Schock I"
 		French:"Choc I"
 		Russian:"Натиск I"
-		Simplified_Chinese:"冲击一级"
+		Simplified_Chinese:"冲击I级"
 	}
 	"Shock II":{
 		Italian:"Assalto II"
 		German:"Schock II"
 		French:"Choc II"
 		Russian:"Натиск II"
-		Simplified_Chinese:"冲击二级"
+		Simplified_Chinese:"冲击II级"
 	}
 	"Shock III":{
 		Italian:"Assalto III"
 		German:"Schock III"
 		French:"Choc III"
 		Russian:"Натиск III"
-		Simplified_Chinese:"冲击三级"
+		Simplified_Chinese:"冲击III级"
 	}
 	"Drill I":{
 		Italian:"Addestramento I"
 		German:"Drill I"
 		French:"Percée I"
 		Russian: "Прорыв I"
-		Simplified_Chinese:"操练一级"
+		Simplified_Chinese:"操练I级"
 	}
 	"Drill II":{
 		Italian:"Addestramento II"
 		German:"Drill II"
 		French:"Percée II"
 		Russian: "Прорыв II"
-		Simplified_Chinese:"操练二级"
+		Simplified_Chinese:"操练II级"
 	}
 	"Drill III":{
 		Italian:"Addestramento III"
 		German:"Drill III"
 		French:"Percée III"
 		Russian: "Прорыв III"
-		Simplified_Chinese:"操练三级"
+		Simplified_Chinese:"操练III级"
 	}
 	"Scouting I":{
 		Italian:"Esplorazione I"
 		German:"Spähen I"
 		French:"Eclaireur I"
 		Russian:"Разведка I"
-		Simplified_Chinese:"侦察一级"
+		Simplified_Chinese:"侦察I级"
 	}
 	"Scouting II":{
 		Italian:"Esplorazione II"
 		German:"Spähen II"
 		French:"Eclaireur II"
 		Russian:"Разведка II"
-		Simplified_Chinese:"侦察二级"
+		Simplified_Chinese:"侦察II级"
 	}
 	"Scouting III":{
 		Italian:"Esplorazione III"
 		German:"Spähen III"
 		French:"Eclaireur III"
 		Russian:"Разведка III"
-		Simplified_Chinese:"侦察三级"
+		Simplified_Chinese:"侦察III级"
 	}
 	"+1 Movement":{
 		Italian:"+1 Movimento"
@@ -8625,14 +8625,14 @@
 		German:"Deckung I"
 		French:"Protection I"
 		Russian:"Укрытие I"
-		Simplified_Chinese:"隐蔽一级"
+		Simplified_Chinese:"隐蔽I级"
 	}
 	"Cover II":{
 		Italian:"Copertura II"
 		German:"Deckung II"
 		French:"Protection II"
 		Russian:"Укрытие II"
-		Simplified_Chinese:"隐蔽二级"
+		Simplified_Chinese:"隐蔽II级"
 	}
 	"+25% Defence against ranged attacks":{
 		Italian:"+25 difesa contro gli attacchi a distanza"
@@ -8750,14 +8750,14 @@
 		German:"Formation I"
 		French:"Formation I"
 		Russian:"Формация I"
-		Simplified_Chinese:"列阵一级"
+		Simplified_Chinese:"列阵I级"
 	}
 	"Formation II":{
 		Italian:"Formazione II"
 		German:"Formation II"
 		French:"Formation II"
 		Russian:"Формация II"
-		Simplified_Chinese:"列阵二级"
+		Simplified_Chinese:"列阵II级"
 	}
 	"Blitz":{
 		Italian:"Incursione"
@@ -8784,21 +8784,21 @@
 		German:"Bombardierung I"
 		French:"Bombardement I"
 		Russian:"Бомбардировка I"
-		Simplified_Chinese:"轰炸一级"
+		Simplified_Chinese:"轰炸I级"
 	}
 	"Bombardment II":{
 		Italian:"Bombardamento II"
 		German:"Bombardierung II"
 		French:"Bombardement II"
 		Russian:"Бомбардировка II"
-		Simplified_Chinese:"轰炸二级"
+		Simplified_Chinese:"轰炸II级"
 	}
 	"Bombardment III":{
 		Italian:"Bombardamento III"
 		German:"Bombardierung III"
 		French:"Bombardement III"
 		Russian:"Бомбардировка III"
-		Simplified_Chinese:"轰炸三级"
+		Simplified_Chinese:"轰炸III级"
 	}
 	"Bonus vs land units 33%":{
 		Italian:"+33% forza contro unità terrestri"
@@ -8817,21 +8817,21 @@
 		German:"Entermannschaft I"
 		French:"Embarquement I"
 		Russian:"Абордаж I"
-		Simplified_Chinese:"接舷一级"
+		Simplified_Chinese:"接舷I级"
 	}
 	"Boarding Party II":{
 		Italian:"Abbordaggio II"
 		German:"Entermannschaft II"
 		French:"Embarquement II"
 		Russian:"Абордаж II"
-		Simplified_Chinese:"接舷二级"
+		Simplified_Chinese:"接舷II级"
 	}
 	"Boarding Party III":{
 		Italian:"Abbordaggio III"
 		German:"Entermannschaft III"
 		French:"Embarquement III"
 		Russian:"Абордаж III"
-		Simplified_Chinese:"接舷三级"
+		Simplified_Chinese:"接舷III级"
 	}
 	"Bonus vs water units 15%":{
 		Italian:"+15% forza contro le unità anfibie"
@@ -8853,63 +8853,63 @@
 		German:"Küstenräuber I"
 		French:"Commando Côtier I" //not very accurate
 		Russian:"Береговой налетчик I"
-		Simplified_Chinese:"海掠一级"
+		Simplified_Chinese:"海掠I级"
 	}
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
 		French:"Commando Côtier II"
 		Russian:"Береговой налетчик II"
-		Simplified_Chinese:"海掠二级"
+		Simplified_Chinese:"海掠II级"
 	}
 	"Coastal Raider III":{
 		Italian:"Incursione costiera III"
 		German:"Küstenräuber III"
 		French:"Commando Côtier III"
 		Russian:"Береговой налетчик III"
-		Simplified_Chinese:"海掠三级"
+		Simplified_Chinese:"海掠III级"
 	}
 	"Targeting I":{
 		Italian:"Puntamento I"
 		German:"Gezielter Schlag I"
 		French:"Ciblage I"
 		Russian:"Прицеливание I"
-		Simplified_Chinese:"定位一级"
+		Simplified_Chinese:"定位I级"
 	}
 	"Targeting II":{
 		Italian:"Puntamento II"
 		German:"Gezielter Schlag II"
 		French:"Ciblage II"
 		Russian:"Прицеливание II"
-		Simplified_Chinese:"定位二级"
+		Simplified_Chinese:"定位II级"
 	}
 	"Targeting III":{
 		Italian:"Puntamento III"
 		German:"Gezielter Schlag III"
 		French:"Ciblage III"
 		Russian:"Прицеливание III"
-		Simplified_Chinese:"定位三级"
+		Simplified_Chinese:"定位III级"
 	}
 	"Wolfpack I":{
 		Italian:"Attacco in massa I"
 		German:"Rudeltaktik I"
 		French:"Meute I"
 		Russian:"Массовая атака I"
-		Simplified_Chinese:"狼群一级"
+		Simplified_Chinese:"狼群I级"
 	}
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
 		French:"Meute II"
 		Russian:"Массовая атака II"
-		Simplified_Chinese:"狼群二级"
+		Simplified_Chinese:"狼群II级"
 	}
 	"Wolfpack III":{
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 		French:"Meute III"
 		Russian:"Массовая атака III"
-		Simplified_Chinese:"狼群三级"
+		Simplified_Chinese:"狼群III级"
 	}
 	
 	// Civilopedia texts
