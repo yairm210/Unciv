@@ -51,13 +51,12 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         categoryToInfos["Units"] = GameBasics.Units.values
         categoryToInfos["Technologies"] = GameBasics.Technologies.values
 
-        val nameList = List<ICivilopedia>(skin)
-
+        val nameList = List<String>(skin)
+        val newArray = Array<ICivilopedia>()
         val nameListClickListener = {
-            if(nameList.selected!=null) label.setText(nameList.selected.description)
+            if(nameList.selected!=null) label.setText(newArray.get(nameList.selectedIndex).description)
         }
         nameList.onClick (nameListClickListener)
-
         nameList.style = List.ListStyle(nameList.style)
         nameList.style.fontColorSelected = Color.BLACK
 
@@ -69,13 +68,15 @@ class CivilopediaScreen : CameraStageBaseScreen() {
             button.style.checkedFontColor = Color.BLACK
             buttons.add(button)
             val buttonClicked = {
-                val newArray = Array<ICivilopedia>()
-                for (civilopediaEntry in categoryToInfos[str]!!.sortedBy { it.toString() })  // Alphabetical order
+                newArray.clear()
+                val civArray=Array<String>()
+                for (civilopediaEntry in categoryToInfos[str]!!.sortedBy { it.toString() }){  // Alphabetical order
                     newArray.add(civilopediaEntry)
-                nameList.setItems(newArray)
+                    civArray.add(civilopediaEntry.toString().tr())
+                }
+                nameList.setItems(civArray)
                 nameList.selected = nameList.items.get(0)
-                label.setText(nameList.selected.description)
-
+                label.setText(newArray.get(0).description)
                 for (btn in buttons) btn.isChecked = false
                 button.isChecked = true
             }
