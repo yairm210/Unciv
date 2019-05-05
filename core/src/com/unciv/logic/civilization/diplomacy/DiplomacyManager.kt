@@ -53,7 +53,7 @@ class DiplomacyManager() {
      * As for why it's String and not DiplomaticModifier see FlagsCountdown comment */
     var diplomaticModifiers = HashMap<String,Float>()
 
-    /** For city states */
+    /** For city-states */
     var influence = 0f
 
     fun clone(): DiplomacyManager {

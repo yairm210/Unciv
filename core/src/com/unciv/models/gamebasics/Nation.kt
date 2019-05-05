@@ -36,7 +36,7 @@ class Nation : INamed {
         return colorFromRGB(secondaryColor!![0], secondaryColor!![1], secondaryColor!![2])
     }
 
-    fun isCityState()=cityStateType != null
+    fun isCityState()= cityStateType != null
 
     lateinit var cities: List<String>
 }
