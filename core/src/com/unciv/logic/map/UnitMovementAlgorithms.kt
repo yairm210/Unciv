@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
@@ -29,9 +30,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             else return 1 / 2f
         }
         if (unit.ignoresTerrainCost) return 1f
+        if(unit.doubleMovementInForestAndJungle && (to.baseTerrain==Constants.forest || to.baseTerrain==Constants.jungle))
+            return 1f
 
         if (unit.roughTerrainPenalty
-                && (to.baseTerrain == "Hill" || to.terrainFeature == "Forest" || to.terrainFeature == "Jungle"))
+                && (to.baseTerrain == Constants.hill || to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
             return 4f
 
         if(unit.doubleMovementInCoast && to.baseTerrain=="Coast")
