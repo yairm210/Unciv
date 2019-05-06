@@ -271,7 +271,7 @@
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
 		Italian:"Aggiorna a [unitType] ([goldCost] oro)"
 		Russian:"Улучшить до [unitType] ([goldCost] золота)"
-		French:"Mise à niveau vers [unitType] ([goldCost] or)"
+		French:"Mise à niveau vers [unitType] ([goldCost] or)" //or Amélioration en [unitType] ([goldCost] or)
 		Romanian:"Avansare [unitType] ([goldCost] aur)"
 		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
 		Simplified_Chinese:"升级到[unitType](需要[goldCost]金钱)"
@@ -348,6 +348,7 @@
 	"Stop exploration":{
 		Italian:"Smetti di esplorare"
 		Simplified_Chinese:"停止探索"
+		French:"Arrêter l'exploration"
 	}
 	"Pillage":{
 		Italian:"Saccheggia"
@@ -1033,17 +1034,20 @@
 		French:"[greatPerson] points"
 		Simplified_Chinese:"[greatPerson]点数"
 	}
-	"Great person points":{ 
+	"Great person points":{ // e.g ?
 		Italian:"Punti Grande Personaggio"
 		Simplified_Chinese:"伟人点数"
+		French:"Points de personnage illustre"
 	}
 	"Current points":{ 
 		Italian:"Punti attuali"
 		Simplified_Chinese:"当前点数"
+		French:"Points actuelles"
 	}
 	"Points per turn":{ 
 		Italian:"Punti per turno"
 		Simplified_Chinese:"获得点数/回合"
+		French:"Points par tours"
 	}
 	"Sell for [sellAmount] gold":{ // when selling a building
 		Italian:"Vendi per [sellAmount] Oro" //es.
@@ -2228,6 +2232,7 @@
 	"Ivory":{
 		Italian:"Avorio"
 		Simplified_Chinese:"象牙"
+		French:"Ivoire"
 	}
 	"Silk":{
 		Italian:"Seta"
@@ -2502,6 +2507,7 @@
 	}
 	"Remove Road":{
 		Simplified_Chinese:"拆毁道路"
+		French:"Retirer la route"
 	}
 	"Railroad":{
 		Italian:"Ferrovia"
@@ -2516,6 +2522,7 @@
 	}
 	"Remove Railroad":{
 		Simplified_Chinese:"拆除铁路"
+		French:"Retirer les rails"
 	}
 	"Remove Forest":{
 		Italian:"Rimuovi foresta"
@@ -2877,6 +2884,7 @@
 	"Enables Open Borders agreements":{
 		Italian:"Consente accordi su Diritti di Passaggio"
 		Simplified_Chinese:"允许签订开放边境协定"
+		French:"Permet l'accord des frontières ouvertes"
 	}
 	
 	"Guilds":{
@@ -3394,6 +3402,7 @@
 	/*
 	"Lasers":{
 		Italian:"Laser"
+		French:"Lasers"
 	}
 	*/
 	"Nanotechnology":{
@@ -3644,8 +3653,9 @@
 		Simplified_Chinese:"平民单位"
 		Portuguese:"Cidadão"
 	}
-	"WaterCivilian":{
+	"WaterCivilian":{ // e.g ?
 		Simplified_Chinese:"海上平民单位"
+		French:"Civil embarqué"
 	}
 	"Melee":{
 		Italian:"da mischia" //Unità da mischia
@@ -3660,6 +3670,7 @@
 	}
 	"WaterMelee":{
 		Simplified_Chinese:"海军近战单位"
+		French:"Unité de mélée embarquée"
 	}
 	"Ranged":{
 		Italian:"da tiro" //Unità da tiro
@@ -3674,9 +3685,11 @@
 	}
 	"WaterRanged":{
 		Simplified_Chinese:"海军远程单位"
+		French:"Unités à distance embarquée"
 	}
-	"WaterSubmarine":{
+	"WaterSubmarine":{ //e.g ?
 		Simplified_Chinese:"海军潜艇单位"
+		//French:"" I haven't any idea about what it means
 	}
 	"Siege":{
 		Italian:"d'assedio" //Unità d'assedio
@@ -3713,6 +3726,7 @@
 	}
 	"Armor":{
 		Simplified_Chinese:"装甲单位"
+		French:"Blindé"
 	}
 	"City":{
 		Italian:"Città"
@@ -3841,15 +3855,19 @@
 
 	"Bonus as Attacker 75%":{
 		Simplified_Chinese:"主动攻击时+75%战斗力"
+		French:"Bonus en tant qu'attaquant +75%"
 	}
 	"Invisible to others":{
 		Simplified_Chinese:"对其他单位隐形"
+		French:"Invisible aux autres" // (unités)
 	}
 	"Can only attack water":{
 		Simplified_Chinese:"只能攻击海上目标"
+		French:"Ne peut attaquer que les unités marines"
 	}
 	"Can attack submarines":{
 		Simplified_Chinese:"能够发现和攻击潜艇单位"
+		French:"Peut attaquer les sous-marins"
 	}
 
 	// Old Great Person translations (for reference only)
@@ -4050,6 +4068,7 @@
 	} 
 	"Unbuildable":{
 		Simplified_Chinese:"不可组建单位"
+		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct 
 	} 
 	// for unit action button
 	"Can build improvement: Manufactory":{
@@ -4276,10 +4295,12 @@
 	"Agreements":{
 		Italian:"Accordi"
 		Simplified_Chinese:"协定"
+		French:"Accords"
 	}
 	"Open Borders":{
 		Italian:"Diritto di passaggio"
 		Simplified_Chinese:"开放边境"
+		French:"Frontières ouvertes"
 	}
 	"Gold per turn":{
 		Italian:"Oro per turno"
@@ -4341,6 +4362,7 @@
 	"[resourceName] not required":{
 		Italian:"Risorsa [resourceName] non richiesta"
 		Simplified_Chinese:"不需要[resourceName]"
+		French:"[resourceName] non requis"
 	}
 	
 	"National ability":{ // the unique ability that each nation has
@@ -4575,39 +4597,51 @@
 	}
 	"India":{
 		Italian:"India"
+		French:"Inde"
 	}
 	"Irochese":{
 		Italian:"Irochese"
+		French:"Iroquois"
 	}
 	"Aztecs":{
 		Italian:"Azteca"
+		French:"Aztèques"
 	}
 	"Denmark":{
 		Italian:"Danimarca"
+		French:"Danemark"
 	}
 	"Inca":{
 		Italian:"Inca"
+		French:"Incas"
 	}
 	"Mongolia":{
 		Italian:"Mongolia"
+		French:"Mongolie"
 	}
 	"Korea":{
 		Italian:"Corea"
+		French:"Corée"
 	}
 	"Turkey":{
 		Italian:"Turchia"
+		French:"Turquie"
 	}
 	"Siam":{
 		Italian:"Siam"
+		French:"Siam"
 	}
 	"Songhai":{
 		Italian:"Songhai"
+		French:"Songhaï"
 	}
 	"Polynesia":{
 		Italian:"Polinesia"
+		French:"Polynésie"
 	}
 	"Persia":{
 		Italian:"Persia"
+		French:"Perse"
 	}
 	*/
 	
@@ -4917,6 +4951,7 @@
 	"[tradeOffer] from [otherCivName] has ended":{
 		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
 		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
+		French:"[tradeOffer] de [otherCivName] a pris fin"
 	}
 	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -4955,14 +4990,17 @@
 	"Not this time.":{
 		Italian:"Non questa volta."
 		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
+		French:"Pas cette fois."
 	} // declining trade text
 	"Excellent!":{
 		Italian:"Eccellente!"
 		Simplified_Chinese:"好极了！和和气气才是生财之道。"
+		French:"Excellent!"
 	} // AI statement after we accept a trade they proposed
 	"How about something else...":{
 		Italian:"Che ne dici di questa offerta?"
 		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
+		French:"Pourquoi pas autre chose..."
 	} // Counteroffer to AI offer
 	
 	"A pleasure to meet you.":{
@@ -4973,45 +5011,58 @@
 	
 	"Our relationship: ":{
 		Italian:"I nostri rapporti: "
+		French:"Notre relation :" //or l'état de notre relation
 	}
 	
-    "Unforgivable":{
-		Italian:"Imperdonabile"
+    "Unforgivable!":{
+		Italian:"Imperdonabile!"
+		French:"Impardonnable!"
     }
-    "Enemy":{
+    "Enemy":{ //e.g ?
 		Italian:"Nemico"
+		French:"Ennemi"
     }
     "Competitor":{
-		Italian:"Avversario"
+	    Italian:"Avversario"
+	    French:"Adversaire" //or en compétition
     }
     "Neutral":{
-		Italian:"Neutrale"
+            Italian:"Neutrale"
+	    French:"Neutre"
     }
     "Favorable":{
 		Italian:"Favorevole"
+	    French:"Favorable"
     }
     "Friend":{
 		Italian:"Amichevole"
+	    French:"Ami"
     }
     "Ally":{
 		Italian:"Alleato"
+	    French:"Allié"
     }
 	
 	// Diplomatic modifiers
 	"You declared war on us!":{
 		Italian:"Ci hai dichiarato guerra!"
+		French:"Vous nous avez déclaré la guerre!"
 	}
 	"Your warmongering ways are unacceptable to us.":{
 		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
+		French:"Votre bellicisme est inacceptable pour nous."
 	}
 	"You have captured our cities!":{
 		Italian:"Hai preso una delle nostre città!"
+		French:"Vous avez capturé nos villes!"
 	}
 	"Years of peace have strengthened our relations.":{
 		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
+		French:"Les années de paix ont renforcées notre relation"
 	}
 	"Our mutual military struggle brings us closer together.":{
 		Italian:"I nostri nemici in comune ci hanno legati."
+		French:"Nos problèmes militaires communs nous ont rapprochés"
 	}
 	
 	// Overview screen
@@ -5426,10 +5477,12 @@
 	"Colossus":{
 		Italian:"Colosso"
 		Simplified_Chinese:"太阳神巨像"
+		French:"Colosse"
 	}
 	"+1 gold from worked water tiles in city":{
 		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
 		Simplified_Chinese:"所在城市每个水上地块+1金钱"
+		French:"+1 or pour les cases maritimes exploitées par la ville"
 	}
 	
 	"Temple":{	
@@ -5625,6 +5678,7 @@
 	"Terracotta Army":{
 		Italian:"Esercito di terracotta"
 		Simplified_Chinese:"兵马俑"
+		French:"Armée de Terre Cuite"
 	}
 	
 	"Market":{	
@@ -5768,10 +5822,12 @@
 	"Great Wall":{
 		Italian:"Grande Muraglia"
 		Simplified_Chinese:"长城"
+		French:"La Grande Muraille"
 	}
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
 		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
 		Simplified_Chinese:"境内敌方陆军单位在任何地块额外消耗1移动力"
+		French:"Les unités terrestre ennemies doivent dépenser un point de déplacement supplémentaires quand elles sont dans votre territoire (rendus obsolète par la Dynamite)"
 	}
 	
 	"Workshop":{	
@@ -6048,10 +6104,12 @@
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
 		Simplified_Chinese:"姬路城"
+		French:"Le château de Himeji"
 	}
 	"+15% combat strength for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
 		Simplified_Chinese:"单位在境内+15%战斗力"
+		French:"+15% de force de combat pour les unités combattants sur un territoire allié"
 	}
 	
 	"Taj Mahal":{	
@@ -6215,10 +6273,12 @@
         "Big Ben":{	
 		Italian:"Big Ben"
 		Simplified_Chinese:"大本钟"
+		French:"Big Ben"
 	}
 	"-15% to purchasing items in cities":{
 		Italian:"-15% costo in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
+		French:"-15% d'or pour les achats dans les villes"
 	}
 	"Cristo Redentor":{
 		Italian:"Cristo Redentor" //Same in Italian
@@ -6253,15 +6313,18 @@
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
 		Simplified_Chinese:"所有城市防御建筑建造速度+25%"
+		French:"Les batiments de défense sont 25% plus efficace dans toutes les villes"
 	}
 	
 	"Neuschwanstein":{
 		Italian:"Castello di Neuschwanstein"
 		Simplified_Chinese:"新天鹅堡"
+		French:"Château de Neuschwanstein"
 	}
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
 		Italian:"+1 Felicità, +2 Cultura e +3 Oro per ogni Castello posseduto"
 		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
+		French:"+1 bonheur, +2 culture et +3 or produits par tous les châteaux"
 	}
 	
 	"Military Academy":{	
@@ -6385,6 +6448,7 @@
 	"Must be next to mountain":{
 		Italian:"Deve rasentare Montagna"
 		Simplified_Chinese:"必须紧邻山脉"
+		French:"Doit être à côté d'une montagne"
 	}
 	"Sydney Opera House":{
 		Spanish:"Casa De La Opera De Sidney"
@@ -6722,10 +6786,12 @@
 	"Can construct roads":{
 		Italian:"Può costruire Strade"
                 Simplified_Chinese:"可以建造道路"
+		French:"Peut construire des routes"
 	}
 	"Construct road":{
 		Italian:"Costruisci Strada"
                 Simplified_Chinese:"建造道路"
+		French:"Construire une route"
 	} // for unit action button
 	
 	"Horseman":{	
@@ -6770,10 +6836,6 @@
 		Portuguese:"Besteiro"
 		German:"Armbrustschütze"
 	}
-	"Chu-Ko-Nu":{	
-		//Same as in Italian
-		Simplified_Chinese:"诸葛弩"
-	}
 	"Longbowman":{	
 		Italian:"Arciere con arco lungo"
 		French:"Archer long"
@@ -6791,7 +6853,11 @@
 		//same in German
 		//same in French
 	} // Chinese unique, can transliterate
-	
+	"Chu-Ko-Nu":{ //it seems that it's useless to keep this one
+		//Same as in Italian
+		Simplified_Chinese:"诸葛弩"
+		French:"Chu Ko Nu"
+	}
 	"Trebuchet":{	
 		Italian:"Trabocco"
 		Russian:"Требушет"
@@ -6844,11 +6910,13 @@
 	"Samurai":{
 		Italian:"Samurai" //Same as in Italian
 		Simplified_Chinese:"日本武士"
+		French:"Samuraï"
 	}
 
 	"Combat very likely to create Great Generals":{
 		Italian:"Può generare un Grande Generale combattendo"
 		Simplified_Chinese:"战斗能更快地产生出大军事家"
+		French:"A de grande chance de faire apparaitre un général illustre suite à un combat"
 	}
 	
 	
@@ -7021,15 +7089,17 @@
 	"Foreign Legion":{
 		Italian:"Legione Straniera"
 		Simplified_Chinese:"外籍军团"
+		French:"Légion étrangère"
 	}
 	"+20% bonus outside friendly territory":{
 		Italian:"+20% Forza fuori da territorio amico"
 		Simplified_Chinese:"境外作战时战斗力+20%"
+		French:"+20% bonus lors de combat hors d'un territoire allié" 
 	}
 	"Foreign Land":{ // for battle table combat percentage
 		Italian:"Terra Straniera"
 		Simplified_Chinese:"他国领土"
-	
+		French:"Terre étrangère"
 	}
 	
 	
@@ -7200,10 +7270,12 @@
         "Mechanized Infantry":{
 		Italian:"Fanteria meccanizzata"
 		Simplified_Chinese:"机械化步兵"
+		French:"Infantrie mécanisée"
 	}
         "Modern Armor":{
 		Italian:"Armatura moderna"
 		Simplified_Chinese:"现代坦克"
+		French:"Blindé moderne"
         }
 	"B17":{
 		Italian:"B-17"
@@ -7234,7 +7306,7 @@
 	/*
 	"Giant Death Robot":{
 		Italian:"Robot Gigante della Morte"
-		French:"Robot géant Mortel" //The most accurate should be "Robot géant de la mort" but it sound really ridiculous
+		French:"Robot Mortel Géant" //The most accurate should be "Robot géant de la mort" but it sound really ridiculous
 		Simplified_Chinese:"末日机甲"
 	}
 	*/
@@ -8572,6 +8644,7 @@
 	"units in open terrain":{
 		Italian:"unità in terreno aperto"
 		Simplified_Chinese:"位于开阔地形的单位"
+		French:"Unités en terrain ouvert"
 	}
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
@@ -8717,27 +8790,34 @@
 		Russian:"Бонус против раненых 33%"
 		Simplified_Chinese:"对战受伤单位时+33%战斗力"
   }
+	//Shouldn't it be just "Bonus vs city [percentage]" ?
 	"Bonus vs City 50%":{
 		Simplified_Chinese:"攻击城市时+50%战斗力"
+		French:"Bonus contre les villes +50%"
 	}
 	"Bonus vs City 15%":{
 		Simplified_Chinese:"攻击城市时+15%战斗力"
+		French:"Bonus contre les villes +15%"
 	}
 	"Bonus vs City 200%":{
 		Simplified_Chinese:"攻击城市时+200%战斗力"
+		French:"Bonus contre les villes +200%"
 	}
 	"Bonus vs City 30%":{
 		Simplified_Chinese:"攻击城市时+30%战斗力"
+		French:"Bonus contre les villes +30%"
 	}
 	"Bonus vs City 33%":{
 		Simplified_Chinese:"攻击城市时+33%战斗力"
+		French:"Bonus contre les villes +33%"
 	}
 	"Penalty vs City 33%":{
 		Simplified_Chinese:"攻击城市时-33%战斗力"
+		French:"Pénalité contre les villes -33%"
 	}
 	"wounded units":{
 		Italian:"unità ferite"
-		French:"unités montées"
+		French:"unités blessés"
 		Simplified_Chinese:"受伤单位"
 	}
 	"Mobility":{
@@ -8891,12 +8971,15 @@
 	}
 	"Bonus vs Mounted 50%":{
 		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
+		French:"Bonus contre les unités montées +50%"
 	}
 	"Bonus vs Mounted 33%":{
 		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
+		French:"Bonus contre les unités montées +33%"
 	}
 	"Bonus vs Armor 100%":{
 		Simplified_Chinese:"对战装甲单位时+100%战斗力"
+		French:"Bonus contre les unités montées +100%"
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
@@ -9050,22 +9133,27 @@
 	"Can be found on ":{
 		Italian:"Può trovarsi su"
 		Simplified_Chinese:"可能发现该资源的地形地貌："
+		French:"Peut être trouver sur "
 	}
 	"Improved by ":{
 		Italian:"Può essere migliorato/a da"
 		Simplified_Chinese:"开发该资源所需要的设施："
+		French:"Amélioré par "
 	}
 	"Bonus stats for improvement: ":{
 		Italian:"Bonus per miglioramento: "
 		Simplified_Chinese:"开发该资源后设施所获奖励效果："
+		French:"Bonus de case améliorée: "
 	}
 	"Can be built on ":{
 		Italian:"Può essere costruito/a su"
 		Simplified_Chinese:"可以建造的地形地貌："
+		French:"Peut être construit sur "
 	}
 	"Tech required: ":{
 		Italian:"Tecnologie propedeutiche"
 		Simplified_Chinese:"需要科技："
+		French:"Technologie(s) requise(s): "
 	}
 	"Defence bonus":{
 		Italian:"Bonus di Difesa"
@@ -9078,38 +9166,45 @@
 		Simplified_Chinese:"移动力消耗"
   }
   " for ":{//for example:+1Gold for Gems,Gold,Silver
-		Italian:" per "
-	Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
+	  Italian:" per "
+	  Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
+	  French:"par "
 }
 
 	//Options menu, pointed out by Smashfanful
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"
 		Russian:"Отсутствующие переводы:"
-        Simplified_Chinese:"未翻译的词条:"
+	        Simplified_Chinese:"未翻译的词条:"
+		French:"Traductions manquantes:"
 	}
 	"Version":{
 		Italian:"Versione"
 		Russian:"Версия"
 		Simplified_Chinese:"版本号"
+		French:"Version"
 	}
 	"Resolution":{
 		Italian:"Risoluzione"
 		Russian:"Разрешения"
 		Simplified_Chinese:"分辨率"
+		French:"Résolution"
 	}
 	"Tileset":{
 		Italian:"Set celle"
 		Simplified_Chinese:"地块显示设置"
+		French:"Taille des cases"
 	}
 	"Map editor":{
 		Italian:"Editor mappe"
 		Russian:"Редактор карт"
 		Simplified_Chinese:"地图编辑器"
+		French:"Editeur de carte"
 	}
 	"Language":{
 		Italian:"Lingua"
 		Simplified_Chinese:"语言设置"
+		French:"langage"
 	}
 	//If don't do this,when game runs in Chinese,it will be lost some font.
 	"missing Chinese font":{
