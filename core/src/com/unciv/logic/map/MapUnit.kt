@@ -258,6 +258,13 @@ class MapUnit {
         return true
     }
 
+    fun adjacentHealingBonus():Int{
+        var healingBonus = 0
+        if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus +=5
+        if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) healingBonus +=5
+        return healingBonus
+    }
+
     //endregion
 
     //region state-changing functions
@@ -336,17 +343,23 @@ class MapUnit {
     }
 
     private fun heal(){
+        if(isEmbarked()) return // embarked units can't heal
         health += rankTileForHealing(getTile())
+        val adjacentUnits = currentTile.getTilesInDistance(1).flatMap { it.getUnits() }
+        if(adjacentUnits.isNotEmpty())
+            health += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
         if(health>100) health=100
     }
 
     fun rankTileForHealing(tileInfo:TileInfo): Int {
-        if(isEmbarked()) return 0 // embarked units can't heal
         return when{
             tileInfo.getOwner() == null -> 10 // no man's land (neutral)
             tileInfo.isCityCenter() -> 20
             !civInfo.isAtWarWith(tileInfo.getOwner()!!) -> 15 // home or allied territory
-            else -> 5 // enemy territory
+            else -> {  // enemy territory
+                if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.")) 10
+                else 5
+            }
         }
     }
 
