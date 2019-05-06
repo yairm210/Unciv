@@ -2501,6 +2501,7 @@
 		Portuguese:"Estrada"
 	}
 	"Remove Road":{
+		Italian:"Rimuovi Strada"
 		Simplified_Chinese:"拆毁道路"
 	}
 	"Railroad":{
@@ -2515,6 +2516,7 @@
 		Portuguese:"Estrada de ferro"
 	}
 	"Remove Railroad":{
+		Italian:"Rimuovi Ferrovia"
 		Simplified_Chinese:"拆除铁路"
 	}
 	"Remove Forest":{
@@ -3645,6 +3647,7 @@
 		Portuguese:"Cidadão"
 	}
 	"WaterCivilian":{
+		Italian:"marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
 	}
 	"Melee":{
@@ -3659,6 +3662,7 @@
 		Portuguese:"Corpo a corpo"
 	}
 	"WaterMelee":{
+		Italian:"marittima da mischia" //Unità marittima da mischia
 		Simplified_Chinese:"海军近战单位"
 	}
 	"Ranged":{
@@ -3673,9 +3677,11 @@
 		Portuguese:"Ataque a distancia"
 	}
 	"WaterRanged":{
+		Italian:"marittima a distanza" //Unità marittima a distanza
 		Simplified_Chinese:"海军远程单位"
 	}
 	"WaterSubmarine":{
+		Italian:"sottomarina" //Unità sottomarina
 		Simplified_Chinese:"海军潜艇单位"
 	}
 	"Siege":{
@@ -3712,6 +3718,7 @@
 		Portuguese:"Explorador"
 	}
 	"Armor":{
+		Italian:"corazzata" //Unità corazzata
 		Simplified_Chinese:"装甲单位"
 	}
 	"City":{
@@ -3840,15 +3847,19 @@
 	}
 
 	"Bonus as Attacker 75%":{
+		Italian:"75% Bonus in attacco"
 		Simplified_Chinese:"主动攻击时+75%战斗力"
 	}
 	"Invisible to others":{
+		Italian:"Invisibile per le altre unità"
 		Simplified_Chinese:"对其他单位隐形"
 	}
 	"Can only attack water":{
+		Italian:"Può attaccare solo unità acquatiche"
 		Simplified_Chinese:"只能攻击海上目标"
 	}
 	"Can attack submarines":{
+		Italian:"Può attaccare i sottomarini"
 		Simplified_Chinese:"能够发现和攻击潜艇单位"
 	}
 
@@ -3941,6 +3952,7 @@
 		Portuguese:"Comece a Idade de Ouro"
 	}
 	"Bonus for land units in 2 radius 15%" :{
+		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
 		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
 	}
 	// for unit action button
@@ -4049,6 +4061,7 @@
 		Portuguese:"Apresse-se Maravilha"
 	} 
 	"Unbuildable":{
+		Italian:"Non costruibile"
 		Simplified_Chinese:"不可组建单位"
 	} 
 	// for unit action button
@@ -4181,7 +4194,7 @@
 		German:"Unsere Gegenstände"
 	}
 	"Our trade offer":{	
-		Italian:"La nostra offerta\n  commerciale"
+		Italian:"La nostra offerta"
 		Russian:"Наше предложение\n  обмена"
 		French:"Notre offre d'échange"
 		Romanian:"Oferta noastră"
@@ -4191,7 +4204,7 @@
 		German:"Unser Handelsangebot"
 	}
 	"[otherCiv]'s trade offer":{
-		Italian:"Offerta \n di [otherCiv]"
+		Italian:"Offerta di [otherCiv]"
 		Russian:"Предложение обмена \n цивилизации [otherCiv]"
 		French:"L'offre d'échange de [otherCiv]"
 		Romanian:"Ofertă de schimb a [otherCiv]"
@@ -4966,7 +4979,7 @@
 	} // Counteroffer to AI offer
 	
 	"A pleasure to meet you.":{
-		Italian:"Lieto di incontrarvi."
+		Italian:"Siamo lieti di incontrarvi."
 		French:"Un plaisir de vous rencontrez"
 		Simplified_Chinese:"很高兴见到你."
 	}
@@ -6217,7 +6230,7 @@
 		Simplified_Chinese:"大本钟"
 	}
 	"-15% to purchasing items in cities":{
-		Italian:"-15% costo in Oro per l'acquisto di unità ed edifici nelle Città"
+		Italian:"-15% costi in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
 	}
 	"Cristo Redentor":{
@@ -6729,7 +6742,7 @@
 	} // for unit action button
 	
 	"Horseman":{	
-		Italian:"Guerriero a cavallo" //wrong translation by Smashfanful
+		Italian:"Guerriero a cavallo"
 		Russian:"Всадник"
 		French:"Cavalier"
 		Romanian:"Călăreţ"
@@ -8718,21 +8731,27 @@
 		Simplified_Chinese:"对战受伤单位时+33%战斗力"
   }
 	"Bonus vs City 50%":{
+		Italian:"50% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+50%战斗力"
 	}
 	"Bonus vs City 15%":{
+		Italian:"15% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+15%战斗力"
 	}
 	"Bonus vs City 200%":{
+		Italian:"200% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+200%战斗力"
 	}
 	"Bonus vs City 30%":{
+		Italian:"30% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+30%战斗力"
 	}
 	"Bonus vs City 33%":{
+		Italian:"33% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+33%战斗力"
 	}
 	"Penalty vs City 33%":{
+		Italian:"33% Malus contro Città"
 		Simplified_Chinese:"攻击城市时-33%战斗力"
 	}
 	"wounded units":{
@@ -8890,12 +8909,15 @@
 		Simplified_Chinese:"对战海军单位时+15%战斗力"
 	}
 	"Bonus vs Mounted 50%":{
+		Italian:"50% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
 	}
 	"Bonus vs Mounted 33%":{
+		Italian:"33% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
 	}
 	"Bonus vs Armor 100%":{
+		Italian:"100% Bonus contro unità corazzate"
 		Simplified_Chinese:"对战装甲单位时+100%战斗力"
 	}
 	"Coastal Raider I":{
