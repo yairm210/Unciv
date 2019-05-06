@@ -1,14 +1,12 @@
 package com.unciv.logic.automation
 
-import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PlayerType
-import com.unciv.logic.civilization.TradeRequest
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
 import com.unciv.Constants
+import com.unciv.logic.civilization.*
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -24,6 +22,7 @@ class NextTurnAutomation{
 
         chooseTechToResearch(civInfo)
         adoptPolicy(civInfo)
+        updateDiplomaticRelationship(civInfo)
         declareWar(civInfo)
         automateCityBombardment(civInfo)
         buyBuildingOrUnit(civInfo)
@@ -237,6 +236,36 @@ class NextTurnAutomation{
                             continue //enemy AI has too large army and happiness. It continues to fight for profit.
                         }
                         tradeLogic.acceptTrade()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateDiplomaticRelationship(civInfo: CivilizationInfo) {
+        // Check if city-state invaded by other civs
+        if (civInfo.isCityState()) {
+            var militaryUnitsInBorder = HashMap<String, Int>()
+            for (city in civInfo.cities) {
+                for (tile in city.getTiles()) {
+                    val troop = tile.militaryUnit
+                    if (troop != null && troop.owner != civInfo.civName) {
+                        if (militaryUnitsInBorder.containsKey(troop.owner)) {
+                            militaryUnitsInBorder[troop.owner] = militaryUnitsInBorder[troop.owner]!! + 1
+                        } else {
+                            militaryUnitsInBorder[troop.owner] = 1
+                        }
+                    }
+                }
+            }
+
+            for (otherCivName in militaryUnitsInBorder.filter { it.value > 0 }.keys) {
+                val otherCiv = civInfo.gameInfo.getCivilization(otherCivName)
+                if (!otherCiv.isBarbarianCivilization()) {
+                    val diplo = civInfo.getDiplomacyManager(otherCiv)
+                    if (diplo.diplomaticStatus != DiplomaticStatus.War) {
+                        diplo.influence -= 10f
+                        otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
                     }
                 }
             }
