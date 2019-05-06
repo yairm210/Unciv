@@ -92,7 +92,7 @@ class BattleDamage{
             modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
 
             val defenderTile = defender.getTile()
-            val isDefenderInRoughTerrain = defenderTile.baseTerrain=="Hill" || defenderTile.terrainFeature == "Forest" || defenderTile.terrainFeature == "Jungle"
+            val isDefenderInRoughTerrain = defenderTile.isRoughTerrain()
             for (BDM in getBattleDamageModifiersOfUnit(attacker.unit)) {
                 val text = BDM.getText()
                 if (BDM.vs == "units in open terrain" && !isDefenderInRoughTerrain) {
@@ -157,7 +157,7 @@ class BattleDamage{
         }
 
         val defenderTile = defender.getTile()
-        val isDefenderInRoughTerrain = defenderTile.baseTerrain == "Hill" || defenderTile.terrainFeature == "Forest" || defenderTile.terrainFeature == "Jungle"
+        val isDefenderInRoughTerrain = defenderTile.isRoughTerrain()
         for (BDM in getBattleDamageModifiersOfUnit(defender.unit)) {
             val text = BDM.getText()
             if (BDM.vs == "units in open terrain" && !isDefenderInRoughTerrain) {

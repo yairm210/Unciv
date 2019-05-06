@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
@@ -136,8 +137,8 @@ class WorkerAutomation(val unit: MapUnit) {
         val improvementStringForResource : String ?= when {
             tile.resource == null || !tile.hasViewableResource(civInfo) -> null
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
-            tile.terrainFeature == "Jungle" -> "Remove Jungle"
-            tile.terrainFeature == "Forest" && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
+            tile.terrainFeature == Constants.jungle -> "Remove Jungle"
+            tile.terrainFeature == Constants.forest && tile.getTileResource().improvement!="Camp" -> "Remove Forest"
             else -> tile.getTileResource().improvement
         }
 
@@ -146,10 +147,10 @@ class WorkerAutomation(val unit: MapUnit) {
             improvementStringForResource != null -> improvementStringForResource
             tile.containsGreatImprovement() -> null
             tile.containsUnfinishedGreatImprovement() -> null
-            tile.terrainFeature == "Jungle" -> "Trading post"
+            tile.terrainFeature == Constants.jungle -> "Trading post"
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
-            tile.terrainFeature == "Forest" -> "Lumber mill"
-            tile.baseTerrain == "Hill" -> "Mine"
+            tile.terrainFeature == Constants.forest -> "Lumber mill"
+            tile.baseTerrain == Constants.hill -> "Mine"
             tile.baseTerrain in listOf("Grassland","Desert","Plains") -> "Farm"
             tile.baseTerrain == "Tundra" -> "Trading post"
             else -> throw Exception("No improvement found for "+tile.baseTerrain)

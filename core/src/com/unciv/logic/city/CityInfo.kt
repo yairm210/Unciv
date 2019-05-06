@@ -72,7 +72,7 @@ class CityInfo {
 
         tryUpdateRoadStatus()
 
-        if (listOf("Forest", "Jungle", "Marsh").contains(tile.terrainFeature))
+        if (listOf(Constants.forest, Constants.jungle, "Marsh").contains(tile.terrainFeature))
             tile.terrainFeature = null
 
         workedTiles = hashSetOf() //reassign 1st working tile

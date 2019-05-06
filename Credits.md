@@ -46,6 +46,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1432662) By uzeir syarief for Longswordsman
 * [Samurai](https://thenounproject.com/search/?q=samurai&i=1683729) By Chanut is Industries
 * [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera for Pikeman
+* [Halberd](https://thenounproject.com/naripuru/uploads/?i=440128) parkjisun for Landsknecht
 * [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
 
 ### Renaissance Era
@@ -79,6 +80,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira
 * [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
 * [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
+* [Tank](https://thenounproject.com/manueldixken/collection/german-tanks/?i=960769) Manuel Dixken, DE for Panzer
 * [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
 * [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
 * [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
@@ -423,6 +425,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
 * [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
 * [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
+* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein, US for city states
 
 # Sound credits
 

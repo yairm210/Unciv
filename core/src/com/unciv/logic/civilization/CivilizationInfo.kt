@@ -133,6 +133,7 @@ class CivilizationInfo {
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
     fun isBarbarianCivilization() =  civName=="Barbarians"
     fun isCityState(): Boolean = getNation().isCityState()
+    fun getCityStateType(): CityStateType = getNation().cityStateType!!
     fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
     fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
 

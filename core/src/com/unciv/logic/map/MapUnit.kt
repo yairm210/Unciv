@@ -26,6 +26,7 @@ class MapUnit {
     @Transient var ignoresTerrainCost = false
     @Transient var roughTerrainPenalty = false
     @Transient var doubleMovementInCoast = false
+    @Transient var doubleMovementInForestAndJungle = false
 
     lateinit var owner: String
     lateinit var name: String
@@ -93,6 +94,7 @@ class MapUnit {
         if("Ignores terrain cost" in uniques) ignoresTerrainCost=true
         if("Rough terrain penalty" in uniques) roughTerrainPenalty=true
         if("Double movement in coast" in uniques) doubleMovementInCoast=true
+        if("Double movement rate through Forest and Jungle" in uniques) doubleMovementInForestAndJungle=true
     }
 
     fun hasUnique(unique:String): Boolean {
@@ -109,7 +111,7 @@ class MapUnit {
                 && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
             visibilityRange += 1
         val tile = getTile()
-        if (tile.baseTerrain == "Hill" && type.isLandUnit()) visibilityRange += 1
+        if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
         return tile.getViewableTiles(visibilityRange, type.isWaterUnit())
     }
 

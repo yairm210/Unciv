@@ -94,8 +94,8 @@ open class TileInfo {
 
     fun getHeight(): Int {
         if (baseTerrain==Constants.mountain) return 4
-        if (baseTerrain == "Hill") return 2
-        if (baseTerrain=="Forest" || baseTerrain=="Jungle") return 1
+        if (baseTerrain == Constants.hill) return 2
+        if (baseTerrain==Constants.forest || baseTerrain==Constants.jungle) return 1
         return 0
     }
 
@@ -134,7 +134,7 @@ open class TileInfo {
             else
                 stats.add(terrainFeatureBase)
 
-            if (terrainFeature == "Jungle" && city != null
+            if (terrainFeature == Constants.jungle && city != null
                     && city.getBuildingUniques().contains("Jungles provide +2 science"))
                 stats.science += 2f
             if(terrainFeature=="Oasis" && city!=null
@@ -204,7 +204,7 @@ open class TileInfo {
         if (improvement.name == "Railroad" && this.roadStatus !== RoadStatus.Railroad) return true
         if(improvement.name == "Remove Road" && this.roadStatus===RoadStatus.Road) return true
         if(improvement.name == "Remove Railroad" && this.roadStatus===RoadStatus.Railroad) return true
-        if (topTerrain.unbuildable && !(topTerrain.name=="Forest" && improvement.name=="Camp")) return false
+        if (topTerrain.unbuildable && !(topTerrain.name==Constants.forest && improvement.name=="Camp")) return false
         return hasViewableResource(civInfo) && getTileResource().improvement == improvement.name
 
     }
@@ -240,6 +240,8 @@ open class TileInfo {
         val yDelta = position.y-otherTile.position.y
         return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()
     }
+
+    fun isRoughTerrain() = baseTerrain == Constants.hill || terrainFeature == Constants.forest || terrainFeature == Constants.jungle
 
     override fun toString(): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case

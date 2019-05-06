@@ -589,6 +589,21 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
+	{
+		name:"Landsknecht",
+		replaces:"Pikeman",
+		uniqueTo:"Germany"
+		unitType:"Melee",
+		movement:2,
+		strength:16,
+		cost: 45,
+		requiredTech:"Civil Service",
+		uniques:["Bonus vs Mounted 50%"],
+		upgradesTo:"Musketman",
+		obsoleteTech:"Gunpowder",
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+	},
 	*/
 	{
 		name:"Galleass",

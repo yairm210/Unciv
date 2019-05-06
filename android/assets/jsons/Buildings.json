@@ -435,6 +435,17 @@
 		requiredTech:"Banking"
 	},
 	{
+		name:"Hanse",
+		replaces:"Bank",
+		uniqueTo:"Germany",		
+		gold:2,
+		specialistSlots:{gold:1},
+		hurryCostModifier:15,
+		percentStatBonus:{gold:25},
+		requiredBuilding:"Market",
+		requiredTech:"Banking"
+	},
+	{
 		name:"Forbidden Palace",
 		culture:1,
 		isWonder:true,

@@ -2,6 +2,7 @@ package com.unciv
 
 import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.GameInfo
+import com.unciv.logic.HexMath
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
@@ -31,6 +32,7 @@ class GameStarter{
         gameInfo.gameParameters = newGameParameters
         gameInfo.tileMap = TileMap(newGameParameters)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
+
         val startingLocations = getStartingLocations(
                 newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers+newGameParameters.numberOfCityStates,
                 gameInfo.tileMap)
@@ -96,7 +98,7 @@ class GameStarter{
                 landTilesInBigEnoughGroup.addAll(tilesInGroup)
         }
 
-        for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/2 downTo 0){
+        for(minimumDistanceBetweenStartingLocations in tileMap.tileMatrix.size/3 downTo 0){
             val freeTiles = landTilesInBigEnoughGroup
                     .filter {  vectorIsAtLeastNTilesAwayFromEdge(it.position,minimumDistanceBetweenStartingLocations,tileMap)}
                     .toMutableList()
@@ -117,13 +119,12 @@ class GameStarter{
     }
 
     fun vectorIsAtLeastNTilesAwayFromEdge(vector: Vector2, n:Int, tileMap: TileMap): Boolean {
-        val arrayXIndex = vector.x.toInt()-tileMap.leftX
-        val arrayYIndex = vector.y.toInt()-tileMap.bottomY
-
-        return arrayXIndex < tileMap.tileMatrix.size-n
-                && arrayXIndex > n
-                && arrayYIndex < tileMap.tileMatrix[arrayXIndex].size-n
-                && arrayYIndex > n
+        // Since all maps are HEXAGONAL, the easiest way of checking if a tile is n steps away from the
+        // edge is checking the distance to the CENTER POINT
+        // Can't believe we used a dumb way of calculating this before!
+        val hexagonalRadius = -tileMap.leftX
+        val distanceFromCenter = HexMath().getDistance(vector, Vector2.Zero)
+        return hexagonalRadius-distanceFromCenter >= n
     }
 
 }
