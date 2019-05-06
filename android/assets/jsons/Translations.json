@@ -3663,7 +3663,7 @@
 		Simplified_Chinese:"平民单位"
 		Portuguese:"Cidadão"
 	}
-	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the the "unitType" in wiki,because some units get a bonus attack to other units.
+	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
 		Simplified_Chinese:"海上平民单位"
 		French:"Civil embarqué"
 	}
