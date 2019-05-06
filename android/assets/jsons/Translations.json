@@ -3695,6 +3695,7 @@
 	}
 	"WaterRanged":{
 		Simplified_Chinese:"海军远程单位"
+		French:"Unités à distance embarquée"	
 	}
 	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
 		Simplified_Chinese:"海军潜艇单位"
