@@ -177,8 +177,8 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
 
         // Todo - re-enable this when city states are fit for players
-        //addCityStatesSelectBox(newGameOptionsTable)
-        newGameParameters.numberOfCityStates = 0
+        addCityStatesSelectBox(newGameOptionsTable)
+        //newGameParameters.numberOfCityStates = 0
 
         humanPlayers.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -201,7 +201,7 @@ class NewGameScreen: PickerScreen(){
     }
 
     private fun addCityStatesSelectBox(newGameOptionsTable: Table) {
-        newGameOptionsTable.add("{Number of city states}:".tr())
+        newGameOptionsTable.add("{Number of city-states}:".tr())
         val cityStatesSelectBox = SelectBox<Int>(skin)
         val cityStatesArray = Array<Int>()
         (0..GameBasics.Nations.filter { it.value.isCityState() }.size).forEach { cityStatesArray.add(it) }
