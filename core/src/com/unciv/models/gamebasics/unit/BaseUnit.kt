@@ -131,7 +131,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if (obsoleteTech!=null && civInfo.tech.isResearched(obsoleteTech!!)) return "Obsolete by $obsoleteTech"
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (GameBasics.Units.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique unit replaces this"
-        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires $requiredResource"
+        if (requiredResource!=null && !civInfo.hasResource(requiredResource!!)) return "Requires [$requiredResource]"
         if (name == Constants.settler && civInfo.isCityState()) return "No settler for city state"
         return ""
     }

@@ -166,11 +166,11 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             }
             if(stat==Stat.Food){
                 statValuesTable.add("Food eaten".toLabel())
-                statValuesTable.add(DecimalFormat("0.#").format(cityStats.foodEaten).toLabel()).row()
+                statValuesTable.add(("-"+DecimalFormat("0.#").format(cityStats.foodEaten)).toLabel()).row()
                 val growthBonus = cityStats.getGrowthBonusFromPolicies()
                 if(growthBonus>0){
                     statValuesTable.add("Growth bonus".toLabel())
-                    statValuesTable.add((growthBonus*100).toInt().toString().toLabel())
+                    statValuesTable.add(("+"+((growthBonus*100).toInt().toString())+"%").toLabel())
                 }
             }
             add(statValuesTable).row()
