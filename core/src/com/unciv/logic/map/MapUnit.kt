@@ -150,8 +150,12 @@ class MapUnit {
             return false
 
         val tileOwner = tile.getOwner()
-        if(tileOwner!=null && tileOwner.civName!=owner
-                && (tile.isCityCenter() || !civInfo.canEnterTiles(tileOwner))) return false
+        if(tileOwner!=null && tileOwner.civName!=owner) {
+            if (tile.isCityCenter()) return false
+            if (!civInfo.canEnterTiles(tileOwner)
+                    && !(civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
+            // AIs won't enter city-state's border.
+        }
 
         val unitsInTile = tile.getUnits()
         if(unitsInTile.isNotEmpty()){
