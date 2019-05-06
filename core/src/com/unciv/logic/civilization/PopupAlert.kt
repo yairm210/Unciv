@@ -4,7 +4,8 @@ enum class AlertType{
     WarDeclaration,
     Defeated,
     FirstContact,
-    CityConquered
+    CityConquered,
+    BorderConflict
 }
 
 class PopupAlert {

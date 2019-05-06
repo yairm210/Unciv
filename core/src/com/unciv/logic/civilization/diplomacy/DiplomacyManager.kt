@@ -240,9 +240,6 @@ class DiplomacyManager() {
                 thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,5f)
             else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
         }
-
-        //Damage diplomatic relationship
-        otherCivDiplomacy.influence = -50f
     }
 
     fun makePeace(){

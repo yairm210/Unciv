@@ -63,6 +63,15 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     close()
                 })
             }
+            AlertType.BorderConflict -> {
+                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
+                addLeaderName(translatedNation)
+                addGoodSizedLabel("Remove your troops in our border immediately!").row()
+                val responseTable = Table()
+                responseTable.add(getCloseButton("Sorry."))
+                responseTable.add(getCloseButton("Never!"))
+                add(responseTable)
+            }
         }
         open()
         isOpen = true
