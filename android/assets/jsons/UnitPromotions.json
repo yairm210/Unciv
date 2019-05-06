@@ -280,6 +280,19 @@
 		effect:"Double movement rate through Forest and Jungle",
 		unitTypes:["Melee"]
 	}
+	{
+		name:"Medic",
+		prerequisites:["Shock I", "Drill I", "Scouting II"],
+		effect:"This unit and all others in adjacent tiles heal 5 additional HP per turn",
+		unitTypes:["Melee","Mounted","Scout"]
+	}
+	{
+		name:"Medic II",
+		prerequisites:["Medic"],
+		effect:"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.",
+		unitTypes:["Melee","Mounted","Scout"]
+	}
+	
 	
 	
 ]
