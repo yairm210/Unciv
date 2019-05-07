@@ -1,0 +1,1077 @@
+{
+	///////// Technologies (Ancient Era)
+	
+	"Agriculture":{
+		Italian:"Agricoltura"
+		Russian:"Земледелие"
+		French:"Agriculture"
+		Romanian:"Agricultură"
+		Dutch:"Agricultuur"
+		Spanish:"Agricultura"
+		Simplified_Chinese:"农业"
+		Portuguese:"Agricultura"
+		German:"Landwirtschaft"
+	}
+	
+	"Pottery":{
+		Italian:"Ceramica"
+		Russian:"Гончарное дело"
+		French:"Poterie"
+		Romanian:"Ceramică"
+		German:"Töpferkunst"
+		Dutch:"Aardwerk"
+		Spanish:"Cerámica"
+		Simplified_Chinese:"制陶"
+		Portuguese:"Cerâmica"
+	}
+
+	"Animal Husbandry":{
+		Italian:"Allevamento di animali"
+		Russian:"Животноводство"
+		French:"Élevage"
+		Romanian:"Creșterea animalelor"
+		German:"Tierhaltung"
+		Dutch:"Veeteelt"
+		Spanish:"Ganadería"
+		Simplified_Chinese:"家畜驯养"
+		Portuguese:"Pecuária"
+	}
+
+	"Archery":{
+		Italian:"Tiro con l'arco"
+		Russian:"Стрельба из лука"
+		French:"Tir à l'arc"
+		Romanian:"Tir cu arcul"
+		German:"Bogenschießen" //current grammar
+		Dutch:"Boogschieten"
+		Spanish:"Tiro con arco"
+		Simplified_Chinese:"弓箭"
+		Portuguese:"Arquearia"
+	}
+
+	"Mining":{
+		Italian:"Estrazione mineraria"
+		Russian:"Добыча руды"
+		French:"Exploitation minière"
+		Romanian:"Exploatare minieră"
+		German:"Bergbau"
+		Dutch:"Mijnbouw"
+		Spanish:"Minería"
+		Simplified_Chinese:"采矿"
+		Portuguese:"Mineração"
+	}
+
+	"Sailing":{
+		Italian:"Vela"
+		Russian:"Мореходство"
+		French:"Navigation à voile"
+		Romanian:"Navigație"
+		German:"Segeln"
+		Dutch:"Zeilen"
+		Spanish:"Náutica"
+		Simplified_Chinese:"帆船"
+		Portuguese:"Navegação"
+	}
+
+	"Calendar":{
+		Italian:"Calendario"
+		Russian:"Календарь"
+		French:"Calendrier"
+		Romanian:"Calendar"
+		German:"Kalender"
+		Dutch:"Kalender"
+		Spanish:"Calendario"
+		Simplified_Chinese:"历法"
+		Portuguese:"Calendário"
+	}
+
+	"Writing":{
+		Italian:"Scrittura"
+		Russian:"Письменность"
+		French:"L'écriture"
+		Romanian:"Scriere"
+		German:"Schrift"
+		Dutch:"Schrift"
+		Spanish:"Escritura"
+		Simplified_Chinese:"文字"
+		Portuguese:"Literatura"
+	}
+
+	"Trapping":{
+		Italian:"Trappole per animali"
+		Russian:"Охота"
+		French:"Piège" //official translate
+		Romanian:"Vânătoare"
+		German:"Fallenstellen"
+		Dutch:"Valstrikken"
+		Spanish:"Caza"
+		Simplified_Chinese:"捕猎"
+		Portuguese:"Caça"
+	}
+
+	"The Wheel":{
+		Italian:"Ruota"
+		Russian:"Колесо"
+		French:"La roue"
+		Romanian:"Roata"
+		German:"Das Rad"
+		Dutch:"Het Wiel"
+		Spanish:"La rueda"
+		Simplified_Chinese:"轮子"
+		Portuguese:"A roda"
+	}
+
+	"Masonry":{
+		Italian:"Muratura"
+		Russian:"Каменная кладка"
+		French:"Maçonnerie"
+		Romanian:"Zidărie"
+		German:"Maurerei"
+		Dutch:"Metselkunst"
+		Spanish:"Albañilería"
+		Simplified_Chinese:"石工术"
+		Portuguese:"Alvenaria"
+	}
+
+	"Bronze Working":{
+		Italian:"Lavorazione del bronzo"
+		Russian:"Обработка бронзы"
+		French:"Travail du bronze"
+		Romanian:"Prelucrarea bronzului"
+		German:"Bronze Bearbeitung"
+		Dutch:"Brons Bewerking"
+		Spanish:"Trabajo del bronce"
+		Simplified_Chinese:"青铜器"
+		Portuguese:"Trabalha com Bronze"
+	}
+	
+///////// Technologies (Classical Era)
+	
+	"Optics":{
+		Italian:"Ottica"
+		Russian:"Оптика"
+		French:"Optique"
+		Romanian:"Optică"
+		German:"Optik"
+		Dutch:"Optica"
+		Spanish:"Óptica"
+		Simplified_Chinese:"光学"
+		Portuguese:"Óptica"
+	}
+
+	"Horseback Riding":{
+		Italian:"Equitazione"
+		Russian:"Верховая езда"
+		French:"Équitation"
+		Romanian:"Călărie"
+		German:"Reiten"
+		Dutch:"Paardrijden"
+		Spanish:"Equitación"
+		Simplified_Chinese:"骑术"
+		Portuguese:"Montaria"
+	}
+
+	"Mathematics":{
+		Italian:"Matematica"
+		Russian:"Математика"
+		French:"Mathématiques"
+		Romanian:"Matematică"
+		German:"Mathematik"
+		Dutch:"Wiskunde"
+		Spanish:"Matemáticas"
+		Simplified_Chinese:"数学"
+		Portuguese:"Matemáticas"
+	}
+
+	"Construction":{
+		Italian:"Costruzione"
+		Russian:"Металлоконструкции"
+		French:"Construction"
+		Romanian:"Arhitectură"
+		German:"Baukunst"
+		Dutch:"Bouwkunde"
+		Spanish:"Construcción"
+		Simplified_Chinese:"建筑构造学"
+		Portuguese:"Construção"
+	}
+    
+	"Philosophy":{
+		Italian:"Filosofia"
+		Russian:"Философия"
+		French:"Philosophie"
+		Romanian:"Filozofie"
+		German:"Philosophie"
+		Dutch:"Filosofie"
+		Spanish:"Filosofía"
+		Simplified_Chinese:"哲学"
+		Portuguese:"Filosofia"
+	}
+
+	"Currency":{
+		Italian:"Valuta"
+		Russian:"Деньги"
+		French:"Monnaie"
+		Romanian:"Monedă"
+		German:"Geld"
+		Dutch:"Geld"
+		Spanish:"Moneda"
+		Simplified_Chinese:"货币制度"
+		Portuguese:"Moeda"
+	}
+
+	"Engineering":{
+		Italian:"Ingegneria"
+		Russian:"Инженерное дело"
+		French:"Ingénierie"
+		Romanian:"Inginerie"
+		German:"Ingenieurwesen"
+		Dutch:"Ingenieurswezen"
+		Spanish:"Ingeniería"
+		Simplified_Chinese:"工程学"
+		Portuguese:"Engenharia"
+	}
+
+	"Iron Working":{
+		Italian:"Lavorazione del ferro"
+		Russian:"Обработка железа"
+		French:"Travail du fer"
+		Romanian:"Prelucrarea fierului"
+		German:"Eisen Bearbeitung"
+		Dutch:"Ijzer Bewerking"
+		Spanish:"Trabajo del hierro"
+		Simplified_Chinese:"铁器"
+		Portuguese:"Trabalho com ferro"
+	}
+	
+/////////   Technologies (Medieval Era)
+	
+	"Theology":{
+		Italian:"Teologia"
+		Russian:"Богословие"
+		French:"Théologie"
+		Romanian:"Teologie"
+		German:"Theologie"
+		Dutch:"Theologie"
+		Spanish:"Teología"
+		Simplified_Chinese:"神学"
+		Portuguese:"Teologia"
+	}
+
+	"Civil Service":{
+		Italian:"Pubblica amministrazione"
+		Russian:"Госслужба"
+		French:"Administration" //official translate, but not very accurate
+		Romanian:"Servicii civile"
+		German:"Zivildienst"
+		Dutch:"Overheidsdienst"
+		Spanish:"Servicio civil"
+		Simplified_Chinese:"文官制度"
+		Portuguese:"Serviço cívil"
+	}
+
+	"Enables Open Borders agreements":{
+		Italian:"Consente accordi su Diritti di Passaggio"
+		Simplified_Chinese:"允许签订开放边境协定"
+		French:"Permet l'accord des frontières ouvertes"
+	}
+	
+	"Guilds":{
+		Italian:"Gilde"
+		Russian:"Гильдии"
+		French:"Guildes"
+		Romanian:"Bresle"
+		Dutch:"Gildes"
+		Spanish:"Gremios"
+		Simplified_Chinese:"行会"
+		Portuguese:"Guildas"
+		German:"Gilden"
+	}
+
+	"Physics":{
+		Italian:"Fisica"
+		Russian:"Физика"
+		French:"Physique"
+		Romanian:"Fizică"
+		German:"Physik"
+		Dutch:"Fysica"
+		Spanish:"Física"
+		Simplified_Chinese:"物理学"
+		Portuguese:"Física"
+	}
+
+	"Metal Casting":{
+		Italian:"Fusione del metallo"
+		Russian:"Литье"
+		French:"Moulage" //official translate
+		Romanian:"Turnarea metalului"
+		German:"Metallguss"
+		Dutch:"Metaal gieten"
+		Spanish:"Fundición"
+		Simplified_Chinese:"金属铸造"
+		Portuguese:"Fundição"
+	}
+
+	"Steel":{
+		Italian:"Acciaio"
+		Russian:"Сталеварение"
+		French:"Acier"
+		Romanian:"Oţel"
+		Dutch:"Staal"
+		Spanish:"Acero"
+		Simplified_Chinese:"炼钢"
+		Portuguese:"Aço"
+		German:"Stahl"
+	}
+
+	"Compass":{
+		Italian:"Bussola"
+		Russian:"Компас"
+		French:"Boussole"
+		Romanian:"Busolă"
+		German:"Kompass"
+		Dutch:"Kompas"
+		Spanish:"Brújula"
+		Simplified_Chinese:"罗盘"
+		Portuguese:"Bússola"
+	}
+
+	"Education":{
+		Italian:"Educazione"
+		Russian:"Образование"
+		French:"Éducation"
+		Romanian:"Educaţie"
+		German:"Bildung"
+		Dutch:"Educatie"
+		Spanish:"Educación"
+		Simplified_Chinese:"教育学"
+		Portuguese:"Educação"
+	}
+
+	"Chivalry":{
+		Italian:"Codice cavalleresco"
+		Russian:"Рыцарство"
+		French:"Chevalerie"
+		Romanian:"Cavalerie"
+		German:"Ritterlichkeit"
+		Dutch:"Ridderlijkheid"
+		Spanish:"Caballería"
+		Simplified_Chinese:"骑士制度"
+		Portuguese:"Cavalheirismo"
+	}
+
+	"Machinery":{
+		Italian:"Meccanica"
+		Russian:"Машиностроение"
+		French:"Mécanique"
+		Romanian:"Instalații mecanice"
+		German:"Maschienenbau"
+		Dutch:"Machinebouw"
+		Spanish:"Mecánica"
+		Simplified_Chinese:"机械"
+		Portuguese:"Maquinária"
+	}
+	
+///////// Technologies (Renaissance Era)
+	
+	"Astronomy":{
+		Italian:"Astronomia"
+		Russian:"Астрономия"
+		French:"Astronomie"
+		Romanian:"Astronomie"
+		German:"Astronomie"
+		Dutch:"Astronomie"
+		Spanish:"Astronomía"
+		Simplified_Chinese:"天文学"
+		Portuguese:"Astronomia"
+	}
+
+	"Acoustics":{
+		Italian:"Acustica"
+		Russian:"Акустика"
+		French:"Acoustique"
+		Romanian:"Acustică"
+		German:"Akustik"
+		Dutch:"Akoestiek"
+		Spanish:"Acústica"
+		Simplified_Chinese:"声学"
+		Portuguese:"Acústica"
+	}
+
+	"Banking":{
+		Italian:"Sistema bancario"
+		Russian:"Банковское дело"
+		French:"Banques"
+		Romanian:"Bănci"
+		German:"Bankwesen"
+		Dutch:"Bank"
+		Spanish:"Banca"
+		Simplified_Chinese:"银行业"
+		Portuguese:"Sistema bancário"
+	}
+
+	"Printing Press":{
+		Italian:"Tipografia"
+		Russian:"Печатный пресс"
+		French:"Imprimerie"
+		Romanian:"Presă de tipar"
+		German:"Druckpresse"
+		Dutch:"Drukpers"
+		Spanish:"Imprenta"
+		Simplified_Chinese:"印刷机"
+		Portuguese:"Impressora"
+	}
+
+	"Gunpowder":{
+		Italian:"Polvere da sparo"
+		Russian:"Порох"
+		French:"Poudre à canon"
+		Romanian:"Praf de puşcă"
+		Dutch:"Buskruid"
+		Spanish:"Pólvora"
+		Simplified_Chinese:"火药"
+		Portuguese:"Pólvora"
+		German:"Schießpulver"
+	}
+
+	"Navigation":{
+		Italian:"Navigazione"
+		Russian:"Навигация"
+		French:"La navigation"
+		Romanian:"Navigație"
+		German:"Navigation"
+		Dutch:"Navigatie"
+		Spanish:"Navegación"
+		Simplified_Chinese:"航海术"
+		Portuguese:"Navegação"
+	}
+
+	"Architecture":{
+		Italian:"Architettura"
+		Russian:"Архитектура"
+		French:"Architecture"
+		Romanian:"Arhitectură"
+		German:"Die Architektur"
+		Dutch:"Architectuur"
+		Spanish:"Arquitectura"
+		Simplified_Chinese:"建筑设计学"
+		Portuguese:"Arquitetura"
+	}
+
+	"Archaeology":{ // Shouldn't it be in Industrial Age?
+		Italian:"Archeologia" 
+		Russian:"Aрхеология"
+		French:"Archéologie"
+		Romanian:"Arheologie"
+		German:"Archäologie"
+		Dutch:"Archeologie"
+		Spanish:"Arqueología"
+		Simplified_Chinese:"考古学"
+		Portuguese:"Arqueologia"
+	}
+
+	"Economics":{
+		Italian:"Economia"
+		Russian:"Экономика"
+		French:"Sciences économiques" //official translate
+		Romanian:"Economie"
+		German:"Ökonomie"
+		Dutch:"Economie"
+		Spanish:"Economía"
+		Simplified_Chinese:"经济学"
+		Portuguese:"Economia"
+	}
+	
+	"Metallurgy":{
+		Italian:"Metallurgia"
+		Russian:"Металлургия"
+		French:"Métallurgie"
+		Romanian:"Metalurgie"
+		Dutch:"Metaalkunde"
+		Spanish:"Metalurgia"
+		Simplified_Chinese:"冶金学"
+		Portuguese:"Metalurgia"
+		German:"Metallhüttenkunde"
+	}
+	
+	"Chemistry":{
+		Italian:"Chimica"
+		Russian:"Химия"
+		French:"Chimie"
+		Romanian:"Chimie"
+		German:"Chemie"
+		Dutch:"Chemie"
+		Spanish:"Química"
+		Simplified_Chinese:"化学"
+		Portuguese:"Química"
+	}
+	
+///////// Technologies (Industrial Era) - as of now the tech tree itself is incomplete, more will probably be added later
+	
+	"Scientific Theory":{
+		Italian:"Teoria scientifica"
+		Russian:"Научная теория"
+		French:"Théorie scientifique"
+		Romanian:"Teorie științifică"
+		German:"Wissenschaftliche Theorie"
+		Dutch:"Wetenschappelijke Theorie"
+		Spanish:"Teoría científica"
+		Simplified_Chinese:"科学理论"
+		Portuguese:"Teoria científica"
+	}
+	
+	"Industrialization":{
+		Italian:"Industrializzazione"
+		Russian:"Индустриализация"
+		French:"Industrialisation"
+		Romanian:"Industrializare"
+		Dutch:"Industrialisatie"
+		Spanish:"Industrialización"
+		Simplified_Chinese:"工业化"
+		Portuguese:"Industrialização"
+		German:"Industrialisierung"
+	}
+
+	"Rifling":{
+		Italian:"Rigatura delle canne"
+		Russian:"Нарезные стволы"
+		French:"Fusil"
+		Romanian:"Ghintuire"
+		Dutch:"Gedraaide loop"
+		Spanish:"Estriado"
+		Simplified_Chinese:"膛线"
+		German:"Gewehrkugeldrall"
+		// Portuguese translation not sure
+	}
+
+	"Military Science":{
+		Italian:"Scienza militare"
+		Russian:"Военная наука"
+		French:"Science militaire"
+		Romanian:"Știință militară"
+		Dutch:"Militaire Wetenschap"
+		Spanish:"Ciencia militar"
+		Simplified_Chinese:"军事科学"
+		Portuguese:"Ciência militar"
+		German:"Militärwissenschaft"
+	}
+
+	"Fertilizer":{
+		Italian:"Fertilizzanti"
+		Russian:"Yдобрения"
+		French:"Engrais"
+		Romanian:"Fertilizatori"
+		German:"Dünger"
+		Dutch:"Mest"
+		Spanish:"Fertilizante"
+		Simplified_Chinese:"化肥"
+		Portuguese:"Fertilizante"
+	}
+
+	"Biology":{
+		Italian:"Biologia"
+		Russian:"Биология"
+		French:"Biologie"
+		Romanian:"Biologie"
+		German:"Biologie"
+		Dutch:"Biologie"
+		Spanish:"Biología"
+		Simplified_Chinese:"生物学"
+		Portuguese:"Biologia"
+	}
+
+	"Electricity":{
+		Italian:"Elettricità"
+		Russian:"Электричество"
+		French:"Électricité"
+		Romanian:"Electricitate"
+		German:"Elektrizität"
+		Dutch:"Elektriciteit"
+		Spanish:"Electricidad"
+		Simplified_Chinese:"电学"
+		Portuguese:"Eletricidade"
+	}
+
+	"Steam Power":{
+		Italian:"Energia a vapore"
+		Russian:"Паровой двигатель"
+		French:"Moteur à vapeur"
+		Romanian:"Puterea aburului"
+		German:"Dampfkraft"
+		Dutch:"Stoomkracht"
+		Spanish:"Energía de vapor"
+		Simplified_Chinese:"蒸汽机"
+		Portuguese:"Energia a vapor"
+	}
+	
+	"Dynamite":{
+		Italian:"Dinamite"
+		Russian:"Динамит"
+		French:"Dynamite"
+		Romanian:"Dinamită"
+		Dutch:"Dynamiet"
+		Spanish:"Dinamita"
+		Simplified_Chinese:"炸药"
+		Portuguese:"Dinamite"
+		German:"Dynamit"
+	}
+	
+///////// Technologies (Modern Era)
+	
+	"Refrigeration":{
+		Italian:"Refrigerazione"
+		Russian:"Криогеника"
+		French:"Réfrigération"
+		Romanian:"Refrigerare"
+		German:"Kühlung"
+		Dutch:"Koeling"
+		Spanish:"Refrigeración"
+		Simplified_Chinese:"制冷"
+		Portuguese:"Refrigeração"
+	}
+
+	"Replaceable Parts":{
+		Italian:"Pezzi indipendenti"
+		Romanian:"Piese de schimb"
+		Spanish:"Produccion En Serie"
+		Simplified_Chinese:"可更换部件"
+		Portuguese:"Partes substituiveís"
+		German:"Ersetzbare Teile"
+		French:"Pièces de rechange"
+		Russian:"Сменные части"
+	}
+    
+	"Radio":{
+		Italian:"Radio"
+		Russian:"Радио"
+		French:"Radio"
+		Romanian:"Radio"
+		German:"Radio"
+		Dutch:"Radio"
+		Spanish:"Radio"
+		Simplified_Chinese:"无线电"
+		Portuguese:"Rádio"
+	}
+
+	"Combustion":{
+		Italian:"Combustione"
+		Russian:"Двигатель ВС"
+		French:"Combustion"
+		Romanian:"Ardere"
+		German:"Verbrennung"
+		Dutch:"Verbranding"
+		Spanish:"Combustión"
+		Simplified_Chinese:"内燃机"
+		Portuguese:"Combustão"
+	}
+
+	"Plastics":{
+		Italian:"Plastica"
+		Russian:"Пластмассы"
+		French:"Matières plastiques"
+		Romanian:"Materiale plastice"
+		German:"Plastik"
+		Dutch:"Plastic"
+		Spanish:"Plástico"
+		Simplified_Chinese:"塑料"
+		Portuguese:"Plásticos"
+	}
+
+	"Electronics":{
+		Italian:"Elettronica"
+		Russian:"Электроника"
+		French:"Électronique"
+		Romanian:"Electronică"
+		German:"Elektronik"
+		Dutch:"Elektronica"
+		Spanish:"Electrónica"
+		Simplified_Chinese:"电子学"
+		Portuguese:"Eletronicos"
+	}
+
+	"Ballistics":{
+		Italian:"Balistica"
+		German:"Ballistik"
+		French:"Balistique"
+		Spanish:"Balística"
+		Russian:"баллистика"
+		Portuguese:"Balística"
+		Romanian:"Balistică"
+		Simplified_Chinese:"弹道学"
+	}
+
+	"Mass Media":{
+		Italian:"Mass media"
+		Russian:"СМИ"
+		French:"Médias de masse"
+		Romanian:"Mass media"
+		German:"Massenmedien"
+		Dutch:"Massa Media"
+		Spanish:"Medios de comunicación"
+		Simplified_Chinese:"大众传媒"
+		Portuguese:"Mídia de massa"
+	}
+
+	"Flight":{
+		Italian:"Volo"
+		Russian:"Авиация"
+		French:"Aviation"
+		Romanian:"Aviație"
+		German:"Flug"
+		Dutch:"Vlucht"
+		Spanish:"Vuelo"
+		Simplified_Chinese:"航空"
+		Portuguese:"Vôo"
+	}
+	
+///////// Technologies (Information Era)
+	
+	"Pharmaceuticals":{
+		Italian:"Farmaceutica"
+		Russian:"Пенициллин"
+		French:"Médicaments"
+		Romanian:"Produse farmaceutice"
+		German:"Arzneimittel"
+		Dutch:"Farmaceutica"
+		Spanish:"Farmacéutica"
+		Simplified_Chinese:"制药学"
+		Portuguese:"Farmacêuticas"
+	}
+
+	"Atomic Theory":{
+		Italian:"Teoria atomica"
+		Russian:"Атомная Теория"
+		French:"Théorie atomique"
+		Romanian:"Teoria atomică"
+		German:"Atomtheorie"
+		Dutch:"Atoom theorie"
+		Spanish:"Teoría atómica"
+		Simplified_Chinese:"原子理论"
+		Portuguese:"Teoria atômica"
+	}
+
+	"Computers":{
+		Italian:"Computer"
+		Russian:"Kомпьютеры"
+		French:"Ordinateurs"
+		Romanian:"Calculatoare"
+		German:"Computer"
+		Dutch:"Computers"
+		Spanish:"Ordenadores"
+		Simplified_Chinese:"电子计算机"
+		Portuguese:"Computadores"
+	}
+
+	"Combined Arms":{
+		Italian:"Armi combinate"
+		Russian:"Комбинированные руки"
+		French:"Armes combinés"
+		German:"Verbundene Waffen"
+		Spanish:"Fuerzas combinadas"
+		Simplified_Chinese:"协同作战"
+	}
+
+	"Nuclear Fission":{
+		Italian:"Fissione nucleare"
+		Russian:"Расщепление ядра"
+		French:"Fission nucléaire"
+		Romanian:"Fisiune nucleară"
+		German:"Kernspaltung"
+		Dutch:"Kernsplijting"
+		Spanish:"Fisión nuclear"
+		Simplified_Chinese:"核裂变"
+		Portuguese:"Fusão núclear"
+	}
+
+	"Ecology":{
+		Italian:"Ecologia"
+		Russian:"Экология"
+		French:"Écologie"
+		Romanian:"Ecologie"
+		German:"Ökologie"
+		Dutch:"Ecologie"
+		Spanish:"Ecología"
+		Simplified_Chinese:"生态学"
+		Portuguese:"Ecologia"
+	}
+
+	"Robotics":{
+		Italian:"Robotica"
+		Russian:"Робототехника"
+		French:"Robotique"
+		Romanian:"Robotică"
+		German:"Robotik"
+		Dutch:"Robotica"
+		Spanish:"Robótica"
+		Simplified_Chinese:"机器人学"
+		Portuguese:"Robótica"
+	}
+
+	"Rocketry":{
+		Italian:"Missilistica"
+		Russian:"Ракетостроение"
+		French:"Fusées" //official translate 
+		Romanian:"Rachete"
+		German:"Raketentechnik"
+		Dutch:"Rakettechniek"
+		Spanish:"Cohetería"
+		Simplified_Chinese:"火箭"
+		Portuguese:"Balística"
+	}
+	
+///////// Technologies (Future Era)
+
+	/*
+	"Lasers":{
+		Italian:"Laser"
+		French:"Lasers"
+	}
+	*/
+
+	"Nanotechnology":{
+		Italian:"Nanotecnologia"
+		Russian:"Нанотехнологии"
+		French:"Nanotechnologie"
+		Romanian:"Nanotehnologie"
+		German:"Nanotechnologie"
+		Dutch:"Nanotechnologie"
+		Spanish:"Nanotecnología"
+		Simplified_Chinese:"纳米技术"
+		Portuguese:"Nano-tecnologia"
+	}
+
+	"Satellites":{
+		Italian:"Satelliti"
+		Russian:"Спутники"
+		French:"Satellites"
+		Romanian:"Sateliți"
+		German:"Satelliten"
+		Dutch:"Satellieten"
+		Spanish:"Satélites"
+		Simplified_Chinese:"卫星"
+		Portuguese:"Satélites"
+	}
+
+	"Particle Physics":{
+		Italian:"Fisica delle particelle"
+		Russian:"Физика элементарных частиц"
+		French:"Physique des particules"
+		Romanian:"Fizica particulelor"
+		German:"Teilchenphysik"
+		Dutch:"Deeltjesfysica"
+		Spanish:"Física de partículas"
+		Simplified_Chinese:"量子物理"
+		Portuguese:"Física de particulas"
+	}
+
+	"Future Tech":{
+		Italian:"Tecnologia futura"
+		Russian:"Технология будущчего"
+		French:"Technologie future"
+		Romanian:"Tehnologia viitorului"
+		German:"Zukunftstechnologien"
+		Dutch:"Toekomst Technologie"
+		Spanish:"Tecnología del futuro"
+		Simplified_Chinese:"未来科技"
+		Portuguese:"Tecnologia futurista" //means futuristic technology (not sure but i'll say that's right anyway)
+	}
+	
+	"Who knows what the future holds?":{
+		Italian:"Chi sa cosa riservano i prossimi anni?"
+		Russian:"Кто знает, что ждет в будущем?"
+		French:"Qui sait ce que l'avenir réserve?"
+		Romanian:"Cine poate ști ce ne rezervă viitorul?"
+		Dutch:"Wie weet wat de toekomst inhoud?"
+		Spanish:"¿Quién sabe qué nos depara el futuro?"
+		Simplified_Chinese:"谁知道未来会怎样?"
+		Portuguese:"Quem sabe o que o futuro reserva?"
+		German:"Wer weiß was die Zukunft für uns bereithält?"
+	}
+	
+	/*
+	"A repeating technology that will increase your score each time it is researched.":{ //Future Tech description
+		Italian:"Questa tecnologia si può sempre ricercare; il tuo punteggio aumenterà ogni volta che viene scoperta."
+		French:"Une technologie qui augmente le score et qui peut être fait indéfiniment."
+		Simplified_Chinese:"一项可以重复研究的科技，每次研究完成时都会增加你的积分"
+	}
+	*/
+	
+///////// Tech uniques
+
+	"+10% science and production in all cities":{
+		Italian:"+10% Scienza e Produzione in tutte le città"
+		Russian:"+10% науки и производства во всех городах"
+		Romanian:"+10% știință și producție în toate orașele"
+		Spanish:"+10% de ciencia y producción en todas las ciudades"
+		Simplified_Chinese:"所有城市+10%的科研和产能产出"
+		Portuguese:"+10% de produção de ciência em todas as cidades"
+		German:"+10% Wissenschaft und Produktion in allen Städten"
+		French:"+10% science et production dans toutes les villes"
+	}
+	
+	"Improves movement speed on roads":{ //Is this a duplicate? It appears 2 items back also. --> I removed the dup.
+		Italian:"Migliora la velocità di movimento sulle strade"
+		Russian:"Улучшает скорость передвижения по дорогам"
+		French:"Améliore la vitesse de déplacement sur les routes"
+		Romanian:"Îmbunătățește viteza de deplasare pe drumuri"
+		Spanish:"Mejora la velocidad de movimiento en carreteras"
+		Simplified_Chinese:"提高道路上的移动速度"
+		Portuguese:"Melhora velocidade de movimento em estradas"
+		German:"Erhöht die Bewegungsgeschwindigkeit auf Straßen"
+	}
+
+	"Enables conversion of city production to science":{
+		Italian:"Consente di convertire la Produzione nelle città in Scienza"
+		Russian:"Разрешает конверсию производства в науку"
+		French:"Permet la conversion de la production des villes en science"
+		Romanian:"Permite conversia producției orașului la știință"
+		Spanish:"Habilita la conversión de producción a ciencia"
+		Simplified_Chinese:"可将城市产能转化为科研"
+		Portuguese:"Habilita a conversão de produção das cidades para ciência"
+		German:"Erlaubt das Umwandeln von städtischer Produktion in Wissenschaft"
+	}
+
+	"Enables conversion of city production to gold":{
+		Italian:"Consente di convertire la Produzione nelle città in Oro"
+		Russian:"Разрешает конверсию производства в золото"
+		French:"Permet la conversion de la production des villes en or"
+		Romanian:"Permite conversia producției orașului la aur"
+		Spanish:"Habilita la conversión de producción a oro"
+		Simplified_Chinese:"可将城市产能转化为金钱"
+		Portuguese:"Habilita a conversão da produção das cidades para ouro"
+		German:"Erlaubt das Umwandeln von städtischer Produktion in Gold"
+	}
+	
+	"Enables embarkation for land units":{
+		Italian:"Permette alle unità terrestri di imbarcarsi e attraversare le caselle acquatiche."
+		Romanian:"Permite îmbarcarea unităților terestre"
+		Spanish:"Habilita la embarcacion a las unidades de tierra"
+		German:"Ermöglicht das Einbooten von Landeinheiten"
+		French:"Permet d'embarquer les unités terrestres"
+		Russian:"Позволяет посадку для наземных единиц"
+		Simplified_Chinese:"陆军单位拥有船运能力"
+		Portuguese:"Permite o embarque de unidades terrestres"
+	}
+	
+	"Enables embarked units to enter ocean tiles":{
+		Italian:"Permette alle unità di imbarcarsi nelle caselle oceaniche"
+		Romanian:"Permite unităților îmbarcate să meargă în celulele ocean"
+		Spanish:"Habilita a las unidades embarcadas a entrar en oceanós"
+		German:"Erlaubt es eingebooteten Einheiten Ozeanfelder zu überqueren"
+		French:"Permet aux unités embarqués de traverser les cases d'océan"
+		Russian:"Позволяет отправленным юнитам входить в тайлы океана"
+		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"
+		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
+	}
+	
+	"Increases embarked movement +1":{
+		Italian:"+1 Movimento per le unità imbarcate"
+		Spanish:"+1 a la velocidad de movimiento a las embarcaciones"
+		Italian:"+1 movimento delle unità imbarcate"
+		French:"Améliore le déplacement embarqué +1"
+		Romanian:"Crește mișcarea ambarcațiunilor +1"
+		Simplified_Chinese:"陆军单位处于船运状态时的移动力+1"
+		Portuguese:"Aumenta movimento enquanto embarcado em +1"
+		German:"+1 für Bewegungen eingebooteter Einheiten"
+	}
+	
+///////// Tech Eras
+	// In case of foreign languages it becomes gender sensitive words
+	//Also in russian "Medieval Era" becomes "Средневековье" or italian for "Renaissance Era" becomes "Rinascimento". So they got a single world to replace 2 english ones
+	
+    "Ancient era":{
+		Italian:"Antichità" //one word translation, as in "Sei entrato in una era, l'Antichità"
+		Russian:"Древнейший мир"
+		French:"Antiquité"
+		Romanian:"Antichitate"
+		Dutch:"Oude"
+		Spanish:"Edad antigua"
+		Simplified_Chinese:"远古时代"
+		Portuguese:"Era anciâ"
+		German:"Altertum"
+	}
+
+	"Classical era":{
+		Italian:"Classica"
+		Russian:"Античность" //one word translation
+		French:"Âge classique" //means nothing in french
+		Romanian:"Era clasică"
+		Dutch:"Klasieke"
+		Spanish:"Edad clásica"
+		Simplified_Chinese:"古典时代"
+		Portuguese:"Era clássica"
+		German:"Klassik"
+	}
+
+	"Medieval era":{
+		Italian:"Medievale"
+		Russian:"Средневековье" //one word translation
+		French:"Moyen Âge"
+		Romanian:"Evul mediu"
+		Dutch:"Middeleeuwse"
+		Spanish:"Edad medieval"
+		Simplified_Chinese:"中古时代"
+		Portuguese:"Era medieval"
+		German:"Mittelalter"
+	}
+
+	"Renaissance era":{
+		Italian:"Rinascimentale"
+		Russian:"Новое время" //one word translation
+		French:"Renaissance" //one word translation
+		Romanian:"Renaştere"
+		Dutch:"Renaissance"
+		Spanish:"Renacimiento"
+		Simplified_Chinese:"启蒙时代"
+		Portuguese:"Era da Renascença"
+		German:"Renaissance"
+	}
+
+	"Industrial era":{
+		Italian:"Industriale"
+		Russian:"Новейшее время"
+		French:"Ère industrielle" //or Révolution Industrielle
+		Romanian:"Epoca industrială"
+		Dutch:"Industrieele"
+		Spanish:"Era industrial"
+		Simplified_Chinese:"工业时代"
+		Portuguese:"Era industrial"
+		German:"Industrielle Revolution"
+	}
+
+	"Modern era":{
+		Italian:"Moderna"
+		Russian:"Современность" //one word translation
+		French:"Ère contemporaine"
+		Romanian:"Epoca modernă"
+		Dutch:"Moderne"
+		Spanish:"Edad moderna"
+		Simplified_Chinese:"电气时代"
+		Portuguese:"Era moderna"
+		German:"Moderne"
+	}
+
+	"Information era":{
+		Italian:"Informatica"     //[newEra] +translation
+		Russian:"Информационная эра" //translation+ [newEra]
+		French:"Ère médiatique"
+		Romanian:"Era informațională"
+		Dutch:"Informatie"
+		Spanish:"Era de la información"
+		Simplified_Chinese:"信息时代"
+		Portuguese:"Era informação"
+		German:"Informationszeitalter"
+	}
+
+	"Future era":{
+		Italian:"Futura"
+		Russian:"Будущее" //all one word translation
+		French:"Ère du futur" 
+		Romanian:"Era viitorului"
+		Dutch:"Toekomst"
+		Spanish:"Era futura"
+		Simplified_Chinese:"未来时代"
+		Portuguese:"Era futurista" //Futurista means futuristic if you want it replaced just put futura (same as spanish) in its place.
+		German:"Ära der Zukunft"
+	}
+
+}

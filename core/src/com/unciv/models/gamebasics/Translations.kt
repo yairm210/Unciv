@@ -4,9 +4,9 @@ import com.badlogic.gdx.utils.JsonReader
 import com.unciv.UnCivGame
 import java.util.*
 
-class Translations() : HashMap<String, HashMap<String, String>>(){
+class Translations : HashMap<String, HashMap<String, String>>(){
 
-    constructor(json:String):this(){
+    fun add(json:String){
         val jsonValue = JsonReader().parse(json)!!
 
         var currentEntry = jsonValue.child

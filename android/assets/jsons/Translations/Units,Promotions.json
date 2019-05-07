@@ -1,0 +1,1475 @@
+{
+
+///////// Unit types
+
+	"Civilian":{
+		Italian:"civile" //Unità civile
+		Russian:"Мирный"
+		French:"Civile"
+		Romanian:"Civil"
+		German:"Zivilist"
+		Dutch:"Burger"
+		Spanish:"Civil"
+		Simplified_Chinese:"平民单位"
+		Portuguese:"Cidadão"
+	}
+
+	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
+		Italian:"marittima civile" //Unità marittima civile
+		Simplified_Chinese:"海上平民单位"
+		French:"Civil embarqué"
+	}
+
+	"Melee":{
+		Italian:"da mischia" //Unità da mischia
+		Russian:"Ближний бой"
+		French:"Mêlée"
+		Romanian:"Luptător de contact"
+		German:"Nahkämpfer"
+		Dutch:"Melee"
+		Spanish:"Cuerpo a cuerpo"
+		Simplified_Chinese:"近战单位"
+		Portuguese:"Corpo a corpo"
+	}
+
+	"WaterMelee":{
+		Italian:"marittima da mischia" //Unità marittima da mischia
+		Simplified_Chinese:"海军近战单位"
+		French:"Navire de combat rapproché"
+	}
+
+	"Ranged":{
+		Italian:"da tiro" //Unità da tiro
+		Russian:"Дальний бой"
+		French:"À distance"
+		Romanian:"Luptător la distanță"
+		German:"Fernkämpfer"
+		Dutch:"Afstands"
+		Spanish:"A distancia"
+		Simplified_Chinese:"远程单位"
+		Portuguese:"Ataque a distancia"
+	}
+
+	"WaterRanged":{
+		Italian:"marittima a distanza" //Unità marittima a distanza
+		Simplified_Chinese:"海军远程单位"
+		French:"Navire de combat à distance"
+	}
+
+	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
+		Italian:"sottomarina" //Unità sottomarina
+		Simplified_Chinese:"海军潜艇单位"
+		French:"Navires sous-marins"
+	}
+
+	"Siege":{
+		Italian:"d'assedio" //Unità d'assedio
+		Russian:"Осадный"
+		French:"Siège" //Unité de siège
+		Romanian:"Dispozitiv de asediu"
+		German:"Belagerungsmaschiene"
+		Dutch:"Belegering"
+		Spanish:"Asedio"
+		Simplified_Chinese:"攻城单位"
+		Portuguese:"Cerco"
+	}
+
+	"Mounted":{
+		Italian:"a cavallo" //Unità a cavallo
+		Russian:"Конный"
+		French:"Montée"
+		Romanian:"Luptător călare"
+		German:"Beritten"
+		Dutch:"Bereden"
+		Spanish:"Montado"
+		Simplified_Chinese:"骑乘单位"
+		Portuguese:"Montado(a)"
+	}
+    
+	"Scout":{
+		Italian:"d'esplorazione" //Unità d'esplorazione
+		Russian:"Разведчик"
+		French:"Éclaireur"
+		Romanian:"Cercetaș"
+		German:"Kundschafter"
+		Dutch:"Verkening"
+		Spanish:"Explorador"
+		Simplified_Chinese:"侦察单位"
+		Portuguese:"Explorador"
+	}
+
+	"Armor":{
+		Italian:"corazzata" //Unità corazzata
+		Simplified_Chinese:"装甲单位"
+		French:"Blindé"
+	}
+
+	"City":{
+		Italian:"Città"
+		Russian:"Город"
+		French:"Ville"
+		Romanian:"Oraș"
+		German:"Stadt"
+		Dutch:"Stad"
+		Spanish:"Ciudad"
+		Simplified_Chinese:"城市"
+		Portuguese:"Cidade"
+	}
+
+	// - - - - NOTE: Unit uniques are to be put next to the first unit that has this unique! - - - 
+	
+////// Ancient Era Units
+
+    // Settler already translated in difficulties
+	
+	"Founds a new city":{
+		Italian:"Può fondare una nuova città"
+		Russian:"Основывает новый город"
+		French:"Fonder une nouvelle ville"
+		Romanian:"Fondează un oraș nou"
+		German:"Gründet eine neue Stadt"
+		Dutch:"Sticht een nieuwe stad"
+		Spanish:"Funda una nueva ciudad"
+		Simplified_Chinese:"建立一座城市，组建此单位时城市的食物积累停止"
+		Portuguese:"Funda uma nova cidade"
+	}
+
+	"Worker":{	
+		Italian:"Lavoratore"
+		Russian:"Рабочий"
+		French:"Ouvrier"
+		Romanian:"Muncitor"
+		Spanish:"Trabajador"
+		Simplified_Chinese:"工人"
+		Portuguese:"Assalariado" // may change to trabalhador (assalariado means wage earner wich in portuguese has the same meaning of worker it is just another way to put it
+		German:"Arbeiter"
+	}
+	
+	
+	"Can build improvements on tiles":{
+		Italian:"Può costruire miglioramenti sulle caselle"
+		Russian:"Может создавать улучшения на клетках"
+		French:"Peut construire des améliorations sur les cases"
+		Romanian:"Poate construi îmbunătățiri pe celule"
+		German:"Kann Verbesserungen auf Feldern bauen"
+		Dutch:"Kan verbeteringen op velden bouwen"
+		Spanish:"Puede construir mejoras en casillas"
+		Simplified_Chinese:"可以在地块上建造设施"
+		Portuguese:"Pode construir melhorias em terrenos"
+	}
+
+	"Scout":{	
+		Italian:"Scout"
+		Russian:"Разведчик"
+		French:"Éclaireur"
+		Romanian:"Explorator"
+		Spanish:"Explorador"
+		Simplified_Chinese:"斥候"
+		Portuguese:"Explorador"
+		German:"Kundschafter"
+	}
+	
+	
+	"Ignores terrain cost":{
+		Italian:"Ignora i costi di movimento su terreno"
+		Russian:"Игнорирует стоимость местности"
+		French:"Ignore le coût du terrain"
+		Romanian:"Ignoră costul terenului"
+		German:"Ignoriert Geländekosten"
+		Dutch:"Negeert terreinskosten"
+		Spanish:"Ignora el coste del terreno"
+		Simplified_Chinese:"所有地形都只消耗1移动力"
+		Portuguese:"Ignora custo de movimento em terrennos díficeis"
+	}
+
+
+	"Warrior":{	
+		Italian:"Guerriero"
+		Russian:"Воин"
+		French:"Guerrier"
+		Romanian:"Războinic"
+		Spanish:"Guerrero"
+		Simplified_Chinese:"勇士"
+		Portuguese:"Guerreiro"
+		German:"Krieger"
+	}
+
+	"Archer":{	
+		Italian:"Arciere"
+		Russian:"Лучник"
+		French:"Archer"
+		Romanian:"Arcaş"
+		Spanish:"Arquero"
+		Simplified_Chinese:"弓箭手"
+		Portuguese:"Arqueiro"
+		German:"Bogenschütze"
+	}
+
+	"Bowman":{
+		// babylons unique
+		Italian:"Guerriero con arco"	
+		Russian:"Меткий лучник"
+		French:"Archer Babylonien"
+		Romanian:"Arcaș"
+		//IS THIS SAME AS ARCHER IN OTHER LANGUAGES=?? 
+		//In official Russian localization it's accurate archer :)
+		//Spanish:Yep, exacly the same problem whit musketman and musketer
+		Spanish:"Arquero experto"
+		Simplified_Chinese:"巴比伦弓手"
+		Portuguese:"Arqueiro"
+		German:"Kampfbogenschütze" //from original game
+	}
+
+	"Work Boats":{
+		Spanish:"Barco de trabajo"
+		Italian:"Chiatta"
+		French:"Bateau-atelier"
+		Romanian:"Barcă de lucru"
+		Simplified_Chinese:"工船"
+		Portuguese:"Barcos de trabalho"
+		German:"Arbeitsboote"
+	}
+
+	"Trireme":{
+		Spanish:"Trirreme"
+		Italian:"Trireme"
+		French:"Trirème"
+		Romanian:"Triremă"
+		Simplified_Chinese:"三列桨战船"
+		Portuguese:"Trireme"
+		//same in German
+	}
+
+	"Chariot Archer":{	
+		Italian:"Arciere su carro"
+		Russian:"Лучник на колеснице"
+		French:"Archer sur char"
+		Romanian:"Arcaș în car"
+		Spanish:"Arquero a carruaje"
+		Simplified_Chinese:"战车射手"
+		Portuguese:"Arqueiro de Biga"
+		German:"Streitwagen-Bogenschütze"
+	}
+	
+	
+	"No defensive terrain bonus":{
+		Italian:"Nessun bonus difensivo su terreno"
+		Russian:"Нет бонуса защиты от ландшафта"
+		French:"Aucun bonus de terrain défensif"
+		Romanian:"Niciun bonus defensiv de teren"
+		German:"Kein geländeabhängiger Verteidigungsbonus"
+		Dutch:"Geen defensiefe terreinsbonussen"
+		Spanish:"Sin bonus de defensa de terreno"
+		Simplified_Chinese:"无地形防御力加成"
+		Portuguese:"Nenhum bonus de defesa do terreno"
+	}
+
+	"Rough terrain penalty":{
+		Italian:"Penalità su terreno accidentato"
+		Russian:"Штраф грубой местности"
+		French:"Pénalité de terrain difficile"
+		Romanian:"Penalizare pentru teren accidentat"
+		German:"Im Nachteil auf rauem Gelände"
+		Dutch:"Nadeel in ruig terrein"
+		Spanish:"Penalización en terreno escabroso"
+		Simplified_Chinese:"复杂地形惩罚"
+		Portuguese:"Penalidade de terreno díficil"
+	}
+
+
+	"War Chariot":{ // Egypt unique
+		Italian:"Carro da guerra"
+		Romanian:"Războinic în car"
+		Spanish:"Carruaje de guerra"
+		Simplified_Chinese:"埃及战车"
+		German:"Streitwagen"
+		French:"Char de guerre"
+	} 
+	
+	"Spearman":{	
+		Italian:"Lanciere"
+		Russian:"Копейщик"
+		French:"Infanterie"
+		Romanian:"Lăncier"
+		Spanish:"Lancero"
+        Simplified_Chinese:"枪兵"
+		Portuguese:"Lanceiro"
+		German:"Speerkrieger"
+	}
+
+	"Hoplite":{ // Greek unique
+		Italian:"Oplita"
+		Romanian:"Hoplit"
+		Spanish:"Hoplita"
+		Simplified_Chinese:"希腊重步兵"
+		German:"Hoplit"
+		French:"Hoplite"
+	}
+	
+////// Classical Era Units
+
+	"Composite Bowman":{
+		Italian:"Arciere composito"
+		Romanian:"Arcaș cu arc compozit"
+		Spanish:"Arcos Compuestos"
+		Simplified_Chinese:"复合弓兵"
+		German:"Kompositbogenschütze"
+		French:"Archer composite"
+	}
+
+	"Catapult":{	
+		Italian:"Catapulta"
+		Russian:"Катапульта"
+		French:"Catapulte"
+		Romanian:"Catapultă"
+		Spanish:"Catapulta"
+		Simplified_Chinese:"石弩"
+		Portuguese:"Catapulta"
+		German:"Katapult"
+	}	
+	
+	"Must set up to ranged attack":{
+		Italian:"Deve allestirsi per attaccare a distanza"
+		Russian:"Необходимо подготовится к дальнобойной атаке"
+		French:"Doit être installé pour attaquer à distance"
+		Romanian:"Trebuie să fie montat pentru a putea ataca"
+		German:"Muss aufgestellt werden um Fernattacken auszuführen"
+		Dutch:"Moet opstellen voordat er een aanval op afstand kan worden gemaakt"
+		Spanish:"Debe montarse para atacar a distancia"
+		Simplified_Chinese:"必须架设才能远程攻击"
+		Portuguese:"Prescisa de preparação para atacar a distancia"
+	}
+
+	"Ballista":{
+		Spanish:"Balista"
+		Italian:"Ballista"
+		French:"Balliste"
+		Romanian:"Balistă"
+		Simplified_Chinese:"弩炮"
+		Portuguese:"Balista"
+		German:"Balliste"
+	}
+
+	"Swordsman":{	
+		Italian:"Spadaccino"
+		Russian:"Мечник"
+		French:"Épéiste"
+		Romanian:"Spadasin"
+		Spanish:"Espadachín"
+		Simplified_Chinese:"剑士"
+		Portuguese:"Espadachin" // may replace with guerreiro com espada if nescessary
+		German:"Schwertkämpfer"
+	}
+	
+	"Legion":{
+		Italian:"Legionario"
+		Romanian:"Legionar"
+		Spanish:"Legionario"
+		Simplified_Chinese:"古罗马军团"
+		German:"Legionär"
+		French:"Légion"
+	}
+
+	"Can construct roads":{
+		Italian:"Può costruire Strade"
+        Simplified_Chinese:"可以建造道路"
+		French:"Peut construire des routes"
+	}
+
+	"Construct road":{ // for unit action button
+		Italian:"Costruisci Strada"
+        Simplified_Chinese:"建造道路"
+		French:"Construire une route"
+	} 
+	
+	"Horseman":{	
+		Italian:"Guerriero a cavallo"
+		Russian:"Всадник"
+		French:"Cavalier"
+		Romanian:"Călăreţ"
+		Spanish:"Jinete"
+		Simplified_Chinese:"骑手"
+		Portuguese:"Cavaleiro" //can be replaced by guerreiro montado if nescessary
+		German:"Reiter"
+	}
+
+	"Companion Cavalry":{	
+		Italian:"Cavalleria dei Compagni"
+		Russian:"Сопутствующая кавалерия"
+		French:"Cavalerie des Compagnons"
+		Romanian:"Cavalerie de companie"
+		Spanish:"Caballería de compañia"
+		Simplified_Chinese:"马其顿禁卫骑兵"
+		Portuguese:"Cavalaria companheira" //may be replaced by cavalaria de compania if nescessary
+		German:"Hetairenreiter"
+	}
+	
+////// Medieval units
+
+	"Galleass":{
+		Spanish:"Galeaza"
+		Italian:"Galeazza"
+		French:"Galléasse"
+		Romanian:"Galeră"
+		Simplified_Chinese:"桨帆战舰"
+		Portuguese:"Galleass"
+		German:"Galeere"
+	}
+	
+	"Crossbowman":{	
+		Italian:"Balestriere"
+		Russian:"Арбалетчик"
+		French:"Arbalétrier"
+		Romanian:"Trăgător cu arbaleta"
+		Spanish:"Ballestero"
+		Simplified_Chinese:"弩手"
+		Portuguese:"Besteiro"
+		German:"Armbrustschütze"
+	}
+
+	"Longbowman":{	
+		Italian:"Arciere con arco lungo"
+		French:"Archer long"
+		Romanian:"Arcaș cu arc lung"
+		Spanish:"Arquero de arco largo"
+		Simplified_Chinese:"长弓手"
+		Portuguese:"Arqueiro de arco longo"
+		German:"Langbogenschütze"
+	}
+
+	"Chu-ko-nu":{
+		Italian:"Chu-ko-nu"//same in Italian
+		Romanian:"Chu-ko-nu"
+		Spanish:"Chu-ko-nu"
+		Simplified_Chinese:"诸葛弩"
+		//same in German
+		//same in French
+	} // Chinese unique, can transliterate
+
+/*
+	"Chu-Ko-Nu":{ //it seems that it's useless to keep this one
+		//Same as in Italian
+		Simplified_Chinese:"诸葛弩"
+		French:"Chu Ko Nu"
+	}
+*/
+
+	"Trebuchet":{	
+		Italian:"Trabocco"
+		Russian:"Требушет"
+		French:"Trébuchet"
+		Romanian:"Aruncător de pietre"
+		Spanish:"Trabuquete"
+		Simplified_Chinese:"抛石机"
+		Portuguese:"Trebuchet"
+		German:"Tribock"
+	}
+
+	"Longswordsman":{
+		Italian:"Guerriero con spada lunga"
+		Russian:"Мечник (длинный меч)"
+		French:"Spadassin à épée longue"
+		Romanian:"Spadasin cu sabie lungă"
+		Spanish:"Espadachín de espada larga"
+		Simplified_Chinese:"长剑士"
+		Portuguese:"Espachin de espada longa" // May replace espadachin with guerreiro if nescessary"
+		German:"Langschwertkämpfer"
+	}
+
+	"Pikeman":{	
+		Italian:"Picchiere"
+		Russian:"Пикинер"
+		French:"Piquier"
+		Romanian:"Suliţaş"
+		Spanish:"Piquero"
+		Simplified_Chinese:"长枪兵"
+		Portuguese:"Piqueiro"
+		German:"Pikenier"
+	}
+
+	"Knight":{	
+		Italian:"Cavaliere"
+		Russian:"Рыцарь"
+		French:"Chevalier"
+		Romanian:"Cavaler"
+		Spanish:"Caballero"
+		Simplified_Chinese:"骑士"
+		Portuguese:"Cavaleiro"
+		German:"Ritter"
+	}
+
+	"Camel Archer":{
+		Italian:"Arciere su cammello"
+		Romanian:"Arcaș pe cămilă"
+		Spanish:"Arquero a camello"
+		Simplified_Chinese:"骆驼骑射手"
+		Russian:"Лучник на верблюде"
+		German:"Kamel-Bogenschütze"
+		French:"Archer méhariste"
+	}
+
+	"Samurai":{
+		Italian:"Samurai" //Same as in Italian
+		Simplified_Chinese:"日本武士"
+		French:"Samuraï"
+	}
+
+	"Combat very likely to create Great Generals":{
+		Italian:"Può generare un Grande Generale combattendo"
+		Simplified_Chinese:"战斗能更快地产生出大军事家"
+		French:"A de grande chance de faire apparaitre un général illustre suite à un combat"
+	}
+	
+////// Renaissance units
+
+	"Caravel":{
+		Spanish:"Caravela"
+		Italian:"Caravella"
+		French:"Caravelle"
+		Romanian:"Caravelă"
+		Simplified_Chinese:"轻帆船"
+		Portuguese:"Caravela"
+		Russian:"Каравелла"
+		German:"Karavelle"
+	}
+
+	"Cannon":{	
+		Italian:"Cannone"
+		Russian:"Пушка"
+		French:"Canon"
+		Romanian:"Tun"
+		Spanish:"Cañón"
+		Simplified_Chinese:"加农炮"
+		Portuguese:"Canhão"
+		German:"Kanone"
+	}
+
+	"Musketman":{	
+		Italian:"Soldato con moschetto"
+		French:"Arquebusier"
+		Romanian:"Muschetar"
+		Spanish:"Mosquetero"
+		Simplified_Chinese:"火铳手"
+		Portuguese:"Soldado com mosquete"
+		Russian:"Стрельцы"
+		German:"Musketschütze"
+	}
+
+	"Musketeer":{ //french unique
+		Spanish:"Mosquetero Revolucionario"
+		Italian:"Moschettiere"
+		French:"Mousquetaire"
+		Romanian:"Muschetar"
+		Simplified_Chinese:"火枪手"
+		Portuguese:"Mosqueteiro"
+		Russian:"Мушкетёр"
+		German:"Musketier"
+	} 
+
+	"Minuteman":{
+		Italian:"Minuteman" //same in Italian
+		Romanian:"Rezervist"
+		Spanish:"Milicia Revolucionaria"
+		Simplified_Chinese:"快速民兵"
+		Russian:"Минитмэн"
+		//same in German
+		//same in French
+	} // American unique
+
+	"Frigate":{
+		Spanish:"Fragata"
+		Italian:"Fregata"
+		French:"Frégate"
+		Romanian:"Fregată"
+		Simplified_Chinese:"护卫舰"
+		Portuguese:"Fragata"
+		Russian:"Фригат"
+		German:"Frigatte"
+	}
+
+	"Ship of the Line":{ // English unique
+		Italian:"Nave di linea"
+		Romanian:"Navă de atac"
+		Spanish:"Barco De La Línea"
+		Simplified_Chinese:"主力舰"
+		Russian:"Линейный корабль"
+		German:"Linienschiff"
+		French:"Navire de ligne"
+	} 
+
+	"Lancer":{	
+		Italian:"Lanciere a cavallo"
+		Russian:"Улан"
+		French:"Lancier"
+		Romanian:"Lăncier"
+		Spanish:"Jinete lancero"
+		Simplified_Chinese:"枪骑兵"
+		Portuguese:"Lanceiro montado"
+		German:"Lanzer"
+	}
+	
+////// Industrial units
+	
+	"Gatling Gun":{
+		Italian:"Mitragliatrice Gatling"
+		Romanian:"Mitralieră Gatling"
+		Spanish:"Ametralladora De Plomo"
+		Simplified_Chinese:"加特林"
+		Russian:"Пулемёт Гатлинга"
+		German:"Gatling Kanone"
+		French:"Mitrailleuse Gatling"
+	}
+
+	"Rifleman":{	
+		Italian:"Fuciliere"
+		Russian:"Стрелок"
+		French:"Fusilier"
+		Romanian:"Carabinier"
+		Spanish:"Fusilero"
+		Simplified_Chinese:"来复枪兵"
+		Portuguese:"Fuzileiro"
+		German:"Gewehrschütze"
+	}
+
+	"Cavalry":{	
+		Italian:"Cavalleria"
+		Russian:"Кавалерия"
+		French:"Cavalerie"
+		Romanian:"Cavalerie"
+		Spanish:"Cavallería"
+		Simplified_Chinese:"近代骑兵"
+		Portuguese:"Cavalaria"
+		German:"Kavallerie"
+	}
+	
+	"Cossack":{
+		Italian:"Cosacco"
+		Romanian:"Cazac"
+		Spanish:"Cosaco"
+		Simplified_Chinese:"哥萨克骑兵"
+		Russian:"Казаки"
+		German:"Kosak"
+		French:"Cosaque"
+	}
+	
+	"Artillery":{	
+		Italian:"Artiglieria"
+		Russian:"Артиллерия"
+		French:"Artillerie"
+		Romanian:"Artilerie"
+		Spanish:"Artillería"
+		Simplified_Chinese:"火炮"
+		Portuguese:"Artilharia"
+		German:"Artillerie"
+	}
+
+	"Ironclad":{
+		Spanish:"Buque a vapor"
+		Italian:"Ironclad"
+		French:"Cuirassé"
+		Romanian:"Blindat"
+		Simplified_Chinese:"铁甲舰"
+		// iron clad has 3 different tranlations to portuguese but i am not sure wich one to use
+		Russian:"Броненосец"
+		German:"Panzerschiff"
+	}
+	
+////// Modern units
+
+	"Landship":{
+		Italian:"Nave di terra"
+		Romanian:"Vehicul terestru"
+		Spanish:"Tanque de la Gran Guerra"
+		Simplified_Chinese:"履带战车"
+		Russian:"Танкетка"
+		German:"Landschiff"
+		French:"Véhicule terrestre" //official translation but ugly
+	}
+	
+	"Great War Infantry":{
+		Italian:"Fante della Grande Guerra"
+		Romanian:"Infanteria Marelui Război"
+		Spanish:"Infanteria de la Gran Guerra"
+		Simplified_Chinese:"早期现代步兵"
+		Russian:"Стрелок"
+		German:"Weltkriegs Infanterie"
+		French:"Infanterie de la grande guerre"
+	}
+
+    "Foreign Legion":{ // French Unique
+		Italian:"Legione straniera"
+		Romanian:"Legiunea Străină"
+		Spanish:"Legion Olvidada"
+		Simplified_Chinese:"外籍军团"
+		Russian:"Иностранный легион"
+		German:"Fremdenlegion"
+		French:"Légion étrangère"
+	}
+	
+    /*
+	"Foreign Legion":{ // this can be deleted
+		Italian:"Legione Straniera"
+		Simplified_Chinese:"外籍军团"
+		French:"Légion étrangère"
+	}
+    */
+
+	"+20% bonus outside friendly territory":{
+		Italian:"+20% Forza fuori da territorio amico"
+		Simplified_Chinese:"境外作战时战斗力+20%"
+		French:"+20% bonus lors de combat hors d'un territoire allié" 
+	}
+
+	"Foreign Land":{ // for battle table combat percentage
+		Italian:"Terra Straniera"
+		Simplified_Chinese:"他国领土"
+		French:"Terre étrangère"
+	}
+	
+	"Destroyer":{
+		Italian:"Cacciatorpediniere"
+		Romanian:"Distrugător"
+		Spanish:"Destructor"
+		Simplified_Chinese:"驱逐舰"
+		Russian:"УНИЧТОЖИТЕЛЬ ВСЕГО И ВСЕЯ ЖИВОГО"
+		German:"Zerstörer"
+		French:"Destroyer"
+	}
+
+	"Machine Gun":{
+		Italian:"Mitragliatrice"
+		Romanian:"Mitralieră"
+		Spanish:"Ametralladora montada"
+		Simplified_Chinese:"机关枪"
+		Russian:"Пулемёт"
+		German:"Maschienengewehr"
+		French:"Mitrailleuse"
+	}
+
+	"Anti-aircraft Gun":{
+		Italian:"Cannone antiaereo"
+		Romanian:"Tun antiaerian"
+		Spanish:"Arma Anti-Aerea"
+		Simplified_Chinese:"高射炮"
+		Russian:"Зенитка"
+		German:"FLAK"
+		French:"Canon anti-aérien"
+	}
+
+	"Infantry":{
+		Italian:"Fanteria"
+		Romanian:"Infanterie"
+		Spanish:"Infanteria"
+		Simplified_Chinese:"现代步兵"
+		Russian:"Пехота"
+		German:"Infanterie"
+		French:"Infanterie"
+	}
+
+	"Battleship":{
+		Italian:"Corazzata"
+		Romanian:"Navă de luptă"
+		Spanish:"Buque de guerra"
+		Simplified_Chinese:"战列舰"
+		Russian:"Линкор"
+		German:"Schlachtschiff"
+		French:"cuirassé"
+	}
+
+	"Submarine":{
+		Italian:"Sottomarino"
+		Romanian:"Submarin"
+		Spanish:"Submarino"
+		Simplified_Chinese:"潜艇"
+		Russian:"Подводная Лодка"
+		German:"U-Boot"
+		French:"Sous-marin"
+	}
+
+	"Carrier":{ // aircrat carrier
+		Italian:"Portaerei"
+		Romanian:"Portavion"
+		Spanish:"Porta Aviones"
+		Simplified_Chinese:"航空母舰"
+		Russian:"Авианосец"
+		German:"Flugzeugträger"
+		French:"Porte-avions"
+	}
+	
+	"Great War Bomber":{
+		Italian:"Bombardiere della Grande Guerra"
+		Romanian:"Bombardier din Marele Război"
+		Spanish:"Bombardero de la Gran Guerra"
+		Simplified_Chinese:"早期轰炸机"
+		Russian:"великий бомбардировщик0_0"
+		German:"Weltkriegsbomber"
+		French:"Bombardier de la grande guerre"
+	}
+
+	"Triplane":{
+		Italian:"Triplano"
+		Romanian:"Triplan"
+		Spanish:"Triplano"
+		Simplified_Chinese:"三翼机"
+		Russian:"ТРИПЛАН"
+		German:"Dreidecker"
+		French:"Triplan"
+	}
+	
+////// Atomic units (not in game yet but will be, not super important but why not)
+
+	"Rocket Artillery":{
+		Italian:"Artiglieria lanciarazzi"
+		Romanian:"Artilerie de rachete"
+		Spanish:"Artilleria de misiles"
+		Simplified_Chinese:"火箭炮"
+		Russian:"Ракетная Артиллерия"
+		German:"Raketenartillerie"
+		French:"Lance-roquettes"
+	}
+
+	"Anti-Tank Gun":{
+		Italian:"Cannone anticarro"
+		Romanian:"Tun antitanc"
+		Spanish:"Arma Anti-Pesados"
+		Simplified_Chinese:"反坦克炮"
+		Russian:"противотанковое оружие"
+		German:"Panzerabwehr-Kanone"
+		French:"Canon antichar"
+	}
+
+	"Marine":{
+		Italian:"Marine"
+		Romanian:"Pușcaș marin"
+		Spanish:"Marine"
+		Simplified_Chinese:"海军陆战队"
+		Russian:"Морской пехотинец"
+		German:"Marine" //not sure if this is correct here
+		French:"Fusillier marin"
+	}
+
+	"Mobile SAM":{
+		Italian:"SAM mobile"
+		Romanian:"Tanc antiaerian"
+		Spanish:"Vehiculo SAM"
+		Simplified_Chinese:"防空导弹车"
+		Russian:"Мобильный СЭМ хуй знвет что это"
+		German:"Mobile Flugabwehrrakte"
+		French:"Lance-missiles SAM mobile"
+	}
+
+	"Paratrooper":{
+		Italian:"Paracadutista"
+		Romanian:"Soldat parașutist"
+		Spanish:"Fuerzas Especiales"
+		Simplified_Chinese:"伞兵"
+		Russian:"Парашютист"
+		German:"Fallschirmjäger"
+		French:"Parachutiste"
+	}
+
+	"Tank":{
+		Italian:"Carro armato"
+		Romanian:"Tanc"
+		Spanish:"Tanque"
+		Simplified_Chinese:"坦克"
+		Russian:"ТАНК"
+		German:"Panzer"
+		French:"Char"
+	}
+
+	"Panzer":{ // german unique
+		Italian:"Panzer" //same in Italian
+		Romanian:"Panzer"
+		Spanish:"Panzer"
+		Simplified_Chinese:"“虎II”坦克"
+		Russian:"Панзэр"
+		German:"Tiger II Panzer" //I used a more late WW2 panzer name here to destinguish 
+		French:"Panzer"
+	} 
+
+	"Bomber":{
+		Italian:"Bombardiere"
+		Romanian:"Bombardier"
+		Spanish:"Bombardero"
+		Simplified_Chinese:"轰炸机"
+		Russian:"Бомбардировщик"
+		French:"Bombardier"
+	}
+
+    "Mechanized Infantry":{
+		Italian:"Fanteria meccanizzata"
+		Simplified_Chinese:"机械化步兵"
+		French:"Infantrie mécanisée"
+	}
+
+    "Modern Armor":{
+		Italian:"Armatura moderna"
+		Simplified_Chinese:"现代坦克"
+		French:"Blindé moderne"
+    }
+
+	"B17":{ // american unique
+		Italian:"B-17"
+		Romanian:"B17"
+		Spanish:"B-17"
+		Simplified_Chinese:"B-17“空中堡垒”"
+		French:"B-17"
+	}
+
+	"Fighter":{
+		Italian:"Caccia"
+		Romanian:"Avion de vânătoare"
+		Spanish:"Caza"
+		Simplified_Chinese:"战斗机"
+		German:"Jäger"
+		French:"Chasseur"
+	}
+
+	"Helicopter Gunship":{
+		Italian:"Elicottero da guerra"
+		Romanian:"Elicopter de atac"
+		Spanish:"Helicoptero Apache"
+		Simplified_Chinese:"武装直升机"
+		Russian:"Боевой вертолёт"
+		German:"Angriffshelikopter"
+		French:"Hélicoptère de combat"
+	}
+	
+////// Information era - not even putting here, too far off
+
+	/*
+	"Giant Death Robot":{
+		Italian:"Robot Gigante della Morte"
+		French:"Robot Mortel Géant" //The most accurate should be "Robot géant de la mort" but it sound really ridiculous
+		Simplified_Chinese:"末日机甲"
+	}
+	*/
+	
+////// Great units
+
+	"Great Artist":{	
+		Italian:"Grande Artista"
+		Russian:"Великий художник"
+		French:"Artiste illustre"
+		Romanian:"Mare Artist"
+		Spanish:"Gran Artista"
+		Simplified_Chinese:"大艺术家"
+		Portuguese:"Grande Artista"
+		German:"Großer Künstler"
+	}
+
+	"Great Scientist":{	
+		Italian:"Grande Scienziato"
+		Russian:"Великий ученый"
+		French:"Scientifique illustre"
+		Romanian:"Mare Om de Știință"
+		Spanish:"Gran Científico"
+		Simplified_Chinese:"大科学家"
+		Portuguese:"Grande Ciêntista"
+		German:"Großer Wissenschaftler"
+	}
+
+	"Great Merchant":{	
+		Italian:"Grande Mercante"
+		Russian:"Великий торговец"
+		French:"Marchand illustre"
+		Romanian:"Mare Comerciant"
+		Spanish:"Gran Mercader"
+		Simplified_Chinese:"大商业家"
+		Portuguese:"Grande Mercador"
+		German:"Großer Händler"
+	}
+
+	"Great Engineer":{	
+		Italian:"Grande Ingegnere"
+		Russian:"Великий инженер"
+		French:"Ingénieur illustre"
+		Romanian:"Mare Inginer"
+		Spanish:"Gran Ingeniero"
+		Simplified_Chinese:"大工程师"
+		Portuguese:"Grande engenheiro"
+		German:"Großer Ingenieur"
+	}
+
+	"Great General":{
+		Italian:"Grande Generale"
+		Romanian:"Mare General"
+		Spanish:"Gran General"
+		Simplified_Chinese:"大军事家"
+		Russian:"Великий полководец"
+		German:"Großer General"
+		French:"Général illustre"
+	}
+	
+	////// Unit Promotions
+
+	"Pick promotion":{
+		Italian:"Scegli promozione"
+		French:"Choisissez une promotion"
+		Simplified_Chinese:"选择晋升项"
+	}
+	
+	" OR ":{// as in "Requires Accuracy I OR Barrage I
+		Italian:" O "
+		Spanish:" O "
+		Romanian:" SAU "
+		Simplified_Chinese:" 或 "
+		Portuguese:" OR "
+		Russian:" ИЛИ "
+		German:" ODER "
+		French:" OU "
+	}
+	
+	"Accuracy I":{
+		Italian:"Precisione I"
+		German:"Genauigkeit I"
+		French:"Précision I"
+		Russian:"Точность I"
+		Simplified_Chinese:"精准I级"
+	}
+
+	"Accuracy II":{
+		Italian:"Precisione II"
+		German:"Genauigkeit II"
+		French:"Précision II"
+		Russian:"Точность II"
+		Simplified_Chinese:"精准II级"
+	}
+
+	"Accuracy III":{
+		Italian:"Precisione III"
+		German:"Genauigkeit III"
+		French:"Précision III"
+		Russian:"Точность III"
+		Simplified_Chinese:"精准III级"
+	}
+
+	"Bonus vs units in open terrain 15%":{
+		Italian:"+15% Forza contro unità in terreno aperto"
+		French:"15% force contre les unités en terrain découvert"
+		Russian:"Бонус против юнитов на открытой местности 15%"
+		Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
+	}
+
+	"units in open terrain":{
+		Italian:"unità in terreno aperto"
+		Simplified_Chinese:"位于开阔地形的单位"
+		French:"Unités en terrain ouvert"
+	}
+
+	"Barrage I":{
+		Italian:"Fuoco di Fila I"
+		German:"Sperrfeuer I"
+		French:"Barrage I"
+		Russian:"Преграда I"
+		Simplified_Chinese:"弹幕I级"
+	}
+
+	"Barrage II":{
+		Italian:"Fuoco di Fila II"
+		German:"Sperrfeuer II"
+		French:"Barrage II"
+		Russian:"Преграда II"
+		Simplified_Chinese:"弹幕II级"
+	}
+
+	"Barrage III":{
+		Italian:"Fuoco di Fila III"
+		German:"Sperrfeuer III"
+		French:"Barrage III"
+		Russian:"Преграда III"
+		Simplified_Chinese:"弹幕III级"
+	}
+
+	"Bonus vs units in rough terrain 15%":{
+		Italian:"+15% Forza contro unità in terreno accidentato"
+		French:"+15% force contre les unités en terrain accidenté"
+		Russian:"Бонус против юнитов в пересеченной местности 15%"
+		Simplified_Chinese:"对战复杂地形中的单位时+15%战斗力"
+	}
+
+	"Shock I":{
+		Italian:"Assalto I"
+		German:"Schock I"
+		French:"Choc I"
+		Russian:"Натиск I"
+		Simplified_Chinese:"冲击I级"
+	}
+
+	"Shock II":{
+		Italian:"Assalto II"
+		German:"Schock II"
+		French:"Choc II"
+		Russian:"Натиск II"
+		Simplified_Chinese:"冲击II级"
+	}
+
+	"Shock III":{
+		Italian:"Assalto III"
+		German:"Schock III"
+		French:"Choc III"
+		Russian:"Натиск III"
+		Simplified_Chinese:"冲击III级"
+	}
+
+	"Drill I":{
+		Italian:"Addestramento I"
+		German:"Drill I"
+		French:"Percée I"
+		Russian: "Прорыв I"
+		Simplified_Chinese:"操练I级"
+	}
+
+	"Drill II":{
+		Italian:"Addestramento II"
+		German:"Drill II"
+		French:"Percée II"
+		Russian: "Прорыв II"
+		Simplified_Chinese:"操练II级"
+	}
+
+	"Drill III":{
+		Italian:"Addestramento III"
+		German:"Drill III"
+		French:"Percée III"
+		Russian: "Прорыв III"
+		Simplified_Chinese:"操练III级"
+	}
+
+	"Scouting I":{
+		Italian:"Esplorazione I"
+		German:"Spähen I"
+		French:"Eclaireur I"
+		Russian:"Разведка I"
+		Simplified_Chinese:"侦察I级"
+	}
+
+	"Scouting II":{
+		Italian:"Esplorazione II"
+		German:"Spähen II"
+		French:"Eclaireur II"
+		Russian:"Разведка II"
+		Simplified_Chinese:"侦察II级"
+	}
+
+	"Scouting III":{
+		Italian:"Esplorazione III"
+		German:"Spähen III"
+		French:"Eclaireur III"
+		Russian:"Разведка III"
+		Simplified_Chinese:"侦察III级"
+	}
+
+	"+1 Movement":{
+		Italian:"+1 Movimento"
+		German:"+1 Sichtweite"
+		French:"+1 Mouvement"
+		Russian:"+1 Передвижение"
+		Simplified_Chinese:"+1移动力"
+	}
+
+	"Cover I":{
+		Italian:"Copertura I"
+		German:"Deckung I"
+		French:"Protection I"
+		Russian:"Укрытие I"
+		Simplified_Chinese:"隐蔽I级"
+	}
+
+	"Cover II":{
+		Italian:"Copertura II"
+		German:"Deckung II"
+		French:"Protection II"
+		Russian:"Укрытие II"
+		Simplified_Chinese:"隐蔽II级"
+	}
+
+	"+25% Defence against ranged attacks":{
+		Italian:"+25 difesa contro gli attacchi a distanza"
+		German:"+25% Verteidigung gegen alle Fernangriffe"
+		French:"+25% défence contre les attaques à distance"
+		Russian:"+25% защиты от дальних атак" 
+		Simplified_Chinese:"对战远程单位时+25%防御力"
+	}
+
+	"March":{
+		Italian:"Marcia"
+		German:"Marschieren"
+		French:"Marche"
+		Russian:"Марш"
+		Simplified_Chinese:"长途行军"
+	}
+
+	"Unit will heal every turn, even if it performs an action":{
+		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
+		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
+		Russian:"Юнит лечится каждый ход, даже если совершает действие"
+		Simplified_Chinese:"每回合回复(包括执行指令后)"
+	}
+
+	"Charge":{
+		Italian:"Carica"
+		German:"Angriff"
+		French:"Charge"
+		Simplified_Chinese:"猛烈冲锋"
+	}
+
+	"Bonus vs wounded units 33%":{
+		Italian:"+33% forza contro unità ferite"
+		French:"+33% force contre les unités montées"
+		Russian:"Бонус против раненых 33%"
+		Simplified_Chinese:"对战受伤单位时+33%战斗力"
+
+	}
+
+	"wounded units":{
+		Italian:"unità ferite"
+		French:"unités blessés"
+		Simplified_Chinese:"受伤单位"
+	}
+
+	"Mobility":{
+		Italian:"Mobilità"
+		German:"Mobilität"
+		French:"Mobilité"
+		Russian:"Мобильность"
+		Simplified_Chinese:"机动能力"
+	}
+
+	"Siege":{
+		Italian:"Assedio"
+		German:"Belagerung"
+		French:"Siège"
+		Russian:"Осада"
+		Simplified_Chinese:"攻坚能力"
+	}
+
+	"Volley":{
+		Italian:"Raffica"
+		German:"Salve"
+		French:"Volée"
+		Russian:"Залп"
+		Simplified_Chinese:"齐射能力"
+	}
+
+	"Sentry":{
+		Italian:"Sentinella"
+		German:"Wache"
+		French:"Sentinel"
+		Russian:"Караул"
+		Simplified_Chinese:"警戒能力"
+	}
+
+	"Range":{
+		Italian:"Raggio di tiro ampliato"
+		German:"Reichweite"
+		French:"Portée"
+		Russian:"Расширенный радиус"
+		Simplified_Chinese:"攻击范围"
+	}
+
+	"+1 Range":{
+		Italian:"+1 raggio"
+		German:"+1 Reichweite"
+		French:"+1 portée d'attaque"
+		Russian:"+1 радиус"
+		Simplified_Chinese:"+1射程"
+	}
+
+	"Indirect Fire":{
+		Italian:"Fuoco indiretto"
+		German:"Indirektes Feuer"
+		French:"Attaque indirecte" //not sure
+		Russian:"Непрямой Огонь"
+		Simplified_Chinese:"间接火力"
+	}
+
+	"Ranged attacks may be performed over obstacles":{
+		Italian:"Permette di sparare a distanza superando gli ostacoli"
+		French:"Les attaques à distances peuvent être effectués à travers des obstacles"
+		Russian:"Дальнобойные атаки могут выполняться над препятствиями"
+		Simplified_Chinese:"越过障碍进行远程攻击"
+	}
+
+	"Formation I":{
+		Italian:"Formazione I"
+		German:"Formation I"
+		French:"Formation I"
+		Russian:"Формация I"
+		Simplified_Chinese:"列阵I级"
+	}
+
+	"Formation II":{
+		Italian:"Formazione II"
+		German:"Formation II"
+		French:"Formation II"
+		Russian:"Формация II"
+		Simplified_Chinese:"列阵II级"
+	}
+
+	"Blitz":{
+		Italian:"Incursione"
+		German:"Blitz"
+		French:"Guerre éclair"
+		Russian:"Блиц"
+		Simplified_Chinese:"闪击战术"
+	}
+
+	"1 additional attack per turn":{
+		Italian:"L'unità può attaccare due volte ogni turno"
+		French:"1 attaque supplémentaire par tour"
+		Russian:"Дополнительная атака за ход"
+		Simplified_Chinese:"每回合有一次额外的攻击机会"
+	}
+
+	"Logistics":{
+		Italian:"Logistica"
+		German:"Logistick"
+		French:"Logistique"
+		Russian:"Логистика"
+		Simplified_Chinese:"后勤补给"
+	}
+
+	"Bombardment I":{
+		Italian:"Bombardamento I"
+		German:"Bombardierung I"
+		French:"Bombardement I"
+		Russian:"Бомбардировка I"
+		Simplified_Chinese:"轰炸I级"
+	}
+
+	"Bombardment II":{
+		Italian:"Bombardamento II"
+		German:"Bombardierung II"
+		French:"Bombardement II"
+		Russian:"Бомбардировка II"
+		Simplified_Chinese:"轰炸II级"
+	}
+
+	"Bombardment III":{
+		Italian:"Bombardamento III"
+		German:"Bombardierung III"
+		French:"Bombardement III"
+		Russian:"Бомбардировка III"
+		Simplified_Chinese:"轰炸III级"
+	}
+
+	"Bonus vs land units 33%":{
+		Italian:"+33% forza contro unità terrestri"
+		French:"+33% force contre les unités terrestres"
+		Russian:"Бонус против наземных юнитов 33%"
+		Simplified_Chinese:"对战陆军单位时+33%战斗力"
+	}
+
+	"Bonus vs land units 34%":{
+		Italian:"+34% forza contro unità terrestri"
+		French:"+34% force contre les unités terrestres"
+		Russian:"Бонус против наземных юнитов 34%"
+		Simplified_Chinese:"对战陆军单位时+34%战斗力"
+	}
+
+	"Boarding Party I":{
+		Italian:"Abbordaggio I"
+		German:"Entermannschaft I"
+		French:"Embarquement I"
+		Russian:"Абордаж I"
+		Simplified_Chinese:"接舷I级"
+	}
+
+	"Boarding Party II":{
+		Italian:"Abbordaggio II"
+		German:"Entermannschaft II"
+		French:"Embarquement II"
+		Russian:"Абордаж II"
+		Simplified_Chinese:"接舷II级"
+	}
+
+	"Boarding Party III":{
+		Italian:"Abbordaggio III"
+		German:"Entermannschaft III"
+		French:"Embarquement III"
+		Russian:"Абордаж III"
+		Simplified_Chinese:"接舷III级"
+	}
+
+	"Bonus vs water units 15%":{
+		Italian:"+15% forza contro le unità anfibie"
+		French:"+15% force contre les unités navales"
+		Russian:"Бонус против водных юнитов +15%"
+		Simplified_Chinese:"对战海军单位时+15%战斗力"
+	}
+	"Coastal Raider I":{
+		Italian:"Incursione costiera I"
+		German:"Küstenräuber I"
+		French:"Commando Côtier I" //not very accurate
+		Russian:"Береговой налетчик I"
+		Simplified_Chinese:"海掠I级"
+	}
+
+	"Coastal Raider II":{
+		Italian:"Incursione costiera II"
+		German:"Küstenräuber II"
+		French:"Commando Côtier II"
+		Russian:"Береговой налетчик II"
+		Simplified_Chinese:"海掠II级"
+	}
+
+	"Coastal Raider III":{
+		Italian:"Incursione costiera III"
+		German:"Küstenräuber III"
+		French:"Commando Côtier III"
+		Russian:"Береговой налетчик III"
+		Simplified_Chinese:"海掠III级"
+	}
+
+	"Targeting I":{
+		Italian:"Puntamento I"
+		German:"Gezielter Schlag I"
+		French:"Ciblage I"
+		Russian:"Прицеливание I"
+		Simplified_Chinese:"定位I级"
+	}
+
+	"Targeting II":{
+		Italian:"Puntamento II"
+		German:"Gezielter Schlag II"
+		French:"Ciblage II"
+		Russian:"Прицеливание II"
+		Simplified_Chinese:"定位II级"
+	}
+
+	"Targeting III":{
+		Italian:"Puntamento III"
+		German:"Gezielter Schlag III"
+		French:"Ciblage III"
+		Russian:"Прицеливание III"
+		Simplified_Chinese:"定位III级"
+	}
+
+	"Wolfpack I":{
+		Italian:"Attacco in massa I"
+		German:"Rudeltaktik I"
+		French:"Meute I"
+		Russian:"Массовая атака I"
+		Simplified_Chinese:"狼群I级"
+	}
+
+	"Wolfpack II":{
+		Italian:"Attacco in massa II"
+		German:"Rudeltaktik II"
+		French:"Meute II"
+		Russian:"Массовая атака II"
+		Simplified_Chinese:"狼群II级"
+	}
+
+	"Wolfpack III":{
+		Italian:"Attacco in massa III"
+		German:"Rudeltaktik III"
+		French:"Meute III"
+		Russian:"Массовая атака III"
+		Simplified_Chinese:"狼群III级"
+	}
+
+
+}

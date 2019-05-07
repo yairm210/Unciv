@@ -1,0 +1,850 @@
+{
+		
+///////////// 	Terrains
+	
+	"Grassland":{
+		Italian:"Prateria"
+		Russian:"Луга"
+		French:"Prairie"
+		Romanian:"Fâneață"
+		German:"Wiese"
+		Dutch:"Grasland"
+		Spanish:"Pradera"
+		Simplified_Chinese:"草原"
+		Portuguese:"pastagem"
+	}
+
+	"Plains":{
+		Italian:"Pianura"
+		Russian:"Pавнины"
+		French:"Plaines"
+		Romanian:"Câmpie"
+		German:"Ebene"
+		Dutch:"Vlakte"
+		Spanish:"Llanura"
+		Simplified_Chinese:"平原"
+		Portuguese:"Planíce"
+	}
+
+	"Tundra":{
+		Italian:"Tundra"
+		Russian:"Tундра"
+		French:"Toundra"
+		Romanian:"Tundră"
+		German:"Tundra"
+		Dutch:"Toendra"
+		Spanish:"Tundra"
+		Simplified_Chinese:"冻土"
+		Portuguese:"Tundra"
+	}
+
+	"Desert":{
+		Italian:"Deserto"
+		Russian:"Пустыня"
+		French:"Désert"
+		Romanian:"Deşert"
+		German:"Wüste"
+		Dutch:"Woestijn"
+		Spanish:"Desierto"
+		Simplified_Chinese:"沙漠"
+		Portuguese:"Deserto"
+	}
+
+	"Lakes":{
+		Italian:"Laghi"
+		Russian:"Озера"
+		French:"Lacs"
+		Romanian:"Lacuri"
+		German:"Seen"
+		Dutch:"Meren"
+		Spanish:"Lagos"
+		Simplified_Chinese:"湖泊"
+		Portuguese:"Lagos"
+	}
+
+	"Hill":{
+		Italian:"Collina"
+		Russian:"Холм"
+		French:"Colline"
+		Romanian:"Deal"
+		German:"Hügel"
+		Dutch:"Heuvel"
+		Spanish:"Colinas"
+		Simplified_Chinese:"丘陵"
+		Portuguese:"Morro"
+	}
+	
+	"Mountain":{
+		Italian:"Montagna"
+		Romanian:"Munte"
+		Spanish:"Montañas"
+		Simplified_Chinese:"山脉"
+		German:"Berge"
+		French:"Montagne"
+		Russian:"гора"
+		Portuguese:"Montanha"
+	}
+
+	"Forest":{
+		Italian:"Foresta"
+		Russian:"Лес"
+		French:"Forêt"
+		Romanian:"Pădure"
+		German:"Wald"
+		Dutch:"Woud"
+		Spanish:"Bosque"
+		Simplified_Chinese:"森林"
+		Portuguese:"Floresta"
+	}
+
+	"Jungle":{
+		Italian:"Giungla"
+		Russian:"Джунгли"
+		French:"Jungle"
+		Romanian:"Junglă"
+		German:"Dschungel"
+		Dutch:"Oerwoud"
+		Spanish:"Selva"
+		Simplified_Chinese:"丛林"
+		Portuguese:"Selva"
+	}
+
+	"Marsh":{
+		Italian:"Palude"
+		Russian:"Болото"
+		French:"Marais"
+		Romanian:"Mlaştină"
+		German:"Sumpf"
+		Dutch:"Moeras"
+		Spanish:"Pantano"
+		Simplified_Chinese:"沼泽"
+		Portuguese:"Pântano"
+	}
+
+	"Oasis":{
+		Italian:"Oasi"
+		Russian:"Оазис"
+		French:"Oasis"
+		Romanian:"Oază"
+		German:"Oase"
+		Dutch:"Oase"
+		Simplified_Chinese:"绿洲"
+		Spanish:"Oasis"
+	}
+
+	"Snow":{
+		Italian:"Neve"
+		Russian:"снег"
+		French:"Neige"
+		Romanian:"Zăpadă"
+		German:"Schnee"
+		Dutch:"Sneeuw"
+		Spanish:"Nieve"
+		Simplified_Chinese:"雪原"
+		Portuguese:"Neve"
+	}
+
+	"Coast":{
+		Italian:"Costa"
+		Russian:"побережье"
+		French:"Côte"
+		Romanian:"Costa"
+		German:"Küste"
+		Dutch:"Costa"
+		Spanish:"Costa"
+		Simplified_Chinese:"海滨"
+		Portuguese:"Costa"
+	}
+
+	"Ocean":{
+		Italian:"Oceano"
+		Russian:"океан"
+		French:"Océan"
+		Romanian:"Ocean"
+		German:"Ozean"
+		Dutch:"Oceaan"
+		Spanish:"Océano"
+		Simplified_Chinese:"海洋"
+		Portuguese:"Oceano"
+	}
+
+	"Flood plains":{
+		Italian:"Pianure allagate"
+		Russian:"Пищевые равнины"
+		French:"Plaines inondables"
+		Romanian:"Câmpii inundate"
+		German:"Flussaue" //according to: https://de.wikipedia.org/wiki/Flussaue
+		Dutch:"Riviervlakte"
+		Spanish:"Terreno inundable"
+		Simplified_Chinese:"冲积平原"
+		Portuguese:"Terras inundáveis"
+	}
+	
+	"Impassible":{
+		Italian:"Inaccessibile"
+		Romanian:"Inaccesibil"
+		Spanish:"Inpasable"
+		Simplified_Chinese:"不能通行"
+		Portuguese:"Impassevel"
+		German:"Unpassierbar"
+		French:"Impraticable"
+		Russian:"нечувствительный"
+	}
+		
+/////////////	Bonus Resources
+
+	"Cattle":{
+		Italian:"Bestiame"
+		Russian:"Скот"
+		French:"Bétail"
+		Romanian:"Vite"
+		German:"Rinder"
+		Dutch:"Rundvee"
+		Spanish:"Ganado"
+		Simplified_Chinese:"牛群"
+		Portuguese:"Gado"
+	}
+
+	"Sheep":{
+		Italian:"Pecora"
+		Russian:"Овцы"
+		French:"Moutons"
+		Romanian:"Oi"
+		German:"Schaafe"
+		Dutch:"Schaap"
+		Spanish:"Ovejas"
+		Simplified_Chinese:"绵羊"
+		Portuguese:"Ovelhas"
+	}
+
+	"Deer":{
+		Italian:"Cervo"
+		Russian:"Oлени"
+		French:"Cerfs"
+		Romanian:"Căprioare"
+		German:"Rotwild"
+		Dutch:"Hert"
+		Spanish:"Ciervos"
+		Simplified_Chinese:"野鹿"
+		Portuguese:"Veados"
+	}
+
+	"Bananas":{
+		Italian:"Banane"
+		Russian:"Бананы"
+		French:"Bananes"
+		Romanian:"Banane"
+		German:"Bananen"
+		Dutch:"Bananen"
+		Spanish:"Plátanos"
+		Simplified_Chinese:"香蕉"
+		Portuguese:"Bananas"
+	}
+
+	"Wheat":{
+		Italian:"Grano"
+		Russian:"Пшеница"
+		French:"Blé"
+		Romanian:"Grâu"
+		German:"Weizen"
+		Dutch:"Tarwe"
+		Spanish:"Trigo"
+		Simplified_Chinese:"小麦"
+		Portuguese:"Trigo"
+	}
+
+	"Stone":{
+		Italian:"Pietra"
+		Russian:"Камень"
+		French:"Pierre"
+		Romanian:"Piatră"
+		German:"Stein"
+		Dutch:"Steen"
+		Spanish:"Piedra"
+		Simplified_Chinese:"花岗石"
+		Portuguese:"Pedra"
+	}
+	
+	"Fish":{
+		Italian:"Pesci"
+		Spanish:"Peces"
+		Italian:"Pesce"
+		French: "Poisson"
+		Romanian:"Pește"
+		Simplified_Chinese:"鱼群"
+		Portuguese:"Peixes"
+		German:"Fisch"
+	}
+
+	"Bison":{
+		Italian:"Bisonti"
+		Russian:"бизоны"
+		French:"Bison"
+		Romanian:"Bizonii"
+		German:"Bison"
+		Dutch:"Bisons"
+		Spanish:"Bisonte"
+		Simplified_Chinese:"野牛"
+		Portuguese:"Bisontes"
+		Japanese:"バイソン"
+	}
+	
+////////// Strategic Resources
+	
+	"Horses":{
+		Italian:"Cavalli"
+		Russian:"Лошади"
+		French:"Chevaux"
+		Romanian:"Cai"
+		German:"Pferde"
+		Dutch:"Paarden"
+		Spanish:"Caballos"
+		Simplified_Chinese:"马"
+		Portuguese:"Cavalos"
+	}
+
+	"Iron":{
+		Italian:"Ferro"
+		Russian:"Железо"
+		French:"Fer"
+		Romanian:"Fier"
+		German:"Eisen"
+		Dutch:"Ijzer"
+		Spanish:"Hierro"
+		Simplified_Chinese:"铁"
+		Portuguese:"Ferro"
+	}
+
+	"Coal":{
+		Italian:"Carbone"
+		Russian:"Уголь"
+		French:"Charbon"
+		Romanian:"Cărbune"
+		German:"Kohle"
+		Dutch:"Kool"
+		Spanish:"Carbón"
+		Simplified_Chinese:"煤"
+		Portuguese:"Carvão"
+	}
+
+	"Oil":{
+		Italian:"Petrolio"
+		Russian:"Нефть"
+		French:"Pétrole"
+		Romanian:"Petrol"
+		German:"Erdöl"
+		Dutch:"Olie"
+		Spanish:"Petróleo"
+		Simplified_Chinese:"石油"
+		Portuguese:"Petróleo"
+	}
+
+	"Aluminum":{
+		Italian:"Alluminio"
+		Russian:"Aлюминий"
+		French:"Aluminium"
+		Romanian:"Aluminiu"
+		German:"Aluminium"
+		Dutch:"Aluminium"
+		Spanish:"Aluminio"
+		Simplified_Chinese:"铝"
+		Portuguese:"Alumínio"
+	}
+
+	"Uranium":{
+		Italian:"Uranio"
+		Russian:"Уран"
+		French:"Uranium"
+		Romanian:"Uraniu"
+		German:"Uran"
+		Dutch:"Uranium"
+		Spanish:"Uranio"
+		Simplified_Chinese:"铀"
+		Portuguese:"Urânio"
+	}
+	
+///////// Luxury Resources
+
+	"Furs":{
+		Italian:"Pellicce"
+		Russian:"Меха"
+		French:"Fourrures"
+		Romanian:"Blănuri"
+		German:"Felle"
+		Dutch:"Bonten"
+		Spanish:"Pieles"
+		Simplified_Chinese:"毛皮"
+		Portuguese:"Peles"
+	}
+
+	"Cotton":{
+		Italian:"Cotone"
+		Russian:"Хлопок"
+		French:"Coton"
+		Romanian:"Bumbac"
+		German:"Baumwolle"
+		Dutch:"Katoen"
+		Spanish:"Algodón"
+		Simplified_Chinese:"棉花"
+		Portuguese:"Algodão"
+	}
+
+	"Dyes":{ // Seems to have translated in all languages as *food dyes* Needs to be rechecked in all languages except french and portuguese
+		Italian:"Coloranti"
+		Russian:"Красители"
+		French:"Teintures"
+		Romanian:"Coloranți"
+		German:"Farbstoffe"
+		Dutch:"Verfstoffen"
+		Spanish:"Tintes"
+		Simplified_Chinese:"染料"
+		Portuguese:"Tintas"
+	}
+
+	"Gems":{
+		Italian:"Pietre preziose"
+		Russian:"Драгоценные камни"
+		French:"Gemmes"
+		Romanian:"Pietre prețioase"
+		German:"Edelsteine"
+		Dutch:"Edelstenen"
+		Spanish:"Gemas"
+		Simplified_Chinese:"宝石"
+   		Portuguese:"Joias"
+	}
+
+	"Silver":{
+		Italian:"Argento"
+		Russian:"Серебро"
+		French:"Argent"
+		Romanian:"Argint"
+		German:"Silber"
+		Dutch:"Zilver"
+		Spanish:"Plata"
+		Simplified_Chinese:"银"
+		Portuguese:"Prata"
+	}
+
+	"Incense":{
+		Italian:"Incenso"
+		Russian:"Благовония"
+		French:"Encens"
+		Romanian:"Parfumuri"
+		German:"Weihrauch"
+		Dutch:"Wierook"
+		Spanish:"Incienso"
+		Simplified_Chinese:"熏香"
+		Portuguese:"Incenso"
+	}
+
+	"Ivory":{
+		Italian:"Avorio"
+		Simplified_Chinese:"象牙"
+		French:"Ivoire"
+	}
+
+	"Silk":{
+		Italian:"Seta"
+		Russian:"Шёлк"
+		French:"Soie"
+		Romanian:"Mătase"
+		German:"Seide"
+		Dutch:"Zijde"
+		Spanish:"Seda"
+		Simplified_Chinese:"丝绸"
+		Portuguese:"Seda"
+	}
+
+	"Spices":{
+		Italian:"Spezie"
+		Russian:"Cпеции"
+		French:"Épices"
+		Romanian:"Condimente"
+		German:"Gewürze"
+		Dutch:"Kruiden"
+		Spanish:"Especias"
+		Simplified_Chinese:"香料"
+		Portuguese:"Especiarias"
+	}
+
+	"Wine":{
+		Italian:"Vino"
+		Russian:"Вино"
+		French:"Vin"
+		Romanian:"Vin"
+		German:"Wein"
+		Dutch:"Wijn"
+		Spanish:"Vino"
+		Simplified_Chinese:"红酒"
+		Portuguese:"Vinho"
+	}
+
+	"Sugar":{
+		Italian:"Zucchero"
+		Russian:"Сахар"
+		French:"Sucre"
+		Romanian:"Zahăr"
+		German:"Zucker"
+		Dutch:"Suiker"
+		Spanish:"Azúcar"
+		Simplified_Chinese:"蔗糖"
+		Portuguese:"Açucar"
+	}
+
+	"Marble":{
+		Italian:"Marmo"
+		Russian:"Мрамор"
+		French:"Marbre"
+		Romanian:"Marmură"
+		German:"Marmor"
+		Dutch:"Marmer"
+		Spanish:"Mármol"
+		Simplified_Chinese:"大理石"
+		Portuguese:"Mármore"
+	}
+
+	"Pearls":{
+		Italian:"Perle"
+		Russian:"Жемчуг"
+		French:"Perles"
+		Romanian:"Perle"
+		German:"Perlen"
+		Dutch:"Parels"
+		Spanish:"Perlas"
+		Simplified_Chinese:"珍珠"
+		Portuguese:"Pérolas"
+	}
+
+	"Whales":{
+		Italian:"Balene"
+		Russian:"Киты"
+		French:"Baleines"
+		Romanian:"Balene"
+		German:"Wale"
+		Dutch:"Walvissen"
+		Spanish:"Ballenas"
+		Simplified_Chinese:"鲸鱼"
+		Portuguese:"Baleias"
+	}
+
+	"Copper":{
+		Italian:"Rame"
+		Russian:"медь"
+		French:"Cuivre"
+		Romanian:"Cupru"
+		German:"Kupfer"
+		Dutch:"Koperen"
+		Spanish:"Cobre"
+		Simplified_Chinese:"赤铜"
+		Portuguese:"Cobre"
+	}
+
+	"Cocoa":{
+		Italian:"Cacao"
+		Russian:"какао"
+		French:"Cacao"
+		Romanian:"Cacao"
+		German:"Kakao"
+		Dutch:"Cacao"
+		Spanish:"Cacao"
+		Simplified_Chinese:"可可"
+		Portuguese:"Cacau"
+	}
+
+	"Crab":{
+		Italian:"Granchi"
+		Russian:"Крабы"
+		French:"Crabe"
+		Romanian:"Crabi"
+		German:"Crabs"
+		Dutch:"Krabben"
+		Spanish:"Cangrejos"
+		Simplified_Chinese:"螃蟹"
+		Portuguese:"Caranguejos"
+	}
+
+	"Citrus":{
+		Italian:"Agrumi"
+		Russian:"цитрусовый"
+		French:"Agrumes"
+		Romanian:"Citrus"
+		German:"Zitrusgewächs"
+		Dutch:"Citrus"
+		Spanish:"Cítricos"
+		Simplified_Chinese:"柑橘"
+		Portuguese:"Cítrico"
+	}
+
+	"Truffles":{
+		Italian:"Tartufi"
+		Russian:"Трюфели"
+		French:"Truffe"
+		Romanian:"Trufe"
+		German:"Trüffel"
+		Dutch:"Truffles"
+		Spanish:"Trufas"
+		Simplified_Chinese:"松露"
+		Portuguese:"Trufas"
+	}
+	
+///////// Tile improvements
+	
+	"Farm":{
+		Italian:"Fattoria"
+		Russian:"Ферма"
+		French:"Ferme"
+		Romanian:"Fermă"
+		German:"Farm"
+		Dutch:"Boerderij"
+		Spanish:"Granja"
+		Simplified_Chinese:"农场"
+		Portuguese:"Fazenda"
+	}
+
+	"Lumber mill":{
+		Italian:"Segheria"
+		Russian:"Лесопилка"
+		French:"Scierie"
+		Romanian:"Fabrică de cherestea"
+		German:"Sägewerk"
+		Dutch:"Houtzagerij"
+		Spanish:"Serrería"
+		Simplified_Chinese:"锯木场"
+		Portuguese:"Serralheria"
+	}
+
+	"Mine":{
+		Italian:"Miniera"
+		Russian:"Шахта"
+		French:"Mine"
+		Romanian:"Mină"
+		German:"Mine"
+		Dutch:"Mijn"
+		Spanish:"Mina"
+		Simplified_Chinese:"矿井"
+		Portuguese:"Mina"
+	}
+
+	"Trading post":{
+		Italian:"Base commerciale"
+		Russian:"Торговый пост"
+		French:"Comptoire commercial"
+		Romanian:"Punct comercial"
+		German:"Handelsposten"
+		Dutch:"Handelspost"
+		Spanish:"Puesto comercial"
+		Simplified_Chinese:"贸易站"
+		Portuguese:"Posto de comércio"
+	}
+
+	"Camp":{
+		Italian:"Campo"
+		Russian:"Лагерь"
+		French:"Campement"
+		Romanian:"Tabără"
+		German:"Lager"
+		Dutch:"Kamp"
+		Spanish:"Campamento"
+		Simplified_Chinese:"猎场"
+		Portuguese:"Campo"
+	}
+	"Oil well":{
+		Italian:"Pozzo di petrolio"
+		Russian:"Нефтяная скважина"
+		French:"Puit de pétrole"
+		Romanian:"Sondă de petrol"
+		German:"Ölbohrloch"
+		Dutch:"Oliebron"
+		Spanish:"Pozo petrolífero"
+		Simplified_Chinese:"油井"
+		Portuguese:"Poço de petróleo"
+	}
+	"Pasture":{
+		Italian:"Pascolo"
+		Russian:"Выгон"
+		French:"Pâturage"
+		Romanian:"Păşune"
+		German:"Weide"
+		Dutch:"Weide"
+		Spanish:"Pastizal"
+		Simplified_Chinese:"牧场"
+		Portuguese:"Pasto"
+	}
+	"Plantation":{
+		Italian:"Piantagione"
+		Russian:"Плантация"
+		French:"Plantation"
+		Romanian:"Plantaţie"
+		German:"Plantage"
+		Dutch:"Plantage"
+		Spanish:"Plantación"
+		Simplified_Chinese:"种植园"
+		Portuguese:"Plantação"
+	}
+	"Quarry":{
+		Italian:"Cava"
+		Russian:"Карьер"
+		French:"Carrière"
+		Romanian:"Carieră"
+		German:"Steinbruch"
+		Dutch:"Steengroeve"
+		Spanish:"Cantera"
+		Simplified_Chinese:"采石场"
+		Portuguese:"Pedreira"
+	}
+	"Fishing Boats":{
+		Italian:"Chiatta"
+		Spanish:"Barcos pesqueros"
+		Italian:"Peschereccio"
+		French: "Bateaux de pêche"
+		Romanian:"Bărci de pescuit"
+		Simplified_Chinese:"渔船"
+		Portuguese:"Barcos de pesca"
+		German:"Fischerboote"
+	}
+	
+	"Road":{
+		Italian:"Strada"
+		Russian:"Дорога"
+		French:"Route"
+		Romanian:"Drum"
+		German:"Straße"
+		Dutch:"Weg"
+		Spanish:"Carretera"
+		Simplified_Chinese:"道路"
+		Portuguese:"Estrada"
+	}
+
+	"Remove Road":{
+		Italian:"Rimuovi Strada"
+		Simplified_Chinese:"拆毁道路"
+		French:"Retirer la route"
+	}
+
+	"Railroad":{
+		Italian:"Ferrovia"
+		Russian:"Железная дорога"
+		French:"Chemin de fer"
+		Romanian:"Cale ferată"
+		German:"Schienen"
+		Dutch:"Spoorweg"
+		Spanish:"Línea de ferrocarril"
+		Simplified_Chinese:"铁路"
+		Portuguese:"Estrada de ferro"
+	}
+
+	"Remove Railroad":{
+		Italian:"Rimuovi Ferrovia"
+		Simplified_Chinese:"拆除铁路"
+		French:"Retirer les rails"
+	}
+
+	"Remove Forest":{
+		Italian:"Rimuovi foresta"
+		Russian:"Вырубить лес"
+		French: "Couper la forêt"
+		Romanian:"Defrișează pădurea"
+		Spanish:"Quitar bosque"
+		Simplified_Chinese:"砍伐森林"
+		Portuguese:"Cortar floresta"
+		German:"Wald abholzen"
+	}
+
+	"Remove Jungle":{
+		Italian:"Rimuovi giungla"
+		Russian:"Вырубить джунгли"
+		French: "Défricher la jungle"
+		Romanian:"Defrișează jungla"
+		Spanish:"Quitar selva"
+		Simplified_Chinese:"砍伐丛林"
+		Portuguese:"Cortar selva"
+		German:"Dschungel abholzen"
+	}
+
+	"Remove Marsh":{
+		Italian:"Bonifica palude"
+		Russian:"Осушить болото"
+		French:"Assécher le marais"
+		Romanian:"Asanează mlaștina"
+		Spanish:"Quitar pantano"
+		Simplified_Chinese:"移除沼泽"
+		Portuguese:"Drenar pântano"
+		German:"Moor trockenlegen"
+	}
+	
+	"Ancient ruins":{
+		Italian:"Antiche rovine"
+		Romanian:"Ruine străvechi"
+		Spanish:"Ruinas Antiguas"
+		Simplified_Chinese:"远古遗迹"
+		German:"Altertümliche Ruinen"
+		French:"Anciennes ruines"
+		Russian:"Древние руины"
+		Portuguese:"Ruínas antigas"
+		Dutch:"Oude ruïnes"
+	}
+	
+	"City ruins":{
+		Italian:"Rovine cittadine"
+		Romanian:"Oraș în ruină"
+		Spanish:"Ciudad en ruinas"
+		Simplified_Chinese:"城市遗址"
+		German:"Stadtruinen"
+		French:"Ruines"
+		Russian:"Руины города"
+		Portuguese:"Ruínas da Cidade"
+		Dutch:"Ruïnes van de stad"
+	}
+	
+///////// Great Unit improvements
+
+	"Academy":{
+		Italian:"Accademia"
+		Russian:"Академия"
+		French:"Académie"
+		Romanian:"Academie"
+		German:"Akademie"
+		Dutch:"Academie"
+		Spanish:"Academia"
+		Simplified_Chinese:"学院"
+		Portuguese:"Academia"
+	}
+
+	"Landmark":{
+		Italian:"Punto di riferimento"
+		Russian:"Достопримечательность"
+		French:"Monument culturel" //more accurate than "point de repère"
+		Romanian:"Reper"
+		//as it is more of a cultural building this makes sense
+		German:"Sehenswürdigkeit" 
+		Dutch:"Mijlpaal"
+		Spanish:"Edificio emblemático"
+		Simplified_Chinese:"风景地标"
+		Portuguese:"Edificio emblemático"
+	}
+
+	"Manufactory":{
+		Italian:"Fabbrica"
+		Russian:"Завод"
+		French:"Manufacture"
+		Romanian:"Fabrică"
+		German:"Fabrik"
+		Dutch:"Fabriek"
+		Spanish:"Fábrica"
+		Simplified_Chinese:"制造中心"
+		Portuguese:"Fábrica"
+	}
+
+	"Customs house":{
+		Italian:"Dogana"
+		Russian:"Таможня"
+		French:"Douanes"
+		Romanian:"Punct vamal"
+		German:"Zollamt"
+		Dutch:"Douanekantoor"
+		Spanish:"Aduana"
+		Simplified_Chinese:"海关"
+		Portuguese:"Alfândega"
+	}
+
+}

@@ -23,7 +23,7 @@ object GameBasics {
     val Nations = LinkedHashMap<String, Nation>()
     val PolicyBranches = LinkedHashMap<String, PolicyBranch>()
     val Difficulties = LinkedHashMap<String, Difficulty>()
-    val Translations = Translations(Gdx.files.internal("jsons/Translations.json").readString())
+    val Translations = Translations()
 
     fun <T> getFromJson(tClass: Class<T>, name: String): T {
         val jsonText = Gdx.files.internal("jsons/$name.json").readString()
@@ -72,6 +72,9 @@ object GameBasics {
                 }
                 branch.policies.last().name = branch.name + " Complete"
             }
+
+        for(file in Gdx.files.internal("jsons/Translations").list())
+            Translations.add(file.readString())
         }
 }
 

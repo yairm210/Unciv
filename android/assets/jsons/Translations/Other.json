@@ -1,0 +1,3346 @@
+{
+	// General Translation tips:
+	// - Keep it uniform! Use the same word/style for the same thing when ever necessary.
+	//   Otherwise it may be confusing to the user
+	//
+	// Keep the names in SQUARE BRACKETS UNTRANSLATED!!!
+	//
+	// - Use the language feature of wikipedia (search the original tech in English
+	//   and then choose your language on the left)
+	//
+	// - When in doubt a full rip of all translations from Civ5 can be found here:
+	//   http://www.dndjunkie.com/civilopedia/default.aspx
+	//   However, I advise you not to use this too much, as we don't want to infringe
+	//   Firaxis copyright!
+	// - If you see typos on other languages (e.g. one space too much) feel free to fix them
+	//
+	// - Try to have at least one round of proof reading before submission
+	//
+	// Cheers! :)
+	
+	"Working...":{ // Displayed when next turn is being...turned
+		Italian:"Attendere..."
+		Russian:"Работает..."
+		French:"Patientez..."
+		Romanian:"Lucru..."
+		Dutch:"Verwerken..."
+		Spanish:"Trabajando..."
+		Simplified_Chinese:"进行中..."
+		Portuguese:"Trabalhando..."
+		German:"Bitte warten..."
+		Japanese:"ワーキング..."
+	}
+
+	"in":{ // As in "Opera House in 3 turns"
+		Italian:"tra"
+		Russian:"через"
+		French:"dans"
+		Romanian:"în"
+		German:"in"
+		Dutch:"in"
+		Spanish:"en"
+		Simplified_Chinese:"建造或组建完成还需"
+		Portuguese:"em"
+		Japanese:"に"
+	}
+
+/////// Turn
+
+	"Next turn":{
+        Dutch:"Volgende beurt"
+        French:"Prochain tour"
+		German:"Nächste Runde"
+		Italian:"Prossimo turno"
+        Japanese:"次のターン"
+        Portuguese:"Proximo turno"
+		Romanian:"Runda următoare"
+		Russian:"Следующий ход"
+		Simplified_Chinese:"下一回合"
+		Spanish:"Siguiente turno"
+		
+	}
+	
+	"Turn":{ // For main screen at top left, e.g. Turn 234
+        Dutch:"Beurt"
+		French:"Tour"
+		German:"Runde"
+        Italian:"Turno"
+		Japanese:"順番"
+        Portuguese:"Turno"
+		Romanian:"Runda"
+        Russian:"Ход"
+        Simplified_Chinese:"回合"
+		Spanish:"Turno"
+	}
+
+
+	"turns":{ // for e.g. turns to technology
+		Italian:"Turni"
+		Russian:"Ходов"
+		French:"Tours"
+		Romanian:"Runde"
+		German:"Runden"
+		Dutch:"Beurten"
+		Spanish:"turnos"
+		Simplified_Chinese:"回合"
+		Portuguese:"turnos"
+		Japanese:"回る"
+	}
+
+/////// Unit
+
+	"Movement":{
+		Italian:"Movimento"
+		Russian:"Передвижение"
+		French:"Déplacer"
+		Romanian:"Mișcare"
+		German:"Bewegungen"
+		Dutch:"Mobieliteit"
+		Spanish:"Movimiento"
+		Simplified_Chinese:"移动力"
+		Portuguese:"Movimento"
+		Japanese:"移動"
+	}
+
+	"Strength":{
+		Italian:"Forza"
+		Russian:"Сила"
+		French:"Force"
+		Romanian:"Putere"
+		German:"Stärke"
+		Dutch:"Kracht"
+		Spanish:"Fuerza"
+		Simplified_Chinese:"近战攻击"
+		Portuguese:"Força"
+		Japanese:"強さ"
+	}
+
+	"Ranged strength":{
+		Italian:"Forza a distanza"
+		Russian:"Сила в дальнем бою"
+		French:"Force à distance"
+		Romanian:"Putere la distanță"
+		German:"Fernkampf-Stärke"
+		Dutch:"Kracht op afstand"
+		Spanish:"Fuerza a distancia"
+		Simplified_Chinese:"远程攻击"
+		Portuguese:"Força a distancia"
+		Japanese:"範囲の強さ"
+	}
+	
+	"Bombard strength":{ // for displaying city info
+		Italian:"Forza bombardamento"
+		Russian:"Бомбардная сила"
+		French:"Force de bombardement"
+		Romanian:"Puterea bombardamentului"
+		German:"Bombardieren Sie die Stärke"
+		Dutch:"Bombard sterkte"
+		Spanish:"Fuerza de bombardeo"
+		Simplified_Chinese:"远程轰击"
+		Portuguese:"Força Bombard"
+		Japanese:"爆撃力"
+	}
+
+
+/////// Unit actions
+
+	"Move unit":{
+		Italian:"Sposta unità"
+		Russian:"Переместить юнит"
+		French:"Déplacer l'unité"
+		Romanian:"Mută unitatea"
+		German:"Einheit bewegen"
+		Dutch:"Eenheid verplaatsen"
+		Spanish:"Mover unidad"
+		Simplified_Chinese:"移动单位"
+		Portuguese:"Mover unidade"
+		Japanese:"移動ユニット"
+	}
+
+	"Stop movement":{
+		Italian:"Ferma movimento"
+		Russian:"Отменить действие"
+		French:"Arrêter le mouvement"
+		Romanian:"Oprește mișcarea"
+		German:"Bewegen abbrechen"
+		Dutch:"Verplaatsen stoppen"
+		Spanish:"Parar movimiento"
+		Simplified_Chinese:"停止移动"
+		Portuguese:"Parar movimento"
+		Japanese:"動きを止める"
+	}
+
+	"Construct improvement":{
+		Italian:"Costruisci miglioramento"
+		Russian:"Построить улучшение"
+		French:"Bâtir une amélioration"
+		Romanian:"Construiește îmbunătățire"
+		German:"Verbesserung bauen"
+		Dutch:"Verbetering bouwen"
+		Spanish:"Construir mejora"
+		Simplified_Chinese:"建造设施"
+        	Portuguese:"Construir melhoria"
+		Japanese:"構造改善"
+	}
+
+	"Automate":{
+		Italian:"Automatizza"
+		Russian:"Автоматизация"
+		French:"Automatiser"
+		Romanian:"Automatizează"
+		German:"Automatisieren"
+		Dutch:"Autoatiseren"
+		Spanish:"Automatizar"
+		Simplified_Chinese:"自动工作"
+		Portuguese:"Automatizar"
+		Japanese:"自動化する"
+	}
+	
+	"Stop automation":{
+		Italian:"Arresta automazione"
+		Spanish:"Parar automatización"
+		Romanian:"Oprește automatizarea"
+		German:"Automatisieren anhalten"
+		French:"Arrêtez automatisation"
+		Portuguese:"Pare a automação"
+		Simplified_Chinese:"停止自动化"
+		Romanian:"Opriți automatizarea"
+		Russian:"Стоп автоматизации"
+		Japanese:"自動化を停止"
+	}
+
+	"Fortify":{
+		Italian:"Fortifica"
+		Russian:"Укрепить"
+		French:"Fortifier"
+		Romanian:"Fortifică"
+		German:"Befestigen"
+		Dutch:"Versterken"
+		Spanish:"Fortificar"
+		Simplified_Chinese:"驻守"
+		Portuguese:"Fortificar"
+		Japanese:"要塞化"
+	}
+	
+	"Fortification":{ // as in "+40% Fortification"
+		Italian:"Fortificazione"
+		Russian:"от укрепления"
+		French:"Fortification"
+		Romanian:"Fortificație"
+		German:"Befestigung"
+		Dutch:"Versterking"
+		Spanish:"Fortificación"
+		Simplified_Chinese:"防御力加成"
+		Portuguese:"Fortficação"
+		Japanese:"要塞"
+	}
+	
+	"Sleep":{
+		Italian:"Riposa"
+		Romanian:"Dormi"
+		Simplified_Chinese:"休眠"
+		Portuguese:"Dormir"
+		German:"Schlafen legen"
+		French:"Dormir"
+		Japanese:"睡眠"
+		Russian:"Спать"
+		Dutch:"Slaap"
+		Spanish:"Dormir"
+	}
+
+	"Set up":{ // For siege units
+		Italian:"Monta"
+		Russian:"Подготовится"
+		French:"Installer"
+		Romanian:"Montează"
+		German:"Aufstellen"
+		Dutch:"Opstellen"
+		Spanish:"Montar"
+		Simplified_Chinese:"架设"
+		Portuguese:"Montar"
+		Japanese:"セットアップ"
+	}
+	
+	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
+		Italian:"Aggiorna a [unitType] ([goldCost] oro)"
+		Russian:"Улучшить до [unitType] ([goldCost] золота)"
+		French:"Mise à niveau vers [unitType] ([goldCost] or)" //or Amélioration en [unitType] ([goldCost] or)
+		Romanian:"Avansare [unitType] ([goldCost] aur)"
+		Spanish:"Mejorar a [unitType] ([goldCost] de oro)"
+		Simplified_Chinese:"升级到[unitType](需要[goldCost]金钱)"
+		Portuguese:"Melhoria a [unitType] custará ([goldCost] ouro)"
+		German:"Verbessere [unitType] ([goldCost] Gold)"
+		Japanese:"[unitType]（[goldCost] gold）にアップグレードする"
+	}
+	
+	"Found city":{
+		Italian:"Fonda città"
+		Russian:"Основать город"
+		French:"Fonder une ville"
+		Romanian:"Fondează oraș"
+		German:"Stadt gründen"
+		Dutch:"Stad stichten"
+		Spanish:"Fundar ciudad"
+       		Simplified_Chinese:"建立城市"
+		Portuguese:"Fundar Cidade"
+		Japanese:"見つかった市"
+	}
+	
+	"Promote":{
+		Italian:"Promuovi"
+		Russian:"Повысить"
+		French:"Promouvoir"
+		Romanian:"Promovează"
+		German:"Befördern"
+		Dutch:"Promoveren"
+		Spanish:"Ascender"
+       	 	Simplified_Chinese:"晋升"
+		Portuguese:"Promover"
+		Japanese:"促進する"
+	}
+
+	"Health":{
+		Italian:"Salute"
+		Russian:"Здоровье"
+		French:"Santé"
+		Romanian:"Sănătate"
+		German:"Gesundheit"
+		Dutch:"Gezondheid"
+		Spanish:"Salud"
+		Simplified_Chinese:"生命"
+		Portuguese:"Saúde"
+		Japanese:"健康"
+	}
+
+	"Disband unit":{
+		Italian:"Sciogli"
+		Russian:"Распустить юнит"
+		French:"Dissoudre l'unité"
+		Romanian:"Desființează unitatea"
+		Dutch:"Eenheid opheffen"
+		Spanish:"Disolver unidad"
+		Simplified_Chinese:"解雇单位"
+		Portuguese:"Desfazer unidade"
+		German:"Einheit auflösen"
+		Japanese:"解散ユニット"
+	}
+	
+	"Explore":{
+		Italian:"Esplora"
+		Romanian:"Explorează"
+		Spanish:"Explorar"
+		German:"Erkunden"
+		French:"Explorer"
+		Portuguese:"Explorar"
+		Japanese:"探検する"
+		Simplified_Chinese:"自由探索"
+		Russian:"обследовать"
+		Dutch:"Onderzoeken"
+	}
+	
+	"Stop exploration":{
+		Italian:"Smetti di esplorare"
+		Simplified_Chinese:"停止探索"
+		French:"Arrêter l'exploration"
+	}
+
+	"Pillage":{
+		Italian:"Saccheggia"
+		German:"Plündern"
+		French:"Pillage"
+		Japanese:"略奪"
+		Portuguese:"Pilhagem"
+		Russian:"мародерство"
+		Romanian:"Prădare"
+		Dutch:"Plundering"
+		Spanish:"Pillaje"
+		Simplified_Chinese:"掠夺"
+	}
+	
+	"Do you really want to disband this unit?":{
+		Italian:"Vuoi davvero sciogliere questa unità?"
+		Russian:"Вы действительно хотите распустить этот юнит?"
+		French:"Voulez-vous vraiment dissoudre cette unité?"
+		Romanian:"Sigur desființezi unitatea?"
+		Dutch:"Wil je echt deze eenheid opheffen"
+		Spanish:"¿Realmente quieres disolver esta unidad?"
+		Simplified_Chinese:"您真的想解雇这个单位吗?"
+		Portuguese:"Voçê realmente quer desfazer essa unidade?"
+		German:"Wollen Sie diese Einheit wirklich auflösen?"
+		Japanese:"あなたは本当にこのユニットを解散したいですか？"
+	}
+	"Disband this unit for [goldAmount] gold?":{
+		Italian:"Vuoi sciogliere questa unità per [goldAmount] Oro?"
+		Portuguese:"Desative esta unidade para ouro [goldAmount]?"
+		French:"Dissoudre cette unité pour [goldAmount] gold?"
+		German:"Diese Einheit für [goldAmount] Gold auflösen?"
+		Spanish:"¿Disolver esta unidad para [goldAmount] gold?"
+		Simplified_Chinese:"要解散这个单位获得[goldAmount]金钱吗？"
+		Japanese:"このユニットを[goldAmount]ゴールドに解散させますか？"
+		Romanian:"Dezactivați această unitate pentru aurul [goldAmount]?"
+		Dutch:"Deze eenheid ontbinden voor [goldAmount] goud?"
+	}
+	
+	"Yes":{
+		Italian:"Sì"
+		Russian:"Да"
+		French:"Oui"
+		Romanian:"Da"
+		Dutch:"Ja"
+		Spanish:"Sí"
+		Simplified_Chinese:"是"
+		Portuguese:"Sim"
+		German:"Ja"
+		Japanese:"はい"
+	}
+	"No":{
+		Italian:"No"
+		Russian:"Нет"
+		French:"Non"
+		Romanian:"Nu"
+		Dutch:"Nee"
+		Spanish:"No"
+		Simplified_Chinese:"否"
+		Portuguese:"Sim"
+		German:"Nein"
+		Japanese:"いいえ"
+	}
+
+/////// Stats / Basics ressources
+
+	"Gold":{
+		Italian:"Oro"
+		Russian:"Золото"
+		French:"Or"
+		Romanian:"Aur"
+		German:"Gold"
+		Dutch:"Goud"
+		Spanish:"Oro"
+		Simplified_Chinese:"金"
+		Portuguese:"Ouro"
+		Japanese:"ゴールド"
+	}
+
+	"Science":{
+		Italian:"Scienza"
+		Russian:"Наука"
+		French:"Science"
+		Romanian:"Ştiinţă"
+		German:"Wissenschaft"
+		Dutch:"Wetenschap"
+		Spanish:"Ciencia"
+		Simplified_Chinese:"科研"
+		Portuguese:"Ciência"
+		Japanese:"科学"
+	}
+
+	"Happiness":{
+		Italian:"Felicità"
+		Russian:"Счастье"
+		French:"Bonheur"
+		Romanian:"Fericire"
+		German:"Zufriedenheit"
+		Dutch:"Tevredenheid"
+		Spanish:"Felicidad"
+		Simplified_Chinese:"快乐"
+		Portuguese:"Felicidade"
+		Japanese:"幸福"
+	}
+
+	"Production":{
+		Italian:"Produzione"
+		Russian:"Производство"
+		French:"Production"
+		Romanian:"Producție"
+		German:"Produktion"
+		Dutch:"Productie"
+		Spanish:"Producción"
+		Simplified_Chinese:"产能"
+		Portuguese:"Produção"
+		Japanese:"製造"
+	}
+
+	"Culture":{
+		Italian:"Cultura"
+		Russian:"Культура"
+		French:"Culture"
+		Romanian:"Cultură"
+		German:"Kultur"
+		Dutch:"Cultuur"
+		Spanish:"Cultura"
+		Simplified_Chinese:"文化"
+		Portuguese:"Cultura"
+		Japanese:"文化"
+	}
+
+	"Food":{
+		Italian:"Cibo"
+		Russian:"Еда"
+		French:"Nourriture"
+		Romanian:"Hrană"
+		German:"Nahrung"
+		Dutch:"Eten"
+		Spanish:"Comida"
+		Simplified_Chinese:"食物"
+		Portuguese:"Comida"
+		Japanese:"フード"
+	}
+	
+	"GOLDEN AGE":{
+		Italian:"ETÀ DELL'ORO"
+		Russian:"ЗОЛОТОЙ ВЕК"
+		French:"ÂGE D'OR"
+		Romanian:"EPOCA DE AUR"
+		German:"GOLDENES ZEITALTER"
+		Dutch:"GOUDEN EEUW"
+		Spanish:"EDAD DORADA"
+		Simplified_Chinese:"黄金时代"
+		Portuguese:"IDADE DOURADA"
+		Japanese:"黄金時代"
+	}
+
+	
+/////// Menu table
+	
+	"Civilopedia":{
+		Italian:"Civilopedia"
+		Russian:"Цивилопедия"
+		French:"Civilopédie"
+		Romanian:"Civilopedie"
+		Spanish:"Civilopedia"
+		Simplified_Chinese:"文明百科"
+		Portuguese:"Civilopédia"
+		German:"Civilopedia"
+		Japanese:"シビロペディア"
+	}
+
+	"Start new game":{
+		Italian:"Nuova partita"
+		Russian:"Новая игра"
+		French:"Nouvelle partie"
+		Romanian:"Joc nou"
+		German:"Neues Spiel"
+		Dutch:"Nieuw spel"
+		Spanish:"Nueva partida"
+		Simplified_Chinese:"开始新游戏"
+		Portuguese:"Novo jogo"
+		Japanese:"新しいゲームを始める"
+	}
+	
+	"Save game":{
+		Italian:"Salva partita"
+		Russian:"Сохранить игру"
+		French:"Sauvegarder la partie"
+		Romanian:"Salvează jocul"
+		German:"Spiel speichern"
+		Dutch:"Spel opslaan"
+		Spanish:"Salvar partida"
+		Simplified_Chinese:"储存游戏"
+		Portuguese:"Salvar jogo"
+		Japanese:"ゲームを保存する"
+	}
+	
+	"Load game":{
+		Italian:"Carica partita"
+		Russian:"Загрузить игру"
+		French:"Charger une partie"
+		Romanian:"Incarcă joc"
+		German:"Spiel laden"
+		Dutch:"Spel laden"
+		Spanish:"Cargar partida"
+		Simplified_Chinese:"载入游戏"
+		Portuguese:"Carregar partida"
+		Japanese:"ゲームをロード"
+	}
+	
+	"Load copied data":{
+		Italian:"Carica i dati copiati"
+		Russian:"Загрузить скопированные данные"
+		French:"Charger des données copiées"
+		Romanian:"Încarcă date copiate"
+		German:"Aus Zwischenablage laden"
+		Dutch:"Gekopieerde data laden"
+		Spanish:"Cargar datos copiados"
+		Simplified_Chinese:"加载复制过的数据"
+		Portuguese:"Carregar dados copiados"
+		Japanese:"コピーしたデータを読み込む"
+	}
+	
+	"Could not load game from clipboard!":{
+		Italian:"Impossibile caricare partita dagli appunti!"
+		Romanian:"Jocul nu a putut fi încărcat din clipboard!"
+		Simplified_Chinese:"无法从剪贴板加载游戏!"
+		Portuguese:"Não foi possivel carregar o jogo da prancheta"
+		German:"Das Spiel konnte nicht aus der Zwischenablage geladen werden!"
+		French:"Impossible de charger la partie depuis le presse-papier"
+		Japanese:"クリップボードからゲームを読み込めませんでした。"
+		Russian:"Не удалось загрузить игру из буфера обмена!"
+		Dutch:"Kon game niet van klembord laden!"
+		Spanish:"No se pudo cargar el juego desde el portapapeles!"
+	}
+	
+/////// New game screen
+	
+	"Start game!":{
+		Italian:"Comincia la tua avventura!"
+		Russian:"Начать игру!"
+		French:"Démarrer la partie!"
+		Romanian:"Începe jocul!"
+		Spanish:"¡Empezar partida!"
+		Simplified_Chinese:"开始游戏！"
+		Portuguese:"Começar partida!"
+		German:"Spiel starten!"
+		Japanese:"ゲームを始める！"
+	}
+	"Civilization:":{
+		Italian:"Civiltà:"
+		Russian:"Цивилизация:"
+		French:"Civilisation:"
+		Romanian:"Civilizaţie:"
+		Spanish:"Civilización"
+		Simplified_Chinese:"文明"
+		Portuguese:"Civilização"
+		German:"Zivilisation"
+		Japanese:"文明"
+	}
+	"World size:":{
+		Italian:"Dimensione mappa:"
+		Russian:"Размер мира:"
+		French:"Taille du monde:"
+		Romanian:"Mărime pământ:"
+		Spanish:"Tamaño del mundo"
+		Simplified_Chinese:"世界大小"
+		Portuguese:"Tamanho do mundo"
+		German:"Weltgröße"
+		Japanese:"ワールドサイズ"
+	}
+
+	"Number of enemies:":{ //nummber of AI should be more accurate
+		Italian:"Numero di nemici:"
+		Russian:"Количество врагов:"
+		French:"Nombre d'ennemies (AI):"
+		Romanian:"Număr inamici:"
+		Spanish:"Número de enemigos:"
+		Simplified_Chinese:"AI智商："
+		Portuguese:"Numero de inimigos:"
+		German:"Anzahl der Gegner:"
+		Japanese:"敵の数"
+	}
+
+	"Victory status":{
+		Italian:"Condizioni di vittoria"
+		Russian:"Статус победы"
+		French:"Conditions de victoire"
+		Romanian:"Statut victorie"
+		German:"Siegesstatus"
+		Dutch:"Overwinning Status"
+		Spanish:"Estatus de victoria"
+		Simplified_Chinese:"胜利进程"
+		Portuguese:"Status da vitória"
+		Japanese:"勝利の地位"
+	}
+
+	"Social policies":{
+		Italian:"Politiche sociali"
+		Russian:"Общественные институты"
+		French:"Doctrines" //official translate
+		Romanian:"Politici sociale"
+		German:"Sozialpolitiken"
+		Dutch:"Sociaal beleid"
+		Spanish:"Políticas sociales"
+		Simplified_Chinese:"社会政策"
+		Portuguese:"Políticas sociais"
+		Japanese:"社会政策"
+	}
+	
+	"Options":{
+		Italian:"Opzioni"
+		German:"Optionen"
+		French:"Options"
+		Japanese:"オプション"
+		Russian:"Опции"
+		Romanian:"Opțiuni"
+		Dutch:"Opties"
+		Spanish:"Opciones"
+		Simplified_Chinese:"选项"
+		Portuguese:"Opções"
+	}
+
+	"Display options":{
+		Italian:"Opzioni"
+		Russian:"Параметры экрана"
+		French:"Options d'affichage"
+		Romanian:"Opțiuni afișaj"
+		German:"Anzeigeeinstellungen"
+		Dutch:"Weergaveopties"
+		Spanish:"Opciones de pantalla"
+		Simplified_Chinese:"显示选项"
+		Portuguese:"Opções de Vídeo"
+		Japanese:"表示オプション"
+	}
+	
+	"Turns between autosaves":{
+		Italian:"Turni tra autosalvataggi"
+		French:"Tours avant sauvegarde automatique"
+		Simplified_Chinese:"自动存档回合数"
+	}
+	
+	"Sound effects volume":{
+		Italian:"Volume effetti"
+		French:"Volume sonore"
+		Simplified_Chinese:"声效大小"
+	}
+	
+	"Show":{
+		Italian:"Mostra"
+		Russian:"Показать"
+		French:"Montrer"
+		Romanian:"Arată"
+		German:"Anzeigen"
+		Dutch:"Toon"
+		Spanish:"Mostrar"
+		Simplified_Chinese:"显示"
+		Portuguese:"Mostrar"
+		Japanese:"見せる"
+	}
+
+	"Hide":{
+		Italian:"Nascondi"
+		Russian:"Спрятать"
+		French:"Cacher"
+		Romanian:"Ascunde"
+		German:"Verstecken"
+		Dutch:"Verberg"
+		Spanish:"Ocultar"
+		Simplified_Chinese:"隐藏"
+		Portuguese:"Ocultar"
+		Japanese:"隠す"
+	}
+	
+	"Worked tiles":{
+		Italian:"Celle sfruttate"
+		Russian:"обработанные клетки"
+		French:"cases exploités"
+		Romanian:"celule lucrate"
+		German:"bearbeitete Felder"
+		Dutch:"Bewerkte velden"
+		Spanish:"casillas trabajadas"
+		Simplified_Chinese:"工作的地块"
+		Portuguese:"Terreno trabalhado"
+		Japanese:"働いたタイル"
+	}
+
+	"Resources and improvements":{
+		Italian:"Risorse e miglioramenti"
+		Russian:"ресурсы и улучшения"
+		French:"ressources et améliorations"
+		Romanian:"resurse și îmbunătățiri"
+		German:"Ressourcen und Verbesserungen"
+		Dutch:"Grondstoffen en Verbeteringen"
+		Spanish:"recursos y mejoras"
+		Simplified_Chinese:"资源与设施"
+		Portuguese:"recursos e melhorias"
+		Japanese:"リソースと改善"
+	}
+
+	"Close":{
+		Italian:"Chiudi"
+		Russian:"Закрыть"
+		French:"Fermer"
+		Romanian:"Închide"
+		German:"Schließen"
+		Dutch:"Sluiten"
+		Spanish:"Cerrar"
+		Simplified_Chinese:"关闭"
+		Portuguese:"Fechar"
+		Japanese:"閉じる"
+	}
+
+/////// City screen
+
+	"Exit city":{
+		Italian:"Esci dalla città"
+		Russian:"Выход из города"
+		French:"Quitter la ville"
+		Romanian:"Ieși din oraș"
+		German:"Stadt verlassen"
+		Dutch:"Stadscherm sluiten"
+		Spanish:"Salir de la ciudad"
+		Simplified_Chinese:"离开城市界面"
+		Portuguese:"Sair da cidade"
+		Japanese:"市を出る"
+	}
+
+	"Raze city":{
+		Italian:"Demolisci città"
+		Russian:"Разрушить город"
+		French:"Démolir la ville"
+		Romanian:"Demolează orașul"
+		German:"Stadt zerstören"
+		Dutch:"Stad vernietigen"
+		Spanish:"Arrasar ciudad"
+		Simplified_Chinese:"摧毁城市"
+		Portuguese:"Saquear cidade"
+		Japanese:"ラゼ市"
+	}
+
+	"Stop razing city":{
+		Italian:"Anulla demolizione città"
+		Russian:"Отменить разрушение города"
+		French:"Annuler démolition de la ville"
+		Romanian:"Anulează demolarea orașului"
+		German:"Zerstörung anhalten"
+		Dutch:"Stad vernieteging stoppen"
+		Spanish:"Dejar de arrasar ciudad"
+		Simplified_Chinese:"停止摧毁城市"
+		Portuguese:"Parar de Saquear cidade"
+		Japanese:"街をすくい止める"
+	}
+
+	"Buy for [amount] gold":{
+		Italian:"Acquista con [amount] oro"
+		Russian:"Купить за [amount] золота"
+		French:"Acheter avec [amount] or"
+		Romanian:"Cumpără cu [amount] aur"
+		German:"Für [amount] Gold kaufen"
+		Dutch:"Voor [amount] gold kopen"
+		Spanish:"Comprar por [amount] de oro"
+		Simplified_Chinese:"购买花费[amount]金钱"
+		Portuguese:"Comprar por [amount] peças de ouro"
+		Japanese:"[amount]ゴールドで購入する"
+	}
+	
+	"Buy":{ // for when the construction is a wonder/special and can't be bought, the button is disabled but still displays text
+		Italian:"Acquista"
+		French:"Acheter"
+		Romanian:"A cumpara"
+		German:"Kaufen"
+		Russian:"купить"
+		Dutch:"Kopen"
+		Spanish:"Comprar"
+		Portuguese:"Comprar"
+		Simplified_Chinese:"购买"
+		Japanese:"購入"
+	}
+	
+	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
+		Italian:"Vorresti acquistare [constructionName] per [buildingGoldCost] oro?"
+		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золото?"
+		French:"Souhaitez-vous acheter [constructionName] pour [buildingGoldCost] gold?"
+		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
+		German:"Möchten Sie [constructionName] für [buildingGoldCost] gold kaufen?"
+		Dutch:"Wilt u [constructionName] kopen voor [buildGoldCost] goud?"
+		Spanish:"¿Te gustaría comprar [constructionName] para [buildingGoldCost] gold?"
+		Simplified_Chinese:"你想花费[buildingGoldCost]金钱购买[constructionName]吗？"
+		Portuguese:"Gostaria de comprar o [constructionName] para o ouro [buildingGoldCost]?"
+		Japanese:"[buildingGoldCost]ゴールドの[constructionName]を購入しますか？"
+	}
+
+	"Maintenance cost":{
+		Italian:"Costi di mantenimento"
+		Russian:"Стоимость обслуживания"
+		French:"Coût de maintenance"
+		Romanian:"Cost întreținere"
+		German:"Wartungskosten"
+		Dutch:"Onderhouskosten"
+		Spanish:"Coste de mantenimiento"
+		Simplified_Chinese:"维护费"
+		Portuguese:"Custo de manutenção"
+		Japanese:"メンテナンス費用"
+	}
+	
+	"Pick construction":{
+		Italian:"Scegli la costruzione"
+		Russian:"Выбор здания"
+		French:"Sélectionner la construction"
+		Romanian:"Alege construcția"
+		German:"Bauwerk auswählen"
+		Dutch:"Bouwwerk kiezen"
+		Spanish:"Elige la construcción"
+		Simplified_Chinese:"选择建筑"
+		Portuguese:"Escolher construção"
+		Japanese:"ピック建設"
+	}
+
+	"Pick improvement":{
+		Italian:"Scegli miglioramento"
+		Simplified_Chinese:"选择设施"
+		French:"Choisir une amélioration"
+	}
+
+	"Build [building]":{ // eg Build Granary
+		Italian:"Costruisci [building]"
+		Russian:"Строить [building]"
+		French:"Construire [building]"
+		Romanian:"Construiește [building]"
+		German:"[building] bauen"
+		Dutch:"[building] bouwen"
+		Spanish:"Construir [building]"
+		Simplified_Chinese:"建造[building]"
+		Portuguese:"Construir [building]"
+	}
+	
+	"Train [unit]":{ // eg Train Scout
+		Italian:"Addestra [unit]"
+		Russian:"Обучить [unit]"
+		French:"Former [unit]"
+		Romanian:"Antrenează [unit]"
+		German:"[unit] ausbilden"
+		Dutch:"[unit] rekruteren"
+		Spanish:"Entrenar [unit]"
+		Simplified_Chinese:"组建[unit]"
+		Portuguese:"Treinar [unit]"
+		Japanese:"電車[unit]"
+	}
+	
+	"Produce [thingToProduce]":{ // eg Produce gold
+		Italian:"Produci [thingToProduce]"
+		Russian:"Производить [thingToProduce]"
+		French:"Produire [thingToProduce]"
+		Romanian:"Produce [thingToProduce]"
+		German:"[thingToProduce] herstellen"
+		Dutch:"[thingToProduce] produceren"
+		Spanish:"Producir [thingToProduce]"
+		Simplified_Chinese:"产能转化：[thingToProduce]"
+		Portuguese:"Produzir [thingToProduce]"
+		Japanese:"プロデュース[thingToProduce]"
+	} 
+	
+	"Nothing":{ // A city can choose to "idle" and produce nothing
+		Italian:"Niente"
+		Russian:"Ничего"
+		French:"Rien"
+		Romanian:"Nimic"
+		German:"Nichts"
+		Dutch:"Niks"
+		Spanish:"Nada"
+		Simplified_Chinese:"无"
+		Portuguese:"Nada"
+		Japanese:"何もない"
+	}
+	
+	"Specialist Buildings":{
+		Italian:"Edifici specialisti"
+		Russian:"Специализированные Здания"
+		French:"Bâtiments spécialisés"
+		Romanian:"Cladiri specializate"
+		German:"Fachbauten"
+		Dutch:"Gespecialiseerde gebouwen"
+		Spanish:"Edificios especializados"
+		Simplified_Chinese:"专业建筑"
+		Portuguese:"Edifícios Especialistas"
+		Japanese:"スペシャリストビル"
+	}
+
+	"Specialist Allocation":{
+		Italian:"Assegna specialisti"
+		Russian:"Распределение специалистов"
+		French:"Affectation Spécialiste"
+		Romanian:"Alocarea specialiștilor"
+		German:"Spezialistzuordnung"
+		Dutch:"Specialistische toewijzing"
+		Spanish:"Asignación de especialistas"
+		Simplified_Chinese:"专业人员分配"
+		Portuguese:"Alocação de Especialistas"
+		Japanese:"スペシャリスト割り当て"
+	}
+
+	"Specialists":{
+		Italian:"Specialisti"
+		Simplified_Chinese:"专业人员"
+		French:"Spécialiste"
+	}
+
+	"Food eaten":{
+		Italian:"Cibo consumato"
+		Simplified_Chinese:"人口消耗"
+		French:"Nourriture consommée"
+	}
+
+	"Growth bonus":{
+		Italian:"Bonus crescita"
+		Simplified_Chinese:"积累速率"
+		French:"Bonus de Croissance"
+	}
+
+	"Free population":{ // as in "Free population: 2/13
+		Italian:"Popolazione libera"
+		Russian:"Свободное население"
+		French:"Population libre"
+		Romanian:"Populație liberă"
+		German:"Freie Bevölkerung"
+		Dutch:"Vrije bevolking"
+		Spanish:"Población libre"
+		Simplified_Chinese:"空闲人口"
+		Portuguese:"População livre"
+		Japanese:"無料の人口"
+	} 
+
+	"[turnsToExpansion] turns to expansion":{
+		Italian:"La città si espanderà tra [turnsToExpansion] turni"
+		Russian:"Город будет расширяться между раундами [turnsToExpansion]"
+		French:"La ville se développera entre [turnsToExpansion] tours"
+		Romanian:"Orașul se va extinde între rundă [turnsToExpansion]"
+		German:"Die Stadt wird sich zwischen [turnsToExpansion]-Runden erweitern"
+		Dutch:"De stad breidt zich uit tussen [turnsToExpansion]-rondes"
+		Spanish:"La ciudad se expandirá entre [turnsToExpansion] rondas"
+		Simplified_Chinese:"这座城市将在[turnsToExpansion]回合后扩张"
+		Portuguese:"A cidade se expandirá entre [turnsToExpansion] turnos"
+		Japanese:"[turnsToExpansion]が拡大に変わります"
+	}
+
+	"Stopped expansion":{ // if culture is 0
+		Italian:"Espansione arrestata"
+		Russian:"Расширение остановлено"
+		French:"Expansion arrêtée"
+		Romanian:"Expansiunea sa oprit"
+		German:"Expansion gestoppt"
+		Dutch:"Uitbreiding gestopt"
+		Spanish:"Expansión detenida"
+		Simplified_Chinese:"扩张停止了"
+		Portuguese:"Expansão parada"
+		Japanese:"拡張停止"
+	}
+
+	"[turnsToPopulation] turns to new population":{
+		Italian:"La città avrà un nuovo abitante tra [turnsToPopulation] turni"
+		Russian:"В городе будет новый житель в раундах [turnsToPopulation]"
+		French:"La ville aura un nouveau résident dans [turnsToPopulation]"
+		Romanian:"Orașul va avea un nou rezident în runde [turnsToPopulation]"
+		German:"Die Stadt wird einen neuen Einwohner in [turnsToPopulation]-Runden haben"
+		Dutch:"De stad krijgt een nieuwe inwoner in [turnsToPopulation]-rondes"
+		Spanish:"La ciudad tendrá un nuevo residente en las rondas de [turnsToPopulation]"
+		Simplified_Chinese:"这座城市将在[turnsToPopulation]轮后有1个新市民"
+		Portuguese:"A cidade terá um novo residente nas [turnsToPopulation] turnos"
+		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
+	}
+
+	"[turnsToStarvation] turns to lose population":{
+		Italian:"La città perderà un abitante tra [turnsToStarvation] turni"
+		Russian:"Город потеряет жителя в [turnsToStarvation] смен"
+		French:"La ville perdra un habitant [turnsToStarvation] tours"
+		Romanian:"Orașul va pierde un locuitor în [turnsToStarvation] schimburi"
+		German:"Die Stadt wird einen Einwohner in [turnsToStarvation]-Runden verlieren"
+		Dutch:"De stad verliest een bewoner in [turnsToStarvation] ploegen"
+		Spanish:"La ciudad pierde un habitante en [turnsToStarvation] turnos"
+		Simplified_Chinese:"这座城市将在[turnsToStarvation]轮后失去1个市民"
+		Portuguese:"A cidade perderá um habitante entre [turnsToStarvation] turnos"
+		Japanese:"[turnsToStarvation]人口を減らす"
+	}
+
+	"Stopped population growth":{
+		Italian:"Crescita della popolazione arrestata"
+		French:"accroissement de la population arrêtée"
+		German:"Bevölkerungswachstum gestoppt"
+		Simplified_Chinese:"人口增长停止"
+		Portuguese:"Crescimento populacional interrompido"
+		Japanese:"人口増加の阻止"
+	}
+
+	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
+		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
+        Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合"
+		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
+		Japanese:"他の[numberOfTurns]ターンに抵抗"
+		French:"En révolte pour [numberOfTurns] tours"
+	}
+
+	"Sell for [sellAmount] gold":{ // when selling a building
+		Italian:"Vendi per [sellAmount] Oro" //es.
+		Russian:"Продам за [sellAmount] золотых"
+		French:"Vendre pour [sellAmount] or"
+		Romanian:"Vindem [sellAmount] de aur"
+		German:"Verkaufen Sie für [sellAmount] Gold"
+		Dutch:"Verkopen voor [sellAmount] goud"
+		Spanish:"Vender por [sellAmount] oro"
+		Simplified_Chinese:"卖掉获得[sellAmount]金钱"
+		Portuguese:"Vender por [sellAmount] ouro"
+	}
+
+	"Are you sure you want to sell this [building]?":{
+		Italian:"Vuoi davvero vendere [building]?" //es.
+		Russian:"Вы действительно хотите продать [building]?"
+		French:"Voulez-vous vraiment vendre [building]?"
+		Romanian:"Chiar vrei să vinzi [building]?"
+		German:"Wollen Sie wirklich [building] verkaufen?"
+		Dutch:"Wil je echt [building] verkopen?"
+		Spanish:"¿Realmente quieres vender [building]?"
+		Simplified_Chinese:"你真的想卖掉[building]吗？"
+		Portuguese:"Você realmente quer vender [building]?"
+	}
+
+    "[greatPerson] points":{ // e.g "Great Scientist points"
+		Italian:"Punti [greatPerson]" //es. "Punti Grande Scienziato"
+		Portuguese:"[greatPerson] aponta"
+		Japanese:"[greatPerson]ポイント"
+		French:"[greatPerson] points"
+		Simplified_Chinese:"[greatPerson]点数"
+	}
+
+	"Great person points":{ // e.g ?
+		Italian:"Punti Grande Personaggio"
+		Simplified_Chinese:"伟人点数"
+		French:"Points de personnage illustre"
+	}
+
+	"Current points":{ 
+		Italian:"Punti attuali"
+		Simplified_Chinese:"当前点数"
+		French:"Points actuelles"
+	}
+
+	"Points per turn":{ 
+		Italian:"Punti per turno"
+		Simplified_Chinese:"获得点数/回合"
+		French:"Points par tours"
+	}
+	
+////// Tech picker
+
+	"Pick a tech":{
+		Italian:"Scegli una tecnologia"
+		Russian:"Выберите технологию"
+		French:"Choisir une technologie"
+		Romanian:"Alege o tehnologie"
+		German:"Technologie auswählen"
+		Dutch:"Technologie kiezen"
+		Spanish:"Elige una tecnología"
+		Simplified_Chinese:"选择一项科技"
+		Portuguese:"Escolher uma tecnologia"
+		Japanese:"技術を選ぶ"
+	}
+	
+	"Pick a free tech":{
+		Italian:"Scegli una tecnologia gratuita"
+		Russian:"Выберите бесплатную технологию"
+		French:"Choisir une technologie gratuite"
+		Romanian:"Alege o tehnologie gratuită"
+		Dutch:"Gratis technologie kiezen"
+		Spanish:"Elige una tecnología gratis"
+		Simplified_Chinese:"选择1项免费科技"
+		Portuguese:"Escolher uma tecnologia gratuita"
+		German:"Kostenlose Technologie auswählen"
+		Japanese:"無料の技術を選ぶ"
+	}
+
+	"Research [technology]":{ // eg "Research Pottery"
+		Italian:"Ricerca [technology]"
+		Russian:"Исследование [technology]"
+		French:"Rechercher [technology]"
+		Romanian:"Cercetează [technology]"
+		German:"[technology] erforschen"
+		Dutch:"[technology] onderzoeken"
+		Spanish:"Investigar [technology]"
+		Simplified_Chinese:"研究[technology]"
+		Portuguese:"Investigar [technology]"
+		Japanese:"研究[technology]"
+	}
+	
+	"Pick [technology] as free tech":{
+		Italian:"Scegli [technology] come tecnologia gratuita"
+		Russian:"Выбрать [technology] как бесплатную технологию"
+		French:"Choisir [technology] comme technologie gratuite"
+		Romanian:"Alege [technology] ca tehnologie gratuită"
+		Dutch:"[technology] kiezen als gratis technologie"
+		Spanish:"Elegir [technology] como tecnología gratis"
+		Simplified_Chinese:"选择[technology]作为免费科技"
+		Portuguese:"Escolher [technology] como tecnologia gratuita"
+		German:"[technology] als kostenlose Technologie auswählen"
+		Japanese:"無料の技術として[technology]を選ぶ"
+	}
+
+	"Units enabled":{
+		Italian:"Unità sbloccate"
+		Russian:"Активные юниты"
+		French:"Unités activées"
+		Romanian:"Unități active"
+		German:"Freigeschaltete Einheiten"
+		Dutch:"Eenheden vrijgespeeld"
+		Spanish:"Unidades habilitadas"
+		Simplified_Chinese:"解锁单位"
+		Portuguese:"Unidades ativadas"
+		Japanese:"有効な単位"
+	}
+
+	"Buildings enabled":{
+		Italian:"Edifici sbloccati"
+		Russian:"Активные здания"
+		French:"Bâtiments activés"
+		Romanian:"Clădiri active"
+		German:"Freigeschaltete Bauwerke"
+		Dutch:"Gebouwen vreijgespeeld"
+		Spanish:"Edificios habilitados"
+		Simplified_Chinese:"解锁建筑"
+		Portuguese:"Construções habilitadas"
+		Japanese:"有効な建物"
+	}
+	
+	"Wonder":{
+		Italian:"Meraviglia"
+		Russian:"Чудо"
+		French:"Merveille"
+		Romanian:"Minune"
+		German:"Wunder"
+		Dutch:"Wonder"
+		Spanish:"Maravilla"
+		Simplified_Chinese:"奇观"
+		Portuguese:"Maravilha"
+		Japanese:"ワンダー"
+	}
+	
+	"Wonders enabled":{
+		Italian:"Meraviglie sbloccate"
+		Russian:"Активные чудеса"
+		French:"Merveilles activées"
+		Romanian:"Minuni active"
+		German:"Freigeschaltete Wunder"
+		Dutch:"Wonders vrijgespeeld"
+		Spanish:"Maravillas habilitadas"
+		Simplified_Chinese:"解锁奇观"
+		Portuguese:"Maravilhas habilitadas"
+		Japanese:"有効不思議"
+	}
+
+	"Tile improvements enabled":{
+		Italian:"Miglioramenti delle celle sbloccati"
+		Russian:"Улучшения клеток включены"
+		French:"Améliorations apportées aux cases"
+		Romanian:"Îmbunătățiri celule active"
+		German:"Freigschaltete Feldverbesserungen"
+		Dutch:"Verbeteringen vrijgespeeld"
+		Spanish:"Mejoras de casilla habilitadas"
+		Simplified_Chinese:"解锁地块设施"
+		Portuguese:"Melhorias de solo habilitadas"
+		Japanese:"タイルの改善"
+	}
+
+	"Reveals [resource] on the map":{ // As in "Reveals Coal on the map"
+		Italian:"Mostra [resource] sulla mappa"
+		Russian:"Показывает [resource] на карте"
+		French:"Révèle [resource] sur la carte"
+		Romanian:"Dezvăluie [resource] pe hartă"
+		German:"Zeigt [resource] auf der Karte an"
+		Dutch:"Onthuld [resource] op de kaart"
+		Spanish:"Descubre [resource] en el mapa"
+		Simplified_Chinese:"在地图上显示[resource]"
+		Portuguese:"Revela [resource] no mapa"
+		Japanese:"地図上の[resource]を明らかにする"
+	}
+	
+	"XP for new units":{
+		Italian:"XP per nuove unità"
+		Russian:"XP для новых юнитов"
+		French:"XP pour les nouvelles unités"
+		Romanian:"XP pentru unități noi"
+		Dutch:"XP voor nieuwe eenheden"
+		Spanish:"PX para unidades nuevas"
+		Simplified_Chinese:"新组建单位的初始经验值"
+		Portuguese:"Experiencia para novas unidades"
+		German:"XP für neue Einheiten"
+		Japanese:"新しいユニット用のXP"
+	}
+	
+	"provide":{ // as in "Camp, Customs House provide +1 Gold"
+		Italian:"forniscono"
+		Russian:"даёт"
+		French:"fournit"
+		Romanian:"furnizează"
+		German:"generieren"
+		Dutch:"genereren"
+		Spanish:"proporcionan"
+		Simplified_Chinese:"提供"
+		Portuguese:"Proporciona"
+		Japanese:"提供する"
+	}
+
+	"provides":{ // as in "Camp provides +1 Gold" (singular of above)
+		Italian:"fornisce"
+		Russian:"обеспечивает"
+		French:"fournit"
+		Romanian:"furnizează"
+		German:"generiert"
+		Dutch:"genereert"
+		Spanish:"proporciona"
+		Simplified_Chinese:"提供"
+		Portuguese:"Proporciona"
+		Japanese:"提供する"
+	}
+	
+
+////////////// 	Save and load game
+	
+	"Current saves":{
+		Italian:"Salvataggio attuale"
+		Russian:"Текущие сохранения"
+		French:"Sauvegardes présentes"
+		Romanian:"Salvări curente"
+		German:"Gespeicherte Spiele"
+		Dutch:"Huidige spellen"
+		Spanish:"Partidas guardadas"
+		Simplified_Chinese:"保存当前游戏"
+		Portuguese:"Partidas salvas"
+	}
+
+	"Saved game name":{
+		Italian:"Nome del salvataggio"
+		Russian:"Название сохранённой игры"
+		French:"Nom de la partie sauvegardée"
+		Romanian:"Numele jocului salvat"
+		German:"Name des gespeicherten Spiels"
+		Dutch:"Naam van opgeslagen spellen"
+		Spanish:"Nombre de partida guardada"
+		Simplified_Chinese:"游戏存档名称"
+		Portuguese:"Nome do jogo salvo"
+	}
+
+	"Copy to clipboard":{
+		Italian:"Copia su appunti"
+		French:"Copier dans le presse-papier"
+		Simplified_Chinese:"复制到剪贴板"
+	}
+
+	"Could not load game":{
+		Italian:"Impossibile caricare partita"
+		Russian:"Не удалось загрузить игру"
+		French:"Impossible de charger la partie"
+		Romanian:"Jocul nu a putut fi încărcat"
+		German:"Spiel konnte nicht geladen werden"
+		Dutch:"Spel kon niet geladen worden"
+		Spanish:"Imposible cargar partida"
+		Simplified_Chinese:"无法读档"
+		Portuguese:"Não foi possivel carregar a partida"
+	}
+
+	"Load [saveFileName]":{ // as in "Load SaveFile2"
+		Italian:"Carica [saveFileName]"
+		Russian:"Загрузить [saveFileName]"
+		French:"Charger [saveFileName]"
+		Romanian:"Încarcă [saveFileName]"
+		German:"[saveFileName] laden"
+		Dutch:"[saveFileName] laden"
+		Spanish:"Cargar [saveFileName]"
+		Simplified_Chinese:"读取[saveFileName]"
+		Portuguese:"Carregar [saveFileName]"
+	}
+
+	"Delete save":{
+		Italian:"Elimina salvataggio"
+		Russian:"Удалить сохранение"
+		French:"Supprimer la sauvegarde"
+		Romanian:"Șterge jocul salvat"
+		German:"Spiel löschen"
+		Dutch:"Spel verwijderen"
+		Spanish:"Borrar partida"
+		Simplified_Chinese:"删除存档"
+		Portuguese:"Apargar jogo salvo"
+	}
+
+	"Saved at":{
+		Italian:"Salvato su"
+		Russian:"Сохранено в"
+		French:"Enregistré sous"
+		Romanian:"Salvat la"
+		German:"Gespeichert um"
+		Dutch:"Opgeslagen in"
+		Spanish:"Guardado en"
+		Simplified_Chinese:"保存在"
+		Portuguese:"Salvo em"
+	}
+	
+	
+////////// Battle table
+	
+	"City strength":{
+		Italian:"Forza della città"
+		Russian:"Сила города"
+		French:"Force de la ville"
+		Romanian:"Puterea orașului"
+		German:"Stärke der Stadt"
+		Dutch:"Kracht van de stad"
+		Spanish:"Fuerza de la ciudad"
+		Simplified_Chinese:"城市强度"
+		Portuguese:"Força da cidade"
+	}
+	
+	"City health":{
+		Italian:"Salute della città"
+		Russian:"Здоровье города"
+		French:"Santé de la ville"
+		Romanian:"Sănătatea orașului"
+		German:"Gesundheit der Stadt"
+		Dutch:"Gezondheid van de stad"
+		Spanish:"Salud de la ciudad"
+		Simplified_Chinese:"城市耐久"
+		Portuguese:"Saúde da cidade"
+	}
+	
+	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
+		Italian:"Catturato"
+		Russian:"Захвачен"
+		French:"Capturé"
+		Romanian:"Capturat"
+		German:"Gefangen"
+		Dutch:"Gevangen"
+		Spanish:"Capturada"
+		Simplified_Chinese:"被占领"
+		Portuguese:"Capturado(a)"
+	}
+	
+	"Attack":{
+		Italian:"Attacco"
+		Russian:"Атака"
+		French:"Attaque"
+		Romanian:"Atac"
+		German:"Angreifen"
+		Dutch:"Aanvallen"
+		Spanish:"Ataque"
+		Simplified_Chinese:"攻击"
+		Portuguese:"Ataque"
+	}
+
+	/*
+	"Attack":{ //As an order
+		Italian:"Attacca"
+		Russian:"Атака"
+		French:"Attaque"
+		Romanian:"Atac"
+		German:"Angreifen"
+		Dutch:"Aanvallen"
+		Spanish:"Ataque"
+		Simplified_Chinese:"攻击"
+		Portuguese:"Ataque"
+	}
+	*/
+	
+	"[percentage] to unit defence":{ // e.g. +25% to unit defence
+		Italian:"[percentage] di difesa dell'unità"
+		Spanish:"[percentage] A la defensa"
+		Italian:"[percentage] difesa dell'unità"
+		Romanian:"[percentage] la defensiva unității"
+		Simplified_Chinese:"[percentage]单位防御力"
+		Portuguese:"[percentage] a defesa da unidade"
+		German:"[percentage] erhöhte Verteidigungsstärke"
+		French:"[percentage] de défense"
+	} 
+	
+	
+	
+///////// Unit uniques
+
+	//  - - - NOTE: These need to be moved to the "Units,Promotions" translation file, in their respective places! - - - 
+
+	"Bonus vs [unitType]":{
+		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
+		Russian:"Бонус против [unitType]"
+		French:"Bonus contre [unitType]"
+		Romanian:"Bonus contra [unitType]"
+		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
+		Dutch:"Voordeel tegen [unitType]"
+		Spanish:"Bonus contra [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力加成："
+		Portuguese:"Bonus contra [unitType]"
+	}
+
+	"Penalty vs [unitType]":{
+		Italian:"Malus contro unità [unitType]"
+		Russian:"Штраф против [unitType]"
+		French:"Pénalité contre [unitType]"
+		Romanian:"Penalizare contra [unitType]"
+		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
+		Dutch:"Nadeel tegen [unitType]"
+		Spanish:"Penalización contra [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力减成："
+		Portuguese:"Penalização contra [unitType]"
+	}
+
+	"Can move after attacking":{
+		Italian:"Può muoversi dopo aver attaccato"
+		Russian:"Может двигаться после атаки"
+		French:"Peut se déplacer après avoir attaqué"
+		Romanian:"Poate să se deplaseze după ce a atacat"
+		German:"Kann sich nach dem Angriff bewegen"
+		Dutch:"Kan zich verplaatsen na het aanvallen"
+		Spanish:"Puede mover después de atacar"
+		Simplified_Chinese:"攻击后可移动"
+		Portuguese:"Pode se mover após atacar"
+	}
+
+	"Limited Visibility":{
+		Italian:"Visibilità limitata"
+		Russian:"Ограниченная видимость"
+		French:"Visibilité réduite"
+		Romanian:"Vizibilitate redusă"
+		German:"Begrenzte Sichtweite"
+		Dutch:"Gelimiteerd zicht"
+		Spanish:"Visibilidad limitada"
+		Simplified_Chinese:"视野受限"
+		Portuguese:"Visibilidade limitada"
+	}
+
+	"Bonus as Attacker 75%":{
+		Italian:"75% Bonus in attacco"
+		Simplified_Chinese:"主动攻击时+75%战斗力"
+		French:"Bonus en tant qu'attaquant +75%"
+	}
+
+	"Invisible to others":{
+		Italian:"Invisibile per le altre unità"
+		Simplified_Chinese:"对其他单位隐形"
+		French:"Invisible aux autres" // (unités)
+	}
+
+	"Can only attack water":{
+		Italian:"Può attaccare solo unità acquatiche"
+		Simplified_Chinese:"只能攻击海上目标"
+		French:"Ne peut attaquer que les unités marines"
+	}
+
+	"Can attack submarines":{
+		Italian:"Può attaccare i sottomarini"
+		Simplified_Chinese:"能够发现和攻击潜艇单位"
+		French:"Peut attaquer les sous-marins"
+	}
+
+///////// Old Great Person translations (for reference only)
+
+	"Can start an 8-turn golden age or construct a Landmark (+6 Culture)":{
+		Italian:"Può iniziare un'Età dell'Oro di 8 turni o costruire un Punto di riferimento (+6 Cultura)"
+		Russian:"Может начать золотой век на 8 ходов или построить памятник (+6 культура)"
+		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 Culture)"
+		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (Cultura + 6)"
+		German:"Kann ein goldenes Zeitalter mit 8 Umdrehungen beginnen oder ein Wahrzeichen erstellen (+6 Kultur)"// German translation not sure
+		Dutch:"Kan een gouden periode van acht beurten starten of een oriëntatiepunt bouwen (+6 Cultuur)"// Dutch translation not sure
+		Spanish:"Puede comenzar una Edad de Oro de 8 turnos o construir un Edificio Emblemático (+6 cultura)"
+		Portuguese:"Pode iniciar uma idade de ouro de 8 voltas ou construir um marco (+6 Cultura)"
+		Simplified_Chinese:"开启8回合黄金时代或建造1座文化地标(+6文化)"
+	}
+
+	"Can discover a technology, or construct an Academy (+4 Science)" :{
+		Italian:"Può scoprire una tecnologia o costruire un'Accademia (+4 Scienza)"
+		Russian:"Может открыть технологию или построить Академию (+4 наука)"
+		French:"Peut découvrir une technologie, ou construire une Académie (+4 science)"
+		Romanian:"Poate să descopere o tehnologie sau să construiască o Academie (știință +4)"
+		German:"Kann eine Technologie entdecken, oder eine Akademie (+4 Erforschung) bauen"
+		Dutch:"Kan een technologie ontdekken, of een Academie (+4wetenschap) bouwen"
+		Spanish:"Puede descubrir una tecnología o construir una Academia (+4 ciencia)"
+		Portuguese:"Pode descobrir uma tecnologia ou construir uma academia (+4 Ciência)"
+		Simplified_Chinese:"获得一项免费科技或建造1座学院(+4科研)"
+	}
+
+	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 Gold)":{
+		Italian:"Può intraprendere una missione commerciale, dare una grande somma di oro, o costruire una Dogana (+4 Oro)"
+		Russian:"Может предпринять торговую миссию, дать большую сумму золота или построить Таможенную палату (+4 золота)"
+		French:"Peut entreprendre une mission commerciale, donner une grosse somme d'or, ou construire une maison de douane (+4 pièces d'or)"
+		Romanian:"Poate să întreprindă o misiune comercială, să dea o sumă mare de aur sau să construiască o casă vamală (+4 de aur)"
+		German:"Kann eine Handelsmission unternehmen, viel Gold geben oder ein Zollamt (+4 Gold) bauen"
+		Dutch:"Kan een handelsmissie ondergaan, levert veel goud op, of bouwt een Douanekantoor (+4 goud) bouwen"
+		Portuguese:"Pode realizar uma missão comercial, dando uma grande soma de ouro, ou construir uma Alfândega (+4 de Ouro)"
+		Spanish:"Puede emprender una misión de comercio que proporciona una gran suma de oro, o construir una Aduana (+4 oro)"
+		Simplified_Chinese:"通过开展贸易获得大笔金钱或建造1座海关(+4金)"
+	}
+
+	"Can speed up construction of a wonder, or construct a Manufactory (+4 Production)":{
+		Italian:"Può velocizzare la costruzione di una meraviglia, o costruire una Manifattura (+4 Produzione)"
+		Russian:"Может ускорить строительство чуда или построить Завод (+4 производства)"
+		French:"Peut accélérer la construction d'une merveille, ou construire une manufacture (+4 production)"
+		Romanian:"Poate accelera construcția unei minune sau poate construi o fabrică (+4 producție)"
+		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
+		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
+		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
+		Portuguese:"Pode acelerar a construção de uma maravilha ou construir um Manufactory (+4 de Produção)"
+		Simplified_Chinese:"加快奇观的建造速度或建造1座工厂(+4生产)"
+	}
+	
+	"May create improvements on water resources":{
+		Spanish:"Puede crear mejoras en recursos acuaticos"
+		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
+		French:"Peut créer des améliorations de ressources maritimes"
+		Romanian:"Poate crea îmbunătățiri pe resurse acvatice"
+		Simplified_Chinese:"可在水域资源建造设施"
+		Portuguese:"Pode criar melhorias em recursos aquáticos"
+		German:"Kann Verbesserungen auf Wasserfeldern bauen"
+		Russian:"Может создать улучшения на водных ресурсах"
+	}
+	
+	"Create [improvementName]":{ // for unit action button - also used for "create fishing boats" and "create oil well"
+		Italian:"Costruisci [improvementName]"
+		Romanian:"Crează [improvementName]"
+		Spanish:"Crear [improvmentName]"
+		Simplified_Chinese:"建造[improvementName]"
+		German:"[improvementName] anlegen"
+		French:"Créer [improvementName]"
+		Russian:"Создайте [improvementName]"
+		Portuguese:"Crio [improvementName]"
+	}
+	
+	"Can start an 8-turn golden age":{
+		Romanian:"Poate începe o eră de aur de 8 runde"
+		Spanish:"Comienza una edad dorada por 8 turnos"
+		Italian:"Può avviare un'Età dell'Oro di 8 turni"
+		French:"Peut commencer un âge d'or de 8 tours"
+		Simplified_Chinese:"可以开启8回合黄金时代"
+		Portuguese:"Pode criar uma Idade Dourada de 8 turnos"
+		German:"Kann ein Goldenes Zeitalter über 8 Runden starten" //I chose to transl. as if Golden Age is a proper name
+		Russian:"Может начать золотой век с 8 поворотами"
+	}
+
+	"Start Golden Age":{
+		Italian:"Avvia un'Età dell'Oro"
+		Romanian:"Începe epoca de aur"
+		Spanish:"Empezar Edad Dorada"
+		Simplified_Chinese:"开启8回合黄金时代"
+		German:"Starte Goldenes Zeitalter" //I chose to transl. as if Golden Age is a proper name
+		French:"Commencer un âge d'Or"
+		Russian:"Начать золотой век"
+		Portuguese:"Comece a Idade de Ouro"
+	}
+
+	"Bonus for land units in 2 radius 15%" :{
+		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
+		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
+        French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
+	}
+
+	// for unit action button
+	"Can build improvement: Landmark":{
+		Spanish:"Puede construir mejora: Edificio Emblematico"
+		Italian:"Può costruire il miglioramento: Punto di riferimento"
+		French:"Peut construire l'amélioration suivante: Monument culturel"
+		Romanian:"Poate construi îmbunătățire: Reper"
+		Simplified_Chinese:"可以建造设施：风景地标"
+		Russian:"Можно построить улучшение: ориентир"
+		Portuguese:"Pode construir melhoria: ponto de refêrencia"
+		German:"Kann Verbesserung errichten: Sehenswürdigkeit"
+	}
+
+	"Can discover a technology":{
+		Spanish:"Puede descubrir una tecnologia"
+		Italian:"Può scoprire una tecnologia"
+		French:"Peut découvrir une technologie"
+		Romanian:"Poate descoperi o tehnologie"
+		Simplified_Chinese:"可以发现1项科技"
+		Portuguese:"Pode descobrir uma tecnologia"
+		German:"Kann eine Technologie entdecken"
+		Russian:"Может открыть для себя технологию"
+	}
+
+	"Discover Technology":{
+		Romanian:"Descoperă tehnologie"
+		Spanish:"Descubrir Tecnologia"
+		Simplified_Chinese:"发现科技"
+		Italian:"Scopri tecnologia"
+		German:"Entdecke Technologie"
+		Portuguese:"Descubra a tecnologia"
+		Russian:"Откройте для себя технологию"
+		French:"Découvrir une technologie"
+	}
+
+	// for unit action button
+	"Can build improvement: Academy":{
+		Spanish:"Puede construir mejora: Academia"
+		Italian:"Può costruire il miglioramento: Accademia"
+		French:"Peut construire l'amélioration suivante: Académie"
+		Romanian:"Poate construi îmbunătățire: Academie"
+		Simplified_Chinese:"可以建造设施：学院"
+		Portuguese:"Pode construir melhoria: Academia"
+		German:"Kann Verbesserung errichten: Akademie"
+		Russian:"Можно построить улучшение: Академия"
+	}
+
+	"Can undertake a trade mission, giving a large sum of gold":{
+		Spanish:"Puede tomar una mision de comercio, generando una gran suma de Oro"
+		Italian:"Può compiere missioni commerciali, donando grandi quantità di Oro"
+		French:"Peut entreprendre une mission commerciale qui donne une large somme en or"
+		Romanian:"Poate iniția o misiune comercială, oferind o sumă considerabilă de aur"
+		Simplified_Chinese:"可以开展贸易获得大笔金钱"
+		Portuguese:"Pode entrar em uma missão comercial, dando grande quantidades de ouro"
+		German:"Kann eine Handelsmission durchführen, die viel Gold einbringt"
+		Russian:"Pode realizar uma missão comercial, dando uma grande soma de ouro"
+	}
+
+	"Conduct Trade Mission":{
+		Italian:"Conduci missione commerciale"
+		Romanian:"Dirijează misiunea comercială"
+		Spanish:"Tomar mision De Comercio"
+		Simplified_Chinese:"开展贸易"
+		German:"Handelsmission durchführen"
+		French:"Faire une mission commerciale"
+		Portuguese:"Realizar missão comercial"
+		Russian:"Провести торговую миссию"
+	} 
+
+	// for unit action button
+	"Your trade mission has earned you [goldGained] gold!":{
+		Italian:"La tua missione commerciale ti ha fruttato [goldGained] Oro!"
+		Romanian:"Misuiunea comercială ți-a adus [goldGained] aur!"
+		Spanish:"¡La mision de comercio ha generado [goldGained] de oro!"
+		Simplified_Chinese:"您开展贸易赚了[goldGained]金钱"
+		Portuguese:"Sua missão comercial ganhou para voçê [goldGained] ouro!"
+		German:"Die Handelsmission hat [goldGained] Gold eingebracht!"
+		French:"Votre mission commerciale vous a rapporté [goldGained] ors"
+		Russian:"Ваша торговая миссия принесла вам [goldGained] золота!"
+	}
+
+	"Can build improvement: Customs house":{
+		Spanish:"Puede construir mejora: Aduana"
+		Italian:"Può costruire il miglioramento: Dogana"
+		French:"Peut construire l'amélioration suivante: Douanes"
+		Romanian:"Poate construi îmbunătățire: Punct vamal"
+		Simplified_Chinese:"可以建造设施：海关"
+		Portuguese:"Pode criar melhoria: Alfândega"
+		Russian:"Можно построить улучшение: таможня"
+		German:"Kann Verbesserung errichten: Zollhaus"
+	}
+
+	"Can speed up construction of a wonder":{
+		Spanish:"Puede acelerar la construccion de una maravilla"
+		Italian:"Può accelerare la costruzione di una Meraviglia"
+		French:"Peut accélérer la construction d'une Merveille"
+		Romanian:"Poate accelera construirea unei minuni"
+		Simplified_Chinese:"可以加快一座奇观的建造速度"
+		Portuguese:"Pode acelerar a construção de uma maravilha"
+		German:"Kann die Produktion eines Wunders beschleunigen"
+		Russian:"Может ускорить строительство чудо"
+	}
+
+	"Hurry Wonder":{
+		Italian:"Accellera Meraviglia"
+		Romanian:"Grăbește minune"
+		Spanish:"Acelerar Maravilla"
+		Simplified_Chinese:"加速奇观建造"
+		German:"Wunder beschleunigen"
+		French:"Accélérer la construction"
+		Russian:"Спешите, чудо"
+		Portuguese:"Apresse-se Maravilha"
+	} 
+
+	"Unbuildable":{
+		Italian:"Non costruibile"
+		Simplified_Chinese:"不可组建单位"
+		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct 
+	}
+
+	// for unit action button
+	"Can build improvement: Manufactory":{
+		Italian:"Può costruire il miglioramento: Manifattura"
+		French:"Peut construire l'amélioration suivante: Manufacture"
+		Romanian:"Poate construi îmbunătățire: fabrică"
+		Simplified_Chinese:"可以建造设施：制造中心"
+		Portuguese:"Pode construir melhoria: Fábrica"
+		German:"Kann Verbesserung errichten: Manufaktur"
+		Russian:"Можно построить улучшение: мануфактура"
+		Spanish:"Se puede construir mejora: Manufactura"
+	}
+	
+	"Cannot enter ocean tiles":{
+		Spanish:"No puede entrar al oceanó"
+		Italian:"Non può entrare nelle caselle oceaniche"
+		French:"Ne peut pas aller sur les tuiles océan"
+		Romanian:"Nu poate accesa celule ocean"
+		Simplified_Chinese:"不能进入海洋"
+		Portuguese:"Não pode entrar o terreno 'oceano' "
+		German:"Ozeanfelder können nicht befahren werden"
+		Russian:"Не может войти в океанские плитки"
+	}
+
+	"Cannot enter ocean tiles until Astronomy":{
+		Spanish:"No puede entrar al oceanó hasta investigar astronomia"
+		Italian:"Può entrare nell'oceano solo dopo aver scoperto l'Astronomia"
+		French:"Ne peut pas aller sur les tuiles océan avant la découverte de l'Astronomie"
+		Romanian:"Nu poate accesa celule ocean înainte de descoperirea Astronomiei"
+		Simplified_Chinese:"不能进入海洋直到掌握天文学"
+		Portuguese:"Não pode entrar o terreno 'oceano' até a pesquisa Astronomia" // if you want you can take away the 'a pesquisa'
+		German:"Ozeanfelder können nicht befahren werden bis Astronomie erforscht ist"
+		Russian:"Не может войти в океанские плитки до Астрономии"
+	}
+
+	"+1 Visibility Range":{
+		Spanish:"+1 Al Rango de Visibilidad"
+		Italian:"+1 raggio di Visione"
+		French:"+1 à la Portée de Vision"
+		Romanian:"+1 Rază vizuală"
+		Simplified_Chinese:"+1视野"
+		Portuguese:"+1 de alcançe ao campo de visão"
+		German:"+1 Sichtweite"
+		Russian:"+1 Диапазон видимости"
+	}
+
+	"Double movement in coast":{
+		Spanish:"Doble movimiento en costas"
+		Italian:"Doppio movimento sulla costa"
+		French:"Double mouvement le long des côtes"
+		Romanian:"Deplasare dublă pe țărm"
+		Simplified_Chinese:"海滨移动时双倍移动力"
+		Portuguese:"Movimento em dobro nas costas"
+		German:"Doppelte Bewegungsgeschwindigkeit an der Küste"
+		Russian:"Двойное движение на побережье"
+	}
+
+	"Indirect Fire":{ // units can fire over forests/hills
+		Spanish:"Fuego Indirecto (Puede disparar sobre colinas y bosques)"
+		Italian:"Fuoco indiretto (l'unità può sparare oltre le foreste o le colline)"
+		French:"Tir indirect"
+		Romanian:"Tir cu boltă"
+		Simplified_Chinese:"间接射击"
+		Portuguese:"Fogo indireto"
+		German:"Indirekter Beschuss"
+		Russian:"Косвенный огонь"
+	}
+	
+////// Policy picker screen
+
+	"You have entered the [newEra] era!":{
+		Italian:"Sei entrato in una nuova era, l'Epoca [newEra]!" //[newEra] not translated in Italian
+		Russian:"Вы вошли в эпоху [newEra]!"
+		French:"Vous êtes entré dans l'ère [newEra]!"
+		Romanian:"Ai intrat în epoca [newEra]!"
+		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is 
+		Spanish:"¡Has entrado en la [newEra]!"
+		Simplified_Chinese:"您已经进入了[newEra]"
+		Portuguese:"Voçê entrou na [newEra]!"
+		German:"Zeitalter [newEra] ist eingeläutet!"
+	}
+
+	"[policyBranch] policy branch unlocked!":{
+		Italian:"Ramo sociale [policyBranch] sbloccato!"
+		Russian:"Ветвь общественных институтов [policyBranch] разблокирована!"
+		French:"Doctrine [policyBranch] déverrouillée!"
+		Romanian:"Ramura [policyBranch] deblocată!"
+		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
+		Spanish:"¡Rama política [policyBranch] desbloqueada!"
+		Simplified_Chinese:"[policyBranch]政策分支解锁!"
+		Portuguese:"[policyBranch] foi desbloqueado(a)"
+		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet"
+	} // EG Rationalism policy branch unlocked!
+	
+////// Trade	
+
+	"Trade":{	
+		Italian:"Negozia"
+		Russian:"Торговля"
+		French:"Échanges"
+		Romanian:"Comerț"
+		Spanish:"Comerciar"
+		Simplified_Chinese:"贸易"
+		Portuguese:"Comércio"
+		German:"Handel"
+	}
+
+	"Offer trade":{	
+		Italian:"Offerta commerciale"
+		Russian:"Предложить обмен"
+		French:"Proposer un échange"
+		Romanian:"Ofertă comercială"
+		Spanish:"Ofrecer intercambio"
+		Simplified_Chinese:"提供贸易"
+		Portuguese:"Oferecer uma troca comercial" // can get rid of 'comercial' if you so wish
+		German:"Handel anbieten"
+	}
+
+	"What do you have in mind?":{	
+		Italian:"Cos'hai in mente?"
+		Russian:"Что вы об этом думаете?"
+		French:"À quoi pensez-vous?"
+		Romanian:"La ce te gândești?"
+		Spanish:"¿Qué tienes en mente?"
+		Simplified_Chinese:"你有什么想法?"
+		Portuguese:"O que está pensando?"
+		German:"Was schwebt Ihnen vor?"
+	}
+
+	"Our items":{	
+		Italian:"I nostri articoli"
+		Russian:"Наши товары"
+		French:"Nos articles"
+		Romanian:"Articolele noastre"
+		Spanish:"Nuestros ítems"
+		Simplified_Chinese:"我们的物品"
+		Portuguese:"Nossos itens/recursos"
+		German:"Unsere Gegenstände"
+	}
+    
+	"Our trade offer":{	
+		Italian:"La nostra offerta"
+		Russian:"Наше предложение\n  обмена"
+		French:"Notre offre d'échange"
+		Romanian:"Oferta noastră"
+		Spanish:"Nuestra oferta"
+		Simplified_Chinese:"我们的贸易提供"
+		Portuguese:"Nossa oferta"
+		German:"Unser Handelsangebot"
+	}
+
+	"[otherCiv]'s trade offer":{
+		Italian:"Offerta di [otherCiv]"
+		Russian:"Предложение обмена \n цивилизации [otherCiv]"
+		French:"L'offre d'échange de [otherCiv]"
+		Romanian:"Ofertă de schimb a [otherCiv]"
+		Spanish:"Oferta de [otherCiv]"
+		Simplified_Chinese:"[otherCiv]的贸易提供"
+		Portuguese:"Oferta de [otherCiv]"
+		German:"[otherCiv]s Handelsangebot"
+	}
+
+	"[otherCiv]'s items":{	
+		Italian:"Gli articoli di [otherCiv]"
+		Russian:"Товары цивилизации [otherCiv]"
+		French:"Les articles de [otherCiv]"
+		Romanian:"Articolele de la [otherCiv]"
+		Spanish:"Ítems de [otherCiv]"
+		Simplified_Chinese:"[otherCiv]的物品"
+		Portuguese:"Itens de [otherCiv]"
+		German:"[otherCiv]s Gegenstände"
+	}
+
+	"Pleasure doing business with you!":{
+		Italian:"È un piacere fare affari con te!"
+		Russian:"С вами приятно иметь дело!"
+		French:"C'est un plaisir de faire des affaires avec vous!"
+		Romanian:"Este o plăcere să facem afaceri împreună!"
+		Spanish:"¡Un placer hacer negocios contigo!"
+		Simplified_Chinese:"很高兴和您做生意!"
+		Portuguese:"É um prazer fazer negócios com voçê" // can remove 'É um prazer' as it translates to 'it is as pleasure'
+		German:"Angenehm mit Ihnen Geschäfte zu machen!"
+	}
+
+	"I think not.":{	
+		Italian:"Non ci penso proprio!"
+		Russian:"Думаю, нет."
+		French:"Je ne crois pas."
+		Romanian:"Nu cred."
+		Spanish:"Creo que no."
+		Simplified_Chinese:"我认为不可行."
+		Portuguese:"Eu acho que não"
+		German:"Lieber nicht."
+	}
+
+	"That is acceptable.":{	
+		Italian:"È accettabile."
+		Russian:"Это приемлемо."
+		French:"C'est acceptable."
+		Romanian:"E acceptabil."
+		Spanish:"Es aceptable"
+		Simplified_Chinese:"这是可以接受的."
+		Portuguese:"Isso é aceitavel"
+		German:"Das ist akzeptabel."
+	}
+
+	"Accept":{	
+		Italian:"Accetta"
+		Russian:"Принять"
+		French:"Accepter"
+		Romanian:"Acceptă"
+		Spanish:"Aceptar"
+		Simplified_Chinese:"同意"
+		Portuguese:"Aceitar"
+		German:"Annehmen"
+	}
+	
+	"There's nothing on the table":{
+		Italian:"Non c'è niente da trattare"
+		Russian:"Вы ничего не предложили" //Don't know how to properly translate this one, but i think this will do okay
+		French:"Il n'y a rien a échangé" //if it's in case of empty trade it's accurate
+		Romanian:"Nu e nimic pe masă"
+		Spanish:"¿Estas de broma?"
+		Simplified_Chinese:"表格上没有任何物品"
+		Portuguese:"Não ha nada a mesa"
+		German:"Der Verhandlungstisch ist leer"
+	}
+
+	"Peace treaty":{
+		Italian:"Trattato di pace"
+		Russian:"Мирный договор"
+		French:"Traité de paix"
+		Romanian:"Tratat de pace"
+		Spanish:"Tratado de paz"
+		Simplified_Chinese:"和平条约"
+		Portuguese:"Tratado de paz"
+		German:"Friedensabkommen"
+	}
+
+	"Agreements":{
+		Italian:"Accordi"
+		Simplified_Chinese:"协定"
+		French:"Accords"
+	}
+
+	"Open Borders":{
+		Italian:"Diritto di passaggio"
+		Simplified_Chinese:"开放边境"
+		French:"Frontières ouvertes"
+	}
+
+	"Gold per turn":{
+		Italian:"Oro per turno"
+		Russian:"Золота за ход"
+		French:"Or par tour"
+		Romanian:"Aur per rundă"
+		Spanish:"Oro por turno"
+		Simplified_Chinese:"每回合得到金钱"
+		Portuguese:"Ouro por turno"
+		German:"Gold pro Runde"
+	}
+
+	"Cities":{ //You misses this translation, said Smashfanful
+		Italian:"Città"
+		Romanian:"Orase"
+		Spanish:"Ciudades"
+		Simplified_Chinese:"城市"
+		German:"Städte"
+		Dutch:"Cities"
+		French:"Villes"
+		Portuguese:"Cidades"
+		Russian:"Города"
+	}
+
+	"Technologies":{ //You misses this translation, said Smashfanful
+		Italian:"Tecnologie"
+		French:"Technologies"
+		Simplified_Chinese:"科技"
+	}
+
+	"Declarations of war":{ //You misses this translation, said Smashfanful
+		Italian:"Dichiarazione di guerra"
+		French:"Déclarations de guerre"
+		Simplified_Chinese:"宣战"
+	}
+
+	"Luxury resources":{
+		Italian:"Risorse di lusso" //You misses this translation, said Smashfanful
+		French:"Ressources de luxes"
+		Simplified_Chinese:"奢侈资源"
+	}
+
+	"Strategic resources":{
+		Italian:"Risorse strategiche" //You misses this translation, said Smashfanful
+		French:"Ressources stratégiques"
+		Simplified_Chinese:"战略资源"
+	}
+
+	// Civilisations and uniques
+	"replaces":{// As in "Camel Archer replaces Knight", "Krepost replaces Barracks"
+		Italian:"sostituisce"
+		Romanian:"înlocuiește"
+		Spanish:"Remplaza"
+		Simplified_Chinese:"替代"
+		German:"ersetzt"
+		French:"remplace"
+		Portuguese:"substitui"
+		Russian:"заменяет"
+	}
+	
+	"[resourceName] not required":{
+		Italian:"Risorsa [resourceName] non richiesta"
+		Simplified_Chinese:"不需要[resourceName]"
+		French:"[resourceName] non requis"
+	}
+	
+	"National ability":{ // the unique ability that each nation has
+		Italian:"Abilità della civiltà"
+		Romanian:"Abilitate a națiunii"
+		Spanish:"Bonus de nacion"
+		German:"Nationalfähigkeit"
+		French:"Capacité de la civilisation"
+		Portuguese:"Habilidade nacional"
+		Russian:"Национальная способность"
+		Simplified_Chinese:"国家能力"
+	}
+	
+	"Babylon":{	
+		Italian:"Babilonia"
+		Russian:"Вавилон"
+		French:"Babylone"
+		Romanian:"Babilonia"
+		Spanish:"Babilonia"
+		Simplified_Chinese:"巴比伦"
+		Portuguese:"Babilonia"
+		German:"Babylonien"
+	}
+
+	"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster":{
+		Italian:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura, e ricevi i Grandi scenziati il 50% più in fretta"
+		Romanian:"La descoperirea abilității Scriere primești un Mare om de știință gratuit, următorii fiind obținuți cu 50% mai repede"
+		German:"Ein kostenloser Großer Wissenschaftler erscheint, wenn Schrift erforscht wurde; Große Wissenschaftler erscheinen 50% häufiger"
+		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres apparaissent 50% plus vite"
+		Portuguese:"Receba gratuitamente o Grande Cientista quando você descobrir Escrevendo, Ganhe Grandes Cientistas 50% mais rápido"
+		Russian:"Получите бесплатно великого ученого, когда откроете для себя написание, заработайте великих ученых на 50% быстрее"
+		Simplified_Chinese:"发明文字后立即获得一位大科学家，大科学家点数积累速率+50%"
+		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
+	}
+	
+	"Greece":{	
+		Italian:"Grecia"
+		Russian:"Греция"
+		French:"Grèce"
+		Romanian:"Grecia"
+		Spanish:"Grecia"
+		Simplified_Chinese:"希腊"
+		Portuguese:"Grécia"
+		German:"Griechenland"
+	}
+
+	"China":{	
+		Italian:"Cina"
+		Russian:"Китай"
+		French:"Chine"
+		Romanian:"China"
+		Spanish:"China"
+		Simplified_Chinese:"中华"
+		Portuguese:"China"
+		German:"China"
+	}
+
+	"Great general provides double combat bonus, and spawns 50% faster":{
+		Italian:"I Grandi Generali concedono nascono il 50% più in fretta e il loro bonus è raddoppiato"
+		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
+		Simplified_Chinese:"大军事家提供双倍战斗力加成，大军事家产生速率+50%"
+		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
+		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait 50% plus vite"
+		Portuguese:"Grande general fornece bônus de combate duplo e gera 50% mais rápido"
+		Russian:"Великий полководец дает двойной боевой бонус и появляется на 50% быстрее"
+		Spanish:"El gran general proporciona bonificación de combate doble y genera un 50% más rápido."
+	}
+	
+	"Egypt":{	
+		Italian:"Egitto"
+		Russian:"Египет"
+		French:"Égypte"
+		Romanian:"Egipt"
+		Spanish:"Egipto"
+		Simplified_Chinese:"埃及"
+		Portuguese:"Egito"
+		German:"Ägypten"
+	}
+
+	"+20% production towards Wonder construction":{
+		Italian:"+20% Produzione per la costruzione di Meraviglie"
+		German:"20% erhöhte Produktion beim Errichten von Wundern"
+		French:"+20% vitesse de construction des merveilles"
+		Spanish:"+ 20% de producción hacia la construcción de maravillas."
+		Romanian:"+ 20% producție spre construcția de mirare"
+		Portuguese:"+ 20% de produção para construção de maravilhas"
+		Russian:"+20% производства на строительство чудес"
+		Simplified_Chinese:"建造奇观时+20%产能积累速率"
+	}
+	
+	"England":{	
+		Italian:"Inghilterra"
+		Russian:"Англия"
+		French:"Angleterre"
+		Romanian:"Anglia"
+		Spanish:"Inglaterra"
+		Simplified_Chinese:"英格兰"
+		Portuguese:"Inglaterra"
+		German:"England"
+	}
+
+	"+2 movement for all naval units":{
+		Italian:"+2 movimento per tutte le unità navali"
+		Romanian:"+2 deplasare pentru toate unitățile navale"
+		Spanish:"+2 de movimiento a las unidades navales"
+		Simplified_Chinese:"所有海军+2移动力"
+		German:"+2 Bewegung für alle Marineeinheiten"
+		French:"+2 mouvements pour les unités navales"
+		Portuguese:"+2 movimento para todas as unidades navais"
+		Russian:"+2 движение для всех военно-морских подразделений"
+	}
+	
+	"France":{	
+		Italian:"Francia"
+		Russian:"Франция"
+		French:"France"
+		Romanian:"Franța"
+		Spanish:"Francia"
+		Simplified_Chinese:"法兰西"
+		Portuguese:"França"
+		German:"Frankreich"
+	}
+
+	"+2 Culture per turn from cities before discovering Steam Power":{
+		Italian:"+2 Cultura al turno dalle città prima di scoprire l'Energia a Vapore"
+		German:"+2 Kultur pro Runde von Städten (bevor Dampfkraft erforscht wurde)"
+		French:"+2 culture par tour et par villes jusqu'à la découverte de la machine à vapeur"
+		Spanish:"+2 Cultura por turno desde las ciudades antes de descubrir la Energía de Vapor."
+		Romanian:"+2 Cultură pe turn de la orașe înainte de a descoperi puterea de abur"
+		Portuguese:"+2 Cultura por turno das cidades antes de descobrir o poder do vapor"
+		Russian:"+2 Культура за ход из городов, прежде чем открыть для себя силу пара"
+		Simplified_Chinese:"在发明蒸汽机之前，每座城市的文化+2"
+	}
+	
+	"Russia":{
+		Italian:"Russia"
+		Romanian:"Rusia"
+		Spanish:"Rusia"
+		Simplified_Chinese:"俄罗斯"
+		German:"Russland"
+		French:"Russie"
+		Portuguese:"Rússia"
+		Russian:"Россия"
+	}
+
+	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
+		Italian:"+1 Produzione dalle Risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
+		Romanian:"Resursele strategice oferă +1 Producție, resursele Cai, Fier și Uraniu oferind cantitate dublă"
+		Spanish:"Los recursos estrategicos proporcionan +1 de produccion y los caballos, uranio y hierro proporcionan 4 envez de 2 recursos"
+		Simplified_Chinese:"每处战略资源+1产能，并且马、铁和铀资源储量加倍"
+		German:"Strategische Ressourcen geben +1 Produktion und Pferde, Eisen und Uran Ressourcen geben die doppelte Menge"
+		French:"Les ressources stratégiques donnent +1 production, et les quantités de chevaux, fer et uranium sont doublés"
+		Portuguese:"Recursos Estratégicos fornecem Produção de +1, e Cavalos, Ferro e Recursos de Urânio fornecem quantidade dupla"
+		Russian:"Стратегические ресурсы дают +1 к добыче, а ресурсы для лошадей, железа и урана дают двойное количество"
+	}
+	
+	"Rome":{
+		Italian:"Roma"
+		Romanian:"Roma"
+		Spanish:"Roma"
+		Simplified_Chinese:"罗马"
+		German:"Rom"
+		French:"Rome"
+		Portuguese:"Roma"
+		Russian:"Рим"
+	}
+
+	"+25% Production towards any buildings that already exist in the Capital":{
+		Italian:"+25% Produzione per gli edifici già esistenti nella Capitale"
+		Romanian:"+25% Producție pentru toate clădirile deja existente în capitală"
+		Spanish:"+25% De producion a las construciones que ya existan en la capital "
+		German:"+25% Produktion für alle Gebäude die bereits in der Hauptstadt existieren"
+		French:"+25% de production pour tous les batiments déjà construits dans la capitale"
+		Portuguese:"+ 25% Produção para quaisquer edifícios que já existam na Capital"
+		Russian:"+ 25% к любым зданиям, которые уже существуют в столице"
+		Simplified_Chinese:"在其他城市建造首都已建有的建筑时+25%产能积累"
+	}
+	
+	"Arabia":{
+		Italian:"Arabia"
+		Romanian:"Arabia"
+		Spanish:"Arabia"
+		Simplified_Chinese:"阿拉伯"
+		German:"Arabien"
+		French:"Arabie"
+		Portuguese:"Arabia"
+		Russian:"Аравия"
+		Dutch:"Saudi"
+	}
+
+	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
+		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
+		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
+	}
+	
+	"America":{
+		Italian:"Stati Uniti"
+		Romanian:"Statele Unite"
+		Spanish:"Estados Unidos"
+		Simplified_Chinese:"美国"
+		German:"Amerika"
+		French:"Etats-Unis"
+		Portuguese:"América"
+		Russian:"Америка"
+	}
+
+	"All land military units have +1 sight, 50% discount when purchasing tiles":{
+		Italian:"+1 Visione per le unità militari terrestri, e -50% costi in Oro quando acquisti una casella"
+		Romanian:"Toate unitățile militare terestre au raza vizuală +1, 50% reducere la cumpărarea celulelor"
+		Spanish:"Todas las unidades militares de tierra obtienen +1 de vision, 50% de descuento al comprar terrenos"
+		Simplified_Chinese:"陆军单位+1视野，购买地块花费-50%"
+		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
+		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
+		Portuguese:"Todas as unidades militares terrestres têm uma vista, 50% de desconto na compra de telhas"
+		Russian:"Все наземные воинские части имеют +1 прицел, скидка 50% при покупке плитки"
+	}
+	
+	"Japan":{
+		Italian:"Giappone"
+		Romanian:"Japonia"
+		Spanish:"Japón"
+		Simplified_Chinese:"日本"
+		German:"Japan"
+		French:"Japon"
+		Portuguese:"Japão"
+		Russian:"Япония"
+	}
+
+	"Units fight as though they were at full strength even when damaged":{
+		Italian:"Le unità combattono come se fossero perfettamente sane, anche quando gravemente ferite"
+		Romanian:"Unitățile se luptă ca și cum ar fi la putere deplină chiar și atunci când sunt deteriorate"
+		Spanish:"Las unidades luchan como si estuvieran con toda su fuerza incluso cuando están dañadas"
+		Simplified_Chinese:"受伤单位战斗力不减"
+		German:"Einheiten kämpfen so, als wären sie selbst bei Beschädigung in voller Stärke"
+		French:"Les unités combattent comme si elles étaient à pleine force même lorsqu'elles sont endommagées"
+		Portuguese:"Unidades lutam como se estivessem em força total, mesmo quando danificadas"
+		Russian:"Юниты сражаются, как будто они в полной силе, даже когда повреждены"
+	}
+
+	/*
+	"Germany":{
+		Italian:"Germania"
+		French:"Allemagne"
+	}
+
+	"India":{
+		Italian:"India"
+		French:"Inde"
+	}
+
+	"Irochese":{
+		Italian:"Irochese"
+		French:"Iroquois"
+	}
+
+	"Aztecs":{
+		Italian:"Azteca"
+		French:"Aztèques"
+	}
+
+	"Denmark":{
+		Italian:"Danimarca"
+		French:"Danemark"
+	}
+
+	"Inca":{
+		Italian:"Inca"
+		French:"Incas"
+	}
+
+	"Mongolia":{
+		Italian:"Mongolia"
+		French:"Mongolie"
+	}
+
+	"Korea":{
+		Italian:"Corea"
+		French:"Corée"
+	}
+
+	"Turkey":{
+		Italian:"Turchia"
+		French:"Turquie"
+	}
+
+	"Siam":{
+		Italian:"Siam"
+		French:"Siam"
+	}
+
+	"Songhai":{
+		Italian:"Songhai"
+		French:"Songhaï"
+	}
+
+	"Polynesia":{
+		Italian:"Polinesia"
+		French:"Polynésie"
+	}
+
+	"Persia":{
+		Italian:"Persia"
+		French:"Perse"
+	}
+	*/
+	
+	"Uniques":{ // unit uniques, displayed on the new game screen when choosing a civ
+		Italian:"Abilità unica"
+		Romanian:"Uniques"
+		Spanish:"Uniques"
+		Simplified_Chinese:"独有"
+		German:"Unikate"
+		French:"Uniques"
+		Portuguese:"Únicos"
+		Russian:"уникальный"
+	}
+
+	"Promotions":{
+		Italian:"Promozioni"
+		Romanian:"Promoţii"
+		Spanish:"Promociones"
+		Simplified_Chinese:"晋升"
+		German:"Beförderungen"
+		French:"Promotions"
+		Portuguese:"Promoções"
+		Russian:"промо акции"
+	}
+	
+	"units in rough terrain":{
+		Italian:"unità su terreno accidentato"
+		Romanian:"unități în teren accidentat"
+		Spanish:"unidades en terreno accidentado"
+		Simplified_Chinese:"位于复杂地形的单位"
+		German:"Einheiten in unwegsamem Gelände"
+		French:"unités en terrain accidenté"
+		Portuguese:"unidades em terreno acidentado"
+		Russian:"юниты на пересеченной местности"
+	}
+	
+	"Barbarians":{
+		Italian:"Barbari"
+		Romanian:"Barbari"
+		Spanish:"Barbaros"
+		Simplified_Chinese:"蛮族"
+		German:"Barbaren"
+		French:"Barbare"
+		Portuguese:"Bárbaros"
+		Russian:"Варвары"
+	}
+	
+//////// Difficulty
+
+	"Settler":{	
+		Italian:"Colono"
+		Russian:"Поселенец"
+		French:"Colon"
+		Romanian:"Colonist"
+		Spanish:"Colono"
+		Simplified_Chinese:"移民"
+		Portuguese:"Colonizador"
+		German:"Siedler"
+	}
+
+	"Chieftain":{	
+		Italian:"Capo"
+		Russian:"Вождь"
+		French:"Chef de clan"
+		Romanian:"Șef de trib"
+		Spanish:"Cacique"
+		Simplified_Chinese:"酋长"
+		Portuguese:"Cacique"
+		German:"Häuptling"
+	}
+
+	"Warlord":{	
+		Italian:"Condottiero"
+		Russian:"Военачальник"
+		French:"Chef de guerre"
+		Romanian:"Comandant"
+		Spanish:"Señor de la guerra"
+		Simplified_Chinese:"军阀"
+		Portuguese:"General"
+		German:"Kriegsherr"
+	}
+
+	"Prince":{	
+		Italian:"Principe"
+		Russian:"Принц"
+		French:"Prince"
+		Romanian:"Prinţ"
+		Spanish:"Príncipe"
+		Simplified_Chinese:"王子"
+		Portuguese:"Príncipe"
+		German:"Prinz"
+	}
+
+	"King":{	
+		Italian:"Re"
+		Russian:"Король"
+		French:"Roi"
+		Romanian:"Rege"
+		Spanish:"Rey"
+		Simplified_Chinese:"国王"
+		Portuguese:"Rei"
+		German:"König"
+	}
+
+	"Emperor":{	
+		Italian:"Imperatore"
+		Russian:"Император"
+		French:"Empereur"
+		Romanian:"Împărat"
+		Spanish:"Emperador"
+		Simplified_Chinese:"皇帝"
+		Portuguese:"Imperador"
+		German:"Kaiser"
+	}
+
+	"Immortal":{	
+		Italian:"Immortale"
+		Russian:"Бессмертный"
+		French:"Immortel"
+		Romanian:"Nemuritor"
+		Spanish:"Inmortal"
+		Simplified_Chinese:"不朽"
+		Portuguese:"Imortal"
+		German:"Unsterblicher"
+	}
+
+	"Deity":{	
+		Italian:"Divinità"
+		Russian:"Божество"
+		French:"Déité" //or Divinité
+		Romanian:"Zeitate"
+		Spanish:"Deidad"
+		Simplified_Chinese:"天神"
+		Portuguese:"Semi-Dus"
+		German:"Gott"
+	}
+
+////// world size
+
+	"Tiny":{
+		Italian:"Minuscola"
+		Romanian:"Micuț"
+		Spanish:"Micro"
+		Simplified_Chinese:"极小"
+		German:"Winzig"
+		Russian:"крошечный"
+		Portuguese:"Minúsculo"
+		French:"Minuscule"
+	}
+
+	"Small":{	
+		Italian:"Piccola"
+		Russian:"Маленький"
+		French:"Petit"
+		Romanian:"Mic"
+		Spanish:"Pequeño"
+		Simplified_Chinese:"小"
+		Portuguese:"Pequeno"
+		German:"Klein"
+	}
+
+	"Medium":{	
+		Italian:"Media"
+		Russian:"Средний"
+		French:"Moyen"
+		Romanian:"Mediu"
+		Spanish:"Mediano"
+		Simplified_Chinese:"中"
+		Portuguese:"Mediano"
+		German:"Mittel"
+	}
+
+	"Large":{	
+		Italian:"Grande"
+		Russian:"Большой"
+		French:"Grand"
+		Romanian:"Mare"
+		Spanish:"Grande"
+		Simplified_Chinese:"大"
+		Portuguese:"Grande"
+		German:"Groß"
+	}
+
+	"Huge":{	
+		Italian:"Enorme"
+		Russian:"огромный"
+		French:"Énorme"
+		Romanian:"Imens"
+		Spanish:"Enorme"
+		Simplified_Chinese:"巨大"
+		Portuguese:"Imensa"
+		German:"Enorm"
+	}
+
+////// New game screen
+	
+	"Civilization":{	
+		Italian:"Civiltà"
+		Russian:"Цивилизация"
+		French:"Civilisation"
+		Romanian:"Civilizaţie"
+		Spanish:"Civilización"
+		Simplified_Chinese:"文明"
+		Portuguese:"Civilização"
+		German:"Zivilisation"
+	}
+
+	"World size":{	 //feels like duplicate
+		Italian:"Dimensione della mappa"
+		Russian:"Размер мира"
+		French:"Taille du monde"
+		Romanian:"Mărime pământ"
+		Spanish:"Tamaño del mundo"
+		Simplified_Chinese:"世界大小"
+		Portuguese:"Tamanho do mundo"
+		German:"Kartengröße"
+	}
+
+	"Number of human players":{	//feels like duplicate
+		Italian:"Numero di giocatori"
+		Russian:"Количество врагов"
+		French:"Nombre d'ennemies"
+		Romanian:"Număr de inamici"
+		Spanish:"Número de enemigos"
+		Simplified_Chinese:"人类玩家"
+		Portuguese:"Número de inimigos"
+		German:"Anzahl der Gegner"
+	}
+
+	"Number of enemies":{	//feels like duplicate
+		Italian:"Numero di avversari"
+		Russian:"Количество врагов"
+		French:"Nombre d'ennemies"
+		Romanian:"Număr de inamici"
+		Spanish:"Número de enemigos"
+		Simplified_Chinese:"电脑玩家"
+		Portuguese:"Número de inimigos"
+		German:"Anzahl der Gegner"
+	}
+
+	"Difficulty":{	
+		Italian:"Difficoltà"
+		Russian:"Сложность"
+		French:"Difficulté"
+		Romanian:"Dificultate"
+		Spanish:"Dificultad"
+		Simplified_Chinese:"难度"
+		Portuguese:"Dificuldade"
+		German:"Schwierigkeitsgrad"
+	}
+
+	"Map type":{	
+		Italian:"Tipo di mappa"
+		Russian:"Тип карты"
+		French:"Type de carte"
+		Romanian:"Tipul hărții"
+		Spanish:"Tipo de mapa"
+		Simplified_Chinese:"地图类型"
+		Portuguese:"Tipo de mapa"
+		German:"Kartentyp"
+		Dutch:"Kaarttype"
+	}
+	
+////// Diplomacy!
+	
+	"Diplomacy":{	
+		Italian:"Diplomazia"
+		Russian:"Дипломатия"
+		French:"Diplomatie"
+		Romanian:"Diplomaţie"
+		Spanish:"Diplomacia"
+		Simplified_Chinese:"外交"
+		Portuguese:"Diplomacia"
+		German:"Diplomatie"
+	}
+
+	"War":{
+		Italian:"Guerra"
+		Russian:"Война"
+		French:"Guerre"
+		Romanian:"Război"
+		Spanish:"Guerra"
+		Simplified_Chinese:"战争"
+		Portuguese:"Guerra"
+		German:"Krieg"
+	}
+
+	"Peace":{
+		Italian:"Pace"
+		Russian:"Мир"
+		French:"Paix"
+		Romanian:"Pace"
+		Spanish:"Paz"
+		Simplified_Chinese:"和平"
+		Portuguese:"Paz"
+		German:"Frieden"
+	}
+	
+	"Declare war":{
+		Italian:"Dichiara guerra"
+		Russian:"Объявить войну"
+		French:"Déclarer la guerre"
+		Romanian:"Declară război"
+		Spanish:"Declarar guerra"
+		Simplified_Chinese:"宣战"
+		Portuguese:"Declarar guerra"
+		German:"Krieg erklären"
+	}
+
+	"Declare war on [civName]?":{
+		Italian:"Dichiarare guerra alla civiltà [civName]?"
+		French:"Déclarer la guerre à [civName]?"
+		Simplified_Chinese:"向[civName]宣战吗？"
+	}
+	
+	"[civName] has declared war on us!":{
+		Italian:"La civiltà [civName] ci ha dichiarato guerra!"
+		Russian:"Цивилизация [civName]  объявила нам войну!"
+		French:"[civName] nous a déclaré la guerre!"
+		Romanian:"[civName] ne-au declarat război!"
+		Spanish:"¡[civName] te ha declarado la guerra!"
+		Simplified_Chinese:"[civName]已经对我们宣战!"
+		Portuguese:"[civName] Declarou guerra contra nós!"
+		German:"[civName] hat uns den Krieg erklärt!"
+	}
+	
+	"[tradeOffer] from [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
+		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
+		French:"[tradeOffer] de [otherCivName] a pris fin"
+	}
+	
+	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
+		Italian:"[leaderName] dell'Impero [nation]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese (so it should be [adjective] instead of [nation]
+		German:"[leaderName] von [nation]"
+		Spanish:"[leaderName] de [nation]"
+		Portuguese:"[leaderName] do [nation]"
+		Simplified_Chinese:"[leaderName]的[nation]"
+		French:"[leaderName] de [nation]"
+		Russian:"[leaderName] из [nation]"
+		Romanian:"[leaderName] de [nation]"
+	}
+	
+	"You'll pay for this!":{
+		Italian:"Pagherai caro questo affronto!"
+		German:"Sie werden dafür bezahlen!"
+		French:"Vous allez payer pour cela!"
+		Spanish:"¡Pagarás por esto!"
+		Russian:"Вы заплатите за это!"
+		Romanian:"Veți plăti pentru asta!"
+		Portuguese:"Você vai pagar por isso!"
+		Simplified_Chinese:"你会为此付出代价！"
+	}
+
+	"Very well.":{
+		Italian:"Molto bene."
+		French:"Très bien."
+		Simplified_Chinese:"很好."
+	}
+
+	"Farewell.":{
+		Italian:"Addio."
+		French:"Adieu."
+		Simplified_Chinese:"再见."
+	}
+	
+	"Not this time.":{ // declining trade text
+		Italian:"Non questa volta."
+		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
+		French:"Pas cette fois."
+	}
+
+	"Excellent!":{ // AI statement after we accept a trade they proposed
+		Italian:"Eccellente!"
+		Simplified_Chinese:"好极了！和和气气才是生财之道。"
+		French:"Excellent!"
+	}
+
+	"How about something else...":{ // Counteroffer to AI offer
+		Italian:"Che ne dici di questa offerta?"
+		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
+		French:"Pourquoi pas autre chose..."
+	}
+	
+	"A pleasure to meet you.":{
+		Italian:"Siamo lieti di incontrarvi."
+		French:"Un plaisir de vous rencontrez"
+		Simplified_Chinese:"很高兴见到你."
+	}
+	
+	"Our relationship: ":{
+		Italian:"I nostri rapporti: "
+		French:"Notre relation :" //or l'état de notre relation
+	}
+	
+    "Unforgivable!":{
+		Italian:"Imperdonabile!"
+		French:"Impardonnable!"
+    }
+
+    "Enemy":{ //e.g ?
+		Italian:"Nemico"
+		French:"Ennemi"
+    }
+
+    "Competitor":{
+	    Italian:"Avversario"
+	    French:"Adversaire" //or en compétition
+    }
+
+    "Neutral":{
+        Italian:"Neutrale"
+	    French:"Neutre"
+    }
+
+    "Favorable":{
+		Italian:"Favorevole"
+	    French:"Favorable"
+    }
+
+    "Friend":{
+		Italian:"Amichevole"
+	    French:"Ami"
+    }
+
+    "Ally":{
+		Italian:"Alleato"
+	    French:"Allié"
+    }
+	
+////// Diplomatic modifiers
+
+	"You declared war on us!":{
+		Italian:"Ci hai dichiarato guerra!"
+		French:"Vous nous avez déclaré la guerre!"
+	}
+
+	"Your warmongering ways are unacceptable to us.":{
+		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
+		French:"Votre bellicisme est inacceptable pour nous."
+	}
+
+	"You have captured our cities!":{
+		Italian:"Hai preso una delle nostre città!"
+		French:"Vous avez capturé nos villes!"
+	}
+
+	"Years of peace have strengthened our relations.":{
+		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
+		French:"Les années de paix ont renforcées notre relation"
+	}
+
+	"Our mutual military struggle brings us closer together.":{
+		Italian:"I nostri nemici in comune ci hanno legati."
+		French:"Nos problèmes militaires communs nous ont rapprochés"
+	}
+	
+////// Overview screen
+
+	"Overview":{	
+		Italian:"Panoramica"
+		Russian:"Обзор"
+		French:"Vue d'ensemble"
+		Romanian:"Prezentare generală"
+		Spanish:"Visión general"
+		Simplified_Chinese:"概览"
+		Portuguese:"Visão geral"
+		German:"Überblick"
+	}
+
+	"Cities":{	
+		Italian:"Città"
+		Russian:"Города"
+		French:"Villes"
+		Romanian:"Orașe"
+		Spanish:"Ciudades"
+		Simplified_Chinese:"城市"
+		Portuguese:"Cidades"
+		German:"Städte"
+	}
+
+	"Total":{
+		Italian:"Totale"
+		Russian:"Всего"
+		French:"Total"
+		Romanian:"Total"
+		Spanish:"Total"
+		Simplified_Chinese:"总计"
+		Portuguese:"Total"
+		German:"Gesamt"
+	}
+
+	"Stats":{	
+		Italian:"Statistiche"
+		Russian:"Статистика"
+		French:"Statistiques"
+		Romanian:"Statistici"
+		Spanish:"Estadísticas"
+		Simplified_Chinese:"统计"
+		Portuguese:"Estatisticas"
+		German:"Statistiken"
+	}
+
+	"Policies":{	
+		Italian:"Politiche"
+		Russian:"Общественные институты"
+		French:"Doctrines"
+		Romanian:"Politici"
+		Spanish:"Políticas"
+		Simplified_Chinese:"政策"
+		Portuguese:"Políticas"
+		German:"Grundsätze"
+	}
+
+	"Base happiness":{	
+		Italian:"Felicità di base"
+		Russian:"Базовое счастье"
+		French:"Bonheur de base"
+		Romanian:"Fericire de bază"
+		Spanish:"Felicidad base"
+		Simplified_Chinese:"基础快乐度"
+		Portuguese:"Felicidade base"
+		German:"Grundzufriedenheit"
+	}
+
+	"Buildings":{	
+		Italian:"Edifici"
+		Russian:"Здания"
+		French:"Bâtiments"
+		Romanian:"Clădiri"
+		Spanish:"Edificios"
+		Simplified_Chinese:"建筑"
+		Portuguese:"Edifícios"
+		German:"Gebäude"
+	}
+
+	"Wonders":{
+		Italian:"Meraviglie"
+		Romanian:"Minuni"
+		Spanish:"Maravillas"
+		German:"Wunder"
+		French:"Merveilles"
+		Simplified_Chinese:"奇观"
+	}
+
+	"Specialist Buildings":{
+		Italian:"Edifici specialisti"
+		Romanian:"Clădiri specializate"
+		Spanish:"Edificios Ocupables"
+		German:"Gebäude der Spezialisten"
+		French:"Batiments spéciaux" //not sure
+		Simplified_Chinese:"专业建筑"
+	}
+
+	"Other":{ // Used for "other constructions" - Gold, Science, Nothing
+		Italian:"Altro"
+		French:"Autre"
+		German:"Andere"
+		Spanish:"Otro"
+		Russian:"Другой"
+		Romanian:"Alte"
+		Portuguese:"De outros"
+		Simplified_Chinese:"其他"
+	} 
+
+	"Population":{	
+		Italian:"Popolazione"
+		Russian:"Население"
+		French:"Population"
+		Romanian:"Populație"
+		Spanish:"Población"
+		Simplified_Chinese:"人口"
+		Portuguese:"População"
+		German:"Bevölkerung"
+	}
+
+	"Luxury resources":{	
+		Italian:"Risorse di lusso"
+		Russian:"Редкие ресурсы"
+		French:"Ressources de luxe"
+		Romanian:"Resurse de lux"
+		Spanish:"Recursos de lujo"
+		Simplified_Chinese:"奢侈资源"
+		Portuguese:"Recursos de luxo"
+		German:"Luxusressource"
+	}
+
+	"Tile yields":{	
+		Italian:"Resa delle celle"
+		Russian:"Клетка дает"
+		French:"Rendement des cases"
+		Romanian:"Randamentele celulelor"
+		Spanish:"Rendimiento de casillas"
+		Simplified_Chinese:"地块产出"
+		Portuguese:"Rendimento de terrenos"
+		German:"Felderträge"
+	}
+
+	"Trade routes":{	
+		Italian:"Rotte commerciali"
+		Russian:"Торговые маршруты"
+		French:"Routes commerciales"
+		Romanian:"Rute commerciale"
+		Spanish:"Rutas comerciales"
+		Simplified_Chinese:"贸易路线"
+		Portuguese:"Rotas comerciais"
+		German:"Handelsrouten"
+	}
+
+	"Maintenance":{	
+		Italian:"Manutenzione"
+		Russian:"Обслуживание"
+		French:"Entretien"
+		Romanian:"Întreținere"
+		Spanish:"Mantenimiento"
+		Simplified_Chinese:"维护费"
+		Portuguese:"Manutenção"
+		German:"Wartung"
+	}
+
+	"Transportation upkeep":{	
+		Italian:"Mantenimento dei trasporti"
+		Russian:"Транспортировка"
+		French:"Entretien des transports"
+		Romanian:"Întreținere trasporturi"
+		Spanish:"Mantenimiento de transporte"
+		Simplified_Chinese:"道(铁)路维护"
+		Portuguese:"Manutenção de transporte"
+		German:"Unterhalt für Transport"
+	}
+
+	"Unit upkeep":{	
+		Italian:"Mantenimento dell'unità"
+		Russian:"Поддержание содержания"
+		French:"Entretien des unités"
+		Romanian:"Întreținere unități"
+		Spanish:"Mantenimiento de unidades"
+		Simplified_Chinese:"单位维护"
+		Portuguese:"Manutenção de unidades"
+		German:"Unterhalt für Einheiten"		
+	}
+	
+	"Trades":{	
+		Italian:"Commercio"
+		Russian:"Соглашения"
+		French:"Échanges"
+		Romanian:"Tranzacții"
+		Spanish:"Comercio"
+		Simplified_Chinese:"贸易"
+		Portuguese:"Comércio"
+		German:"Handel"
+	}
+
+	"Units":{	
+		Italian:"Unità"
+		Russian:"Юниты"
+		French:"Unités"
+		Romanian:"Unități"
+		Spanish:"Unidades"
+		Simplified_Chinese:"单位"
+		Portuguese:"Unidades"
+		German:"Einheiten"
+	}
+
+	"Name":{	
+		Italian:"Nome"
+		Russian:"Имя"
+		French:"Nom"
+		Romanian:"Nume"
+		Spanish:"Nombre"
+		Simplified_Chinese:"名称"
+		Portuguese:"Nome"
+		German:"Name"
+	}
+
+	"Closest city":{	
+		Italian:"Città più vicina"
+		Russian:"Ближайший город"
+		French:"Ville la plus proche"
+		Romanian:"Cel mai apropiat oraș"
+		Spanish:"Ciudad más cercana"
+		Simplified_Chinese:"最靠近的城市"
+		Portuguese:"Cidade mais próxima"
+		German:"Nächstgelegene Stadt"
+	}
+	
+	"Defeated":{
+		Italian:"Sconfitto"
+		Russian:"побежденный"
+		French:"Vaincu"
+		German:"Besiegt"
+		Spanish:"Derrotado"
+		Romanian:"Învins"
+		Portuguese:"Derrotado"
+		Simplified_Chinese:"战败"
+	}
+	
+////// Victory Screen
+
+	"Science victory":{
+		Italian:"Vittoria Scientifica"
+		German:"Wissenschaftssieg"
+		French:"Victoire scientifique"
+		Simplified_Chinese:"科技胜利"
+	}
+
+	"Cultural victory":{
+		Italian:"Vittoria Culturale"
+		German:"Kultursieg"
+		French:"Victoire Culturelle"
+		Simplified_Chinese:"文化胜利"
+	}
+
+	"Conquest victory":{
+		Italian:"Vittoria per Dominazione"
+		German:"Dominanzsieg"
+		French:"Victoire militaire"
+		Simplified_Chinese:"征服胜利"
+	}
+
+	"Complete all the spaceship parts\n to win!":{
+		Italian:"Completa tutte le parti\n  dell'astronave per vincere!"
+		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
+		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
+		Russian:"Для победы\n завершите все части космического коробля"
+		Simplified_Chinese:"完成建造太空飞船\n胜利！"
+	}
+
+	"Complete 4 policy branches\n to win!":{
+		Italian:"Completa quattro rami\n  politici per vincere!"
+		German:"Um zu gewinnen vervollständigen\nSie 4 Grundsatzzweige!"
+		French:"Completer 4 Doctrines pour gagner!"
+		Russian:"Для победы\n завершите 4 ветви общественных инстутов"
+		Simplified_Chinese:"完全推行4项社会政策\n胜利！"
+	}
+
+	"Destroy all enemies\n to win!":{
+		Italian:"Distruggi tutti gli avversari \n per vincere!"
+		German:"Um zu gewinnen besiegen Sie alle Gegner!"
+		French:"Eliminer tous vos adversaires pour gagner!"
+		Russian:"Для победы, \n уничтожьте всех врагов"
+		Simplified_Chinese:"消灭所有敌人\n胜利!"
+	}
+
+	"You have won a scientific victory!":{
+		Italian:"Hai ottenuto una Vittoria Scientifica!"
+		German:"Sie haben den Wissenschaftssieg errungen!"
+		French:"Vous avez fait une victoire scientifique!"
+		Russian:"Вы одержали научную победу!"
+		Simplified_Chinese:"恭喜！你赢得了科技胜利！"
+	}
+
+	"You have won a cultural victory!":{
+		Italian:"Hai ottenuto una Vittoria Culturale!"
+		German:"Sie haben den Kultursieg errungen!"
+		French:"Vous avez fait une victoire culturelle!"
+		Russian:"Вы одержали культурную победу!"
+		Simplified_Chinese:"恭喜！你赢得了文化胜利！"
+	}
+
+	"You have won a conquest victory!":{
+		Italian:"Hai ottenuto una Vittoria per Dominazione!"
+		German:"Sie haben den Dominanzsieg errungen!"
+		French:"Vous avez fait une victoire militaire !"
+		Russian:"Вы одержали победу завоевания!"
+		Simplified_Chinese:"恭喜！你赢得了征服胜利！"
+	}
+
+	"One more turn...!":{
+		Italian:"Aspetta! Solo un altro turno..."
+		German:"Nur noch eine Runde..."
+		French:"Un autre tour... !"
+		Russian:"Еще один ход...!"
+		Simplified_Chinese:"再来一回合...！"
+	}
+
+	"Built Apollo Program":{
+		Italian:"Programma Apollo costruito"
+		German:"Vollendete das Apollo-Programm" //not sure about the context here
+		French:"Construiser le programme Apollo" //same, it could be "construire"
+		Simplified_Chinese:"开启阿波罗计划"
+	}
+
+	"Destroy [civName]":{
+		Italian:"Distruggi [civName]"
+		German:"Zerstöre [civName]"
+		French:"Détruiser [civName]"
+		Russian:"Уничтожить [civName]"
+		Simplified_Chinese:"摧毁[civName]文明"
+	}	
+	
+	
+////// Civilopedia texts
+
+	"Basics":{
+		Italian:"Basi"
+		German:"Spielkonzepte"
+		French:"Basiques"
+		Simplified_Chinese:"基础"
+	}
+
+	"Resources":{
+		Italian:"Risorse"
+		German:"Ressourcen"
+		French:"Ressources"
+		Simplified_Chinese:"资源"
+	}
+
+	"Terrains":{
+		Italian:"Terreni e caratteristiche"
+		German:"Gelände und Geländearten"
+		French:"Terrains"
+		Simplified_Chinese:"地形"
+	}
+
+	"Tile Improvements":{
+		Italian:"Miglioramenti"
+		German:"Modernisierungen"
+		French:"Améliorations de cases" 
+		Simplified_Chinese:"地块设施"
+	}
+	
+	"Unique to [civName], replaces [unitName]":{
+		Italian:"Unico per la civiltà [civName], sostituisce [unitName]"
+		Spanish:"Único a la civilización [civName], reemplaza [unitName]"
+		Romanian:"Unic pentru civilizație [civName], înlocuiește [unitName]"
+		Simplified_Chinese:"[civName]文明独有，取代[unitName]"
+		Portuguese:"Exclusivo da civilização [civName], substitui [unitName]"
+		Russian:"Уникальный для цивилизации [civName], заменяет [unitName]"
+		German:"Einzigartig für Zivilisation [civName], ersetzt [unitName]"
+		French:"Unique à la civilisation [civName], remplace [unitName]"
+	}
+
+	"Cost":{
+		Italian:"Costo"
+		Simplified_Chinese:"花费"
+        French:"Côte"
+	}
+
+	"Requires [buildingName] to be built in the city":{
+		Italian:"Richiede la costruzione di [buildingName] nella città"
+		French:"Requiert la construction de [buildingName] dans la ville"
+		Simplified_Chinese:"需要城市建有[buildingName]"
+	}
+
+	"Requires [buildingName] to be built in all cities":{
+		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
+		French:"Requiert la construction de [buildingName] dans toutes les villes"
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+	}
+
+	"Provides a free [buildingName] in the city":{
+		Italian:"Dona l'edificio gratuito [buildingName] nella città"
+		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
+		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+	}
+
+	"Requires worked [resource] near city":{
+		Italian:"Richiede che la città sfrutti [resource]"
+		French:"Nécessite l'exploitation de [resource] près de la ville"
+		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
+	}
+
+	"Wonder is being built elsewhere":{
+		Simplified_Chinese:"正在其他城市建造该奇观"
+        French:"Cette merveille est déjà en construction ailleurs"
+	}
+
+	"Requires a [buildingName] in all cities":{
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+        French:"Nécessite un(e) [buildingName] dans toutes les villes"
+	}
+
+	"Requires a [buildingName] in this city":{
+		Simplified_Chinese:"需要城市建有[buildingName]"
+        French:"Nécessite un(e) [buildingName] dans cette ville"
+	}
+
+	"Requires [resource]":{
+		Simplified_Chinese:"需要资源：[resource]"
+        French:"[resource] requis(e)"
+	}
+
+	"Required tech: [requiredTech]":{
+		Italian:"Tecnologie propedeutiche: [requiredTech]"
+		French:"Nécessite la technologie: [requiredTech]"
+		Simplified_Chinese:"需要科技：[requiredTech]"
+	}
+
+	"Upgrades to [upgradedUnit]":{
+		Italian:"Aggiorna a [upgradedUnit]"
+		French:"Améliorer en [upgradedUnit]"
+		Simplified_Chinese:"可升级为[upgradedUnit]"
+	}
+
+	"Obsolete with [obsoleteTech]":{
+		Italian:"Diventa obsoleta con [obsoleteTech]"
+		French:"Obsolète avec [obsoleteTech]"
+		Simplified_Chinese:"研发下列科技后过时：[obsoleteTech]"
+	}
+
+	"May contain [listOfResources]":{ //e.g ?
+		Italian:"Può contenere [listOfResources]"
+		French:"Peut contenir [listOfResources]"
+		Simplified_Chinese:"可能拥有下列资源：[listOfResources]"
+	}
+
+	"Occurs on [listOfTerrains]":{
+		Italian:"Può avvenire/avviene su [listOfTerrains]"
+		French:"Doit possèder [listOfTerrains]"
+		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
+	}
+
+	"Can be found on ":{
+		Italian:"Può trovarsi su"
+		Simplified_Chinese:"可能发现该资源的地形地貌："
+		French:"Peut être trouver sur "
+	}
+
+	"Improved by ":{
+		Italian:"Può essere migliorato/a da"
+		Simplified_Chinese:"开发该资源所需要的设施："
+		French:"Amélioré par "
+	}
+
+	"Bonus stats for improvement: ":{
+		Italian:"Bonus per miglioramento: "
+		Simplified_Chinese:"开发该资源后设施所获奖励效果："
+		French:"Bonus de case améliorée: "
+	}
+
+	"Can be built on ":{
+		Italian:"Può essere costruito/a su"
+		Simplified_Chinese:"可以建造的地形地貌："
+		French:"Peut être construit sur "
+	}
+
+	"Tech required: ":{
+		Italian:"Tecnologie propedeutiche"
+		Simplified_Chinese:"需要科技："
+		French:"Technologie(s) requise(s): "
+	}
+
+	"Defence bonus":{
+		Italian:"Bonus di Difesa"
+		French:"Bonus de défence"
+		Simplified_Chinese:"防御力加成"
+	}
+
+	"Movement cost":{
+		Italian:"Costi di movimento"
+		French:"Coût de mouvement"
+		Simplified_Chinese:"移动力消耗"
+    }
+
+    " for ":{ //for example:+1Gold for Gems,Gold,Silver
+	  Italian:" per "
+	  Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
+	  French:"par "
+    }
+
+    // Options menu, pointed out by Smashfanful
+
+	"Missing translations:":{
+		Italian:"Traduzioni mancanti:"
+		Russian:"Отсутствующие переводы:"
+	    Simplified_Chinese:"未翻译的词条:"
+		French:"Traductions manquantes:"
+	}
+
+	"Version":{
+		Italian:"Versione"
+		Russian:"Версия"
+		Simplified_Chinese:"版本号"
+		French:"Version"
+	}
+
+	"Resolution":{
+		Italian:"Risoluzione"
+		Russian:"Разрешения"
+		Simplified_Chinese:"分辨率"
+		French:"Résolution"
+	}
+
+	"Tileset":{
+		Italian:"Set celle"
+		Simplified_Chinese:"地块显示设置"
+		French:"Taille des cases"
+	}
+
+	"Map editor":{
+		Italian:"Editor mappe"
+		Russian:"Редактор карт"
+		Simplified_Chinese:"地图编辑器"
+		French:"Editeur de carte"
+	}
+
+	"Language":{
+		Italian:"Lingua"
+		Simplified_Chinese:"语言设置"
+		French:"langage"
+	}
+    
+	//If don't do this,when game runs in Chinese,it will be lost some font.
+	"missing Chinese font":{
+		Simplified_Chinese:"。、，：查俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
+	}
+}

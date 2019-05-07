@@ -40,8 +40,8 @@ class CivilopediaScreen : CameraStageBaseScreen() {
         val categoryToInfos = LinkedHashMap<String, Collection<ICivilopedia>>()
 
         val language = UnCivGame.Current.settings.language.replace(" ","_")
-        val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp_$language.json").exists())"BasicHelp_$language"
-        else "BasicHelp"
+        val basicHelpFileName = if(Gdx.files.internal("jsons/BasicHelp/BasicHelp_$language.json").exists())"BasicHelp/BasicHelp_$language"
+        else "BasicHelp/BasicHelp"
 
         categoryToInfos["Basics"] = GameBasics.getFromJson(kotlin.Array<BasicHelp>::class.java, basicHelpFileName).toList()
         categoryToInfos["Buildings"] = GameBasics.Buildings.values

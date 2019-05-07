@@ -1,0 +1,1412 @@
+{
+		
+	// Buildings!
+	"Palace":{	
+		Italian:"Palazzo"
+		Russian:"Дворец"
+		French:"Palais"
+		Romanian:"Palat"
+		Spanish:"Palacio"
+		Simplified_Chinese:"宫殿"
+		Portuguese:"Palácio"
+		German:"Palast"
+	}
+
+	"Indicates the capital city":{
+		Italian:"Indica la città capitale"
+		Romanian:"Stabilește orașul capitală"
+		Spanish:"Indica la capital"
+		Simplified_Chinese:"表示首都"
+		German:"Gibt die Hauptstadt an"
+		French:"Indique la capitale"
+	}
+	
+	"Monument":{	
+		Italian:"Monumento"
+		Russian:"Монумент"
+		French:"Monument"
+		Romanian:"Monument"
+		Spanish:"Monumento"
+		Simplified_Chinese:"纪念碑"
+		Portuguese:"Monumento"
+		German:"Monument"
+	}
+
+	"Granary":{	
+		Italian:"Granaio"
+		Russian:"Амбар"
+		French:"Grenier"
+		Romanian:"Grânar"
+		Spanish:"Granero"
+		Simplified_Chinese:"粮仓"
+		Portuguese:"Celeiro"
+		German:"Kornspeicher"
+	}
+
+	"Stone Works":{	
+		Italian:"Scalpellino"
+		Russian:"Каменные работы"
+		French:"Ouvrages de maçonnerie"
+		Romanian:"Carieră de piatră"
+		Spanish:"Cantería"
+		Simplified_Chinese:"石工坊"
+		Portuguese:"Obras de pedras"
+		German:"Mauerwerk"
+	}
+
+	"Stonehenge":{	
+		Italian:"Stonehenge"
+		Russian:"Стоунхендж"
+		French:"Stonehenge"
+		Romanian:"Stonehenge"
+		Spanish:"Stonehenge"
+		Simplified_Chinese:"巨石阵"
+		Portuguese:"Stonehenge"
+	}
+	
+	"Library":{	
+		Italian:"Biblioteca"
+		Russian:"Библиотека"
+		French:"Bibliothèque"
+		Romanian:"Bibliotecă"
+		Spanish:"Biblioteca"
+		Simplified_Chinese:"图书馆"
+		Portuguese:"Livraria"
+		German:"Bibliothek"
+	}
+
+	"+1 Science Per 2 Population":{
+		Italian:"+1 Scienza ogni 2 abitanti"
+		Russian:"+1 Наука за 2 населения"
+		French:"+1 Science pour 2 Population"
+		Romanian:"+1 știință la 2 persoane"
+		German:"+1 Wissenschaft pro 2 Einwohner"
+		Dutch:"+1 Wetenschap per 2 Populatie"
+		Spanish:"+1 Ciencia cada 2 habitantes"
+		Simplified_Chinese:"每2人口+1科研"
+		Portuguese:"+1 Ciência a cada 2 habitantes"
+	}
+
+	"Paper Maker":{
+		Italian:"Cartiera"
+		Romanian:"Fabricant de hârtie"
+		Spanish:"Papelera"
+		Simplified_Chinese:"造纸坊"
+		German:"Papiermacher"
+		French:"Fabricant de papier"
+	}
+	
+	"The Great Library":{	
+		Italian:"Grande Biblioteca"
+		Russian:"Великая Библиотека"
+		French:"La Grande Bibliothèque"
+		Romanian:"Marea Bibliotecă"
+		Spanish:"La Gran Biblioteca"
+		Simplified_Chinese:"大图书馆"
+		Portuguese:"A Grande Biblioteca"
+		German:"Die Große Bibliothek"
+	}
+
+	"Circus":{	
+		Italian:"Circo"
+		Russian:"Цирк"
+		French:"Cirque"
+		Romanian:"Circ"
+		Spanish:"Circo"
+		Simplified_Chinese:"马戏场"
+		Portuguese:"Circo"
+		German:"Zirkus"
+	}
+
+	"Walls":{	
+		Italian:"Mura"
+		Russian:"Стены"
+		French:"Murs"
+		Romanian:"Ziduri"
+		Spanish:"Muros"
+		Simplified_Chinese:"城墙"
+		Portuguese:"Muralhas"
+		German:"Mauern"
+	}
+
+	"Walls of Babylon":{
+		Italian:"Mura di Babilonia"
+		Simplified_Chinese:"巴比伦城墙"
+        French:"Murs de Babylone"
+	}
+	
+	"The Pyramids":{	
+		Italian:"Grandi Piramidi"
+		Russian:"Пирамиды"
+		French:"Les pyramides"
+		Romanian:"Piramidele"
+		Spanish:"Las Pirámides"
+		Simplified_Chinese:"大金字塔"
+		Portuguese:"Pirâmides"
+		German:"Die Pyramiden"
+	}
+
+	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
+		Italian:"+25% velocità costruzione lavoratori"
+		Russian:"Увеличивает на 25% скорость создания улучшений на клетках"
+		French:"La vitesse de construction des travailleurs a augmenté de 25%"
+		Romanian:"Construirea de muncitori a crescut cu 25%"
+		German:"Arbeiterproduktion um 25% erhöht"
+		Dutch:"Werkerproducktie met 25% vehoogt"
+		Spanish:"+25% velocidad de construcción trabajador"
+		Simplified_Chinese:"设施建造速度+25%"
+		Portuguese:"Velocidade de construção dos trabalhadores aumentada em +25%"
+	}
+
+	"Provides 2 free workers":{
+		Italian:"Offre 2 Lavoratori gratuiti"
+		Russian:"предоставляет 2 бесплатных рабочих"
+		French:"Fournit 2 travailleurs gratuits"
+		Romanian:"Oferă gratuit 2 muncitori"
+		German:"Gibt 2 kostenlose Arbeiter"
+		Dutch:"Geeft 2 gratis werkers"
+		Spanish:"Proporciona 2 trabajadores gratis"
+		Simplified_Chinese:"提供2个免费工人"
+		Portuguese:"Proporciona 2 trabalhadores gratis"
+	}
+	
+	"Barracks":{	
+		Italian:"Caserma"
+		Russian:"Казармы"
+		French:"Caserne"
+		Romanian:"Cazarmă"
+		Spanish:"Barracones"
+		Simplified_Chinese:"军营"
+		Portuguese:"Quartéis"
+		German:"Baracken"
+	}
+	
+	"Krepost":{ // russian uique, transliterate this probably, this is a russian word
+		Italian:"Krepost"
+		Romanian:"Fortăreață"
+		Spanish:"Krepost"
+		Simplified_Chinese:"俄罗斯营垒"
+		German:"Krepost"
+		Russian:"Krepost"
+		French:"Krepost"
+	}
+	
+	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
+		Italian:"-25% costi in Cultura e Oro nell'acquistare nuove celle nella città"
+		Romanian:"Costurile în Cultură și Aur pentru cumpărarea noilor celule în acest oraș sunt reduse cu 25%"
+		Spanish:"El coste de comprar terrenos en esta ciudad se reduce un 25%"
+		Simplified_Chinese:"所在城市扩展新地块所需文化和金钱花费-25%"
+		German:"Kultur- und Goldkosten für den Erwerb neuer Felder in dieser Stadt sind um 25% reduziert"
+		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
+	}
+	
+	"Colossus":{
+		Italian:"Colosso"
+		Simplified_Chinese:"太阳神巨像"
+		French:"Colosse"
+	}
+
+	"+1 gold from worked water tiles in city":{
+		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
+		Simplified_Chinese:"所在城市每个水上地块+1金钱"
+		French:"+1 or pour les cases maritimes exploitées par la ville"
+	}
+	
+	"Temple":{	
+		Italian:"Tempio"
+		Russian:"Храм"
+		French:"Temple"
+		Romanian:"Templu"
+		Spanish:"Templo"
+		Simplified_Chinese:"神庙"
+		Portuguese:"Templo"
+		German:"Tempel"
+	}
+
+	"Burial Tomb":{
+		Italian:"Sepolcro"
+		Romanian:"Loc de veci"
+		Spanish:"Tumba Sagrada"
+		Simplified_Chinese:"陵墓"
+		German:"Grabstätte"
+		French:"Tombeau"
+	}
+	
+	"The Oracle":{	
+		Italian:"Oracolo"
+		Russian:"Оракул"
+		French:"L'oracle"
+		Romanian:"Oracolul"
+		Spanish:"El Oráculo"
+		Simplified_Chinese:"神谕所"
+		Portuguese:"O Oráculo"
+		German:"Das Orakel"
+	}
+
+	"Free Social Policy":{
+		Italian:"Ricevi una politica sociale gratuita"
+		Russian:"Бесплатный общественный институт"
+		French:"Doctrine gratuite"
+		Romanian:"Politică socială gratuită"
+		German:"Kostenloser Solzialgrundsatz"
+		Dutch:"Gratis sociaalbeleid"
+		Spanish:"Política social gratis"
+		Simplified_Chinese:"免费的社会政策"
+		Portuguese:"Politica social gratis"
+	}
+	
+	"National College":{	
+		Italian:"Colleggio Nazionale"
+		Russian:"Национальный колледж"
+		French:"Collège National"
+		Romanian:"Colegiu Național"
+		Spanish:"Universidad Nacional"
+		Simplified_Chinese:"国立研究院"
+		Portuguese:"Universidade Nacional"
+		German:"Nationale Hochschule"
+	}
+	
+	"Chichen Itza":{	
+		Italian:"Chichen Itza"
+		Russian:"Чичен-Ица"
+		French:"Chichen Itza"
+		Romanian:"Chichen Itza"
+		Spanish:"Chichén Itzá"
+		Simplified_Chinese:"奇琴伊察"
+		Portuguese:"Chichen Itza"
+		German:"Chichen Itza"
+	}
+
+	"Golden Age length increases +50%":{
+		Italian:"+50% durata dell'Età dell'Oro"
+		Russian:"Длина золотого века +50%"
+		French:"La durée des âges d'or augmente de 50%"
+		Romanian:"Durata Epocii de Aur crește +50%"
+		German:"Länge Goldener Zeitalter um 50% erhöht"
+		Dutch:"Gouden eeuw lengte neem toe met +50%"
+		Spanish:"La Edad Dorada dura 50% más"
+		Simplified_Chinese:"黄金时代持续时间+50%"
+		Portuguese:"Duração de idade dourada aumentada em 50%"
+	}
+	
+	"Lighthouse":{
+		Spanish:"faro"
+		Italian:"Faro"
+		French:"Phare"
+		Romanian:"Far"
+		Simplified_Chinese:"灯塔"
+		Portuguese:"Farol" // farol also means that thing wich has a red ligh (i do not remember it's name) so if deemed nescessarry can add costeira to the beggining
+		German:"Leuchtturm"
+	}
+
+	"Can only be built in coastal cities":{
+		Italian:"La città deve trovarsi sulla costa"
+		French:"Peut seulement être construit dans les villes côtières"
+		Romanian:"Poate fi construit doar în orașe de pe țărm"
+		Simplified_Chinese:"只能建在海滨城市"
+		Portuguese:"Só pode ser construido em cidades costeiras"
+		German:"Kann nur in Küstenstädten gebaut werden"
+	}
+
+	"+1 food from Ocean and Coast tiles":{
+		Italian:"+1 Cibo da caselle Oceano e costiere"
+		Romanian:"+1 hrană din celule ocean și de țărm"
+		German:"+1 Nahrung von Ozean und Küsten Feldern"
+		French:"+1 nourriture des cases océans et côtes"
+		Simplified_Chinese:"每个海滨地块和海洋地块+1食物"
+	}
+	
+	"The Great Lighthouse":{
+		Spanish:"El Faro Del Fin Del Mundo"
+		Italian:"Grande Faro"
+		French:"le Grand Phare"
+		Romanian:"Marele Far"
+		Simplified_Chinese:"大灯塔"
+		Portuguese:"O Grande Farol"
+		German:"Der Große Leuchtturm"
+	}
+
+	"All military naval units receive +1 movement and +1 sight":{
+		Spanish:"Todas las unidades militares navales reciben +1de movimiento y +1 de vision"
+		Italian:"+1 Movimento e +1 Visione per ogni unità militare marittima"
+		French:"+1 de mouvement et +1 de vision à toutes les unités navales militaires"
+		Romanian:"Toate unitățile militare navale primesc +1 deplasare și +1 raza vizuală"
+		Simplified_Chinese:"所有海军军事单位+1移动力和+1视野"
+		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
+		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
+	}
+
+	"Stable":{	
+		Italian:"Scuderia"
+		Russian:"Конюшня"
+		French:"Écurie"
+		Romanian:"Grajd"
+		Spanish:"Establos"
+		Simplified_Chinese:"马厩"
+		Portuguese:"Estabulos"
+		German:"Stall"
+	}
+
+	"+15% Production when building Mounted Units in this city":{
+		Italian:"+15% Produzione nella città nel reclutare unità a cavallo"
+		German:"+15% Produktion beim Ausbilden von berittenen Einheiten in dieser Stadt"
+		French:"+15% Production lorsqu'une unité montée est produite dans cette ville"
+		Simplified_Chinese:"组建骑乘单位时产能积累速率+15%"
+	}
+	
+	"Circus Maximus":{	
+		Italian:"Circo Massimo"
+		Russian:"Цирк Максимус"
+		French:"Circus Maximus"
+		Romanian:"Circus Maximus"
+		Spanish:"Circo Máximo"
+		Simplified_Chinese:"大竞技场"
+		Portuguese:"Circo Máximo" //can also be spelled normally as Circus Maximus altough that (Circo Máximo) is written in normal portuguese not latin
+		German:"Circus Maximus"
+	}
+
+	"Hanging Gardens":{	
+		Italian:"Giardini Pensili"
+		Russian:"Висячие сады"
+		French:"Jardins suspendus"
+		Romanian:"Grădini suspendate"
+		Spanish:"Jardines Colgantes"
+		Simplified_Chinese:"空中花园"
+		Portuguese:"Jardins Suspensos"
+		German:"Hängende Gärten"
+	}
+
+	/*
+	//New Wonder: Statue of Zeus! Suggested by Smashfanful
+	"Statue of Zeus":{	
+		Italian:"Statua di Zeus"
+		French:"Statue de Zeus"
+		Simplified_Chinese:"宙斯神像"
+	}
+
+	"+15% Combat Strenght when attacking Cities":{
+		Italian:"+15% Forza quando attacchi le Città"
+		French:"+15% force lors d'attaque de villes"
+		Simplified_Chinese:"在攻击城市时所有单位+15%战斗力"
+	}
+
+	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
+	"Mausoleum of Halicarnassus":{	
+		Italian:"Mausoleo di Alicarnasso"
+		French:"Mausolé d'Halicarnasse"
+		Simplified_Chinese:"摩索拉斯陵墓"
+	}
+
+	"+2 Gold from every source of Marble and Stone":{
+		Italian:"+2 Oro da ogni fonte di Marmo e Pietra"
+		French:"+2 or pour chaque ressources de marbre et de pierre"
+		Simplified_Chinese:"所在城市开发的每处大理石或花岗石资源额外+2金钱"
+	}
+	*/
+
+	"Colosseum":{	
+		Italian:"Colosseo"
+		Russian:"Колизей"
+		French:"Collisée"
+		Romanian:"Coloseum"
+		Spanish:"Coliseo"
+		Simplified_Chinese:"罗马竞技场"
+		Portuguese:"Coliseu"
+		German:"Collosseum"
+	}
+	
+	"Terracotta Army":{
+		Italian:"Esercito di terracotta"
+		Simplified_Chinese:"兵马俑"
+		French:"Armée de Terre Cuite"
+	}
+	
+	"Market":{	
+		Italian:"Mercato"
+		Russian:"Рынок"
+		French:"Marché"
+		Romanian:"Piaţă"
+		Spanish:"Mercado"
+		Simplified_Chinese:"市场"
+		Portuguese:"Mercado"
+		German:"Markt"
+	}
+	
+	"Bazaar":{ // Arabian unique - transliterate?
+		Italian:"Bazaar"
+		Romanian:"Bazar"
+		Spanish:"Bazar"
+		Simplified_Chinese:"巴扎"
+		German:"Basar"
+		French:"Bazar"
+		Russian:"базар"
+	}
+	
+	"Provides 1 extra copy of each improved luxury resource near this City":{
+		Italian:"Concede 1 copia aggiuntiva di ogni risorsa di lusso migliorata vicino alla città"
+		Romanian:"Oferă o copie în plus pentru fiecare resursă de lux din apropierea acestui oraș"
+		Spanish:"Proporciona una copia extra de los recursos de lujo de la ciudad"
+		Simplified_Chinese:"所在城市每处已开发的奢侈资源额外增加1处"
+		German:"Gibt 1 extra Einheit jeder verbesserten Luxusresource in der Nähe dieser Stadt"
+		French:"Produit un exemplaire supplémentaire de chaque ressources de luxe à côté de cette ville"
+	}
+
+	"+2 Gold for each source of Oil and oasis":{
+		Italian:"+2 Oro per ogni fonte di Petrolio e ogni casella di Oasi"
+		Romanian:"+2 Aur pentru fiecare sursă de Petrol sau oază"
+		Spanish:"+2 de Oro por cada fuente de Petroleo o Oasis"
+		Simplified_Chinese:"每处石油资源和每处绿洲+2金钱"
+		German:"+2 Gold für jede Ölquelle oder Oase"
+		French:"+2 or pour chaque ressources de pétrole et d'oasis"
+	}
+			
+	"Monastery":{	
+		Italian:"Monastero"
+		Russian:"Монастырь"
+		French:"Monastère"
+		Romanian:"Mănăstire"
+		Spanish:"Monasterio"
+		Simplified_Chinese:"修道院"
+		Portuguese:"Monastério"
+		German:"Kloster"
+	}
+
+	"Notre Dame":{	
+		Italian:"Notre Dame"
+		Russian:"Нотр-Дам"
+		French:"Notre-Dame"
+		Romanian:"Notre Dame"
+		Spanish:"Notre Dame"
+		Simplified_Chinese:"巴黎圣母院"
+		Portuguese:"Notre Dame"
+		German:"Notre-Dame"
+	}
+	
+	"Hagia Sophia":{
+		Italian:"Hagia Sophia"
+		Russian:"Собор Святой Софии"
+		French:"Sainte-Sophie"
+		Romanian:"Sfânta Sofia"
+		Spanish:"Santa Sofía"
+		Simplified_Chinese:"圣索菲亚大教堂"
+		Portuguese:"Santa Sofia"
+		German:"Hagia Sophia"
+	}
+
+	"+33% great person generation in all cities":{
+		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
+		Russian:"+ 33% к созданию великих людей во всех городах"
+		French:"+ 33% de génération de Personnages illustres dans toutes les villes"
+		Romanian:"+33% generație de persoane mari în toate orașele"
+		German:"+33% erhöhte Wahrscheinlichkeit für die Geburt Großer Persönlichkeiten"
+		Dutch:"+33% Geweldig persoon generatie in alle steden"
+		Spanish:"+33% generación de Grandes Personas en todas las ciudades"
+		Simplified_Chinese:"+33%所有城市伟人点数积累"
+		Portuguese:"+33% de geração de grandes pessoas em todas as cidades"
+	}
+	
+	"Mint":{ 
+		Italian:"Zecca"
+		Russian:"Монетный двор"
+		French:"Hôtel de la monnaie"
+		Romanian:"Fabrică de bani"
+		Spanish:"Casa de la moneda"
+		Simplified_Chinese:"铸币厂"
+		Portuguese:"Casa da moeda"
+		German:"Prägerei"
+	}
+	
+	"Machu Picchu":{	
+		Italian:"Machu Picchu"
+		Russian:"Мачу-Пикчу"
+		French:"Machu Picchu"
+		Romanian:"Machu Picchu"
+		Spanish:"Machu Picchu"
+		Simplified_Chinese:"马丘比丘"
+		Portuguese:"Machu Picchu"
+		German:"Machu Picchu"
+	}
+
+	"Gold from all trade routes +25%":{
+		Italian:"+25% oro da ogni rotta commerciale"
+		Russian:"Золото со всех торговых путей + 25%"
+		French:"Or de toutes les routes commerciales + 25%"
+		Romanian:"Aur din toate rutele comerciale +25%"
+		German:"Gold von allen Handelsrouten um 25% erhöht"
+		Dutch:"Van alle handelroutes +25% goud"
+		Spanish:"+25% de oro en todas las rutas de comercio"
+		Simplified_Chinese:"所有贸易路线的金币收益+25%"
+		Portuguese:"+25% de ouro de todas as linhas comerciais" // Linhas comerciais= comertial lines, replace with rotas de comércio if needed
+	}
+	
+	"Aqueduct":{	
+		Italian:"Acquedotto"
+		Russian:"Акведук"
+		French:"Aqueduc"
+		Romanian:"Apeduct"
+		Spanish:"Acueducto"
+		Simplified_Chinese:"引水渠"
+		Portuguese:"Aqueduto"
+		German:"Aquädukt"
+	}
+
+	"40% of food is carried over after a new citizen is born":{
+		Italian:"Il 40% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
+		Russian:"40% продовольствия сохраняется после рождения нового гражданина"
+		French:"40% de la nourriture est préservée après la naissance d'un nouveau citoyen"
+		Romanian:"40% din hrană este păstrată după ce se naște un nou cetățean"
+		German:"40% der Nahrung wird übertragen, wenn ein neuer Einwohner geboren wird"
+		Dutch:"40% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
+		Spanish:"40% de comida es arrastrada cada vez que nace un nuevo habitante"
+		Simplified_Chinese:"城市增加新的市民后保留40%食物储备以加速成长"
+		Portuguese:"40% da comida é mantida depois de um novo cidadão nascer"
+	}
+	
+	"Great Wall":{
+		Italian:"Grande Muraglia"
+		Simplified_Chinese:"长城"
+		French:"La Grande Muraille"
+	}
+
+	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
+		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
+		Simplified_Chinese:"境内敌方陆军单位在任何地块额外消耗1移动力"
+		French:"Les unités terrestre ennemies doivent dépenser un point de déplacement supplémentaires quand elles sont dans votre territoire (rendus obsolète par la Dynamite)"
+	}
+	
+	"Workshop":{	
+		Italian:"Bottega"
+		Russian:"Мастерская"
+		French:"Atelier"
+		Romanian:"Atelier"
+		Spanish:"Taller"
+		Simplified_Chinese:"工坊"
+		Portuguese:"Oficina"
+		German:"Werkstatt"
+	}
+
+	"Forge":{	
+		Italian:"Fucina"
+		Russian:"Кузница"
+		French:"Forge"
+		Romanian:"Forjă"
+		Spanish:"Forja"
+		Simplified_Chinese:"煅造场"
+		Portuguese:"Forja"
+		German:"Schmiede"
+	}
+	
+	"Harbor":{
+		Spanish:"Puerto"
+		Italian:"Porto"
+		French:"Havre"
+		Romanian:"Port"
+		Simplified_Chinese:"港口"
+		Portuguese:"Porto"
+		German:"Hafen"
+	}
+
+	"+1 production from all sea resources worked by the city":{
+		Spanish:"+1 de produccion a todos los recursos acuaticos trabajados por la ciudad"
+		Italian:"+1 Produzione per ogni risorsa marittima sfruttata"
+		French:"+1 de production pour toutes les ressources maritimes exploitées par la ville"
+		Romanian:"+1 producție din toate resursele maritime prelucrate de oraș"
+		Simplified_Chinese:"所在城市每个海洋资源+1产能"
+		Portuguese:"1+ de produção de todos os recursos marítimos trabalhados pelo cidade"
+		German:"+1 Produktion von allen Meer Ressourcen die von dieser Stadt bewirtschaftet werden"
+	}
+
+	"Connects trade routes over water":{
+		Spanish:"Conecta rutas de comercio por el agua"
+		Italian:"Consente le rotte commerciali marittime"
+		French:"Connecter des routes commerciales maritimes"
+		Romanian:"Leagă rute comerciale pe apă"
+		Simplified_Chinese:"连接水上贸易路线"
+		Portuguese:"Conecta rotas comerciais pela água"
+		German:"Verbindet Handelsrouten über Wasser"
+	}
+	
+	"University":{	
+		Italian:"Università"
+		Russian:"Университет"
+		French:"Université"
+		Romanian:"Universitate"
+		Spanish:"Universidad"
+		Simplified_Chinese:"大学"
+		Portuguese:"Universidade"
+		German:"Universität"
+	}
+
+	"Jungles provide +2 science":{
+		Italian:"+2 scienza da giungle"
+		Russian:"Джунгли обеспечивают +2 науки"
+		French:"Jungles fournissent +2 science"
+		Romanian:"Junglele oferă +2 știință"
+		German:"Dschungel produziert +2 Wissenschaft"
+		Dutch:"Oerwouden leveren +2 Wetenschap"
+		Spanish:"Las selvas proporcionan +2 ciencia"
+		Simplified_Chinese:"丛林+2科研"
+		Portuguese:"Selvas proporcionam +2 ciência"
+	}
+	
+	"Oxford University":{	
+		Italian:"Università di Oxford"
+		Russian:"Оксфордский университет"
+		French:"L'université d'Oxford"
+		Romanian:"Universitatea Oxford"
+		Spanish:"Universidad de Oxford"
+		Simplified_Chinese:"牛津大学"
+		Portuguese:"Universidade de Oxford"
+		German:"Oxford Universität"
+	}
+
+	"Castle":{	
+		Italian:"Castello"
+		Russian:"Замок"
+		French:"Château"
+		Romanian:"Castel"
+		Spanish:"Castillo"
+		Simplified_Chinese:"城堡"
+		Portuguese:"Castelo"
+		German:"Burg"
+	}
+	
+	"Alhambra":{
+		Italian:"Alhambra"
+		German:"Alhambra"
+		French:"Alhambra"
+		Simplified_Chinese:"阿尔罕布拉宫"
+	}
+
+	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
+		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
+		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
+		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
+		Simplified_Chinese:"所在城市新组建的近战、骑乘和装甲单位获得“操练I级”晋升"
+	}
+	
+	"Angkor Wat":{	
+		Italian:"Angkor Wat"
+		Russian:"Ангкор-Ват"
+		French:"Angkor Wat"
+		Romanian:"Angkor Wat"
+		Spanish:"Angkor Wat"
+		Simplified_Chinese:"吴哥窟"
+		Portuguese:"Angkor Wat"
+		German:"Angkor Wat"
+	}
+
+	"Cost of acquiring new tiles reduced by 25%":{
+		Italian:"-25% costo di acquisto di nuove celle"
+		Russian:"Сокращает стоимость приобретения новых клеток на 25%"
+		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
+		Romanian:"Costul de achiziționare a celulelor noi redus cu 25%"
+		German:"Kosten um neue Felder zu kaufen ist um 25% verringert"
+		Dutch:"Kosten voor het kopen van nieuwe velden verlaagt met 25%"
+		Spanish:"El coste de adquirir nuevas casillas se reduce 25%"
+		Simplified_Chinese:"购买新地块花费降低25%"
+		Portuguese:"Custa de comprar novos terrenos reduzido em 25%"
+	}
+	
+	"Porcelain Tower":{	
+		Italian:"Torre di Porcellana"
+		Russian:"Фарфоровая башня"
+		French:"Tour de Porcelaine"
+		Romanian:"Turnul de Porțelan"
+		Spanish:"Torre de Porcelana"
+		Simplified_Chinese:"大报恩寺塔"
+		Portuguese:"Torre de Porcelana"
+		German:"Porzellan Turm"
+	}
+
+	"Free great scientist appears":{
+		Spanish:"Aparece una Gran Persona gratis"
+		Italian:"Appare un Grande Scienziato"
+		French:"Un scientifique illustre gratuit apparaît"
+		Romanian:"Apare un mare om de știință gratuit"
+		Simplified_Chinese:"免费的大科学家出现"
+		Portuguese:"Aparece um Grande Cientista grátis"
+		German:"Ein kostenloser Großer Wissenschaftler erscheint"
+	}
+	
+	"Ironworks":{	
+		Italian:"Ferriera"
+		Russian:"Металлургический завод"
+		French:"Atelier métallurgique"
+		Romanian:"Fierărie"
+		Spanish:"Herrería"
+		Simplified_Chinese:"大铁厂"
+		Portuguese:"Siderurgia"
+		German:"Eisenhüttenwerk"
+	}
+
+	"Armory":{	
+		Italian:"Armeria"
+		Russian:"Оружейная"
+		French:"Arsenal"
+		Romanian:"Depozit de arme"
+		Spanish:"Armería"
+		Simplified_Chinese:"军械所"
+		Portuguese:"Arsenal"
+		German:"Waffenkammer"
+	}
+
+	"Observatory":{	
+		Italian:"Osservatorio"
+		Russian:"Обсерватория"
+		French:"Observatoire"
+		Romanian:"Observator"
+		Spanish:"Observatorio"
+		Simplified_Chinese:"天文台"
+		Portuguese:"Observatório"
+		German:"Observatorium"
+	}
+
+	"Opera House":{	
+		Italian:"Teatro dell'opera"
+		Russian:"Оперный театр"
+		French:"Opéra"
+		Romanian:"Operă"
+		Spanish:"Teatro de la Ópera"
+		Simplified_Chinese:"歌剧院"
+		Portuguese:"Casa de Ópera"
+		German:"Opernhaus"
+	}
+	
+	"Sistine Chapel":{	
+		Italian:"Cappella Sistina"
+		Russian:"Сикстинская капелла"
+		French:"Chapelle Sixtine"
+		Romanian:"Capela Sixtină"
+		Spanish:"Capilla Sixtina"
+		Simplified_Chinese:"西斯廷教堂"
+		Portuguese:" Capela Sistina"
+		German:"Sistinische Kapelle"
+	}
+
+	"Culture in all cities increased by 25%":{
+		Italian:"+25% cultura in ogni città"
+		Russian:"Увеличивает прирост культуры на 25% во всех городах"
+		French:"La culture dans toutes les villes a augmenté de 25%"
+		Romanian:"Cultura în toate orașele crescută cu 25%"
+		German:"Kultur wird in allen Städten um 25% erhöht"
+		Dutch:"Cultuur word in alle steden verhoogd met 25%"
+		Spanish:"Cultura en todas las ciudades incrementada 25%"
+		Simplified_Chinese:"所有城市的文化产出+25%"
+		Portuguese:"Cultura em todas as cidades incrementada em 25%"
+	}
+	
+	"Bank":{	
+		Italian:"Banca"
+		Russian:"Банк"
+		French:"Banque"
+		Romanian:"Bancă"
+		Spanish:"Banco"
+		Simplified_Chinese:"银行"
+		Portuguese:"Banco"
+		German:"Bank"
+	}
+	
+	"Forbidden Palace":{	
+		Italian:"Palazzo Proibito"
+		Russian:"Запретный дворец"
+		French:"Cité Interdite"
+		Romanian:"Palatul interzis"
+		Spanish:"Palacio Prohibido"
+		Simplified_Chinese:"紫禁城"
+		Portuguese:"Palácio Proibido"
+		German:"Verbotener Palast"
+	}
+
+	"Unhappiness from population decreased by 10%":{
+		Italian:"-10% infelicità della popolazione"
+		Russian:"Снижает недовольство от населения на 10%"
+		French:"Le mécontentement de la population a diminué de 10%"
+		Romanian:"Nefericirea de la populație a scăzut cu 10%"
+		German:"Unzufriedenheit durch Bevölkerung um 10% verringert"
+		Dutch:"Ontevredenheid van het volk word met 10% verlaagd"
+		Spanish:"Infelicidad de la población reducida 10%"
+		Simplified_Chinese:"来自人口的不满-10%"
+		Portuguese:"Infelicidade da população reduzida em 10%"
+	}
+	
+	"Theatre":{	
+		Italian:"Teatro"
+		Russian:"Tеатр"
+		French:"Théâtre"
+		Romanian:"Teatru"
+		Spanish:"Teatro"
+		Simplified_Chinese:"剧院"
+		Portuguese:"Teatro"
+		German:"Theater"
+	}
+	
+	"Leaning Tower of Pisa":{
+		Italian:"Torre pendente di Pisa"
+		Romanian:"Turnul din Pisa"
+		Spanish:"La Torre Inclinada De Pizza"
+		German:"Schiefer Turm von Pisa"
+		French:"Tour de Pise"
+		Simplified_Chinese:"比萨斜塔"
+	}
+
+	"Free Great Person":{
+		Italian:"Ottieni un Grande Personaggio gratuito"
+		Romanian:"Persoană mare gratuită"
+		Spanish:"Gran Persona gratis"
+		German:"Kostenlose große Persönlichkeit"
+		French:"Personnage illustre gratuit"
+		Simplified_Chinese:"免费的伟人"
+	}
+	
+	"Himeji Castle":{
+		Italian:"Castello di Himeji"
+		Simplified_Chinese:"姬路城"
+		French:"Le château de Himeji"
+	}
+
+	"+15% combat strength for units fighting in friendly territory":{
+		Italian:"+15% Forza per le unità che combattono in territorio amico"
+		Simplified_Chinese:"单位在境内+15%战斗力"
+		French:"+15% de force de combat pour les unités combattants sur un territoire allié"
+	}
+	
+	"Taj Mahal":{	
+		Italian:"Taj Mahal" //same in Italian
+		Russian:"Тадж-Махал"
+		French:"Taj Mahal"
+		Romanian:"Taj Mahal"
+		Spanish:"Taj Mahal"
+		Simplified_Chinese:"泰姬陵"
+		Portuguese:"Taj Mahal" // somethimes h has no sound in the portuguese language (brazilian variation [altough i am not sure about other variations]) and others it has the sound of h (weak sound)
+					   // so that is why i would double check it later to see if Taj Mahal is correctly written in portuguese
+		German:"Taj Mahal"
+	}
+	
+	"Empire enters golden age":{
+		Italian:"L'impero entra nell'Età dell'Oro"
+		Russian:"Империя вступает в золотой век"
+		French:"L'Empire entre dans un âge d'or"
+		Romanian:"Imperiul intră în epoca de aur"
+		German:"Es beginnt ein Goldenes Zeitalter"
+		Dutch:"Het rijk betreed een gouden eeuw"
+		Spanish:"El imperio comienza una Edad Dorada"
+		Simplified_Chinese:"帝国进入黄金时代"
+		Portuguese:"Império entra idade dourada"
+	}
+	
+	"Windmill":{	
+		Italian:"Mulino a vento"
+		Russian:"Ветряная мельница"
+		French:"Moulin à vent"
+		Romanian:"Moară de vant"
+		Spanish:"Molino de viento"
+		Simplified_Chinese:"风车"
+		Portuguese:"Moinho de vento"
+		German:"Windmühle"
+	}
+
+	"Museum":{	
+		Italian:"Museo"
+		Russian:"Музей"
+		French:"Musée"
+		Romanian:"Muzeu"
+		Spanish:"Museo"
+		Simplified_Chinese:"博物馆"
+		Portuguese:"Museu"
+		//same in German
+	}
+
+	"Hermitage":{	
+		Italian:"Hermitage"
+		Russian:"Эрмитаж"
+		French:"Ermitage"
+		Romanian:"Schit"
+		Spanish:"Ermita"
+		Simplified_Chinese:"冬宫"
+		Portuguese:"Eremitério"
+		German:"Eremitage"
+	}
+	
+	"The Louvre":{	
+		Italian:"Il Louvre"
+		Russian:"Лувр"
+		French:"Le Louvre"
+		Romanian:"Luvru"
+		Spanish:"El Louvre"
+		Simplified_Chinese:"卢浮宫"
+		Portuguese:"O Louvre"
+		German:"Der Louvre"
+	}
+
+	"Free Great Artist Appears":{
+		Italian:"Appare un Grande Artista gratuito"
+		Russian:"Появляется бесплатный великий художник"
+		French:"Artiste illustre gratuit apparaît"
+		Romanian:"un Artist Mare gratuit apare"
+		Dutch:"Een gratis geweldige artiest verschijnt"
+		Spanish:"Aparece un Gran Artista gratis"
+		Simplified_Chinese:"免费的大艺术家出现"
+		Portuguese:"Aparece um Grande Artista grátis"
+		German:"Kostenloser Großer Künstler erscheint"
+	}
+	
+	"Seaport":{
+		Spanish:"Astillero"
+		Italian:"Cantiere navale"
+		French:"Port"
+		Romanian:"Port maritim"
+		Simplified_Chinese:"海运码头"
+		Portuguese:"Port"
+		German:"Seehafen"
+	}
+
+	"+1 production and gold from all sea resources worked by the city":{
+		Spanish:"+1 de produccion y oro por todos los recursos acuaticos trabajados por la ciudad"
+		Italian:"+1 Produzione e Oro da ogni risorsa marittima sfruttata dalla città"
+		French:"+1 de production et d'or pour toutes les ressources maritimes exploitées par la ville"
+		Romanian:"+1 producție și aur din toate resursele maritime prelucrate de oraș"
+		Simplified_Chinese:"所在城市每个海洋资源+1产能和金钱"
+		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
+		German:"+1 Produktion und Gold von allen Meeresressourcen die von der Stadt bewirtschaftet werden"
+	}
+
+	"+15% production of naval units":{
+		Spanish:"+15% A la produccion de unidades navales"
+		Italian:"+15% Produzione per le unità marittime"
+		French:"+15% à la production d'unités maritimes"
+		Romanian:"+15% producție de unități navale"
+		Simplified_Chinese:"组建海上单位时+15%产能积累"
+		Portuguese:"15% na produção de unidades marítimas"
+		German:"+15% Produktion für Marineeinheiten"
+	}
+	
+	"Public School":{	
+		Italian:"Scuola pubblica"
+		Russian:"Школа"
+		French:"École publique"
+		Romanian:"Școală publică"
+		Spanish:"Escuela pública"
+		Simplified_Chinese:"公立学校"
+		Portuguese:"Escola Pública"
+		German:"Öffentliche Schule"
+	}
+	
+	"Hospital":{	
+		Italian:"Ospedale"
+		Russian:"Больница"
+		French:"Hôpital"
+		Romanian:"Spital"
+		Spanish:"Hospital"
+		Simplified_Chinese:"医院"
+		Portuguese:"Hospital"
+		German:"Krankenhaus"
+	}
+
+	"25% of food is carried over after a new citizen is born":{
+		Italian:"Il 25% del cibo viene immagazzinato dopo la nascita di un nuovo cittadino"
+		Russian:"25% продовольствия сохраняется после рождения нового гражданина"
+		French:"25% de la nourriture est préservée après la naissance d'un nouveau citoyen"
+		Romanian:"25% din hrană este păstrată după ce se naște un nou cetățean"
+		German:"25% vom Essensvorrat wird behalten, wenn ein neuer Bewohner geboren wird"
+		Dutch:"25% van het voedsel word overgedragen na de geboorte van een nieuwe burger"
+		Spanish:"25% de comida es arrastrada cada vez que nace un nuevo habitante"
+		Simplified_Chinese:"城市增加新的市民后保留25%食物储备以加速成长"
+		Portuguese:"25% da comida é mantida depois de um novo cidadão nascer"
+	}
+	
+	"Factory":{	
+		Italian:"Fabbrica"
+		Russian:"Завод"
+		French:"Usine"
+		Romanian:"Uzină"
+		Spanish:"Fábrica"
+		Simplified_Chinese:"工厂"
+		Portuguese:"Fábrica"
+		German:"Fabrik"
+	}
+
+	"Stock Exchange":{	
+		Italian:"Borsa valori"
+		Russian:"Фондовая биржа"
+		French:"Bourse"
+		Romanian:"Bursa de Valori"
+		Spanish:"Bolsa de valores"
+		Simplified_Chinese:"证券交易所"
+		Portuguese:"Bolsa de valores"
+		German:"Börse"
+	}
+
+    "Big Ben":{	
+		Italian:"Big Ben"
+		Simplified_Chinese:"大本钟"
+		French:"Big Ben"
+	}
+
+	"-15% to purchasing items in cities":{
+		Italian:"-15% costi in Oro per l'acquisto di unità ed edifici nelle Città"
+		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
+		French:"-15% d'or pour les achats dans les villes"
+	}
+
+	"Cristo Redentor":{
+		Italian:"Cristo Redentor" //Same in Italian
+		Russian:"Кристо Редентор"
+		French:"Christ rédempteur"
+		Romanian:"Cristo Redentor"
+		Spanish:"Cristo Redentor"
+		Simplified_Chinese:"救世基督像"
+		Portuguese:"Cristo Redentor"
+		//same in German
+	}
+
+	"Culture cost of adopting new Policies reduced by 10%":{
+		Italian:"-10% costo in Cultura per ogni nuova politiche"
+		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
+		French:"Coût culturel de l'adoption de nouvelles Doctrines réduit de 10%"
+		Romanian:"Costul în cultură de adoptare a noilor politici a scăzut cu 10%"
+		German:"Neue Sozialpolitiken erfordern 10% weniger Kultur"
+		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
+		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
+		Simplified_Chinese:"推行新政策所需的文化点数-10%"
+		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
+	}
+	
+	"Kremlin":{
+		Italian:"Cremlino"
+		French:"Kremlin"
+		German:"Kreml"
+		Spanish:"Kremlin"
+		Russian:"Кремль"
+		Simplified_Chinese:"克里姆林宫"
+	}
+
+	"Defensive buildings in all cities are 25% more effective":{
+		Italian:"+25% efficacia delle strutture difensive in tutte le città"
+		Simplified_Chinese:"所有城市防御建筑建造速度+25%"
+		French:"Les batiments de défense sont 25% plus efficace dans toutes les villes"
+	}
+	
+	"Neuschwanstein":{
+		Italian:"Castello di Neuschwanstein"
+		Simplified_Chinese:"新天鹅堡"
+		French:"Château de Neuschwanstein"
+	}
+
+	"+1 happiness, +2 culture and +3 gold from every Castle":{
+		Italian:"+1 Felicità, +2 Cultura e +3 Oro per ogni Castello posseduto"
+		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
+		French:"+1 bonheur, +2 culture et +3 or produits par tous les châteaux"
+	}
+	
+	"Military Academy":{	
+		Italian:"Accademia militare"
+		Russian:"Военная академия"
+		French:"Académie militaire"
+		Romanian:"Academie militară"
+		Spanish:"Academia militar"
+		Simplified_Chinese:"军事学院"
+		Portuguese:"Academia militar"
+		German:"Militärakademie"
+	}
+
+	"Broadcast Tower":{	
+		Italian:"Ripetitore"
+		Russian:"Широковещательная башня"
+		French:"Tour de diffusion"
+		Romanian:"Turn radio"
+		Spanish:"Torre de emisión"
+		Simplified_Chinese:"广播塔"
+		Portuguese:"Torre de Transmissão"
+		German:"Fernmeldeturm"
+	}
+	
+	"Eiffel Tower":{	
+		Italian:"Torre Eiffel"
+		Russian:"Эйфелева башня"
+		French:"La Tour Eiffel"
+		Romanian:"Turnul Eiffel"
+		Spanish:"Torre Eiffel"
+		Simplified_Chinese:"艾菲尔铁塔"
+		Portuguese:"Torre Eiffel"
+		German:"Eiffel-Turm"
+	}
+
+	"Provides 1 happiness per social policy":{
+		Italian:"+1 Felicità per ogni politica sociale"
+		Russian:"Обеспечивает 1 счастье за каждый общественный институт"
+		French:"Fournit 1 de bonheur par Doctrines"
+		Romanian:"Oferă 1 fericire per politică socială"
+		German:"Gibt +1 Zufriedenheit pro Sozialgrundsatz"
+		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
+		Spanish:"Otorga 1 felicidad por cada política social"
+		Simplified_Chinese:"每项社会政策+1快乐"
+		Portuguese:"Provem 1 felicade por política social"
+	}
+	
+	"Statue of Liberty":{
+		Italian:"Statua della Libertà"
+		German:"Freiheitsstatue"
+		French:"Statue de la Liberté"
+		Simplified_Chinese:"自由女神像"
+	}
+
+	"+1 Production from specialists":{
+		Italian:"+1 Produzione dagli Specialisti"
+		German:"+1 Produktion von Spezialisten"
+		French:"+1 Production par spécialiste"
+		Simplified_Chinese:"每位专业人员+1产能"
+	}
+	
+	"Medical Lab":{	
+		Italian:"Laboratorio medico"
+		Russian:"Медицинская лаборатория"
+		French:"Laboratoire médical"
+		Romanian:"Laborator medical"
+		Spanish:"Laboratorio médico"
+		Simplified_Chinese:"医学实验室"
+		Portuguese:"Laboratório médico"
+		German:"Medizinisches Labor"
+	}
+
+	"Research Lab":{	
+		Italian:"Laboratorio di ricerca"
+		Russian:"Исследовательская лаборатория"
+		French:"Laboratoire de recherche"
+		Romanian:"Laborator de cercetare"
+		Spanish:"Laboratorio de investigación"
+		Simplified_Chinese:"研发实验室"
+		Portuguese:"Laboratório de investigação"
+		German:"Forschungslabor"
+	}
+
+	"Hydro Plant":{	
+		Italian:"Centrale idroelettrica"
+		Russian:"ГЭС"
+		French:"Centrale hydroélectrique"
+		Romanian:"Hidrocentrală"
+		Spanish:"Central hidroeléctrica"
+		Simplified_Chinese:"水电站"
+		Portuguese:"Central hidroelétrica"
+		German:"Wasserkraftwerk"
+	}
+
+	"Stadium":{	
+		Italian:"Stadio"
+		Russian:"Стадион"
+		French:"Stade"
+		Romanian:"Stadion"
+		Spanish:"Estadio"
+		Simplified_Chinese:"体育场"
+		Portuguese:"Estadio"
+		German:"Stadion"
+	}
+	
+	"Solar Plant":{	
+		Italian:"Centrale ad energia solare"
+		Russian:"Солнечный завод"
+		French:"Centrale solaire"
+		Romanian:"Centrală solară"
+		Spanish:"Planta Solar"
+		Simplified_Chinese:"太阳能电站"
+		Portuguese:"Planta Solar"
+		German:"Solarkraftwerk"
+	}
+
+	"Must be next to desert":{
+		Italian:"Deve rasentare Deserto"
+		Russian:"Должно быть рядом с пустыней"
+		French:"Doit être à côté d'un désert"
+		Romanian:"Trebuie să fie lângă deșert"
+		German:"Muss an eine Wüste grenzen"
+		Dutch:"Moet aan een woestijn grenzen"
+		Spanish:"Debe estar próximo a un desierto"
+		Simplified_Chinese:"必须紧邻沙漠"
+		Portuguese:"Nescessário que esteja proximo ao deserto"
+	}
+
+	"Must be next to mountain":{
+		Italian:"Deve rasentare Montagna"
+		Simplified_Chinese:"必须紧邻山脉"
+		French:"Doit être à côté d'une montagne"
+	}
+
+	"Sydney Opera House":{
+		Spanish:"Casa De La Opera De Sidney"
+		Italian:"Teatro dell'Opera di Sidney"
+		French:"Opéra de Sydney"
+		Romanian:"Opera din Sydney"
+		Simplified_Chinese:"悉尼歌剧院"
+		Portuguese:"Ópera de Sydney"
+		German:"Opernhaus Sydney"
+	}
+	
+	"CN Tower":{
+		Italian:"CN Tower" //same in Italian
+		//same in German
+		French:"Tour du CN"
+		Spanish:"Torre CN"
+		Simplified_Chinese:"西恩塔"
+	}
+
+	"+1 population in each city":{
+		Italian:"+1 Popolazione in ogni città"
+		German:"+1 Einwohner in jeder Stadt"
+		French:"+1 population dans chaque villes"
+		Simplified_Chinese:"每座城市+1人口"
+	}
+
+	"+1 happiness in each city":{
+		Italian:"+1 Felicità in ogni città"
+		German:"+1 Zufriedenheit in jeder Stadt"
+		French:"+1 bonheur dans chaque villes"
+		Simplified_Chinese:"每座城市+1快乐"
+	}
+	
+	"Pentagon":{
+		Italian:"Pentagono"
+		French:"Pentagone"
+		//same in German
+		Simplified_Chinese:"五角大楼"
+	}
+
+	"Gold cost of upgrading military units reduced by 33%":{
+		Spanish:"El coste de mejorar unidades con oro se reduce un 33%"
+		Italian:"-33% costi in Oro per aggiornare un'unità militare"
+		Romanian:"Costurile în aur pentru dezvoltarea unităților militare reduse cu 33%"
+		Simplified_Chinese:"升级军事单位所需的金钱-33%"
+		Portuguese:"-33% custo de ouro para unidades militares"
+		Russian:"стоимость улучшения юнита снижается на 33%"
+		German:"Goldkosten für die Verbesserung von Militäreinheiten ist um 33% reduziert"
+		French:"Le coût en or de l'amélioration des unités militaires est réduit de 33%"
+	}
+	
+	"Apollo Program":{	
+		Italian:"Programma Apollo"
+		Russian:"Программа Аполлон"
+		French:"Programme Apollo"
+		Romanian:"Programul Apollo"
+		Simplified_Chinese:"阿波罗计划"
+		Spanish:"Programa Apollo"
+		German:"Apollo Programm"
+	}
+
+	"Enables construction of Spaceship parts":{
+		Italian:"Consente la costruzione di parti dell'astronave"
+		Russian:"Разрешает строительство частей космического корабля"
+		French:"Permet la construction des pièces du Vaisseau Spatial"
+		Romanian:"Permite construcția de piese pentru nave spațiale"
+		German:"Erlaubt die Produktion von Raumschiffteilen"
+		Dutch:"Ontgrendelt productie van ruimteschip onderdelen"
+		Spanish:"Habilita la construcción de partes de Nave Espacial"
+		Simplified_Chinese:"允许建造太空飞船的部件"
+		Portuguese:"Habilita a construção de partes da nave espacial"
+	}
+	
+	"Nuclear Plant":{	
+		Italian:"Centrale nucleare"
+		Russian:"АЭС"
+		French:"Centrale nucléaire"
+		Romanian:"Centrală nucleară"
+		Spanish:"Central nuclear"
+		Simplified_Chinese:"核电站"
+		Portuguese:"Planta Nuclear"
+		German:"Atomkraftwerk"
+	}
+	
+	"Spaceship Factory":{	
+		Italian:"Fabbrica di astronavi"
+		Russian:"Завод космических кораблей"
+		French:"Chantier spatial"
+		Romanian:"Fabrică de nave spațiale"
+		Spanish:"Fábrica de Nave Espacial"
+		Simplified_Chinese:"太空船工厂"
+		Portuguese:"Fábrica de Naves Espaciais"
+		German:"Raumschiff-Fabrik"
+	}
+    
+	"Increases production of spaceship parts by 50%":{
+		Italian:"+50% produzione di parti dell'astronave"
+		Russian:"Ускоряет производство частей космического корабля на 50%"
+		French:"Augmente la production de pièces de Vaisseau Spatial de 50%"
+		Romanian:"Crește producția de piese pentru nave spațiale cu 50%"
+		German:"Erhöht die Produktion von Raumschiffteilen um 50%"
+		Dutch:"Verhoogd de productiesnelheid van ruimteschips onderdelen met 50%"
+		Spanish:"Incrementa la producción de partes de Nave Espacial 50%"
+		Simplified_Chinese:"建造太空船部件时+50%产能"
+		Portuguese:"Torna a construção de partes de nave em 50%"
+	}
+	
+	"Spaceship part":{
+		Italian:"Parte dell'astronave"
+		Russian:"Часть космического корабля"
+		French:"Pièce de Vaisseau Spatial"
+		Romanian:"piesă de nave spațiale"
+		German:"Raumschiffteil"
+		Dutch:"Ruimteschip onderdeel"
+		Spanish:"Parte de Nave Espacial"
+		Simplified_Chinese:"太空船的部件"
+		Portuguese:"Parte de Nave Espacial"
+	}
+	
+	"Hubble Space Telescope":{
+		Italian:"Telescopio spaziale Hubble"
+		German:"Hubble Weltraumteleskop"
+		French:"Téléscope de Hubble"
+		Simplified_Chinese:"哈勃太空望远镜"
+	}
+
+	"2 free great scientists appear":{
+		Italian:"Appaiono 2 grandi scenziati gratuiti"
+		German:"2 kostenlose Große Wissenschaftler erscheinen"
+		French:"2 scientifiques illustres apparaissent"
+		Simplified_Chinese:"2个免费的大科学家出现"
+	}
+
+	"Increases production of spaceship parts by 25%":{
+		Italian:"+25% Produzione per le parti dell'astronave"
+		German:"Erhöht die Produktion von Raumschiffteilen um 25%"
+		French:"Améliore la production de pièces de vaisseau spatial de 25%"
+		Simplified_Chinese:"建造太空船部件时+25%产能"
+	}
+	
+	"SS Booster":{	//no translation that I know of
+		Italian:"Propulsore dell'astronave"
+		Spanish:"Potenciador (Nave espacial)"
+		French:"Propulseur (Vaisseau Spatial)" // official translate is "Fusée de lancement"
+		Romanian:"Propulsor pentru nave spațiale"
+		Simplified_Chinese:"飞船助推器"
+		Portuguese:"Propulsor de Nave Espacial"
+		German:"Raumschiff Booster"
+	}
+
+	"SS Cockpit":{	//no translation that I know of
+		Italian:"Abitacolo dell'astronave"
+		Spanish:"Cabina (Nave espacial)"
+		French:"Cabine (Vaisseau Spatial)"
+		Romanian:"Cabină pentru nave spațiale"
+		Simplified_Chinese:"飞船驾驶舱"
+		Portuguese:"Cabine de Nave Espacial"
+		German:"Raumschiff Cockpit"
+	}
+
+	"SS Engine":{	//no translation that I know of
+		Italian:"Motore dell'astronave"
+		Spanish:"Motor (Nave espacial)"
+		French:"Moteur (Vaisseau Spatial)"
+		Romanian:"Motor pentru nave spațiale"
+		Simplified_Chinese:"飞船发动机"
+		Portuguese:"Propulsor principal de Nave Espacial"
+		German:"Raumschiff Triebwerke"
+	}
+
+	"SS Stasis Chamber":{	//no translation that I know of
+		Italian:"Camera di stasi dell'astronave"
+		Spanish:"Cámara de estasis (Nave espacial)"
+		French:"Module de biostase (Vaisseau Spatial)"
+		Romanian:"Cameră de biostază pentru nave spațiale"
+		Simplified_Chinese:"飞船休眠舱"
+		Portuguese:"Câmara  de biostase de Nave Espacial"
+		German:"Raumschiff Stase-Kammer"
+	}
+}
