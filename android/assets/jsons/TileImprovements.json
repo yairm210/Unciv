@@ -35,6 +35,19 @@
 		improvingTech:"Economics",
 		improvingTechStats: {gold:1}
 	},
+	/*
+	{
+		name:"Moai",
+		uniqueTo:"Polynesia",
+		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Tundra"],
+		culture:1,
+		turnsToBuild:7,
+		techRequired:"Construction",
+		improvingTech:"Flight",
+		improvingTechStats: {gold:1}
+		//+1 additional Culture for each adjacent Moai
+	},
+	*/
 	
 	// Resource-specific
 	{
