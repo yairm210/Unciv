@@ -877,6 +877,7 @@
 	}
 
 	"Pick improvement":{
+		Italian:"Scegli miglioramento"
 		Simplified_Chinese:"选择设施"
 		French:"Choisir une amélioration"
 	}
@@ -959,16 +960,19 @@
 	}
 
 	"Specialists":{
+		Italian:"Specialisti"
 		Simplified_Chinese:"专业人员"
 		French:"Spécialiste"
 	}
 
 	"Food eaten":{
+		Italian:"Cibo consumato"
 		Simplified_Chinese:"人口消耗"
 		French:"Nourriture consommée"
 	}
 
 	"Growth bonus":{
+		Italian:"Bonus crescita"
 		Simplified_Chinese:"积累速率"
 		French:"Bonus de Croissance"
 	}
@@ -2546,6 +2550,7 @@
 	}
 
 	"Remove Road":{
+		Italian:"Rimuovi Strada"
 		Simplified_Chinese:"拆毁道路"
 		French:"Retirer la route"
 	}
@@ -2563,6 +2568,7 @@
 	}
 
 	"Remove Railroad":{
+		Italian:"Rimuovi Ferrovia"
 		Simplified_Chinese:"拆除铁路"
 		French:"Retirer les rails"
 	}
@@ -3765,6 +3771,7 @@
 	}
 
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
+		Italian:"marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
 		French:"Civil embarqué"
 	}
@@ -3782,6 +3789,7 @@
 	}
 
 	"WaterMelee":{
+		Italian:"marittima da mischia" //Unità marittima da mischia
 		Simplified_Chinese:"海军近战单位"
 		French:"Navire de combat rapproché"
 	}
@@ -3799,11 +3807,13 @@
 	}
 
 	"WaterRanged":{
+		Italian:"marittima a distanza" //Unità marittima a distanza
 		Simplified_Chinese:"海军远程单位"
 		French:"Navire de combat à distance"
 	}
 
 	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
+		Italian:"sottomarina" //Unità sottomarina
 		Simplified_Chinese:"海军潜艇单位"
 		French:"Navires sous-marins"
 	}
@@ -3845,6 +3855,7 @@
 	}
 
 	"Armor":{
+		Italian:"corazzata" //Unità corazzata
 		Simplified_Chinese:"装甲单位"
 		French:"Blindé"
 	}
@@ -3984,21 +3995,25 @@
 	}
 
 	"Bonus as Attacker 75%":{
+		Italian:"75% Bonus in attacco"
 		Simplified_Chinese:"主动攻击时+75%战斗力"
 		French:"Bonus en tant qu'attaquant +75%"
 	}
 
 	"Invisible to others":{
+		Italian:"Invisibile per le altre unità"
 		Simplified_Chinese:"对其他单位隐形"
 		French:"Invisible aux autres" // (unités)
 	}
 
 	"Can only attack water":{
+		Italian:"Può attaccare solo unità acquatiche"
 		Simplified_Chinese:"只能攻击海上目标"
 		French:"Ne peut attaquer que les unités marines"
 	}
 
 	"Can attack submarines":{
+		Italian:"Può attaccare i sottomarini"
 		Simplified_Chinese:"能够发现和攻击潜艇单位"
 		French:"Peut attaquer les sous-marins"
 	}
@@ -4098,6 +4113,7 @@
 	}
 
 	"Bonus for land units in 2 radius 15%" :{
+		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
 		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
         French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
 	}
@@ -4216,6 +4232,7 @@
 	} 
 
 	"Unbuildable":{
+		Italian:"Non costruibile"
 		Simplified_Chinese:"不可组建单位"
 		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct 
 	}
@@ -4360,7 +4377,7 @@
 	}
     
 	"Our trade offer":{	
-		Italian:"La nostra offerta\n  commerciale"
+		Italian:"La nostra offerta"
 		Russian:"Наше предложение\n  обмена"
 		French:"Notre offre d'échange"
 		Romanian:"Oferta noastră"
@@ -4371,7 +4388,7 @@
 	}
 
 	"[otherCiv]'s trade offer":{
-		Italian:"Offerta \n di [otherCiv]"
+		Italian:"Offerta di [otherCiv]"
 		Russian:"Предложение обмена \n цивилизации [otherCiv]"
 		French:"L'offre d'échange de [otherCiv]"
 		Romanian:"Ofertă de schimb a [otherCiv]"
@@ -5221,7 +5238,7 @@
 	}
 	
 	"A pleasure to meet you.":{
-		Italian:"Lieto di incontrarvi."
+		Italian:"Siamo lieti di incontrarvi."
 		French:"Un plaisir de vous rencontrez"
 		Simplified_Chinese:"很高兴见到你."
 	}
@@ -6577,7 +6594,7 @@
 	}
 
 	"-15% to purchasing items in cities":{
-		Italian:"-15% costo in Oro per l'acquisto di unità ed edifici nelle Città"
+		Italian:"-15% costi in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
 		French:"-15% d'or pour les achats dans les villes"
 	}
@@ -7133,7 +7150,7 @@
 	} 
 	
 	"Horseman":{	
-		Italian:"Guerriero a cavallo" //wrong translation by Smashfanful
+		Italian:"Guerriero a cavallo"
 		Russian:"Всадник"
 		French:"Cavalier"
 		Romanian:"Călăreţ"
@@ -9328,8 +9345,33 @@
 		French:"+33% force contre les unités montées"
 		Russian:"Бонус против раненых 33%"
 		Simplified_Chinese:"对战受伤单位时+33%战斗力"
-    }
-  
+
+  }
+	"Bonus vs City 50%":{
+		Italian:"50% Bonus contro Città"
+		Simplified_Chinese:"攻击城市时+50%战斗力"
+	}
+	"Bonus vs City 15%":{
+		Italian:"15% Bonus contro Città"
+		Simplified_Chinese:"攻击城市时+15%战斗力"
+	}
+	"Bonus vs City 200%":{
+		Italian:"200% Bonus contro Città"
+		Simplified_Chinese:"攻击城市时+200%战斗力"
+	}
+	"Bonus vs City 30%":{
+		Italian:"30% Bonus contro Città"
+		Simplified_Chinese:"攻击城市时+30%战斗力"
+	}
+	"Bonus vs City 33%":{
+		Italian:"33% Bonus contro Città"
+		Simplified_Chinese:"攻击城市时+33%战斗力"
+	}
+	"Penalty vs City 33%":{
+		Italian:"33% Malus contro Città"
+		Simplified_Chinese:"攻击城市时-33%战斗力"
+	}
+
 	"wounded units":{
 		Italian:"unità ferite"
 		French:"unités blessés"
@@ -9508,27 +9550,32 @@
 	}
 
 	"Bonus vs Mounted 50%":{
+		Italian:"50% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
         French:"Bonus contre les unités montées +50%"
 	}
 
 /*
 	"Bonus vs Mounted 33%":{
+		Italian:"33% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
 	}
 
 	"Bonus vs Armor 100%":{
+		Italian:"100% Bonus contro unità corazzate"
 		Simplified_Chinese:"对战装甲单位时+100%战斗力"
 		French:"Bonus contre les unités montées +50%"
 	}
 */
 
 	"Bonus vs Mounted 33%":{
+		Italian:"33% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
 		French:"Bonus contre les unités montées +33%"
 	}
 
 	"Bonus vs Armor 100%":{
+		Italian:"100% Bonus contro unità corazzate"
 		Simplified_Chinese:"对战装甲单位时+100%战斗力"
 		French:"Bonus contre les unités montées +100%"
 	}
