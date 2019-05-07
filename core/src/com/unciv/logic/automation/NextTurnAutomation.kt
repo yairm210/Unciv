@@ -245,28 +245,15 @@ class NextTurnAutomation{
     private fun updateDiplomaticRelationship(civInfo: CivilizationInfo) {
         // Check if city-state invaded by other civs
         if (civInfo.isCityState()) {
-            var militaryUnitsInBorder = HashMap<String, Int>()
-            for (city in civInfo.cities) {
-                for (tile in city.getTiles()) {
-                    val troop = tile.militaryUnit
-                    if (troop != null && troop.owner != civInfo.civName) {
-                        if (militaryUnitsInBorder.containsKey(troop.owner)) {
-                            militaryUnitsInBorder[troop.owner] = militaryUnitsInBorder[troop.owner]!! + 1
-                        } else {
-                            militaryUnitsInBorder[troop.owner] = 1
-                        }
-                    }
-                }
-            }
+            for (civ in civInfo.gameInfo.civilizations) {
+                if (civ == civInfo || civ.isBarbarianCivilization()) continue
+                val diplomacy = civInfo.getDiplomacyManager(civ)!!
+                if (diplomacy.diplomaticStatus == DiplomaticStatus.War) continue
 
-            for (otherCivName in militaryUnitsInBorder.filter { it.value > 0 }.keys) {
-                val otherCiv = civInfo.gameInfo.getCivilization(otherCivName)
-                if (!otherCiv.isBarbarianCivilization()) {
-                    val diplo = civInfo.getDiplomacyManager(otherCiv)
-                    if (diplo.diplomaticStatus != DiplomaticStatus.War) {
-                        diplo.influence -= 10f
-                        otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
-                    }
+                val unitsInBorder = civ.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
+                if (unitsInBorder > 0 && diplomacy.influence < 30f) {
+                    diplomacy.influence -= 10f
+                    civ.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
                 }
             }
         }
