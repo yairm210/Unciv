@@ -4983,22 +4983,22 @@
 		Russian:"Вы заплатите за это!"
 		Romanian:"Veți plăti pentru asta!"
 		Portuguese:"Você vai pagar por isso!"
-		Simplified_Chinese:"你会为此付出代价！"
+		Simplified_Chinese:"蠢货！你会为此付出代价的！"
 	}
 	"Very well.":{
 		Italian:"Molto bene."
 		French:"Très bien."
-		Simplified_Chinese:"很好."
+		Simplified_Chinese:"很好。"
 	}
 	"Farewell.":{
 		Italian:"Addio."
 		French:"Adieu."
-		Simplified_Chinese:"再见."
+		Simplified_Chinese:"再见。"
 	}
 	
 	"Not this time.":{
 		Italian:"Non questa volta."
-		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
+		Simplified_Chinese:"这次不行，我只和有诚意的人交易。"
 		French:"Pas cette fois."
 	} // declining trade text
 	"Excellent!":{
@@ -5021,57 +5021,70 @@
 	"Our relationship: ":{
 		Italian:"I nostri rapporti: "
 		French:"Notre relation :" //or l'état de notre relation
+		Simplified_Chinese:"我们的关系："
 	}
 	
-    "Unforgivable!":{
+  "Unforgivable!":{
 		Italian:"Imperdonabile!"
 		French:"Impardonnable!"
+		Simplified_Chinese:"仇深似海"
     }
     "Enemy":{ //e.g ?
 		Italian:"Nemico"
 		French:"Ennemi"
-    }
-    "Competitor":{
-	    Italian:"Avversario"
-	    French:"Adversaire" //or en compétition
-    }
-    "Neutral":{
-            Italian:"Neutrale"
-	    French:"Neutre"
-    }
-    "Favorable":{
+		Simplified_Chinese:"宿命之敌"
+	}
+  "Competitor":{
+		Italian:"Avversario"
+		French:"Adversaire" //or en compétition
+		Simplified_Chinese:"瑜亮之争"
+	}
+  "Neutral":{
+		Italian:"Neutrale"
+		French:"Neutre"
+		Simplified_Chinese:"泛泛之交"
+  }
+  "Favorable":{
 		Italian:"Favorevole"
-	    French:"Favorable"
-    }
-    "Friend":{
+		French:"Favorable"
+		Simplified_Chinese:"惺惺相惜"
+  }
+  "Friend":{
 		Italian:"Amichevole"
-	    French:"Ami"
-    }
-    "Ally":{
+		French:"Ami"
+		Simplified_Chinese:"秦晋之好"
+  }
+  "Ally":{
 		Italian:"Alleato"
-	    French:"Allié"
-    }
+		French:"Allié"
+		Simplified_Chinese:"生死同盟"
+  }
 	
 	// Diplomatic modifiers
 	"You declared war on us!":{
 		Italian:"Ci hai dichiarato guerra!"
 		French:"Vous nous avez déclaré la guerre!"
+		Simplified_Chinese:"不知死活的蠢货，竟敢向我们宣战！"
 	}
 	"Your warmongering ways are unacceptable to us.":{
 		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
 		French:"Votre bellicisme est inacceptable pour nous."
+		Simplified_Chinese:"你的穷兵黩武是我们无法容忍的，请好自为之。"
 	}
 	"You have captured our cities!":{
 		Italian:"Hai preso una delle nostre città!"
 		French:"Vous avez capturé nos villes!"
+		Simplified_Chinese:"你竟敢占领我们的城市！多行不义必自毙！"
 	}
 	"Years of peace have strengthened our relations.":{
 		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
 		French:"Les années de paix ont renforcées notre relation"
+		Simplified_Chinese:"长久以来的和平让我们的人民更加友爱，好好珍惜它吧，我的朋友！"
 	}
 	"Our mutual military struggle brings us closer together.":{
 		Italian:"I nostri nemici in comune ci hanno legati."
 		French:"Nos problèmes militaires communs nous ont rapprochés"
+		Simplified_Chinese:"一起度过峥嵘的战斗岁月让我们的关系更加紧密，感谢你，我的朋友！"
 	}
 	
 	// Overview screen
