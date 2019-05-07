@@ -1,6 +1,7 @@
 [
 	{
-		name:"巴比伦",
+		name:"Babylon",
+		translatedName:"巴比伦",
 		leaderName:"尼布甲尼撒二世",
 		adjective:["巴比伦的"],
 		startBias:["Avoid Tundra"],
@@ -35,7 +36,8 @@
 			"阿拉普哈","图图布","沙杜普姆","腊皮库姆","马什干-沙皮尔","图图尔","拉马迪","阿奈","哈拉杜姆","阿格拉布"]
 	},
 	{
-		name:"希腊",
+		name:"Greece",
+		translatedName:"希腊",
 		leaderName:"亚历山大",
 		adjective:["希腊的"],
 		startBias:["Coast"],
@@ -68,7 +70,8 @@
 			"帕洛斯","埃利斯","锡拉库萨","赫拉克莱娅","格尔腾","加尔西斯","皮洛斯","佩拉","纳克索斯"]
 	},
 	{
-		name:"中华",
+		name:"China",
+		translatedName:"中华",
 		leaderName:"武则天",
 		adjective:["中华的"],
 		
@@ -102,7 +105,8 @@
 			"太原","台南","大连","丽江","无锡","苏州","茂名","韶关","阳江","河源"]
 	},
 	{
-		name:"埃及",
+		name:"Egypt",
+		translatedName:"埃及",
 		leaderName:"拉美西斯二世",
 		adjective:["埃及的"],
 		startBias:["Avoid Jungle","Avoid Forest"],
@@ -137,7 +141,8 @@
 			"门迭斯","阿什穆嫩","塔尼斯","布巴斯提斯","奥里克斯","塞苯尼陀斯","阿赫姆","卡纳克","卢克索","艾尔卡布"]
 	},
 	{
-		name:"英格兰",
+		name:"England",
+		translatedName:"英格兰",
 		leaderName:"伊丽莎白",
 		adjective:["英格兰的"],
 		startBias:["Coast"],
@@ -172,7 +177,8 @@
 			"曼彻斯特","布里斯托","莱斯特","卡莱尔","伊普斯维奇","朴茨茅斯","贝里克","巴斯","马姆波利斯","南安普顿"]
 	},
 	{
-		name:"法兰西",
+		name:"France",
+		translatedName:"法兰西",
 		leaderName:"拿破仑",
 		adjective:["法兰西的"],
 		
@@ -206,7 +212,8 @@
 			"尼斯","圣埃蒂安","南特","兰斯","勒芒","蒙彼利埃","利摩日","南锡","里尔","卡昂"]
 	},
 	{
-		name:"俄罗斯",
+		name:"Russia",
+		translatedName:"俄罗斯",
 		leaderName:"叶卡捷琳娜",
 		adjective:["俄罗斯的"],
 		startBias:["Tundra"],
@@ -241,7 +248,8 @@
 			"阿尔汉格尔斯克","车里雅宾斯克","托博尔斯克","沃洛格达","鄂木斯克","阿斯特拉罕","库尔斯克","萨拉托夫","图拉","弗拉基米尔"]
 	},
 	{
-		name:"罗马",
+		name:"Rome",
+		translatedName:"罗马",
 		leaderName:"奥古斯都·恺撒",
 		adjective:["罗马的"],
 		
@@ -275,7 +283,8 @@
 			"锡耶纳","阿奎莱亚","克鲁西姆","苏特留姆","克雷莫纳","普拉什提亚","斯帕里斯","阿萨克塔萨","奥瑞拉诺茹姆","尼科波利斯"]
 	},
 	{
-		name:"阿拉伯",
+		name:"Arabia",
+		translatedName:"阿拉伯",
 		leaderName:"哈伦·拉希德",
 		adjective:["阿拉伯的"],
 		startBias:["Desert"],
@@ -310,7 +319,8 @@
 			"艾达布","贝特","苏哈尔","塔伊夫","哈玛","塔布克","萨纳","斯遏","的黎波里","突尼斯"]
 	},
 	{
-		name:"美利坚",
+		name:"America",
+		translatedName:"美利坚",
 		leaderName:"华盛顿",
 		adjective:["美利坚的"],
 		
@@ -344,7 +354,8 @@
 			"克里夫兰","肯萨斯城","圣地亚哥","里士满","拉斯维加斯","菲尼克斯","阿尔伯克基","明尼阿波丽斯","匹兹堡"]
 	},
 	{
-		name:"日本",
+		name:"Japan",
+		translatedName:"日本",
 		leaderName:"织田信长",
 		adjective:["日本的"],
 		startBias:["Coast"],
@@ -755,7 +766,8 @@
 	},
 	*/
 	{
-		name:"蛮族",
+		name:"Barbarians",
+		translatedName:"蛮族",
 		mainColor:[0,0,0],
 		secondaryColor:[182,0,0]
 	}
