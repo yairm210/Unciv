@@ -221,7 +221,7 @@ class Building : NamedStats(), IConstruction{
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "Wonder is already built"
             if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
-                return "Requires a $requiredBuildingInAllCities in all cities"
+                return "Requires a [$requiredBuildingInAllCities] in all cities"
             if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "Wonder is being built elsewhere"
             if(civInfo.isCityState())
@@ -229,7 +229,7 @@ class Building : NamedStats(), IConstruction{
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
-            return "Requires a $requiredBuilding in this city"
+            return "Requires a [$requiredBuilding] in this city"
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
 
@@ -246,7 +246,7 @@ class Building : NamedStats(), IConstruction{
             return "Can only be built in coastal cities"
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
-            return "Requires $requiredResource"
+            return "Requires [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getTilesInRange()

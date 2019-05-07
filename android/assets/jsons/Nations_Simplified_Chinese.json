@@ -1,6 +1,7 @@
 [
 	{
-		name:"巴比伦",
+		name:"Babylon",
+		translatedName:"巴比伦",
 		leaderName:"尼布甲尼撒二世",
 		adjective:["巴比伦的"],
 		startBias:["Avoid Tundra"],
@@ -35,7 +36,8 @@
 			"阿拉普哈","图图布","沙杜普姆","腊皮库姆","马什干-沙皮尔","图图尔","拉马迪","阿奈","哈拉杜姆","阿格拉布"]
 	},
 	{
-		name:"希腊",
+		name:"Greece",
+		translatedName:"希腊",
 		leaderName:"亚历山大",
 		adjective:["希腊的"],
 		startBias:["Coast"],
@@ -68,7 +70,8 @@
 			"帕洛斯","埃利斯","锡拉库萨","赫拉克莱娅","格尔腾","加尔西斯","皮洛斯","佩拉","纳克索斯"]
 	},
 	{
-		name:"中华",
+		name:"China",
+		translatedName:"中华",
 		leaderName:"武则天",
 		adjective:["中华的"],
 		
@@ -102,7 +105,8 @@
 			"太原","台南","大连","丽江","无锡","苏州","茂名","韶关","阳江","河源"]
 	},
 	{
-		name:"埃及",
+		name:"Egypt",
+		translatedName:"埃及",
 		leaderName:"拉美西斯二世",
 		adjective:["埃及的"],
 		startBias:["Avoid Jungle","Avoid Forest"],
@@ -137,7 +141,8 @@
 			"门迭斯","阿什穆嫩","塔尼斯","布巴斯提斯","奥里克斯","塞苯尼陀斯","阿赫姆","卡纳克","卢克索","艾尔卡布"]
 	},
 	{
-		name:"英格兰",
+		name:"England",
+		translatedName:"英格兰",
 		leaderName:"伊丽莎白",
 		adjective:["英格兰的"],
 		startBias:["Coast"],
@@ -172,7 +177,8 @@
 			"曼彻斯特","布里斯托","莱斯特","卡莱尔","伊普斯维奇","朴茨茅斯","贝里克","巴斯","马姆波利斯","南安普顿"]
 	},
 	{
-		name:"法兰西",
+		name:"France",
+		translatedName:"法兰西",
 		leaderName:"拿破仑",
 		adjective:["法兰西的"],
 		
@@ -206,7 +212,8 @@
 			"尼斯","圣埃蒂安","南特","兰斯","勒芒","蒙彼利埃","利摩日","南锡","里尔","卡昂"]
 	},
 	{
-		name:"俄罗斯",
+		name:"Russia",
+		translatedName:"俄罗斯",
 		leaderName:"叶卡捷琳娜",
 		adjective:["俄罗斯的"],
 		startBias:["Tundra"],
@@ -241,7 +248,8 @@
 			"阿尔汉格尔斯克","车里雅宾斯克","托博尔斯克","沃洛格达","鄂木斯克","阿斯特拉罕","库尔斯克","萨拉托夫","图拉","弗拉基米尔"]
 	},
 	{
-		name:"罗马",
+		name:"Rome",
+		translatedName:"罗马",
 		leaderName:"奥古斯都·恺撒",
 		adjective:["罗马的"],
 		
@@ -275,7 +283,8 @@
 			"锡耶纳","阿奎莱亚","克鲁西姆","苏特留姆","克雷莫纳","普拉什提亚","斯帕里斯","阿萨克塔萨","奥瑞拉诺茹姆","尼科波利斯"]
 	},
 	{
-		name:"阿拉伯",
+		name:"Arabia",
+		translatedName:"阿拉伯",
 		leaderName:"哈伦·拉希德",
 		adjective:["阿拉伯的"],
 		startBias:["Desert"],
@@ -310,7 +319,8 @@
 			"艾达布","贝特","苏哈尔","塔伊夫","哈玛","塔布克","萨纳","斯遏","的黎波里","突尼斯"]
 	},
 	{
-		name:"美利坚",
+		name:"America",
+		translatedName:"美利坚",
 		leaderName:"华盛顿",
 		adjective:["美利坚的"],
 		
@@ -344,7 +354,8 @@
 			"克里夫兰","肯萨斯城","圣地亚哥","里士满","拉斯维加斯","菲尼克斯","阿尔伯克基","明尼阿波丽斯","匹兹堡"]
 	},
 	{
-		name:"日本",
+		name:"Japan",
+		translatedName:"日本",
 		leaderName:"织田信长",
 		adjective:["日本的"],
 		startBias:["Coast"],
@@ -481,39 +492,6 @@
 		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
 	},
 	{
-		name:"Zulu",
-		leaderName:"Shaka Zulu",
-		adjective:["Zulu"],
-		startBias:["Avoid Jungle"],
-		
-		startIntroPart1: "Your people kneel before you, great warrior Shaka of the Zulu Kingdom. As you rose from a place of exile to become the true leader of the Zulus, you ushered in changes throughout the Zulu society, implementing new laws and cultural reforms that strenghtened the position of your people. However, it was your tenacity in the art of war that truly established your reputation, as your tactics and strategies on the battlefield forever changed the face of combat across the plains of southern Africa."
-		startIntroPart2: "Most formidable king, your people once again long for the unity and strenght your leadership afforded them. Can you return the Zulu Kingdom to such great prominence? Will you build a civilization that stands the test of time?"
-		
-		declaringWar:"None will slow our progress, not even you! Prepare for war!"
-		attacked:"Your arrogance will only lead you to defeat!"
-		defeated:"My warriors have failed, and so I failed them."
-		introduction:"I'm Shaka of Zulu. Don't try to move, warrior, or I'll destroy you."
-		
-		neutralHello:"Hail your Majesty!"
-		neutralLetsHearIt:["Go ahead.","Proceed.","I'm listening."]
-		neutralNo:["Not a bit.","No!","Try again"]
-		neutralYes:["I accept","It is good.","Alright."]
-
-		hateHello:"What are you doing here?"
-		hateLetsHearIt:["Speak!","What do you say?","Go on."]
-		hateNo:["No way.","Certainly not!","Impossible!"]
-		hateYes:["Fine!","I suppose I must.","Very well..."]
-		
-		afterPeace:"It seems that the Gods of War were against our dispute..."
-		tradeRequest:"You might accept this offer."
-				
-		mainColor:[153,76,0],
-		secondaryColor:[255,255,255],
-		unique:"Melee units cost 50% less maintenance, and all units require 25% less experience to earn their next promotion.",
-		cities:["Ulundi","Umugungundlovu","Nobamba","Bulawayo","KwaDukuza","Nongoma","oNdini","Nodwengu","Ndonakusuka","Babanango","Khangela","KwaHlomendlini","Hlobane","eThekwini","Mlambongwenya","Eziqwaqweni","eMangweni","Isiphezi","Masotsheni","Mtunzini","Nyakamubi","Dumazulu","Hlatikulu","Mthonjaneni","Empangeni","Pongola","Tugela","Kwamashi","Ingwavuma","Hluhluwe","Matubatuba","Mhlahlandlela","Mthatha","Maseru","Lobamba","Qunu"]
-	},
-
-	{
 		name:"Mongolia",
 		leaderName:"Genghis Khan",
 		adjective:["Mongolian"],
@@ -544,37 +522,6 @@
 		secondaryColor:[0,204,102],
 		unique:"All mounted units have +1 Movement. +30% when assaulting cities,",
 		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan","Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
-	},
-
-	{
-		name:"Celts",
-		leaderName:"Boudicca",
-		
-		startIntroPart1: ""
-		startIntroPart2: ""
-		
-		declaringWar:"How dare you?! I will be the one owning your head!"
-		attacked:"I have been preparing for war for a long time! To arms, patriots! We march to war!"
-		defeated:"You, awful king! You realized that you "won" this war in mane only?"
-		introduction:"I am Boudicca, Queen of the Celts. Let no-one underestimate me!"
-		
-		neutralHello:"The Heavens have given good to you."
-		neutralLetsHearIt:["We are all ears...","Well?"]
-		neutralNo:["We must decline.","No.","We refuse."]
-		neutralYes:["Sure, it shall be so.","Fine...","Acceptable."]
-
-		hateHello:"Well?"
-		hateLetsHearIt:["Speak!","And?"]
-		hateNo:["Unacceptable!","A thousand times no!","Never!"]
-		hateYes:["Disgusting... Fine!","If I have to..."]
-		
-		afterPeace:"Well played, fellow warrior."
-		tradeRequest:"Let us unite our armies, and profit from the reaping of the rewards."
-				
-		mainColor:[0,51,25],
-		secondaryColor:[255,255,255],
-		unique:"+1 Culture per city with an adjacent unimproved Forest. Bonus increased to +2 Culture in Cities with 3 or more adjacent unimproved Forest tiles.",
-		cities:["Edinburgh","Dublin","Cardiff","Truro","Nantes","Douglas","Glasgow","Cork","Aberystwyth","Penzance","Rennes","Ramsey","Inverness","Limerick","Swansea","St. Ives","Brest","Peel","Aberdeen","Belfast","Caernarfon","Newquay","Saint- Nazaire","Castletown","Stirling","Galway","Conwy","St. Austell","Saint-Malo","Onchan","Dundee","Londonberry","Llanfairpwllgwyngyll","Falmouth","Lorient","St. John's"]
 	},
 	{
 		name:"Incan",
@@ -636,9 +583,8 @@
 		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
 		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir","Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz","Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube","Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada","Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava","Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka","Paishiyauvada","Patigrbana","Phrada"]
 	},
-
 	{
-		name:"Polynesian",
+		name:"Polynesia",
 		leaderName:"Kamehameha I",
 		
 		startIntroPart1: ""
@@ -698,8 +644,6 @@
 		unique:"+2 Science for all Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean capital.",
 		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
-
-
 	{
 		name:"Songhai",
 		leaderName:"Askia",
@@ -730,8 +674,6 @@
 		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
 		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
-
-
 	{
 		name:"Ottoman",
 		leaderName:"Suleiman I",
@@ -762,8 +704,6 @@
 		unique:"Pay only one.third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
 	},
-
-
 	{
 		name:"Iroquois",
 		leaderName:"Hiawatha",
@@ -794,38 +734,6 @@
 		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
 		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River","Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle","Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
-
-	{
-		name:"Phoenicia",
-		leaderName:"Dido",
-		
-		startIntroPart1: ""
-		startIntroPart2: ""
-		
-		declaringWar:"Tell me, do you-all know how numerous my armies, elephands and warships are? No? Today, you-all shall find out!"
-		attacked:"Fate is against you! I will see all your worthless cities in ruin - and you amongs it!"
-		defeated:"Do not bask in the glory of your conquest. One day, you, too, may see your capital bathed in flames."
-		introduction:"I, Dido, queen and mother of Carthage and of everything that is hers, greet you on behalf of the Phoenicians."
-		
-		neutralHello:"Good day."
-		neutralLetsHearIt:["Yes?","I'm listening"]
-		neutralNo:["No.","That is not enough.","Certainly not."]
-		neutralYes:["Very well.","Alright.","Fine."]
-
-		hateHello:"What is it now?"
-		hateLetsHearIt:["I'm listening.","Speak.","Go on."]
-		hateNo:["What?!","You cannot be serious!"]
-		hateYes:["I suppose I must.","Very well."]
-		
-		afterPeace:"It seems you realized that war is an horrible enemy for the business that is trade."
-		tradeRequest:"Hello, there, friend. Are you interested in this deal?"
-				
-		mainColor:[255,0,127],
-		secondaryColor:[51,255,255],
-		unique:"All coastal Cities get a free Harbor. Units may cross mountains after the first Great General is earned.",
-		cities:["Carthage","Utique","Hippo Regius", "Gades","Saguntum","Carthago Nova", "Panormus","Lilybaeum","Hadrumetum","Zama Regia", "Karalis","Malaca","Leptis Magna","Hippo Diarrhytus","Motya","Sulci","Tharros","Leptis Parva", "Soluntum","Lixus","Odea","Theveste","Ibossim","Thapsus","Aleria","Tingis","Abyla","Sabratha","Rusadir","Baecula","Saldae","Tas-Silg","Sala","Iol"]
-	},
-
 	{
 		name:"Denmark",
 		leaderName:"Harald Bluetooth",
@@ -856,71 +764,10 @@
 		unique:"+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa.",
 		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso","Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore","Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers","Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen","Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
-
-	{
-		name:"Maya",
-		leaderName:"Pacal",
-		
-		startIntroPart1: ""
-		startIntroPart2: ""
-		
-		declaringWar:"A sacrifice unlike all others must be made! Prepare for destruction!"
-		attacked:"Come! Your warriors shall make great sacrifices in the name of the Sun God!"
-		defeated:"We stood to the last man... but all was in vain. If you are either a man or a God, I know not... nor do I care."
-		introduction:"Greetings, foreigner! I am knows as Pacal, ruler of the great Mayan empire!"
-		
-		neutralHello:"A fine day, is it not?"
-		neutralLetsHearIt:["Let us hear it.","Go ahead.","I'm listening..."]
-		neutralNo:["No.","Not today, I'm afraid.","I must decline."]
-		neutralYes:["Very well.","If I must...","Fine."]
-
-		hateHello:"You..."
-		hateLetsHearIt:["Speak now!.","Talk!","Well?"]
-		hateNo:["No!","Absolutely not!","There is no way, no deal!"]
-		hateYes:["Fine!","Okay, you win."]
-		
-		afterPeace:"Great Sun God, accept our peace!"
-		tradeRequest:"Friend, I believe I may have found a way to save us all! Look, look and accept our offer!"
-				
-		mainColor:[255,255,153],
-		secondaryColor:[0,51,0],
-		unique:"After researching Theology, you gain a free Great Person (each can only be chosen once) at the end of every Mayan Long Cound calendar cycle (every 394 years).",
-		cities:["Palenque","Tikal","Chichen Itza","Uxmal","Tulum","Copan","Coba","El Mirador","Calakmul","Edzna","Lamanai","Izapa","Uaxactun","Comalcalco","Piedras Negras","Cancuen","Yaxha","Quirigua","Q'umarkaj","Nakbe","Cerros","Xunantunich","Takalik Abaj","Cival","San Bartolo","Altar de Sacrificios","Seibal","Caracol","Naranjo","Dos Pilas","Mayapan","Ixinche","Zaculeu","Kabah"]
-	},
-
-	{
-		name:"Shoshone",
-		leaderName:"Pocatello",
-		
-		startIntroPart1: ""
-		startIntroPart2: ""
-		
-		declaringWar:"I have tried so many times to give you the benefit of the dubt... no more! I wish you a swift ending."
-		attacked:"So be it! I will do what I must to make the foreigner go away!"
-		defeated:"Sprits of the ancestors... be merciful to my soul... be merciful to my people..."
-		introduction:"I am chief Pocatello. You have arrived in the thick of Shoshone land."
-		
-		neutralHello:"Ah, you've arrived!"
-		neutralLetsHearIt:["Yes?","What is it?","I'm listening."]
-		neutralNo:["No.","Perhaps no.","I must decline."]
-		neutralYes:["Very well.","It shall be that way.","Deal."]
-
-		hateHello:"Be alert, foreigner!"
-		hateLetsHearIt:["Talk!.","And?","Go on"]
-		hateNo:["NO!","There is no way I could accept this!"]
-		hateYes:["If I must...","Fine!"]
-		
-		afterPeace:"It seems you, at least, have the goodness of considering peace..."
-		tradeRequest:"Listen our words, and consider!"
-				
-		mainColor:[32,32,32],
-		secondaryColor:[0,128,255],
-		unique:"Founded cities start with additional territory. Units receive a combat bonus when fighting within their own territory.",
-		cities:["Moson Kahni","Te-Moak","Agaidika","Goshute","Pohokwi","Washakie","Timbisha","Hukandeka","Duckwater","Tukudeka","Kuchundeka","Yomba","Kamudeka","Ely","Yambadeka","Tetadeka","Deheyaeka","Pengwideka","Winnemucca","Skull Valley","Big Pine","Duck Valley","Nampa","Bannock","Yahandeka"]
-	},
 	*/
 	{
-		name:"蛮族",
+		name:"Barbarians",
+		translatedName:"蛮族",
 		mainColor:[0,0,0],
 		secondaryColor:[182,0,0]
 	}
