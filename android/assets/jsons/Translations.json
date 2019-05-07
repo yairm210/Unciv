@@ -413,7 +413,7 @@
 	}
 
 	// Stats
-	"Gold":{
+	"Gold":{//The basic resource and luxury resource have the same name,before repairing this problem,I will not translate it. 
 		Italian:"Oro"
 		Russian:"Золото"
 		French:"Or"
@@ -421,7 +421,7 @@
 		German:"Gold"
 		Dutch:"Goud"
 		Spanish:"Oro"
-		Simplified_Chinese:"金"
+		Simplified_Chinese:"Gold"
 		Portuguese:"Ouro"
 		Japanese:"ゴールド"
 	}
@@ -7406,6 +7406,9 @@
 		Portuguese:"Adotar Política"
 		German:"Grundsatz verabschieden"
 	}
+	"Adopt free policy":{
+		Simplified_Chinese:"推行免费的社会政策"
+	}
 	"Unlocked at":{
 		Italian:"Si sblocca con"
 		Russian:"Разблокируется в"
@@ -8797,7 +8800,7 @@
 		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
 		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
 		Russian:"Юнит лечится каждый ход, даже если совершает действие"
-		Simplified_Chinese:"每回合回复(包括执行指令后)"
+		Simplified_Chinese:"每回合回复生命值(包括执行指令后)"
 	}
 	"Charge":{
 		Italian:"Carica"
@@ -8846,12 +8849,12 @@
 		Russian:"Караул"
 		Simplified_Chinese:"警戒能力"
 	}
-	"Range":{
+	"Range":{//the UnitPromotions ability and the Unit attribute(eg:Strength:7,Ranged strength:9,Range:2) have the same name,before repairing this problem,I will not translate it.
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
 		French:"Portée"
 		Russian:"Расширенный радиус"
-		Simplified_Chinese:"攻击范围"
+		Simplified_Chinese:"Range"
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
@@ -9048,7 +9051,18 @@
 		Russian:"Массовая атака III"
 		Simplified_Chinese:"狼群III级"
 	}
-	
+	"Medic":{
+		Simplified_Chinese:"医疗I级"
+	}
+	"This unit and all others in adjacent tiles heal 5 additional HP per turn":{
+		Simplified_Chinese:"此单位以及相邻的所有单位每回合额外恢复5生命值"
+	}
+	"Medic II":{
+		Simplified_Chinese:"医疗II级"
+	}
+	"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.":{
+		Simplified_Chinese:"此单位以及相邻的所有单位每回合额外恢复5生命值，此单位在己方领土以外每回合额外恢复5生命值"
+	}
 	// Civilopedia texts
 	"Basics":{
 		Italian:"Basi"
