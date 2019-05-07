@@ -28,21 +28,6 @@
 		uniques:["Ignores terrain cost"],
 		attackSound:"nonmetalhit"
 	},
-	/*
-	{
-		name:"Pathfinder",
-		uniqueTo:"Shoshone",
-		replaces:"Scout",
-		unitType:"Scout",
-		movement:2,
-		strength:8,
-		cost:45,
-		obsoleteTech:"Scientific Theory",
-		uniques:["Ignores terrain cost","Native tongue"],
-		attackSound:"nonmetalhit"
-		//Shoshone unique unit. May choose benefit when discovering ancient ruins.
-	},
-	*/
 	{
 		name:"Warrior",
 		unitType:"Melee",
@@ -144,23 +129,6 @@
 		upgradesTo:"Crossbowman",
 		attackSound:"arrow"
 		//Incan unique unit
-	},
-	{
-		name:"Atl Atl Warrior",
-		unitType:"Ranged",
-		replaces:"Archer",
-		uniqueTo:"Maya",
-		movement:2,
-		strength:5,
-		rangedStrength:7,
-		cost: 36,
-		hurryCostModifier:20,
-		requiredTech:"Agriculture",
-		obsoleteTech:"Machinery",
-		uniques:["May withdraw before melee"],
-		upgradesTo:"Crossbowman",
-		attackSound:"arrow"
-		//Mayan unique unit. Already available. Maybe you should put it as one of the Mayan Turn 1 units in game XD
 	},
 	*/
 	{
@@ -365,7 +333,7 @@
 	{
 		name:"Mohawk Warrior",
 		unitType:"Melee",
-		uniqueTo:"Rome",
+		uniqueTo:"Iroquois",
 		replaces:"Swordsman",
 		movement:2,
 		strength:14,
@@ -373,11 +341,10 @@
 		requiredTech:"Iron Working",
 		upgradesTo:"Longswordsman",
 		obsoleteTech:"Gunpowder",
-		requiredResource:"Iron",
 		hurryCostModifier:20,
 		uniques:["Combat Bonus in Forest/Jungle 33%"],
 		attackSound:"metalhit"
-		//Iroquese unique unit. Bonus when fighting in Jungles and Forests.
+		//Iroquese unique unit. Bonus when fighting in Jungles and Forests. Doesn't require Iron.
 	},
 	*/
 	{
@@ -410,24 +377,6 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 	},
-	/*
-	{
-		name:"African Elephant",
-		unitType:"Mounted",
-		uniqueTo:"Phoenicia",
-		replaces:"Horseman",
-		movement:3,
-		strength:14,
-		cost: 100,
-		requiredTech:"Horseback Riding",
-		upgradesTo:"Knight",
-		obsoleteTech:"Chivalry",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Feared Elephant","Great Generals II"],
-		hurryCostModifier:20,
-		attackSound:"horse"
-		//A Phoenician unique unit. It needs no Horses
-	},
-	*/
 	
 	// Medieval Era
 	{
@@ -575,21 +524,6 @@
 	},
 	/*
 	{
-		name:"Impi",
-		unitType:"Melee",
-		replaces:"Pikeman",
-		uniqueTo:"Zulu",
-		movement:2,
-		strength:16,
-		cost: 90,
-		requiredTech:"Civil Service",
-		uniques:["Bonus vs Mounted 50%","Spear Throw"],
-		upgradesTo:"Rifleman",
-		obsoleteTech:"Gunpowder",
-		hurryCostModifier:20,
-		attackSound:"metalhit"
-	},
-	{
 		name:"Landsknecht",
 		replaces:"Pikeman",
 		uniqueTo:"Germany"
@@ -666,8 +600,42 @@
 		obsoleteTech:"Military science",
 		uniques:["Can move after attacking","No defensive terrain bonus"],
 		hurryCostModifier:20,
-		attackSound:"arrow"
+		attackSound:"horse"
 		//Songhai unique unit. Costs slightly less and is more powerful than a Knight
+	},
+	{
+		name:"Keshik",
+		replaces:"Knight",
+		uniqueTo:"Mongolia",
+		unitType:"Mounted",
+		movement:5,
+		strength:15,
+		rangedStrength:16,
+		cost: 120,
+		requiredTech:"Chivalry",
+		requiredResource:"Horses",
+		upgradesTo:"Cavalry",
+		obsoleteTech:"Military science",
+		uniques:["Can move after attacking","No defensive terrain bonus","Combat very likely to create Great Generals","50% Bonus XP gain"],
+		hurryCostModifier:20,
+		attackSound:"arrow"
+		//Mongolian unique unit.
+	},
+	{
+		name:"Naresuan's Elephant",
+		unitType:"Mounted",
+		replaces:"Knight",
+		uniqueTo:"Siam",
+		movement:3,
+		strength:25,
+		cost: 225,
+		requiredTech:"Chivalry",
+		obsoleteTech:"Military Science",
+		upgradesTo:"Cavalry",
+		uniques:["Can move after attacking","No defensive terrain bonus","50% Bonus vs. Mounted","33% Penalty vs. Cities"],
+		hurryCostModifier:20,
+		attackSound:"shot"
+		//Siamese unique unit. Doesn't require Horses.
 	},
 	*/
 	
@@ -911,24 +879,6 @@
 		hurryCostModifier:20,
 		attackSound:"horse"
 	},
-	/*
-	{
-		name:"Comanche Rider",
-		unitType:"Mounted",
-		replaces:"Cavalry",
-		uniqueTo:"Shoshone",
-		movement:4,
-		strength:34,
-		cost: 200,
-		requiredTech:"Military Science",
-		requiredResource:"Horses",
-		upgradesTo:"Landship",
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Damaged Enemy Bonus 33%","Full Moon Striker"],
-		hurryCostModifier:20,
-		attackSound:"horse"
-		//Shoshone unique unit that should replace Cavalry, take less to build and also deal +33% damage to damaged unit. +1 Movement due to Full Moon Striker.
-	},
-	*/
 	{
 		name:"Artillery",
 		unitType:"Siege",
