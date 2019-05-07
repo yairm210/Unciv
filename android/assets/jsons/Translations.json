@@ -866,7 +866,9 @@
 		Portuguese:"Escolher construção"
 		Japanese:"ピック建設"
 	}
-	
+	"Pick improvement":{
+		Simplified_Chinese:"选择设施"
+	}
 	"Build [building]":{ // eg Build Granary
 		Italian:"Costruisci [building]"
 		Russian:"Строить [building]"
@@ -943,7 +945,15 @@
 		Portuguese:"Alocação de Especialistas"
 		Japanese:"スペシャリスト割り当て"
 	}
-
+	"Specialists":{
+		Simplified_Chinese:"专业人员"
+	}
+	"Food eaten":{
+		Simplified_Chinese:"人口消耗"
+	}
+	"Growth bonus":{
+		Simplified_Chinese:"积累速率"
+	}
 	"Free population":{
 		Italian:"Popolazione libera"
 		Russian:"Свободное население"
@@ -3653,7 +3663,7 @@
 		Simplified_Chinese:"平民单位"
 		Portuguese:"Cidadão"
 	}
-	"WaterCivilian":{ // e.g ?
+	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
 		Simplified_Chinese:"海上平民单位"
 		French:"Civil embarqué"
 	}
@@ -3687,7 +3697,7 @@
 		Simplified_Chinese:"海军远程单位"
 		French:"Unités à distance embarquée"
 	}
-	"WaterSubmarine":{ //e.g ?
+	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
 		Simplified_Chinese:"海军潜艇单位"
 		//French:"" I haven't any idea about what it means
 	}
@@ -3852,7 +3862,6 @@
 		Simplified_Chinese:"视野受限"
 		Portuguese:"Visibilidade limitada"
 	}
-
 	"Bonus as Attacker 75%":{
 		Simplified_Chinese:"主动攻击时+75%战斗力"
 		French:"Bonus en tant qu'attaquant +75%"
@@ -8607,7 +8616,7 @@
 		Italian:" O "
 		Spanish:" O "
 		Romanian:" SAU "
-		Simplified_Chinese:" OR "
+		Simplified_Chinese:" 或 "
 		Portuguese:" OR "
 		Russian:" ИЛИ "
 		German:" ODER "
@@ -8829,7 +8838,7 @@
 		German:"Reichweite"
 		French:"Portée"
 		Russian:"Расширенный радиус"
-		Simplified_Chinese:"射程拓展"
+		Simplified_Chinese:"攻击范围"
 	}
 	"+1 Range":{
 		Italian:"+1 raggio"
@@ -8944,6 +8953,24 @@
 		French:"+15% force contre les unités navales"
 		Russian:"Бонус против водных юнитов +15%"
 		Simplified_Chinese:"对战海军单位时+15%战斗力"
+	}
+	"Bonus vs Mounted 50%":{
+		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
+	}
+	"Bonus vs Mounted 33%":{
+		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
+	}
+	"Bonus vs Armor 100%":{
+		Simplified_Chinese:"对战装甲单位时+100%战斗力"
+		French:"Bonus contre les unités montées +50%"
+	}
+	"Bonus vs Mounted 33%":{
+		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
+		French:"Bonus contre les unités montées +33%"
+	}
+	"Bonus vs Armor 100%":{
+		Simplified_Chinese:"对战装甲单位时+100%战斗力"
+		French:"Bonus contre les unités montées +100%"
 	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
@@ -9067,7 +9094,19 @@
 	"Requires worked [resource] near city":{
 		Italian:"Richiede che la città sfrutti [resource]"
 		French:"Nécessite l'exploitation de [resource] près de la ville"
-		Simplified_Chinese:"需要城市附近有可供利用的[resource]资源"
+		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
+	}
+	"Wonder is being built elsewhere":{
+		Simplified_Chinese:"正在其他城市建造该奇观"
+	}
+	"Requires a [buildingName] in all cities":{
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+	}
+	"Requires a [buildingName] in this city":{
+		Simplified_Chinese:"需要城市建有[buildingName]"
+	}
+	"Requires [resource]":{
+		Simplified_Chinese:"需要资源：[resource]"
 	}
 	"Required tech: [requiredTech]":{
 		Italian:"Tecnologie propedeutiche: [requiredTech]"

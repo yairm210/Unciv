@@ -19,7 +19,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         setDefaultCloseAction()
 
-        rightSideButton.setText("Pick improvement")
+        rightSideButton.setText("Pick improvement".tr())
         rightSideButton.onClick {
             tileInfo.startWorkingOnImprovement(selectedImprovement!!, currentPlayerCiv)
             if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.action=null // this is to "wake up" the worker if it's sleeping
@@ -41,7 +41,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
                 improvementButton.add(ImageGetter.getImage("OtherIcons/Stop.png")).size(30f).pad(10f)
             else improvementButton.add(ImageGetter.getImprovementIcon(improvement.name,30f)).pad(10f)
 
-            improvementButton.add(Label(improvement.name + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}".tr(),skin)
+            improvementButton.add(Label(improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}".tr(),skin)
                     .setFontColor(Color.WHITE)).pad(10f)
 
             improvementButton.onClick {
