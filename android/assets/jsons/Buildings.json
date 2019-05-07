@@ -204,6 +204,18 @@
 		hurryCostModifier:25,
 		requiredTech:"Philosophy"
 	},
+	/*
+	{
+		name:"Mud Pyramid Mosque",
+		replaces:"Temple",
+		uniqueTo:"Songhai",
+		//No manteinance
+		hurryCostModifier:15,
+		culture:4,
+		requiredBuilding:"Monument",
+		requiredTech:"Philosophy"
+	},
+	*/
 	{
 		name:"The Oracle",
 		culture:3,
@@ -311,6 +323,19 @@
 		percentStatBonus:{production:15},
 		requiredTech:"Metal Casting"
 	},
+	/*
+	{
+		name:"Longhouse",
+		replaces:"Workshop",
+		uniqueTo:"Iroquois",
+		maintenance:2,
+		production:2,
+		specialistSlots:{production:1},
+		hurryCostModifier:25,
+		uniques:["Forests provide +1 production"],
+		requiredTech:"Metal Casting"
+	},
+	*/
 	{
 		name:"Forge",
 		maintenance:1,
@@ -347,6 +372,21 @@
 		requiredBuildingInAllCities:"University",
 		requiredTech:"Education"
 	},
+	/*
+	{
+		name:"Wat",
+		replaces:"University",
+		uniqueTo:"Siam",
+		maintenance:2,
+		hurryCostModifier:15,
+		percentStatBonus:{science:33},
+		specialistSlots:{science:2},
+		culture:1,
+		requiredBuilding:"Library",
+		uniques:["Jungles provide +2 science"],
+		requiredTech:"Education"
+	},
+	*/
 	{
 		name:"Castle",
 		cityStrength:7,
@@ -355,6 +395,19 @@
 		requiredBuilding:"Walls",
 		requiredTech:"Chivalry"
 	},
+	/*
+	{
+		name:"Mughal Fort",
+		replaces:"Castle",
+		uniqueTo:"India",
+		cityStrength:7,
+		cityHealth:25,
+		culture:2;
+		hurryCostModifier:25,
+		requiredBuilding:"Walls",
+		requiredTech:"Chivalry"
+	},
+	*/
 	{
 		name:"Angkor Wat",
 		culture:1,
@@ -434,6 +487,21 @@
 		requiredBuilding:"Market",
 		requiredTech:"Banking"
 	},
+	/*
+	{
+		name:"Satrap's Court",
+		replaces:"Bank",
+		uniqueTo:"Persia",	
+		gold:3,
+		specialistSlots:{gold:1},
+		happiness:2,
+		hurryCostModifier:15,
+		percentStatBonus:{gold:25},
+		uniques:["+1 Gold per incoming trade route (and +1 Gold for the foreign owner)"],
+		requiredBuilding:"Market",
+		requiredTech:"Banking"
+	},
+	*/
 	{
 		name:"Hanse",
 		replaces:"Bank",
