@@ -187,14 +187,14 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         })
 
         if (languageSelectBox.selected.percentComplete != 100) {
-            add("Missing translations:".toLabel()).pad(5f).row()
+            add("Missing translations:".toLabel()).pad(5f).colspan(2).row()
             val missingTextSelectBox = SelectBox<String>(skin)
             val missingTextArray = Array<String>()
             val currentLanguage = UnCivGame.Current.settings.language
             GameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }.forEach { missingTextArray.add(it.key) }
             missingTextSelectBox.items = missingTextArray
             missingTextSelectBox.selected = "Untranslated texts"
-            add(missingTextSelectBox).pad(10f).width(UnCivGame.Current.worldScreen.stage.width / 2).row()
+            add(missingTextSelectBox).pad(10f).width(UnCivGame.Current.worldScreen.stage.width / 2).colspan(2).row()
         }
     }
 

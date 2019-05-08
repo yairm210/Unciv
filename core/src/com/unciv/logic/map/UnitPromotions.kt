@@ -20,7 +20,13 @@ class UnitPromotions{
             XP -= xpForNextPromotion()
             numberOfPromotions++
         }
-        promotions.add(promotionName)
+
+        if(promotionName=="Heal Instantly"){
+            unit.health += 50
+            if(unit.health>100) unit.health=100
+        }
+        else promotions.add(promotionName)
+
         unit.updateUniques()
         unit.civInfo.updateViewableTiles() // some promotions give the unit bonus sight
     }

@@ -1,6 +1,11 @@
 [
 
 	{
+		name:"Heal Instantly",
+		effect:"Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion",
+		unitTypes:["Melee","Mounted","Scout","Siege","Ranged","Armor","WaterMelee","WaterRanged","WaterSubmarine"]
+	}
+	{
 		name:"Accuracy I",
 		effect:"Bonus vs units in open terrain 15%",
 		unitTypes:["Siege","Ranged"]
@@ -292,7 +297,4 @@
 		effect:"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.",
 		unitTypes:["Melee","Mounted","Scout"]
 	}
-	
-	
-	
 ]

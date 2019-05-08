@@ -31,7 +31,9 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
         val unitType = mapUnit.type
         val promotionsForUnitType = GameBasics.UnitPromotions.values.filter { it.unitTypes.contains(unitType.toString()) }
         val unitAvailablePromotions = mapUnit.promotions.getAvailablePromotions()
+
         for (promotion in promotionsForUnitType) {
+            if(promotion.name=="Heal Instantly" && mapUnit.health==100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = mapUnit.promotions.promotions.contains(promotion.name)
             val promotionButton = Button(skin)
