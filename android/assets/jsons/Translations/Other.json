@@ -2646,7 +2646,7 @@
 	}
 
 	"Declare war on [civName]?":{
-		Italian:"Dichiarare guerra alla civiltà [civName]?"
+		Italian:"Vuoi dichiarare guerra a [civName]?"
 		French:"Déclarer la guerre à [civName]?"
 		Simplified_Chinese:"向[civName]宣战吗？"
 	}
