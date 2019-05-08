@@ -1479,8 +1479,12 @@
 		Simplified_Chinese:"狼群III级"
 	}
 	
-	"Heal Instantly":{}
-	"Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion":{}
+	"Heal Instantly":{
+		Italian:"Cura istantanea"
+	}
+	"Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion":{
+		Italian:"Cura l'unità di 50 PF, rinunciando però all'opportunità di scegliere una promozione."
+	}
 
 
 }
