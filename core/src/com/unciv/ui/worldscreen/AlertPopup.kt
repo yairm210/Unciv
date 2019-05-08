@@ -49,10 +49,16 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 add(getCloseButton("Farewell."))
             }
             AlertType.FirstContact -> {
-                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
-                addLeaderName(translatedNation)
-                addGoodSizedLabel(translatedNation.introduction).row()
-                add(getCloseButton("A pleasure to meet you."))
+                val civ = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val translatedNation = civ.getTranslatedNation()
+                if (civ.isCityState()) {
+                    addGoodSizedLabel("Type : " + civ.getCityStateType()).row()
+                    add(getCloseButton("A pleasure to meet you."))
+                } else {
+                    addLeaderName(translatedNation)
+                    addGoodSizedLabel(translatedNation.introduction).row()
+                    add(getCloseButton("A pleasure to meet you."))
+                }
             }
             AlertType.CityConquered -> {
                 addGoodSizedLabel("What would you like to do with the city?").row()

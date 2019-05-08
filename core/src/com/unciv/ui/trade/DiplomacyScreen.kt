@@ -10,6 +10,9 @@ import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
+import com.unciv.logic.trade.TradeLogic
+import com.unciv.logic.trade.TradeOffer
+import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
@@ -113,7 +116,24 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
         val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
 
-        if (!currentPlayerCiv.isAtWarWith(otherCiv)) {
+        if (currentPlayerCiv.isAtWarWith(otherCiv)) {
+            if (otherCiv.isCityState()) {
+                val PeaceButton = TextButton("Negociate Peace".tr(), skin)
+                PeaceButton.onClick {
+                    YesNoPopupTable("Peace with [${otherCiv.civName}]?".tr(), {
+                        diplomacyManager.makePeace()
+                        updateLeftSideTable()
+                    }, this)
+
+                    val tradeLogic = TradeLogic(currentPlayerCiv, otherCiv)
+                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+                    tradeLogic.currentTrade.theirOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+                    tradeLogic.acceptTrade()
+
+                }
+                diplomacyTable.add(PeaceButton).row()
+            }
+        } else {
             val declareWarButton = TextButton("Declare war".tr(), skin)
             declareWarButton.color = Color.RED
             val turnsToPeaceTreaty = diplomacyManager.turnsToPeaceTreaty()
