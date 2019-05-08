@@ -47,12 +47,12 @@
 /////// Turn
 
 	"Next turn":{
-        Dutch:"Volgende beurt"
-        French:"Prochain tour"
+        	Dutch:"Volgende beurt"
+        	French:"Prochain tour"
 		German:"Nächste Runde"
-		Italian:"Prossimo turno"
-        Japanese:"次のターン"
-        Portuguese:"Proximo turno"
+		Italian:"Fine turno"
+        	Japanese:"次のターン"
+        	Portuguese:"Proximo turno"
 		Romanian:"Runda următoare"
 		Russian:"Следующий ход"
 		Simplified_Chinese:"下一回合"
@@ -61,15 +61,15 @@
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
-        Dutch:"Beurt"
+        	Dutch:"Beurt"
 		French:"Tour"
 		German:"Runde"
-        Italian:"Turno"
+        	Italian:"Turno"
 		Japanese:"順番"
-        Portuguese:"Turno"
+        	Portuguese:"Turno"
 		Romanian:"Runda"
-        Russian:"Ход"
-        Simplified_Chinese:"回合"
+        	Russian:"Ход"
+        	Simplified_Chinese:"回合"
 		Spanish:"Turno"
 	}
 
@@ -339,7 +339,7 @@
 	}
 	
 	"Stop exploration":{
-		Italian:"Smetti di esplorare"
+		Italian:"Ferma esplorazione"
 		Simplified_Chinese:"停止探索"
 		French:"Arrêter l'exploration"
 	}
@@ -1039,7 +1039,7 @@
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
-        Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合"
+        	Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
 		French:"En révolte pour [numberOfTurns] tours"
@@ -1069,7 +1069,7 @@
 		Portuguese:"Você realmente quer vender [building]?"
 	}
 
-    "[greatPerson] points":{ // e.g "Great Scientist points"
+    	"[greatPerson] points":{ // e.g "Great Scientist points"
 		Italian:"Punti [greatPerson]" //es. "Punti Grande Scienziato"
 		Portuguese:"[greatPerson] aponta"
 		Japanese:"[greatPerson]ポイント"
@@ -1375,7 +1375,7 @@
 	}
 	
 	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
-		Italian:"Catturato"
+		Italian:"Cattura"
 		Russian:"Захвачен"
 		French:"Capturé"
 		Romanian:"Capturat"
@@ -1387,7 +1387,7 @@
 	}
 	
 	"Attack":{
-		Italian:"Attacco"
+		Italian:"Attacca"
 		Russian:"Атака"
 		French:"Attaque"
 		Romanian:"Atac"
@@ -1598,7 +1598,7 @@
 	"Bonus for land units in 2 radius 15%" :{
 		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
 		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
-        French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
+        	French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
 	}
 
 	// for unit action button
@@ -2224,7 +2224,7 @@
 	}
 
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
-		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
+		Italian:"+1 Oro da ogni rotta commerciale, e raddoppio delle risorse di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
 	}
 	
@@ -2646,7 +2646,7 @@
 	}
 
 	"Declare war on [civName]?":{
-		Italian:"Dichiarare guerra alla civiltà [civName]?"
+		Italian:"Vuoi dichiarare guerra a [civName]?"
 		French:"Déclarer la guerre à [civName]?"
 		Simplified_Chinese:"向[civName]宣战吗？"
 	}
@@ -2731,40 +2731,40 @@
 		French:"Notre relation :" //or l'état de notre relation
 	}
 	
-    "Unforgivable!":{
+    	"Unforgivable!":{
 		Italian:"Imperdonabile!"
 		French:"Impardonnable!"
-    }
+    	}
 
-    "Enemy":{ //e.g ?
+    	"Enemy":{ //e.g ?
 		Italian:"Nemico"
 		French:"Ennemi"
-    }
+    	}
 
-    "Competitor":{
-	    Italian:"Avversario"
-	    French:"Adversaire" //or en compétition
-    }
+    	"Competitor":{
+	    	Italian:"Avversario"
+	    	French:"Adversaire" //or en compétition
+    	}
 
-    "Neutral":{
-        Italian:"Neutrale"
-	    French:"Neutre"
-    }
+   	"Neutral":{
+        	Italian:"Neutrale"
+	    	French:"Neutre"
+    	}
 
-    "Favorable":{
+    	"Favorable":{
 		Italian:"Favorevole"
-	    French:"Favorable"
-    }
+	    	French:"Favorable"
+    	}
 
-    "Friend":{
+    	"Friend":{
 		Italian:"Amichevole"
-	    French:"Ami"
-    }
+	    	French:"Ami"
+    	}
 
-    "Ally":{
+    	"Ally":{
 		Italian:"Alleato"
-	    French:"Allié"
-    }
+	    	French:"Allié"
+    	}
 	
 ////// Diplomatic modifiers
 
@@ -3172,7 +3172,7 @@
 	"Cost":{
 		Italian:"Costo"
 		Simplified_Chinese:"花费"
-        French:"Côte"
+        	French:"Côte"
 	}
 
 	"Requires [buildingName] to be built in the city":{
@@ -3200,23 +3200,27 @@
 	}
 
 	"Wonder is being built elsewhere":{
+		Italian:"Meraviglia in costruzione altrove"
 		Simplified_Chinese:"正在其他城市建造该奇观"
-        French:"Cette merveille est déjà en construction ailleurs"
+        	French:"Cette merveille est déjà en construction ailleurs"
 	}
 
 	"Requires a [buildingName] in all cities":{
+		Italian:"Richiede [buildingName] in tutte le città"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
-        French:"Nécessite un(e) [buildingName] dans toutes les villes"
+        	French:"Nécessite un(e) [buildingName] dans toutes les villes"
 	}
 
 	"Requires a [buildingName] in this city":{
+		Italian:"Richiede [buildingName] nella città"
 		Simplified_Chinese:"需要城市建有[buildingName]"
-        French:"Nécessite un(e) [buildingName] dans cette ville"
+        	French:"Nécessite un(e) [buildingName] dans cette ville"
 	}
 
 	"Requires [resource]":{
+		Italian:"Richiede [resource]"
 		Simplified_Chinese:"需要资源：[resource]"
-        French:"[resource] requis(e)"
+        	French:"[resource] requis(e)"
 	}
 
 	"Required tech: [requiredTech]":{
