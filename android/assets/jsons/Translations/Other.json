@@ -2731,12 +2731,20 @@
 		French:"Notre relation :" //or l'état de notre relation
 	}
 	
-    "Unforgivable!":{
-		Italian:"Imperdonabile!"
-		French:"Impardonnable!"
+	
+	// Friendship declaration flavor texts
+	"Declare Friendship ([numberOfTurns] turns)":{}
+	"May our nations forever remain united!":{}
+	"Indeed!":{}
+	
+	// Relationship states, from worst (Unforgivable) to best (Ally)
+	
+    "Unforgivable":{
+		Italian:"Imperdonabile"
+		French:"Impardonnable"
     }
 
-    "Enemy":{ //e.g ?
+    "Enemy":{
 		Italian:"Nemico"
 		French:"Ennemi"
     }
@@ -2796,6 +2804,8 @@
 	"We have signed a public declaration of friendship":{}
 	"You have declared friendship with our enemies!":{}
 	"You have declared friendship with our allies":{}
+	
+	"Our open borders have brought us closer together.":{}
 	
 ////// Overview screen
 

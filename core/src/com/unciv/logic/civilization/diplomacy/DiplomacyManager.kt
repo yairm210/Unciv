@@ -24,6 +24,7 @@ enum class RelationshipLevel{
 enum class DiplomacyFlags{
     DeclinedLuxExchange,
     DeclinedPeace,
+    DeclaredWar,
     DeclarationOfFriendship,
     BorderConflict
 }
@@ -37,7 +38,8 @@ enum class DiplomaticModifiers{
     YearsOfPeace,
     SharedEnemy,
     DeclarationOfFriendship,
-    DeclaredFriendshipWithOurAllies
+    DeclaredFriendshipWithOurAllies,
+    OpenBorders
 }
 
 class DiplomacyManager() {
@@ -70,6 +72,7 @@ class DiplomacyManager() {
         toReturn.influence = influence
         toReturn.flagsCountdown.putAll(flagsCountdown)
         toReturn.hasOpenBorders=hasOpenBorders
+        toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         return toReturn
     }
 
@@ -200,6 +203,12 @@ class DiplomacyManager() {
             addModifier(DiplomaticModifiers.YearsOfPeace,0.5f)
         else revertToZero(DiplomaticModifiers.YearsOfPeace,-0.5f) // war makes you forget the good ol' days
 
+        var openBorders = 0
+        if(hasOpenBorders) openBorders+=1
+        if(otherCivDiplomacy().hasOpenBorders) openBorders+=1
+        if(openBorders>0) addModifier(DiplomaticModifiers.OpenBorders,openBorders/8f) // so if we both have open borders it'll grow by 0.25 per turn
+        else revertToZero(DiplomaticModifiers.OpenBorders, 1/8f)
+
         revertToZero(DiplomaticModifiers.DeclaredWarOnUs,1/8f) // this disappears real slow - it'll take 160 turns to really forget, this is war declaration we're talking about
         revertToZero(DiplomaticModifiers.WarMongerer,0.5f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
         revertToZero(DiplomaticModifiers.CapturedOurCities,1/4f) // if you captured our cities, though, that's harder to forget
@@ -247,6 +256,11 @@ class DiplomacyManager() {
         /// AI won't propose peace for 10 turns
         setFlag(DiplomacyFlags.DeclinedPeace,10)
         otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.DeclinedPeace,10)
+
+        // AI won't agree to trade for 10 turns
+        setFlag(DiplomacyFlags.DeclaredWar,10)
+        otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.DeclaredWar,10)
+
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs,-20f)
 
         removeFlag(DiplomacyFlags.BorderConflict)
@@ -300,6 +314,8 @@ class DiplomacyManager() {
     fun signDeclarationOfFriendship(){
         setModifier(DiplomaticModifiers.DeclarationOfFriendship,35f)
         otherCivDiplomacy().setModifier(DiplomaticModifiers.DeclarationOfFriendship,35f)
+        setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.DeclarationOfFriendship,30)
 
         for(thirdCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
             if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue

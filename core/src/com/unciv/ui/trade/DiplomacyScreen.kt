@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -16,7 +17,6 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
 class DiplomacyScreen:CameraStageBaseScreen() {
@@ -60,11 +60,15 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             leftSideTable.add(civIndicator).row()
 
             civIndicator.onClick {
-                rightSideTable.clear()
-                if(civ.isCityState()) rightSideTable.add(getCityStateDiplomacyTable(civ))
-                else rightSideTable.add(getMajorCivDiplomacyTable(civ))
+                updateRightSide(civ)
             }
         }
+    }
+
+    fun updateRightSide(civ: CivilizationInfo){
+        rightSideTable.clear()
+        if(civ.isCityState()) rightSideTable.add(getCityStateDiplomacyTable(civ))
+        else rightSideTable.add(getMajorCivDiplomacyTable(civ))
     }
 
     fun setTrade(civ: CivilizationInfo): TradeTable {
@@ -128,31 +132,6 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         return diplomacyTable
     }
 
-    private fun getDeclareWarButton(diplomacyManager: DiplomacyManager, otherCiv: CivilizationInfo): TextButton {
-        val declareWarButton = TextButton("Declare war".tr(), skin)
-        declareWarButton.color = Color.RED
-        val turnsToPeaceTreaty = diplomacyManager.turnsToPeaceTreaty()
-        if (turnsToPeaceTreaty > 0) {
-            declareWarButton.disable()
-            declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
-        }
-        declareWarButton.onClick {
-            YesNoPopupTable("Declare war on [${otherCiv.civName}]?".tr(), {
-                diplomacyManager.declareWar()
-
-                val responsePopup = PopupTable(this)
-                responsePopup.add(otherCiv.getTranslatedNation().getLeaderDisplayName().toLabel())
-                responsePopup.addSeparator()
-                responsePopup.addGoodSizedLabel(otherCiv.getNation().attacked).row()
-                responsePopup.addButton("Very well.".tr()) { responsePopup.remove() }
-                responsePopup.open()
-
-                updateLeftSideTable()
-            }, this)
-        }
-        return declareWarButton
-    }
-
     private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         val diplomacyTable = Table()
@@ -162,11 +141,25 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
         val tradeButton = TextButton("Trade".tr(), skin)
         tradeButton.onClick { setTrade(otherCiv) }
+        if(otherCiv.getDiplomacyManager(currentPlayerCiv).hasFlag(DiplomacyFlags.DeclaredWar))
+            tradeButton.disable() // Can't trade for 10 turns after war was declared
         diplomacyTable.add(tradeButton).row()
 
         val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
 
+
+
         if (!currentPlayerCiv.isAtWarWith(otherCiv)) {
+            if(otherCiv.getDiplomacyManager(currentPlayerCiv).relationshipLevel() > RelationshipLevel.Neutral
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
+                val declareFriendshipButton = TextButton("Declare Friendship ([30] turns)".tr(),skin)
+                declareFriendshipButton.onClick {
+                    diplomacyManager.signDeclarationOfFriendship()
+                        setRightSideFlavorText(otherCiv,"May our nations forever remain united!".tr(),"Indeed!".tr())
+                }
+                diplomacyTable.add(declareFriendshipButton).row()
+            }
+
             val declareWarButton = getDeclareWarButton(diplomacyManager, otherCiv)
             diplomacyTable.add(declareWarButton).row()
         }
@@ -198,6 +191,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 DeclarationOfFriendship -> "We have signed a public declaration of friendship"
                 DeclaredFriendshipWithOurEnemies -> "You have declared friendship with our enemies!"
                 DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
+                OpenBorders -> "Our open borders have brought us closer together."
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"
@@ -208,6 +202,39 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.add(diplomacyModifiersTable).row()
 
         return diplomacyTable
+    }
+
+    private fun getDeclareWarButton(diplomacyManager: DiplomacyManager, otherCiv: CivilizationInfo): TextButton {
+        val declareWarButton = TextButton("Declare war".tr(), skin)
+        declareWarButton.color = Color.RED
+        val turnsToPeaceTreaty = diplomacyManager.turnsToPeaceTreaty()
+        if (turnsToPeaceTreaty > 0) {
+            declareWarButton.disable()
+            declareWarButton.setText(declareWarButton.text.toString() + " ($turnsToPeaceTreaty)")
+        }
+        declareWarButton.onClick {
+            YesNoPopupTable("Declare war on [${otherCiv.civName}]?".tr(), {
+                diplomacyManager.declareWar()
+                setRightSideFlavorText(otherCiv,otherCiv.getTranslatedNation().attacked,"Very well.")
+                updateLeftSideTable()
+            }, this)
+        }
+        return declareWarButton
+    }
+
+    private fun setRightSideFlavorText(otherCiv: CivilizationInfo, flavorText:String, response: String){
+        val diplomacyTable = Table()
+        diplomacyTable.defaults().pad(10f)
+        diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
+        diplomacyTable.addSeparator()
+        diplomacyTable.add(flavorText.toLabel()).row()
+
+        val responseButton = TextButton(response,skin)
+        responseButton.onClick { updateRightSide(otherCiv) }
+        diplomacyTable.add(responseButton)
+
+        rightSideTable.clear()
+        rightSideTable.add(diplomacyTable)
     }
 
 }
