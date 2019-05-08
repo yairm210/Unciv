@@ -19,13 +19,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     }
 
     fun addLeaderName(translatedNation: Nation){
-        val otherCivLeaderName: String
-        if (translatedNation.isCityState()) {
-            otherCivLeaderName = "City-state [${translatedNation.getNameTranslation()}]".tr()
-        } else {
-            otherCivLeaderName = "[${translatedNation.leaderName}] of [${translatedNation.getNameTranslation()}]".tr()
-        }
-
+        val otherCivLeaderName = translatedNation.getLeaderDisplayName()
         add(otherCivLeaderName.toLabel())
         addSeparator()
     }

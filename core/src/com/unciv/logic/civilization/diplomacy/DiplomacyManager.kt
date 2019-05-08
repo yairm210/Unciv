@@ -52,7 +52,7 @@ class DiplomacyManager() {
     /** Contains various flags (declared war, promised to not settle, declined luxury trade) and the number of turns in which they will expire.
      *  The JSON serialize/deserialize REFUSES to deserialize hashmap keys as Enums, so I'm forced to use strings instead =(
      *  This is so sad Alexa play Despacito */
-    var flagsCountdown = HashMap<String,Int>()
+    private var flagsCountdown = HashMap<String,Int>()
 
     /** For AI. Positive is good relations, negative is bad.
      * Baseline is 1 point for each turn of peace - so declaring a war upends 40 years of peace, and e.g. capturing a city can be another 30 or 40.

@@ -14,6 +14,9 @@ class Nation : INamed {
     }
 
     var leaderName=""
+    fun getLeaderDisplayName() = if(isCityState()) "City-state [${getNameTranslation()}]".tr()
+        else "[$leaderName] of [${getNameTranslation()}]"
+
     var cityStateType: CityStateType?=null
     var declaringWar=""
     var attacked=""

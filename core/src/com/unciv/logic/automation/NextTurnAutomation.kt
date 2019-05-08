@@ -169,7 +169,7 @@ class NextTurnAutomation{
                 && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)}) {
 
             val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
-            if(relationshipLevel==RelationshipLevel.Enemy || relationshipLevel == RelationshipLevel.Unforgivable)
+            if(relationshipLevel <= RelationshipLevel.Enemy)
                 continue
 
             val trades = potentialLuxuryTrades(civInfo,otherCiv)
