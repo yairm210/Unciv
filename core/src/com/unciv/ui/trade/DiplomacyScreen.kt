@@ -8,17 +8,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.tr
-import com.unciv.models.stats.Stat
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
-import javax.xml.soap.Text
 
 class DiplomacyScreen:CameraStageBaseScreen() {
 
@@ -179,15 +177,17 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             diplomacyModifiersTable.add(relationshipText.toLabel()).row()
 
             for(modifier in otherCivDiplomacyManager.diplomaticModifiers){
-                var text = when(DiplomaticModifiers.valueOf(modifier.key)){
-                    DiplomaticModifiers.DeclaredWarOnUs -> "You declared war on us!"
-                    DiplomaticModifiers.WarMongerer -> "Your warmongering ways are unacceptable to us."
-                    DiplomaticModifiers.CapturedOurCities -> "You have captured our cities!"
-                    DiplomaticModifiers.YearsOfPeace -> "Years of peace have strengthened our relations."
-                    DiplomaticModifiers.SharedEnemy -> "Our mutual military struggle brings us closer together."
+                var text = when(valueOf(modifier.key)){
+                    DeclaredWarOnUs -> "You declared war on us!"
+                    WarMongerer -> "Your warmongering ways are unacceptable to us."
+                    CapturedOurCities -> "You have captured our cities!"
+                    YearsOfPeace -> "Years of peace have strengthened our relations."
+                    SharedEnemy -> "Our mutual military struggle brings us closer together."
+                    DeclarationOfFriendship -> "We have signed a public declaration of friendship"
+                    DeclaredFriendshipWithOurEnemies -> "You have declared friendship with our enemies!"
+                    DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
                 }
-                text = text.tr()
-                text += " "
+                text = text.tr()+" "
                 if(modifier.value>0) text += "+"
                 text += modifier.value.toInt()
                 val color = if(modifier.value<0) Color.RED else Color.GREEN

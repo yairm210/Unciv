@@ -1,12 +1,12 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
+import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
-import com.unciv.Constants
-import com.unciv.logic.civilization.*
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -166,7 +166,7 @@ class NextTurnAutomation{
         // B. have a way for the AI to keep track of the "pending offers" - see DiplomacyManager.resourcesFromTrade
 
         for (otherCiv in knownCivs.filter { it.isPlayerCivilization() && !it.isAtWarWith(civInfo)
-                && !civInfo.getDiplomacyManager(it).flagsCountdown.containsKey(DiplomacyFlags.DeclinedLuxExchange.toString())}) {
+                && !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedLuxExchange)}) {
 
             val relationshipLevel = civInfo.getDiplomacyManager(otherCiv).relationshipLevel()
             if(relationshipLevel==RelationshipLevel.Enemy || relationshipLevel == RelationshipLevel.Unforgivable)
@@ -205,7 +205,7 @@ class NextTurnAutomation{
                 val enemiesCiv = civInfo.diplomacy.filter{ it.value.diplomaticStatus == DiplomaticStatus.War }
                         .map{ it.value.otherCiv() }
                         .filterNot{ it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
-                        .filter { !civInfo.getDiplomacyManager(it).flagsCountdown.containsKey(DiplomacyFlags.DeclinedPeace.toString()) }
+                        .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
 
                 for (enemy in enemiesCiv) {
                     val enemiesStrength = Automation().evaluteCombatStrength(enemy)
@@ -245,30 +245,17 @@ class NextTurnAutomation{
     private fun updateDiplomaticRelationship(civInfo: CivilizationInfo) {
         // Check if city-state invaded by other civs
         if (civInfo.isCityState()) {
-            for (civ in civInfo.gameInfo.civilizations) {
-                var needClearCounter = false
-                if (civ == civInfo || civ.isBarbarianCivilization() || !civInfo.getKnownCivs().contains(civ)) continue
-                val diplomacy = civInfo.getDiplomacyManager(civ)!!
-                if (diplomacy.diplomaticStatus == DiplomaticStatus.War) {
-                    needClearCounter = true
-                }
+            for (otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }) {
+                if(civInfo.isAtWarWith(otherCiv)) continue
+                val diplomacy = civInfo.getDiplomacyManager(otherCiv)
 
-                val unitsInBorder = civ.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
+                val unitsInBorder = otherCiv.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
                 if (unitsInBorder > 0 && diplomacy.influence < 30f) {
                     diplomacy.influence -= 10f
-                    if (!diplomacy.flagsCountdown.containsKey("BorderConflict")
-                            || diplomacy.flagsCountdown["BorderConflict"]!! <= 0) {
-                        civ.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
-                        diplomacy.flagsCountdown["BorderConflict"] = 10
-                    } else {
-                        diplomacy.flagsCountdown["BorderConflict"]!!.minus(1)
+                    if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
+                        otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
+                        diplomacy.setFlag(DiplomacyFlags.BorderConflict,10)
                     }
-                } else {
-                    needClearCounter = true
-                }
-
-                if (needClearCounter && diplomacy.flagsCountdown.containsKey("BorderConflict")) {
-                    diplomacy.flagsCountdown.remove("BorderConflict")
                 }
             }
         }
