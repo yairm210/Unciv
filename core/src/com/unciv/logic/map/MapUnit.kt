@@ -403,7 +403,7 @@ class MapUnit {
         currentMovement = getMaxMovement().toFloat()
         attacksThisTurn=0
         val tileOwner = getTile().getOwner()
-        if(tileOwner!=null && !civInfo.canEnterTiles(tileOwner)) // if an enemy city expanded onto this tile while I was in it
+        if(tileOwner!=null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movementAlgs().teleportToClosestMoveableTile()
         doPreTurnAction()
     }

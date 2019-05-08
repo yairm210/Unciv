@@ -246,14 +246,29 @@ class NextTurnAutomation{
         // Check if city-state invaded by other civs
         if (civInfo.isCityState()) {
             for (civ in civInfo.gameInfo.civilizations) {
-                if (civ == civInfo || civ.isBarbarianCivilization()) continue
+                var needClearCounter = false
+                if (civ == civInfo || civ.isBarbarianCivilization() || !civInfo.getKnownCivs().contains(civ)) continue
                 val diplomacy = civInfo.getDiplomacyManager(civ)!!
-                if (diplomacy.diplomaticStatus == DiplomaticStatus.War) continue
+                if (diplomacy.diplomaticStatus == DiplomaticStatus.War) {
+                    needClearCounter = true
+                }
 
                 val unitsInBorder = civ.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
                 if (unitsInBorder > 0 && diplomacy.influence < 30f) {
                     diplomacy.influence -= 10f
-                    civ.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
+                    if (!diplomacy.flagsCountdown.containsKey("BorderConflict")
+                            || diplomacy.flagsCountdown["BorderConflict"]!! <= 0) {
+                        civ.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))
+                        diplomacy.flagsCountdown["BorderConflict"] = 10
+                    } else {
+                        diplomacy.flagsCountdown["BorderConflict"]!!.minus(1)
+                    }
+                } else {
+                    needClearCounter = true
+                }
+
+                if (needClearCounter && diplomacy.flagsCountdown.containsKey("BorderConflict")) {
+                    diplomacy.flagsCountdown.remove("BorderConflict")
                 }
             }
         }
