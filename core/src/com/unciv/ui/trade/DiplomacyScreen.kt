@@ -121,15 +121,12 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 val PeaceButton = TextButton("Negociate Peace".tr(), skin)
                 PeaceButton.onClick {
                     YesNoPopupTable("Peace with [${otherCiv.civName}]?".tr(), {
-                        diplomacyManager.makePeace()
+                        val tradeLogic = TradeLogic(currentPlayerCiv, otherCiv)
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+                        tradeLogic.currentTrade.theirOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+                        tradeLogic.acceptTrade()
                         updateLeftSideTable()
                     }, this)
-
-                    val tradeLogic = TradeLogic(currentPlayerCiv, otherCiv)
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
-                    tradeLogic.currentTrade.theirOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
-                    tradeLogic.acceptTrade()
-
                 }
                 diplomacyTable.add(PeaceButton).row()
             }
