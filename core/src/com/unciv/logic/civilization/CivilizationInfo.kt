@@ -37,7 +37,9 @@ enum class PlayerType{
 }
 
 enum class CityStateType{
-    Cultured
+    Cultured,
+    Maritime,
+    Mercantile
 }
 
 class TradeRequest(val requestingCiv:String,
@@ -152,7 +154,7 @@ class CivilizationInfo {
         //City states culture bonus
         for (otherCivName in diplomacy.keys) {
             val otherCiv = gameInfo.getCivilization(otherCivName)
-            if (otherCiv.isCityState() && otherCiv.diplomacy[civName]!!.influence > 60) {
+            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured && otherCiv.diplomacy[civName]!!.influence >= 60) {
                 val cultureBonus = Stats()
                 cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
                 if (statMap.containsKey("City States"))
@@ -242,6 +244,17 @@ class CivilizationInfo {
             if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
             statMap["Policies"] = statMap["Policies"]!! +
                     policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
+        }
+
+        //From city-states
+        for (otherCivName in diplomacy.keys) {
+            val otherCiv = gameInfo.getCivilization(otherCivName)
+            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile && otherCiv.diplomacy[civName]!!.influence >= 60) {
+                if (statMap.containsKey("City-states"))
+                    statMap["City-states"] = statMap["City-states"]!! + 3f
+                else
+                    statMap["City-states"] = 3f
+            }
         }
 
         return statMap

@@ -4,6 +4,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
 import com.unciv.Constants
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
@@ -115,6 +116,24 @@ class CityStats {
         val civUnique = cityInfo.civInfo.getNation().unique
         if(civUnique == "+2 Culture per turn from cities before discovering Steam Power")
             stats.culture += 2
+
+        return stats
+    }
+
+    private fun getStatsFromCityStates(): Stats {
+        val stats = Stats()
+
+        for (otherCivName in cityInfo.civInfo.diplomacy.keys) {
+            val otherCiv = cityInfo.civInfo.gameInfo.getCivilization(otherCivName)
+            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Maritime
+                    && otherCiv.diplomacy[cityInfo.civInfo.civName]!!.influence >= 60) {
+                if (cityInfo.isCapital()) {
+                    stats.food = stats.food + 3
+                } else {
+                    stats.food = stats.food + 1
+                }
+            }
+        }
 
         return stats
     }
@@ -321,6 +340,7 @@ class CityStats {
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
         newBaseStatList["National ability"] = getStatsFromNationUnique()
+        newBaseStatList["CityStates"] = getStatsFromCityStates()
 
         baseStatList = newBaseStatList
     }
