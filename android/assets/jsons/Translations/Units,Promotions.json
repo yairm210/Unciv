@@ -230,6 +230,28 @@
 		German:"Arbeitsboote"
 	}
 
+	"Cannot enter ocean tiles until Astronomy":{
+		Spanish:"No puede entrar al oceanó hasta investigar astronomia"
+		Italian:"Può entrare nell'oceano solo dopo aver scoperto l'Astronomia"
+		French:"Ne peut pas aller sur les tuiles océan avant la découverte de l'Astronomie"
+		Romanian:"Nu poate accesa celule ocean înainte de descoperirea Astronomiei"
+		Simplified_Chinese:"不能进入海洋直到掌握天文学"
+		Portuguese:"Não pode entrar o terreno 'oceano' até a pesquisa Astronomia" // if you want you can take away the 'a pesquisa'
+		German:"Ozeanfelder können nicht befahren werden bis Astronomie erforscht ist"
+		Russian:"Не может войти в океанские плитки до Астрономии"
+	}
+
+	"May create improvements on water resources":{
+		Spanish:"Puede crear mejoras en recursos acuaticos"
+		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
+		French:"Peut créer des améliorations de ressources maritimes"
+		Romanian:"Poate crea îmbunătățiri pe resurse acvatice"
+		Simplified_Chinese:"可在水域资源建造设施"
+		Portuguese:"Pode criar melhorias em recursos aquáticos"
+		German:"Kann Verbesserungen auf Wasserfeldern bauen"
+		Russian:"Может создать улучшения на водных ресурсах"
+	}
+
 	"Trireme":{
 		Spanish:"Trirreme"
 		Italian:"Trireme"
@@ -238,6 +260,17 @@
 		Simplified_Chinese:"三列桨战船"
 		Portuguese:"Trireme"
 		//same in German
+	}
+
+	"Cannot enter ocean tiles":{
+		Spanish:"No puede entrar al oceanó"
+		Italian:"Non può entrare nelle caselle oceaniche"
+		French:"Ne peut pas aller sur les tuiles océan"
+		Romanian:"Nu poate accesa celule ocean"
+		Simplified_Chinese:"不能进入海洋"
+		Portuguese:"Não pode entrar o terreno 'oceano' "
+		German:"Ozeanfelder können nicht befahren werden"
+		Russian:"Не может войти в океанские плитки"
 	}
 
 	"Chariot Archer":{	
@@ -250,7 +283,6 @@
 		Portuguese:"Arqueiro de Biga"
 		German:"Streitwagen-Bogenschütze"
 	}
-	
 	
 	"No defensive terrain bonus":{
 		Italian:"Nessun bonus difensivo su terreno"
@@ -297,6 +329,10 @@
 		German:"Speerkrieger"
 	}
 
+	"Bonus vs Mounted 50%":{
+		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
+	}
+
 	"Hoplite":{ // Greek unique
 		Italian:"Oplita"
 		Romanian:"Hoplit"
@@ -328,6 +364,10 @@
 		German:"Katapult"
 	}	
 	
+	"Bonus vs City 200%":{
+		Simplified_Chinese:"攻击城市时+200%战斗力"
+	}
+
 	"Must set up to ranged attack":{
 		Italian:"Deve allestirsi per attaccare a distanza"
 		Russian:"Необходимо подготовится к дальнобойной атаке"
@@ -391,6 +431,22 @@
 		Simplified_Chinese:"骑手"
 		Portuguese:"Cavaleiro" //can be replaced by guerreiro montado if nescessary
 		German:"Reiter"
+	}
+
+	"Can move after attacking":{
+		Italian:"Può muoversi dopo aver attaccato"
+		Russian:"Может двигаться после атаки"
+		French:"Peut se déplacer après avoir attaqué"
+		Romanian:"Poate să se deplaseze după ce a atacat"
+		German:"Kann sich nach dem Angriff bewegen"
+		Dutch:"Kan zich verplaatsen na het aanvallen"
+		Spanish:"Puede mover después de atacar"
+		Simplified_Chinese:"攻击后可移动"
+		Portuguese:"Pode se mover após atacar"
+	}
+
+	"Penalty vs City 33%":{
+		Simplified_Chinese:"攻击城市时-33%战斗力"
 	}
 
 	"Companion Cavalry":{	
@@ -465,6 +521,18 @@
 		German:"Tribock"
 	}
 
+	"Limited Visibility":{
+		Italian:"Visibilità limitata"
+		Russian:"Ограниченная видимость"
+		French:"Visibilité réduite"
+		Romanian:"Vizibilitate redusă"
+		German:"Begrenzte Sichtweite"
+		Dutch:"Gelimiteerd zicht"
+		Spanish:"Visibilidad limitada"
+		Simplified_Chinese:"视野受限"
+		Portuguese:"Visibilidade limitada"
+	}
+
 	"Longswordsman":{
 		Italian:"Guerriero con spada lunga"
 		Russian:"Мечник (длинный меч)"
@@ -531,6 +599,17 @@
 		Portuguese:"Caravela"
 		Russian:"Каравелла"
 		German:"Karavelle"
+	}
+
+	"+1 Visibility Range":{
+		Spanish:"+1 Al Rango de Visibilidad"
+		Italian:"+1 raggio di Visione"
+		French:"+1 à la Portée de Vision"
+		Romanian:"+1 Rază vizuală"
+		Simplified_Chinese:"+1视野"
+		Portuguese:"+1 de alcançe ao campo de visão"
+		German:"+1 Sichtweite"
+		Russian:"+1 Диапазон видимости"
 	}
 
 	"Cannon":{	
@@ -608,6 +687,10 @@
 		German:"Lanzer"
 	}
 	
+	"Bonus vs Mounted 33%":{	
+		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
+	}
+
 ////// Industrial units
 	
 	"Gatling Gun":{
@@ -652,6 +735,13 @@
 		French:"Cosaque"
 	}
 	
+	"Bonus vs wounded units 33%":{
+		Italian:"+33% forza contro unità ferite"
+		French:"+33% force contre les unités montées"
+		Russian:"Бонус против раненых 33%"
+		Simplified_Chinese:"对战受伤单位时+33%战斗力"
+	}
+
 	"Artillery":{	
 		Italian:"Artiglieria"
 		Russian:"Артиллерия"
@@ -661,6 +751,14 @@
 		Simplified_Chinese:"火炮"
 		Portuguese:"Artilharia"
 		German:"Artillerie"
+	}
+
+	"Indirect Fire":{
+		Italian:"Fuoco indiretto"
+		German:"Indirektes Feuer"
+		French:"Attaque indirecte" //not sure
+		Russian:"Непрямой Огонь"
+		Simplified_Chinese:"间瞄射击"
 	}
 
 	"Ironclad":{
@@ -674,6 +772,21 @@
 		German:"Panzerschiff"
 	}
 	
+	"Bonus vs City 33%":{
+		Simplified_Chinese:"攻击城市时+33%战斗力"
+	}
+
+	"Double movement in coast":{
+		Spanish:"Doble movimiento en costas"
+		Italian:"Doppio movimento sulla costa"
+		French:"Double mouvement le long des côtes"
+		Romanian:"Deplasare dublă pe țărm"
+		Simplified_Chinese:"海滨移动时双倍移动力"
+		Portuguese:"Movimento em dobro nas costas"
+		German:"Doppelte Bewegungsgeschwindigkeit an der Küste"
+		Russian:"Двойное движение на побережье"
+	}
+
 ////// Modern units
 
 	"Landship":{
@@ -722,7 +835,7 @@
 
 	"Foreign Land":{ // for battle table combat percentage
 		Italian:"Terra Straniera"
-		Simplified_Chinese:"他国领土"
+		Simplified_Chinese:"境外"
 		French:"Terre étrangère"
 	}
 	
@@ -734,6 +847,12 @@
 		Russian:"УНИЧТОЖИТЕЛЬ ВСЕГО И ВСЕЯ ЖИВОГО"
 		German:"Zerstörer"
 		French:"Destroyer"
+	}
+
+	"Can attack submarines":{
+		Italian:"Può attaccare i sottomarini"
+		Simplified_Chinese:"能够发现和攻击潜艇单位"
+		French:"Peut attaquer les sous-marins"
 	}
 
 	"Machine Gun":{
@@ -776,6 +895,10 @@
 		French:"cuirassé"
 	}
 
+	"Bonus vs City 30%":{
+		Simplified_Chinese:"攻击城市时+30%战斗力"
+	}
+
 	"Submarine":{
 		Italian:"Sottomarino"
 		Romanian:"Submarin"
@@ -784,6 +907,24 @@
 		Russian:"Подводная Лодка"
 		German:"U-Boot"
 		French:"Sous-marin"
+	}
+
+	"Bonus as Attacker 75%":{
+		Italian:"75% Bonus in attacco"
+		Simplified_Chinese:"主动攻击时+75%战斗力"
+		French:"Bonus en tant qu'attaquant +75%"
+	}
+
+	"Invisible to others":{
+		Italian:"Invisibile per le altre unità"
+		Simplified_Chinese:"对其他单位隐形"
+		French:"Invisible aux autres" // (unités)
+	}
+
+	"Can only attack water":{
+		Italian:"Può attaccare solo unità acquatiche"
+		Simplified_Chinese:"只能攻击海上目标"
+		French:"Ne peut attaquer que les unités marines"
 	}
 
 	"Carrier":{ // aircrat carrier
@@ -836,6 +977,10 @@
 		Russian:"противотанковое оружие"
 		German:"Panzerabwehr-Kanone"
 		French:"Canon antichar"
+	}
+
+	"Bonus vs Armor 100%":{
+		Simplified_Chinese:"对战装甲单位时+100%战斗力"
 	}
 
 	"Marine":{
@@ -959,6 +1104,35 @@
 		German:"Großer Künstler"
 	}
 
+
+	"Unbuildable":{
+		Italian:"Non costruibile"
+		Simplified_Chinese:"不可组建单位"
+		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct 
+	}
+
+	"Can start an 8-turn golden age":{
+		Romanian:"Poate începe o eră de aur de 8 runde"
+		Spanish:"Comienza una edad dorada por 8 turnos"
+		Italian:"Può avviare un'Età dell'Oro di 8 turni"
+		French:"Peut commencer un âge d'or de 8 tours"
+		Simplified_Chinese:"可以开启8回合黄金时代"
+		Portuguese:"Pode criar uma Idade Dourada de 8 turnos"
+		German:"Kann ein Goldenes Zeitalter über 8 Runden starten" //I chose to transl. as if Golden Age is a proper name
+		Russian:"Может начать золотой век с 8 поворотами"
+	}
+
+	"Can build improvement: Landmark":{
+		Spanish:"Puede construir mejora: Edificio Emblematico"
+		Italian:"Può costruire il miglioramento: Punto di riferimento"
+		French:"Peut construire l'amélioration suivante: Monument culturel"
+		Romanian:"Poate construi îmbunătățire: Reper"
+		Simplified_Chinese:"可以建造设施：风景地标"
+		Russian:"Можно построить улучшение: ориентир"
+		Portuguese:"Pode construir melhoria: ponto de refêrencia"
+		German:"Kann Verbesserung errichten: Sehenswürdigkeit"
+	}
+
 	"Great Scientist":{	
 		Italian:"Grande Scienziato"
 		Russian:"Великий ученый"
@@ -968,6 +1142,28 @@
 		Simplified_Chinese:"大科学家"
 		Portuguese:"Grande Ciêntista"
 		German:"Großer Wissenschaftler"
+	}
+
+	"Can discover a technology":{
+		Spanish:"Puede descubrir una tecnologia"
+		Italian:"Può scoprire una tecnologia"
+		French:"Peut découvrir une technologie"
+		Romanian:"Poate descoperi o tehnologie"
+		Simplified_Chinese:"可以发现1项科技"
+		Portuguese:"Pode descobrir uma tecnologia"
+		German:"Kann eine Technologie entdecken"
+		Russian:"Может открыть для себя технологию"
+	}
+
+	"Can build improvement: Academy":{
+		Spanish:"Puede construir mejora: Academia"
+		Italian:"Può costruire il miglioramento: Accademia"
+		French:"Peut construire l'amélioration suivante: Académie"
+		Romanian:"Poate construi îmbunătățire: Academie"
+		Simplified_Chinese:"可以建造设施：学院"
+		Portuguese:"Pode construir melhoria: Academia"
+		German:"Kann Verbesserung errichten: Akademie"
+		Russian:"Можно построить улучшение: Академия"
 	}
 
 	"Great Merchant":{	
@@ -981,6 +1177,28 @@
 		German:"Großer Händler"
 	}
 
+	"Can undertake a trade mission, giving a large sum of gold":{
+		Spanish:"Puede tomar una mision de comercio, generando una gran suma de Oro"
+		Italian:"Può compiere missioni commerciali, donando grandi quantità di Oro"
+		French:"Peut entreprendre une mission commerciale qui donne une large somme en or"
+		Romanian:"Poate iniția o misiune comercială, oferind o sumă considerabilă de aur"
+		Simplified_Chinese:"可以开展贸易获得大笔金钱"
+		Portuguese:"Pode entrar em uma missão comercial, dando grande quantidades de ouro"
+		German:"Kann eine Handelsmission durchführen, die viel Gold einbringt"
+		Russian:"Pode realizar uma missão comercial, dando uma grande soma de ouro"
+	}
+
+	"Can build improvement: Customs house":{
+		Spanish:"Puede construir mejora: Aduana"
+		Italian:"Può costruire il miglioramento: Dogana"
+		French:"Peut construire l'amélioration suivante: Douanes"
+		Romanian:"Poate construi îmbunătățire: Punct vamal"
+		Simplified_Chinese:"可以建造设施：海关"
+		Portuguese:"Pode criar melhoria: Alfândega"
+		Russian:"Можно построить улучшение: таможня"
+		German:"Kann Verbesserung errichten: Zollhaus"
+	}
+
 	"Great Engineer":{	
 		Italian:"Grande Ingegnere"
 		Russian:"Великий инженер"
@@ -990,6 +1208,28 @@
 		Simplified_Chinese:"大工程师"
 		Portuguese:"Grande engenheiro"
 		German:"Großer Ingenieur"
+	}
+
+	"Can speed up construction of a wonder":{
+		Spanish:"Puede acelerar la construccion de una maravilla"
+		Italian:"Può accelerare la costruzione di una Meraviglia"
+		French:"Peut accélérer la construction d'une Merveille"
+		Romanian:"Poate accelera construirea unei minuni"
+		Simplified_Chinese:"可以加快一座奇观的建造速度"
+		Portuguese:"Pode acelerar a construção de uma maravilha"
+		German:"Kann die Produktion eines Wunders beschleunigen"
+		Russian:"Может ускорить строительство чудо"
+	}
+
+	"Can build improvement: Manufactory":{
+		Italian:"Può costruire il miglioramento: Manifattura"
+		French:"Peut construire l'amélioration suivante: Manufacture"
+		Romanian:"Poate construi îmbunătățire: fabrică"
+		Simplified_Chinese:"可以建造设施：制造中心"
+		Portuguese:"Pode construir melhoria: Fábrica"
+		German:"Kann Verbesserung errichten: Manufaktur"
+		Russian:"Можно построить улучшение: мануфактура"
+		Spanish:"Se puede construir mejora: Manufactura"
 	}
 
 	"Great General":{
@@ -1002,6 +1242,12 @@
 		French:"Général illustre"
 	}
 	
+	"Bonus for land units in 2 radius 15%" :{
+		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
+		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
+        	French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
+	}
+
 	////// Unit Promotions
 
 	"Pick promotion":{
@@ -1215,14 +1461,6 @@
 		Simplified_Chinese:"猛烈冲锋"
 	}
 
-	"Bonus vs wounded units 33%":{
-		Italian:"+33% forza contro unità ferite"
-		French:"+33% force contre les unités montées"
-		Russian:"Бонус против раненых 33%"
-		Simplified_Chinese:"对战受伤单位时+33%战斗力"
-
-	}
-
 	"wounded units":{
 		Italian:"unità ferite"
 		French:"unités blessés"
@@ -1253,6 +1491,10 @@
 		Simplified_Chinese:"齐射能力"
 	}
 
+	"Bonus vs City 50%":{
+		Simplified_Chinese:"攻击城市时+50%战斗力"
+	}
+
 	"Sentry":{
 		Italian:"Sentinella"
 		German:"Wache"
@@ -1275,14 +1517,6 @@
 		French:"+1 portée d'attaque"
 		Russian:"+1 радиус"
 		Simplified_Chinese:"+1射程"
-	}
-
-	"Indirect Fire":{
-		Italian:"Fuoco indiretto"
-		German:"Indirektes Feuer"
-		French:"Attaque indirecte" //not sure
-		Russian:"Непрямой Огонь"
-		Simplified_Chinese:"间接火力"
 	}
 
 	"Ranged attacks may be performed over obstacles":{
@@ -1407,6 +1641,10 @@
 		Simplified_Chinese:"海掠I级"
 	}
 
+	"Bonus vs City 15%":{
+		Simplified_Chinese:"攻击城市时+15%战斗力"
+	}
+
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
 		German:"Küstenräuber II"
@@ -1455,6 +1693,10 @@
 		Simplified_Chinese:"狼群I级"
 	}
 
+	"Bonus as Attacker 25%":{
+		Simplified_Chinese:"主动攻击时+25%战斗力"
+	}
+
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"
 		German:"Rudeltaktik II"
@@ -1479,12 +1721,37 @@
 		Simplified_Chinese:"狼群III级"
 	}
 	
+	"Woodsman":{
+		Simplified_Chinese:"林地幽灵"
+	}
+
+	"Double movement rate through Forest and Jungle":{
+		Simplified_Chinese:"森林和丛林移动时双倍移动力"
+	}
+
 	"Heal Instantly":{
 		Italian:"Cura istantanea"
+		Simplified_Chinese:"浴火重生"
 	}
 	"Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion":{
 		Italian:"Cura l'unità di 50 PF, rinunciando però all'opportunità di scegliere una promozione."
+		Simplified_Chinese:"立即回复50生命值，同时放弃本次晋升机会"
 	}
 
+	"Medic":{
+		Simplified_Chinese:"治疗I"
+	}
+
+	"This unit and all others in adjacent tiles heal 5 additional HP per turn":{
+		Simplified_Chinese:"本单位及其相邻单位每回合额外回复5生命值"
+	}
+
+	"Medic II":{
+		Simplified_Chinese:"治疗II"
+	}
+
+	"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.":{
+		Simplified_Chinese:"本单位及其相邻单位每回合额外回复5生命值，该单位在己方领土以外每回合额外回复5生命值"
+	}
 
 }
