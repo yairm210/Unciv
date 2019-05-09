@@ -578,7 +578,32 @@
 		Dutch:"Kon game niet van klembord laden!"
 		Spanish:"No se pudo cargar el juego desde el portapapeles!"
 	}
-	
+
+////// New game screen - it looks like it's duplicated
+/*
+	"Civilization":{	
+		Italian:"Civiltà"
+		Russian:"Цивилизация"
+		French:"Civilisation"
+		Romanian:"Civilizaţie"
+		Spanish:"Civilización"
+		Simplified_Chinese:"文明"
+		Portuguese:"Civilização"
+		German:"Zivilisation"
+	}
+
+	"World size":{	 //feels like duplicate
+		Italian:"Dimensione della mappa"
+		Russian:"Размер мира"
+		French:"Taille du monde"
+		Romanian:"Mărime pământ"
+		Spanish:"Tamaño del mundo"
+		Simplified_Chinese:"世界大小"
+		Portuguese:"Tamanho do mundo"
+		German:"Kartengröße"
+	}
+
+*/
 /////// New game screen
 	
 	"Start game!":{
@@ -592,6 +617,7 @@
 		German:"Spiel starten!"
 		Japanese:"ゲームを始める！"
 	}
+
 	"Civilization:":{
 		Italian:"Civiltà:"
 		Russian:"Цивилизация:"
@@ -603,6 +629,7 @@
 		German:"Zivilisation"
 		Japanese:"文明"
 	}
+
 	"World size:":{
 		Italian:"Dimensione mappa:"
 		Russian:"Размер мира:"
@@ -615,6 +642,18 @@
 		Japanese:"ワールドサイズ"
 	}
 
+	"Map type":{	
+		Italian:"Tipo di mappa"
+		Russian:"Тип карты"
+		French:"Type de carte"
+		Romanian:"Tipul hărții"
+		Spanish:"Tipo de mapa"
+		Simplified_Chinese:"地图类型"
+		Portuguese:"Tipo de mapa"
+		German:"Kartentyp"
+		Dutch:"Kaarttype"
+	}
+
 	"Number of enemies:":{ //nummber of AI should be more accurate
 		Italian:"Numero di nemici:"
 		Russian:"Количество врагов:"
@@ -625,6 +664,41 @@
 		Portuguese:"Numero de inimigos:"
 		German:"Anzahl der Gegner:"
 		Japanese:"敵の数"
+	}
+
+/*
+	"Number of enemies":{	//duplicated
+		Italian:"Numero di avversari"
+		Russian:"Количество врагов"
+		French:"Nombre d'ennemies"
+		Romanian:"Număr de inamici"
+		Spanish:"Número de enemigos"
+		Simplified_Chinese:"电脑玩家"
+		Portuguese:"Número de inimigos"
+		German:"Anzahl der Gegner"
+	}
+*/
+
+	"Number of human players":{
+		Italian:"Numero di giocatori"
+		Russian:"Количество врагов"
+		French:"Nombre de joueurs humains"
+		Romanian:"Număr de inamici"
+		Spanish:"Número de enemigos"
+		Simplified_Chinese:"人类玩家"
+		Portuguese:"Número de inimigos"
+		German:"Anzahl der Gegner"
+	}
+
+	"Difficulty":{	
+		Italian:"Difficoltà"
+		Russian:"Сложность"
+		French:"Difficulté"
+		Romanian:"Dificultate"
+		Spanish:"Dificultad"
+		Simplified_Chinese:"难度"
+		Portuguese:"Dificuldade"
+		German:"Schwierigkeitsgrad"
 	}
 
 	"Victory status":{
@@ -1935,6 +2009,10 @@
 		Portuguese:"Aceitar"
 		German:"Annehmen"
 	}
+
+	"Keep going":{
+		French:"Continuer..."
+	}
 	
 	"There's nothing on the table":{
 		Italian:"Non c'è niente da trattare"
@@ -1967,7 +2045,7 @@
 	"Open Borders":{
 		Italian:"Diritto di passaggio"
 		Simplified_Chinese:"开放边境"
-		French:"Frontières ouvertes"
+		French:"Accord de libre passage"
 	}
 
 	"Gold per turn":{
@@ -1981,7 +2059,7 @@
 		German:"Gold pro Runde"
 	}
 
-	"Cities":{ //You misses this translation, said Smashfanful
+	"Cities":{ //You misses this translation, said Smashfanful //Don't translate in diplomacy view
 		Italian:"Città"
 		Romanian:"Orase"
 		Spanish:"Ciudades"
@@ -1999,7 +2077,7 @@
 		Simplified_Chinese:"科技"
 	}
 
-	"Declarations of war":{ //You misses this translation, said Smashfanful
+	"Declarations of war":{ //You misses this translation, said Smashfanful //Don't translate in diplomacy view
 		Italian:"Dichiarazione di guerra"
 		French:"Déclarations de guerre"
 		Simplified_Chinese:"宣战"
@@ -2011,7 +2089,7 @@
 		Simplified_Chinese:"奢侈资源"
 	}
 
-	"Strategic resources":{
+	"Strategic resources":{ //Don't translate in diplomacy view
 		Italian:"Risorse strategiche" //You misses this translation, said Smashfanful
 		French:"Ressources stratégiques"
 		Simplified_Chinese:"战略资源"
@@ -2529,75 +2607,6 @@
 		Portuguese:"Imensa"
 		German:"Enorm"
 	}
-
-////// New game screen
-	
-	"Civilization":{	
-		Italian:"Civiltà"
-		Russian:"Цивилизация"
-		French:"Civilisation"
-		Romanian:"Civilizaţie"
-		Spanish:"Civilización"
-		Simplified_Chinese:"文明"
-		Portuguese:"Civilização"
-		German:"Zivilisation"
-	}
-
-	"World size":{	 //feels like duplicate
-		Italian:"Dimensione della mappa"
-		Russian:"Размер мира"
-		French:"Taille du monde"
-		Romanian:"Mărime pământ"
-		Spanish:"Tamaño del mundo"
-		Simplified_Chinese:"世界大小"
-		Portuguese:"Tamanho do mundo"
-		German:"Kartengröße"
-	}
-
-	"Number of human players":{	//feels like duplicate
-		Italian:"Numero di giocatori"
-		Russian:"Количество врагов"
-		French:"Nombre d'ennemies"
-		Romanian:"Număr de inamici"
-		Spanish:"Número de enemigos"
-		Simplified_Chinese:"人类玩家"
-		Portuguese:"Número de inimigos"
-		German:"Anzahl der Gegner"
-	}
-
-	"Number of enemies":{	//feels like duplicate
-		Italian:"Numero di avversari"
-		Russian:"Количество врагов"
-		French:"Nombre d'ennemies"
-		Romanian:"Număr de inamici"
-		Spanish:"Número de enemigos"
-		Simplified_Chinese:"电脑玩家"
-		Portuguese:"Número de inimigos"
-		German:"Anzahl der Gegner"
-	}
-
-	"Difficulty":{	
-		Italian:"Difficoltà"
-		Russian:"Сложность"
-		French:"Difficulté"
-		Romanian:"Dificultate"
-		Spanish:"Dificultad"
-		Simplified_Chinese:"难度"
-		Portuguese:"Dificuldade"
-		German:"Schwierigkeitsgrad"
-	}
-
-	"Map type":{	
-		Italian:"Tipo di mappa"
-		Russian:"Тип карты"
-		French:"Type de carte"
-		Romanian:"Tipul hărții"
-		Spanish:"Tipo de mapa"
-		Simplified_Chinese:"地图类型"
-		Portuguese:"Tipo de mapa"
-		German:"Kartentyp"
-		Dutch:"Kaarttype"
-	}
 	
 ////// Diplomacy!
 	
@@ -2645,7 +2654,7 @@
 		German:"Krieg erklären"
 	}
 
-	"Declare war on [civName]?":{
+	"Declare war on [civName]?":{ //Don't translate in diplomacy view
 		Italian:"Vuoi dichiarare guerra a [civName]?"
 		French:"Déclarer la guerre à [civName]?"
 		Simplified_Chinese:"向[civName]宣战吗？"
@@ -2731,54 +2740,58 @@
 		French:"Notre relation :" //or l'état de notre relation
 	}
 	
-	
 	// Friendship declaration flavor texts
 	"Declare Friendship ([numberOfTurns] turns)":{
 		Italian:"Dichiarazione di Amicizia ([numberOfTurns] turni)"
+		French:"Déclaration d'Amitié ([numberOfTurns] tours)"
 	}
+
 	"May our nations forever remain united!":{
 		Italian:"Possano le nostre nazioni rimanere per sempre unite!"
+		French:"Puissent nos nations rester unies pour toujours!"
 	}
+
 	"Indeed!":{
 		Italian:"Perfetto!"
+		French:"Parfait!" //or En effet! , more accurate but harder to understand what it means
 	}
 	
 	// Relationship states, from worst (Unforgivable) to best (Ally)
 	
-    "Unforgivable":{
+	"Unforgivable":{
 		Italian:"Imperdonabile"
 		French:"Impardonnable"
-    }
+	}
 
-    "Enemy":{
+	"Enemy":{
 		Italian:"Nemico"
 		French:"Ennemi"
-    }
+	}
 
-    "Competitor":{
-	    Italian:"Avversario"
-	    French:"Adversaire" //or en compétition
-    }
+	"Competitor":{
+		Italian:"Avversario"
+		French:"Adversaire" //or en compétition
+	}
 
-    "Neutral":{
-        Italian:"Neutrale"
-	    French:"Neutre"
-    }
+	"Neutral":{
+		Italian:"Neutrale"
+		French:"Neutre"
+	}
 
-    "Favorable":{
+	"Favorable":{
 		Italian:"Favorevole"
-	    French:"Favorable"
-    }
+		French:"Favorable"
+	}
 
-    "Friend":{
+	"Friend":{
 		Italian:"Amichevole"
-	    French:"Ami"
-    }
+		French:"Ami"
+	}
 
-    "Ally":{
+	"Ally":{
 		Italian:"Alleato"
-	    French:"Allié"
-    }
+		French:"Allié"
+	}
 	
 ////// Diplomatic modifiers
 
@@ -2809,16 +2822,20 @@
 	
 	"We have signed a public declaration of friendship":{
 		Italian:"Abbiamo segnato una dichiarazione pubblica d'amicizia!"
+		French:"Nous avons publiquement signé une Déclaration d'Amitié"
 	}
 	"You have declared friendship with our enemies!":{
 		Italian:"Hai dichiarato un'amicizia con i nostri nemici!"
+		French:"Vous avez signé une Déclaration d'Amitié avec nos ennemis!"
 	}
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
+		French:"Vous avez signé une Déclaration d'Amitié avec nos alliés"
 	}
 	
 	"Our open borders have brought us closer together.":{
 		Italian:"I nostri accordi di passaggio hanno avvicinato le nostre nazioni."
+		French:"Notre Accord de libre passage nous a rapprochés"
 	}
 	
 ////// Overview screen
@@ -2834,7 +2851,8 @@
 		German:"Überblick"
 	}
 
-	"Cities":{	
+/*
+	"Cities":{ //duplicated
 		Italian:"Città"
 		Russian:"Города"
 		French:"Villes"
@@ -2844,6 +2862,7 @@
 		Portuguese:"Cidades"
 		German:"Städte"
 	}
+*/
 
 	"Total":{
 		Italian:"Totale"
