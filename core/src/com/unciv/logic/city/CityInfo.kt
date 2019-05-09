@@ -44,7 +44,7 @@ class CityInfo {
         this.location = cityLocation
         setTransients()
 
-        val nationCities = civInfo.getTranslatedNation().cities
+        val nationCities = civInfo.getNation().cities
         val cityNameIndex = civInfo.citiesCreated % nationCities.size
         val cityName = nationCities[cityNameIndex]
 
