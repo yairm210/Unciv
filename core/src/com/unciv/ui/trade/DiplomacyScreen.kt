@@ -95,9 +95,14 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
             diplomacyTable.add(("Type : " + otherCiv.getCityStateType().toString()).toLabel()).row()
             diplomacyTable.add(("Influence : " + otherCiv.getDiplomacyManager(currentPlayerCiv).influence.toInt().toString()).toLabel()).row()
-            if (otherCiv.getDiplomacyManager(currentPlayerCiv).influence > 60) {
-                if (otherCiv.getCityStateType() == CityStateType.Cultured) {
-                    diplomacyTable.add(("Providing " + (5.0f * currentPlayerCiv.getEra().ordinal).toString() + " culture each turn").toLabel())
+            if (otherCiv.getDiplomacyManager(currentPlayerCiv).influence >= 60) {
+                when(otherCiv.getCityStateType()) {
+                    CityStateType.Cultured -> diplomacyTable.add(
+                            ("Providing " + (5.0f * currentPlayerCiv.getEra().ordinal).toString() + " culture each turn").toLabel())
+                    CityStateType.Maritime -> diplomacyTable.add(
+                            ("Providing 3 food in capital and 1 food in other cities.").toLabel())
+                    CityStateType.Mercantile -> diplomacyTable.add(
+                            ("Providing 3 happiness.").toLabel())
                 }
             }
         } else {

@@ -46,6 +46,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val civ = worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val translatedNation = civ.getTranslatedNation()
                 if (civ.isCityState()) {
+                    addLeaderName(translatedNation)
                     addGoodSizedLabel("Type : " + civ.getCityStateType()).row()
                     add(getCloseButton("A pleasure to meet you."))
                 } else {

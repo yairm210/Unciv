@@ -1527,54 +1527,6 @@
 		Portuguese:"Penalização contra [unitType]"
 	}
 
-	"Can move after attacking":{
-		Italian:"Può muoversi dopo aver attaccato"
-		Russian:"Может двигаться после атаки"
-		French:"Peut se déplacer après avoir attaqué"
-		Romanian:"Poate să se deplaseze după ce a atacat"
-		German:"Kann sich nach dem Angriff bewegen"
-		Dutch:"Kan zich verplaatsen na het aanvallen"
-		Spanish:"Puede mover después de atacar"
-		Simplified_Chinese:"攻击后可移动"
-		Portuguese:"Pode se mover após atacar"
-	}
-
-	"Limited Visibility":{
-		Italian:"Visibilità limitata"
-		Russian:"Ограниченная видимость"
-		French:"Visibilité réduite"
-		Romanian:"Vizibilitate redusă"
-		German:"Begrenzte Sichtweite"
-		Dutch:"Gelimiteerd zicht"
-		Spanish:"Visibilidad limitada"
-		Simplified_Chinese:"视野受限"
-		Portuguese:"Visibilidade limitada"
-	}
-
-	"Bonus as Attacker 75%":{
-		Italian:"75% Bonus in attacco"
-		Simplified_Chinese:"主动攻击时+75%战斗力"
-		French:"Bonus en tant qu'attaquant +75%"
-	}
-
-	"Invisible to others":{
-		Italian:"Invisibile per le altre unità"
-		Simplified_Chinese:"对其他单位隐形"
-		French:"Invisible aux autres" // (unités)
-	}
-
-	"Can only attack water":{
-		Italian:"Può attaccare solo unità acquatiche"
-		Simplified_Chinese:"只能攻击海上目标"
-		French:"Ne peut attaquer que les unités marines"
-	}
-
-	"Can attack submarines":{
-		Italian:"Può attaccare i sottomarini"
-		Simplified_Chinese:"能够发现和攻击潜艇单位"
-		French:"Peut attaquer les sous-marins"
-	}
-
 ///////// Old Great Person translations (for reference only)
 
 	"Can start an 8-turn golden age or construct a Landmark (+6 Culture)":{
@@ -1625,16 +1577,6 @@
 		Simplified_Chinese:"加快奇观的建造速度或建造1座工厂(+4生产)"
 	}
 	
-	"May create improvements on water resources":{
-		Spanish:"Puede crear mejoras en recursos acuaticos"
-		Italian:"Può costruire miglioramenti sulle risorse acquatiche"
-		French:"Peut créer des améliorations de ressources maritimes"
-		Romanian:"Poate crea îmbunătățiri pe resurse acvatice"
-		Simplified_Chinese:"可在水域资源建造设施"
-		Portuguese:"Pode criar melhorias em recursos aquáticos"
-		German:"Kann Verbesserungen auf Wasserfeldern bauen"
-		Russian:"Может создать улучшения на водных ресурсах"
-	}
 	
 	"Create [improvementName]":{ // for unit action button - also used for "create fishing boats" and "create oil well"
 		Italian:"Costruisci [improvementName]"
@@ -1645,17 +1587,6 @@
 		French:"Créer [improvementName]"
 		Russian:"Создайте [improvementName]"
 		Portuguese:"Crio [improvementName]"
-	}
-	
-	"Can start an 8-turn golden age":{
-		Romanian:"Poate începe o eră de aur de 8 runde"
-		Spanish:"Comienza una edad dorada por 8 turnos"
-		Italian:"Può avviare un'Età dell'Oro di 8 turni"
-		French:"Peut commencer un âge d'or de 8 tours"
-		Simplified_Chinese:"可以开启8回合黄金时代"
-		Portuguese:"Pode criar uma Idade Dourada de 8 turnos"
-		German:"Kann ein Goldenes Zeitalter über 8 Runden starten" //I chose to transl. as if Golden Age is a proper name
-		Russian:"Может начать золотой век с 8 поворотами"
 	}
 
 	"Start Golden Age":{
@@ -1669,34 +1600,7 @@
 		Portuguese:"Comece a Idade de Ouro"
 	}
 
-	"Bonus for land units in 2 radius 15%" :{
-		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
-		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
-        	French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
-	}
-
 	// for unit action button
-	"Can build improvement: Landmark":{
-		Spanish:"Puede construir mejora: Edificio Emblematico"
-		Italian:"Può costruire il miglioramento: Punto di riferimento"
-		French:"Peut construire l'amélioration suivante: Monument culturel"
-		Romanian:"Poate construi îmbunătățire: Reper"
-		Simplified_Chinese:"可以建造设施：风景地标"
-		Russian:"Можно построить улучшение: ориентир"
-		Portuguese:"Pode construir melhoria: ponto de refêrencia"
-		German:"Kann Verbesserung errichten: Sehenswürdigkeit"
-	}
-
-	"Can discover a technology":{
-		Spanish:"Puede descubrir una tecnologia"
-		Italian:"Può scoprire una tecnologia"
-		French:"Peut découvrir une technologie"
-		Romanian:"Poate descoperi o tehnologie"
-		Simplified_Chinese:"可以发现1项科技"
-		Portuguese:"Pode descobrir uma tecnologia"
-		German:"Kann eine Technologie entdecken"
-		Russian:"Может открыть для себя технологию"
-	}
 
 	"Discover Technology":{
 		Romanian:"Descoperă tehnologie"
@@ -1710,27 +1614,6 @@
 	}
 
 	// for unit action button
-	"Can build improvement: Academy":{
-		Spanish:"Puede construir mejora: Academia"
-		Italian:"Può costruire il miglioramento: Accademia"
-		French:"Peut construire l'amélioration suivante: Académie"
-		Romanian:"Poate construi îmbunătățire: Academie"
-		Simplified_Chinese:"可以建造设施：学院"
-		Portuguese:"Pode construir melhoria: Academia"
-		German:"Kann Verbesserung errichten: Akademie"
-		Russian:"Можно построить улучшение: Академия"
-	}
-
-	"Can undertake a trade mission, giving a large sum of gold":{
-		Spanish:"Puede tomar una mision de comercio, generando una gran suma de Oro"
-		Italian:"Può compiere missioni commerciali, donando grandi quantità di Oro"
-		French:"Peut entreprendre une mission commerciale qui donne une large somme en or"
-		Romanian:"Poate iniția o misiune comercială, oferind o sumă considerabilă de aur"
-		Simplified_Chinese:"可以开展贸易获得大笔金钱"
-		Portuguese:"Pode entrar em uma missão comercial, dando grande quantidades de ouro"
-		German:"Kann eine Handelsmission durchführen, die viel Gold einbringt"
-		Russian:"Pode realizar uma missão comercial, dando uma grande soma de ouro"
-	}
 
 	"Conduct Trade Mission":{
 		Italian:"Conduci missione commerciale"
@@ -1755,28 +1638,6 @@
 		Russian:"Ваша торговая миссия принесла вам [goldGained] золота!"
 	}
 
-	"Can build improvement: Customs house":{
-		Spanish:"Puede construir mejora: Aduana"
-		Italian:"Può costruire il miglioramento: Dogana"
-		French:"Peut construire l'amélioration suivante: Douanes"
-		Romanian:"Poate construi îmbunătățire: Punct vamal"
-		Simplified_Chinese:"可以建造设施：海关"
-		Portuguese:"Pode criar melhoria: Alfândega"
-		Russian:"Можно построить улучшение: таможня"
-		German:"Kann Verbesserung errichten: Zollhaus"
-	}
-
-	"Can speed up construction of a wonder":{
-		Spanish:"Puede acelerar la construccion de una maravilla"
-		Italian:"Può accelerare la costruzione di una Meraviglia"
-		French:"Peut accélérer la construction d'une Merveille"
-		Romanian:"Poate accelera construirea unei minuni"
-		Simplified_Chinese:"可以加快一座奇观的建造速度"
-		Portuguese:"Pode acelerar a construção de uma maravilha"
-		German:"Kann die Produktion eines Wunders beschleunigen"
-		Russian:"Может ускорить строительство чудо"
-	}
-
 	"Hurry Wonder":{
 		Italian:"Accellera Meraviglia"
 		Romanian:"Grăbește minune"
@@ -1787,79 +1648,6 @@
 		Russian:"Спешите, чудо"
 		Portuguese:"Apresse-se Maravilha"
 	} 
-
-	"Unbuildable":{
-		Italian:"Non costruibile"
-		Simplified_Chinese:"不可组建单位"
-		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct 
-	}
-
-	// for unit action button
-	"Can build improvement: Manufactory":{
-		Italian:"Può costruire il miglioramento: Manifattura"
-		French:"Peut construire l'amélioration suivante: Manufacture"
-		Romanian:"Poate construi îmbunătățire: fabrică"
-		Simplified_Chinese:"可以建造设施：制造中心"
-		Portuguese:"Pode construir melhoria: Fábrica"
-		German:"Kann Verbesserung errichten: Manufaktur"
-		Russian:"Можно построить улучшение: мануфактура"
-		Spanish:"Se puede construir mejora: Manufactura"
-	}
-	
-	"Cannot enter ocean tiles":{
-		Spanish:"No puede entrar al oceanó"
-		Italian:"Non può entrare nelle caselle oceaniche"
-		French:"Ne peut pas aller sur les tuiles océan"
-		Romanian:"Nu poate accesa celule ocean"
-		Simplified_Chinese:"不能进入海洋"
-		Portuguese:"Não pode entrar o terreno 'oceano' "
-		German:"Ozeanfelder können nicht befahren werden"
-		Russian:"Не может войти в океанские плитки"
-	}
-
-	"Cannot enter ocean tiles until Astronomy":{
-		Spanish:"No puede entrar al oceanó hasta investigar astronomia"
-		Italian:"Può entrare nell'oceano solo dopo aver scoperto l'Astronomia"
-		French:"Ne peut pas aller sur les tuiles océan avant la découverte de l'Astronomie"
-		Romanian:"Nu poate accesa celule ocean înainte de descoperirea Astronomiei"
-		Simplified_Chinese:"不能进入海洋直到掌握天文学"
-		Portuguese:"Não pode entrar o terreno 'oceano' até a pesquisa Astronomia" // if you want you can take away the 'a pesquisa'
-		German:"Ozeanfelder können nicht befahren werden bis Astronomie erforscht ist"
-		Russian:"Не может войти в океанские плитки до Астрономии"
-	}
-
-	"+1 Visibility Range":{
-		Spanish:"+1 Al Rango de Visibilidad"
-		Italian:"+1 raggio di Visione"
-		French:"+1 à la Portée de Vision"
-		Romanian:"+1 Rază vizuală"
-		Simplified_Chinese:"+1视野"
-		Portuguese:"+1 de alcançe ao campo de visão"
-		German:"+1 Sichtweite"
-		Russian:"+1 Диапазон видимости"
-	}
-
-	"Double movement in coast":{
-		Spanish:"Doble movimiento en costas"
-		Italian:"Doppio movimento sulla costa"
-		French:"Double mouvement le long des côtes"
-		Romanian:"Deplasare dublă pe țărm"
-		Simplified_Chinese:"海滨移动时双倍移动力"
-		Portuguese:"Movimento em dobro nas costas"
-		German:"Doppelte Bewegungsgeschwindigkeit an der Küste"
-		Russian:"Двойное движение на побережье"
-	}
-
-	"Indirect Fire":{ // units can fire over forests/hills
-		Spanish:"Fuego Indirecto (Puede disparar sobre colinas y bosques)"
-		Italian:"Fuoco indiretto (l'unità può sparare oltre le foreste o le colline)"
-		French:"Tir indirect"
-		Romanian:"Tir cu boltă"
-		Simplified_Chinese:"间接射击"
-		Portuguese:"Fogo indireto"
-		German:"Indirekter Beschuss"
-		Russian:"Косвенный огонь"
-	}
 	
 ////// Policy picker screen
 
@@ -2121,7 +1909,7 @@
 		French:"Capacité de la civilisation"
 		Portuguese:"Habilidade nacional"
 		Russian:"Национальная способность"
-		Simplified_Chinese:"国家能力"
+		Simplified_Chinese:"民族特性"
 	}
 	
 	"Babylon":{	
@@ -2758,41 +2546,48 @@
 	
 	// Relationship states, from worst (Unforgivable) to best (Ally)
 	
-	"Unforgivable":{
+  "Unforgivable":{
 		Italian:"Imperdonabile"
 		French:"Impardonnable"
-	}
+		Simplified_Chinese:"仇深似海"
+  }
 
-	"Enemy":{
+  "Enemy":{
 		Italian:"Nemico"
 		French:"Ennemi"
-	}
+		Simplified_Chinese:"宿命之敌"
+  }
 
-	"Competitor":{
-		Italian:"Avversario"
+  "Competitor":{
+	  Italian:"Avversario"
 		French:"Adversaire" //or en compétition
-	}
+		Simplified_Chinese:"瑜亮之争"
+  }
 
-	"Neutral":{
-		Italian:"Neutrale"
+  "Neutral":{
+    Italian:"Neutrale"
 		French:"Neutre"
-	}
+		Simplified_Chinese:"泛泛之交"
+  }
 
-	"Favorable":{
+  "Favorable":{
 		Italian:"Favorevole"
 		French:"Favorable"
-	}
+		Simplified_Chinese:"惺惺相惜"
+  }
 
-	"Friend":{
+  "Friend":{
 		Italian:"Amichevole"
 		French:"Ami"
-	}
+		Simplified_Chinese:"秦晋之好"
+  }
 
-	"Ally":{
+  "Ally":{
 		Italian:"Alleato"
-		French:"Allié"
-	}
-	
+    French:"Allié"
+	  Simplified_Chinese:"歃血之盟"
+  }
+
 ////// Diplomatic modifiers
 
 	"You declared war on us!":{
