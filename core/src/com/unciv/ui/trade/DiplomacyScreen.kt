@@ -92,7 +92,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         if (otherCiv.isCityState()) {
-            diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
+            diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel()).row()
             diplomacyTable.add(("Type : " + otherCiv.getCityStateType().toString()).toLabel()).row()
             diplomacyTable.add(("Influence : " + otherCiv.getDiplomacyManager(currentPlayerCiv).influence.toInt().toString()).toLabel()).row()
             if (otherCiv.getDiplomacyManager(currentPlayerCiv).influence >= 60) {

@@ -327,9 +327,11 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         }
 
         for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
-            for(diplomacy in civ.diplomacy.values.filter { !it.otherCiv().isBarbarianCivilization() && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
+            for(diplomacy in civ.diplomacy.values.
+                    filter { !it.otherCiv().isBarbarianCivilization() && !it.otherCiv().isCityState()
+                            && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
                 val civGroup = civGroups[civ.civName]!!
-                val otherCivGroup = civGroups[diplomacy.otherCivName]!!
+                val otherCivGroup = civGroups[diplomacy.otherCivName]!! //
 
                 val statusLine = ImageGetter.getLine(civGroup.x+civGroup.width/2,civGroup.y+civGroup.height/2,
                         otherCivGroup.x+otherCivGroup.width/2,otherCivGroup.y+otherCivGroup.height/2,3f)
