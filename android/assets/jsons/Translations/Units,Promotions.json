@@ -493,7 +493,7 @@
 		German:"Langbogenschütze"
 	}
 
-	"Chu-ko-nu":{
+	"Chu-Ko-Nu":{
 		Italian:"Chu-ko-nu"//same in Italian
 		Romanian:"Chu-ko-nu"
 		Spanish:"Chu-ko-nu"
@@ -502,13 +502,20 @@
 		//same in French
 	} // Chinese unique, can transliterate
 
-/*
-	"Chu-Ko-Nu":{ //it seems that it's useless to keep this one
-		//Same as in Italian
-		Simplified_Chinese:"诸葛弩"
-		French:"Chu Ko Nu"
+	"Logistics":{
+		Italian:"Logistica"
+		German:"Logistick"
+		French:"Logistique"
+		Russian:"Логистика"
+		Simplified_Chinese:"后勤补给"
 	}
-*/
+
+	"1 additional attack per turn":{
+		Italian:"L'unità può attaccare due volte ogni turno"
+		French:"1 attaque supplémentaire par tour"
+		Russian:"Дополнительная атака за ход"
+		Simplified_Chinese:"每回合有一次额外的攻击机会"
+	}
 
 	"Trebuchet":{	
 		Italian:"Trabocco"
@@ -1508,7 +1515,7 @@
 		German:"Reichweite"
 		French:"Portée"
 		Russian:"Расширенный радиус"
-		Simplified_Chinese:"攻击范围"
+		Simplified_Chinese:"Range"// the unit attribute and the promotions ability have the same name,if we do not solve this problem,i will not translate it.
 	}
 
 	"+1 Range":{
@@ -1548,21 +1555,6 @@
 		French:"Guerre éclair"
 		Russian:"Блиц"
 		Simplified_Chinese:"闪击战术"
-	}
-
-	"1 additional attack per turn":{
-		Italian:"L'unità può attaccare due volte ogni turno"
-		French:"1 attaque supplémentaire par tour"
-		Russian:"Дополнительная атака за ход"
-		Simplified_Chinese:"每回合有一次额外的攻击机会"
-	}
-
-	"Logistics":{
-		Italian:"Logistica"
-		German:"Logistick"
-		French:"Logistique"
-		Russian:"Логистика"
-		Simplified_Chinese:"后勤补给"
 	}
 
 	"Bombardment I":{

@@ -416,7 +416,7 @@
 		German:"Gold"
 		Dutch:"Goud"
 		Spanish:"Oro"
-		Simplified_Chinese:"金"
+		Simplified_Chinese:"Gold"//the basic resource and the luxury resource have the same name,if we do not solve this problem,i will not translate it.
 		Portuguese:"Ouro"
 		Japanese:"ゴールド"
 	}
@@ -2060,11 +2060,13 @@
 		Russian:"Юниты сражаются, как будто они в полной силе, даже когда повреждены"
 	}
 
-	/*
 	"Germany":{
 		Italian:"Germania"
 		French:"Allemagne"
+		Simplified_Chinese:"德意志"
 	}
+	
+/*
 
 	"India":{
 		Italian:"India"
@@ -3179,9 +3181,5 @@
 		Simplified_Chinese:"语言设置"
 		French:"langage"
 	}
-    
-	//If don't do this,when game runs in Chinese,it will be lost some font.
-	"missing Chinese font":{
-		Simplified_Chinese:"。、，：查俱左右详细介绍节哪绚丽多彩概念奇妙等虽然待健康但距影响范围欢迎第就也而应然情况该智屏按钮促几例如脑终至因容熟还永味着担告问题激励善竭尽求感谢-足让旅教扣余灾菜程库差财富谋慢乏较貌段看控少缺顶遥栏随稍奖棒如果欢请评系页允些使径断穿份吧具起旦决赛难绝送依另皂白注许负两"
-	}
+
 }
