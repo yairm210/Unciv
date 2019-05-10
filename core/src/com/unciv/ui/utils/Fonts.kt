@@ -29,10 +29,14 @@ class Fonts {
                 "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
         if (font == "Arial") return defaultText
         if (font == chineseFont) {
-            val constants = "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
             val charSet = HashSet<Char>()
-            charSet.addAll(constants.asIterable())
             charSet.addAll(defaultText.asIterable())
+            var BasicHelpString=Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").readString()
+                BasicHelpString.forEach {charSet.add(it)}
+            var NationsString=Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").readString()
+                NationsString.forEach {charSet.add(it)}
+            var TutorialsString=Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").readString()
+                TutorialsString.forEach {charSet.add(it)}
             for (entry in GameBasics.Translations.entries) {
                 for (lang in entry.value) {
                     if (lang.key.contains("Chinese")) charSet.addAll(lang.value.asIterable())
