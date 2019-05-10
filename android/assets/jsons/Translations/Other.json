@@ -1367,7 +1367,7 @@
 		Portuguese:"Nome do jogo salvo"
 	}
 
-	"Copy to clipboard":{
+	"Copy to clipboard":{ //shouldn't it be "copy saved game to clipboard" ?
 		Italian:"Copia su appunti"
 		French:"Copier dans le presse-papier"
 		Simplified_Chinese:"复制到剪贴板"
@@ -3138,9 +3138,9 @@
     }
 
     " for ":{ //for example:+1Gold for Gems,Gold,Silver
-	  Italian:" per "
-	  Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
-	  French:"par "
+		Italian:" per "
+		Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
+		French:"par "
     }
 
     // Options menu, pointed out by Smashfanful
@@ -3148,7 +3148,7 @@
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"
 		Russian:"Отсутствующие переводы:"
-	    Simplified_Chinese:"未翻译的词条:"
+	    	Simplified_Chinese:"未翻译的词条:"
 		French:"Traductions manquantes:"
 	}
 
