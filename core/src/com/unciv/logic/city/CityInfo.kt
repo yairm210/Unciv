@@ -269,7 +269,7 @@ class CityInfo {
         }
 
         for(building in cityConstructions.getBuiltBuildings()
-                .filter{ it.uniqueTo != newCivInfo.civName && it.replaces != ""}) {
+                .filter{ it.uniqueTo != newCivInfo.civName && it.replaces != null}) {
             cityConstructions.removeBuilding(building.name)
             cityConstructions.addBuilding(building.replaces!!)
         }
