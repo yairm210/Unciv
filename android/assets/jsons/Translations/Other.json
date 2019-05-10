@@ -2445,7 +2445,7 @@
 		French:"[civName] nous a déclaré la guerre!"
 		Romanian:"[civName] ne-au declarat război!"
 		Spanish:"¡[civName] te ha declarado la guerra!"
-		Simplified_Chinese:"[civName]已经对我们宣战!"
+		Simplified_Chinese:"[civName]已经对我们宣战！"
 		Portuguese:"[civName] Declarou guerra contra nós!"
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
@@ -2475,24 +2475,24 @@
 		Russian:"Вы заплатите за это!"
 		Romanian:"Veți plăti pentru asta!"
 		Portuguese:"Você vai pagar por isso!"
-		Simplified_Chinese:"你会为此付出代价！"
+		Simplified_Chinese:"你会为此付出代价的！"
 	}
 
 	"Very well.":{
 		Italian:"Molto bene."
 		French:"Très bien."
-		Simplified_Chinese:"很好."
+		Simplified_Chinese:"很好。"
 	}
 
 	"Farewell.":{
 		Italian:"Addio."
 		French:"Adieu."
-		Simplified_Chinese:"再见."
+		Simplified_Chinese:"再见。"
 	}
 	
 	"Not this time.":{ // declining trade text
 		Italian:"Non questa volta."
-		Simplified_Chinese:"这次不行。我只和有诚意的人交易。"
+		Simplified_Chinese:"这次不行，我只和有诚意的人交易。"
 		French:"Pas cette fois."
 	}
 
@@ -2511,24 +2511,29 @@
 	"A pleasure to meet you.":{
 		Italian:"Siamo lieti di incontrarvi."
 		French:"Un plaisir de vous rencontrez"
-		Simplified_Chinese:"很高兴见到你."
+		Simplified_Chinese:"很高兴见到你。"
 	}
 	
 	"Our relationship: ":{
 		Italian:"I nostri rapporti: "
 		French:"Notre relation :" //or l'état de notre relation
+		Simplified_Chinese:"我们的关系："
 	}
-	
 	
 	// Friendship declaration flavor texts
 	"Declare Friendship ([numberOfTurns] turns)":{
 		Italian:"Dichiarazione di Amicizia ([numberOfTurns] turni)"
+		Simplified_Chinese:"宣布相互友善([numberOfTurns]回合)"
 	}
+
 	"May our nations forever remain united!":{
 		Italian:"Possano le nostre nazioni rimanere per sempre unite!"
+		Simplified_Chinese:"我们两个文明将永远肝胆相照、休戚与共地站在一起！"
 	}
+
 	"Indeed!":{
 		Italian:"Perfetto!"
+		Simplified_Chinese:"这是无比正确的命运抉择！"
 	}
 	
 	// Relationship states, from worst (Unforgivable) to best (Ally)
@@ -2571,7 +2576,8 @@
 
   "Ally":{
 		Italian:"Alleato"
-	  French:"歃血之盟"
+		French:"Allié"
+		Simplified_Chinese:"歃血之盟"
   }
 	
 ////// Diplomatic modifiers
@@ -2579,40 +2585,49 @@
 	"You declared war on us!":{
 		Italian:"Ci hai dichiarato guerra!"
 		French:"Vous nous avez déclaré la guerre!"
+		Simplified_Chinese:"不知死活的蠢货!你竟敢向我们宣战！"
 	}
 
 	"Your warmongering ways are unacceptable to us.":{
 		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
 		French:"Votre bellicisme est inacceptable pour nous."
+		Simplified_Chinese:"你的穷兵黩武行径是我们无法容忍的！"
 	}
 
 	"You have captured our cities!":{
 		Italian:"Hai preso una delle nostre città!"
 		French:"Vous avez capturé nos villes!"
+		Simplified_Chinese:"多行不义必自毙！你竟敢占领我们的城市！"
 	}
 
 	"Years of peace have strengthened our relations.":{
 		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
 		French:"Les années de paix ont renforcées notre relation"
+		Simplified_Chinese:"多年的和平时光让我们更加珍视彼此的关系。"
 	}
 
 	"Our mutual military struggle brings us closer together.":{
 		Italian:"I nostri nemici in comune ci hanno tenuti insieme."
 		French:"Nos problèmes militaires communs nous ont rapprochés"
+		Simplified_Chinese:"共同的戎马岁月拉近了彼此的距离。"
 	}
 	
 	"We have signed a public declaration of friendship":{
 		Italian:"Abbiamo segnato una dichiarazione pubblica d'amicizia!"
+		Simplified_Chinese:"真是美好的一天！我们宣布：两个文明间将彼此尊重、相互友善！"
 	}
 	"You have declared friendship with our enemies!":{
 		Italian:"Hai dichiarato un'amicizia con i nostri nemici!"
+		Simplified_Chinese:"渡尽劫波兄弟在,相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
 	}
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
+		Simplified_Chinese:"兄弟齐心、其利断金！我们宣布：我们与盟友间兄弟般的友谊永世长存！"
 	}
 	
 	"Our open borders have brought us closer together.":{
 		Italian:"I nostri accordi di passaggio hanno avvicinato le nostre nazioni."
+		Simplified_Chinese:"开放的边界促进了彼此的了解，让我们的人民心心相通！"
 	}
 	
 ////// Overview screen
