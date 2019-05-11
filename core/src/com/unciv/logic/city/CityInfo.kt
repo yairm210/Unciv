@@ -259,6 +259,21 @@ class CityInfo {
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             cityConstructions.removeBuilding(building.name)
         isBeingRazed=false
+
+        // Transfer unique buildings
+        val builtBuildings = cityConstructions.getBuiltBuildings().map{ it.name }
+        for(building in GameBasics.Buildings.values
+                .filter{ it.uniqueTo == newCivInfo.civName && builtBuildings.contains(it.replaces) }) {
+            cityConstructions.removeBuilding(building.replaces!!)
+            cityConstructions.addBuilding(building.name)
+        }
+
+        for(building in cityConstructions.getBuiltBuildings()
+                .filter{ it.uniqueTo != newCivInfo.civName && it.replaces != null}) {
+            cityConstructions.removeBuilding(building.name)
+            cityConstructions.addBuilding(building.replaces!!)
+        }
+
         tryUpdateRoadStatus()
     }
 
