@@ -251,7 +251,7 @@
 		German:"Kostenloser Solzialgrundsatz"
 		Dutch:"Gratis sociaalbeleid"
 		Spanish:"Política social gratis"
-		Simplified_Chinese:"免费的社会政策"
+		Simplified_Chinese:"获得1次免费推行社会政策的机会"
 		Portuguese:"Politica social gratis"
 	}
 	
@@ -863,6 +863,10 @@
 		Simplified_Chinese:"免费的伟人"
 	}
 	
+	"Choose a free great person":{
+		Simplified_Chinese:"选择1个免费的伟人"
+	}
+
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
 		Simplified_Chinese:"姬路城"
@@ -1072,7 +1076,7 @@
 		German:"Neue Sozialpolitiken erfordern 10% weniger Kultur"
 		Dutch:"Aanschaffingskosten nieuwe sociaal beleiden verlaagd met 10%"
 		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
-		Simplified_Chinese:"推行新政策所需的文化点数-10%"
+		Simplified_Chinese:"推行新的社会政策所需的文化点数-10%"
 		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
 	}
 	
@@ -1159,7 +1163,7 @@
 		Italian:"+1 Produzione dagli Specialisti"
 		German:"+1 Produktion von Spezialisten"
 		French:"+1 Production par spécialiste"
-		Simplified_Chinese:"每位专业人员+1产能"
+		Simplified_Chinese:"每个专业人员+1产能"
 	}
 	
 	"Medical Lab":{	

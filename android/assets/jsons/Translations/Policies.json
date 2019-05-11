@@ -22,6 +22,17 @@
 		German:"Grundsatz verabschieden"
 	}
 
+	"Adopt free policy":{
+		Italian:"Adotta politica"
+		Russian:"Принять общественный институт"
+		French:"Adopter la Doctrine"
+		Romanian:"Adoptă politică"
+		Spanish:"Adoptar política"
+		Simplified_Chinese:"推行免费的政策"
+		Portuguese:"Adotar Política"
+		German:"Grundsatz verabschieden"
+	}
+
 	"Unlocked at":{
 		Italian:"Si sblocca con"
 		Russian:"Разблокируется в"
@@ -340,7 +351,7 @@
 		Russian:"Бесплатный Великий Человек по выбору рядом со столицей"
 		Romanian:"Om Mare la alegere gratuit lângă capitală"
 		Spanish:"Gran Persona gratis a elegir cerca de la capital"
-		Simplified_Chinese:"获得1个免费的伟人，类型可以选择"
+		Simplified_Chinese:"首都附近出现1个免费的伟人，类型可以选择"
 		Portuguese:"Grande Pessoa de sua escolha (grátis) na capital" 
 		German:"Kostenlose Große Persönlichkeit der Wahl erscheint in der Hauptstadt"
 		French:"personnage illustre gratuit près de votre capitale"
@@ -619,7 +630,7 @@
 		Russian:"+1 культура за каждый монумент, храм и монастырь. Даёт бесплатный общественный институт"
 		Romanian:"+1 cultură pentru fiecare monument, templu sau mănăstire. Obține o politică gratuită"
 		Spanish:"+1 cultura por cada monumento, templo y monasterio. Ganas una política gratis"
-		Simplified_Chinese:"每座纪念碑、神庙和修道院+1文化，获得1项免费的社会政策"
+		Simplified_Chinese:"每座纪念碑、神庙和修道院+1文化，获得1次免费推行社会政策的机会"
 		Portuguese:"+1 cultura por cada monumento, templo e monastério. Ganha uma apolítica grátis"
 		German:"+1 Kultur für jedes Monument, Kloster und Tempel; Ein kostenloser Grundsatz."
 		French:"+1 culture pour chaque monument, temple et monastère, donne une doctrine gratuite"
