@@ -1,5 +1,6 @@
 package com.unciv.logic.trade
 
+import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
@@ -29,7 +30,7 @@ class TradeEvaluation{
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
             TradeType.Treaty -> {
-                if (offer.name == "Peace Treaty")
+                if (offer.name == Constants.peaceTreaty)
                     return evaluatePeaceCostForThem(civInfo,tradePartner) // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                 else return 1000
             }
@@ -119,7 +120,7 @@ class TradeEvaluation{
             TradeType.Gold -> return offer.amount
             TradeType.Gold_Per_Turn -> return offer.amount * offer.duration
             TradeType.Treaty -> {
-                if (offer.name == "Peace Treaty")
+                if (offer.name == Constants.peaceTreaty)
                     return evaluatePeaceCostForThem(civInfo,tradePartner) // Since it will be evaluated twice, once when they evaluate our offer and once when they evaluate theirs
                 else return 1000
             }

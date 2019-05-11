@@ -3,6 +3,7 @@ package com.unciv.ui.trade
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
@@ -52,7 +53,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
                 val amountPerClick =
                         if (offer.type == Gold) 50
                         else 1
-                if (offer.amount > 0)
+                if (offer.amount > 0 && offer.name != Constants.peaceTreaty) // can't disable peace treaty!
                     tradeButton.onClick {
                         val amountTransferred = min(amountPerClick, offer.amount)
                         onOfferClicked(offer.copy(amount = amountTransferred))

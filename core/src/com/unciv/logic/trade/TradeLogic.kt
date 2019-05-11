@@ -1,5 +1,6 @@
 package com.unciv.logic.trade
 
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
@@ -17,7 +18,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         val offers = TradeOffersList()
         if (civInfo.isCityState() && otherCivilization.isCityState()) return offers
         if(civInfo.isAtWarWith(otherCivilization))
-            offers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+            offers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
 
         if(!otherCivilization.getDiplomacyManager(civInfo).hasOpenBorders
                 && !otherCivilization.isCityState()
@@ -101,7 +102,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     from.updateViewableTiles()
                 }
                 if(offer.type== TradeType.Treaty){
-                    if(offer.name=="Peace Treaty") to.getDiplomacyManager(from).makePeace()
+                    if(offer.name==Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
                 }
                 if(offer.type==TradeType.Introduction)
                     to.meetCivilization(to.gameInfo.getCivilization(offer.name.split(" ")[2]))

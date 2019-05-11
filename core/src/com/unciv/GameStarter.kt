@@ -17,7 +17,7 @@ class GameParameters{
     var difficulty="Prince"
     var mapRadius=20
     var numberOfHumanPlayers=1
-    var humanNations=ArrayList<String>().apply { add("Babylon") }
+    var humanNations=ArrayList<String>().apply { add("Babylon") } // Good default starting civ
     var numberOfEnemies=3
     var numberOfCityStates=0
     var mapType= MapType.Perlin

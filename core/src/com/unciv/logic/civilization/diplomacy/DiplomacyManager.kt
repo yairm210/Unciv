@@ -1,6 +1,7 @@
 package com.unciv.logic.civilization.diplomacy
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
@@ -89,7 +90,7 @@ class DiplomacyManager() {
     fun turnsToPeaceTreaty(): Int {
         for(trade in trades)
             for(offer in trade.ourOffers)
-                if(offer.name=="Peace Treaty" && offer.duration > 0) return offer.duration
+                if(offer.name == Constants.peaceTreaty && offer.duration > 0) return offer.duration
         return 0
     }
 

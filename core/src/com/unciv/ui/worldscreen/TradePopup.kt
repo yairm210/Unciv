@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.trade.TradeLogic
 import com.unciv.logic.trade.TradeType
@@ -62,7 +63,7 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
 
-            if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name=="Peace Treaty" })
+            if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name== Constants.peaceTreaty })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
 
             remove()

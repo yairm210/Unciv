@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SplitPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
@@ -122,8 +123,8 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 PeaceButton.onClick {
                     YesNoPopupTable("Peace with [${otherCiv.civName}]?".tr(), {
                         val tradeLogic = TradeLogic(currentPlayerCiv, otherCiv)
-                        tradeLogic.currentTrade.ourOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
-                        tradeLogic.currentTrade.theirOffers.add(TradeOffer("Peace Treaty", TradeType.Treaty, 20))
+                        tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+                        tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
                         tradeLogic.acceptTrade()
                         updateLeftSideTable()
                     }, this)
@@ -144,11 +145,25 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
         diplomacyTable.addSeparator()
 
-        val tradeButton = TextButton("Trade".tr(), skin)
-        tradeButton.onClick { setTrade(otherCiv) }
-        if(otherCiv.getDiplomacyManager(currentPlayerCiv).hasFlag(DiplomacyFlags.DeclaredWar))
-            tradeButton.disable() // Can't trade for 10 turns after war was declared
-        diplomacyTable.add(tradeButton).row()
+        if(!currentPlayerCiv.isAtWarWith(otherCiv)) {
+            val tradeButton = TextButton("Trade".tr(), skin)
+            tradeButton.onClick { setTrade(otherCiv) }
+            diplomacyTable.add(tradeButton).row()
+        }
+        else{
+            val negotiatePeaceButton = TextButton("Negotiate Peace".tr(),skin)
+            negotiatePeaceButton.onClick {
+                val tradeTable = setTrade(otherCiv)
+                val peaceTreaty = TradeOffer(Constants.peaceTreaty,TradeType.Treaty,30)
+                tradeTable.tradeLogic.currentTrade.theirOffers.add(peaceTreaty)
+                tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
+                tradeTable.offerColumnsTable.update()
+            }
+            if (otherCiv.getDiplomacyManager(currentPlayerCiv).hasFlag(DiplomacyFlags.DeclaredWar))
+                negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
+
+            diplomacyTable.add(negotiatePeaceButton).row()
+        }
 
         val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
 
