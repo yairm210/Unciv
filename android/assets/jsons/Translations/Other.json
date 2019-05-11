@@ -1930,7 +1930,7 @@
 		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres apparaissent 50% plus vite"
 		Portuguese:"Receba gratuitamente o Grande Cientista quando você descobrir Escrevendo, Ganhe Grandes Cientistas 50% mais rápido"
 		Russian:"Получите бесплатно великого ученого, когда откроете для себя написание, заработайте великих ученых на 50% быстрее"
-		Simplified_Chinese:"发明文字后立即获得一位大科学家，大科学家点数积累速率+50%"
+		Simplified_Chinese:"发明文字后立即获得一个大科学家，大科学家点数积累速率+50%"
 		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
 	}
 	
@@ -2590,8 +2590,8 @@
 
   "Ally":{
 		Italian:"Alleato"
-    French:"Allié"
-	  Simplified_Chinese:"歃血之盟"
+		French:"Allié"
+		Simplified_Chinese:"歃血之盟"
   }
 
 ////// Diplomatic modifiers
@@ -2628,13 +2628,14 @@
 	
 	"We have signed a public declaration of friendship":{
 		Italian:"Abbiamo segnato una dichiarazione pubblica d'amicizia!"
+		Simplified_Chinese:"真是美好的一天！我们宣布：两个文明间将彼此尊重、相互友善！"
 		French:"Nous avons publiquement signé une Déclaration d'Amitié"
-    		Simplified_Chinese:"渡尽劫波兄弟在,相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
-
 	}
+
 	"You have declared friendship with our enemies!":{
 		Italian:"Hai dichiarato un'amicizia con i nostri nemici!"
 		French:"Vous avez signé une Déclaration d'Amitié avec nos ennemis!"
+		Simplified_Chinese:"渡尽劫波兄弟在,相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
 	}
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
