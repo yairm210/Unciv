@@ -97,6 +97,7 @@ class DiplomacyManager() {
     fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
 
     fun relationshipLevel(): RelationshipLevel {
+
         if(civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
             return RelationshipLevel.Neutral // People make their own choices.
 
@@ -107,12 +108,18 @@ class DiplomacyManager() {
         // maybe we need to average their views of each other? That makes sense to me.
 
         val opinion = opinionOfOtherCiv()
+        if(opinion<-80) return RelationshipLevel.Unforgivable
+        if(opinion<-40) return RelationshipLevel.Enemy
+
+        // This is here because when you're at war you can either be enemy OR unforgivable,
+        // depending on the opinion
+        if(civInfo.isAtWarWith(otherCiv()))
+            return RelationshipLevel.Enemy
+
+        if(opinion<-15) return RelationshipLevel.Competitor
         if(opinion>80) return RelationshipLevel.Ally
         if(opinion>40) return RelationshipLevel.Friend
         if(opinion>15) return RelationshipLevel.Favorable
-        if(opinion<-80) return RelationshipLevel.Unforgivable
-        if(opinion<-40) return RelationshipLevel.Enemy
-        if(opinion<-15) return RelationshipLevel.Competitor
         return RelationshipLevel.Neutral
     }
 
