@@ -263,7 +263,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
                 val gameInfoClone = gameInfo.clone()
                 kotlin.concurrent.thread {
-                    // the save takes a long time( up to a second!) and we can do it while the player continues his game.
+                    // the save takes a long time (up to a second!) and we can do it while the player continues his game.
                     // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
                     // So what we do is we clone all the game data and serialize the clone.
                     if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0)
@@ -278,6 +278,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 // That's why this needs to be after the game is saved.
                 shouldUpdate=true
 
+                updateNextTurnButton()
                 Gdx.input.inputProcessor = stage
             }
         }
