@@ -143,6 +143,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         updateTechButton(cloneCivilization)
         updateDiplomacyButton(cloneCivilization)
+        updateNextTurnButton()
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         battleTable.update()
@@ -234,7 +235,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 index = ++index % dueUnits.size // for looping
                 val unit = dueUnits[index]
                 unit.due = false
-                setNextTurnButtonCaption()
                 tileMapHolder.setCenterPosition(unit.currentTile.position)
                 shouldUpdate=true
                 return@onClick
@@ -280,7 +280,7 @@ class WorldScreen : CameraStageBaseScreen() {
                     if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0)
                         GameSaver().saveGame(gameInfoClone, "Autosave")
                     nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
-                    setNextTurnButtonCaption()
+                    updateNextTurnButton()
                 }
 
                 // If we put this BEFORE the save game, then we try to save the game...
@@ -298,7 +298,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     fun getDueUnits() = currentPlayerCiv.getCivUnits().filter { it.due }
 
-    fun setNextTurnButtonCaption() {
+    fun updateNextTurnButton() {
         nextTurnButton.setText(getNextTurnCaption())
         nextTurnButton.color = if(getDueUnits().isEmpty()) Color.WHITE else Color.GRAY
     }
