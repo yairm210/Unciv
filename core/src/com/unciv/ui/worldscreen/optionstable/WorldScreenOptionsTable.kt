@@ -50,6 +50,12 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             addButton("Hide") { settings.showResourcesAndImprovements = false; update() }
         else addButton("Show") { settings.showResourcesAndImprovements = true; update() }
 
+        add("Check for idle units".toLabel())
+        addButton(if(settings.checkForDueUnits) "Yes" else "No") {
+            settings.checkForDueUnits = !settings.checkForDueUnits
+            update()
+        }
+
         addLanguageSelectBox()
 
         addResolutionSelectBox()

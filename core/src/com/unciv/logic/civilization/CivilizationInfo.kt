@@ -307,6 +307,8 @@ class CivilizationInfo {
     fun shouldOpenTechPicker() = tech.freeTechs != 0
             || tech.currentTechnology()==null && cities.isNotEmpty()
 
+    fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && hasDueUnits()
+
     fun getNextDueUnit(selectedUnit: MapUnit?): MapUnit? {
         val dueUnits = getDueUnits()
         if(dueUnits.isNotEmpty()) {

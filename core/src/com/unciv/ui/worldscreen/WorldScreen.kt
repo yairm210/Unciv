@@ -48,8 +48,6 @@ class WorldScreen : CameraStageBaseScreen() {
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
 
-        nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
-                topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(this)
         notificationsScroll.width = stage.width/3
 
@@ -229,10 +227,12 @@ class WorldScreen : CameraStageBaseScreen() {
         nextTurnButton.onClick {
 
             // cycle through units not yet done
-            currentPlayerCiv.getNextDueUnit(bottomBar.unitTable.selectedUnit)?.let {
-                tileMapHolder.setCenterPosition(it.currentTile.position)
-                shouldUpdate=true
-                return@onClick
+            if (currentPlayerCiv.shouldGoToDueUnit()) {
+                currentPlayerCiv.getNextDueUnit(bottomBar.unitTable.selectedUnit)?.let {
+                    tileMapHolder.setCenterPosition(it.currentTile.position)
+                    shouldUpdate=true
+                    return@onClick
+                }
             }
 
             if (currentPlayerCiv.shouldOpenTechPicker()) {
@@ -285,7 +285,7 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     fun updateNextTurnButton() {
-        val text = if (currentPlayerCiv.hasDueUnits())
+        val text = if (currentPlayerCiv.shouldGoToDueUnit())
             "Next unit"
         else if(currentPlayerCiv.shouldOpenTechPicker())
             "Pick a tech"
@@ -296,6 +296,7 @@ class WorldScreen : CameraStageBaseScreen() {
         nextTurnButton.setText(text.tr())
         nextTurnButton.color = if(text=="Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
+        nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
     override fun resize(width: Int, height: Int) {
