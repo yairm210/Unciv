@@ -300,6 +300,26 @@ class CivilizationInfo {
         units=newList
     }
 
+    fun getDueUnits() = getCivUnits().filter { it.due }
+
+    fun hasDueUnits() = getDueUnits().isNotEmpty()
+
+    fun shouldOpenTechPicker() = tech.freeTechs != 0
+            || tech.currentTechnology()==null && cities.isNotEmpty()
+
+    fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && hasDueUnits()
+
+    fun getNextDueUnit(selectedUnit: MapUnit?): MapUnit? {
+        val dueUnits = getDueUnits()
+        if(dueUnits.isNotEmpty()) {
+            var index = dueUnits.indexOf(selectedUnit)
+            index = ++index % dueUnits.size // for looping
+            val unit = dueUnits[index]
+            unit.due = false
+            return unit
+        }
+        return null
+    }
 
     fun updateViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()

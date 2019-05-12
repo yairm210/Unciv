@@ -15,6 +15,7 @@ class PolicyManager {
     internal val adoptedPolicies = HashSet<String>()
     var numberOfAdoptedPolicies = 0
     var shouldOpenPolicyPicker = false
+            get() = field && canAdoptPolicy()
 
     // from https://forums.civfanatics.com/threads/the-number-crunching-thread.389702/
     // round down to nearest 5

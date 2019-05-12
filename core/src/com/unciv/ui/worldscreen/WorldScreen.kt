@@ -6,11 +6,11 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
@@ -48,8 +48,6 @@ class WorldScreen : CameraStageBaseScreen() {
         topBar.setPosition(0f, stage.height - topBar.height)
         topBar.width = stage.width
 
-        nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f,
-                topBar.y - nextTurnButton.height - 10f)
         notificationsScroll = NotificationsScroll(this)
         notificationsScroll.width = stage.width/3
 
@@ -143,6 +141,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         updateTechButton(cloneCivilization)
         updateDiplomacyButton(cloneCivilization)
+        updateNextTurnButton()
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         battleTable.update()
@@ -222,21 +221,26 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     private fun createNextTurnButton(): TextButton {
-        val nextTurnButton = TextButton("Next turn".tr(), skin)
-        nextTurnButton.onClick {
-            if(currentPlayerCiv.policies.shouldOpenPolicyPicker && !currentPlayerCiv.policies.canAdoptPolicy())
-                currentPlayerCiv.policies.shouldOpenPolicyPicker = false // something has changed and we can no longer adopt the policy, e.g. we conquered another city
 
-            if (currentPlayerCiv.tech.freeTechs != 0) {
-                game.screen = TechPickerScreen(true, currentPlayerCiv)
+        val nextTurnButton = TextButton("", skin) // text is set in update()
+
+        nextTurnButton.onClick {
+
+            // cycle through units not yet done
+            if (currentPlayerCiv.shouldGoToDueUnit()) {
+                currentPlayerCiv.getNextDueUnit(bottomBar.unitTable.selectedUnit)?.let {
+                    tileMapHolder.setCenterPosition(it.currentTile.position)
+                    shouldUpdate=true
+                    return@onClick
+                }
+            }
+
+            if (currentPlayerCiv.shouldOpenTechPicker()) {
+                game.screen = TechPickerScreen(currentPlayerCiv.tech.freeTechs != 0, currentPlayerCiv)
                 return@onClick
             } else if (currentPlayerCiv.policies.shouldOpenPolicyPicker) {
                 game.screen = PolicyPickerScreen(currentPlayerCiv)
                 currentPlayerCiv.policies.shouldOpenPolicyPicker = false
-                return@onClick
-            }
-            else if (currentPlayerCiv.tech.currentTechnology() == null && currentPlayerCiv.cities.isNotEmpty()) {
-                game.screen = TechPickerScreen(currentPlayerCiv)
                 return@onClick
             }
 
@@ -264,6 +268,7 @@ class WorldScreen : CameraStageBaseScreen() {
                     if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0)
                         GameSaver().saveGame(gameInfoClone, "Autosave")
                     nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
+                    updateNextTurnButton()
                 }
 
                 // If we put this BEFORE the save game, then we try to save the game...
@@ -272,12 +277,26 @@ class WorldScreen : CameraStageBaseScreen() {
                 // That's why this needs to be after the game is saved.
                 shouldUpdate=true
 
-                nextTurnButton.setText("Next turn".tr())
                 Gdx.input.inputProcessor = stage
             }
         }
 
         return nextTurnButton
+    }
+
+    fun updateNextTurnButton() {
+        val text = if (currentPlayerCiv.shouldGoToDueUnit())
+            "Next unit"
+        else if(currentPlayerCiv.shouldOpenTechPicker())
+            "Pick a tech"
+        else if(currentPlayerCiv.policies.shouldOpenPolicyPicker)
+            "Pick a policy"
+        else
+            "Next turn"
+        nextTurnButton.setText(text.tr())
+        nextTurnButton.color = if(text=="Next turn") Color.WHITE else Color.GRAY
+        nextTurnButton.pack()
+        nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
     override fun resize(width: Int, height: Int) {
