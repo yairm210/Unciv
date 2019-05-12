@@ -28,7 +28,7 @@ class Language(val language:String){
 }
 
 class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
-    val languageSelectBox = SelectBox<Language>(skin)
+    var selectedLanguage: String = "English"
 
     init {
         update()
@@ -151,7 +151,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
     private fun addLanguageSelectBox() {
         add("Language".toLabel())
-
+        val languageSelectBox = SelectBox<Language>(skin)
         val languageArray = Array<Language>()
         GameBasics.Translations.getLanguages().map { Language(it) }.sortedByDescending { it.percentComplete }
                 .forEach { languageArray.add(it) }
@@ -161,7 +161,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                val selectedLanguage = languageSelectBox.selected.language
+                selectedLanguage = languageSelectBox.selected.language
                 if (Fonts().containsFont(Fonts().getFontForLanguage(selectedLanguage)))
                     selectLanguage()
                 else {
@@ -200,7 +200,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
 
     fun selectLanguage(){
-        UnCivGame.Current.settings.language = languageSelectBox.selected.language
+        UnCivGame.Current.settings.language = selectedLanguage
         UnCivGame.Current.settings.save()
 
         CameraStageBaseScreen.resetFonts()
