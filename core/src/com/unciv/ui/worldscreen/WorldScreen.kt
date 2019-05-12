@@ -224,7 +224,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     private fun createNextTurnButton(): TextButton {
 
-        val nextTurnButton = TextButton(getNextTurnCaption(), skin)
+        val nextTurnButton = TextButton("", skin) // text is set in update()
 
         nextTurnButton.onClick {
 
@@ -235,19 +235,12 @@ class WorldScreen : CameraStageBaseScreen() {
                 return@onClick
             }
 
-            if(currentPlayerCiv.policies.shouldOpenPolicyPicker && !currentPlayerCiv.policies.canAdoptPolicy())
-                currentPlayerCiv.policies.shouldOpenPolicyPicker = false // something has changed and we can no longer adopt the policy, e.g. we conquered another city
-
-            if (currentPlayerCiv.tech.freeTechs != 0) {
-                game.screen = TechPickerScreen(true, currentPlayerCiv)
+            if (currentPlayerCiv.shouldOpenTechPicker()) {
+                game.screen = TechPickerScreen(currentPlayerCiv.tech.freeTechs != 0, currentPlayerCiv)
                 return@onClick
             } else if (currentPlayerCiv.policies.shouldOpenPolicyPicker) {
                 game.screen = PolicyPickerScreen(currentPlayerCiv)
                 currentPlayerCiv.policies.shouldOpenPolicyPicker = false
-                return@onClick
-            }
-            else if (currentPlayerCiv.tech.currentTechnology() == null && currentPlayerCiv.cities.isNotEmpty()) {
-                game.screen = TechPickerScreen(currentPlayerCiv)
                 return@onClick
             }
 
@@ -292,12 +285,18 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     fun updateNextTurnButton() {
-        nextTurnButton.setText(getNextTurnCaption())
-        nextTurnButton.color = if(currentPlayerCiv.hasDueUnits()) Color.WHITE else Color.GRAY
+        val text = if (currentPlayerCiv.hasDueUnits())
+            "Next unit"
+        else if(currentPlayerCiv.shouldOpenTechPicker())
+            "Pick a tech"
+        else if(currentPlayerCiv.policies.shouldOpenPolicyPicker)
+            "Pick a policy"
+        else
+            "Next turn"
+        nextTurnButton.setText(text.tr())
+        nextTurnButton.color = if(text=="Next turn") Color.WHITE else Color.GRAY
+        nextTurnButton.pack()
     }
-
-    private fun getNextTurnCaption() =
-            if (currentPlayerCiv.hasDueUnits()) "Next turn".tr() else "Next unit".tr()
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
