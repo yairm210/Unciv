@@ -35,6 +35,8 @@ class MapUnit {
     var action: String? = null // work, automation, fortifying, I dunno what.
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
+    var due: Boolean = true
+        get() = field && isIdle()
 
     //region pure functions
     fun clone(): MapUnit {
@@ -402,6 +404,7 @@ class MapUnit {
     fun startTurn(){
         currentMovement = getMaxMovement().toFloat()
         attacksThisTurn=0
+        due = true
         val tileOwner = getTile().getOwner()
         if(tileOwner!=null && !civInfo.canEnterTiles(tileOwner) && !tileOwner.isCityState()) // if an enemy city expanded onto this tile while I was in it
             movementAlgs().teleportToClosestMoveableTile()
