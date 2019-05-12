@@ -17,9 +17,13 @@ class TradeEvaluation{
                 .filter { it.type!= TradeType.Treaty } // since treaties should only be evaluated once for 2 sides
                 .map { evaluateBuyCost(it,evaluator,tradePartner) }.sum()
 
-        val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipLevel()
-        if(relationshipLevel==RelationshipLevel.Enemy) sumOfTheirOffers = (sumOfTheirOffers*1.5).toInt()
-        else if(relationshipLevel==RelationshipLevel.Unforgivable) sumOfTheirOffers *= 2
+        // If we're making a peace treaty, don't try to up the bargain for people you don't like.
+        // Leads to spartan behaviour where you demand more, the more you hate the enemy...unhelpful
+        if(trade.ourOffers.none { it.name==Constants.peaceTreaty }) {
+            val relationshipLevel = evaluator.getDiplomacyManager(tradePartner).relationshipLevel()
+            if (relationshipLevel == RelationshipLevel.Enemy) sumOfTheirOffers = (sumOfTheirOffers * 1.5).toInt()
+            else if (relationshipLevel == RelationshipLevel.Unforgivable) sumOfTheirOffers *= 2
+        }
 
         val sumOfOurOffers = trade.ourOffers.map { evaluateSellCost(it, evaluator, tradePartner)}.sum()
         return sumOfOurOffers <= sumOfTheirOffers
