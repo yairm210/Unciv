@@ -210,9 +210,12 @@ class CityConstructions {
 
     fun addCultureBuilding() {
         val basicCultureBuildings = listOf("Monument", "Temple", "Opera House", "Museum")
-        val buildableCultureBuildings = GameBasics.Buildings.values
-                .filter { it.isBuildable(this)
-                        && (basicCultureBuildings.contains(it.name) || basicCultureBuildings.contains(it.replaces))}
+                .map { cityInfo.civInfo.getEquivalentBuilding(it) }
+
+        val buildableCultureBuildings = basicCultureBuildings
+                .map { GameBasics.Buildings[it]!! }
+                .filter { it.isBuildable(this)}
+
         if (buildableCultureBuildings.isEmpty()) return
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
         addBuilding(cultureBuildingToBuild)

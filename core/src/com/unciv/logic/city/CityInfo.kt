@@ -2,11 +2,11 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.Constants
 import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -261,17 +261,12 @@ class CityInfo {
         isBeingRazed=false
 
         // Transfer unique buildings
-        val builtBuildings = cityConstructions.getBuiltBuildings().map{ it.name }
-        for(building in GameBasics.Buildings.values
-                .filter{ it.uniqueTo == newCivInfo.civName && builtBuildings.contains(it.replaces) }) {
-            cityConstructions.removeBuilding(building.replaces!!)
-            cityConstructions.addBuilding(building.name)
-        }
-
-        for(building in cityConstructions.getBuiltBuildings()
-                .filter{ it.uniqueTo != newCivInfo.civName && it.replaces != null}) {
-            cityConstructions.removeBuilding(building.name)
-            cityConstructions.addBuilding(building.replaces!!)
+        for(building in cityConstructions.getBuiltBuildings()) {
+            val civEquivalentBuilding = newCivInfo.getEquivalentBuilding(building.name)
+            if(building.name != civEquivalentBuilding) {
+                cityConstructions.removeBuilding(building.name)
+                cityConstructions.addBuilding(civEquivalentBuilding)
+            }
         }
 
         tryUpdateRoadStatus()

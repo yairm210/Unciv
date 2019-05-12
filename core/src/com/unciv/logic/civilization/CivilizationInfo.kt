@@ -129,7 +129,6 @@ class CivilizationInfo {
 
     fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
-    fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
 
     fun getCapital()=cities.first { it.isCapital() }
@@ -139,6 +138,8 @@ class CivilizationInfo {
     fun isCityState(): Boolean = getNation().isCityState()
     fun getCityStateType(): CityStateType = getNation().cityStateType!!
     fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
+
+
     fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
 
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
@@ -317,6 +318,15 @@ class CivilizationInfo {
             return unit
         }
         return null
+    }
+
+    fun getEquivalentBuilding(buildingName:String): String {
+        val building = GameBasics.Buildings[buildingName]!!
+        val baseBuildingName = if(building.replaces==null) buildingName else building.replaces!!
+        for(blding in GameBasics.Buildings.values)
+            if(blding.replaces==buildingName && blding.uniqueTo==civName)
+                return blding.name
+        return baseBuildingName
     }
 
     fun updateViewableTiles() {
