@@ -228,8 +228,9 @@ class WorldScreen : CameraStageBaseScreen() {
 
             // cycle through units not yet done
             if (currentPlayerCiv.shouldGoToDueUnit()) {
-                currentPlayerCiv.getNextDueUnit(bottomBar.unitTable.selectedUnit)?.let {
-                    tileMapHolder.setCenterPosition(it.currentTile.position)
+                val nextDueUnit = currentPlayerCiv.getNextDueUnit(bottomBar.unitTable.selectedUnit)
+                if(nextDueUnit!=null) {
+                    tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position)
                     shouldUpdate=true
                     return@onClick
                 }

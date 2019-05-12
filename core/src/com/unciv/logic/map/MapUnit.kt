@@ -36,7 +36,6 @@ class MapUnit {
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
     var due: Boolean = true
-        get() = field && isIdle()
 
     //region pure functions
     fun clone(): MapUnit {

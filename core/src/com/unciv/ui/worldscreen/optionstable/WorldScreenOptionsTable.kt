@@ -51,7 +51,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         else addButton("Show") { settings.showResourcesAndImprovements = true; update() }
 
         add("Check for idle units".toLabel())
-        addButton(if(settings.checkForDueUnits) "Yes" else "No") {
+        addButton(if(settings.checkForDueUnits) "Yes".tr() else "No".tr()) {
             settings.checkForDueUnits = !settings.checkForDueUnits
             update()
         }
