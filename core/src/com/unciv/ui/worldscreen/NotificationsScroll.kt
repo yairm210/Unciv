@@ -25,7 +25,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             minitable.add(ImageGetter.getCircle()
                     .apply { color=notification.color }).size(10f).pad(5f)
             minitable.background(ImageGetter.getDrawable("OtherIcons/civTableBackground.png"))
-            minitable.add(label).pad(3f).padRight(10f)
+            minitable.add(label).pad(5f).padRight(10f)
 
             if (notification.location != null) {
                 minitable.onClick {
