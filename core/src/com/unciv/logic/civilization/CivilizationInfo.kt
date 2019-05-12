@@ -300,6 +300,21 @@ class CivilizationInfo {
         units=newList
     }
 
+    fun getDueUnits() = getCivUnits().filter { it.due }
+
+    fun hasDueUnits() = getDueUnits().isEmpty()
+
+    fun getNextDueUnit(selectedUnit: MapUnit?): MapUnit? {
+        val dueUnits = getDueUnits()
+        if(dueUnits.isNotEmpty()) {
+            var index = dueUnits.indexOf(selectedUnit)
+            index = ++index % dueUnits.size // for looping
+            val unit = dueUnits[index]
+            unit.due = false
+            return unit
+        }
+        return null
+    }
 
     fun updateViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()

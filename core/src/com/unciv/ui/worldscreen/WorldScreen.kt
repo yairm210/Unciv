@@ -229,13 +229,8 @@ class WorldScreen : CameraStageBaseScreen() {
         nextTurnButton.onClick {
 
             // cycle through units not yet done
-            val dueUnits = getDueUnits()
-            if(dueUnits.isNotEmpty()) {
-                var index = dueUnits.indexOf(bottomBar.unitTable.selectedUnit)
-                index = ++index % dueUnits.size // for looping
-                val unit = dueUnits[index]
-                unit.due = false
-                tileMapHolder.setCenterPosition(unit.currentTile.position)
+            currentPlayerCiv.getNextDueUnit(bottomBar.unitTable.selectedUnit)?.let {
+                tileMapHolder.setCenterPosition(it.currentTile.position)
                 shouldUpdate=true
                 return@onClick
             }
@@ -296,15 +291,13 @@ class WorldScreen : CameraStageBaseScreen() {
         return nextTurnButton
     }
 
-    fun getDueUnits() = currentPlayerCiv.getCivUnits().filter { it.due }
-
     fun updateNextTurnButton() {
         nextTurnButton.setText(getNextTurnCaption())
-        nextTurnButton.color = if(getDueUnits().isEmpty()) Color.WHITE else Color.GRAY
+        nextTurnButton.color = if(currentPlayerCiv.hasDueUnits()) Color.WHITE else Color.GRAY
     }
 
     private fun getNextTurnCaption() =
-            if (getDueUnits().isEmpty()) "Next turn".tr() else "Next unit".tr()
+            if (currentPlayerCiv.hasDueUnits()) "Next turn".tr() else "Next unit".tr()
 
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
