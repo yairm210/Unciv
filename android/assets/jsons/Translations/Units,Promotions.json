@@ -330,6 +330,7 @@
 	}
 
 	"Bonus vs Mounted 50%":{
+		Italian:"+50% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
 	}
 
@@ -365,6 +366,7 @@
 	}	
 	
 	"Bonus vs City 200%":{
+		Italian:"+200% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+200%战斗力"
 	}
 
@@ -412,13 +414,13 @@
 
 	"Can construct roads":{
 		Italian:"Può costruire Strade"
-        Simplified_Chinese:"可以建造道路"
+        	Simplified_Chinese:"可以建造道路"
 		French:"Peut construire des routes"
 	}
 
 	"Construct road":{ // for unit action button
 		Italian:"Costruisci Strada"
-        Simplified_Chinese:"建造道路"
+        	Simplified_Chinese:"建造道路"
 		French:"Construire une route"
 	} 
 	
@@ -446,6 +448,7 @@
 	}
 
 	"Penalty vs City 33%":{
+		Italian:"+33% Malus contro Città"
 		Simplified_Chinese:"攻击城市时-33%战斗力"
 	}
 
@@ -694,7 +697,8 @@
 		German:"Lanzer"
 	}
 	
-	"Bonus vs Mounted 33%":{	
+	"Bonus vs Mounted 33%":{
+		Italian:"+33% Bonus contro unità a cavallo
 		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
 	}
 
@@ -780,6 +784,7 @@
 	}
 	
 	"Bonus vs City 33%":{
+		Italian:"+33 Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+33%战斗力"
 	}
 
@@ -903,6 +908,7 @@
 	}
 
 	"Bonus vs City 30%":{
+		Italian:"+30 Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+30%战斗力"
 	}
 
@@ -987,6 +993,7 @@
 	}
 
 	"Bonus vs Armor 100%":{
+		Italian:"+100% Bonus contro unità corazzate"
 		Simplified_Chinese:"对战装甲单位时+100%战斗力"
 	}
 
@@ -1499,6 +1506,7 @@
 	}
 
 	"Bonus vs City 50%":{
+		Italian:"+50% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+50%战斗力"
 	}
 
@@ -1634,6 +1642,7 @@
 	}
 
 	"Bonus vs City 15%":{
+		Italian:"+15% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+15%战斗力"
 	}
 
@@ -1686,6 +1695,7 @@
 	}
 
 	"Bonus as Attacker 25%":{
+		Italian:"+25% Bonus come attaccante"
 		Simplified_Chinese:"主动攻击时+25%战斗力"
 	}
 
@@ -1705,7 +1715,7 @@
 		Simplified_Chinese:"狼群III级"
 	}
 
-	"Wolfpack III":{
+	"Wolfpack III":{ //Duplicate?
 		Italian:"Attacco in massa III"
 		German:"Rudeltaktik III"
 		French:"Meute III"
@@ -1714,10 +1724,12 @@
 	}
 	
 	"Woodsman":{
+		Italian:"Forestali"
 		Simplified_Chinese:"林地幽灵"
 	}
 
 	"Double movement rate through Forest and Jungle":{
+		Italian:"Movimento doppio attraverso Foreste e Giungle."
 		Simplified_Chinese:"森林和丛林移动时双倍移动力"
 	}
 
@@ -1731,18 +1743,22 @@
 	}
 
 	"Medic":{
+		Italian:"Medico I"
 		Simplified_Chinese:"治疗I"
 	}
 
 	"This unit and all others in adjacent tiles heal 5 additional HP per turn":{
+		Italian:"L'unità attuale e quelle circostanti guariscono di 5 PF al turno"
 		Simplified_Chinese:"本单位及其相邻单位每回合额外回复5生命值"
 	}
 
 	"Medic II":{
+		Italian:"Medico II"
 		Simplified_Chinese:"治疗II"
 	}
 
 	"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.":{
+		Italian:"L'unità attuale e quelle circostanti guariscono di 5 PF al turno. Inoltre, l'unità recupera 5 PF aggiuntivi se si trova fuori dal territorio amico."
 		Simplified_Chinese:"本单位及其相邻单位每回合额外回复5生命值，该单位在己方领土以外每回合额外回复5生命值"
 	}
 
