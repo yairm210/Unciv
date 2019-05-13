@@ -268,8 +268,13 @@ class WorldScreen : CameraStageBaseScreen() {
                     // So what we do is we clone all the game data and serialize the clone.
                     if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0)
                         GameSaver().saveGame(gameInfoClone, "Autosave")
-                    nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
-                    updateNextTurnButton()
+
+                    // do this on main thread
+                    Gdx.app.postRunnable {
+                        nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
+                        updateNextTurnButton()
+                    }
+
                 }
 
                 // If we put this BEFORE the save game, then we try to save the game...
@@ -278,7 +283,10 @@ class WorldScreen : CameraStageBaseScreen() {
                 // That's why this needs to be after the game is saved.
                 shouldUpdate=true
 
-                updateNextTurnButton()
+                // do this on main thread
+                Gdx.app.postRunnable {
+                    updateNextTurnButton()
+                }
                 Gdx.input.inputProcessor = stage
             }
         }
