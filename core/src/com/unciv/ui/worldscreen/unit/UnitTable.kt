@@ -2,14 +2,14 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.Image
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.unciv.UnCivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
+import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
@@ -25,6 +25,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     var currentlyExecutingAction : String? = null
     var lastSelectedCityButton : Boolean = false
     val deselectUnitButton = Table()
+    val helpUnitButton = Table()
 
     // This is so that not on every update(), we will update the unit table.
     // Most of the time it's the same unit with the same stats so why waste precious time?
@@ -33,23 +34,41 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     init {
         pad(5f)
+
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
-        add(Table().apply {
-            add(prevIdleUnitButton)
-            add(unitIconHolder)
-            add(unitNameLabel).pad(5f)
-            add(nextIdleUnitButton)
-        }).colspan(2).row()
-        separator= addSeparator().actor!!
-        add(promotionsTable).colspan(2).row()
-        add(unitDescriptionTable)
+        add(VerticalGroup().apply {
+            pad(5f)
 
-        deselectUnitButton.add(Label("X",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(20f)
-        deselectUnitButton.pack()
-        deselectUnitButton.touchable = Touchable.enabled
-        deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true }
-        addActor(deselectUnitButton)
+            deselectUnitButton.add(Label("X",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(10f)
+            deselectUnitButton.pack()
+            deselectUnitButton.touchable = Touchable.enabled
+            deselectUnitButton.onClick { selectedUnit=null; selectedCity=null; worldScreen.shouldUpdate=true }
+            addActor(deselectUnitButton)
+
+            helpUnitButton.add(Label("?",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(10f)
+            helpUnitButton.pack()
+            helpUnitButton.touchable = Touchable.enabled
+            helpUnitButton.onClick { UnCivGame.Current.screen = CivilopediaScreen() }
+            addActor(helpUnitButton)
+
+        }).left()
+
+        add(prevIdleUnitButton)
+
+        add(Table().apply {
+            add(Table().apply {
+                add(unitIconHolder)
+                add(unitNameLabel).pad(5f)
+
+            }).colspan(2).fill().row()
+            separator= addSeparator().actor!!
+            add(promotionsTable).colspan(2).row()
+            add(unitDescriptionTable)
+        }).expand()
+
+        add(nextIdleUnitButton)
+
     }
 
     fun update() {
