@@ -87,8 +87,12 @@
 		Japanese:"回る"
 	}
 	
-	"Next unit":{}
-	"Pick a policy":{}
+	"Next unit":{
+		Italian:"Prossima unità"
+	}
+	"Pick a policy":{
+		Italian:"Scegli Politica"
+	}
 
 /////// Unit
 
@@ -1802,6 +1806,7 @@
 	}
 
 	"Keep going":{
+		Italian:"Continua..."
 		French:"Continuer..."
 	}
 	
@@ -2493,7 +2498,9 @@
 		Simplified_Chinese:"你会为此付出代价的！"
 	}
 	
-	"Negotiate Peace":{}
+	"Negotiate Peace":{
+		Italian:"Negozia una pace"
+	}
 
 	"Very well.":{
 		Italian:"Molto bene."
@@ -2558,47 +2565,47 @@
 	
 	// Relationship states, from worst (Unforgivable) to best (Ally)
 	
-  "Unforgivable":{
+  	"Unforgivable":{
 		Italian:"Imperdonabile"
 		French:"Impardonnable"
 		Simplified_Chinese:"仇深似海"
-  }
+  	}
 
-  "Enemy":{
+  	"Enemy":{
 		Italian:"Nemico"
 		French:"Ennemi"
 		Simplified_Chinese:"宿命之敌"
-  }
+  	}
 
-  "Competitor":{
-	  Italian:"Avversario"
+  	"Competitor":{
+	  	Italian:"Avversario"
 		French:"Adversaire" //or en compétition
 		Simplified_Chinese:"瑜亮之争"
-  }
+  	}
 
-  "Neutral":{
-    Italian:"Neutrale"
+  	"Neutral":{
+    		Italian:"Neutrale"
 		French:"Neutre"
 		Simplified_Chinese:"泛泛之交"
-  }
+  	}
 
-  "Favorable":{
+  	"Favorable":{
 		Italian:"Favorevole"
 		French:"Favorable"
 		Simplified_Chinese:"惺惺相惜"
-  }
+  	}
 
-  "Friend":{
+  	"Friend":{
 		Italian:"Amichevole"
 		French:"Ami"
 		Simplified_Chinese:"秦晋之好"
-  }
+ 	 }
 
-  "Ally":{
+  	"Ally":{
 		Italian:"Alleato"
 		French:"Allié"
 		Simplified_Chinese:"歃血之盟"
-  }
+  	}
 
 ////// Diplomatic modifiers
 
@@ -3072,19 +3079,19 @@
 	"Requires a [buildingName] in all cities":{
 		Italian:"Richiede [buildingName] in tutte le città"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
-        French:"Nécessite un(e) [buildingName] dans toutes les villes"
+        	French:"Nécessite un(e) [buildingName] dans toutes les villes"
 	}
 
 	"Requires a [buildingName] in this city":{
 		Italian:"Richiede [buildingName] nella città"
 		Simplified_Chinese:"需要城市建有[buildingName]"
-        French:"Nécessite un(e) [buildingName] dans cette ville"
+        	French:"Nécessite un(e) [buildingName] dans cette ville"
 	}
 
 	"Requires [resource]":{
 		Italian:"Richiede [resource]"
 		Simplified_Chinese:"需要资源：[resource]"
-        French:"[resource] requis(e)"
+        	French:"[resource] requis(e)"
 	}
 
 	"Required tech: [requiredTech]":{
