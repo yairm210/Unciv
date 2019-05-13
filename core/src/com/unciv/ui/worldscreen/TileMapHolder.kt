@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -28,7 +29,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
     class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
-    var moveHereButtonDto :MoveHereButtonDto?=null
 
     internal fun addTiles() {
 
@@ -77,17 +77,19 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         selectedTile = tileInfo
 
         val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
+
         if (selectedUnit != null && selectedUnit.getTile() != tileInfo
                 && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-            queueAddMoveHereButton(selectedUnit, tileInfo)
+            moveHere(selectedUnit, tileInfo)
+            worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit // keep moved unit selected
         }
 
-        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
         worldScreen.shouldUpdate = true
     }
 
-    private fun queueAddMoveHereButton(selectedUnit: MapUnit, tileInfo: TileInfo) {
+    private fun moveHere(selectedUnit: MapUnit, tileInfo: TileInfo) {
         thread {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
@@ -95,9 +97,19 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
              * so that and that alone will be relegated to the concurrent thread.
              */
             val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size // this is what takes the most time, tbh
-            moveHereButtonDto = MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
-            worldScreen.shouldUpdate = true // when the world screen updates, is calls our updateTiles,
-            // which will add the move here button *on the main thread*! Problem solved!
+
+            Gdx.app.postRunnable {
+                if(turnsToGetThere==1) {
+                    // single turn instant move
+                    selectedUnit.movementAlgs().headTowards(tileInfo)
+                } else {
+                    // add "move to" button
+                    val moveHereButtonDto = MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
+                    addMoveHereButtonToTile(moveHereButtonDto, tileGroups[moveHereButtonDto.tileInfo]!!)
+                }
+                worldScreen.shouldUpdate = true
+            }
+
         }
     }
 
@@ -183,11 +195,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     && (showSubmarine || unitsInTile.firstOrNull {!it.isInvisible()}!=null)
             if(canSeeTile && canSeeEnemy)
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
-        }
-
-        if(moveHereButtonDto!=null) {
-            addMoveHereButtonToTile(moveHereButtonDto!!, tileGroups[moveHereButtonDto!!.tileInfo]!!)
-            moveHereButtonDto=null
         }
 
         if (worldScreen.bottomBar.unitTable.selectedCity!=null){

@@ -209,7 +209,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
-                && selectedUnit!=selectedTile.militaryUnit){
+                && selectedUnit!=selectedTile.militaryUnit
+                && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
             selectedUnit = selectedTile.militaryUnit
             selectedCity = null
         }
@@ -217,6 +218,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                         && selectedUnit!=selectedTile.civilianUnit){
             selectedUnit = selectedTile.civilianUnit
             selectedCity = null
+        } else if(selectedTile == previouslySelectedUnit?.currentTile) {
+            // tapping the same tile again will deselect a unit.
+            // important for single-tap-move to abort moving easily
+            selectedUnit = null
         }
 
         if(selectedUnit != previouslySelectedUnit)
