@@ -49,7 +49,13 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             helpUnitButton.add(Label("?",CameraStageBaseScreen.skin).setFontColor(Color.WHITE)).pad(10f)
             helpUnitButton.pack()
             helpUnitButton.touchable = Touchable.enabled
-            helpUnitButton.onClick { UnCivGame.Current.screen = CivilopediaScreen() }
+            helpUnitButton.onClick {
+                val pedia = CivilopediaScreen()
+                if (selectedUnit != null) {
+                    pedia.select("Units", selectedUnit?.name)
+                }
+                UnCivGame.Current.screen = pedia
+            }
             addActor(helpUnitButton)
 
         }).left()

@@ -1058,7 +1058,7 @@
 		Russian:"Город будет расширяться между раундами [turnsToExpansion]"
 		French:"La ville se développera entre [turnsToExpansion] tours"
 		Romanian:"Orașul se va extinde între rundă [turnsToExpansion]"
-		German:"Die Stadt wird sich zwischen [turnsToExpansion]-Runden erweitern"
+		German:"Erweiterung in [turnsToExpansion] Runden"
 		Dutch:"De stad breidt zich uit tussen [turnsToExpansion]-rondes"
 		Spanish:"La ciudad se expandirá entre [turnsToExpansion] rondas"
 		Simplified_Chinese:"这座城市将在[turnsToExpansion]回合后扩张"
@@ -1084,7 +1084,7 @@
 		Russian:"В городе будет новый житель в раундах [turnsToPopulation]"
 		French:"La ville aura un nouveau résident dans [turnsToPopulation]"
 		Romanian:"Orașul va avea un nou rezident în runde [turnsToPopulation]"
-		German:"Die Stadt wird einen neuen Einwohner in [turnsToPopulation]-Runden haben"
+		German:"Neuer Einwohner in [turnsToPopulation] Runden"
 		Dutch:"De stad krijgt een nieuwe inwoner in [turnsToPopulation]-rondes"
 		Spanish:"La ciudad tendrá un nuevo residente en las rondas de [turnsToPopulation]"
 		Simplified_Chinese:"这座城市将在[turnsToPopulation]轮后有1个新市民"
@@ -1863,8 +1863,9 @@
 	}
 
 	"Technologies":{ //You misses this translation, said Smashfanful
-		Italian:"Tecnologie"
-		French:"Technologies"
+		Italian:"Tecnologie",
+		German:"Technologien",
+		French:"Technologies",
 		Simplified_Chinese:"科技"
 	}
 
@@ -3009,7 +3010,7 @@
 
 	"Terrains":{
 		Italian:"Terreni e caratteristiche"
-		German:"Gelände und Geländearten"
+		German:"Gelände"
 		French:"Terrains"
 		Simplified_Chinese:"地形"
 	}
