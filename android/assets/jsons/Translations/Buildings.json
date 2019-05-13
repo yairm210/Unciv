@@ -132,7 +132,7 @@
 	"Walls of Babylon":{
 		Italian:"Mura di Babilonia"
 		Simplified_Chinese:"巴比伦城墙"
-        French:"Murs de Babylone"
+        	French:"Murs de Babylone"
 	}
 	
 	"The Pyramids":{	
@@ -808,6 +808,7 @@
 	}
 	
 	"Hanse":{	
+		Italian:"Hanse" //Same as in Italian, it seems
 		Simplified_Chinese:"汉萨会馆"
 	}
 
@@ -864,6 +865,7 @@
 	}
 	
 	"Choose a free great person":{
+		Italian:"Scegli Grande Personaggio gratuito"
 		Simplified_Chinese:"选择1个免费的伟人"
 	}
 
@@ -1045,7 +1047,7 @@
 		German:"Börse"
 	}
 
-    "Big Ben":{	
+    	"Big Ben":{	
 		Italian:"Big Ben"
 		Simplified_Chinese:"大本钟"
 		French:"Big Ben"
