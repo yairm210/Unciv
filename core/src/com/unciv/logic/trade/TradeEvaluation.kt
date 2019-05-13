@@ -133,7 +133,30 @@ class TradeEvaluation{
                     return 250 // fair price
                 else return 500 // you want to take away our last lux of this type?!
             }
-            TradeType.Strategic_Resource -> return 50*offer.amount
+            TradeType.Strategic_Resource -> {
+                if(!civInfo.isAtWar()) return 50*offer.amount
+
+                val canUseForUnits = GameBasics.Units.values
+                        .any { it.requiredResource==offer.name && it.isBuildable(civInfo) }
+                if(!canUseForUnits) return 50*offer.amount
+
+                val amountLeft = civInfo.getCivResourcesByName()[offer.name]!!
+
+                // Each strategic resource starts costing 100 more when we ass the 5 resources baseline
+                // That is to say, if I have 4 and you take one away, that's 200
+                // take away the third, that's 300, 2nd 400, 1st 500
+
+                // So if he had 5 left, and we want to buy 2, then we want to buy his 5th and 4th last resources,
+                // So we'll calculate how much he'll sell his 4th for (200) and his 5th for (100)
+                var totalCost = 0
+
+                // I know it's confusing, you're welcome to change to a more understandable way of counting if you can think of one...
+                for(numberOfResource in (amountLeft-offer.amount+1)..amountLeft){
+                    if(numberOfResource>5) totalCost+=100
+                    else totalCost += (6-numberOfResource) * 100
+                }
+                return totalCost
+            }
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
