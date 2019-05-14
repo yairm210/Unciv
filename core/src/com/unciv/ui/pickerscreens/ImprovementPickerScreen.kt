@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
@@ -19,16 +20,21 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         setDefaultCloseAction()
 
-        rightSideButton.setText("Pick improvement".tr())
-        rightSideButton.onClick {
-            tileInfo.startWorkingOnImprovement(selectedImprovement!!, currentPlayerCiv)
-            if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.action=null // this is to "wake up" the worker if it's sleeping
-            game.setWorldScreen()
-            dispose()
+        fun accept(improvement: TileImprovement?) {
+            if (improvement != null) {
+                tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
+                if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
+                game.setWorldScreen()
+                dispose()
+            }
         }
 
-        val regularImprovements = VerticalGroup()
-        regularImprovements.space(10f)
+        rightSideButton.setText("Pick improvement".tr())
+        rightSideButton.onClick {
+            accept(selectedImprovement)
+        }
+
+        val regularImprovements = Table()
 
         for (improvement in GameBasics.TileImprovements.values) {
             if (!tileInfo.canBuildImprovement(improvement, currentPlayerCiv)) continue
@@ -45,11 +51,20 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
                     .setFontColor(Color.WHITE)).pad(10f)
 
             improvementButton.onClick {
-                    selectedImprovement = improvement
-                    pick(improvement.name)
-                    descriptionLabel.setText(improvement.description)
-                }
-            regularImprovements.addActor(improvementButton)
+                accept(improvement)
+            }
+            regularImprovements.add(improvementButton)
+
+            val helpButton = Button(skin)
+            helpButton.add(Label("?", skin)).pad(15f)
+
+            helpButton.onClick {
+                selectedImprovement = improvement
+                pick(improvement.name)
+                descriptionLabel.setText(improvement.description)
+            }
+            regularImprovements.add(helpButton).pad(5f).row()
+
         }
         topTable.add(regularImprovements)
     }
