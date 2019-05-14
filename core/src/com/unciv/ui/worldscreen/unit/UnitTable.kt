@@ -34,7 +34,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     init {
         pad(5f)
-
+        touchable = Touchable.enabled
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
         add(VerticalGroup().apply {
