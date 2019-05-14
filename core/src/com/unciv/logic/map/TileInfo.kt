@@ -209,6 +209,8 @@ open class TileInfo {
 
     }
 
+    fun hasImprovementInProgress() = improvementInProgress!=null
+
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
         return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
     }

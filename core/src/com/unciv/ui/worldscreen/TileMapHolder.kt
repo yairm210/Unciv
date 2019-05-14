@@ -80,7 +80,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
 
         if (selectedUnit != null && selectedUnit.getTile() != tileInfo
-                && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
+                && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)
+                && selectedUnit.action!="Set Up") {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             moveHere(selectedUnit, tileInfo)
             worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit // keep moved unit selected
@@ -214,7 +215,11 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
+
         tileGroups[unit.getTile()]!!.selectUnit(unit)
+
+        // units set up can't move unless packed together
+        if(unit.action=="Set Up") return
 
         for (tile: TileInfo in unit.getDistanceToTiles().keys)
             if (unit.canMoveTo(tile))

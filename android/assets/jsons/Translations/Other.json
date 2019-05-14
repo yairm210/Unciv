@@ -266,7 +266,11 @@
 		Simplified_Chinese:"架设"
 		Portuguese:"Montar"
 		Japanese:"セットアップ"
-	}
+	},
+
+	"Pack up": { // For siege units
+		"German": "Einpacken"
+	},
 	
 	"Upgrade to [unitType] ([goldCost] gold)":{ // EG Upgrade to Cannon (140 gold)
 		Italian:"Aggiorna a [unitType] ([goldCost] oro)"
