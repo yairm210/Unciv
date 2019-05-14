@@ -4,7 +4,6 @@ import com.unciv.Constants
 import com.unciv.logic.automation.Automation
 import com.unciv.logic.automation.ThreatLevel
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceType
@@ -93,7 +92,7 @@ class TradeEvaluation{
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(nameOfCivToDeclareWarOn)
                 val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
 
-                if(civInfo.getDiplomacyManager(civToDeclareWarOn).diplomaticStatus== DiplomaticStatus.War){
+                if(civInfo.isAtWarWith(civToDeclareWarOn)){
                     when (threatToThem) {
                         ThreatLevel.VeryLow -> return 0
                         ThreatLevel.Low -> return 0
@@ -180,7 +179,7 @@ class TradeEvaluation{
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
-                if(offer.name=="Open Borders") return 100
+                if(offer.name == "Open Borders") return 100
                 throw Exception("Invalid agreement type!")
             }
         }

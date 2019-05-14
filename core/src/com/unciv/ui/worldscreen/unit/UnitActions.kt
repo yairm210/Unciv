@@ -6,6 +6,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -105,7 +106,7 @@ class UnitActions {
         }
 
         if(!unit.type.isCivilian() && tile.improvement !=null){
-            actionList += UnitAction("Pillage", unit.currentMovement>0)
+            actionList += UnitAction("Pillage", unit.currentMovement>0 && canPillage(unit,tile))
             {
                 // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
                 //    and I can't find any other sources so I'll go with that
@@ -251,6 +252,12 @@ class UnitActions {
         }
 
         return actionList
+    }
+
+    fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
+        val tileOwner = tile.getOwner()
+        // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
+        return tileOwner==null || tileOwner==unit.civInfo || unit.civInfo.isAtWarWith(tileOwner)
     }
 
 }
