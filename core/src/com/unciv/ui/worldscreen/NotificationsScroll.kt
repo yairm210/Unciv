@@ -1,10 +1,10 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
-import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import kotlin.math.min
 
@@ -12,7 +12,8 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
     private var notificationsTable = Table()
 
     init {
-        widget = notificationsTable
+        actor = notificationsTable.right()
+        touchable = Touchable.childrenOnly
     }
 
     internal fun update(notifications: MutableList<Notification>) {
@@ -20,21 +21,24 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
         for (notification in notifications.toList()) { // tolist to avoid concurrecy problems
             val label = notification.text.toLabel().setFontColor(Color.BLACK)
                     .setFontSize(14)
-            val minitable = Table()
+            val listItem = Table()
 
-            minitable.add(ImageGetter.getCircle()
+            listItem.add(ImageGetter.getCircle()
                     .apply { color=notification.color }).size(10f).pad(5f)
-            minitable.background(ImageGetter.getDrawable("OtherIcons/civTableBackground.png"))
-            minitable.add(label).pad(5f).padRight(10f)
+            listItem.background(ImageGetter.getDrawable("OtherIcons/civTableBackground.png"))
+            listItem.add(label).pad(5f).padRight(10f)
 
-            if (notification.location != null) {
-                minitable.onClick {
-                    worldScreen.tileMapHolder.setCenterPosition(notification.location!!)
+            // using a larger click area to avoid miss-clicking in between the messages on the map
+            val clickArea = Table().apply {
+                add(listItem).pad(3f)
+                touchable = Touchable.enabled
+                onClick {
+                    if (notification.location != null)
+                        worldScreen.tileMapHolder.setCenterPosition(notification.location!!)
                 }
             }
 
-            notificationsTable.add(minitable).pad(3f)
-            notificationsTable.row()
+            notificationsTable.add(clickArea).right().row()
         }
         notificationsTable.pack()
         pack()

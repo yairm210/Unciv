@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -14,6 +15,10 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
+    init {
+        touchable = Touchable.enabled
+    }
+    
     fun getIconForUnitAction(unitAction:String): Actor {
         if(unitAction.startsWith("Upgrade to")){
             // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].

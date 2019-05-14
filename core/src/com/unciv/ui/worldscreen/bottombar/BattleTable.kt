@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.bottombar
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.actions.RepeatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -24,6 +25,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
         pad(5f)
+        touchable = Touchable.enabled
     }
 
     fun hide(){
