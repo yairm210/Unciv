@@ -315,8 +315,16 @@
             Simplified_Chinese:"在我们的领土附近发现了一个敌人的[unit]"
             Portuguese:"Um(a) [unit] inimigo(a) foi vista dentro de nosso território"
             Japanese:"私たちの領土に敵[unit]が発見されました"
-        }
-        
+        },
+
+        "[amount] enemy units were spotted near our territory": {
+            German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
+        },
+
+        "[amount] enemy units were spotted in our territory": {
+            German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
+        },
+
         "The civilization of [civName] has been destroyed!":{
             Italian:"La civiltà [civName] è stata distrutta!"
             Russian:"Цивилизация [civName] была уничтожена!"
