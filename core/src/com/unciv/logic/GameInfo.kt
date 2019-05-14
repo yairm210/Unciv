@@ -73,12 +73,32 @@ class GameInfo {
                             && (it.getOwner() == thisPlayer || it.neighbors.any { neighbor -> neighbor.getOwner() == thisPlayer })
                 }
 
-        for (enemyUnitTile in enemyUnitsCloseToTerritory) {
-            val inOrNear = if (enemyUnitTile.getOwner() == thisPlayer) "in" else "near"
-            val unitName = enemyUnitTile.militaryUnit!!.name
-            thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", enemyUnitTile.position, Color.RED)
-        }
+        // enemy units ON our territory
+        addEnemyUnitNotification(
+                thisPlayer,
+                enemyUnitsCloseToTerritory.filter { it.getOwner()==thisPlayer },
+                "in"
+        )
+        // enemy units NEAR our territory
+        addEnemyUnitNotification(
+                thisPlayer,
+                enemyUnitsCloseToTerritory.filter { it.getOwner()!=thisPlayer },
+                "near"
+        )
+    }
 
+    private fun addEnemyUnitNotification(thisPlayer: CivilizationInfo, tiles: List<TileInfo>, inOrNear: String) {
+        // don't flood the player with similar messages. instead cycle through units by clicking the message multiple times.
+        if (tiles.size < 3) {
+            for (tile in tiles) {
+                val unitName = tile.militaryUnit!!.name
+                thisPlayer.addNotification("An enemy [$unitName] was spotted $inOrNear our territory", tile.position, Color.RED)
+            }
+        }
+        else {
+            val positions = tiles.map { it.position }
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", positions, Color.RED)
+        }
     }
 
     fun placeBarbarianUnit(tileToPlace: TileInfo?) {

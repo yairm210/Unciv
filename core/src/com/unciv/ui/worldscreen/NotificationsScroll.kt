@@ -33,8 +33,11 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
                 add(listItem).pad(3f)
                 touchable = Touchable.enabled
                 onClick {
-                    if (notification.location != null)
-                        worldScreen.tileMapHolder.setCenterPosition(notification.location!!)
+                    if (notification.locations.isNotEmpty()) {
+                        var index = notification.locations.indexOf(worldScreen.tileMapHolder.selectedTile?.position)
+                        index = ++index % notification.locations.size // cycle through locations
+                        worldScreen.tileMapHolder.setCenterPosition(notification.locations[index])
+                    }
                 }
             }
 
