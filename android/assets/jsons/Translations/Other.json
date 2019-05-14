@@ -39,7 +39,7 @@
 		German:"in"
 		Dutch:"in"
 		Spanish:"en"
-		Simplified_Chinese:"建造或组建完成还需"
+		Simplified_Chinese:"建造/组建完成还需"
 		Portuguese:"em"
 		Japanese:"に"
 	}
@@ -47,32 +47,30 @@
 /////// Turn
 
 	"Next turn":{
-        	Dutch:"Volgende beurt"
-        	French:"Prochain tour"
+		Dutch:"Volgende beurt"
+		French:"Prochain tour"
 		German:"Nächste Runde"
 		Italian:"Fine turno"
-        	Japanese:"次のターン"
-        	Portuguese:"Proximo turno"
+		Japanese:"次のターン"
+		Portuguese:"Proximo turno"
 		Romanian:"Runda următoare"
 		Russian:"Следующий ход"
 		Simplified_Chinese:"下一回合"
-		Spanish:"Siguiente turno"
-		
+		Spanish:"Siguiente turno"	
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
-        	Dutch:"Beurt"
+    Dutch:"Beurt"
 		French:"Tour"
 		German:"Runde"
-        	Italian:"Turno"
+    Italian:"Turno"
 		Japanese:"順番"
-        	Portuguese:"Turno"
+    Portuguese:"Turno"
 		Romanian:"Runda"
-        	Russian:"Ход"
-        	Simplified_Chinese:"回合"
+    Russian:"Ход"
+    Simplified_Chinese:"回合"
 		Spanish:"Turno"
 	}
-
 
 	"turns":{ // for e.g. turns to technology
 		Italian:"Turni"
@@ -86,12 +84,19 @@
 		Portuguese:"turnos"
 		Japanese:"回る"
 	}
-	
+
+	"turn":{ // for e.g. "1 turn" to technology
+		Simplified_Chinese:"回合"
+	}
+
 	"Next unit":{
 		Italian:"Prossima unità"
+		Simplified_Chinese:"下个未行动单位"
 	}
+
 	"Pick a policy":{
 		Italian:"Scegli Politica"
+		Simplified_Chinese:"选择一项社会政策"
 	}
 
 /////// Unit
@@ -186,7 +191,7 @@
 		Dutch:"Verbetering bouwen"
 		Spanish:"Construir mejora"
 		Simplified_Chinese:"建造设施"
-        	Portuguese:"Construir melhoria"
+    Portuguese:"Construir melhoria"
 		Japanese:"構造改善"
 	}
 
@@ -237,7 +242,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"防御力加成"
+		Simplified_Chinese:"驻守防御力+"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -288,7 +293,7 @@
 		German:"Stadt gründen"
 		Dutch:"Stad stichten"
 		Spanish:"Fundar ciudad"
-       		Simplified_Chinese:"建立城市"
+    Simplified_Chinese:"建立城市"
 		Portuguese:"Fundar Cidade"
 		Japanese:"見つかった市"
 	}
@@ -301,7 +306,7 @@
 		German:"Befördern"
 		Dutch:"Promoveren"
 		Spanish:"Ascender"
-       	 	Simplified_Chinese:"晋升"
+    Simplified_Chinese:"晋升"
 		Portuguese:"Promover"
 		Japanese:"促進する"
 	}
@@ -376,6 +381,7 @@
 		German:"Wollen Sie diese Einheit wirklich auflösen?"
 		Japanese:"あなたは本当にこのユニットを解散したいですか？"
 	}
+
 	"Disband this unit for [goldAmount] gold?":{
 		Italian:"Vuoi sciogliere questa unità per [goldAmount] Oro?"
 		Portuguese:"Desative esta unidade para ouro [goldAmount]?"
@@ -400,6 +406,7 @@
 		German:"Ja"
 		Japanese:"はい"
 	}
+
 	"No":{
 		Italian:"No"
 		Russian:"Нет"
@@ -586,9 +593,7 @@
 		Spanish:"No se pudo cargar el juego desde el portapapeles!"
 	}
 
-////// New game screen - it looks like it's duplicated
-/*
-	"Civilization":{	
+	"Civilization":{//this word is not used in the game.
 		Italian:"Civiltà"
 		Russian:"Цивилизация"
 		French:"Civilisation"
@@ -599,7 +604,7 @@
 		German:"Zivilisation"
 	}
 
-	"World size":{	 //feels like duplicate
+	"World size":{	 //not duplicate,the other one is wrong.
 		Italian:"Dimensione della mappa"
 		Russian:"Размер мира"
 		French:"Taille du monde"
@@ -610,7 +615,7 @@
 		German:"Kartengröße"
 	}
 
-*/
+
 /////// New game screen
 	
 	"Start game!":{
@@ -625,30 +630,6 @@
 		Japanese:"ゲームを始める！"
 	}
 
-	"Civilization:":{
-		Italian:"Civiltà:"
-		Russian:"Цивилизация:"
-		French:"Civilisation:"
-		Romanian:"Civilizaţie:"
-		Spanish:"Civilización"
-		Simplified_Chinese:"文明"
-		Portuguese:"Civilização"
-		German:"Zivilisation"
-		Japanese:"文明"
-	}
-
-	"World size:":{
-		Italian:"Dimensione mappa:"
-		Russian:"Размер мира:"
-		French:"Taille du monde:"
-		Romanian:"Mărime pământ:"
-		Spanish:"Tamaño del mundo"
-		Simplified_Chinese:"世界大小"
-		Portuguese:"Tamanho do mundo"
-		German:"Weltgröße"
-		Japanese:"ワールドサイズ"
-	}
-
 	"Map type":{	
 		Italian:"Tipo di mappa"
 		Russian:"Тип карты"
@@ -661,20 +642,7 @@
 		Dutch:"Kaarttype"
 	}
 
-	"Number of enemies:":{ //nummber of AI should be more accurate
-		Italian:"Numero di nemici:"
-		Russian:"Количество врагов:"
-		French:"Nombre d'ennemies (AI):"
-		Romanian:"Număr inamici:"
-		Spanish:"Número de enemigos:"
-		Simplified_Chinese:"AI智商："
-		Portuguese:"Numero de inimigos:"
-		German:"Anzahl der Gegner:"
-		Japanese:"敵の数"
-	}
-
-/*
-	"Number of enemies":{	//duplicated
+	"Number of enemies":{	//not duplicated,the word above this one is wrong.
 		Italian:"Numero di avversari"
 		Russian:"Количество врагов"
 		French:"Nombre d'ennemies"
@@ -684,7 +652,6 @@
 		Portuguese:"Número de inimigos"
 		German:"Anzahl der Gegner"
 	}
-*/
 
 	"Number of human players":{
 		Italian:"Numero di giocatori"
@@ -1120,7 +1087,7 @@
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
 		Italian:"La resistenza durerà per altri [numberOfTurns] turni"
-        	Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合"
+      Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合"
 		Portuguese:"A resistência durará por outros [numberOfTurns] turnos"
 		Japanese:"他の[numberOfTurns]ターンに抵抗"
 		French:"En révolte pour [numberOfTurns] tours"
@@ -1478,20 +1445,6 @@
 		Simplified_Chinese:"攻击"
 		Portuguese:"Ataque"
 	}
-
-	/*
-	"Attack":{ //As an order
-		Italian:"Attacca"
-		Russian:"Атака"
-		French:"Attaque"
-		Romanian:"Atac"
-		German:"Angreifen"
-		Dutch:"Aanvallen"
-		Spanish:"Ataque"
-		Simplified_Chinese:"攻击"
-		Portuguese:"Ataque"
-	}
-	*/
 	
 	"[percentage] to unit defence":{ // e.g. +25% to unit defence
 		Italian:"[percentage] di difesa dell'unità"
@@ -1808,6 +1761,7 @@
 	"Keep going":{
 		Italian:"Continua..."
 		French:"Continuer..."
+		Simplified_Chinese:"继续..."
 	}
 	
 	"There's nothing on the table":{
@@ -2500,6 +2454,7 @@
 	
 	"Negotiate Peace":{
 		Italian:"Negozia una pace"
+		Simplified_Chinese:"议和"
 	}
 
 	"Very well.":{
@@ -2565,47 +2520,47 @@
 	
 	// Relationship states, from worst (Unforgivable) to best (Ally)
 	
-  	"Unforgivable":{
+  "Unforgivable":{
 		Italian:"Imperdonabile"
 		French:"Impardonnable"
 		Simplified_Chinese:"仇深似海"
-  	}
+  }
 
-  	"Enemy":{
+  "Enemy":{
 		Italian:"Nemico"
 		French:"Ennemi"
 		Simplified_Chinese:"宿命之敌"
-  	}
+  }
 
-  	"Competitor":{
-	  	Italian:"Avversario"
+  "Competitor":{
+	  Italian:"Avversario"
 		French:"Adversaire" //or en compétition
 		Simplified_Chinese:"瑜亮之争"
-  	}
+  }
 
-  	"Neutral":{
-    		Italian:"Neutrale"
+  "Neutral":{
+    Italian:"Neutrale"
 		French:"Neutre"
 		Simplified_Chinese:"泛泛之交"
-  	}
+  }
 
-  	"Favorable":{
+  "Favorable":{
 		Italian:"Favorevole"
 		French:"Favorable"
 		Simplified_Chinese:"惺惺相惜"
-  	}
+  }
 
-  	"Friend":{
+  "Friend":{
 		Italian:"Amichevole"
 		French:"Ami"
 		Simplified_Chinese:"秦晋之好"
- 	 }
+ 	}
 
-  	"Ally":{
+  "Ally":{
 		Italian:"Alleato"
 		French:"Allié"
 		Simplified_Chinese:"歃血之盟"
-  	}
+  }
 
 ////// Diplomatic modifiers
 
@@ -2650,6 +2605,7 @@
 		French:"Vous avez signé une Déclaration d'Amitié avec nos ennemis!"
 		Simplified_Chinese:"渡尽劫波兄弟在,相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
 	}
+
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
 		French:"Vous avez signé une Déclaration d'Amitié avec nos alliés"
@@ -2674,19 +2630,6 @@
 		Portuguese:"Visão geral"
 		German:"Überblick"
 	}
-
-/*
-	"Cities":{ //duplicated
-		Italian:"Città"
-		Russian:"Города"
-		French:"Villes"
-		Romanian:"Orașe"
-		Spanish:"Ciudades"
-		Simplified_Chinese:"城市"
-		Portuguese:"Cidades"
-		German:"Städte"
-	}
-*/
 
 	"Total":{
 		Italian:"Totale"
@@ -3043,7 +2986,7 @@
 	"Cost":{
 		Italian:"Costo"
 		Simplified_Chinese:"花费"
-        	French:"Côte"
+    French:"Côte"
 	}
 
 	"Requires [buildingName] to be built in the city":{
@@ -3073,25 +3016,25 @@
 	"Wonder is being built elsewhere":{
 		Italian:"Meraviglia in costruzione altrove"
 		Simplified_Chinese:"正在其他城市建造该奇观"
-        	French:"Cette merveille est déjà en construction ailleurs"
+    French:"Cette merveille est déjà en construction ailleurs"
 	}
 
 	"Requires a [buildingName] in all cities":{
 		Italian:"Richiede [buildingName] in tutte le città"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
-        	French:"Nécessite un(e) [buildingName] dans toutes les villes"
+    French:"Nécessite un(e) [buildingName] dans toutes les villes"
 	}
 
 	"Requires a [buildingName] in this city":{
 		Italian:"Richiede [buildingName] nella città"
 		Simplified_Chinese:"需要城市建有[buildingName]"
-        	French:"Nécessite un(e) [buildingName] dans cette ville"
+    French:"Nécessite un(e) [buildingName] dans cette ville"
 	}
 
 	"Requires [resource]":{
 		Italian:"Richiede [resource]"
 		Simplified_Chinese:"需要资源：[resource]"
-        	French:"[resource] requis(e)"
+    French:"[resource] requis(e)"
 	}
 
 	"Required tech: [requiredTech]":{
@@ -3177,7 +3120,7 @@
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"
 		Russian:"Отсутствующие переводы:"
-	    	Simplified_Chinese:"未翻译的词条:"
+		Simplified_Chinese:"未翻译的词条:"
 		French:"Traductions manquantes:"
 	}
 
