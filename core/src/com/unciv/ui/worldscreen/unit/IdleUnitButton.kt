@@ -4,19 +4,21 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
+import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileMapHolder
 
-class IdleUnitButton (internal val unitTable: UnitTable,
-                                          val tileMapHolder: TileMapHolder, val previous:Boolean)
-    : Table() {
+class IdleUnitButton (
+        internal val unitTable: UnitTable,
+        val tileMapHolder: TileMapHolder,
+        val previous:Boolean
+) : Table() {
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
 
-    fun getTilesWithIdleUnits() = tileMapHolder.tileMap.values
-                    .filter { it.hasIdleUnit() && it.getUnits().first().owner == unitTable.worldScreen.currentPlayerCiv.civName }
+    fun hasIdleUnits() = unitTable.worldScreen.currentPlayerCiv.getIdleUnits().isNotEmpty()
 
     init {
         val imageSize = 25f
@@ -28,20 +30,26 @@ class IdleUnitButton (internal val unitTable: UnitTable,
         add(image).size(imageSize).pad(10f,20f,10f,20f)
         enable()
         onClick {
-            val tilesWithIdleUnits = getTilesWithIdleUnits()
-            if(tilesWithIdleUnits.isEmpty()) return@onClick
-            val tileToSelect: TileInfo
-            if (unitTable.selectedUnit==null || !tilesWithIdleUnits.contains(unitTable.selectedUnit!!.getTile()))
-                tileToSelect = tilesWithIdleUnits[0]
+
+            val idleUnits = unitTable.worldScreen.currentPlayerCiv.getIdleUnits()
+            if(idleUnits.isEmpty()) return@onClick
+
+            val unitToSelect: MapUnit
+            if (unitTable.selectedUnit==null || !idleUnits.contains(unitTable.selectedUnit!!))
+                unitToSelect = idleUnits[0]
             else {
-                var index = tilesWithIdleUnits.indexOf(unitTable.selectedUnit!!.getTile())
+                var index = idleUnits.indexOf(unitTable.selectedUnit!!)
                 if(previous) index-- else index++
-                index += tilesWithIdleUnits.size
-                index %= tilesWithIdleUnits.size // for looping
-                tileToSelect = tilesWithIdleUnits[index]
+                index += idleUnits.size
+                index %= idleUnits.size // for looping
+                unitToSelect = idleUnits[index]
             }
-            tileMapHolder.setCenterPosition(tileToSelect.position)
+
+            unitToSelect.due = false
+            tileMapHolder.setCenterPosition(unitToSelect.currentTile.position)
+            unitTable.selectedUnit = unitToSelect
             unitTable.worldScreen.shouldUpdate=true
+
         }
     }
 

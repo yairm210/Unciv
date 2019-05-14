@@ -106,7 +106,7 @@ class UnitAutomation{
 
     fun pillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
         val tilesInDistance = unitDistanceToTiles.filter {it.value < unit.currentMovement}.keys
-                .filter { unit.canMoveTo(it) && it.improvement != null }
+                .filter { unit.canMoveTo(it) && it.improvement != null && UnitActions().canPillage(unit,it) }
 
         if (tilesInDistance.isEmpty()) return false
         val tileToPillage = tilesInDistance.maxBy { it.getDefensiveBonus() }!!

@@ -6,6 +6,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
+import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -18,7 +19,7 @@ import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
 import kotlin.math.min
 
-class UnitAction(var name: String, var canAct:Boolean, var action:()->Unit){
+class UnitAction(var name: String, var canAct: Boolean, var currentAction: Boolean = false, var title: String = name.tr(), var action: () -> Unit = {}){
     var sound="click"
     fun sound(soundName:String): UnitAction {sound=soundName; return this}
 }
@@ -38,26 +39,41 @@ class UnitActions {
                     }
         }
 
-        if(unit.canFortify()) {
-            actionList += UnitAction("Fortify", unit.currentMovement >0)
-                { unit.action = "Fortify 0" }.sound("fortify")
+        if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0 && unit.action!="Set Up") {
+            val sleeping = unit.action == "Sleep"
+            actionList += UnitAction("Sleep", !sleeping, sleeping) {
+                unit.action = "Sleep"
+            }
         }
 
-        if(!unit.isFortified() && !unit.canFortify() && unit.action!="Sleep") {
-            actionList += UnitAction("Sleep",unit.currentMovement >0) { unit.action = "Sleep" }
+        if(unit.canFortify()) {
+            actionList += UnitAction("Fortify", unit.currentMovement >0) {
+                unit.action = "Fortify 0"
+            }.sound("fortify")
+        } else if (unit.isFortified()) {
+            actionList += UnitAction(
+                    "Fortify",
+                    false,
+                    currentAction = true,
+                    title = "Fortification".tr() + " " + unit.getFortificationTurns() * 20 + "%"
+            )
         }
 
         if(unit.type == UnitType.Scout){
-            if(unit.action != "explore")
-                actionList += UnitAction("Explore",unit.currentMovement >0)
-                    { UnitAutomation().automatedExplore(unit); unit.action = "explore" }
+            if(unit.action != "Explore")
+                actionList += UnitAction("Explore",true) {
+                    UnitAutomation().automatedExplore(unit)
+                    unit.action = "Explore"
+                }
             else
                 actionList += UnitAction("Stop exploration", true) { unit.action = null }
         }
 
         if(!unit.type.isCivilian() && unit.promotions.canBePromoted()) {
-            actionList += UnitAction("Promote", unit.currentMovement >0)
-            { UnCivGame.Current.screen = PromotionPickerScreen(unit) }.sound("promote")
+            // promotion does not consume movement points, so we can do it always
+            actionList += UnitAction("Promote", true) {
+                UnCivGame.Current.screen = PromotionPickerScreen(unit)
+            }.sound("promote")
         }
 
         if(unit.baseUnit().upgradesTo!=null && tile.getOwner()==unit.civInfo) {
@@ -90,7 +106,7 @@ class UnitActions {
         }
 
         if(!unit.type.isCivilian() && tile.improvement !=null){
-            actionList += UnitAction("Pillage", unit.currentMovement>0)
+            actionList += UnitAction("Pillage", unit.currentMovement>0 && canPillage(unit,tile))
             {
                 // http://well-of-souls.com/civ/civ5_improvements.html says that naval improvements are destroyed upon pilllage
                 //    and I can't find any other sources so I'll go with that
@@ -104,9 +120,17 @@ class UnitActions {
             }
         }
 
-        if(unit.hasUnique("Must set up to ranged attack") && unit.action != "Set Up" && !unit.isEmbarked())
-            actionList+=UnitAction("Set up",unit.currentMovement >0)
-                {unit.action="Set Up"; unit.useMovementPoints(1f)}.sound("setup")
+        if(unit.hasUnique("Must set up to ranged attack") && !unit.isEmbarked()) {
+            val setUp = unit.action == "Set Up"
+            actionList+=UnitAction("Set up", unit.currentMovement >0 && !setUp, currentAction = setUp ) {
+                unit.action="Set Up"
+                // setting up uses up all movement points
+                // this is to avoid problems with the idle state:
+                // - it should not be idle when setting up right now
+                // - it should be idle when set up in the past
+                unit.currentMovement=0f
+            }.sound("setup")
+        }
 
         if (unit.hasUnique("Founds a new city") && !unit.isEmbarked()) {
             actionList += UnitAction("Found city",
@@ -121,7 +145,7 @@ class UnitActions {
                 unit.destroy()
             }.sound("chimes")
         }
-        
+
         if (unit.hasUnique("Can build improvements on tiles") && !unit.isEmbarked()) {
             actionList += UnitAction("Construct improvement",
                     unit.currentMovement >0
@@ -130,7 +154,7 @@ class UnitActions {
             ) { worldScreen.game.screen = ImprovementPickerScreen(tile) }
 
             if("automation" == unit.action){
-                actionList += UnitAction("Stop automation",true) {unit.action = null}
+                actionList += UnitAction("Stop automation", true) {unit.action = null}
             }
             else {
                 actionList += UnitAction("Automate", unit.currentMovement >0)
@@ -176,7 +200,7 @@ class UnitActions {
 
 
         if (unit.name == "Great Scientist" && !unit.isEmbarked()) {
-            actionList += UnitAction( "Discover Technology",unit.currentMovement >0
+            actionList += UnitAction("Discover Technology", unit.currentMovement >0
             ) {
                 unit.civInfo.tech.freeTechs += 1
                 unit.destroy()
@@ -185,7 +209,7 @@ class UnitActions {
         }
 
         if (unit.hasUnique("Can start an 8-turn golden age") && !unit.isEmbarked()) {
-            actionList += UnitAction( "Start Golden Age",unit.currentMovement >0
+            actionList += UnitAction("Start Golden Age", unit.currentMovement >0
             ) {
                 unit.civInfo.goldenAges.enterGoldenAge()
                 unit.destroy()
@@ -193,7 +217,7 @@ class UnitActions {
         }
 
         if (unit.name == "Great Engineer" && !unit.isEmbarked()) {
-            actionList += UnitAction( "Hurry Wonder",
+            actionList += UnitAction("Hurry Wonder",
                     unit.currentMovement >0 &&
                             tile.isCityCenter() &&
                             tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building &&
@@ -218,7 +242,7 @@ class UnitActions {
             }.sound("chimes")
         }
 
-        actionList += UnitAction("Disband unit",unit.currentMovement >0
+        actionList += UnitAction("Disband unit", unit.currentMovement >0
         ) {
             val disbandText = if(unit.currentTile.getOwner()==unit.civInfo)
                 "Disband this unit for [${unit.baseUnit.getDisbandGold()}] gold?".tr()
@@ -228,6 +252,12 @@ class UnitActions {
         }
 
         return actionList
+    }
+
+    fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
+        val tileOwner = tile.getOwner()
+        // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
+        return tileOwner==null || tileOwner==unit.civInfo || unit.civInfo.isAtWarWith(tileOwner)
     }
 
 }
