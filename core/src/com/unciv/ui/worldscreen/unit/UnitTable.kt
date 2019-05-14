@@ -34,7 +34,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     init {
         pad(5f)
-
+        touchable = Touchable.enabled
         background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK, 0.5f))
 
         add(VerticalGroup().apply {
@@ -92,7 +92,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             }
         }
 
-        if(prevIdleUnitButton.getTilesWithIdleUnits().isNotEmpty()) { // more efficient to do this check once for both
+        if(prevIdleUnitButton.hasIdleUnits()) { // more efficient to do this check once for both
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
         }
@@ -127,14 +127,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitDescriptionTable.add("XP")
                 unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion())
             }
-
             if(unit.isFortified() && unit.getFortificationTurns()>0) {
                 unitDescriptionTable.row()
                 unitDescriptionTable.add("Fortification".tr())
                 unitDescriptionTable.add(""+unit.getFortificationTurns() * 20 + "%")
             }
             unitDescriptionTable.pack()
-
             if(unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                 selectedUnitHasChanged = true
         }
@@ -159,6 +157,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitNameLabel.setText("")
             unitDescriptionTable.clear()
             unitIconHolder.clear()
+            promotionsTable.clear()
         }
 
         if(!selectedUnitHasChanged) return

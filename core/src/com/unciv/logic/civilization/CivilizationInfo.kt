@@ -301,6 +301,8 @@ class CivilizationInfo {
         units=newList
     }
 
+    fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
+
     fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
 
     fun shouldOpenTechPicker() = tech.freeTechs != 0
@@ -309,11 +311,10 @@ class CivilizationInfo {
     fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
 
     fun getNextDueUnit(selectedUnit: MapUnit?): MapUnit? {
+        selectedUnit?.due = false
         val dueUnits = getDueUnits()
         if(dueUnits.isNotEmpty()) {
-            var index = dueUnits.indexOf(selectedUnit)
-            index = ++index % dueUnits.size // for looping
-            val unit = dueUnits[index]
+            val unit = dueUnits[0]
             unit.due = false
             return unit
         }
@@ -500,8 +501,13 @@ class CivilizationInfo {
     }
 
     fun addNotification(text: String, location: Vector2?,color: Color) {
+        val locations = if(location!=null) listOf(location) else emptyList()
+        addNotification(text, locations, color)
+    }
+
+    fun addNotification(text: String, locations: List<Vector2>, color: Color) {
         if(playerType==PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, location,color))
+        notifications.add(Notification(text, locations,color))
     }
 
     fun addGreatPerson(greatPerson: String, city:CityInfo = cities.random()) {

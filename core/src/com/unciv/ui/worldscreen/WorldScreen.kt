@@ -49,7 +49,8 @@ class WorldScreen : CameraStageBaseScreen() {
         topBar.width = stage.width
 
         notificationsScroll = NotificationsScroll(this)
-        notificationsScroll.width = stage.width/3
+        // notifications are right-aligned, they take up only as much space as necessary.
+        notificationsScroll.width = stage.width/2
 
         minimapWrapper.x = stage.width - minimapWrapper.width
 
@@ -150,7 +151,7 @@ class WorldScreen : CameraStageBaseScreen() {
         minimapWrapper.y = bottomBar.height // couldn't be bothered to create a separate val for minimap wrapper
 
         unitActionsTable.update(bottomBar.unitTable.selectedUnit)
-        unitActionsTable.y = bottomBar.height
+        unitActionsTable.y = bottomBar.unitTable.height
 
         // if we use the clone, then when we update viewable tiles
         // it doesn't update the explored tiles of the civ... need to think about that harder
@@ -159,7 +160,6 @@ class WorldScreen : CameraStageBaseScreen() {
 
         topBar.update(cloneCivilization)
         notificationsScroll.update(currentPlayerCiv.notifications)
-        notificationsScroll.width = stage.width/3
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
 

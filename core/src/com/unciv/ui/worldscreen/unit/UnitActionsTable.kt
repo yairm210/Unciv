@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
@@ -14,6 +15,10 @@ import com.unciv.ui.worldscreen.WorldScreen
 
 class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
 
+    init {
+        touchable = Touchable.enabled
+    }
+    
     fun getIconForUnitAction(unitAction:String): Actor {
         if(unitAction.startsWith("Upgrade to")){
             // Regexplaination: start with a [, take as many non-] chars as you can, until you reach a ].
@@ -63,7 +68,9 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     private fun getUnitActionButton(unitAction: UnitAction): Button {
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.name)).size(20f).pad(5f)
-        actionButton.add(Label(unitAction.name.tr(),CameraStageBaseScreen.skin).setFontColor(Color.WHITE))
+        actionButton.add(
+                Label(unitAction.title,CameraStageBaseScreen.skin)
+                        .setFontColor(if(unitAction.currentAction) Color.YELLOW else Color.WHITE))
                 .pad(5f)
         actionButton.pack()
         actionButton.onClick(unitAction.sound) { unitAction.action(); UnCivGame.Current.worldScreen.shouldUpdate=true }
