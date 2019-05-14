@@ -117,7 +117,7 @@ class MapUnit {
     }
 
     fun isFortified(): Boolean {
-        return action!=null && action!!.startsWith("Fortify")
+        return action?.startsWith("Fortify") == true
     }
 
     fun getFortificationTurns(): Int {
@@ -311,7 +311,7 @@ class MapUnit {
 
         if (action == "automation") WorkerAutomation(this).automateWorkerAction()
 
-        if(action == "explore") UnitAutomation().automatedExplore(this)
+        if(action == "Explore") UnitAutomation().automatedExplore(this)
     }
 
     private fun doPostTurnAction() {
