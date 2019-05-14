@@ -130,7 +130,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
             if(unit.isFortified() && unit.getFortificationTurns()>0) {
                 unitDescriptionTable.row()
-                unitDescriptionTable.add("Fortification")
+                unitDescriptionTable.add("Fortification".tr())
                 unitDescriptionTable.add(""+unit.getFortificationTurns() * 20 + "%")
             }
             unitDescriptionTable.pack()
