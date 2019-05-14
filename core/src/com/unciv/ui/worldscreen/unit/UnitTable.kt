@@ -128,13 +128,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion())
             }
 
-            if(unit.isFortified() && unit.getFortificationTurns()>0) {
-                unitDescriptionTable.row()
-                unitDescriptionTable.add("Fortification")
-                unitDescriptionTable.add(""+unit.getFortificationTurns() * 20 + "%")
-            }
-            unitDescriptionTable.pack()
-
             if(unit.promotions.promotions.size != promotionsTable.children.size) // The unit has been promoted! Reload promotions!
                 selectedUnitHasChanged = true
         }
@@ -159,6 +152,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             unitNameLabel.setText("")
             unitDescriptionTable.clear()
             unitIconHolder.clear()
+            promotionsTable.clear()
         }
 
         if(!selectedUnitHasChanged) return

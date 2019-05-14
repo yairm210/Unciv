@@ -26,7 +26,7 @@ class SpecificUnitAutomation{
                 val createImprovementAction = UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
                         .firstOrNull { it.name.startsWith("Create") } // could be either fishing boats or oil well
                 if (createImprovementAction != null)
-                    return createImprovementAction.action() // unit is already gone, can't "explore"
+                    return createImprovementAction.action() // unit is already gone, can't "Explore"
             }
         }
         else UnitAutomation().explore(unit, unit.getDistanceToTiles())
