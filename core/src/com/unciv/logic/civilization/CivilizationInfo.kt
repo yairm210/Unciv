@@ -301,6 +301,8 @@ class CivilizationInfo {
         units=newList
     }
 
+    fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
+
     fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
 
     fun shouldOpenTechPicker() = tech.freeTechs != 0
@@ -309,11 +311,10 @@ class CivilizationInfo {
     fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
 
     fun getNextDueUnit(selectedUnit: MapUnit?): MapUnit? {
+        selectedUnit?.due = false
         val dueUnits = getDueUnits()
         if(dueUnits.isNotEmpty()) {
-            var index = dueUnits.indexOf(selectedUnit)
-            index = ++index % dueUnits.size // for looping
-            val unit = dueUnits[index]
+            val unit = dueUnits[0]
             unit.due = false
             return unit
         }
