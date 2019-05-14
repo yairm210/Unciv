@@ -43,12 +43,14 @@ class UnitActions {
             val sleeping = unit.action == "Sleep"
             actionList += UnitAction("Sleep", !sleeping, sleeping) {
                 unit.action = "Sleep"
+                unitTable.selectedUnit = null
             }
         }
 
         if(unit.canFortify()) {
             actionList += UnitAction("Fortify", unit.currentMovement >0) {
                 unit.action = "Fortify 0"
+                unitTable.selectedUnit = null
             }.sound("fortify")
         } else if (unit.isFortified()) {
             actionList += UnitAction(
@@ -126,8 +128,8 @@ class UnitActions {
                 unit.action="Set Up"
                 // setting up uses up all movement points
                 // this is to avoid problems with the idle state:
-                // - it should not be idle when setting up right now
-                // - it should be idle when set up in the past
+                // - unit should not be idle when setting up right now
+                // - unit should be idle when set up in the past
                 unit.currentMovement=0f
             }.sound("setup")
         }
@@ -151,7 +153,7 @@ class UnitActions {
                     unit.currentMovement >0
                             && !tile.isCityCenter()
                             && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
-            ) { worldScreen.game.screen = ImprovementPickerScreen(tile) }
+            ) { worldScreen.game.screen = ImprovementPickerScreen(tile) { unitTable.selectedUnit = null } }
 
             if("automation" == unit.action){
                 actionList += UnitAction("Stop automation", true) {unit.action = null}

@@ -28,7 +28,8 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
             listItem.background(ImageGetter.getDrawable("OtherIcons/civTableBackground.png"))
             listItem.add(label).pad(5f).padRight(10f)
 
-            // using a larger click area to avoid miss-clicking in between the messages on the map
+            // using a large click area with no gap in between each message item.
+            // this avoids accidentally clicking in between the messages, resulting in a map click
             val clickArea = Table().apply {
                 add(listItem).pad(3f)
                 touchable = Touchable.enabled
