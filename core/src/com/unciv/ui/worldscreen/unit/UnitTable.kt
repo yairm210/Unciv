@@ -92,7 +92,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             }
         }
 
-        if(prevIdleUnitButton.getTilesWithIdleUnits().isNotEmpty()) { // more efficient to do this check once for both
+        if(prevIdleUnitButton.hasIdleUnits()) { // more efficient to do this check once for both
             prevIdleUnitButton.enable()
             nextIdleUnitButton.enable()
         }
