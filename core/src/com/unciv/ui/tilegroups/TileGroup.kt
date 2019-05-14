@@ -442,11 +442,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
 
-
-
-    fun showCircle(color: Color) {
+    fun showCircle(color: Color, alpha: Float = 0.3f) {
         circleImage.isVisible = true
-        circleImage.color = color.cpy().apply { a=0.3f }
+        circleImage.color = color.cpy().apply { a=alpha }
     }
 
     fun hideCircle() {

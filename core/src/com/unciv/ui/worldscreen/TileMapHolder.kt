@@ -218,7 +218,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         for (tile: TileInfo in unit.getDistanceToTiles().keys)
             if (unit.canMoveTo(tile))
-                tileGroups[tile]!!.showCircle(colorFromRGB(0, 120, 215))
+                tileGroups[tile]!!.showCircle(Color.WHITE, 0.7f)
 
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = when {
