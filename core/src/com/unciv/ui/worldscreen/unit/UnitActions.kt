@@ -39,7 +39,9 @@ class UnitActions {
                     }
         }
 
-        if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0 && unit.action!="Set Up") {
+        val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
+        if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0
+                && unit.action!="Set Up" && !workingOnImprovement) {
             val sleeping = unit.action == "Sleep"
             actionList += UnitAction("Sleep", !sleeping, sleeping) {
                 unit.action = "Sleep"
@@ -161,7 +163,8 @@ class UnitActions {
             actionList += UnitAction("Construct improvement",
                     unit.currentMovement >0
                             && !tile.isCityCenter()
-                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
+                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
+                    currentAction = unit.currentTile.hasImprovementInProgress()
             ) { worldScreen.game.screen = ImprovementPickerScreen(tile) { unitTable.selectedUnit = null } }
 
             if("automation" == unit.action){
