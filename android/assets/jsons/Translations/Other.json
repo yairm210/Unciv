@@ -2160,9 +2160,17 @@
 		French:"Inde"
 	}
 
-	"Irochese":{
+	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
+		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
+	}
+
+	"Iroquois":{
 		Italian:"Irochese"
 		French:"Iroquois"
+	}
+
+	"Units move through Forest and Jungle in friendly territory as if it is a Road. These tiles can be used to establish Trade Routes upon searching The Wheel.":{
+		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando si scopre la Ruota."
 	}
 
 	"Aztecs":{
@@ -2170,9 +2178,17 @@
 		French:"Aztèques"
 	}
 
+	"Gain Culture for the empire from each enemy unit killed.":{
+		Italian:"Ogni unità nemica eliminata frutta Cultura per il tuo impero."
+	}
+
 	"Denmark":{
 		Italian:"Danimarca"
 		French:"Danemark"
+	}
+
+	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
+		Italian:"+1 Movimento per le Unità imbarcate, che pagano solo 1 Movimento per sbarcare. Le Unità da mischia non spendono alcun Movimento per saccheggiare."
 	}
 
 	"Inca":{
@@ -2185,9 +2201,17 @@
 		French:"Mongolie"
 	}
 
+	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
+		Italian:"+30% Forza contro le Città-stato e le loro unità. +1 Movimento per le Unità a cavallo."
+	}
+
 	"Korea":{
 		Italian:"Corea"
 		French:"Corée"
+	}
+
+	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
+		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
 	}
 
 	"Turkey":{
