@@ -95,6 +95,7 @@
 		Italian:"Prossima unità"
 		Simplified_Chinese:"下个未行动单位"
 	}
+
 	"Pick a policy":{
 		Italian:"Scegli Politica"
 		Simplified_Chinese:"选择一项社会政策"
@@ -791,6 +792,10 @@
 		Simplified_Chinese:"资源与设施"
 		Portuguese:"recursos e melhorias"
 		Japanese:"リソースと改善"
+	}
+	
+	"Check for idle units":{
+		Simplified_Chinese:"查看未行动单位"
 	}
 
 	"Close":{
