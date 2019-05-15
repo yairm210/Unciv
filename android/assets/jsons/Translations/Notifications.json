@@ -318,11 +318,13 @@
         }
 
         "[amount] enemy units were spotted near our territory": {
+            Italian:"Abbiamo avvistato [amount] unità nemiche vicino ai nostri confini!"
             German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
             Simplified_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
         }
 
         "[amount] enemy units were spotted in our territory": {
+            Italian:"Abbiamo avvistato [amount] unità nemiche nel nostro territorio!"
             German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
             Simplified_Chinese:"在我们的领土内发现了[amount]个敌方单位"
         }

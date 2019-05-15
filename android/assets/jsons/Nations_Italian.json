@@ -98,7 +98,7 @@
 		secondaryColor:[255,255,255],
 		uniqueName:"L'Arte della Guerra",
 		unique:"Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta."
-		cities:["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macau","Shandong",
+		cities:["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macao","Shandong",
 			"Kaifeng","Ningbo","Baoding","Yangzhou","Harbin","Chongqing","Luoyang","Kunming","Taipei","Shenyang",
 			"Taiyuan","Tainan","Dalian","Lijiang","Wuxi","Suzhou","Maoming","Shaoguan","Yangjiang","Heyuan"]
 	},
@@ -203,7 +203,7 @@
 		secondaryColor:[239,236,148],
 		uniqueName:"Ancien Régime",
 		unique:"+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
-		cities:["Parigi","Orleans","Lyon","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
+		cities:["Parigi","Orleans","Lione","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
 			"Dijon","Amiens","Cherbourg","Poitiers","Tolosa","Bayonne","Strasburgo","Brest","Bordeaux","Rennes",
 			"Nizza","Saint Etienne","Nantes","Reims","Le Mans","Montpellier","Limoges","Nancy","Lilla","Caen"]
 	},
@@ -273,7 +273,7 @@
 		secondaryColor:[238,201,9],
 		uniqueName:"La Gloria di Roma",
 		unique:"+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
-		cities:["Roma","Antium","Cumae","Neapolis","Ravenna","Arretium","Milano","Arpinum","Circei","Setia",
+		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arretium","Milano","Arpinum","Circei","Setia",
 			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
 			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
 	},
@@ -378,7 +378,10 @@
 		secondaryColor:[185,0,0],
 		uniqueName:"Bushido",
 		unique: "Le unità combattono come se fossero perfettamente sane. +1 Cultura dai Pescherecci.",
-		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki",
+		"Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke",
+		"Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu",
+		"Yamaguchi","Ota","Tottori"]
 	},	/*
 	{
 		name:"Germany",
