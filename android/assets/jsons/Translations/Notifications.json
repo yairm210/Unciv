@@ -318,10 +318,12 @@
         },
 
         "[amount] enemy units were spotted near our territory": {
+            Italian:"Abbiamo avvistato [amount] unità nemiche vicino ai nostri confini!"
             German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
         },
 
         "[amount] enemy units were spotted in our territory": {
+            Italian:"Abbiamo avvistato [amount] unità nemiche nel nostro territorio!"
             German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
         },
 
