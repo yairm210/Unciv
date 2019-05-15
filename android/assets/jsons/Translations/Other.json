@@ -88,6 +88,7 @@
 	}
 
 	"turn":{ // for e.g. "1 turn" to technology
+		Italian:"turno"
 		Simplified_Chinese:"回合"
 	}
 
