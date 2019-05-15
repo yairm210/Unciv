@@ -39,7 +39,7 @@
 		German:"in"
 		Dutch:"in"
 		Spanish:"en"
-		Simplified_Chinese:"建造或组建完成还需"
+		Simplified_Chinese:"建造/组建完成还需"
 		Portuguese:"em"
 		Japanese:"に"
 	}
@@ -86,12 +86,18 @@
 		Portuguese:"turnos"
 		Japanese:"回る"
 	}
-	
+
+	"turn":{ // for e.g. "1 turn" to technology
+		Simplified_Chinese:"回合"
+	}
+
 	"Next unit":{
 		Italian:"Prossima unità"
+		Simplified_Chinese:"下个未行动单位"
 	}
 	"Pick a policy":{
 		Italian:"Scegli Politica"
+		Simplified_Chinese:"选择一项社会政策"
 	}
 
 /////// Unit
@@ -237,7 +243,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"防御力加成"
+		Simplified_Chinese:"驻守防御力+"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -586,9 +592,9 @@
 		Spanish:"No se pudo cargar el juego desde el portapapeles!"
 	}
 
-////// New game screen - it looks like it's duplicated
+////// New game screen - not duplicated,the other word is wrong.
 /*
-	"Civilization":{	
+	"Civilization":{	//this word is not used in the game.
 		Italian:"Civiltà"
 		Russian:"Цивилизация"
 		French:"Civilisation"
@@ -598,8 +604,9 @@
 		Portuguese:"Civilização"
 		German:"Zivilisation"
 	}
+*/
 
-	"World size":{	 //feels like duplicate
+	"World size":{	 //not duplicate,the other one is wrong.
 		Italian:"Dimensione della mappa"
 		Russian:"Размер мира"
 		French:"Taille du monde"
@@ -610,7 +617,7 @@
 		German:"Kartengröße"
 	}
 
-*/
+
 /////// New game screen
 	
 	"Start game!":{
@@ -625,30 +632,6 @@
 		Japanese:"ゲームを始める！"
 	}
 
-	"Civilization:":{
-		Italian:"Civiltà:"
-		Russian:"Цивилизация:"
-		French:"Civilisation:"
-		Romanian:"Civilizaţie:"
-		Spanish:"Civilización"
-		Simplified_Chinese:"文明"
-		Portuguese:"Civilização"
-		German:"Zivilisation"
-		Japanese:"文明"
-	}
-
-	"World size:":{
-		Italian:"Dimensione mappa:"
-		Russian:"Размер мира:"
-		French:"Taille du monde:"
-		Romanian:"Mărime pământ:"
-		Spanish:"Tamaño del mundo"
-		Simplified_Chinese:"世界大小"
-		Portuguese:"Tamanho do mundo"
-		German:"Weltgröße"
-		Japanese:"ワールドサイズ"
-	}
-
 	"Map type":{	
 		Italian:"Tipo di mappa"
 		Russian:"Тип карты"
@@ -661,20 +644,7 @@
 		Dutch:"Kaarttype"
 	}
 
-	"Number of enemies:":{ //nummber of AI should be more accurate
-		Italian:"Numero di nemici:"
-		Russian:"Количество врагов:"
-		French:"Nombre d'ennemies (AI):"
-		Romanian:"Număr inamici:"
-		Spanish:"Número de enemigos:"
-		Simplified_Chinese:"AI智商："
-		Portuguese:"Numero de inimigos:"
-		German:"Anzahl der Gegner:"
-		Japanese:"敵の数"
-	}
-
-/*
-	"Number of enemies":{	//duplicated
+	"Number of enemies":{	///not duplicated,the word above this one is wrong.
 		Italian:"Numero di avversari"
 		Russian:"Количество врагов"
 		French:"Nombre d'ennemies"
@@ -684,7 +654,6 @@
 		Portuguese:"Número de inimigos"
 		German:"Anzahl der Gegner"
 	}
-*/
 
 	"Number of human players":{
 		Italian:"Numero di giocatori"
@@ -1478,20 +1447,6 @@
 		Simplified_Chinese:"攻击"
 		Portuguese:"Ataque"
 	}
-
-	/*
-	"Attack":{ //As an order
-		Italian:"Attacca"
-		Russian:"Атака"
-		French:"Attaque"
-		Romanian:"Atac"
-		German:"Angreifen"
-		Dutch:"Aanvallen"
-		Spanish:"Ataque"
-		Simplified_Chinese:"攻击"
-		Portuguese:"Ataque"
-	}
-	*/
 	
 	"[percentage] to unit defence":{ // e.g. +25% to unit defence
 		Italian:"[percentage] di difesa dell'unità"
@@ -1503,7 +1458,6 @@
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
 	} 
-	
 	
 	
 ///////// Unit uniques
@@ -1808,6 +1762,7 @@
 	"Keep going":{
 		Italian:"Continua..."
 		French:"Continuer..."
+		Simplified_Chinese:"继续..."
 	}
 	
 	"There's nothing on the table":{
@@ -2500,6 +2455,7 @@
 	
 	"Negotiate Peace":{
 		Italian:"Negozia una pace"
+		Simplified_Chinese:"议和"
 	}
 
 	"Very well.":{
@@ -2674,19 +2630,6 @@
 		Portuguese:"Visão geral"
 		German:"Überblick"
 	}
-
-/*
-	"Cities":{ //duplicated
-		Italian:"Città"
-		Russian:"Города"
-		French:"Villes"
-		Romanian:"Orașe"
-		Spanish:"Ciudades"
-		Simplified_Chinese:"城市"
-		Portuguese:"Cidades"
-		German:"Städte"
-	}
-*/
 
 	"Total":{
 		Italian:"Totale"
@@ -2892,7 +2835,11 @@
 		Portuguese:"Cidade mais próxima"
 		German:"Nächstgelegene Stadt"
 	}
-	
+
+	"Go to unit":{	
+		Simplified_Chinese:"跳转至所在地图位置"
+	}
+
 	"Defeated":{
 		Italian:"Sconfitto"
 		Russian:"побежденный"
