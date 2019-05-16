@@ -1,8 +1,10 @@
 package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -22,6 +24,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         touchable= Touchable.disabled
     }
 
+    var offset: Float = 0f;
+    var isButtonMoved = false
+    var isLabelClicked = false
+
     fun update(isCityViewable:Boolean) {
         val cityButtonText = city.population.population.toString() + " | " + city.name
         background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
@@ -31,12 +37,56 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
         clear()
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
-            Touchable.enabled // So you can click anywhere on the button to go to the city
-            onClick {
-                if (!tileGroup.selectCity(city)) {
+
+            // So you can click anywhere on the button to go to the city
+            touchable = Touchable.enabled
+
+            label.touchable = Touchable.enabled
+            label.onClick {
+                isLabelClicked = true
+                // clicking on the label swings that label a little down to allow selection of units there.
+                // second tap on the label will go to the city screen
+                if (tileGroup.selectCity(city)) {
+                    val floatAction = object : FloatAction(0f, 1f, 0.4f) {
+                        override fun update(percent: Float) {
+                            offset = -height*percent
+                            update(isCityViewable)
+                        }
+
+                        override fun end() {
+                            isButtonMoved=true
+                        }
+                    }
+                    floatAction.interpolation = Interpolation.swingOut
+                    tileGroup.addAction(floatAction)
+                }
+                else {
                     UnCivGame.Current.screen = CityScreen(city)
                 }
             }
+
+            // clicking anywhere else on the button opens the city screen immediately
+            onClick {
+                // we need to check if the label was just clicked, as onClick will propagate
+                // the click event to its touchable parent.
+                if(!isLabelClicked)
+                    UnCivGame.Current.screen = CityScreen(city)
+                isLabelClicked=false
+            }
+
+        }
+
+        // when deselected, move city button to its original position
+        if (tileGroup.worldScreen.bottomBar.unitTable.selectedCity == null && isButtonMoved) {
+            isButtonMoved = false
+            val floatAction = object : FloatAction(0f, 1f, 0.4f) {
+                override fun update(percent: Float) {
+                    offset = -height*(1-percent)
+                    update(isCityViewable)
+                }
+            }
+            floatAction.interpolation = Interpolation.sine
+            tileGroup.addAction(floatAction)
         }
 
         if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
@@ -56,23 +106,28 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
                 val cityStateImage = ImageGetter.getImage("OtherIcons/CityState.png").apply { color = Color.LIGHT_GRAY }
-                add(cityStateImage).size(20f).pad(2f).padLeft(5f)
+                add(cityStateImage).size(20f).pad(2f).padLeft(10f)
             } else {
                 val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
-                add(starImage).size(20f).pad(2f).padLeft(5f)
+                add(starImage).size(20f).pad(2f).padLeft(10f)
             }
         } else if (city.civInfo.isCurrentPlayer() && city.cityStats.isConnectedToCapital(RoadStatus.Road)) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
-            add(connectionImage).size(20f).pad(2f).padLeft(5f)
+            add(connectionImage).size(20f).pad(2f).padLeft(10f)
         } else {
             add()
         } // this is so the health bar is always 2 columns wide
-        add(label).pad(10f)
+        add("".toLabel()).padTop(10f).padBottom(10f) // sufficient vertical padding
+        add(label)
+                .padLeft(10f).padRight(10f) // sufficient horizontal padding
+                .fillY() // provide full-height clicking area
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
-            add(getConstructionGroup(city.cityConstructions)).padRight(5f)
+            add(getConstructionGroup(city.cityConstructions)).padRight(10f)
         }
         pack()
         setOrigin(Align.center)
+        center(tileGroup)
+        y += offset // for animated shifting of City button
         touchable = Touchable.enabled
 
     }

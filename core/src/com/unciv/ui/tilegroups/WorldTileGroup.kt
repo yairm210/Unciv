@@ -71,7 +71,6 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
             }
 
             cityButton!!.update(viewable)
-            cityButton!!.center(this)
         }
     }
 
