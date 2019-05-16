@@ -79,10 +79,10 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         return tradeTable
     }
 
-    fun giveGoldGift(otherCiv: CivilizationInfo) {
+    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        currentPlayerCiv.gold -= 100
-        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += 10
+        currentPlayerCiv.gold -= giftAmount
+        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += giftAmount/10
         rightSideTable.clear()
         rightSideTable.add(getCityStateDiplomacyTable(otherCiv))
     }
@@ -112,9 +112,10 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.addSeparator()
 
         val giftButton = TextButton("Give 100 gold".tr(), skin)
-        giftButton.onClick{ giveGoldGift(otherCiv) }
+        val giftAmount = 100
+        giftButton.onClick{ giveGoldGift(otherCiv,giftAmount ) }
         diplomacyTable.add(giftButton).row()
-        if (currentPlayerCiv.gold < 1) giftButton.disable()
+        if (currentPlayerCiv.gold < giftAmount ) giftButton.disable()
 
         val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
 

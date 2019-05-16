@@ -2528,7 +2528,7 @@
 		French:"Pas cette fois."
 	}
 
-	"Excellent!":{ // AI statement after we accept a trade they proposed
+	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state
 		Italian:"Eccellente!"
 		Simplified_Chinese:"好极了！和和气气才是生财之道。"
 		French:"Excellent!"
@@ -2550,6 +2550,9 @@
 		Italian:"I nostri rapporti: "
 		French:"Notre relation :" //or l'état de notre relation
 		Simplified_Chinese:"我们的关系："
+	}
+	
+	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
 	}
 	
 	// Friendship declaration flavor texts
