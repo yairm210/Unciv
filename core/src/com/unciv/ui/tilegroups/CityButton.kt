@@ -77,7 +77,11 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         }
 
         // when deselected, move city button to its original position
-        if (tileGroup.worldScreen.bottomBar.unitTable.selectedCity == null && isButtonMoved) {
+        val unitTable = tileGroup.worldScreen.bottomBar.unitTable
+        if (isButtonMoved
+                && unitTable.selectedCity == null
+                && unitTable.selectedUnit?.currentTile != city.ccenterTile) {
+
             isButtonMoved = false
             val floatAction = object : FloatAction(0f, 1f, 0.4f) {
                 override fun update(percent: Float) {
