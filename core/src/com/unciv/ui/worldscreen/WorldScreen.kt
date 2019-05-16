@@ -267,8 +267,14 @@ class WorldScreen : CameraStageBaseScreen() {
                     // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
                     // So what we do is we clone all the game data and serialize the clone.
                     if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0)
-                        GameSaver().saveGame(gameInfoClone, "Autosave")
-
+                        try {
+                            GameSaver().saveGame(gameInfoClone, "Autosave")
+                        } catch (ex: Exception) {
+                            Gdx.app.postRunnable {
+                                currentPlayerCiv.addNotification("Autosave failed.", null, Color.RED)
+                                shouldUpdate=true
+                            }
+                        }
                     // do this on main thread
                     Gdx.app.postRunnable {
                         nextTurnButton.enable() // only enable the user to next turn once we've saved the current one

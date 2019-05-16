@@ -1,5 +1,6 @@
 package com.unciv.logic
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
@@ -36,6 +37,15 @@ class GameSaver {
 
     fun saveGame(game: GameInfo, GameName: String) {
         json().toJson(game,getSave(GameName))
+        // if we are on debug level, check saved game immediately, so we catch errors early
+        if (Gdx.app.logLevel >= Application.LOG_DEBUG) {
+            try {
+                loadGame(GameName)
+            } catch (ex: Exception) {
+                Gdx.app.debug("save", "verifying saved game failed", ex)
+                throw ex
+            }
+        }
     }
 
     fun loadGame(GameName: String) : GameInfo {

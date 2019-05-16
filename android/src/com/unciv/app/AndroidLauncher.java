@@ -12,6 +12,6 @@ public class AndroidLauncher extends AndroidApplication {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		String version = BuildConfig.VERSION_NAME;
-		initialize(new UnCivGame(version), config);
+		initialize(new UnCivGame(version, BuildConfig.DEBUG), config);
 	}
 }

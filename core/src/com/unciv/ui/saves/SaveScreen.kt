@@ -1,6 +1,7 @@
 package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -11,6 +12,7 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.toLabel
 
 
@@ -57,9 +59,16 @@ class SaveScreen : PickerScreen() {
         topTable.add(newSave)
         topTable.pack()
 
+        val errorLabel = "".toLabel().setFontColor(Color.RED)
+        rightSideGroup.addActorAt(0, errorLabel)
         rightSideButton.setText("Save game".tr())
         rightSideButton.onClick {
-            GameSaver().saveGame(UnCivGame.Current.gameInfo, textField.text)
+            try {
+                GameSaver().saveGame(UnCivGame.Current.gameInfo, textField.text)
+            } catch (ex: Exception) {
+                errorLabel.setText("Error saving game.")
+                return@onClick
+            }
             UnCivGame.Current.setWorldScreen()
         }
         rightSideButton.enable()

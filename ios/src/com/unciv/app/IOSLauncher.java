@@ -10,7 +10,7 @@ class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new com.unciv.UnCivGame("IOS"), config);
+        return new IOSApplication(new com.unciv.UnCivGame("IOS", false), config);
     }
 
     public static void main(String[] argv) {

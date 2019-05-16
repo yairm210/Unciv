@@ -1,5 +1,6 @@
 package com.unciv
 
+import com.badlogic.gdx.Application
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.unciv.logic.GameInfo
@@ -9,7 +10,7 @@ import com.unciv.ui.LanguagePickerScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.worldscreen.WorldScreen
 
-class UnCivGame(val version: String) : Game() {
+class UnCivGame(val version: String, val debug: Boolean) : Game() {
     var gameInfo: GameInfo = GameInfo()
     lateinit var settings : GameSettings
 
@@ -27,6 +28,7 @@ class UnCivGame(val version: String) : Game() {
     override fun create() {
         Current = this
         Gdx.input.isCatchBackKey=true
+        if(debug) Gdx.app.logLevel = Application.LOG_DEBUG
         GameBasics.run {  } // just to initialize the GameBasics
         settings = GameSaver().getGeneralSettings()
         if (GameSaver().getSave("Autosave").exists()) {
