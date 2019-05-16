@@ -5,14 +5,14 @@ import com.badlogic.gdx.math.Vector2
 
 class Notification {
     var text: String = ""
-    var locations: List<Vector2> = listOf()
+    var locations: ArrayList<Vector2> = ArrayList()
     var color: Color = Color.BLACK
 
     internal constructor() // Needed for json deserialization
 
-    constructor(text: String, location: List<Vector2> = listOf(), color: Color) {
+    constructor(text: String, locations: List<Vector2> = ArrayList(), color: Color) {
         this.text = text
-        this.locations = location
+        this.locations = ArrayList(locations)
         this.color = color
     }
 }
