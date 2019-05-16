@@ -36,6 +36,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         label.setFontColor(city.civInfo.getNation().getSecondaryColor())
 
         clear()
+        val unitTable = tileGroup.worldScreen.bottomBar.unitTable
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
 
             // So you can click anywhere on the button to go to the city
@@ -46,21 +47,13 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 isLabelClicked = true
                 // clicking on the label swings that label a little down to allow selection of units there.
                 // second tap on the label will go to the city screen
-                if (tileGroup.selectCity(city)) {
-                    val floatAction = object : FloatAction(0f, 1f, 0.4f) {
-                        override fun update(percent: Float) {
-                            offset = -height*percent
-                            update(isCityViewable)
-                        }
-
-                        override fun end() {
-                            isButtonMoved=true
-                        }
-                    }
-                    floatAction.interpolation = Interpolation.swingOut
-                    tileGroup.addAction(floatAction)
-                }
-                else {
+                if (!isButtonMoved) {
+                    moveButtonDown()
+                    if(unitTable.selectedUnit == null)
+                        tileGroup.selectCity(city)
+                } else if (unitTable.selectedUnit != null) {
+                    moveButtonUp()
+                } else {
                     UnCivGame.Current.screen = CityScreen(city)
                 }
             }
@@ -69,28 +62,20 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             onClick {
                 // we need to check if the label was just clicked, as onClick will propagate
                 // the click event to its touchable parent.
-                if(!isLabelClicked)
+                if (!isLabelClicked && !isButtonMoved) {
                     UnCivGame.Current.screen = CityScreen(city)
+                }
                 isLabelClicked=false
             }
 
         }
 
         // when deselected, move city button to its original position
-        val unitTable = tileGroup.worldScreen.bottomBar.unitTable
         if (isButtonMoved
                 && unitTable.selectedCity == null
                 && unitTable.selectedUnit?.currentTile != city.ccenterTile) {
 
-            isButtonMoved = false
-            val floatAction = object : FloatAction(0f, 1f, 0.4f) {
-                override fun update(percent: Float) {
-                    offset = -height*(1-percent)
-                    update(isCityViewable)
-                }
-            }
-            floatAction.interpolation = Interpolation.sine
-            tileGroup.addAction(floatAction)
+            moveButtonUp()
         }
 
         if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
@@ -131,11 +116,37 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         pack()
         setOrigin(Align.center)
         center(tileGroup)
-        y += offset // for animated shifting of City button
+        y = offset // for animated shifting of City button
         touchable = Touchable.enabled
 
     }
 
+    private fun moveButtonDown() {
+        val floatAction = object : FloatAction(0f, 1f, 0.4f) {
+            override fun update(percent: Float) {
+                offset = -height * percent
+                y = offset
+            }
+
+            override fun end() {
+                isButtonMoved = true
+            }
+        }
+        floatAction.interpolation = Interpolation.swingOut
+        tileGroup.addAction(floatAction)
+    }
+
+    private fun moveButtonUp() {
+        isButtonMoved = false
+        val floatAction = object : FloatAction(0f, 1f, 0.4f) {
+            override fun update(percent: Float) {
+                offset = -height * (1 - percent)
+                y = offset
+            }
+        }
+        floatAction.interpolation = Interpolation.sine
+        tileGroup.addAction(floatAction)
+    }
 
     private fun getConstructionGroup(cityConstructions: CityConstructions): Group {
         val group= Group()
