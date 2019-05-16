@@ -796,6 +796,7 @@
 	}
 	
 	"Check for idle units":{
+		Italian:"Controlla unità inutilizzate"
 		Simplified_Chinese:"查看未行动单位"
 	}
 
@@ -2180,9 +2181,17 @@
 		French:"Turquie"
 	}
 
+	"50% chance of converting a barbarian naval unit to your side and earning 25 Gold. Pay only one-third the usual cost for naval unit maintenance.":{
+		Italian:"50% di chance di convertire un'unita navale barbarica dalla tua parte e ottenere 25 Oro. Mantenimento delle unità navali ridotte a un terzo."
+	}
+
 	"Siam":{
 		Italian:"Siam"
 		French:"Siam"
+	}
+
+	"Food and Culture from friendly City-States increased by 50%.":{
+		Italian:"+50% Cibo e Cultura ricevute dalle Città-Stato amiche o alleate."
 	}
 
 	"Songhai":{
@@ -2190,15 +2199,28 @@
 		French:"Songhaï"
 	}
 
+	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
+		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
+	}
+
 	"Polynesia":{
 		Italian:"Polinesia"
 		French:"Polynésie"
+	}
+
+	"Can embark and move over Oceans immediately. +1 Sight when embarked.":{
+		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate."
 	}
 
 	"Persia":{
 		Italian:"Persia"
 		French:"Perse"
 	}
+
+	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and a +10% Combat Strenght bonus.":{
+		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
+	}
+	
 	*/
 	
 	"Uniques":{ // unit uniques, displayed on the new game screen when choosing a civ
@@ -2552,7 +2574,7 @@
 	// Relationship states, from worst (Unforgivable) to best (Ally)
 	
   	"Unforgivable":{
-		Italian:"Imperdonabile"
+		Italian:"Imperdonabile!"
 		French:"Impardonnable"
 		Simplified_Chinese:"仇深似海"
   	}
@@ -2867,6 +2889,7 @@
 	}
 
 	"Go to unit":{	
+		Italian:"Vai a unità"
 		Simplified_Chinese:"跳转至所在地图位置"
 	}
 
