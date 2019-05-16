@@ -230,7 +230,8 @@ class WorldScreen : CameraStageBaseScreen() {
             if (currentPlayerCiv.shouldGoToDueUnit()) {
                 val nextDueUnit = currentPlayerCiv.getNextDueUnit()
                 if(nextDueUnit!=null) {
-                    tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position)
+                    tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                    bottomBar.unitTable.selectedUnit = nextDueUnit
                     shouldUpdate=true
                 }
                 return@onClick

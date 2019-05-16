@@ -255,10 +255,11 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
     }
 
-    fun setCenterPosition(vector: Vector2, immediately: Boolean =false) {
+    fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true) {
         val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }
         selectedTile = tileGroup.tileInfo
-        worldScreen.bottomBar.unitTable.tileSelected(selectedTile!!)
+        if(selectUnit)
+            worldScreen.bottomBar.unitTable.tileSelected(selectedTile!!)
 
         val originalScrollX = scrollX
         val originalScrollY = scrollY

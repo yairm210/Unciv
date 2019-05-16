@@ -74,7 +74,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             touchable = Touchable.enabled
             onClick {
                 selectedUnit?.currentTile?.position?.let {
-                    worldScreen.tileMapHolder.setCenterPosition(it)
+                    worldScreen.tileMapHolder.setCenterPosition(it, false, false)
                 }
             }
         }).expand()
@@ -172,7 +172,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 
-            unitDescriptionTable.onClick { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
         }
 
         pack()
