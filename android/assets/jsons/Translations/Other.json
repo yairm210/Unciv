@@ -39,7 +39,7 @@
 		German:"in"
 		Dutch:"in"
 		Spanish:"en"
-		Simplified_Chinese:"建造或组建完成还需"
+		Simplified_Chinese:"建造/组建完成还需"
 		Portuguese:"em"
 		Japanese:"に"
 	}
@@ -86,12 +86,20 @@
 		Portuguese:"turnos"
 		Japanese:"回る"
 	}
-	
+
+	"turn":{ // for e.g. "1 turn" to technology
+		Italian:"turno"
+		Simplified_Chinese:"回合"
+	}
+
 	"Next unit":{
 		Italian:"Prossima unità"
+		Simplified_Chinese:"下个未行动单位"
 	}
+
 	"Pick a policy":{
 		Italian:"Scegli Politica"
+		Simplified_Chinese:"选择一项社会政策"
 	}
 
 /////// Unit
@@ -237,7 +245,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"防御力加成"
+		Simplified_Chinese:"驻守防御力+"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -586,9 +594,9 @@
 		Spanish:"No se pudo cargar el juego desde el portapapeles!"
 	}
 
-////// New game screen - it looks like it's duplicated
+////// New game screen - not duplicated,the other word is wrong.
 /*
-	"Civilization":{	
+	"Civilization":{	//this word is not used in the game.
 		Italian:"Civiltà"
 		Russian:"Цивилизация"
 		French:"Civilisation"
@@ -598,8 +606,9 @@
 		Portuguese:"Civilização"
 		German:"Zivilisation"
 	}
+*/
 
-	"World size":{	 //feels like duplicate
+	"World size":{	 //not duplicate,the other one is wrong.
 		Italian:"Dimensione della mappa"
 		Russian:"Размер мира"
 		French:"Taille du monde"
@@ -610,7 +619,7 @@
 		German:"Kartengröße"
 	}
 
-*/
+
 /////// New game screen
 	
 	"Start game!":{
@@ -625,30 +634,6 @@
 		Japanese:"ゲームを始める！"
 	}
 
-	"Civilization:":{
-		Italian:"Civiltà:"
-		Russian:"Цивилизация:"
-		French:"Civilisation:"
-		Romanian:"Civilizaţie:"
-		Spanish:"Civilización"
-		Simplified_Chinese:"文明"
-		Portuguese:"Civilização"
-		German:"Zivilisation"
-		Japanese:"文明"
-	}
-
-	"World size:":{
-		Italian:"Dimensione mappa:"
-		Russian:"Размер мира:"
-		French:"Taille du monde:"
-		Romanian:"Mărime pământ:"
-		Spanish:"Tamaño del mundo"
-		Simplified_Chinese:"世界大小"
-		Portuguese:"Tamanho do mundo"
-		German:"Weltgröße"
-		Japanese:"ワールドサイズ"
-	}
-
 	"Map type":{	
 		Italian:"Tipo di mappa"
 		Russian:"Тип карты"
@@ -661,20 +646,7 @@
 		Dutch:"Kaarttype"
 	}
 
-	"Number of enemies:":{ //nummber of AI should be more accurate
-		Italian:"Numero di nemici:"
-		Russian:"Количество врагов:"
-		French:"Nombre d'ennemies (AI):"
-		Romanian:"Număr inamici:"
-		Spanish:"Número de enemigos:"
-		Simplified_Chinese:"AI智商："
-		Portuguese:"Numero de inimigos:"
-		German:"Anzahl der Gegner:"
-		Japanese:"敵の数"
-	}
-
-/*
-	"Number of enemies":{	//duplicated
+	"Number of enemies":{	///not duplicated,the word above this one is wrong.
 		Italian:"Numero di avversari"
 		Russian:"Количество врагов"
 		French:"Nombre d'ennemies"
@@ -684,7 +656,6 @@
 		Portuguese:"Número de inimigos"
 		German:"Anzahl der Gegner"
 	}
-*/
 
 	"Number of human players":{
 		Italian:"Numero di giocatori"
@@ -822,6 +793,10 @@
 		Simplified_Chinese:"资源与设施"
 		Portuguese:"recursos e melhorias"
 		Japanese:"リソースと改善"
+	}
+	
+	"Check for idle units":{
+		Simplified_Chinese:"查看未行动单位"
 	}
 
 	"Close":{
@@ -1478,20 +1453,6 @@
 		Simplified_Chinese:"攻击"
 		Portuguese:"Ataque"
 	}
-
-	/*
-	"Attack":{ //As an order
-		Italian:"Attacca"
-		Russian:"Атака"
-		French:"Attaque"
-		Romanian:"Atac"
-		German:"Angreifen"
-		Dutch:"Aanvallen"
-		Spanish:"Ataque"
-		Simplified_Chinese:"攻击"
-		Portuguese:"Ataque"
-	}
-	*/
 	
 	"[percentage] to unit defence":{ // e.g. +25% to unit defence
 		Italian:"[percentage] di difesa dell'unità"
@@ -1503,7 +1464,6 @@
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
 	} 
-	
 	
 	
 ///////// Unit uniques
@@ -1808,6 +1768,7 @@
 	"Keep going":{
 		Italian:"Continua..."
 		French:"Continuer..."
+		Simplified_Chinese:"继续..."
 	}
 	
 	"There's nothing on the table":{
@@ -2160,9 +2121,17 @@
 		French:"Inde"
 	}
 
-	"Irochese":{
+	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
+		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
+	}
+
+	"Iroquois":{
 		Italian:"Irochese"
 		French:"Iroquois"
+	}
+
+	"Units move through Forest and Jungle in friendly territory as if it is a Road. These tiles can be used to establish Trade Routes upon searching The Wheel.":{
+		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando si scopre la Ruota."
 	}
 
 	"Aztecs":{
@@ -2170,9 +2139,17 @@
 		French:"Aztèques"
 	}
 
+	"Gain Culture for the empire from each enemy unit killed.":{
+		Italian:"Ogni unità nemica eliminata frutta Cultura per il tuo impero."
+	}
+
 	"Denmark":{
 		Italian:"Danimarca"
 		French:"Danemark"
+	}
+
+	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
+		Italian:"+1 Movimento per le Unità imbarcate, che pagano solo 1 Movimento per sbarcare. Le Unità da mischia non spendono alcun Movimento per saccheggiare."
 	}
 
 	"Inca":{
@@ -2185,9 +2162,17 @@
 		French:"Mongolie"
 	}
 
+	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
+		Italian:"+30% Forza contro le Città-stato e le loro unità. +1 Movimento per le Unità a cavallo."
+	}
+
 	"Korea":{
 		Italian:"Corea"
 		French:"Corée"
+	}
+
+	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
+		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
 	}
 
 	"Turkey":{
@@ -2500,6 +2485,7 @@
 	
 	"Negotiate Peace":{
 		Italian:"Negozia una pace"
+		Simplified_Chinese:"议和"
 	}
 
 	"Very well.":{
@@ -2674,19 +2660,6 @@
 		Portuguese:"Visão geral"
 		German:"Überblick"
 	}
-
-/*
-	"Cities":{ //duplicated
-		Italian:"Città"
-		Russian:"Города"
-		French:"Villes"
-		Romanian:"Orașe"
-		Spanish:"Ciudades"
-		Simplified_Chinese:"城市"
-		Portuguese:"Cidades"
-		German:"Städte"
-	}
-*/
 
 	"Total":{
 		Italian:"Totale"
@@ -2892,7 +2865,11 @@
 		Portuguese:"Cidade mais próxima"
 		German:"Nächstgelegene Stadt"
 	}
-	
+
+	"Go to unit":{	
+		Simplified_Chinese:"跳转至所在地图位置"
+	}
+
 	"Defeated":{
 		Italian:"Sconfitto"
 		Russian:"побежденный"
