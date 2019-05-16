@@ -39,16 +39,20 @@ class UnitActions {
                     }
         }
 
-        if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0 && unit.action!="Set Up") {
+        val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
+        if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0
+                && unit.action!="Set Up" && !workingOnImprovement) {
             val sleeping = unit.action == "Sleep"
             actionList += UnitAction("Sleep", !sleeping, sleeping) {
                 unit.action = "Sleep"
+                unitTable.selectedUnit = null
             }
         }
 
         if(unit.canFortify()) {
             actionList += UnitAction("Fortify", unit.currentMovement >0) {
                 unit.action = "Fortify 0"
+                unitTable.selectedUnit = null
             }.sound("fortify")
         } else if (unit.isFortified()) {
             actionList += UnitAction(
@@ -126,9 +130,10 @@ class UnitActions {
                 unit.action="Set Up"
                 // setting up uses up all movement points
                 // this is to avoid problems with the idle state:
-                // - it should not be idle when setting up right now
-                // - it should be idle when set up in the past
+                // - unit should not be idle when setting up right now
+                // - unit should be idle when set up in the past
                 unit.currentMovement=0f
+                unitTable.selectedUnit = null
             }.sound("setup")
         }
 
@@ -150,8 +155,9 @@ class UnitActions {
             actionList += UnitAction("Construct improvement",
                     unit.currentMovement >0
                             && !tile.isCityCenter()
-                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
-            ) { worldScreen.game.screen = ImprovementPickerScreen(tile) }
+                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
+                    currentAction = unit.currentTile.hasImprovementInProgress()
+            ) { worldScreen.game.screen = ImprovementPickerScreen(tile) { unitTable.selectedUnit = null } }
 
             if("automation" == unit.action){
                 actionList += UnitAction("Stop automation", true) {unit.action = null}
