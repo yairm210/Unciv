@@ -186,12 +186,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 
-        // move city tiles in front, to make their CityButtons clickable
-        for (tileGroup in tileGroups.values){
-            if(tileGroup.cityButton!=null)
-                tileGroup.toFront()
-        }
-
         if(moveHereButtonDto!=null) {
             addMoveHereButtonToTile(moveHereButtonDto!!, tileGroups[moveHereButtonDto!!.tileInfo]!!)
             moveHereButtonDto=null

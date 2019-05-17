@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
+import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
@@ -25,8 +26,8 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     }
 
     var offset: Float = 0f;
-    var isButtonMoved = false
-    var isLabelClicked = false
+    var buttonDownClickArea: Actor? = null
+    fun isButtonMoved() = buttonDownClickArea != null
 
     fun update(isCityViewable:Boolean) {
         val cityButtonText = city.population.population.toString() + " | " + city.name
@@ -41,37 +42,27 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
             // So you can click anywhere on the button to go to the city
             touchable = Touchable.enabled
-
             label.touchable = Touchable.enabled
-            label.onClick {
-                isLabelClicked = true
-                // clicking on the label swings that label a little down to allow selection of units there.
-                // second tap on the label will go to the city screen
-                if (!isButtonMoved) {
-                    moveButtonDown()
-                    if(unitTable.selectedUnit == null)
-                        tileGroup.selectCity(city)
-                } else if (unitTable.selectedUnit != null) {
-                    moveButtonUp()
-                } else {
-                    UnCivGame.Current.screen = CityScreen(city)
-                }
-            }
 
             // clicking anywhere else on the button opens the city screen immediately
-            onClick {
-                // we need to check if the label was just clicked, as onClick will propagate
-                // the click event to its touchable parent.
-                if (!isLabelClicked && !isButtonMoved) {
-                    UnCivGame.Current.screen = CityScreen(city)
+            onClickEvent { _, x, y ->
+                if (!isButtonMoved()) {
+                    if (hit(x, y, true) == label) {
+                        // clicking on the label swings that label a little down to allow selection of units there.
+                        // second tap on the label will go to the city screen
+                        moveButtonDown()
+                        if (unitTable.selectedUnit == null)
+                            tileGroup.selectCity(city)
+                    } else {
+                        UnCivGame.Current.screen = CityScreen(city)
+                    }
                 }
-                isLabelClicked=false
             }
 
         }
 
         // when deselected, move city button to its original position
-        if (isButtonMoved
+        if (isButtonMoved()
                 && unitTable.selectedCity == null
                 && unitTable.selectedUnit?.currentTile != city.ccenterTile) {
 
@@ -118,6 +109,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         center(tileGroup)
         y = offset // for animated shifting of City button
         touchable = Touchable.enabled
+        updateClickArea()
 
     }
 
@@ -129,7 +121,11 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             }
 
             override fun end() {
-                isButtonMoved = true
+                buttonDownClickArea = Actor().onClick {
+                    UnCivGame.Current.screen = CityScreen(city)
+                }
+                tileGroup.cityButtonLayerGroup.addActor(buttonDownClickArea)
+                updateClickArea()
             }
         }
         floatAction.interpolation = Interpolation.swingOut
@@ -137,15 +133,30 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     }
 
     private fun moveButtonUp() {
-        isButtonMoved = false
         val floatAction = object : FloatAction(0f, 1f, 0.4f) {
             override fun update(percent: Float) {
                 offset = -height * (1 - percent)
                 y = offset
             }
+
+            override fun end() {
+                buttonDownClickArea?.remove()
+                buttonDownClickArea = null
+            }
         }
         floatAction.interpolation = Interpolation.sine
         tileGroup.addAction(floatAction)
+    }
+
+    private fun updateClickArea() {
+        buttonDownClickArea?.let { clickArea ->
+            clickArea.setSize(width, height)
+            clickArea.setScale(scaleX, scaleY)
+            clickArea.setOrigin(Align.center)
+            clickArea.center(tileGroup.cityButtonLayerGroup)
+            clickArea.y = y
+            clickArea.touchable = Touchable.enabled
+        }
     }
 
     private fun getConstructionGroup(cityConstructions: CityConstructions): Group {
