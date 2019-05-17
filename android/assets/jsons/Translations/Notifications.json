@@ -408,5 +408,13 @@
             Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
         }
 
+        "[unit] finished exploring.": {
+            Italian:"[unit] ha terminato la sua esplorazione."
+            "German": "[unit] hat die Erkundung abgeschlossen."
+        },
 
+        "[unit] has no work to do.": {
+            Italian:"[unit] è inattiva."
+            "German": "[unit] hat keine Arbeit mehr."
+        }
 }

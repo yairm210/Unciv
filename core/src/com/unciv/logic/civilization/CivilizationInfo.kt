@@ -310,8 +310,7 @@ class CivilizationInfo {
 
     fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
 
-    fun getNextDueUnit(selectedUnit: MapUnit?): MapUnit? {
-        selectedUnit?.due = false
+    fun getNextDueUnit(): MapUnit? {
         val dueUnits = getDueUnits()
         if(dueUnits.isNotEmpty()) {
             val unit = dueUnits[0]
