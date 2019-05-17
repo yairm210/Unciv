@@ -42,7 +42,7 @@
 		startBias:["Coast"],
 		
 		startIntroPart1: "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea."
-		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Grek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
 		
 		declaringWar:"You are in my way, you must be destroyed."
 		attacked:"As a matter of fact I too grow weary of peace."
@@ -86,7 +86,7 @@
 		neutralNo:["Nope.","Of course not.","Definitely not."]
 		neutralYes:["Of course.","I agree.","Excellent!"]
 
-		hateHello:" Oh. It's you?"
+		hateHello:"Oh. It's you?"
 		hateLetsHearIt:["And what else?","Keep talking."]
 		hateNo:["I cannot accept that.","Sorry, say that again.","Get out of my face!"]
 		hateYes:["I suppose I must accept.","Ah. Very good."]
@@ -114,7 +114,7 @@
 		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
 		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
 		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
-		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
+		introduction:"Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
 		
 		neutralHello:"Good day.",
 		neutralLetsHearIt:["Go on.","Speak.","I am all ears."],
@@ -350,7 +350,7 @@
 		adjective:["Japanese"],
 		startBias:["Coast"],
 		
-		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the frield of battle, your people are also immensely industious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
+		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the field of battle, your people are also immensely industrious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
 		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
