@@ -1,6 +1,5 @@
 package com.unciv.ui.worldscreen.optionstable
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -12,7 +11,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
-import kotlin.concurrent.thread
 
 class Language(val language:String){
     val percentComplete:Int
@@ -168,6 +166,8 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         languageSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 selectedLanguage = languageSelectBox.selected.language
+                selectLanguage()
+                /*
                 if (Fonts().containsFont(Fonts().getFontForLanguage(selectedLanguage)))
                     selectLanguage()
                 else {
@@ -189,6 +189,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
                                 }
                             })
                 }
+                */
             }
         })
 

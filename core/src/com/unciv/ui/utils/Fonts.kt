@@ -1,110 +1,43 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.BitmapFont
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
-import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
-import java.io.FileOutputStream
-import java.net.URL
+import core.java.nativefont.NativeFont
+import core.java.nativefont.NativeFontPaint
 
 class Fonts {
     companion object {
         // Contains e.g. "Arial 22", fontname and size, to BitmapFont
-        val fontCache = HashMap<String, BitmapFont>()
+        val fontCache = HashMap<String, NativeFont>()
     }
+   fun getCharsForFont(): String {
+       val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
+               "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +
+               "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏÄĂÂÊÉÎÔÖƠƯÜäăâêôöơưüáéèíóú1234567890" +
+               "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
+       val charSet = HashSet<Char>()
+       charSet.addAll(defaultText.asIterable())
 
-    fun getFontForLanguage(language:String): String {
-        if (language.contains("Chinese")) return chineseFont
-        else return "Arial"
-    }
+       if (Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").exists())
+           charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").readString().asIterable())
+       if (Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").exists())
+           charSet.addAll(Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").readString().asIterable())
+       if (Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").exists())
+           charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").readString().asIterable())
 
-    val chineseFont = "WenQuanYiMicroHei"
-
-    fun getCharsForFont(font: String): String {
-        val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
-                "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +
-                "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏÄĂÂÊÉÎÔÖƠƯÜäăâêôöơưüáéèíóú1234567890" +
-                "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
-        if (font == "Arial") return defaultText
-        if (font == chineseFont) {
-            val charSet = HashSet<Char>()
-            charSet.addAll(defaultText.asIterable())
-
-            if(Gdx.files.internal("BasicHelp/BasicHelp_Simplified_Chinese.json").exists())
-                charSet.addAll(Gdx.files.internal("BasicHelp/BasicHelp_Simplified_Chinese.json").readString().asIterable())
-            if (Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").exists())
-                charSet.addAll(Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").readString().asIterable())
-            if (Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").exists())
-                charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").readString().asIterable())
-
-            for (entry in GameBasics.Translations.entries) {
-                for (lang in entry.value) {
-                    if (lang.key.contains("Chinese")) charSet.addAll(lang.value.asIterable())
-                }
-            }
-            return charSet.joinToString()
-        }
-        return ""
-    }
-
-    fun download(link: String, path: String) {
-        val input = URL(link).openStream()
-        val output = FileOutputStream(Gdx.files.local(path).file())
-        input.use {
-            output.use {
-                input.copyTo(output)
-            }
-        }
-    }
-
-    fun containsFont(font:String): Boolean {
-        if (Gdx.files.internal("skin/$font.ttf").exists())
-            return true
-        if (Gdx.files.local("fonts/$font.ttf").exists())
-            return true
-
-        return false
-    }
-
-    fun downloadFontForLanguage(language:String){
-        val font = getFontForLanguage(language)
-        if(containsFont(language)) return
-
-        if (!Gdx.files.local("fonts").exists())
-            Gdx.files.local("fonts").mkdirs()
-
-        val localPath = "fonts/$font.ttf"
-        if (font == chineseFont)
-            download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf", localPath)//This font is licensed under Apache2.0 or GPLv3
-    }
-
-    fun getFont(size: Int): BitmapFont {
-        val language = UnCivGame.Current.settings.language
-        val fontForLanguage = getFontForLanguage(language)
-        val keyForFont = "$fontForLanguage $size"
-        if (fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
-        val generator: FreeTypeFontGenerator
-
-        if (Gdx.files.internal("skin/$fontForLanguage.ttf").exists())
-            generator = FreeTypeFontGenerator(Gdx.files.internal("skin/$fontForLanguage.ttf"))
-        else {
-            val localPath = "fonts/$fontForLanguage.ttf"
-            if(!containsFont(fontForLanguage))  downloadFontForLanguage(language)
-            generator = FreeTypeFontGenerator(Gdx.files.local(localPath))
-        }
-
-        val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
-        parameter.size = size
-        parameter.minFilter = Texture.TextureFilter.Linear
-        parameter.magFilter = Texture.TextureFilter.Linear
-
-        parameter.characters = getCharsForFont(fontForLanguage)
-
-        val font = generator.generateFont(parameter)
-        generator.dispose() // don't forget to dispose to avoid memory leaks!
-        fontCache[keyForFont] = font
-        return font
-    }
+       for (entry in GameBasics.Translations.entries) {
+           for (lang in entry.value) {
+               if (lang.key.contains("Chinese")) charSet.addAll(lang.value.asIterable())
+           }
+       }
+       return charSet.joinToString()
+   }
+   fun getFont(size: Int): NativeFont {
+     val fontForLanguage ="Nativefont"
+       val keyForFont = "$fontForLanguage $size"
+       val font=NativeFont(NativeFontPaint(size))
+       font.appendText(getCharsForFont())
+       fontCache[keyForFont] = font
+       return font
+   }
 }
