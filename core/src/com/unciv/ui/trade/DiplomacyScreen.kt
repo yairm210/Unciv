@@ -220,6 +220,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 DeclaredFriendshipWithOurEnemies -> "You have declared friendship with our enemies!"
                 DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
                 OpenBorders -> "Our open borders have brought us closer together."
+                BetrayedDeclarationOfFriendship -> "Your so-called 'friendship' is worth nothing."
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"
