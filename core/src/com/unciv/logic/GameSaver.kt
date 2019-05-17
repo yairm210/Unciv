@@ -66,4 +66,19 @@ class GameSaver {
     fun setGeneralSettings(gameSettings: GameSettings){
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
     }
+
+    fun autoSave(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
+        kotlin.concurrent.thread {
+            // the save takes a long time (up to a second!) and we can do it while the player continues his game.
+            // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
+            // So what we do is we clone all the game data and serialize the clone.
+            saveGame(gameInfo.clone(), "Autosave")
+
+            // do this on main thread
+            Gdx.app.postRunnable {
+                postRunnable()
+            }
+        }
+
+    }
 }
