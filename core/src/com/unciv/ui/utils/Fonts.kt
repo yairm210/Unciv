@@ -35,6 +35,7 @@ class Fonts {
    fun getFont(size: Int): NativeFont {
      val fontForLanguage ="Nativefont"
        val keyForFont = "$fontForLanguage $size"
+       if (fontCache.containsKey(keyForFont))return fontCache[keyForFont]!!
        val font=NativeFont(NativeFontPaint(size))
        font.appendText(getCharsForFont())
        fontCache[keyForFont] = font
