@@ -9,6 +9,9 @@ import com.unciv.ui.utils.*
 import kotlin.math.min
 
 class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(null) {
+
+    var notificationsHash : Int = 0
+
     private var notificationsTable = Table()
 
     init {
@@ -17,10 +20,15 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
     }
 
     internal fun update(notifications: MutableList<Notification>) {
+
+        // no news? - keep our list as it is, especially don't reset scroll position
+        if(notificationsHash == notifications.hashCode())
+            return
+        notificationsHash = notifications.hashCode()
+
         notificationsTable.clearChildren()
-        for (notification in notifications.toList()) { // tolist to avoid concurrecy problems
-            val label = notification.text.toLabel().setFontColor(Color.BLACK)
-                    .setFontSize(14)
+        for (notification in notifications.toList()) { // toList to avoid concurrency problems
+            val label = notification.text.toLabel().setFontColor(Color.BLACK).setFontSize(14)
             val listItem = Table()
 
             listItem.add(ImageGetter.getCircle()
