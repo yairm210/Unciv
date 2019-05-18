@@ -2673,6 +2673,9 @@
 		Simplified_Chinese:"开放的边界促进了彼此的了解，让我们的人民心心相通！"
 	}
 	
+	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
+	}
+	
 ////// Overview screen
 
 	"Overview":{	

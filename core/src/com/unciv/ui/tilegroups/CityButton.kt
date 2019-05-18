@@ -71,39 +71,38 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
         if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
             val healthBar = ImageGetter.getHealthBar(city.health.toFloat(), city.getMaxHealth().toFloat(), 100f)
-            add(healthBar).colspan(3).row()
+            add(healthBar).row()
         }
 
+        val iconTable = Table()
         if(city.resistanceCounter > 0){
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance.png")
-            add(resistanceImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(resistanceImage).size(20f).pad(2f).padLeft(5f)
         }
 
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
-            add(fireImage).size(20f).pad(2f).padLeft(5f)
+            iconTable.add(fireImage).size(20f).pad(2f).padLeft(5f)
         }
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
                 val cityStateImage = ImageGetter.getImage("OtherIcons/CityState.png").apply { color = Color.LIGHT_GRAY }
-                add(cityStateImage).size(20f).pad(2f).padLeft(10f)
+                iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
             } else {
                 val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
-                add(starImage).size(20f).pad(2f).padLeft(10f)
+                iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
             }
         } else if (city.civInfo.isCurrentPlayer() && city.cityStats.isConnectedToCapital(RoadStatus.Road)) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
-            add(connectionImage).size(20f).pad(2f).padLeft(10f)
-        } else {
-            add()
-        } // this is so the health bar is always 2 columns wide
-        add("".toLabel()).padTop(10f).padBottom(10f) // sufficient vertical padding
-        add(label)
-                .padLeft(10f).padRight(10f) // sufficient horizontal padding
+            iconTable.add(connectionImage).size(20f).pad(2f).padLeft(10f)
+        }
+
+        iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
-            add(getConstructionGroup(city.cityConstructions)).padRight(10f)
+            iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f)
         }
+        add(iconTable).row()
         pack()
         setOrigin(Align.center)
         center(tileGroup)
