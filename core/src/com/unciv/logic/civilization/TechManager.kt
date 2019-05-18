@@ -27,6 +27,7 @@ class TechManager {
     /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
     private var techsInProgress = HashMap<String, Int>()
+    private var techRecentlyFinished: String? = null
 
     //region state-changing functions
     fun clone(): TechManager {
@@ -42,7 +43,15 @@ class TechManager {
         return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
     }
 
-    fun currentTechnology(): String? {
+    fun recentlyFinishedTechnology(): Technology? = techRecentlyFinished?.let {
+        GameBasics.Technologies[it]
+    }
+
+    fun currentTechnology(): Technology? = currentTechnologyName()?.let {
+        GameBasics.Technologies[it]
+    }
+
+    fun currentTechnologyName(): String? {
         if (techsToResearch.isEmpty()) return null
         else return techsToResearch[0]
     }
@@ -91,8 +100,9 @@ class TechManager {
     }
 
     fun nextTurn(scienceForNewTurn: Int) {
-        val currentTechnology = currentTechnology()
+        val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
+        techRecentlyFinished = null
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
@@ -100,6 +110,7 @@ class TechManager {
         // We finished it!
         techsInProgress.remove(currentTechnology)
         addTechnology(currentTechnology)
+        techRecentlyFinished = currentTechnology
     }
 
     fun getFreeTechnology(techName:String){
@@ -121,7 +132,7 @@ class TechManager {
             researchedTechUniques = researchedTechUniques.withItem(unique)
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", null, Color.BLUE)
+        civInfo.addNotification("Research of [$techName] has completed!", null, Color.BLUE, true)
 
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {

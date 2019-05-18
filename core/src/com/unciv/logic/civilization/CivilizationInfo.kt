@@ -499,14 +499,14 @@ class CivilizationInfo {
         return false
     }
 
-    fun addNotification(text: String, location: Vector2?,color: Color) {
-        val locations = if(location!=null) listOf(location) else emptyList()
-        addNotification(text, locations, color)
+    fun addNotification(text: String, location: Vector2?, color: Color, openTech: Boolean = false) {
+        val locations = if (location != null) listOf(location) else emptyList()
+        addNotification(text, locations, color, openTech)
     }
 
-    fun addNotification(text: String, locations: List<Vector2>, color: Color) {
-        if(playerType==PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, locations,color))
+    fun addNotification(text: String, locations: List<Vector2>, color: Color, openTech: Boolean = false) {
+        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
+        notifications.add(Notification(text, locations, color, openTech))
     }
 
     fun addGreatPerson(greatPerson: String, city:CityInfo = cities.random()) {
