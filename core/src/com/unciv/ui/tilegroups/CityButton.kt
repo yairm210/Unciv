@@ -5,7 +5,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
@@ -25,7 +25,6 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         touchable= Touchable.disabled
     }
 
-    var offset: Float = 0f;
     var buttonDownClickArea: Actor? = null
     fun isButtonMoved() = buttonDownClickArea != null
 
@@ -49,9 +48,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 if (!isButtonMoved()) {
                     if (hit(x, y, true) == label) {
                         // clicking on the label swings that label a little down to allow selection of units there.
+                        // this also allows to target selected units to move to the city tile from elsewhere.
                         // second tap on the label will go to the city screen
                         moveButtonDown()
-                        if (unitTable.selectedUnit == null)
+                        if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement==0f)
                             tileGroup.selectCity(city)
                     } else {
                         UnCivGame.Current.screen = CityScreen(city)
@@ -63,7 +63,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
         // when deselected, move city button to its original position
         if (isButtonMoved()
-                && unitTable.selectedCity == null
+                && unitTable.selectedCity != city
                 && unitTable.selectedUnit?.currentTile != city.ccenterTile) {
 
             moveButtonUp()
@@ -105,45 +105,34 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         add(iconTable).row()
         pack()
         setOrigin(Align.center)
-        center(tileGroup)
-        y = offset // for animated shifting of City button
+        centerX(tileGroup)
         touchable = Touchable.enabled
         updateClickArea()
 
     }
 
     private fun moveButtonDown() {
-        val floatAction = object : FloatAction(0f, 1f, 0.4f) {
-            override fun update(percent: Float) {
-                offset = -height * percent
-                y = offset
-            }
-
-            override fun end() {
-                buttonDownClickArea = Actor().onClick {
-                    UnCivGame.Current.screen = CityScreen(city)
+        val floatAction = Actions.sequence(
+                Actions.moveBy(0f, -height, 0.4f, Interpolation.swingOut),
+                Actions.run {
+                    buttonDownClickArea = Actor().onClick {
+                        UnCivGame.Current.screen = CityScreen(city)
+                    }
+                    tileGroup.cityButtonLayerGroup.addActor(buttonDownClickArea)
+                    updateClickArea()
                 }
-                tileGroup.cityButtonLayerGroup.addActor(buttonDownClickArea)
-                updateClickArea()
-            }
-        }
-        floatAction.interpolation = Interpolation.swingOut
+        )
         tileGroup.addAction(floatAction)
     }
 
     private fun moveButtonUp() {
-        val floatAction = object : FloatAction(0f, 1f, 0.4f) {
-            override fun update(percent: Float) {
-                offset = -height * (1 - percent)
-                y = offset
-            }
-
-            override fun end() {
-                buttonDownClickArea?.remove()
-                buttonDownClickArea = null
-            }
-        }
-        floatAction.interpolation = Interpolation.sine
+        val floatAction = Actions.sequence(
+                Actions.moveBy(0f, height, 0.4f, Interpolation.sine),
+                Actions.run {
+                    buttonDownClickArea?.remove()
+                    buttonDownClickArea = null
+                }
+        )
         tileGroup.addAction(floatAction)
     }
 
@@ -152,8 +141,8 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             clickArea.setSize(width, height)
             clickArea.setScale(scaleX, scaleY)
             clickArea.setOrigin(Align.center)
-            clickArea.center(tileGroup.cityButtonLayerGroup)
-            clickArea.y = y
+            clickArea.centerX(tileGroup.cityButtonLayerGroup)
+            clickArea.y = y-height
             clickArea.touchable = Touchable.enabled
         }
     }
