@@ -1,6 +1,5 @@
 package com.unciv.ui
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
@@ -11,8 +10,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.*
-import com.unciv.ui.worldscreen.optionstable.PopupTable
-import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
 
 class LanguageTable(val language:String,skin: Skin):Table(skin){
@@ -77,6 +74,9 @@ class LanguagePickerScreen: PickerScreen(){
 
 
         rightSideButton.onClick {
+            pickLanguage()
+        }
+            /*
             if (Fonts().containsFont(Fonts().getFontForLanguage(chosenLanguage)))
                 pickLanguage()
             else {
@@ -96,6 +96,7 @@ class LanguagePickerScreen: PickerScreen(){
                         },this)
             }
         }
+        */
     }
 
     fun pickLanguage(){
