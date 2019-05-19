@@ -157,6 +157,8 @@ class CityStats {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         newHappinessList ["Cities"] = -3f * unhappinessModifier
+        if (civInfo.getNation().unique.contains("Unhappiness from number of Cities doubled"))
+            newHappinessList ["Cities"] *=2 //for the Indian
 
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
@@ -165,6 +167,8 @@ class CityStats {
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
+        if (civInfo.getNation().unique.contains("Unhappiness from number of Citizens halved")) 
+            unhappinessFromCitizens *= 0.5f //for the Indian
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
