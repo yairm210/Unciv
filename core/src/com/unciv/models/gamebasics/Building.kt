@@ -3,9 +3,10 @@ package com.unciv.models.gamebasics
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.Constants
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.Stats
+import com.unciv.models.stats.*
 
 class Building : NamedStats(), IConstruction{
 
@@ -149,8 +150,10 @@ class Building : NamedStats(), IConstruction{
 
             if (adoptedPolicies.contains("Autocracy Complete") && cityStrength > 0)
                 stats.happiness += 1
-
-            if (name == "Castle" && civInfo.getBuildingUniques().contains("+1 happiness, +2 culture and +3 gold from every Castle")){
+            
+            //Neuschwanstein:
+            if (hashSetOf("Castle", "Mughal Fort").contains(name) 
+                    && civInfo.getBuildingUniques().contains("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
                 stats.culture+=2
                 stats.gold+=3
@@ -195,6 +198,18 @@ class Building : NamedStats(), IConstruction{
     fun getRejectionReason(construction: CityConstructions):String{
         if (construction.isBuilt(name)) return "Already built"
 
+        if ("Must be next to desert" in uniques
+                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
+            return "Must be next to desert"
+
+        if ("Must be next to mountain" in uniques
+                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Mountain" })
+            return "Must be next to mountain"
+
+        if("Can only be built in coastal cities" in uniques
+                && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
+            return "Can only be built in coastal cities"
+
         val civInfo = construction.cityInfo.civInfo
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
@@ -208,39 +223,32 @@ class Building : NamedStats(), IConstruction{
 
             if(civInfo.cities.any { it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "Wonder is being built elsewhere"
+
+            if(civInfo.isCityState())
+                return "No world wonders for city-states"
         }
 
 
         // National wonders
         if(requiredBuildingInAllCities!=null) {
-            if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
-                return "Requires a $requiredBuildingInAllCities in all cities"
 
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "Wonder is already built"
-            if (civInfo.cities.any {it.cityConstructions.isBeingConstructed(name) })
+            if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
+                return "Requires a [$requiredBuildingInAllCities] in all cities"
+            if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "Wonder is being built elsewhere"
+            if(civInfo.isCityState())
+                return "No world wonders for city-states"
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))
-            return "Requires a $requiredBuilding in this city"
+            return "Requires a [$requiredBuilding] in this city"
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
 
-        if ("Must be next to desert" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
-            return "Must be next to desert"
-
-        if ("Must be next to mountain" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Mountain" })
-            return "Must be next to mountain"
-
-        if("Can only be built in coastal cities" in uniques
-                && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
-            return "Can only be built in coastal cities"
-
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
-            return "Requires $requiredResource"
+            return "Requires [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
             val containsResourceWithImprovement = construction.cityInfo.getTilesInRange()
@@ -292,8 +300,8 @@ class Building : NamedStats(), IConstruction{
                 civInfo.addGreatPerson("Great Scientist", construction.cityInfo)
             }
             "Provides 2 free workers" in uniques -> {
-                civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
-                civInfo.placeUnitNearTile(construction.cityInfo.location, "Worker")
+                civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
+                civInfo.placeUnitNearTile(construction.cityInfo.location, Constants.worker)
             }
             "Free Social Policy" in uniques -> civInfo.policies.freePolicies++
             "Free Great Person" in uniques -> {
@@ -311,5 +319,12 @@ class Building : NamedStats(), IConstruction{
         }
 
         if (freeTechs != 0) civInfo.tech.freeTechs += freeTechs
+    }
+
+    fun isStatRelated(stat: Stat): Boolean {
+        if (get(stat) > 0) return true
+        if (percentStatBonus!=null && percentStatBonus!!.get(stat)>0) return true
+        if (specialistSlots!=null && specialistSlots!!.get(stat)>0) return true
+        return false
     }
 }
