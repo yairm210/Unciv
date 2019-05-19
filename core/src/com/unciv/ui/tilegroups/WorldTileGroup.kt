@@ -67,7 +67,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
         if (city != null && tileInfo.isCityCenter()) {
             if (cityButton == null) {
                 cityButton = CityButton(city, this, CameraStageBaseScreen.skin)
-                addActor(cityButton)
+                cityButtonLayerGroup.addActor(cityButton)
             }
 
             cityButton!!.update(viewable)

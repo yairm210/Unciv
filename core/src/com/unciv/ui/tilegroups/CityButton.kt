@@ -2,7 +2,6 @@ package com.unciv.ui.tilegroups
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Interpolation
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.Actions
@@ -25,8 +24,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         touchable= Touchable.disabled
     }
 
-    var buttonDownClickArea: Actor? = null
-    fun isButtonMoved() = buttonDownClickArea != null
+    var isButtonMoved=false
 
     fun update(isCityViewable:Boolean) {
         val cityButtonText = city.population.population.toString() + " | " + city.name
@@ -43,26 +41,24 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             touchable = Touchable.enabled
             label.touchable = Touchable.enabled
 
-            // clicking anywhere else on the button opens the city screen immediately
-            onClickEvent { _, x, y ->
-                if (!isButtonMoved()) {
-                    if (hit(x, y, true) == label) {
-                        // clicking on the label swings that label a little down to allow selection of units there.
-                        // this also allows to target selected units to move to the city tile from elsewhere.
-                        // second tap on the label will go to the city screen
-                        moveButtonDown()
-                        if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement==0f)
-                            tileGroup.selectCity(city)
-                    } else {
-                        UnCivGame.Current.screen = CityScreen(city)
-                    }
+            // clicking on the button swings the button a little down to allow selection of units there.
+            // this also allows to target selected units to move to the city tile from elsewhere.
+            // second tap on the button will go to the city screen
+            onClick {
+                if (!isButtonMoved) {
+                    moveButtonDown()
+                    if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f)
+                        tileGroup.selectCity(city)
+
+                } else {
+                    UnCivGame.Current.screen = CityScreen(city)
                 }
             }
 
         }
 
         // when deselected, move city button to its original position
-        if (isButtonMoved()
+        if (isButtonMoved
                 && unitTable.selectedCity != city
                 && unitTable.selectedUnit?.currentTile != city.ccenterTile) {
 
@@ -107,44 +103,22 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         setOrigin(Align.center)
         centerX(tileGroup)
         touchable = Touchable.enabled
-        updateClickArea()
-
     }
 
     private fun moveButtonDown() {
-        val floatAction = Actions.sequence(
+        val moveButtonAction = Actions.sequence(
                 Actions.moveBy(0f, -height, 0.4f, Interpolation.swingOut),
-                Actions.run {
-                    buttonDownClickArea = Actor().onClick {
-                        UnCivGame.Current.screen = CityScreen(city)
-                    }
-                    tileGroup.cityButtonLayerGroup.addActor(buttonDownClickArea)
-                    updateClickArea()
-                }
+                Actions.run { isButtonMoved=true }
         )
-        tileGroup.addAction(floatAction)
+        parent.addAction(moveButtonAction) // Move the whole cityButtonLayerGroup down, so the citybutton remains clickable
     }
 
     private fun moveButtonUp() {
         val floatAction = Actions.sequence(
                 Actions.moveBy(0f, height, 0.4f, Interpolation.sine),
-                Actions.run {
-                    buttonDownClickArea?.remove()
-                    buttonDownClickArea = null
-                }
+                Actions.run {isButtonMoved=false}
         )
-        tileGroup.addAction(floatAction)
-    }
-
-    private fun updateClickArea() {
-        buttonDownClickArea?.let { clickArea ->
-            clickArea.setSize(width, height)
-            clickArea.setScale(scaleX, scaleY)
-            clickArea.setOrigin(Align.center)
-            clickArea.centerX(tileGroup.cityButtonLayerGroup)
-            clickArea.y = y-height
-            clickArea.touchable = Touchable.enabled
-        }
+        parent.addAction(floatAction)
     }
 
     private fun getConstructionGroup(cityConstructions: CityConstructions): Group {
