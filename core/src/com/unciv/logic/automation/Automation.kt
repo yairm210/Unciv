@@ -12,6 +12,7 @@ import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 class Automation {
@@ -159,8 +160,9 @@ class Automation {
             }
 
             //worker
-            if (workers < cities * 0.6f) {
-                relativeCostEffectiveness.add(ConstructionChoice(Constants.worker,cities.toFloat()/(workers+0.1f)))
+            val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers - see #
+            if (workers < citiesCountedTowardsWorkers * 0.6f) {
+                relativeCostEffectiveness.add(ConstructionChoice(Constants.worker,citiesCountedTowardsWorkers/(workers+0.1f)))
             }
 
             //Work boat
