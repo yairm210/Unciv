@@ -1,5 +1,6 @@
 package core.java.nativefont;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
@@ -63,7 +64,19 @@ public class NativeFont extends BitmapFont {
     }
 
     private void createListener() {
-        String className = "core.java.nativefont.NativeFontAndroid";
+        String className = "core.java.nativefont.NativeFont";
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            className += "Desktop";
+        } else if (Gdx.app.getType() == Application.ApplicationType.Android) {
+            className += "Android";
+        } else if (Gdx.app.getType() == Application.ApplicationType.iOS) {
+            if (robovm)
+                className += "IOS";
+            else
+                className += "IOSMoe";
+        }else if (Gdx.app.getType() == Application.ApplicationType.WebGL){
+            className += "Html";
+        }
         try {
             Class<? extends NativeFontListener> claz = (Class<? extends NativeFontListener>) Gdx.app.getClass().getClassLoader().loadClass(className);
             listener = claz.newInstance();
