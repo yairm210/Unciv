@@ -25,6 +25,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
+* [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado, US for War Elephant
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 
@@ -46,6 +47,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1432662) By uzeir syarief for Longswordsman
 * [Samurai](https://thenounproject.com/search/?q=samurai&i=1683729) By Chanut is Industries
 * [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera for Pikeman
+* [Halberd](https://thenounproject.com/naripuru/uploads/?i=440128) parkjisun for Landsknecht
 * [Knight](https://thenounproject.com/search/?q=Knight&i=30912) By Tyler Glaude
 
 ### Renaissance Era
@@ -63,6 +65,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 * [Rifle](https://thenounproject.com/search/?q=Rifle&i=604291) By Chameleon Design for Rifleman
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1023745) By Bakunetso Kaito for Cavalry
+* [horse racing](https://thenounproject.com/antimso/uploads/?i=2427932) By Sergio Morozov for Cossack
 * [Artillery](https://thenounproject.com/search/?q=Artillery&i=1165261) By Creative Mania
 * [Ship](https://thenounproject.com/term/ship/1594793/) By Aisyah for Ironclad
 
@@ -78,6 +81,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira
 * [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
 * [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
+* [Tank](https://thenounproject.com/manueldixken/collection/german-tanks/?i=960769) Manuel Dixken, DE for Panzer
 * [APC](https://thenounproject.com/search/?q=apc&i=9965) By Luke Anthony Firth for Mechanized Infantry
 * [Military vehicle](https://thenounproject.com/search/?q=Army%20rocket&i=23115) By Luke Anthony Firth For Rocket Artillery
 * [Modern Armor](https://thenounproject.com/search/?q=tank&i=218) By Public Domain Nouns for Modern Armor
@@ -156,7 +160,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Temple](https://thenounproject.com/term/temple/1808407/) By 1516
 * [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
 * [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle
-* [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra for Colloseum
+* [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra for Colosseum
 * [Terracotta Army](https://thenounproject.com/search/?q=terracotta&i=2306346) By Supalerk Laipawat
 * [Stadium](https://thenounproject.com/term/stadium/1152530/) By Creaticca Creative Agency for Circus Maximus
 * [Market](https://thenounproject.com/term/market/1723050/) By sofi
@@ -172,6 +176,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
 * [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
 * [Castle](https://thenounproject.com/search/?q=castle&i=390189) By Mint Shirt
+* [Red Fort](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092466), [Gateway of India](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092468) By Arunabh Jain, IN for Mughal Fort
 * [Cambodia](https://thenounproject.com/term/cambodia/1809152/) By Wichai Wi for Angkor Wat
 * [Alhambra](https://thenounproject.com/search/?q=alhambra&i=403759) By parkjisun
 * [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University
@@ -422,6 +427,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
 * [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
 * [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
+* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein, US for city states
 
 # Sound credits
 
