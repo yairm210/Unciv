@@ -2610,7 +2610,10 @@
 	}
 	
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
+
+		Italian:"Abbiamo incontrato la Citta-Stato di [name]!"
 		Portuguese:"Nós encontramos a cidade-estado de [name]"
+
 	}
 	
 	// Friendship declaration flavor texts
@@ -2688,6 +2691,7 @@
 
 ////// Diplomatic modifiers
 
+
 	"You declared war on us!":{
 		Italian:"Ci hai dichiarato guerra!"
 		French:"Vous nous avez déclaré la guerre!"
@@ -2750,10 +2754,13 @@
 		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
 	}
 	
+
+
 	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
+    Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
 		Portuguese:"Sua chamada 'amizade' não vale nada."
 	}
-	
+
 ////// Overview screen
 
 	"Overview":{	
