@@ -739,7 +739,7 @@
 		Italian:"Turni tra autosalvataggi"
 		French:"Tours avant sauvegarde automatique"
 		Simplified_Chinese:"自动存档回合数"
-		Português:"Turnos entre autosaves" /
+		Português:"Turnos entre autosaves"
 	}
 	
 	"Sound effects volume":{
@@ -1020,14 +1020,14 @@
 		Italian:"Cibo consumato"
 		Simplified_Chinese:"人口消耗"
 		French:"Nourriture consommée"
-		Portuguese:"Comida consumida" //by the way can we still use this to ask questions? please don't massacre poor me
+		Portuguese:"Comida consumida"
 	}
 
 	"Growth bonus":{
 		Italian:"Bonus crescita"
 		Simplified_Chinese:"积累速率"
 		French:"Bonus de Croissance"
-		Portuguese:"Bonus de crescimento
+		Portuguese:"Bonus de crescimento"
 	}
 
 	"Free population":{ // as in "Free population: 2/13
@@ -1363,7 +1363,7 @@
 		Portuguese:"Nome do jogo salvo"
 	}
 
-	"Copy to clipboard":{ //shouldn't it be "copy saved game to clipboard" ? //just trying to draw attention to this, please answer
+	"Copy to clipboard":{ //shouldn't it be "copy saved game to clipboard" ? //Y: technichally yes, but that's longer so doesn't fit as well into the button-space
 		Italian:"Copia su appunti"
 		French:"Copier dans le presse-papier"
 		Simplified_Chinese:"复制到剪贴板"
@@ -1442,7 +1442,7 @@
 		Dutch:"Gezondheid van de stad"
 		Spanish:"Salud de la ciudad"
 		Simplified_Chinese:"城市耐久"
-		Portuguese:"Resistencia da cidade" // Are we treating cities as beings here? Just want to know
+		Portuguese:"Resistencia da cidade" // Are we treating cities as beings here? Just want to know // Y: Not sure what you mean, but I assume we are?
 	}
 	
 	"Captured":{ // Shown in the battle table when attacking a civilian unit or a defeated city
@@ -1555,7 +1555,7 @@
 		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
 		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
 		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
-		Portuguese:"Pode acelerar a construção de uma maravilha ou construir uma manufatura (+4 de Produção)" //did someone else try to translate this? its getting ridiculous
+		Portuguese:"Pode acelerar a construção de uma maravilha ou construir uma manufatura (+4 de Produção)"
 		Simplified_Chinese:"加快奇观的建造速度或建造1座工厂(+4生产)"
 	}
 	
@@ -1784,7 +1784,7 @@
 		Italian:"Continua..."
 		French:"Continuer..."
 		Simplified_Chinese:"继续..."
-		Portuguese:"Prossiga
+		Portuguese:"Prossiga"
 	}
 	
 	"There's nothing on the table":{
@@ -1820,7 +1820,7 @@
 		Italian:"Diritto di passaggio"
 		Simplified_Chinese:"开放边境"
 		French:"Accord de libre passage"
-		Portuguese:"Acordo de fronteiras abertas
+		Portuguese:"Acordo de fronteiras abertas"
 	}
 
 	"Gold per turn":{
@@ -1846,30 +1846,30 @@
 		Russian:"Города"
 	}
 
-	"Technologies":{ //You misses this translation, said Smashfanful
+	"Technologies":{
 		Italian:"Tecnologie",
 		German:"Technologien",
 		French:"Technologies",
 		Simplified_Chinese:"科技"
-		Porguese:"Tecnologias"
+		Portuguese:"Tecnologias"
 	}
 
-	"Declarations of war":{ //You misses this translation, said Smashfanful //Don't translate in diplomacy view //eeeeh... what?
+	"Declarations of war":{
 		Italian:"Dichiarazione di guerra"
 		French:"Déclarations de guerre"
 		Simplified_Chinese:"宣战"
-		Portguese:"Declarações de guerra"
+		Portuguese:"Declarações de guerra"
 	}
 
 	"Luxury resources":{
-		Italian:"Risorse di lusso" //You misses this translation, said Smashfanful
+		Italian:"Risorse di lusso"
 		French:"Ressources de luxes"
 		Simplified_Chinese:"奢侈资源"
 		Portuguese:"Recursos raros/luxuosos" //raros = rare luxuosos = luxurious
 	}
 
-	"Strategic resources":{ //Don't translate in diplomacy view
-		Italian:"Risorse strategiche" //You misses this translation, said Smashfanful
+	"Strategic resources":{
+		Italian:"Risorse strategiche"
 		French:"Ressources stratégiques"
 		Simplified_Chinese:"战略资源"
 		Portuguese:"Recursos estratégicos"
@@ -2564,7 +2564,7 @@
 		Italian:"Molto bene."
 		French:"Très bien."
 		Simplified_Chinese:"很好。"
-		Portuguese"Muito bem."
+		Portuguese:"Muito bem."
 	}
 
 	"Farewell.":{
@@ -2662,14 +2662,14 @@
     		Italian:"Neutrale"
 		French:"Neutre"
 		Simplified_Chinese:"泛泛之交"
-		Portugese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
+		Portuguese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
   	}
 
   	"Favorable":{
 		Italian:"Favorevole"
 		French:"Favorable"
 		Simplified_Chinese:"惺惺相惜"
-		Portuguese:"Favorável
+		Portuguese:"Favorável"
   	}
 
   	"Friend":{
@@ -2727,7 +2727,7 @@
 		Italian:"Abbiamo segnato una dichiarazione pubblica d'amicizia!"
 		Simplified_Chinese:"真是美好的一天！我们宣布：两个文明间将彼此尊重、相互友善！"
 		French:"Nous avons publiquement signé une Déclaration d'Amitié"
-		Portuguese:"Assinamos uma declaração pública de amizade
+		Portuguese:"Assinamos uma declaração pública de amizade"
 	}
 
 	"You have declared friendship with our enemies!":{
@@ -3224,21 +3224,21 @@
 		Italian:"Diventa obsoleta con [obsoleteTech]"
 		French:"Obsolète avec [obsoleteTech]"
 		Simplified_Chinese:"研发下列科技后过时：[obsoleteTech]"
-		Portuguese:"Obsoleta(0) com [obsoleteTech]
+		Portuguese:"Obsoleta(0) com [obsoleteTech]"
 	}
 
-	"May contain [listOfResources]":{ //e.g ?
+	"May contain [listOfResources]":{ //For civilopedia, e.g coast "May Contain Plearls, Whale"
 		Italian:"Può contenere [listOfResources]"
 		French:"Peut contenir [listOfResources]"
 		Simplified_Chinese:"可能拥有下列资源：[listOfResources]"
 		Portuguese:"Pode conter [listOfResources]"
 	}
 
-	"Occurs on [listOfTerrains]":{ //shouldn't there be a ':' in that?
+	"Occurs on [listOfTerrains]":{ //For civilopedia again
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
 		French:"Doit possèder [listOfTerrains]"
 		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
-		Portuguese:"Ocorre em [listOfTerrains]
+		Portuguese:"Ocorre em [listOfTerrains]"
 	}
 
 	"Can be found on ":{ //?
@@ -3290,11 +3290,11 @@
 		Portuguese:"Custo de movimento"
     }
 
-    " for ":{ //for example:+1Gold for Gems,Gold,Silver
+    " for ":{ //for example:+1 Gold for Gems,Gold,Silver
 		Italian:" per "
 		Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
 		French:"par "
-	    	Portuguese:"Por "
+	    Portuguese:"Por "
     }
 
     // Options menu, pointed out by Smashfanful
@@ -3302,7 +3302,7 @@
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"
 		Russian:"Отсутствующие переводы:"
-	    	Simplified_Chinese:"未翻译的词条:"
+		Simplified_Chinese:"未翻译的词条:"
 		French:"Traductions manquantes:"
 		Portuguese:"Traduções faltando:"
 	}
