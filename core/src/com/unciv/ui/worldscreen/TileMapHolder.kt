@@ -142,6 +142,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     Sounds.play("whoosh")
                     if (dto.unit.currentTile != dto.tileInfo)
                         dto.unit.action = "moveTo " + dto.tileInfo.position.x.toInt() + "," + dto.tileInfo.position.y.toInt()
+                    if(dto.unit.currentMovement>0){
+                        worldScreen.bottomBar.unitTable.selectedUnit=dto.unit
+                    }
                 } catch (e: Exception) {
                 }
             }
