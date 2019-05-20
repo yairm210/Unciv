@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.logic.civilization.Notification
-import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.utils.*
 import kotlin.math.min
 
@@ -43,14 +42,7 @@ class NotificationsScroll(internal val worldScreen: WorldScreen) : ScrollPane(nu
                 add(listItem).pad(3f)
                 touchable = Touchable.enabled
                 onClick {
-                    if (notification.locations.isNotEmpty()) {
-                        var index = notification.locations.indexOf(worldScreen.tileMapHolder.selectedTile?.position)
-                        index = ++index % notification.locations.size // cycle through locations
-                        worldScreen.tileMapHolder.setCenterPosition(notification.locations[index])
-                    }
-                    else if (notification.openTech) {
-                        worldScreen.game.screen = TechPickerScreen(worldScreen.currentPlayerCiv)
-                    }
+                    notification.action?.execute(worldScreen)
                 }
             }
 

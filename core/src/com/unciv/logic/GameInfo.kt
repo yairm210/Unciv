@@ -5,6 +5,7 @@ import com.unciv.GameParameters
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -97,7 +98,7 @@ class GameInfo {
         }
         else {
             val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", positions, Color.RED)
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
         }
     }
 

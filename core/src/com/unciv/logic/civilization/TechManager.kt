@@ -132,7 +132,7 @@ class TechManager {
             researchedTechUniques = researchedTechUniques.withItem(unique)
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", null, Color.BLUE, true)
+        civInfo.addNotification("Research of [$techName] has completed!", Color.BLUE, TechAction())
 
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {
