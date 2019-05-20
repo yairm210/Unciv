@@ -71,6 +71,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             separator= addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
             add(unitDescriptionTable)
+            touchable = Touchable.enabled
+            onClick {
+                selectedUnit?.currentTile?.position?.let {
+                    worldScreen.tileMapHolder.setCenterPosition(it)
+                }
+            }
         }).expand()
 
         add(nextIdleUnitButton)

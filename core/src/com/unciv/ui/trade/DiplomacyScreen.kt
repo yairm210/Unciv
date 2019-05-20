@@ -48,10 +48,17 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         for (civ in UnCivGame.Current.gameInfo.civilizations
                 .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }) {
-            if (!currentPlayerCiv.diplomacy.containsKey(civ.civName)) continue
+            if (!currentPlayerCiv.knows(civ.civName)) continue
 
             val civIndicator = ImageGetter.getCircle().apply { color = civ.getNation().getSecondaryColor() }
                     .surroundWithCircle(100f).apply { circle.color = civ.getNation().getColor() }
+            if(civ.isCityState()){
+                val cityStateIcon = ImageGetter.getImage("OtherIcons/CityState.png")
+                cityStateIcon.setSize(70f,70f)
+                cityStateIcon.center(civIndicator)
+                civIndicator.addActor(cityStateIcon)
+            }
+
             val relationship = ImageGetter.getCircle()
             if(currentPlayerCiv.isAtWarWith(civ)) relationship.color = Color.RED
             else relationship.color = Color.GREEN
@@ -79,10 +86,10 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         return tradeTable
     }
 
-    fun giveGoldGift(otherCiv: CivilizationInfo) {
+    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        currentPlayerCiv.gold -= 100
-        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += 10
+        currentPlayerCiv.gold -= giftAmount
+        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += giftAmount/10
         rightSideTable.clear()
         rightSideTable.add(getCityStateDiplomacyTable(otherCiv))
     }
@@ -94,16 +101,16 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.defaults().pad(10f)
         if (otherCiv.isCityState()) {
             diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel()).row()
-            diplomacyTable.add(("Type : " + otherCiv.getCityStateType().toString()).toLabel()).row()
-            diplomacyTable.add(("Influence : " + otherCiv.getDiplomacyManager(currentPlayerCiv).influence.toInt().toString()).toLabel()).row()
+            diplomacyTable.add(("Type: " + otherCiv.getCityStateType().toString()).toLabel()).row()
+            diplomacyTable.add(("Influence: " + otherCiv.getDiplomacyManager(currentPlayerCiv).influence.toInt()+"/60").toLabel()).row()
             if (otherCiv.getDiplomacyManager(currentPlayerCiv).influence >= 60) {
                 when(otherCiv.getCityStateType()) {
                     CityStateType.Cultured -> diplomacyTable.add(
                             ("Providing " + (5.0f * currentPlayerCiv.getEra().ordinal).toString() + " culture each turn").toLabel())
                     CityStateType.Maritime -> diplomacyTable.add(
-                            ("Providing 3 food in capital and 1 food in other cities.").toLabel())
+                            "Providing 3 food in capital and 1 food in other cities".toLabel())
                     CityStateType.Mercantile -> diplomacyTable.add(
-                            ("Providing 3 happiness.").toLabel())
+                            "Providing 3 happiness".toLabel())
                 }
             }
         } else {
@@ -111,10 +118,11 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         }
         diplomacyTable.addSeparator()
 
-        val giftButton = TextButton("Give 100 gold".tr(), skin)
-        giftButton.onClick{ giveGoldGift(otherCiv) }
+        val giftAmount = 100
+        val giftButton = TextButton("Give [$giftAmount] gold".tr(), skin)
+        giftButton.onClick{ giveGoldGift(otherCiv,giftAmount ) }
         diplomacyTable.add(giftButton).row()
-        if (currentPlayerCiv.gold < 1) giftButton.disable()
+        if (currentPlayerCiv.gold < giftAmount ) giftButton.disable()
 
         val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
 
@@ -212,6 +220,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 DeclaredFriendshipWithOurEnemies -> "You have declared friendship with our enemies!"
                 DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
                 OpenBorders -> "Our open borders have brought us closer together."
+                BetrayedDeclarationOfFriendship -> "Your so-called 'friendship' is worth nothing."
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"

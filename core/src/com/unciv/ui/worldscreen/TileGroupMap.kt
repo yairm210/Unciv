@@ -31,6 +31,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): G
         val featureLayers = ArrayList<Group>()
         val miscLayers = ArrayList<Group>()
         val unitLayers = ArrayList<Group>()
+        val cityButtonLayers = ArrayList<Group>()
         val circleCrosshairFogLayers = ArrayList<Group>()
 
         for(group in tileGroups.sortedByDescending { it.tileInfo.position.x + it.tileInfo.position.y }){
@@ -39,6 +40,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): G
             featureLayers.add(group.featureLayerGroup.apply { setPosition(group.x,group.y) })
             miscLayers.add(group.miscLayerGroup.apply { setPosition(group.x,group.y) })
             unitLayers.add(group.unitLayerGroup.apply { setPosition(group.x,group.y) })
+            cityButtonLayers.add(group.cityButtonLayerGroup.apply { setPosition(group.x,group.y) })
             circleCrosshairFogLayers.add(group.circleCrosshairFogLayerGroup.apply { setPosition(group.x,group.y) })
         }
         for(group in baseLayers) addActor(group)
@@ -47,6 +49,7 @@ class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): G
         for(group in circleCrosshairFogLayers) addActor(group)
         for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability
         for(group in unitLayers) addActor(group) // Aaand units above everything else.
+        for(group in cityButtonLayers) addActor(group) // city buttons clickability
 
 
         // there are tiles "below the zero",

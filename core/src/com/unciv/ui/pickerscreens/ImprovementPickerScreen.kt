@@ -10,7 +10,7 @@ import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
-class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
+class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
 
     init {
@@ -21,6 +21,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo) : PickerScreen() {
             if (improvement != null) {
                 tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
                 if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
+                onAccept()
                 game.setWorldScreen()
                 dispose()
             }

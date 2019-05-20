@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
@@ -141,6 +142,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     Sounds.play("whoosh")
                     if (dto.unit.currentTile != dto.tileInfo)
                         dto.unit.action = "moveTo " + dto.tileInfo.position.x.toInt() + "," + dto.tileInfo.position.y.toInt()
+                    if(dto.unit.currentMovement>0){
+                        worldScreen.bottomBar.unitTable.selectedUnit=dto.unit
+                    }
                 } catch (e: Exception) {
                 }
             }
@@ -264,13 +268,15 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             updateVisualScroll()
         }
         else {
-            addAction(object : FloatAction(0f, 1f, 0.4f) {
+            val action = object : FloatAction(0f, 1f, 0.4f) {
                 override fun update(percent: Float) {
                     scrollX = finalScrollX * percent + originalScrollX * (1 - percent)
                     scrollY = finalScrollY * percent + originalScrollY * (1 - percent)
                     updateVisualScroll()
                 }
-            })
+            }
+            action.interpolation = Interpolation.sine
+            addAction(action)
         }
 
         worldScreen.shouldUpdate=true
