@@ -6,6 +6,7 @@ class GameSettings {
     var showWorkedTiles: Boolean = false
     var showResourcesAndImprovements: Boolean = true
     var checkForDueUnits: Boolean = true
+    var singleTapMove: Boolean = false
     var language: String = "English"
     var resolution: String = "1050x700"
     var tutorialsShown = ArrayList<String>()

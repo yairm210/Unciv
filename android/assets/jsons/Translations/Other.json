@@ -151,7 +151,7 @@
 		Russian:"Бомбардная сила"
 		French:"Force de bombardement"
 		Romanian:"Puterea bombardamentului"
-		German:"Bombardieren Sie die Stärke"
+		German:"Stärke Bombardierung"
 		Dutch:"Bombard sterkte"
 		Spanish:"Fuerza de bombardeo"
 		Simplified_Chinese:"远程轰击"
@@ -803,8 +803,14 @@
 	"Check for idle units":{
 		Italian:"Controlla unità inutilizzate"
 		Simplified_Chinese:"查看未行动单位"
-		Portuguese:"Cheque por unidades sem ordens"
+		Portuguese:"Cheque por unidades sem ordens",
+		German: "Untätige Einheiten anzeigen bei Rundenende"
 	}
+
+	"Move units with a single tap":{
+		German: "Einheiten mit einem Klick bewegen"
+	},
+
 
 	"Close":{
 		Italian:"Chiudi"
