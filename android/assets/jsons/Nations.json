@@ -765,24 +765,10 @@
 		//TO DO : better dialogs
 		declaringWar:"Declare war.",
 		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
-		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-		
 		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-				
-		mainColor:[0,100,0],
-		secondaryColor:[213,249,255],
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[185,132,66],
 		cities:["Milan"]
 	},
 	{
@@ -794,24 +780,10 @@
 		//TO DO : better dialogs
 		declaringWar:"Declare war.",
 		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
-		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-		
 		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-				
-		mainColor:[255, 250, 240],
-		secondaryColor:[238, 44, 44],
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[62,197,252],
 		cities:["Florence"]
 	},
 	{
@@ -823,24 +795,10 @@
 		//TO DO : better dialogs
 		declaringWar:"Declare war.",
 		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
-
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-
 		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
 
-		mainColor:[32, 178, 170],
-		secondaryColor:[255, 255, 224],
+		mainColor:[0, 0, 0],
+		secondaryColor:[211, 220, 103],
 		cities:["Rio de Janeiro"]
 	},
 	{
@@ -851,24 +809,10 @@
 		//TO DO : better dialogs
 		declaringWar:"Declare war.",
 		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
-
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-
 		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-
-		mainColor:[250, 250, 210],
-		secondaryColor:[250, 128, 114],
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[194,97,255],
 		cities:["Rio de Janeiro"]
 	},
 
