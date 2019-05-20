@@ -20,6 +20,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.unit.UnitContextMenu
 import kotlin.concurrent.thread
 
 class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap: TileMap) : ScrollPane(null) {
@@ -41,7 +42,15 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val allTiles = TileGroupMap(daTileGroups,worldScreen.stage.width)
 
         for(tileGroup in tileGroups.values){
-            tileGroup.onClick{ onTileClicked(tileGroup.tileInfo)}
+            tileGroup.addListener (object: ActorGestureListener() {
+                override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {
+                    onTileClicked(tileGroup.tileInfo)
+                }
+                override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
+                    return onTileLongClicked(tileGroup.tileInfo)
+                }
+
+            })
         }
 
         actor = allTiles
@@ -77,7 +86,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     private fun onTileClicked(tileInfo: TileInfo) {
         worldScreen.displayTutorials("TileClicked")
-        if (unitActionOverlay != null) unitActionOverlay!!.remove()
+        unitActionOverlay?.remove()
         selectedTile = tileInfo
 
         val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
@@ -122,7 +131,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 } else {
                     // add "move to" button
                     val moveHereButtonDto = MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
-                    addMoveHereButtonToTile(moveHereButtonDto, tileGroups[moveHereButtonDto.tileInfo]!!)
+                    addMoveHereButtonToTile(moveHereButtonDto)
                 }
                 worldScreen.shouldUpdate = true
             }
@@ -131,7 +140,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     }
 
 
-    private fun addMoveHereButtonToTile(dto: MoveHereButtonDto, tileGroup: WorldTileGroup) {
+    private fun addMoveHereButtonToTile(dto: MoveHereButtonDto) {
         val size = 60f
         val moveHereButton = Group().apply { width = size;height = size; }
         moveHereButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
@@ -148,48 +157,45 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         moveHereButton.addActor(unitIcon)
 
         if (dto.unit.currentMovement > 0)
-            moveHereButton.onClick(""){onMoveButtonClick(dto)}
-
-        else moveHereButton.color.a = 0.5f
-        addOverlayOnTileGroup(tileGroup, moveHereButton)
-        moveHereButton.y += tileGroup.height
-        unitActionOverlay = moveHereButton
-    }
-
-    private fun onMoveButtonClick(dto: MoveHereButtonDto) {
-        // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-        thread {
-            if (dto.unit.movementAlgs().canReach(dto.tileInfo)) {
-                try {
-                    // Because this is darned concurrent (as it MUST be to avoid ANRs),
-                    // there are edge cases where the canReach is true,
-                    // but until it reaches the headTowards the board has changed and so the headTowards fails.
-                    // I can't think of any way to avoid this,
-                    // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
-                    dto.unit.movementAlgs().headTowards(dto.tileInfo)
-                    Sounds.play("whoosh")
-                    if (dto.unit.currentTile != dto.tileInfo)
-                        dto.unit.action = "moveTo " + dto.tileInfo.position.x.toInt() + "," + dto.tileInfo.position.y.toInt()
-                    if(dto.unit.currentMovement>0){
-                        worldScreen.bottomBar.unitTable.selectedUnit=dto.unit
-                    }
-                } catch (e: Exception) {
-                }
+            moveHereButton.onClick(""){
+                UnitContextMenu(this, dto.unit, dto.tileInfo).onMoveButtonClick()
             }
 
-            // we don't update it directly because we're on a different thread; instead, we tell it to update itself
-            worldScreen.shouldUpdate = true
-
-            removeUnitActionOverlay=true
-        }
+        else moveHereButton.color.a = 0.5f
+        addOverlayOnTileGroup(dto.tileInfo, moveHereButton)
     }
 
-    private fun addOverlayOnTileGroup(group:WorldTileGroup, actor: Actor) {
+
+
+    fun onTileLongClicked(tileInfo: TileInfo): Boolean {
+
+        unitActionOverlay?.remove()
+        selectedTile = tileInfo
+        val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
+        worldScreen.shouldUpdate = true
+
+        if (selectedUnit != null) {
+            addOverlayOnTileGroup(tileInfo, UnitContextMenu(this, selectedUnit, tileInfo))
+            return true
+        }
+
+        return false
+    }
+
+    private fun addOverlayOnTileGroup(tileInfo: TileInfo, actor: Actor) {
+
+        val group = tileGroups[tileInfo]!!
+
         actor.center(group)
         actor.x+=group.x
         actor.y+=group.y
         group.parent.addActor(actor)
         actor.toFront()
+
+        actor.y += actor.height
+        unitActionOverlay = actor
+
     }
 
     internal fun updateTiles(civInfo: CivilizationInfo) {
@@ -217,20 +223,23 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 
-        if (worldScreen.bottomBar.unitTable.selectedCity!=null){
-            val city = worldScreen.bottomBar.unitTable.selectedCity!!
-            updateTilegroupsForSelectedCity(city, playerViewableTilePositions)
-        } else if(worldScreen.bottomBar.unitTable.selectedUnit!=null){
-            val unit = worldScreen.bottomBar.unitTable.selectedUnit!!
-            updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
-        }
-        else if(unitActionOverlay!=null){
-            unitActionOverlay!!.remove()
-            unitActionOverlay=null
+        val unitTable = worldScreen.bottomBar.unitTable
+        when {
+            unitTable.selectedCity!=null -> {
+                val city = unitTable.selectedCity!!
+                updateTilegroupsForSelectedCity(city, playerViewableTilePositions)
+            }
+            unitTable.selectedUnit!=null -> {
+                val unit = unitTable.selectedUnit!!
+                updateTilegroupsForSelectedUnit(unit, playerViewableTilePositions)
+            }
+            unitActionOverlay!=null      -> {
+                unitActionOverlay!!.remove()
+                unitActionOverlay=null
+            }
         }
 
-        if(selectedTile!=null)
-            tileGroups[selectedTile!!]!!.showCircle(Color.WHITE)
+        tileGroups[selectedTile]?.showCircle(Color.WHITE)
     }
 
     private fun updateTilegroupsForSelectedUnit(unit: MapUnit, playerViewableTilePositions: HashSet<Vector2>) {
