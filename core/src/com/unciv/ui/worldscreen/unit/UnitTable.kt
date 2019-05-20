@@ -181,18 +181,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun citySelected(cityInfo: CityInfo) : Boolean {
         if (cityInfo == selectedCity) return false
-        lastSelectedCityButton = true
         selectedCity = cityInfo
         selectedUnit = null
         selectedUnitHasChanged = true
+        worldScreen.shouldUpdate = true
         return true
     }
 
     fun tileSelected(selectedTile: TileInfo) {
-        if (lastSelectedCityButton) {
-            lastSelectedCityButton = false
-            return
-        }
 
         val previouslySelectedUnit = selectedUnit
         if(currentlyExecutingAction=="moveTo"){

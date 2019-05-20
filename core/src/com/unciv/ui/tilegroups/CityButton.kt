@@ -41,16 +41,16 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             touchable = Touchable.enabled
             label.touchable = Touchable.enabled
 
-            // clicking on the button swings the button a little down to allow selection of units there.
+            // clicking on the label swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
             // second tap on the button will go to the city screen
-            onClick {
-                if (!isButtonMoved) {
+            onClickEvent { _, x, y ->
+                if (hit(x, y, true) == label) {
                     moveButtonDown()
-                    if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f)
+                    if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement==0f)
                         tileGroup.selectCity(city)
-
                 } else {
+                    // clicking anywhere else on the button opens the city screen immediately
                     UnCivGame.Current.screen = CityScreen(city)
                 }
             }
