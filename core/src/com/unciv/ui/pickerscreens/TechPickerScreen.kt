@@ -1,5 +1,6 @@
 package com.unciv.ui.pickerscreens
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.unciv.UnCivGame
@@ -13,7 +14,7 @@ import java.util.*
 import kotlin.collections.HashSet
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
+class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var isFreeTechPick: Boolean = false
@@ -101,6 +102,21 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         }
 
         displayTutorials("TechPickerScreen")
+
+        // per default show current/recent technology,
+        // and possibly select it to show description,
+        // which is very helpful when just discovered and clicking the notification
+        val tech = centerOnTech ?: civInfo.tech.currentTechnology()
+        if (tech != null) {
+            // select only if there it doesn't mess up tempTechsToResearch
+            if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1) {
+                selectTechnology(tech, true)
+            }
+            else {
+                centerOnTechnology(tech)
+            }
+        }
+
     }
 
     private fun setButtonsInfo() {
@@ -131,9 +147,19 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         }
     }
 
-    private fun selectTechnology(tech: Technology?) {
+    private fun selectTechnology(tech: Technology?, center: Boolean = false) {
+
         selectedTech = tech
-        descriptionLabel.setText(tech!!.description)
+        descriptionLabel.setText(tech?.description)
+
+        if(tech==null)
+            return
+
+        // center on technology
+        if (center) {
+            centerOnTechnology(tech)
+        }
+
         if (isFreeTechPick) {
             selectTechnologyForFreeTech(tech)
             return
@@ -153,6 +179,14 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         setButtonsInfo()
     }
 
+    private fun centerOnTechnology(tech: Technology) {
+        Gdx.app.postRunnable {
+            techNameToButton[tech.name]?.let {
+                scrollPane.scrollTo(it.x, it.y, it.width, it.height, true, true)
+                scrollPane.updateVisualScroll()
+            }
+        }
+    }
 
 
     private fun selectTechnologyForFreeTech(tech: Technology) {

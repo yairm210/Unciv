@@ -42,7 +42,11 @@ class TechManager {
         return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
     }
 
-    fun currentTechnology(): String? {
+    fun currentTechnology(): Technology? = currentTechnologyName()?.let {
+        GameBasics.Technologies[it]
+    }
+
+    fun currentTechnologyName(): String? {
         if (techsToResearch.isEmpty()) return null
         else return techsToResearch[0]
     }
@@ -91,7 +95,7 @@ class TechManager {
     }
 
     fun nextTurn(scienceForNewTurn: Int) {
-        val currentTechnology = currentTechnology()
+        val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
@@ -121,7 +125,7 @@ class TechManager {
             researchedTechUniques = researchedTechUniques.withItem(unique)
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", null, Color.BLUE)
+        civInfo.addNotification("Research of [$techName] has completed!", Color.BLUE, TechAction(techName))
 
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {

@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.BaseUnit
@@ -192,7 +193,7 @@ class Automation {
             else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice // ignore modifiers, go for the cheapest.
 
             currentConstruction = theChosenOne
-            cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", cityInfo.location, Color.BROWN)
+            cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", Color.BROWN, CityAction(cityInfo.location))
         }
     }
 
