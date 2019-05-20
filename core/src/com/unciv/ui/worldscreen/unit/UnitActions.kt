@@ -41,7 +41,7 @@ class UnitActions {
 
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
         if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0
-                && unit.action!="Set Up" && !workingOnImprovement) {
+                && !workingOnImprovement) {
             val sleeping = unit.action == "Sleep"
             actionList += UnitAction("Sleep", !sleeping, sleeping) {
                 unit.action = "Sleep"
