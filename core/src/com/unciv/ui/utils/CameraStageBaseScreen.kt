@@ -122,20 +122,23 @@ fun Label.setFontSize(size:Int): Label {
 }
 
 
-
-// If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
-
-fun Actor.onClick(sound:String,function: () -> Unit){
+/** same as [onClick], but sends the [InputEvent] and coordinates along */
+fun Actor.onClickEvent(sound: String = "click", function: (event: InputEvent?, x: Float, y: Float) -> Unit) {
     this.addListener(object : ClickListener() {
         override fun clicked(event: InputEvent?, x: Float, y: Float) {
-            if(sound!="") Sounds.play(sound)
-            function()
+            if (sound != "") Sounds.play(sound)
+            function(event, x, y)
         }
-    } )
+    })
+}
+
+// If there are other buttons that require special clicks then we'll have an onclick that will accept a string parameter, no worries
+fun Actor.onClick(sound: String = "click", function: () -> Unit) {
+    onClickEvent(sound) { _, _, _ -> function() }
 }
 
 fun Actor.onClick(function: () -> Unit): Actor {
-    onClick("click",function)
+    onClick("click", function)
     return this
 }
 

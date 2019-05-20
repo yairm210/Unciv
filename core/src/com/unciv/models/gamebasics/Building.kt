@@ -196,6 +196,18 @@ class Building : NamedStats(), IConstruction{
     fun getRejectionReason(construction: CityConstructions):String{
         if (construction.isBuilt(name)) return "Already built"
 
+        if ("Must be next to desert" in uniques
+                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
+            return "Must be next to desert"
+
+        if ("Must be next to mountain" in uniques
+                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Mountain" })
+            return "Must be next to mountain"
+
+        if("Can only be built in coastal cities" in uniques
+                && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
+            return "Can only be built in coastal cities"
+
         val civInfo = construction.cityInfo.civInfo
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"
@@ -232,18 +244,6 @@ class Building : NamedStats(), IConstruction{
             return "Requires a [$requiredBuilding] in this city"
         if (cannotBeBuiltWith != null && construction.isBuilt(cannotBeBuiltWith!!))
             return "Cannot be built with $cannotBeBuiltWith"
-
-        if ("Must be next to desert" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Desert" })
-            return "Must be next to desert"
-
-        if ("Must be next to mountain" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Mountain" })
-            return "Must be next to mountain"
-
-        if("Can only be built in coastal cities" in uniques
-                && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
-            return "Can only be built in coastal cities"
 
         if (requiredResource != null && !civInfo.hasResource(requiredResource!!))
             return "Requires [$requiredResource]"
