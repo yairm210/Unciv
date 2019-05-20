@@ -6,6 +6,7 @@ import com.unciv.Constants
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.TerrainType
@@ -300,9 +301,12 @@ class MapUnit {
         val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
                 .filter { it.militaryUnit!=null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo)}
         if(enemyUnitsInWalkingDistance.isNotEmpty()) {
-            if (action != null && action!!.startsWith("moveTo")) action=null
+            if (mapUnitAction?.shouldStopOnEnemyInSight()==true)
+                mapUnitAction=null
             return  // Don't you dare move.
         }
+
+        mapUnitAction?.doPreTurnAction()
 
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -383,14 +387,13 @@ class MapUnit {
         if(otherTile==getTile()) return // already here!
         val distanceToTiles = getDistanceToTiles()
 
-        class YouCantGetThereFromHereException : Exception()
+        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
         if (!distanceToTiles.containsKey(otherTile))
+            throw YouCantGetThereFromHereException("$this can't get from ${currentTile.position} to ${otherTile.position}.")
 
-            throw YouCantGetThereFromHereException()
-
-        class CantEnterThisTileException : Exception()
+        class CantEnterThisTileException(msg: String) : Exception(msg)
         if(!canMoveTo(otherTile))
-            throw CantEnterThisTileException()
+            throw CantEnterThisTileException("$this can't enter $otherTile")
         if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo) throw Exception("This is an enemy city, you can't go here!")
 
         currentMovement -= distanceToTiles[otherTile]!!
