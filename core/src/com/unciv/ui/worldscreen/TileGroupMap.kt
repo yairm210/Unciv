@@ -47,9 +47,9 @@ class TileGroupMap<T: TileGroup>(val tileGroups:Collection<T>, padding:Float): G
         for(group in featureLayers) addActor(group)
         for(group in miscLayers) addActor(group)
         for(group in circleCrosshairFogLayers) addActor(group)
-        for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability
-        for(group in cityButtonLayers) addActor(group) // city buttons clickability
+        for(group in tileGroups) addActor(group) // The above layers are for the visual layers, this is for the clickability of the tile
         for(group in unitLayers) addActor(group) // Aaand units above everything else.
+        for(group in cityButtonLayers) addActor(group) // city buttons + clickability
 
 
         // there are tiles "below the zero",
