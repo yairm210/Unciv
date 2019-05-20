@@ -17,6 +17,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 import kotlin.concurrent.thread
@@ -90,6 +91,20 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit // keep moved unit selected
         }
 
+        if(selectedUnit==null || selectedUnit.type==UnitType.Civilian){
+            val unitsInTile = selectedTile!!.getUnits()
+            if(unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(worldScreen.currentPlayerCiv)){
+                // try to select the closest city to bombard this guy
+                val citiesThatCanBombard = selectedTile!!.getTilesInDistance(2)
+                        .filter { it.isCityCenter() }.map { it.getCity()!! }
+                        .filter { !it.attackedThisTurn }
+                if(citiesThatCanBombard.isNotEmpty())
+                    worldScreen.bottomBar.unitTable.citySelected(citiesThatCanBombard.first())
+            }
+        }
+
+        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
+      
         worldScreen.shouldUpdate = true
     }
 

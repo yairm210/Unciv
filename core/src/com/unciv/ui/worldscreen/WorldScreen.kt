@@ -207,7 +207,7 @@ class WorldScreen : CameraStageBaseScreen() {
             techButton.add(buttonPic)
         }
         else {
-            val currentTech = civInfo.tech.currentTechnology()!!
+            val currentTech = civInfo.tech.currentTechnologyName()!!
             val innerButton = TechButton(currentTech,civInfo.tech)
             innerButton.color = colorFromRGB(7, 46, 43)
             techButton.add(innerButton)

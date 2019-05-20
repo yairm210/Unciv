@@ -37,7 +37,7 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
 
         addGoodSizedLabel(translatedNation.tradeRequest).colspan(columns).row()
 
-        addButton("Sounds good!".tr()){
+        addButton("Sounds good!"){
             val tradeLogic = TradeLogic(currentPlayerCiv, requestingCiv)
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()

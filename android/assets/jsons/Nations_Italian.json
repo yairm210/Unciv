@@ -48,12 +48,12 @@
 		defeated:"Così come in fretta era iniziata, così ora la mia lunga marcia giunge alla fine."
 		introduction:"Benvenuto, straniero! Sono Alexandros, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
 		
-		neutralHello:"Saluti!"
+		neutralHello:"Saluti..."
 		neutralLetsHearIt:["Ti ascolto.","Avanti.","Sì?","Parla."]
 		neutralNo:["Rifiutiamo.","Certo che no.","Non reputo saggio accettarlo."]
 		neutralYes:["Ma certo.","Molto bene.","Accettabile!"]
 
-		hateHello:"Cosa?"
+		hateHello:"Come osi venire davanti al mio cospetto?"
 		hateLetsHearIt:["Dimmi.","Dunque?","Avanti."]
 		hateNo:["Ciò non è gradito!","Niente da fare!","Scusami?"]
 		hateYes:["Oh, benissimo.","Se proprio devo.","Affare fatto."]
@@ -133,7 +133,7 @@
 		secondaryColor:[98,10,210],
 		uniqueName:"Costruttori di Monumenti",
 		unique:"+20% Produzione durante la costruzione di una Meraviglia"
-		cities:["Tebe","Menfi","ELiopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
+		cities:["Tebe","Menfi","Eliopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
 			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi",
 			"Mendes","Elashmunein","Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
 	},
@@ -148,7 +148,7 @@
 		
 		declaringWar:"Per grazia di Dio, i tuoi giorni sono contati!"
 		attacked:"Mai ci arrenderemo all'invasore!"
-		defeated:"Sei riuscito a trionfare sull'impero su cui il Sole non tramonta mai. La vittoria è tua, ma non credere durerà a lungo, perché grazie alla provvidenza, l'Inghilterra risorgerà dalle ceneri."
+		defeated:"Hai trionfato sull'impero su cui il Sole non tramonta mai. La vittoria è tua, ma non credere durerà a lungo, perché grazie alla provvidenza, l'Inghilterra risorgerà dalle ceneri."
 		introduction:"Io sono Elisabetta d'Inghilterra. Siamo lieti di incontrarvi."
 		
 		neutralHello:"Salve di nuovo."
@@ -398,14 +398,14 @@
 		introduction:"Guten tag. Nel nome del grande popolo tedesco, vi diamo il benvenuto."
 		
 		neutralHello:"E dunque?"
-		neutralLetsHearIt:["Cos'hai da dire?","Sì?","Ja?"]
-		neutralNo:["Non lo accetto.","Nein.","Impossibile."]
+		neutralLetsHearIt:["Cos'hai da dire?","Sì?","Ja? (Sì?)"]
+		neutralNo:["Non lo accetto.","Nein. (No)","Impossibile."]
 		neutralYes:["D'accordo.","Benissimo, allora.","Ja."]
 
 		hateHello:"Sputa il rospo!"
 		hateLetsHearIt:["E...?!","Avanti!","Beh, dimmelo!"]
 		hateNo:["Ciò non è accettabile!","Stai scherzando, spero!","Nein!"]
-		hateYes:["Va bene.","Gut.","Non credo possa rifiutare."]
+		hateYes:["Va bene.","Gut. (Ben)","Non credo possa rifiutare."]
 		
 		afterPeace:"Che ne pensi di metterci una pietra sopra?"
 		tradeRequest:"Considerare con cautela questa proposta sarebbe nei nostri migliori interessi."

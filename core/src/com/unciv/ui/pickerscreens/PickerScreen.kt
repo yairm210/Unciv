@@ -15,6 +15,7 @@ open class PickerScreen : CameraStageBaseScreen() {
     protected var topTable: Table
     var bottomTable:Table = Table()
     internal var splitPane: SplitPane
+    protected var scrollPane: ScrollPane
 
     init {
         bottomTable.add(closeButton).width(stage.width / 4)
@@ -33,7 +34,7 @@ open class PickerScreen : CameraStageBaseScreen() {
         bottomTable.align(Align.center)
 
         topTable = Table()
-        val scrollPane = ScrollPane(topTable)
+        scrollPane = ScrollPane(topTable)
 
         scrollPane.setSize(stage.width, stage.height * screenSplit)
 
