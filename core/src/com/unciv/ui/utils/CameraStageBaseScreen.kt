@@ -163,6 +163,12 @@ fun Table.addSeparator(): Cell<Image> {
     return cell
 }
 
+fun Table.addSeparatorVertical(): Cell<Image> {
+    val image = ImageGetter.getWhiteDot()
+    val cell = add(image).width(2f).fillY()
+    return cell
+}
+
 /**
  * Solves concurrent modification problems - everyone who had a reference to the previous arrayList can keep using it because it hasn't changed
  */

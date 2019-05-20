@@ -799,7 +799,7 @@
 		Portuguese:"recursos e melhorias"
 		Japanese:"リソースと改善"
 	}
-	
+
 	"Check for idle units":{
 		Italian:"Controlla unità inutilizzate"
 		Simplified_Chinese:"查看未行动单位"
@@ -875,7 +875,7 @@
 		Dutch:"Voor [amount] gold kopen"
 		Spanish:"Comprar por [amount] de oro"
 		Simplified_Chinese:"购买花费[amount]金钱"
-		Portuguese:"Comprar por [amount] ouro" 
+		Portuguese:"Comprar por [amount] ouro"
 		Japanese:"[amount]ゴールドで購入する"
 	}
 	
@@ -936,6 +936,10 @@
 		Simplified_Chinese:"选择设施"
 		French:"Choisir une amélioration"
 		Portuguese:"Escolha uma melhoria"
+	}
+
+	"Pick now!": {
+		German: "Jetzt wählen!"
 	}
 
 	"Build [building]":{ // eg Build Granary
@@ -1486,7 +1490,7 @@
 		French:"[percentage] de défense"
 	} 
 	
-	
+
 ///////// Unit uniques
 
 	//  - - - NOTE: These need to be moved to the "Units,Promotions" translation file, in their respective places! - - - 
@@ -1590,7 +1594,7 @@
 
 	// for unit action button
 
-	"Discover Technology":{ 
+	"Discover Technology":{
 		Romanian:"Descoperă tehnologie"
 		Spanish:"Descubrir Tecnologia"
 		Simplified_Chinese:"发现科技"
@@ -1661,7 +1665,7 @@
 		Simplified_Chinese:"[policyBranch]政策分支解锁!"
 		Portuguese:"[policyBranch] foi desbloqueado(a)"
 		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet"
-	} 
+	}
 	
 ////// Trade	
 
@@ -2091,7 +2095,7 @@
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
 		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
-		Portuguese:"1 ouro adicional de rotas comerciais e recursos de petróleo geram o dobro" // óleo could mean normal kitchen oil and even fuel from sugar cane 
+		Portuguese:"1 ouro adicional de rotas comerciais e recursos de petróleo geram o dobro" // óleo could mean normal kitchen oil and even fuel from sugar cane
 	}
 	
 	"America":{
@@ -2273,7 +2277,7 @@
 		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
 		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
 	}
-	
+
 	*/
 	
 	"Uniques":{ // unit uniques, displayed on the new game screen when choosing a civ
@@ -2618,7 +2622,7 @@
 		Simplified_Chinese:"我们的关系："
 		Portuguese:"Nossas relações"
 	}
-	
+
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
 		Italian:"Abbiamo incontrato la Citta-Stato di [name]!"
 		Portuguese:"Nós encontramos a cidade-estado de [name]"
@@ -2762,11 +2766,11 @@
 		Simplified_Chinese:"开放的边界促进了彼此的了解，让我们的人民心心相通！"
 		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
 	}
-	
+
 
 
 	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
-    		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
+    Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
 		Portuguese:"Sua chamada 'amizade' não vale nada."
 	}
 
@@ -2868,7 +2872,7 @@
 		Portuguese:"De outros"
 		Simplified_Chinese:"其他"
 		Portuguese:"Outros"
-	} 
+	}
 
 	"Population":{	
 		Italian:"Popolazione"
@@ -2991,7 +2995,7 @@
 		German:"Nächstgelegene Stadt"
 	}
 
-	"Go to unit":{	
+	"Go to unit":{
 		Italian:"Vai a unità"
 		Simplified_Chinese:"跳转至所在地图位置"
 		Portuguese:"Ir para a unidade"
@@ -3111,8 +3115,8 @@
 		French:"Détruiser [civName]"
 		Russian:"Уничтожить [civName]"
 		Simplified_Chinese:"摧毁[civName]文明"
-		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory? 
-	}	
+		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory?
+	}
 	
 	
 ////// Civilopedia texts

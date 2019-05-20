@@ -1,16 +1,14 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.scenes.scene2d.ui.Button
-import com.badlogic.gdx.scenes.scene2d.ui.Label
-import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.*
 
 class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerScreen() {
     private var selectedImprovement: TileImprovement? = null
@@ -19,13 +17,19 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
         val currentPlayerCiv = game.gameInfo.getCurrentPlayerCivilization()
         setDefaultCloseAction()
 
+        fun accept(improvement: TileImprovement?) {
+            if (improvement != null) {
+                tileInfo.startWorkingOnImprovement(improvement, currentPlayerCiv)
+                if (tileInfo.civilianUnit != null) tileInfo.civilianUnit!!.action = null // this is to "wake up" the worker if it's sleeping
+                onAccept()
+                game.setWorldScreen()
+                dispose()
+            }
+        }
+
         rightSideButton.setText("Pick improvement".tr())
         rightSideButton.onClick {
-            tileInfo.startWorkingOnImprovement(selectedImprovement!!, currentPlayerCiv)
-            if(tileInfo.civilianUnit!=null) tileInfo.civilianUnit!!.action=null // this is to "wake up" the worker if it's sleeping
-            onAccept()
-            game.setWorldScreen()
-            dispose()
+            accept(selectedImprovement)
         }
 
         val regularImprovements = VerticalGroup()
@@ -36,21 +40,37 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             if(improvement.name == tileInfo.improvement) continue
             if(improvement.name==tileInfo.improvementInProgress) continue
 
-            val improvementButton = Button(skin)
+            val group = Table()
 
-            if(improvement.name.startsWith("Remove"))
-                improvementButton.add(ImageGetter.getImage("OtherIcons/Stop.png")).size(30f).pad(10f)
-            else improvementButton.add(ImageGetter.getImprovementIcon(improvement.name,30f)).pad(10f)
+            val image = if(improvement.name.startsWith("Remove"))
+                ImageGetter.getImage("OtherIcons/Stop.png")
+            else
+                ImageGetter.getImprovementIcon(improvement.name,30f)
 
-            improvementButton.add(Label(improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}".tr(),skin)
+            group.add(image).size(30f).pad(10f)
+
+            group.add(Label(improvement.name.tr() + " - " + improvement.getTurnsToBuild(currentPlayerCiv) + " {turns}".tr(),skin)
                     .setFontColor(Color.WHITE)).pad(10f)
 
-            improvementButton.onClick {
-                    selectedImprovement = improvement
-                    pick(improvement.name)
-                    descriptionLabel.setText(improvement.description)
-                }
+            group.touchable = Touchable.enabled
+            group.onClick {
+                selectedImprovement = improvement
+                pick(improvement.name)
+                descriptionLabel.setText(improvement.description)
+            }
+
+            val pickNow = Label("Pick now!", skin)
+            pickNow.touchable = Touchable.enabled
+            pickNow.onClick {
+                accept(improvement)
+            }
+
+            val improvementButton = Button(skin)
+            improvementButton.add(group).padRight(10f).fillY()
+            improvementButton.addSeparatorVertical()
+            improvementButton.add(pickNow).padLeft(10f).fill()
             regularImprovements.addActor(improvementButton)
+
         }
         topTable.add(regularImprovements)
     }
