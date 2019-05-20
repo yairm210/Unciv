@@ -35,6 +35,7 @@ enum class DiplomaticModifiers{
     WarMongerer,
     CapturedOurCities,
     DeclaredFriendshipWithOurEnemies,
+    BetrayedDeclarationOfFriendship,
 
     YearsOfPeace,
     SharedEnemy,
@@ -213,15 +214,17 @@ class DiplomacyManager() {
 
         var openBorders = 0
         if(hasOpenBorders) openBorders+=1
+
         if(otherCivDiplomacy().hasOpenBorders) openBorders+=1
         if(openBorders>0) addModifier(DiplomaticModifiers.OpenBorders,openBorders/8f) // so if we both have open borders it'll grow by 0.25 per turn
         else revertToZero(DiplomaticModifiers.OpenBorders, 1/8f)
 
         revertToZero(DiplomaticModifiers.DeclaredWarOnUs,1/8f) // this disappears real slow - it'll take 160 turns to really forget, this is war declaration we're talking about
-        revertToZero(DiplomaticModifiers.WarMongerer,0.5f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
+        revertToZero(DiplomaticModifiers.WarMongerer,1/2f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
         revertToZero(DiplomaticModifiers.CapturedOurCities,1/4f) // if you captured our cities, though, that's harder to forget
+        revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship,1/2f) // if you captured our cities, though, that's harder to forget
         if(!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
-            revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 0.5f) //decreases slowly and will revert to full if it is declared later
+            revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1/2f) //decreases slowly and will revert to full if it is declared later
 
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
@@ -238,10 +241,9 @@ class DiplomacyManager() {
 
     }
 
-    fun declareWar(){
+    /** Everything that happens to both sides equally when war is delcared by one side on the other */
+    private fun onWarDeclared(){
         diplomaticStatus = DiplomaticStatus.War
-        val otherCiv = otherCiv()
-        val otherCivDiplomacy = otherCiv.getDiplomacyManager(civInfo)
 
         // Cancel all trades.
         for(trade in trades)
@@ -250,35 +252,40 @@ class DiplomacyManager() {
         trades.clear()
         updateHasOpenBorders()
 
-        for(trade in otherCivDiplomacy.trades)
-            for(offer in trade.theirOffers.filter { it.duration>0 })
-                otherCiv.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
-        otherCivDiplomacy.trades.clear()
-        otherCivDiplomacy.updateHasOpenBorders()
+        setFlag(DiplomacyFlags.DeclinedPeace,10)/// AI won't propose peace for 10 turns
+        setFlag(DiplomacyFlags.DeclaredWar,10) // AI won't agree to trade for 10 turns
+        removeFlag(DiplomacyFlags.BorderConflict)
+    }
 
+    fun declareWar(){
+        val otherCiv = otherCiv()
+        val otherCivDiplomacy = otherCivDiplomacy()
 
-        otherCiv.getDiplomacyManager(civInfo).diplomaticStatus = DiplomaticStatus.War
+        onWarDeclared()
+        otherCivDiplomacy.onWarDeclared()
+
         otherCiv.addNotification("[${civInfo.civName}] has declared war on us!",null, Color.RED)
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
 
-        /// AI won't propose peace for 10 turns
-        setFlag(DiplomacyFlags.DeclinedPeace,10)
-        otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.DeclinedPeace,10)
-
-        // AI won't agree to trade for 10 turns
-        setFlag(DiplomacyFlags.DeclaredWar,10)
-        otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.DeclaredWar,10)
-
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs,-20f)
-
-        removeFlag(DiplomacyFlags.BorderConflict)
-        otherCivDiplomacy.removeFlag(DiplomacyFlags.BorderConflict)
 
         for(thirdCiv in civInfo.getKnownCivs()){
             if(thirdCiv.isAtWarWith(otherCiv))
                 thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,5f)
             else thirdCiv.getDiplomacyManager(civInfo).addModifier(DiplomaticModifiers.WarMongerer,-5f)
         }
+
+        if(hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
+            removeFlag(DiplomacyFlags.DeclarationOfFriendship)
+            otherCivDiplomacy.removeModifier(DiplomaticModifiers.DeclarationOfFriendship)
+            for(knownCiv in civInfo.getKnownCivs()){
+                val amount = if(knownCiv==otherCiv) -40f else -20f
+                val diploManager = knownCiv.getDiplomacyManager(civInfo)
+                diploManager.addModifier(DiplomaticModifiers.BetrayedDeclarationOfFriendship, amount)
+                diploManager.removeModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies) // obviously this guy's declarations of friendship aren't worth much.
+            }
+        }
+        otherCivDiplomacy.removeFlag(DiplomacyFlags.DeclarationOfFriendship)
     }
 
     fun makePeace(){
@@ -308,6 +315,9 @@ class DiplomacyManager() {
         val modifierString = modifier.toString()
         diplomaticModifiers[modifierString] = amount
     }
+
+    fun removeModifier(modifier: DiplomaticModifiers) =
+        diplomaticModifiers.remove(modifier.toString())
 
     fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.toString())
 

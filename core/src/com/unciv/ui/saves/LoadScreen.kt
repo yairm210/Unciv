@@ -73,6 +73,7 @@ class LoadScreen : PickerScreen() {
                 UnCivGame.Current.loadGame(loadedGame)
             }catch (ex:Exception){
                 errorLabel.setText("Could not load game from clipboard!".tr())
+                ex.printStackTrace()
             }
         }
 
@@ -101,6 +102,7 @@ class LoadScreen : PickerScreen() {
                 popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
                 popup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
                 popup.open()
+                ex.printStackTrace()
             }
         }
 

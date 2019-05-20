@@ -808,6 +808,7 @@
 	}
 	
 	"Hanse":{	
+		Italian:"Hanse" //Same as in Italian
 		Simplified_Chinese:"汉萨会馆"
 	}
 
@@ -864,6 +865,7 @@
 	}
 	
 	"Choose a free great person":{
+		Italian:"Scegli un Grande Personaggio gratuito"
 		Simplified_Chinese:"选择1个免费的伟人"
 	}
 

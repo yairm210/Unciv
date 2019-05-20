@@ -209,7 +209,7 @@
             German:"Ein(e) feindliche(r) [unit] hat [cityname] angegriffen" // Gender sensitive
             Dutch:"Een vijandelijke [unit] heeft [cityname] aangevallen"
             Spanish:"Un [unit] enemigo ha atacado [cityname]"
-            Simplified_Chinese:"一个敌人的[unit]攻击了[cityname]"
+            Simplified_Chinese:"1个敌方的[unit]攻击了[cityname]"
             Portuguese:"Um(a) [unit] inimaga(o) atacou [cityname]"
             Japanese:"敵[unit]が[cityname]を攻撃しました"
         }
@@ -222,7 +222,7 @@
             German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] angegriffen" // Gender sensitive
             Dutch:"Een vijandige [unit] heeft onze [ourUnit] aangevallen"
             Spanish:"Un [unit] enemigo ha atacado nuestro [ourUnit]"
-            Simplified_Chinese:"一个敌人的[unit]攻击了我们的[ourUnit]"
+            Simplified_Chinese:"1个敌方的[unit]攻击了我们的[ourUnit]"
             Portuguese:"Um(a) [unit] inimigo(a) atacout nossa [ourUnit]"
             Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました"
         }
@@ -234,7 +234,7 @@
             German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen" // Gender sensitive
             Dutch:"Een vijandige [unit] heeft [cityname] ingenomen"
             Spanish:"Un [unit] enemigo ha capturado [cityname]"
-            Simplified_Chinese:"一个敌人的[unit]占领了[cityname]"
+            Simplified_Chinese:"1个敌方的[unit]占领了[cityname]"
             Portuguese:"Um(a) [unit] inimigo(a) capturou [cityname]"
             Japanese:"敵[unit]が[cityname]を占領しました"
         }
@@ -247,7 +247,7 @@
             German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] gefangen genommen" // Gender sensitive
             Dutch:"Een vijandige [unit] heeft [ourUnit] gevangen genomen"
             Spanish:"Un [unit] enemigo ha capturado nuestro [ourUnit]"
-            Simplified_Chinese:"一个敌人的[unit]俘虏了我们的[ourUnit]"
+            Simplified_Chinese:"1个敌方的[unit]俘虏了我们的[ourUnit]"
             Portuguese:"Um(a) [unit] inimigo(a) capturou nosso(a) [ourUnit]"
             Japanese:"敵[unit]が私たちの[ourUnit]を捕獲しました"
         }
@@ -260,7 +260,7 @@
             German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] zerstört" // Gender sensitive
             Dutch:"Een vijandige [unit] heeft onze [ourUnit] gedood"
             Spanish:"Un [unit] enemigo ha destruido nuestro [ourUnit]"
-            Simplified_Chinese:"一个敌人的[unit]杀死了我们的[ourUnit]"
+            Simplified_Chinese:"1个敌方的[unit]杀死了我们的[ourUnit]"
             Portuguese:"Um(a) [unit] inimigo(a) destruiu nosso(a) [ourUnit]"
             Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました"
         }
@@ -273,7 +273,7 @@
             German:"Ein(e) feindliche(r) [unit] wurde beim Angriff auf [cityname] zerstört" // Gender sensitive
             Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op [cityname]"
             Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba [cityname]"
-            Simplified_Chinese:"一个敌人的[unit]在攻打[cityname]时被消灭"
+            Simplified_Chinese:"1个敌方的[unit]在攻击[cityname]时被消灭"
             Portuguese:"Um(a) [unit] inimigo(a) foi destruido enquanto atacava [cityname]"
             Japanese:"[cityname]を攻撃している間に敵[unit]が破壊された"
         }
@@ -286,7 +286,7 @@
             German:"Ein(e) feindliche(r) [unit] wurde beim Angriff auf unsere(n) [ourUnit] zerstört" // Gender sensitive
             Dutch:"Een vijandige [unit] werd gedood tijdens zijn aanval op onze [unit]"
             Spanish:"Un [unit] enemigo ha sido destruido mientras atacaba nuestro [ourUnit]"
-            Simplified_Chinese:"一个敌人的[unit]在攻击我方[ourUnit]时被消灭"
+            Simplified_Chinese:"1个敌方的[unit]在攻击我方[ourUnit]时被消灭"
             Portuguese:"Um(a) [unit] inimigo(a) foi destruido(a) enquanto atacando nosso(a) [ourUit]"
             Japanese:"「私たちの[ourUnit]を攻撃している間に敵[unit]が破壊された"
         }
@@ -299,7 +299,7 @@
             German:"Ein(e) feindliche(r) [unit] wurde nahe unserer Grenzen entdeckt" // Gender sensitive
             Dutch:"Een vijandige [unit] is gezien buiten onze grenzen"
             Spanish:"Se ha avistado un [unit] enemigo cerca de nuestro territorio"
-            Simplified_Chinese:"在我们的领土附近发现了一个敌人的[unit]"
+            Simplified_Chinese:"在我们的领土附近发现了1个敌方的[unit]"
             Portuguese:"Um(a) [unit] foi visto perto de nosso território"
             Japanese:"私たちの領土の近くに敵[unit]が発見されました"
         }
@@ -312,18 +312,22 @@
             German:"Ein(e) feindliche(r) [unit] wurde in unseren Grenzen entdeckt" // Gender sensitive
             Dutch:"Een vijandige [unit] is binnen onze grenzen gezien"
             Spanish:"Se ha avistado un [unit] enemigo en nuestro territorio"
-            Simplified_Chinese:"在我们的领土附近发现了一个敌人的[unit]"
+            Simplified_Chinese:"在我们的领土内发现了1个敌方的[unit]"
             Portuguese:"Um(a) [unit] inimigo(a) foi vista dentro de nosso território"
             Japanese:"私たちの領土に敵[unit]が発見されました"
-        },
+        }
 
         "[amount] enemy units were spotted near our territory": {
+            Italian:"Abbiamo avvistato [amount] unità nemiche vicino ai nostri confini!"
             German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
-        },
+            Simplified_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
+        }
 
         "[amount] enemy units were spotted in our territory": {
+            Italian:"Abbiamo avvistato [amount] unità nemiche nel nostro territorio!"
             German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
-        },
+            Simplified_Chinese:"在我们的领土内发现了[amount]个敌方单位"
+        }
 
         "The civilization of [civName] has been destroyed!":{
             Italian:"La civiltà [civName] è stata distrutta!"
@@ -404,5 +408,13 @@
             Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
         }
 
+        "[unit] finished exploring.": {
+            Italian:"[unit] ha terminato la sua esplorazione."
+            "German": "[unit] hat die Erkundung abgeschlossen."
+        },
 
+        "[unit] has no work to do.": {
+            Italian:"[unit] è inattiva."
+            "German": "[unit] hat keine Arbeit mehr."
+        }
 }

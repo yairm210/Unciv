@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
@@ -8,6 +9,7 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.TileImprovement
+import com.unciv.models.gamebasics.tr
 
 class WorkerAutomation(val unit: MapUnit) {
 
@@ -40,6 +42,9 @@ class WorkerAutomation(val unit: MapUnit) {
         }
         if(tile.improvementInProgress!=null) return // we're working!
         if(tryConnectingCities()) return //nothing to do, try again to connect cities
+
+        unit.civInfo.addNotification("[${unit.name.tr()}] has no work to do.".tr(), unit.currentTile.position, Color.GRAY)
+
     }
 
 

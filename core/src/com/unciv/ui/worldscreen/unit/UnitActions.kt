@@ -126,23 +126,15 @@ class UnitActions {
 
         if(unit.hasUnique("Must set up to ranged attack") && !unit.isEmbarked()) {
             val setUp = unit.action == "Set Up"
-            if(!setUp) {
-                actionList += UnitAction("Set up", unit.currentMovement > 0) {
-                    unit.action = "Set Up"
-                    // setting up uses up all movement points
-                    // this is to avoid problems with the idle state:
-                    // - unit should not be idle when setting up right now
-                    // - unit should be idle when set up in the past
-                    unit.currentMovement = 0f
-                    unitTable.selectedUnit = null
-                }.sound("setup")
-            }
-            else {
-                actionList += UnitAction("Pack up", true) {
-                    // packing together does not take any movement points
-                    unit.action = null
-                }.sound("setup")
-            }
+            actionList+=UnitAction("Set up", unit.currentMovement >0 && !setUp, currentAction = setUp ) {
+                unit.action="Set Up"
+                // setting up uses up all movement points
+                // this is to avoid problems with the idle state:
+                // - unit should not be idle when setting up right now
+                // - unit should be idle when set up in the past
+                unit.currentMovement=0f
+                unitTable.selectedUnit = null
+            }.sound("setup")
         }
 
         if (unit.hasUnique("Founds a new city") && !unit.isEmbarked()) {

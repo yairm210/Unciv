@@ -55,6 +55,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     protected var civilianUnitImage: UnitGroup? = null
     protected var militaryUnitImage: UnitGroup? = null
 
+    val cityButtonLayerGroup = Group().apply { isTransform=true; setSize(groupSize,groupSize);touchable=Touchable.childrenOnly }
+
     val circleCrosshairFogLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targete
@@ -76,6 +78,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         this.addActor(featureLayerGroup)
         this.addActor(miscLayerGroup)
         this.addActor(unitLayerGroup)
+        this.addActor(cityButtonLayerGroup)
         this.addActor(circleCrosshairFogLayerGroup)
 
         updateTileImage(false)
