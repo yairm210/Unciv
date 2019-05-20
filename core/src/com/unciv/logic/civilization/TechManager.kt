@@ -27,7 +27,6 @@ class TechManager {
     /* When moving towards a certain tech, the user doesn't have to manually pick every one. */
     var techsToResearch = ArrayList<String>()
     private var techsInProgress = HashMap<String, Int>()
-    private var techRecentlyFinished: String? = null
 
     //region state-changing functions
     fun clone(): TechManager {
@@ -41,10 +40,6 @@ class TechManager {
 
     fun costOfTech(techName: String): Int {
         return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
-    }
-
-    fun recentlyFinishedTechnology(): Technology? = techRecentlyFinished?.let {
-        GameBasics.Technologies[it]
     }
 
     fun currentTechnology(): Technology? = currentTechnologyName()?.let {
@@ -102,7 +97,6 @@ class TechManager {
     fun nextTurn(scienceForNewTurn: Int) {
         val currentTechnology = currentTechnologyName()
         if (currentTechnology == null) return
-        techRecentlyFinished = null
         techsInProgress[currentTechnology] = researchOfTech(currentTechnology) + scienceForNewTurn
         if (techsInProgress[currentTechnology]!! < costOfTech(currentTechnology))
             return
@@ -110,7 +104,6 @@ class TechManager {
         // We finished it!
         techsInProgress.remove(currentTechnology)
         addTechnology(currentTechnology)
-        techRecentlyFinished = currentTechnology
     }
 
     fun getFreeTechnology(techName:String){
@@ -132,7 +125,7 @@ class TechManager {
             researchedTechUniques = researchedTechUniques.withItem(unique)
         updateTransientBooleans()
 
-        civInfo.addNotification("Research of [$techName] has completed!", Color.BLUE, TechAction())
+        civInfo.addNotification("Research of [$techName] has completed!", Color.BLUE, TechAction(techName))
 
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {

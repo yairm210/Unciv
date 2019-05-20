@@ -14,7 +14,7 @@ import java.util.*
 import kotlin.collections.HashSet
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
+class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var isFreeTechPick: Boolean = false
@@ -106,7 +106,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() 
         // per default show current/recent technology,
         // and possibly select it to show description,
         // which is very helpful when just discovered and clicking the notification
-        val tech = civInfo.tech.recentlyFinishedTechnology() ?: civInfo.tech.currentTechnology()
+        val tech = centerOnTech ?: civInfo.tech.currentTechnology()
         if (tech != null) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1) {

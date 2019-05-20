@@ -2,7 +2,7 @@ package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.city.CityInfo
+import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
@@ -12,6 +12,7 @@ import com.unciv.ui.worldscreen.WorldScreen
  * there that should not be serialized to the saved game.
  */
 open class Notification(
+        // default parameters necessary for json deserialization
         var text: String = "",
         var color: Color = Color.BLACK,
         var action: NotificationAction? = null
@@ -38,9 +39,10 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 }
 
 /** show tech screen */
-class TechAction : NotificationAction {
+class TechAction(val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
-        worldScreen.game.screen = TechPickerScreen(worldScreen.currentPlayerCiv)
+        val tech = GameBasics.Technologies[techName]
+        worldScreen.game.screen = TechPickerScreen(worldScreen.currentPlayerCiv, tech)
     }
 }
 
