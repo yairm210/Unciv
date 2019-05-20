@@ -58,6 +58,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             var lastInitialDistance = 0f
 
             override fun zoom(event: InputEvent?, initialDistance: Float, distance: Float) {
+                // deselect any unit, as zooming occasionally forwards clicks on to the map
+                worldScreen.bottomBar.unitTable.selectedUnit = null
                 if (lastInitialDistance != initialDistance) {
                     lastInitialDistance = initialDistance
                     lastScale = scaleX
