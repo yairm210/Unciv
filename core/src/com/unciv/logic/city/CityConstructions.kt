@@ -143,6 +143,8 @@ class CityConstructions {
     }
 
     fun constructIfEnough(){
+        stopUnbuildableConstruction()
+
         val construction = getConstruction(currentConstruction)
         if(construction is SpecialConstruction) return
         
@@ -154,10 +156,16 @@ class CityConstructions {
     }
 
     fun endTurn(cityStats: Stats) {
-        val construction = getConstruction(currentConstruction)
-        if(construction is SpecialConstruction) return
+        stopUnbuildableConstruction()
 
+        if(getConstruction(currentConstruction) !is SpecialConstruction)
+            addProductionPoints(Math.round(cityStats.production))
+    }
+
+    private fun stopUnbuildableConstruction() {
         // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
+        val construction = getConstruction(currentConstruction)
+
         val saveCurrentConstruction = currentConstruction
         currentConstruction = ""
         if (!construction.isBuildable(this)) {
@@ -166,8 +174,6 @@ class CityConstructions {
             chooseNextConstruction()
         } else
             currentConstruction = saveCurrentConstruction
-
-        addProductionPoints(Math.round(cityStats.production))
     }
 
     fun constructionComplete(construction: IConstruction) {

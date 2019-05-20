@@ -74,7 +74,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             touchable = Touchable.enabled
             onClick {
                 selectedUnit?.currentTile?.position?.let {
-                    worldScreen.tileMapHolder.setCenterPosition(it)
+                    worldScreen.tileMapHolder.setCenterPosition(it, false, false)
                 }
             }
         }).expand()
@@ -172,7 +172,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 
-            unitDescriptionTable.onClick { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
         }
 
         pack()
@@ -181,18 +180,14 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun citySelected(cityInfo: CityInfo) : Boolean {
         if (cityInfo == selectedCity) return false
-        lastSelectedCityButton = true
         selectedCity = cityInfo
         selectedUnit = null
         selectedUnitHasChanged = true
+        worldScreen.shouldUpdate = true
         return true
     }
 
     fun tileSelected(selectedTile: TileInfo) {
-        if (lastSelectedCityButton) {
-            lastSelectedCityButton = false
-            return
-        }
 
         val previouslySelectedUnit = selectedUnit
         if(currentlyExecutingAction=="moveTo"){
@@ -209,7 +204,8 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
         }
 
         else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
-                && selectedUnit!=selectedTile.militaryUnit){
+                && selectedUnit!=selectedTile.militaryUnit
+                && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
             selectedUnit = selectedTile.militaryUnit
             selectedCity = null
         }
@@ -217,6 +213,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                         && selectedUnit!=selectedTile.civilianUnit){
             selectedUnit = selectedTile.civilianUnit
             selectedCity = null
+        } else if(selectedTile == previouslySelectedUnit?.currentTile) {
+            // tapping the same tile again will deselect a unit.
+            // important for single-tap-move to abort moving easily
+            selectedUnit = null
         }
 
         if(selectedUnit != previouslySelectedUnit)
