@@ -3310,6 +3310,10 @@
 		Portuguese:"Custo de movimento"
     }
 
+	"Rough Terrain":{
+		German: "Unwegsames Gelände"
+	}
+
     " for ":{ //for example:+1 Gold for Gems,Gold,Silver
 		Italian:" per "
 		Simplified_Chinese:"，当建造在拥有下列资源的地块上时："

@@ -243,7 +243,7 @@ open class TileInfo {
         return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()
     }
 
-    fun isRoughTerrain() = baseTerrain == Constants.hill || terrainFeature == Constants.forest || terrainFeature == Constants.jungle
+    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
 
     override fun toString(): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case

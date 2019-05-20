@@ -33,6 +33,9 @@ class Terrain : NamedStats(), ICivilopedia {
                 sb.appendln("{Defence bonus}: ".tr()+(defenceBonus*100).toInt()+"%")
             }
 
+            if(rough)
+                sb.appendln("Rough Terrain".tr())
+
             return sb.toString()
         }
     lateinit var type: TerrainType
@@ -62,6 +65,7 @@ class Terrain : NamedStats(), ICivilopedia {
     var movementCost = 1
     var defenceBonus:Float = 0f
     var impassable = false
+    var rough = false
 
     fun getColor(): Color = colorFromRGB(RGB!![0], RGB!![1], RGB!![2])
 }
