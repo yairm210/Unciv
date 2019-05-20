@@ -22,8 +22,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
     var selectedUnit : MapUnit? = null
     var selectedCity : CityInfo? = null
-    var currentlyExecutingAction : String? = null
-    var lastSelectedCityButton : Boolean = false
     val deselectUnitButton = Table()
     val helpUnitButton = Table()
 
@@ -88,12 +86,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if (selectedUnit!!.civInfo != worldScreen.currentPlayerCiv) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 selectedCity = null
-                currentlyExecutingAction = null
                 selectedUnitHasChanged = true
             } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists}
                 selectedUnit = null
                 selectedCity = null
-                currentlyExecutingAction = null
                 selectedUnitHasChanged = true
             }
         }
@@ -190,20 +186,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun tileSelected(selectedTile: TileInfo) {
 
         val previouslySelectedUnit = selectedUnit
-        if(currentlyExecutingAction=="moveTo"){
-            if(selectedUnit!!.movementAlgs()
-                    .getShortestPath(selectedTile).isEmpty())
-                return // can't reach there with the selected unit, watcha want me to do?
-
-            val reachedTile = selectedUnit!!.movementAlgs().headTowards(selectedTile)
-
-            selectedUnit!!.action=null // Disable any prior action (automation, fortification...)
-            if(reachedTile!=selectedTile) // Didn't get all the way there
-                selectedUnit!!.action = "moveTo " + selectedTile.position.x.toInt() + "," + selectedTile.position.y.toInt()
-            currentlyExecutingAction = null
-        }
-
-        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
+        if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
                 && selectedUnit!=selectedTile.militaryUnit
                 && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
             selectedUnit = selectedTile.militaryUnit

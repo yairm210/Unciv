@@ -16,6 +16,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class MapUnit {
+
     @Transient lateinit var civInfo: CivilizationInfo
     @Transient lateinit var baseUnit: BaseUnit
     @Transient internal lateinit var currentTile :TileInfo
@@ -32,7 +33,13 @@ class MapUnit {
     lateinit var name: String
     var currentMovement: Float = 0f
     var health:Int = 100
-    var action: String? = null // work, automation, fortifying, I dunno what.
+
+    var mapUnitAction : MapUnitAction? = null
+    var action: String? // work, automation, fortifying, I dunno what.
+        // getter and setter for compatibility: make sure string-based actions still work
+        get() = mapUnitAction?.name
+        set(value) { mapUnitAction = value?.let{ MapUnitAction(this, value) } }
+
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
     var due: Boolean = true
@@ -275,6 +282,7 @@ class MapUnit {
     //region state-changing functions
     fun setTransients(){
         promotions.unit=this
+        mapUnitAction?.unit = this
         baseUnit=GameBasics.Units[name]!!
         updateUniques()
     }
