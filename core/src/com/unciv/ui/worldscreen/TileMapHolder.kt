@@ -224,9 +224,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         tileGroups[unit.getTile()]!!.selectUnit(unit)
 
-        // units set up can't move unless packed together
-        if(unit.action=="Set Up") return
-
         for (tile: TileInfo in unit.getDistanceToTiles().keys)
             if (unit.canMoveTo(tile))
                 tileGroups[tile]!!.showCircle(Color.WHITE, 0.7f)
