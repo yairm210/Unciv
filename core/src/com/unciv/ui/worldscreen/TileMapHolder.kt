@@ -103,8 +103,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
         }
 
-        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
-      
         worldScreen.shouldUpdate = true
     }
 
