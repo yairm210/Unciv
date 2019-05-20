@@ -10,7 +10,8 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.Sounds
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileMapHolder
-import com.unciv.logic.map.BuildLongRoadAction
+import com.unciv.logic.map.action.BuildLongRoadAction
+import com.unciv.logic.map.action.MapUnitAction
 import kotlin.concurrent.thread
 
 class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUnit, val targetTile: TileInfo) : VerticalGroup() {
@@ -19,15 +20,29 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
 
         space(10f)
 
-        addButton(ImageGetter.getStatIcon("Movement"), "Move here") {
+        addButton(ImageGetter.getStatIcon("Movement"), "Move unit") {
             onMoveButtonClick()
         }
-        addButton(ImageGetter.getImprovementIcon("Road"), "Construct Road this way") {
-            onConstructRoadButtonClick()
-        }
+
+        addButton(
+                ImageGetter.getImprovementIcon("Road"),
+                "Construct road",
+                BuildLongRoadAction(selectedUnit, targetTile)
+        )
 
         pack()
 
+    }
+
+    fun addButton(icon: Actor, label: String, action: MapUnitAction) {
+        if (action.isAvailable()) {
+            addButton(icon, label) {
+                selectedUnit.mapUnitAction = action
+                selectedUnit.mapUnitAction?.doPreTurnAction()
+                tileMapHolder.removeUnitActionOverlay = true
+                tileMapHolder.worldScreen.shouldUpdate = true
+            }
+        }
     }
 
     fun addButton(icon: Actor, label: String, action: () -> Unit) {
@@ -67,7 +82,4 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
         }
     }
 
-    private fun onConstructRoadButtonClick() {
-        selectedUnit.mapUnitAction = BuildLongRoadAction()
-    }
 }

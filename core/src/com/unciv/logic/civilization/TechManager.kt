@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
@@ -195,5 +196,14 @@ class TechManager {
         if(researchedTechUniques.contains("Enables embarkation for land units")) unitsCanEmbark=true
         if(researchedTechUniques.contains("Enables embarked units to enter ocean tiles")) embarkedUnitsCanEnterOcean=true
         if(researchedTechUniques.contains("Improves movement speed on roads")) movementSpeedOnRoadsImproved = true
+    }
+
+    fun getBestRoadAvailable(): RoadStatus {
+        if (!isResearched(RoadStatus.Road.improvement()!!.techRequired!!)) return RoadStatus.None
+
+        val techEnablingRailroad = RoadStatus.Railroad.improvement()!!.techRequired!!
+        val canBuildRailroad = isResearched(techEnablingRailroad)
+
+        return if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road
     }
 }
