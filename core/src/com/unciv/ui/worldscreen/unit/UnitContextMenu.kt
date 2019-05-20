@@ -10,6 +10,7 @@ import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.Sounds
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileMapHolder
+import com.unciv.logic.map.BuildLongRoadAction
 import kotlin.concurrent.thread
 
 class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUnit, val targetTile: TileInfo) : VerticalGroup() {
@@ -67,6 +68,6 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
     }
 
     private fun onConstructRoadButtonClick() {
-        // TODO
+        selectedUnit.mapUnitAction = BuildLongRoadAction()
     }
 }

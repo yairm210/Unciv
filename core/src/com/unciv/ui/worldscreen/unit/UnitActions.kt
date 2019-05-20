@@ -34,7 +34,6 @@ class UnitActions {
         if(unit.action!=null && unit.action!!.startsWith("moveTo")) {
             actionList +=
                     UnitAction("Stop movement", true) {
-                        unitTable.currentlyExecutingAction = null
                         unit.action = null
                     }
         }
@@ -146,7 +145,6 @@ class UnitActions {
 
                 unit.civInfo.addCity(tile.position)
                 tile.improvement = null
-                unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                 unit.destroy()
             }.sound("chimes")
         }

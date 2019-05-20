@@ -246,8 +246,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 return@onClick
             }
 
-            bottomBar.unitTable.currentlyExecutingAction = null
-
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             nextTurnButton.disable()
             nextTurnButton.setText("Working...".tr())
