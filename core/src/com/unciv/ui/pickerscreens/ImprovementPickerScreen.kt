@@ -54,22 +54,21 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
 
             group.touchable = Touchable.enabled
             group.onClick {
-                accept(improvement)
-            }
-
-            val help = Label("?", skin)
-            help.setAlignment(Align.center)
-            help.touchable = Touchable.enabled
-            help.onClick {
                 selectedImprovement = improvement
                 pick(improvement.name)
                 descriptionLabel.setText(improvement.description)
             }
 
+            val pickNow = Label("Pick now!", skin)
+            pickNow.touchable = Touchable.enabled
+            pickNow.onClick {
+                accept(improvement)
+            }
+
             val improvementButton = Button(skin)
-            improvementButton.add(group).fillY()
+            improvementButton.add(group).padRight(10f).fillY()
             improvementButton.addSeparatorVertical()
-            improvementButton.add(help).width(40f).fillY()
+            improvementButton.add(pickNow).padLeft(10f).fill()
             regularImprovements.addActor(improvementButton)
 
         }

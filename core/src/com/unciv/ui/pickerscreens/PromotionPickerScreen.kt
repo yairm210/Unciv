@@ -55,13 +55,6 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
             group.touchable = Touchable.enabled
             group.onClick {
-                accept(promotion)
-            }
-
-            val help = Label("?", skin)
-            help.touchable = Touchable.enabled
-            help.setAlignment(Align.center)
-            help.onClick {
                 selectedPromotion = promotion
                 rightSideButton.setText(promotion.name.tr())
                 if(isPromotionAvailable && !unitHasPromotion) rightSideButton.enable()
@@ -72,12 +65,19 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
                 if(promotion.prerequisites.isNotEmpty()) {
                     val prerequisitesString:ArrayList<String> = arrayListOf()
-                   for (i in promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }){
-                       prerequisitesString.add(i.tr())
-                   }
+                    for (i in promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }){
+                        prerequisitesString.add(i.tr())
+                    }
                     descriptionText +="\n{Requires}: ".tr()+prerequisitesString.joinToString(" OR ".tr())
                 }
                 descriptionLabel.setText(descriptionText)
+            }
+
+            val pickNow = Label("Pick now!", skin)
+            pickNow.touchable = Touchable.enabled
+            pickNow.setAlignment(Align.center)
+            pickNow.onClick {
+                accept(promotion)
             }
 
 
@@ -86,7 +86,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
             if(isPromotionAvailable) {
                 promotionButton.addSeparatorVertical()
-                promotionButton.add(help).width(40f).fillY()
+                promotionButton.add(pickNow).padLeft(10f).fillY()
             }
             else {
                 group.touchable = Touchable.disabled

@@ -17,20 +17,19 @@ open class PickerScreen : CameraStageBaseScreen() {
     internal var splitPane: SplitPane
 
     init {
-        bottomTable.add(closeButton).width(stage.width / 4)
+        bottomTable.add(closeButton).pad(10f)
 
         descriptionLabel = "".toLabel()
         descriptionLabel.setWrap(true)
         val labelScroll = ScrollPane(descriptionLabel)
-        bottomTable.add(labelScroll).pad(5f).width(stage.width / 2)
+        bottomTable.add(labelScroll).pad(5f).fill().expand()
 
         rightSideButton = TextButton("", skin)
         rightSideButton.disable()
         rightSideGroup.addActor(rightSideButton)
 
-        bottomTable.add(rightSideGroup).width(stage.width / 4)
+        bottomTable.add(rightSideGroup).pad(10f).right()
         bottomTable.height = stage.height * (1 - screenSplit)
-        bottomTable.align(Align.center)
 
         topTable = Table()
         val scrollPane = ScrollPane(topTable)
