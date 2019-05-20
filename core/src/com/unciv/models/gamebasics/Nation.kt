@@ -14,7 +14,7 @@ class Nation : INamed {
     }
 
     var leaderName=""
-    fun getLeaderDisplayName() = if(isCityState()) "City-state [${getNameTranslation()}]".tr()
+    fun getLeaderDisplayName() = if(isCityState()) getNameTranslation()
         else "[$leaderName] of [${getNameTranslation()}]"
 
     var cityStateType: CityStateType?=null

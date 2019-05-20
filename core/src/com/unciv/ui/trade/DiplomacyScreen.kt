@@ -56,6 +56,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 val cityStateIcon = ImageGetter.getImage("OtherIcons/CityState.png")
                 cityStateIcon.setSize(70f,70f)
                 cityStateIcon.center(civIndicator)
+                cityStateIcon.color= Color.BLACK
                 civIndicator.addActor(cityStateIcon)
             }
 

@@ -81,7 +81,8 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         }
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
-                val cityStateImage = ImageGetter.getImage("OtherIcons/CityState.png").apply { color = Color.LIGHT_GRAY }
+                val cityStateImage = ImageGetter.getImage("OtherIcons/CityState.png")
+                        .apply { color = city.civInfo.getNation().getSecondaryColor()}
                 iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
             } else {
                 val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
