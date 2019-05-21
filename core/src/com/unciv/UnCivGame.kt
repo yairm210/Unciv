@@ -84,6 +84,10 @@ class UnCivGame(val version: String) : Game() {
         resume()
     }
 
+    override fun dispose() {
+        GameSaver().autoSave(gameInfo)
+    }
+
     companion object {
         lateinit var Current: UnCivGame
     }
