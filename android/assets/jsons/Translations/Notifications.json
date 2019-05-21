@@ -414,7 +414,7 @@
         },
 
         "[unit] has no work to do.": {
-            Italian:"[unit] è inattiva."
+            Italian:"L'unità [unit] è ora inattiva."
             "German": "[unit] hat keine Arbeit mehr."
         }
 }
