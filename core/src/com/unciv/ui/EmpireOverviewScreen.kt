@@ -3,9 +3,7 @@ package com.unciv.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
@@ -36,7 +34,6 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.clear()
             centerTable.add(getCityInfoTable())
             centerTable.pack()
-            centerTable.center(stage)
         }
         setCities()
         setCityInfoButton.onClick(setCities)
@@ -45,11 +42,14 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setStatsInfoButton = TextButton("Stats".tr(),skin)
         setStatsInfoButton.onClick {
             centerTable.clear()
-            centerTable.add(getHappinessTable())
-            centerTable.add(getGoldTable()).row()
-            centerTable.add(getGreatPeopleTable())
+            centerTable.add(ScrollPane(HorizontalGroup().apply {
+                space(20f)
+                top()
+                addActor(getHappinessTable())
+                addActor(getGoldTable())
+                addActor(getGreatPeopleTable())
+            }))
             centerTable.pack()
-            centerTable.center(stage)
         }
         topTable.add(setStatsInfoButton)
 
@@ -58,7 +58,6 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.clear()
             centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the naviagation buttons
             centerTable.pack()
-            centerTable.center(stage)
         }
         topTable.add(setCurrentTradesButton)
 
@@ -67,7 +66,6 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.clear()
             centerTable.add(ScrollPane(getUnitTable())).height(stage.height*0.8f)
             centerTable.pack()
-            centerTable.center(stage)
         }
         topTable.add(setUnitsButton )
 
@@ -77,16 +75,17 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.clear()
             centerTable.add(createDiplomacyGroup()).height(stage.height*0.8f)
             centerTable.pack()
-            centerTable.center(stage)
         }
         topTable.add(setDiplomacyButton )
 
         topTable.pack()
-        topTable.width = stage.width
-        topTable.y = stage.height-topTable.height
 
-        stage.addActor(topTable)
-        stage.addActor(centerTable)
+        val table = Table()
+        table.add(topTable).row()
+        table.add(centerTable).expand().row()
+        table.setFillParent(true)
+        stage.addActor(table)
+
     }
 
     private fun getTradesTable(): Table {
@@ -128,10 +127,10 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         happinessTable.addSeparator()
         for (entry in currentPlayerCivInfo.getHappinessForNextTurn()) {
             happinessTable.add(entry.key.tr())
-            happinessTable.add(entry.value.toString()).row()
+            happinessTable.add(entry.value.roundToInt().toString()).row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(currentPlayerCivInfo.getHappinessForNextTurn().values.sum().toString())
+        happinessTable.add(currentPlayerCivInfo.getHappinessForNextTurn().values.sum().roundToInt().toString())
         happinessTable.pack()
         return happinessTable
     }
@@ -145,11 +144,11 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         for (entry in currentPlayerCivInfo.getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
-            goldTable.add(entry.value.gold.toString()).row()
+            goldTable.add(entry.value.gold.roundToInt().toString()).row()
             total += entry.value.gold
         }
         goldTable.add("Total".tr())
-        goldTable.add(total.toString())
+        goldTable.add(total.roundToInt().toString())
         goldTable.pack()
         return goldTable
     }
@@ -206,8 +205,13 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val cityInfoTableDetails = Table(skin)
         cityInfoTableDetails.defaults().pad(padding).minWidth(iconSize).align(Align.left)//we need the min width so we can align the different tables
 
-        for (city in currentPlayerCivInfo.cities) {
-            cityInfoTableDetails.add(city.name)
+        for (city in currentPlayerCivInfo.cities.sortedBy { it.name }) {
+            val button = Button(Label(city.name, skin), skin)
+            button.onClick {
+                UnCivGame.Current.setWorldScreen()
+                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(city.ccenterTile.position)
+            }
+            cityInfoTableDetails.add(button)
             cityInfoTableDetails.add(city.cityConstructions.getCityProductionTextForCityButton()).actor!!.setAlignment(Align.left)
             cityInfoTableDetails.add(city.population.population.toString()).actor!!.setAlignment(Align.center)
             cityInfoTableDetails.add(city.cityStats.currentCityStats.food.roundToInt().toString()).actor!!.setAlignment(Align.center)
@@ -245,8 +249,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.defaults().pad(padding).align(Align.right)
 
         table.add(cityInfoTableIcons).row()
-        val height = if(cityInfoTableDetails.rows > 0) cityInfoTableDetails.getRowHeight(0)*4f else 100f //if there are no cities, set the height of the scroll pane to 100
-        table.add(cityInfoScrollPane).width(cityInfoTableDetails.width).height(height).row()
+        table.add(cityInfoScrollPane).width(cityInfoTableDetails.width).row()
         table.add(cityInfoTableTotal)
         table.pack()
 
@@ -260,24 +263,22 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         table.add("Ranged strength".tr())
         table.add("Movement".tr())
         table.add("Closest city".tr())
-        table.add("Go to unit".tr())
         table.row()
         table.addSeparator()
 
-        for(unit in currentPlayerCivInfo.getCivUnits()){
+        for(unit in currentPlayerCivInfo.getCivUnits().sortedBy { it.name }){
             val baseUnit = unit.baseUnit()
-            table.add(unit.name.tr())
+            val button = TextButton(unit.name.tr(), skin)
+            button.onClick {
+                UnCivGame.Current.setWorldScreen()
+                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
+            }
+            table.add(button).left()
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
             val closestCity = unit.getTile().getTilesInDistance(3).firstOrNull{it.isCityCenter()}
             if (closestCity!=null) table.add(closestCity.getCity()!!.name) else table.add()
-            val goToUnitButton = TextButton("Go to unit".tr(),skin)
-            goToUnitButton.onClick {
-                UnCivGame.Current.setWorldScreen()
-                UnCivGame.Current.worldScreen.tileMapHolder.setCenterPosition(unit.currentTile.position)
-            }
-            table.add(goToUnitButton)
             table.row()
         }
         table.pack()
