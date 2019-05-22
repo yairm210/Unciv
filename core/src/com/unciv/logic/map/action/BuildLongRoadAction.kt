@@ -7,7 +7,9 @@ import com.unciv.logic.map.TileInfo
 class BuildLongRoadAction(
         mapUnit: MapUnit = MapUnit(),
         val target: TileInfo = TileInfo()
-) : MapUnitAction(mapUnit, "Build Long Road") {
+) : MapUnitAction(mapUnit) {
+
+    override fun name(): String = "Build Long Road"
 
     override fun shouldStopOnEnemyInSight(): Boolean = true
 
