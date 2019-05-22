@@ -2995,12 +2995,6 @@
 		German:"Nächstgelegene Stadt"
 	}
 
-	"Go to unit":{
-		Italian:"Vai a unità"
-		Simplified_Chinese:"跳转至所在地图位置"
-		Portuguese:"Ir para a unidade"
-	}
-
 	"Defeated":{
 		Italian:"Sconfitto"
 		Russian:"побежденный"
