@@ -3,6 +3,7 @@ package com.unciv.logic.map.action
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 
 class BuildLongRoadAction(
@@ -17,6 +18,7 @@ class BuildLongRoadAction(
     override fun isAvailable(): Boolean
             = unit.hasUnique("Can build improvements on tiles")
             && getPath(target).isNotEmpty()
+            && unit.civInfo.tech.getBestRoadAvailable() != RoadStatus.None
 
     override fun doPreTurnAction() {
 

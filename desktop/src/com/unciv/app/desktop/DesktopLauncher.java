@@ -17,7 +17,7 @@ class DesktopLauncher {
 		// This is so they don't look all pixelated
 		settings.filterMag = Texture.TextureFilter.MipMapLinearLinear;
 		settings.filterMin =  Texture.TextureFilter.MipMapLinearLinear;
-		TexturePacker.process(settings, "../images", ".", "game");
+		TexturePacker.process(settings, "../Images", ".", "game");
 
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		new LwjglApplication(new UnCivGame("Desktop"), config);
