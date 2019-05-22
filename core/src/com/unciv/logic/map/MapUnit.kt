@@ -7,6 +7,7 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.action.MapUnitAction
+import com.unciv.logic.map.action.StringAction
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.TerrainType
@@ -38,8 +39,8 @@ class MapUnit {
     var mapUnitAction : MapUnitAction? = null
     var action: String? // work, automation, fortifying, I dunno what.
         // getter and setter for compatibility: make sure string-based actions still work
-        get() = mapUnitAction?.name
-        set(value) { mapUnitAction = value?.let{ MapUnitAction(this, value) } }
+        get() = (mapUnitAction as? StringAction)?.action ?: mapUnitAction?.let { "" } // null if no action is assigned.
+        set(value) { mapUnitAction = value?.let{ StringAction(this, value) } } // wrap traditional string-encoded actions into StringAction
 
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
