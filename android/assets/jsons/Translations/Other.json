@@ -262,12 +262,16 @@
 		Romanian:"Dormi"
 		Simplified_Chinese:"休眠"
 		Portuguese:"Dormir"
-		German:"Schlafen legen"
+		German:"Schlafen"
 		French:"Dormir"
 		Japanese:"睡眠"
 		Russian:"Спать"
 		Dutch:"Slaap"
 		Spanish:"Dormir"
+	}
+
+	"Moving": {
+		"German": "Bewegen"
 	}
 
 	"Set up":{ // For siege units

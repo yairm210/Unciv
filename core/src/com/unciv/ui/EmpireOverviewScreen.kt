@@ -104,7 +104,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size))
         return generalTable
     }
-    
+
     private fun createOffersTable(civ: CivilizationInfo, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
         val table = Table()
         table.defaults().pad(10f)
@@ -256,6 +256,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     fun getUnitTable(): Table {
         val table=Table(skin).apply { defaults().pad(5f) }
         table.add("Name".tr())
+        table.add("Action".tr())
         table.add("Strength".tr())
         table.add("Ranged strength".tr())
         table.add("Movement".tr())
@@ -267,6 +268,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         for(unit in currentPlayerCivInfo.getCivUnits()){
             val baseUnit = unit.baseUnit()
             table.add(unit.name.tr())
+            unit.mapUnitAction?.let { table.add(it.name().tr()) } ?: table.add()
             if(baseUnit.strength>0) table.add(baseUnit.strength.toString()) else table.add()
             if(baseUnit.rangedStrength>0) table.add(baseUnit.rangedStrength.toString()) else table.add()
             table.add(DecimalFormat("0.#").format(unit.currentMovement)+"/"+unit.getMaxMovement())
