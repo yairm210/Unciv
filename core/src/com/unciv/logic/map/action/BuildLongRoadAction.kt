@@ -1,5 +1,6 @@
 package com.unciv.logic.map.action
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
@@ -38,6 +39,7 @@ class BuildLongRoadAction(
         if (stepForward(target)) {
             startWorkingOnRoad()
         } else if (unit.currentMovement > 1f) {
+            unit.civInfo.addNotification("[${unit.name}] canceled building road: can't move forward.", unit.currentTile.position, Color.GRAY)
             unit.action = null
             return
         }
@@ -52,13 +54,17 @@ class BuildLongRoadAction(
         for (step in getPath(destination).drop(1)) {
             if(step !in tilesUnitCanCurrentlyReach) return false // we're out of tiles in reachable distance, no need to check any further
 
-            if (unit.currentMovement > 0f && unit.canMoveTo(step)) {
-                unit.moveToTile(step)
-                success = true
-
-                // if there is a road already, take multiple steps, otherwise this is where we're going to build a road
-                if (!isRoadFinished(step)) return true
-
+            if (unit.currentMovement > 0f) {
+                if(unit.canMoveTo(step)) {
+                    unit.moveToTile(step)
+                    success = true
+                    // if there is a road already, take multiple steps, otherwise this is where we're going to build a road
+                    if (!isRoadFinished(step)) return true
+                }
+                else if(!isRoadFinished(step)){
+                    unit.civInfo.addNotification("[${unit.name}] skipped building road. It can't move here.", step.position, Color.GRAY)
+                }
+                // worker moves on even if the current step is blocked
             } else break
         }
         return success
