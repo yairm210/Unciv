@@ -177,7 +177,8 @@ class MapUnit {
     }
 
     /**
-     * Designates whether we can walk to the tile - without attacking
+     * Designates whether we can enter the tile - without attacking
+     * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         if(!canPassThrough(tile)) return false
@@ -380,9 +381,6 @@ class MapUnit {
         }
     }
 
-    /**
-     * @return The tile that we reached this turn
-     */
     fun moveToTile(otherTile: TileInfo) {
         if(otherTile==getTile()) return // already here!
         val distanceToTiles = getDistanceToTiles()
@@ -394,7 +392,8 @@ class MapUnit {
         class CantEnterThisTileException(msg: String) : Exception(msg)
         if(!canMoveTo(otherTile))
             throw CantEnterThisTileException("$this can't enter $otherTile")
-        if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo) throw Exception("This is an enemy city, you can't go here!")
+        if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo)
+            throw Exception("This is an enemy city, you can't go here!")
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"

@@ -20,9 +20,10 @@ class BuildLongRoadAction(
         // we're working!
         if (unit.currentTile.improvementInProgress != null)
             return
-        else if (startWorking()) {
+
+        if (startWorkingOnRoad())
             return
-        }
+
 
         // we reached our target? And road is finished?
         if (unit.currentTile.position == target.position
@@ -33,7 +34,7 @@ class BuildLongRoadAction(
 
         // move one step forward - and start building
         if (stepForward(target)) {
-            startWorking()
+            startWorkingOnRoad()
         } else if (unit.currentMovement > 1f) {
             unit.action = null
             return
@@ -45,21 +46,24 @@ class BuildLongRoadAction(
     // independent of movement costs, but should respect impassable terrain like water and enemy territory
     private fun stepForward(destination: TileInfo): Boolean {
         var success = false
+        val tilesUnitCanCurrentlyReach = unit.getDistanceToTiles().keys
         for (step in getPath(destination).drop(1)) {
+            if(step !in tilesUnitCanCurrentlyReach) return false // we're out of tiles in reachable distance, no need to check any further
+
             if (unit.currentMovement > 0f && unit.canMoveTo(step)) {
                 unit.moveToTile(step)
                 success = true
-                // if there is a road already, take multiple steps, otherwise break
-                if (!isRoadFinished(step)) {
-                    break
-                }
+
+                // if there is a road already, take multiple steps, otherwise this is where we're going to build a road
+                if (!isRoadFinished(step)) return true
+
             } else break
         }
         return success
     }
 
     private fun isRoadFinished(tile: TileInfo): Boolean {
-        return tile.roadStatus == unit.civInfo.tech.getBestRoadAvailable()
+        return tile.roadStatus >= unit.civInfo.tech.getBestRoadAvailable()
     }
 
     private fun getPath(destination: TileInfo): List<TileInfo> {
@@ -71,12 +75,12 @@ class BuildLongRoadAction(
 
     private fun isRoadableTile(it: TileInfo) = it.isLand && unit.canPassThrough(it)
 
-    private fun startWorking(): Boolean {
+    private fun startWorkingOnRoad(): Boolean {
         val tile = unit.currentTile
         if (unit.currentMovement > 0 && isRoadableTile(tile)) {
             val roadToBuild = unit.civInfo.tech.getBestRoadAvailable()
             roadToBuild.improvement()?.let { improvement ->
-                if (tile.roadStatus != roadToBuild && tile.improvementInProgress != improvement.name) {
+                if (tile.roadStatus < roadToBuild && tile.improvementInProgress != improvement.name) {
                     tile.startWorkingOnImprovement(improvement, unit.civInfo)
                     return true
                 }
