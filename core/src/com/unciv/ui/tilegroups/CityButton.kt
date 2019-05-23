@@ -105,7 +105,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
     private fun moveButtonDown() {
         val moveButtonAction = Actions.sequence(
-                Actions.moveBy(0f, -height, 0.4f, Interpolation.swingOut),
+                Actions.moveTo(tileGroup.x, tileGroup.y-height, 0.4f, Interpolation.swingOut),
                 Actions.run { isButtonMoved=true }
         )
         parent.addAction(moveButtonAction) // Move the whole cityButtonLayerGroup down, so the citybutton remains clickable
@@ -113,7 +113,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
     private fun moveButtonUp() {
         val floatAction = Actions.sequence(
-                Actions.moveBy(0f, height, 0.4f, Interpolation.sine),
+                Actions.moveTo(tileGroup.x, tileGroup.y, 0.4f, Interpolation.sine),
                 Actions.run {isButtonMoved=false}
         )
         parent.addAction(floatAction)
