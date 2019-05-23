@@ -173,10 +173,14 @@ class CityStats {
         val civInfo = cityInfo.civInfo
         val newHappinessList = LinkedHashMap<String,Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
-        if(!civInfo.isPlayerCivilization())
-            unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
+            if(!civInfo.isPlayerCivilization())
+                unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
+        
+        var unhappinessFromCity=-3f
+            if (civInfo.getNation().unique=="Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.") 
+                unhappinessFromCity*=2f//doubled for the Indian
 
-        newHappinessList ["Cities"] = -3f * unhappinessModifier
+        newHappinessList ["Cities"] = unhappinessFromCity * unhappinessModifier
 
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
@@ -185,6 +189,8 @@ class CityStats {
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
+        if (civInfo.getNation().unique=="Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved."
+            unhappinessFromCitizens *= 0.5f //halved for the Indian
 
         newHappinessList["Population"] = -unhappinessFromCitizens * unhappinessModifier
 
