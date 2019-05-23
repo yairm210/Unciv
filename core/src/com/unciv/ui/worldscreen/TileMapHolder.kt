@@ -84,8 +84,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
 
         if (selectedUnit != null && selectedUnit.getTile() != tileInfo
-                && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)
-                && selectedUnit.action!="Set Up") {
+                && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             moveHere(selectedUnit, tileInfo)
             worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit // keep moved unit selected
