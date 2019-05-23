@@ -134,7 +134,9 @@
             Japanese:"[construction]は[cityName]に建てられました"
         }
 		
-		"[wonder] has been built in a faraway land":{}
+	"[wonder] has been built in a faraway land":{	
+            Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
+	}
         
         "Work has started on [construction]":{
             Italian:"Sono iniziati i lavori per [construction]"
@@ -229,7 +231,9 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました"
         }
 
-		"Enemy city [cityName] has attacked our [ourUnit]":{}
+	"Enemy city [cityName] has attacked our [ourUnit]":{
+            Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
+	}
 		
         "An enemy [unit] has captured [cityname]":{
             Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
@@ -270,7 +274,9 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました"
         }
 		
-		"Enemy city [cityName] has destroyed our [ourUnit]":{}
+	"Enemy city [cityName] has destroyed our [ourUnit]":{
+            Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
+	}
         
         "An enemy [unit] was destroyed while attacking [cityname]":{
             Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava [cityname]"
