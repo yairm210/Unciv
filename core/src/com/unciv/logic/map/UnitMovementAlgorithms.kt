@@ -137,7 +137,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     fun headTowards(destination: TileInfo): TileInfo {
         val currentTile = unit.getTile()
-        if(currentTile==destination) return currentTile
+        if (currentTile == destination) return currentTile
 
         val distanceToTiles = unit.getDistanceToTiles()
 
@@ -152,7 +152,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     return currentTile
 
                 val reachableDestinationNeighbors = destinationNeighbors
-                        .filter { distanceToTiles.containsKey(it) && unit.canMoveTo(it)}
+                        .filter { distanceToTiles.containsKey(it) && unit.canMoveTo(it) }
                 if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
                     return currentTile
 
@@ -160,8 +160,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             }
         } else { // If the tile is far away, we need to build a path how to get there, and then take the first step
             val path = getShortestPath(destination)
-            class UnreachableDestinationException:Exception()
-            if(path.isEmpty()) throw UnreachableDestinationException()
+            class UnreachableDestinationException : Exception()
+            if (path.isEmpty()) throw UnreachableDestinationException()
             destinationTileThisTurn = path.first()
         }
 

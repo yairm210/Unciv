@@ -6,6 +6,8 @@ import com.unciv.Constants
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.action.MapUnitAction
+import com.unciv.logic.map.action.StringAction
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.TerrainType
@@ -16,6 +18,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class MapUnit {
+
     @Transient lateinit var civInfo: CivilizationInfo
     @Transient lateinit var baseUnit: BaseUnit
     @Transient internal lateinit var currentTile :TileInfo
@@ -32,7 +35,15 @@ class MapUnit {
     lateinit var name: String
     var currentMovement: Float = 0f
     var health:Int = 100
-    var action: String? = null // work, automation, fortifying, I dunno what.
+
+    var mapUnitAction : MapUnitAction? = null
+
+    var action: String? // work, automation, fortifying, I dunno what.
+        // getter and setter for compatibility: make sure string-based actions still work
+        get() = (mapUnitAction as? StringAction)?.action ?: mapUnitAction?.let { "" } // null if no action is assigned.
+        set(value) { mapUnitAction = value?.let{ StringAction(this, value) } } // wrap traditional string-encoded actions into StringAction
+
+
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
     var due: Boolean = true
@@ -169,7 +180,8 @@ class MapUnit {
     }
 
     /**
-     * Designates whether we can walk to the tile - without attacking
+     * Designates whether we can enter the tile - without attacking
+     * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         if(!canPassThrough(tile)) return false
@@ -275,6 +287,7 @@ class MapUnit {
     //region state-changing functions
     fun setTransients(){
         promotions.unit=this
+        mapUnitAction?.unit = this
         baseUnit=GameBasics.Units[name]!!
         updateUniques()
     }
@@ -292,9 +305,12 @@ class MapUnit {
         val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
                 .filter { it.militaryUnit!=null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo)}
         if(enemyUnitsInWalkingDistance.isNotEmpty()) {
-            if (action != null && action!!.startsWith("moveTo")) action=null
+            if (mapUnitAction?.shouldStopOnEnemyInSight()==true)
+                mapUnitAction=null
             return  // Don't you dare move.
         }
+
+        mapUnitAction?.doPreTurnAction()
 
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -368,22 +384,19 @@ class MapUnit {
         }
     }
 
-    /**
-     * @return The tile that we reached this turn
-     */
     fun moveToTile(otherTile: TileInfo) {
         if(otherTile==getTile()) return // already here!
         val distanceToTiles = getDistanceToTiles()
 
-        class YouCantGetThereFromHereException : Exception()
+        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
         if (!distanceToTiles.containsKey(otherTile))
+            throw YouCantGetThereFromHereException("$this can't get from ${currentTile.position} to ${otherTile.position}.")
 
-            throw YouCantGetThereFromHereException()
-
-        class CantEnterThisTileException : Exception()
+        class CantEnterThisTileException(msg: String) : Exception(msg)
         if(!canMoveTo(otherTile))
-            throw CantEnterThisTileException()
-        if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo) throw Exception("This is an enemy city, you can't go here!")
+            throw CantEnterThisTileException("$this can't enter $otherTile")
+        if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo)
+            throw Exception("This is an enemy city, you can't go here!")
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"

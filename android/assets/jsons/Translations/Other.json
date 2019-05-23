@@ -227,6 +227,10 @@
 		Japanese:"自動化を停止"
 	}
 
+	"Construct road": {
+		"German": "Straße bauen"
+	}
+
 	"Fortify":{
 		Italian:"Fortifica"
 		Russian:"Укрепить"
@@ -258,12 +262,16 @@
 		Romanian:"Dormi"
 		Simplified_Chinese:"休眠"
 		Portuguese:"Dormir"
-		German:"Schlafen legen"
+		German:"Schlafen"
 		French:"Dormir"
 		Japanese:"睡眠"
 		Russian:"Спать"
 		Dutch:"Slaap"
 		Spanish:"Dormir"
+	}
+
+	"Moving": {
+		"German": "Bewegen"
 	}
 
 	"Set up":{ // For siege units

@@ -49,23 +49,20 @@ class WorkerAutomation(val unit: MapUnit) {
 
 
 
-    fun tryConnectingCities():Boolean{ // returns whether we actually did anything
-        val techEnablingRailroad = GameBasics.TileImprovements["Railroad"]!!.techRequired!!
-        val canBuildRailroad = unit.civInfo.tech.isResearched(techEnablingRailroad)
+    fun tryConnectingCities():Boolean { // returns whether we actually did anything
 
-        val targetRoadName = if (canBuildRailroad) "Railroad" else "Road"
-        val targetStatus = if (canBuildRailroad) RoadStatus.Railroad else RoadStatus.Road
+        val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
         val citiesThatNeedConnecting = unit.civInfo.cities
                 .filter { it.population.population>3 && !it.isCapital()
-                    && !it.cityStats.isConnectedToCapital(targetStatus) }
+                    && !it.cityStats.isConnectedToCapital(targetRoad) }
         if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
                 .map { city -> BFS(city.getCenterTile()){it.isLand && unit.canPassThrough(it)} }
                 .toMutableList()
 
-        val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetStatus) }
+        val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
                 .map { it.getCenterTile() }
 
         while(citiesThatNeedConnectingBfs.any()){
@@ -78,7 +75,7 @@ class WorkerAutomation(val unit: MapUnit) {
                 for(city in connectedCities)
                     if(bfs.tilesToCheck.contains(city)) { // we have a winner!
                         val pathToCity = bfs.getPathTo(city)
-                        val roadableTiles = pathToCity.filter { it.roadStatus < targetStatus }
+                        val roadableTiles = pathToCity.filter { it.roadStatus < targetRoad }
                         val tileToConstructRoadOn :TileInfo
                         if(unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
                         else{
@@ -88,8 +85,8 @@ class WorkerAutomation(val unit: MapUnit) {
                             unit.movementAlgs().headTowards(tileToConstructRoadOn)
                         }
                         if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
-                                && unit.currentTile.improvementInProgress!=targetRoadName)
-                            tileToConstructRoadOn.startWorkingOnImprovement(GameBasics.TileImprovements[targetRoadName]!!,unit.civInfo)
+                                && unit.currentTile.improvementInProgress!=targetRoad.name)
+                            tileToConstructRoadOn.startWorkingOnImprovement(targetRoad.improvement()!!,unit.civInfo)
                         return true
                     }
             }
