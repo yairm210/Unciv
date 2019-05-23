@@ -32,7 +32,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
         if (locations.isNotEmpty()) {
             var index = locations.indexOf(worldScreen.tileMapHolder.selectedTile?.position)
             index = ++index % locations.size // cycle through locations
-            worldScreen.tileMapHolder.setCenterPosition(locations[index])
+            worldScreen.tileMapHolder.setCenterPosition(locations[index], selectUnit = false)
         }
     }
 
