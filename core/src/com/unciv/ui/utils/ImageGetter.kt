@@ -70,7 +70,7 @@ object ImageGetter {
         return getImage("UnitIcons/$unitName").apply { this.color=color }
     }
 
-    val foodCircleColor =  colorFromRGB(129, 199, 132)// .GREEN.cpy().lerp(Color.WHITE,0.5f)
+    val foodCircleColor =  colorFromRGB(129, 199, 132)
     val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!
     val goldCircleColor = Color.GOLD.cpy().lerp(Color.WHITE,0.5f)!!
     fun getImprovementIcon(improvementName:String, size:Float=20f):Actor{
@@ -102,13 +102,14 @@ object ImageGetter {
 
     fun getBlue() = Color(0x004085bf)
 
-    fun getCircle() = getImage("OtherIcons/Circle") // This is used, like, everywhere
+    fun getCircle() = getImage("OtherIcons/Circle")
 
     fun getBackground(color:Color): Drawable {
         return getDrawable(whiteDotLocation).tint(color)
     }
 
     fun refreshAltas() {
+        atlas.dispose() // To avoid OutOfMemory exceptions
         atlas = TextureAtlas("game.atlas")
     }
 
