@@ -382,7 +382,39 @@
 		"Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke",
 		"Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu",
 		"Yamaguchi","Ota","Tottori"]
-	},	/*
+	},
+	{
+		name:"India",
+		leaderName:"Gandhi",
+		adjective:["indiano"],
+		startBias:["Prateria"],
+		
+		declaringWar:"Posso dichiarare guerra senza sacrificare morali! Non chiedermi come: non capiresti."
+		attacked:"Non sono riuscito ad evitare la violenza. Occhio per occhio rende soltanto il mondo cieco."
+		defeated:"Puoi incatenarmi, torturarmi, persino distruggere questo corpo, ma la mia mente rimarrà sempre libera."
+		introduction:"Saluti! Sono Mohandas Gandhi. Il mio popolo mi chiama Bapu, ma chiamami amico, per favore."
+		
+		neutralHello:"Pace a te."
+		neutralLetsHearIt:["Vai avanti.","Sì?","Ti ascolto."]
+		neutralNo:["Certo che no.","No.","Questo non lo accetto."]
+		neutralYes:["Va bene.","D'accordo.","Benissimo."]
+
+		hateHello:"Cos'è che vuoi?"
+		hateLetsHearIt:["Continua.","E...?","Avanti."]
+		hateNo:["Non è accettabile.","Non scherzare.","Ciò è impossibile."]
+		hateYes:["Oh. Benissimo.","Credo dovrei accettare.","Molto bene..."]
+		
+		afterPeace:"Sono contento che siamo di nuovo in pace, anche se abbiamo dovuto pagare un prezzo per ciò."
+		tradeRequest:"Amico mio, ti interessa questo accordo?"
+				
+		mainColor:[16,126,5],
+		secondaryColor:[255,153,51],
+		unique:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata.",
+		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
+			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
+			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
+	},	
+	/*
 	{
 		name:"Germany",
 		translatedName:"Germania",
