@@ -228,6 +228,7 @@
 	}
 
 	"Construct road": {
+		Italian: "Costruisci strada"
 		"German": "Straße bauen"
 	}
 
@@ -271,6 +272,7 @@
 	}
 
 	"Moving": {
+		"Italian": "In movimento"
 		"German": "Bewegen"
 	}
 
@@ -2159,8 +2161,6 @@
 		Portuguese:"Alemanha"
 	}
 	
-/*
-
 	"India":{
 		Italian:"India"
 		French:"Inde"
@@ -2171,6 +2171,7 @@
 		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
 		Portugue:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
 	}
+/*
 
 	"Iroquois":{
 		Italian:"Irochese"
