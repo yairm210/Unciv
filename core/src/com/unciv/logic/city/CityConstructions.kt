@@ -222,7 +222,6 @@ class CityConstructions {
                 .map { cityInfo.civInfo.getEquivalentBuilding(it) }
 
         val buildableCultureBuildings = basicCultureBuildings
-                .map { GameBasics.Buildings[it]!! }
                 .filter { it.isBuildable(this)}
 
         if (buildableCultureBuildings.isEmpty()) return

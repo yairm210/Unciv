@@ -202,7 +202,6 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
-	/*
 	{
 		name:"War Elephant",
 		unitType:"Ranged",
@@ -218,9 +217,7 @@
 		uniques:["No defensive terrain bonus"],
 		hurryCostModifier:20,
 		attackSound:"horse"
-		//This is the Indian unique unit. It replaces Chariot Archer, moves slower, has no rough terrain penalty and needs no horses.
 	},
-	*/
 	{
 		name:"Spearman",
 		unitType:"Melee",

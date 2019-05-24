@@ -1,12 +1,13 @@
 package com.unciv.models.gamebasics
 
+import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.Constants
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
-import com.unciv.models.stats.*
+import com.unciv.models.stats.Stat
+import com.unciv.models.stats.Stats
 
 class Building : NamedStats(), IConstruction{
 
@@ -124,22 +125,24 @@ class Building : NamedStats(), IConstruction{
         val stats = this.clone()
         if(civInfo != null) {
             val adoptedPolicies = civInfo.policies.adoptedPolicies
-            if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(name))
+            val baseBuildingName = getBaseBuilding().name
+
+            if (adoptedPolicies.contains("Organized Religion") && cultureBuildings.contains(baseBuildingName ))
                 stats.happiness += 1
 
-            if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(name))
+            if (adoptedPolicies.contains("Free Religion") && cultureBuildings.contains(baseBuildingName ))
                 stats.culture += 1f
 
-            if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(name))
+            if (adoptedPolicies.contains("Entrepreneurship") && hashSetOf("Mint", "Market", "Bank", "Stock Market").contains(baseBuildingName ))
                 stats.science += 1f
 
-            if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(name))
+            if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(baseBuildingName ))
                 stats.happiness += 1f
 
-            if (adoptedPolicies.contains("Theocracy") && name == "Temple")
+            if (adoptedPolicies.contains("Theocracy") && baseBuildingName == "Temple")
                 percentStatBonus = Stats().apply { gold = 10f }
 
-            if (adoptedPolicies.contains("Free Thought") && name == "University")
+            if (adoptedPolicies.contains("Free Thought") && baseBuildingName == "University")
                 percentStatBonus!!.science = 50f
 
             if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
@@ -151,7 +154,7 @@ class Building : NamedStats(), IConstruction{
             if (adoptedPolicies.contains("Autocracy Complete") && cityStrength > 0)
                 stats.happiness += 1
 
-            if (hashSetOf("Castle", "Mughal Fort").contains(name) 
+            if (baseBuildingName == "Castle"
                     && civInfo.getBuildingUniques().contains("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
                 stats.culture+=2
@@ -325,5 +328,10 @@ class Building : NamedStats(), IConstruction{
         if (percentStatBonus!=null && percentStatBonus!!.get(stat)>0) return true
         if (specialistSlots!=null && specialistSlots!!.get(stat)>0) return true
         return false
+    }
+
+    fun getBaseBuilding(): Building {
+        if(replaces==null) return this
+        else return GameBasics.Buildings[replaces!!]!!
     }
 }

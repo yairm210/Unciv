@@ -40,7 +40,16 @@ class MapUnit {
 
     var action: String? // work, automation, fortifying, I dunno what.
         // getter and setter for compatibility: make sure string-based actions still work
-        get() = (mapUnitAction as? StringAction)?.action ?: mapUnitAction?.let { "" } // null if no action is assigned.
+        get() {
+            val mapUnitActionVal=mapUnitAction
+            if(mapUnitActionVal is StringAction)
+                return mapUnitActionVal.action
+            // any other unit action does count as a unit action, thus is not null. The actual logic is not based on an action string, but realized by extending MapUnitAction
+            if(mapUnitActionVal!=null)
+                return ""
+
+            return null // unit has no action
+        }
         set(value) { mapUnitAction = value?.let{ StringAction(this, value) } } // wrap traditional string-encoded actions into StringAction
 
 

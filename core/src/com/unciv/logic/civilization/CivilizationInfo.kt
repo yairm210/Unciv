@@ -15,13 +15,10 @@ import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.models.Counter
-import com.unciv.models.gamebasics.Difficulty
-import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Nation
+import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
@@ -320,13 +317,13 @@ class CivilizationInfo {
         return null
     }
 
-    fun getEquivalentBuilding(buildingName:String): String {
-        val building = GameBasics.Buildings[buildingName]!!
-        val baseBuildingName = if(building.replaces==null) buildingName else building.replaces!!
-        for(blding in GameBasics.Buildings.values)
-            if(blding.replaces==buildingName && blding.uniqueTo==civName)
-                return blding.name
-        return baseBuildingName
+    fun getEquivalentBuilding(buildingName:String): Building {
+        val baseBuilding = GameBasics.Buildings[buildingName]!!.getBaseBuilding()
+
+        for(building in GameBasics.Buildings.values)
+            if(building.replaces==baseBuilding.name && building.uniqueTo==civName)
+                return building
+        return baseBuilding
     }
 
     fun updateViewableTiles() {

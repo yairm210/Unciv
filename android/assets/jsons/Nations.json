@@ -377,6 +377,40 @@
 		unique: "Units fight as though they were at full strength even when damaged",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
 	},
+	{
+		name:"India",
+		leaderName:"Gandhi",
+		adjective:["Indian"],
+		startBias:["Grassland"],
+		
+		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
+		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
+		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
+		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
+		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
+		
+		neutralHello:"I wish you peace."
+		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
+		neutralNo:["Absolutely not.","No.","This is unacceptable"]
+		neutralYes:["Okay.","We agree.","Fine."]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["Continue.","And?","Go on."]
+		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
+		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
+		
+		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
+		tradeRequest:"My friend, are you interested in this arrangement?"
+				
+		mainColor:[16,126,5],
+		secondaryColor:[255,153,51],
+		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
+		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
+			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
+			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
+	},
 	/*
 	{
 		name:"Germany",
@@ -415,40 +449,7 @@
 			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
-	{
-		name:"India",
-		leaderName:"Gandhi",
-		adjective:["Indian"],
-		startBias:["Grassland"],
-		
-		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
-		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
-		
-		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
-		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
-		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
-		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
-		
-		neutralHello:"I wish you peace."
-		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
-		neutralNo:["Absolutely not.","No.","This is unacceptable"]
-		neutralYes:["Okay.","We agree.","Fine."]
-
-		hateHello:"What do you want?"
-		hateLetsHearIt:["Continue.","And?","Go on."]
-		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
-		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
-		
-		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
-		tradeRequest:"My friend, are you interested in this arrangement?"
-				
-		mainColor:[0,255,0],
-		secondaryColor:[255,153,51],
-		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
-		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
-			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
-			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
-	},
+	
 	{
 		name:"Aztecs",
 		leaderName:"Montezuma I",

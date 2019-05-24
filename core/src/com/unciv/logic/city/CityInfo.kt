@@ -263,9 +263,9 @@ class CityInfo {
         // Transfer unique buildings
         for(building in cityConstructions.getBuiltBuildings()) {
             val civEquivalentBuilding = newCivInfo.getEquivalentBuilding(building.name)
-            if(building.name != civEquivalentBuilding) {
+            if(building != civEquivalentBuilding) {
                 cityConstructions.removeBuilding(building.name)
-                cityConstructions.addBuilding(civEquivalentBuilding)
+                cityConstructions.addBuilding(civEquivalentBuilding.name)
             }
         }
 
