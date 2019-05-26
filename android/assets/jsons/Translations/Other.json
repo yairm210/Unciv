@@ -2642,10 +2642,21 @@
 	
 	// City States
 	
-	"Provides [amountOfCulture] culture at 30 Influence":{}
-	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{}
-	"Provides 3 happiness at 30 Influence":{}
-	"Gift [goldAmount] gold":{}
+	"Provides [amountOfCulture] culture at 30 Influence":{
+		Italian:"Dona [amountOfCulture] punti Cultura quando l'Influenza supera 30 punti"
+	}
+
+	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
+		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città quando l'Influenza supera 30 punti"
+	}
+
+	"Provides 3 happiness at 30 Influence":{
+		Italian:"Dona 3 Punti Felicità quando l'Influenza supera 30 punti"
+	}
+
+	"Gift [goldAmount] gold":{
+		Italian:"Dona [goldAmount] Oro"
+	}
 	
 
 ////// Diplomatic modifiers
