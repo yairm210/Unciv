@@ -184,6 +184,8 @@ class WorldScreen : CameraStageBaseScreen() {
             displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
             btn.onClick { UnCivGame.Current.screen = DiplomacyScreen() }
+            btn.label.setFontSize(30)
+            btn.labelCell.pad(10f)
             diplomacyButtonWrapper.add(btn)
         }
         diplomacyButtonWrapper.pack()
@@ -223,9 +225,10 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton(): TextButton {
 
         val nextTurnButton = TextButton("", skin) // text is set in update()
+        nextTurnButton.label.setFontSize(30)
+        nextTurnButton.labelCell.pad(10f)
 
         nextTurnButton.onClick {
-
             // cycle through units not yet done
             if (currentPlayerCiv.shouldGoToDueUnit()) {
                 val nextDueUnit = currentPlayerCiv.getNextDueUnit()
