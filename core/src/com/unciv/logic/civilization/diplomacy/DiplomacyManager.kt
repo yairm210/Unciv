@@ -63,7 +63,7 @@ class DiplomacyManager() {
      * As for why it's String and not DiplomaticModifier see FlagsCountdown comment */
     var diplomaticModifiers = HashMap<String,Float>()
 
-    /** For city-states */
+    /** For city-states. Influence is saved in the CITY STATE -> major civ Diplomacy, NOT in the major civ -> cty state diplomacy. */
     var influence = 0f
 
     fun clone(): DiplomacyManager {
@@ -98,29 +98,39 @@ class DiplomacyManager() {
     fun opinionOfOtherCiv() = diplomaticModifiers.values.sum()
 
     fun relationshipLevel(): RelationshipLevel {
-
         if(civInfo.isPlayerCivilization() && otherCiv().isPlayerCivilization())
             return RelationshipLevel.Neutral // People make their own choices.
 
         if(civInfo.isPlayerCivilization())
             return otherCiv().getDiplomacyManager(civInfo).relationshipLevel()
 
+        if(civInfo.isCityState()){
+            if (influence<=-60) return RelationshipLevel.Unforgivable
+            if (influence<=-30) return RelationshipLevel.Enemy
+
+            if(civInfo.isAtWarWith(otherCiv()))
+                return RelationshipLevel.Enemy // See below, same with major civs
+
+            if(influence>=60) return RelationshipLevel.Ally
+            if(influence>=30) return RelationshipLevel.Friend
+        }
+
         // not entirely sure what to do between AI civs, because they probably have different views of each other,
         // maybe we need to average their views of each other? That makes sense to me.
 
         val opinion = opinionOfOtherCiv()
-        if(opinion<-80) return RelationshipLevel.Unforgivable
-        if(opinion<-40) return RelationshipLevel.Enemy
+        if(opinion<=-80) return RelationshipLevel.Unforgivable
+        if(opinion<=-40) return RelationshipLevel.Enemy
 
         // This is here because when you're at war you can either be enemy OR unforgivable,
         // depending on the opinion
         if(civInfo.isAtWarWith(otherCiv()))
             return RelationshipLevel.Enemy
 
-        if(opinion<-15) return RelationshipLevel.Competitor
-        if(opinion>80) return RelationshipLevel.Ally
-        if(opinion>40) return RelationshipLevel.Friend
-        if(opinion>15) return RelationshipLevel.Favorable
+        if(opinion<=-15) return RelationshipLevel.Competitor
+        if(opinion>=80) return RelationshipLevel.Ally
+        if(opinion>=40) return RelationshipLevel.Friend
+        if(opinion>=15) return RelationshipLevel.Favorable
         return RelationshipLevel.Neutral
     }
 
@@ -268,6 +278,7 @@ class DiplomacyManager() {
         otherCiv.popupAlerts.add(PopupAlert(AlertType.WarDeclaration,civInfo.civName))
 
         otherCivDiplomacy.setModifier(DiplomaticModifiers.DeclaredWarOnUs,-20f)
+        if(otherCiv.isCityState()) otherCivDiplomacy.influence -= 60
 
         for(thirdCiv in civInfo.getKnownCivs()){
             if(thirdCiv.isAtWarWith(otherCiv))

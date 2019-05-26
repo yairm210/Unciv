@@ -9,6 +9,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
@@ -124,7 +125,8 @@ class CivilizationInfo {
         return translatedNation
     }
 
-    fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
+    fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
+    fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
 
@@ -150,9 +152,9 @@ class CivilizationInfo {
         }
 
         //City states culture bonus
-        for (otherCivName in diplomacy.keys) {
-            val otherCiv = gameInfo.getCivilization(otherCivName)
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured && otherCiv.diplomacy[civName]!!.influence >= 60) {
+        for (otherCiv in getKnownCivs()) {
+            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
+                    && otherCiv.getDiplomacyManager(civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
                 cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
                 if (statMap.containsKey("City States"))
@@ -245,9 +247,9 @@ class CivilizationInfo {
         }
 
         //From city-states
-        for (otherCivName in diplomacy.keys) {
-            val otherCiv = gameInfo.getCivilization(otherCivName)
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile && otherCiv.diplomacy[civName]!!.influence >= 60) {
+        for (otherCiv in getKnownCivs()) {
+            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile
+                    && otherCiv.getDiplomacyManager(this).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (statMap.containsKey("City-states"))
                     statMap["City-states"] = statMap["City-states"]!! + 3f
                 else

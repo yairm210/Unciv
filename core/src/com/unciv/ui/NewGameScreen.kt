@@ -177,8 +177,8 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
 
         // Todo - re-enable this when city states are fit for players
-//        addCityStatesSelectBox(newGameOptionsTable)
-        newGameParameters.numberOfCityStates = 0
+        addCityStatesSelectBox(newGameOptionsTable)
+//        newGameParameters.numberOfCityStates = 0
 
         humanPlayers.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {

@@ -1,10 +1,11 @@
 package com.unciv.logic.city
 
+import com.unciv.Constants
 import com.unciv.UnCivGame
+import com.unciv.logic.civilization.CityStateType
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
-import com.unciv.Constants
-import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.BaseUnit
@@ -123,15 +124,11 @@ class CityStats {
     private fun getStatsFromCityStates(): Stats {
         val stats = Stats()
 
-        for (otherCivName in cityInfo.civInfo.diplomacy.keys) {
-            val otherCiv = cityInfo.civInfo.gameInfo.getCivilization(otherCivName)
+        for (otherCiv in cityInfo.civInfo.getKnownCivs()) {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Maritime
-                    && otherCiv.diplomacy[cityInfo.civInfo.civName]!!.influence >= 60) {
-                if (cityInfo.isCapital()) {
-                    stats.food = stats.food + 3
-                } else {
-                    stats.food = stats.food + 1
-                }
+                    && otherCiv.getDiplomacyManager(cityInfo.civInfo).relationshipLevel() >= RelationshipLevel.Friend) {
+                if (cityInfo.isCapital()) stats.food += 3
+                else stats.food += 1
             }
         }
 

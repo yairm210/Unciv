@@ -1531,79 +1531,6 @@
 		Portuguese:"Penalidade contra [unitType]"
 	}
 
-///////// Old Great Person translations (for reference only)
-
-	"Can start an 8-turn golden age or construct a Landmark (+6 Culture)":{
-		Italian:"Può iniziare un'Età dell'Oro di 8 turni o costruire un Punto di riferimento (+6 Cultura)"
-		Russian:"Может начать золотой век на 8 ходов или построить памятник (+6 культура)"
-		French:"Peut commencer un âge d'or de 8 tours ou construire un monument (+6 Culture)"
-		Romanian:"Poate începe o nouă epocă de aur sau construi un monument (Cultura + 6)"
-		German:"Kann ein goldenes Zeitalter mit 8 Umdrehungen beginnen oder ein Wahrzeichen erstellen (+6 Kultur)"// German translation not sure
-		Dutch:"Kan een gouden periode van acht beurten starten of een oriëntatiepunt bouwen (+6 Cultuur)"// Dutch translation not sure
-		Spanish:"Puede comenzar una Edad de Oro de 8 turnos o construir un Edificio Emblemático (+6 cultura)"
-		Portuguese:"Pode iniciar uma idade dourada de 8 turnos ou construir uma maravilha (+6 Cultura)"
-		Simplified_Chinese:"开启8回合黄金时代或建造1座文化地标(+6文化)"
-	}
-
-	"Can discover a technology, or construct an Academy (+4 Science)" :{
-		Italian:"Può scoprire una tecnologia o costruire un'Accademia (+4 Scienza)"
-		Russian:"Может открыть технологию или построить Академию (+4 наука)"
-		French:"Peut découvrir une technologie, ou construire une Académie (+4 science)"
-		Romanian:"Poate să descopere o tehnologie sau să construiască o Academie (știință +4)"
-		German:"Kann eine Technologie entdecken, oder eine Akademie (+4 Erforschung) bauen"
-		Dutch:"Kan een technologie ontdekken, of een Academie (+4wetenschap) bouwen"
-		Spanish:"Puede descubrir una tecnología o construir una Academia (+4 ciencia)"
-		Portuguese:"Pode descobrir uma tecnologia ou construir uma academia (+4 Ciência)"
-		Simplified_Chinese:"获得一项免费科技或建造1座学院(+4科研)"
-	}
-
-	"Can undertake a trade mission, giving a large sum of gold, or construct a Customs House (+4 Gold)":{
-		Italian:"Può intraprendere una missione commerciale, dare una grande somma di oro, o costruire una Dogana (+4 Oro)"
-		Russian:"Может предпринять торговую миссию, дать большую сумму золота или построить Таможенную палату (+4 золота)"
-		French:"Peut entreprendre une mission commerciale, donner une grosse somme d'or, ou construire une maison de douane (+4 pièces d'or)"
-		Romanian:"Poate să întreprindă o misiune comercială, să dea o sumă mare de aur sau să construiască o casă vamală (+4 de aur)"
-		German:"Kann eine Handelsmission unternehmen, viel Gold geben oder ein Zollamt (+4 Gold) bauen"
-		Dutch:"Kan een handelsmissie ondergaan, levert veel goud op, of bouwt een Douanekantoor (+4 goud) bouwen"
-		Portuguese:"Pode realizar uma missão comercial, dando uma grande soma de ouro, ou construir uma Alfândega (+4 de Ouro)"
-		Spanish:"Puede emprender una misión de comercio que proporciona una gran suma de oro, o construir una Aduana (+4 oro)"
-		Simplified_Chinese:"通过开展贸易获得大笔金钱或建造1座海关(+4金)"
-	}
-
-	"Can speed up construction of a wonder, or construct a Manufactory (+4 Production)":{
-		Italian:"Può velocizzare la costruzione di una meraviglia, o costruire una Manifattura (+4 Produzione)"
-		Russian:"Может ускорить строительство чуда или построить Завод (+4 производства)"
-		French:"Peut accélérer la construction d'une merveille, ou construire une manufacture (+4 production)"
-		Romanian:"Poate accelera construcția unei minune sau poate construi o fabrică (+4 producție)"
-		German:"Kann die Bauzeit eines Wunders verkürzen oder eine Fabrik (+4 Produktion) bauen"
-		Dutch:"Kan de produtie van een wonder versnellen, of kan een Fabriek (+4 productie) bouwen"
-		Spanish:"Puede acelerar la construción de una Maravilla o construir una Fábrica (+4 producción)"
-		Portuguese:"Pode acelerar a construção de uma maravilha ou construir uma manufatura (+4 de Produção)"
-		Simplified_Chinese:"加快奇观的建造速度或建造1座工厂(+4生产)"
-	}
-	
-	
-	"Create [improvementName]":{ // for unit action button - also used for "create fishing boats" and "create oil well"
-		Italian:"Costruisci [improvementName]"
-		Romanian:"Crează [improvementName]"
-		Spanish:"Crear [improvmentName]"
-		Simplified_Chinese:"建造[improvementName]"
-		German:"[improvementName] anlegen"
-		French:"Créer [improvementName]"
-		Russian:"Создайте [improvementName]"
-		Portuguese:"Cria [improvementName]"
-	}
-
-	"Start Golden Age":{
-		Italian:"Avvia un'Età dell'Oro"
-		Romanian:"Începe epoca de aur"
-		Spanish:"Empezar Edad Dorada"
-		Simplified_Chinese:"开启8回合黄金时代"
-		German:"Starte Goldenes Zeitalter" //I chose to transl. as if Golden Age is a proper name
-		French:"Commencer un âge d'Or"
-		Russian:"Начать золотой век"
-		Portuguese:"Começar a Idade Dourada" // ç=ss or depending on situation just s
-	}
-
 	// for unit action button
 
 	"Discover Technology":{
@@ -2169,7 +2096,7 @@
 
 	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
 		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
-		Portugue:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
+		Portuguese:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
 	}
 /*
 
@@ -2712,6 +2639,11 @@
 		Simplified_Chinese:"歃血之盟"
 		Portuguese:"Aliado"
   	}
+	
+	// City State bonuses
+	"Provides [amountOfCulture] culture at 30 Influence":{}
+	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{}
+	"Provides 3 happiness at 30 Influence":{}
 
 ////// Diplomatic modifiers
 
@@ -3171,7 +3103,8 @@
 	"Cost":{
 		Italian:"Costo"
 		Simplified_Chinese:"花费"
-        	French:"Côte"
+		French:"Côte"
+		French:"Côte"
 		Portuguese:"Custo"
 	}
 
@@ -3213,7 +3146,7 @@
 	"Requires a [buildingName] in all cities":{
 		Italian:"Richiede [buildingName] in tutte le città"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
-        	French:"Nécessite un(e) [buildingName] dans toutes les villes"
+		French:"Nécessite un(e) [buildingName] dans toutes les villes"
 		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
 	}
 
@@ -3227,7 +3160,7 @@
 	"Requires [resource]":{
 		Italian:"Richiede [resource]"
 		Simplified_Chinese:"需要资源：[resource]"
-        	French:"[resource] requis(e)"
+		French:"[resource] requis(e)"
 		Portuguese:"Requer [resource]"
 	}
 
@@ -3320,14 +3253,13 @@
 		German: "Unwegsames Gelände"
 	}
 
-    	" for ":{ //for example:+1 Gold for Gems,Gold,Silver
+	" for ":{ //for example:+1 Gold for Gems,Gold,Silver
 		Italian:" per "
 		Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
 		French:"par "
 	    Portuguese:"Por "
-    	}
+	}
 
-    // Options menu, pointed out by Smashfanful
 
 	"Missing translations:":{
 		Italian:"Traduzioni mancanti:"

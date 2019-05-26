@@ -250,7 +250,7 @@ class NextTurnAutomation{
                 val diplomacy = civInfo.getDiplomacyManager(otherCiv)
 
                 val unitsInBorder = otherCiv.getCivUnits().count { !it.type.isCivilian() && it.getTile().getOwner() == civInfo }
-                if (unitsInBorder > 0 && diplomacy.influence < 30f) {
+                if (unitsInBorder > 0 && diplomacy.relationshipLevel() < RelationshipLevel.Friend) {
                     diplomacy.influence -= 10f
                     if (!diplomacy.hasFlag(DiplomacyFlags.BorderConflict)) {
                         otherCiv.popupAlerts.add(PopupAlert(AlertType.BorderConflict,civInfo.civName))

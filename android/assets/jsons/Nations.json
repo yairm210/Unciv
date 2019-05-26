@@ -763,10 +763,9 @@
 		cityStateType:"Cultured",
 		startBias:["Coast"],
 		
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		afterPeace:"Peace then.",
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless out lands.",
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[185,132,66],
@@ -778,10 +777,9 @@
 		cityStateType:"Cultured",
 		startBias:["Coast"],
 		
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		afterPeace:"Peace then.",
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless out lands.",
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[62,197,252],
@@ -793,10 +791,9 @@
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		afterPeace:"Peace then.",
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless out lands.",
 
 		mainColor:[0, 0, 0],
 		secondaryColor:[211, 220, 103],
@@ -807,10 +804,9 @@
 		adjective:["Antwerp"],
 		cityStateType:"Mercantile",
 
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		afterPeace:"Peace then.",
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless out lands.",
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[194,97,255],
