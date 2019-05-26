@@ -2,7 +2,10 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
@@ -108,7 +111,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             val unit = selectedUnit!!
             var nameLabelText = unit.name.tr()
             if(unit.health<100) nameLabelText+=" ("+unit.health+")"
-            unitNameLabel.setText(nameLabelText)
+            if(nameLabelText!=unitNameLabel.text.toString()){
+                unitNameLabel.setText(nameLabelText)
+                selectedUnitHasChanged=true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
+            }
+
 
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f)
