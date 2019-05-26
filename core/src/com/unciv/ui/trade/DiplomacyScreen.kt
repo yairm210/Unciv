@@ -125,7 +125,8 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.addSeparator()
 
         val giftAmount = 100
-        val giftButton = TextButton("Give [$giftAmount] gold".tr(), skin)
+        val influenceAmount = giftAmount/10
+        val giftButton = TextButton("Gift [$giftAmount] gold (+[$influenceAmount] influence)".tr(), skin)
         giftButton.onClick{ giveGoldGift(otherCiv,giftAmount ) }
         diplomacyTable.add(giftButton).row()
         if (currentPlayerCiv.gold < giftAmount ) giftButton.disable()
@@ -154,9 +155,17 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
     private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
+
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
+
+        val translatedNation = otherCiv.getTranslatedNation()
+        diplomacyTable.add(translatedNation.getLeaderDisplayName().toLabel().setFontSize(24)).row()
+        if(otherCivDiplomacyManager.relationshipLevel()<=RelationshipLevel.Enemy)
+            diplomacyTable.add(translatedNation.hateHello.toLabel()).row()
+        else
+            diplomacyTable.add(translatedNation.neutralHello.toLabel()).row()
         diplomacyTable.addSeparator()
 
         if(!currentPlayerCiv.isAtWarWith(otherCiv)) {
@@ -173,7 +182,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
                 tradeTable.offerColumnsTable.update()
             }
-            if (otherCiv.getDiplomacyManager(currentPlayerCiv).hasFlag(DiplomacyFlags.DeclaredWar))
+            if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar))
                 negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
 
             diplomacyTable.add(negotiatePeaceButton).row()
@@ -184,7 +193,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
 
         if (!currentPlayerCiv.isAtWarWith(otherCiv)) {
-            if(otherCiv.getDiplomacyManager(currentPlayerCiv).relationshipLevel() > RelationshipLevel.Neutral
+            if(otherCivDiplomacyManager.relationshipLevel() > RelationshipLevel.Neutral
                     && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
                 val declareFriendshipButton = TextButton("Declare Friendship ([30] turns)".tr(),skin)
                 declareFriendshipButton.onClick {
@@ -198,8 +207,6 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             diplomacyTable.add(declareWarButton).row()
         }
 
-
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
 
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
 

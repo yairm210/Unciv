@@ -2640,10 +2640,13 @@
 		Portuguese:"Aliado"
   	}
 	
-	// City State bonuses
+	// City States
+	
 	"Provides [amountOfCulture] culture at 30 Influence":{}
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{}
 	"Provides 3 happiness at 30 Influence":{}
+	"Gift [goldAmount] gold":{}
+	
 
 ////// Diplomatic modifiers
 
