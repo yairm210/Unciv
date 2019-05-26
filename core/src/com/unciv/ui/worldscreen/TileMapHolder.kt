@@ -89,17 +89,17 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         unitActionOverlay?.remove()
         selectedTile = tileInfo
 
-        val selectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+        val previousSelectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
         worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
+        val newSelectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
 
-        if (selectedUnit != null && selectedUnit.getTile() != tileInfo
-                && selectedUnit.canMoveTo(tileInfo) && selectedUnit.movementAlgs().canReach(tileInfo)) {
+        if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
+                && previousSelectedUnit.canMoveTo(tileInfo) && previousSelectedUnit.movementAlgs().canReach(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-            moveHere(selectedUnit, tileInfo)
-            worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit // keep moved unit selected
+            moveHere(previousSelectedUnit, tileInfo)
         }
 
-        if(selectedUnit==null || selectedUnit.type==UnitType.Civilian){
+        if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
             val unitsInTile = selectedTile!!.getUnits()
             if(unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(worldScreen.currentPlayerCiv)){
                 // try to select the closest city to bombard this guy
@@ -127,6 +127,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 if(UnCivGame.Current.settings.singleTapMove && turnsToGetThere==1) {
                     // single turn instant move
                     selectedUnit.movementAlgs().headTowards(tileInfo)
+                    worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit // keep moved unit selected
                 } else {
                     // add "move to" button
                     val moveHereButtonDto = MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
