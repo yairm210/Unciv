@@ -389,6 +389,9 @@
 		adjective:["indiano"],
 		startBias:["Prateria"],
 		
+		startIntroPart1:"Salve, presidente Gandhi, grande anima a capo dell'India! Tu governi una delle più antiche nazioni del mondo, con una storia risalente fino a 10,000 anni fa, una nazione spirituale, patria di tre delle più diffuse religioni del mondo: induismo, buddismo e jainismo. Una nazione passionale, piena di musica e colori, una nazione di grande ricchezza e di spietata povertà. Per secoli, dopo varie gloriose dinastie come i Maurya e i Gupta, l'India è stata divisa in regni in perenne lotta tra di loro e con gli invasori stranieri. Nel XII secolo d.C., l'India fu conquistata dai Turchi musulmani, mentre all'inizio del XVII secolofurono gli inglesi a conquistare il territorio frammentato, grazie alla loro astuta diplomazia e alla loro superiorità tecnologica. L'Inghilterra rimase al comando della nazione per due secoli, ma alla fine fu scacciata da una crescente ondata di nazionalismo, una ribellione pacifica mai vista prima nella storia."
+		startIntroPart2:"Gandhi, il tuo popolo si rivolge a te oer raggiungere nuove vette e nuova gloria. Aiuterai la tua gente affinché comprenda appieno il suo potenziale, affinché torni a essere il centro culturale e religioso del mondo? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
 		declaringWar:"Posso dichiarare guerra senza sacrificare morali! Non chiedermi come: non capiresti."
 		attacked:"Non sono riuscito ad evitare la violenza. Occhio per occhio rende soltanto il mondo cieco."
 		defeated:"Puoi incatenarmi, torturarmi, persino distruggere questo corpo, ma la mia mente rimarrà sempre libera."
