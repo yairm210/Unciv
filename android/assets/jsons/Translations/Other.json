@@ -75,7 +75,7 @@
 
 
 	"turns":{ // for e.g. turns to technology
-		Italian:"Turni"
+		Italian:"turni"
 		Russian:"Ходов"
 		French:"Tours"
 		Romanian:"Runde"
@@ -950,7 +950,7 @@
 	}
 
 	"Pick now!": {
-		Italian: "Scegli ora!"
+		Italian: "Scegli ora!" //You didn't translate this in Italian, said Smashfanful
 		German: "Jetzt wählen!"
 	}
 
@@ -1079,7 +1079,7 @@
 	}
 
 	"Stopped expansion":{ // if culture is 0
-		Italian:"Espansione arrestata"
+		Italian:"Espansione arrestata" //You didn't translate this in Italian, said Smashfanful
 		Russian:"Расширение остановлено"
 		French:"Expansion arrêtée"
 		Romanian:"Expansiunea sa oprit"
@@ -1620,7 +1620,7 @@
 	}
 
 	"Offer trade":{	
-		Italian:"Offerta commerciale"
+		Italian:"Negozia"
 		Russian:"Предложить обмен"
 		French:"Proposer un échange"
 		Romanian:"Ofertă comercială"
@@ -2474,14 +2474,14 @@
 	}
 	
 	"[tradeOffer] from [otherCivName] has ended":{
-		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato" //You didn't translate this in Italian, said Smashfanful
 		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
 		French:"[tradeOffer] de [otherCivName] a pris fin"
 		Portuguese:"[tradeOffer] de [otherCivName] terminou"
 	}
 	
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
-		Italian:"[leaderName] dell'Impero [nation]" //es. Ramses II dell'Impero egiziano, Napoleone dell'Impero francese (so it should be [adjective] instead of [nation]
+		Italian:"[leaderName] del popolo [nation]"
 		German:"[leaderName] von [nation]"
 		Spanish:"[leaderName] de [nation]"
 		Portuguese:"[leaderName] do [nation]"
