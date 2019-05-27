@@ -169,8 +169,10 @@ class UnitActions {
             }
         }
 
-        if(unit.hasUnique("Can construct roads") && tile.roadStatus==RoadStatus.None
+        if(unit.hasUnique("Can construct roads")
+                && tile.roadStatus==RoadStatus.None
                 && tile.improvementInProgress != "Road"
+                && tile.isLand
                 && unit.civInfo.tech.isResearched(GameBasics.TileImprovements["Road"]!!.techRequired!!))
             actionList+=UnitAction("Construct road", unit.currentMovement >0){
                 tile.improvementInProgress="Road"
