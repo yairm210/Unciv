@@ -462,6 +462,10 @@
 		Portuguese:"Cavalaria companheira" //may be replaced by cavalaria de compania if nescessary
 		German:"Hetairenreiter"
 	}
+
+	"War Elephant":{//Indian unique unit	
+		Italian:"Elefante da guerra"
+	}
 	
 ////// Medieval units
 
