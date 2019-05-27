@@ -113,6 +113,7 @@ class DiplomacyManager() {
 
             if(influence>=60) return RelationshipLevel.Ally
             if(influence>=30) return RelationshipLevel.Friend
+            return RelationshipLevel.Neutral
         }
 
         // not entirely sure what to do between AI civs, because they probably have different views of each other,

@@ -98,33 +98,39 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
+
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         if (otherCiv.isCityState()) {
             diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel()).row()
             diplomacyTable.add(("Type: " + otherCiv.getCityStateType().toString()).toLabel()).row()
-            diplomacyTable.add(("Influence: " + otherCiv.getDiplomacyManager(currentPlayerCiv).influence.toInt()+"/30").toLabel()).row()
+            diplomacyTable.add(("Influence: " + otherCivDiplomacyManager.influence.toInt()+"/30").toLabel()).row()
 
-            diplomacyTable.add(getRelationshipTable(otherCiv.getDiplomacyManager(currentPlayerCiv))).row()
+            diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
 
             val friendBonusText = when(otherCiv.getCityStateType()) {
-                CityStateType.Cultured -> "Provides [" + (5.0f * currentPlayerCiv.getEra().ordinal).toString() + "] culture at 30 Influence"
-                CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at 30 Influence"
-                CityStateType.Mercantile -> "Provides 3 happiness at 30 Influence"
+                CityStateType.Cultured -> "Provides [" + (3 * (currentPlayerCiv.getEra().ordinal+1)).toString() + "] culture at [30] Influence"
+                CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at [30] Influence"
+                CityStateType.Mercantile -> "Provides 3 happiness at [30] Influence"
             }
+
             val friendBonusLabel = friendBonusText.toLabel()
-            if (otherCiv.getDiplomacyManager(currentPlayerCiv).relationshipLevel() >= RelationshipLevel.Friend)
+            diplomacyTable.add(friendBonusLabel).row()
+            if (otherCivDiplomacyManager.relationshipLevel() >= RelationshipLevel.Friend) {
                 friendBonusLabel.setFontColor(Color.GREEN)
+                val turnsToRelationshipChange = otherCivDiplomacyManager.influence.toInt() - 30 + 1
+                diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel()).row()
+            }
             else
                 friendBonusLabel.setFontColor(Color.GRAY)
-            diplomacyTable.add(friendBonusLabel).row()
 
         } else {
             diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
         }
         diplomacyTable.addSeparator()
 
-        val giftAmount = 100
+        val giftAmount = 250
         val influenceAmount = giftAmount/10
         val giftButton = TextButton("Gift [$giftAmount] gold (+[$influenceAmount] influence)".tr(), skin)
         giftButton.onClick{ giveGoldGift(otherCiv,giftAmount ) }

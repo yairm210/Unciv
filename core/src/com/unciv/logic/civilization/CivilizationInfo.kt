@@ -156,7 +156,7 @@ class CivilizationInfo {
             if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
                     && otherCiv.getDiplomacyManager(civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
-                cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
+                cultureBonus.add(Stat.Culture, 3f * (getEra().ordinal+1))
                 if (statMap.containsKey("City States"))
                     statMap["City States"] = statMap["City States"]!! + cultureBonus
                 else

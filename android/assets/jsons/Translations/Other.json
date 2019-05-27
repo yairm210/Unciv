@@ -2657,6 +2657,10 @@
 	"Gift [goldAmount] gold":{
 		Italian:"Dona [goldAmount] Oro"
 	}
+
+	"Relationship changes in another [turnsToRelationshipChange] turns":{
+		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
+  }
 	
 
 ////// Diplomatic modifiers
@@ -3208,6 +3212,73 @@
 
 	"Occurs on [listOfTerrains]":{ //For civilopedia again
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
+
+
+	"Requires worked [resource] near city":{
+		Italian:"Richiede che la città sfrutti [resource]"
+		French:"Nécessite l'exploitation de [resource] près de la ville"
+		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
+		Portuguese:"Requer [resource] trabalhado perto da cidade"
+	}
+
+	"Wonder is being built elsewhere":{
+		Italian:"Meraviglia in costruzione altrove"
+		Simplified_Chinese:"正在其他城市建造该奇观"
+        	French:"Cette merveille est déjà en construction ailleurs"
+		Portuguese:"A maravilha está sendo construida em uma cidade estrangeira"
+	}
+
+	"Requires a [buildingName] in all cities":{
+		Italian:"Richiede [buildingName] in tutte le città"
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+		French:"Nécessite un(e) [buildingName] dans toutes les villes"
+		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
+	}
+
+	"Requires a [buildingName] in this city":{
+		Italian:"Richiede [buildingName] nella città"
+		Simplified_Chinese:"需要城市建有[buildingName]"
+        	French:"Nécessite un(e) [buildingName] dans cette ville"
+		Portuguese:"Requer um [buildingName] nessa cidade"
+	}
+
+	"Requires [resource]":{
+		Italian:"Richiede [resource]"
+		Simplified_Chinese:"需要资源：[resource]"
+		French:"[resource] requis(e)"
+		Portuguese:"Requer [resource]"
+	}
+
+	"Required tech: [requiredTech]":{
+		Italian:"Tecnologie propedeutiche: [requiredTech]"
+		French:"Nécessite la technologie: [requiredTech]"
+		Simplified_Chinese:"需要科技：[requiredTech]"
+		Portuguese:"Requer tecnologia: [requiredTech]"
+	}
+
+	"Upgrades to [upgradedUnit]":{
+		Italian:"Aggiorna a [upgradedUnit]"
+		French:"Améliorer en [upgradedUnit]"
+		Simplified_Chinese:"可升级为[upgradedUnit]"
+		Portuguese:"Melhorar para [upgradedUnit]"
+	}
+
+	"Obsolete with [obsoleteTech]":{
+		Italian:"Diventa obsoleta con [obsoleteTech]"
+		French:"Obsolète avec [obsoleteTech]"
+		Simplified_Chinese:"研发下列科技后过时：[obsoleteTech]"
+		Portuguese:"Obsoleta(0) com [obsoleteTech]"
+	}
+
+	"May contain [listOfResources]":{ //For civilopedia, e.g coast "May Contain Plearls, Whale"
+		Italian:"Può contenere [listOfResources]"
+		French:"Peut contenir [listOfResources]"
+		Simplified_Chinese:"可能拥有下列资源：[listOfResources]"
+		Portuguese:"Pode conter [listOfResources]"
+	}
+
+	"Occurs on [listOfTerrains]":{ //For civilopedia again
+		Italian:"Può avvenire/avviene su [listOfTerrains]"
 		French:"Doit possèder [listOfTerrains]"
 		Simplified_Chinese:"可能出现在以下地形：[listOfTerrains]"
 		Portuguese:"Ocorre em [listOfTerrains]"
@@ -3221,7 +3292,7 @@
 	}
 
 	"Improved by ":{
-		Italian:"Può essere migliorato/a da"
+		Italian:"Può essere migliorato/a da: "
 		Simplified_Chinese:"开发该资源所需要的设施："
 		French:"Amélioré par "
 		Portuguese:"Melhorado por "
@@ -3235,14 +3306,14 @@
 	}
 
 	"Can be built on ":{
-		Italian:"Può essere costruito/a su"
+		Italian:"Può essere costruito/a su: "
 		Simplified_Chinese:"可以建造的地形地貌："
 		French:"Peut être construit sur "
 		Portuguese:"Pode ser construido em "
 	}
 
 	"Tech required: ":{
-		Italian:"Tecnologie propedeutiche"
+		Italian:"Tecnologie propedeutiche: "
 		Simplified_Chinese:"需要科技："
 		French:"Technologie(s) requise(s): "
 		Portuguese:"Tecnologia(s) requirida(s): "
