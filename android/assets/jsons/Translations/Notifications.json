@@ -6,7 +6,7 @@
         // I remember that some languages have upside-down question marks before to mark a question
 
         "Research of [technologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
-            Italian:"Abbiamo scoperto la tecnologia [technologyName]!"
+            Italian:"I nostri saggi hanno scoperto la tecnologia [technologyName]!"
             Russian:"Исследование [technologyName] завершено!"
             French:"Recherche de [technologyName] est completée!"
             Romanian:"Cercetarea [technologyName] s-a încheiat!"
@@ -57,7 +57,7 @@
         }
 
         "We have encountered [civName]!":{
-            Italian:"Abbiamo incontrato la civiltà [civName]!"
+            Italian:"Abbiamo incontrato il popolo [civName]!"
             Russian:"Мы встретились с цивилизацией [civName]!"
             Spanish:"¡Hemos encontrado [civName]!"
             French:"Nous sommes entrés en contact avec [civName]!"
@@ -370,7 +370,7 @@
             Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]"
         }
         "We have discovered the lost technology of [techName] in the ruins!":{
-            Italian:"Abbiamo scoperto tra le rovine la tecnologia perduta [techName]]!"
+            Italian:"Abbiamo scoperto i segreti della tecnologia perduta [techName]]!"
             Romanian:"Am descoperit tehnologia pierdută [techName] printre ruine!"
             German:"Wir haben die vergessene Technologie [techName] in den Ruinen wiederentdeckt!"
             French:"Nous avons découvert la technologie perdu [techName] dans les ruines!"
@@ -422,12 +422,12 @@
         }
 
         "[unit] finished exploring.": {
-            Italian:"[unit] ha terminato la sua esplorazione."
+            Italian:"[unit] non sta più esplorando."
             "German": "[unit] hat die Erkundung abgeschlossen."
         },
 
         "[unit] has no work to do.": {
-            Italian:"L'unità [unit] è ora inattiva."
+            Italian:"[unit] è ora inattivo."
             "German": "[unit] hat keine Arbeit mehr."
         }
 }
