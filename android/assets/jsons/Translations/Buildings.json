@@ -670,6 +670,10 @@
 		Portuguese:"Castelo"
 		German:"Burg"
 	}
+
+	"Mughal Fort":{	//Indian unique
+		Italian:"Forte Mughal"
+	}
 	
 	"Alhambra":{
 		Italian:"Alhambra"
