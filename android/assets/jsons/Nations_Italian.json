@@ -457,6 +457,66 @@
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
 	*/
+
+	//City states
+	{
+		name:"Milan",
+		translatedName:"Milano",
+		adjective:["Milan"],
+		cityStateType:"Cultured",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[185,132,66],
+		cities:["Milano"]
+	},
+	{
+		name:"Florence",
+		adjective:["Florence"],
+		cityStateType:"Cultured",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[62,197,252],
+		cities:["Florence"]
+	},
+	{
+		name:"Rio de Janeiro",
+		adjective:["Rio de Janeiro"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[211, 220, 103],
+		cities:["Rio de Janeiro"]
+	},
+	{
+		name:"Antwerp",
+		adjective:["Antwerp"],
+		cityStateType:"Mercantile",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[194,97,255],
+		cities:["Antwerp"]
+	},
+	
+	//Barbarian
 	{
 		name:"Barbarians",
 		mainColor:[0,0,0],
