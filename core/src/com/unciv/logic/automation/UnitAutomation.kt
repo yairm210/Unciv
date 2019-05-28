@@ -233,15 +233,14 @@ class UnitAutomation{
                 .filter { unit.civInfo.isAtWarWith(it) }
                 .flatMap { it.cities }.asSequence()
                 .filter { it.location in unit.civInfo.exploredTiles }
-                .map { it.getCenterTile() }.toList()
 
         if(unit.type.isRanged()) // ranged units don't harm capturable cities, waste of a turn
-            enemyCities = enemyCities.filterNot { it.getCity()!!.health==1 }
+            enemyCities = enemyCities.filterNot { it.health==1 }
 
         val closestReachableEnemyCity = enemyCities
-                .asSequence()
-                .sortedBy { city -> // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
-                    unit.civInfo.cities.asSequence().map { city.arialDistanceTo(it.getCenterTile()) }.min()!!
+                .asSequence().map { it.getCenterTile() }
+                .sortedBy { cityCenterTile -> // sort enemy cities by closeness to our cities, and only then choose the first reachable - checking canReach is comparatively very time-intensive!
+                    unit.civInfo.cities.asSequence().map { cityCenterTile.arialDistanceTo(it.getCenterTile()) }.min()!!
                 }
                 .firstOrNull { unit.movementAlgs().canReach(it) }
 
