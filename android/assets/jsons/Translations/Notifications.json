@@ -421,6 +421,10 @@
             Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
         }
 
+        "[cityName] Cannot continue work on [construction]": {
+            Italian:"[cityName] non può più costruire [construction]."
+        },
+
         "One of our trades with [nation] has ended": {
             Italian:"Un nostro accordo con [nation] è terminato."
         },
