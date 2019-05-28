@@ -950,7 +950,7 @@
 	}
 
 	"Pick now!": {
-		Italian: "Scegli ora!" //You didn't translate this in Italian, said Smashfanful
+		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
 	}
 
@@ -1079,7 +1079,7 @@
 	}
 
 	"Stopped expansion":{ // if culture is 0
-		Italian:"Espansione arrestata" //You didn't translate this in Italian, said Smashfanful
+		Italian:"Espansione arrestata"
 		Russian:"Расширение остановлено"
 		French:"Expansion arrêtée"
 		Romanian:"Expansiunea sa oprit"
@@ -2474,7 +2474,7 @@
 	}
 	
 	"[tradeOffer] from [otherCivName] has ended":{
-		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato" //You didn't translate this in Italian, said Smashfanful
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
 		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
 		French:"[tradeOffer] de [otherCivName] a pris fin"
 		Portuguese:"[tradeOffer] de [otherCivName] terminou"
@@ -3212,6 +3212,7 @@
 
 	"Occurs on [listOfTerrains]":{ //For civilopedia again
 		Italian:"Può avvenire/avviene su [listOfTerrains]"
+	}
 
 
 	"Requires worked [resource] near city":{
