@@ -2508,6 +2508,23 @@
 		Portuguese:"Negociar paz"
 	}
 
+	//Diplomatic sections
+	"Luxury resources":{
+		Italian:"Risorse di lusso"
+	}
+	"Strategic resources":{
+		Italian:"Risorse strategiche"
+	}
+	"Technologies":{
+		Italian:"Tecnologie"
+	}
+	"Cities":{
+		Italian:"Città"
+	}
+	"Introduce to [nation]":{
+		Italian:"Introduzione per il popolo [nation]"
+	}
+
 	"Very well.":{
 		Italian:"Molto bene."
 		French:"Très bien."
@@ -2662,6 +2679,24 @@
 		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
   }
 	
+
+
+
+	"What would you like to do with the city?":{ // When you conquer a City
+		Italian:"Cosa vorresti farne della città?"
+	}
+	"Annex":{ 
+		Italian:"Annetti"
+	}
+	"Raze":{ 
+		Italian:"Radi al suolo"
+	}
+	"Convert production to science at a rate of 4 to 1":{ 
+		Italian:"Converti la Produzione a Scienza a un tasso di 4 a 1"
+	}
+	"Convert production to gold at a rate of 4 to 1":{ 
+		Italian:"Converti la Produzione a Oro a un tasso di 4 a 1"
+	}
 
 ////// Diplomatic modifiers
 
