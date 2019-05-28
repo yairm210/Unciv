@@ -765,7 +765,7 @@
 		
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless out lands.",
+		afterPeace:"May peace forever bless our lands.",
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[185,132,66],
@@ -779,7 +779,7 @@
 		
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless out lands.",
+		afterPeace:"May peace forever bless our lands.",
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[62,197,252],
@@ -793,7 +793,7 @@
 
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless out lands.",
+		afterPeace:"May peace forever bless our lands.",
 
 		mainColor:[0, 0, 0],
 		secondaryColor:[211, 220, 103],
@@ -806,11 +806,11 @@
 
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
-		afterPeace:"May peace forever bless out lands.",
+		afterPeace:"May peace forever bless our lands.",
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[194,97,255],
-		cities:["Rio de Janeiro"]
+		cities:["Antwerp"]
 	},
 
 	//Barbarian
