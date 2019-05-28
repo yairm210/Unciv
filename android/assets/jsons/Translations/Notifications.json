@@ -421,6 +421,10 @@
             Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
         }
 
+        "One of our trades with [nation] has ended": {
+            Italian:"Un nostro accordo con [nation] è terminato."
+        },
+
         "[unit] finished exploring.": {
             Italian:"[unit] non sta più esplorando."
             "German": "[unit] hat die Erkundung abgeschlossen."
