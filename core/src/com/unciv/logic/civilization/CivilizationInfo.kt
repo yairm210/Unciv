@@ -144,11 +144,9 @@ class CivilizationInfo {
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
         val statMap = HashMap<String,Stats>()
         for (city in cities){
-            for(entry in city.cityStats.baseStatList){
-                if(statMap.containsKey(entry.key))
-                    statMap[entry.key] = statMap[entry.key]!! + entry.value
-                else statMap[entry.key] = entry.value
-            }
+            val statBonuses = Stats()
+            if(!statMap.containsKey("Cities")) statMap["Cities"]=Stats()
+            statMap["Cities"] = statMap["Cities"]!! + city.cityStats.currentCityStats
         }
 
         //City states culture bonus
