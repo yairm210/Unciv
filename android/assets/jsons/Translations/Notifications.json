@@ -423,11 +423,11 @@
 
         "[unit] finished exploring.": {
             Italian:"[unit] non sta più esplorando."
-            "German": "[unit] hat die Erkundung abgeschlossen."
+            German: "[unit] hat die Erkundung abgeschlossen."
         },
 
         "[unit] has no work to do.": {
             Italian:"[unit] è ora inattivo."
-            "German": "[unit] hat keine Arbeit mehr."
+            German:"[unit] hat keine Arbeit mehr."
         }
 }

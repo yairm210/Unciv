@@ -325,6 +325,7 @@ class CivilizationInfo {
         return baseBuilding
     }
 
+    // This is a big performance
     fun updateViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
         newViewableTiles.addAll(cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles

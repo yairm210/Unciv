@@ -84,7 +84,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun getShortestPath(destination: TileInfo): List<TileInfo> {
         val currentTile = unit.getTile()
-        if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sig
+        if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
 
         var tilesToCheck: List<TileInfo> = listOf(currentTile)
         val movementTreeParents = HashMap<TileInfo, TileInfo?>() // contains a map of "you can get from X to Y in that turn"

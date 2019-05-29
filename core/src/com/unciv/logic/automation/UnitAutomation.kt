@@ -10,7 +10,6 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tr
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -399,13 +398,10 @@ class UnitAutomation{
     }
 
     internal fun explore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
-        val distanceToTiles:HashMap<TileInfo, Float>
         if(tryGoToRuin(unit,unitDistanceToTiles))
         {
             if(unit.currentMovement==0f) return
-            distanceToTiles = unit.getDistanceToTiles()
         }
-        else distanceToTiles = unitDistanceToTiles
 
         for(tile in unit.currentTile.getTilesInDistance(5))
             if(unit.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
@@ -413,14 +409,6 @@ class UnitAutomation{
                 unit.movementAlgs().headTowards(tile)
                 return
             }
-
-
-        val reachableTiles= distanceToTiles
-                .filter { unit.canMoveTo(it.key) && unit.movementAlgs().canReach(it.key) }
-
-        val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
-        if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
-        else if (reachableTiles.any()) unit.moveToTile(reachableTiles.toList().random().first)
     }
 
     fun automatedExplore(unit:MapUnit){
@@ -441,7 +429,7 @@ class UnitAutomation{
                 return
             }
         }
-        unit.civInfo.addNotification("[${unit.name.tr()}] finished exploring.".tr(), unit.currentTile.position, Color.GRAY)
+        unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
     }
 
 }

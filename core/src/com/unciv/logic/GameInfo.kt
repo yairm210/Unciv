@@ -9,9 +9,12 @@ import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
 
 class GameInfo {
+    @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
@@ -35,7 +38,7 @@ class GameInfo {
     fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
     fun getCurrentPlayerCivilization() = getCivilization(currentPlayer)
     fun getBarbarianCivilization() = getCivilization("Barbarians")
-    fun getDifficulty() = GameBasics.Difficulties[difficulty]!!
+    fun getDifficulty() = difficultyObject
     //endregion
 
     fun nextTurn() {
@@ -146,6 +149,7 @@ class GameInfo {
             getCurrentPlayerCivilization().playerType=PlayerType.Human
         if(getCurrentPlayerCivilization().difficulty!="Chieftain")
             difficulty= getCurrentPlayerCivilization().difficulty
+        difficultyObject = GameBasics.Difficulties[difficulty]!!
 
         // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
         // because updating leads to getting the building uniques from the civ info,
