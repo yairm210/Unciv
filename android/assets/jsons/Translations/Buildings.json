@@ -231,7 +231,13 @@
 		German:"Grabstätte"
 		French:"Tombeau"
 	}
-	
+
+	/*
+	"Mud Pyramid Mosque":{	//Songhai unique
+		Italian:"Moschea della Piramide di Fango"
+	}
+	*/
+
 	"The Oracle":{	
 		Italian:"Oracolo"
 		Russian:"Оракул"
@@ -335,6 +341,15 @@
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
 	}
+
+	/*
+	"Courthouse":{
+		Italian:"Palazzo di giustizia"
+		
+	"Eliminates extra Unhappiness from an Occupied City":{
+		Italian:"Elimina l'Infelicità supplementare proveniente da una Città occupata"
+	}
+	*/
 
 	"Stable":{	
 		Italian:"Scuderia"
@@ -585,6 +600,16 @@
 		German:"Werkstatt"
 	}
 
+	/*
+	"Longhouse":{	//Irochese unique
+		Italian:"Casa Lunga"
+	}
+	
+	"+1 Production from each worked Forest tile":{	
+		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
+	}
+	*/
+
 	"Forge":{	
 		Italian:"Fucina"
 		Russian:"Кузница"
@@ -638,7 +663,7 @@
 	}
 
 	"Jungles provide +2 science":{
-		Italian:"+2 scienza da giungle"
+		Italian:"+2 scienza per ogni Giungla"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă +2 știință"
@@ -648,6 +673,12 @@
 		Simplified_Chinese:"丛林+2科研"
 		Portuguese:"Selvas proporcionam +2 ciência"
 	}
+
+	/*
+	"Wat":{	//Siamese unique
+		Italian:"Wat"
+	}
+	*/
 	
 	"Oxford University":{	
 		Italian:"Università di Oxford"
@@ -811,10 +842,16 @@
 		German:"Bank"
 	}
 	
-	"Hanse":{	
-		Italian:"Hanse" //Same as in Italian
+	"Hanse":{	//German unique
+		Italian:"Hansa" //Same as in Italian
 		Simplified_Chinese:"汉萨会馆"
 	}
+
+	/*
+	"Satrap's Court":{	//Persian unique
+		Italian:"Corte del Satrapo"
+	}
+	*/
 
 	"Forbidden Palace":{	
 		Italian:"Palazzo Proibito"
@@ -1075,7 +1112,7 @@
 	}
 
 	"Culture cost of adopting new Policies reduced by 10%":{
-		Italian:"-10% costo in Cultura per ogni nuova politiche"
+		Italian:"-10% costo in Cultura per ogni nuova politica"
 		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
 		French:"Coût culturel de l'adoption de nouvelles Doctrines réduit de 10%"
 		Romanian:"Costul în cultură de adoptare a noilor politici a scăzut cu 10%"
