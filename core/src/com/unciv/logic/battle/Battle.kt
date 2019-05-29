@@ -253,5 +253,6 @@ class Battle(val gameInfo:GameInfo) {
 
         capturedUnit.civInfo.removeUnit(capturedUnit)
         capturedUnit.assignOwner(attacker.getCivInfo())
+        capturedUnit.updateViewableTiles()
     }
 }

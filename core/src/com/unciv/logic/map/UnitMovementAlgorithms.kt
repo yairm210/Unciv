@@ -56,6 +56,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
                     var totalDistanceToTile:Float
+
                     if (!unit.canPassThrough(neighbor))
                         totalDistanceToTile = unitMovement // Can't go here.
                     // The reason that we don't just "return" is so that when calculating how to reach an enemy,
@@ -67,11 +68,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
                     }
 
-                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) {
-                        if (totalDistanceToTile < unitMovement)
+                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) { // this is the new best path
+                        if (totalDistanceToTile < unitMovement)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
                             totalDistanceToTile = unitMovement
+                        // In Civ V, you can always travel between adjacent tiles, even if you don't technically
+                        // have enough movement points - it simple depletes what you have
+
                         distanceToTiles[neighbor] = totalDistanceToTile
                     }
                 }

@@ -329,11 +329,11 @@ class CivilizationInfo {
     fun updateViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
         newViewableTiles.addAll(cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
-        newViewableTiles.addAll(getCivUnits().flatMap { it.getViewableTiles()})
+        newViewableTiles.addAll(getCivUnits().flatMap { it.viewableTiles})
         viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(getCivUnits().filter {it.hasUnique("Can attack submarines")}.flatMap {it.getViewableTiles()})
+        newViewableInvisibleTiles.addAll(getCivUnits().filter {it.hasUnique("Can attack submarines")}.flatMap {it.viewableTiles})
         viewableInvisibleUnitsTiles = newViewableInvisibleTiles
         // updating the viewable tiles also affects the explored tiles, obvs
 

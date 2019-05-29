@@ -102,6 +102,7 @@ class UnitActions {
                             newunit.promotions.addPromotion(promotion,true)
 
                     newunit.updateUniques()
+                    newunit.updateViewableTiles()
                     newunit.currentMovement = 0f
                     worldScreen.shouldUpdate = true
                 }.sound("upgrade")

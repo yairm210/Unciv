@@ -174,7 +174,11 @@ class GameInfo {
             }
         }
 
-        for (civInfo in civilizations) civInfo.setTransients()
+        for (civInfo in civilizations) {
+            civInfo.setTransients()
+            for(unit in civInfo.getCivUnits())
+                unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
+        }
         for (civInfo in civilizations){
             for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
         }

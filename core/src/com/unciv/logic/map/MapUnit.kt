@@ -23,6 +23,11 @@ class MapUnit {
     @Transient lateinit var baseUnit: BaseUnit
     @Transient internal lateinit var currentTile :TileInfo
 
+    // This is saved per each unit because if we need to recalculate viewable tiles every time a unit moves,
+    //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
+    // About 10% of total NextTurn performance time, at the time of this change!
+    @Transient var viewableTiles = listOf<TileInfo>()
+
     // These are for performance improvements to getMovementCostBetweenAdjacentTiles,
     // a major component of getDistanceToTilesWithinTurn,
     // which in turn is a component of getShortestPath and canReach
@@ -122,7 +127,8 @@ class MapUnit {
         return getUniques().contains(unique)
     }
 
-    fun getViewableTiles(): MutableList<TileInfo> {
+    // we need to map all the places that this could change: Unit changes locations, owners, gets promotion?
+    fun updateViewableTiles() {
         var visibilityRange = 2
         visibilityRange += getUniques().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
@@ -133,7 +139,9 @@ class MapUnit {
             visibilityRange += 1
         val tile = getTile()
         if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
-        return tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+        viewableTiles = tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+
+        civInfo.updateViewableTiles() // for the civ
     }
 
     fun isFortified(): Boolean {
@@ -450,7 +458,8 @@ class MapUnit {
         currentTile = tile
         if(tile.improvement=="Ancient ruins" && !civInfo.isBarbarianCivilization())
             getAncientRuinBonus()
-        civInfo.updateViewableTiles()
+
+        updateViewableTiles()
     }
 
     fun disband(){
