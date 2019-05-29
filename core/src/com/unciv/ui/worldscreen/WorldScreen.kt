@@ -269,6 +269,7 @@ class WorldScreen : CameraStageBaseScreen() {
                         updateNextTurnButton()
                     }
                 }
+                else nextTurnButton.enable() // Enable immediately
 
                 // If we put this BEFORE the save game, then we try to save the game...
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
