@@ -151,18 +151,13 @@
             Japanese:"[construction]の作業が開始されました"
         }
         
-        "Cannot continue work on [construction]":{
-            Italian:"Impossibile costruire [construction]" //You didn't translate this, said Smashfanful
-            Russian:"Не удается продолжить работу над [construction]"
-            French:"Impossible de continuer à travailler sur [construction]"
-            Romanian:"Nu se poate continua munca pentru [construction]"
-            German:"Arbeit an/am [construction] konnte nicht fortgeführt werden"
-            Dutch:"Er kan niet meer veder gewerkt worden aan [construction]"
-            Spanish:"Imposible continuar trabajo en [construction]"
-            Simplified_Chinese:"无法继续建造[construction]"
-            Portuguese:"Não é possivel continuar os trabalhos em [construction]"
-            Japanese:"[construction]の作業を続行できません"
+        "[cityName] cannot continue work on [construction]":{
+            Italian:"[cityName] non può più costruire [construction]"
         }
+		
+		"One of our trades with [nation] has ended": {
+            Italian:"Un nostro accordo con [nation] è terminato."
+        },
 
         "[cityname] has expanded its borders!":{
             Italian:"[cityname] ha espanso i suoi confini!"
