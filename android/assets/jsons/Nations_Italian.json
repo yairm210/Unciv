@@ -463,7 +463,7 @@
 		name:"Milan",
 		translatedName:"Milano",
 		adjective:["Milan"],
-		cityStateType:"Cultured",
+		cityStateType:"Acculturata",
 		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
@@ -476,8 +476,8 @@
 	},
 	{
 		name:"Florence",
-		adjective:["Florence"],
-		cityStateType:"Cultured",
+		adjective:["Firenze"],
+		cityStateType:"Acculturata",
 		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
@@ -486,12 +486,12 @@
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[62,197,252],
-		cities:["Florence"]
+		cities:["Firenze"]
 	},
 	{
 		name:"Rio de Janeiro",
 		adjective:["Rio de Janeiro"],
-		cityStateType:"Maritime",
+		cityStateType:"Marittima",
 		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
