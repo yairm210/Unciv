@@ -6,7 +6,7 @@
         // I remember that some languages have upside-down question marks before to mark a question
 
         "Research of [technologyName] has completed!":{ // For technology notifications EG Research of Writing has completed
-            Italian:"I nostri saggi hanno scoperto la tecnologia [technologyName]!"
+            Italian:"Abbiamo scoperto la tecnologia [technologyName]!"
             Russian:"Исследование [technologyName] завершено!"
             French:"Recherche de [technologyName] est completée!"
             Romanian:"Cercetarea [technologyName] s-a încheiat!"
@@ -155,7 +155,7 @@
             Italian:"[cityName] non può più costruire [construction]"
         }
 		
-		"One of our trades with [nation] has ended": {
+	"One of our trades with [nation] has ended": {
             Italian:"Un nostro accordo con [nation] è terminato."
         },
 
