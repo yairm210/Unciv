@@ -40,6 +40,10 @@ class UnitAutomation{
         val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
         var unitDistanceToTiles = unit.getDistanceToTiles()
 
+        if(unit.civInfo.isBarbarianCivilization() &&
+                unit.currentTile.improvement==Constants.barbarianEncampment && unit.type.isLandUnit())
+            return // stay in the encampment
+
         if(tryGoToRuin(unit,unitDistanceToTiles)){
             if(unit.currentMovement==0f) return
             unitDistanceToTiles = unit.getDistanceToTiles()
@@ -61,7 +65,7 @@ class UnitAutomation{
         if (tryAttackNearbyEnemy(unit)) return
 
         // Barbarians try to pillage improvements if no targets reachable
-        if (unit.civInfo.isBarbarianCivilization() && pillageImprovement(unit, unitDistanceToTiles)) return
+        if (unit.civInfo.isBarbarianCivilization() && tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         if (tryGarrisoningUnit(unit)) return
 
@@ -75,17 +79,21 @@ class UnitAutomation{
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
 
-        // else, go to a random space
-        explore(unit,unitDistanceToTiles)
-        // if both failed, then... there aren't any reachable tiles. Which is possible.
+        // else, try to go o unreached tiles
+        if(tryExplore(unit,unitDistanceToTiles)) return
+
+        // Barbarians just wander all over the place
+        if(unit.civInfo.isBarbarianCivilization())
+            wander(unit,unitDistanceToTiles)
     }
+
 
 
     fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>):Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.canMoveTo(it) }
         val unitTile = unit.getTile()
 
-        if (pillageImprovement(unit, unitDistanceToTiles)) return true
+        if (tryPillageImprovement(unit, unitDistanceToTiles)) return true
 
         val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
         if(tilesByHealingRate.isEmpty()) return false
@@ -105,7 +113,7 @@ class UnitAutomation{
         return true
     }
 
-    fun pillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
+    fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
         val tilesInDistance = unitDistanceToTiles.filter {it.value < unit.currentMovement}.keys
                 .filter { unit.canMoveTo(it) && it.improvement != null && UnitActions().canPillage(unit,it) }
 
@@ -114,8 +122,8 @@ class UnitAutomation{
         if (unit.getTile()!=tileToPillage)
             unit.moveToTile(tileToPillage)
 
-        UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
-                .first { it.name=="Pillage" }.action()
+        UnitActions().getUnitActions(unit, UnCivGame.Current.worldScreen)
+                .first { it.name == "Pillage" }.action()
         return true
     }
 
@@ -125,7 +133,7 @@ class UnitAutomation{
                 if (combatant.isRanged()) return false
                 if (tile.isWater) return false // can't attack water units while embarked, only land
             }
-            if (combatant.unit.hasUnique("Can only attack water") && tile.isLand) return false
+            if (tile.isLand && combatant.unit.hasUnique("Can only attack water")) return false
         }
 
         val tileCombatant = Battle(combatant.getCivInfo().gameInfo).getMapCombatantOfTile(tile)
@@ -391,24 +399,26 @@ class UnitAutomation{
     }
 
     fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
-        val tileWithRuin = unitDistanceToTiles.keys.firstOrNull{unit.canMoveTo(it) && it.improvement == "Ancient ruins"}
+        if(unit.civInfo.isBarbarianCivilization()) return false // barbs don't have anything to do in ruins
+        val tileWithRuin = unitDistanceToTiles.keys.firstOrNull{unit.canMoveTo(it) && it.improvement == Constants.ancientRuins}
         if(tileWithRuin==null) return false
         unit.moveToTile(tileWithRuin)
         return true
     }
 
-    internal fun explore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+    internal fun tryExplore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
         if(tryGoToRuin(unit,unitDistanceToTiles))
         {
-            if(unit.currentMovement==0f) return
+            if(unit.currentMovement==0f) return true
         }
 
         for(tile in unit.currentTile.getTilesInDistance(5))
             if(unit.canMoveTo(tile) && tile.position !in unit.civInfo.exploredTiles
                     &&  unit.movementAlgs().canReach(tile)){
                 unit.movementAlgs().headTowards(tile)
-                return
+                return true
             }
+        return false
     }
 
     fun automatedExplore(unit:MapUnit){
@@ -430,6 +440,17 @@ class UnitAutomation{
             }
         }
         unit.civInfo.addNotification("[${unit.name}] finished exploring.", unit.currentTile.position, Color.GRAY)
+    }
+
+
+    fun wander(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+        val reachableTiles= unitDistanceToTiles
+                .filter { unit.canMoveTo(it.key) && unit.movementAlgs().canReach(it.key) }
+
+        val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
+        if (reachableTilesMaxWalkingDistance.any()) unit.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
+        else if (reachableTiles.any()) unit.moveToTile(reachableTiles.toList().random().first)
+
     }
 
 }

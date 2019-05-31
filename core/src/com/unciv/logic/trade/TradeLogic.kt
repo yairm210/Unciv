@@ -51,14 +51,12 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         val otherCivsWeKnow = civInfo.getKnownCivs()
-                .filter { it.civName != otherCivilization.civName && !it.isBarbarianCivilization() && !it.isDefeated() }
+                .filter { it.civName != otherCivilization.civName && it.isMajorCiv() && !it.isDefeated() }
         val civsWeKnowAndTheyDont = otherCivsWeKnow
                 .filter { !otherCivilization.diplomacy.containsKey(it.civName) && !it.isDefeated() }
 
-        if (!otherCivilization.isCityState()) {
-            for (thirdCiv in civsWeKnowAndTheyDont) {
-                offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0))
-            }
+        for (thirdCiv in civsWeKnowAndTheyDont) {
+            offers.add(TradeOffer("Introduction to " + thirdCiv.civName, TradeType.Introduction, 0))
         }
 
         if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
@@ -105,11 +103,11 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     if(offer.name==Constants.peaceTreaty) to.getDiplomacyManager(from).makePeace()
                 }
                 if(offer.type==TradeType.Introduction)
-                    to.meetCivilization(to.gameInfo.getCivilization(offer.name.split(" ")[2]))
+                    to.meetCivilization(to.gameInfo.getCivilization(offer.name.removePrefix("Introduction to " )))
 
                 if(offer.type==TradeType.WarDeclaration){
-                    val nameOfCivToDeclareWarOn = offer.name.split(' ').last()
-                    from.diplomacy[nameOfCivToDeclareWarOn]!!.declareWar()
+                    val nameOfCivToDeclareWarOn = offer.name.removePrefix("Declare war on ")
+                    from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
                 }
             }
         }

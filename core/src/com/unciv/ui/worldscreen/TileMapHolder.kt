@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
@@ -216,6 +217,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     || (!tileGroup.tileInfo.hasEnemySubmarine())
             tileGroup.update(canSeeTile, showSubmarine)
 
+            if(tileGroup.tileInfo.improvement==Constants.barbarianEncampment)
+                tileGroup.showCircle(Color.RED)
+
             val unitsInTile = tileGroup.tileInfo.getUnits()
             val canSeeEnemy = unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(civInfo)
                     && (showSubmarine || unitsInTile.firstOrNull {!it.isInvisible()}!=null)
@@ -266,7 +270,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         else 0.5f
         for (tile in tileGroups.values) {
             if (tile.populationImage != null) tile.populationImage!!.color.a = fadeout
-            if (tile.improvementImage != null) tile.improvementImage!!.color.a = fadeout
+            if (tile.improvementImage != null && tile.tileInfo.improvement!=Constants.barbarianEncampment
+                    && tile.tileInfo.improvement!=Constants.ancientRuins)
+                tile.improvementImage!!.color.a = fadeout
             if (tile.resourceImage != null) tile.resourceImage!!.color.a = fadeout
         }
     }

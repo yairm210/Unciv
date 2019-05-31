@@ -412,7 +412,7 @@
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
 	},
 	/*
-	{
+	{   //  REQUIRES BARBARIAN CAMPS
 		name:"Germany",
 		leaderName:"Otto von Bismark",
 		adjective:["German"],
@@ -450,14 +450,14 @@
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
 	
-	{
+	{   // REQUIRES RIVERS
 		name:"Aztecs",
 		leaderName:"Montezuma I",
 		adjective:["Aztec"],
 		startBias:["Jungle"],
 		
 		startIntroPart1: "Welcome, o divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
-		startIntroPart2: "O great king Mintezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
+		startIntroPart2: "O great king Montezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Die, die, die!)"
 		attacked:"Excellent! Let the blood flow in raging torrents!"
