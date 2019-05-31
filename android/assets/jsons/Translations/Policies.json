@@ -43,6 +43,26 @@
 		Portuguese:"Desbloqueado em"
 		German:"Freigeschaltet bei" //this could be wrong, "at" is very flexible and its translation depends on the context
 	}
+
+
+/*
+	//////Honorific Titles
+	
+
+	"Lord":{
+		Italian:"Lord"
+	}//When a male leader first adopts Tradition
+	"Lady":{
+		Italian:"Lady"
+	}//When a female leader first adopts Tradition
+	"Consul":{
+		Italian:"Console"
+	}//When any leader first adopts Liberty
+	"The Great":{
+		Italian:"Grande"
+	}//When any leader first adopts Honor
+	
+*/
 	
 ////// Tradition branch
 
@@ -505,7 +525,7 @@
 ////// Piety branch
 
 	"Piety":{
-		Italian:"Pietà"
+		Italian:"Devozione"
 		Russian:"Набожность"
 		Romanian:"Credință"
 		Spanish:"Piedad"
@@ -582,7 +602,7 @@
 	}
 
 	"Temples give +10% gold":{
-		Italian:"+10% Oro dai Templi (Sepolcri per gli Egizi)"
+		Italian:"+10% Oro da Templi/Sepolcri"
 		Russian:"Храмы увеличивают на 10% приток золота в городах"
 		Romanian:"Templele oferă +10% aur"
 		Spanish:"Templos dan +10% oro"
@@ -637,7 +657,7 @@
 	}
 
 	"Piety Complete":{
-		Italian:"Pietà Completa"
+		Italian:"Devozione Completa"
 		Russian:"Набожность завершена"
 		Romanian:"Credință realizată"
 		Spanish:"Piedad Completa"
@@ -647,8 +667,8 @@
 		French:"Piété complète"
 	}
 
-	"Reduce culture cost of future policies by 10%":{
-		Italian:"-10% costi in Cultura per le Politiche future"
+	"Reduce culture cost of future policies by 10%.":{
+		Italian:"-10% costi in Cultura per le Politiche future."
 		Russian:"Уменьшает цену будущих общественных институтов на 10%"
 		Romanian:"Reduce costul în cultură pentru politicile viitoare cu 10%"
 		Spanish:"Reduce el coste de cultura de políticas futuras un 10%"
@@ -657,6 +677,67 @@
 		German:"Reduziere Kulturkosten von zukünftigen Grundsätzen um 10%"
 		French:"Réduit le cout en culture des futures doctrines de 10%"
 	}
+
+/*
+	
+////// Patronage branch, unlocked in Middle Ages
+
+	"Patronage":{
+		Italian:"Mecenatismo"
+	}
+
+	"Influence loss rate decreased by 25%.":{
+		Italian:"-25% calo d'Influenza per le Città-Stato."
+	}
+
+	"Philantropy":{
+		Italian:"Filantropia"
+	}
+
+	"Gifts of Gold generate 25% more Influence.":{
+		Italian:"+25% Influenza per ogni dono in Oro."
+	}
+
+	"Aestethics":{
+		Italian:"Estetica"
+	}
+
+	"Resting point for Influence level with all City-States is increased by 20.":{
+		Italian:"Aumenta di 20 il livello minimo d'Influenza con tutte le Città-Stato."
+	}
+
+	"Scholasticism":{
+		Italian:"Scolasticismo"
+	}//Needs Philantropy
+
+	"All Allied City-States provide a Science bonus equal to 25% of what they produce for themselves.":{
+		Italian:"Le Città-Stato alleate forniscono un bonus di Scienza uguale al 25% del proprio livello attuale."
+	}
+
+	"Cultural Diplomacy":{
+		Italian:"Diplomazia Culturale"
+	}//Needs Scholasticism
+
+	"Doubles the quantity of Resources gifted by City-States. Happiness from gifted Luxuries increased by 50%":{
+		Italian:"Doppia quantità di Risorse donate dalle Città-Stato, e +50% Felicità dalle Risorse di lusso da loro ricevute."
+	}
+
+	"Educated Elite":{
+		Italian:"Elite Istruita"
+	}//Needs Scholasticism and Aestethics
+
+	"Allied City-States will occasionally gift you Great People.":{
+		Italian:"Le Città-Stato alleate di doneranno occasionalmente dei Grandi Personaggi."
+	}
+
+	"Patronage Complete":{
+		Italian:"Mecenatismo Completo"
+	}
+
+	"-33% Influence decrease rate per turn with all other City-States.":{
+		Italian:"-33% calo d'Influenza per turno con tutte le altre Città-Stato."
+	}
+*/
 	
 ////// Commerce branch
 
@@ -760,7 +841,7 @@
 	}
 
 	"Cost of purchasing culture buildings reduced by 50%":{
-		Italian:"-50% costi di per l'acquisto delle strutture culturali"
+		Italian:"-50% costi in Oro per l'acquisto delle strutture culturali"
 		Russian:"Цена покупки культурных строений уменьшена на 50%"
 		Romanian:"Costul clădirilor de cultură redus cu 50%"
 		Spanish:"Coste de comprar edificios de cultura reducido un 50%"
@@ -938,7 +1019,7 @@
 	}
 
 	"Gain 2 free technologies":{
-		Italian:"Consente di scoprite due Tecnologie gratuite"
+		Italian:"Consente di scoprire due Tecnologie gratuite"
 		Russian:"Даёт 2 бесплатные технологии"
 		Romanian:"Obține 2 tehnologii gratuite"
 		Spanish:"Ganas 2 tecnologías gratis"
@@ -981,7 +1062,7 @@
 		Portuguese:"Liberdade"
 		German:"Freiheit"
 		French:"Liberté"
-	}
+	}//Should not be adopted if Autocracy is asopted
 
 	"+25% great people rate":{
 		Italian:"+25% tasso di generazione per i Grandi Personaggi"
@@ -1080,7 +1161,7 @@
 		Portuguese:"+1 cultura para cada 2 habitantes"
 		German:"+1 Kultur für jeden 2. Einwohner"
 		French:"+1 culture tous les 2 citoyens"
-	}
+	}//Also, 8 units should be maintenance-free
 
 	"Democracy":{
 		Italian:"Democrazia"
@@ -1137,7 +1218,7 @@
 		Russian:"Автократия"
 		German:"Autokratie"
 		French:"Autocratie"
-	}
+	}//Should not be adopted if Freedom is asopted
 
 	"-33% unit upkeep costs":{
 		Spanish:"Coste de mantenimiento de unidades reducido en 33%"
