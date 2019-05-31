@@ -2660,7 +2660,23 @@
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
 		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
-  }
+ 	}
+
+	"What would you like to do with the city?":{ // When you conquer a City
+		Italian:"Cosa vorresti farne della città?"
+	}
+	"Annex":{ 
+		Italian:"Annetti"
+	}
+	"Raze":{ 
+		Italian:"Radi al suolo"
+	}
+	"Convert production to science at a rate of 4 to 1":{ 
+		Italian:"Converti la Produzione a Scienza a un tasso di 4 a 1"
+	}
+	"Convert production to gold at a rate of 4 to 1":{ 
+		Italian:"Converti la Produzione a Oro a un tasso di 4 a 1"
+	}
 	
 
 ////// Diplomatic modifiers
@@ -2728,11 +2744,26 @@
 		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
 	}
 
-
-
 	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
     		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
 		Portuguese:"Sua chamada 'amizade' não vale nada."
+	}
+
+	//Diplomatic sections
+	"Luxury resources":{
+		Italian:"Risorse di lusso"
+	}
+	"Strategic resources":{
+		Italian:"Risorse strategiche"
+	}
+	"Technologies":{
+		Italian:"Tecnologie"
+	}
+	"Cities":{
+		Italian:"Città"
+	}
+	"Introduce to [nation]":{
+		Italian:"Introduzione per il popolo [nation]"
 	}
 
 ////// Overview screen
