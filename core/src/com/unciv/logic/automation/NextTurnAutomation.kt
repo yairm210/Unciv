@@ -16,9 +16,11 @@ class NextTurnAutomation{
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
-        offerPeaceTreaty(civInfo)
-        exchangeTechs(civInfo)
-        exchangeLuxuries(civInfo)
+        if(civInfo.isMajorCiv()) {
+            offerPeaceTreaty(civInfo)
+            exchangeTechs(civInfo)
+            exchangeLuxuries(civInfo)
+        }
 
         chooseTechToResearch(civInfo)
         adoptPolicy(civInfo)
