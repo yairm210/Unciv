@@ -226,9 +226,9 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました"
         }
 
-	"Enemy city [cityName] has attacked our [ourUnit]":{
-            Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
-	}
+		"Enemy city [cityName] has attacked our [ourUnit]":{
+			Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
+		}
 		
         "An enemy [unit] has captured [cityname]":{
             Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
@@ -269,9 +269,9 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました"
         }
 		
-	"Enemy city [cityName] has destroyed our [ourUnit]":{
-            Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
-	}
+		"Enemy city [cityName] has destroyed our [ourUnit]":{
+			Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
+		}
         
         "An enemy [unit] was destroyed while attacking [cityname]":{
             Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava [cityname]"
@@ -349,6 +349,8 @@
             Portuguese:"A civilização de [civName] foi destruida!"
             Japanese:"[civName]の文明は破壊されました！"
         }
+		
+		"We have captured a barbarian encampment and recovered [goldAmount] gold!":{}
         
     /////////////////	ruins
 

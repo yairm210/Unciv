@@ -459,9 +459,16 @@ class MapUnit {
         if(tile.improvement==Constants.ancientRuins && !civInfo.isBarbarianCivilization())
             getAncientRuinBonus()
         if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
-            tile.improvement=null // todo get bonus from clearing encampment
+            clearEncampment(tile)
 
         updateViewableTiles()
+    }
+
+    private fun clearEncampment(tile: TileInfo) {
+        tile.improvement=null
+        val goldToAdd = 25 // game-speed-dependant
+        civInfo.gold+=goldToAdd
+        civInfo.addNotification("We have captured a barbarian encampment and recovered [$goldToAdd] gold!", tile.position, Color.RED)
     }
 
     fun disband(){
