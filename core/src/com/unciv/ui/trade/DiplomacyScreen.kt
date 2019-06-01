@@ -209,6 +209,15 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 diplomacyTable.add(declareFriendshipButton).row()
             }
 
+            if(!diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)){
+                val denounceButton = TextButton("Denounce ([30] turns)".tr(),skin)
+                denounceButton.onClick {
+                    diplomacyManager.denounce()
+                    setRightSideFlavorText(otherCiv,"We will remember this.".tr(),"Very well.".tr())
+                }
+                diplomacyTable.add(denounceButton).row()
+            }
+
             val declareWarButton = getDeclareWarButton(diplomacyManager, otherCiv)
             diplomacyTable.add(declareWarButton).row()
         }
@@ -229,6 +238,9 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
                 OpenBorders -> "Our open borders have brought us closer together."
                 BetrayedDeclarationOfFriendship -> "Your so-called 'friendship' is worth nothing."
+                Denunciation -> "You have publically denounced us!"
+                DenouncedOurAllies -> "You have denounced our allies"
+                DenouncedOurEnemies -> "You have denounced our enemies"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"

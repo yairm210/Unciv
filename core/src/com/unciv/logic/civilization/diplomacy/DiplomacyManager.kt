@@ -27,6 +27,7 @@ enum class DiplomacyFlags{
     DeclinedPeace,
     DeclaredWar,
     DeclarationOfFriendship,
+    Denunceation,
     BorderConflict
 }
 
@@ -36,11 +37,14 @@ enum class DiplomaticModifiers{
     CapturedOurCities,
     DeclaredFriendshipWithOurEnemies,
     BetrayedDeclarationOfFriendship,
+    Denunciation,
+    DenouncedOurAllies,
 
     YearsOfPeace,
     SharedEnemy,
     DeclarationOfFriendship,
     DeclaredFriendshipWithOurAllies,
+    DenouncedOurEnemies,
     OpenBorders
 }
 
@@ -219,8 +223,10 @@ class DiplomacyManager() {
         removeUntenebleTrades()
         updateHasOpenBorders()
 
-        if(diplomaticStatus==DiplomaticStatus.Peace)
-            addModifier(DiplomaticModifiers.YearsOfPeace,0.5f)
+        if(diplomaticStatus==DiplomaticStatus.Peace) {
+            if(diplomaticModifiers[DiplomaticModifiers.YearsOfPeace.name]!! < 30)
+                addModifier(DiplomaticModifiers.YearsOfPeace, 0.5f)
+        }
         else revertToZero(DiplomaticModifiers.YearsOfPeace,-0.5f) // war makes you forget the good ol' days
 
         var openBorders = 0
@@ -351,10 +357,28 @@ class DiplomacyManager() {
             if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue
             val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
             when(thirdCivRelationshipWithOtherCiv){
-                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,15f)
-                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,5f)
+                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,-15f)
+                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurEnemies,-5f)
                 RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies,5f)
                 RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DeclaredFriendshipWithOurAllies,15f)
+            }
+        }
+    }
+    
+    fun denounce(){
+        setModifier(DiplomaticModifiers.Denunciation,-35f)
+        otherCivDiplomacy().setModifier(DiplomaticModifiers.Denunciation,-35f)
+        setFlag(DiplomacyFlags.Denunceation,30)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.Denunceation,30)
+
+        for(thirdCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
+            if(thirdCiv==otherCiv() || !thirdCiv.knows(otherCivName)) continue
+            val thirdCivRelationshipWithOtherCiv = thirdCiv.getDiplomacyManager(otherCiv()).relationshipLevel()
+            when(thirdCivRelationshipWithOtherCiv){
+                RelationshipLevel.Unforgivable -> addModifier(DiplomaticModifiers.DenouncedOurEnemies,15f)
+                RelationshipLevel.Enemy -> addModifier(DiplomaticModifiers.DenouncedOurEnemies,5f)
+                RelationshipLevel.Friend -> addModifier(DiplomaticModifiers.DenouncedOurAllies,-5f)
+                RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DenouncedOurAllies,-15f)
             }
         }
     }

@@ -2589,6 +2589,14 @@
 		Portuguese:"Perfeito!"
 	}
 	
+	// Denunceation flavour texts
+	"Denounce ([numberOfTurns] turns)":{
+	}
+	
+	"We will remember this.":{
+	}
+	
+	
 	// Relationship states, from worst (Unforgivable) to best (Ally)
 	
   	"Unforgivable":{
@@ -2729,10 +2737,18 @@
 	}
 
 
-
 	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
-    		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
+		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
 		Portuguese:"Sua chamada 'amizade' não vale nada."
+	}
+	
+	"You have publically denounced us!":{
+	}
+	
+	"You have denounced our allies":{
+	}
+	
+	"You have denounced our enemies":{
 	}
 
 ////// Overview screen
