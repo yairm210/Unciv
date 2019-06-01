@@ -217,7 +217,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     || (!tileGroup.tileInfo.hasEnemySubmarine())
             tileGroup.update(canSeeTile, showSubmarine)
 
-            if(tileGroup.tileInfo.improvement==Constants.barbarianEncampment)
+            if(tileGroup.tileInfo.improvement==Constants.barbarianEncampment
+                    && tileGroup.tileInfo.position in civInfo.exploredTiles)
                 tileGroup.showCircle(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
