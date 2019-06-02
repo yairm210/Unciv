@@ -682,6 +682,14 @@
 		German:"Anzahl der Gegner"
 	}
 
+	"Number of city-states":{
+		Italian:"Numero di Città-Stato"
+	}
+
+	"No barbarians":{
+		Italian:"Niente barbari"
+	}
+
 	"Difficulty":{	
 		Italian:"Difficoltà"
 		Russian:"Сложность"
@@ -2591,9 +2599,11 @@
 	
 	// Denunceation flavour texts
 	"Denounce ([numberOfTurns] turns)":{
+		Italian:"Denuncia ([numberOfTurns] turni)"
 	}
 	
 	"We will remember this.":{
+		Italian:"Non credere che ce lo scorderemo!"
 	}
 	
 	
@@ -2669,6 +2679,21 @@
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
 		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
   }
+ 	"What would you like to do with the city?":{ // When you conquer a City
+		Italian:"Cosa vorresti farne della città?"
+	}
+	"Annex":{ 
+		Italian:"Annetti"
+	}
+	"Raze":{ 
+		Italian:"Radi al suolo"
+	}
+	"Convert production to science at a rate of 4 to 1":{ 
+		Italian:"Converti la Produzione a Scienza a un tasso di 4 a 1"
+	}
+	"Convert production to gold at a rate of 4 to 1":{ 
+		Italian:"Converti la Produzione a Oro a un tasso di 4 a 1"
+	}
 	
 
 ////// Diplomatic modifiers
@@ -2743,12 +2768,33 @@
 	}
 	
 	"You have publically denounced us!":{
+		Italian:"Ci hai denunciato pubblicamente di fronte al mondo!"
 	}
 	
 	"You have denounced our allies":{
+		Italian:"Hai denunciato i nostri alleati!"
 	}
 	
 	"You have denounced our enemies":{
+		Italian:"Hai denunciato i nostri nemici!"
+	}
+
+
+ 	//Diplomatic sections
+	"Luxury resources":{
+		Italian:"Risorse di lusso"
+	}
+	"Strategic resources":{
+		Italian:"Risorse strategiche"
+	}
+	"Technologies":{
+		Italian:"Tecnologie"
+	}
+	"Cities":{
+		Italian:"Città"
+	}
+	"Introduce to [nation]":{
+		Italian:"Introduzione per il popolo [nation]"
 	}
 
 ////// Overview screen
@@ -3087,6 +3133,21 @@
 		Russian:"Уничтожить [civName]"
 		Simplified_Chinese:"摧毁[civName]文明"
 		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory?
+	}
+
+//////Great People commands
+
+	"Create Customs house":{
+		Italian:"Costruisci Dogana"
+	}
+	"Create Academy":{
+		Italian:"Costruisci Accademia"
+	}
+	"Create Manufactory":{
+		Italian:"Costruisci Fabbrica"
+	}
+	"Create Landmark":{
+		Italian:"Costruisci Punto di Riferimento"
 	}
 	
 	
