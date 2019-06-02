@@ -761,7 +761,6 @@
 		name:"Milan",
 		adjective:["Milan"],
 		cityStateType:"Cultured",
-		startBias:["Coast"],
 		
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
@@ -775,7 +774,6 @@
 		name:"Florence",
 		adjective:["Florence"],
 		cityStateType:"Cultured",
-		startBias:["Coast"],
 		
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
@@ -803,6 +801,7 @@
 		name:"Antwerp",
 		adjective:["Antwerp"],
 		cityStateType:"Mercantile",
+		startBias:["Coast"],
 
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
@@ -817,6 +816,7 @@
 		name:"Tyre",
 		adjective:["Tyre"],
 		cityStateType:"Mercantile",
+		startBias:["Coast"],
 
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
@@ -830,6 +830,7 @@
 		name:"Ur",
 		adjective:["Ur"],
 		cityStateType:"Maritime",
+		startBias:["Coast"],
 
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
