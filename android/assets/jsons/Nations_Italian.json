@@ -425,7 +425,7 @@
 		adjective:["tedesco"],
 		
 		startIntroPart1: "Salve, potente Bismarck, primo cancelliere della Germania e del suo impero! La germania è una delle nazioni più giovani, sorta dalle ceneri del Sacro Romano Impero e poi unificata nel 1871, poco più di un secolo fa. Il popolo tedesco si è rivelato creativo, industrioso e feroce in guerra. Nonostante le catastrofi subite nella prima metà del XX secolo, la Germania è riuscita a imporsi come una delle nazioni più importanti dal punto di vista economico, artistico e tecnologico.."
-		startIntroPart2: "Grande principe Bismarck, il popolo tedesco guarda a te per vivere nuovi giorni di gloria. Forte è la sua determinazione affinché tu, l'amato Cancelliere di Ferro, torni a guidare la nazione ancora una volta. Sceglierai di dominare con il suangue e l'acciaio o patrocinerai le arti e l'industria? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		startIntroPart2: "Grande cancelliere Bismarck, il popolo tedesco guarda a te per vivere nuovi giorni di gloria. Forte è la sua determinazione affinché tu, l'amato Cancelliere di Ferro, torni a guidare la nazione ancora una volta. Sceglierai di dominare con il suangue e l'acciaio o patrocinerai le arti e l'industria? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Lascia che tu lo sappia: tu sei un nemico della Germania e come tale vai combattuto. Che Dio abbia pietà di te, perché io non ne avrò."
 		attacked:"Ho sconfitto nemici dieci volte più potennti di te. Tu ne sarai solo un altro per gli storici!"
@@ -440,7 +440,7 @@
 		hateHello:"Sputa il rospo!"
 		hateLetsHearIt:["E...?!","Avanti!","Beh, dimmelo!"]
 		hateNo:["Ciò non è accettabile!","Stai scherzando, spero!","Nein!"]
-		hateYes:["Va bene.","Gut. (Ben)","Non credo possa rifiutare."]
+		hateYes:["Va bene.","Gut. (Bene)","Non credo possa rifiutare."]
 		
 		afterPeace:"Che ne pensi di metterci una pietra sopra?"
 		tradeRequest:"Considerare con cautela questa proposta sarebbe nei nostri migliori interessi."
@@ -456,15 +456,50 @@
 			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
+	{
+		name:"Mongolia",
+		translatedName:"Mongolia",
+		leaderName:"Genghis Khan",
+		adjective:["mongolo"],
+		startBias:["Plains"],
+		
+		startIntroPart1: "Salute a te, o grande Temujin, immortale imperatore dell'impero mongolo! I tuoi pugni frantumano le mura delle città e la tua voce annunciaa disperazione ai nemici che la odano. O khan, tu riunisti le tribù in lotta nell'Asia settentrionale facendone il tuo popolo e creando la più temibile cavalleria che il mondo abbia mai visto. L'astuta diplomazia dei tuoi divideva il nemico, lo rendeva debole e inerme di fronte all'esercito conquistatore della Mongolia, che in pochi anni s'impadronì di gran parte della Cina e dell'Asia orientale. E l'impero continuò a crescere, fino a estendersi dall'Europa al sud della Corea, dai confini con Bisanzio fino a Giava. Invero fu l'impero più vasto mai creato, di fronte al quale quello romano e quello greco impallidiscono."
+		startIntroPart2: "Temujin, il tuo popolo desidera cavalcare di nuovo verso la lotta e la conquista sotto la tua guida! Tremerà ancora il mondo al suono poderoso della tua cavalleria che avanza nella steppa? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Sei sulla strada dei miei eserciti. Se non ti vuoi sottomettere con le buone, allora risolviamola come guerrieri!"
+		attacked:"Basta con le parole. Oggi, la Mongolia marcia per la tua sconfitta!"
+		defeated:"Hai sottomesso i clan della Mongolia. Il mio rispetto per te è quasi uguale al mio disprezzo. Attendo la tua giustizia."
+		introduction:"Io sono Temujin, conquistatore di città e paesi. Davanti a me si estendono le future terre mongole. Dietro di me cavalca la tempesta."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Ti ascolto.","Che c'è?"]
+		neutralNo:["No.","Certo che no!"]
+		neutralYes:["Bene.","Sta bene.","Ma certo!"]
+
+		hateHello:"E dunque?"
+		hateLetsHearIt:["E poi?","Continua..."]
+		hateNo:["Smetti di scherzare.","Questo non lo tollero!"]
+		hateYes:["Va bene...","D'accordo!"]
+		
+		afterPeace:"Sembra che ti abbia sottovalutato. Molto bene... per ora la tua testa rimane sulle tue spalle."
+		tradeRequest:"Non sono sempre così generoso, ma spero tu accolga questa rara opportunità che noi ti diamo."
+				
+		mainColor:[51,0,0],
+		secondaryColor:[0,204,102],
+		uniqueName:"Terrore mongolo",
+		unique:"+1 Movimento per le unità a cavallo. +30% Forza quando assali una Città-Stato o ne attacchi le unità.",
+		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
+		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
+		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
+	},
 	*/
 
 	//City states
 	{
 		name:"Milan",
 		translatedName:"Milano",
-		adjective:["Milan"],
+		adjective:["milanese"],
 		cityStateType:"Acculturata",
-		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
@@ -476,9 +511,9 @@
 	},
 	{
 		name:"Florence",
-		adjective:["Firenze"],
+		translatedName:"Firenze",
+		adjective:["fiorentino"],
 		cityStateType:"Acculturata",
-		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
@@ -490,7 +525,8 @@
 	},
 	{
 		name:"Rio de Janeiro",
-		adjective:["Rio de Janeiro"],
+		translatedName:"Rio de Janeiro",
+		adjective:["brasiliano"],
 		cityStateType:"Marittima",
 		startBias:["Coast"],
 		
@@ -504,8 +540,10 @@
 	},
 	{
 		name:"Antwerp",
-		adjective:["Antwerp"],
+		translatedName:"Antwerp",
+		adjective:["anversano"],
 		cityStateType:"Mercantile",
+		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
@@ -513,8 +551,40 @@
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[194,97,255],
-		cities:["Antwerp"]
+		cities:["Anversa"]
 	},
+	/*
+	{
+		name:"Tyre",
+		translatedName:"Tiro",
+		adjective:["tirano"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[255,97,255],
+		cities:["Tiro"]
+	},
+	{
+		name:"Ur",
+		translatedName:"Ur",
+		adjective:["sumero"],
+		cityStateType:"Marittima",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[60,190,255],
+		cities:["Ur"]
+	},
+	*/
 	
 	//Barbarian
 	{
