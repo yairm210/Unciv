@@ -200,7 +200,8 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
         if (!currentPlayerCiv.isAtWarWith(otherCiv)) {
             if(otherCivDiplomacyManager.relationshipLevel() > RelationshipLevel.Neutral
-                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)){
                 val declareFriendshipButton = TextButton("Declare Friendship ([30] turns)".tr(),skin)
                 declareFriendshipButton.onClick {
                     diplomacyManager.signDeclarationOfFriendship()
@@ -209,7 +210,8 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 diplomacyTable.add(declareFriendshipButton).row()
             }
 
-            if(!diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)){
+            if(!diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)
+                            && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
                 val denounceButton = TextButton("Denounce ([30] turns)".tr(),skin)
                 denounceButton.onClick {
                     diplomacyManager.denounce()
