@@ -3,10 +3,10 @@ package com.unciv.models.gamebasics.tile
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stats
 import java.util.*
-import com.unciv.models.gamebasics.tr
 
 class TileImprovement : NamedStats(), ICivilopedia {
 
@@ -48,7 +48,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
                 stringBuilder.appendln(it.key + " for ".tr() + it.value.joinToString(", "))
             }
 
-            if (techRequired != null) stringBuilder.appendln("Tech required: ".tr()+"$techRequired".tr())
+            if (techRequired != null) stringBuilder.appendln("Required tech: [$techRequired]".tr())
 
             return stringBuilder.toString()
         }

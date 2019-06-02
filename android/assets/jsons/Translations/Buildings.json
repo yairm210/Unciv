@@ -1460,4 +1460,74 @@
 		Portuguese:"Câmara  de biostase de Nave Espacial"
 		German:"Raumschiff Stase-Kammer"
 	}
+	
+	
+	// UI notifications of building info/conditions
+	
+	
+	"Requires [buildingName] to be built in the city":{
+		Italian:"Richiede la costruzione di [buildingName] nella città"
+		French:"Requiert la construction de [buildingName] dans la ville"
+		Simplified_Chinese:"需要城市建有[buildingName]"
+		Portuguese:"Requer [buildingName] para ser construido na cidade"
+	}
+
+	"Requires [buildingName] to be built in all cities":{
+		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
+		French:"Requiert la construction de [buildingName] dans toutes les villes"
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+		Portuguese:"Requer [buildingName] para ser construido em todas as cidades"
+	}
+
+	"Provides a free [buildingName] in the city":{
+		Italian:"Dona l'edificio gratuito [buildingName] nella città"
+		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
+		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+		Portuguese:"Provê um(a) [buildingName] grátis na cidade"
+	}
+
+	"Requires worked [resource] near city":{
+		Italian:"Richiede che la città sfrutti [resource]"
+		French:"Nécessite l'exploitation de [resource] près de la ville"
+		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
+		Portuguese:"Requer [resource] trabalhado perto da cidade"
+	}
+
+	"Wonder is being built elsewhere":{
+		Italian:"Meraviglia in costruzione altrove"
+		Simplified_Chinese:"正在其他城市建造该奇观"
+        	French:"Cette merveille est déjà en construction ailleurs"
+		Portuguese:"A maravilha está sendo construida em uma cidade estrangeira"
+	}
+
+	"Requires a [buildingName] in all cities":{
+		Italian:"Richiede [buildingName] in tutte le città"
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+		French:"Nécessite un(e) [buildingName] dans toutes les villes"
+		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
+	}
+
+	"Requires a [buildingName] in this city":{
+		Italian:"Richiede [buildingName] nella città"
+		Simplified_Chinese:"需要城市建有[buildingName]"
+        	French:"Nécessite un(e) [buildingName] dans cette ville"
+		Portuguese:"Requer um [buildingName] nessa cidade"
+	}
+
+	"Requires [resource]":{
+		Italian:"Richiede [resource]"
+		Simplified_Chinese:"需要资源：[resource]"
+		French:"[resource] requis(e)"
+		Portuguese:"Requer [resource]"
+	}
+
+	"Required tech: [requiredTech]":{
+		Italian:"Tecnologie propedeutiche: [requiredTech]"
+		French:"Nécessite la technologie: [requiredTech]"
+		Simplified_Chinese:"需要科技：[requiredTech]"
+		Portuguese:"Requer tecnologia: [requiredTech]"
+	}
+	
+	
+
 }

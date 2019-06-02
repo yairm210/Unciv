@@ -205,11 +205,11 @@ class Building : NamedStats(), IConstruction{
             return "Must be next to desert"
 
         if ("Must be next to mountain" in uniques
-                && !construction.cityInfo.getCenterTile().getTilesInDistance(1).any { it.baseTerrain == "Mountain" })
+                && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain == "Mountain" })
             return "Must be next to mountain"
 
         if("Can only be built in coastal cities" in uniques
-                && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
+                && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain=="Coast" })
             return "Can only be built in coastal cities"
 
         val civInfo = construction.cityInfo.civInfo

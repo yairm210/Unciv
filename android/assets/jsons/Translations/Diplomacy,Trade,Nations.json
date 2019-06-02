@@ -1,0 +1,1008 @@
+{
+	
+////// Diplomacy!
+	
+	"Diplomacy":{	
+		Italian:"Diplomazia"
+		Russian:"Дипломатия"
+		French:"Diplomatie"
+		Romanian:"Diplomaţie"
+		Spanish:"Diplomacia"
+		Simplified_Chinese:"外交"
+		Portuguese:"Diplomacia"
+		German:"Diplomatie"
+	}
+
+	"War":{
+		Italian:"Guerra"
+		Russian:"Война"
+		French:"Guerre"
+		Romanian:"Război"
+		Spanish:"Guerra"
+		Simplified_Chinese:"战争"
+		Portuguese:"Guerra"
+		German:"Krieg"
+	}
+
+	"Peace":{
+		Italian:"Pace"
+		Russian:"Мир"
+		French:"Paix"
+		Romanian:"Pace"
+		Spanish:"Paz"
+		Simplified_Chinese:"和平"
+		Portuguese:"Paz"
+		German:"Frieden"
+	}
+	
+	"Declare war":{
+		Italian:"Dichiara guerra"
+		Russian:"Объявить войну"
+		French:"Déclarer la guerre"
+		Romanian:"Declară război"
+		Spanish:"Declarar guerra"
+		Simplified_Chinese:"宣战"
+		Portuguese:"Declarar guerra"
+		German:"Krieg erklären"
+	}
+
+	"Declare war on [civName]?":{ //Don't translate in diplomacy view
+		Italian:"Vuoi dichiarare guerra a [civName]?"
+		French:"Déclarer la guerre à [civName]?"
+		Simplified_Chinese:"向[civName]宣战吗？"
+		Portuguese:"Deseja declarar guerra a [civName]?"
+	}
+	
+	"[civName] has declared war on us!":{
+		Italian:"La civiltà [civName] ci ha dichiarato guerra!"
+		Russian:"Цивилизация [civName]  объявила нам войну!"
+		French:"[civName] nous a déclaré la guerre!"
+		Romanian:"[civName] ne-au declarat război!"
+		Spanish:"¡[civName] te ha declarado la guerra!"
+		Simplified_Chinese:"[civName]已经对我们宣战！"
+		Portuguese:"[civName] declarou guerra contra nós!"
+		German:"[civName] hat uns den Krieg erklärt!"
+	}
+	
+	"[tradeOffer] from [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
+		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
+		French:"[tradeOffer] de [otherCivName] a pris fin"
+		Portuguese:"[tradeOffer] de [otherCivName] terminou"
+	}
+	
+	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
+		Italian:"[leaderName] del popolo [nation]"
+		German:"[leaderName] von [nation]"
+		Spanish:"[leaderName] de [nation]"
+		Portuguese:"[leaderName] do [nation]"
+		Simplified_Chinese:"[leaderName]的[nation]"
+		French:"[leaderName] de [nation]"
+		Russian:"[leaderName] из [nation]"
+		Romanian:"[leaderName] de [nation]"
+	}
+	
+	"You'll pay for this!":{
+		Italian:"Pagherai caro questo affronto!"
+		German:"Sie werden dafür bezahlen!"
+		French:"Vous allez payer pour cela!"
+		Spanish:"¡Pagarás por esto!"
+		Russian:"Вы заплатите за это!"
+		Romanian:"Veți plăti pentru asta!"
+		Portuguese:"Você vai pagar por isso!"
+		Simplified_Chinese:"你会为此付出代价的！"
+	}
+	
+	"Negotiate Peace":{
+		Italian:"Negozia una pace"
+		Simplified_Chinese:"议和"
+		Portuguese:"Negociar paz"
+	}
+
+	"Very well.":{
+		Italian:"Molto bene."
+		French:"Très bien."
+		Simplified_Chinese:"很好。"
+		Portuguese:"Muito bem."
+	}
+
+	"Farewell.":{
+		Italian:"Addio."
+		French:"Adieu."
+		Simplified_Chinese:"再见。"
+		Portuguese:"Adeus."
+	}
+
+	"Sounds good!":{
+		Italian:"Sta bene!"	
+	}
+	
+	"Not this time.":{ // declining trade text
+		Italian:"Non questa volta."
+		Simplified_Chinese:"这次不行，我只和有诚意的人交易。"
+		French:"Pas cette fois."
+		Portuguese:"Dessa vez não."
+	}
+
+	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state
+		Italian:"Eccellente!"
+		Simplified_Chinese:"好极了！和和气气才是生财之道。"
+		French:"Excellent!"
+		Portuguese:"Excelente!"
+	}
+
+	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
+		Italian:"Che ne dici di questa offerta?"
+		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
+		French:"Pourquoi pas autre chose..."
+		Portuguese:"Porque não algo mais..."
+	}
+	
+	"A pleasure to meet you.":{
+		Italian:"Siamo lieti di incontrarvi."
+		French:"Un plaisir de vous rencontrez"
+		Simplified_Chinese:"很高兴见到你。"
+		Portuguese:"Prazer conhece-lo"
+	}
+	
+	"Our relationship: ":{
+		Italian:"I nostri rapporti: "
+		French:"Notre relation :" //or l'état de notre relation
+		Simplified_Chinese:"我们的关系："
+		Portuguese:"Nossas relações"
+	}
+
+	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
+		Italian:"Abbiamo incontrato la Citta-Stato di [name]!"
+		Portuguese:"Nós encontramos a cidade-estado de [name]"
+
+	}
+	
+	// Friendship declaration flavor texts
+	"Declare Friendship ([numberOfTurns] turns)":{
+		Italian:"Dichiarazione di Amicizia ([numberOfTurns] turni)"
+		French:"Déclaration d'Amitié ([numberOfTurns] tours)"
+		Simplified_Chinese:"宣布相互友善([numberOfTurns]回合)"
+		Portuguese:"Declarar amizade ([numberOfTurns] turns)"
+	}
+
+	"May our nations forever remain united!":{
+		Italian:"Possano le nostre nazioni rimanere per sempre unite!"
+		French:"Puissent nos nations rester unies pour toujours!"
+		Simplified_Chinese:"我们两个文明将永远肝胆相照、休戚与共地站在一起！"
+		Portuguese:"Que nossas nações se mantenho unidas para sempre!"
+	}
+
+	"Indeed!":{
+		Italian:"Perfetto!"
+		French:"Parfait!" //or En effet! , more accurate but harder to understand what it means
+		Simplified_Chinese:"这是无比正确的命运抉择！"
+		Portuguese:"Perfeito!"
+	}
+	
+	// Denunceation flavour texts
+	"Denounce ([numberOfTurns] turns)":{
+	}
+	
+	"We will remember this.":{
+	}
+	
+	
+	// Relationship states, from worst (Unforgivable) to best (Ally)
+	
+  	"Unforgivable":{
+		Italian:"Imperdonabile!"
+		French:"Impardonnable"
+		Simplified_Chinese:"仇深似海"
+		Portuguese:"Imperdoável"
+  	}
+
+  	"Enemy":{
+		Italian:"Nemico"
+		French:"Ennemi"
+		Simplified_Chinese:"宿命之敌"
+		Portuguese:"Inimigos" //as in 'we are enemies' not just 'they are our enemy'
+  	}
+
+  	"Competitor":{
+	  	Italian:"Avversario"
+		French:"Adversaire" //or en compétition
+		Simplified_Chinese:"瑜亮之争"
+		Portuguese:"Adversários"
+  	}
+
+  	"Neutral":{
+    		Italian:"Neutrale"
+		French:"Neutre"
+		Simplified_Chinese:"泛泛之交"
+		Portuguese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
+  	}
+
+  	"Favorable":{
+		Italian:"Favorevole"
+		French:"Favorable"
+		Simplified_Chinese:"惺惺相惜"
+		Portuguese:"Favorável"
+  	}
+
+  	"Friend":{
+		Italian:"Amichevole"
+		French:"Ami"
+		Simplified_Chinese:"秦晋之好"
+		Portuguese:"Amigos"
+ 	 }
+
+  	"Ally":{
+		Italian:"Alleato"
+		French:"Allié"
+		Simplified_Chinese:"歃血之盟"
+		Portuguese:"Aliado"
+  	}
+	
+	// City States
+	
+	"Provides [amountOfCulture] culture at 30 Influence":{
+		Italian:"Dona [amountOfCulture] punti Cultura quando l'Influenza supera 30 punti"
+	}
+
+	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
+		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città quando l'Influenza supera 30 punti"
+	}
+
+	"Provides 3 happiness at 30 Influence":{
+		Italian:"Dona 3 Punti Felicità quando l'Influenza supera 30 punti"
+	}
+
+	"Gift [goldAmount] gold":{
+		Italian:"Dona [goldAmount] Oro"
+	}
+
+	"Relationship changes in another [turnsToRelationshipChange] turns":{
+		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
+	}
+	
+
+////// Diplomatic modifiers
+
+
+	"You declared war on us!":{
+		Italian:"Ci hai dichiarato guerra!"
+		French:"Vous nous avez déclaré la guerre!"
+		Simplified_Chinese:"不知死活的蠢货!你竟敢向我们宣战！"
+		Portuguese:"Você declarou guerra contra nós!"
+	}
+
+	"Your warmongering ways are unacceptable to us.":{
+		Italian:"Non accettiamo i tuoi metodi da guerrafondaio!"
+		French:"Votre bellicisme est inacceptable pour nous."
+		Simplified_Chinese:"你的穷兵黩武行径是我们无法容忍的！"
+		Portuguese:"Seus costumes de guerra são inaceitáveis para nós."
+	}
+
+	"You have captured our cities!":{
+		Italian:"Hai preso una delle nostre città!"
+		French:"Vous avez capturé nos villes!"
+		Simplified_Chinese:"多行不义必自毙！你竟敢占领我们的城市！"
+		Portuguese:"Você capturou nossas(nossa) cidades(cidade)!"
+	}
+
+	"Years of peace have strengthened our relations.":{
+		Italian:"Gli anni di pace hanno rafforzato i nostri rapporti."
+		French:"Les années de paix ont renforcées notre relation"
+		Simplified_Chinese:"多年的和平时光让我们更加珍视彼此的关系。"
+		Portuguese:"Anos de paz fortaleceram nossas relações."
+	}
+
+	"Our mutual military struggle brings us closer together.":{
+		Italian:"I nostri nemici in comune ci hanno tenuti insieme."
+		French:"Nos problèmes militaires communs nous ont rapprochés"
+		Simplified_Chinese:"共同的戎马岁月拉近了彼此的距离。"
+		Portuguese:"Nossas lutas mutuas nos fazem mais próximos."
+	}
+	
+	"We have signed a public declaration of friendship":{
+		Italian:"Abbiamo segnato una dichiarazione pubblica d'amicizia!"
+		Simplified_Chinese:"真是美好的一天！我们宣布：两个文明间将彼此尊重、相互友善！"
+		French:"Nous avons publiquement signé une Déclaration d'Amitié"
+		Portuguese:"Assinamos uma declaração pública de amizade"
+	}
+
+	"You have declared friendship with our enemies!":{
+		Italian:"Hai dichiarato un'amicizia con i nostri nemici!"
+		French:"Vous avez signé une Déclaration d'Amitié avec nos ennemis!"
+		Simplified_Chinese:"渡尽劫波兄弟在,相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
+		Portuguese:"Voçê declarou amizade a um de nossos inimigos!"
+	}
+	"You have declared friendship with our allies":{
+		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
+		French:"Vous avez signé une Déclaration d'Amitié avec nos alliés"
+		Simplified_Chinese:"兄弟齐心、其利断金！我们宣布：我们与盟友间兄弟般的友谊永世长存！"
+		Portuguese:"Voçê declarou amizade a um de nossos aliados"
+	}
+	
+	"Our open borders have brought us closer together.":{
+		Italian:"I nostri accordi di passaggio hanno avvicinato le nostre nazioni."
+		French:"Notre Accord de libre passage nous a rapprochés"
+		Simplified_Chinese:"开放的边界促进了彼此的了解，让我们的人民心心相通！"
+		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
+	}
+
+
+	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
+		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
+		Portuguese:"Sua chamada 'amizade' não vale nada."
+	}
+	
+	"You have publically denounced us!":{
+		Italian:"Ci hai denunciato pubblicamente di fronte al mondo!"
+	}
+	
+	"You have denounced our allies":{
+		Italian:"Hai denunciato i nostri alleati!"
+	}
+	
+	"You have denounced our enemies":{
+		Italian:"Hai denunciato i nostri nemici!"
+	}
+	
+	
+////// Trade	
+
+	"Trade":{	
+		Italian:"Negozia"
+		Russian:"Торговля"
+		French:"Échanges"
+		Romanian:"Comerț"
+		Spanish:"Comerciar"
+		Simplified_Chinese:"贸易"
+		Portuguese:"Comércio"
+		German:"Handel"
+	}
+
+	"Offer trade":{	
+		Italian:"Negozia"
+		Russian:"Предложить обмен"
+		French:"Proposer un échange"
+		Romanian:"Ofertă comercială"
+		Spanish:"Ofrecer intercambio"
+		Simplified_Chinese:"提供贸易"
+		Portuguese:"Oferecer uma troca comercial" // seems like not one person wants to :D
+		German:"Handel anbieten"
+	}
+
+	"What do you have in mind?":{	
+		Italian:"Cos'hai in mente?"
+		Russian:"Что вы об этом думаете?"
+		French:"À quoi pensez-vous?"
+		Romanian:"La ce te gândești?"
+		Spanish:"¿Qué tienes en mente?"
+		Simplified_Chinese:"你有什么想法?"
+		Portuguese:"O que tens em mente?" //tens as in have or has nor tens of thousands of course
+		German:"Was schwebt Ihnen vor?"
+	}
+
+	"Our items":{	
+		Italian:"I nostri articoli"
+		Russian:"Наши товары"
+		French:"Nos articles"
+		Romanian:"Articolele noastre"
+		Spanish:"Nuestros ítems"
+		Simplified_Chinese:"我们的物品"
+		Portuguese:"Nossos itens/recursos"
+		German:"Unsere Gegenstände"
+	}
+    
+	"Our trade offer":{	
+		Italian:"La nostra offerta"
+		Russian:"Наше предложение\n  обмена"
+		French:"Notre offre d'échange"
+		Romanian:"Oferta noastră"
+		Spanish:"Nuestra oferta"
+		Simplified_Chinese:"我们的贸易提供"
+		Portuguese:"Nossa oferta"
+		German:"Unser Handelsangebot"
+	}
+
+	"[otherCiv]'s trade offer":{
+		Italian:"Offerta di [otherCiv]"
+		Russian:"Предложение обмена \n цивилизации [otherCiv]"
+		French:"L'offre d'échange de [otherCiv]"
+		Romanian:"Ofertă de schimb a [otherCiv]"
+		Spanish:"Oferta de [otherCiv]"
+		Simplified_Chinese:"[otherCiv]的贸易提供"
+		Portuguese:"Oferta da(o/e) [otherCiv]" // da(o/e) meaning of in diffenrent genders
+		German:"[otherCiv]s Handelsangebot"
+	}
+
+	"[otherCiv]'s items":{	
+		Italian:"Gli articoli di [otherCiv]"
+		Russian:"Товары цивилизации [otherCiv]"
+		French:"Les articles de [otherCiv]"
+		Romanian:"Articolele de la [otherCiv]"
+		Spanish:"Ítems de [otherCiv]"
+		Simplified_Chinese:"[otherCiv]的物品"
+		Portuguese:"Itens da(o/e) [otherCiv]"
+		German:"[otherCiv]s Gegenstände"
+	}
+
+	"Pleasure doing business with you!":{
+		Italian:"È un piacere fare affari con te!"
+		Russian:"С вами приятно иметь дело!"
+		French:"C'est un plaisir de faire des affaires avec vous!"
+		Romanian:"Este o plăcere să facem afaceri împreună!"
+		Spanish:"¡Un placer hacer negocios contigo!"
+		Simplified_Chinese:"很高兴和您做生意!"
+		Portuguese:"É um prazer fazer negócios com voçê" // can remove 'É um prazer' as it translates to 'it is a pleasure'
+		German:"Angenehm mit Ihnen Geschäfte zu machen!"
+	}
+
+	"I think not.":{	
+		Italian:"Non ci penso proprio!"
+		Russian:"Думаю, нет."
+		French:"Je ne crois pas."
+		Romanian:"Nu cred."
+		Spanish:"Creo que no."
+		Simplified_Chinese:"我认为不可行."
+		Portuguese:"Acho que não"
+		German:"Lieber nicht."
+	}
+
+	"That is acceptable.":{	
+		Italian:"È accettabile."
+		Russian:"Это приемлемо."
+		French:"C'est acceptable."
+		Romanian:"E acceptabil."
+		Spanish:"Es aceptable"
+		Simplified_Chinese:"这是可以接受的."
+		Portuguese:"Isto é aceitavel"
+		German:"Das ist akzeptabel."
+	}
+
+	"Accept":{	
+		Italian:"Accetta"
+		Russian:"Принять"
+		French:"Accepter"
+		Romanian:"Acceptă"
+		Spanish:"Aceptar"
+		Simplified_Chinese:"同意"
+		Portuguese:"Aceitar"
+		German:"Annehmen"
+	}
+
+	"Keep going":{
+		Italian:"Continua..."
+		French:"Continuer..."
+		Simplified_Chinese:"继续..."
+		Portuguese:"Prossiga"
+	}
+	
+	"There's nothing on the table":{
+		Italian:"Non c'è niente da trattare"
+		Russian:"Вы ничего не предложили" //Don't know how to properly translate this one, but i think this will do okay
+		French:"Il n'y a rien a échangé" //if it's in case of empty trade it's accurate
+		Romanian:"Nu e nimic pe masă"
+		Spanish:"¿Estas de broma?"
+		Simplified_Chinese:"表格上没有任何物品"
+		Portuguese:"Não ha nada á mesa"
+		German:"Der Verhandlungstisch ist leer"
+	}
+
+	"Peace treaty":{
+		Italian:"Trattato di pace"
+		Russian:"Мирный договор"
+		French:"Traité de paix"
+		Romanian:"Tratat de pace"
+		Spanish:"Tratado de paz"
+		Simplified_Chinese:"和平条约"
+		Portuguese:"Tratado de paz"
+		German:"Friedensabkommen"
+	}
+
+	"Agreements":{
+		Italian:"Accordi"
+		Simplified_Chinese:"协定"
+		French:"Accords"
+		Portuguese:"Acordos"
+	}
+
+	"Open Borders":{
+		Italian:"Diritto di passaggio"
+		Simplified_Chinese:"开放边境"
+		French:"Accord de libre passage"
+		Portuguese:"Acordo de fronteiras abertas"
+	}
+
+	"Gold per turn":{
+		Italian:"Oro per turno"
+		Russian:"Золота за ход"
+		French:"Or par tour"
+		Romanian:"Aur per rundă"
+		Spanish:"Oro por turno"
+		Simplified_Chinese:"每回合得到金钱"
+		Portuguese:"Ouro por turno"
+		German:"Gold pro Runde"
+	}
+
+	"Cities":{
+		Italian:"Città"
+		Romanian:"Orase"
+		Spanish:"Ciudades"
+		Simplified_Chinese:"城市"
+		German:"Städte"
+		Dutch:"Cities"
+		French:"Villes"
+		Portuguese:"Cidades"
+		Russian:"Города"
+	}
+
+	"Technologies":{
+		Italian:"Tecnologie",
+		German:"Technologien",
+		French:"Technologies",
+		Simplified_Chinese:"科技"
+		Portuguese:"Tecnologias"
+	}
+
+	"Declarations of war":{
+		Italian:"Dichiarazione di guerra"
+		French:"Déclarations de guerre"
+		Simplified_Chinese:"宣战"
+		Portuguese:"Declarações de guerra"
+	}
+
+	"Luxury resources":{
+		Italian:"Risorse di lusso"
+		French:"Ressources de luxes"
+		Simplified_Chinese:"奢侈资源"
+		Portuguese:"Recursos raros/luxuosos" //raros = rare luxuosos = luxurious
+	}
+
+	"Strategic resources":{
+		Italian:"Risorse strategiche"
+		French:"Ressources stratégiques"
+		Simplified_Chinese:"战略资源"
+		Portuguese:"Recursos estratégicos"
+	}
+	
+	
+	// Nations and uniques
+	
+	
+	"replaces":{// As in "Camel Archer replaces Knight", "Krepost replaces Barracks"
+		Italian:"sostituisce"
+		Romanian:"înlocuiește"
+		Spanish:"Remplaza"
+		Simplified_Chinese:"替代"
+		German:"ersetzt"
+		French:"remplace"
+		Portuguese:"substitui"
+		Russian:"заменяет"
+	}
+	
+	"[resourceName] not required":{
+		Italian:"Risorsa [resourceName] non richiesta"
+		Simplified_Chinese:"不需要[resourceName]"
+		French:"[resourceName] non requis"
+		Portuguese:"[resourceName] não requirido"
+	}
+	
+	"National ability":{ // the unique ability that each nation has
+		Italian:"Abilità della civiltà"
+		Romanian:"Abilitate a națiunii"
+		Spanish:"Bonus de nacion"
+		German:"Nationalfähigkeit"
+		French:"Capacité de la civilisation"
+		Portuguese:"Habilidade nacional"
+		Russian:"Национальная способность"
+		Simplified_Chinese:"民族特性"
+	}
+	
+	"Babylon":{	
+		Italian:"Babilonia"
+		Russian:"Вавилон"
+		French:"Babylone"
+		Romanian:"Babilonia"
+		Spanish:"Babilonia"
+		Simplified_Chinese:"巴比伦"
+		Portuguese:"Babilônia"
+		German:"Babylonien"
+	}
+
+	"Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster":{
+		Italian:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura, e ricevi i Grandi scenziati il 50% più in fretta"
+		Romanian:"La descoperirea abilității Scriere primești un Mare om de știință gratuit, următorii fiind obținuți cu 50% mai repede"
+		German:"Ein kostenloser Großer Wissenschaftler erscheint, wenn Schrift erforscht wurde; Große Wissenschaftler erscheinen 50% häufiger"
+		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres apparaissent 50% plus vite"
+		Portuguese:"Receba gratuitamente um grande cientista quando você descobrir Escritura, ganhe grandes cientistas 50% mais rápido"
+		Russian:"Получите бесплатно великого ученого, когда откроете для себя написание, заработайте великих ученых на 50% быстрее"
+		Simplified_Chinese:"发明文字后立即获得一个大科学家，大科学家点数积累速率+50%"
+		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
+	}
+	
+	"Greece":{	
+		Italian:"Grecia"
+		Russian:"Греция"
+		French:"Grèce"
+		Romanian:"Grecia"
+		Spanish:"Grecia"
+		Simplified_Chinese:"希腊"
+		Portuguese:"Grécia"
+		German:"Griechenland"
+	}
+
+	"China":{	
+		Italian:"Cina"
+		Russian:"Китай"
+		French:"Chine"
+		Romanian:"China"
+		Spanish:"China"
+		Simplified_Chinese:"中华"
+		Portuguese:"China"
+		German:"China"
+	}
+
+	"Great general provides double combat bonus, and spawns 50% faster":{
+		Italian:"I Grandi Generali concedono nascono il 50% più in fretta e il loro bonus è raddoppiato"
+		Romanian:"Marele general oferă bonus de luptă dublu și se crează cu 50% mai repede"
+		Simplified_Chinese:"大军事家提供双倍战斗力加成，大军事家产生速率+50%"
+		German:"Ein Großer General gibt den doppelten Kampfbonus und erscheint 50% häufiger"
+		French:"Le général illustre donne deux fois plus de bonus de combat, et apparait 50% plus vite"
+		Portuguese:"Grande general fornece bônus de combate duplo e é gerado 50% mais rápido"
+		Russian:"Великий полководец дает двойной боевой бонус и появляется на 50% быстрее"
+		Spanish:"El gran general proporciona bonificación de combate doble y genera un 50% más rápido."
+	}
+	
+	"Egypt":{	
+		Italian:"Egitto"
+		Russian:"Египет"
+		French:"Égypte"
+		Romanian:"Egipt"
+		Spanish:"Egipto"
+		Simplified_Chinese:"埃及"
+		Portuguese:"Egíto"
+		German:"Ägypten"
+	}
+
+	"+20% production towards Wonder construction":{
+		Italian:"+20% Produzione per la costruzione di Meraviglie"
+		German:"20% erhöhte Produktion beim Errichten von Wundern"
+		French:"+20% vitesse de construction des merveilles"
+		Spanish:"+ 20% de producción hacia la construcción de maravillas."
+		Romanian:"+ 20% producție spre construcția de mirare"
+		Portuguese:"+ 20% de produção para construção de maravilhas"
+		Russian:"+20% производства на строительство чудес"
+		Simplified_Chinese:"建造奇观时+20%产能积累速率"
+	}
+	
+	"England":{	
+		Italian:"Inghilterra"
+		Russian:"Англия"
+		French:"Angleterre"
+		Romanian:"Anglia"
+		Spanish:"Inglaterra"
+		Simplified_Chinese:"英格兰"
+		Portuguese:"Inglaterra"
+		German:"England"
+	}
+
+	"+2 movement for all naval units":{
+		Italian:"+2 movimento per tutte le unità navali"
+		Romanian:"+2 deplasare pentru toate unitățile navale"
+		Spanish:"+2 de movimiento a las unidades navales"
+		Simplified_Chinese:"所有海军+2移动力"
+		German:"+2 Bewegung für alle Marineeinheiten"
+		French:"+2 mouvements pour les unités navales"
+		Portuguese:"+2 movimento para todas as unidades navais"
+		Russian:"+2 движение для всех военно-морских подразделений"
+	}
+	
+	"France":{	
+		Italian:"Francia"
+		Russian:"Франция"
+		French:"France"
+		Romanian:"Franța"
+		Spanish:"Francia"
+		Simplified_Chinese:"法兰西"
+		Portuguese:"França"
+		German:"Frankreich"
+	}
+
+	"+2 Culture per turn from cities before discovering Steam Power":{
+		Italian:"+2 Cultura al turno dalle città prima di scoprire l'Energia a Vapore"
+		German:"+2 Kultur pro Runde von Städten (bevor Dampfkraft erforscht wurde)"
+		French:"+2 culture par tour et par villes jusqu'à la découverte de la machine à vapeur"
+		Spanish:"+2 Cultura por turno desde las ciudades antes de descubrir la Energía de Vapor."
+		Romanian:"+2 Cultură pe turn de la orașe înainte de a descoperi puterea de abur"
+		Portuguese:"+2 Cultura por turno das cidades antes de descobrir o poder do vapor" //'poder do vapor' means the power of steam
+		Russian:"+2 Культура за ход из городов, прежде чем открыть для себя силу пара"
+		Simplified_Chinese:"在发明蒸汽机之前，每座城市的文化+2"
+	}
+	
+	"Russia":{
+		Italian:"Russia"
+		Romanian:"Rusia"
+		Spanish:"Rusia"
+		Simplified_Chinese:"俄罗斯"
+		German:"Russland"
+		French:"Russie"
+		Portuguese:"Rússia"
+		Russian:"Россия"
+	}
+
+	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
+		Italian:"+1 Produzione dalle Risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
+		Romanian:"Resursele strategice oferă +1 Producție, resursele Cai, Fier și Uraniu oferind cantitate dublă"
+		Spanish:"Los recursos estrategicos proporcionan +1 de produccion y los caballos, uranio y hierro proporcionan 4 envez de 2 recursos"
+		Simplified_Chinese:"每处战略资源+1产能，并且马、铁和铀资源储量加倍"
+		German:"Strategische Ressourcen geben +1 Produktion und Pferde, Eisen und Uran Ressourcen geben die doppelte Menge"
+		French:"Les ressources stratégiques donnent +1 production, et les quantités de chevaux, fer et uranium sont doublés"
+		Portuguese:"Recursos Estratégicos fornecem Produção de +1, recursos de cavalos, ferro e urânio fornecem quantidade dupla"
+		Russian:"Стратегические ресурсы дают +1 к добыче, а ресурсы для лошадей, железа и урана дают двойное количество"
+	}
+	
+	"Rome":{
+		Italian:"Roma"
+		Romanian:"Roma"
+		Spanish:"Roma"
+		Simplified_Chinese:"罗马"
+		German:"Rom"
+		French:"Rome"
+		Portuguese:"Roma"
+		Russian:"Рим"
+	}
+
+	"+25% Production towards any buildings that already exist in the Capital":{
+		Italian:"+25% Produzione per gli edifici già esistenti nella Capitale"
+		Romanian:"+25% Producție pentru toate clădirile deja existente în capitală"
+		Spanish:"+25% De producion a las construciones que ya existan en la capital "
+		German:"+25% Produktion für alle Gebäude die bereits in der Hauptstadt existieren"
+		French:"+25% de production pour tous les batiments déjà construits dans la capitale"
+		Portuguese:"+ 25% Produção para quaisquer edifícios que já existam na Capital"
+		Russian:"+ 25% к любым зданиям, которые уже существуют в столице"
+		Simplified_Chinese:"在其他城市建造首都已建有的建筑时+25%产能积累"
+	}
+	
+	"Arabia":{
+		Italian:"Arabia"
+		Romanian:"Arabia"
+		Spanish:"Arabia"
+		Simplified_Chinese:"阿拉伯"
+		German:"Arabien"
+		French:"Arabie"
+		Portuguese:"Arábia"
+		Russian:"Аравия"
+		Dutch:"Saudi"
+	}
+
+	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
+		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
+		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
+		Portuguese:"1 ouro adicional de rotas comerciais e recursos de petróleo geram o dobro" // óleo could mean normal kitchen oil and even fuel from sugar cane
+	}
+	
+	"America":{
+		Italian:"Stati Uniti"
+		Romanian:"Statele Unite"
+		Spanish:"Estados Unidos"
+		Simplified_Chinese:"美国"
+		German:"Amerika"
+		French:"Etats-Unis"
+		Portuguese:"América"
+		Russian:"Америка"
+	}
+
+	"All land military units have +1 sight, 50% discount when purchasing tiles":{
+		Italian:"+1 Visione per le unità militari terrestri, e -50% costi in Oro quando acquisti una casella"
+		Romanian:"Toate unitățile militare terestre au raza vizuală +1, 50% reducere la cumpărarea celulelor"
+		Spanish:"Todas las unidades militares de tierra obtienen +1 de vision, 50% de descuento al comprar terrenos"
+		Simplified_Chinese:"陆军单位+1视野，购买地块花费-50%"
+		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
+		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
+		Portuguese:"Todas as unidades militares terrestres ganham +1 alcançe devisão e 50% de desconto na compra de terrenos" //i don't remember my translations being this bad? who was the monster?
+		Russian:"Все наземные воинские части имеют +1 прицел, скидка 50% при покупке плитки"
+	}
+	
+	"Japan":{
+		Italian:"Giappone"
+		Romanian:"Japonia"
+		Spanish:"Japón"
+		Simplified_Chinese:"日本"
+		German:"Japan"
+		French:"Japon"
+		Portuguese:"Japão"
+		Russian:"Япония"
+	}
+
+	"Units fight as though they were at full strength even when damaged":{
+		Italian:"Le unità combattono come se fossero perfettamente sane, anche quando gravemente ferite"
+		Romanian:"Unitățile se luptă ca și cum ar fi la putere deplină chiar și atunci când sunt deteriorate"
+		Spanish:"Las unidades luchan como si estuvieran con toda su fuerza incluso cuando están dañadas"
+		Simplified_Chinese:"受伤单位战斗力不减"
+		German:"Einheiten kämpfen so, als wären sie selbst bei Beschädigung in voller Stärke"
+		French:"Les unités combattent comme si elles étaient à pleine force même lorsqu'elles sont endommagées"
+		Portuguese:"Unidades lutam como se estivessem em força total mesmo quando danificadas"
+		Russian:"Юниты сражаются, как будто они в полной силе, даже когда повреждены"
+	}
+
+	"Germany":{
+		Italian:"Germania"
+		French:"Allemagne"
+		Simplified_Chinese:"德意志"
+		Portuguese:"Alemanha"
+	}
+	
+	"India":{
+		Italian:"India"
+		French:"Inde"
+		Portuguese:"Índia"
+	}
+
+	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
+		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
+		Portuguese:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
+	}
+/*
+
+	"Iroquois":{
+		Italian:"Irochese"
+		French:"Iroquois"
+		Portuguese:"Tribo Iroquois" //tribo meaning tribe of course
+	}
+
+	"Units move through Forest and Jungle in friendly territory as if it is a Road. These tiles can be used to establish Trade Routes upon searching The Wheel.":{
+		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando si scopre la Ruota."
+		Portuguese:"Mova-se por florestas e selvas em território amigo como se fossem estradas. Estas terras podem ser usadas para estabelecer rotas de comércio após pesquisar a roda."
+	}
+
+	"Aztecs":{
+		Italian:"Azteca"
+		French:"Aztèques"
+		Portuguese:"Astecas"
+	}
+
+	"Gain Culture for the empire from each enemy unit killed.":{
+		Italian:"Ogni unità nemica eliminata frutta Cultura per il tuo impero."
+		Portuguese:"Ganhe cultura para seu império por cada inimigo morto"
+	}
+
+	"Denmark":{
+		Italian:"Danimarca"
+		French:"Danemark"
+		Portuguese:"Dinamarca"
+	}
+
+	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
+		Italian:"+1 Movimento per le Unità imbarcate, che pagano solo 1 Movimento per sbarcare. Le Unità da mischia non spendono alcun Movimento per saccheggiare."
+		Portuguese:"Unidades embarcadas tem um movimento a mais e usam apenas 1 ponto de movimento para se mover de terra a mar. Unidades corpo-a-corpo não gastam pontos de movimento para pilhar"
+	}
+
+	"Inca":{
+		Italian:"Inca"
+		French:"Incas"
+		Portuguese:"Inca"
+	}
+
+	"Mongolia":{
+		Italian:"Mongolia"
+		French:"Mongolie"
+		Portuguese:"Mongolia"
+	}
+
+	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
+		Italian:"+30% Forza contro le Città-stato e le loro unità. +1 Movimento per le Unità a cavallo."
+		Portuguese:"Força de combate adicional de +30% quando lutando cidades-estado ou atacando uma cidade-estado. Um movimento extra para todas as unidades montadas"
+		}
+
+	"Korea":{
+		Italian:"Corea"
+		French:"Corée"
+		Portuguese:"Coréia"
+	}
+
+	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
+		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
+		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
+	}
+
+	"Turkey":{
+		Italian:"Turchia"
+		French:"Turquie"
+		Portuguese:"Turquia"
+	}
+
+	"50% chance of converting a barbarian naval unit to your side and earning 25 Gold. Pay only one-third the usual cost for naval unit maintenance.":{
+		Italian:"50% di chance di convertire un'unita navale barbarica dalla tua parte e ottenere 25 Oro. Mantenimento delle unità navali ridotte a un terzo."
+		Portuguese:"50% de chance de converter uma unidade naval bárbara para ti e ganhar 25 ouro. Gaste apenas 1/3 do custo normal para manter unidades navais."
+	}
+
+	"Siam":{
+		Italian:"Siam"
+		French:"Siam"
+		Portuguese:"Siam" //not sure but will do
+	}
+
+	"Food and Culture from friendly City-States increased by 50%.":{
+		Italian:"+50% Cibo e Cultura ricevute dalle Città-Stato amiche o alleate."
+		Portuguese:"Comida e cultura de cidades-estado amigas aumentada em 50%."
+	}
+
+	"Songhai":{
+		Italian:"Songhai"
+		French:"Songhaï"
+		Portuguese:"Songhai" //not sure but will do
+	}
+
+	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
+		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
+		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
+	}
+
+	"Polynesia":{
+		Italian:"Polinesia"
+		French:"Polynésie"
+		Portuguese:"Polinésia"
+	}
+
+	"Can embark and move over Oceans immediately. +1 Sight when embarked.":{
+		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate."
+		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
+	}
+
+	"Persia":{
+		Italian:"Persia"
+		French:"Perse"
+		Portuguese:"Pérsia"
+	}
+
+	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and a +10% Combat Strenght bonus.":{
+		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
+		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
+	}
+
+	*/
+	
+	"Uniques":{ // unit uniques, displayed on the new game screen when choosing a civ
+		Italian:"Abilità unica"
+		Romanian:"Uniques"
+		Spanish:"Uniques"
+		Simplified_Chinese:"独有"
+		German:"Unikate"
+		French:"Uniques"
+		Portuguese:"Únicos(a)"
+		Russian:"уникальный"
+	}
+
+	"Promotions":{
+		Italian:"Promozioni"
+		Romanian:"Promoţii"
+		Spanish:"Promociones"
+		Simplified_Chinese:"晋升"
+		German:"Beförderungen"
+		French:"Promotions"
+		Portuguese:"Promoções"
+		Russian:"промо акции"
+	}
+	
+	"units in rough terrain":{
+		Italian:"unità su terreno accidentato"
+		Romanian:"unități în teren accidentat"
+		Spanish:"unidades en terreno accidentado"
+		Simplified_Chinese:"位于复杂地形的单位"
+		German:"Einheiten in unwegsamem Gelände"
+		French:"unités en terrain accidenté"
+		Portuguese:"unidades em terreno acidentado"
+		Russian:"юниты на пересеченной местности"
+	}
+	
+	"Barbarians":{
+		Italian:"Barbari"
+		Romanian:"Barbari"
+		Spanish:"Barbaros"
+		Simplified_Chinese:"蛮族"
+		German:"Barbaren"
+		French:"Barbare"
+		Portuguese:"Bárbaros"
+		Russian:"Варвары"
+	}
+
+}

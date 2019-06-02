@@ -1,0 +1,308 @@
+{
+	
+	"Load copied data":{
+		Italian:"Carica i dati copiati"
+		Russian:"Загрузить скопированные данные"
+		French:"Charger des données copiées"
+		Romanian:"Încarcă date copiate"
+		German:"Aus Zwischenablage laden"
+		Dutch:"Gekopieerde data laden"
+		Spanish:"Cargar datos copiados"
+		Simplified_Chinese:"加载复制过的数据"
+		Portuguese:"Carregar dados copiados"
+		Japanese:"コピーしたデータを読み込む"
+	}
+	
+	"Could not load game from clipboard!":{
+		Italian:"Impossibile caricare partita dagli appunti!"
+		Romanian:"Jocul nu a putut fi încărcat din clipboard!"
+		Simplified_Chinese:"无法从剪贴板加载游戏!"
+		Portuguese:"Não foi possivel carregar o jogo da prancheta"
+		German:"Das Spiel konnte nicht aus der Zwischenablage geladen werden!"
+		French:"Impossible de charger la partie depuis le presse-papier"
+		Japanese:"クリップボードからゲームを読み込めませんでした。"
+		Russian:"Не удалось загрузить игру из буфера обмена!"
+		Dutch:"Kon game niet van klembord laden!"
+		Spanish:"No se pudo cargar el juego desde el portapapeles!"
+	}
+
+////// New game screen
+
+/*
+	"Civilization":{	//this word is not used in the game.
+		Italian:"Civiltà"
+		Russian:"Цивилизация"
+		French:"Civilisation"
+		Romanian:"Civilizaţie"
+		Spanish:"Civilización"
+		Simplified_Chinese:"文明"
+		Portuguese:"Civilização"
+		German:"Zivilisation"
+	}
+*/
+
+	"World size":{	 //not duplicate,the other one is wrong.
+		Italian:"Dimensione della mappa"
+		Russian:"Размер мира"
+		French:"Taille du monde"
+		Romanian:"Mărime pământ"
+		Spanish:"Tamaño del mundo"
+		Simplified_Chinese:"世界大小"
+		Portuguese:"Tamanho do mundo"
+		German:"Kartengröße"
+	}
+
+	
+	"Start game!":{
+		Italian:"Comincia la tua avventura!"
+		Russian:"Начать игру!"
+		French:"Démarrer la partie!"
+		Romanian:"Începe jocul!"
+		Spanish:"¡Empezar partida!"
+		Simplified_Chinese:"开始游戏！"
+		Portuguese:"Começar partida!"
+		German:"Spiel starten!"
+		Japanese:"ゲームを始める！"
+	}
+
+	"Map type":{	
+		Italian:"Tipo di mappa"
+		Russian:"Тип карты"
+		French:"Type de carte"
+		Romanian:"Tipul hărții"
+		Spanish:"Tipo de mapa"
+		Simplified_Chinese:"地图类型"
+		Portuguese:"Tipo de mapa"
+		German:"Kartentyp"
+		Dutch:"Kaarttype"
+	}
+
+	"Number of enemies":{	///not duplicated,the word above this one is wrong.
+		Italian:"Numero di avversari"
+		Russian:"Количество врагов"
+		French:"Nombre d'ennemies"
+		Romanian:"Număr de inamici"
+		Spanish:"Número de enemigos"
+		Simplified_Chinese:"电脑玩家"
+		Portuguese:"Número de inimigos"
+		German:"Anzahl der Gegner"
+	}
+
+	"Number of human players":{
+		Italian:"Numero di giocatori"
+		Russian:"Количество врагов"
+		French:"Nombre de joueurs humains"
+		Romanian:"Număr de inamici"
+		Spanish:"Número de enemigos"
+		Simplified_Chinese:"人类玩家"
+		Portuguese:"Número de jogadores"
+		German:"Anzahl der Gegner"
+	}
+
+	"Difficulty":{	
+		Italian:"Difficoltà"
+		Russian:"Сложность"
+		French:"Difficulté"
+		Romanian:"Dificultate"
+		Spanish:"Dificultad"
+		Simplified_Chinese:"难度"
+		Portuguese:"Dificuldade"
+		German:"Schwierigkeitsgrad"
+	}
+	
+	"Number of city-states":{
+		Italian:"Numero di Città-Stato"
+	}
+	
+	"No barbarians":{
+		Italian:"Niente barbari"
+	}
+	
+	
+////////////// 	Save and load game
+	
+	"Current saves":{
+		Italian:"Salvataggio attuale"
+		Russian:"Текущие сохранения"
+		French:"Sauvegardes présentes"
+		Romanian:"Salvări curente"
+		German:"Gespeicherte Spiele"
+		Dutch:"Huidige spellen"
+		Spanish:"Partidas guardadas"
+		Simplified_Chinese:"保存当前游戏"
+		Portuguese:"Partidas salvas"
+	}
+
+	"Saved game name":{
+		Italian:"Nome del salvataggio"
+		Russian:"Название сохранённой игры"
+		French:"Nom de la partie sauvegardée"
+		Romanian:"Numele jocului salvat"
+		German:"Name des gespeicherten Spiels"
+		Dutch:"Naam van opgeslagen spellen"
+		Spanish:"Nombre de partida guardada"
+		Simplified_Chinese:"游戏存档名称"
+		Portuguese:"Nome do jogo salvo"
+	}
+
+	"Copy to clipboard":{ //shouldn't it be "copy saved game to clipboard" ? //Y: technichally yes, but that's longer so doesn't fit as well into the button-space
+		Italian:"Copia su appunti"
+		French:"Copier dans le presse-papier"
+		Simplified_Chinese:"复制到剪贴板"
+		Portuguese:"Copiar" //means copy but it is correct because you can actually paste it as text
+	}
+
+	"Could not load game":{
+		Italian:"Impossibile caricare partita"
+		Russian:"Не удалось загрузить игру"
+		French:"Impossible de charger la partie"
+		Romanian:"Jocul nu a putut fi încărcat"
+		German:"Spiel konnte nicht geladen werden"
+		Dutch:"Spel kon niet geladen worden"
+		Spanish:"Imposible cargar partida"
+		Simplified_Chinese:"无法读档"
+		Portuguese:"Não foi possivel carregar a partida salva"
+	}
+
+	"Load [saveFileName]":{ // as in "Load SaveFile2"
+		Italian:"Carica [saveFileName]"
+		Russian:"Загрузить [saveFileName]"
+		French:"Charger [saveFileName]"
+		Romanian:"Încarcă [saveFileName]"
+		German:"[saveFileName] laden"
+		Dutch:"[saveFileName] laden"
+		Spanish:"Cargar [saveFileName]"
+		Simplified_Chinese:"读取[saveFileName]"
+		Portuguese:"Carregar [saveFileName]"
+	}
+
+	"Delete save":{
+		Italian:"Elimina salvataggio"
+		Russian:"Удалить сохранение"
+		French:"Supprimer la sauvegarde"
+		Romanian:"Șterge jocul salvat"
+		German:"Spiel löschen"
+		Dutch:"Spel verwijderen"
+		Spanish:"Borrar partida"
+		Simplified_Chinese:"删除存档"
+		Portuguese:"Apagar jogo salvo"
+	}
+
+	"Saved at":{
+		Italian:"Salvato su"
+		Russian:"Сохранено в"
+		French:"Enregistré sous"
+		Romanian:"Salvat la"
+		German:"Gespeichert um"
+		Dutch:"Opgeslagen in"
+		Spanish:"Guardado en"
+		Simplified_Chinese:"保存在"
+		Portuguese:"Salvo em"
+	}
+	
+	// Options
+	
+	"Options":{
+		Italian:"Opzioni"
+		German:"Optionen"
+		French:"Options"
+		Japanese:"オプション"
+		Russian:"Опции"
+		Romanian:"Opțiuni"
+		Dutch:"Opties"
+		Spanish:"Opciones"
+		Simplified_Chinese:"选项"
+		Portuguese:"Opções"
+	}
+
+	"Display options":{
+		Italian:"Opzioni"
+		Russian:"Параметры экрана"
+		French:"Options d'affichage"
+		Romanian:"Opțiuni afișaj"
+		German:"Anzeigeeinstellungen"
+		Dutch:"Weergaveopties"
+		Spanish:"Opciones de pantalla"
+		Simplified_Chinese:"显示选项"
+		Portuguese:"Opções de Vídeo"
+		Japanese:"表示オプション"
+	}
+	
+	"Turns between autosaves":{
+		Italian:"Turni tra autosalvataggi"
+		French:"Tours avant sauvegarde automatique"
+		Simplified_Chinese:"自动存档回合数"
+		Portuguese:"Turnos entre autosaves"
+	}
+	
+	"Sound effects volume":{
+		Italian:"Volume effetti"
+		French:"Volume sonore"
+		Simplified_Chinese:"声效大小"
+	}
+	
+	"Show":{
+		Italian:"Mostra"
+		Russian:"Показать"
+		French:"Montrer"
+		Romanian:"Arată"
+		German:"Anzeigen"
+		Dutch:"Toon"
+		Spanish:"Mostrar"
+		Simplified_Chinese:"显示"
+		Portuguese:"Mostrar"
+		Japanese:"見せる"
+	}
+
+	"Hide":{
+		Italian:"Nascondi"
+		Russian:"Спрятать"
+		French:"Cacher"
+		Romanian:"Ascunde"
+		German:"Verstecken"
+		Dutch:"Verberg"
+		Spanish:"Ocultar"
+		Simplified_Chinese:"隐藏"
+		Portuguese:"Ocultar"
+		Japanese:"隠す"
+	}
+	
+	"Worked tiles":{
+		Italian:"Celle sfruttate"
+		Russian:"обработанные клетки"
+		French:"cases exploités"
+		Romanian:"celule lucrate"
+		German:"bearbeitete Felder"
+		Dutch:"Bewerkte velden"
+		Spanish:"casillas trabajadas"
+		Simplified_Chinese:"工作的地块"
+		Portuguese:"Terrenos trabalhados"
+		Japanese:"働いたタイル"
+	}
+
+	"Resources and improvements":{
+		Italian:"Risorse e miglioramenti"
+		Russian:"ресурсы и улучшения"
+		French:"ressources et améliorations"
+		Romanian:"resurse și îmbunătățiri"
+		German:"Ressourcen und Verbesserungen"
+		Dutch:"Grondstoffen en Verbeteringen"
+		Spanish:"recursos y mejoras"
+		Simplified_Chinese:"资源与设施"
+		Portuguese:"recursos e melhorias"
+		Japanese:"リソースと改善"
+	}
+
+	"Check for idle units":{
+		Italian:"Controlla unità inutilizzate"
+		Simplified_Chinese:"查看未行动单位"
+		Portuguese:"Cheque por unidades sem ordens",
+		German: "Untätige Einheiten anzeigen bei Rundenende"
+	}
+
+	"Move units with a single tap":{
+		Italian:"Muovi unità con un solo tocco"
+		German: "Einheiten mit einem Klick bewegen"
+	}
+	
+}
