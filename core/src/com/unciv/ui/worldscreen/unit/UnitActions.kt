@@ -128,12 +128,7 @@ class UnitActions {
             val setUp = unit.action == "Set Up"
             actionList+=UnitAction("Set up", unit.currentMovement >0 && !setUp, currentAction = setUp ) {
                 unit.action="Set Up"
-                // setting up uses up all movement points
-                // this is to avoid problems with the idle state:
-                // - unit should not be idle when setting up right now
-                // - unit should be idle when set up in the past
-                unit.currentMovement=0f
-                unitTable.selectedUnit = null
+                unit.useMovementPoints(1f)
             }.sound("setup")
         }
 
