@@ -324,7 +324,7 @@
 		French:"Infanterie"
 		Romanian:"Lăncier"
 		Spanish:"Lancero"
-        Simplified_Chinese:"枪兵"
+        	Simplified_Chinese:"枪兵"
 		Portuguese:"Lanceiro"
 		German:"Speerkrieger"
 	}
@@ -332,6 +332,7 @@
 	"Bonus vs Mounted 50%":{
 		Italian:"+50% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
+		French:"Bonus contre les unités montées +50%" //I feel that i already wrote this elsewhere...
 	}
 
 	"Hoplite":{ // Greek unique
@@ -368,6 +369,7 @@
 	"Bonus vs City 200%":{
 		Italian:"+200% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+200%战斗力"
+		French:"Bonus contre les villes +200%"
 	}
 
 	"Must set up to ranged attack":{
@@ -450,6 +452,7 @@
 	"Penalty vs City 33%":{
 		Italian:"+33% Malus contro Città"
 		Simplified_Chinese:"攻击城市时-33%战斗力"
+		French:"Pénalité contre les villes -33%"
 	}
 
 	"Companion Cavalry":{	
@@ -465,6 +468,7 @@
 
 	"War Elephant":{//Indian unique unit	
 		Italian:"Elefante da guerra"
+		French:"Éléphant de Guerre"
 	}
 	
 ////// Medieval units
@@ -704,6 +708,7 @@
 	"Bonus vs Mounted 33%":{
 		Italian:"+33% Bonus contro unità a cavallo"
 		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
+		French:"Bonus contre les unitées montées +33%"
 	}
 
 ////// Industrial units
@@ -790,6 +795,7 @@
 	"Bonus vs City 33%":{
 		Italian:"+33 Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+33%战斗力"
+		French:"Bonus contre les villes +33%"
 	}
 
 	"Double movement in coast":{
@@ -999,6 +1005,7 @@
 	"Bonus vs Armor 100%":{
 		Italian:"+100% Bonus contro unità corazzate"
 		Simplified_Chinese:"对战装甲单位时+100%战斗力"
+		French:"Bonus contre les unités Blindées +100%"
 	}
 
 	"Marine":{
@@ -1512,6 +1519,7 @@
 	"Bonus vs City 50%":{
 		Italian:"+50% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+50%战斗力"
+		French:"Bonus contre les villes +50%"
 	}
 
 	"Sentry":{
@@ -1648,6 +1656,7 @@
 	"Bonus vs City 15%":{
 		Italian:"+15% Bonus contro Città"
 		Simplified_Chinese:"攻击城市时+15%战斗力"
+		French:"Bonus contre les villes +15%"
 	}
 
 	"Coastal Raider II":{
@@ -1701,6 +1710,7 @@
 	"Bonus as Attacker 25%":{
 		Italian:"+25% Bonus come attaccante"
 		Simplified_Chinese:"主动攻击时+25%战斗力"
+		French:"Bonus en attaquant +25%"
 	}
 
 	"Wolfpack II":{
@@ -1730,40 +1740,48 @@
 	"Woodsman":{
 		Italian:"Forestali"
 		Simplified_Chinese:"林地幽灵"
+		French:"Bûcheron"
 	}
 
 	"Double movement rate through Forest and Jungle":{
 		Italian:"Movimento doppio attraverso Foreste e Giungle."
 		Simplified_Chinese:"森林和丛林移动时双倍移动力"
+		French:"Déplacement doublé dans la Forêt et la Jungle"
 	}
 
 	"Heal Instantly":{
 		Italian:"Cura istantanea"
 		Simplified_Chinese:"浴火重生"
+		French:"Soin instantané"
 	}
 	"Heal this Unit by 50 HP; Doing so will consume this opportunity to choose a Promotion":{
 		Italian:"Cura l'unità di 50 PF, rinunciando però all'opportunità di scegliere una promozione."
 		Simplified_Chinese:"立即回复50生命值，同时放弃本次晋升机会"
+		French:"Soigne cette unité de 50 PV, coûte une promotion"
 	}
 
 	"Medic":{
 		Italian:"Medico I"
 		Simplified_Chinese:"治疗I"
+		French:"Médecin"
 	}
 
 	"This unit and all others in adjacent tiles heal 5 additional HP per turn":{
 		Italian:"L'unità attuale e quelle circostanti guariscono di 5 PF al turno"
 		Simplified_Chinese:"本单位及其相邻单位每回合额外回复5生命值"
+		French:"Cette unité et toutes celles présentes dans les cases adjacentes se soignent de 5 PV supplémentaires par tour"
 	}
 
 	"Medic II":{
 		Italian:"Medico II"
 		Simplified_Chinese:"治疗II"
+		French:"Médecin II"
 	}
 
 	"This unit and all others in adjacent tiles heal 5 additional HP. This unit heals 5 additional HP outside of friendly territory.":{
 		Italian:"L'unità attuale e quelle circostanti guariscono di 5 PF al turno. Inoltre, l'unità recupera 5 PF aggiuntivi se si trova fuori dal territorio amico."
 		Simplified_Chinese:"本单位及其相邻单位每回合额外回复5生命值，该单位在己方领土以外每回合额外回复5生命值"
+		French:"Cette unité et toutes celles présentes dans les cases adjacentes se soignent de 5 PV supplémentaires par tour. Cette unité se soigne de 5 PV supplémentaires par tour en dehors d'un territoire allié"
 	}
 
 }
