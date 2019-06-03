@@ -224,7 +224,7 @@ class DiplomacyManager() {
         updateHasOpenBorders()
 
         if(diplomaticStatus==DiplomaticStatus.Peace) {
-            if(diplomaticModifiers[DiplomaticModifiers.YearsOfPeace.name]!! < 30)
+            if(getModifier(DiplomaticModifiers.YearsOfPeace)< 30)
                 addModifier(DiplomaticModifiers.YearsOfPeace, 0.5f)
         }
         else revertToZero(DiplomaticModifiers.YearsOfPeace,-0.5f) // war makes you forget the good ol' days
@@ -318,31 +318,35 @@ class DiplomacyManager() {
             unit.movementAlgs().teleportToClosestMoveableTile()
     }
 
-    fun hasFlag(flag:DiplomacyFlags) = flagsCountdown.containsKey(flag.toString())
-    fun setFlag(flag: DiplomacyFlags, amount: Int){ flagsCountdown[flag.toString()]=amount}
-    fun removeFlag(flag: DiplomacyFlags){ flagsCountdown.remove(flag.toString())}
+    fun hasFlag(flag:DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
+    fun setFlag(flag: DiplomacyFlags, amount: Int){ flagsCountdown[flag.name]=amount}
+    fun removeFlag(flag: DiplomacyFlags){ flagsCountdown.remove(flag.name)}
 
     fun addModifier(modifier: DiplomaticModifiers, amount:Float){
-        val modifierString = modifier.toString()
+        val modifierString = modifier.name
         if(!hasModifier(modifier)) setModifier(modifier,0f)
         diplomaticModifiers[modifierString] = diplomaticModifiers[modifierString]!!+amount
         if(diplomaticModifiers[modifierString]==0f) diplomaticModifiers.remove(modifierString)
     }
 
     fun setModifier(modifier: DiplomaticModifiers, amount: Float){
-        val modifierString = modifier.toString()
-        diplomaticModifiers[modifierString] = amount
+        diplomaticModifiers[modifier.name] = amount
+    }
+
+    fun getModifier(modifier: DiplomaticModifiers): Float {
+        if(!hasModifier(modifier)) return 0f
+        return diplomaticModifiers[modifier.name]!!
     }
 
     fun removeModifier(modifier: DiplomaticModifiers) =
-        diplomaticModifiers.remove(modifier.toString())
+        diplomaticModifiers.remove(modifier.name)
 
-    fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.toString())
+    fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.name)
 
     /** @param amount always positive, so you don't need to think about it */
     fun revertToZero(modifier: DiplomaticModifiers, amount: Float){
         if(!hasModifier(modifier)) return
-        val currentAmount = diplomaticModifiers[modifier.toString()]!!
+        val currentAmount = getModifier(modifier)
         if(currentAmount > 0) addModifier(modifier,-amount)
         else addModifier(modifier,amount)
     }
