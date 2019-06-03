@@ -99,7 +99,7 @@ class TileEditorOptionsTable(mapEditorScreen: MapEditorScreen): Table(){
         val baseTerrainTable = Table().apply { defaults().pad(20f) }
         for(baseTerrain in baseTerrains) baseTerrainTable.add(baseTerrain).row()
         baseTerrainTable.pack()
-        add(baseTerrainTable)
+        add(ScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f)
 
         val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
         for(terrainFeature in terrainFeatures) terrainFeaturesTable.add(terrainFeature).row()
@@ -109,10 +109,10 @@ class TileEditorOptionsTable(mapEditorScreen: MapEditorScreen): Table(){
         val resourcesTable = Table()
         for(resource in resources) resourcesTable.add(resource).row()
         resourcesTable.pack()
-        add(ScrollPane(resourcesTable)).height(mapEditorScreen.stage.height/2).row()
+        add(ScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f).row()
 
-        height=mapEditorScreen.stage.height
         pack()
+        height=mapEditorScreen.stage.height // needs to be after pack obvs
         setPosition(mapEditorScreen.stage.width - width, 0f)
     }
 
