@@ -95,7 +95,7 @@ open class TileInfo {
     fun getHeight(): Int {
         if (baseTerrain==Constants.mountain) return 4
         if (baseTerrain == Constants.hill) return 2
-        if (baseTerrain==Constants.forest || baseTerrain==Constants.jungle) return 1
+        if (terrainFeature==Constants.forest || terrainFeature==Constants.jungle) return 1
         return 0
     }
 
