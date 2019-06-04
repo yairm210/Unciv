@@ -132,7 +132,7 @@
 	"Walls of Babylon":{
 		Italian:"Mura di Babilonia"
 		Simplified_Chinese:"巴比伦城墙"
-        French:"Murs de Babylone"
+        	French:"Murs de Babylone"
 	}
 	
 	"The Pyramids":{	
@@ -235,6 +235,7 @@
 	/*
 	"Mud Pyramid Mosque":{	//Songhai unique
 		Italian:"Moschea della Piramide di Fango"
+		French:"Mosquée d'adobe" //official translation
 	}
 	*/
 
@@ -345,9 +346,12 @@
 	/*
 	"Courthouse":{
 		Italian:"Palazzo di giustizia"
+		French:"Palais de justice"
+	}
 		
 	"Eliminates extra Unhappiness from an Occupied City":{
 		Italian:"Elimina l'Infelicità supplementare proveniente da una Città occupata"
+		French:"Enlève le mécontentement supplémentaire des villes occupées"
 	}
 	*/
 
@@ -603,10 +607,12 @@
 	/*
 	"Longhouse":{	//Irochese unique
 		Italian:"Casa Lunga"
+		French:"Longère"
 	}
 	
 	"+1 Production from each worked Forest tile":{	
 		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
+		French:"+1 production pour chaque cases de forêt exploitées par la ville."
 	}
 	*/
 
@@ -677,6 +683,7 @@
 	/*
 	"Wat":{	//Siamese unique
 		Italian:"Wat"
+		//same in French
 	}
 	*/
 	
@@ -704,6 +711,7 @@
 
 	"Mughal Fort":{	//Indian unique
 		Italian:"Forte Mughal"
+		French:"Fort Monghol"
 	}
 	
 	"Alhambra":{
@@ -845,11 +853,13 @@
 	"Hanse":{	//German unique
 		Italian:"Hansa" //Same as in Italian
 		Simplified_Chinese:"汉萨会馆"
+		French:"Hanse" //same in French
 	}
 
 	/*
 	"Satrap's Court":{	//Persian unique
 		Italian:"Corte del Satrapo"
+		French:"Cour de Satrape"
 	}
 	*/
 
@@ -908,6 +918,7 @@
 	"Choose a free great person":{
 		Italian:"Scegli un Grande Personaggio gratuito"
 		Simplified_Chinese:"选择1个免费的伟人"
+		French:"Choisissez un personnage illustre gratuit"
 	}
 
 	"Himeji Castle":{
