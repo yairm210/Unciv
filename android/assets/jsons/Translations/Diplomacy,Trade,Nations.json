@@ -97,6 +97,7 @@
 		Italian:"Negozia una pace"
 		Simplified_Chinese:"议和"
 		Portuguese:"Negociar paz"
+		French:"Négocier la paix"
 	}
 
 	"Very well.":{
@@ -114,7 +115,8 @@
 	}
 
 	"Sounds good!":{
-		Italian:"Sta bene!"	
+		Italian:"Sta bene!"
+		French:"Très bien!"
 	}
 	
 	"Not this time.":{ // declining trade text
@@ -155,7 +157,7 @@
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
 		Italian:"Abbiamo incontrato la Citta-Stato di [name]!"
 		Portuguese:"Nós encontramos a cidade-estado de [name]"
-
+		French:"Nous avons rencontré la cité-état de [name]!"
 	}
 	
 	// Friendship declaration flavor texts
@@ -182,9 +184,11 @@
 	
 	// Denunceation flavour texts
 	"Denounce ([numberOfTurns] turns)":{
+		French:"Dénoncer ([numberOfTurns] tours)"
 	}
 	
 	"We will remember this.":{
+		French:"Nous nous en souviendrons."
 	}
 	
 	
@@ -243,22 +247,27 @@
 	
 	"Provides [amountOfCulture] culture at 30 Influence":{
 		Italian:"Dona [amountOfCulture] punti Cultura quando l'Influenza supera 30 punti"
+		French:"Fournit [amountOfCulture] de Culture à 30 d'influence"
 	}
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
 		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città quando l'Influenza supera 30 punti"
+		French:"Fournit 3 Nourriture à la capitale et 1 nourriture pour les autres villes à 30 d'influence"
 	}
 
 	"Provides 3 happiness at 30 Influence":{
 		Italian:"Dona 3 Punti Felicità quando l'Influenza supera 30 punti"
+		French:"Fournit 3 de Bonheur à 30 d'influence"
 	}
 
 	"Gift [goldAmount] gold":{
 		Italian:"Dona [goldAmount] Oro"
+		French:"Donner [goldAmount] ors"
 	}
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
 		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
+		French:"Les relations changent dans [turnsToRelationshipChange] tours"
 	}
 	
 
@@ -331,18 +340,22 @@
 	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
 		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
 		Portuguese:"Sua chamada 'amizade' não vale nada."
+		French:"Votre soi-disant 'amitié' ne vaut rien."
 	}
 	
 	"You have publically denounced us!":{
 		Italian:"Ci hai denunciato pubblicamente di fronte al mondo!"
+		French:"Vous nous avez dénoncé publiquement!"
 	}
 	
 	"You have denounced our allies":{
 		Italian:"Hai denunciato i nostri alleati!"
+		French:"Vous avez dénoncé nos alliées"
 	}
 	
 	"You have denounced our enemies":{
 		Italian:"Hai denunciato i nostri nemici!"
+		French:"Vous avez dénoncé nos ennemies"
 	}
 	
 	
@@ -536,9 +549,9 @@
 	}
 
 	"Technologies":{
-		Italian:"Tecnologie",
-		German:"Technologien",
-		French:"Technologies",
+		Italian:"Tecnologie"
+		German:"Technologien"
+		French:"Technologies"
 		Simplified_Chinese:"科技"
 		Portuguese:"Tecnologias"
 	}
@@ -778,6 +791,7 @@
 		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
 		Portuguese:"1 ouro adicional de rotas comerciais e recursos de petróleo geram o dobro" // óleo could mean normal kitchen oil and even fuel from sugar cane
+		French:"+1 Or pour chaque route commerciale, la quantité de pétrole est doublée"
 	}
 	
 	"America":{
@@ -840,6 +854,7 @@
 	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
 		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
 		Portuguese:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
+		French:"Le mécontentement dut au nombre de villes est doublé. Le mécontentement dut au nombre de citoyens est réduit de moitié"
 	}
 /*
 
@@ -852,6 +867,7 @@
 	"Units move through Forest and Jungle in friendly territory as if it is a Road. These tiles can be used to establish Trade Routes upon searching The Wheel.":{
 		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando si scopre la Ruota."
 		Portuguese:"Mova-se por florestas e selvas em território amigo como se fossem estradas. Estas terras podem ser usadas para estabelecer rotas de comércio após pesquisar a roda."
+		French:"Les Forêt et les Jungles en territoire alliés ont les mêmes attributs que les routes. A la découverte de la Roue, elles peuvent établir des routes commerciales."
 	}
 
 	"Aztecs":{
@@ -863,6 +879,7 @@
 	"Gain Culture for the empire from each enemy unit killed.":{
 		Italian:"Ogni unità nemica eliminata frutta Cultura per il tuo impero."
 		Portuguese:"Ganhe cultura para seu império por cada inimigo morto"
+		French:"Gagne de la Culture à chaque unité ennemie détruite."
 	}
 
 	"Denmark":{
@@ -874,6 +891,7 @@
 	"Embarked Units have +1 Movement and pay just 1 movement point to move from sea to land. Melee Units pay no movement point cost to pillage.":{
 		Italian:"+1 Movimento per le Unità imbarcate, che pagano solo 1 Movimento per sbarcare. Le Unità da mischia non spendono alcun Movimento per saccheggiare."
 		Portuguese:"Unidades embarcadas tem um movimento a mais e usam apenas 1 ponto de movimento para se mover de terra a mar. Unidades corpo-a-corpo não gastam pontos de movimento para pilhar"
+		French:"Les unités embarquées ont +1 de mouvement et ne perde qu'un point de mouvement en débarquant. Le pillage ne coûte pas de point de déplacement pour les unités de mélée"
 	}
 
 	"Inca":{
@@ -891,7 +909,8 @@
 	"+30% Combat Strenght when fighting City-State units or attacking a City-State. +1 Movement for all Mounted Units.":{
 		Italian:"+30% Forza contro le Città-stato e le loro unità. +1 Movimento per le Unità a cavallo."
 		Portuguese:"Força de combate adicional de +30% quando lutando cidades-estado ou atacando uma cidade-estado. Um movimento extra para todas as unidades montadas"
-		}
+		French:"+30% Force d'attaque lors des combats contre les villes ou unités des Cités-états. +1 mouvement pour les unités montées."
+	}
 
 	"Korea":{
 		Italian:"Corea"
@@ -902,6 +921,7 @@
 	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
 		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
 		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
+		French:"+1 Science pour chaque spécialistes et amélioration de case de personnage illustre. Reçoit un bonus de science à chaque fois qu'un batiment ou une merveille scientifique est  construit dans la capitale"
 	}
 
 	"Turkey":{
@@ -913,6 +933,7 @@
 	"50% chance of converting a barbarian naval unit to your side and earning 25 Gold. Pay only one-third the usual cost for naval unit maintenance.":{
 		Italian:"50% di chance di convertire un'unita navale barbarica dalla tua parte e ottenere 25 Oro. Mantenimento delle unità navali ridotte a un terzo."
 		Portuguese:"50% de chance de converter uma unidade naval bárbara para ti e ganhar 25 ouro. Gaste apenas 1/3 do custo normal para manter unidades navais."
+		French:"50% de chance de convertir une unité barbare navale et de gagner 25 Or. Les unités navales coutent 3 fois moins à entretenir."
 	}
 
 	"Siam":{
@@ -924,6 +945,7 @@
 	"Food and Culture from friendly City-States increased by 50%.":{
 		Italian:"+50% Cibo e Cultura ricevute dalle Città-Stato amiche o alleate."
 		Portuguese:"Comida e cultura de cidades-estado amigas aumentada em 50%."
+		French:"La Nourriture et la Culture fournit par les cités-états sont augmentées de 50%"
 	}
 
 	"Songhai":{
@@ -935,6 +957,7 @@
 	"Receive triple Gold from Barbarian encampments and pillaging Cities. Embarked units can defend themselves.":{
 		Italian:"Saccheggiare città o conquistare accampamenti barbari frutta una quantità tripla di Oro. Le unità imbarcate possono difendersi da sole."
 		Portuguese:"Receba 3x mais ouro de campos bárbaros e ao pilhar cidades. Unidades embarcadas podem se defender."
+		French:"Reçoit 3 fois plus d'or lors des pillages de campement barbare et de villes. Les unités embarquées peuvent se défendre."
 	}
 
 	"Polynesia":{
@@ -946,6 +969,7 @@
 	"Can embark and move over Oceans immediately. +1 Sight when embarked.":{
 		Italian:"Le unità possono imbarcarsi e attraversare gli oceani fin da subito, e ricevono +1 Visione quando imbarcate."
 		Portuguese:"Pode embarcar e mover unidades sobre oceanos imediatamente. +1 visão quando embarcado"
+		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
 	}
 
 	"Persia":{
@@ -957,6 +981,7 @@
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and a +10% Combat Strenght bonus.":{
 		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
 		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
+		French:"Les Ages d'Or durent 50% plus longtemps. Durant les Ages d'Or, les unités gagnent +1 mouvement et +10% de force de Combat."
 	}
 
 	*/
