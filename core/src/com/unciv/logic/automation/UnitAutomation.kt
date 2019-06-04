@@ -114,6 +114,7 @@ class UnitAutomation{
     }
 
     fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
+        if(unit.type.isCivilian()) return false
         val tilesInDistance = unitDistanceToTiles.filter {it.value < unit.currentMovement}.keys
                 .filter { unit.canMoveTo(it) && it.improvement != null && UnitActions().canPillage(unit,it) }
 
