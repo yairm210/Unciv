@@ -112,10 +112,12 @@
 	
 	"Number of city-states":{
 		Italian:"Numero di Città-Stato"
+		French:"Nombre de cité-état"
 	}
 	
 	"No barbarians":{
 		Italian:"Niente barbari"
+		French:"Pas de barbare"
 	}
 	
 	
@@ -298,11 +300,13 @@
 		Simplified_Chinese:"查看未行动单位"
 		Portuguese:"Cheque por unidades sem ordens",
 		German: "Untätige Einheiten anzeigen bei Rundenende"
+		French:"Vérifier les unités inactives"
 	}
 
 	"Move units with a single tap":{
 		Italian:"Muovi unità con un solo tocco"
 		German: "Einheiten mit einem Klick bewegen"
+		French:"Bouger les unités en un seul click"
 	}
 	
 }
