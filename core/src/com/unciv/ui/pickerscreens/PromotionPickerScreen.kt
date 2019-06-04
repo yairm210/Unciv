@@ -87,10 +87,8 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
                 promotionButton.addSeparatorVertical()
                 promotionButton.add(pickNow).padLeft(10f).fillY()
             }
-            else {
-                group.touchable = Touchable.disabled
-                promotionButton.disable()
-            }
+            else promotionButton.color= Color.GRAY
+
             if(unitHasPromotion) promotionButton.color = Color.GREEN
             availablePromotionsGroup.addActor(promotionButton)
 
