@@ -64,6 +64,8 @@
 				
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
+		uniqueName:"Hellenic League",
+		unique:"City-State Influence degrades at half and recovers at twice the normal rate",
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
@@ -627,7 +629,7 @@
 		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
 		
 		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
-		tradeRequest:"We have many thinkgs to discuss and have much to benefit from each other."
+		tradeRequest:"We have many things to discuss and have much to benefit from each other."
 				
 		mainColor:[0,0,255],
 		secondaryColor:[255,0,0],
@@ -691,7 +693,7 @@
 				
 		mainColor:[204,255,229],
 		secondaryColor:[0,102,0],
-		unique:"Pay only one.third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
+		unique:"Pay only one third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
 	},
 	{
