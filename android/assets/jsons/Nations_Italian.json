@@ -2,7 +2,8 @@
 	{
 		name:"Babylon",
 		translatedName:"Babilonia",
-		leaderName:"Nabucodonosor II",
+		leaderName:"Nebuchadnezzar II",
+		translatedLeaderName:"Nabucodonosor II",
 		adjective:["babilonese"],
 		
 		startIntroPart1:"Che la benedizione del cielo scenda su di te, o grande Nabucodonosor, padre dell'antica e potente Babilonia! Giovane era il mondo quando Sargon eresse Babilonia, quasi cinquemila anni fa. A lungo crebbe e prosperò, dando vita al suo primo impero nel XVIII secolo a.C. sotto il divino Hammurabi, il legiferatore. Anche se conquistata prima dai Cassiti e poi dagli Assiri, Babilonia resistette, riemergendo come una fenice dalle ceneri della distruzione e riguadagnando la propria indipendenza nonostante i suoi molti nemici. Babilonia era davvero il centro delle arti e della conoscenza nel mondo antico!"
@@ -37,7 +38,8 @@
 	{
 		name:"Greece",
 		translatedName:"Grecia",
-		leaderName:"Alessandro",
+		leaderName:"Alexander",
+		translatedLeaderName:"Alessandro",
 		adjective:["greco"],
 		
 		startIntroPart1:"Che le benedizioni degli dei scendano su di te, o grande re Alessandro! Tu sei a capo della potente nazione greca. Il tuo popolo a lungo ha vissuto diviso in numerose città-stato, come le leggendarie Atene, Sparta e Tebe, dove cose meravigliose hanno visto la luce: la democrazia, la filosofia, la tragedia, l'arte e l'architettura, ponendo le basi dell'intera civiltà occidentale. Sebbene poco numerosi e spesso in conflitto tra di loro, nel V secolo a.C. i greci riuscirono a sconfiggere la vicina e vastissima nazione della Persia, a terra come in mare."
@@ -63,6 +65,8 @@
 		
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
+		uniqueName:"Lega Ellenica",
+		unique:"L'Influenza delle Città-Stato cala il doppiò più lentamente e sale a doppia velocità rispetto al normale.",
 		cities:["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
 			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tirinto","Samo","Mitilene","Chio",
 			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos"]
@@ -105,7 +109,8 @@
 	{
 		name:"Egypt",
 		translatedName:"Egitto",
-		leaderName:"Ramses II",
+		leaderName:"Ramesses II",
+		translatedLeaderName:"Ramses II",
 		adjective:["egiziano"],
 		
 		startIntroPart1:"Salute a te, o grande Ramses, Faraone d'Egitto, che fai sorgere il sole e scorrere il Nilo, e che benedici il suo popolo con ogni cosa buona della vita! O grande capo, da tempo immemore il tuo popolo ha vissuto lungo le sponde del fiume Nilo, dove ha concepito la scrittura e approfondito la matematica, la scultura e l'architettura, creando migliaia di anni fa i grandi monumenti che ancora oggi si erigono alti e fieri."
@@ -140,7 +145,8 @@
 	{
 		name:"England",
 		translatedName:"Inghilterra",
-		leaderName:"Elisabetta",
+		leaderName:"Elizabeth",
+		translatedLeaderName:"Elisabetta",
 		adjective:["inglese"],
 		
 		startIntroPart1:"Lode a Sua Serena Altezza, regina Elisabetta Gloriana, che guida e protegge la celebre nazione marittima d'Inghilterra. L'Inghilterra è una terra antica, con insediamenti risalenti fino a 35.000 anni fa e oggetto di innumerevoli ondate di invasioni, ciascuna delle quali ha poi contribuito a definire il carattere della popolazione. Anche se l'Inghilterra è un'isola poco estesa, per anni la sua gente ha dominato la scena mondiale: la sua flotta ineguagliabile, i suoi brilanti artisti e l'astuzia dei suoi mercanti le hanno conferito un potere e un'influenza che andavano ben al di là dei semplici numeri."
@@ -175,7 +181,8 @@
 	{
 		name:"France",
 		translatedName:"Francia",
-		leaderName:"Napoleone",
+		leaderName:"Napoleon",
+		translatedLeaderName:"Napoleone",
 		adjective:["francese"],
 		
 		startIntroPart1:"Lunga vita e trionfi a te, primo console e imperatore di Francia, Napoleone I, capo del popolo francese. La Francia giace nel cuore dell'Europa. Per lungo tempo Parigi è stata al centro del mondo in fatto di cultura, arti e letteratura. Anche se circondata da nazioni concorrenti, e spesso nemiche, la Francia è sempre emersa a testa alta. I suoi eserciti hanno marciati trionfalmente da un capo all'altro del mondo e i suoi soldati e i suoi generali si sono rivelati tra i migliori della storia."
@@ -210,7 +217,8 @@
 	{
 		name:"Russia",
 		translatedName:"Russia",
-		leaderName:"Caterina",
+		leaderName:"Catherine",
+		translatedLeaderName:"Caterina",
 		adjective:["russo"],
 		
 		startIntroPart1:"Salute, Vostra Maestà Imperiale Caterina, meravigliosa imperatrice di tutte le Russie. Al vostro comando si muove il più grande paese del mondo. La potente Russia si estende dall'Oceano Pacifico a est al Mar Baltico a ovest. Nonostante guerre, siccità e ogni altro genere di disastro, il popolo russo sopravvive e prospera e i suoi artisti e scienziati sono tra i migliori al mondo. Ancora oggi il paese è annoverabile come uno tra i più potenti della storia umana, una vera superpotenza, dotata per di più della forza più distruttiva mai concepita."
@@ -245,7 +253,8 @@
 	{
 		name:"Rome",
 		translatedName:"Roma",
-		leaderName:"Augusto Cesare",
+		leaderName:"Augustus Caesar",
+		translatedLeaderName:"Cesare Augusto",
 		adjective:["romano"],
 		
 		startIntroPart1:"Che la benedizione degli dei scenda su di te, Cesare Augusto, imperatore di Roma e di tutte le sue terre. Il tuo impero fu il più vasto e duraturo di tutto l'emisfero occidentale, di cui il tuo popolo ha modellato cutura, leggi, arti e tecnica militare come mai altri prima o dopo. Anno dopo anno di gloriose conquiste, Roma giunse a dominare tutto il bacino del Medirettaneo, dalla Spagna a ovest alla Siria a est, espandendosi a nord fino all'Inghilterra e alla Germania settentrionale. L'arte e l'architettura romana ancora oggi meravigliano e stupiscono il mondo facendo di Roma un modello per le civiltà che seguirono."
@@ -491,6 +500,103 @@
 		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
 		"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt",
 		"Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
+	},
+	{
+		name:"Iroquois",
+		translatedName:"Irochese",
+		leaderName:"Hiawatha",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Sei una peste per Madre Terra! Preparati a combattere!"
+		attacked:"Creatura maligna! I miei prodi ti massacreranno!"
+		defeated:"Ci avrai anche sconfitti... ma i nostri spiriti sono immortali! Tra cento, mille anni torneremo!"
+		introduction:"Saluti, straniero. Sono Hiawatha, e parlo per il popolo degli Irochesi. Cerchiamo la pace con tutti, ma siamo anche abili guerrieri."
+		
+		neutralHello:"Buongiorno."
+		neutralLetsHearIt:["Sì?","Ti ascolto."]
+		neutralNo:["No.","Certo che no."]
+		neutralYes:["Benissimo.","Va bene."]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Ti ascolto.","Parla."]
+		hateNo:["È inaccettabile!","Dovrai passare sui nostri cadaveri!"]
+		hateYes:["Se proprio devo...","Va bene."]
+		
+		afterPeace:"Ti ringrazio per la tua pietà. Preghiamo che sia l'inizio di una nuova amicizia."
+		tradeRequest:"Questo affare ti congenia, amico mio?"
+				
+		mainColor:[0,25,51],
+		secondaryColor:[255,255,102],
+		unique:"Tutte le unità trattano le caselle di Foresta e Giungla come fossero Strade; queste caselle stabiliscono Rotte Commerciali una volta scoperta la Ruota.",
+		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
+		"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
+		"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie",
+		"Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
+	},
+	{
+		name:"Korean",
+		translatedName:"Corea",
+		leaderName:"Sejong",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Jip-hyun-jun (la Sala dei Giusti) non tollera più la tua insolenza. Libereremo i tuoi cittadini oppressi anche con la forza, e li illumineremo!"
+		attacked:"Sciocca progenie di una megera! Sarete distrutti dalla magnifica potenza scientifica del mio paese!"
+		defeated:"Ora resta da vedere chi proteggerà il mio popolo... Il buio è giunto."
+		introduction:"Benvenuto nel palazzo dei Choson, straniero. Io sono il re Sejong l'Istruito, sovrano di queste terre e di questo popolo."
+		
+		neutralHello:"Salve."
+		neutralLetsHearIt:["Sentiamo.","Vai avanti","Continue."]
+		neutralNo:["Non posso farlo.","Spiacente, ma non posso accettare."]
+		neutralYes:["Ciò sta bene.","Capisco...","Certamente!"]
+
+		hateHello:"Oh, sei tu..."
+		hateLetsHearIt:["Cosa vorresti dire?","Dunque?","Parla pure."]
+		hateNo:["Il cielo me ne scampi.","Questa è follia!","Non posso far ciò."]
+		hateYes:["Hm... va bene, d'accordo.","Credo dovrei accettare...","Va bene..."]
+		
+		afterPeace:"Vedo che hai sviluppato delle strategie interessanti... Benissimo, credo dovremo finirla qui."
+		tradeRequest:"Abbiamo molte cose da discutere e tanto da guadagnare tra di noi."
+				
+		mainColor:[0,0,255],
+		secondaryColor:[255,0,0],
+		unique:"+2 Scienz per ogni miglioramento da Gran Personaggio. Ricevi uno sprint tecnologico quando costruisci una struttura/Meraviglia scientifica nella Capitale.",
+		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+	},
+	{
+		name:"Persian",
+		translatedName:"Persia",
+		leaderName:"Darius I",
+		translatedLeaderName:"Dario I",
+		
+		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
+		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!"
+		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!"
+		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!"
+		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
+		
+		neutralHello:"Good day to you!"
+		neutralLetsHearIt:["Go on.","You said?"]
+		neutralNo:["You are not serious!","Not good enough."]
+		neutralYes:["Good!","Certainly.","Agreed!"]
+
+		hateHello:"Ahh... you..."
+		hateLetsHearIt:["I'm listening.","Go on!"]
+		hateNo:["We say... no!","Of course not!"]
+		hateYes:["Alright!","Agreed."]
+		
+		afterPeace:"It appears we should call it a tie..."
+		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
+				
+		mainColor:[255,0,0],
+		secondaryColor:[255,255,0],
+		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
+		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir","Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz","Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube","Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada","Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava","Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka","Paishiyauvada","Patigrbana","Phrada"]
 	},
 	*/
 
