@@ -59,7 +59,8 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             settings.singleTapMove = !settings.singleTapMove
             update()
         }
-      addFontSelectBox()
+
+        addFontSelectBox()
       
         addLanguageSelectBox()
 
