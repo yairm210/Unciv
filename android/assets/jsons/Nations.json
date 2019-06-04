@@ -64,8 +64,10 @@
 				
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
+		/*
 		uniqueName:"Hellenic League",
 		unique:"City-State Influence degrades at half and recovers at twice the normal rate",
+		*/
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
