@@ -34,21 +34,24 @@ class UnitActions {
         if(unit.action!=null && unit.action!!.startsWith("moveTo")) {
             actionList +=
                     UnitAction("Stop movement", true) {
-                        unitTable.currentlyExecutingAction = null
                         unit.action = null
                     }
         }
 
-        if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0 && unit.action!="Set Up") {
+        val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
+        if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0
+                && !workingOnImprovement) {
             val sleeping = unit.action == "Sleep"
             actionList += UnitAction("Sleep", !sleeping, sleeping) {
                 unit.action = "Sleep"
+                unitTable.selectedUnit = null
             }
         }
 
         if(unit.canFortify()) {
             actionList += UnitAction("Fortify", unit.currentMovement >0) {
                 unit.action = "Fortify 0"
+                unitTable.selectedUnit = null
             }.sound("fortify")
         } else if (unit.isFortified()) {
             actionList += UnitAction(
@@ -99,6 +102,7 @@ class UnitActions {
                             newunit.promotions.addPromotion(promotion,true)
 
                     newunit.updateUniques()
+                    newunit.updateViewableTiles()
                     newunit.currentMovement = 0f
                     worldScreen.shouldUpdate = true
                 }.sound("upgrade")
@@ -124,11 +128,7 @@ class UnitActions {
             val setUp = unit.action == "Set Up"
             actionList+=UnitAction("Set up", unit.currentMovement >0 && !setUp, currentAction = setUp ) {
                 unit.action="Set Up"
-                // setting up uses up all movement points
-                // this is to avoid problems with the idle state:
-                // - it should not be idle when setting up right now
-                // - it should be idle when set up in the past
-                unit.currentMovement=0f
+                unit.useMovementPoints(1f)
             }.sound("setup")
         }
 
@@ -141,7 +141,6 @@ class UnitActions {
 
                 unit.civInfo.addCity(tile.position)
                 tile.improvement = null
-                unitTable.currentlyExecutingAction = null // In case the settler was in the middle of doing something and we then founded a city with it
                 unit.destroy()
             }.sound("chimes")
         }
@@ -150,8 +149,9 @@ class UnitActions {
             actionList += UnitAction("Construct improvement",
                     unit.currentMovement >0
                             && !tile.isCityCenter()
-                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) }
-            ) { worldScreen.game.screen = ImprovementPickerScreen(tile) }
+                            && GameBasics.TileImprovements.values.any { tile.canBuildImprovement(it, unit.civInfo) },
+                    currentAction = unit.currentTile.hasImprovementInProgress()
+            ) { worldScreen.game.screen = ImprovementPickerScreen(tile) { unitTable.selectedUnit = null } }
 
             if("automation" == unit.action){
                 actionList += UnitAction("Stop automation", true) {unit.action = null}
@@ -165,8 +165,10 @@ class UnitActions {
             }
         }
 
-        if(unit.hasUnique("Can construct roads") && tile.roadStatus==RoadStatus.None
+        if(unit.hasUnique("Can construct roads")
+                && tile.roadStatus==RoadStatus.None
                 && tile.improvementInProgress != "Road"
+                && tile.isLand
                 && unit.civInfo.tech.isResearched(GameBasics.TileImprovements["Road"]!!.techRequired!!))
             actionList+=UnitAction("Construct road", unit.currentMovement >0){
                 tile.improvementInProgress="Road"

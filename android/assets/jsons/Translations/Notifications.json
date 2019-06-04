@@ -57,7 +57,7 @@
         }
 
         "We have encountered [civName]!":{
-            Italian:"Abbiamo incontrato la civiltà [civName]!"
+            Italian:"Abbiamo incontrato il popolo [civName]!"
             Russian:"Мы встретились с цивилизацией [civName]!"
             Spanish:"¡Hemos encontrado [civName]!"
             French:"Nous sommes entrés en contact avec [civName]!"
@@ -133,6 +133,11 @@
             Portuguese:"o(a) [construction] foi construirdo em [cityName]"
             Japanese:"[construction]は[cityName]に建てられました"
         }
+		
+	"[wonder] has been built in a faraway land":{	
+            Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
+	    French:"[wonder] a été construit(e) dans un lointain pays"
+	}
         
         "Work has started on [construction]":{
             Italian:"Sono iniziati i lavori per [construction]"
@@ -147,18 +152,15 @@
             Japanese:"[construction]の作業が開始されました"
         }
         
-        "Cannot continue work on [construction]":{
-            Italian:"Impossibile costruire [construction]" //You didn't translate this, said Smashfanful
-            Russian:"Не удается продолжить работу над [construction]"
-            French:"Impossible de continuer à travailler sur [construction]"
-            Romanian:"Nu se poate continua munca pentru [construction]"
-            German:"Arbeit an/am [construction] konnte nicht fortgeführt werden"
-            Dutch:"Er kan niet meer veder gewerkt worden aan [construction]"
-            Spanish:"Imposible continuar trabajo en [construction]"
-            Simplified_Chinese:"无法继续建造[construction]"
-            Portuguese:"Não é possivel continuar os trabalhos em [construction]"
-            Japanese:"[construction]の作業を続行できません"
+        "[cityName] cannot continue work on [construction]":{
+            Italian:"[cityName] non può più costruire [construction]"
+	    French:"[cityName] ne peut plus travailler sur [construction]"
         }
+		
+	"One of our trades with [nation] has ended": {
+            Italian:"Un nostro accordo con [nation] è terminato."
+	    French:"Un de nos échanges avec [nation] a pris fin"
+        },
 
         "[cityname] has expanded its borders!":{
             Italian:"[cityname] ha espanso i suoi confini!"
@@ -226,6 +228,12 @@
             Portuguese:"Um(a) [unit] inimigo(a) atacout nossa [ourUnit]"
             Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました"
         }
+
+	"Enemy city [cityName] has attacked our [ourUnit]":{
+		Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
+		French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
+	}
+		
         "An enemy [unit] has captured [cityname]":{
             Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
             Russian:"Вражеский [unit] захватил [cityname]"
@@ -264,6 +272,11 @@
             Portuguese:"Um(a) [unit] inimigo(a) destruiu nosso(a) [ourUnit]"
             Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました"
         }
+		
+	"Enemy city [cityName] has destroyed our [ourUnit]":{
+		Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
+		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
+	}
         
         "An enemy [unit] was destroyed while attacking [cityname]":{
             Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava [cityname]"
@@ -321,12 +334,14 @@
             Italian:"Abbiamo avvistato [amount] unità nemiche vicino ai nostri confini!"
             German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
             Simplified_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
+	    French:"[amount] unités ennemies ont été repérées proche de notre territoire"
         }
 
         "[amount] enemy units were spotted in our territory": {
             Italian:"Abbiamo avvistato [amount] unità nemiche nel nostro territorio!"
             German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
             Simplified_Chinese:"在我们的领土内发现了[amount]个敌方单位"
+	    French:"[amount] unités ennemies ont été repérées sur notre territoire"
         }
 
         "The civilization of [civName] has been destroyed!":{
@@ -341,6 +356,11 @@
             Portuguese:"A civilização de [civName] foi destruida!"
             Japanese:"[civName]の文明は破壊されました！"
         }
+		
+	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
+            Italian:"Nella cattura di un accampamento barbaro, abbiamo recuperato [goldAmount] Oro!"
+	    French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
+	}
         
     /////////////////	ruins
 
@@ -357,7 +377,7 @@
             Portuguese:"Encontramos sobreviventes nas ruínas - população adicionada a [cityName]"
         }
         "We have discovered the lost technology of [techName] in the ruins!":{
-            Italian:"Abbiamo scoperto tra le rovine la tecnologia perduta [techName]]!"
+            Italian:"Abbiamo scoperto i segreti della tecnologia perduta [techName]]!"
             Romanian:"Am descoperit tehnologia pierdută [techName] printre ruine!"
             German:"Wir haben die vergessene Technologie [techName] in den Ruinen wiederentdeckt!"
             French:"Nous avons découvert la technologie perdu [techName] dans les ruines!"
@@ -408,5 +428,15 @@
             Portuguese:"Encontramos um estoque de [quantidade] de ouro nas ruínas!"
         }
 
+        "[unit] finished exploring.": {
+            Italian:"[unit] non sta più esplorando."
+            German: "[unit] hat die Erkundung abgeschlossen."
+	    French:"[unit] a fini d'explorer"
+        },
 
+        "[unit] has no work to do.": {
+            Italian:"[unit] è ora inattivo."
+            German:"[unit] hat keine Arbeit mehr."
+	    French:"[unit] n'a rien à faire"
+        }
 }

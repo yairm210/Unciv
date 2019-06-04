@@ -1,6 +1,7 @@
 package com.unciv.logic.battle
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.logic.GameInfo
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
@@ -8,7 +9,6 @@ import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.TileInfo
-import com.unciv.Constants
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
 import kotlin.math.max
@@ -81,8 +81,7 @@ class Battle(val gameInfo:GameInfo) {
 
         if(defender.isDefeated()
                 && defender is CityCombatant
-                && attacker.isMelee()
-                && attacker.getUnitType().isLandUnit()){
+                && attacker.isMelee()){
             conquerCity(defender.city, attacker)
         }
 
@@ -254,5 +253,6 @@ class Battle(val gameInfo:GameInfo) {
 
         capturedUnit.civInfo.removeUnit(capturedUnit)
         capturedUnit.assignOwner(attacker.getCivInfo())
+        capturedUnit.updateViewableTiles()
     }
 }

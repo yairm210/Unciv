@@ -8,6 +8,7 @@ import com.unciv.logic.trade.TradeOffer
 import com.unciv.logic.trade.TradeOffersList
 import com.unciv.logic.trade.TradeType
 import com.unciv.logic.trade.TradeType.*
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.cityscreen.ExpanderTab
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.disable
@@ -35,7 +36,7 @@ class OffersListScroll(val onOfferClicked: (TradeOffer) -> Unit) : ScrollPane(nu
             }
             val offersOfType = offersToDisplay.filter { it.type == offertype }
             if (labelName!="" && offersOfType.any()) {
-                expanderTabs[offertype] = ExpanderTab(labelName, CameraStageBaseScreen.skin)
+                expanderTabs[offertype] = ExpanderTab(labelName.tr(), CameraStageBaseScreen.skin)
                 expanderTabs[offertype]!!.innerTable.defaults().pad(5f)
             }
         }

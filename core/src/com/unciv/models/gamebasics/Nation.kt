@@ -14,7 +14,7 @@ class Nation : INamed {
     }
 
     var leaderName=""
-    fun getLeaderDisplayName() = if(isCityState()) "City-state [${getNameTranslation()}]".tr()
+    fun getLeaderDisplayName() = if(isCityState()) getNameTranslation()
         else "[$leaderName] of [${getNameTranslation()}]"
 
     var cityStateType: CityStateType?=null
@@ -24,9 +24,18 @@ class Nation : INamed {
     var introduction=""
     var tradeRequest=""
 
+    var neutralHello=""
+    var hateHello=""
+
     var neutralLetsHearIt = ArrayList<String>()
     var neutralYes = ArrayList<String>()
     var neutralNo = ArrayList<String>()
+
+    var hateLetsHearIt = ArrayList<String>()
+    var hateYes = ArrayList<String>()
+    var hateNo = ArrayList<String>()
+
+    var afterPeace=""
 
     lateinit var mainColor: List<Int>
     var unique:String?=null

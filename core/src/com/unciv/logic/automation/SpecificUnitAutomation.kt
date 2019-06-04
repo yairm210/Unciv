@@ -29,7 +29,7 @@ class SpecificUnitAutomation{
                     return createImprovementAction.action() // unit is already gone, can't "Explore"
             }
         }
-        else UnitAutomation().explore(unit, unit.getDistanceToTiles())
+        else UnitAutomation().tryExplore(unit, unit.getDistanceToTiles())
     }
 
     fun automateGreatGeneral(unit: MapUnit){
@@ -95,8 +95,11 @@ class SpecificUnitAutomation{
                 .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings) }
                 .firstOrNull { unit.movementAlgs().canReach(it) }
 
-        if(bestCityLocation==null) // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
-            return UnitAutomation().explore(unit, unit.getDistanceToTiles())
+        if(bestCityLocation==null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
+            if(UnitAutomation().tryExplore(unit, unit.getDistanceToTiles())) return // try to find new areas
+            UnitAutomation().wander(unit, unit.getDistanceToTiles()) // go around aimlessly
+            return
+        }
 
         if(bestCityLocation.getTilesInDistance(3).any { it.isCityCenter() })
             throw Exception("City within distance")

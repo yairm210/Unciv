@@ -95,7 +95,7 @@ open class TileInfo {
     fun getHeight(): Int {
         if (baseTerrain==Constants.mountain) return 4
         if (baseTerrain == Constants.hill) return 2
-        if (baseTerrain==Constants.forest || baseTerrain==Constants.jungle) return 1
+        if (terrainFeature==Constants.forest || terrainFeature==Constants.jungle) return 1
         return 0
     }
 
@@ -209,6 +209,8 @@ open class TileInfo {
 
     }
 
+    fun hasImprovementInProgress() = improvementInProgress!=null
+
     fun hasViewableResource(civInfo: CivilizationInfo): Boolean {
         return resource != null && (getTileResource().revealedBy == null || civInfo.tech.isResearched(getTileResource().revealedBy!!))
     }
@@ -241,7 +243,7 @@ open class TileInfo {
         return listOf(abs(xDelta),abs(yDelta), abs(xDelta-yDelta)).max()!!.toInt()
     }
 
-    fun isRoughTerrain() = baseTerrain == Constants.hill || terrainFeature == Constants.forest || terrainFeature == Constants.jungle
+    fun isRoughTerrain() = getBaseTerrain().rough || getTerrainFeature()?.rough == true
 
     override fun toString(): String {
         val lineList = ArrayList<String>() // more readable than StringBuilder, with same performance for our use-case

@@ -132,7 +132,7 @@
 	"Walls of Babylon":{
 		Italian:"Mura di Babilonia"
 		Simplified_Chinese:"巴比伦城墙"
-        French:"Murs de Babylone"
+        	French:"Murs de Babylone"
 	}
 	
 	"The Pyramids":{	
@@ -231,7 +231,14 @@
 		German:"Grabstätte"
 		French:"Tombeau"
 	}
-	
+
+	/*
+	"Mud Pyramid Mosque":{	//Songhai unique
+		Italian:"Moschea della Piramide di Fango"
+		French:"Mosquée d'adobe" //official translation
+	}
+	*/
+
 	"The Oracle":{	
 		Italian:"Oracolo"
 		Russian:"Оракул"
@@ -335,6 +342,18 @@
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
 	}
+
+	/*
+	"Courthouse":{
+		Italian:"Palazzo di giustizia"
+		French:"Palais de justice"
+	}
+		
+	"Eliminates extra Unhappiness from an Occupied City":{
+		Italian:"Elimina l'Infelicità supplementare proveniente da una Città occupata"
+		French:"Enlève le mécontentement supplémentaire des villes occupées"
+	}
+	*/
 
 	"Stable":{	
 		Italian:"Scuderia"
@@ -585,6 +604,18 @@
 		German:"Werkstatt"
 	}
 
+	/*
+	"Longhouse":{	//Irochese unique
+		Italian:"Casa Lunga"
+		French:"Longère"
+	}
+	
+	"+1 Production from each worked Forest tile":{	
+		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
+		French:"+1 production pour chaque cases de forêt exploitées par la ville."
+	}
+	*/
+
 	"Forge":{	
 		Italian:"Fucina"
 		Russian:"Кузница"
@@ -638,7 +669,7 @@
 	}
 
 	"Jungles provide +2 science":{
-		Italian:"+2 scienza da giungle"
+		Italian:"+2 scienza per ogni Giungla"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă +2 știință"
@@ -648,6 +679,13 @@
 		Simplified_Chinese:"丛林+2科研"
 		Portuguese:"Selvas proporcionam +2 ciência"
 	}
+
+	/*
+	"Wat":{	//Siamese unique
+		Italian:"Wat"
+		//same in French
+	}
+	*/
 	
 	"Oxford University":{	
 		Italian:"Università di Oxford"
@@ -669,6 +707,11 @@
 		Simplified_Chinese:"城堡"
 		Portuguese:"Castelo"
 		German:"Burg"
+	}
+
+	"Mughal Fort":{	//Indian unique
+		Italian:"Forte Mughal"
+		French:"Fort Monghol"
 	}
 	
 	"Alhambra":{
@@ -807,10 +850,18 @@
 		German:"Bank"
 	}
 	
-	"Hanse":{	
-		Italian:"Hanse" //Same as in Italian
+	"Hanse":{	//German unique
+		Italian:"Hansa" //Same as in Italian
 		Simplified_Chinese:"汉萨会馆"
+		French:"Hanse" //same in French
 	}
+
+	/*
+	"Satrap's Court":{	//Persian unique
+		Italian:"Corte del Satrapo"
+		French:"Cour de Satrape"
+	}
+	*/
 
 	"Forbidden Palace":{	
 		Italian:"Palazzo Proibito"
@@ -867,6 +918,7 @@
 	"Choose a free great person":{
 		Italian:"Scegli un Grande Personaggio gratuito"
 		Simplified_Chinese:"选择1个免费的伟人"
+		French:"Choisissez un personnage illustre gratuit"
 	}
 
 	"Himeji Castle":{
@@ -1071,7 +1123,7 @@
 	}
 
 	"Culture cost of adopting new Policies reduced by 10%":{
-		Italian:"-10% costo in Cultura per ogni nuova politiche"
+		Italian:"-10% costo in Cultura per ogni nuova politica"
 		Russian:"Колличество культуры для принятия новых общественных институтов -10%"
 		French:"Coût culturel de l'adoption de nouvelles Doctrines réduit de 10%"
 		Romanian:"Costul în cultură de adoptare a noilor politici a scăzut cu 10%"
@@ -1419,4 +1471,74 @@
 		Portuguese:"Câmara  de biostase de Nave Espacial"
 		German:"Raumschiff Stase-Kammer"
 	}
+	
+	
+	// UI notifications of building info/conditions
+	
+	
+	"Requires [buildingName] to be built in the city":{
+		Italian:"Richiede la costruzione di [buildingName] nella città"
+		French:"Requiert la construction de [buildingName] dans la ville"
+		Simplified_Chinese:"需要城市建有[buildingName]"
+		Portuguese:"Requer [buildingName] para ser construido na cidade"
+	}
+
+	"Requires [buildingName] to be built in all cities":{
+		Italian:"Richiede la costruzione di [buildingName] in tutte le città"
+		French:"Requiert la construction de [buildingName] dans toutes les villes"
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+		Portuguese:"Requer [buildingName] para ser construido em todas as cidades"
+	}
+
+	"Provides a free [buildingName] in the city":{
+		Italian:"Dona l'edificio gratuito [buildingName] nella città"
+		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
+		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
+		Portuguese:"Provê um(a) [buildingName] grátis na cidade"
+	}
+
+	"Requires worked [resource] near city":{
+		Italian:"Richiede che la città sfrutti [resource]"
+		French:"Nécessite l'exploitation de [resource] près de la ville"
+		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
+		Portuguese:"Requer [resource] trabalhado perto da cidade"
+	}
+
+	"Wonder is being built elsewhere":{
+		Italian:"Meraviglia in costruzione altrove"
+		Simplified_Chinese:"正在其他城市建造该奇观"
+        	French:"Cette merveille est déjà en construction ailleurs"
+		Portuguese:"A maravilha está sendo construida em uma cidade estrangeira"
+	}
+
+	"Requires a [buildingName] in all cities":{
+		Italian:"Richiede [buildingName] in tutte le città"
+		Simplified_Chinese:"需要所有城市建有[buildingName]"
+		French:"Nécessite un(e) [buildingName] dans toutes les villes"
+		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
+	}
+
+	"Requires a [buildingName] in this city":{
+		Italian:"Richiede [buildingName] nella città"
+		Simplified_Chinese:"需要城市建有[buildingName]"
+        	French:"Nécessite un(e) [buildingName] dans cette ville"
+		Portuguese:"Requer um [buildingName] nessa cidade"
+	}
+
+	"Requires [resource]":{
+		Italian:"Richiede [resource]"
+		Simplified_Chinese:"需要资源：[resource]"
+		French:"[resource] requis(e)"
+		Portuguese:"Requer [resource]"
+	}
+
+	"Required tech: [requiredTech]":{
+		Italian:"Tecnologie propedeutiche: [requiredTech]"
+		French:"Nécessite la technologie: [requiredTech]"
+		Simplified_Chinese:"需要科技：[requiredTech]"
+		Portuguese:"Requer tecnologia: [requiredTech]"
+	}
+	
+	
+
 }

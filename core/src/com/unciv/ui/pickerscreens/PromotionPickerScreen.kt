@@ -1,8 +1,11 @@
 package com.unciv.ui.pickerscreens
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
+import com.badlogic.gdx.utils.Align
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
 import com.unciv.models.gamebasics.GameBasics
@@ -18,16 +21,23 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         setDefaultCloseAction()
-        rightSideButton.setText("Pick promotion".tr())
-        rightSideButton.onClick("promote") {
-            mapUnit.promotions.addPromotion(selectedPromotion!!.name)
+
+        fun accept(promotion: Promotion?) {
+            mapUnit.promotions.addPromotion(promotion!!.name)
             if(mapUnit.promotions.canBePromoted()) game.screen = PromotionPickerScreen(mapUnit)
             else game.setWorldScreen()
             dispose()
+            game.worldScreen.shouldUpdate=true
+        }
+
+        rightSideButton.setText("Pick promotion".tr())
+        rightSideButton.onClick("promote") {
+          accept(selectedPromotion)
         }
 
         val availablePromotionsGroup = VerticalGroup()
         availablePromotionsGroup.space(10f)
+
         val unitType = mapUnit.type
         val promotionsForUnitType = GameBasics.UnitPromotions.values.filter { it.unitTypes.contains(unitType.toString()) }
         val unitAvailablePromotions = mapUnit.promotions.getAvailablePromotions()
@@ -36,15 +46,15 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
             if(promotion.name=="Heal Instantly" && mapUnit.health==100) continue
             val isPromotionAvailable = promotion in unitAvailablePromotions
             val unitHasPromotion = mapUnit.promotions.promotions.contains(promotion.name)
-            val promotionButton = Button(skin)
 
-            if(!isPromotionAvailable) promotionButton.color = Color.GRAY
-            promotionButton.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
-            promotionButton.add(promotion.name.toLabel()
-                    .setFontColor(Color.WHITE)).pad(10f)
-            if(unitHasPromotion) promotionButton.color = Color.GREEN
+            val group = Table()
 
-            promotionButton.onClick {
+            group.add(ImageGetter.getPromotionIcon(promotion.name)).size(30f).pad(10f)
+            group.add(promotion.name.toLabel()
+                    .setFontColor(Color.WHITE)).pad(10f).padRight(20f)
+
+            group.touchable = Touchable.enabled
+            group.onClick {
                 selectedPromotion = promotion
                 rightSideButton.setText(promotion.name.tr())
                 if(isPromotionAvailable && !unitHasPromotion) rightSideButton.enable()
@@ -55,14 +65,36 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
 
                 if(promotion.prerequisites.isNotEmpty()) {
                     val prerequisitesString:ArrayList<String> = arrayListOf()
-                   for (i in promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }){
-                       prerequisitesString.add(i.tr())
-                   }
+                    for (i in promotion.prerequisites.filter { promotionsForUnitType.any { promotion ->  promotion.name==it } }){
+                        prerequisitesString.add(i.tr())
+                    }
                     descriptionText +="\n{Requires}: ".tr()+prerequisitesString.joinToString(" OR ".tr())
                 }
                 descriptionLabel.setText(descriptionText)
             }
+
+            val pickNow = "Pick now!".toLabel()
+            pickNow.setAlignment(Align.center)
+            pickNow.onClick {
+                accept(promotion)
+            }
+
+
+            val promotionButton = Button(skin)
+            promotionButton.add(group).fillY()
+
+            if(isPromotionAvailable) {
+                promotionButton.addSeparatorVertical()
+                promotionButton.add(pickNow).padLeft(10f).fillY()
+            }
+            else {
+                group.touchable = Touchable.disabled
+                promotionButton.disable()
+            }
+            if(unitHasPromotion) promotionButton.color = Color.GREEN
             availablePromotionsGroup.addActor(promotionButton)
+
+
         }
         topTable.add(availablePromotionsGroup)
     }

@@ -7,6 +7,7 @@ import com.unciv.GameSettings
 import com.unciv.logic.map.TileMap
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.ImageGetter
+import java.io.File
 
 class GameSaver {
     private val saveFilesFolder = "SaveFiles"
@@ -65,5 +66,25 @@ class GameSaver {
 
     fun setGeneralSettings(gameSettings: GameSettings){
         getGeneralSettingsFile().writeString(json().toJson(gameSettings), false)
+    }
+
+    fun autoSave(gameInfo: GameInfo, postRunnable: () -> Unit = {}) {
+        val gameInfoClone = gameInfo.clone()
+        kotlin.concurrent.thread {
+            // the save takes a long time (up to a second!) and we can do it while the player continues his game.
+            // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
+            // So what we do is we clone all the game data and serialize the clone.
+            saveGame(gameInfoClone, "Autosave")
+
+            // keep auto-saves for the last 10 turns for debugging purposes
+            // eg turn 238 is saved as "Autosave-8"
+            getSave("Autosave").copyTo(Gdx.files.local(saveFilesFolder + File.separator + "Autosave-${gameInfoClone.turns%10}"))
+
+            // do this on main thread
+            Gdx.app.postRunnable {
+                postRunnable()
+            }
+        }
+
     }
 }

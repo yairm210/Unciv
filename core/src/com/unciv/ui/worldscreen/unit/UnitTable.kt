@@ -2,7 +2,10 @@ package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.Image
+import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.UnCivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityInfo
@@ -22,8 +25,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     private val unitDescriptionTable = Table(CameraStageBaseScreen.skin)
     var selectedUnit : MapUnit? = null
     var selectedCity : CityInfo? = null
-    var currentlyExecutingAction : String? = null
-    var lastSelectedCityButton : Boolean = false
     val deselectUnitButton = Table()
     val helpUnitButton = Table()
 
@@ -71,6 +72,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             separator= addSeparator().actor!!
             add(promotionsTable).colspan(2).row()
             add(unitDescriptionTable)
+            touchable = Touchable.enabled
+            onClick {
+                selectedUnit?.currentTile?.position?.let {
+                    worldScreen.tileMapHolder.setCenterPosition(it, false, false)
+                }
+            }
         }).expand()
 
         add(nextIdleUnitButton)
@@ -82,12 +89,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             if (selectedUnit!!.civInfo != worldScreen.currentPlayerCiv) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 selectedCity = null
-                currentlyExecutingAction = null
                 selectedUnitHasChanged = true
             } else if (selectedUnit!! !in selectedUnit!!.getTile().getUnits()) { // The unit that was there no longer exists}
                 selectedUnit = null
                 selectedCity = null
-                currentlyExecutingAction = null
                 selectedUnitHasChanged = true
             }
         }
@@ -106,7 +111,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             val unit = selectedUnit!!
             var nameLabelText = unit.name.tr()
             if(unit.health<100) nameLabelText+=" ("+unit.health+")"
-            unitNameLabel.setText(nameLabelText)
+            if(nameLabelText!=unitNameLabel.text.toString()){
+                unitNameLabel.setText(nameLabelText)
+                selectedUnitHasChanged=true // We need to reload the health bar of the unit in the icon - happens e.g. when picking the Heal Instantly promotion
+            }
+
 
             unitDescriptionTable.clear()
             unitDescriptionTable.defaults().pad(2f)
@@ -166,7 +175,6 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
             for(promotion in selectedUnit!!.promotions.promotions)
                 promotionsTable.add(ImageGetter.getPromotionIcon(promotion)).size(20f)
 
-            unitDescriptionTable.onClick { worldScreen.tileMapHolder.setCenterPosition(selectedUnit!!.getTile().position) }
         }
 
         pack()
@@ -175,35 +183,19 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun citySelected(cityInfo: CityInfo) : Boolean {
         if (cityInfo == selectedCity) return false
-        lastSelectedCityButton = true
         selectedCity = cityInfo
         selectedUnit = null
         selectedUnitHasChanged = true
+        worldScreen.shouldUpdate = true
         return true
     }
 
     fun tileSelected(selectedTile: TileInfo) {
-        if (lastSelectedCityButton) {
-            lastSelectedCityButton = false
-            return
-        }
 
         val previouslySelectedUnit = selectedUnit
-        if(currentlyExecutingAction=="moveTo"){
-            if(selectedUnit!!.movementAlgs()
-                    .getShortestPath(selectedTile).isEmpty())
-                return // can't reach there with the selected unit, watcha want me to do?
-
-            val reachedTile = selectedUnit!!.movementAlgs().headTowards(selectedTile)
-
-            selectedUnit!!.action=null // Disable any prior action (automation, fortification...)
-            if(reachedTile!=selectedTile) // Didn't get all the way there
-                selectedUnit!!.action = "moveTo " + selectedTile.position.x.toInt() + "," + selectedTile.position.y.toInt()
-            currentlyExecutingAction = null
-        }
-
-        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
-                && selectedUnit!=selectedTile.militaryUnit){
+        if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
+                && selectedUnit!=selectedTile.militaryUnit
+                && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
             selectedUnit = selectedTile.militaryUnit
             selectedCity = null
         }
@@ -211,6 +203,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                         && selectedUnit!=selectedTile.civilianUnit){
             selectedUnit = selectedTile.civilianUnit
             selectedCity = null
+        } else if(selectedTile == previouslySelectedUnit?.currentTile) {
+            // tapping the same tile again will deselect a unit.
+            // important for single-tap-move to abort moving easily
+            selectedUnit = null
         }
 
         if(selectedUnit != previouslySelectedUnit)

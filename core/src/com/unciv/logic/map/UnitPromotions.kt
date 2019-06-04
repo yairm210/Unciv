@@ -28,7 +28,7 @@ class UnitPromotions{
         else promotions.add(promotionName)
 
         unit.updateUniques()
-        unit.civInfo.updateViewableTiles() // some promotions give the unit bonus sight
+        unit.updateViewableTiles()  // some promotions/uniques give the unit bonus sight
     }
 
     fun getAvailablePromotions(): List<Promotion> {

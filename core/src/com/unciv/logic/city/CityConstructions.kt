@@ -143,6 +143,8 @@ class CityConstructions {
     }
 
     fun constructIfEnough(){
+        stopUnbuildableConstruction()
+
         val construction = getConstruction(currentConstruction)
         if(construction is SpecialConstruction) return
         
@@ -154,20 +156,24 @@ class CityConstructions {
     }
 
     fun endTurn(cityStats: Stats) {
-        val construction = getConstruction(currentConstruction)
-        if(construction is SpecialConstruction) return
+        stopUnbuildableConstruction()
 
+        if(getConstruction(currentConstruction) !is SpecialConstruction)
+            addProductionPoints(Math.round(cityStats.production))
+    }
+
+    private fun stopUnbuildableConstruction() {
         // Let's try to remove the building from the city, and see if we can still build it (we need to remove because of wonders etc.)
+        val construction = getConstruction(currentConstruction)
+
         val saveCurrentConstruction = currentConstruction
         currentConstruction = ""
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
-            cityInfo.civInfo.addNotification("[${cityInfo.name}] Cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
+            cityInfo.civInfo.addNotification("[${cityInfo.name}] cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
             chooseNextConstruction()
         } else
             currentConstruction = saveCurrentConstruction
-
-        addProductionPoints(Math.round(cityStats.production))
     }
 
     fun constructionComplete(construction: IConstruction) {
@@ -176,8 +182,11 @@ class CityConstructions {
 
         if (construction is Building && construction.isWonder && construction.requiredBuildingInAllCities == null) {
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
-                val builtLocation = if (civ.exploredTiles.contains(cityInfo.location)) cityInfo.name else "a faraway land"
-                civ.addNotification("[$currentConstruction] has been built in [$builtLocation]", cityInfo.location, Color.BROWN)
+                if (civ.exploredTiles.contains(cityInfo.location))
+                    civ.addNotification("[$currentConstruction] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
+                else
+                    civ.addNotification("[$currentConstruction] has been built in a faraway land",null,Color.BROWN)
+
             }
         } else
             cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
@@ -213,7 +222,6 @@ class CityConstructions {
                 .map { cityInfo.civInfo.getEquivalentBuilding(it) }
 
         val buildableCultureBuildings = basicCultureBuildings
-                .map { GameBasics.Buildings[it]!! }
                 .filter { it.isBuildable(this)}
 
         if (buildableCultureBuildings.isEmpty()) return

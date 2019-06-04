@@ -9,19 +9,17 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
+import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.Trade
 import com.unciv.models.Counter
-import com.unciv.models.gamebasics.Difficulty
-import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.Nation
+import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
@@ -127,7 +125,8 @@ class CivilizationInfo {
         return translatedNation
     }
 
-    fun getDiplomacyManager(civInfo: CivilizationInfo) = diplomacy[civInfo.civName]!!
+    fun getDiplomacyManager(civInfo: CivilizationInfo) = getDiplomacyManager(civInfo.civName)
+    fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
 
@@ -145,19 +144,16 @@ class CivilizationInfo {
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
         val statMap = HashMap<String,Stats>()
         for (city in cities){
-            for(entry in city.cityStats.baseStatList){
-                if(statMap.containsKey(entry.key))
-                    statMap[entry.key] = statMap[entry.key]!! + entry.value
-                else statMap[entry.key] = entry.value
-            }
+            if(!statMap.containsKey("Cities")) statMap["Cities"]=Stats()
+            statMap["Cities"] = statMap["Cities"]!! + city.cityStats.currentCityStats
         }
 
         //City states culture bonus
-        for (otherCivName in diplomacy.keys) {
-            val otherCiv = gameInfo.getCivilization(otherCivName)
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured && otherCiv.diplomacy[civName]!!.influence >= 60) {
+        for (otherCiv in getKnownCivs()) {
+            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
+                    && otherCiv.getDiplomacyManager(civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
-                cultureBonus.add(Stat.Culture, 5.0f * getEra().ordinal)
+                cultureBonus.add(Stat.Culture, 3f * (getEra().ordinal+1))
                 if (statMap.containsKey("City States"))
                     statMap["City States"] = statMap["City States"]!! + cultureBonus
                 else
@@ -248,9 +244,9 @@ class CivilizationInfo {
         }
 
         //From city-states
-        for (otherCivName in diplomacy.keys) {
-            val otherCiv = gameInfo.getCivilization(otherCivName)
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile && otherCiv.diplomacy[civName]!!.influence >= 60) {
+        for (otherCiv in getKnownCivs()) {
+            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile
+                    && otherCiv.getDiplomacyManager(this).relationshipLevel() >= RelationshipLevel.Friend) {
                 if (statMap.containsKey("City-states"))
                     statMap["City-states"] = statMap["City-states"]!! + 3f
                 else
@@ -310,8 +306,7 @@ class CivilizationInfo {
 
     fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
 
-    fun getNextDueUnit(selectedUnit: MapUnit?): MapUnit? {
-        selectedUnit?.due = false
+    fun getNextDueUnit(): MapUnit? {
         val dueUnits = getDueUnits()
         if(dueUnits.isNotEmpty()) {
             val unit = dueUnits[0]
@@ -321,23 +316,24 @@ class CivilizationInfo {
         return null
     }
 
-    fun getEquivalentBuilding(buildingName:String): String {
-        val building = GameBasics.Buildings[buildingName]!!
-        val baseBuildingName = if(building.replaces==null) buildingName else building.replaces!!
-        for(blding in GameBasics.Buildings.values)
-            if(blding.replaces==buildingName && blding.uniqueTo==civName)
-                return blding.name
-        return baseBuildingName
+    fun getEquivalentBuilding(buildingName:String): Building {
+        val baseBuilding = GameBasics.Buildings[buildingName]!!.getBaseBuilding()
+
+        for(building in GameBasics.Buildings.values)
+            if(building.replaces==baseBuilding.name && building.uniqueTo==civName)
+                return building
+        return baseBuilding
     }
 
+    // This is a big performance
     fun updateViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
         newViewableTiles.addAll(cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
-        newViewableTiles.addAll(getCivUnits().flatMap { it.getViewableTiles()})
+        newViewableTiles.addAll(getCivUnits().flatMap { it.viewableTiles})
         viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(getCivUnits().filter {it.hasUnique("Can attack submarines")}.flatMap {it.getViewableTiles()})
+        newViewableInvisibleTiles.addAll(getCivUnits().filter {it.hasUnique("Can attack submarines")}.flatMap {it.viewableTiles})
         viewableInvisibleUnitsTiles = newViewableInvisibleTiles
         // updating the viewable tiles also affects the explored tiles, obvs
 
@@ -500,14 +496,14 @@ class CivilizationInfo {
         return false
     }
 
-    fun addNotification(text: String, location: Vector2?,color: Color) {
-        val locations = if(location!=null) listOf(location) else emptyList()
-        addNotification(text, locations, color)
+    fun addNotification(text: String, location: Vector2?, color: Color) {
+        val locations = if (location != null) listOf(location) else emptyList()
+        addNotification(text, color, LocationAction(locations))
     }
 
-    fun addNotification(text: String, locations: List<Vector2>, color: Color) {
-        if(playerType==PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
-        notifications.add(Notification(text, locations,color))
+    fun addNotification(text: String, color: Color, action: NotificationAction?=null) {
+        if (playerType == PlayerType.AI) return // no point in lengthening the saved game info if no one will read it
+        notifications.add(Notification(text, color, action))
     }
 
     fun addGreatPerson(greatPerson: String, city:CityInfo = cities.random()) {

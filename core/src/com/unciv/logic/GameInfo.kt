@@ -1,16 +1,22 @@
 package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.GameParameters
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.LocationAction
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
+import java.util.*
 
 class GameInfo {
+    @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
@@ -34,7 +40,7 @@ class GameInfo {
     fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
     fun getCurrentPlayerCivilization() = getCivilization(currentPlayer)
     fun getBarbarianCivilization() = getCivilization("Barbarians")
-    fun getDifficulty() = GameBasics.Difficulties[difficulty]!!
+    fun getDifficulty() = difficultyObject
     //endregion
 
     fun nextTurn() {
@@ -47,9 +53,25 @@ class GameInfo {
             currentPlayerIndex = (currentPlayerIndex+1) % civilizations.size
             if(currentPlayerIndex==0){
                 turns++
-                if (turns % 10 == 0 && !gameParameters.noBarbarians) { // every 10 turns add a barbarian in a random place
-                    placeBarbarianUnit(null)
+                if (turns % 10 == 0 && !gameParameters.noBarbarians) {
+                    val encampments = tileMap.values.filter { it.improvement==Constants.barbarianEncampment }
+
+                    if(encampments.size < civilizations.filter { it.isMajorCiv() }.size*2) {
+                        val newEncampmentTile = placeBarbarianEncampment(encampments)
+                        if (newEncampmentTile != null)
+                            placeBarbarianUnit(newEncampmentTile)
+                    }
+
+                    val totalBarbariansAllowedOnMap = encampments.size*3
+                    var extraBarbarians = totalBarbariansAllowedOnMap - getBarbarianCivilization().getCivUnits().size
+
+                    for (tile in tileMap.values.filter { it.improvement == Constants.barbarianEncampment }) {
+                        if(extraBarbarians<=0) break
+                        extraBarbarians--
+                        placeBarbarianUnit(tile)
+                    }
                 }
+
             }
             thisPlayer = civilizations[currentPlayerIndex]
             thisPlayer.startTurn()
@@ -97,23 +119,28 @@ class GameInfo {
         }
         else {
             val positions = tiles.map { it.position }
-            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", positions, Color.RED)
+            thisPlayer.addNotification("[${positions.size}] enemy units were spotted $inOrNear our territory", Color.RED, LocationAction(positions))
         }
     }
 
-    fun placeBarbarianUnit(tileToPlace: TileInfo?) {
-        var tile = tileToPlace
-        if (tileToPlace == null) {
-            // Barbarians will only spawn in places that no one can see
-            val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
-                    .flatMap { it.viewableTiles }.toHashSet()
-            val viableTiles = tileMap.values.filter { it.militaryUnit == null
-                    && it.civilianUnit == null && !it.getBaseTerrain().impassable && it.baseTerrain!="Lakes"
-                    && !allViewableTiles.contains(it)}
-            if (viableTiles.isEmpty()) return // no place for more barbs =(
-            tile = viableTiles.random()
+    fun placeBarbarianEncampment(existingEncampments: List<TileInfo>): TileInfo? {
+        // Barbarians will only spawn in places that no one can see
+        val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
+                .flatMap { it.viewableTiles }.toHashSet()
+        val tilesWithin3ofExistingEncampment = existingEncampments.flatMap { it.getTilesInDistance(3) }
+        val viableTiles = tileMap.values.filter {
+            !it.getBaseTerrain().impassable && it.isLand
+                    && it.terrainFeature==null
+                    && it !in tilesWithin3ofExistingEncampment
+                    && it !in allViewableTiles
         }
+        if (viableTiles.isEmpty()) return null // no place for more barbs =(
+        val tile = viableTiles.random()
+        tile.improvement = Constants.barbarianEncampment
+        return tile
+    }
 
+    fun placeBarbarianUnit(tileToPlace: TileInfo) {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = GameBasics.Technologies.keys.toMutableList()
@@ -123,9 +150,17 @@ class GameInfo {
         val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() && it.uniqueTo == null }
                 .filter{ allResearchedTechs.contains(it.requiredTech)
                         && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
-        val unit = if (unitList.isEmpty()) "Warrior" else unitList.random().name
 
-        tileMap.placeUnitNearTile(tile!!.position, unit, getBarbarianCivilization())
+        val landUnits = unitList.filter { it.unitType.isLandUnit() }
+        val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
+
+        val unit:String
+        if (unitList.isEmpty()) unit="Warrior"
+        else if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain=="Coast" } && Random().nextBoolean())
+            unit=waterUnits.random().name
+        else unit = landUnits.random().name
+
+        tileMap.placeUnitNearTile(tileToPlace.position, unit, getBarbarianCivilization())
     }
 
     // All cross-game data which needs to be altered (e.g. when removing or changing a name of a building/tech)
@@ -145,6 +180,7 @@ class GameInfo {
             getCurrentPlayerCivilization().playerType=PlayerType.Human
         if(getCurrentPlayerCivilization().difficulty!="Chieftain")
             difficulty= getCurrentPlayerCivilization().difficulty
+        difficultyObject = GameBasics.Difficulties[difficulty]!!
 
         // We have to remove all deprecated buildings from all cities BEFORE we update a single one, or run setTransients on the civs,
         // because updating leads to getting the building uniques from the civ info,
@@ -169,7 +205,11 @@ class GameInfo {
             }
         }
 
-        for (civInfo in civilizations) civInfo.setTransients()
+        for (civInfo in civilizations) {
+            civInfo.setTransients()
+            for(unit in civInfo.getCivUnits())
+                unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
+        }
         for (civInfo in civilizations){
             for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
         }

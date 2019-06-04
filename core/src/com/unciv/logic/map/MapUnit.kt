@@ -6,6 +6,8 @@ import com.unciv.Constants
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.action.MapUnitAction
+import com.unciv.logic.map.action.StringAction
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.TerrainType
@@ -16,9 +18,15 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class MapUnit {
+
     @Transient lateinit var civInfo: CivilizationInfo
     @Transient lateinit var baseUnit: BaseUnit
     @Transient internal lateinit var currentTile :TileInfo
+
+    // This is saved per each unit because if we need to recalculate viewable tiles every time a unit moves,
+    //  and we need to go over ALL the units, that's a lot of time spent on updating information we should already know!
+    // About 10% of total NextTurn performance time, at the time of this change!
+    @Transient var viewableTiles = listOf<TileInfo>()
 
     // These are for performance improvements to getMovementCostBetweenAdjacentTiles,
     // a major component of getDistanceToTilesWithinTurn,
@@ -32,7 +40,24 @@ class MapUnit {
     lateinit var name: String
     var currentMovement: Float = 0f
     var health:Int = 100
-    var action: String? = null // work, automation, fortifying, I dunno what.
+
+    var mapUnitAction : MapUnitAction? = null
+
+    var action: String? // work, automation, fortifying, I dunno what.
+        // getter and setter for compatibility: make sure string-based actions still work
+        get() {
+            val mapUnitActionVal=mapUnitAction
+            if(mapUnitActionVal is StringAction)
+                return mapUnitActionVal.action
+            // any other unit action does count as a unit action, thus is not null. The actual logic is not based on an action string, but realized by extending MapUnitAction
+            if(mapUnitActionVal!=null)
+                return ""
+
+            return null // unit has no action
+        }
+        set(value) { mapUnitAction = value?.let{ StringAction(this, value) } } // wrap traditional string-encoded actions into StringAction
+
+
     var attacksThisTurn = 0
     var promotions = UnitPromotions()
     var due: Boolean = true
@@ -102,7 +127,8 @@ class MapUnit {
         return getUniques().contains(unique)
     }
 
-    fun getViewableTiles(): MutableList<TileInfo> {
+    // we need to map all the places that this could change: Unit changes locations, owners, gets promotion?
+    fun updateViewableTiles() {
         var visibilityRange = 2
         visibilityRange += getUniques().count{it=="+1 Visibility Range"}
         if(hasUnique("Limited Visibility")) visibilityRange-=1
@@ -113,7 +139,9 @@ class MapUnit {
             visibilityRange += 1
         val tile = getTile()
         if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
-        return tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+        viewableTiles = tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+
+        civInfo.updateViewableTiles() // for the civ
     }
 
     fun isFortified(): Boolean {
@@ -169,7 +197,8 @@ class MapUnit {
     }
 
     /**
-     * Designates whether we can walk to the tile - without attacking
+     * Designates whether we can enter the tile - without attacking
+     * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
         if(!canPassThrough(tile)) return false
@@ -275,6 +304,7 @@ class MapUnit {
     //region state-changing functions
     fun setTransients(){
         promotions.unit=this
+        mapUnitAction?.unit = this
         baseUnit=GameBasics.Units[name]!!
         updateUniques()
     }
@@ -292,9 +322,12 @@ class MapUnit {
         val enemyUnitsInWalkingDistance = getDistanceToTiles().keys
                 .filter { it.militaryUnit!=null && civInfo.isAtWarWith(it.militaryUnit!!.civInfo)}
         if(enemyUnitsInWalkingDistance.isNotEmpty()) {
-            if (action != null && action!!.startsWith("moveTo")) action=null
+            if (mapUnitAction?.shouldStopOnEnemyInSight()==true)
+                mapUnitAction=null
             return  // Don't you dare move.
         }
+
+        mapUnitAction?.doPreTurnAction()
 
         if (action != null && action!!.startsWith("moveTo")) {
             val destination = action!!.replace("moveTo ", "").split(",").dropLastWhile { it.isEmpty() }.toTypedArray()
@@ -368,22 +401,19 @@ class MapUnit {
         }
     }
 
-    /**
-     * @return The tile that we reached this turn
-     */
     fun moveToTile(otherTile: TileInfo) {
         if(otherTile==getTile()) return // already here!
         val distanceToTiles = getDistanceToTiles()
 
-        class YouCantGetThereFromHereException : Exception()
+        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
         if (!distanceToTiles.containsKey(otherTile))
+            throw YouCantGetThereFromHereException("$this can't get from ${currentTile.position} to ${otherTile.position}.")
 
-            throw YouCantGetThereFromHereException()
-
-        class CantEnterThisTileException : Exception()
+        class CantEnterThisTileException(msg: String) : Exception(msg)
         if(!canMoveTo(otherTile))
-            throw CantEnterThisTileException()
-        if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo) throw Exception("This is an enemy city, you can't go here!")
+            throw CantEnterThisTileException("$this can't enter $otherTile")
+        if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo)
+            throw Exception("This is an enemy city, you can't go here!")
 
         currentMovement -= distanceToTiles[otherTile]!!
         if (currentMovement < 0.1) currentMovement = 0f // silly floats which are "almost zero"
@@ -426,9 +456,19 @@ class MapUnit {
             tile.civilianUnit=this
         else tile.militaryUnit=this
         currentTile = tile
-        if(tile.improvement=="Ancient ruins" && !civInfo.isBarbarianCivilization())
+        if(tile.improvement==Constants.ancientRuins && !civInfo.isBarbarianCivilization())
             getAncientRuinBonus()
-        civInfo.updateViewableTiles()
+        if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
+            clearEncampment(tile)
+
+        updateViewableTiles()
+    }
+
+    private fun clearEncampment(tile: TileInfo) {
+        tile.improvement=null
+        val goldToAdd = 25 // game-speed-dependant
+        civInfo.gold+=goldToAdd
+        civInfo.addNotification("We have captured a barbarian encampment and recovered [$goldToAdd] gold!", tile.position, Color.RED)
     }
 
     fun disband(){

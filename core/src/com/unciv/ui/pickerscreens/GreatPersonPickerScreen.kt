@@ -30,7 +30,7 @@ class GreatPersonPickerScreen : PickerScreen() {
                 pick("Get " +unit.name)
                 descriptionLabel.setText(unit.uniques.joinToString())
             }
-            topTable.add(button).pad(10f)
+            topTable.add(button).pad(10f).row()
         }
 
         rightSideButton.onClick("choir") {

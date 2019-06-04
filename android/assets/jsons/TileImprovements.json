@@ -145,10 +145,7 @@
 		improvingTechStats:{gold:1}
 	},
 	
-	{
-		name:"Ancient ruins"
-	},
-	{
-		name:"City ruins"
-	}
+	{ name:"Ancient ruins" },
+	{ name:"City ruins" },
+	{ name:"Barbarian encampment" },
 ]

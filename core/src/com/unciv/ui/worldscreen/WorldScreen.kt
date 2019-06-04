@@ -184,6 +184,8 @@ class WorldScreen : CameraStageBaseScreen() {
             displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
             btn.onClick { UnCivGame.Current.screen = DiplomacyScreen() }
+            btn.label.setFontSize(30)
+            btn.labelCell.pad(10f)
             diplomacyButtonWrapper.add(btn)
         }
         diplomacyButtonWrapper.pack()
@@ -207,7 +209,7 @@ class WorldScreen : CameraStageBaseScreen() {
             techButton.add(buttonPic)
         }
         else {
-            val currentTech = civInfo.tech.currentTechnology()!!
+            val currentTech = civInfo.tech.currentTechnologyName()!!
             val innerButton = TechButton(currentTech,civInfo.tech)
             innerButton.color = colorFromRGB(7, 46, 43)
             techButton.add(innerButton)
@@ -223,17 +225,19 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun createNextTurnButton(): TextButton {
 
         val nextTurnButton = TextButton("", skin) // text is set in update()
+        nextTurnButton.label.setFontSize(30)
+        nextTurnButton.labelCell.pad(10f)
 
         nextTurnButton.onClick {
-
             // cycle through units not yet done
             if (currentPlayerCiv.shouldGoToDueUnit()) {
-                val nextDueUnit = currentPlayerCiv.getNextDueUnit(bottomBar.unitTable.selectedUnit)
+                val nextDueUnit = currentPlayerCiv.getNextDueUnit()
                 if(nextDueUnit!=null) {
-                    tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position)
+                    tileMapHolder.setCenterPosition(nextDueUnit.currentTile.position, false, false)
+                    bottomBar.unitTable.selectedUnit = nextDueUnit
                     shouldUpdate=true
-                    return@onClick
                 }
+                return@onClick
             }
 
             if (currentPlayerCiv.shouldOpenTechPicker()) {
@@ -244,8 +248,6 @@ class WorldScreen : CameraStageBaseScreen() {
                 currentPlayerCiv.policies.shouldOpenPolicyPicker = false
                 return@onClick
             }
-
-            bottomBar.unitTable.currentlyExecutingAction = null
 
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             nextTurnButton.disable()
@@ -261,21 +263,13 @@ class WorldScreen : CameraStageBaseScreen() {
                     throw ex
                 }
 
-                val gameInfoClone = gameInfo.clone()
-                kotlin.concurrent.thread {
-                    // the save takes a long time (up to a second!) and we can do it while the player continues his game.
-                    // On the other hand if we alter the game data while it's being serialized we could get a concurrent modification exception.
-                    // So what we do is we clone all the game data and serialize the clone.
-                    if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0)
-                        GameSaver().saveGame(gameInfoClone, "Autosave")
-
-                    // do this on main thread
-                    Gdx.app.postRunnable {
+                if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0) {
+                    GameSaver().autoSave(gameInfo) {
                         nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
                         updateNextTurnButton()
                     }
-
                 }
+                else nextTurnButton.enable() // Enable immediately
 
                 // If we put this BEFORE the save game, then we try to save the game...
                 // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data

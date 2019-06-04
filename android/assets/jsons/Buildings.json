@@ -395,19 +395,17 @@
 		requiredBuilding:"Walls",
 		requiredTech:"Chivalry"
 	},
-	/*
 	{
 		name:"Mughal Fort",
 		replaces:"Castle",
 		uniqueTo:"India",
 		cityStrength:7,
 		cityHealth:25,
-		culture:2;
+		culture:2,
 		hurryCostModifier:25,
 		requiredBuilding:"Walls",
 		requiredTech:"Chivalry"
 	},
-	*/
 	{
 		name:"Angkor Wat",
 		culture:1,

@@ -1,6 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
+import com.unciv.Constants
 import com.unciv.Constants.Companion.mountain
 import com.unciv.Constants.Companion.ocean
 import com.unciv.logic.HexMath
@@ -488,7 +489,7 @@ open class RandomMapGenerator {
     fun maybeAddAncientRuins(tile: TileInfo) {
         val baseTerrain = tile.getBaseTerrain()
         if(baseTerrain.type!=TerrainType.Water && !baseTerrain.impassable && Random().nextDouble() < 1f/100)
-            tile.improvement = "Ancient ruins"
+            tile.improvement = Constants.ancientRuins
     }
 
 

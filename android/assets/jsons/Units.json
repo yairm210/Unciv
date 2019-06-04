@@ -68,7 +68,7 @@
 		uniques:["Haka War Dance"],
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
-		//Polynesian unique unit. All Units near him have -10% strenght
+		//Polynesian unique unit. All nearby enemy Units have -10% strenght
 	},
 	{
 		name:"Brute",
@@ -155,20 +155,17 @@
 	},
 	/*
 	{
-		name:"Quinquereme",
+		name:"Galley",
 		unitType:"WaterMelee",
-		uniqueTo:"Phoenicia",
-		replaces:"Trireme",
-		movement:4,
-		strength:13,
-		cost: 45,
-		requiredTech:"Sailing",
+		uniqueTo:"Barbarian",
+		movement:3,
+		strength:7,
+		cost: 40,
 		uniques:["Cannot enter ocean tiles"]
-		upgradesTo:"Caravel",
-		obsoleteTech:"Astronomy",
+		upgradesTo:"Trireme",
 		hurryCostModifier:20,
 		attackSound:"nonmetalhit"
-		//Phoenician unique naval unit, stronger than Trireme.
+		//Barbarian unique naval unit, weaker and slower than Trireme.
 	},
 	*/
 	{
@@ -202,7 +199,6 @@
 		hurryCostModifier:20,
 		attackSound:"arrow"
 	},
-	/*
 	{
 		name:"War Elephant",
 		unitType:"Ranged",
@@ -218,9 +214,7 @@
 		uniques:["No defensive terrain bonus"],
 		hurryCostModifier:20,
 		attackSound:"horse"
-		//This is the Indian unique unit. It replaces Chariot Archer, moves slower, has no rough terrain penalty and needs no horses.
 	},
-	*/
 	{
 		name:"Spearman",
 		unitType:"Melee",

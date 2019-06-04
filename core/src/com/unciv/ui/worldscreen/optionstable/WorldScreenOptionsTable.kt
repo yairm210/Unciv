@@ -54,8 +54,13 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             update()
         }
 
-        addFontSelectBox()
-
+        add("Move units with a single tap".toLabel())
+        addButton(if(settings.singleTapMove) "Yes".tr() else "No".tr()) {
+            settings.singleTapMove = !settings.singleTapMove
+            update()
+        }
+      addFontSelectBox()
+      
         addLanguageSelectBox()
 
         addResolutionSelectBox()

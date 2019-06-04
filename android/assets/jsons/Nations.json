@@ -42,7 +42,7 @@
 		startBias:["Coast"],
 		
 		startIntroPart1: "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea."
-		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Grek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
+		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
 		
 		declaringWar:"You are in my way, you must be destroyed."
 		attacked:"As a matter of fact I too grow weary of peace."
@@ -86,7 +86,7 @@
 		neutralNo:["Nope.","Of course not.","Definitely not."]
 		neutralYes:["Of course.","I agree.","Excellent!"]
 
-		hateHello:" Oh. It's you?"
+		hateHello:"Oh. It's you?"
 		hateLetsHearIt:["And what else?","Keep talking."]
 		hateNo:["I cannot accept that.","Sorry, say that again.","Get out of my face!"]
 		hateYes:["I suppose I must accept.","Ah. Very good."]
@@ -114,7 +114,7 @@
 		declaringWar:"You are but a pest on this Earth, prepare to be eliminated!",
 		attacked:"You are a fool who evokes pity. You have brought my hostility upon yourself and your repulsive civilization!",
 		defeated:"Strike me down and my soul will torment yours forever – you have won nothing.",
-		introduction:" Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
+		introduction:"Greetings, I am Ramesses the god. I am the living embodiment of Egypt, mother and father of all civilizations.",
 		
 		neutralHello:"Good day.",
 		neutralLetsHearIt:["Go on.","Speak.","I am all ears."],
@@ -350,7 +350,7 @@
 		adjective:["Japanese"],
 		startBias:["Coast"],
 		
-		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the frield of battle, your people are also immensely industious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
+		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the field of battle, your people are also immensely industrious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
 		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"I hereby inform you of our intention to wipe out your civilization from this world."
@@ -377,8 +377,42 @@
 		unique: "Units fight as though they were at full strength even when damaged",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
 	},
-	/*
 	{
+		name:"India",
+		leaderName:"Gandhi",
+		adjective:["Indian"],
+		startBias:["Grassland"],
+		
+		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
+		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
+		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
+		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
+		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
+		
+		neutralHello:"I wish you peace."
+		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
+		neutralNo:["Absolutely not.","No.","This is unacceptable"]
+		neutralYes:["Okay.","We agree.","Fine."]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["Continue.","And?","Go on."]
+		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
+		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
+		
+		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
+		tradeRequest:"My friend, are you interested in this arrangement?"
+				
+		mainColor:[16,126,5],
+		secondaryColor:[255,153,51],
+		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
+		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
+			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
+			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
+	},
+	/*
+	{   //  REQUIRES BARBARIAN CAMPS
 		name:"Germany",
 		leaderName:"Otto von Bismark",
 		adjective:["German"],
@@ -415,48 +449,15 @@
 			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
-	{
-		name:"India",
-		leaderName:"Gandhi",
-		adjective:["Indian"],
-		startBias:["Grassland"],
-		
-		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
-		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
-		
-		declaringWar:"I have just received a report that large numbers of my troops have crossed your borders."
-		attacked:"My attempts to avoid violence have failed. An eye for an eye only makes the world blind."
-		defeated:"You can chain me, you can torture me, you can even destroy this body, but you will never imprison my mind. "
-		introduction:"Hello, I am Mohandas Gandhi. My people call me Bapu, but please, call me friend."
-		
-		neutralHello:"I wish you peace."
-		neutralLetsHearIt:["Go ahead.","Yes?","I'm listening."]
-		neutralNo:["Absolutely not.","No.","This is unacceptable"]
-		neutralYes:["Okay.","We agree.","Fine."]
-
-		hateHello:"What do you want?"
-		hateLetsHearIt:["Continue.","And?","Go on."]
-		hateNo:["This is not acceptable.","You are probably not serious.","This is impossible."]
-		hateYes:["Oh. Very good.","I think that I should accept.","Very well..."]
-		
-		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
-		tradeRequest:"My friend, are you interested in this arrangement?"
-				
-		mainColor:[0,255,0],
-		secondaryColor:[255,153,51],
-		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
-		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
-			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
-			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
-	},
-	{
+	
+	{   // REQUIRES RIVERS
 		name:"Aztecs",
 		leaderName:"Montezuma I",
 		adjective:["Aztec"],
 		startBias:["Jungle"],
 		
 		startIntroPart1: "Welcome, o divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
-		startIntroPart2: "O great king Mintezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
+		startIntroPart2: "O great king Montezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Die, die, die!)"
 		attacked:"Excellent! Let the blood flow in raging torrents!"
@@ -760,58 +761,26 @@
 		name:"Milan",
 		adjective:["Milan"],
 		cityStateType:"Cultured",
-		startBias:["Coast"],
 		
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
 		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-		
-		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-				
-		mainColor:[0,100,0],
-		secondaryColor:[213,249,255],
+		mainColor:[0, 0, 0],
+		secondaryColor:[185,132,66],
 		cities:["Milan"]
 	},
 	{
 		name:"Florence",
 		adjective:["Florence"],
 		cityStateType:"Cultured",
-		startBias:["Coast"],
 		
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
 		
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-		
-		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-				
-		mainColor:[255, 250, 240],
-		secondaryColor:[238, 44, 44],
+		mainColor:[0, 0, 0],
+		secondaryColor:[62,197,252],
 		cities:["Florence"]
 	},
 	{
@@ -820,57 +789,58 @@
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
 
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-
-		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-
-		mainColor:[32, 178, 170],
-		secondaryColor:[255, 255, 224],
+		mainColor:[0, 0, 0],
+		secondaryColor:[211, 220, 103],
 		cities:["Rio de Janeiro"]
 	},
 	{
 		name:"Antwerp",
 		adjective:["Antwerp"],
 		cityStateType:"Mercantile",
+		startBias:["Coast"],
 
-		//TO DO : better dialogs
-		declaringWar:"Declare war.",
-		attacked:"Let's fight.",
-		defeated:"GoodBye.",
-		introduction:"Hi.",
-
-		neutralHello:"Greetings.",
-		neutralLetsHearIt:["I'm listening.","What do you want?"],
-		neutralNo:["No!","Certainly not.","Unacceptable!"],
-		neutralYes:["Completed!","Yes!","Agreed!"],
-
-		hateHello:"What do YOU want?!",
-		hateLetsHearIt:["I'm certainly listening.","I'm listening!"],
-		hateNo:["No!","Certainly not!","Unacceptable!"],
-		hateYes:["Yes!"],
-
-		afterPeace:"Peace then.",
-		tradeRequest:"Trade?",
-
-		mainColor:[250, 250, 210],
-		secondaryColor:[250, 128, 114],
-		cities:["Rio de Janeiro"]
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[194,97,255],
+		cities:["Antwerp"]
 	},
+	/*
+	{
+		name:"Tyre",
+		adjective:["Tyre"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[255,97,255],
+		cities:["Tyre"]
+	},
+	{
+		name:"Ur",
+		adjective:["Ur"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[60,190,255],
+		cities:["Ur"]
+	},
+	*/
 
 	//Barbarian
 	{

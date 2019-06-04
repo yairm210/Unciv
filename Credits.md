@@ -25,6 +25,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
+* [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado, US for War Elephant
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 
@@ -175,6 +176,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Chichen Itza](https://thenounproject.com/term/chichen-itza/668065/) By Hea Poh Lin
 * [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
 * [Castle](https://thenounproject.com/search/?q=castle&i=390189) By Mint Shirt
+* [Red Fort](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092466), [Gateway of India](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092468) By Arunabh Jain, IN for Mughal Fort
 * [Cambodia](https://thenounproject.com/term/cambodia/1809152/) By Wichai Wi for Angkor Wat
 * [Alhambra](https://thenounproject.com/search/?q=alhambra&i=403759) By parkjisun
 * [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University

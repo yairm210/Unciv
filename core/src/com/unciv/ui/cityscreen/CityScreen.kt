@@ -120,7 +120,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
                     / city.cityStats.currentCityStats.culture).toInt()
             turnsToExpansionString = "[$turnsToExpansion] turns to expansion".tr()
         } else {
-            turnsToExpansionString = "Stopped expansion"
+            turnsToExpansionString = "Stopped expansion".tr()
         }
         table.add(Label(turnsToExpansionString + " (" + city.expansion.cultureStored + "/" + city.expansion.getCultureToNextTile() + ")",
                 skin)).colspan(columns).row()

@@ -48,10 +48,18 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         for (civ in UnCivGame.Current.gameInfo.civilizations
                 .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }) {
-            if (!currentPlayerCiv.diplomacy.containsKey(civ.civName)) continue
+            if (!currentPlayerCiv.knows(civ.civName)) continue
 
             val civIndicator = ImageGetter.getCircle().apply { color = civ.getNation().getSecondaryColor() }
                     .surroundWithCircle(100f).apply { circle.color = civ.getNation().getColor() }
+            if(civ.isCityState()){
+                val cityStateIcon = ImageGetter.getImage("OtherIcons/CityState.png")
+                cityStateIcon.setSize(70f,70f)
+                cityStateIcon.center(civIndicator)
+                cityStateIcon.color= Color.BLACK
+                civIndicator.addActor(cityStateIcon)
+            }
+
             val relationship = ImageGetter.getCircle()
             if(currentPlayerCiv.isAtWarWith(civ)) relationship.color = Color.RED
             else relationship.color = Color.GREEN
@@ -79,42 +87,55 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         return tradeTable
     }
 
-    fun giveGoldGift(otherCiv: CivilizationInfo) {
+    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
+        if(!otherCiv.isCityState()) throw Exception("You can only gain influence with city states!")
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        currentPlayerCiv.gold -= 100
-        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += 10
-        rightSideTable.clear()
-        rightSideTable.add(getCityStateDiplomacyTable(otherCiv))
+        currentPlayerCiv.gold -= giftAmount
+        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += giftAmount/10
+        updateRightSide(otherCiv)
     }
 
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
+
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         if (otherCiv.isCityState()) {
             diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel()).row()
-            diplomacyTable.add(("Type : " + otherCiv.getCityStateType().toString()).toLabel()).row()
-            diplomacyTable.add(("Influence : " + otherCiv.getDiplomacyManager(currentPlayerCiv).influence.toInt().toString()).toLabel()).row()
-            if (otherCiv.getDiplomacyManager(currentPlayerCiv).influence >= 60) {
-                when(otherCiv.getCityStateType()) {
-                    CityStateType.Cultured -> diplomacyTable.add(
-                            ("Providing " + (5.0f * currentPlayerCiv.getEra().ordinal).toString() + " culture each turn").toLabel())
-                    CityStateType.Maritime -> diplomacyTable.add(
-                            ("Providing 3 food in capital and 1 food in other cities.").toLabel())
-                    CityStateType.Mercantile -> diplomacyTable.add(
-                            ("Providing 3 happiness.").toLabel())
-                }
+            diplomacyTable.add(("Type: " + otherCiv.getCityStateType().toString()).toLabel()).row()
+            diplomacyTable.add(("Influence: " + otherCivDiplomacyManager.influence.toInt()+"/30").toLabel()).row()
+
+            diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
+
+            val friendBonusText = when(otherCiv.getCityStateType()) {
+                CityStateType.Cultured -> "Provides [" + (3 * (currentPlayerCiv.getEra().ordinal+1)).toString() + "] culture at [30] Influence"
+                CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at [30] Influence"
+                CityStateType.Mercantile -> "Provides 3 happiness at [30] Influence"
             }
+
+            val friendBonusLabel = friendBonusText.toLabel()
+            diplomacyTable.add(friendBonusLabel).row()
+            if (otherCivDiplomacyManager.relationshipLevel() >= RelationshipLevel.Friend) {
+                friendBonusLabel.setFontColor(Color.GREEN)
+                val turnsToRelationshipChange = otherCivDiplomacyManager.influence.toInt() - 30 + 1
+                diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel()).row()
+            }
+            else
+                friendBonusLabel.setFontColor(Color.GRAY)
+
         } else {
             diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
         }
         diplomacyTable.addSeparator()
 
-        val giftButton = TextButton("Give 100 gold".tr(), skin)
-        giftButton.onClick{ giveGoldGift(otherCiv) }
+        val giftAmount = 250
+        val influenceAmount = giftAmount/10
+        val giftButton = TextButton("Gift [$giftAmount] gold (+[$influenceAmount] influence)".tr(), skin)
+        giftButton.onClick{ giveGoldGift(otherCiv,giftAmount ) }
         diplomacyTable.add(giftButton).row()
-        if (currentPlayerCiv.gold < 1) giftButton.disable()
+        if (currentPlayerCiv.gold < giftAmount ) giftButton.disable()
 
         val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
 
@@ -140,9 +161,17 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
     private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
+
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
+
+        val translatedNation = otherCiv.getTranslatedNation()
+        diplomacyTable.add(translatedNation.getLeaderDisplayName().toLabel().setFontSize(24)).row()
+        if(otherCivDiplomacyManager.relationshipLevel()<=RelationshipLevel.Enemy)
+            diplomacyTable.add(translatedNation.hateHello.toLabel()).row()
+        else
+            diplomacyTable.add(translatedNation.neutralHello.toLabel()).row()
         diplomacyTable.addSeparator()
 
         if(!currentPlayerCiv.isAtWarWith(otherCiv)) {
@@ -159,7 +188,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 tradeTable.tradeLogic.currentTrade.ourOffers.add(peaceTreaty)
                 tradeTable.offerColumnsTable.update()
             }
-            if (otherCiv.getDiplomacyManager(currentPlayerCiv).hasFlag(DiplomacyFlags.DeclaredWar))
+            if (otherCivDiplomacyManager.hasFlag(DiplomacyFlags.DeclaredWar))
                 negotiatePeaceButton.disable() // Can't trade for 10 turns after war was declared
 
             diplomacyTable.add(negotiatePeaceButton).row()
@@ -170,8 +199,9 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
 
         if (!currentPlayerCiv.isAtWarWith(otherCiv)) {
-            if(otherCiv.getDiplomacyManager(currentPlayerCiv).relationshipLevel() > RelationshipLevel.Neutral
-                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
+            if(otherCivDiplomacyManager.relationshipLevel() > RelationshipLevel.Neutral
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
+                    && !diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)){
                 val declareFriendshipButton = TextButton("Declare Friendship ([30] turns)".tr(),skin)
                 declareFriendshipButton.onClick {
                     diplomacyManager.signDeclarationOfFriendship()
@@ -180,27 +210,24 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 diplomacyTable.add(declareFriendshipButton).row()
             }
 
+            if(!diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)
+                            && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)){
+                val denounceButton = TextButton("Denounce ([30] turns)".tr(),skin)
+                denounceButton.onClick {
+                    diplomacyManager.denounce()
+                    setRightSideFlavorText(otherCiv,"We will remember this.".tr(),"Very well.".tr())
+                }
+                diplomacyTable.add(denounceButton).row()
+            }
+
             val declareWarButton = getDeclareWarButton(diplomacyManager, otherCiv)
             diplomacyTable.add(declareWarButton).row()
         }
 
 
+        diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
+
         val diplomacyModifiersTable = Table()
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
-
-        val relationshipTable = Table()
-        relationshipTable.add("Our relationship: ".toLabel())
-        val relationshipLevel = otherCivDiplomacyManager.relationshipLevel()
-        val relationshipText = otherCivDiplomacyManager.relationshipLevel().toString().tr() + " (" + otherCivDiplomacyManager.opinionOfOtherCiv().toInt() + ")"
-        val relationshipColor = when {
-            relationshipLevel == RelationshipLevel.Neutral -> Color.WHITE
-            relationshipLevel == RelationshipLevel.Favorable || relationshipLevel == RelationshipLevel.Friend
-                    || relationshipLevel == RelationshipLevel.Ally -> Color.GREEN
-            else -> Color.RED
-        }
-        relationshipTable.add(relationshipText.toLabel().setFontColor(relationshipColor))
-        diplomacyModifiersTable.add(relationshipText.toLabel()).row()
-
         for (modifier in otherCivDiplomacyManager.diplomaticModifiers) {
             var text = when (valueOf(modifier.key)) {
                 DeclaredWarOnUs -> "You declared war on us!"
@@ -212,6 +239,10 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 DeclaredFriendshipWithOurEnemies -> "You have declared friendship with our enemies!"
                 DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
                 OpenBorders -> "Our open borders have brought us closer together."
+                BetrayedDeclarationOfFriendship -> "Your so-called 'friendship' is worth nothing."
+                Denunciation -> "You have publically denounced us!"
+                DenouncedOurAllies -> "You have denounced our allies"
+                DenouncedOurEnemies -> "You have denounced our enemies"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"
@@ -222,6 +253,26 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.add(diplomacyModifiersTable).row()
 
         return diplomacyTable
+    }
+
+    fun getRelationshipTable(otherCivDiplomacyManager: DiplomacyManager): Table {
+        val relationshipTable = Table()
+
+        val opinionOfUs = if(otherCivDiplomacyManager.civInfo.isCityState()) otherCivDiplomacyManager.influence.toInt()
+        else otherCivDiplomacyManager.opinionOfOtherCiv().toInt()
+
+        relationshipTable.add("Our relationship: ".toLabel())
+        val relationshipLevel = otherCivDiplomacyManager.relationshipLevel()
+        val relationshipText = relationshipLevel.name.tr() + " ($opinionOfUs)"
+        val relationshipColor = when {
+            relationshipLevel == RelationshipLevel.Neutral -> Color.WHITE
+            relationshipLevel == RelationshipLevel.Favorable || relationshipLevel == RelationshipLevel.Friend
+                    || relationshipLevel == RelationshipLevel.Ally -> Color.GREEN
+            else -> Color.RED
+        }
+
+        relationshipTable.add(relationshipText.toLabel().setFontColor(relationshipColor))
+        return relationshipTable
     }
 
     private fun getDeclareWarButton(diplomacyManager: DiplomacyManager, otherCiv: CivilizationInfo): TextButton {

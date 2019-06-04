@@ -56,6 +56,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             for (tileToCheck in tilesToCheck)
                 for (neighbor in tileToCheck.neighbors) {
                     var totalDistanceToTile:Float
+
                     if (!unit.canPassThrough(neighbor))
                         totalDistanceToTile = unitMovement // Can't go here.
                     // The reason that we don't just "return" is so that when calculating how to reach an enemy,
@@ -67,11 +68,14 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
                     }
 
-                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) {
-                        if (totalDistanceToTile < unitMovement)
+                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) { // this is the new best path
+                        if (totalDistanceToTile < unitMovement)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
                             totalDistanceToTile = unitMovement
+                        // In Civ V, you can always travel between adjacent tiles, even if you don't technically
+                        // have enough movement points - it simple depletes what you have
+
                         distanceToTiles[neighbor] = totalDistanceToTile
                     }
                 }
@@ -84,7 +88,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
     fun getShortestPath(destination: TileInfo): List<TileInfo> {
         val currentTile = unit.getTile()
-        if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sig
+        if (currentTile.position == destination) return listOf(currentTile) // edge case that's needed, so that workers will know that they can reach their own tile. *sigh*
 
         var tilesToCheck: List<TileInfo> = listOf(currentTile)
         val movementTreeParents = HashMap<TileInfo, TileInfo?>() // contains a map of "you can get from X to Y in that turn"
@@ -137,7 +141,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
      */
     fun headTowards(destination: TileInfo): TileInfo {
         val currentTile = unit.getTile()
-        if(currentTile==destination) return currentTile
+        if (currentTile == destination) return currentTile
 
         val distanceToTiles = unit.getDistanceToTiles()
 
@@ -152,7 +156,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                     return currentTile
 
                 val reachableDestinationNeighbors = destinationNeighbors
-                        .filter { distanceToTiles.containsKey(it) && unit.canMoveTo(it)}
+                        .filter { distanceToTiles.containsKey(it) && unit.canMoveTo(it) }
                 if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
                     return currentTile
 
@@ -160,8 +164,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             }
         } else { // If the tile is far away, we need to build a path how to get there, and then take the first step
             val path = getShortestPath(destination)
-            class UnreachableDestinationException:Exception()
-            if(path.isEmpty()) throw UnreachableDestinationException()
+            class UnreachableDestinationException : Exception()
+            if (path.isEmpty()) throw UnreachableDestinationException()
             destinationTileThisTurn = path.first()
         }
 
