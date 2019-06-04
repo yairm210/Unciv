@@ -416,6 +416,7 @@
 	}
 	
 	"Create [improvement]":{ // for great units, fishing boats, etc.
+		Italian:"Costruisci [improvement]"
 		French:"Construire [improvement]"
 	}
 	
