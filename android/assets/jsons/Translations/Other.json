@@ -91,18 +91,21 @@
 		Italian:"turno"
 		Simplified_Chinese:"回合"
 		Portuguese:"Turno"
+		French:"tour"
 	}
 
 	"Next unit":{
 		Italian:"Prossima unità"
 		Simplified_Chinese:"下个未行动单位"
 		Portuguese:"Próxima unidade"
+		French:"Unité suivante"
 	}
 
 	"Pick a policy":{
 		Italian:"Scegli Politica"
 		Simplified_Chinese:"选择一项社会政策"
 		Portuguese:"Escolha uma política"
+		French:"Choisir une Doctrine"
 	}
 
 /////// Unit
@@ -197,7 +200,7 @@
 		Dutch:"Verbetering bouwen"
 		Spanish:"Construir mejora"
 		Simplified_Chinese:"建造设施"
-        Portuguese:"Construir melhoria"
+        	Portuguese:"Construir melhoria"
 		Japanese:"構造改善"
 	}
 
@@ -230,6 +233,7 @@
 	"Construct road": {
 		Italian: "Costruisci strada"
 		German: "Straße bauen"
+		French:"Contruire une route"
 	}
 
 	"Fortify":{
@@ -271,9 +275,10 @@
 		Spanish:"Dormir"
 	}
 
-	"Moving": {
+	"Moving": { //sample would be appreciated
 		"Italian": "In movimento"
 		"German": "Bewegen"
+		French:"En mouvement"
 	}
 
 	"Set up":{ // For siege units
@@ -411,6 +416,7 @@
 	}
 	
 	"Create [improvement]":{ // for great units, fishing boats, etc.
+		French:"Construire [improvement]"
 	}
 	
 	"Yes":{
@@ -739,9 +745,10 @@
 		Portuguese:"Escolha uma melhoria"
 	}
 
-	"Pick now!": {
+	"Pick now!": { //sample needed
 		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
+		French:"Choisir maintenant !"
 	}
 
 	"Build [building]":{ // eg Build Granary
