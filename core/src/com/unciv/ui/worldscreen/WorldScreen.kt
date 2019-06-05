@@ -142,7 +142,6 @@ class WorldScreen : CameraStageBaseScreen() {
 
         updateTechButton(cloneCivilization)
         updateDiplomacyButton(cloneCivilization)
-        updateNextTurnButton()
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         battleTable.update()
@@ -174,6 +173,7 @@ class WorldScreen : CameraStageBaseScreen() {
                     && currentPlayerCiv.popupAlerts.any() && !AlertPopup.isOpen ->
                 AlertPopup(this,currentPlayerCiv.popupAlerts.first())
         }
+        updateNextTurnButton()
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
@@ -300,6 +300,8 @@ class WorldScreen : CameraStageBaseScreen() {
         nextTurnButton.setText(text.tr())
         nextTurnButton.color = if(text=="Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
+        if(AlertPopup.isOpen) nextTurnButton.disable()
+        else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 

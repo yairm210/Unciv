@@ -19,6 +19,7 @@ import com.unciv.logic.trade.TradeType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
+import kotlin.math.roundToInt
 
 class DiplomacyScreen:CameraStageBaseScreen() {
 
@@ -38,6 +39,9 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
         val closeButton = TextButton("Close".tr(), skin)
         closeButton.onClick { UnCivGame.Current.setWorldScreen() }
+        closeButton.label.setFontSize(24)
+        closeButton.labelCell.pad(10f)
+        closeButton.pack()
         closeButton.y = stage.height - closeButton.height - 10
         closeButton.x = 10f
         stage.addActor(closeButton) // This must come after the split pane so it will be above, that the button will be clickable
@@ -240,13 +244,14 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 DeclaredFriendshipWithOurAllies -> "You have declared friendship with our allies"
                 OpenBorders -> "Our open borders have brought us closer together."
                 BetrayedDeclarationOfFriendship -> "Your so-called 'friendship' is worth nothing."
-                Denunciation -> "You have publically denounced us!"
+                Denunciation -> "You have publicly denounced us!"
                 DenouncedOurAllies -> "You have denounced our allies"
                 DenouncedOurEnemies -> "You have denounced our enemies"
+                BetrayedPromiseToNotSettleCitiesNearUs -> "You betrayed your promise to not settle cities near us"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"
-            text += modifier.value.toInt()
+            text += modifier.value.roundToInt()
             val color = if (modifier.value < 0) Color.RED else Color.GREEN
             diplomacyModifiersTable.add(text.toLabel().setFontColor(color)).row()
         }

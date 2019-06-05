@@ -14,7 +14,7 @@ import com.unciv.ui.worldscreen.optionstable.PopupTable
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): PopupTable(worldScreen){
     fun getCloseButton(text:String): TextButton {
         val button = TextButton(text.tr(), skin)
-        button.onClick { close() }
+        button.onClick { close(); worldScreen.shouldUpdate=true }
         return button
     }
 
