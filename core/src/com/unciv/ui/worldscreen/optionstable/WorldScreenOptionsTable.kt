@@ -75,7 +75,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         add("Version".toLabel())
         add(UnCivGame.Current.version.toLabel()).row()
 
-        addButton("Close"){ remove() }
+        addButton("Close"){ remove() }.colspan(2)
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)

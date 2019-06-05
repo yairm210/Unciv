@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
@@ -257,6 +258,7 @@ class UnitActions {
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
+        if(tile.improvement==null || tile.improvement==Constants.barbarianEncampment) return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner==null || tileOwner==unit.civInfo || unit.civInfo.isAtWarWith(tileOwner)
