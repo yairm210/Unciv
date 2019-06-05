@@ -72,7 +72,7 @@ class TileMap {
                 .filter {contains(it)}.map { get(it) }.toList()
     }
 
-    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit {
+    fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
         val tilesInDistance = getTilesInDistance(position, 2)
         unit.assignOwner(civInfo)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
@@ -89,7 +89,10 @@ class TileMap {
             for(promotion in unit.baseUnit.promotions)
                 unit.promotions.addPromotion(promotion,true)
         }
-        else civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+        else {
+            civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
+            return null // we didn't actually create a unit...
+        }
 
         return unit
     }

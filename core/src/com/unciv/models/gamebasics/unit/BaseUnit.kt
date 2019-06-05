@@ -1,10 +1,10 @@
 package com.unciv.models.gamebasics.unit
 
+import com.unciv.Constants
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.IConstruction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
-import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.gamebasics.Translations
@@ -144,6 +144,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override fun postBuildEvent(construction: CityConstructions) {
         val unit = construction.cityInfo.civInfo.placeUnitNearTile(construction.cityInfo.location, name)
+        if(unit==null) return // couldn't place the unit, so there's actually no unit =(
         unit.promotions.XP += construction.getBuiltBuildings().sumBy { it.xpForNewUnits }
         if(construction.cityInfo.civInfo.policies.isAdopted("Total War"))
             unit.promotions.XP += 15
