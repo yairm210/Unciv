@@ -1,8 +1,10 @@
 package com.unciv.logic.automation
 
 import com.unciv.Constants
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
@@ -343,6 +345,20 @@ class NextTurnAutomation{
             val bestCity = civInfo.cities.maxBy { it.cityStats.currentCityStats.production }!!
             if (bestCity.cityConstructions.builtBuildings.size > 1) // 2 buildings or more, otherwise focus on self first
                 bestCity.cityConstructions.currentConstruction = Constants.settler
+        }
+    }
+
+
+    fun onCitySettledNearBorders(civInfo: CivilizationInfo, newCity: CityInfo){
+        val diplomacyManager = civInfo.getDiplomacyManager(newCity.civInfo)
+        if(diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs)) return
+        if(diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)){
+            newCity.civInfo.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
+            diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,200)
+            diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,-20f)
+        }
+        else{
+            newCity.civInfo.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCiv, civInfo.civName))
         }
     }
 

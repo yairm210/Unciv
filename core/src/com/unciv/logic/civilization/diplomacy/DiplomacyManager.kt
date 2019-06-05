@@ -28,7 +28,9 @@ enum class DiplomacyFlags{
     DeclaredWar,
     DeclarationOfFriendship,
     Denunceation,
-    BorderConflict
+    BorderConflict,
+    AgreedToNotSettleNearUs,
+    IgnoreThemSettlingNearUs
 }
 
 enum class DiplomaticModifiers{
@@ -39,6 +41,7 @@ enum class DiplomaticModifiers{
     BetrayedDeclarationOfFriendship,
     Denunciation,
     DenouncedOurAllies,
+    BetrayedPromiseToNotSettleCitiesNearUs,
 
     YearsOfPeace,
     SharedEnemy,
@@ -140,7 +143,6 @@ class DiplomacyManager() {
     }
 
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
-
 
     fun goldPerTurn():Int{
         var goldPerTurnForUs = 0
@@ -338,9 +340,7 @@ class DiplomacyManager() {
         return diplomaticModifiers[modifier.name]!!
     }
 
-    fun removeModifier(modifier: DiplomaticModifiers) =
-        diplomaticModifiers.remove(modifier.name)
-
+    fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
     fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.name)
 
     /** @param amount always positive, so you don't need to think about it */
@@ -386,5 +386,6 @@ class DiplomacyManager() {
             }
         }
     }
+
     //endregion
 }

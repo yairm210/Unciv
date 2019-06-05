@@ -5,7 +5,9 @@ enum class AlertType{
     Defeated,
     FirstContact,
     CityConquered,
-    BorderConflict
+    BorderConflict,
+    CitySettledNearOtherCiv,
+    CitySettledNearOtherCivDespiteOurPromise,
 }
 
 class PopupAlert {

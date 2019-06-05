@@ -74,6 +74,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 responseTable.add(getCloseButton("Never!"))
                 add(responseTable)
             }
+            
         }
         open()
         isOpen = true
