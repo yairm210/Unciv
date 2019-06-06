@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.optionstable
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -179,18 +180,23 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
                     selectFont()
                 }
                 else {
-                    YesNoPopupTable("This Font requires you to download fonts.\n" +
-                            "Do you want to download fonts?",
-            {
-                val downloading = PopupTable(screen)
-                downloading.add("Downloading...".toLabel())
-                downloading.open()
-                selectFont()
-                if (Fonts.fontDownloadIsWell==0)
-                    UnCivGame.Current.settings.fontSet = "NativeFont(Recommended)"
-                UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
-            })
-}
+                        YesNoPopupTable("This Font requires you to download fonts.\n" +
+                                "Do you want to download fonts?",
+                                {
+                                    val downloading = PopupTable(screen)
+                                    downloading.add("Downloading...".toLabel())
+                                    downloading.open()
+                                    selectFont()
+                                    UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
+                                })
+                    if (Fonts.fontDownloadIsWell==0) {
+                        val downloadingno = PopupTable(screen)
+                        downloadingno.add("fail to downloding".toLabel())
+                        downloadingno.addButton("Close".tr()) { downloadingno.remove() }
+                        downloadingno.open()
+                        UnCivGame.Current.settings.fontSet = "NativeFont(Recommended)"
+                    }
+                }
             }
         })
     }

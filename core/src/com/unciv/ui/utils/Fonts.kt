@@ -70,7 +70,7 @@ class Fonts {
            val keyForFont = "$fontForLanguage $size"
            if (fontCache.containsKey(keyForFont))return fontCache[keyForFont]!!
            if (!Gdx.files.local("fonts/$fontForLanguage.ttf").exists())
-               download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf",fontForLanguage)
+               download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf",fontForLanguage)//This font is licensed under Apache2.0 or GPLv3
            val MD5_WenQuanYiMicroHei=getMD5(fontForLanguage)
            if (MD5_WenQuanYiMicroHei!="96574d6f2f2bbd4a3ce56979623b1952"){
                fontDownloadIsWell=0
