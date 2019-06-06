@@ -42,6 +42,32 @@ class Fonts {
         }
         return sb.toString()
     }
+    fun getCharsForFont(font: String): String {
+        val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
+                "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +
+                "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏÀÄĂÂÊÉÎÔÖƠƯÜäăâêôöơưüáéèìíóú1234567890" +
+                "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.*|"
+        if (font == "Arial") return defaultText
+        if (font == chineseFont) {
+            val charSet = HashSet<Char>()
+            charSet.addAll(defaultText.asIterable())
+
+            if(Gdx.files.internal("BasicHelp/BasicHelp_Simplified_Chinese.json").exists())
+                charSet.addAll(Gdx.files.internal("BasicHelp/BasicHelp_Simplified_Chinese.json").readString().asIterable())
+            if (Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").exists())
+                charSet.addAll(Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").readString().asIterable())
+            if (Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").exists())
+                charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").readString().asIterable())
+
+            for (entry in GameBasics.Translations.entries) {
+                for (lang in entry.value) {
+                    if (lang.key.contains("Chinese")) charSet.addAll(lang.value.asIterable())
+                }
+            }
+            return charSet.joinToString()
+        }
+        return ""
+    }
    fun getCharsForFont(): String {
        val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
                "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +
