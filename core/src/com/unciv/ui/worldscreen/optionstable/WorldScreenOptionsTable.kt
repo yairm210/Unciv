@@ -174,23 +174,23 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
         FontSetSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
-                selectFont()
-/*if (Fonts().containsFont())
-    selectFont()
-else {
-    YesNoPopupTable("This Font requires you to download fonts.\n" +
-            "Do you want to download fonts?",
+                if (FontSetSelectBox.selected == "NativeFont(Recommended)") {
+                    UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
+                    selectFont()
+                }
+                else {
+                    YesNoPopupTable("This Font requires you to download fonts.\n" +
+                            "Do you want to download fonts?",
             {
                 val downloading = PopupTable(screen)
                 downloading.add("Downloading...".toLabel())
                 downloading.open()
-                Gdx.input.inputProcessor = null // no interaction until download is over
-                Fonts().download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf")
                 selectFont()
+                if (Fonts.fontDownloadIsWell==0)
+                    UnCivGame.Current.settings.fontSet = "NativeFont(Recommended)"
+                UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
             })
 }
-*/
             }
         })
     }
