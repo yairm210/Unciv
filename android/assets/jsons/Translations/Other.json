@@ -420,7 +420,9 @@
 		French:"Construire [improvement]"
 	}
 	
-	"Start Golden Age":{}
+	"Start Golden Age":{
+		Italian:"Inizia Età dell'Oro"
+	}
 	
 	"Yes":{
 		Italian:"Sì"
@@ -445,6 +447,10 @@
 		Portuguese:"Não"
 		German:"Nein"
 		Japanese:"いいえ"
+	}
+
+	"Acquire":{
+		Italian:"Prendi"
 	}
 
 /////// Stats / Basics ressources
@@ -621,7 +627,9 @@
 		Japanese:"社会政策"
 	}
 	
-	"Community":{}
+	"Community":{
+		Italian:"Community"
+	}
 	
 
 	"Close":{
