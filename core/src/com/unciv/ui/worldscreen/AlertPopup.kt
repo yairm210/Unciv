@@ -91,6 +91,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }).row()
                 add(getCloseButton("We shall do as we please.") {
                     otherCivDiploManager.addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-10f)
+                    otherCivDiploManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
                 }).row()
             }
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> {

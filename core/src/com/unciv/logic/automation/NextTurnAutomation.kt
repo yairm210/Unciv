@@ -364,7 +364,7 @@ class NextTurnAutomation{
             diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {}
             diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs) -> {
                 otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
-                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,200)
+                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
                 diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,-20f)
             }
             else -> {
