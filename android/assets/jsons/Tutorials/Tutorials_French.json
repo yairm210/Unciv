@@ -2,200 +2,200 @@
 	// so for example:
 	PolicyPickerScreen: [ // Activated when entering policy picker screen
 		[ // This is simply a more comfortable format than "all in one line with \n".
-			"A chaque tour, La culture que vous gagnez grave à vos ",
+			"A chaque tour, la culture que vous gagnez grâce à vos",
 			"  villes est ajoutée à votre total de culture.",
-			"Lorsque vous avez suffisament de culture, vous pouvez choisir ",
+			"Lorsque vous avez suffisament de culture, vous pouvez choisir",
 			"  une Doctrine, chaque culture vous donnera un bonus différent."
 		],  // this will be displayed as 4 lines of text in-game as well
 		[
 			"Les Doctrines sont organisées en arbre, chaque",
-			"  arbre donne un bonus supplémentaires lorsque ",
+			"  arbre donne un bonus supplémentaire lorsque",
 			"  toutes les doctrines de l'arbre ont été adoptées."
 		],
 		[
-			"Pour chaque doctrine adoptée, et chaque ville contruite,",
-			"  Le coût pour adopter une nouvelle doctrine augmente"
+			"Pour chaque doctrine adoptée et chaque ville construite,",
+			" le coût pour adopter une nouvelle doctrine augmente."
 		]
 	],
 	
 	CityEntered: [
 		[
-			"Bienvenue dans votre première ville!",
+			"Bienvenue dans votre première ville !",
 			"Pour l'instant, vous avez seulement 1 habitant, mais d'autres viendront lorsque vous aurez suffisament de surplus de nourriture",
-			"De même, les frontières de votre ville s'élargissent lorsque vous amassez suffisament de point de culture,",
-			"  la culture est d'avantage produite par les batiments que par les cases."
+			"De même, les frontières de votre ville s'élargissent lorsque vous amassez suffisament de point de culture.",
+			" La culture est davantage produite par les bâtiments que par les cases."
 		],
 		[
 			"Chaque habitant dans votre ville peut exploiter une seule case, fournissant ainsi les ressources de cette case à votre ville.",
-			"Vous pouvez assigner et désassigner les cases exploités par vos habitants en cliquant dessus - ",
-			"  évidement, vous ne pouvez assigner un habitant que si vous avez des habitants inoccupés!"
+			"Vous pouvez assigner et désassigner les cases exploitées par vos habitants en cliquant dessus.",
+			"  Evidemment, vous ne pouvez assigner un habitant à une case que si vous avez des habitants inoccupés !"
 		],
 		[
 			"La case centrale d'une ville est toujours exploitée, et elle ne requiert pas d'habitant,",
-			"  mais elle ne peut pas être améliorée par les améliorations de case."
+			" mais elle ne peut pas être améliorée par les améliorations de case."
 		],
 		[
-			"Les points de production de la ville sont toujours utilisés afin de construire le batiment choisis - ",
-			"vous pouvez choisir ce batiment en cliquant sur l'un des batiments de la liste à gauche"
+			"Les points de production de la ville sont toujours utilisés afin de construire le bâtiment choisis - ",
+			"vous pouvez choisir ce bâtiment en cliquant sur l'un des bâtiments de la liste à gauche."
 		]
 	],
 	
 	ScienceVictoryScreenEntered : [
 		[
-			"C'est le panneau de la victoire scientifique, ici",
-			"  vous pouvez voir votre progression sur la construction",
-			"  du vaisseau spatial qui vous permettra de voyage parmi les étoiles."
+			"C'est le panneau de la victoire scientifique. Ici,",
+			" vous pouvez voir votre progression sur la construction",
+			" du vaisseau spatial qui vous permettra de voyager parmi les étoiles."
 		],
 		[
 			"Il y a 6 parties à construire, et",
-			"  elle nécessite toutes un haut niveau technologique"
+			" chacune d'entre elles nécessite un niveau technologique élevé."
 		],
 	],
 	
 	TechPickerScreen : [
 		[
-			"La technologie est centrale dans le développement de votre civilization,",
-			" les avancées technologiques vous amènent de nouveaux batiments,",
-			" améliorations de cases, et de nouvelles possibilités"
+			"La technologie est centrale dans le développement de votre civilisation.",
+			" Les avancées technologiques vous amènent de nouveaux bâtiments,",
+			" améliorations de cases et de nouvelles possibilités."
 		],
 		[
-			"La majorité des technologies nécessite d'autres technologies pour être recherchés - ",
-			"  mais vous pouvez choisir celle qui vous intéresse le plus,",
-			"  votre civilization recherchera automatiquement les technologies nécessaire pour y arriver"
+			"La majorité des technologies nécessite d'autres technologies pour être recherchée",
+			" mais vous pouvez choisir celle qui vous intéresse le plus.",
+			" Votre civilisation recherchera automatiquement les technologies nécessaires pour y parvenir."
 		]
 	],
 	
 	
 	CityFounded : [
 		[
-			"Vous avez fondé une nouvelle ville!",
+			"Vous avez fondé une nouvelle ville !",
 			" Les villes composent le moteur de votre empire, elles produisent de l'or et de la science",
-			" pour l'entièreté de votre civilization, les ressources partagées sont affichés en haut de l'écran."
+			" pour l'entièreté de votre civilisation. Les ressources partagées sont affichées en haut de l'écran."
 		],
 		[
 			"La science est utilisée pour rechercher des technologies.",
-			" Vous pouvez voir l'écran des technologies en cliquant sur le bouton en haut à gauche, au-dessus du bouton diplomatie",
+			" Vous pouvez voir l'écran des technologies en cliquant sur le bouton en haut à gauche, au-dessus du bouton diplomatie.",
 		],
 		[
 			"Vous pouvez cliquer sur le nom de la ville pour voir l'écran de ville afin de la gérer,",
-			"  et voir les différents informations la concernant"
+			" et voir les différents informations la concernant."
 		]
 	],
 	
 	NewGame: [
 		[
-			"Bonjour, et bienvenue sur Unciv!",
-			"ce jeu peut être complèxe, nous allons donc vous guidez pour vos débuts.",
-			"Avant que nous commencions, revoyons les bases du concept de ce jeu."
+			"Bonjour, et bienvenue sur Unciv !",
+			"Ce jeu peut être complexe : nous allons donc vous guider pour vos débuts.",
+			"Avant de commencer, revoyons les bases du concept de ce jeu."
 		],
 		[
-			"Diriger une civilization est difficile : Il y a toujours quelque chose qui ne va pas,",
-			" Vos citoyens demandent toujours plus – plus de produits de luxe, plus de nourriture, ...",
-			" Et les autres civilizations veulent vous voir disparaitre ou vous asservir."
+			"Diriger une civilisation est difficile : il y a toujours quelque chose qui ne va pas.",
+			" Vos citoyens demandent toujours plus : plus de produits de luxe, plus de nourriture, ...",
+			" Et les autres civilisations veulent vous voir disparaitre ou vous asservir."
 		],
 		[
-			"Toutes les parties de Unciv commence de la même manière:",
-			"Vous commencez avec quelques unités -",
-			"  un Colon - qui peut fonder une ville,",
-			"  un Guerrier - une unité militaire basique,",
-			"  et un Eclaireur, pour explorer les environs."
+			"Toutes les parties de Unciv commencent de la même manière.",
+			" Vous débutez avec quelques unités :",
+			" un Colon, qui peut fonder une ville,",
+			" un Guerrier, une unité militaire basique,",
+			" et un Eclaireur, pour explorer les environs."
 		],
 		[
-			"C'est à vous de fonder votre Capital.",
-			"C'est une tâche improtante parce que votre capital sera probablement votre ville la plus prospère.",
-			"Beaucoup de bonus ne s'appliquent qu'à votre capital et elle sera probablement le centre de votre empire."
+			"C'est à vous de fonder votre capitale.",
+			" C'est une tâche importante parce que votre capitale sera probablement votre ville la plus prospère.",
+			" Beaucoup de bonus ne s'appliquent qu'à votre capitale et elle sera probablement le centre de votre empire."
 		],
 		[
-			"Une fois que vous aurez votre première ville vous serez capable de commencer à produire de nouvelles unités",
+			"Une fois que vous aurez votre première ville, vous serez capable de produire de nouvelles unités",
 			"  et vous commencerez à produire des points de recherche.",
-			"Nous n'allons pas parler de la recherche tout de suite – ce sera abordé plus tard dans ce tutoriel –",
-			"  parlons tout d'abord de la production."
+			" Nous n'allons pas parler de la recherche tout de suite : ce sera abordé plus tard dans ce tutoriel.",
+			" Parlons tout d'abord de la production !"
 		],
 		[
 			"La première unité que votre ville produira devrait être soit un Eclaireur soit un Guerrier."
-			" Le Guerrier est une unité polyvalente et pluitôt résistante, tandis que l'Eclaireur est rapide",
-			" mais n'est pas bon au combat, il vaut mieux le garder pour l'éxploration.",
-			" Personnelement, je vous conseillera plutôt de commencer par améliorer votre capital en y construisant",
-			" des batiments, mais ce choix n'appartient qu'à vous."
+			" Le Guerrier est une unité polyvalente et plutôt résistante, tandis que l'Eclaireur est rapide",
+			" mais n'est pas bon au combat, il vaut mieux le garder pour l'exploration.",
+			" Personnellement, je vous conseillerais plutôt de commencer par améliorer votre capitale en y construisant",
+			" des bâtiments. Mais ce choix n'appartient qu'à vous..."
 		],
 		[
-			"Si vous êtes un vétéran de jeux de stratégie vous produirez probablement assez rapidement un Colon.",
-			"Une expansion rapide est importante dans la majorité des jeux de stratégies.",
-			"Mais n'allez pas trop vite! Avant de vous expandre, apprenez d'abord à gérer les villes que vous possédez déjà."
+			"Si vous êtes un vétéran des jeux de stratégie, vous produirez probablement assez rapidement un Colon.",
+			" Une expansion rapide est importante dans la majorité des jeux de stratégie.",
+			" Mais n'allez pas trop vite ! Avant de vous étendre, apprenez d'abord à gérer les villes que vous possédez déjà."
 		],
 		[
-			"Tandis que les villes grandissent en taille et en influence, elles sont aussi capables de controler de plus grands territoires.",
-			"Vous devez aussi gérer le bonheur de votre empire, et il n'est pas rattaché qu'à une seule ville.",
-			"En effet, votre empire tout entié partage le même niveau de satisfaction.",
-			"Lorsque vos villes gagneront en population vous comprendrez pourquoi il est de plus en plus difficile de garder vos citoyens heureux."
+			"Tandis que les villes grandissent en taille et en influence, elles sont aussi capables de contrôler de plus grands territoires.",
+			" Vous devez aussi gérer le bonheur de votre empire, et il n'est pas rattaché qu'à une seule ville.",
+			" En effet, votre empire tout entier partage le même niveau de satisfaction.",
+			" Lorsque vos villes gagneront en population vous comprendrez pourquoi il est de plus en plus difficile de garder vos citoyens heureux."
 		],
 		[
-			"De plus, les batiments permettant d'augmenter le bonheur de vos citoyens ne peuvent se débloquer que par de nouvelles technologies.",
-			"Si le bonheur de votre empire descend en dessous de 0 vos villes arrêteront de croitre.",
-			"Si votre empire devient sérieusement malheureux (indiqué par le smiley en haut de l'interface)",
+			"De plus, les bâtiments permettant d'augmenter le bonheur de vos citoyens ne peuvent se débloquer que par de nouvelles technologies.",
+			" Si le bonheur de votre empire descend en dessous de 0 vos villes arrêteront de croître.",
+			" Si votre empire devient sérieusement malheureux (indiqué par le smiley en haut de l'interface)",
 			" vos soldats seront découragés et se battront donc moins bien."
 		],
 		[
-			"C'est pourquoi il est difficile de s'expandre rapidement dans Unciv."
-			"Ce n'est pas impossible, mais en tant que nouveau joueur vous ne devriez pas essayer."
+			"C'est pourquoi il est difficile de s'étendre rapidement dans Unciv."
+			" Ce n'est pas impossible, mais en tant que nouveau joueur vous ne devriez pas essayer."
 		],
 		[
-			"Donc, que devez-vous faire? Prenez votre temps, éxplorez, et améliorez vos villes et vos territoires en produisant des Ouvriers.",
-			"Ne construisez de ville que lorsque vous avez trouver un bon endroit où vous installez."
+			"Donc, que faire ? Prenez votre temps : explorez, améliorez vos villes et vos territoires en produisant des Ouvriers.",
+			" Ne construisez pas de ville avant d'avoir trouvé un bon endroit où vous installer."
 		],
 		[
-			"Mais comment savoir que c'est un bon endroit?",
-			"Regardez les cases aux alentours, si il y a des ressources, en particulier des resources de luxe, alors c'est probablement un bon endroit.",
-			"On reconnait les ressources de luxe par les smileys qui se trouvent à côté de leur icône de ressource",
-			"Ses ressources rendent votre civilization heureuse. Les autres ressources permettent de construire des unités ou des batiments spécifiques."
+			"Mais comment savoir si c'est un bon endroit ?",
+			" Regardez les cases aux alentours : s'il y a des ressources, en particulier des ressources de luxe, alors c'est probablement un bon endroit.",
+			" On reconnait les ressources de luxe par les smileys qui se trouvent à côté de leur icône de ressource.",
+			" Ces ressources rendent votre civilisation heureuse. Les autres ressources permettent de construire des unités ou des bâtiments spécifiques."
 		],
 		[
-			"A noter que les villes ont un large rayon d'action - on parlera de cela plus tard"
-			"Ce qui veux dire que vous n'êtes par forcé de construire vos villes juste à côté des ressources.",
-			"Il vaut mieux donc éviter les zones peu prospère (Tundra et Désert) quitte à être éloigné des ressources"
-			"En grandissant, votre cité étendra son rayon d'action et pourra accéder à des ressources jusqu'alors trop éloignés."
-            "Donc choisissez bien vos emplacements de villes et ne soyez pas trop pressé.",
+			"A noter que les villes ont un large rayon d'action. Nous parlerons de cela plus tard..."
+			" Cela veut dire que vous n'êtes pas obligé de construire vos villes juste à côté des ressources.",
+			" Il vaut mieux éviter les zones peu prospères (Tundra et Désert), quitte à être éloigné des ressources."
+			" En grandissant, votre cité étendra son rayon d'action et pourra accéder à des ressources jusqu'alors trop éloignées."
+            " Donc choisissez bien vos emplacements de villes et ne soyez pas trop pressé.",
 		],
 		[
 			"Il est désormais temps de commencer à réfléchir à comment gagner."
 		],
 		[
 			"Il y a trois moyen de gagner dans Unciv :",
-			"Victoire Culturel: finir 4 arbre de Doctrines",
-			"Victoire Militaire: être la dernière civilization existante",
-			"Victoire Scientifique: être le premier à construire un vaisseau capable de coloniser Alpha Centauri"
+			" Victoire Culturelle : finir 4 arbres de Doctrines",
+			" Victoire Militaire : être la dernière civilisation existante",
+			" Victoire Scientifique : être le premier à construire un vaisseau capable de coloniser Alpha Centauri."
 		],
 		[
-			"Ce sont les bases de Unciv – fondez une capital prospère, étendez vous avec modération pour garder votre empire heureux,",
+			"Ce sont les bases de Unciv. Fondez une capitale prospère, étendez vous avec modération pour garder votre empire heureux,",
 			" et visez l'une des conditions de victoire."
-			"Evidement, il y a encore d'autres éléments à savoir, mais apprenez à nager avant de plonger.",
-			"Si vous n'avez pas l'habitde des jeux comme Unciv concentrez vous sur ce que vous dit le tutoriel.",
-			"Au fur et à mesure de votre avancée de nouveaux tutoriels viendront vous aider."
+			" Evidemment, il y a encore d'autres éléments à savoir, mais apprenez à nager avant de plonger.",
+			" Si vous n'avez pas l'habitude des jeux comme Unciv, concentrez vous sur ce que vous conseille ce tutoriel.",
+			" Au fur et à mesure de votre avancée de nouveaux tutoriels seront proposés pour vous aider."
 		]
 	],
 	
 	TileLayout: [
 		[
-			"C'est la carte du monde, elle est faite de nombreuses cases.",
-			"chaque cases peut contenir des unités, des ressources et des villes.",
-			"En cliquant sur une case vous obtiendrez des informations la concernant."
+			"C'est la carte du monde : elle est faite de nombreuses cases.",
+			" Chaque cases peut contenir des unités, des ressources et des villes.",
+			" En cliquant sur une case vous obtiendrez des informations la concernant."
 		]
 	],
 	
 	
 	TileClicked : [
 		[
-			"Cliquer sur une case la sélectionne,",
-			"  et donne des informations la concernant (en bas à droite).",
-			"Si une unité se trouve sur cette case, alors elle sera sélectionnée,"
-			"  vous pourrez alors avoir des informations à son propose et la controlée (si elle vous appartient)."
+			"Cliquer sur une case la sélectionne",
+			" et donne des informations la concernant (en bas à droite).",
+			" Si une unité se trouve sur cette case, elle sera alors sélectionnée,"
+			" vous pourrez avoir des informations à son propos et la contrôler (si elle vous appartient)."
 		]
 	],
 	
 	UnitSelected : [
 		[
-			"Lorsque une unité est sélectionnée, les informations la concernant s'affichent en bas à gauche.",
-			"Les actions qu'elle peut effectuer s'afficheront sur l'écran centrale."
+			"Lorsqu'une unité est sélectionnée, les informations la concernant s'affichent en bas à gauche.",
+			" Les actions qu'elle peut effectuer s'afficheront sur l'écran central."
 		]
 	],
 	
@@ -205,8 +205,8 @@
 			"cliquez sur le bouton tour suivant en haut à droite pour continuer."
 		],
 		[
-			"à chaque tour, de la science, de la culture et de l'or sont produits",
-			" par votre civilization, vos villes construisent des batiments ou des unités",
+			"A chaque tour, de la science, de la culture et de l'or sont produits",
+			" par votre civilisation. Vos villes construisent des bâtiments ou des unités",
 			" et elles peuvent s'agrandir en population et/ou en influence."
 		]
 	],
@@ -214,179 +214,179 @@
 	NextTurn: [
 		[
 			"Lors de vos premiers tours,",
-			"  vous aurez peu de choix,",
-			"  mais plus votre civilization grandira, ",
-			"  plus vous aurez d'éléments à gérer"
+			" vous aurez peu de choix.",
+			" Mais plus votre civilisation grandira, ",
+			" plus vous aurez d'éléments à gérer."
 		]
 	]
 	
 	ContactMe:  [
 		[
-			"Salut! Si vous avez joué jusqu'ici, vous avez probablement",
+			"Salut ! Si vous avez joué jusqu'ici, vous avez probablement",
 			" remarqué que ce jeu n'est pas encore fini.",
-			"UnCiv est open-source et gratuit, pour toujours.",
-			" Ce qui veux dire pas de pub ou éléments payants.",
+			" UnCiv est open-source et gratuit, pour toujours.",
+			" Ce qui veut dire qu'il ne contient ni pub ou ni aucun élément payant.",
 		],
 		[
 			"Ce qui me motive à travailler dessus, ",
 			" en plus du fait que c'est super cool,"
-			" c'est le soutien des joueurs - vous êtes les meilleurs!"
+			" c'est le soutien des joueurs - vous êtes les meilleurs !"
 		],
 		[
 			"Chaque note et commentaire que je reçois me fait sourire =)",
-			"  Donc contacter moi! Envoyez moi un email, une review, ou une Github issue"
-			"  ou envoyez moi un pigeon voyageur, et découvrons comment rendre ce jeu",
-			"  encore plus incroyable! (écrivez moi en anglais si possible)"
+			" Donc n'hésitez pas à me contacter ! Envoyez-moi un email, une review, ou une Github issue."
+			" Ou envoyez-moi un pigeon voyageur, et découvrons comment rendre ce jeu",
+			" encore plus incroyable ! (écrivez-moi en anglais si possible)"
 			"(info Contact dans le Play Store)" 
 		]
 	],
 	
 	Unhappiness:  [
 		[
-			"On dirait que vos citoyens ne sont pas contents!",
-			"Tant qu'ils sont malheureux, vos villes grandiront 4 fois moins vite,",
-			"  et vos troupes seront 2% moins efficace au combat pour chaque points négatifs"
+			"On dirait que vos citoyens ne sont pas contents !",
+			" Tant qu'ils sont malheureux, vos villes grandiront 4 fois moins vite",
+			" et vos troupes seront 2% moins efficace au combat pour chaque point négatif."
 		],
 		[
-			"Le malheur peut provenir de deux choses: la Population et les villes",
-			"  Chaque ville coûte 3 de bonheur, et chaque habitants 1"
+			"Le malheur peut provenir de deux choses : la population et les villes.",
+			" Chaque ville coûte 3 de bonheur, et chaque habitants en coûte 1."
 		],
 		[
-			"Il y a deux moyens de lutter contre le malheur:",
+			"Il y a deux moyens de lutter contre le malheur :",
 			"  en construisant certains batiments",
-			"  ou en ayant des ressources de luxes sur votre territoire"
+			"  ou en ayant des ressources de luxe sur votre territoire."
 		]
 	],
 	
 	GoldenAge:  [
 		[
-			"Vous êtes entré dans un Age d'Or!",
-			"les points d'Age d'or se gagnent gràce au bonheur de vos citoyens, ",
-			"  1 point de bonheur excédentaire = 1 point d'Age d'Or accumulé",
-			"Lorsque vous êtes dans un Age d'Or, la culture et la production augmente de +20%,",
-			"  et chaque case fournissant de l'or en produit un de plus."
+			"Vous êtes entré dans un Age d'or !",
+			" Les points d'Age d'or se gagnent grâce au bonheur de vos citoyens :",
+			" 1 point de bonheur excédentaire = 1 point d'Age d'or accumulé.",
+			" Lorsque vous êtes dans un Age d'or, la culture et la production augmente de +20%",
+			" et chaque case fournissant de l'or en produit un de plus."
 		]
 	],
 	
 	SecondCity:  [
 		[
-			"Vous avez fondé votre deuxième ville!",
-			"Connectez vos villes à votre capital par des routes",
-			"  cela génerera de l'or via les routes de commerce.",
-			"Notez que chaque route coute 1 or de maintenance par tour, "
-			"  donc attendez que vos villes grandissent!"
+			"Vous avez fondé votre deuxième ville !",
+			" Connectez vos villes à votre capitale par des routes.",
+			" Cela génèrera de l'or via les routes du commerce.",
+			" Notez que chaque route coûte 1 ressource d'or de maintenance par tour,"
+			" donc attendez que vos villes grandissent !"
 		]
 	]
 	
 	EnemyCity:  [
 		[
-			"Vous avez rencontré une ville ennemie!",
-			"Les villes peuvent être conquise en réduisant leurs vie à 1,",
-			"  puis en y envoyant une unité de mélée.",
-			"Les villes se soignent à chaque tour, il vaut donc mieux les attaquer avec des unités à distance"
-			"  et utiliser vos unités de mélée pour les défendre jusqu'à ce que la vllle tombe!"
+			"Vous avez rencontré une ville ennemie !",
+			" Les villes peuvent être conquises en réduisant leur vie à 1",
+			" puis en y envoyant une unité de mêlée.",
+			" Les villes se soignent à chaque tour. Il vaut donc mieux les attaquer avec des unités à distance"
+			" et utiliser vos unités de mêlée pour les défendre jusqu'à ce que la ville tombe !"
 		]
 	]
 	
 	LuxuryResource:  [
 		[
-			"Vous avez trouvé votre première ressource de luxe!",
-			"Chaque ressource de luxe différente que vous possédez vous donne 5 de bonheur,",
-			"  mais les doublons/triplons/... de la même ressource ne donnent rien, ",
-			"  donc échanger les avec les autres civilizations!"
+			"Vous avez trouvé votre première ressource de luxe !",
+			" Chaque ressource de luxe différente que vous possédez vous donne 5 de bonheur",
+			" mais les doublons/triplons/... de la même ressource ne donnent rien. ",
+			" Donc échangez-les avec les autres civilisations !"
 		]
 	]
 	
 	StrategicResource:  [
 		[
-			"Vous avez trouvé votre première ressource stratégique!",
-			"Les ressources stratégiques servent à produire certaines unités et certains batiments",
-			"  qui requiert des ressources spécifiques, par exemple, le cavalier nécessite des chevaux."
-			"Chaque unité 'consomme' 1 de la ressource dont il a besoin, mais si l'unité est détruite ",
+			"Vous avez trouvé votre première ressource stratégique !",
+			" Les ressources stratégiques servent à produire certaines unités et certains bâtiments",
+			"  qui requierent des ressources spécifiques. Par exemple, le cavalier nécessite des chevaux."
+			" Chaque unité 'consomme' 1 de la ressource dont il a besoin, mais si l'unité est détruite ",
 			" vous récupérez cette ressource.",
-			"Les ressources stratégiques que vous possédez sont listés sur la barre en haut de l'écran."
+			" Les ressources stratégiques que vous possédez sont listées sur la barre en haut de l'écran."
 		]
 	]
 	
 	EnemyCityNeedsConqueringWithMeleeUnit:  [
 		[
-			"Cette ville n'est plus capable de se défendre!",
-			"Pour conquérir cette ville vous devez l'attaquer avec une unité de mélée"
+			"Cette ville n'est plus capable de se défendre !",
+			" Pour conquérir cette ville vous devez l'attaquer avec une unité de mêlée."
 		]
 	]
 	
 	BarbarianEncountered:  [
 		[
-			"Vous avez rencontré une unité barbare!",
-			"Les barbares attaques tout ceux qu'ils croisent, donc ne laissez ",
-			" pas vos civiles à côté d'eux, et gardez un oeil sur vos éclaireurs!"
+			"Vous avez rencontré une unité barbare !",
+			" Les barbares attaquent tous ceux qu'ils croisent, donc ne laissez ",
+			" pas vos unités civiles à côté d'eux et gardez un oeil sur vos éclaireurs !"
 		]
 	]
 	
 	OtherCivEncountered:  [
 		[
-			"Vous avez rencontré une autre civilization!",
-			"Lorsque vous les rencontrez, les autres civilizations sont pacifiques,",
-			" et vous pouvez échanger avec eux, mais ils pourront vous déclarer la guerre si l'envie leurs prends"
+			"Vous avez rencontré une autre civilisation !",
+			" Lorsque vous les rencontrez, les autres civilisations sont pacifiques",
+			" et vous pouvez échanger avec elles, mais elles pourront vous déclarer la guerre si l'envie leur prend."
 		]
 	]
 	
 	GameCrashed:  [
 		[
-			"Oh non! On dirait que quelque chose ne c'est ABSOLUMENT pas passez comme prévu!",
-			"Ce n'est pas sensé arrivé!",
-			"S'il vous plait, envoyé un mail à yairm210@hotmail.com avec les informations de la partie",
-			" (menu (en haut à gauche) -> charger une partie -> copy saved game to clipboard -> copier dans le mail)",
-			" et j'essayerai de régler cela aussi vite que possible!"
+			"Oh non ! On dirait que quelque chose ne s'est ABSOLUMENT pas passé comme prévu !",
+			" Ce n'est pas censé arriver !",
+			" S'il vous plaît, envoyez un mail à yairm210@hotmail.com avec les informations de la partie",
+			" (Menu (en haut à gauche) -> Charger une partie -> Copy saved game to clipboard -> Copier dans le mail)",
+			" et j'essayerai de régler cela aussi vite que possible !"
 		]
 	]
 	
 	ApolloProgram:  [
 		[
-			"Vous avez completé le programmme Apollo!",
-			"Vous pouvez désormais produire des parties de vaisseau spatiale",
-			" (Si vous aves les technologies nécessaire) et faire une victoire scientifique!"
+			"Vous avez complété le programmme Apollo !",
+			" Vous pouvez désormais produire des parties de vaisseau spatial",
+			" (si vous avez les technologies nécessaires) et faire une victoire scientifique !"
 		]
 	]
 	
 	InjuredUnits:[
 		[
-			"L'une de vos unité est blessé!",
-			"Les unités blessés font moins de dégâts en combat, mais elle regagne des points de vies en restant inactive",
-			"Les unités se soignenet de 5 points de vies par tour en territoire ennemie, 10 en territoire neutre,"
-			" 15 en territoire allié et 20 dans vos villes"
+			"L'une de vos unités est blessée !",
+			" Les unités blessées font moins de dégâts en combat, mais elles regagnent des points de vie en restant inactives.",
+			" Les unités se soignent de 5 points de vie par tour en territoire ennemi, de 10 points de vie en territoire neutre,"
+			" de 15 points de vie en territoire allié et de 20 points de vie dans vos villes."
 		]
 	]
 	
 	WorkerTrained:[
 		[
-			"Vous avez produit un Ouvrier!",
-			"Les ouvriers sont vitales pour l'agrandissement de vos villes, ils peuvent améliorer les cases",
-			"leurs permettant ainsi de prouire plus de nourriture, d'or, ou de points de production"
+			"Vous avez produit un Ouvrier !",
+			" Les ouvriers sont vitaux pour l'agrandissement de vos villes. Ils peuvent améliorer les cases",
+			" leur permettant ainsi de produire plus de nourriture, d'or ou de points de production."
 		]
 	]
 	
 	SiegeUnitTrained:[
 		[
-			"Vous avez produit une unité de siège!",
-			"Ces unités sont efficace contre les villes, mais elles doivent être installés avant d'attaquer.",
-			"Une fois installées, elle peuvent attaquer depuis leurs position,",
-			" mais dès qu'elle bouge, elle devront être ré-installées pour pouvoir attaqué."
+			"Vous avez produit une unité de siège !",
+			" Ces unités sont efficaces contre les villes, mais elles doivent être installées avant de pouvoir attaquer.",
+			" Une fois installées, elles peuvent attaquer depuis leur position",
+			" mais dès qu'elles bougent, elles devront être ré-installées avant de pouvoir attaquer."
 		]
 	]
 	
 	CanEmbark:[
 		[
-			"Vos unités terrestres peuvent désormais s'embarquer pour traverser les océans!",
-			"Entrer ou quitter une case d'océan prend un tour entier.",
-			"De plus, les unités embarqués ne peuvent pas se défendre, donc faites attention!"
+			"Vos unités terrestres peuvent désormais s'embarquer pour traverser les océans !",
+			" Entrer ou quitter une case d'océan prend un tour entier.",
+			" De plus, les unités embarquées ne peuvent pas se défendre, donc faites attention !"
 		]
 	]
 
 	CityRange:[
 		[
-			"Vos citoyens peuvent exploiter les zones se trouvant jusqu'à 3 cases de leurs ville.",
-			"Les fontières des villes augmente au-delà, sans limitte,",
+			"Vos citoyens peuvent exploiter les zones se trouvant jusqu'à 3 cases de leur ville.",
+			"Les fontières des villes augmentent au-delà et sans limite,",
 			"mais les citoyens sont restreints à 3 cases de distance."
 		]
 	]
