@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.optionstable
 
+import com.badlogic.gdx.Gdx
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
@@ -53,9 +54,31 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             remove()
         }
 
+        addButton("Community"){
+            WorldScreenCommunityTable(worldScreen)
+            remove()
+        }
+
         addButton("Close".tr()){ remove() }
 
         open()
     }
 }
 
+class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
+    init{
+        addButton("Discord"){
+            Gdx.net.openURI("https://discord.gg/bjrB4Xw")
+            remove()
+        }
+
+        addButton("Github"){
+            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            remove()
+        }
+
+        addButton("Close".tr()){ remove() }
+
+        open()
+    }
+}

@@ -420,6 +420,8 @@
 		French:"Construire [improvement]"
 	}
 	
+	"Start Golden Age":{}
+	
 	"Yes":{
 		Italian:"Sì"
 		Russian:"Да"
@@ -618,6 +620,8 @@
 		Portuguese:"Políticas sociais"
 		Japanese:"社会政策"
 	}
+	
+	"Community":{}
 	
 
 	"Close":{

@@ -422,13 +422,13 @@
 
 	"Can construct roads":{
 		Italian:"Può costruire Strade"
-        	Simplified_Chinese:"可以建造道路"
+		Simplified_Chinese:"可以建造道路"
 		French:"Peut construire des routes"
 	}
 
 	"Construct road":{ // for unit action button
 		Italian:"Costruisci Strada"
-        	Simplified_Chinese:"建造道路"
+		Simplified_Chinese:"建造道路"
 		French:"Construire une route"
 	} 
 	
