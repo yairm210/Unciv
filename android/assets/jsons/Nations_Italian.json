@@ -607,7 +607,7 @@
 		name:"Milan",
 		translatedName:"Milano",
 		adjective:["milanese"],
-		cityStateType:"Acculturata",
+		cityStateType:"Cultured",
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
@@ -621,7 +621,7 @@
 		name:"Florence",
 		translatedName:"Firenze",
 		adjective:["fiorentino"],
-		cityStateType:"Acculturata",
+		cityStateType:"Cultured",
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
@@ -635,7 +635,7 @@
 		name:"Rio de Janeiro",
 		translatedName:"Rio de Janeiro",
 		adjective:["brasiliano"],
-		cityStateType:"Marittima",
+		cityStateType:"Maritime",
 		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
@@ -681,7 +681,7 @@
 		name:"Ur",
 		translatedName:"Ur",
 		adjective:["sumero"],
-		cityStateType:"Marittima",
+		cityStateType:"Maritime",
 		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
