@@ -184,10 +184,12 @@
 	
 	// Denunceation flavour texts
 	"Denounce ([numberOfTurns] turns)":{
+		Italian:"Denuncia ([numberOfTurns] turni)"
 		French:"Dénoncer ([numberOfTurns] tours)"
 	}
 	
 	"We will remember this.":{
+		Italian:"Non credere che ce lo scorderemo!"
 		French:"Nous nous en souviendrons."
 	}
 	
@@ -359,18 +361,53 @@
 	}
 	
 	// Demands
-	"Demands":{}
-	"Please don't settle new cities near us.":{}
-	"Very well, we shall look for new lands to settle.":{}
-	"We shall do as we please.":{}
+	"Demands":{
+		Italian:"Richieste"
+	}
+	"Please don't settle new cities near us.":{
+		Italian:"Smetti di fondare città vicino a noi."
+	}
+	"Very well, we shall look for new lands to settle.":{
+		Italian:"Ti porgiamo le nostre scuse."
+	}
+	"We shall do as we please.":{
+		Italian:"Colonizzeremo la terra che ci pare e piace."
+	}
 	
-	"You betrayed your promise to not settle cities near us":{}
+	"You betrayed your promise to not settle cities near us":{
+		Italian:"Hai tradito la tua promessa di non fondare città nelle nostre vicinanze."
+	}
 	
-	"You refused to stop settling cities near us":{}
+	"You refused to stop settling cities near us":{
+		Italian:"Hai continuato a fondare città nelle nostre vicinanze."
+	}
 	
-	"We noticed your new city near our borders, despite your promise. This will have....implications.":{}
+	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
+		Italian:"Abbiamo notato la la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
+	}
 	
 	
+////// City-States Types
+
+	
+	"Cultured":{
+		Italian:"Acculturata"
+	}
+	
+	"Maritime":{
+		Italian:"Marittima"
+	}
+	
+	"Mercantile":{
+		Italian:"Mercantile"
+	}
+	
+	/*
+	"Militaristic":{
+		Italian:"Militaristica"
+	}
+	*/
+
 ////// Trade	
 
 	"Trade":{	
@@ -385,7 +422,7 @@
 	}
 
 	"Offer trade":{	
-		Italian:"Negozia"
+		Italian:"Offri scambio"
 		Russian:"Предложить обмен"
 		French:"Proposer un échange"
 		Romanian:"Ofertă comercială"
