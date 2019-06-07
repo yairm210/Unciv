@@ -25,13 +25,13 @@ Made with LibGDX on Android Studio
 * Combat and barbarians
    * Promotions and combat modifiers
 * Other civilizations, diplomacy and trade
+* City-states
 * Hotseat multiplayer
 * Map editor
 
 # What's next?
 
 * UI+UX improvements (suggestions welcome!)
-* City-states
 * Air units
 
 I'd love to hear your feedback, either here or via mail to yairm210@hotmail.com!
