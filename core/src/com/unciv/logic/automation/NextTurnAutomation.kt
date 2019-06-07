@@ -1,7 +1,6 @@
 package com.unciv.logic.automation
 
 import com.unciv.Constants
-import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -22,6 +21,7 @@ class NextTurnAutomation{
             offerPeaceTreaty(civInfo)
             exchangeTechs(civInfo)
             exchangeLuxuries(civInfo)
+            issueRequests(civInfo)
         }
 
         chooseTechToResearch(civInfo)
@@ -35,6 +35,7 @@ class NextTurnAutomation{
         trainSettler(civInfo)
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
+
 
     private fun buyBuildingOrUnit(civInfo: CivilizationInfo) {
         //allow AI spending money to purchase building & unit
@@ -349,17 +350,30 @@ class NextTurnAutomation{
     }
 
 
-    fun onCitySettledNearBorders(civInfo: CivilizationInfo, newCity: CityInfo){
-        val diplomacyManager = civInfo.getDiplomacyManager(newCity.civInfo)
-        if(diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs)) return
-        if(diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs)){
-            newCity.civInfo.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
-            diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,200)
-            diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,-20f)
+    private fun issueRequests(civInfo: CivilizationInfo) {
+        for(otherCiv in civInfo.getKnownCivs().filter { it.isMajorCiv() }){
+            val diploManager = civInfo.getDiplomacyManager(otherCiv)
+            if(diploManager.hasFlag(DiplomacyFlags.SettledCitiesNearUs))
+                onCitySettledNearBorders(civInfo,otherCiv)
         }
-        else{
-            newCity.civInfo.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCiv, civInfo.civName))
+    }
+
+    fun onCitySettledNearBorders(civInfo: CivilizationInfo, otherCiv:CivilizationInfo){
+        val diplomacyManager = civInfo.getDiplomacyManager(otherCiv)
+        when {
+            diplomacyManager.hasFlag(DiplomacyFlags.IgnoreThemSettlingNearUs) -> {}
+            diplomacyManager.hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs) -> {
+                otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCivDespiteOurPromise, civInfo.civName))
+                diplomacyManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,200)
+                diplomacyManager.setModifier(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,-20f)
+            }
+            else -> {
+                val threatLevel = Automation().threatAssessment(civInfo,otherCiv)
+                if(threatLevel<ThreatLevel.High) // don't piss them off for no reason please.
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCiv, civInfo.civName))
+            }
         }
+        diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)
     }
 
 }

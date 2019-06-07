@@ -3,6 +3,7 @@ package com.unciv.logic.automation
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
@@ -81,7 +82,15 @@ class SpecificUnitAutomation{
         if(unit.getTile().militaryUnit==null) return // Don't move until you're accompanied by a military unit
 
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
-                .flatMap { it.getCenterTile().getTilesInDistance(3) }.toHashSet()
+                .flatMap {
+                    val distanceAwayFromCity =
+                            if (it.civInfo.knows(unit.civInfo.civName)
+                                    && it.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.WeAgreedNotToSettleNearThem))
+                                6
+                            else 3
+                    it.getCenterTile().getTilesInDistance(distanceAwayFromCity)
+                }
+                .toHashSet()
 
         // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)

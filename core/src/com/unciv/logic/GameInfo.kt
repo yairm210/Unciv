@@ -147,7 +147,8 @@ class GameInfo {
         for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
-        val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() && it.uniqueTo == null }
+        val unitList = GameBasics.Units.values
+                .filter { !it.unitType.isCivilian() && it.uniqueTo == null }
                 .filter{ allResearchedTechs.contains(it.requiredTech)
                         && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
 

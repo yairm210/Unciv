@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -39,7 +40,7 @@ class CityInfo {
     var hasSoldBuildingThisTurn = false
 
     constructor()   // for json parsing, we need to have a default constructor
-    constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
+    constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
         this.location = cityLocation
         setTransients()
@@ -78,6 +79,15 @@ class CityInfo {
         workedTiles = hashSetOf() //reassign 1st working tile
         population.autoAssignPopulation()
         cityStats.update()
+
+        val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it!=civInfo }
+                .flatMap { it.cities }
+                .filter { it.getCenterTile().arialDistanceTo(getCenterTile()) <= 6 }
+        val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
+                .filter { it.exploredTiles.contains(location) }
+        for(otherCiv in civsWithCloseCities)
+            otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
+
     }
 
     //region pure functions

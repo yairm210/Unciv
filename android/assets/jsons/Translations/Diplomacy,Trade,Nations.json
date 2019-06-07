@@ -126,7 +126,7 @@
 		Portuguese:"Dessa vez não."
 	}
 
-	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state
+	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
 		Italian:"Eccellente!"
 		Simplified_Chinese:"好极了！和和气气才是生财之道。"
 		French:"Excellent!"
@@ -358,7 +358,17 @@
 		French:"Vous avez dénoncé nos ennemies"
 	}
 	
+	// Demands
+	"Demands":{}
+	"Please don't settle new cities near us.":{}
+	"Very well, we shall look for new lands to settle.":{}
+	"We shall do as we please.":{}
+	
 	"You betrayed your promise to not settle cities near us":{}
+	
+	"You refused to stop settling cities near us":{}
+	
+	"We noticed your new city near our borders, despite your promise. This will have....implications.":{}
 	
 	
 ////// Trade	

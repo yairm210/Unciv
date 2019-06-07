@@ -4,17 +4,24 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.optionstable.PopupTable
+import kotlin.random.Random
 
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): PopupTable(worldScreen){
-    fun getCloseButton(text:String): TextButton {
+    fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
         val button = TextButton(text.tr(), skin)
-        button.onClick { close(); worldScreen.shouldUpdate=true }
+        button.onClick {
+            if(action!=null) action()
+            worldScreen.shouldUpdate=true
+            close()
+        }
         return button
     }
 
@@ -47,7 +54,6 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 val translatedNation = civ.getTranslatedNation()
                 if (civ.isCityState()) {
                     addLeaderName(translatedNation)
-                    val cityStateType = civ.getCityStateType()
                     addGoodSizedLabel("We have encountered the City-State of [${translatedNation.getNameTranslation()}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
@@ -74,7 +80,26 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 responseTable.add(getCloseButton("Never!"))
                 add(responseTable)
             }
-            
+            AlertType.CitySettledNearOtherCiv -> {
+                val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val otherCivDiploManager = otherciv.getDiplomacyManager(worldScreen.currentPlayerCiv)
+                val translatedNation = otherciv.getTranslatedNation()
+                addLeaderName(translatedNation)
+                addGoodSizedLabel("Please don't settle new cities near us.").row()
+                add(getCloseButton("Very well, we shall look for new lands to settle."){
+                    otherCivDiploManager.setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100+ Random.nextInt(-20,20))
+                }).row()
+                add(getCloseButton("We shall do as we please.") {
+                    otherCivDiploManager.addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-10f)
+                }).row()
+            }
+            AlertType.CitySettledNearOtherCivDespiteOurPromise -> {
+                val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val translatedNation = otherciv.getTranslatedNation()
+                addLeaderName(translatedNation)
+                addGoodSizedLabel("We noticed your new city near our borders, despite your promise. This will have....implications.").row()
+                add(getCloseButton("Very well."))
+            }
         }
         open()
         isOpen = true

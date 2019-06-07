@@ -29,7 +29,9 @@ enum class DiplomacyFlags{
     DeclarationOfFriendship,
     Denunceation,
     BorderConflict,
+    SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
+    WeAgreedNotToSettleNearThem,
     IgnoreThemSettlingNearUs
 }
 
@@ -41,6 +43,7 @@ enum class DiplomaticModifiers{
     BetrayedDeclarationOfFriendship,
     Denunciation,
     DenouncedOurAllies,
+    RefusedToNotSettleCitiesNearUs,
     BetrayedPromiseToNotSettleCitiesNearUs,
 
     YearsOfPeace,
@@ -48,7 +51,8 @@ enum class DiplomaticModifiers{
     DeclarationOfFriendship,
     DeclaredFriendshipWithOurAllies,
     DenouncedOurEnemies,
-    OpenBorders
+    OpenBorders,
+    FulfilledPromiseToNotSettleCitiesNearUs
 }
 
 class DiplomacyManager() {
@@ -241,7 +245,10 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.DeclaredWarOnUs,1/8f) // this disappears real slow - it'll take 160 turns to really forget, this is war declaration we're talking about
         revertToZero(DiplomaticModifiers.WarMongerer,1/2f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
         revertToZero(DiplomaticModifiers.CapturedOurCities,1/4f) // if you captured our cities, though, that's harder to forget
-        revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship,1/2f) // if you captured our cities, though, that's harder to forget
+        revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship,1/8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,1/4f)
+        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,1/8f) // That's a bastardly thing to do
+
         if(!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1/2f) //decreases slowly and will revert to full if it is declared later
 
@@ -249,6 +256,8 @@ class DiplomacyManager() {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) {
                 flagsCountdown.remove(flag)
+                if(flag==DiplomacyFlags.AgreedToNotSettleNearUs.name)
+                    addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,10f)
             }
         }
 
