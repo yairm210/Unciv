@@ -777,6 +777,16 @@
 		uniques:["Gold cost of upgrading military units reduced by 33%"]
 		requiredTech:"Combined Arms"
 	},
+	/*
+	{
+		name:"United Nations",
+		isWonder:true,
+		culture:1,
+		greatPersonPoints:{gold:2}
+		uniques:["Triggers a vote for World Leader, achieving Diplomatic Victory"]
+		requiredTech:"Globalization"
+	},
+	*/
 	{
 		name:"Spaceship Factory",
 		production:3,
