@@ -480,6 +480,13 @@
 		buildingCost:750,
 		wonderCost:1250,
 		techs:[
+			/*
+			{
+				name:"Globalization",
+				row:2,
+				prerequisites:["Computers","Ecology"]
+			},
+			*/
 			{
 				name:"Nanotechnology",
 				row:3,
