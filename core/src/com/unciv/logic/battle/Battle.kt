@@ -239,7 +239,7 @@ class Battle(val gameInfo:GameInfo) {
             defender.takeDamage(100)
             return
         } // barbarians don't capture civilians!
-        
+
         if (defender.getCivInfo().isDefeated()) {//Last settler captured
             defender.getCivInfo().destroy()
             attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,defender.getCivInfo().civName))
