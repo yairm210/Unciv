@@ -456,7 +456,7 @@ class MapUnit {
             tile.civilianUnit=this
         else tile.militaryUnit=this
         currentTile = tile
-        if(tile.improvement==Constants.ancientRuins && !civInfo.isBarbarianCivilization())
+        if(tile.improvement==Constants.ancientRuins && civInfo.isMajorCiv())
             getAncientRuinBonus()
         if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
             clearEncampment(tile)

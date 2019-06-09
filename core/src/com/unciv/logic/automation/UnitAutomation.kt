@@ -401,7 +401,7 @@ class UnitAutomation{
     }
 
     fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
-        if(unit.civInfo.isBarbarianCivilization()) return false // barbs don't have anything to do in ruins
+        if(!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
         val tileWithRuin = unitDistanceToTiles.keys.firstOrNull{unit.canMoveTo(it) && it.improvement == Constants.ancientRuins}
         if(tileWithRuin==null) return false
         unit.moveToTile(tileWithRuin)
