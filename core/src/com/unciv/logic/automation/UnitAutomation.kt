@@ -79,6 +79,8 @@ class UnitAutomation{
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
 
+        if(tryHeadTowardsEncampment(unit)) return
+
         // else, try to go o unreached tiles
         if(tryExplore(unit,unitDistanceToTiles)) return
 
@@ -87,6 +89,20 @@ class UnitAutomation{
             wander(unit,unitDistanceToTiles)
     }
 
+    private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
+        if(unit.civInfo.isBarbarianCivilization()) return false
+        val knownEncampments = unit.civInfo.exploredTiles.asSequence()
+                .map { unit.civInfo.gameInfo.tileMap[it] }
+                .filter { it.improvement==Constants.barbarianEncampment }
+        val cities = unit.civInfo.cities
+        val encampmentsCloseToCities
+                = knownEncampments.filter { cities.any { city -> city.getCenterTile().arialDistanceTo(it) < 6 } }
+                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+        val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movementAlgs().canReach(it) }
+        if(encampmentToHeadTowards==null) return false
+        unit.movementAlgs().headTowards(encampmentToHeadTowards)
+        return true
+    }
 
 
     fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>):Boolean {
