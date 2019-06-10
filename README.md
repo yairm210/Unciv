@@ -36,4 +36,8 @@ Made with LibGDX on Android Studio
 
 I'd love to hear your feedback, either here or via mail to yairm210@hotmail.com!
 
+# Desktop play
+
+You can play Unciv on any desktop using the Bluestacks emulator!
+
 # [Credits and 3rd parties](Credits.md)
