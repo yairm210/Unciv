@@ -397,5 +397,16 @@ class DiplomacyManager() {
         }
     }
 
+    fun agreeNotToSettleNear(){
+        otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100)
+        addModifier(DiplomaticModifiers.UnacceptableDemands,-10f)
+    }
+
+    fun refuseDemandNotToSettleNear(){
+        addModifier(DiplomaticModifiers.UnacceptableDemands,-20f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
+        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-15f)
+    }
+
     //endregion
 }

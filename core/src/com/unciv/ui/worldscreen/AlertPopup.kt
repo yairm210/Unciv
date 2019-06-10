@@ -4,15 +4,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.optionstable.PopupTable
-import kotlin.random.Random
 
 class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): PopupTable(worldScreen){
     fun getCloseButton(text: String, action: (() -> Unit)?=null): TextButton {
@@ -82,16 +79,15 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.CitySettledNearOtherCiv -> {
                 val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
-                val otherCivDiploManager = otherciv.getDiplomacyManager(worldScreen.currentPlayerCiv)
+                val playerDiploManager = worldScreen.currentPlayerCiv.getDiplomacyManager(otherciv)
                 val translatedNation = otherciv.getTranslatedNation()
                 addLeaderName(translatedNation)
                 addGoodSizedLabel("Please don't settle new cities near us.").row()
                 add(getCloseButton("Very well, we shall look for new lands to settle."){
-                    otherCivDiploManager.setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100+ Random.nextInt(-20,20))
+                    playerDiploManager.agreeNotToSettleNear()
                 }).row()
                 add(getCloseButton("We shall do as we please.") {
-                    otherCivDiploManager.addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-10f)
-                    otherCivDiploManager.setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
+                    playerDiploManager.refuseDemandNotToSettleNear()
                 }).row()
             }
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> {

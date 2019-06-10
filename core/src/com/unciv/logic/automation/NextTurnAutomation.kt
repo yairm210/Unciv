@@ -17,6 +17,8 @@ class NextTurnAutomation{
 
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
+        respondToDemands(civInfo)
+
         if(civInfo.isMajorCiv()) {
             offerPeaceTreaty(civInfo)
             exchangeTechs(civInfo)
@@ -34,6 +36,18 @@ class NextTurnAutomation{
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
         civInfo.popupAlerts.clear() // AIs don't care about popups.
+    }
+
+    private fun respondToDemands(civInfo: CivilizationInfo) {
+        for(popupAlert in civInfo.popupAlerts){
+            if(popupAlert.type==AlertType.CitySettledNearOtherCiv){  // we're called upon to make a decision
+                val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
+                val diploManager = civInfo.getDiplomacyManager(demandingCiv)
+                if(Automation().threatAssessment(civInfo,demandingCiv) >= ThreatLevel.High)
+                    diploManager.agreeNotToSettleNear()
+                else diploManager.refuseDemandNotToSettleNear()
+            }
+        }
     }
 
 

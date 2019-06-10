@@ -278,12 +278,12 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         dontSettleCitiesButton.onClick {
             val threatLevel = Automation().threatAssessment(otherCiv,currentPlayerCiv)
             if(threatLevel>ThreatLevel.Medium){
+                otherCiv.getDiplomacyManager(currentPlayerCiv).agreeNotToSettleNear()
                 setRightSideFlavorText(otherCiv,"Very well, we shall look for new lands to settle.","Excellent!")
-                currentPlayerCiv.getDiplomacyManager(otherCiv).setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100)
             }
             else {
+                otherCiv.getDiplomacyManager(currentPlayerCiv).refuseDemandNotToSettleNear()
                 setRightSideFlavorText(otherCiv,"We shall do as we please.","Very well.")
-                otherCiv.getDiplomacyManager(currentPlayerCiv).addModifier(UnacceptableDemands,-20f)
             }
         }
         demandsTable.add(dontSettleCitiesButton).row()
