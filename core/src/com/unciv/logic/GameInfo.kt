@@ -149,7 +149,7 @@ class GameInfo {
         }
         val unitList = GameBasics.Units.values
                 .filter { !it.unitType.isCivilian() && it.uniqueTo == null }
-                .filter{ allResearchedTechs.contains(it.requiredTech)
+                .filter{ (it.requiredTech==null || allResearchedTechs.contains(it.requiredTech!!))
                         && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
 
         val landUnits = unitList.filter { it.unitType.isLandUnit() }

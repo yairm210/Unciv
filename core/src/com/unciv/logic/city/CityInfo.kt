@@ -322,7 +322,7 @@ class CityInfo {
                 .flatMap { it.cities }
                 .filter { it.getCenterTile().arialDistanceTo(getCenterTile()) <= 6 }
         val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
-                .filter { it.exploredTiles.contains(location) }
+                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
         for(otherCiv in civsWithCloseCities)
             otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
     }

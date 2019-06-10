@@ -129,6 +129,7 @@ class CivilizationInfo {
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
+    fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
 
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human

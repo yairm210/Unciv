@@ -54,7 +54,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         for (civ in UnCivGame.Current.gameInfo.civilizations
                 .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }) {
-            if (!currentPlayerCiv.knows(civ.civName)) continue
+            if (!currentPlayerCiv.knows(civ)) continue
 
             val civIndicator = ImageGetter.getCircle().apply { color = civ.getNation().getSecondaryColor() }
                     .surroundWithCircle(100f).apply { circle.color = civ.getNation().getColor() }

@@ -20,7 +20,7 @@ import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
 import kotlin.math.min
 
-class UnitAction(var name: String, var canAct: Boolean, var currentAction: Boolean = false, var title: String = name.tr(), var action: () -> Unit = {}){
+class UnitAction(var name: String, var canAct: Boolean, var currentAction: Boolean = false, var title: String = name, var action: () -> Unit = {}){
     var sound="click"
     fun sound(soundName:String): UnitAction {sound=soundName; return this}
 }

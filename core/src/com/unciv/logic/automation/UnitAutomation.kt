@@ -147,8 +147,8 @@ class UnitAutomation{
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
         if(combatant is MapUnitCombatant){
             if (combatant.unit.isEmbarked()) {
-                if (combatant.isRanged()) return false
                 if (tile.isWater) return false // can't attack water units while embarked, only land
+                if (combatant.isRanged()) return false
             }
             if (tile.isLand && combatant.unit.hasUnique("Can only attack water")) return false
         }
@@ -159,7 +159,7 @@ class UnitAutomation{
         if(!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         //only submarine and destroyer can attack submarine
-        //garisoned submarine can be attacked by anyone, or the city will be in invincible
+        //garrisoned submarine can be attacked by anyone, or the city will be in invincible
         if (tileCombatant.isInvisible() && !tile.isCityCenter()) {
             if (combatant is MapUnitCombatant
                     && combatant.unit.hasUnique("Can attack submarines")

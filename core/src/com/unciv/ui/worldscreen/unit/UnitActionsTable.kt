@@ -6,9 +6,9 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.map.MapUnit
-import com.unciv.Constants
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
@@ -69,7 +69,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
         val actionButton = Button(CameraStageBaseScreen.skin)
         actionButton.add(getIconForUnitAction(unitAction.name)).size(20f).pad(5f)
         actionButton.add(
-                Label(unitAction.title,CameraStageBaseScreen.skin)
+                Label(unitAction.title.tr(),CameraStageBaseScreen.skin)
                         .setFontColor(if(unitAction.currentAction) Color.YELLOW else Color.WHITE))
                 .pad(5f)
         actionButton.pack()

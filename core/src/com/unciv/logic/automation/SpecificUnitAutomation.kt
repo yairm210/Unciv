@@ -84,7 +84,7 @@ class SpecificUnitAutomation{
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
                 .flatMap {
                     val distanceAwayFromCity =
-                            if (unit.civInfo.knows(it.civInfo.civName)
+                            if (unit.civInfo.knows(it.civInfo)
                                     // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
                                     && it.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
                                 6
