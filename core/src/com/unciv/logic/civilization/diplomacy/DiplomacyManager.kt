@@ -45,6 +45,7 @@ enum class DiplomaticModifiers{
     DenouncedOurAllies,
     RefusedToNotSettleCitiesNearUs,
     BetrayedPromiseToNotSettleCitiesNearUs,
+    UnacceptableDemands,
 
     YearsOfPeace,
     SharedEnemy,
@@ -248,6 +249,7 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship,1/8f) // That's a bastardly thing to do
         revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,1/4f)
         revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,1/8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.UnacceptableDemands,1/4f)
 
         if(!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1/2f) //decreases slowly and will revert to full if it is declared later

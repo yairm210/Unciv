@@ -258,6 +258,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 BetrayedPromiseToNotSettleCitiesNearUs -> "You betrayed your promise to not settle cities near us"
                 RefusedToNotSettleCitiesNearUs -> "You refused to stop settling cities near us"
                 FulfilledPromiseToNotSettleCitiesNearUs -> "You fulfilled your promise to stop settling cities near us!"
+                UnacceptableDemands -> "Your arrogant demands are in bad taste"
             }
             text = text.tr() + " "
             if (modifier.value > 0) text += "+"
@@ -280,7 +281,10 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 setRightSideFlavorText(otherCiv,"Very well, we shall look for new lands to settle.","Excellent!")
                 otherCiv.getDiplomacyManager(currentPlayerCiv).setFlag(DiplomacyFlags.WeAgreedNotToSettleNearThem,100)
             }
-            else setRightSideFlavorText(otherCiv,"We shall do as we please.","Very well.")
+            else {
+                setRightSideFlavorText(otherCiv,"We shall do as we please.","Very well.")
+                otherCiv.getDiplomacyManager(currentPlayerCiv).addModifier(UnacceptableDemands,-20f)
+            }
         }
         demandsTable.add(dontSettleCitiesButton).row()
         demandsTable.add(TextButton("Close".tr(),skin).onClick { updateRightSide(otherCiv) })
