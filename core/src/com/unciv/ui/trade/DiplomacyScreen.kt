@@ -279,7 +279,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             val threatLevel = Automation().threatAssessment(otherCiv,currentPlayerCiv)
             if(threatLevel>ThreatLevel.Medium){
                 setRightSideFlavorText(otherCiv,"Very well, we shall look for new lands to settle.","Excellent!")
-                otherCiv.getDiplomacyManager(currentPlayerCiv).setFlag(DiplomacyFlags.WeAgreedNotToSettleNearThem,100)
+                currentPlayerCiv.getDiplomacyManager(otherCiv).setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100)
             }
             else {
                 setRightSideFlavorText(otherCiv,"We shall do as we please.","Very well.")

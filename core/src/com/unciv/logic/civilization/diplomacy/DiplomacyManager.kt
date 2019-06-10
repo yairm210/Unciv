@@ -31,7 +31,6 @@ enum class DiplomacyFlags{
     BorderConflict,
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
-    WeAgreedNotToSettleNearThem,
     IgnoreThemSettlingNearUs
 }
 
