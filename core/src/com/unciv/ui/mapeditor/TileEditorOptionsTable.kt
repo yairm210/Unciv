@@ -5,35 +5,94 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
+import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TerrainType
+import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.ui.tilegroups.TileGroup
+import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
 import com.unciv.ui.utils.onClick
 
-class TileEditorOptionsTable(mapEditorScreen: MapEditorScreen): Table(){
+class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
     val tileSetLocation = "TileSets/"+ UnCivGame.Current.settings.tileSet +"/"
 
     var clearTerrainFeature=false
     var selectedTerrain : Terrain?=null
+
     var clearResource=false
     var selectedResource: TileResource?=null
+
+    var clearImprovement=false
+    var selectedImprovement:TileImprovement?=null
+
+    val editorPickTable = Table()
 
     private var currentHex: Actor = Group()
 
     init{
+        height=mapEditorScreen.stage.height
+        width=mapEditorScreen.stage.width/3
+
+        setTerrainsAndResources()
+
+        val tabPickerTable = Table().apply { defaults().pad(10f) }
+        val terrainsAndResourcesTabButton = TextButton("Terrains & Resources",skin)
+                .onClick { setTerrainsAndResources() }
+        tabPickerTable.add(terrainsAndResourcesTabButton)
+
+        val civLocationsButton = TextButton("Improvements",skin)
+                .onClick { setImprovements() }
+        tabPickerTable.add(civLocationsButton)
+        tabPickerTable.pack()
+        add(ScrollPane(tabPickerTable).apply { this.width= mapEditorScreen.stage.width/3}).row()
+
+        add(editorPickTable).row()
+
+        setPosition(mapEditorScreen.stage.width - width, 0f)
+    }
+
+    private fun setImprovements() {
+        val improvementsTable = Table()
+
+        improvementsTable.add(getHex(Color.WHITE).apply {
+            onClick {
+                clearSelection()
+                clearImprovement = true
+                setCurrentHex(ImageGetter.getCircle().apply { setSize(60f,60f) })
+            }
+        }).row()
+
+        for(improvement in GameBasics.TileImprovements.values){
+            if(improvement.name.startsWith("Remove")) continue
+            val improvementImage = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
+            improvementImage.onClick {
+                clearSelection()
+                selectedImprovement=improvement
+                setCurrentHex(getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f)))
+            }
+            improvementsTable.add(improvementImage).row()
+        }
+
+        editorPickTable.clear()
+        editorPickTable.add(ScrollPane(improvementsTable)).height(mapEditorScreen.stage.height*0.7f)
+    }
+
+    fun setTerrainsAndResources(){
+
         val baseTerrains = ArrayList<Actor>()
         val terrainFeatures=ArrayList<Actor>()
         terrainFeatures.add(getHex(Color.WHITE).apply {
             onClick {
                 clearSelection()
                 clearTerrainFeature = true
-                setCurrentHex(null)
+                setCurrentHex(ImageGetter.getCircle().apply { setSize(60f,60f) })
             }
         })
 
@@ -68,7 +127,7 @@ class TileEditorOptionsTable(mapEditorScreen: MapEditorScreen): Table(){
             onClick {
                 clearSelection()
                 clearResource = true
-                setCurrentHex(null)
+                setCurrentHex(ImageGetter.getCircle().apply { setSize(60f,60f) })
             }
         })
 
@@ -96,24 +155,26 @@ class TileEditorOptionsTable(mapEditorScreen: MapEditorScreen): Table(){
 
         background = ImageGetter.getBackground(Color.GRAY.cpy().apply { a = 0.7f })
 
+        val terrainsAndResourcesTable = Table()
         val baseTerrainTable = Table().apply { defaults().pad(20f) }
         for(baseTerrain in baseTerrains) baseTerrainTable.add(baseTerrain).row()
         baseTerrainTable.pack()
-        add(ScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f)
+        terrainsAndResourcesTable.add(ScrollPane(baseTerrainTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f)
 
         val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
         for(terrainFeature in terrainFeatures) terrainFeaturesTable.add(terrainFeature).row()
         terrainFeaturesTable.pack()
-        add(terrainFeaturesTable)
+        terrainsAndResourcesTable.add(terrainFeaturesTable)
 
         val resourcesTable = Table()
         for(resource in resources) resourcesTable.add(resource).row()
         resourcesTable.pack()
-        add(ScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f).row()
+        terrainsAndResourcesTable.add(ScrollPane(resourcesTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f).row()
 
-        pack()
-        height=mapEditorScreen.stage.height // needs to be after pack obvs
-        setPosition(mapEditorScreen.stage.width - width, 0f)
+        terrainsAndResourcesTable.pack()
+
+        editorPickTable.clear()
+        editorPickTable.add(terrainsAndResourcesTable)
     }
 
 
@@ -141,9 +202,11 @@ class TileEditorOptionsTable(mapEditorScreen: MapEditorScreen): Table(){
         selectedTerrain=null
         clearResource=false
         selectedResource=null
+        clearImprovement=false
+        selectedImprovement=null
     }
 
-    fun updateTile(tileInfo: TileInfo) {
+    fun updateTileWhenClicked(tileInfo: TileInfo) {
         when {
             clearTerrainFeature -> tileInfo.terrainFeature = null
             clearResource -> tileInfo.resource = null
@@ -153,21 +216,36 @@ class TileEditorOptionsTable(mapEditorScreen: MapEditorScreen): Table(){
                     tileInfo.terrainFeature = selectedTerrain!!.name
                 else tileInfo.baseTerrain = selectedTerrain!!.name
             }
+            clearImprovement -> {
+                tileInfo.improvement=null
+                tileInfo.roadStatus=RoadStatus.None
+            }
+            selectedImprovement!=null -> {
+                val improvement = selectedImprovement!!
+                if(improvement.name=="Road") tileInfo.roadStatus=RoadStatus.Road
+                else if(improvement.name=="Railroad") tileInfo.roadStatus=RoadStatus.Railroad
+                else tileInfo.improvement=improvement.name
+            }
         }
     }
 
 
-    fun setCurrentHex(tileInfo: TileInfo?){
-        currentHex.remove()
-        if(tileInfo!=null)currentHex= TileGroup(tileInfo)
+    fun setCurrentHex(tileInfo: TileInfo){
+        val tileGroup = TileGroup(tileInfo)
                 .apply {
                     showEntireMap=true
                     forMapEditorIcon=true
                     update(true,true,true)
                 }
-        else currentHex = ImageGetter.getCircle().apply { setSize(60f,60f) }
+        setCurrentHex(tileGroup)
+    }
+
+    fun setCurrentHex(actor:Actor){
+        currentHex.remove()
+        currentHex=actor
         currentHex.setPosition(stage.width-currentHex.width-10, 10f)
         stage.addActor(currentHex)
     }
+
 
 }
