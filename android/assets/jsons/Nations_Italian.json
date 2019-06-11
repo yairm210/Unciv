@@ -649,6 +649,40 @@
 			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
 			"Bitlis","Yalova"]
 	},
+	{
+		name:"Polynesia",
+		translatedName:"Polinesia",
+		leaderName:"Kamehameha I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"L'antico fuoco che s'illumina attraverso il cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente speravo in un altro esito."
+		attacked:"È evidente: ho valutato male te e i tuoi veri intenti."
+		defeated:"Il granchio dal duro guscio s'inchina, e il leone cade nel sonno. Kanaloa viene ora da me."
+		introduction:"Aloha! Saluti e auguri a te, amico. Io sono Kamehameha, Grande Re di questo glorioso regno."
+		
+		neutralHello:"Benvenuto, amico!"
+		neutralLetsHearIt:["Procedi.","E?","Cosa c'è?"]
+		hateNo:["Certamente no.","Dobbiamo rifiutare."]
+		hateYes:["Allora è deciso.","Eccellente!"]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Procedi.","Ti ascolto.","Cosa c'è?"]
+		hateNo:["Certo che no!","Questo lo rifiuto!"]
+		hateYes:["Sì, penso che dovrei.","Sì, così sia."]
+		
+		afterPeace:"Forse le stelle hanno sbagliato posto... Consulterò il mio Kahuna."
+		tradeRequest:"Vieni, organizziamo un banchetto!"
+				
+		mainColor:[255,128,0],
+		secondaryColor:[255,255,0],
+		unique:"Le unità imbarcate possono attraversare Coste e Oceani fin da subito, e ottengono +1 Visione.",
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
+			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
+			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
+			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+	},
 	*/
 
 	//City states
