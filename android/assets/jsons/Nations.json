@@ -669,6 +669,39 @@
 		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
 	{
+		name:"Siam",
+		leaderName:"Ramkhamhaeng",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"You lowly, arrogant fool! I will make you regret of your insolence!"
+		attacked:"You scoundrel! I shall prepare to fend you off!"
+		defeated:"Althought I lost, my honor shall endure. I wish you good luck."
+		introduction:"I, Pho Kun Ramkhamhaeng, King of Siam, consider it a great honor that you have walked to visit my country of Siam."
+		
+		neutralHello:"Welcome."
+		neutralLetsHearIt:["Let us hear it.","You say?","I'm listening"]
+		neutralNo:["No.","Certainly no.","No way."]
+		neutralYes:["In that case...","Of course.","Agreed."]
+
+		hateHello:"Greetings."
+		hateLetsHearIt:["You were saying?.","Please proceed","So?"]
+		hateNo:["That is unacceptable.","You probably didn't mean that.","What did you say?"]
+		hateYes:["I think I must do as such.","Very well."]
+		
+		afterPeace:"You have won, but I shall return to repay this debt."
+		tradeRequest:"Greetings. I believe this is a fair proposal for both parties. What do you think?"
+				
+		mainColor:[51,25,0],
+		secondaryColor:[255,255,102],
+		unique:"Food and Culture from Friendly City-States are increased by 50%",
+		cities:["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
+			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
+			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
+			"Ban Phai","Loci","Khan Kaen","Surin"]
+	},
+	{
 		name:"Ottoman",
 		leaderName:"Suleiman I",
 		
