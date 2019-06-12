@@ -156,9 +156,18 @@ class Automation {
 
             //Wonders
             if (buildableWonders.isNotEmpty()) {
+                val wondersByPriority = buildableWonders.sortedByDescending {
+                    if(it.isStatRelated(Stat.Science)){
+                        if(preferredVictoryType==VictoryType.Scientific) return@sortedByDescending 1.5f
+                        else return@sortedByDescending 1.3f
+                    }
+                    if(it.isStatRelated(Stat.Happiness)) return@sortedByDescending 1.2f
+                    if(it.isStatRelated(Stat.Production)) return@sortedByDescending 1.1f
+                    1f
+                }
+                val wonder = wondersByPriority.first()
                 val citiesBuildingWonders = cityInfo.civInfo.cities
                         .count { it.cityConstructions.isBuildingWonder() }
-                val wonder = buildableWonders.random()
                 relativeCostEffectiveness.add(ConstructionChoice(wonder.name,3.5f / (citiesBuildingWonders + 1)))
             }
 
