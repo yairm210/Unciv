@@ -5,6 +5,7 @@ import com.unciv.Constants
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
@@ -37,7 +38,7 @@ class Automation {
 
     fun rankStatsValue(stats: Stats, civInfo: CivilizationInfo): Float {
         var rank = 0.0f
-        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to kepp city growing
+        if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
         else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
         if (civInfo.gold < 0 && civInfo.getStatsForNextTurn().gold <= 0) rank += stats.gold
@@ -123,7 +124,7 @@ class Automation {
                 relativeCostEffectiveness.add(choice)
             }
 
-            //Science
+            //Science buildings
             val scienceBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Science) }
                     .minBy{it.cost}
             if (scienceBuilding!=null) {
@@ -197,25 +198,34 @@ class Automation {
             }
 
             //Army
-            val militaryUnit = chooseMilitaryUnit(cityInfo)
-            val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
-            // most buildings and civ units contribute the the civ's growth, military units are anti-growth
-            val militaryChoice = ConstructionChoice(militaryUnit,unitsToCitiesRatio/2)
-            if (isAtWar) {
-                militaryChoice.choiceModifier=unitsToCitiesRatio*2
+            if(cityInfo.civInfo.getStatsForNextTurn().gold>0 || (isAtWar && cityInfo.civInfo.gold > -50)) {
+                val militaryUnit = chooseMilitaryUnit(cityInfo)
+                val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
+                // most buildings and civ units contribute the the civ's growth, military units are anti-growth
+                val militaryChoice = ConstructionChoice(militaryUnit, unitsToCitiesRatio / 2)
+                if (isAtWar) militaryChoice.choiceModifier = unitsToCitiesRatio * 2
+                else if (preferredVictoryType == VictoryType.Domination) militaryChoice.choiceModifier = unitsToCitiesRatio * 1.5f
+                relativeCostEffectiveness.add(militaryChoice)
             }
-            relativeCostEffectiveness.add(militaryChoice)
 
             val production = cityInfo.cityStats.currentCityStats.production
 
-            // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
-
             val theChosenOne:String
-            if(relativeCostEffectiveness.any { it.remainingWork < production*30 }) { // it's possible that this is a new city and EVERYTHING is way expensive.
+            if(relativeCostEffectiveness.isEmpty()){ // choose one of the special constructions instead
+                // add science!
+                if(SpecialConstruction.science.isBuildable(cityConstructions))
+                    theChosenOne="Science"
+                else if(SpecialConstruction.gold.isBuildable(cityConstructions))
+                    theChosenOne="Gold"
+                else theChosenOne = "Nothing"
+            }
+            else if(relativeCostEffectiveness.any { it.remainingWork < production*30 }) {
                 relativeCostEffectiveness.removeAll { it.remainingWork >= production * 30 }
                 theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork/it.choiceModifier }!!.choice
             }
-            else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice // ignore modifiers, go for the cheapest.
+            // it's possible that this is a new city and EVERYTHING is way expensive - ignore modifiers, go for the cheapest.
+            // Nobody can plan 30 turns ahead, I don't care how cost-efficient you are.
+            else theChosenOne = relativeCostEffectiveness.minBy { it.remainingWork }!!.choice
 
             currentConstruction = theChosenOne
             cityInfo.civInfo.addNotification("Work has started on [$currentConstruction]", Color.BROWN, CityAction(cityInfo.location))
