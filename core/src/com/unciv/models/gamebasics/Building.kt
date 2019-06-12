@@ -169,8 +169,9 @@ class Building : NamedStats(), IConstruction{
     }
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
-        return if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety")) (cost * 0.85).toInt()
-        else cost
+        if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety"))
+            return (cost * 0.85).toInt()
+        else return cost
     }
 
     override fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean): Int {

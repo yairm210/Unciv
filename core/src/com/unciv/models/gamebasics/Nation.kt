@@ -5,6 +5,13 @@ import com.unciv.logic.civilization.CityStateType
 import com.unciv.models.stats.INamed
 import com.unciv.ui.utils.colorFromRGB
 
+enum class VictoryType{
+    Neutral,
+    Cultural,
+    Domination,
+    Scientific
+}
+
 class Nation : INamed {
     override lateinit var name: String
     var translatedName=""
@@ -18,6 +25,7 @@ class Nation : INamed {
         else "[$leaderName] of [${getNameTranslation()}]"
 
     var cityStateType: CityStateType?=null
+    var preferredVictoryType:VictoryType = VictoryType.Neutral
     var declaringWar=""
     var attacked=""
     var defeated=""

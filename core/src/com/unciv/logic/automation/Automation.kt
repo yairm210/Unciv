@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stat
@@ -87,6 +88,7 @@ class Automation {
                     && cityInfo.getTiles().any { it.isWater && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
             val isAtWar = cityInfo.civInfo.isAtWar()
+            val preferredVictoryType = cityInfo.civInfo.getNation().preferredVictoryType
 
             data class ConstructionChoice(val choice:String, var choiceModifier:Float){
                 val remainingWork:Int = getRemainingWork(choice)
@@ -125,7 +127,10 @@ class Automation {
             val scienceBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Science) }
                     .minBy{it.cost}
             if (scienceBuilding!=null) {
-                val choice = ConstructionChoice(scienceBuilding.name,1.1f)
+                var modifier = 1.1f
+                if(preferredVictoryType==VictoryType.Scientific)
+                    modifier*=1.4f
+                val choice = ConstructionChoice(scienceBuilding.name,modifier)
                 relativeCostEffectiveness.add(choice)
             }
 
@@ -143,7 +148,10 @@ class Automation {
             val wartimeBuilding = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
                     .minBy { it.cost }
             if (wartimeBuilding!=null) {
-                relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,0.9f))
+                var modifier = 0.9f
+                if(preferredVictoryType==VictoryType.Domination)
+                    modifier *= 1.3f
+                relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,modifier))
             }
 
             //Wonders
@@ -152,6 +160,14 @@ class Automation {
                         .count { it.cityConstructions.isBuildingWonder() }
                 val wonder = buildableWonders.random()
                 relativeCostEffectiveness.add(ConstructionChoice(wonder.name,3.5f / (citiesBuildingWonders + 1)))
+            }
+
+            // culture buildings
+            val cultureBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Culture) }.minBy { it.cost }
+            if(cultureBuilding!=null){
+                var modifier = 0.8f
+                if(preferredVictoryType==VictoryType.Cultural) modifier =1.4f
+                relativeCostEffectiveness.add(ConstructionChoice(cultureBuilding.name, modifier))
             }
 
             //other buildings

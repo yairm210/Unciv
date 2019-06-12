@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.trade.*
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.gamebasics.tr
 import kotlin.math.min
@@ -352,6 +353,7 @@ class NextTurnAutomation{
     private fun trainSettler(civInfo: CivilizationInfo) {
         if(civInfo.isCityState()) return
         if(civInfo.isAtWar()) return // don't train settlers when you could be training troops.
+        if(civInfo.getNation().preferredVictoryType==VictoryType.Cultural && civInfo.cities.size >3) return
         if (civInfo.cities.any()
                 && civInfo.happiness > civInfo.cities.size + 5
                 && civInfo.getCivUnits().none { it.name == Constants.settler }
