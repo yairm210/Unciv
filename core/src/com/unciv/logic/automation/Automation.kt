@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.VictoryType
@@ -57,9 +58,18 @@ class Automation {
     }
 
     fun chooseMilitaryUnit(city: CityInfo) : String {
-        val militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
+        var militaryUnits = city.cityConstructions.getConstructableUnits().filter { !it.unitType.isCivilian() }
         if (militaryUnits.map { it.name }.contains(city.cityConstructions.currentConstruction))
             return city.cityConstructions.currentConstruction
+
+        val findWaterConnectedCitiesAndEnemies = BFS(city.getCenterTile()){it.isWater || it.isCityCenter()}
+        findWaterConnectedCitiesAndEnemies.stepToEnd()
+        if(findWaterConnectedCitiesAndEnemies.tilesReached.keys.none {
+                    (it.isCityCenter() && it.getOwner() != city.civInfo)
+                            || (it.militaryUnit != null && it.militaryUnit!!.civInfo != city.civInfo)
+                }) // there is absolutely no reason for you to make water units on this body of water.
+            militaryUnits = militaryUnits.filter { it.unitType.isLandUnit() }
+
         val chosenUnit: BaseUnit
         if(!city.civInfo.isAtWar() && city.civInfo.cities.any { it.getCenterTile().militaryUnit==null}
                 && militaryUnits.any { it.unitType== UnitType.Ranged }) // this is for city defence so get an archery unit if we can
@@ -149,7 +159,7 @@ class Automation {
             //War buildings
             val wartimeBuilding = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
                     .minBy { it.cost }
-            if (wartimeBuilding!=null) {
+            if (wartimeBuilding!=null && (preferredVictoryType!=VictoryType.Cultural || isAtWar)) {
                 var modifier = 0.5f
                 if(isAtWar) modifier = 1f
                 if(preferredVictoryType==VictoryType.Domination)
