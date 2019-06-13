@@ -146,12 +146,13 @@ class CityConstructions {
         stopUnbuildableConstruction()
 
         val construction = getConstruction(currentConstruction)
-        if(construction is SpecialConstruction) return
-        
-        val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
-        if (inProgressConstructions.containsKey(currentConstruction)
-                && inProgressConstructions[currentConstruction]!! >= productionCost) {
-            constructionComplete(construction)
+        if(construction is SpecialConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+        else {
+            val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
+            if (inProgressConstructions.containsKey(currentConstruction)
+                    && inProgressConstructions[currentConstruction]!! >= productionCost) {
+                constructionComplete(construction)
+            }
         }
     }
 

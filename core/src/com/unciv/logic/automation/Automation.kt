@@ -9,6 +9,7 @@ import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.civilization.CityAction
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
@@ -74,10 +75,10 @@ class Automation {
 
     fun chooseNextConstruction(cityConstructions: CityConstructions) {
         cityConstructions.run {
-            if (currentConstruction!="") return
+            if (getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
+
             val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder }
             val buildableWonders = getBuildableBuildings().filter { it.isWonder }
-            val buildableUnits = getConstructableUnits()
 
             val civUnits = cityInfo.civInfo.getCivUnits()
             val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size
@@ -149,7 +150,8 @@ class Automation {
             val wartimeBuilding = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
                     .minBy { it.cost }
             if (wartimeBuilding!=null) {
-                var modifier = 0.9f
+                var modifier = 0.5f
+                if(isAtWar) modifier = 1f
                 if(preferredVictoryType==VictoryType.Domination)
                     modifier *= 1.3f
                 relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,modifier))
@@ -157,26 +159,33 @@ class Automation {
 
             //Wonders
             if (buildableWonders.isNotEmpty()) {
-                val wondersByPriority = buildableWonders.sortedByDescending {
-                    if(it.isStatRelated(Stat.Science)){
-                        if(preferredVictoryType==VictoryType.Scientific) return@sortedByDescending 1.5f
-                        else return@sortedByDescending 1.3f
+                fun getWonderPriority(wonder: Building): Float {
+                    if(preferredVictoryType==VictoryType.Cultural
+                            && wonder.name in listOf("Sistine Chapel","Eiffel Tower","Cristo Redentor","Neuschwanstein","Sydney Opera House"))
+                        return 3f
+                    if(wonder.isStatRelated(Stat.Science)){
+                        if(preferredVictoryType==VictoryType.Scientific) return 1.5f
+                        else return 1.3f
                     }
-                    if(it.isStatRelated(Stat.Happiness)) return@sortedByDescending 1.2f
-                    if(it.isStatRelated(Stat.Production)) return@sortedByDescending 1.1f
-                    1f
+                    if(wonder.isStatRelated(Stat.Happiness)) return 1.2f
+                    if(wonder.isStatRelated(Stat.Production)) return 1.1f
+                    return 1f
                 }
+                val wondersByPriority = buildableWonders
+                        .sortedByDescending { getWonderPriority(it) }
                 val wonder = wondersByPriority.first()
                 val citiesBuildingWonders = cityInfo.civInfo.cities
                         .count { it.cityConstructions.isBuildingWonder() }
-                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,3.5f / (citiesBuildingWonders + 1)))
+
+                relativeCostEffectiveness.add(ConstructionChoice(wonder.name,
+                        3.5f * getWonderPriority(wonder) / (citiesBuildingWonders + 1)))
             }
 
             // culture buildings
             val cultureBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Culture) }.minBy { it.cost }
             if(cultureBuilding!=null){
                 var modifier = 0.8f
-                if(preferredVictoryType==VictoryType.Cultural) modifier =1.4f
+                if(preferredVictoryType==VictoryType.Cultural) modifier =1.6f
                 relativeCostEffectiveness.add(ConstructionChoice(cultureBuilding.name, modifier))
             }
 
@@ -198,7 +207,8 @@ class Automation {
             }
 
             //Army
-            if(cityInfo.civInfo.getStatsForNextTurn().gold>0 || (isAtWar && cityInfo.civInfo.gold > -50)) {
+            if((!isAtWar && cityInfo.civInfo.getStatsForNextTurn().gold>0 && militaryUnits<cities*2)
+                    || (isAtWar && cityInfo.civInfo.gold > -50)) {
                 val militaryUnit = chooseMilitaryUnit(cityInfo)
                 val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
                 // most buildings and civ units contribute the the civ's growth, military units are anti-growth
