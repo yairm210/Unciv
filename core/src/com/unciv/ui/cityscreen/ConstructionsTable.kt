@@ -34,7 +34,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
         pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
 
-        if(rejectionReason=="") {
+        if(rejectionReason=="") { // no rejection reason means we can build it!
             pickProductionButton.onClick {
                 lastConstruction = cityScreen.city.cityConstructions.currentConstruction
                 cityScreen.city.cityConstructions.currentConstruction = construction
