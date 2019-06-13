@@ -233,7 +233,7 @@ class DiplomacyManager() {
             if(getModifier(DiplomaticModifiers.YearsOfPeace)< 30)
                 addModifier(DiplomaticModifiers.YearsOfPeace, 0.5f)
         }
-        else revertToZero(DiplomaticModifiers.YearsOfPeace,-0.5f) // war makes you forget the good ol' days
+        else revertToZero(DiplomaticModifiers.YearsOfPeace,0.5f) // war makes you forget the good ol' days
 
         var openBorders = 0
         if(hasOpenBorders) openBorders+=1
