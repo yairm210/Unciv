@@ -141,8 +141,8 @@
 		uniqueName:"Costruttori di Monumenti",
 		unique:"+20% Produzione durante la costruzione di una Meraviglia"
 		cities:["Tebe","Menfi","Eliopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
-			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi",
-			"Mendes","Elashmunein","Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
+			"Abido","Asyut","Avaris","Lisht","Buto","Edfu","Pithom","Busiri","Kahun","Atribi","Mendes","Elashmunein",
+			"Tanis","Bubasti","Oryx","Sebennytus","Akhmin","Karnak","Luxor","El Kab"]
 	},
 	{
 		name:"England",
@@ -248,9 +248,9 @@
 		secondaryColor:[0,0,0],
 		uniqueName:"Ricchezze Siberiane",
 		unique:"+1 Produzione dalle risorse strategiche, e doppia quantità da Cavalli, Ferro e Uranio.",
-		cities:["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk","Orenburg",
-			"Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita","Samara",
-			"Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
+		cities:["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk",
+			"Orenburg","Krasnoyarsk","Khabarovsk","Bryansk","Tver","Novosibirsk","Magadan","Murmansk","Irkutsk","Chita",
+			"Samara","Arkhangelsk","Chelyabinsk","Tobolsk","Vologda","Omsk","Astrakhan","Kursk","Saratov","Tula","Vladimir"]
 	},
 	{
 		name:"Rome",
@@ -270,7 +270,7 @@
 		neutralHello:"Saluti."
 		neutralLetsHearIt:["Comincia pure.","Continua."]
 		neutralNo:["No.","Certo che no!"]
-		neutralYes:["Good.","I agree."]
+		neutralYes:["Bene.","D'accordo."]
 
 		hateHello:"Che cosa vuoi?"
 		hateLetsHearIt:["E...?","Continua."]
@@ -284,9 +284,9 @@
 		secondaryColor:[238,201,9],
 		uniqueName:"La Gloria di Roma",
 		unique:"+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
-		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arretium","Milano","Arpinum","Circei","Setia",
-			"Satricum","Ardea","Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra",
-			"Signia","Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
+		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arretium","Milano","Arpinum","Circei","Setia","Satricum","Ardea",
+			"Ostia","Velitrae","Viroconium","Tarentum","Brundisium","Caesaraugusta","Caesarea","Palmyra","Signia",
+			"Aquileia","Clusium","Sutrium","Cremona","Placentia","Hispalis","Artaxata","Aurelianorum","Nicopolis"]
 	},
 	{
 		name:"Arabia",
@@ -319,9 +319,9 @@
 		secondaryColor:[146,221,9],
 		uniqueName:"Carovane Commerciali",
     		unique:"+1 Oro per ogni rotta commerciale, e doppia quantita da Petrolio.",
-		cities:["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat",
-			"Aden","Yamama","Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul",
-			"Aydab","Bayt","Suhar","Taif","Hama","Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
+		cities:["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat","Aden","Yamama",
+			"Muscat","Mansura","Bukhara","Fez","Shiraz","Merw","Balkh","Mosul","Aydab","Bayt","Suhar","Taif","Hama",
+			"Tabuk","Sana'a","Shihr","Tripoli","Tunis"]
 	},
 	{
 		name:"America",
@@ -354,9 +354,10 @@
 		secondaryColor:[255,255,255],
 		uniqueName:"Destino Manifesto",
 		unique:"+1 Visione per tutte le unità militari terrestri. 50% di sconto per l'acquisto delle caselle",
-		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles","Houston",
-			"Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati","Dallas","Memphis",
-			"Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque","Minneapolis","Pittsburgh"]
+		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles",
+			"Houston","Portland","St. Louis","Miami","Buffalo","Detroit","New Orleans","Baltimore","Denver","Cincinnati",
+			"Dallas","Memphis","Cleveland","Kansas City","San Diego","Richmond","Las Vegas","Phoenix","Albuquerque",
+			"Minneapolis","Pittsburgh"]
 	},
 	{
 		name:"Japan",
@@ -390,9 +391,9 @@
 		uniqueName:"Bushido",
 		unique: "Le unità combattono come se fossero perfettamente sane. +1 Cultura dai Pescherecci.",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki",
-		"Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke",
-		"Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu",
-		"Yamaguchi","Ota","Tottori"]
+			"Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo",
+			"Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha",
+			"Sendai","Gifu","Yamaguchi","Ota","Tottori"]
 	},
 	{
 		name:"India",
@@ -424,9 +425,10 @@
 		mainColor:[16,126,5],
 		secondaryColor:[255,153,51],
 		unique:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata.",
-		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
-			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
-			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
+		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad",
+			"Madurai","Ahmedabad","Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur",
+			"Rajagriha","Sravasti","Tiruchirapalli","Thanjavur","Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior",
+			"Jaipur","Karachi"]
 	},	
 	/*
 	{
@@ -531,6 +533,7 @@
 				
 		mainColor:[0,25,51],
 		secondaryColor:[255,255,102],
+		uniqueName:"La Grande Via del Guerriero",
 		unique:"Tutte le unità trattano le caselle di Foresta e Giungla come fossero Strade; queste caselle stabiliscono Rotte Commerciali una volta scoperta la Ruota.",
 		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
 		"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
@@ -565,8 +568,11 @@
 				
 		mainColor:[0,0,255],
 		secondaryColor:[255,0,0],
-		unique:"+2 Scienz per ogni miglioramento da Gran Personaggio. Ricevi uno sprint tecnologico quando costruisci una struttura/Meraviglia scientifica nella Capitale.",
-		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+		uniqueName:"Sapienti della Sala di Giada",
+		unique:"+2 Scienza per ogni miglioramento da Gran Personaggio. Ricevi uno sprint tecnologico quando costruisci una struttura/Meraviglia scientifica nella Capitale.",
+		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
+			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
+			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
 	{
 		name:"Persian",
@@ -574,12 +580,12 @@
 		leaderName:"Darius I",
 		translatedLeaderName:"Dario I",
 		
-		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
-		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
+		startIntroPart1: ""
+		startIntroPart2: ""
 		
-		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!"
+		declaringWar:"La tua contiuna esistenza rappresenta un imbarazzo per tutti i leader del mondo! Farò loro un favore distruggendoti!"
 		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!"
-		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!"
+		defeated:"Canaglia! Che tu sia maledetto! Il mondo ricorderà a lungo l'errore che hai commesso!"
 		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
 		
 		neutralHello:"Good day to you!"
@@ -589,16 +595,93 @@
 
 		hateHello:"Ahh... you..."
 		hateLetsHearIt:["I'm listening.","Go on!"]
-		hateNo:["We say... no!","Of course not!"]
-		hateYes:["Alright!","Agreed."]
+		hateNo:["Io dico... no!","Certo che no!"]
+		hateYes:["Va bene!","D'accordo."]
 		
-		afterPeace:"It appears we should call it a tie..."
-		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
+		afterPeace:"Sembra che mi convenga finirla qui..."
+		tradeRequest:"Nella mia infinita misericordia, ti faccio questa offerta. Di certo, sarai d'accordo?"
 				
 		mainColor:[255,0,0],
 		secondaryColor:[255,255,0],
-		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
-		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir","Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz","Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube","Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada","Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava","Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka","Paishiyauvada","Patigrbana","Phrada"]
+		uniqueName:"Eredità Achemenide",
+		unique:"Le Età dell'Oro durano il 50% in più, e in esse le Unità ricevono +1 Movimento e +10% Forza",
+		cities:["Persepoli","Parsagade","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardi","Ergili","Dariushkabir",
+			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
+			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
+			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
+			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
+			"Gaugamela","Harmozeia","Ecatompilo","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
+			"Paishiyauvada","Patigrbana","Phrada"]
+	},
+	{
+		name:"Ottoman",
+		translatedName:"Turchia",
+		leaderName:"Suleiman I",
+		translatedLeaderName:"Solimano I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Il tuo persistere nel rifiutare di riconoscere la nostra preminenza ci porta alla guerra."
+		attacked:"Bene. Il mondo sarà testimone dell'inconstastabile potenza dell'esercito del glorioso impero ottomano."
+		defeated:"Morte! Rovina! Istanbul diventa l'Iram dei Pilastri, ricordata solo dai poeti malinconici."
+		introduction:"Dalla magnificenza del Topkapi, gli ottomani ti salutano, straniero! Io sono il sultano Solimano, Kayser-I Rum, e ti porgo i miei saluti!"
+		
+		neutralHello:"Saluti!"
+		neutralLetsHearIt:["Ti ascolto.","Vai avanti."]
+		neutralNo:["No.","Certo che no!","Mi rifiuto."]
+		neutralYes:["Benissimo.","D'accordo.","Accettiamo!"]
+
+		hateHello:"Cosa vuoi da me?"
+		hateLetsHearIt:["Parla!","Avanti!"]
+		hateNo:["Scusami?","Non lo accetto!","Stai scherzando, spero!"]
+		hateYes:["Ah, va bene!","Benissimo.","Direi che mi conviene accettare."]
+		
+		afterPeace:"Complimenti per la tua vittoria! Speriamo che la pace scenda su di noi in eterno!"
+		tradeRequest:"Facciamo un affare! Ti interessa?"
+				
+		mainColor:[204,255,229],
+		secondaryColor:[0,102,0],
+		uniqueName:"Corsari barbarici",
+		unique:"Il mantenimento delle navi costa solo un terzo rispetto al normale. Tutte le navi da mischia ricevono la promozione Cattura Navale, che permette loro di catturare le navi nemiche sconfitte.",
+		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
+			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
+			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
+			"Bitlis","Yalova"]
+	},
+	{
+		name:"Polynesia",
+		translatedName:"Polinesia",
+		leaderName:"Kamehameha I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"L'antico fuoco che s'illumina attraverso il cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente speravo in un altro esito."
+		attacked:"È evidente: ho valutato male te e i tuoi veri intenti."
+		defeated:"Il granchio dal duro guscio s'inchina, e il leone cade nel sonno. Kanaloa viene ora da me."
+		introduction:"Aloha! Saluti e auguri a te, amico. Io sono Kamehameha, Grande Re di questo glorioso regno."
+		
+		neutralHello:"Benvenuto, amico!"
+		neutralLetsHearIt:["Procedi.","E?","Cosa c'è?"]
+		hateNo:["Certamente no.","Dobbiamo rifiutare."]
+		hateYes:["Allora è deciso.","Eccellente!"]
+
+		hateHello:"Oh, sei tu."
+		hateLetsHearIt:["Procedi.","Ti ascolto.","Cosa c'è?"]
+		hateNo:["Certo che no!","Questo lo rifiuto!"]
+		hateYes:["Sì, penso che dovrei.","Sì, così sia."]
+		
+		afterPeace:"Forse le stelle hanno sbagliato posto... Consulterò il mio Kahuna."
+		tradeRequest:"Vieni, organizziamo un banchetto!"
+				
+		mainColor:[255,128,0],
+		secondaryColor:[255,255,0],
+		unique:"Le unità imbarcate possono attraversare Coste e Oceani fin da subito, e ottengono +1 Visione.",
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
+			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
+			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
+			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
 	*/
 
