@@ -360,7 +360,7 @@ class NextTurnAutomation{
             for (i in 0..city.population.population)
                 city.population.autoAssignPopulation()
 
-            Automation().chooseNextConstruction(city.cityConstructions)
+            city.cityConstructions.chooseNextConstruction()
             if (city.health < city.getMaxHealth())
                 Automation().trainMilitaryUnit(city) // override previous decision if city is under attack
         }

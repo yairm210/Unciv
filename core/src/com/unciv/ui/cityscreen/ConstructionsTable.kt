@@ -38,6 +38,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             pickProductionButton.onClick {
                 lastConstruction = cityScreen.city.cityConstructions.currentConstruction
                 cityScreen.city.cityConstructions.currentConstruction = construction
+                cityScreen.city.cityConstructions.currentConstructionIsUserSet=true
                 cityScreen.city.cityStats.update()
                 cityScreen.update()
             }

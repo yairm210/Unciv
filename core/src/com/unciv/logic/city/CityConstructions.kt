@@ -20,6 +20,7 @@ class CityConstructions {
     var builtBuildings = ArrayList<String>()
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstruction: String = "Monument" // default starting building!
+    var currentConstructionIsUserSet = false
 
     //region pure functions
     fun clone(): CityConstructions {
@@ -172,7 +173,7 @@ class CityConstructions {
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
             cityInfo.civInfo.addNotification("[${cityInfo.name}] cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
-            chooseNextConstruction()
+            cancelCurrentConstruction()
         } else
             currentConstruction = saveCurrentConstruction
     }
@@ -192,8 +193,7 @@ class CityConstructions {
         } else
             cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
 
-        currentConstruction = ""
-        chooseNextConstruction()
+        cancelCurrentConstruction()
     }
 
     fun addBuilding(buildingName:String){
@@ -211,10 +211,8 @@ class CityConstructions {
     fun purchaseBuilding(buildingName: String) {
         cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo)
         getConstruction(buildingName).postBuildEvent(this)
-        if (currentConstruction == buildingName) {
-            currentConstruction = ""
-            chooseNextConstruction()
-        }
+        if (currentConstruction == buildingName)
+            cancelCurrentConstruction()
         cityInfo.cityStats.update()
     }
 
@@ -228,13 +226,18 @@ class CityConstructions {
         if (buildableCultureBuildings.isEmpty()) return
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
         addBuilding(cultureBuildingToBuild)
-        if (currentConstruction == cultureBuildingToBuild) {
-            currentConstruction=""
-            chooseNextConstruction()
-        }
+        if (currentConstruction == cultureBuildingToBuild)
+            cancelCurrentConstruction()
+    }
+
+    fun cancelCurrentConstruction(){
+        currentConstructionIsUserSet=false
+        currentConstruction=""
+        chooseNextConstruction()
     }
 
     fun chooseNextConstruction() {
+        if(currentConstructionIsUserSet) return
         Automation().chooseNextConstruction(this)
     }
     //endregion
