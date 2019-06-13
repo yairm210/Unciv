@@ -10,6 +10,7 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.VictoryType
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -23,6 +24,7 @@ class GameParameters{
     var mapType= MapType.Perlin
     var noBarbarians=false
     var mapFileName :String?=null
+    var victoryTypes :ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
 }
 
 class GameStarter{

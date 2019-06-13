@@ -11,6 +11,7 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
@@ -73,10 +74,9 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.skin = skin
 
         addMapTypeSizeAndFile(newGameOptionsTable)
-
         addNumberOfHumansAndEnemies(newGameOptionsTable)
-
         addDifficultySelectBox(newGameOptionsTable)
+        addVictoryTypeCheckboxes(newGameOptionsTable)
 
         val noBarbariansCheckbox = CheckBox("No barbarians".tr(),skin)
         noBarbariansCheckbox.isChecked=newGameParameters.noBarbarians
@@ -224,6 +224,40 @@ class NewGameScreen: PickerScreen(){
             }
         })
         newGameOptionsTable.add(difficultySelectBox).pad(10f).row()
+    }
+
+
+    private fun addVictoryTypeCheckboxes(newGameOptionsTable: Table) {
+        newGameOptionsTable.add("{Victory conditions}:".tr()).colspan(2).row()
+
+        // Create a checkbox for each VictoryType existing
+        var i=0
+        VictoryType.values().forEach{
+            val victoryCheckbox = CheckBox(it.name.tr(),skin)
+            victoryCheckbox.name=it.name
+            victoryCheckbox.isChecked=newGameParameters.victoryTypes.contains(it)
+            victoryCheckbox.addListener(object : ChangeListener() {
+                override fun changed(event: ChangeEvent?, actor: Actor?) {
+                    // If the checkbox is checked, adds the victoryType else remove it
+                    if(victoryCheckbox.isChecked){
+                        newGameParameters.victoryTypes.add(it)
+                    } else {
+                        newGameParameters.victoryTypes.remove(it)
+                    }
+                }
+            })
+            i++
+            if(i%2==0) {
+                // New row only each two checkboxes
+                newGameOptionsTable.add(victoryCheckbox)
+                        .left() // Left alignment
+                        .pad(10f).row()
+            } else {
+                newGameOptionsTable.add(victoryCheckbox)
+                        .left() // Left alignment
+            }
+        }
+
     }
 
     private fun getMapFileSelectBox(): SelectBox<String> {

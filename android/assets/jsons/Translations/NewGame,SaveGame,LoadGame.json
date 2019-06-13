@@ -119,6 +119,22 @@
 		Italian:"Niente barbari"
 		French:"Pas de barbare"
 	}
+
+	"Victory conditions": {
+		French: "Conditions de victoire"
+	}
+
+	"Scientific": {
+		French: "Scientifique"
+	}
+
+	"Domination": {
+		French: "Conquete"
+	},
+
+	"Cultural": {
+		French: "Culturelle"
+	}
 	
 	
 ////////////// 	Save and load game
