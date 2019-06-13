@@ -142,9 +142,24 @@ class NextTurnAutomation{
 
     private fun adoptPolicy(civInfo: CivilizationInfo) {
         while (civInfo.policies.canAdoptPolicy()) {
+
             val adoptablePolicies = GameBasics.PolicyBranches.values.flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
-            val policyToAdopt = adoptablePolicies.random()
+
+            val preferredVictoryType = civInfo.getNation().preferredVictoryType
+            val policyBranchPriority =
+                    when(preferredVictoryType) {
+                        VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Rationalism")
+                        VictoryType.Scientific -> listOf("Rationalism","Commerce","Liberty","Freedom")
+                        VictoryType.Domination-> listOf("Autocracy","Honor","Liberty","Rationalism")
+                        VictoryType.Neutral -> listOf()
+                    }
+            val policiesByPreference = adoptablePolicies
+                    .groupBy { if(it.branch in policyBranchPriority) policyBranchPriority.indexOf(it.branch) else 10 }
+
+            val preferredPolicies = policiesByPreference.minBy { it.key }!!.value
+
+            val policyToAdopt = preferredPolicies.random()
             civInfo.policies.adopt(policyToAdopt)
         }
     }
