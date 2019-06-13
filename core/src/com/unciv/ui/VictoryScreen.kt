@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.addSeparator
@@ -35,21 +36,35 @@ class VictoryScreen : PickerScreen() {
 
         rightSideButton.isVisible=false
 
-        if(playerCivInfo.victoryManager.hasWonScientificVictory()){
-            won("You have won a scientific victory!")
+        var someoneHasWon = false
+
+        val playerVictoryType = playerCivInfo.victoryManager.hasWonVictoryType()
+        if(playerVictoryType!=null){
+            someoneHasWon=true
+            when(playerVictoryType){
+                VictoryType.Cultural -> wonOrLost("You have won a cultural victory!")
+                VictoryType.Domination -> wonOrLost("You have won a domination victory!") // todo change translation
+                VictoryType.Scientific -> wonOrLost("You have won a scientific victory!")
+            }
         }
-        else if(playerCivInfo.victoryManager.hasWonCulturalVictory()){
-            won("You have won a cultural victory!")
-        }
-        else if(playerCivInfo.victoryManager.hasWonConquestVictory()){
-            won("You have won a conquest victory!")
+        for(civ in game.gameInfo.civilizations.filter { it.isMajorCiv() && it!=playerCivInfo }){
+            val civVictoryType = civ.victoryManager.hasWonVictoryType()
+            if(civVictoryType!=null){
+                someoneHasWon=true
+                val winningCivName = civ.civName
+                when(civVictoryType){
+                    VictoryType.Cultural -> wonOrLost("[$winningCivName] has won a cultural victory!")
+                    VictoryType.Domination -> wonOrLost("[$winningCivName] has won a domination victory!")
+                    VictoryType.Scientific -> wonOrLost("[$winningCivName] has  won a scientific victory!")
+                }
+            }
         }
 
-        else setDefaultCloseAction()
+        if(!someoneHasWon) setDefaultCloseAction()
     }
 
 
-    fun won(description: String) {
+    fun wonOrLost(description: String) {
         descriptionLabel.setText(description.tr())
 
         rightSideButton.setText("Start new game".tr())
@@ -180,7 +195,7 @@ class VictoryScreen : PickerScreen() {
 
         val civsToPartsRemaining = majorCivs.map {
             civToSpaceshipPartsRemaining(it,
-                    it.victoryManager.requiredSpaceshipParts.size - it.victoryManager.currentsSpaceshipParts.size)
+                    it.victoryManager.spaceshipPartsRemaining())
         }
 
         for (entry in civsToPartsRemaining)

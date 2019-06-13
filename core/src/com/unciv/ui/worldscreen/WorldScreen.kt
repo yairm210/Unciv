@@ -163,7 +163,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
         when {
-            !gameInfo.oneMoreTurnMode && currentPlayerCiv.victoryManager.hasWon() -> game.screen = VictoryScreen()
+            !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
             currentPlayerCiv.policies.freePolicies>0 -> game.screen = PolicyPickerScreen(currentPlayerCiv)
             currentPlayerCiv.greatPeople.freeGreatPeople>0 -> game.screen = GreatPersonPickerScreen()
             currentPlayerCiv.tradeRequests.isNotEmpty() ->{
