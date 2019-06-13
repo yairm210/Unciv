@@ -233,46 +233,44 @@ class NextTurnAutomation{
     }
 
     private fun offerPeaceTreaty(civInfo: CivilizationInfo) {
-        if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
+        if (!civInfo.isAtWar() || civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
 
-            val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
-            if (civInfo.isAtWar()) { //evaluate peace
-                val enemiesCiv = civInfo.diplomacy.filter{ it.value.diplomaticStatus == DiplomaticStatus.War }
-                        .map{ it.value.otherCiv() }
-                        .filterNot{ it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
-                        .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
+        val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
+        val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
+                .map { it.value.otherCiv() }
+                .filterNot { it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
+                .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
 
-                for (enemy in enemiesCiv) {
-                    val enemiesStrength = Automation().evaluteCombatStrength(enemy)
-                    if (enemiesStrength < ourCombatStrength * 2) {
-                        continue //We're losing, but can still fight. Refuse peace.
-                    }
+        for (enemy in enemiesCiv) {
+            val enemiesStrength = Automation().evaluteCombatStrength(enemy)
+            if (civInfo.getNation().preferredVictoryType!=VictoryType.Cultural
+                    && enemiesStrength < ourCombatStrength*2 ) {
+                continue //We're losing, but can still fight. Refuse peace.
+            }
 
-                    // pay for peace
-                    val tradeLogic = TradeLogic(civInfo, enemy)
+            // pay for peace
+            val tradeLogic = TradeLogic(civInfo, enemy)
 
-                    tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
-                    tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+            tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
+            tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
 
-                    var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo,enemy)
-                    if(moneyWeNeedToPay>0) {
-                        if (moneyWeNeedToPay > civInfo.gold && civInfo.gold > 0) { // we need to make up for this somehow...
-                            moneyWeNeedToPay = civInfo.gold
-                        }
-                        if (civInfo.gold > 0) tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, moneyWeNeedToPay))
-                    }
-
-                    if(enemy.isPlayerCivilization())
-                        enemy.tradeRequests.add(TradeRequest(civInfo.civName,tradeLogic.currentTrade.reverse()))
-
-                    else {
-                        if (enemy.getCivUnits().filter { !it.type.isCivilian() }.size > enemy.cities.size
-                                && enemy.happiness > 0) {
-                            continue //enemy AI has too large army and happiness. It continues to fight for profit.
-                        }
-                        tradeLogic.acceptTrade()
-                    }
+            var moneyWeNeedToPay = -TradeEvaluation().evaluatePeaceCostForThem(civInfo, enemy)
+            if (moneyWeNeedToPay > 0) {
+                if (moneyWeNeedToPay > civInfo.gold && civInfo.gold > 0) { // we need to make up for this somehow...
+                    moneyWeNeedToPay = civInfo.gold
                 }
+                if (civInfo.gold > 0) tradeLogic.currentTrade.ourOffers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, moneyWeNeedToPay))
+            }
+
+            if (enemy.isPlayerCivilization())
+                enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
+            else {
+                if (enemy.getNation().preferredVictoryType!=VictoryType.Cultural
+                        && enemy.getCivUnits().filter { !it.type.isCivilian() }.size > enemy.cities.size
+                        && enemy.happiness > 0) {
+                    continue //enemy AI has too large army and happiness. It continues to fight for profit.
+                }
+                tradeLogic.acceptTrade()
             }
         }
     }
