@@ -87,8 +87,8 @@ class Automation {
         cityConstructions.run {
             if (getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
 
-            val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder }
-            val buildableWonders = getBuildableBuildings().filter { it.isWonder }
+            val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder || it.isNationalWonder }
+            val buildableWonders = getBuildableBuildings().filter { it.isWonder || it.isNationalWonder }
 
             val civUnits = cityInfo.civInfo.getCivUnits()
             val militaryUnits = civUnits.filter { !it.type.isCivilian()}.size

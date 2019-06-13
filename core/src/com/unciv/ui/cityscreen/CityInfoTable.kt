@@ -63,7 +63,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                         cityScreen.city.civInfo)
                 wonderDetailsTable.add(detailsString.toLabel().apply { setWrap(true)})
                         .width(cityScreen.stage.width/4 - 2*pad ).row() // when you set wrap, then you need to manually set the size of the label
-                if(!building.isWonder) {
+                if(!building.isWonder && !building.isNationalWonder) {
                     val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
                     val sellBuildingButton = TextButton("Sell for [$sellAmount] gold".tr(),skin)
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
@@ -90,7 +90,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {
-                building.isWonder -> wonders.add(building)
+                building.isWonder || building.isNationalWonder -> wonders.add(building)
                 building.specialistSlots != null -> specialistBuildings.add(building)
                 else -> otherBuildings.add(building)
             }

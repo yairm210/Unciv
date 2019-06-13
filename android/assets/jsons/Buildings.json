@@ -2,7 +2,7 @@
 	// Ancient Era
 	{
 		name:"Palace",
-		isWonder:true,
+		isNationalWonder:true,
 		production:3,
 		science:3,
 		gold:3,
@@ -159,7 +159,7 @@
 		name:"Circus Maximus",
 		happiness:5,
 		culture:1,
-		isWonder:true,
+		isNationalWonder:true,
 		requiredBuildingInAllCities:"Colosseum",
 		requiredTech:"Horseback Riding"
 	},
@@ -292,7 +292,7 @@
 		name:"National College",
 		science:3,
 		culture:1,
-		isWonder:true,
+		isNationalWonder:true,
 		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"Library",
 		requiredTech:"Civil Service"
@@ -367,7 +367,7 @@
 		science:3,
 		culture:1,
 		freeTechs:1,
-		isWonder:true,
+		isNationalWonder:true,
 		percentStatBonus:{science:50},
 		requiredBuildingInAllCities:"University",
 		requiredTech:"Education"
@@ -555,7 +555,7 @@
 		name:"Hermitage",
 		percentStatBonus:{culture:50},
 		culture:5,
-		isWonder:true,
+		isNationalWonder:true,
 		requiredBuildingInAllCities:"Opera House",
 		requiredTech:"Archaeology"
 	}, 
@@ -794,7 +794,7 @@
 	{
 		name:"Apollo Program",
 		cost:1500,
-		isWonder:true,
+		isNationalWonder:true,
 		uniques:["Enables construction of Spaceship parts"],
 		requiredTech:"Rocketry"
 	},

@@ -24,6 +24,7 @@ class Building : NamedStats(), IConstruction{
     /** Extra cost percentage when purchasing */
     var hurryCostModifier: Int = 0
     var isWonder = false
+    var isNationalWonder = false
     var requiredBuilding: String? = null
     var requiredBuildingInAllCities: String? = null
     /** A strategic resource that will be consumed by this building */
@@ -78,6 +79,7 @@ class Building : NamedStats(), IConstruction{
         if(uniqueTo!=null) stringBuilder.appendln("Unique to [$uniqueTo], replaces [$replaces]".tr())
         if (!forBuildingPickerScreen) stringBuilder.appendln("{Cost}: $cost".tr())
         if (isWonder) stringBuilder.appendln("Wonder".tr())
+        if(isNationalWonder) stringBuilder.appendln("National Wonder".tr())
         if (!forBuildingPickerScreen && requiredTech != null)
             stringBuilder.appendln("Required tech: [$requiredTech]".tr())
         if (!forBuildingPickerScreen && requiredBuilding != null)
@@ -165,7 +167,7 @@ class Building : NamedStats(), IConstruction{
     }
 
     override fun canBePurchased(): Boolean {
-        return !isWonder
+        return !isWonder && !isNationalWonder
     }
 
     override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
@@ -219,7 +221,7 @@ class Building : NamedStats(), IConstruction{
         if (requiredTech != null && !civInfo.tech.isResearched(requiredTech!!)) return "$requiredTech not researched"
 
         // Regular wonders
-        if (isWonder && requiredBuildingInAllCities==null){
+        if (isWonder){
             if(civInfo.gameInfo.civilizations.flatMap { it.cities }
                             .any {it.cityConstructions.isBuilt(name)})
                 return "Wonder is already built"
@@ -233,16 +235,15 @@ class Building : NamedStats(), IConstruction{
 
 
         // National wonders
-        if(requiredBuildingInAllCities!=null) {
-
+        if(isNationalWonder) {
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
-                return "Wonder is already built"
+                return "National Wonder is already built"
             if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
                 return "Requires a [$requiredBuildingInAllCities] in all cities"
             if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
-                return "Wonder is being built elsewhere"
+                return "National Wonder is being built elsewhere"
             if(civInfo.isCityState())
-                return "No world wonders for city-states"
+                return "No national wonders for city-states"
         }
 
         if (requiredBuilding != null && !construction.containsBuildingOrEquivalent(requiredBuilding!!))

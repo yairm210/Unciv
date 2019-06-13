@@ -1090,6 +1090,8 @@
 		Japanese:"ワンダー"
 	}
 	
+	"National Wonder":{}
+	
 	"Wonders enabled":{
 		Italian:"Meraviglie sbloccate"
 		Russian:"Активные чудеса"
@@ -1561,6 +1563,8 @@
 		Simplified_Chinese:"奇观"
 		Portuguese:"Maravilhas"
 	}
+	
+	"National Wonders":{}
 
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"

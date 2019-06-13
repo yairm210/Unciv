@@ -97,7 +97,9 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         constructionPickerTable.addCategory("Units",units)
 
         val buildableWonders = ArrayList<Table>()
+        val buildableNationalWonders = ArrayList<Table>()
         val buildableBuildings = ArrayList<Table>()
+
         for (building in GameBasics.Buildings.values) {
             if (!building.shouldBeDisplayed(cityConstructions) && building.name != cityConstructions.currentConstruction) continue
             val productionTextButton = getProductionButton(building.name,
@@ -106,11 +108,14 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                     )
             if (building.isWonder)
                 buildableWonders += productionTextButton
+            else if(building.isNationalWonder)
+                buildableNationalWonders += productionTextButton
             else
                 buildableBuildings += productionTextButton
         }
 
         constructionPickerTable.addCategory("Wonders",buildableWonders)
+        constructionPickerTable.addCategory("National Wonders",buildableNationalWonders)
         constructionPickerTable.addCategory("Buildings",buildableBuildings)
 
         val specialConstructions = ArrayList<Table>()
