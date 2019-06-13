@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
+import com.unciv.models.gamebasics.VictoryType
 
 
 class PolicyManager {
@@ -76,7 +77,16 @@ class PolicyManager {
             "Free Religion" -> freePolicies++
             "Liberty Complete" -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.random())
+                else {
+                    val preferredVictoryType = civInfo.getNation().preferredVictoryType
+                    val greatPerson = when(preferredVictoryType) {
+                        VictoryType.Cultural -> "Great Artist"
+                        VictoryType.Scientific -> "Great Scientist"
+                        VictoryType.Domination,VictoryType.Neutral ->
+                            GameBasics.Units.keys.filter { it.startsWith("Great") }.random()
+                    }
+                    civInfo.addGreatPerson(greatPerson)
+                }
             }
         }
 

@@ -298,6 +298,9 @@ class NextTurnAutomation{
 
     private fun declareWar(civInfo: CivilizationInfo) {
         if (civInfo.isCityState()) return
+        if(civInfo.getNation().preferredVictoryType==VictoryType.Cultural)
+            return
+
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
             val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
             if (!civInfo.isAtWar() && civInfo.happiness > 0
