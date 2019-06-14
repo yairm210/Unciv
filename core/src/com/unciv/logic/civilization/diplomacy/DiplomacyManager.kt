@@ -7,9 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TileResource
+import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tr
 
 enum class RelationshipLevel{
@@ -159,20 +158,20 @@ class DiplomacyManager() {
         return goldPerTurnForUs
     }
 
-    fun resourcesFromTrade(): Counter<TileResource> {
-        val counter = Counter<TileResource>()
+    fun resourcesFromTrade(): ResourceSupplyList {
+        val counter = ResourceSupplyList()
         for(trade in trades){
             for(offer in trade.ourOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount)
+                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
             for(offer in trade.theirOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,offer.amount)
+                    counter.add(GameBasics.TileResources[offer.name]!!,offer.amount,"Trade")
         }
         for(tradeRequest in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
             for(offer in tradeRequest.trade.theirOffers) // "theirOffers" in the other civ's trade request, is actually out civ's offers
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount)
+                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
         }
         return counter
     }
@@ -180,7 +179,9 @@ class DiplomacyManager() {
 
     //region state-changing functions
     fun removeUntenebleTrades(){
-        val negativeCivResources = civInfo.getCivResources().filter { it.value<0 }.map { it.key.name }
+        val negativeCivResources = civInfo.getCivResources()
+                .filter { it.amount<0 }.map { it.resource.name }
+
         for(trade in trades.toList()) {
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)

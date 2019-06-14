@@ -15,11 +15,10 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.trade.Trade
-import com.unciv.models.Counter
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.tech.TechEra
+import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
 import java.util.*
@@ -227,7 +226,7 @@ class CivilizationInfo {
 
         var happinessPerUniqueLuxury = 5f
         if (policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
-        statMap["Luxury resources"]= getCivResources().keys
+        statMap["Luxury resources"]= getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
         for(city in cities.toList()){
@@ -259,14 +258,22 @@ class CivilizationInfo {
     }
 
     /**
-     * Returns a counter of non-zero resources that the civ has
+     * Returns list of all resources and their origin - for most usages you'll want getCivResources().totalSupply(),
+     * which unifies al the different sources
      */
-    fun getCivResources(): Counter<TileResource> {
-        val civResources = Counter<TileResource>()
+    fun getCivResources(): ResourceSupplyList {
+        val newResourceSupplyList=ResourceSupplyList()
+        for(resourceSupply in getDetailedCivResources())
+            newResourceSupplyList.add(resourceSupply.resource,resourceSupply.amount,"All")
+        return newResourceSupplyList
+    }
+
+    fun getDetailedCivResources(): ResourceSupplyList {
+        val civResources = ResourceSupplyList()
         for (city in cities) civResources.add(city.getCityResources())
         for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
         for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
-            civResources.add(resource,-1)
+            civResources.add(resource,-1,"Units")
         return civResources
     }
 
@@ -276,7 +283,8 @@ class CivilizationInfo {
     fun getCivResourcesByName():HashMap<String,Int>{
         val hashMap = HashMap<String,Int>()
         for(resource in GameBasics.TileResources.keys) hashMap[resource]=0
-        for(entry in getCivResources()) hashMap[entry.key.name] = entry.value
+        for(entry in getCivResources())
+            hashMap[entry.resource.name] = entry.amount
         return hashMap
     }
 

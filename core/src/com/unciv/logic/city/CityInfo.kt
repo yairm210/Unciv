@@ -8,10 +8,9 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.min
@@ -108,8 +107,8 @@ class CityInfo {
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
     fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
 
-    fun getCityResources(): Counter<TileResource> {
-        val cityResources = Counter<TileResource>()
+    fun getCityResources(): ResourceSupplyList {
+        val cityResources = ResourceSupplyList()
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
@@ -128,14 +127,15 @@ class CityInfo {
                 if(resource.resourceType == ResourceType.Luxury
                         && getBuildingUniques().contains("Provides 1 extra copy of each improved luxury resource near this City"))
                     amountToAdd*=2
-                cityResources.add(resource, amountToAdd)
+
+                cityResources.add(resource, amountToAdd, "Tiles")
             }
 
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
             val resource = GameBasics.TileResources[building.requiredResource]!!
-            cityResources.add(resource, -1)
+            cityResources.add(resource, -1, "Buildings")
         }
 
         return cityResources

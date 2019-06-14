@@ -44,12 +44,12 @@ class TradeEvaluation{
                 val civsWhoWillTradeUsForTheLux = civInfo.diplomacy.values.map { it.civInfo } // secondly - should we buy this in order to resell it?
                         .filter { it != tradePartner }
                         .filter { !it.hasResource(offer.name) } //they don't have
-                val ourResourceNames = civInfo.getCivResources().map { it.key.name }
+                val ourResourceNames = civInfo.getCivResources().map { it.resource.name }
                 val civsWithLuxToTrade = civsWhoWillTradeUsForTheLux.filter {
                     // these are other civs who we could trade this lux away to, in order to get a different lux
                     it.getCivResources().any {
-                        it.value > 1 && it.key.resourceType == ResourceType.Luxury //they have a lux we don't and will be willing to trade it
-                                && !ourResourceNames.contains(it.key.name)
+                        it.amount > 1 && it.resource.resourceType == ResourceType.Luxury //they have a lux we don't and will be willing to trade it
+                                && !ourResourceNames.contains(it.resource.name)
                     }
                 }
                 var numberOfCivsWhoWouldTradeUsForTheLux = civsWithLuxToTrade.count()

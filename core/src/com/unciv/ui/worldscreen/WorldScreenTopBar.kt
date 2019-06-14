@@ -110,8 +110,8 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
             val isRevealed = civInfo.tech.isResearched(resource.revealedBy!!)
             resourceLabels[resource.name]!!.isVisible = isRevealed
             resourceImages[resource.name]!!.isVisible = isRevealed
-            if (!civResources.containsKey(resource)) resourceLabels[resource.name]!!.setText("0")
-            else resourceLabels[resource.name]!!.setText(civResources[resource]!!.toString())
+            if (!civResources.any { it.resource==resource}) resourceLabels[resource.name]!!.setText("0")
+            else resourceLabels[resource.name]!!.setText(civResources.first { it.resource==resource }.amount.toString())
         }
 
         val turns = civInfo.gameInfo.turns

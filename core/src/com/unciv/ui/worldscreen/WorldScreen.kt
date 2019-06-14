@@ -340,8 +340,8 @@ class WorldScreen : CameraStageBaseScreen() {
         if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
         if(gameInfo.turns >= 100) displayTutorials("ContactMe")
         val resources = currentPlayerCiv.getCivResources()
-        if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
-        if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
+        if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
+        if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
         if("EnemyCity" !in shownTutorials
                 && currentPlayerCiv.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
                         .any { it.isCityCenter() && it.getOwner()!=currentPlayerCiv })

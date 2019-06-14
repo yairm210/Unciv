@@ -19,6 +19,7 @@ import kotlin.math.roundToInt
 class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     val currentPlayerCivInfo = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         val topTable = Table().apply { defaults().pad(10f) }
@@ -73,10 +74,18 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setDiplomacyButton = TextButton("Diplomacy".tr(),skin)
         setDiplomacyButton.onClick {
             centerTable.clear()
-            centerTable.add(createDiplomacyGroup()).height(stage.height*0.8f)
+            centerTable.add(getDiplomacyGroup()).height(stage.height*0.8f)
             centerTable.pack()
         }
-        topTable.add(setDiplomacyButton )
+        topTable.add(setDiplomacyButton)
+
+        val setResourcesButton = TextButton("Resources".tr(),skin)
+        setResourcesButton.onClick {
+            centerTable.clear()
+            centerTable.add(getResourcesTable()).height(stage.height*0.8f)
+            centerTable.pack()
+        }
+        topTable.add(setResourcesButton)
 
         topTable.pack()
 
@@ -87,6 +96,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         stage.addActor(table)
 
     }
+
 
     private fun getTradesTable(): Table {
         val tradesTable = Table().apply { defaults().pad(10f) }
@@ -292,7 +302,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     fun playerKnows(civ:CivilizationInfo) = civ==currentPlayerCivInfo ||
             currentPlayerCivInfo.diplomacy.containsKey(civ.civName)
 
-    fun createDiplomacyGroup(): Group {
+    fun getDiplomacyGroup(): Group {
         val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() && !it.isCityState() }
         val groupSize = 500f
         val group = Group()
@@ -348,5 +358,37 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             }
 
         return group
+    }
+
+
+    private fun getResourcesTable(): Table {
+        val resourcesTable=Table().apply { defaults().pad(10f) }
+        val resourceDrilldown = currentPlayerCivInfo.getDetailedCivResources()
+
+        // First row of table has all the icons
+        resourcesTable.add()
+        val resources = resourceDrilldown.map { it.resource }.distinct()
+        for(resource in resources)
+            resourcesTable.add(ImageGetter.getResourceImage(resource.name,30f))
+        resourcesTable.addSeparator()
+
+        val origins = resourceDrilldown.map { it.origin }.distinct()
+        for(origin in origins){
+            resourcesTable.add(origin.toLabel())
+            for(resource in resources){
+                val resourceSupply = resourceDrilldown.firstOrNull { it.resource==resource && it.origin==origin }
+                if(resourceSupply==null) resourcesTable.add()
+                else resourcesTable.add(resourceSupply.amount.toString().toLabel())
+            }
+            resourcesTable.row()
+        }
+        
+        resourcesTable.add("Total".toLabel())
+        for(resource in resources){
+            val sum = resourceDrilldown.filter { it.resource==resource }.sumBy { it.amount }
+            resourcesTable.add(sum.toString().toLabel())
+        }
+
+        return resourcesTable
     }
 }
