@@ -246,8 +246,7 @@ class NewGameScreen: PickerScreen(){
                     }
                 }
             })
-            i++
-            if(i%2==0) {
+            if(++i%2==0) {
                 // New row only each two checkboxes
                 newGameOptionsTable.add(victoryCheckbox)
                         .left() // Left alignment
