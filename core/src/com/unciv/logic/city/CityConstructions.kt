@@ -182,7 +182,7 @@ class CityConstructions {
         construction.postBuildEvent(this)
         inProgressConstructions.remove(currentConstruction)
 
-        if (construction is Building && construction.requiredBuildingInAllCities == null) {
+        if (construction is Building && construction.isWonder) {
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
                     civ.addNotification("[$currentConstruction] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)

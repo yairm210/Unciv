@@ -86,6 +86,8 @@ class Building : NamedStats(), IConstruction{
             stringBuilder.appendln("Requires [$requiredBuilding] to be built in the city".tr())
         if (!forBuildingPickerScreen && requiredBuildingInAllCities != null)
             stringBuilder.appendln("Requires [$requiredBuildingInAllCities] to be built in all cities".tr())
+        if(requiredResource!=null)
+            stringBuilder.appendln("Requires [$requiredResource]".tr())
         if (providesFreeBuilding != null)
             stringBuilder.appendln("Provides a free [$providesFreeBuilding] in the city".tr())
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
@@ -238,7 +240,9 @@ class Building : NamedStats(), IConstruction{
         if(isNationalWonder) {
             if (civInfo.cities.any {it.cityConstructions.isBuilt(name) })
                 return "National Wonder is already built"
-            if (civInfo.cities.any { !it.cityConstructions.containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
+            if (requiredBuildingInAllCities!=null
+                    && civInfo.cities.any { !it.cityConstructions
+                            .containsBuildingOrEquivalent(requiredBuildingInAllCities!!) })
                 return "Requires a [$requiredBuildingInAllCities] in all cities"
             if (civInfo.cities.any {it!=construction.cityInfo && it.cityConstructions.isBeingConstructed(name) })
                 return "National Wonder is being built elsewhere"
