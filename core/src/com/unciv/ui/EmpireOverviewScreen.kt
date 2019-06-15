@@ -11,6 +11,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeOffersList
+import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import java.text.DecimalFormat
@@ -367,7 +368,9 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
         // First row of table has all the icons
         resourcesTable.add()
-        val resources = resourceDrilldown.map { it.resource }.distinct()
+        val resources = resourceDrilldown.map { it.resource }
+                .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
+
         for(resource in resources)
             resourcesTable.add(ImageGetter.getResourceImage(resource.name,30f))
         resourcesTable.addSeparator()
@@ -382,7 +385,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             }
             resourcesTable.row()
         }
-        
+
         resourcesTable.add("Total".toLabel())
         for(resource in resources){
             val sum = resourceDrilldown.filter { it.resource==resource }.sumBy { it.amount }
