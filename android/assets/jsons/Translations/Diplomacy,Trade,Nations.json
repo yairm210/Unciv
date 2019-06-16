@@ -204,42 +204,42 @@
   	}
 
   	"Enemy":{
-		Italian:"Nemico"
+		Italian:"Nemici"
 		French:"Ennemi"
 		Simplified_Chinese:"宿命之敌"
 		Portuguese:"Inimigos" //as in 'we are enemies' not just 'they are our enemy'
   	}
 
   	"Competitor":{
-	  	Italian:"Avversario"
+	  	Italian:"Avversari"
 		French:"Adversaire" //or en compétition
 		Simplified_Chinese:"瑜亮之争"
 		Portuguese:"Adversários"
   	}
 
   	"Neutral":{
-		Italian:"Neutrale"
+		Italian:"Neutri"
 		French:"Neutre"
 		Simplified_Chinese:"泛泛之交"
 		Portuguese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
   	}
 
   	"Favorable":{
-		Italian:"Favorevole"
+		Italian:"Favorevoli"
 		French:"Favorable"
 		Simplified_Chinese:"惺惺相惜"
 		Portuguese:"Favorável"
   	}
 
   	"Friend":{
-		Italian:"Amichevole"
+		Italian:"Amichevoli"
 		French:"Ami"
 		Simplified_Chinese:"秦晋之好"
 		Portuguese:"Amigos"
  	 }
 
   	"Ally":{
-		Italian:"Alleato"
+		Italian:"Alleati"
 		French:"Allié"
 		Simplified_Chinese:"歃血之盟"
 		Portuguese:"Aliado"
@@ -376,6 +376,10 @@
 	
 	"You betrayed your promise to not settle cities near us":{
 		Italian:"Hai tradito la tua promessa di non fondare città nelle nostre vicinanze."
+	}
+	
+	"You fulfilled your promise to stop settling cities near us!":{
+		Italian:"Hai mantenuto la tua promessa di non fondare città nelle nostre vicinanze."
 	}
 	
 	"You refused to stop settling cities near us":{
