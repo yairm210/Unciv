@@ -100,7 +100,7 @@ class Automation {
                     && cityInfo.getTiles().any { it.isWater && it.hasViewableResource(cityInfo.civInfo) && it.improvement == null }
 
             val isAtWar = cityInfo.civInfo.isAtWar()
-            val preferredVictoryType = cityInfo.civInfo.getNation().preferredVictoryType
+            val preferredVictoryType = cityInfo.civInfo.victoryType()
 
             data class ConstructionChoice(val choice:String, var choiceModifier:Float){
                 val remainingWork:Int = getRemainingWork(choice)

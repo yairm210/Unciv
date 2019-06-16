@@ -138,6 +138,11 @@ class CivilizationInfo {
     fun getCityStateType(): CityStateType = getNation().cityStateType!!
     fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
 
+    fun victoryType(): VictoryType {
+        val victoryType = getNation().preferredVictoryType
+        if(gameInfo.gameParameters.victoryTypes.contains(victoryType)) return victoryType
+        else return VictoryType.Neutral
+    }
 
     fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
 

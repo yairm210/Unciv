@@ -17,6 +17,11 @@ import com.unciv.ui.utils.toLabel
 class VictoryScreen : PickerScreen() {
 
     val playerCivInfo = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+    val victoryTypes = playerCivInfo.gameInfo.gameParameters.victoryTypes
+    val scientificVictoryEnabled = victoryTypes.contains(VictoryType.Scientific)
+    val culturalVictoryEnabled = victoryTypes.contains(VictoryType.Cultural)
+    val dominationVictoryEnabled = victoryTypes.contains(VictoryType.Domination)
+
 
     val contentsTable = Table()
 
@@ -83,17 +88,17 @@ class VictoryScreen : PickerScreen() {
     fun setMyVictoryTable(){
         val myVictoryStatusTable = Table()
         myVictoryStatusTable.defaults().pad(10f)
-        myVictoryStatusTable.add("Science victory".toLabel())
-        myVictoryStatusTable.add("Cultural victory".toLabel())
-        myVictoryStatusTable.add("Conquest victory".toLabel())
+        if(scientificVictoryEnabled) myVictoryStatusTable.add("Science victory".toLabel())
+        if(culturalVictoryEnabled) myVictoryStatusTable.add("Cultural victory".toLabel())
+        if(dominationVictoryEnabled) myVictoryStatusTable.add("Conquest victory".toLabel())
         myVictoryStatusTable.row()
-        myVictoryStatusTable.add(scienceVictoryColumn())
-        myVictoryStatusTable.add(culturalVictoryColumn())
-        myVictoryStatusTable.add(conquestVictoryColumn())
+        if(scientificVictoryEnabled) myVictoryStatusTable.add(scienceVictoryColumn())
+        if(culturalVictoryEnabled) myVictoryStatusTable.add(culturalVictoryColumn())
+        if(dominationVictoryEnabled) myVictoryStatusTable.add(conquestVictoryColumn())
         myVictoryStatusTable.row()
-        myVictoryStatusTable.add("Complete all the spaceship parts\n to win!".toLabel())
-        myVictoryStatusTable.add("Complete 4 policy branches\n to win!".toLabel())
-        myVictoryStatusTable.add("Destroy all enemies\n to win!".toLabel())
+        if(scientificVictoryEnabled) myVictoryStatusTable.add("Complete all the spaceship parts\n to win!".toLabel())
+        if(culturalVictoryEnabled) myVictoryStatusTable.add("Complete 4 policy branches\n to win!".toLabel())
+        if(dominationVictoryEnabled) myVictoryStatusTable.add("Destroy all enemies\n to win!".toLabel())
 
         contentsTable.clear()
         contentsTable.add(myVictoryStatusTable)
@@ -148,9 +153,9 @@ class VictoryScreen : PickerScreen() {
         val majorCivs = game.gameInfo.civilizations.filter { it.isMajorCiv() }
         val globalVictoryTable = Table().apply { defaults().pad(10f) }
 
-        globalVictoryTable.add(getGlobalScientificVictoryColumn(majorCivs))
-        globalVictoryTable.add(getGlobalPolicyVictoryColumn(majorCivs))
-        globalVictoryTable.add(getGlobalDominationVictoryColumn(majorCivs))
+        if(scientificVictoryEnabled) globalVictoryTable.add(getGlobalScientificVictoryColumn(majorCivs))
+        if(culturalVictoryEnabled) globalVictoryTable.add(getGlobalCulturalVictoryColumn(majorCivs))
+        if(dominationVictoryEnabled) globalVictoryTable.add(getGlobalDominationVictoryColumn(majorCivs))
 
         contentsTable.clear()
         contentsTable.add(globalVictoryTable)
@@ -162,15 +167,17 @@ class VictoryScreen : PickerScreen() {
         dominationVictoryColumn.add("Undefeated civs".toLabel()).row()
         dominationVictoryColumn.addSeparator()
 
-        for (civ in majorCivs.filter { !it.isDefeated() })
-            dominationVictoryColumn.add(TextButton(civ.civName.tr(), skin).apply { color = Color.GREEN }).row()
+        for (civ in majorCivs.filter { !it.isDefeated() }) {
+            val civName = if(playerCivInfo.knows(civ) || playerCivInfo==civ) civ.civName.tr() else "???"
+            dominationVictoryColumn.add(TextButton(civName, skin).apply { color = Color.GREEN }).row()
+        }
 
         for (civ in majorCivs.filter { it.isDefeated() })
             dominationVictoryColumn.add(TextButton(civ.civName.tr(), skin).apply { color = Color.GRAY }).row()
         return dominationVictoryColumn
     }
 
-    private fun getGlobalPolicyVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
+    private fun getGlobalCulturalVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val policyVictoryColumn = Table().apply { defaults().pad(10f) }
         policyVictoryColumn.add("Branches completed".toLabel()).row()
         policyVictoryColumn.addSeparator()
@@ -181,8 +188,10 @@ class VictoryScreen : PickerScreen() {
                 majorCivs.map { civToBranchesCompleted(it, it.policies.adoptedPolicies.count { pol -> pol.endsWith("Complete") }) }
                         .sortedByDescending { it.branchesCompleted }
 
-        for (entry in civsToBranchesCompleted)
-            policyVictoryColumn.add(TextButton(entry.civ.civName.tr() + " - " + entry.branchesCompleted, skin)).row()
+        for (entry in civsToBranchesCompleted) {
+            val civName = if(playerCivInfo.knows(entry.civ) || playerCivInfo==entry.civ) entry.civ.civName.tr() else "???"
+            policyVictoryColumn.add(TextButton(civName + " - " + entry.branchesCompleted, skin)).row()
+        }
         return policyVictoryColumn
     }
 
@@ -198,8 +207,10 @@ class VictoryScreen : PickerScreen() {
                     it.victoryManager.spaceshipPartsRemaining())
         }
 
-        for (entry in civsToPartsRemaining)
-            scientificVictoryColumn.add(TextButton(entry.civ.civName.tr() + " - " + entry.partsRemaining, skin)).row()
+        for (entry in civsToPartsRemaining) {
+            val civName = if(playerCivInfo.knows(entry.civ) || playerCivInfo==entry.civ) entry.civ.civName.tr() else "???"
+            scientificVictoryColumn.add(TextButton(civName + " - " + entry.partsRemaining, skin)).row()
+        }
         return scientificVictoryColumn
     }
 

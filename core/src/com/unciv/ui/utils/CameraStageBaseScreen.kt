@@ -71,6 +71,7 @@ open class CameraStageBaseScreen : Screen {
             skin.get<TextField.TextFieldStyle>(TextField.TextFieldStyle::class.java).font = Fonts().getFont(18)
             skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).font = Fonts().getFont(20)
             skin.get<SelectBox.SelectBoxStyle>(SelectBox.SelectBoxStyle::class.java).listStyle.font = Fonts().getFont(20)
+            skin.get<CheckBox.CheckBoxStyle>(CheckBox.CheckBoxStyle::class.java).fontColor= Color.WHITE
         }
         internal var batch: Batch = SpriteBatch()
     }

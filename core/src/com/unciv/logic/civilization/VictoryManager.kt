@@ -30,11 +30,14 @@ class VictoryManager {
 
     fun spaceshipPartsRemaining() = requiredSpaceshipParts.values.sum() - currentsSpaceshipParts.values.sum()
 
-    fun hasWonScientificVictory() = spaceshipPartsRemaining()==0
+    fun hasWonScientificVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Scientific)
+            && spaceshipPartsRemaining()==0
 
-    fun hasWonCulturalVictory() = civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3
+    fun hasWonCulturalVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Cultural)
+            && civInfo.policies.adoptedPolicies.count{it.endsWith("Complete")} > 3
 
-    fun hasWonDominationVictory() = civInfo.gameInfo.civilizations.all { it==civInfo || it.isDefeated() || it.isCityState() }
+    fun hasWonDominationVictory() = civInfo.gameInfo.gameParameters.victoryTypes.contains(VictoryType.Domination)
+            && civInfo.gameInfo.civilizations.all { it==civInfo || it.isDefeated() || it.isCityState() }
 
     fun hasWonVictoryType(): VictoryType? {
         if(!civInfo.isMajorCiv()) return null

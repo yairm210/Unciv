@@ -146,7 +146,7 @@ class NextTurnAutomation{
             val adoptablePolicies = GameBasics.PolicyBranches.values.flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
 
-            val preferredVictoryType = civInfo.getNation().preferredVictoryType
+            val preferredVictoryType = civInfo.victoryType()
             val policyBranchPriority =
                     when(preferredVictoryType) {
                         VictoryType.Cultural -> listOf("Piety", "Freedom", "Tradition", "Rationalism")
@@ -243,7 +243,7 @@ class NextTurnAutomation{
 
         for (enemy in enemiesCiv) {
             val enemiesStrength = Automation().evaluteCombatStrength(enemy)
-            if (civInfo.getNation().preferredVictoryType!=VictoryType.Cultural
+            if (civInfo.victoryType()!=VictoryType.Cultural
                     && enemiesStrength < ourCombatStrength*2 ) {
                 continue //We're losing, but can still fight. Refuse peace.
             }
@@ -265,7 +265,7 @@ class NextTurnAutomation{
             if (enemy.isPlayerCivilization())
                 enemy.tradeRequests.add(TradeRequest(civInfo.civName, tradeLogic.currentTrade.reverse()))
             else {
-                if (enemy.getNation().preferredVictoryType!=VictoryType.Cultural
+                if (enemy.victoryType()!=VictoryType.Cultural
                         && enemy.getCivUnits().filter { !it.type.isCivilian() }.size > enemy.cities.size
                         && enemy.happiness > 0) {
                     continue //enemy AI has too large army and happiness. It continues to fight for profit.
@@ -296,7 +296,7 @@ class NextTurnAutomation{
 
     private fun declareWar(civInfo: CivilizationInfo) {
         if (civInfo.isCityState()) return
-        if(civInfo.getNation().preferredVictoryType==VictoryType.Cultural)
+        if (civInfo.victoryType()==VictoryType.Cultural)
             return
 
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
@@ -369,7 +369,7 @@ class NextTurnAutomation{
     private fun trainSettler(civInfo: CivilizationInfo) {
         if(civInfo.isCityState()) return
         if(civInfo.isAtWar()) return // don't train settlers when you could be training troops.
-        if(civInfo.getNation().preferredVictoryType==VictoryType.Cultural && civInfo.cities.size >3) return
+        if(civInfo.victoryType()==VictoryType.Cultural && civInfo.cities.size >3) return
         if (civInfo.cities.any()
                 && civInfo.happiness > civInfo.cities.size + 5
                 && civInfo.getCivUnits().none { it.name == Constants.settler }

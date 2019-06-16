@@ -79,7 +79,7 @@ class PolicyManager {
             "Liberty Complete" -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
                 else {
-                    val preferredVictoryType = civInfo.getNation().preferredVictoryType
+                    val preferredVictoryType = civInfo.victoryType()
                     val greatPerson = when(preferredVictoryType) {
                         VictoryType.Cultural -> "Great Artist"
                         VictoryType.Scientific -> "Great Scientist"

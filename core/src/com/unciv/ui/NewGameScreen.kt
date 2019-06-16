@@ -77,15 +77,7 @@ class NewGameScreen: PickerScreen(){
         addNumberOfHumansAndEnemies(newGameOptionsTable)
         addDifficultySelectBox(newGameOptionsTable)
         addVictoryTypeCheckboxes(newGameOptionsTable)
-
-        val noBarbariansCheckbox = CheckBox("No barbarians".tr(),skin)
-        noBarbariansCheckbox.isChecked=newGameParameters.noBarbarians
-        noBarbariansCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.noBarbarians = noBarbariansCheckbox.isChecked
-            }
-        })
-        newGameOptionsTable.add(noBarbariansCheckbox).colspan(2).row()
+        addBarbariansCheckbox(newGameOptionsTable)
 
 
         rightSideButton.enable()
@@ -110,6 +102,17 @@ class NewGameScreen: PickerScreen(){
 
         newGameOptionsTable.pack()
         return newGameOptionsTable
+    }
+
+    private fun addBarbariansCheckbox(newGameOptionsTable: Table) {
+        val noBarbariansCheckbox = CheckBox("No barbarians".tr(), skin)
+        noBarbariansCheckbox.isChecked = newGameParameters.noBarbarians
+        noBarbariansCheckbox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.noBarbarians = noBarbariansCheckbox.isChecked
+            }
+        })
+        newGameOptionsTable.add(noBarbariansCheckbox).colspan(2).row()
     }
 
     private fun addMapTypeSizeAndFile(newGameOptionsTable: Table) {
@@ -171,14 +174,14 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Number of enemies}:".tr())
         val enemiesSelectBox = SelectBox<Int>(skin)
         val enemiesArray = Array<Int>()
-        (0..GameBasics.Nations.filter{ !it.value.isCityState() }.size - 1).forEach { enemiesArray.add(it) }
+        for (enemyNumber in 0 until GameBasics.Nations.filter{ !it.value.isCityState() }.size) {
+            enemiesArray.add(enemyNumber)
+        }
         enemiesSelectBox.items = enemiesArray
         enemiesSelectBox.selected = newGameParameters.numberOfEnemies
         newGameOptionsTable.add(enemiesSelectBox).pad(10f).row()
 
-        // Todo - re-enable this when city states are fit for players
         addCityStatesSelectBox(newGameOptionsTable)
-//        newGameParameters.numberOfCityStates = 0
 
         humanPlayers.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -232,31 +235,26 @@ class NewGameScreen: PickerScreen(){
 
         // Create a checkbox for each VictoryType existing
         var i=0
-        VictoryType.values().forEach{
-            val victoryCheckbox = CheckBox(it.name.tr(),skin)
-            victoryCheckbox.name=it.name
-            victoryCheckbox.isChecked=newGameParameters.victoryTypes.contains(it)
+        val victoryConditionsTable = Table().apply { defaults().pad(10f) }
+        for (victoryType in VictoryType.values()) {
+            if(victoryType==VictoryType.Neutral) continue
+            val victoryCheckbox = CheckBox(victoryType.name.tr(),skin)
+            victoryCheckbox.name=victoryType.name
+            victoryCheckbox.isChecked=newGameParameters.victoryTypes.contains(victoryType)
             victoryCheckbox.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    // If the checkbox is checked, adds the victoryType else remove it
+                    // If the checkbox is checked, adds the victoryTypes else remove it
                     if(victoryCheckbox.isChecked){
-                        newGameParameters.victoryTypes.add(it)
+                        newGameParameters.victoryTypes.add(victoryType)
                     } else {
-                        newGameParameters.victoryTypes.remove(it)
+                        newGameParameters.victoryTypes.remove(victoryType)
                     }
                 }
             })
-            if(++i%2==0) {
-                // New row only each two checkboxes
-                newGameOptionsTable.add(victoryCheckbox)
-                        .left() // Left alignment
-                        .pad(10f).row()
-            } else {
-                newGameOptionsTable.add(victoryCheckbox)
-                        .left() // Left alignment
-            }
+            victoryConditionsTable.add(victoryCheckbox)
+            if(++i%2==0) victoryConditionsTable.row()
         }
-
+        newGameOptionsTable.add(victoryConditionsTable).colspan(2).row()
     }
 
     private fun getMapFileSelectBox(): SelectBox<String> {
