@@ -121,18 +121,22 @@
 	}
 
 	"Victory conditions": {
+		Italian:"Condizioni di Vittoria"
 		French: "Conditions de victoire"
 	}
 
 	"Scientific": {
+		Italian:"Scientifica"
 		French: "Scientifique"
 	}
 
 	"Domination": {
+		Italian:"Per Dominazione"
 		French: "Conquete"
 	},
 
 	"Cultural": {
+		Italian:"Culturale"
 		French: "Culturelle"
 	}
 	
