@@ -439,4 +439,20 @@
             German:"[unit] hat keine Arbeit mehr."
 	    French:"[unit] n'a rien à faire"
         }
+
+	"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
+		Italian:"Stai perdendo il controllo di [name]."
+	}
+
+	"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
+		Italian:"Non sei più amico di [name]!"
+	}
+
+	"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
+		Italian:"L'alleanza con [name] si sta sfaldando."
+	}
+
+	"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
+		Italian:"Non sei più alleato con [name]!"
+	}
 }
