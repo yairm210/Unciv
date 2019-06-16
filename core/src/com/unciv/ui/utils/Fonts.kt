@@ -32,15 +32,18 @@ class Fonts {
     fun getMD5(fontForLanguage: String):String {
         val sb = StringBuffer("")
         val md = MessageDigest.getInstance("MD5")
-        md.update(FileInputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file()).readBytes())
-        val b = md.digest()
-        for(i in b) {
-            var d = i.toInt()
-            if (d < 0) d = i+256
-            if (d < 16) sb.append("0")
-            sb.append(Integer.toHexString(d))
+        if (Gdx.files.local("fonts/$fontForLanguage.ttf").exists()) {
+            md.update(FileInputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file()).readBytes())
+            val b = md.digest()
+            for (i in b) {
+                var d = i.toInt()
+                if (d < 0) d = i + 256
+                if (d < 16) sb.append("0")
+                sb.append(Integer.toHexString(d))
+            }
+            return sb.toString()
         }
-        return sb.toString()
+        return ""
     }
     fun getCharsForFont(): String {
         val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +

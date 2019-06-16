@@ -175,8 +175,8 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
         FontSetSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
+                UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
                 if (FontSetSelectBox.selected == "NativeFont(Recommended)") {
-                    UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
                     selectFont()
                 }
                 else {
@@ -186,16 +186,9 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
                                     val downloading = PopupTable(screen)
                                     downloading.add("Downloading...".toLabel())
                                     downloading.open()
+                                    Gdx.input.inputProcessor = null
                                     selectFont()
-                                    UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
                                 })
-                    if (Fonts.fontDownloadIsWell==0) {
-                        val downloadingno = PopupTable(screen)
-                        downloadingno.add("fail to downloding".toLabel())
-                        downloadingno.addButton("Close".tr()) { downloadingno.remove() }
-                        downloadingno.open()
-                        UnCivGame.Current.settings.fontSet = "NativeFont(Recommended)"
-                    }
                 }
             }
         })
