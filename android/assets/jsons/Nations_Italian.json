@@ -430,7 +430,6 @@
 			"Rajagriha","Sravasti","Tiruchirapalli","Thanjavur","Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior",
 			"Jaipur","Karachi"]
 	},	
-	/*
 	{
 		name:"Germany",
 		translatedName:"Germania",
@@ -461,7 +460,7 @@
 		mainColor:[224,224,224],
 		secondaryColor:[64,64,64],
 		uniqueName:"Furor Teutonicus",
-		unique:"Quando sconfiggi un'unità barbara, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri.",
+		unique:"Quando sconfiggi un'unità barbara nel suo accampamento, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri.",
 		cities:["Berlino","Amburgo","Monaco","Colonia","Francoforte","Essen","Dortmund","Stoccarta","Dusseldorf","Bremen",
 			"Hannover","Duisburg","Lipsia","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
 			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
@@ -469,6 +468,7 @@
 			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
+	/*
 	{
 		name:"Mongolia",
 		translatedName:"Mongolia",
