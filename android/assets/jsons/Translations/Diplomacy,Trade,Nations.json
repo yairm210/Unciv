@@ -901,6 +901,10 @@
 		Simplified_Chinese:"德意志"
 		Portuguese:"Alemanha"
 	}
+
+	"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Pay 25% less for land unit maintenance.":{
+		Italian:"Quando sconfiggi un'unità barbara nel suo accampamento, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri."
+	}
 	
 	"India":{
 		Italian:"India"
@@ -909,7 +913,7 @@
 	}
 
 	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
-		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
+		Italian:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata."
 		Portuguese:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
 		French:"Le mécontentement dut au nombre de villes est doublé. Le mécontentement dut au nombre de citoyens est réduit de moitié"
 	}
