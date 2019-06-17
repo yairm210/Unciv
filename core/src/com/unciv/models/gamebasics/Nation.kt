@@ -48,6 +48,9 @@ class Nation : INamed {
     lateinit var mainColor: List<Int>
     var unique:String?=null
     var secondaryColor: List<Int>?=null
+    var startBias = ArrayList<String>()
+
+
     fun getColor(): Color {
         return colorFromRGB(mainColor[0], mainColor[1], mainColor[2])
     }
