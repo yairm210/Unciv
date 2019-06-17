@@ -356,14 +356,19 @@
             Portuguese:"A civilização de [civName] foi destruida!"
             Japanese:"[civName]の文明は破壊されました！"
         }
+
+        "The City-State of [name] has been destroyed!":{
+            Italian:"La Città-Stato di [name] è stata distrutta!"
+        }
 			
-		"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
-			Italian:"Nella cattura di un accampamento barbaro, abbiamo recuperato [goldAmount] Oro!"
-			French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
-		}
+	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
+		Italian:"Nella cattura di un accampamento barbaro, abbiamo recuperato [goldAmount] Oro!"
+		French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
+	}
 		
-		"A barbarian [unitType] has joined us!":{
-		}
+	"A barbarian [unitType] has joined us!":{
+            Italian:"L'unità barbarica [unitType] si è unita a noi!"
+	}
         
     /////////////////	ruins
 
