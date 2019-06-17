@@ -17,7 +17,6 @@ import kotlin.math.min
 
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
-    @Transient var isConnectedToCapital = false
     @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
     @Transient val range = 2
     @Transient lateinit var tileMap: TileMap
@@ -95,7 +94,6 @@ class CityInfo {
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
         toReturn.isBeingRazed=isBeingRazed
-        toReturn.isConnectedToCapital = isConnectedToCapital
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.resistanceCounter = resistanceCounter
         return toReturn
@@ -178,6 +176,7 @@ class CityInfo {
     }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
+    fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
 
     internal fun getMaxHealth(): Int {
         return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }

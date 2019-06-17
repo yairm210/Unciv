@@ -12,7 +12,6 @@ import com.unciv.UnCivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
-import com.unciv.logic.map.RoadStatus
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 
@@ -87,7 +86,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
                 iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
             }
-        } else if (city.civInfo.isCurrentPlayer() && city.cityStats.isConnectedToCapital(RoadStatus.Road)) {
+        } else if (city.civInfo.isCurrentPlayer() && city.isConnectedToCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(10f)
         }

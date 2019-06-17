@@ -56,6 +56,7 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
                 for (stat in building.toHashMap())
                     if (stat.value != originalBuildingStatMap[stat.key])
                         textList += "  "+stat.key.toString().tr() +" "+stat.value.toInt() + " vs " + originalBuildingStatMap[stat.key]!!.toInt()
+
                 for(unique in building.uniques.filter { it !in originalBuilding.uniques })
                     textList += "  "+unique.tr()
                 if (building.maintenance != originalBuilding.maintenance)
@@ -74,6 +75,8 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
                 val originalUnit = GameBasics.Units[unit.replaces!!]!!
 
                 textList += unit.name.tr() + " - {replaces} " + originalUnit.name.tr()
+                if(unit.cost != originalUnit.cost)
+                    textList += "  {Cost} " + unit.cost + " vs " + originalUnit.cost
                 if (unit.strength != originalUnit.strength)
                     textList += "  {Strength} " + unit.strength + " vs " + originalUnit.strength
                 if (unit.rangedStrength!= originalUnit.rangedStrength)

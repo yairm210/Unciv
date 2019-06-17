@@ -516,7 +516,6 @@
 		attackSound:"metalhit"
 		//Pikeman should upgrade not only to Musketman but also to Lancer
 	},
-	/*
 	{
 		name:"Landsknecht",
 		replaces:"Pikeman",
@@ -532,7 +531,6 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	*/
 	{
 		name:"Galleass",
 		unitType:"WaterRanged",
@@ -1014,7 +1012,6 @@
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
-	/*
 	{
 		name:"Panzer",
 		unitType:"Armor",
@@ -1029,7 +1026,6 @@
 		hurryCostModifier:20,
 		//German unique unit, stronger than Tank
 	},
-	*/
 	{
 		name:"Anti-Tank Gun",
 		unitType:"Melee",

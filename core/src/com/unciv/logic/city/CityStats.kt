@@ -34,7 +34,7 @@ class CityStats {
 
     private fun getStatsFromTradeRoute(): Stats {
         val stats = Stats()
-        if (!cityInfo.isCapital() && isConnectedToCapital(RoadStatus.Road)) {
+        if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if(civInfo.getNation().unique=="+1 Gold from each Trade Route, Oil resources provide double quantity") goldFromTradeRoute += 1
@@ -196,7 +196,7 @@ class CityStats {
             happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
         if (civInfo.policies.isAdopted("Monarchy") && cityInfo.isCapital())
             happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
-        if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
+        if (civInfo.policies.isAdopted("Meritocracy") && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
         if(civInfo.policies.isAdopted("Military Caste") && cityInfo.getCenterTile().militaryUnit!=null)
             happinessFromPolicies+=1
@@ -320,7 +320,7 @@ class CityStats {
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
-        if(roadType==RoadStatus.Road)  return cityInfo.isConnectedToCapital // this transient is not applicable to connection via railroad.
+        if(roadType==RoadStatus.Road)  return cityInfo.isConnectedToCapital() // this transient is not applicable to connection via railroad.
 
         val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
         val bfs = BFS(capitalTile){it.roadStatus == roadType}

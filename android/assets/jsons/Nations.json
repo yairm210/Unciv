@@ -430,8 +430,7 @@
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
 	},
-	/*
-	{   //  REQUIRES BARBARIAN CAMPS
+	{
 		name:"Germany",
 		leaderName:"Otto von Bismark",
 		adjective:["German"],
@@ -440,10 +439,10 @@
 		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
 		startIntroPart2: "Great Prince Bismark, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rile and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?"
 		
-		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!"
-		attacked:"Corrupted villain! We will bring you into the ground!"
-		defeated:"Germany has been destroyed. I weep for the future generations."
-		introduction:"Guten tag. In the name of the great German people, I bid you welcome."
+		declaringWar: "I cannot wait until ye grow even mightier. Therefore, prepare for war!"
+		attacked: "Corrupted villain! We will bring you into the ground!"
+		defeated: "Germany has been destroyed. I weep for the future generations."
+		introduction: "Guten tag. In the name of the great German people, I bid you welcome."
 		
 		neutralHello:"What now?"
 		neutralLetsHearIt:["What do ye say?","Yes?","Ja?"]
@@ -458,8 +457,8 @@
 		afterPeace:"What do ye think about calling it a draw?"
 		tradeRequest:"It would be in your best interest, to carefully consider this proposal."
 				
-		mainColor:[224,224,224],
-		secondaryColor:[64,64,64],
+		mainColor:[150,150,150],
+		secondaryColor:[60,60,60],
 		uniqueName:"Furor Teutonicus"
 		unique:"67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance.",
 		cities:["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
@@ -470,6 +469,7 @@
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
 	
+	/*
 	{   // REQUIRES RIVERS
 		name:"Aztecs",
 		leaderName:"Montezuma I",

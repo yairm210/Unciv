@@ -234,17 +234,17 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Victory conditions}:".tr()).colspan(2).row()
 
         // Create a checkbox for each VictoryType existing
-        var i=0
+        var i = 0
         val victoryConditionsTable = Table().apply { defaults().pad(10f) }
         for (victoryType in VictoryType.values()) {
-            if(victoryType==VictoryType.Neutral) continue
-            val victoryCheckbox = CheckBox(victoryType.name.tr(),skin)
-            victoryCheckbox.name=victoryType.name
-            victoryCheckbox.isChecked=newGameParameters.victoryTypes.contains(victoryType)
+            if (victoryType == VictoryType.Neutral) continue
+            val victoryCheckbox = CheckBox(victoryType.name.tr(), skin)
+            victoryCheckbox.name = victoryType.name
+            victoryCheckbox.isChecked = newGameParameters.victoryTypes.contains(victoryType)
             victoryCheckbox.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     // If the checkbox is checked, adds the victoryTypes else remove it
-                    if(victoryCheckbox.isChecked){
+                    if (victoryCheckbox.isChecked) {
                         newGameParameters.victoryTypes.add(victoryType)
                     } else {
                         newGameParameters.victoryTypes.remove(victoryType)
@@ -252,7 +252,7 @@ class NewGameScreen: PickerScreen(){
                 }
             })
             victoryConditionsTable.add(victoryCheckbox)
-            if(++i%2==0) victoryConditionsTable.row()
+            if (++i % 2 == 0) victoryConditionsTable.row()
         }
         newGameOptionsTable.add(victoryConditionsTable).colspan(2).row()
     }

@@ -508,6 +508,7 @@
 		specialistSlots:{gold:1},
 		hurryCostModifier:15,
 		percentStatBonus:{gold:25},
+		uniques:["+5% Production for every Trade Route with a City-State in the empire"]
 		requiredBuilding:"Market",
 		requiredTech:"Banking"
 	},

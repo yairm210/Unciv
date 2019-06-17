@@ -14,7 +14,7 @@ import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.trade.Trade
+import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
@@ -25,23 +25,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToInt
-
-enum class PlayerType{
-    AI,
-    Human
-}
-
-enum class CityStateType{
-    Cultured,
-    Maritime,
-    Mercantile
-}
-
-class TradeRequest(val requestingCiv:String,
-                   /** Their offers are what they offer us, and our offers are what they want in return */
-                   val trade: Trade)
 
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
@@ -53,6 +39,8 @@ class CivilizationInfo {
     @Transient private var units=listOf<MapUnit>()
     @Transient var viewableTiles = setOf<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
+    /** Contains cities from ALL civilizations connected by trade routes to the capital */
+    @Transient var citiesConnectedToCapital = listOf<CityInfo>()
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false
@@ -203,9 +191,16 @@ class CivilizationInfo {
         val freeUnits = 3
         var unitsToPayFor = getCivUnits()
         if(policies.isAdopted("Oligarchy")) unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
-        val totalPaidUnits = max(0,unitsToPayFor.count()-freeUnits)
+
+        var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
+        if(getNation().unique=="67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."){
+            val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
+            numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
+        }
+
+
         val gameProgress = gameInfo.turns/400f // as game progresses Maintenance cost rises
-        var cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
+        var cost = baseUnitCost*numberOfUnitsToPayFor*(1+gameProgress)
         cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
         if(!isPlayerCivilization())
             cost *= gameInfo.getDifficulty().aiUnitMaintenanceModifier
@@ -544,6 +539,7 @@ class CivilizationInfo {
         val citiesReachedToMediums = HashMap<CityInfo,ArrayList<String>>()
         var citiesToCheck = mutableListOf(getCapital())
         citiesReachedToMediums[getCapital()] = arrayListOf("Start")
+
         while(citiesToCheck.isNotEmpty() && citiesReachedToMediums.size<cities.size){
             val newCitiesToCheck = mutableListOf<CityInfo>()
             for(cityToConnectFrom in citiesToCheck){
@@ -551,6 +547,7 @@ class CivilizationInfo {
 
                 // This is copypasta and can be cleaned up
                 if(!reachedMediums.contains("Road")){
+
                     val roadBfs = BFS(cityToConnectFrom.getCenterTile()){it.roadStatus!=RoadStatus.None}
                     roadBfs.stepToEnd()
                     val reachedCities = cities.filter { roadBfs.tilesReached.containsKey(it.getCenterTile())}
@@ -586,9 +583,7 @@ class CivilizationInfo {
             citiesToCheck = newCitiesToCheck
         }
 
-        for(city in cities){
-            city.isConnectedToCapital = citiesReachedToMediums.containsKey(city)
-        }
+        citiesConnectedToCapital = citiesReachedToMediums.keys.toList()
     }
 
     fun destroy(){

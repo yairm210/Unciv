@@ -49,8 +49,8 @@ class CityConstructions {
 
     fun getStatPercentBonuses(): Stats {
         val stats = Stats()
-        for (building in getBuiltBuildings().filter { it.percentStatBonus != null })
-            stats.add(building.percentStatBonus!!)
+        for (building in getBuiltBuildings())
+            stats.add(building.getStatPercentageBonuses(cityInfo.civInfo))
         return stats
     }
 

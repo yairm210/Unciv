@@ -39,3 +39,8 @@ class Trade{
         theirOffers.addAll(trade.theirOffers)
     }
 }
+
+
+class TradeRequest(val requestingCiv:String,
+                   /** Their offers are what they offer us, and our offers are what they want in return */
+                   val trade: Trade)

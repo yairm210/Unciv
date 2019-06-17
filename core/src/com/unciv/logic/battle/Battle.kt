@@ -85,6 +85,16 @@ class Battle(val gameInfo:GameInfo) {
             conquerCity(defender.city, attacker)
         }
 
+
+        // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
+        if(defender.isDefeated() && defender.getCivInfo().isBarbarianCivilization() && attackedTile.improvement==Constants.barbarianEncampment
+                && attacker.getCivInfo().getNation().unique== "67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."
+                && Random().nextDouble() > 0.67){
+            attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
+            attacker.getCivInfo().gold += 25
+            attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!",attackedTile.position, Color.RED)
+        }
+
         // we're a melee unit and we destroyed\captured an enemy unit
         else if (attacker.isMelee()
                 && (defender.isDefeated() || defender.getCivInfo()==attacker.getCivInfo())
@@ -95,6 +105,7 @@ class Battle(val gameInfo:GameInfo) {
                 captureCivilianUnit(attacker,MapUnitCombatant(attackedTile.civilianUnit!!))
             attacker.unit.moveToTile(attackedTile)
         }
+
 
         if(attacker is MapUnitCombatant) {
             val unit = attacker.unit
@@ -140,6 +151,7 @@ class Battle(val gameInfo:GameInfo) {
             addXp(attacker,2,defender)
             addXp(defender,2,attacker)
         }
+
 
         // Add culture when defeating a barbarian when Honor policy is adopted (can be either attacker or defender!)
         fun tryGetCultureFromHonor(civUnit:ICombatant, barbarianUnit:ICombatant){

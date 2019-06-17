@@ -55,10 +55,9 @@ class Building : NamedStats(), IConstruction{
         val infoList= mutableListOf<String>()
         val str = getStats(null).toString()
         if(str.isNotEmpty()) infoList += str
-        if(percentStatBonus!=null){
-            for(stat in percentStatBonus!!.toHashMap())
-                if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key.toString().tr()}"
-        }
+        for(stat in getStatPercentageBonuses(null).toHashMap())
+            if(stat.value!=0f) infoList+="+${stat.value.toInt()}% ${stat.key.toString().tr()}"
+
         val improvedResources = GameBasics.TileResources.values.filter { it.building==name }.map { it.name.tr() }
         if(improvedResources.isNotEmpty()){
             // buildings that improve resources
@@ -93,13 +92,14 @@ class Building : NamedStats(), IConstruction{
         if(uniques.isNotEmpty()) stringBuilder.appendln(uniques.asSequence().map { it.tr() }.joinToString("\n"))
         if (stats.toString() != "")
             stringBuilder.appendln(stats)
-        if (this.percentStatBonus != null) {
-            if (this.percentStatBonus!!.production != 0f) stringBuilder.append("+" + this.percentStatBonus!!.production.toInt() + "% {Production}\n".tr())
-            if (this.percentStatBonus!!.gold != 0f) stringBuilder.append("+" + this.percentStatBonus!!.gold.toInt() + "% {Gold}\n".tr())
-            if (this.percentStatBonus!!.science != 0f) stringBuilder.append("+" + this.percentStatBonus!!.science.toInt() + "% {Science}\r\n".tr())
-            if (this.percentStatBonus!!.food != 0f) stringBuilder.append("+" + this.percentStatBonus!!.food.toInt() + "% {Food}\n".tr())
-            if (this.percentStatBonus!!.culture != 0f) stringBuilder.append("+" + this.percentStatBonus!!.culture.toInt() + "% {Culture}\r\n".tr())
-        }
+
+        val percentStats = getStatPercentageBonuses(civInfo)
+        if (percentStats.production != 0f) stringBuilder.append("+" + percentStats.production.toInt() + "% {Production}\n".tr())
+        if (percentStats.gold != 0f) stringBuilder.append("+" + percentStats.gold.toInt() + "% {Gold}\n".tr())
+        if (percentStats.science != 0f) stringBuilder.append("+" + percentStats.science.toInt() + "% {Science}\r\n".tr())
+        if (percentStats.food != 0f) stringBuilder.append("+" + percentStats.food.toInt() + "% {Food}\n".tr())
+        if (percentStats.culture != 0f) stringBuilder.append("+" + percentStats.culture.toInt() + "% {Culture}\r\n".tr())
+
         if (this.greatPersonPoints != null) {
             val gpp = this.greatPersonPoints!!
             if (gpp.production != 0f) stringBuilder.appendln("+" + gpp.production.toInt()+" " + "[Great Engineer] points".tr())
@@ -143,12 +143,6 @@ class Building : NamedStats(), IConstruction{
             if (adoptedPolicies.contains("Humanism") && hashSetOf("University", "Observatory", "Public School").contains(baseBuildingName ))
                 stats.happiness += 1f
 
-            if (adoptedPolicies.contains("Theocracy") && baseBuildingName == "Temple")
-                percentStatBonus = Stats().apply { gold = 10f }
-
-            if (adoptedPolicies.contains("Free Thought") && baseBuildingName == "University")
-                percentStatBonus!!.science = 50f
-
             if (adoptedPolicies.contains("Rationalism Complete") && !isWonder && stats.science > 0)
                 stats.gold += 1f
 
@@ -165,6 +159,26 @@ class Building : NamedStats(), IConstruction{
                 stats.gold+=3
             }
         }
+        return stats
+    }
+
+    fun getStatPercentageBonuses(civInfo: CivilizationInfo?): Stats {
+        val stats = percentStatBonus
+        if(stats==null) return Stats() // empty
+        if(civInfo==null) return stats // initial stats
+
+        val adoptedPolicies = civInfo.policies.adoptedPolicies
+        val baseBuildingName = getBaseBuilding().name
+
+        if (adoptedPolicies.contains("Theocracy") && baseBuildingName == "Temple")
+            stats.gold = 10f
+
+        if (adoptedPolicies.contains("Free Thought") && baseBuildingName == "University")
+            stats.science = 50f
+
+        if(uniques.contains("+5% Production for every Trade Route with a City-State in the empire"))
+            stats.production += 5*civInfo.citiesConnectedToCapital.count { it.civInfo.isCityState() }
+
         return stats
     }
 
@@ -331,7 +345,7 @@ class Building : NamedStats(), IConstruction{
 
     fun isStatRelated(stat: Stat): Boolean {
         if (get(stat) > 0) return true
-        if (percentStatBonus!=null && percentStatBonus!!.get(stat)>0) return true
+        if (getStatPercentageBonuses(null).get(stat)>0) return true
         if (specialistSlots!=null && specialistSlots!!.get(stat)>0) return true
         return false
     }
