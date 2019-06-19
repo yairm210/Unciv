@@ -42,7 +42,7 @@ You can play Unciv on any desktop using the Bluestacks emulator!
 
 # FAQ
 
-## Will you implement <feature>?
+## Will you implement {feature}?
 
 If it's in the original Civ V, then yes!
 
