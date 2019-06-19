@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
@@ -73,7 +74,7 @@ class SpecificUnitAutomation{
                 .take(5)
                 .toList()
         var rank =  top5Tiles.asSequence().map { nearbyTileRankings[it]!! }.sum()
-        if(tileInfo.neighbors.any{it.baseTerrain == "Coast"}) rank += 5
+        if(tileInfo.neighbors.any{it.baseTerrain == Constants.coast}) rank += 5
         return rank
     }
 

@@ -157,7 +157,7 @@ class GameInfo {
 
         val unit:String
         if (unitList.isEmpty()) unit="Warrior"
-        else if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain=="Coast" } && Random().nextBoolean())
+        else if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
             unit=waterUnits.random().name
         else unit = landUnits.random().name
 

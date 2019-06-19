@@ -37,7 +37,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 && (to.baseTerrain == Constants.hill || to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
             return 4f
 
-        if(unit.doubleMovementInCoast && to.baseTerrain=="Coast")
+        if(unit.doubleMovementInCoast && to.baseTerrain==Constants.coast)
             return 1/2f
 
         return to.getLastTerrain().movementCost.toFloat() // no road

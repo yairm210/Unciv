@@ -123,7 +123,7 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if((baseTerrain== Constants.ocean||baseTerrain=="Coast") && city!=null
+        if((baseTerrain== Constants.ocean||baseTerrain==Constants.coast) && city!=null
                 && city.getBuildingUniques().contains("+1 food from Ocean and Coast tiles"))
             stats.food += 1
 

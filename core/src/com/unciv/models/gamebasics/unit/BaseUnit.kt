@@ -120,7 +120,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     fun getRejectionReason(construction: CityConstructions): String {
         val civRejectionReason = getRejectionReason(construction.cityInfo.civInfo)
         if(civRejectionReason!="") return civRejectionReason
-        if(unitType.isWaterUnit() && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain=="Coast" })
+        if(unitType.isWaterUnit() && construction.cityInfo.getCenterTile().neighbors.none { it.baseTerrain==Constants.coast })
             return "Can't build water units by the coast"
         return ""
     }
