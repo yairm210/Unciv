@@ -219,12 +219,14 @@ class DiplomacyManager() {
 
     fun nextTurn(){
         for(trade in trades.toList()){
-            for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 })
+            for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 }) {
                 offer.duration--
+                if(offer.duration==0)
+                    civInfo.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+            }
 
             if(trade.ourOffers.all { it.duration<=0 } && trade.theirOffers.all { it.duration<=0 }) {
                 trades.remove(trade)
-                civInfo.addNotification("One of our trades with [$otherCivName] has ended!".tr(),null, Color.YELLOW)
             }
         }
         removeUntenebleTrades()
