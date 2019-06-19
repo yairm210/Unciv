@@ -40,4 +40,20 @@ I'd love to hear your feedback, either here or via mail to yairm210@hotmail.com!
 
 You can play Unciv on any desktop using the Bluestacks emulator!
 
+# FAQ
+
+## Will you implement <feature>?
+
+If it's in the original Civ V, then yes!
+
+There's a lot left to implement, so it's hard to give an estimation of when exactly each feature will be added, but we're constantly improving!
+
+If not, then the feature won't be added until we've finished all the features from the original Civ - as mentioned, this will take a while!
+
+## How can I help?
+
+If you're a programmer, you can join us in any of the open issue, or work on improving anything you want - once you're finished, issue a pull request and it'll go into the next version!
+
+If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
+
 # [Credits and 3rd parties](Credits.md)
