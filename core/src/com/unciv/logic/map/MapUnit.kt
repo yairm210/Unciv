@@ -473,7 +473,7 @@ class MapUnit {
 
     fun disband(){
         destroy()
-        if(currentTile.isCityCenter() && currentTile.getOwner()==civInfo)
+        if(currentTile.getOwner()==civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
     }
 
