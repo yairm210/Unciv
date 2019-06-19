@@ -30,7 +30,8 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
                 .tint(city.civInfo.getNation().getColor())
         val label = cityButtonText.toLabel()
-        label.setFontColor(city.civInfo.getNation().getSecondaryColor())
+        val secondaryColor = city.civInfo.getNation().getSecondaryColor()
+        label.setFontColor(secondaryColor)
 
         clear()
         val unitTable = tileGroup.worldScreen.bottomBar.unitTable
@@ -80,7 +81,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
                 val cityStateImage = ImageGetter.getNationIcon("CityState")
-                        .apply { color = city.civInfo.getNation().getSecondaryColor()}
+                        .apply { color = secondaryColor}
                 iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
             } else {
                 val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
@@ -88,13 +89,19 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             }
         } else if (city.civInfo.isCurrentPlayer() && city.isConnectedToCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
+            connectionImage.color = secondaryColor
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(10f)
         }
 
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
-        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
+
+        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
             iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f)
+        else if(city.civInfo.isMajorCiv()) {
+            val nationIcon = ImageGetter.getNationIcon(city.civInfo.getNation().name)
+            nationIcon.color = secondaryColor
+            iconTable.add(nationIcon).size(20f).padRight(10f)
         }
         add(iconTable).row()
         pack()
