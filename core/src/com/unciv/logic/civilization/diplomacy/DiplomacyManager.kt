@@ -209,7 +209,7 @@ class DiplomacyManager() {
         }
 
         if(hasOpenBorders && !newHasOpenBorders){ // borders were closed, get out!
-            for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName== otherCivName }){
+            for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }){
                 unit.movementAlgs().teleportToClosestMoveableTile()
             }
         }

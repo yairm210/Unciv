@@ -9,10 +9,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.setFontColor
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.utils.*
 
 class NationTable(val nation: Nation, val newGameParameters: GameParameters, skin: Skin, width:Float, onClick:()->Unit): Table(skin){
     val innerTable = Table()
@@ -20,8 +17,13 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, ski
         background= ImageGetter.getBackground(nation.getSecondaryColor())
         innerTable.pad(10f)
         innerTable.background= ImageGetter.getBackground(nation.getColor())
-        innerTable.add(Label(nation.leaderName.tr()+" - "+nation.name.tr(), skin)
-                .apply { setFontColor(nation.getSecondaryColor())}).row()
+
+        val titleTable = Table()
+        titleTable.add(ImageGetter.getNationIndicator(nation,50f)).pad(10f)
+        titleTable.add(nation.getLeaderDisplayName().toLabel()
+                .apply { setFontColor(nation.getSecondaryColor()); setFontSize(24)})
+        innerTable.add(titleTable).row()
+
         innerTable.add(getUniqueLabel(nation)
                 .apply { setWrap(true);setFontColor(nation.getSecondaryColor())})
                 .width(width)

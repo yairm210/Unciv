@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.Drawable
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable
 import com.badlogic.gdx.utils.Align
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
 
 object ImageGetter {
@@ -53,13 +54,8 @@ object ImageGetter {
         }
     }
 
-    fun imageExists(fileName:String): Boolean {
-        return atlas.findRegion(fileName)!=null
-    }
-
-    fun techIconExists(techName:String): Boolean {
-        return imageExists("TechIcons/$techName")
-    }
+    fun imageExists(fileName:String) = atlas.findRegion(fileName)!=null
+    fun techIconExists(techName:String) = imageExists("TechIcons/$techName")
 
     fun getStatIcon(statName: String): Image {
         return getImage("StatIcons/$statName")
@@ -69,6 +65,25 @@ object ImageGetter {
     fun getUnitIcon(unitName:String,color:Color= Color.BLACK):Image{
         return getImage("UnitIcons/$unitName").apply { this.color=color }
     }
+
+    fun getNationIndicator(nation: Nation, size:Float): IconCircleGroup {
+        val civIndicator = getCircle().apply { color = nation.getSecondaryColor() }
+                .surroundWithCircle(size).apply { circle.color = nation.getColor() }
+
+        val civIconName = if(nation.isCityState()) "CityState" else nation.name
+        if(nationIconExists(civIconName)){
+            val cityStateIcon = ImageGetter.getNationIcon(civIconName)
+            cityStateIcon.setSize(size*0.7f,size*0.7f)
+            cityStateIcon.center(civIndicator)
+            cityStateIcon.color = nation.getColor()
+            civIndicator.addActor(cityStateIcon)
+        }
+
+        return civIndicator
+    }
+
+    fun nationIconExists(nation:String) = imageExists("NationIcons/$nation")
+    fun getNationIcon(nation:String) = getImage("NationIcons/$nation")
 
     val foodCircleColor =  colorFromRGB(129, 199, 132)
     val productionCircleColor = Color.BROWN.cpy().lerp(Color.WHITE,0.5f)!!

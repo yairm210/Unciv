@@ -411,6 +411,22 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Harvest](https://thenounproject.com/term/harvest/1022373/) By Made for Flood plains
 * [Puddle](https://thenounproject.com/search/?q=puddle&i=1138155) By Bakunetsu Kaito for Lakes
 
+## Nations
+
+* [Eye of Horus](https://thenounproject.com/search/?q=eye%20of%20horus&i=92471) By Lilit Kalachyan for Egypt
+* [Russia](https://thenounproject.com/search/?q=russia&i=64137) By Eugen Belyakoff
+* [Yin Yang](https://thenounproject.com/search/?q=tao&i=1023129) By andriwidodo for China
+* [Lion](https://thenounproject.com/search/?q=lion&i=912735) By parkjisun for Babylon
+* [Omega](https://thenounproject.com/search/?q=omega&i=1925519) By icon 54 for Greece
+* [Shield](https://thenounproject.com/search/?q=American%20shield&i=5825) By Nathan Driskell for America
+* [Fleaur de Lis](https://thenounproject.com/search/?q=fleur%20de&i=78672) By Jessika Gadoury for France
+* [Crown](https://thenounproject.com/search/?q=crown&i=607405) By Peter van Driel for England
+* [Wreath](https://thenounproject.com/search/?q=laurel&i=692545) by VectorBakery or Roman
+* [Iron Cross](https://thenounproject.com/search/?q=iron%20cross&i=373241) By Souvik Maity for Germany
+* [Star and Crecent](https://thenounproject.com/search/?q=star%20and%20crescent&i=2552427) for Arabia
+* [Family Crest Komon](https://thenounproject.com/search/?q=oda&i=2293528) by sahua d for Japan
+* [Ashika Chakra](https://thenounproject.com/search/?q=ashoka%20chakra&i=2328559) by sahua d for India
+
 ## Others 
 
 * [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
@@ -451,3 +467,5 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
+
+

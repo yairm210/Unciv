@@ -56,15 +56,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }) {
             if (!currentPlayerCiv.knows(civ)) continue
 
-            val civIndicator = ImageGetter.getCircle().apply { color = civ.getNation().getSecondaryColor() }
-                    .surroundWithCircle(100f).apply { circle.color = civ.getNation().getColor() }
-            if(civ.isCityState()){
-                val cityStateIcon = ImageGetter.getImage("OtherIcons/CityState.png")
-                cityStateIcon.setSize(70f,70f)
-                cityStateIcon.center(civIndicator)
-                cityStateIcon.color= Color.BLACK
-                civIndicator.addActor(cityStateIcon)
-            }
+            val civIndicator = ImageGetter.getNationIndicator(civ.getNation(),100f)
 
             val relationship = ImageGetter.getCircle()
             if(currentPlayerCiv.isAtWarWith(civ)) relationship.color = Color.RED
