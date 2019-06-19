@@ -311,27 +311,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val civGroups = HashMap<String, Actor>()
         for(i in 0..relevantCivs.lastIndex){
             val civ = relevantCivs[i]
-            val civGroup = Table()
-            val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
 
-            var civNameText = civ.civName.tr()
-            if(civ.isDefeated()) civNameText += "\n({Defeated})".tr()
-            val label = civNameText.toLabel()
-            label.setAlignment(Align.center)
-
-            if (civ.isDefeated()) {
-                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
-                label.setFontColor(Color.BLACK)
-            } else if (playerKnows(civ)) {
-                civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
-                label.setFontColor(civ.getNation().getSecondaryColor())
-            } else {
-                civGroup.background = civGroupBackground.tint(Color.DARK_GRAY)
-                label.setText("???")
-            }
-
-            civGroup.add(label).pad(10f)
-            civGroup.pack()
+            val civGroup = getCivGroup(civ, "", currentPlayerCivInfo)
 
             val vector = HexMath().getVectorForAngle(2 * Math.PI.toFloat() *i / relevantCivs.size)
             civGroup.center(group)
@@ -393,5 +374,33 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         }
 
         return resourcesTable
+    }
+
+    companion object {
+        fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String,currentPlayer:CivilizationInfo): Table {
+            val civGroup = Table()
+            val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+
+            val civNameText = civ.civName.tr()+afterCivNameText
+            val label = civNameText.toLabel()
+            label.setAlignment(Align.center)
+
+            if (civ.isDefeated()) {
+                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
+                civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
+                label.setFontColor(Color.BLACK)
+            } else if (currentPlayer==civ || currentPlayer.knows(civ)) {
+                civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
+                label.setFontColor(civ.getNation().getSecondaryColor())
+            } else {
+                civGroup.background = civGroupBackground.tint(Color.DARK_GRAY)
+                label.setText("???")
+            }
+
+            civGroup.add(ImageGetter.getNationIndicator(civ.getNation(), 30f))
+            civGroup.add(label).pad(10f)
+            civGroup.pack()
+            return civGroup
+        }
     }
 }

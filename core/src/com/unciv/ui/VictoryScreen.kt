@@ -167,13 +167,12 @@ class VictoryScreen : PickerScreen() {
         dominationVictoryColumn.add("Undefeated civs".toLabel()).row()
         dominationVictoryColumn.addSeparator()
 
-        for (civ in majorCivs.filter { !it.isDefeated() }) {
-            val civName = if(playerCivInfo.knows(civ) || playerCivInfo==civ) civ.civName.tr() else "???"
-            dominationVictoryColumn.add(TextButton(civName, skin).apply { color = Color.GREEN }).row()
-        }
+        for (civ in majorCivs.filter { !it.isDefeated() })
+            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).row()
 
         for (civ in majorCivs.filter { it.isDefeated() })
-            dominationVictoryColumn.add(TextButton(civ.civName.tr(), skin).apply { color = Color.GRAY }).row()
+            dominationVictoryColumn.add(EmpireOverviewScreen.getCivGroup(civ, "", playerCivInfo)).row()
+
         return dominationVictoryColumn
     }
 
@@ -189,8 +188,7 @@ class VictoryScreen : PickerScreen() {
                         .sortedByDescending { it.branchesCompleted }
 
         for (entry in civsToBranchesCompleted) {
-            val civName = if(playerCivInfo.knows(entry.civ) || playerCivInfo==entry.civ) entry.civ.civName.tr() else "???"
-            policyVictoryColumn.add(TextButton(civName + " - " + entry.branchesCompleted, skin)).row()
+            policyVictoryColumn.add(EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)).row()
         }
         return policyVictoryColumn
     }
@@ -208,8 +206,7 @@ class VictoryScreen : PickerScreen() {
         }
 
         for (entry in civsToPartsRemaining) {
-            val civName = if(playerCivInfo.knows(entry.civ) || playerCivInfo==entry.civ) entry.civ.civName.tr() else "???"
-            scientificVictoryColumn.add(TextButton(civName + " - " + entry.partsRemaining, skin)).row()
+            scientificVictoryColumn.add(EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo)).row()
         }
         return scientificVictoryColumn
     }
