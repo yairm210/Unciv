@@ -45,7 +45,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         setStatsInfoButton.onClick {
             centerTable.clear()
             centerTable.add(ScrollPane(HorizontalGroup().apply {
-                space(20f)
+                space(40f)
                 top()
                 addActor(getHappinessTable())
                 addActor(getGoldTable())
@@ -62,6 +62,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.pack()
         }
         topTable.add(setCurrentTradesButton)
+        if(currentPlayerCivInfo.diplomacy.values.all { it.trades.isEmpty() })
+            setCurrentTradesButton.disable()
 
         val setUnitsButton = TextButton("Units".tr(),skin)
         setUnitsButton.onClick {
@@ -87,6 +89,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.pack()
         }
         topTable.add(setResourcesButton)
+        if(currentPlayerCivInfo.getDetailedCivResources().isEmpty())
+            setResourcesButton.disable()
 
         topTable.pack()
 
@@ -386,10 +390,11 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             label.setAlignment(Align.center)
 
             if (civ.isDefeated()) {
-                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
+                civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
                 label.setFontColor(Color.BLACK)
             } else if (currentPlayer==civ || currentPlayer.knows(civ)) {
+                civGroup.add(ImageGetter.getNationIndicator(civ.getNation(), 30f))
                 civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
                 label.setFontColor(civ.getNation().getSecondaryColor())
             } else {
@@ -397,7 +402,6 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 label.setText("???")
             }
 
-            civGroup.add(ImageGetter.getNationIndicator(civ.getNation(), 30f))
             civGroup.add(label).pad(10f)
             civGroup.pack()
             return civGroup
