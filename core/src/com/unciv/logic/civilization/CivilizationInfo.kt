@@ -194,7 +194,7 @@ class CivilizationInfo {
 
         var numberOfUnitsToPayFor = max(0f, unitsToPayFor.count().toFloat() - freeUnits)
         if(getNation().unique=="67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."){
-            val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() }.toFloat())
+            val numberOfUnitsWithDiscount = min(numberOfUnitsToPayFor, unitsToPayFor.count { it.type.isLandUnit() && !it.type.isCivilian()}.toFloat())
             numberOfUnitsToPayFor -= 0.25f * numberOfUnitsWithDiscount
         }
 
