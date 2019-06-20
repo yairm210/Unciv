@@ -316,6 +316,7 @@ class CivilizationInfo {
         newList.remove(mapUnit)
         units=newList
         updateStatsForNextTurn() // unit upkeep
+        updateDetailedCivResources()
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }

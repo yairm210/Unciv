@@ -303,6 +303,9 @@ class CityInfo {
         cityConstructions.removeBuilding(buildingName)
         civInfo.gold += getGoldForSellingBuilding(buildingName)
         hasSoldBuildingThisTurn=true
+
+        cityStats.update()
+        civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
     }
 
 
