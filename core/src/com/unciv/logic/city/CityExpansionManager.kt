@@ -95,6 +95,9 @@ class CityExpansionManager {
         if(cityInfo.workedTiles.contains(tileInfo.position))
             cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tileInfo.position)
         tileInfo.owningCity=null
+
+        cityInfo.civInfo.updateDetailedCivResources()
+        cityInfo.cityStats.update()
     }
 
     fun takeOwnership(tileInfo: TileInfo){
@@ -105,6 +108,7 @@ class CityExpansionManager {
         cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
         tileInfo.owningCity = cityInfo
         cityInfo.population.autoAssignPopulation()
+        cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
 
         for(unit in tileInfo.getUnits())

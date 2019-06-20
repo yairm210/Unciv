@@ -522,10 +522,10 @@ class MapUnit {
         (actions.random())()
     }
 
-    fun assignOwner(civInfo:CivilizationInfo){
+    fun assignOwner(civInfo:CivilizationInfo, updateCivInfo:Boolean=true){
         owner=civInfo.civName
         this.civInfo=civInfo
-        civInfo.addUnit(this)
+        civInfo.addUnit(this,updateCivInfo)
     }
 
     //endregion

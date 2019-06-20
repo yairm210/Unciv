@@ -211,7 +211,10 @@ class GameInfo {
             for(unit in civInfo.getCivUnits())
                 unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
         }
+
         for (civInfo in civilizations){
+            // We need to determine the GLOBAL happiness state in order to determine the city stats
+            for(cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
             for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
         }
     }

@@ -43,7 +43,7 @@ class Automation {
         if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
         else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
-        if (civInfo.gold < 0 && civInfo.getStatsForNextTurn().gold <= 0) rank += stats.gold
+        if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0) rank += stats.gold
         else rank += stats.gold / 2
 
         rank += stats.production
@@ -129,7 +129,7 @@ class Automation {
                     .minBy{it.cost}
             if (goldBuilding!=null) {
                 val choice = ConstructionChoice(goldBuilding.name,1.2f)
-                if (cityInfo.civInfo.getStatsForNextTurn().gold<0) {
+                if (cityInfo.civInfo.statsForNextTurn.gold<0) {
                     choice.choiceModifier=3f
                 }
                 relativeCostEffectiveness.add(choice)
@@ -151,8 +151,9 @@ class Automation {
                     .minBy{it.cost}
             if (happinessBuilding!=null) {
                 val choice = ConstructionChoice(happinessBuilding.name,1f)
-                if (cityInfo.civInfo.happiness > 5) choice.choiceModifier = 1/2f // less desperate
-                if (cityInfo.civInfo.happiness < 0) choice.choiceModifier = 3f // more desperate
+                val civHappiness = cityInfo.civInfo.getHappiness()
+                if (civHappiness > 5) choice.choiceModifier = 1/2f // less desperate
+                if (civHappiness < 0) choice.choiceModifier = 3f // more desperate
                 relativeCostEffectiveness.add(choice)
             }
 
@@ -217,7 +218,7 @@ class Automation {
             }
 
             //Army
-            if((!isAtWar && cityInfo.civInfo.getStatsForNextTurn().gold>0 && militaryUnits<cities*2)
+            if((!isAtWar && cityInfo.civInfo.statsForNextTurn.gold>0 && militaryUnits<cities*2)
                     || (isAtWar && cityInfo.civInfo.gold > -50)) {
                 val militaryUnit = chooseMilitaryUnit(cityInfo)
                 val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)

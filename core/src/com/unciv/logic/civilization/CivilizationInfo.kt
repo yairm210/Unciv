@@ -44,9 +44,10 @@ class CivilizationInfo {
 
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false
+    @Transient var statsForNextTurn = Stats()
+    @Transient var detailedCivResources = ResourceSupplyList()
 
     var gold = 0
-    var happiness = 15
     @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
     var playerType = PlayerType.AI
     var civName = ""
@@ -78,7 +79,6 @@ class CivilizationInfo {
     fun clone(): CivilizationInfo {
         val toReturn = CivilizationInfo()
         toReturn.gold = gold
-        toReturn.happiness = happiness
         toReturn.playerType = playerType
         toReturn.civName = civName
         toReturn.tech = tech.clone()
@@ -132,7 +132,9 @@ class CivilizationInfo {
         else return VictoryType.Neutral
     }
 
-    fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
+    fun updateStatsForNextTurn(){
+        statsForNextTurn = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
+    }
 
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
         val statMap = HashMap<String,Stats>()
@@ -154,7 +156,7 @@ class CivilizationInfo {
             }
         }
 
-        for (entry in getHappinessForNextTurn()) {
+        for (entry in getHappinessBreakdown()) {
             if (!statMap.containsKey(entry.key))
                 statMap[entry.key] = Stats()
             statMap[entry.key]!!.happiness += entry.value
@@ -220,7 +222,9 @@ class CivilizationInfo {
         return transportationUpkeep
     }
 
-    fun getHappinessForNextTurn(): HashMap<String, Float> {
+    fun getHappiness() = getHappinessBreakdown().values.sum().roundToInt()
+
+    fun getHappinessBreakdown(): HashMap<String, Float> {
         val statMap = HashMap<String,Float>()
         statMap["Base happiness"] = getDifficulty().baseHappiness.toFloat()
 
@@ -230,7 +234,7 @@ class CivilizationInfo {
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
 
         for(city in cities.toList()){
-            for(keyvalue in city.cityStats.getCityHappiness()){
+            for(keyvalue in city.cityStats.happinessList){
                 if(statMap.containsKey(keyvalue.key))
                     statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value
                 else statMap[keyvalue.key] = keyvalue.value
@@ -258,23 +262,23 @@ class CivilizationInfo {
     }
 
     /**
-     * Returns list of all resources and their origin - for most usages you'll want getCivResources().totalSupply(),
+     * Returns list of all resources and their origin - for most usages you'll want updateDetailedCivResources().totalSupply(),
      * which unifies al the different sources
      */
     fun getCivResources(): ResourceSupplyList {
         val newResourceSupplyList=ResourceSupplyList()
-        for(resourceSupply in getDetailedCivResources())
+        for(resourceSupply in detailedCivResources)
             newResourceSupplyList.add(resourceSupply.resource,resourceSupply.amount,"All")
         return newResourceSupplyList
     }
 
-    fun getDetailedCivResources(): ResourceSupplyList {
-        val civResources = ResourceSupplyList()
-        for (city in cities) civResources.add(city.getCityResources())
-        for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
+    fun updateDetailedCivResources() {
+        val newDetailedCivResources = ResourceSupplyList()
+        for (city in cities) newDetailedCivResources.add(city.getCityResources())
+        for (dip in diplomacy.values) newDetailedCivResources.add(dip.resourcesFromTrade())
         for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
-            civResources.add(resource,-1,"Units")
-        return civResources
+            newDetailedCivResources.add(resource,-1,"Units")
+        detailedCivResources = newDetailedCivResources
     }
 
     /**
@@ -294,16 +298,24 @@ class CivilizationInfo {
 
     fun getCivUnits(): List<MapUnit> = units
 
-    fun addUnit(mapUnit: MapUnit){
+    fun addUnit(mapUnit: MapUnit, updateCivInfo:Boolean=true){
         val newList = ArrayList(units)
         newList.add(mapUnit)
         units=newList
+
+        if(updateCivInfo) {
+            // Not relevant when updating tileinfo transients, since some info of the civ itself isn't yet available,
+            // and in any case it'll be updated once civ info transients are
+            updateStatsForNextTurn() // unit upkeep
+            updateDetailedCivResources()
+        }
     }
 
     fun removeUnit(mapUnit: MapUnit){
         val newList = ArrayList(units)
         newList.remove(mapUnit)
         units=newList
+        updateStatsForNextTurn() // unit upkeep
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
@@ -431,6 +443,7 @@ class CivilizationInfo {
         setCitiesConnectedToCapitalTransients()
         updateViewableTiles()
         updateHasActiveGreatWall()
+        updateDetailedCivResources()
     }
 
     fun updateHasActiveGreatWall(){
@@ -439,6 +452,8 @@ class CivilizationInfo {
     }
 
     fun startTurn(){
+        updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
+
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
@@ -450,14 +465,13 @@ class CivilizationInfo {
         setCitiesConnectedToCapitalTransients()
         for (city in cities) city.startTurn()
 
-        happiness = getHappinessForNextTurn().values.sum().roundToInt()
         getCivUnits().toList().forEach { it.startTurn() }
     }
 
     fun endTurn() {
         notifications.clear()
 
-        val nextTurnStats = getStatsForNextTurn()
+        val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
 
@@ -484,7 +498,7 @@ class CivilizationInfo {
             city.endTurn()
         }
 
-        goldenAges.endTurn(happiness)
+        goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
         diplomacy.values.forEach{it.nextTurn()}
         updateHasActiveGreatWall()
@@ -604,6 +618,7 @@ class CivilizationInfo {
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         currentPlayerCiv.gold -= giftAmount
         otherCiv.getDiplomacyManager(currentPlayerCiv).influence += giftAmount/10
+        updateStatsForNextTurn()
     }
 
     //endregion

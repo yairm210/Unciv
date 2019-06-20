@@ -92,7 +92,7 @@ class PolicyManager {
         }
 
         for (cityInfo in civInfo.cities)
-            cityInfo.cityStats.update()
+            cityInfo.cityStats.update() // This ALSO has the side-effect of updating the CivInfo startForNextTurn so we don't need to call it explicitly
 
         if(!canAdoptPolicy()) shouldOpenPolicyPicker=false
     }

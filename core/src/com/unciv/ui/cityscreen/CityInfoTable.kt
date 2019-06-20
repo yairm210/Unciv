@@ -133,7 +133,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         for(stats in unifiedStatList.values) stats.happiness=0f
 
         // add happiness to stat list
-        for(entry in cityStats.getCityHappiness().filter { it.value!=0f }){
+        for(entry in cityStats.happinessList.filter { it.value!=0f }){
             if(!unifiedStatList.containsKey(entry.key))
                 unifiedStatList[entry.key]= Stats()
             unifiedStatList[entry.key]!!.happiness=entry.value

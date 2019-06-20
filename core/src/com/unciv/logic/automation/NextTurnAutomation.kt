@@ -75,7 +75,7 @@ class NextTurnAutomation{
             }
         }
 
-        if(civInfo.happiness < 5){
+        if(civInfo.getHappiness() < 5){
             for(cityState in civInfo.gameInfo.civilizations
                     .filter { it.isCityState() && it.getCityStateType()==CityStateType.Mercantile }){
                 val diploManager = cityState.getDiplomacyManager(civInfo)
@@ -300,7 +300,7 @@ class NextTurnAutomation{
             else {
                 if (enemy.victoryType()!=VictoryType.Cultural
                         && enemy.getCivUnits().filter { !it.type.isCivilian() }.size > enemy.cities.size
-                        && enemy.happiness > 0) {
+                        && enemy.getHappiness() > 0) {
                     continue //enemy AI has too large army and happiness. It continues to fight for profit.
                 }
                 tradeLogic.acceptTrade()
@@ -334,7 +334,7 @@ class NextTurnAutomation{
 
         if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
             val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
-            if (!civInfo.isAtWar() && civInfo.happiness > 0
+            if (!civInfo.isAtWar() && civInfo.getHappiness() > 0
                     && ourMilitaryUnits >= civInfo.cities.size) { //evaluate war
                 val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
                 val enemyCivsByDistanceToOurs = civInfo.getKnownCivs()
@@ -404,7 +404,7 @@ class NextTurnAutomation{
         if(civInfo.isAtWar()) return // don't train settlers when you could be training troops.
         if(civInfo.victoryType()==VictoryType.Cultural && civInfo.cities.size >3) return
         if (civInfo.cities.any()
-                && civInfo.happiness > civInfo.cities.size + 5
+                && civInfo.getHappiness() > civInfo.cities.size + 5
                 && civInfo.getCivUnits().none { it.name == Constants.settler }
                 && civInfo.cities.none { it.cityConstructions.currentConstruction == Constants.settler }) {
 

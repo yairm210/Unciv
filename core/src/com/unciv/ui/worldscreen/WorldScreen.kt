@@ -106,7 +106,6 @@ class WorldScreen : CameraStageBaseScreen() {
         gameClone.setTransients()
         val cloneCivilization = gameClone.getCurrentPlayerCivilization()
         kotlin.concurrent.thread {
-            currentPlayerCiv.happiness = gameClone.getCurrentPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()
             gameInfo.civilizations.forEach { it.setCitiesConnectedToCapitalTransients() }
         }
 
@@ -336,7 +335,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 && currentPlayerCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
             displayTutorials("BarbarianEncountered")
         if(currentPlayerCiv.cities.size > 2) displayTutorials("SecondCity")
-        if(currentPlayerCiv.happiness < 0) displayTutorials("Unhappiness")
+        if(currentPlayerCiv.getHappiness() < 0) displayTutorials("Unhappiness")
         if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
         if(gameInfo.turns >= 100) displayTutorials("ContactMe")
         val resources = currentPlayerCiv.getCivResources()

@@ -47,8 +47,9 @@ class BattleDamage{
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            if (combatant.getCivInfo().happiness < 0)
-                modifiers["Unhappiness"] = max(0.02f * combatant.getCivInfo().happiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
+            val civHappiness = combatant.getCivInfo().getHappiness()
+            if (civHappiness < 0)
+                modifiers["Unhappiness"] = max(0.02f * civHappiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
             if(combatant.getCivInfo().policies.isAdopted("Populism") && combatant.getHealth() < 100){
                 modifiers["Populism"] = 0.25f

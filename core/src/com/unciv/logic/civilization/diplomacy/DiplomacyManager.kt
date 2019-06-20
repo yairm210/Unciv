@@ -221,8 +221,12 @@ class DiplomacyManager() {
         for(trade in trades.toList()){
             for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 }) {
                 offer.duration--
-                if(offer.duration==0)
-                    civInfo.addNotification("["+offer.name+"] from [$otherCivName] has ended",null, Color.GOLD)
+                if(offer.duration==0) {
+                    civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", null, Color.GOLD)
+
+                    civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
+                    civInfo.updateDetailedCivResources() // if they were giving us resources
+                }
             }
 
             if(trade.ourOffers.all { it.duration<=0 } && trade.theirOffers.all { it.duration<=0 }) {

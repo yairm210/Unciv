@@ -17,7 +17,7 @@ class CityConstructions {
     @Transient lateinit var cityInfo: CityInfo
     @Transient private var builtBuildingObjects=ArrayList<Building>()
 
-    var builtBuildings = ArrayList<String>()
+    var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstruction: String = "Monument" // default starting building!
     var currentConstructionIsUserSet = false
@@ -213,7 +213,9 @@ class CityConstructions {
         getConstruction(buildingName).postBuildEvent(this)
         if (currentConstruction == buildingName)
             cancelCurrentConstruction()
+
         cityInfo.cityStats.update()
+        cityInfo.civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
     }
 
     fun addCultureBuilding() {

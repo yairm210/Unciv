@@ -61,7 +61,7 @@ class TechManager {
 
     fun turnsToTech(techName: String): Int {
         return Math.ceil( remainingScienceToTech(techName).toDouble()
-                / civInfo.getStatsForNextTurn().science).toInt()
+                / civInfo.statsForNextTurn.science).toInt()
     }
 
     fun isResearched(TechName: String): Boolean = techsResearched.contains(TechName)

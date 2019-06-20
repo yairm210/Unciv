@@ -89,7 +89,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             centerTable.pack()
         }
         topTable.add(setResourcesButton)
-        if(currentPlayerCivInfo.getDetailedCivResources().isEmpty())
+        if(currentPlayerCivInfo.detailedCivResources.isEmpty())
             setResourcesButton.disable()
 
         topTable.pack()
@@ -140,12 +140,12 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         happinessTable.defaults().pad(5f)
         happinessTable.add("Happiness".toLabel().setFontSize(24)).colspan(2).row()
         happinessTable.addSeparator()
-        for (entry in currentPlayerCivInfo.getHappinessForNextTurn()) {
+        for (entry in currentPlayerCivInfo.getHappinessBreakdown()) {
             happinessTable.add(entry.key.tr())
             happinessTable.add(entry.value.roundToInt().toString()).row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(currentPlayerCivInfo.getHappinessForNextTurn().values.sum().roundToInt().toString())
+        happinessTable.add(currentPlayerCivInfo.getHappinessBreakdown().values.sum().roundToInt().toString())
         happinessTable.pack()
         return happinessTable
     }
@@ -349,7 +349,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun getResourcesTable(): Table {
         val resourcesTable=Table().apply { defaults().pad(10f) }
-        val resourceDrilldown = currentPlayerCivInfo.getDetailedCivResources()
+        val resourceDrilldown = currentPlayerCivInfo.detailedCivResources
 
         // First row of table has all the icons
         resourcesTable.add()
