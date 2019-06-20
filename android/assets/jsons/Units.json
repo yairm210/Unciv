@@ -93,8 +93,8 @@
 		cost: 40,
 		hurryCostModifier:20,
 		requiredTech:"Archery",
-		obsoleteTech:"Machinery",
-		upgradesTo:"Crossbowman",
+		obsoleteTech:"Machinery",//Should be Construction
+		upgradesTo:"Crossbowman",//Should be Composite Bowman
 		attackSound:"arrow"
 	},
 	{
@@ -279,13 +279,11 @@
 		attackSound:"throw"
 	},
 	{
-		name:"Ballista",
+		name:"Composite Bowman",
 		unitType:"Siege",
-		uniqueTo:"Rome",
-		replaces:"Catapult",
 		movement:2,
-		strength:8,
-		rangedStrength:10,
+		strength:7,
+		rangedStrength:8,
 		cost: 75,
 		requiredTech:"Mathematics",
 		obsoleteTech:"Physics",
@@ -294,6 +292,21 @@
 		hurryCostModifier:20,
 		attackSound:"throw"
 	},
+	/*
+	{
+		name:"Composite Bowman",
+		unitType:"Ranged",
+		movement:2,
+		strength:7,
+		rangedStrength:11,
+		cost: 75,
+		hurryCostModifier:20,
+		requiredTech:"Construction",
+		obsoleteTech:"Machinery",
+		upgradesTo:"Crossbowman",
+		attackSound:"arrow"
+	},
+	*/
 	{
 		name:"Swordsman",
 		unitType:"Melee",
