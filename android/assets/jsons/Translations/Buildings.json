@@ -159,7 +159,7 @@
 	}
 
 	"Provides 2 free workers":{
-		Italian:"Offre 2 Lavoratori gratuiti"
+		Italian:"Appaiono 2 Lavoratori gratuiti"
 		Russian:"предоставляет 2 бесплатных рабочих"
 		French:"Fournit 2 travailleurs gratuits"
 		Romanian:"Oferă gratuit 2 muncitori"
@@ -192,7 +192,7 @@
 	}
 	
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
-		Italian:"-25% costi in Cultura e Oro nell'acquistare nuove celle nella città"
+		Italian:"-25% costi in Cultura e Oro nell'acquisto di nuove celle nella città"
 		Romanian:"Costurile în Cultură și Aur pentru cumpărarea noilor celule în acest oraș sunt reduse cu 25%"
 		Spanish:"El coste de comprar terrenos en esta ciudad se reduce un 25%"
 		Simplified_Chinese:"所在城市扩展新地块所需文化和金钱花费-25%"
@@ -669,7 +669,7 @@
 	}
 
 	"Jungles provide +2 science":{
-		Italian:"+2 scienza per ogni Giungla"
+		Italian:"+2 Scienza dalle Giungle"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
 		Romanian:"Junglele oferă +2 știință"
@@ -740,7 +740,7 @@
 	}
 
 	"Cost of acquiring new tiles reduced by 25%":{
-		Italian:"-25% costo di acquisto di nuove celle"
+		Italian:"-25% costo per l'acquisto di nuove celle"
 		Russian:"Сокращает стоимость приобретения новых клеток на 25%"
 		French:"Coût d'acquisition de nouvelles tuiles réduit de 25%"
 		Romanian:"Costul de achiziționare a celulelor noi redus cu 25%"
@@ -856,6 +856,10 @@
 		French:"Hanse" //same in French
 	}
 
+	"+5% Production for every Trade Route with a City-State in the empire":{
+		Italian:"+5% Produzione per ogni Rotta Commerciale con una Città-Stato nell'impero"
+	}
+
 	/*
 	"Satrap's Court":{	//Persian unique
 		Italian:"Corte del Satrapo"
@@ -875,7 +879,7 @@
 	}
 
 	"Unhappiness from population decreased by 10%":{
-		Italian:"-10% infelicità della popolazione"
+		Italian:"-10% infelicità dalla popolazione"
 		Russian:"Снижает недовольство от населения на 10%"
 		French:"Le mécontentement de la population a diminué de 10%"
 		Romanian:"Nefericirea de la populație a scăzut cu 10%"
@@ -1302,7 +1306,8 @@
 		Portuguese:"Ópera de Sydney"
 		German:"Opernhaus Sydney"
 	}
-	
+
+	/*
 	"CN Tower":{
 		Italian:"CN Tower" //same in Italian
 		//same in German
@@ -1310,6 +1315,7 @@
 		Spanish:"Torre CN"
 		Simplified_Chinese:"西恩塔"
 	}
+	*/
 
 	"+1 population in each city":{
 		Italian:"+1 Popolazione in ogni città"
@@ -1388,7 +1394,7 @@
 	}
     
 	"Increases production of spaceship parts by 50%":{
-		Italian:"+50% produzione di parti dell'astronave"
+		Italian:"+50% produzione per le parti dell'astronave"
 		Russian:"Ускоряет производство частей космического корабля на 50%"
 		French:"Augmente la production de pièces de Vaisseau Spatial de 50%"
 		Romanian:"Crește producția de piese pentru nave spațiale cu 50%"
