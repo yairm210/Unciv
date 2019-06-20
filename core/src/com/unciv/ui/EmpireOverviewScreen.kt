@@ -58,7 +58,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setCurrentTradesButton = TextButton("Trades".tr(),skin)
         setCurrentTradesButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the naviagation buttons
+            centerTable.add(ScrollPane(getTradesTable())).height(stage.height*0.8f) // so it doesn't cover the navigation buttons
             centerTable.pack()
         }
         topTable.add(setCurrentTradesButton)

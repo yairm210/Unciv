@@ -85,13 +85,6 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         return tradeTable
     }
 
-    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
-        if(!otherCiv.isCityState()) throw Exception("You can only gain influence with city states!")
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        currentPlayerCiv.gold -= giftAmount
-        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += giftAmount/10
-        updateRightSide(otherCiv)
-    }
 
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
@@ -131,7 +124,10 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val giftAmount = 250
         val influenceAmount = giftAmount/10
         val giftButton = TextButton("Gift [$giftAmount] gold (+[$influenceAmount] influence)".tr(), skin)
-        giftButton.onClick{ giveGoldGift(otherCiv,giftAmount ) }
+        giftButton.onClick{
+            currentPlayerCiv.giveGoldGift(otherCiv,giftAmount)
+            updateRightSide(otherCiv)
+        }
         diplomacyTable.add(giftButton).row()
         if (currentPlayerCiv.gold < giftAmount ) giftButton.disable()
 

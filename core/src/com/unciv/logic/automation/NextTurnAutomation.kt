@@ -32,7 +32,7 @@ class NextTurnAutomation{
         updateDiplomaticRelationship(civInfo)
         declareWar(civInfo)
         automateCityBombardment(civInfo)
-        buyBuildingOrUnit(civInfo)
+        useGold(civInfo)
         automateUnits(civInfo)
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
@@ -51,9 +51,42 @@ class NextTurnAutomation{
         }
     }
 
+    private fun tryGainInfluence(civInfo: CivilizationInfo, cityState:CivilizationInfo){
+        if(civInfo.gold<250) return // save up
+        if(cityState.getDiplomacyManager(civInfo).influence<20){
+            civInfo.giveGoldGift(cityState,250)
+            return
+        }
+        if(civInfo.gold<500) return // it's not worth it to invest now, wait until you have enough for 2
+        civInfo.giveGoldGift(cityState,500)
+        return
+    }
 
-    private fun buyBuildingOrUnit(civInfo: CivilizationInfo) {
-        //allow AI spending money to purchase building & unit
+    /** allow AI to spend money to purchase city-state friendship, buildings & unit */
+    private fun useGold(civInfo: CivilizationInfo) {
+        if(civInfo.victoryType()==VictoryType.Cultural){
+            for(cityState in civInfo.gameInfo.civilizations
+                    .filter { it.isCityState() && it.getCityStateType()==CityStateType.Cultured }){
+                val diploManager = cityState.getDiplomacyManager(civInfo)
+                if(diploManager.influence < 40){ // we want to gain influence with them
+                    tryGainInfluence(civInfo,cityState)
+                    return
+                }
+            }
+        }
+
+        if(civInfo.happiness < 5){
+            for(cityState in civInfo.gameInfo.civilizations
+                    .filter { it.isCityState() && it.getCityStateType()==CityStateType.Mercantile }){
+                val diploManager = cityState.getDiplomacyManager(civInfo)
+                if(diploManager.influence < 40){ // we want to gain influence with them
+                    tryGainInfluence(civInfo,cityState)
+                    return
+                }
+            }
+        }
+
+
         for (city in civInfo.cities.sortedByDescending{ it.population.population }) {
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction.canBePurchased()
