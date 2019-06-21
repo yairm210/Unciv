@@ -279,11 +279,13 @@
 		attackSound:"throw"
 	},
 	{
-		name:"Composite Bowman",
+		name:"Ballista",
 		unitType:"Siege",
+		replaces:"Catapult",
+		uniqueTo:"Rome",
 		movement:2,
-		strength:7,
-		rangedStrength:8,
+		strength:8,
+		rangedStrength:10,
 		cost: 75,
 		requiredTech:"Mathematics",
 		obsoleteTech:"Physics",
