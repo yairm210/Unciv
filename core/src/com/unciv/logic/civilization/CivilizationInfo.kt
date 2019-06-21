@@ -39,6 +39,7 @@ class CivilizationInfo {
     @Transient private var units=listOf<MapUnit>()
     @Transient var viewableTiles = setOf<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
+
     /** Contains cities from ALL civilizations connected by trade routes to the capital */
     @Transient var citiesConnectedToCapital = listOf<CityInfo>()
 
@@ -437,7 +438,6 @@ class CivilizationInfo {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
             cityInfo.setTransients()
         }
-        setCitiesConnectedToCapitalTransients()
         updateViewableTiles()
         updateHasActiveGreatWall()
         updateDetailedCivResources()
@@ -550,8 +550,9 @@ class CivilizationInfo {
         val citiesReachedToMediums = HashMap<CityInfo,ArrayList<String>>()
         var citiesToCheck = mutableListOf(getCapital())
         citiesReachedToMediums[getCapital()] = arrayListOf("Start")
+        val allCivCities = gameInfo.civilizations.flatMap { it.cities }
 
-        while(citiesToCheck.isNotEmpty() && citiesReachedToMediums.size<cities.size){
+        while(citiesToCheck.isNotEmpty() && citiesReachedToMediums.size<allCivCities.size){
             val newCitiesToCheck = mutableListOf<CityInfo>()
             for(cityToConnectFrom in citiesToCheck){
                 val reachedMediums = citiesReachedToMediums[cityToConnectFrom]!!
@@ -561,7 +562,7 @@ class CivilizationInfo {
 
                     val roadBfs = BFS(cityToConnectFrom.getCenterTile()){it.roadStatus!=RoadStatus.None}
                     roadBfs.stepToEnd()
-                    val reachedCities = cities.filter { roadBfs.tilesReached.containsKey(it.getCenterTile())}
+                    val reachedCities = allCivCities.filter { roadBfs.tilesReached.containsKey(it.getCenterTile())}
                     for(reachedCity in reachedCities){
                         if(!citiesReachedToMediums.containsKey(reachedCity)){
                             newCitiesToCheck.add(reachedCity)
@@ -578,7 +579,7 @@ class CivilizationInfo {
                         && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent("Harbor")){
                     val seaBfs = BFS(cityToConnectFrom.getCenterTile()){it.isWater || it.isCityCenter()}
                     seaBfs.stepToEnd()
-                    val reachedCities = cities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
+                    val reachedCities = allCivCities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
                     for(reachedCity in reachedCities){
                         if(!citiesReachedToMediums.containsKey(reachedCity)){
                             newCitiesToCheck.add(reachedCity)

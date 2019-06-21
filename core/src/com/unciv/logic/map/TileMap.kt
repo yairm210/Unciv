@@ -75,7 +75,7 @@ class TileMap {
     fun placeUnitNearTile(position: Vector2, unitName: String, civInfo: CivilizationInfo): MapUnit? {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
         val tilesInDistance = getTilesInDistance(position, 2)
-        unit.assignOwner(civInfo)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
+        unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
         var unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) && (unit.type.isWaterUnit() || it.isLand) }
         if (unitToPlaceTile==null)
             unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
@@ -88,6 +88,10 @@ class TileMap {
             // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
             for(promotion in unit.baseUnit.promotions)
                 unit.promotions.addPromotion(promotion,true)
+
+            // And update civ stats, since the new unit changes both unit upkeep and resource consumption
+            civInfo.updateStatsForNextTurn()
+            civInfo.updateDetailedCivResources()
         }
         else {
             civInfo.removeUnit(unit) // since we added it to the civ units in the previous assignOwner
