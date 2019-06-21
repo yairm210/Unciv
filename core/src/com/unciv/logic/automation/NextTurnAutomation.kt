@@ -25,10 +25,10 @@ class NextTurnAutomation{
             exchangeTechs(civInfo)
             exchangeLuxuries(civInfo)
             issueRequests(civInfo)
+            adoptPolicy(civInfo)
         }
 
         chooseTechToResearch(civInfo)
-        adoptPolicy(civInfo)
         updateDiplomaticRelationship(civInfo)
         declareWar(civInfo)
         automateCityBombardment(civInfo)
