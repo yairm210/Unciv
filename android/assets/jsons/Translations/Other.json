@@ -928,7 +928,7 @@
 	}
 
 	"Stopped population growth":{
-		Italian:"Crescita della popolazione arrestata"
+		Italian:"Stagnazione"
 		French:"accroissement de la population arrêtée"
 		German:"Bevölkerungswachstum gestoppt"
 		Simplified_Chinese:"人口增长停止"
@@ -1829,7 +1829,56 @@
 		Simplified_Chinese:"摧毁[civName]文明"
 		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory?
 	}
+
+	"Our status":{
+		Italian:"I nostri status"
+	}
+
+	"Global status":{
+		Italian:"Status Globale"
+	}
+
+	"Spaceships parts remaining":{
+		Italian:"Parti dell'astronave rimanenti"
+	}
+
+	"Branches completed":{
+		Italian:"Rami completati"
+	}
+
+	"Undefeated civs":{
+		Italian:"Civiltà esistenti"
+	}
 	
+	
+////// When you conquer an enemy City
+
+	"What would you like to do with the city?":{
+		Italian:"Cosa vorresti farne della Città?"
+	}
+
+	"Annex":{
+		Italian:"Annetti"
+	}
+
+	"Raze":{
+		Italian:"Radi al suolo"
+	}
+	
+	
+////// When you cross a City-State border
+
+	"Remove your troops in our border immediately!":{
+		Italian:"Esigiamo che rimuoviate i vostri soldati dai nostri confini!"
+	}
+
+	"Sorry.":{
+		Italian:"Ti porgiamo le nostre scuse."
+	}
+
+	"Never!":{
+		Italian:"Non sia mai!"
+	}
 	
 ////// Civilopedia texts
 
