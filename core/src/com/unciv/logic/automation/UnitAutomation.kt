@@ -41,8 +41,10 @@ class UnitAutomation{
         var unitDistanceToTiles = unit.getDistanceToTiles()
 
         if(unit.civInfo.isBarbarianCivilization() &&
-                unit.currentTile.improvement==Constants.barbarianEncampment && unit.type.isLandUnit())
+                unit.currentTile.improvement==Constants.barbarianEncampment && unit.type.isLandUnit()) {
+            if(unit.canFortify()) unit.fortify()
             return // stay in the encampment
+        }
 
         if(tryGoToRuin(unit,unitDistanceToTiles)){
             if(unit.currentMovement==0f) return
@@ -123,9 +125,7 @@ class UnitAutomation{
         if(unitTile!=bestTileForHealing && bestTileForHealingRank > unit.rankTileForHealing(unitTile))
             unit.moveToTile(bestTileForHealing)
 
-        if(unit.currentMovement>0 && unit.canFortify()){
-            unit.action="Fortify 0"
-        }
+        if(unit.currentMovement>0 && unit.canFortify()) unit.fortify()
         return true
     }
 

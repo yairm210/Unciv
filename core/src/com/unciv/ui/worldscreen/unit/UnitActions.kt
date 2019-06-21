@@ -33,10 +33,7 @@ class UnitActions {
         val actionList = ArrayList<UnitAction>()
 
         if(unit.action!=null && unit.action!!.startsWith("moveTo")) {
-            actionList +=
-                    UnitAction("Stop movement", true) {
-                        unit.action = null
-                    }
+            actionList += UnitAction("Stop movement", true) {unit.action = null}
         }
 
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
@@ -51,7 +48,7 @@ class UnitActions {
 
         if(unit.canFortify()) {
             actionList += UnitAction("Fortify", unit.currentMovement >0) {
-                unit.action = "Fortify 0"
+                unit.fortify()
                 unitTable.selectedUnit = null
             }.sound("fortify")
         } else if (unit.isFortified()) {

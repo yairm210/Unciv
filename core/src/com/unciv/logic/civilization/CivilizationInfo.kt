@@ -261,10 +261,6 @@ class CivilizationInfo {
         return statMap
     }
 
-    /**
-     * Returns list of all resources and their origin - for most usages you'll want updateDetailedCivResources().totalSupply(),
-     * which unifies al the different sources
-     */
     fun getCivResources(): ResourceSupplyList {
         val newResourceSupplyList=ResourceSupplyList()
         for(resourceSupply in detailedCivResources)

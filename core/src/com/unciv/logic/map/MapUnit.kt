@@ -292,6 +292,8 @@ class MapUnit {
         return true
     }
 
+    fun fortify(){ action = "Fortify 0"}
+
     fun adjacentHealingBonus():Int{
         var healingBonus = 0
         if(hasUnique("This unit and all others in adjacent tiles heal 5 additional HP per turn")) healingBonus +=5
