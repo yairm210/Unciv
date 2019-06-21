@@ -67,7 +67,7 @@
 		secondaryColor:[68,142,249],
 		/*
 		uniqueName:"Lega Ellenica",
-		unique:"L'Influenza delle Città-Stato cala il doppiò più lentamente e sale a doppia velocità rispetto al normale.",
+		unique:"L'Influenza delle Città-Stato cala il doppio più lentamente e cresce il doppio rispetto al normale.",
 		*/
 		cities:["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
 			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tirinto","Samo","Mitilene","Chio",
