@@ -93,6 +93,13 @@ class WorldScreen : CameraStageBaseScreen() {
                     else -> Vector2.Zero
                 }
         tileMapHolder.setCenterPosition(tileToCenterOn,true)
+
+
+        // On the one hand, all updates to e.g. TileGroups need to happen on the main rendering thread.
+        // On the other hand, the initial setup requires setting up a lot of items on the map,
+        // and we would sometimes get an "Input dispatching timed out" ANR when doing so.
+        // Putting it in a postRunnnable is our way of attempting to avoid this.
+        Gdx.app.postRunnable { render(0f) }
     }
 
     // This is private so that we will set the shouldUpdate to true instead.
@@ -313,9 +320,12 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     var shouldUpdate=true
+
+
     override fun render(delta: Float) {
-        if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
-            if(currentPlayerCiv!=gameInfo.getCurrentPlayerCivilization()){
+        if (shouldUpdate) { //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+
+            if (currentPlayerCiv != gameInfo.getCurrentPlayerCivilization()) {
                 UnCivGame.Current.screen = PlayerReadyScreen(gameInfo.getCurrentPlayerCivilization())
                 return
             }
@@ -323,8 +333,9 @@ class WorldScreen : CameraStageBaseScreen() {
             // otherwise images will not load properly!
             update()
             showTutorialsOnNextTurn()
-            shouldUpdate=false
+            shouldUpdate = false
         }
+
         super.render(delta)
     }
 
