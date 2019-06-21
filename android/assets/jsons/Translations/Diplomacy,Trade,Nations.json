@@ -688,6 +688,10 @@
 		Simplified_Chinese:"发明文字后立即获得一个大科学家，大科学家点数积累速率+50%"
 		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
 	}
+
+	"Nebuchadnezzar II":{//Babylonian Leader
+		Italian:"Nabucodonosor II"
+	}
 	
 	"Greece":{	
 		Italian:"Grecia"
@@ -698,6 +702,10 @@
 		Simplified_Chinese:"希腊"
 		Portuguese:"Grécia"
 		German:"Griechenland"
+	}
+
+	"Alexander":{
+		Italian:"Alessandro"
 	}
 
 	"China":{	
@@ -733,6 +741,10 @@
 		German:"Ägypten"
 	}
 
+	"Ramesses II":{
+		Italian:"Ramses II"
+	}
+
 	"+20% production towards Wonder construction":{
 		Italian:"+20% Produzione per la costruzione di Meraviglie"
 		German:"20% erhöhte Produktion beim Errichten von Wundern"
@@ -753,6 +765,10 @@
 		Simplified_Chinese:"英格兰"
 		Portuguese:"Inglaterra"
 		German:"England"
+	}
+
+	"Elizabeth":{
+		Italian:"Elisabetta"
 	}
 
 	"+2 movement for all naval units":{
@@ -777,6 +793,10 @@
 		German:"Frankreich"
 	}
 
+	"Napoleon":{
+		Italian:"Napoleone"
+	}
+
 	"+2 Culture per turn from cities before discovering Steam Power":{
 		Italian:"+2 Cultura al turno dalle città prima di scoprire l'Energia a Vapore"
 		German:"+2 Kultur pro Runde von Städten (bevor Dampfkraft erforscht wurde)"
@@ -799,6 +819,10 @@
 		Russian:"Россия"
 	}
 
+	"Catherine":{
+		Italian:"Caterina II"
+	}
+
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
 		Italian:"+1 Produzione dalle Risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
 		Romanian:"Resursele strategice oferă +1 Producție, resursele Cai, Fier și Uraniu oferind cantitate dublă"
@@ -819,6 +843,10 @@
 		French:"Rome"
 		Portuguese:"Roma"
 		Russian:"Рим"
+	}
+
+	"Augustus Caesar":{
+		Italian:"Cesare Augusto"
 	}
 
 	"+25% Production towards any buildings that already exist in the Capital":{
