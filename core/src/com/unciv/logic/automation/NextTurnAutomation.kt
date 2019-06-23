@@ -65,7 +65,7 @@ class NextTurnAutomation{
     /** allow AI to spend money to purchase city-state friendship, buildings & unit */
     private fun useGold(civInfo: CivilizationInfo) {
         if(civInfo.victoryType()==VictoryType.Cultural){
-            for(cityState in civInfo.gameInfo.civilizations
+            for(cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.getCityStateType()==CityStateType.Cultured }){
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if(diploManager.influence < 40){ // we want to gain influence with them
@@ -76,7 +76,7 @@ class NextTurnAutomation{
         }
 
         if(civInfo.getHappiness() < 5){
-            for(cityState in civInfo.gameInfo.civilizations
+            for(cityState in civInfo.getKnownCivs()
                     .filter { it.isCityState() && it.getCityStateType()==CityStateType.Mercantile }){
                 val diploManager = cityState.getDiplomacyManager(civInfo)
                 if(diploManager.influence < 40){ // we want to gain influence with them
