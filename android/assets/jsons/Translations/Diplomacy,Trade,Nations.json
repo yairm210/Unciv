@@ -846,7 +846,7 @@
 	}
 
 	"Augustus Caesar":{
-		Italian:"Cesare Augusto"
+		Italian:"Cesare Augusto"Harun al-Rashid
 	}
 
 	"+25% Production towards any buildings that already exist in the Capital":{
@@ -872,6 +872,10 @@
 		Dutch:"Saudi"
 	}
 
+	"Harun al-Rashid":{
+		Italian:"Harun al-Rashid" //Same as Italian
+	}
+
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
 		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
@@ -888,6 +892,10 @@
 		French:"Etats-Unis"
 		Portuguese:"América"
 		Russian:"Америка"
+	}
+
+	"George Washington":{
+		Italian:"George Washington" //Same as Italian
 	}
 
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
@@ -912,6 +920,10 @@
 		Russian:"Япония"
 	}
 
+	"Oda Nobunaga":{
+		Italian:"Oda Nobunaga" //Same as Italian
+	}
+
 	"Units fight as though they were at full strength even when damaged":{
 		Italian:"Le unità combattono come se fossero perfettamente sane, anche quando gravemente ferite"
 		Romanian:"Unitățile se luptă ca și cum ar fi la putere deplină chiar și atunci când sunt deteriorate"
@@ -930,6 +942,10 @@
 		Portuguese:"Alemanha"
 	}
 
+	"Otto von Bismark":{
+		Italian:"Otto von Bismark" //Same as Italian
+	}
+
 	"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Pay 25% less for land unit maintenance.":{
 		Italian:"Quando sconfiggi un'unità barbara nel suo accampamento, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri."
 	}
@@ -938,6 +954,10 @@
 		Italian:"India"
 		French:"Inde"
 		Portuguese:"Índia"
+	}
+
+	"Gandhi":{
+		Italian:"Gandhi" //Same as Italian
 	}
 
 	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
