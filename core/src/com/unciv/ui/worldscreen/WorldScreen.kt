@@ -346,6 +346,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 && currentPlayerCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
             displayTutorials("BarbarianEncountered")
         if(currentPlayerCiv.cities.size > 2) displayTutorials("SecondCity")
+        if(currentPlayerCiv.getHappiness() < 5) displayTutorials("HappinessGettingLow")
         if(currentPlayerCiv.getHappiness() < 0) displayTutorials("Unhappiness")
         if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
         if(gameInfo.turns >= 100) displayTutorials("ContactMe")
