@@ -68,6 +68,12 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             update()
         }
 
+        add("Auto-assign city production".toLabel())
+        addButton(if(settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
+            settings.autoAssignCityProduction= !settings.autoAssignCityProduction
+            update()
+        }
+
         addLanguageSelectBox()
 
         addResolutionSelectBox()

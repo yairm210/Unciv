@@ -20,6 +20,19 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
     var constructionScrollPane:ScrollPane?=null
     var lastConstruction = ""
 
+
+    fun update() {
+        val city = cityScreen.city
+        pad(10f)
+        columnDefaults(0).padRight(10f)
+        clear()
+
+        addConstructionPickerScrollpane(city)
+        addCurrentConstructionTable(city)
+
+        pack()
+    }
+
     private fun getProductionButton(construction: String, buttonText: String, rejectionReason: String=""): Table {
         val pickProductionButton = Table()
         pickProductionButton.touchable = Touchable.enabled
@@ -52,18 +65,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if(construction==cityScreen.city.cityConstructions.currentConstruction)
             pickProductionButton.color= Color.GREEN
         return pickProductionButton
-    }
-
-    fun update() {
-        val city = cityScreen.city
-        pad(10f)
-        columnDefaults(0).padRight(10f)
-        clear()
-
-        addConstructionPickerScrollpane(city)
-        addCurrentConstructionTable(city)
-
-        pack()
     }
 
     private fun Table.addCategory(title:String,list:ArrayList<Table>){
@@ -169,26 +170,35 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         currentConstructionTable.background = ImageGetter.getBackground(ImageGetter.getBlue().lerp(Color.BLACK,0.5f))
         currentConstructionTable.pad(10f)
 
-        currentConstructionTable.add(
-                ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction).surroundWithCircle(50f))
-                .pad(5f)
+        val userNeedsToSetProduction = city.cityConstructions.currentConstruction==""
+        if(!userNeedsToSetProduction) {
+            currentConstructionTable.add(
+                    ImageGetter.getConstructionImage(city.cityConstructions.currentConstruction).surroundWithCircle(50f))
+                    .pad(5f)
 
-        val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
-        currentConstructionTable.add(buildingText.toLabel().setFontColor(Color.WHITE)).row()
+            val buildingText = city.cityConstructions.getCityProductionTextForCityButton()
+            currentConstructionTable.add(buildingText.toLabel().setFontColor(Color.WHITE)).row()
+        }
+        else{
+            currentConstructionTable.add() // no icon
+            currentConstructionTable.add("Pick construction".toLabel()).row()
+        }
 
-        val currentConstruction = city.cityConstructions.getCurrentConstruction()
         val description: String
-        if (currentConstruction is BaseUnit)
-            description = currentConstruction.getDescription(true)
-        else if (currentConstruction is Building)
-            description = currentConstruction.getDescription(true, city.civInfo)
-        else description = currentConstruction.description.tr()
+        if(userNeedsToSetProduction)
+            description=""
+        else if (construction is BaseUnit)
+            description = construction.getDescription(true)
+        else if (construction is Building)
+            description = construction.getDescription(true, city.civInfo)
+        else description = construction.description.tr()
 
         val descriptionLabel = description.toLabel()
         descriptionLabel.setWrap(true)
         descriptionLabel.width = stage.width / 4
         val descriptionScroll = ScrollPane(descriptionLabel)
-        currentConstructionTable.add(descriptionScroll).colspan(2).width(stage.width / 4).height(stage.height / 8)
+        currentConstructionTable.add(descriptionScroll).colspan(2)
+                .width(stage.width / 4).height(stage.height / 8)
 
         add(currentConstructionTable.addBorder(2f, Color.WHITE))
     }

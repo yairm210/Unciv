@@ -57,7 +57,8 @@ class CityConstructions {
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstruction // See below
         var result = currentConstructionSnapshot .tr()
-        if (SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  })
+        if (currentConstructionSnapshot!=""
+                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  })
             result += "\r\n" + turnsToConstruction(currentConstructionSnapshot ) + " {turns}".tr()
         return result
     }
@@ -65,7 +66,8 @@ class CityConstructions {
     fun getProductionForTileInfo(): String {
         val currentConstructionSnapshot = currentConstruction // this is because there were rare errors tht I assume were caused because currentContruction changed on another thread
         var result = currentConstructionSnapshot.tr()
-        if (SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot })
+        if (currentConstructionSnapshot!=""
+                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot })
             result += "\r\n{in} ".tr() + turnsToConstruction(currentConstructionSnapshot) + " {turns}".tr()
         return result
     }

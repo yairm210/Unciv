@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UnCivGame
 import com.unciv.logic.battle.CityCombatant
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
@@ -85,6 +86,7 @@ class Automation {
 
     fun chooseNextConstruction(cityConstructions: CityConstructions) {
         cityConstructions.run {
+            if(!UnCivGame.Current.settings.autoAssignCityProduction) return
             if (getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
 
             val buildableNotWonders = getBuildableBuildings().filterNot { it.isWonder || it.isNationalWonder }

@@ -16,6 +16,7 @@ import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.VictoryScreen
+import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
@@ -246,6 +247,13 @@ class WorldScreen : CameraStageBaseScreen() {
                 return@onClick
             }
 
+            val cityWithNoProductionSet = currentPlayerCiv.cities
+                    .firstOrNull{it.cityConstructions.currentConstruction==""}
+            if(cityWithNoProductionSet!=null){
+                game.screen = CityScreen(cityWithNoProductionSet)
+                return@onClick
+            }
+
             if (currentPlayerCiv.shouldOpenTechPicker()) {
                 game.screen = TechPickerScreen(currentPlayerCiv.tech.freeTechs != 0, currentPlayerCiv)
                 return@onClick
@@ -297,6 +305,8 @@ class WorldScreen : CameraStageBaseScreen() {
     fun updateNextTurnButton() {
         val text = if (currentPlayerCiv.shouldGoToDueUnit())
             "Next unit"
+        else if(currentPlayerCiv.cities.any{it.cityConstructions.currentConstruction==""})
+            "Pick construction"
         else if(currentPlayerCiv.shouldOpenTechPicker())
             "Pick a tech"
         else if(currentPlayerCiv.policies.shouldOpenPolicyPicker)
