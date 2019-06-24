@@ -57,12 +57,14 @@ class TradeTable(val otherCivilization: CivilizationInfo, stage: Stage, onTradeC
             }
             else if(offerButton.text.toString() == "Accept".tr()){
                 tradeLogic.acceptTrade()
-                offerColumnsTable = OfferColumnsTable(TradeLogic(currentPlayerCiv,otherCivilization), stage) { onChange() }
-                offerColumnsTableWrapper.clear()
-                offerColumnsTableWrapper.add(offerColumnsTable)
                 if(tradeLogic.currentTrade.ourOffers.any { it.name== Constants.peaceTreaty })
                     tradeText.setText(otherCivilization.getTranslatedNation().afterPeace)
                 else tradeText.setText("Pleasure doing business with you!".tr())
+
+                tradeLogic = TradeLogic(currentPlayerCiv,otherCivilization)
+                offerColumnsTable = OfferColumnsTable(tradeLogic, stage) { onChange() }
+                offerColumnsTableWrapper.clear()
+                offerColumnsTableWrapper.add(offerColumnsTable)
                 onTradeComplete()
 
                 offerButton.setText("Offer trade".tr())
