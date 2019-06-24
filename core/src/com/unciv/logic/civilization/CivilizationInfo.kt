@@ -613,9 +613,8 @@ class CivilizationInfo {
 
     fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
         if(!otherCiv.isCityState()) throw Exception("You can only gain influence with city states!")
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        currentPlayerCiv.gold -= giftAmount
-        otherCiv.getDiplomacyManager(currentPlayerCiv).influence += giftAmount/10
+        gold -= giftAmount
+        otherCiv.getDiplomacyManager(this).influence += giftAmount/10
         updateStatsForNextTurn()
     }
 
