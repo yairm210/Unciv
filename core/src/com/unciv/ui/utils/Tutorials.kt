@@ -26,6 +26,7 @@ class Tutorials{
 
 
     fun displayTutorials(name: String, stage: Stage) {
+        if (UnCivGame.Current.settings.showTutorials) return
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
         val texts = getTutorials(name, UnCivGame.Current.settings.language)
         tutorialTexts.add(Tutorial(name,texts))

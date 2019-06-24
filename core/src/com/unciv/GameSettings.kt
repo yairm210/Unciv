@@ -14,6 +14,7 @@ class GameSettings {
     var soundEffectsVolume = 0.5f
     var turnsBetweenAutosaves = 1
     var tileSet:String = "FantasyHex"
+    var showTutorials: Boolean = true
 
     fun save(){
         GameSaver().setGeneralSettings(this)

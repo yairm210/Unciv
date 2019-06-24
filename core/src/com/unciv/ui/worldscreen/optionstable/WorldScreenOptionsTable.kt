@@ -62,6 +62,12 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             update()
         }
 
+        add("Show tutorials".toLabel())
+        addButton(if(settings.showTutorials) "Yes".tr() else "No".tr()) {
+            settings.showTutorials= !settings.showTutorials
+            update()
+        }
+
         addLanguageSelectBox()
 
         addResolutionSelectBox()
