@@ -139,6 +139,14 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             unifiedStatList[entry.key]!!.happiness=entry.value
         }
 
+        // Add maintenance if relevant
+
+        val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
+        if(maintenance>0)
+            unifiedStatList["Maintenance"]=Stats().add(Stat.Gold,-maintenance.toFloat())
+
+
+
         for(stat in Stat.values()){
             if(unifiedStatList.all { it.value.get(stat)==0f }) continue
 
@@ -156,13 +164,6 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 statValuesTable.add(entry.key.toLabel())
                 val decimal = DecimalFormat("0.#").format(specificStatValue)
                 statValuesTable.add("+$decimal%".toLabel()).row()
-            }
-            if(stat==Stat.Gold){
-                val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
-                if(maintenance>0){
-                    statValuesTable.add("Maintenance".toLabel())
-                    statValuesTable.add("-$maintenance".toLabel())
-                }
             }
             if(stat==Stat.Food){
                 statValuesTable.add("Food eaten".toLabel())
