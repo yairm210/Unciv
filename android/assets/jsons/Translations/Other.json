@@ -1240,29 +1240,6 @@
 
 	//  - - - NOTE: These need to be moved to the "Units,Promotions" translation file, in their respective places! - - - 
 
-	"Bonus vs [unitType]":{
-		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
-		Russian:"Бонус против [unitType]"
-		French:"Bonus contre [unitType]"
-		Romanian:"Bonus contra [unitType]"
-		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
-		Dutch:"Voordeel tegen [unitType]"
-		Spanish:"Bonus contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力加成："
-		Portuguese:"Bonus contra [unitType]"
-	}
-
-	"Penalty vs [unitType]":{
-		Italian:"Malus contro unità [unitType]"
-		Russian:"Штраф против [unitType]"
-		French:"Pénalité contre [unitType]"
-		Romanian:"Penalizare contra [unitType]"
-		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
-		Dutch:"Nadeel tegen [unitType]"
-		Spanish:"Penalización contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力减成："
-		Portuguese:"Penalidade contra [unitType]"
-	}
 
 	// for unit action button
 

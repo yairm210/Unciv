@@ -335,12 +335,6 @@
 		German:"Speerkrieger"
 	}
 
-	"Bonus vs Mounted 50%":{
-		Italian:"+50% Bonus contro unità a cavallo"
-		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
-		French:"Bonus contre les unités montées +50%" //I feel that i already wrote this elsewhere...
-	}
-
 	"Hoplite":{ // Greek unique
 		Italian:"Oplita"
 		Romanian:"Hoplit"
@@ -371,12 +365,6 @@
 		Portuguese:"Catapulta"
 		German:"Katapult"
 	}	
-	
-	"Bonus vs City 200%":{
-		Italian:"+200% Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+200%战斗力"
-		French:"Bonus contre les villes +200%"
-	}
 
 	"Must set up to ranged attack":{
 		Italian:"Deve allestirsi per attaccare a distanza"
@@ -726,11 +714,6 @@
 	"No movement cost to pillage":{
 	}
 	
-	"Bonus vs Mounted 33%":{
-		Italian:"+33% Bonus contro unità a cavallo"
-		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
-		French:"Bonus contre les unitées montées +33%"
-	}
 
 ////// Industrial units
 	
@@ -813,11 +796,6 @@
 		German:"Panzerschiff"
 	}
 	
-	"Bonus vs City 33%":{
-		Italian:"+33 Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+33%战斗力"
-		French:"Bonus contre les villes +33%"
-	}
 
 	"Double movement in coast":{
 		Spanish:"Doble movimiento en costas"
@@ -938,10 +916,6 @@
 		French:"cuirassé"
 	}
 
-	"Bonus vs City 30%":{
-		Italian:"+30 Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+30%战斗力"
-	}
 
 	"Submarine":{
 		Italian:"Sottomarino"
@@ -1023,11 +997,6 @@
 		French:"Canon antichar"
 	}
 
-	"Bonus vs Armor 100%":{
-		Italian:"+100% Bonus contro unità corazzate"
-		Simplified_Chinese:"对战装甲单位时+100%战斗力"
-		French:"Bonus contre les unités Blindées +100%"
-	}
 
 	"Marine":{
 		Italian:"Marine"
@@ -1313,6 +1282,37 @@
 		French:" OU "
 	}
 	
+	
+	"Bonus vs City":{
+		Italian:"Bonus contro Città"
+        Simplified_Chinese:"攻击城市时+15%战斗力"
+        French:"Bonus contre les villes"
+	}
+	
+	"Bonus vs [unitType]":{
+		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
+		Russian:"Бонус против [unitType]"
+		French:"Bonus contre [unitType]"
+		Romanian:"Bonus contra [unitType]"
+		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
+		Dutch:"Voordeel tegen [unitType]"
+		Spanish:"Bonus contra [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力加成："
+		Portuguese:"Bonus contra [unitType]"
+	}
+
+	"Penalty vs [unitType]":{
+		Italian:"Malus contro unità [unitType]"
+		Russian:"Штраф против [unitType]"
+		French:"Pénalité contre [unitType]"
+		Romanian:"Penalizare contra [unitType]"
+		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
+		Dutch:"Nadeel tegen [unitType]"
+		Spanish:"Penalización contra [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力减成："
+		Portuguese:"Penalidade contra [unitType]"
+	}
+	
 	"Accuracy I":{
 		Italian:"Precisione I"
 		German:"Genauigkeit I"
@@ -1537,11 +1537,6 @@
 		Simplified_Chinese:"齐射能力"
 	}
 
-	"Bonus vs City 50%":{
-		Italian:"+50% Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+50%战斗力"
-		French:"Bonus contre les villes +50%"
-	}
 
 	"Sentry":{
 		Italian:"Sentinella"
@@ -1674,11 +1669,6 @@
 		Simplified_Chinese:"海掠I级"
 	}
 
-	"Bonus vs City 15%":{
-		Italian:"+15% Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+15%战斗力"
-		French:"Bonus contre les villes +15%"
-	}
 
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
