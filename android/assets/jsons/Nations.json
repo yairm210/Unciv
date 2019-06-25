@@ -469,6 +469,45 @@
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
 	
+	
+	{
+		name:"The Ottomans",
+		leaderName:"Suleiman I",
+		adjective:["Ottoman"],
+		startBias:["Coast"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Blessings of God be upon you, oh Great Emperor Suleiman! Your power, wealth and generosity awe the world! Truly, are you called 'Magnificent!' Your empire began in Bithynia, a small country in Eastern Anatolia in 12th century. Taking advantage in the decline of the great Selkuj Sultanate of Rum, King Osman I of Bithynia expanded west into Anatolia. Over the next century, your subjects brought down the empire of Byzantium, taking its holdings in Turkey and then the Balkans. In the mid 15th century, the Ottomans captured ancient Constantinople, gaining control of the strategic link between Europe and the Middle East. Your people's empire would continue to expand for centuries governing much of North Africa, the Middle East and Eastern Europe at its height."
+		startIntroPart2: "Mighty Sultan, heed the call of your people! Bring your empire back to the height of its power and glory and once again the world will look upon your greatness with awe and admiration! Will you accept the challenge, great emperor? Will you build an empire that will stand the test of time?"
+		
+		declaringWar:"Your continued insolence and failure to recognize and preeminence leads us to war."
+		attacked:"Good. The world shall witness the incontestable might of my armies and the glory of the Empire."
+		defeated:"Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melancholy poets."
+		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!"
+		
+		neutralHello:"Greetings!"
+		neutralLetsHearIt:["I'm listening.","Go on."]
+		neutralNo:["No.","Of course not!","We decline."]
+		neutralYes:["Very good.","Fine.","We accept!"]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["So you say!","Go on!"]
+		hateNo:["Excuse me?","This is unacceptable!","You can't be serious!"]
+		hateYes:["Ah, very good!","Very good.","I assume we must come to an agreement."]
+		
+		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
+		tradeRequest:"Let us do business! Would you be interested?"
+				
+		mainColor:[18,84,30],
+		secondaryColor:[245,248,185],
+		uniqueName:"Barbary Corsairs"
+		unique:"Pay only one third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
+		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
+			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
+			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
+			"Bitlis","Yalova"]
+	},
+	
 	/*
 	{   // REQUIRES RIVERS
 		name:"Aztecs",
@@ -766,43 +805,6 @@
 			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
 			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
 			"Ban Phai","Loci","Khan Kaen","Surin"]
-	},
-	{
-		name:"Ottoman",
-		leaderName:"Suleiman I",
-		adjective:["Ottoman"],
-		startBias:["Coast"],
-		preferredVictoryType:"Domination",
-		
-		startIntroPart1: "Blessings of God be upon you, oh Great Emperor Suleiman! Your power, wealth and generosity awe the world! Truly, are you called "Magnificent!" Your empire began in Bithynia, a small country in Eastern Anatolia in 12th century. Taking advantage in the decline of the great Selkuj Sultanate of Rum, King Osman I of Bithynia expanded west into Anatolia. Over the next century, your subjects brought down the empire of Byzantium, taking its holdings in Turkey and then the Balkans. In the mid 15th century, the Ottomans captured ancient Constantinople, gaining control of the strategic link between Europe and the Middle East. Your people's empire would continue to expand for centuries governing much of North Africa, the Middle East and Eastern Europe at its height."
-		startIntroPart2: "Mighty Sultan, heed the call of your people! Bring your empire back to the height of its power and glory and once again the world will look upon your greatness with awe and admiration! Will you accept the challenge, great emperor? Will you build an empire that will stand the test of time?"
-		
-		declaringWar:"Your continued insolence and failure to recognize and preeminence leads us to war."
-		attacked:"Good. The world shall witness the incontestable might of my armies and the glory of the Empire."
-		defeated:"Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melancholy poets."
-		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!"
-		
-		neutralHello:"Greetings!"
-		neutralLetsHearIt:["I'm listening.","Go on."]
-		neutralNo:["No.","Of course not!","We decline."]
-		neutralYes:["Very good.","Fine.","We accept!"]
-
-		hateHello:"What do you want?"
-		hateLetsHearIt:["So you say!","Go on!"]
-		hateNo:["Excuse me?","This is unacceptable!","You can't be serious!"]
-		hateYes:["Ah, very good!","Very good.","I assume we must come to an agreement."]
-		
-		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
-		tradeRequest:"Let us do business! Would you be interested?"
-				
-		mainColor:[204,255,229],
-		secondaryColor:[0,102,0],
-		uniqueName:"Barbary Corsairs"
-		unique:"Pay only one third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
-		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
-			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
-			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
-			"Bitlis","Yalova"]
 	},
 	{
 		name:"Iroquois",

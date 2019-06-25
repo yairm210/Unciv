@@ -18,7 +18,6 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
-import kotlin.math.min
 
 class UnitAction(var name: String, var canAct: Boolean, var currentAction: Boolean = false, var title: String = name, var action: () -> Unit = {}){
     var sound="click"
@@ -117,8 +116,8 @@ class UnitActions {
                     tile.turnsToImprovement = 2
                 }
                 tile.improvement = null
-                unit.useMovementPoints(1f)
-                unit.health = min(100,unit.health+25)
+                if(!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
+                unit.healBy(25)
             }
         }
 

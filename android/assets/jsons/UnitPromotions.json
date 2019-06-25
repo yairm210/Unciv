@@ -264,19 +264,19 @@
 	}
 	{
 		name:"Wolfpack I",
-		effect:"Bonus as Attacker 25%",
+		effect:"Bonus as Attacker [25]%",
 		unitTypes:["WaterSubmarine"]
 	}
 	{
 		name:"Wolfpack II",
 		prerequisites:["Wolfpack I"],
-		effect:"Bonus as Attacker 25%",
+		effect:"Bonus as Attacker [25]%",
 		unitTypes:["WaterSubmarine"]
 	}
 	{
 		name:"Wolfpack III",
 		prerequisites:["Wolfpack II"],
-		effect:"Bonus as Attacker 25%",
+		effect:"Bonus as Attacker [25]%",
 		unitTypes:["WaterSubmarine"]
 	}
 	{

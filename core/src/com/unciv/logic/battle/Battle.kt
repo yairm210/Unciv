@@ -78,6 +78,18 @@ class Battle(val gameInfo:GameInfo) {
             defender.getCivInfo().addNotification(notificationString, attackedTile.position, Color.RED)
         }
 
+        // Units that heal when killing
+        if(defender.isDefeated()
+                && defender is MapUnitCombatant
+                && attacker is MapUnitCombatant){
+            val regex = Regex("""Heals \[(\d*)\] damage if it kills a unit"""")
+            for(unique in attacker.unit.getUniques()){
+                val match = regex.matchEntire(unique)
+                if(match==null) continue
+                val amountToHeal = match.groups[1]!!.value.toInt()
+                attacker.unit.healBy(amountToHeal)
+            }
+        }
 
         if(defender.isDefeated()
                 && defender is CityCombatant
@@ -87,7 +99,8 @@ class Battle(val gameInfo:GameInfo) {
 
 
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
-        if(defender.isDefeated() && defender.getCivInfo().isBarbarianCivilization() && attackedTile.improvement==Constants.barbarianEncampment
+        if(defender.isDefeated() && defender.getCivInfo().isBarbarianCivilization()
+                && attackedTile.improvement==Constants.barbarianEncampment
                 && attacker.getCivInfo().getNation().unique== "67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance."
                 && Random().nextDouble() > 0.67){
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())

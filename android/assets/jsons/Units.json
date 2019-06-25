@@ -716,12 +716,11 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	/*
 	{
-		name:"Jannissary",
+		name:"Janissary",
 		unitType:"Melee",
 		replaces:"Musketman",
-		uniqueTo:"Ottoman",
+		uniqueTo:"The Ottomans",
 		movement:2,
 		strength:24,
 		cost: 150,
@@ -729,11 +728,9 @@
 		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
 		hurryCostModifier:20,
-		uniques:["Heal 50 if it kills an Unit","Combat bonus when attacking 25%"],
+		uniques:["Heals [50] damage if it kills a unit", "Bonus as Attacker [25]%"],
 		attackSound:"shot"
-		//Ottoman unique unit, slightly weaker than Musketman, but heals 50 HP when it kills an units, and +25% Strenght when attacking
 	},
-	*/
 	{
 		name:"Minuteman",
 		unitType:"Melee",
@@ -788,30 +785,30 @@
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20,
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%"],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%"],
+		promotions:["Formation I"],
 		upgradesTo:"Anti-Tank Gun",
 		obsoleteTech:"Combined Arms",
 		attackSound:"horse"
 	},
-	/*
 	{
 		name:"Sipahi",
 		unitType:"Mounted",
 		replaces:"Lancer",
-		uniqueTo:"Ottoman",
+		uniqueTo:"The Ottomans",
 		movement:5,
 		strength:25,
 		cost: 185,
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20,
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%","Formation I","+1 Visibility"],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%",
+			"+1 Visibility Range", "No movement cost to pillage"],
+		promotions:["Formation I"],
 		upgradesTo:"Anti-Tank Gun",
 		obsoleteTech:"Combined Arms",
 		attackSound:"horse"
-		//Another Ottoman unique attack.
 	},
-	*/
 	
 	// Industrial Era
 	
@@ -960,7 +957,7 @@
 		rangedStrength: 60,
 		cost: 325,
 		requiredTech:"Refrigeration",
-		uniques:["Bonus as Attacker 75%", "Invisible to others", "Can only attack water", "Can attack submarines"],
+		uniques:["Bonus as Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines"],
 		hurryCostModifier:20
 	},
 	{

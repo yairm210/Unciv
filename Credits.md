@@ -55,11 +55,13 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Sail boat](https://thenounproject.com/term/sail-boat/5292/) By Alessandro Suraci for Caravel
 * [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
 * [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski for Musketman
+* [Tarbouche](https://thenounproject.com/search/?q=turkish%20hat&i=245391) By Mohamed Amine for Janissary
 * [Black powder musket](https://thenounproject.com/term/black-powder-musket/1202078/) By Jarem Fyre for Minuteman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
 * [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
+* [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
 
 ### Industrial
 
@@ -426,6 +428,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Star and Crecent](https://thenounproject.com/search/?q=star%20and%20crescent&i=2552427) for Arabia
 * [Family Crest Komon](https://thenounproject.com/search/?q=oda&i=2293528) by sahua d for Japan
 * [Ashika Chakra](https://thenounproject.com/search/?q=ashoka%20chakra&i=2328559) by sahua d for India
+* Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 
 ## Others 
 

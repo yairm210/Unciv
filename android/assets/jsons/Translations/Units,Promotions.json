@@ -330,7 +330,7 @@
 		French:"Infanterie"
 		Romanian:"Lăncier"
 		Spanish:"Lancero"
-        	Simplified_Chinese:"枪兵"
+		Simplified_Chinese:"枪兵"
 		Portuguese:"Lanceiro"
 		German:"Speerkrieger"
 	}
@@ -672,8 +672,14 @@
 		Russian:"Мушкетёр"
 		German:"Musketier"
 	} 
+	
+	"Janissary":{ // Ottoman unique
+	}
+	
+	"Heals [amountHealed] damage if it kills a unit":{
+	}
 
-	"Minuteman":{
+	"Minuteman":{ // american unique
 		Italian:"Minuteman" //same in Italian
 		Romanian:"Rezervist"
 		Spanish:"Milicia Revolucionaria"
@@ -681,7 +687,7 @@
 		Russian:"Минитмэн"
 		//same in German
 		//same in French
-	} // American unique
+	}
 
 	"Frigate":{
 		Spanish:"Fragata"
@@ -713,6 +719,11 @@
 		Simplified_Chinese:"枪骑兵"
 		Portuguese:"Lanceiro montado"
 		German:"Lanzer"
+	}
+	
+	"Sipahi":{}
+	
+	"No movement cost to pillage":{
 	}
 	
 	"Bonus vs Mounted 33%":{
@@ -942,10 +953,10 @@
 		French:"Sous-marin"
 	}
 
-	"Bonus as Attacker 75%":{
-		Italian:"75% Bonus in attacco"
+	"Bonus as Attacker [amount]%":{
+		Italian:"[amount]% Bonus in attacco"
 		Simplified_Chinese:"主动攻击时+75%战斗力"
-		French:"Bonus en tant qu'attaquant +75%"
+		French:"Bonus en tant qu'attaquant +[amount]%"
 	}
 
 	"Invisible to others":{
@@ -1717,11 +1728,6 @@
 		Simplified_Chinese:"狼群I级"
 	}
 
-	"Bonus as Attacker 25%":{
-		Italian:"+25% Bonus come attaccante"
-		Simplified_Chinese:"主动攻击时+25%战斗力"
-		French:"Bonus en attaquant +25%"
-	}
 
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"

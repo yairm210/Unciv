@@ -384,10 +384,15 @@ class MapUnit {
 
     private fun heal(){
         if(isEmbarked()) return // embarked units can't heal
-        health += rankTileForHealing(getTile())
+        var amountToHealBy = rankTileForHealing(getTile())
         val adjacentUnits = currentTile.getTilesInDistance(1).flatMap { it.getUnits() }
         if(adjacentUnits.isNotEmpty())
-            health += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
+            amountToHealBy += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
+        healBy(amountToHealBy)
+    }
+
+    fun healBy(amount:Int){
+        health += amount
         if(health>100) health=100
     }
 

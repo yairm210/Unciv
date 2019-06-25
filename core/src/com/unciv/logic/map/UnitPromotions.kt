@@ -21,10 +21,7 @@ class UnitPromotions{
             numberOfPromotions++
         }
 
-        if(promotionName=="Heal Instantly"){
-            unit.health += 50
-            if(unit.health>100) unit.health=100
-        }
+        if(promotionName=="Heal Instantly") unit.healBy(50)
         else promotions.add(promotionName)
 
         unit.updateUniques()
