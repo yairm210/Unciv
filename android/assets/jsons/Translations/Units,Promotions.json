@@ -662,9 +662,11 @@
 	} 
 	
 	"Janissary":{ // Ottoman unique
+		Italian:"Giannizzero"
 	}
 	
 	"Heals [amountHealed] damage if it kills a unit":{
+		Italian:"Cura [amountHealed] PF quando uccide un'unità nemica"
 	}
 
 	"Minuteman":{ // american unique
@@ -709,9 +711,12 @@
 		German:"Lanzer"
 	}
 	
-	"Sipahi":{}
+	"Sipahi":{
+		Italian:"Sipahi"//same as in Italian
+	}
 	
 	"No movement cost to pillage":{
+		Italian:"Nessun costo di movimento per il saccheggio"
 	}
 	
 
