@@ -468,6 +468,42 @@
 			"Osnabruck","Ludwingshafen","Leverkusen","Oldenburg","Neuss","Mulheim","Darmstadt","Herne","Wurzburg",
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
+	{
+		name:"Ottoman",
+		translatedName:"Turchia",
+		leaderName:"Suleiman I",
+		translatedLeaderName:"Solimano I",
+		
+		startIntroPart1: ""
+		startIntroPart2: ""
+		
+		declaringWar:"Il tuo persistere nel rifiutare di riconoscere la nostra preminenza ci porta alla guerra."
+		attacked:"Bene. Il mondo sarà testimone dell'inconstastabile potenza dell'esercito del glorioso impero ottomano."
+		defeated:"Morte! Rovina! Istanbul diventa l'Iram dei Pilastri, ricordata solo dai poeti malinconici."
+		introduction:"Dalla magnificenza del Topkapi, gli ottomani ti salutano, straniero! Io sono il sultano Solimano, Kayser-I Rum, e ti porgo i miei saluti!"
+		
+		neutralHello:"Saluti!"
+		neutralLetsHearIt:["Ti ascolto.","Vai avanti."]
+		neutralNo:["No.","Certo che no!","Mi rifiuto."]
+		neutralYes:["Benissimo.","D'accordo.","Accettiamo!"]
+
+		hateHello:"Cosa vuoi da me?"
+		hateLetsHearIt:["Parla!","Avanti!"]
+		hateNo:["Scusami?","Non lo accetto!","Stai scherzando, spero!"]
+		hateYes:["Ah, va bene!","Benissimo.","Direi che mi conviene accettare."]
+		
+		afterPeace:"Complimenti per la tua vittoria! Speriamo che la pace scenda su di noi in eterno!"
+		tradeRequest:"Facciamo un affare! Ti interessa?"
+				
+		mainColor:[204,255,229],
+		secondaryColor:[0,102,0],
+		uniqueName:"Corsari barbarici",
+		unique:"Il mantenimento delle navi costa solo un terzo rispetto al normale. Tutte le navi da mischia ricevono la promozione Cattura Navale, che permette loro di catturare le navi nemiche sconfitte.",
+		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
+			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
+			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
+			"Bitlis","Yalova"]
+	},
 	/*
 	{
 		name:"Mongolia",
@@ -612,42 +648,6 @@
 			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
 			"Gaugamela","Harmozeia","Ecatompilo","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
 			"Paishiyauvada","Patigrbana","Phrada"]
-	},
-	{
-		name:"Ottoman",
-		translatedName:"Turchia",
-		leaderName:"Suleiman I",
-		translatedLeaderName:"Solimano I",
-		
-		startIntroPart1: ""
-		startIntroPart2: ""
-		
-		declaringWar:"Il tuo persistere nel rifiutare di riconoscere la nostra preminenza ci porta alla guerra."
-		attacked:"Bene. Il mondo sarà testimone dell'inconstastabile potenza dell'esercito del glorioso impero ottomano."
-		defeated:"Morte! Rovina! Istanbul diventa l'Iram dei Pilastri, ricordata solo dai poeti malinconici."
-		introduction:"Dalla magnificenza del Topkapi, gli ottomani ti salutano, straniero! Io sono il sultano Solimano, Kayser-I Rum, e ti porgo i miei saluti!"
-		
-		neutralHello:"Saluti!"
-		neutralLetsHearIt:["Ti ascolto.","Vai avanti."]
-		neutralNo:["No.","Certo che no!","Mi rifiuto."]
-		neutralYes:["Benissimo.","D'accordo.","Accettiamo!"]
-
-		hateHello:"Cosa vuoi da me?"
-		hateLetsHearIt:["Parla!","Avanti!"]
-		hateNo:["Scusami?","Non lo accetto!","Stai scherzando, spero!"]
-		hateYes:["Ah, va bene!","Benissimo.","Direi che mi conviene accettare."]
-		
-		afterPeace:"Complimenti per la tua vittoria! Speriamo che la pace scenda su di noi in eterno!"
-		tradeRequest:"Facciamo un affare! Ti interessa?"
-				
-		mainColor:[204,255,229],
-		secondaryColor:[0,102,0],
-		uniqueName:"Corsari barbarici",
-		unique:"Il mantenimento delle navi costa solo un terzo rispetto al normale. Tutte le navi da mischia ricevono la promozione Cattura Navale, che permette loro di catturare le navi nemiche sconfitte.",
-		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
-			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
-			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
-			"Bitlis","Yalova"]
 	},
 	{
 		name:"Polynesia",
