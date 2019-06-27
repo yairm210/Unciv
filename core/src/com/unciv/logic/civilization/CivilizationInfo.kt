@@ -20,6 +20,7 @@ import com.unciv.models.gamebasics.tech.TechEra
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stat
+import com.unciv.models.stats.StatMap
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
@@ -138,10 +139,9 @@ class CivilizationInfo {
     }
 
     fun getStatMapForNextTurn(): HashMap<String, Stats> {
-        val statMap = HashMap<String,Stats>()
+        val statMap = StatMap()
         for (city in cities){
-            if(!statMap.containsKey("Cities")) statMap["Cities"]=Stats()
-            statMap["Cities"] = statMap["Cities"]!! + city.cityStats.currentCityStats
+            statMap.add("Cities",city.cityStats.currentCityStats)
         }
 
         //City states culture bonus
@@ -150,17 +150,12 @@ class CivilizationInfo {
                     && otherCiv.getDiplomacyManager(civName).relationshipLevel() >= RelationshipLevel.Friend) {
                 val cultureBonus = Stats()
                 cultureBonus.add(Stat.Culture, 3f * (getEra().ordinal+1))
-                if (statMap.containsKey("City States"))
-                    statMap["City States"] = statMap["City States"]!! + cultureBonus
-                else
-                    statMap["City States"] = cultureBonus
+                statMap.add("City States",cultureBonus)
             }
         }
 
         for (entry in getHappinessBreakdown()) {
-            if (!statMap.containsKey(entry.key))
-                statMap[entry.key] = Stats()
-            statMap[entry.key]!!.happiness += entry.value
+            statMap.add(entry.key,Stats().apply { happiness=entry.value })
         }
 
         statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
@@ -168,10 +163,7 @@ class CivilizationInfo {
 
         if (policies.isAdopted("Mandate Of Heaven")) {
             val happiness = statMap.values.map { it.happiness }.sum()
-            if(happiness>0) {
-                if (!statMap.containsKey("Policies")) statMap["Policies"] = Stats()
-                statMap["Policies"]!!.culture += happiness / 2
-            }
+            if(happiness>0) statMap.add("Policies",Stats().apply { culture=happiness/2 })
         }
 
         // negative gold hurts science

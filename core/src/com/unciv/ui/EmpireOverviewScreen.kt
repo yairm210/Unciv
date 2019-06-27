@@ -44,12 +44,12 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setStatsInfoButton = TextButton("Stats".tr(),skin)
         setStatsInfoButton.onClick {
             centerTable.clear()
-            centerTable.add(ScrollPane(HorizontalGroup().apply {
-                space(40f)
-                top()
-                addActor(getHappinessTable())
-                addActor(getGoldTable())
-                addActor(getGreatPeopleTable())
+            centerTable.add(ScrollPane(Table().apply {
+                defaults().pad(40f)
+                add(getHappinessTable()).top()
+                add(getGoldTable()).top()
+                add(getScienceTable()).top()
+                add(getGreatPeopleTable()).top()
             }))
             centerTable.pack()
         }
@@ -166,6 +166,24 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         goldTable.add(total.roundToInt().toString())
         goldTable.pack()
         return goldTable
+    }
+
+
+    private fun getScienceTable(): Table {
+        val scienceTable = Table(skin)
+        scienceTable.defaults().pad(5f)
+        scienceTable.add("Science".toLabel().setFontSize(24)).colspan(2).row()
+        scienceTable.addSeparator()
+        val scienceStats = currentPlayerCivInfo.getStatMapForNextTurn()
+                .filter { it.value.science!=0f }
+        for (entry in scienceStats) {
+            scienceTable.add(entry.key.tr())
+            scienceTable.add(entry.value.science.roundToInt().toString()).row()
+        }
+        scienceTable.add("Total".tr())
+        scienceTable.add(scienceStats.values.map { it.science }.sum().roundToInt().toString())
+        scienceTable.pack()
+        return scienceTable
     }
 
 
