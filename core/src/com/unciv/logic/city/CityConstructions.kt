@@ -28,6 +28,7 @@ class CityConstructions {
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
         toReturn.currentConstruction=currentConstruction
+        toReturn.currentConstructionIsUserSet=currentConstructionIsUserSet
         return toReturn
     }
 
