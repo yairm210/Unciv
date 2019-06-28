@@ -327,7 +327,7 @@
 	"Spearman":{	
 		Italian:"Lanciere"
 		Russian:"Копейщик"
-		French:"Infanterie"
+		French:"Lancier"
 		Romanian:"Lăncier"
 		Spanish:"Lancero"
 		Simplified_Chinese:"枪兵"
@@ -703,8 +703,8 @@
 	"Lancer":{	
 		Italian:"Lanciere a cavallo"
 		Russian:"Улан"
-		French:"Lancier"
-		Romanian:"Lăncier"
+		French:"Lancier monté"
+		Romanian:"Lăncier montat"
 		Spanish:"Jinete lancero"
 		Simplified_Chinese:"枪骑兵"
 		Portuguese:"Lanceiro montado"
@@ -1038,18 +1038,18 @@
 		Romanian:"Tanc"
 		Spanish:"Tanque"
 		Simplified_Chinese:"坦克"
-		Russian:"ТАНК"
+		Russian:"Танк"
 		German:"Panzer"
 		French:"Char"
 	}
 
 	"Panzer":{ // german unique
-		Italian:"Panzer" //same in Italian
+		Italian:"Panzer"
 		Romanian:"Panzer"
 		Spanish:"Panzer"
 		Simplified_Chinese:"“虎II”坦克"
 		Russian:"Панзэр"
-		German:"Tiger II Panzer" //I used a more late WW2 panzer name here to destinguish 
+		German:"Königstiger" //I used a more late WW2 panzer name here to destinguish
 		French:"Panzer"
 	} 
 
