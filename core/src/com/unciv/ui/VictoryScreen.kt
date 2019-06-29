@@ -75,7 +75,9 @@ class VictoryScreen : PickerScreen() {
         rightSideButton.setText("Start new game".tr())
         rightSideButton.isVisible = true
         rightSideButton.enable()
-        rightSideButton.onClick { UnCivGame.Current.startNewGame() }
+        rightSideButton.onClick {
+            UnCivGame.Current.screen=NewGameScreen()
+        }
 
         closeButton.setText("One more turn...!".tr())
         closeButton.onClick {
