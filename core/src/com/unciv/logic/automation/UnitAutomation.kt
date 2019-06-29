@@ -379,6 +379,11 @@ class UnitAutomation{
         val siegeUnits = targets
                 .filter { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getUnitType()==UnitType.Siege }
         if(siegeUnits.any()) targets = siegeUnits
+        else{
+            val rangedUnits = targets
+                    .filter { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getUnitType().isRanged() }
+            if(rangedUnits.any()) targets=rangedUnits
+        }
         return targets.minBy { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getHealth() }
     }
 
