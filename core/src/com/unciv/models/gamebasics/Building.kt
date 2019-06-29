@@ -163,8 +163,7 @@ class Building : NamedStats(), IConstruction{
     }
 
     fun getStatPercentageBonuses(civInfo: CivilizationInfo?): Stats {
-        val stats = percentStatBonus
-        if(stats==null) return Stats() // empty
+        val stats = if(percentStatBonus==null) Stats() else percentStatBonus!!.clone()
         if(civInfo==null) return stats // initial stats
 
         val adoptedPolicies = civInfo.policies.adoptedPolicies
