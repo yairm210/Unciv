@@ -186,7 +186,7 @@ class WorldScreen : CameraStageBaseScreen() {
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
         if(civInfo.getKnownCivs()
-                        .filterNot { it.isDefeated() || it.isBarbarianCivilization() }
+                        .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }
                         .any()) {
             displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)

@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -373,8 +374,11 @@ class UnitAutomation{
     }
 
     private fun chooseBombardTarget(city: CityInfo) : TileInfo? {
-        val targets = getBombardTargets(city)
+        var targets = getBombardTargets(city)
         if (targets.isEmpty()) return null
+        val siegeUnits = targets
+                .filter { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getUnitType()==UnitType.Siege }
+        if(siegeUnits.any()) targets = siegeUnits
         return targets.minBy { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getHealth() }
     }
 
