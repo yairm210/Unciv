@@ -876,15 +876,15 @@
 	} 
 
 	"[turnsToExpansion] turns to expansion":{
-		Italian:"La città si espanderà tra [turnsToExpansion] turni"
-		Russian:"Город будет расширяться между раундами [turnsToExpansion]"
-		French:"La ville se développera entre [turnsToExpansion] tours"
-		Romanian:"Orașul se va extinde între rundă [turnsToExpansion]"
+		Italian:"[turnsToExpansion] turni fino al'espansione"
+		Russian:"Расширение в [turnsToExpansion] раунды(ах)"
+		French:"[turnsToExpansion] tours à l'expansion"
+		Romanian:"[turnsToExpansion] rundă până la expansiunea"
 		German:"Erweiterung in [turnsToExpansion] Runden"
-		Dutch:"De stad breidt zich uit tussen [turnsToExpansion]-rondes"
-		Spanish:"La ciudad se expandirá entre [turnsToExpansion] rondas"
+		Dutch:"Uitbreiding in [turnsToExpansion] rondes"
+		Spanish:"[turnsToExpansion] rondas hasta la expansión"
 		Simplified_Chinese:"这座城市将在[turnsToExpansion]回合后扩张"
-		Portuguese:"A cidade se expandirá em [turnsToExpansion] turnos"
+		Portuguese:"[turnsToExpansion] turnos até a expansão"
 		Japanese:"[turnsToExpansion]が拡大に変わります"
 	}
 
@@ -902,44 +902,48 @@
 	}
 
 	"[turnsToPopulation] turns to new population":{
-		Italian:"La città avrà un nuovo abitante tra [turnsToPopulation] turni"
-		Russian:"В городе будет новый житель в раундах [turnsToPopulation]"
-		French:"La ville aura un nouveau résident dans [turnsToPopulation]"
-		Romanian:"Orașul va avea un nou rezident în runde [turnsToPopulation]"
+		Italian:"[turnsToPopulation] turni fino a un nuovo abitante"
+		Russian:"Hовый житель в [turnsToPopulation] раундах"
+		French:"[turnsToPopulation] tours à un nouveau résident"
+		Romanian:"[turnsToPopulation] rundă până un nou rezident"
 		German:"Neuer Einwohner in [turnsToPopulation] Runden"
-		Dutch:"De stad krijgt een nieuwe inwoner in [turnsToPopulation]-rondes"
-		Spanish:"La ciudad tendrá un nuevo residente en las rondas de [turnsToPopulation]"
+		Dutch:"Een nieuwe inwoner in [turnsToPopulation] rondes"
+		Spanish:"[turnsToPopulation] rondas hasta un nuevo residente"
 		Simplified_Chinese:"这座城市将在[turnsToPopulation]轮后有1个新市民"
-		Portuguese:"A cidade terá um novo residente em [turnsToPopulation] turnos"
+		Portuguese:"[turnsToPopulation] turnos até um novo residente"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
 	}
 
 	"[turnsToStarvation] turns to lose population":{
-		Italian:"La città perderà un abitante tra [turnsToStarvation] turni"
-		Russian:"Город потеряет жителя в [turnsToStarvation] смен"
-		French:"La ville perdra un habitant [turnsToStarvation] tours"
-		Romanian:"Orașul va pierde un locuitor în [turnsToStarvation] schimburi"
-		German:"Die Stadt wird einen Einwohner in [turnsToStarvation]-Runden verlieren"
-		Dutch:"De stad verliest een bewoner in [turnsToStarvation] ploegen"
-		Spanish:"La ciudad pierde un habitante en [turnsToStarvation] turnos"
+		Italian:"Perdita di popolazione tra [turnsToStarvation] turni"
+		Russian:"Потеря населения в [turnsToStarvation] смен"
+		French:"Perte de population dans [turnsToStarvation] tours"
+		Romanian:"Pierderea populației în [turnsToStarvation] rundă"
+		German:"Bevölkerungsverlust in [turnsToStarvation] Runden"
+		Dutch:"Bevolkingsverlies in [turnsToStarvation] rondes"
+		Spanish:"Pérdida de población en [turnsToStarvation] turnos"
 		Simplified_Chinese:"这座城市将在[turnsToStarvation]轮后失去1个市民"
-		Portuguese:"A cidade perderá um habitante em [turnsToStarvation] turnos"
+		Portuguese:"Perda de população em [turnsToStarvation] turnos"
 		Japanese:"[turnsToStarvation]人口を減らす"
 	}
 
 	"Stopped population growth":{
 		Italian:"Stagnazione"
-		French:"accroissement de la population arrêtée"
+		Russian:"Pост населения oстановлен"
+		French:"Accroissement de la population arrêtée"
+		Romanian:"Creșterea populației arestate"
 		German:"Bevölkerungswachstum gestoppt"
+		Dutch:"De bevolkingsgroei gestopt"
+		Spanish:"Aumento de la población detenida"
 		Simplified_Chinese:"人口增长停止"
 		Portuguese:"Crescimento populacional interrompido"
 		Japanese:"人口増加の阻止"
 	}
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
-		Italian:"La resistenza durerà per altri [numberOfTurns] turni."
+		Italian:"La resistenza mentre altri [numberOfTurns] turni."
         Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
-		Portuguese:"A resistência durará por [numberOfTurns] turnos mais."
+		Portuguese:"A resistência por [numberOfTurns] turnos mais."
 		Japanese:"他の[numberOfTurns]ターンに抵抗."
 		French:"En révolte pour [numberOfTurns] tours."
 	}
