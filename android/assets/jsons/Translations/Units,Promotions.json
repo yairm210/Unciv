@@ -1262,11 +1262,18 @@
 		French:"Général illustre"
 	}
 	
-	"Bonus for land units in 2 radius 15%" :{
+	"Bonus for units in 2 tile radius 15%" :{
+		Italian:"15% Bonus per le unità nel raggio di 2 caselle"
+		French:"Bonus de combat +15% pour les unités dans un rayon de 2 cases"
+	}
+	
+	/* Not in use now, but will be when we eventually add Great Admiral and split the job
+	"Bonus for land units in 2 tile radius 15%" :{
 		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
 		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
-        	French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
+		French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
 	}
+	*/
 
 	////// Unit Promotions
 

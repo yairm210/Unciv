@@ -66,16 +66,15 @@ class BattleDamage{
                 modifiers["Missing resource"]=-0.25f
             }
 
-            //to do : performance improvement
-            if (combatant.getUnitType().isLandUnit()) {
+            //todo : performance improvement
+            if (combatant.getUnitType()!=UnitType.City) {
                 val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
                         .filter {it.civilianUnit?.civInfo == combatant.unit.civInfo}
                         .map {it.civilianUnit}
-                if (nearbyCivUnits.any { it!!.hasUnique("Bonus for land units in 2 radius 15%") }) {
-                    modifiers["Great general"]= when {
-                        combatant.unit.civInfo.getNation().unique == "Great general provides double combat bonus, and spawns 50% faster" -> 0.3f
-                        else -> 0.15f
-                    }
+                if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
+                    modifiers["Great General"]= if (combatant.unit.civInfo.getNation().unique ==
+                            "Great general provides double combat bonus, and spawns 50% faster") 0.3f
+                    else 0.15f
                 }
             }
         }
