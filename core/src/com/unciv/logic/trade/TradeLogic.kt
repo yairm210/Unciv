@@ -3,7 +3,6 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 
@@ -26,8 +25,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements")) {
             val relationshipLevel = otherCivilization.getDiplomacyManager(civInfo).relationshipLevel()
 
-            if(relationshipLevel >= RelationshipLevel.Neutral)
-                offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
+            offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
         }
 
         for(entry in civInfo.getCivResources()

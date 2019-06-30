@@ -179,7 +179,15 @@ class TradeEvaluation{
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
-                if(offer.name == "Open Borders") return 100
+                if(offer.name == "Open Borders"){
+                    when(civInfo.getDiplomacyManager(tradePartner).relationshipLevel()){
+                        RelationshipLevel.Unforgivable -> return 10000
+                        RelationshipLevel.Enemy -> return 2000
+                        RelationshipLevel.Competitor -> return 500
+                        RelationshipLevel.Neutral -> return 200
+                        RelationshipLevel.Favorable,RelationshipLevel.Friend,RelationshipLevel.Ally -> return 100
+                    }
+                }
                 throw Exception("Invalid agreement type!")
             }
         }
