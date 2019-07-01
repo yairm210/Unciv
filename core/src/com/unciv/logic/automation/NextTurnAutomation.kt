@@ -1,6 +1,7 @@
 package com.unciv.logic.automation
 
 import com.unciv.Constants
+import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
@@ -262,7 +263,18 @@ class NextTurnAutomation{
     }
 
     fun getMinDistanceBetweenCities(civ1: CivilizationInfo, civ2: CivilizationInfo): Int {
-        return civ1.cities.map { city -> civ2.cities.map { it.getCenterTile().arialDistanceTo(city.getCenterTile()) }.min()!! }.min()!!
+        return getClosestCities(civ1,civ2).arialDistance
+    }
+
+    data class CityDistance(val city1:CityInfo, val city2:CityInfo, val arialDistance: Int)
+    fun getClosestCities(civ1: CivilizationInfo, civ2: CivilizationInfo): CityDistance {
+        val cityDistances = arrayListOf<CityDistance>()
+        for(civ1city in civ1.cities)
+            for(civ2city in civ2.cities)
+                cityDistances.add(CityDistance(civ1city,civ2city,
+                        civ1city.getCenterTile().arialDistanceTo(civ2city.getCenterTile())))
+
+        return cityDistances.minBy { it.arialDistance }!!
     }
 
     private fun offerPeaceTreaty(civInfo: CivilizationInfo) {

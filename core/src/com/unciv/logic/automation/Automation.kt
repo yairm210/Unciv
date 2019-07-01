@@ -159,15 +159,30 @@ class Automation {
                 relativeCostEffectiveness.add(choice)
             }
 
-            //War buildings
-            val wartimeBuilding = buildableNotWonders.filter { it.xpForNewUnits>0 || it.cityStrength>0 }
+            //Defensive building
+            val defensiveBuilding = buildableNotWonders.filter { it.cityStrength>0 }
                     .minBy { it.cost }
-            if (wartimeBuilding!=null && (preferredVictoryType!=VictoryType.Cultural || isAtWar)) {
+            if(defensiveBuilding!=null && (isAtWar || preferredVictoryType!=VictoryType.Cultural)){
+                var modifier = 0.2f
+                if(isAtWar) modifier = 0.5f
+
+                // If this city is the closest city to another civ, that makes it a likely candidate for attack
+                if(cityInfo.civInfo.getKnownCivs()
+                                .any{ NextTurnAutomation().getClosestCities(cityInfo.civInfo,it).city1 == cityInfo })
+                    modifier *= 1.5f
+
+                relativeCostEffectiveness.add(ConstructionChoice(defensiveBuilding.name, modifier))
+            }
+
+            val unitTrainingBuilding = buildableNotWonders.filter { it.xpForNewUnits>0}
+                    .minBy { it.cost }
+            //cityInfo.civInfo.cities.sortedByDescending {  } // todo don't build if this is a weak production city
+            if (unitTrainingBuilding!=null && (preferredVictoryType!=VictoryType.Cultural || isAtWar)) {
                 var modifier = 0.5f
                 if(isAtWar) modifier = 1f
                 if(preferredVictoryType==VictoryType.Domination)
                     modifier *= 1.3f
-                relativeCostEffectiveness.add(ConstructionChoice(wartimeBuilding.name,modifier))
+                relativeCostEffectiveness.add(ConstructionChoice(unitTrainingBuilding.name,modifier))
             }
 
             //Wonders
