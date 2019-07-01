@@ -876,7 +876,7 @@
 	} 
 
 	"[turnsToExpansion] turns to expansion":{
-		Italian:"[turnsToExpansion] turni fino al'espansione"
+		Italian:"[turnsToExpansion] turni per espandersi"
 		Russian:"Расширение в [turnsToExpansion] раунды(ах)"
 		French:"[turnsToExpansion] tours à l'expansion"
 		Romanian:"[turnsToExpansion] rundă până la expansiunea"
@@ -941,7 +941,7 @@
 	}
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
-		Italian:"La resistenza mentre altri [numberOfTurns] turni."
+		Italian:"La resistenza durerà altri [numberOfTurns] turni."
         Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
 		Portuguese:"A resistência por [numberOfTurns] turnos mais."
 		Japanese:"他の[numberOfTurns]ターンに抵抗."
