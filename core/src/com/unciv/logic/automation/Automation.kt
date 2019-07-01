@@ -261,7 +261,7 @@ class Automation {
         fun square(x:Int) = x*x
         val unitStrength =  civInfo.getCivUnits().map { square(max(it.baseUnit().strength, it.baseUnit().rangedStrength)) }.sum()
         val cityStrength = civInfo.cities.map { square(CityCombatant(it).getCityStrength()) }.sum()
-        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt() + 1 //avoid 0
+        return (sqrt(unitStrength.toDouble()) /*+ sqrt(cityStrength.toDouble())*/).toInt() + 1 //avoid 0, becaus we divide by the result
     }
 
     fun threatAssessment(assessor:CivilizationInfo, assessed: CivilizationInfo): ThreatLevel {

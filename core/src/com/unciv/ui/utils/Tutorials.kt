@@ -11,7 +11,7 @@ import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
-import java.util.LinkedHashMap
+import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.set
@@ -26,7 +26,7 @@ class Tutorials{
 
 
     fun displayTutorials(name: String, stage: Stage) {
-        if (UnCivGame.Current.settings.showTutorials) return
+        if (!UnCivGame.Current.settings.showTutorials) return
         if (UnCivGame.Current.settings.tutorialsShown.contains(name)) return
         val texts = getTutorials(name, UnCivGame.Current.settings.language)
         tutorialTexts.add(Tutorial(name,texts))

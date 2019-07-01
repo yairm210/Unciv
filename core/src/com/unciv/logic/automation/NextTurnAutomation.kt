@@ -329,30 +329,36 @@ class NextTurnAutomation{
 
     private fun declareWar(civInfo: CivilizationInfo) {
         if (civInfo.isCityState()) return
-        if (civInfo.victoryType()==VictoryType.Cultural)
-            return
+        if (civInfo.victoryType() == VictoryType.Cultural) return
+        if (civInfo.cities.isEmpty() || civInfo.diplomacy.isEmpty()) return
+        if (civInfo.isAtWar() || civInfo.getHappiness() <= 0) return
 
-        if (civInfo.cities.isNotEmpty() && civInfo.diplomacy.isNotEmpty()) {
-            val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
-            if (!civInfo.isAtWar() && civInfo.getHappiness() > 0
-                    && ourMilitaryUnits >= civInfo.cities.size) { //evaluate war
-                val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
-                val enemyCivsByDistanceToOurs = civInfo.getKnownCivs()
-                        .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar() }
-                        .groupBy { getMinDistanceBetweenCities(civInfo, it) }
-                        .toSortedMap()
+        val ourMilitaryUnits = civInfo.getCivUnits().filter { !it.type.isCivilian() }.size
+        if (ourMilitaryUnits < civInfo.cities.size) return
 
-                for (group in enemyCivsByDistanceToOurs) {
-                    if (group.key > 7) break
-                    for (otherCiv in group.value) {
-                        if (Automation().evaluteCombatStrength(otherCiv) * 2 < ourCombatStrength) {
-                            civInfo.getDiplomacyManager(otherCiv).declareWar()
-                            return
-                        }
-                    }
-                }
-            }
+        //evaluate war
+        val enemyCivs = civInfo.getKnownCivs()
+                .filterNot { it == civInfo || it.cities.isEmpty() || !civInfo.getDiplomacyManager(it).canDeclareWar() }
+        if (enemyCivs.isEmpty()) return
+
+        var enemyCivsToEvaluate = enemyCivs.filter { getMinDistanceBetweenCities(civInfo, it) <= 7 }
+
+        var isFightingFarAway = false
+        if (enemyCivsToEvaluate.isEmpty()) { // so, there ARE civs we can declare war on, just not close by
+            if (civInfo.victoryType() != VictoryType.Domination) return // No point in attacking civs that are too far away
+            enemyCivsToEvaluate = enemyCivs
+            isFightingFarAway = true
         }
+
+        val weakestCloseCiv = enemyCivsToEvaluate.minBy { Automation().evaluteCombatStrength(it) }!!
+        val weakestCloseCivCombatStrength = Automation().evaluteCombatStrength(weakestCloseCiv)
+        val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
+
+        val amountWeNeedToBeStronger =
+                if (civInfo.victoryType() == VictoryType.Domination && !isFightingFarAway) 1.5f else 2f
+
+        if (weakestCloseCivCombatStrength * amountWeNeedToBeStronger < ourCombatStrength)
+            civInfo.getDiplomacyManager(weakestCloseCiv).declareWar()
     }
 
     private fun automateUnits(civInfo: CivilizationInfo) {
