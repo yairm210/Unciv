@@ -2,7 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -243,7 +243,7 @@ class CityConstructions {
 
     fun chooseNextConstruction() {
         if(currentConstructionIsUserSet) return
-        Automation().chooseNextConstruction(this)
+        ConstructionAutomation(this).chooseNextConstruction()
     }
     //endregion
 
