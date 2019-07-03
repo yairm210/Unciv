@@ -168,16 +168,21 @@ object ImageGetter {
     fun getHealthBar(currentHealth: Float, maxHealth: Float, healthBarSize: Float): Table {
         val healthPercent = currentHealth / maxHealth
         val healthBar = Table()
+
         val healthPartOfBar = getWhiteDot()
         healthPartOfBar.color = when {
             healthPercent > 2 / 3f -> Color.GREEN
             healthPercent > 1 / 3f -> Color.ORANGE
             else -> Color.RED
         }
-        val emptyPartOfBar = getDot(Color.BLACK)
         healthBar.add(healthPartOfBar).width(healthBarSize * healthPercent).height(5f)
+
+        val emptyPartOfBar = getDot(Color.BLACK)
         healthBar.add(emptyPartOfBar).width(healthBarSize * (1 - healthPercent)).height(5f)
+
+        healthBar.pad(1f)
         healthBar.pack()
+        healthBar.background= getBackground(Color.BLACK)
         return healthBar
     }
 
