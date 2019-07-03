@@ -28,6 +28,8 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
         setButtonActions()
 
+        addAirUnitTable()
+
         if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
             val healthBar = ImageGetter.getHealthBar(city.health.toFloat(), city.getMaxHealth().toFloat(), 100f)
             add(healthBar).row()
@@ -39,6 +41,20 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         pack()
         setOrigin(Align.center)
         centerX(tileGroup)
+    }
+
+    private fun addAirUnitTable() {
+        if (!tileGroup.tileInfo.airUnits.isNotEmpty()) return
+        val secondarycolor = city.civInfo.getNation().getSecondaryColor()
+        val airUnitTable = Table().apply { defaults().pad(5f) }
+        airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+                .tint(city.civInfo.getNation().getColor())
+        val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
+        aircraftImage.color = secondarycolor
+        airUnitTable.add(aircraftImage).size(15f)
+        airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel()
+                .setFontColor(secondarycolor).setFontSize(15))
+        add(airUnitTable).row()
     }
 
     private fun setButtonActions() {

@@ -23,6 +23,7 @@ open class TileInfo {
 
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
+    var airUnits=ArrayList<MapUnit>()
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String

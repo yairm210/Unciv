@@ -833,8 +833,18 @@
 		strength:34,
 		cost: 225,
 		requiredTech:"Rifling",
-		obsoleteTech:"Replaceable Parts", //Should be Replaceable Parts
+		obsoleteTech:"Replaceable Parts",
 		upgradesTo:"Great War Infantry",
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
+	{
+		name:"Triplane",
+		unitType:"AirFighter",
+		movement:1,
+		strength:34,
+		cost: 225,
+		requiredTech:"Flight",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},

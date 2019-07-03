@@ -447,6 +447,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
 * [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
 * [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein, US for city states
+* [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker
 
 # Sound credits
 

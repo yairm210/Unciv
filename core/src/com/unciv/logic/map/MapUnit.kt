@@ -201,6 +201,9 @@ class MapUnit {
      * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
+        if(type.isAirUnit())
+            return tile.airUnits.size<6 && tile.isCityCenter() && tile.getCity()?.civInfo==civInfo
+
         if(!canPassThrough(tile)) return false
 
         if (type.isCivilian())
@@ -410,15 +413,24 @@ class MapUnit {
 
     fun moveToTile(otherTile: TileInfo) {
         if(otherTile==getTile()) return // already here!
-        val distanceToTiles = getDistanceToTiles()
-
-        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
-        if (!distanceToTiles.containsKey(otherTile))
-            throw YouCantGetThereFromHereException("$this can't get from ${currentTile.position} to ${otherTile.position}.")
 
         class CantEnterThisTileException(msg: String) : Exception(msg)
         if(!canMoveTo(otherTile))
             throw CantEnterThisTileException("$this can't enter $otherTile")
+
+        if(type.isAirUnit()){ // they move differently from all other units
+            action=null
+            removeFromTile()
+            putInTile(otherTile)
+            currentMovement=0f
+            return
+        }
+
+        val distanceToTiles = getDistanceToTiles()
+        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
+        if (!distanceToTiles.containsKey(otherTile))
+            throw YouCantGetThereFromHereException("$this can't get from ${currentTile.position} to ${otherTile.position}.")
+
         if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo)
             throw Exception("This is an enemy city, you can't go here!")
 
@@ -453,15 +465,20 @@ class MapUnit {
     }
 
     fun removeFromTile(){
-        if (type.isCivilian()) getTile().civilianUnit=null
-        else getTile().militaryUnit=null
+        when {
+            type.isAirUnit() -> currentTile.airUnits.remove(this)
+            type.isCivilian() -> getTile().civilianUnit=null
+            else -> getTile().militaryUnit=null
+        }
     }
 
     fun putInTile(tile:TileInfo){
-        if(!canMoveTo(tile)) throw Exception("I can't go there!")
-        if(type.isCivilian())
-            tile.civilianUnit=this
-        else tile.militaryUnit=this
+        when {
+            !canMoveTo(tile) -> throw Exception("I can't go there!")
+            type.isAirUnit() -> tile.airUnits.add(this)
+            type.isCivilian() -> tile.civilianUnit=this
+            else -> tile.militaryUnit=this
+        }
         currentTile = tile
         if(tile.improvement==Constants.ancientRuins && civInfo.isMajorCiv())
             getAncientRuinBonus()
