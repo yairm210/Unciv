@@ -346,6 +346,7 @@ class Building : NamedStats(), IConstruction{
         if (get(stat) > 0) return true
         if (getStatPercentageBonuses(null).get(stat)>0) return true
         if (specialistSlots!=null && specialistSlots!!.get(stat)>0) return true
+        if(resourceBonusStats!=null && resourceBonusStats!!.get(stat)>0) return true
         return false
     }
 

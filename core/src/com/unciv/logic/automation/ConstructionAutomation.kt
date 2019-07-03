@@ -10,6 +10,7 @@ import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.stats.Stat
 import kotlin.math.min
+import kotlin.math.sqrt
 
 class ConstructionAutomation(val cityConstructions: CityConstructions){
 
@@ -82,12 +83,13 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addMilitaryUnitChoice() {
+        if(!isAtWar && !cityIsOverAverageProduction) return // don't make any military units here. Infrastructure first!
         if ((!isAtWar && civInfo.statsForNextTurn.gold > 0 && militaryUnits < cities * 2)
                 || (isAtWar && civInfo.gold > -50)) {
             val militaryUnit = Automation().chooseMilitaryUnit(cityInfo)
             val unitsToCitiesRatio = cities.toFloat() / (militaryUnits + 1)
             // most buildings and civ units contribute the the civ's growth, military units are anti-growth
-            var modifier = unitsToCitiesRatio / 2
+            var modifier = sqrt(unitsToCitiesRatio) / 2
             if (preferredVictoryType == VictoryType.Domination) modifier *= 3
             else if (isAtWar) modifier *= unitsToCitiesRatio * 2
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
@@ -108,7 +110,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
 
     private fun addWorkerChoice() {
         val citiesCountedTowardsWorkers = min(5, cities) // above 5 cities, extra cities won't make us want more workers
-        if (workers < citiesCountedTowardsWorkers * 0.6f) {
+        if (workers < citiesCountedTowardsWorkers * 0.6f && civUnits.none { it.name==Constants.worker && it.isIdle() }) {
             var modifier = citiesCountedTowardsWorkers / (workers + 0.1f)
             if (!cityIsOverAverageProduction) modifier /= 5 // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, Constants.worker, modifier)
@@ -145,7 +147,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
             val citiesBuildingWonders = civInfo.cities
                     .count { it.cityConstructions.isBuildingWonder() }
 
-            var modifier = 3.5f * getWonderPriority(wonder) / (citiesBuildingWonders + 1)
+            var modifier = 2f * getWonderPriority(wonder) / (citiesBuildingWonders + 1)
             if (!cityIsOverAverageProduction) modifier /= 5  // higher production cities will deal with this
             addChoice(relativeCostEffectiveness, wonder.name, modifier)
         }
@@ -192,7 +194,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addScienceBuildingChoice() {
-        val scienceBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Science) }
+        val scienceBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Science) || it.name=="Library" } // only stat related in unique
                 .minBy { it.cost }
         if (scienceBuilding != null) {
             var modifier = 1.1f
@@ -220,7 +222,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addFoodBuildingChoice() {
-        val foodBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Food) }
+        val foodBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Food) }  // only stat related in unique
                 .minBy { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f
