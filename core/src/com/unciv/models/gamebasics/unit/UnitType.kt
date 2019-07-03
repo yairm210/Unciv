@@ -9,10 +9,14 @@ enum class UnitType{
     Mounted,
     Armor,
     Siege,
+
     WaterCivilian,
     WaterMelee,
     WaterRanged,
-    WaterSubmarine;
+    WaterSubmarine,
+
+    AirFighter,
+    AirBomber;
 
     fun isMelee(): Boolean {
         return this == Melee
@@ -45,6 +49,14 @@ enum class UnitType{
     }
 
     fun isWaterUnit(): Boolean {
-        return !isLandUnit() // if we ever get air units, this'll have to change
+        return this==WaterSubmarine
+                || this==WaterRanged
+                || this==WaterMelee
+                || this==WaterCivilian
+    }
+
+    fun isAirUnit():Boolean{
+        return this==AirBomber
+                || this==AirFighter
     }
 }

@@ -70,6 +70,9 @@ class PopulationManager {
         }
     }
 
+    // todo - change tile choice according to city!
+    // if small city, favor production above all, ignore gold!
+    // if larger city, food should be worth less!
     internal fun autoAssignPopulation() {
         if(getFreePopulation()==0) return
 
