@@ -63,7 +63,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
 
             // So you can click anywhere on the button to go to the city
-            touchable = Touchable.enabled
+            touchable = Touchable.childrenOnly
 
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
@@ -91,6 +91,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     private fun getIconTable(): Table {
         val secondaryColor = city.civInfo.getNation().getSecondaryColor()
         val iconTable = Table()
+        iconTable.touchable=Touchable.enabled
         iconTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
                 .tint(city.civInfo.getNation().getColor())
 

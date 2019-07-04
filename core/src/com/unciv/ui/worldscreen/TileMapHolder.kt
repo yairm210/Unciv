@@ -7,8 +7,10 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.InputEvent
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.actions.FloatAction
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ActorGestureListener
 import com.unciv.Constants
 import com.unciv.UnCivGame
@@ -52,6 +54,10 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 }
 
             })
+
+            tileGroup.cityButtonLayerGroup.onClick("") {
+                showAircraft(tileGroup.tileInfo.getCity()!!)
+            }
         }
 
         actor = allTiles
@@ -90,15 +96,17 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         unitActionOverlay?.remove()
         selectedTile = tileInfo
 
-        val previousSelectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
-        worldScreen.bottomBar.unitTable.tileSelected(tileInfo)
-        val newSelectedUnit = worldScreen.bottomBar.unitTable.selectedUnit
+        val unitTable = worldScreen.bottomBar.unitTable
+        val previousSelectedUnit = unitTable.selectedUnit
+        unitTable.tileSelected(tileInfo)
+        val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
                 && previousSelectedUnit.canMoveTo(tileInfo) && previousSelectedUnit.movementAlgs().canReach(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             moveHere(previousSelectedUnit, tileInfo)
         }
+
 
         if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
             val unitsInTile = selectedTile!!.getUnits()
@@ -108,7 +116,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                         .filter { it.isCityCenter() }.map { it.getCity()!! }
                         .filter { !it.attackedThisTurn }
                 if(citiesThatCanBombard.isNotEmpty())
-                    worldScreen.bottomBar.unitTable.citySelected(citiesThatCanBombard.first())
+                    unitTable.citySelected(citiesThatCanBombard.first())
             }
         }
 
@@ -191,7 +199,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         actor.center(group)
         actor.x+=group.x
         actor.y+=group.y
-        group.parent.addActor(actor)
+        group.parent.addActor(actor) // Add the overlay to the TileGroupMap - it's what actually displays all the tiles
         actor.toFront()
 
         actor.y += actor.height
@@ -285,6 +293,25 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
             tileGroups[attackableTile]!!.showCrosshair()
         }
+    }
+
+    private fun showAircraft(city:CityInfo){
+        if (city.getCenterTile().airUnits.isEmpty()) return
+        val airUnitsTable = Table().apply { defaults().pad(10f) }
+        for(unit in city.getCenterTile().airUnits){
+            val unitGroup = UnitGroup(unit,60f).surroundWithCircle(80f)
+            unitGroup.circle.color = Color.GRAY.cpy().apply { a=0.5f }
+            unitGroup.touchable=Touchable.enabled
+            unitGroup.onClick {
+                worldScreen.bottomBar.unitTable.selectedUnit=unit
+                worldScreen.shouldUpdate=true
+                unitGroup.circle.color = Color.WHITE
+            }
+            airUnitsTable.add(unitGroup)
+        }
+        airUnitsTable.height=60f
+        unitActionOverlay?.remove()
+        addOverlayOnTileGroup(city.getCenterTile(),airUnitsTable)
     }
 
     fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true) {

@@ -57,7 +57,7 @@ class BattleDamage{
 
             if(combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                            .any { it.civInfo==combatant.getCivInfo() && !it.type.isCivilian()})
+                            .any { it.civInfo==combatant.getCivInfo() && !it.type.isCivilian() && !it.type.isAirUnit()})
                 modifiers["Discipline"] = 0.15f
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
@@ -108,7 +108,7 @@ class BattleDamage{
             }
 
             for (ability in attacker.unit.getUniques()) {
-                val regexResult = Regex("""Bonus as Attacker (\d*)%""").matchEntire(ability) //to do: extend to defender, and penalyy
+                val regexResult = Regex("""Bonus as Attacker [(\d*)]%""").matchEntire(ability) //to do: extend to defender, and penalyy
                 if (regexResult == null) continue
                 val bonus = regexResult.groups[1]!!.value.toFloat() / 100
                 if (modifiers.containsKey("Attacker Bonus"))
