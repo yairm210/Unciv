@@ -501,7 +501,7 @@
 		mainColor:[18,84,30],
 		secondaryColor:[245,248,185],
 		uniqueName:"Barbary Corsairs"
-		unique:"Pay only one third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
+		unique:"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.",
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
 			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
 			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",

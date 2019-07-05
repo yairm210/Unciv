@@ -108,6 +108,13 @@ class Battle(val gameInfo:GameInfo) {
             attacker.getCivInfo().addNotification("A barbarian [${defender.getName()}] has joined us!",attackedTile.position, Color.RED)
         }
 
+        // Similarly, Ottoman unique
+        if(defender.isDefeated() && defender.getUnitType().isWaterUnit()
+                && attacker.getCivInfo().getNation().unique== "Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units."
+                && Random().nextDouble() > 0.33){
+            attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
+        }
+
         // we're a melee unit and we destroyed\captured an enemy unit
         else if (attacker.isMelee()
                 && (defender.isDefeated() || defender.getCivInfo()==attacker.getCivInfo())
@@ -135,23 +142,7 @@ class Battle(val gameInfo:GameInfo) {
             attacker.city.attackedThisTurn = true
         }
 
-        // XP!
-        fun addXp(thisCombatant:ICombatant, amount:Int, otherCombatant:ICombatant){
-            if(thisCombatant !is MapUnitCombatant) return
-            if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarianCivilization())
-                return
-            var amountToAdd = amount
-            if(thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
-            thisCombatant.unit.promotions.XP += amountToAdd
 
-            if(thisCombatant.getCivInfo().getNation().unique
-                    == "Great general provides double combat bonus, and spawns 50% faster")
-                amountToAdd = (amountToAdd * 1.5f).toInt()
-            if(thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
-                amountToAdd *= 2
-
-            thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += amountToAdd
-        }
 
         if(attacker.isMelee()){
             if(!defender.getUnitType().isCivilian()) // unit was not captured but actually attacked
@@ -184,6 +175,24 @@ class Battle(val gameInfo:GameInfo) {
 
         if(attacker is MapUnitCombatant && attacker.unit.action!=null && attacker.unit.action!!.startsWith("moveTo"))
             attacker.unit.action=null
+    }
+
+    // XP!
+    fun addXp(thisCombatant:ICombatant, amount:Int, otherCombatant:ICombatant){
+        if(thisCombatant !is MapUnitCombatant) return
+        if(thisCombatant.unit.promotions.totalXpProduced() >= 30 && otherCombatant.getCivInfo().isBarbarianCivilization())
+            return
+        var amountToAdd = amount
+        if(thisCombatant.getCivInfo().policies.isAdopted("Military Tradition")) amountToAdd = (amountToAdd * 1.5f).toInt()
+        thisCombatant.unit.promotions.XP += amountToAdd
+
+        if(thisCombatant.getCivInfo().getNation().unique
+                == "Great general provides double combat bonus, and spawns 50% faster")
+            amountToAdd = (amountToAdd * 1.5f).toInt()
+        if(thisCombatant.unit.hasUnique("Combat very likely to create Great Generals"))
+            amountToAdd *= 2
+
+        thisCombatant.getCivInfo().greatPeople.greatGeneralPoints += amountToAdd
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {

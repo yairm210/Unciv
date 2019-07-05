@@ -838,6 +838,7 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
+	/*
 	{
 		name:"Triplane",
 		unitType:"AirFighter",
@@ -848,6 +849,7 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
+	*/
 	/*
 	{
 		name:"Norvegian Ski Infantry",
