@@ -131,7 +131,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
              * The only "heavy lifting" that needs to be done is getting the turns to get there,
              * so that and that alone will be relegated to the concurrent thread.
              */
-            val turnsToGetThere = selectedUnit.movementAlgs().getShortestPath(tileInfo).size // this is what takes the most time, tbh
+            val turnsToGetThere = if(selectedUnit.type.isAirUnit()) 1
+                else selectedUnit.movementAlgs().getShortestPath(tileInfo).size // this is what takes the most time, tbh
 
             Gdx.app.postRunnable {
                 if(UnCivGame.Current.settings.singleTapMove && turnsToGetThere==1) {
@@ -284,9 +285,14 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         tileGroups[unit.getTile()]!!.selectUnit(unit)
 
-        for (tile: TileInfo in unit.getDistanceToTiles().keys)
+        val isAirUnit = unit.type.isAirUnit()
+        val tilesInMoveRange = if(isAirUnit) unit.getTile().getTilesInDistance(unit.getRange())
+        else unit.getDistanceToTiles().keys
+
+        for (tile: TileInfo in tilesInMoveRange)
             if (unit.canMoveTo(tile))
-                tileGroups[tile]!!.showCircle(Color.WHITE, if (UnCivGame.Current.settings.singleTapMove) 0.7f else 0.3f)
+                tileGroups[tile]!!.showCircle(Color.WHITE,
+                        if (UnCivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
 
         val unitType = unit.type
         val attackableTiles: List<TileInfo> = when {

@@ -132,6 +132,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
             }
 
+            if(unit.type.isRanged()){
+                unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
+                unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
+            }
+
             if (!unit.type.isCivilian()) {
                 unitDescriptionTable.add("XP")
                 unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion())

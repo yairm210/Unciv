@@ -129,18 +129,23 @@ class MapUnit {
 
     // we need to map all the places that this could change: Unit changes locations, owners, gets promotion?
     fun updateViewableTiles() {
-        var visibilityRange = 2
-        visibilityRange += getUniques().count{it=="+1 Visibility Range"}
-        if(hasUnique("Limited Visibility")) visibilityRange-=1
-        if(civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
-            visibilityRange += 1
-        if(type.isWaterUnit() && !type.isCivilian()
-                && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
-            visibilityRange += 1
-        val tile = getTile()
-        if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
-        viewableTiles = tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+        if(type.isAirUnit()){
+            viewableTiles = getTile().getTilesInDistance(6)  // it's that simple
+        }
+        else {
+            var visibilityRange = 2
+            visibilityRange += getUniques().count { it == "+1 Visibility Range" }
+            if (hasUnique("Limited Visibility")) visibilityRange -= 1
+            if (civInfo.getNation().unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
+                visibilityRange += 1
+            if (type.isWaterUnit() && !type.isCivilian()
+                    && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
+                visibilityRange += 1
+            val tile = getTile()
+            if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
 
+            viewableTiles = tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+        }
         civInfo.updateViewableTiles() // for the civ
     }
 

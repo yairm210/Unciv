@@ -838,18 +838,20 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	/*
+	
 	{
 		name:"Triplane",
 		unitType:"AirFighter",
 		movement:1,
-		strength:34,
-		cost: 225,
+		strength:35,
+		rangedStrength:35,
+		range:5,
+		cost: 325,
 		requiredTech:"Flight",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	*/
+	
 	/*
 	{
 		name:"Norvegian Ski Infantry",

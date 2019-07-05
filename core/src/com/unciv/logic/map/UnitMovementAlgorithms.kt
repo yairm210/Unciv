@@ -143,6 +143,11 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         val currentTile = unit.getTile()
         if (currentTile == destination) return currentTile
 
+        if(unit.type.isAirUnit()){
+            unit.moveToTile(destination)
+            return destination
+        }
+
         val distanceToTiles = unit.getDistanceToTiles()
 
         val destinationTileThisTurn: TileInfo
@@ -174,6 +179,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     }
 
     fun canReach(destination: TileInfo): Boolean {
+        if(unit.type.isAirUnit())
+            return unit.currentTile.arialDistanceTo(destination) <= unit.getRange()
         return getShortestPath(destination).isNotEmpty()
     }
 

@@ -31,6 +31,7 @@ enum class UnitType{
                 || this == WaterRanged
                 || this == WaterSubmarine
                 || this == City
+                || this.isAirUnit()
     }
 
     fun isLandUnit(): Boolean {
