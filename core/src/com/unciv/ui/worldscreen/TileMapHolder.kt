@@ -56,7 +56,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             })
 
             tileGroup.cityButtonLayerGroup.onClick("") {
-                showAircraft(tileGroup.tileInfo.getCity()!!)
+                onTileClicked(tileGroup.tileInfo)
             }
         }
 
@@ -104,8 +104,9 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
                 && previousSelectedUnit.canMoveTo(tileInfo) && previousSelectedUnit.movementAlgs().canReach(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
-            moveHere(previousSelectedUnit, tileInfo)
+            addTileOverlaysWithUnitMovement(previousSelectedUnit, tileInfo)
         }
+        else addTileOverlays(tileInfo) // no unit movement but display the units in the tile etc.
 
 
         if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
@@ -123,7 +124,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         worldScreen.shouldUpdate = true
     }
 
-    private fun moveHere(selectedUnit: MapUnit, tileInfo: TileInfo) {
+    private fun addTileOverlaysWithUnitMovement(selectedUnit: MapUnit, tileInfo: TileInfo) {
         thread {
             /** LibGdx sometimes has these weird errors when you try to edit the UI layout from 2 separate threads.
              * And so, all UI editing will be done on the main thread.
@@ -140,7 +141,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                 } else {
                     // add "move to" button
                     val moveHereButtonDto = MoveHereButtonDto(selectedUnit, tileInfo, turnsToGetThere)
-                    addMoveHereButtonToTile(moveHereButtonDto)
+                    addTileOverlays(tileInfo, moveHereButtonDto)
                 }
                 worldScreen.shouldUpdate = true
             }
@@ -148,8 +149,32 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
     }
 
+    private fun addTileOverlays(tileInfo: TileInfo, moveHereDto:MoveHereButtonDto?=null){
+        val table = Table().apply { defaults().pad(10f) }
+        if(moveHereDto!=null)
+            table.add(getMoveHereButton(moveHereDto))
 
-    private fun addMoveHereButtonToTile(dto: MoveHereButtonDto) {
+        if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.currentPlayerCiv) {
+            for (unit in tileInfo.getCity()!!.getCenterTile().getUnits()) {
+                val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
+                unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }
+                if (unit.currentMovement == 0f) unitGroup.color.a = 0.5f
+                unitGroup.touchable = Touchable.enabled
+                unitGroup.onClick {
+                    worldScreen.bottomBar.unitTable.selectedUnit = unit
+                    worldScreen.bottomBar.unitTable.selectedCity = null
+                    worldScreen.shouldUpdate = true
+                    removeUnitActionOverlay = true
+                }
+                table.add(unitGroup)
+            }
+        }
+
+        addOverlayOnTileGroup(tileInfo, table)
+        table.moveBy(0f,60f)
+    }
+
+    private fun getMoveHereButton(dto: MoveHereButtonDto): Group {
         val size = 60f
         val moveHereButton = Group().apply { width = size;height = size; }
         moveHereButton.addActor(ImageGetter.getCircle().apply { width = size; height = size })
@@ -171,7 +196,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
             }
 
         else moveHereButton.color.a = 0.5f
-        addOverlayOnTileGroup(dto.tileInfo, moveHereButton)
+        return moveHereButton
     }
 
 
@@ -295,24 +320,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         }
     }
 
-    private fun showAircraft(city:CityInfo){
-        if (city.getCenterTile().airUnits.isEmpty()) return
-        val airUnitsTable = Table().apply { defaults().pad(10f) }
-        for(unit in city.getCenterTile().airUnits){
-            val unitGroup = UnitGroup(unit,60f).surroundWithCircle(80f)
-            unitGroup.circle.color = Color.GRAY.cpy().apply { a=0.5f }
-            unitGroup.touchable=Touchable.enabled
-            unitGroup.onClick {
-                worldScreen.bottomBar.unitTable.selectedUnit=unit
-                worldScreen.shouldUpdate=true
-                unitGroup.circle.color = Color.WHITE
-            }
-            airUnitsTable.add(unitGroup)
-        }
-        airUnitsTable.height=60f
-        unitActionOverlay?.remove()
-        addOverlayOnTileGroup(city.getCenterTile(),airUnitsTable)
-    }
 
     fun setCenterPosition(vector: Vector2, immediately: Boolean = false, selectUnit: Boolean = true) {
         val tileGroup = tileGroups.values.first { it.tileInfo.position == vector }

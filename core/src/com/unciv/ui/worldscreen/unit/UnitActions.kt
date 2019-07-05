@@ -54,8 +54,8 @@ class UnitActions {
             actionList += UnitAction(
                     "Fortify",
                     false,
-                    currentAction = true,
-                    title = "Fortification".tr() + " " + unit.getFortificationTurns() * 20 + "%"
+                    true,
+                    "Fortification".tr() + " " + unit.getFortificationTurns() * 20 + "%"
             )
         }
 
