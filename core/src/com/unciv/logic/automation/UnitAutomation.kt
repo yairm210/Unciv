@@ -199,7 +199,7 @@ class UnitAutomation{
 
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                    if (unit.hasUnique("Indirect Fire")) reachableTile.getTilesInDistance(rangeOfAttack)
+                    if (unit.hasUnique("Indirect Fire") || unit.type.isAirUnit()) reachableTile.getTilesInDistance(rangeOfAttack)
                     else reachableTile.getViewableTiles(rangeOfAttack, unit.type.isWaterUnit())
 
             attackableTiles += tilesInAttackRange.asSequence().filter { it in tilesWithEnemies }

@@ -295,11 +295,12 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                         if (UnCivGame.Current.settings.singleTapMove || isAirUnit) 0.7f else 0.3f)
 
         val unitType = unit.type
-        val attackableTiles: List<TileInfo> = when {
-            unitType.isCivilian() -> listOf()
-            else -> UnitAutomation().getAttackableEnemies(unit, unit.getDistanceToTiles()).map { it.tileToAttack }
-                    .filter { (UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
+        val attackableTiles: List<TileInfo> = if (unitType.isCivilian()) listOf()
+        else {
+            val tiles = UnitAutomation().getAttackableEnemies(unit, unit.getDistanceToTiles()).map { it.tileToAttack }
+            tiles.filter { (UnCivGame.Current.viewEntireMapForDebug || playerViewableTilePositions.contains(it.position)) }
         }
+
         for (attackableTile in attackableTiles) {
             tileGroups[attackableTile]!!.showCircle(colorFromRGB(237, 41, 57))
             tileGroups[attackableTile]!!.showCrosshair()
