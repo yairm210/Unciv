@@ -59,8 +59,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
     private fun setImprovements() {
-        val improvementsTable = Table()
 
+        editorPickTable.clear()
+
+        val improvementsTable = Table()
         improvementsTable.add(getHex(Color.WHITE).apply {
             onClick {
                 clearSelection()
@@ -79,9 +81,20 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             }
             improvementsTable.add(improvementImage).row()
         }
-
-        editorPickTable.clear()
         editorPickTable.add(ScrollPane(improvementsTable)).height(mapEditorScreen.stage.height*0.7f)
+
+        val nationsTable = Table()
+        for(nation in GameBasics.Nations.values){
+            val nationImage = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
+            nationImage.onClick {
+                clearSelection()
+                selectedImprovement=TileImprovement().apply { name="StartingLocation "+nation.name }
+                setCurrentHex(getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f)))
+            }
+            nationsTable.add(nationImage).row()
+        }
+
+        editorPickTable.add(ScrollPane(nationsTable)).height(mapEditorScreen.stage.height*0.7f)
     }
 
     fun setTerrainsAndResources(){

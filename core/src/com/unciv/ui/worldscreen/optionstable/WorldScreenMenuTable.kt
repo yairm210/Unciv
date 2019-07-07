@@ -20,6 +20,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             for(tile in tileMapClone.values){
                 tile.militaryUnit=null
                 tile.civilianUnit=null
+                tile.airUnits=ArrayList()
             }
             UnCivGame.Current.screen = MapEditorScreen(tileMapClone)
             remove()

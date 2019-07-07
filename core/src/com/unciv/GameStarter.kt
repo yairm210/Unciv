@@ -108,22 +108,42 @@ class GameStarter{
                     .toMutableList()
 
             val startingLocations = HashMap<CivilizationInfo,TileInfo>()
-            for(civ in civs){
-                if(freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
-                var preferredTiles = freeTiles.toList()
-                for(startBias in civ.getNation().startBias){
-                    if(startBias.startsWith("Avoid ")) {
-                        val tileToAvoid = startBias.removePrefix("Avoid ")
-                        preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid}
+
+            val tilesWithStartingLocations = tileMap.values
+                    .filter { it.improvement!=null && it.improvement!!.startsWith("StartingLocation ") }
+
+            val civsOrderedByAvailableLocations = civs.sortedBy {civ ->
+                when {
+                    tilesWithStartingLocations.any { it.improvement=="StartingLocation "+civ.civName } -> 1 // harshest requirements
+                    civ.getNation().startBias.isNotEmpty() -> 2 // less harsh
+                    else -> 3
+                }  // no requirements
+            }
+
+            for(civ in civsOrderedByAvailableLocations){
+                var startingLocation:TileInfo
+                val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement=="StartingLocation "+civ.civName }
+                if(presetStartingLocation!=null) startingLocation = presetStartingLocation
+                else {
+                    if (freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
+                    var preferredTiles = freeTiles.toList()
+
+                    for (startBias in civ.getNation().startBias) {
+                        if (startBias.startsWith("Avoid ")) {
+                            val tileToAvoid = startBias.removePrefix("Avoid ")
+                            preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
+                        } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.neighbors.any { n -> n.baseTerrain == startBias } }
+                        else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature == startBias }
                     }
-                    else if(startBias==Constants.coast) preferredTiles = preferredTiles.filter { it.neighbors.any { n -> n.baseTerrain==startBias } }
-                    else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature==startBias }
+
+                    startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()
                 }
-                val randomLocation = if(preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()
-                startingLocations.put(civ, randomLocation)
-                freeTiles.removeAll(tileMap.getTilesInDistance(randomLocation.position,minimumDistanceBetweenStartingLocations))
+                startingLocations[civ] = startingLocation
+                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position,minimumDistanceBetweenStartingLocations))
             }
             if(startingLocations.size < civs.size) continue // let's try again with less minimum distance!
+
+            for(tile in tilesWithStartingLocations) tile.improvement=null // get rid of the starting location improvements
             return startingLocations
         }
         throw Exception("Didn't manage to get starting locations even with distance of 1?")

@@ -129,6 +129,8 @@ class CivilizationInfo {
     fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
 
     fun victoryType(): VictoryType {
+        if(gameInfo.gameParameters.victoryTypes.size==1)
+            return gameInfo.gameParameters.victoryTypes.first() // That is the most relevant one
         val victoryType = getNation().preferredVictoryType
         if(gameInfo.gameParameters.victoryTypes.contains(victoryType)) return victoryType
         else return VictoryType.Neutral

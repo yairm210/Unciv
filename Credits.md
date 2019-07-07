@@ -446,8 +446,9 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
 * [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
 * [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
-* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein, US for city states
+* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for city states
 * [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker
+* [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54
 
 # Sound credits
 
