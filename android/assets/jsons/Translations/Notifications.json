@@ -161,6 +161,10 @@
             Italian:"Un nostro accordo con [nation] è terminato."
 			French:"Un de nos échanges avec [nation] a pris fin"
         },
+		
+	"One of our trades with [nation] has been cut short": {
+            Italian:"Un nostro accordo con [nation] è stato interrotto."
+        },
 
         "[cityname] has expanded its borders!":{
             Italian:"[cityname] ha espanso i suoi confini!"
