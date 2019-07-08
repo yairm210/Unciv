@@ -110,12 +110,21 @@ class UnitAutomation{
 
     fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>):Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.canMoveTo(it) }
+        if(unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val unitTile = unit.getTile()
 
         if (tryPillageImprovement(unit, unitDistanceToTiles)) return true
 
         val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
-        if(tilesByHealingRate.isEmpty()) return false
+
+        if(tilesByHealingRate.keys.none { it!=0 }){// We can't heal here at all! We're probably embarked
+            val reachableCityTile = unit.civInfo.cities.map { it.getCenterTile() }
+                    .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                    .firstOrNull{unit.movementAlgs().canReach(it)}
+            if(reachableCityTile!=null) unit.movementAlgs().headTowards(reachableCityTile)
+            else wander(unit,unitDistanceToTiles)
+            return true
+        }
 
         val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         // within the tiles with best healing rate, we'll prefer one which has defensive bonuses
@@ -276,13 +285,27 @@ class UnitAutomation{
             val reachableTilesNotInBombardRange = unitDistanceToTiles.keys.filter { it !in tilesInBombardRange }
             val canMoveIntoBombardRange = tilesInBombardRange.any { unitDistanceToTiles.containsKey(it)}
 
-            if(!canMoveIntoBombardRange) // no need to worry, keep going as the movement alg. says
-                unit.movementAlgs().headTowards(closestReachableEnemyCity)
+            val suitableGatheringGroundTiles = closestReachableEnemyCity.getTilesAtDistance(4)
+                    .union(closestReachableEnemyCity.getTilesAtDistance(3))
+                    .filter { it.isLand }
+            val closestReachableLandingGroundTile = suitableGatheringGroundTiles
+                    .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                    .firstOrNull { unit.movementAlgs().canReach(it) }
+
+            // don't head straight to the city, try to head to landing grounds -
+            // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
+            val tileToHeadTo = if(closestReachableLandingGroundTile!=null) closestReachableLandingGroundTile
+            else closestReachableEnemyCity
+
+
+            if(tileToHeadTo !in tilesInBombardRange) // no need to worry, keep going as the movement alg. says
+                unit.movementAlgs().headTowards(tileToHeadTo)
 
             else{
                 if(unit.getRange()>2){ // should never be in a bombardable position
                     val tilesCanAttackFromButNotInBombardRange =
                             reachableTilesNotInBombardRange.filter{it.arialDistanceTo(closestReachableEnemyCity) <= unit.getRange()}
+
                     // move into position far away enough that the bombard doesn't hurt
                     if(tilesCanAttackFromButNotInBombardRange.any())
                         unit.movementAlgs().headTowards(tilesCanAttackFromButNotInBombardRange.minBy { unitDistanceToTiles[it]!! }!!)

@@ -407,6 +407,7 @@ class MapUnit {
 
     fun rankTileForHealing(tileInfo:TileInfo): Int {
         return when{
+            tileInfo.isWater && type.isLandUnit() -> 0 // Can't heal in water!
             tileInfo.getOwner() == null -> 10 // no man's land (neutral)
             tileInfo.isCityCenter() -> 20
             !civInfo.isAtWarWith(tileInfo.getOwner()!!) -> 15 // home or allied territory
