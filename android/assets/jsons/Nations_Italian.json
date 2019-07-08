@@ -424,7 +424,7 @@
 				
 		mainColor:[16,126,5],
 		secondaryColor:[255,153,51],
-		unique:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata.",
+		unique:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata.",//not translated
 		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad",
 			"Madurai","Ahmedabad","Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur",
 			"Rajagriha","Sravasti","Tiruchirapalli","Thanjavur","Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior",
@@ -460,7 +460,7 @@
 		mainColor:[224,224,224],
 		secondaryColor:[64,64,64],
 		uniqueName:"Furor Teutonicus",
-		unique:"Quando sconfiggi un'unità barbara nel suo accampamento, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri.",
+		unique:"67% di chance di guadagnare 25 Oro e reclutare un'unità barbarica da un accampamento conquistato. -25% manutenzione per le unità terrestri.",//not translated
 		cities:["Berlino","Amburgo","Monaco","Colonia","Francoforte","Essen","Dortmund","Stoccarta","Dusseldorf","Bremen",
 			"Hannover","Duisburg","Lipsia","Dresden","Bonn","Bochum","Bielefeld","Karlsruhe","Gelsenkirchen","Wiesbaden",
 			"Munster","Rostok","Chemnitz","Braunschweig","Halle","Mצnchengladbach","Kiel","Wuppertal","Freiburg","Hagen",
@@ -474,8 +474,8 @@
 		leaderName:"Suleiman I",
 		translatedLeaderName:"Solimano I",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Che il cielo ti benedica, oh grande imperatore Solimano! La tua potenza, la tua ricchezza e la tua generosità stupiscono il bondo! Con buona ragione sei chiamato "il magnifico"! Il tuo impero conobbe i suoi inizi nel XII secolo in Bitinia, un piccolo paese dell'Anatolia orientale. Sfruttando il declino del grande sultanato selgiuchide di Rum, re Osman I di Bitinia si espanse nell'Anatolia occidentale. Nel corso del secolo successivo, i tuoi sudditi distrussero l'impero bizantino, soppiantandolo in Turchia e poi nei Balbani. A metà del XV secolo, gli ottomani conquistarono l'antica Costantinopoli, assumendo il controllo del collegamento strategico tra Europa e Medio Oriente. L'impero della tua gente continuò a espandersi per secoli, raggiungendo al suo apice anche il controllo dell'Africa settentrionale, del Medio Oriente e dell'Europa orientale."
+		startIntroPart2: "Potente Solimano, ascolta la voce del tuo popolo! Riporta il tuo impero alla potenza e alla gloria passate e ancora una volta il mondo tornerà a guardarti con stupore e ammirazione. Accetterai la sfida, grande imperatore? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Il tuo persistere nel rifiutare di riconoscere la nostra preminenza ci porta alla guerra."
 		attacked:"Bene. Il mondo sarà testimone dell'inconstastabile potenza dell'esercito del glorioso impero ottomano."
@@ -498,7 +498,7 @@
 		mainColor:[204,255,229],
 		secondaryColor:[0,102,0],
 		uniqueName:"Corsari barbarici",
-		unique:"Il mantenimento delle navi costa solo un terzo rispetto al normale. Tutte le navi da mischia ricevono la promozione Cattura Navale, che permette loro di catturare le navi nemiche sconfitte.",
+		unique:"La manutenzione delle navi costa solo un terzo rispetto al normale. Tutte le navi da mischia ricevono la promozione Cattura Navale, che permette loro di catturare le navi nemiche sconfitte.",//not translated
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
 			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
 			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
