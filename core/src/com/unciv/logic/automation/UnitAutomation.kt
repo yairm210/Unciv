@@ -231,7 +231,7 @@ class UnitAutomation{
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull { val tile = it.currentTile
-                    (it.name== Constants.settler || it.name.startsWith("Great") && it.type.isCivilian())
+                    (it.name== Constants.settler || it.name in GreatPersonManager().statToGreatPersonMapping.values)
                             && tile.militaryUnit==null && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
         if(settlerOrGreatPersonToAccompany==null) return false
         unit.movementAlgs().headTowards(settlerOrGreatPersonToAccompany.currentTile)

@@ -120,7 +120,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     private fun addCultureBuildingChoice() {
         val cultureBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Culture) }.minBy { it.cost }
         if (cultureBuilding != null) {
-            var modifier = 0.8f
+            var modifier = 0.5f
+            if(cityInfo.cityStats.currentCityStats.culture==0f) // It won't grow if we don't help it
+                modifier=0.8f
             if (preferredVictoryType == VictoryType.Cultural) modifier = 1.6f
             addChoice(relativeCostEffectiveness, cultureBuilding.name, modifier)
         }

@@ -35,7 +35,7 @@ class Automation {
         else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
         if (civInfo.gold < 0 && civInfo.statsForNextTurn.gold <= 0) rank += stats.gold
-        else rank += stats.gold / 2
+        else rank += stats.gold / 3 // 3 gold is much worse than 2 production
 
         rank += stats.production
         rank += stats.science
