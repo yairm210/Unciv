@@ -7,7 +7,7 @@ class GameSettings {
     var showResourcesAndImprovements: Boolean = true
     var checkForDueUnits: Boolean = true
     var singleTapMove: Boolean = false
-    var fontSet:String = "NativeFont"
+    var fontSet:String = "NativeFont(Recommended)"
     var language: String = "English"
     var resolution: String = "1050x700"
     var tutorialsShown = ArrayList<String>()

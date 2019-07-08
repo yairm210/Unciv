@@ -12,6 +12,9 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import java.io.InputStream
+import java.net.URL
+import kotlin.concurrent.thread
 
 class Language(val language:String){
     val percentComplete:Int
@@ -187,6 +190,12 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
                                     downloading.add("Downloading...".toLabel())
                                     downloading.open()
                                     Gdx.input.inputProcessor = null
+                                     thread{
+    val input = URL("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf").openConnection()
+                                         input.connect()
+                                         val inputStream=input.getInputStream()
+                                         val fontfilelength=input.contentLength
+                                    }.join()
                                     selectFont()
                                 })
                 }
