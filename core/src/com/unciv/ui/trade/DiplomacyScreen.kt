@@ -104,6 +104,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
                 CityStateType.Cultured -> "Provides [" + (3 * (currentPlayerCiv.getEra().ordinal+1)).toString() + "] culture at [30] Influence"
                 CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at [30] Influence"
                 CityStateType.Mercantile -> "Provides 3 happiness at [30] Influence"
+                CityStateType.Militaristic -> "Provides land units every 20 turns at [30] Influence"
             }
 
             val friendBonusLabel = friendBonusText.toLabel()
