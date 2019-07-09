@@ -56,4 +56,6 @@ If you're a programmer, you can join us in any of the open issue, or work on imp
 
 If not, you can help by spreading the word - vote for Unciv where you can, mention it on Reddit or Twitter etc, and help us with new ideas of how to get the word out!
 
+If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
+
 # [Credits and 3rd parties](Credits.md)
