@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.diplomacy
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
@@ -30,7 +31,8 @@ enum class DiplomacyFlags{
     BorderConflict,
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
-    IgnoreThemSettlingNearUs
+    IgnoreThemSettlingNearUs,
+    ProvideMilitaryUnit
 }
 
 enum class DiplomaticModifiers{
@@ -260,12 +262,23 @@ class DiplomacyManager() {
         if(!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1/2f) //decreases slowly and will revert to full if it is declared later
 
+        if(otherCiv().isCityState() && otherCiv().getCityStateType() == CityStateType.Militaristic) {
+            if (relationshipLevel() < RelationshipLevel.Friend) {
+                if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
+            }
+            else {
+                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+            }
+        }
+
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) {
                 flagsCountdown.remove(flag)
                 if(flag==DiplomacyFlags.AgreedToNotSettleNearUs.name)
                     addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,10f)
+                else if(flag==DiplomacyFlags.ProvideMilitaryUnit.name)
+                    civInfo.giftMilitaryUnitBy(otherCiv())
             }
         }
 

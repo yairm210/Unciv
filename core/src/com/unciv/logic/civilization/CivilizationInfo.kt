@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -395,6 +396,19 @@ class CivilizationInfo {
         gold -= giftAmount
         otherCiv.getDiplomacyManager(this).influence += giftAmount/10
         updateStatsForNextTurn()
+    }
+
+    fun giftMilitaryUnitBy(otherCiv: CivilizationInfo) {
+        val city = NextTurnAutomation().getClosestCities(this, otherCiv).city1
+        if (city == null) {
+            addNotification("Exception! Failed to find a suitable city to place gift unit.".tr(), null, Color.RED)
+        } else {
+            var militaryUnit = city.cityConstructions
+                    .getConstructableUnits().filter { !it.unitType.isCivilian() && it.unitType.isLandUnit()}
+                    .random()
+            placeUnitNearTile(city.location, militaryUnit.name)
+            addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!".tr(), null, Color.RED)
+        }
     }
 
     //endregion
