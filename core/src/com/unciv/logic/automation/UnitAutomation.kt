@@ -33,6 +33,9 @@ class UnitAutomation{
         if (unit.name == "Great General")
             return SpecificUnitAutomation().automateGreatGeneral(unit)
 
+        if(unit.type==UnitType.Fighter)
+            return SpecificUnitAutomation().automateFighter(unit)
+
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)
@@ -61,7 +64,7 @@ class UnitAutomation{
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (unit.type.isLandUnit() && unit.type.isMelee() && unit.isEmbarked()) {
-            if (tryLandUnitToAttackPosition(unit,unitDistanceToTiles)) return
+            if (tryDisembarkUnitToAttackPosition(unit,unitDistanceToTiles)) return
         }
 
         // if there is an attackable unit in the vicinity, attack!
@@ -330,7 +333,7 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryLandUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+    private fun tryDisembarkUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
         if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
@@ -349,7 +352,7 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
+    fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
         val attackableEnemies = getAttackableEnemies(unit, unit.getDistanceToTiles())
                 // Only take enemies we can fight without dying
                 .filter {

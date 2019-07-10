@@ -130,7 +130,9 @@ class MapUnit {
     // we need to map all the places that this could change: Unit changes locations, owners, gets promotion?
     fun updateViewableTiles() {
         if(type.isAirUnit()){
-            viewableTiles = getTile().getTilesInDistance(6)  // it's that simple
+            if(hasUnique("6 tiles in every direction always visible"))
+                viewableTiles = getTile().getTilesInDistance(6)  // it's that simple
+            else viewableTiles = listOf() // bomber units don't do recon
         }
         else {
             var visibilityRange = 2
@@ -557,6 +559,19 @@ class MapUnit {
         owner=civInfo.civName
         this.civInfo=civInfo
         civInfo.addUnit(this,updateCivInfo)
+    }
+
+    fun canIntercept(attackedTile: TileInfo): Boolean {
+        return interceptChance()!=0 && attacksThisTurn==0
+                && currentTile.arialDistanceTo(attackedTile) <= getRange()
+    }
+
+    fun interceptChance():Int{
+        val interceptUnique = getUniques()
+                .firstOrNull { it.endsWith(" chance to intercept air attacks") }
+        if(interceptUnique==null) return 0
+        val percent = Regex("\\d+").find(interceptUnique)!!.value
+        return percent.toInt()
     }
 
     //endregion

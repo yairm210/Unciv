@@ -960,15 +960,6 @@
 		French:"Porte-avions"
 	}
 	
-	"Great War Bomber":{
-		Italian:"Bombardiere della Grande Guerra"
-		Romanian:"Bombardier din Marele Război"
-		Spanish:"Bombardero de la Gran Guerra"
-		Simplified_Chinese:"早期轰炸机"
-		Russian:"великий бомбардировщик0_0"
-		German:"Weltkriegsbomber"
-		French:"Bombardier de la grande guerre"
-	}
 
 	"Triplane":{
 		Italian:"Triplano"
@@ -978,6 +969,20 @@
 		Russian:"ТРИПЛАН"
 		German:"Dreidecker"
 		French:"Triplan"
+	}
+	
+	"[percent]% chance to intercept air attacks":{
+	}
+	
+	
+	"Great War Bomber":{
+		Italian:"Bombardiere della Grande Guerra"
+		Romanian:"Bombardier din Marele Război"
+		Spanish:"Bombardero de la Gran Guerra"
+		Simplified_Chinese:"早期轰炸机"
+		Russian:"великий бомбардировщик0_0"
+		German:"Weltkriegsbomber"
+		French:"Bombardier de la grande guerre"
 	}
 	
 ////// Atomic units (not in game yet but will be, not super important but why not)

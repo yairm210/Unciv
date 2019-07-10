@@ -2,6 +2,7 @@ package com.unciv.logic.automation
 
 import com.unciv.Constants
 import com.unciv.UnCivGame
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -159,6 +160,26 @@ class SpecificUnitAutomation{
             return
         }
 
+    }
+
+    fun automateFighter(unit: MapUnit) {
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        val enemyAirUnitsInRange = tilesInRange
+                .flatMap { it.airUnits }.filter { it.civInfo.isAtWarWith(unit.civInfo) }
+
+        if(enemyAirUnitsInRange.isNotEmpty()) return // we need to be on standby in case they attack
+        if(UnitAutomation().tryAttackNearbyEnemy(unit)) return
+
+        val reachableCities = tilesInRange
+                .filter { it.isCityCenter() && it.getOwner()==unit.civInfo && unit.canMoveTo(it)}
+
+        for(city in reachableCities){
+            if(city.getTilesInDistance(unit.getRange())
+                            .any { UnitAutomation().containsAttackableEnemy(it,MapUnitCombatant(unit)) }) {
+                unit.moveToTile(city)
+                return
+            }
+        }
     }
 
 }

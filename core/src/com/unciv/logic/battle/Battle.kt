@@ -34,6 +34,11 @@ class Battle(val gameInfo:GameInfo) {
         println(attacker.getCivInfo().civName+" "+attacker.getName()+" attacked "+defender.getCivInfo().civName+" "+defender.getName())
         val attackedTile = defender.getTile()
 
+        if(attacker is MapUnitCombatant && attacker.getUnitType().isAirUnit()){
+            intercept(attacker,defender)
+            if(attacker.isDefeated()) return
+        }
+
         var damageToDefender = BattleDamage().calculateDamageToDefender(attacker,defender)
         var damageToAttacker = BattleDamage().calculateDamageToAttacker(attacker,defender)
 
@@ -286,5 +291,31 @@ class Battle(val gameInfo:GameInfo) {
         capturedUnit.civInfo.removeUnit(capturedUnit)
         capturedUnit.assignOwner(attacker.getCivInfo())
         capturedUnit.updateViewableTiles()
+    }
+
+    fun intercept(attacker:MapUnitCombatant, defender: ICombatant){
+        val attackedTile = defender.getTile()
+        for(unit in defender.getCivInfo().getCivUnits().filter { it.canIntercept(attackedTile) }){
+            if(Random().nextFloat() > 100f/unit.interceptChance()) continue
+            val damage = BattleDamage().calculateDamageToDefender(MapUnitCombatant(unit),attacker)
+            attacker.takeDamage(damage)
+
+            val attackerName = attacker.getName()
+            val interceptorName = unit.name
+
+            if(attacker.isDefeated()){
+                attacker.getCivInfo().addNotification("Our [$attackerName] was destroyed by an intercepting [$interceptorName]",
+                        Color.RED)
+                defender.getCivInfo().addNotification("Our [$interceptorName] intercepted and destroyed an enemy [$attackerName]",
+                        unit.currentTile.position, Color.RED)
+            }
+            else{
+                attacker.getCivInfo().addNotification("Our [$attackerName] was attacked by an intercepting [$interceptorName]",
+                        Color.RED)
+                defender.getCivInfo().addNotification("Our [$interceptorName] intercepted and attacked an enemy [$attackerName]",
+                        unit.currentTile.position, Color.RED)
+            }
+            return
+        }
     }
 }

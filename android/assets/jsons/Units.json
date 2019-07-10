@@ -838,10 +838,10 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	/*
+	
 	{
 		name:"Triplane",
-		unitType:"AirFighter",
+		unitType:"Fighter",
 		movement:1,
 		strength:35,
 		rangedStrength:35,
@@ -849,6 +849,8 @@
 		cost: 325,
 		requiredTech:"Flight",
 		hurryCostModifier:20,
+		uniques:["[50]% chance to intercept air attacks","Bonus vs Bomber 150%",
+			"6 tiles in every direction always visible"]
 		attackSound:"shot"
 	},
 	
