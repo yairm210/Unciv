@@ -140,12 +140,15 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         happinessTable.defaults().pad(5f)
         happinessTable.add("Happiness".toLabel().setFontSize(24)).colspan(2).row()
         happinessTable.addSeparator()
-        for (entry in currentPlayerCivInfo.getHappinessBreakdown()) {
+
+        val happinessBreakdown = currentPlayerCivInfo.stats().getHappinessBreakdown()
+
+        for (entry in happinessBreakdown) {
             happinessTable.add(entry.key.tr())
             happinessTable.add(entry.value.roundToInt().toString()).row()
         }
         happinessTable.add("Total".tr())
-        happinessTable.add(currentPlayerCivInfo.getHappinessBreakdown().values.sum().roundToInt().toString())
+        happinessTable.add(happinessBreakdown.values.sum().roundToInt().toString())
         happinessTable.pack()
         return happinessTable
     }
@@ -156,7 +159,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         goldTable.add("Gold".toLabel().setFontSize(24)).colspan(2).row()
         goldTable.addSeparator()
         var total=0f
-        for (entry in currentPlayerCivInfo.getStatMapForNextTurn()) {
+        for (entry in currentPlayerCivInfo.stats().getStatMapForNextTurn()) {
             if(entry.value.gold==0f) continue
             goldTable.add(entry.key.tr())
             goldTable.add(entry.value.gold.roundToInt().toString()).row()
@@ -174,7 +177,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         scienceTable.defaults().pad(5f)
         scienceTable.add("Science".toLabel().setFontSize(24)).colspan(2).row()
         scienceTable.addSeparator()
-        val scienceStats = currentPlayerCivInfo.getStatMapForNextTurn()
+        val scienceStats = currentPlayerCivInfo.stats().getStatMapForNextTurn()
                 .filter { it.value.science!=0f }
         for (entry in scienceStats) {
             scienceTable.add(entry.key.tr())
