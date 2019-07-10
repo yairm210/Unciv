@@ -876,7 +876,7 @@
 	} 
 
 	"[turnsToExpansion] turns to expansion":{
-		Italian:"[turnsToExpansion] turni per espandersi"
+		Italian:"Espansione dei confini tra [turnsToExpansion] turni"
 		Russian:"Расширение в [turnsToExpansion] раунды(ах)"
 		French:"[turnsToExpansion] tours à l'expansion"
 		Romanian:"[turnsToExpansion] rundă până la expansiunea"
@@ -902,7 +902,7 @@
 	}
 
 	"[turnsToPopulation] turns to new population":{
-		Italian:"[turnsToPopulation] turni fino a un nuovo abitante"
+		Italian:"Nuovo abitante tra [turnsToPopulation] turni"
 		Russian:"Hовый житель в [turnsToPopulation] раундах"
 		French:"[turnsToPopulation] tours à un nouveau résident"
 		Romanian:"[turnsToPopulation] rundă până un nou rezident"
@@ -1582,6 +1582,10 @@
 		Simplified_Chinese:"人口"
 		Portuguese:"População"
 		German:"Bevölkerung"
+	}
+
+	"CityStates":{	
+		Italian:"Città-Stato"
 	}
 
 	"Luxury resources":{	
