@@ -2,6 +2,7 @@ package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.Gdx
 import com.unciv.UnCivGame
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.NewGameScreen
@@ -21,6 +22,10 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 tile.militaryUnit=null
                 tile.civilianUnit=null
                 tile.airUnits=ArrayList()
+                tile.improvement=null
+                tile.improvementInProgress=null
+                tile.turnsToImprovement=0
+                tile.roadStatus=RoadStatus.None
             }
             UnCivGame.Current.screen = MapEditorScreen(tileMapClone)
             remove()
