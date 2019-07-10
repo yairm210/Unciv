@@ -260,7 +260,10 @@
 	"Provides 3 happiness at 30 Influence":{
 		Italian:"Dona 3 Punti Felicità quando l'Influenza supera 30 punti"
 		French:"Fournit 3 de Bonheur à 30 d'influence"
-	}
+	},
+
+	"Provides land units every 20 turns at 30 Influence":{
+	},
 
 	"Gift [goldAmount] gold":{
 		Italian:"Dona [goldAmount] Oro"
@@ -409,12 +412,10 @@
 	"Mercantile":{
 		Italian:"Mercantile"
 	}
-	
-	/*
+
 	"Militaristic":{
 		Italian:"Militaristica"
 	}
-	*/
 
 ////// Trade	
 
