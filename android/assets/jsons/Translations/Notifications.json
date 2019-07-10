@@ -462,5 +462,8 @@
 
 		"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
 			Italian:"Non sei più alleato con [name]!"
-		}
+		},
+
+        "[civName] gave us a [untiName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
+        }
 }

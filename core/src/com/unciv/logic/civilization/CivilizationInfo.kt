@@ -622,7 +622,7 @@ class CivilizationInfo {
                     .getConstructableUnits().filter { !it.unitType.isCivilian() && it.unitType.isLandUnit()}
                     .random()
             placeUnitNearTile(city.location, militaryUnit.name)
-            addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!".tr(), null, Color.RED)
+            addNotification("[${otherCiv.civName}] gave us a [${militaryUnit.name}] as gift near [${city.name}]!".tr(), null, Color.GREEN)
         }
     }
 
