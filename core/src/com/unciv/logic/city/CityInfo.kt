@@ -241,8 +241,8 @@ class CityInfo {
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
         for(unit in getCenterTile().getUnits())
-            if(!unit.canPassThrough(getCenterTile()))
-                unit.movementAlgs().teleportToClosestMoveableTile()
+            if(!unit.movement.canPassThrough(getCenterTile()))
+                unit.movement.teleportToClosestMoveableTile()
 
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getTiles().forEach { expansion.relinquishOwnership(it) }

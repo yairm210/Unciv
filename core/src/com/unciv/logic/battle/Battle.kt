@@ -21,7 +21,7 @@ class Battle(val gameInfo:GameInfo) {
 
     fun moveAndAttack(attacker: ICombatant, attackableTile: UnitAutomation.AttackableTile){
         if (attacker is MapUnitCombatant) {
-            attacker.unit.moveToTile(attackableTile.tileToAttackFrom)
+            attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
             if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != "Set Up") {
                 attacker.unit.action = "Set Up"
                 attacker.unit.useMovementPoints(1f)
@@ -124,11 +124,11 @@ class Battle(val gameInfo:GameInfo) {
         else if (attacker.isMelee()
                 && (defender.isDefeated() || defender.getCivInfo()==attacker.getCivInfo())
                 // This is so that if we attack e.g. a barbarian in enemy territory that we can't enter, we won't enter it
-                && (attacker as MapUnitCombatant).unit.canMoveTo(attackedTile)) {
+                && (attacker as MapUnitCombatant).unit.movement.canMoveTo(attackedTile)) {
             // we destroyed an enemy military unit and there was a civilian unit in the same tile as well
             if(attackedTile.civilianUnit!=null && attackedTile.civilianUnit!!.civInfo != attacker.getCivInfo())
                 captureCivilianUnit(attacker,MapUnitCombatant(attackedTile.civilianUnit!!))
-            attacker.unit.moveToTile(attackedTile)
+            attacker.unit.movement.moveToTile(attackedTile)
         }
 
 
@@ -262,7 +262,7 @@ class Battle(val gameInfo:GameInfo) {
             }
         }
 
-        (attacker as MapUnitCombatant).unit.moveToTile(city.getCenterTile())
+        (attacker as MapUnitCombatant).unit.movement.moveToTile(city.getCenterTile())
     }
 
     fun getMapCombatantOfTile(tile:TileInfo): ICombatant? {

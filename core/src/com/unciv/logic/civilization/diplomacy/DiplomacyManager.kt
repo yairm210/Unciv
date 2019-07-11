@@ -212,7 +212,7 @@ class DiplomacyManager() {
 
         if(hasOpenBorders && !newHasOpenBorders){ // borders were closed, get out!
             for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }){
-                unit.movementAlgs().teleportToClosestMoveableTile()
+                unit.movement.teleportToClosestMoveableTile()
             }
         }
 
@@ -343,11 +343,11 @@ class DiplomacyManager() {
         val otherCiv = otherCiv()
         // We get out of their territory
         for(unit in civInfo.getCivUnits().filter { it.getTile().getOwner()== otherCiv})
-            unit.movementAlgs().teleportToClosestMoveableTile()
+            unit.movement.teleportToClosestMoveableTile()
 
         // And we get out of theirs
         for(unit in otherCiv.getCivUnits().filter { it.getTile().getOwner()== civInfo})
-            unit.movementAlgs().teleportToClosestMoveableTile()
+            unit.movement.teleportToClosestMoveableTile()
     }
 
     fun hasFlag(flag:DiplomacyFlags) = flagsCountdown.containsKey(flag.name)

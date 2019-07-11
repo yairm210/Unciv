@@ -5,13 +5,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.map.action.BuildLongRoadAction
+import com.unciv.logic.map.action.MapUnitAction
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.Sounds
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileMapHolder
-import com.unciv.logic.map.action.BuildLongRoadAction
-import com.unciv.logic.map.action.MapUnitAction
 import kotlin.concurrent.thread
 
 class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUnit, val targetTile: TileInfo) : VerticalGroup() {
@@ -57,14 +57,14 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
     fun onMoveButtonClick() {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         thread {
-            if (selectedUnit.movementAlgs().canReach(targetTile)) {
+            if (selectedUnit.movement.canReach(targetTile)) {
                 try {
                     // Because this is darned concurrent (as it MUST be to avoid ANRs),
                     // there are edge cases where the canReach is true,
                     // but until it reaches the headTowards the board has changed and so the headTowards fails.
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
-                    selectedUnit.movementAlgs().headTowards(targetTile)
+                    selectedUnit.movement.headTowards(targetTile)
                     Sounds.play("whoosh")
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
