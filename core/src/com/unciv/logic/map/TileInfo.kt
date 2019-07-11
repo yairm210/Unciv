@@ -23,6 +23,7 @@ open class TileInfo {
 
     var militaryUnit:MapUnit?=null
     var civilianUnit:MapUnit?=null
+    var airUnits=ArrayList<MapUnit>()
 
     var position: Vector2 = Vector2.Zero
     lateinit var baseTerrain: String
@@ -39,6 +40,7 @@ open class TileInfo {
         val toReturn = TileInfo()
         if(militaryUnit!=null) toReturn.militaryUnit=militaryUnit!!.clone()
         if(civilianUnit!=null) toReturn.civilianUnit=civilianUnit!!.clone()
+        for(airUnit in airUnits) toReturn.airUnits.add(airUnit.clone())
         toReturn.position=position.cpy()
         toReturn.baseTerrain=baseTerrain
         toReturn.terrainFeature=terrainFeature
@@ -61,12 +63,14 @@ open class TileInfo {
     }
 
     //region pure functions
+
+    /** Returns military, civilian and air units in tile */
     fun getUnits(): List<MapUnit> {
         val list = ArrayList<MapUnit>(2)
         if(militaryUnit!=null) list.add(militaryUnit!!)
         if(civilianUnit!=null) list.add(civilianUnit!!)
+        list.addAll(airUnits)
         return list
-        // this used to be "return listOf(militaryUnit,civilianUnit).filterNotNull()" but profiling revealed that that took considerably longer
     }
 
     fun getCity(): CityInfo? = owningCity
@@ -123,7 +127,7 @@ open class TileInfo {
     fun getTileStats(city: CityInfo?, observingCiv: CivilizationInfo): Stats {
         var stats = getBaseTerrain().clone()
 
-        if((baseTerrain== Constants.ocean||baseTerrain=="Coast") && city!=null
+        if((baseTerrain== Constants.ocean||baseTerrain==Constants.coast) && city!=null
                 && city.getBuildingUniques().contains("+1 food from Ocean and Coast tiles"))
             stats.food += 1
 
@@ -292,11 +296,9 @@ open class TileInfo {
         isLand = getBaseTerrain().type==TerrainType.Land
         isOcean = baseTerrain == Constants.ocean
 
-        if(militaryUnit!=null) militaryUnit!!.currentTile = this
-        if(civilianUnit!=null) civilianUnit!!.currentTile = this
-
         for (unit in getUnits()) {
-            unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner))
+            unit.currentTile = this
+            unit.assignOwner(tileMap.gameInfo.getCivilization(unit.owner),false)
             unit.setTransients()
         }
     }
@@ -310,7 +312,7 @@ open class TileInfo {
         val unitsInTile = getUnits()
         if (unitsInTile.isEmpty()) return false
         if (!unitsInTile.first().civInfo.isPlayerCivilization() &&
-                unitsInTile.firstOrNull {it.isInvisible() == true} != null) {
+                unitsInTile.firstOrNull { it.isInvisible() } != null) {
             return true
         }
         return false

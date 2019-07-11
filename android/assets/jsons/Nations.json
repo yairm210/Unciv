@@ -5,6 +5,7 @@
 		leaderName:"Nebuchadnezzar II",
 		adjective:["Babylonian"],
 		startBias:["Avoid Tundra"],
+		preferredVictoryType:"Scientific",
 		
 		startIntroPart1: "May the blessings of heaven be upon you, O great Nebuchadnezzar, father of mighty and ancient Babylon! Young was the world when Sargon built Babylon some five thousand years ago, long did it grow and prosper, gaining its first empire the eighteenth century BC, under godlike Hammurabi, the giver of law. Although conquered by the Kassites and then by the Assyrians, Babylon endured, emerging phoenix-like from its ashes of destruction and regaining its independence despite its many enemies. Truly was Babylon the center of arts and learning in the ancient world. O Nebuchadnezzar, your empire endured but a short time after your death, falling to the mighty Persians, and then to the Greeks, until the great city was destroyed by 141 BC.",
 		startIntroPart2: "But is Babylon indeed gone forever, great Nebuchadnezzar? Your people look to you to bring the empire back to life once more. Will you accept the challenge? Will you build a civilization that will stand the test of time?",
@@ -40,6 +41,7 @@
 		leaderName:"Alexander",
 		adjective:["Greek"],
 		startBias:["Coast"],
+		// preferredVictoryType:"Diplomatic",
 		
 		startIntroPart1: "May the blessings of the gods be upon you, oh great King Alexander! You are the ruler of the mighty Greek nation. Your people lived for so many years in isolated city-states - legendary cities such as Athens, Sparta, Thebes - where they gave the world many great things, such as democracy, philosophy, ragedy, art and architecture, the very foundation of Western Civilization. Although few in number and often hostile to each other, in the 5th century BC they were able to defeat their much larger neighbor, Persia, on land and sea."
 		startIntroPart2: "Alexander, your people stand ready to march to war, to spread the great Greek culture to millions and to bring you everlasting glory. Are you ready to accept your destiny, King Alexander? Will you lead your people to triumph and greatness? Can you build a civilization that will stand the test of time?"
@@ -64,6 +66,10 @@
 				
 		mainColor:[181, 232, 232],
 		secondaryColor:[68,142,249],
+		/*
+		uniqueName:"Hellenic League",
+		unique:"City-State Influence degrades at half and recovers at twice the normal rate",
+		*/
 		cities:["Athens","Sparta","Corinth","Argos","Knossos","Mycenae","Pharsalos","Ephesus","Halicarnassus","Rhodes",
 			"Eretria","Pergamon","Miletos","Megara","Phocaea","Sicyon","Tiryns","Samos","Mytilene","Chios",
 			"Paros","Ellis","Syracuse","Herakleia","Gortyn","Chalkis","Pylos","Pella","Naxos"]
@@ -72,6 +78,7 @@
 		name:"China",
 		leaderName:"Wu Zetian",
 		adjective:["Chinese"],
+		preferredVictoryType:"Scientific",
 		
 		startIntroPart1: "The Blessings of Heaven be upon you. Empress Wu Zetian, most beautiful and haughty ruler of China! Oh great Empress, whose shadow causes the flowers to blossom and the rivers to flow! You are the leader of the Chinese, the oldest and the greatest civilization that humanity has ever produced. China's history stretches back into the mists of time, its people achieving many great things long before the other upstart civilizations were even conceived. China's contributions to the arts and sciences are too many and too wondrous to do justice to - the printing press, gunpowder, the works of Confucius - these are but a few of the gifts China has given to an undeserving world!"
 		startIntroPart2: "You, great Queen, who, with cunning and beauty, rose from the position of lowly concubine to that of Divine Empress - your people call out to you to lead them! Great China is once again beset on all sides by barbarians. Can you defeat all your many foes and return your country to greatness? Can you build a civilization to stand the test of time?"
@@ -107,6 +114,7 @@
 		leaderName:"Ramesses II",
 		adjective:["Egyptian"],
 		startBias:["Avoid Jungle","Avoid Forest"],
+		preferredVictoryType:"Cultural",
 		
 		startIntroPart1: "We greet thee, oh great Ramesses, Pharaoh of Egypt, who causes the sun to rise and the Nile to flow, and who blesses his fortunate people with all the good things of life! Oh great lord, from time immemorial your people lived on the banks of the Nile river, where they brought writing to the world, and advanced mathematics, sculpture, and architecture. Thousands of years ago they created the great monuments which still stand tall and proud.",
 		startIntroPart2: "Oh, Ramesses, for uncounted years your people endured, as other petty nations around them have risen and then fallen into dust. They look to you to lead them once more into greatness. Can you honor the gods and bring Egypt back to her rightful place at the very center of the world? Can you build a civilization that will stand the test of time?",
@@ -142,6 +150,7 @@
 		leaderName:"Elizabeth",
 		adjective:["English"],
 		startBias:["Coast"],
+		//preferredVictoryType:"Diplomatic",
 	
 		startIntroPart1: "Praises upon her serene highness, Queen Elizabeth Gloriana. You lead and protect the celebrated maritime nation of England. England is an ancient land, settled as early as 35,000 years ago. The island has seen countless waves of invaders, each in turn becoming a part of the fabric of the people. Although England is a small island, for many years your people dominated the world stage. Their matchless navy, brilliant artists and shrewd merchants, giving them power and influence far in excess of their mere numbers."
 		startIntroPart2: "Queen Elizabeth, will you bring about a new golden age for the English people? They look to you once more to return peace and prosperity to the nation. Will you take up the mantle of greatness? Can you build a civilization that will stand the test of time?"
@@ -176,6 +185,7 @@
 		name:"France",
 		leaderName:"Napoleon",
 		adjective:["French"],
+		preferredVictoryType:"Cultural",
 		
 		startIntroPart1: "Long life and triumph to you, First Consul and Emperor of France, Napoleon I, ruler of the French people. France lies at the heart of Europe. Long has Paris been the world center of culture, arts and letters. Although surrounded by competitors - and often enemies - France has endured as a great nation. Its armies have marched triumphantly into battle from one end of the world to the other, its soldiers and generals among the best in history."
 		startIntroPart2: "Napoleon Bonaparte, France yearns for you to rebuild your empire, to lead her once more to glory and greatness, to make France once more the epicenter of culture and refinement. Emperor, will you ride once more against your foes? Can you build a civilization that will stand the test of time?"
@@ -211,6 +221,7 @@
 		leaderName:"Catherine",
 		adjective:["Russian"],
 		startBias:["Tundra"],
+		preferredVictoryType:"Scientific",
 	
 		startIntroPart1: "Greetings upon thee, Your Imperial Majesty Catherine, wondrous Empress of all the Russias. At your command lies the largest country in the world. Mighty Russia stretches from the Pacific Ocean in the east to the Baltic Sea in the west. Despite wars, droughts, and every manner of disaster the heroic Russian people survive and prosper, their artists and scientists among the best in the world. The Empire today remains one of the strongest ever seen in human history - a true superpower, with the greatest destructive force ever devised at her command."
 		startIntroPart2: "Catherine, your people look to you to bring forth glorious days for Russia and her people, to revitalize the land and recapture the wonder of the Enlightenment. Will you lead your people once more into greatness? Can you build a civilization that will stand the test of time?"
@@ -245,6 +256,7 @@
 		name:"Rome",
 		leaderName:"Augustus Caesar",
 		adjective:["Roman"],
+		preferredVictoryType:"Scientific",
 		
 		startIntroPart1: "The blessings of the gods be upon you, Caesar Augustus, emperor of Rome and all her holdings. Your empire was the greatest and longest lived of all in Western civilization. And your people single handedly shaped its culture, law, art, and warfare like none other, before or since. Through years of glorious conquest, Rome came to dominate all the lands of the Mediterranean from Spain in the west to Syria in the east. And her dominion would eventually expand to cover much of England and northern Germany. Roman art and architecture still awe and inspire the world. And she remains the envy of all lesser civilizations who have followed."
 		startIntroPart2: "O mighty emperor, your people turn to you to once more reclaim the glory of Rome! Will you see to it that your empire rises again, bringing peace and order to all? Will you make Rome once again center of the world? Can you build a civilization that will stand the test of time?"
@@ -280,6 +292,7 @@
 		leaderName:"Harun al-Rashid",
 		adjective:["Arabian"],
 		startBias:["Desert"],
+		preferredVictoryType:"Scientific",
 		
 		startIntroPart1: "Blessings of God be upon you oh great caliph Harun al-Rashid, leader of the pious Arabian people! The Muslim empire, the Caliphate was born in the turbulent years after the death of the prophet Muhammad in 632 AD, as his followers sought to extend the rule of God to all of the people of the earth. The caliphate grew mighty indeed at the height of its power, ruling Spain, North Africa, the Middle East, Anatolia, the Balkans and Persia. An empire as great as or even greater than that of Rome. The arts and sciences flourished in Arabia during the Middle Ages, even as the countries of Europe descended into ignorance and chaos. The Caliphate survived for six hundred years, until finally succumbing to attack from the Mongols, those destroyers of Empires."
 		startIntroPart2: "Great Caliph Harun al Rashid, your people look to you to return them to greatness! To make Arabia once again an enlightened land of arts and knowledge, a powerful nation who needs fear no enemy! Oh Caliph, will you take up the challenge? Can you build a civilization that will stand the test of time?"
@@ -314,6 +327,7 @@
 		name:"America",
 		leaderName:"Washington",
 		adjective:["American"],
+		preferredVictoryType:"Scientific",
 		
 		startIntroPart1: "Welcome President Washington! You lead the industrious American civilization! Formed in the conflagration of revolution in the 18th century, within a hundred years, the young nation became embroiled in a terrible civil war that nearly tore the country apart, but it was just a few short years later in the 20th century that the United States reached the height of its power, emerging triumphant and mighty from the two terrible wars that destroyed so many other great nations. The United States is a nation of immigrants, filled with optimism and determination. They lack only a leader to help them fulfill their promise."
 		startIntroPart2: "President Washington, can you lead the American people to greatness? Can you build a civilization that will stand the test of time?"
@@ -349,6 +363,7 @@
 		leaderName:"Oda Nobunaga",
 		adjective:["Japanese"],
 		startBias:["Coast"],
+		preferredVictoryType:"Domination",
 		
 		startIntroPart1: "Blessings upon you, noble Oda Nobunaga, ruler of Japan, the land of the Rising Sun! May you long walk among its flowering blossoms. The Japanese are an island people, proud and pious with a rich culture of arts and letters. Your civilization stretches back thousands of years, years of bloody warfare, expansion and isolation, great wealth and great poverty. In addition to their prowess on the field of battle, your people are also immensely industrious, and their technological innovation and mighty factories are the envy of lesser people everywhere."
 		startIntroPart2: "Legendary damiyo, will you grab the reins of destiny? Will you bring your family and people the honor and glory they deserve? Will you once again pick up the sword and march to triumph? Will you build a civilization that stands the test of time?"
@@ -375,13 +390,17 @@
 		secondaryColor:[185,0,0],
 		uniqueName:"Bushido"
 		unique: "Units fight as though they were at full strength even when damaged",
-		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen","Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori","Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
+		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama",
+			"Shimonoseki","Matsuyama","Sapporo","Hakodate","Ise","Toyama","Fukushima","Suo","Bizen","Echizen",
+			"Izumi","Omi","Echigo","Kozuke","Sado","Kobe","Nagano","Hiroshima","Takayama","Akita","Fukuoka","Aomori",
+			"Kamakura","Kochi","Naha","Sendai","Gifu","Yamaguchi","Ota","Tottori"]
 	},
 	{
 		name:"India",
 		leaderName:"Gandhi",
 		adjective:["Indian"],
 		startBias:["Grassland"],
+		preferredVictoryType:"Cultural",
 		
 		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
 		startIntroPart2: "Gandhi, your people look to you to lead them to even greater heights of glory! Can you help your people realize their great potential, to once again become the world's center of arts, culture and religion? Can you build a civilization that will stand the test of time?"
@@ -411,19 +430,19 @@
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
 	},
-	/*
-	{   //  REQUIRES BARBARIAN CAMPS
+	{
 		name:"Germany",
 		leaderName:"Otto von Bismark",
 		adjective:["German"],
+		preferredVictoryType:"Scientific",
 		
 		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
 		startIntroPart2: "Great Prince Bismark, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rile and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?"
 		
-		declaringWar:"I cannot wait until ye grow even mightier. Therefore, prepare for war!"
-		attacked:"Corrupted villain! We will bring you into the ground!"
-		defeated:"Germany has been destroyed. I weep for the future generations."
-		introduction:"Guten tag. In the name of the great German people, I bid you welcome."
+		declaringWar: "I cannot wait until ye grow even mightier. Therefore, prepare for war!"
+		attacked: "Corrupted villain! We will bring you into the ground!"
+		defeated: "Germany has been destroyed. I weep for the future generations."
+		introduction: "Guten tag. In the name of the great German people, I bid you welcome."
 		
 		neutralHello:"What now?"
 		neutralLetsHearIt:["What do ye say?","Yes?","Ja?"]
@@ -438,8 +457,8 @@
 		afterPeace:"What do ye think about calling it a draw?"
 		tradeRequest:"It would be in your best interest, to carefully consider this proposal."
 				
-		mainColor:[224,224,224],
-		secondaryColor:[64,64,64],
+		mainColor:[150,150,150],
+		secondaryColor:[60,60,60],
 		uniqueName:"Furor Teutonicus"
 		unique:"67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance.",
 		cities:["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
@@ -450,13 +469,54 @@
 			"Recklinghausen","Gצttingen","Wolfsburg","Koblenz","Hildesheim","Erlangen"]
 	},
 	
+	
+	{
+		name:"The Ottomans",
+		leaderName:"Suleiman I",
+		adjective:["Ottoman"],
+		startBias:["Coast"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Blessings of God be upon you, oh Great Emperor Suleiman! Your power, wealth and generosity awe the world! Truly, are you called 'Magnificent!' Your empire began in Bithynia, a small country in Eastern Anatolia in 12th century. Taking advantage in the decline of the great Selkuj Sultanate of Rum, King Osman I of Bithynia expanded west into Anatolia. Over the next century, your subjects brought down the empire of Byzantium, taking its holdings in Turkey and then the Balkans. In the mid 15th century, the Ottomans captured ancient Constantinople, gaining control of the strategic link between Europe and the Middle East. Your people's empire would continue to expand for centuries governing much of North Africa, the Middle East and Eastern Europe at its height."
+		startIntroPart2: "Mighty Sultan, heed the call of your people! Bring your empire back to the height of its power and glory and once again the world will look upon your greatness with awe and admiration! Will you accept the challenge, great emperor? Will you build an empire that will stand the test of time?"
+		
+		declaringWar:"Your continued insolence and failure to recognize and preeminence leads us to war."
+		attacked:"Good. The world shall witness the incontestable might of my armies and the glory of the Empire."
+		defeated:"Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melancholy poets."
+		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!"
+		
+		neutralHello:"Greetings!"
+		neutralLetsHearIt:["I'm listening.","Go on."]
+		neutralNo:["No.","Of course not!","We decline."]
+		neutralYes:["Very good.","Fine.","We accept!"]
+
+		hateHello:"What do you want?"
+		hateLetsHearIt:["So you say!","Go on!"]
+		hateNo:["Excuse me?","This is unacceptable!","You can't be serious!"]
+		hateYes:["Ah, very good!","Very good.","I assume we must come to an agreement."]
+		
+		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
+		tradeRequest:"Let us do business! Would you be interested?"
+				
+		mainColor:[18,84,30],
+		secondaryColor:[245,248,185],
+		uniqueName:"Barbary Corsairs"
+		unique:"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.",
+		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
+			"Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin",
+			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
+			"Bitlis","Yalova"]
+	},
+	
+	/*
 	{   // REQUIRES RIVERS
 		name:"Aztecs",
 		leaderName:"Montezuma I",
 		adjective:["Aztec"],
 		startBias:["Jungle"],
+		preferredVictoryType:"Domination",
 		
-		startIntroPart1: "Welcome, o divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
+		startIntroPart1: "Welcome, O divine Montezuma! We grovel in awe at your magnificence! May the heaven shower all manner of good things upon you all the days of your life! Your are the leader of the mighty Aztec people, wandering nomads from a lost home in the north who in the 12th century came to live in the mesa central in the heart of what would come to be call Mexico. Surrounded by many tribes fighting to control the rich land surrounding the sacred lakes of Texoco, Xaltocan and Zampango. Through cunning alliances and martial prowess, within a mere two hundred years, the Aztecs came to dominate the Central American basin, ruling a mighty empire stretching from sea to sea. But the empire fell soon under the assault of the accursed Spaniards, wielding fiendish weapons the likes of which your faithful warriors had never seen."
 		startIntroPart2: "O great king Montezuma, your people call upon you once more, to rise up and lead them to glory, bring them wealth and power, and give them dominion over their foes and rivals. Will you answer their call, glorious leader? Will you build a civilization that stands the test of time?"
 		
 		declaringWar:"Xi-miqa-can! Xi-miqa-can! Xi-miqa-can! (Die, die, die!)"
@@ -479,14 +539,20 @@
 		
 		mainColor:[255,51,51],
 		secondaryColor:[153,255,255],
+		uniqueName:"Sacrificial Captives"
 		unique:"Gain Culture for the empire from each enemy unit killed.",
-		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
+		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan",
+			"Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco",
+			"Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac",
+			"Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec",
+			"Itzapalapa","Ayotzinco","Iztapam"]
 	},
 	{
 		name:"Mongolia",
 		leaderName:"Genghis Khan",
 		adjective:["Mongolian"],
 		startBias:["Plains"],
+		preferredVictoryType:"Domination",
 		
 		startIntroPart1: "Greetings, o great Temujin, immortal emperor of the mighty Mongol Empire! Your fists shatter walls of cities and your voice brings despair to your enemies. O Khan! You united the warring tribes of Northern Asia into a mighty people, creating the greatest cavalry force the world has ever witnessed. Your people's cunning diplomacy divided their enemies, making them weak and helpless before Mongolia's conquering armies. In a few short years, your people soldiers conquered most of China and Eastern Asia, and the empire continued to grow until it reached west into Europe and south to Korea. Indeed, it was the greatest empire ever seen, dwarfing those pathetic conquests of the Romans of the Greeks."
 		startIntroPart2: "Temujin, your people cann upon you once more to lead them to battle and conquest. Will the world once again trembe at the thunderous sound of your cavalry, sweeping down from the steppes? Will you build a civilization that stands the test of time?"
@@ -511,12 +577,19 @@
 				
 		mainColor:[51,0,0],
 		secondaryColor:[0,204,102],
+		uniqueName:"Mongol Terror"
 		unique:"All mounted units have +1 Movement. +30% when assaulting cities,",
-		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan","Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
+		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
+			"Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg",
+			"Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor",
+			"Har-Ayrag","Nalayh","Tes"]
 	},
 	{
 		name:"Incan",
 		leaderName:"Pachacuti",
+		adjective:["Incan"],
+		startBias:["Hill"],
+		preferredVictoryType:"Cultural",
 		
 		startIntroPart1: "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today."
 		startIntroPart2: "Oh King Pachacuti, truly are you called "Earth Shaker"! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
@@ -541,12 +614,18 @@
 				
 		mainColor:[255,255,51],
 		secondaryColor:[0,204,102],
+		uniqueName:"Great Andean Road"
 		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
-		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
+		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos",
+			"Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha",
+			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
+			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
 	{
 		name:"Persian",
 		leaderName:"Darius I",
+		adjective:["Persian"],
+		preferredVictoryType:"Scientific",
 		
 		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
 		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
@@ -571,15 +650,25 @@
 				
 		mainColor:[255,0,0],
 		secondaryColor:[255,255,0],
+		uniqueName:"Achaemenid Legacy"
 		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
-		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir","Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz","Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube","Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada","Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava","Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka","Paishiyauvada","Patigrbana","Phrada"]
+		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
+			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
+			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
+			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
+			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
+			"Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
+			"Paishiyauvada","Patigrbana","Phrada"]
 	},
 	{
 		name:"Polynesia",
 		leaderName:"Kamehameha I",
+		adjective:["Polynesia"],
+		startBias:["Coast"],
+		preferredVictoryType:"Cultural",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Greetings and blessings be upon you, Kamehameha the Great, chosen by the heavens to unite your scattered peoples. Oh mighty King, you were the first to bring the Big Island of Hawai'I under one solitary rule in 1791 AD. This was followed by the merging of all the remaining islands under your standard in 1810. As the first King of Hawai'I, you standardized the legal and taxation systems and instituted the Mamalahoe Kawanai, an edict protecting civilians in times of war. You ensured the continued unification and sovereignty of the islands by your strong laws and deeds, even after your death in 1819."
+		startIntroPart2: "Oh wise and exalted King, your people wish for a kingdom of their own once more and require a leader of unparalleled greatness! Will you answer their call and don the mantle of the Lion of the Pacific? Will you build a kingdom that stands the test of time?"
 		
 		declaringWar:"The ancient fire flashing across the sky is what proclaimed that this day would come, though I had foolishly hoped for a different outcome."
 		attacked:"It is obvious now that I misjudged you and your true intentions."
@@ -601,15 +690,22 @@
 				
 		mainColor:[255,128,0],
 		secondaryColor:[255,255,0],
+		uniqueName:"Wayfinding"
 		unique:"Can embark and move over Costs and Oceans immediately. +1 Sight when embarked",
-		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui","Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu","Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia","Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
+		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
+			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
+			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
+			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
 	{
 		name:"Korean",
 		leaderName:"Sejong",
+		adjective:["Korean"],
+		startBias:["Coast"],
+		preferredVictoryType:"Scientific",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Greetings to you, exalted King Sejong the Great, servant to the people and protector of the Choson Dynasty! Your glorious vision of prosperity and overwhelming benevolence towards the common man made you the most beloved of all Korean kings. From the earliest days of your reign, the effort you took to provide a fair and just society for all was surpassed only by the technological advances spurred onwards by your unquenched thirst for knowledge. Guided by your wisdom, the scholars of the Jade Hall developed Korea's first written language, Hangul, bringing the light of literature and science to the masses after centuries of literary darkness."
+		startIntroPart2: "Honorable Sejong, once more the people look to your for guidance. Will you rise to the occasion, bringing harmony and understanding to the people? Can you once again advance your kingdom's standing to such wondrous heights? Can you build a civilization that stands the test of time?"
 		
 		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
 		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
@@ -627,19 +723,25 @@
 		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
 		
 		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
-		tradeRequest:"We have many thinkgs to discuss and have much to benefit from each other."
+		tradeRequest:"We have many things to discuss and have much to benefit from each other."
 				
 		mainColor:[0,0,255],
 		secondaryColor:[255,0,0],
+		uniqueName:"Scholars of the Jade Hall"
 		unique:"+2 Science for all Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean capital.",
-		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
+			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
+			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
 	{
 		name:"Songhai",
 		leaderName:"Askia",
+		adjective:["Songhai"],
+		startBias:["Avoid Tundra"],
+		preferredVictoryType:"Domination",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "May the blessings of God, who is greatest of all, be upon you Askia, leader of the Songhai people! For many years your kingdom was a vassal of the mighty West African state of Mali, until the middle of the 14th century, when King Sunni Ali Ber wrested independence from the Mali, conquering much territory and fighting off numerous foes who sought to destroy him. Ultimately, his conquest of the wealthy cities of Timbuktu and Jenne gave the growing Songhai empire the economic power to survive for some 100 years, until the empire was destroyed by foes with advanced technology - muskets against spearmen."
+		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
 		
 		declaringWar:"You are an abomination to heaven and earth, the chief of ignorant savages! You must be destroyed!"
 		attacked:"Fool! You have doomed your people to fire and destruction!"
@@ -661,45 +763,58 @@
 				
 		mainColor:[204,102,0],
 		secondaryColor:[255,0,0],
+		uniqueName:"River Warlord"
 		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
-		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
+		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
+			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
+			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
 	{
-		name:"Ottoman",
-		leaderName:"Suleiman I",
+		name:"Siam",
+		leaderName:"Ramkhamhaeng",
+		adjective:["Siamese"],
+		startBias:["Avoid Forest"],
+		//preferredVictoryType:"Diplomatic",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Greetings to you, Great King Ramkhamhaeng, leader of the glorious Siamese people! O mighty King, your people bow down before you in awe and fear! You are the ruler of Siam, an ancient country in the heart of Southeast Asia, a beautiful and mysterious land. Surrounded by foes, beset by bloody war and grinding poverty, the clever and loyal Siamese people have endured and trumphed. King Ramkhamhaeng, your empire was once part of the Khmer Empire, until the 13th century AD, when your ancestors revolted, forming the small Sukhothai kingdom. Through successful battle and cunning diplomacy, the tiny kingdom grew into a mighty empire, an empire which would dominate South East Asia for more than a century!"
+		startIntroPart2: "Oh, wise and puissant King Ramkhamhaeng, your people need you to once again lead them to greatness! Cann you use your wits and strenght of arms to protect your people and defeat your foes? Can you build a civilization that will stand the test of time?"
 		
-		declaringWar:"Your continued insolence and failure to recognize and preeminence leads us to war."
-		attacked:"Good. The world shall witness the incontestable might of my armies and the glory of the Empire."
-		defeated:"Ruin! Ruin! Istanbul becomes Iram of the Pillars, remembered only by the melancholy poets."
-		introduction:"From the magnificence of Topkapi, the Ottoman nation greets you, stranger! I'm Suleiman, Kayser-I Rum, and I bestow upon you my welcome!"
+		declaringWar:"You lowly, arrogant fool! I will make you regret of your insolence!"
+		attacked:"You scoundrel! I shall prepare to fend you off!"
+		defeated:"Althought I lost, my honor shall endure. I wish you good luck."
+		introduction:"I, Pho Kun Ramkhamhaeng, King of Siam, consider it a great honor that you have walked to visit my country of Siam."
 		
-		neutralHello:"Greetings!"
-		neutralLetsHearIt:["I'm listening.","Go on."]
-		neutralNo:["No.","Of course not!","We decline."]
-		neutralYes:["Very good.","Fine.","We accept!"]
+		neutralHello:"Welcome."
+		neutralLetsHearIt:["Let us hear it.","You say?","I'm listening"]
+		neutralNo:["No.","Certainly no.","No way."]
+		neutralYes:["In that case...","Of course.","Agreed."]
 
-		hateHello:"What do you want?"
-		hateLetsHearIt:["So you say!","Go on!"]
-		hateNo:["Excuse me?","This is unacceptable!","You can't be serious!"]
-		hateYes:["Ah, very good!","Very good.","I assume we must come to an agreement."]
+		hateHello:"Greetings."
+		hateLetsHearIt:["You were saying?.","Please proceed","So?"]
+		hateNo:["That is unacceptable.","You probably didn't mean that.","What did you say?"]
+		hateYes:["I think I must do as such.","Very well."]
 		
-		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
-		tradeRequest:"Let us do business! Would you be interested?"
+		afterPeace:"You have won, but I shall return to repay this debt."
+		tradeRequest:"Greetings. I believe this is a fair proposal for both parties. What do you think?"
 				
-		mainColor:[204,255,229],
-		secondaryColor:[0,102,0],
-		unique:"Pay only one.third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
-		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
+		mainColor:[51,25,0],
+		secondaryColor:[255,255,102],
+		uniqueName:"Father Governs Children"
+		unique:"Food and Culture from Friendly City-States are increased by 50%",
+		cities:["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
+			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
+			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
+			"Ban Phai","Loci","Khan Kaen","Surin"]
 	},
 	{
 		name:"Iroquois",
 		leaderName:"Hiawatha",
+		adjective:["Irochese"],
+		startBias:["Forest"],
+		preferredVictoryType:"Scientific",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Greetings, noble Hiawatha, leader of the mighty Iroquois nations! Long have your people lived near the great and holy lake Ontario in the land that has come to be known as the New York state in North America. In the mists of antiquity, the five peoples of Seneca, Onondaga, Mohawks, Cayugas and Oneida united into one nation, the Haudenosaunee, the Iroquois. With no written language, the wise men of your nation created the great law of peace, the model for many contitutions including that of the United States. For many years, your people battled great enemies, such as the Huron, and the French and English invaders. Tought outnumbered and facing weapons far more advanced than the ones your warriors wielded, the Iroquois survived and prospered, until they were finally overwhelmed by the mighty armies of the new United States."
+		startIntroPart2: "Oh noble Hiawatha, listen to the cries of your people! They call out to you to lead them in peace and war, to rebuild the great longhouse and unite the tribes once again. Will you accept this challenge, great leader? Will you build a civilization that will stand the test of time?"
 		
 		declaringWar:"You are a plague upon Mother Earth! Prepare for battle!"
 		attacked:"You evil creature! My braves will slaughter you!"
@@ -721,15 +836,23 @@
 				
 		mainColor:[0,25,51],
 		secondaryColor:[255,255,102],
+		uniqueName:"The Great Warpath"
 		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
-		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River","Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle","Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
+		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
+			"Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle",
+			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
+			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
 	{
+		//NEEDS SNOW AND ICE
 		name:"Denmark",
 		leaderName:"Harald Bluetooth",
+		adjective:["Danish"],
+		startBias:["Coast"],
+		preferredVictoryType:"Domination",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Honor and glory be yours, Harald Bluetooth Gormsson, mighty heir of King Gorm of the Old and Thryra Dannebod. Not only were you victorious on the battlefield against the armies of Norway, you also completed massive construction project across the land - numerous Ring Fortresses to protect the populace from invasion and internal strife. You successfully drove off waves of German settlers in 983 AD and sheltered your kingdom from unwanted foreign influence."
+		startIntroPart2: "Stalwart Viking, the time for greatness is upon you once more. You are called to rise up and lead your people to renewed power and trumph! Will you make the world shudder once more at the very thought of your great armies of the Northsmen? Will you let the Viking battle cry ring out across the crashing waved? Will you build a civilization to stand the test of time?"
 		
 		declaringWar:"If I am to be honest, I tire of those pointless charades. Why don't we settle our disputes on the field of battle, like true men? Perhaps the skalds will sing of your valor... or mine!"
 		attacked:"Ahahah! You seem to show some skills of a true Viking! Too bad that I'll probably kill you!"
@@ -751,8 +874,13 @@
 				
 		mainColor:[51,25,0],
 		secondaryColor:[255,255,102],
-		unique:"+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa.",
-		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso","Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore","Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers","Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen","Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
+		uniqueName:"Viking Fury"
+		unique:"+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa. Melee units pay no movement cost to pillage.",
+		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
+			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
+			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",
+			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
+			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
 	*/
 

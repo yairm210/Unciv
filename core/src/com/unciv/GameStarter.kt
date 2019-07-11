@@ -10,6 +10,7 @@ import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.VictoryType
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -23,6 +24,7 @@ class GameParameters{
     var mapType= MapType.Perlin
     var noBarbarians=false
     var mapFileName :String?=null
+    var victoryTypes :ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
 }
 
 class GameStarter{
@@ -33,9 +35,6 @@ class GameStarter{
         gameInfo.tileMap = TileMap(newGameParameters)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
 
-        val startingLocations = getStartingLocations(
-                newGameParameters.numberOfEnemies+newGameParameters.numberOfHumanPlayers+newGameParameters.numberOfCityStates,
-                gameInfo.tileMap)
 
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(GameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
@@ -73,8 +72,13 @@ class GameStarter{
 
         // and only now do we add units for everyone, because otherwise both the gameInfo.setTransients() and the placeUnit will both add the unit to the civ's unit list!
 
+
+        val startingLocations = getStartingLocations(
+                gameInfo.civilizations.filter { !it.isBarbarianCivilization() },
+                gameInfo.tileMap)
+
         for (civ in gameInfo.civilizations.filter { !it.isBarbarianCivilization() }) {
-            val startingLocation = startingLocations.pop()!!
+            val startingLocation = startingLocations[civ]!!
 
             civ.placeUnitNearTile(startingLocation.position, Constants.settler)
             civ.placeUnitNearTile(startingLocation.position, "Warrior")
@@ -84,7 +88,7 @@ class GameStarter{
         return gameInfo
     }
 
-    fun getStartingLocations(numberOfPlayers:Int,tileMap: TileMap): Stack<TileInfo> {
+    fun getStartingLocations(civs:List<CivilizationInfo>,tileMap: TileMap): HashMap<CivilizationInfo, TileInfo> {
         var landTiles = tileMap.values
                 .filter { it.isLand && !it.getBaseTerrain().impassable }
 
@@ -103,17 +107,44 @@ class GameStarter{
                     .filter {  vectorIsAtLeastNTilesAwayFromEdge(it.position,minimumDistanceBetweenStartingLocations,tileMap)}
                     .toMutableList()
 
-            val startingLocations = ArrayList<TileInfo>()
-            for(player in 0..numberOfPlayers){
-                if(freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
-                val randomLocation = freeTiles.random()
-                startingLocations.add(randomLocation)
-                freeTiles.removeAll(tileMap.getTilesInDistance(randomLocation.position,minimumDistanceBetweenStartingLocations))
+            val startingLocations = HashMap<CivilizationInfo,TileInfo>()
+
+            val tilesWithStartingLocations = tileMap.values
+                    .filter { it.improvement!=null && it.improvement!!.startsWith("StartingLocation ") }
+
+            val civsOrderedByAvailableLocations = civs.sortedBy {civ ->
+                when {
+                    tilesWithStartingLocations.any { it.improvement=="StartingLocation "+civ.civName } -> 1 // harshest requirements
+                    civ.getNation().startBias.isNotEmpty() -> 2 // less harsh
+                    else -> 3
+                }  // no requirements
             }
-            if(startingLocations.size < numberOfPlayers) continue // let's try again with less minimum distance!
-            val stack = Stack<TileInfo>()
-            stack.addAll(startingLocations)
-            return stack
+
+            for(civ in civsOrderedByAvailableLocations){
+                var startingLocation:TileInfo
+                val presetStartingLocation = tilesWithStartingLocations.firstOrNull { it.improvement=="StartingLocation "+civ.civName }
+                if(presetStartingLocation!=null) startingLocation = presetStartingLocation
+                else {
+                    if (freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
+                    var preferredTiles = freeTiles.toList()
+
+                    for (startBias in civ.getNation().startBias) {
+                        if (startBias.startsWith("Avoid ")) {
+                            val tileToAvoid = startBias.removePrefix("Avoid ")
+                            preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
+                        } else if (startBias == Constants.coast) preferredTiles = preferredTiles.filter { it.neighbors.any { n -> n.baseTerrain == startBias } }
+                        else preferredTiles = preferredTiles.filter { it.baseTerrain == startBias || it.terrainFeature == startBias }
+                    }
+
+                    startingLocation = if (preferredTiles.isNotEmpty()) preferredTiles.random() else freeTiles.random()
+                }
+                startingLocations[civ] = startingLocation
+                freeTiles.removeAll(tileMap.getTilesInDistance(startingLocation.position,minimumDistanceBetweenStartingLocations))
+            }
+            if(startingLocations.size < civs.size) continue // let's try again with less minimum distance!
+
+            for(tile in tilesWithStartingLocations) tile.improvement=null // get rid of the starting location improvements
+            return startingLocations
         }
         throw Exception("Didn't manage to get starting locations even with distance of 1?")
     }

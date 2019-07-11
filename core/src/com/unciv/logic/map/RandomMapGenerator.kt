@@ -162,7 +162,7 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
         //Coasts
         for (tile in map.values.filter { it.baseTerrain == ocean }) {
             if (HexMath().getVectorsInDistance(tile.position,2).any { hasLandTile(map,it) }) {
-                tile.baseTerrain = "Coast"
+                tile.baseTerrain = Constants.coast
                 tile.setTransients()
             }
         }
@@ -500,7 +500,7 @@ open class RandomMapGenerator {
     open fun setWaterTiles(map: HashMap<String, TileInfo>) {
         for (tile in map.values.filter { it.baseTerrain == ocean }) {
             if (HexMath().getVectorsInDistance(tile.position,2).any { hasLandTile(map,it) }) {
-                tile.baseTerrain = "Coast"
+                tile.baseTerrain = Constants.coast
                 tile.setTransients()
             }
         }

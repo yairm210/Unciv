@@ -93,8 +93,8 @@
 		cost: 40,
 		hurryCostModifier:20,
 		requiredTech:"Archery",
-		obsoleteTech:"Machinery",
-		upgradesTo:"Crossbowman",
+		obsoleteTech:"Machinery",//Should be Construction
+		upgradesTo:"Crossbowman",//Should be Composite Bowman
 		attackSound:"arrow"
 	},
 	{
@@ -281,8 +281,8 @@
 	{
 		name:"Ballista",
 		unitType:"Siege",
-		uniqueTo:"Rome",
 		replaces:"Catapult",
+		uniqueTo:"Rome",
 		movement:2,
 		strength:8,
 		rangedStrength:10,
@@ -294,6 +294,21 @@
 		hurryCostModifier:20,
 		attackSound:"throw"
 	},
+	/*
+	{
+		name:"Composite Bowman",
+		unitType:"Ranged",
+		movement:2,
+		strength:7,
+		rangedStrength:11,
+		cost: 75,
+		hurryCostModifier:20,
+		requiredTech:"Construction",
+		obsoleteTech:"Machinery",
+		upgradesTo:"Crossbowman",
+		attackSound:"arrow"
+	},
+	*/
 	{
 		name:"Swordsman",
 		unitType:"Melee",
@@ -516,7 +531,6 @@
 		attackSound:"metalhit"
 		//Pikeman should upgrade not only to Musketman but also to Lancer
 	},
-	/*
 	{
 		name:"Landsknecht",
 		replaces:"Pikeman",
@@ -532,7 +546,6 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	*/
 	{
 		name:"Galleass",
 		unitType:"WaterRanged",
@@ -703,12 +716,11 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	/*
 	{
-		name:"Jannissary",
+		name:"Janissary",
 		unitType:"Melee",
 		replaces:"Musketman",
-		uniqueTo:"Ottoman",
+		uniqueTo:"The Ottomans",
 		movement:2,
 		strength:24,
 		cost: 150,
@@ -716,11 +728,9 @@
 		upgradesTo:"Rifleman"
 		obsoleteTech:"Rifling",
 		hurryCostModifier:20,
-		uniques:["Heal 50 if it kills an Unit","Combat bonus when attacking 25%"],
+		uniques:["Heals [50] damage if it kills a unit", "Bonus as Attacker [25]%"],
 		attackSound:"shot"
-		//Ottoman unique unit, slightly weaker than Musketman, but heals 50 HP when it kills an units, and +25% Strenght when attacking
 	},
-	*/
 	{
 		name:"Minuteman",
 		unitType:"Melee",
@@ -775,30 +785,30 @@
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20,
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%"],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%"],
+		promotions:["Formation I"],
 		upgradesTo:"Anti-Tank Gun",
 		obsoleteTech:"Combined Arms",
 		attackSound:"horse"
 	},
-	/*
 	{
 		name:"Sipahi",
 		unitType:"Mounted",
 		replaces:"Lancer",
-		uniqueTo:"Ottoman",
+		uniqueTo:"The Ottomans",
 		movement:5,
 		strength:25,
 		cost: 185,
 		requiredTech:"Metallurgy",
 		requiredResource:"Horses",
 		hurryCostModifier:20,
-		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%","Bonus vs Mounted 33%","Formation I","+1 Visibility"],
+		uniques:["Can move after attacking","No defensive terrain bonus","Penalty vs City 33%",
+			"+1 Visibility Range", "No movement cost to pillage"],
+		promotions:["Formation I"],
 		upgradesTo:"Anti-Tank Gun",
 		obsoleteTech:"Combined Arms",
 		attackSound:"horse"
-		//Another Ottoman unique attack.
 	},
-	*/
 	
 	// Industrial Era
 	
@@ -823,11 +833,27 @@
 		strength:34,
 		cost: 225,
 		requiredTech:"Rifling",
-		obsoleteTech:"Replaceable Parts", //Should be Replaceable Parts
+		obsoleteTech:"Replaceable Parts",
 		upgradesTo:"Great War Infantry",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
+	
+	{
+		name:"Triplane",
+		unitType:"Fighter",
+		movement:1,
+		strength:35,
+		rangedStrength:35,
+		range:5,
+		cost: 325,
+		requiredTech:"Flight",
+		hurryCostModifier:20,
+		uniques:["[50]% chance to intercept air attacks","Bonus vs Bomber 150%",
+			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
+	
 	/*
 	{
 		name:"Norvegian Ski Infantry",
@@ -947,7 +973,7 @@
 		rangedStrength: 60,
 		cost: 325,
 		requiredTech:"Refrigeration",
-		uniques:["Bonus as Attacker 75%", "Invisible to others", "Can only attack water", "Can attack submarines"],
+		uniques:["Bonus as Attacker [75]%", "Invisible to others", "Can only attack water", "Can attack submarines"],
 		hurryCostModifier:20
 	},
 	{
@@ -1014,7 +1040,6 @@
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
 	},
-	/*
 	{
 		name:"Panzer",
 		unitType:"Armor",
@@ -1029,7 +1054,6 @@
 		hurryCostModifier:20,
 		//German unique unit, stronger than Tank
 	},
-	*/
 	{
 		name:"Anti-Tank Gun",
 		unitType:"Melee",
@@ -1110,7 +1134,7 @@
 		name:"Great General",
 		unbuildable:true,
 		unitType:"Civilian",
-		uniques:["Can start an 8-turn golden age","Bonus for land units in 2 radius 15%"] //to do : should be able to build mega-fort
+		uniques:["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%"] //to do : should be able to build mega-fort
 		movement:2
 	},
 	

@@ -87,3 +87,10 @@ open class Stats() {
         science=hashMap[Stat.Science]!!
     }
 }
+
+class StatMap:LinkedHashMap<String,Stats>(){
+    fun add(source:String,stats:Stats){
+        if(!containsKey(source)) put(source,stats)
+        else put(source, get(source)!!+stats)
+    }
+}

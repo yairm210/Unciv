@@ -126,7 +126,7 @@
 		Portuguese:"Dessa vez não."
 	}
 
-	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state
+	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
 		Italian:"Eccellente!"
 		Simplified_Chinese:"好极了！和和气气才是生财之道。"
 		French:"Excellent!"
@@ -184,10 +184,12 @@
 	
 	// Denunceation flavour texts
 	"Denounce ([numberOfTurns] turns)":{
+		Italian:"Denuncia ([numberOfTurns] turni)"
 		French:"Dénoncer ([numberOfTurns] tours)"
 	}
 	
 	"We will remember this.":{
+		Italian:"Non credere che ce lo scorderemo!"
 		French:"Nous nous en souviendrons."
 	}
 	
@@ -202,42 +204,42 @@
   	}
 
   	"Enemy":{
-		Italian:"Nemico"
+		Italian:"Nemici"
 		French:"Ennemi"
 		Simplified_Chinese:"宿命之敌"
 		Portuguese:"Inimigos" //as in 'we are enemies' not just 'they are our enemy'
   	}
 
   	"Competitor":{
-	  	Italian:"Avversario"
+	  	Italian:"Avversari"
 		French:"Adversaire" //or en compétition
 		Simplified_Chinese:"瑜亮之争"
 		Portuguese:"Adversários"
   	}
 
   	"Neutral":{
-    		Italian:"Neutrale"
+		Italian:"Neutri"
 		French:"Neutre"
 		Simplified_Chinese:"泛泛之交"
 		Portuguese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
   	}
 
   	"Favorable":{
-		Italian:"Favorevole"
+		Italian:"Favorevoli"
 		French:"Favorable"
 		Simplified_Chinese:"惺惺相惜"
 		Portuguese:"Favorável"
   	}
 
   	"Friend":{
-		Italian:"Amichevole"
+		Italian:"Amichevoli"
 		French:"Ami"
 		Simplified_Chinese:"秦晋之好"
 		Portuguese:"Amigos"
  	 }
 
   	"Ally":{
-		Italian:"Alleato"
+		Italian:"Alleati"
 		French:"Allié"
 		Simplified_Chinese:"歃血之盟"
 		Portuguese:"Aliado"
@@ -343,7 +345,7 @@
 		French:"Votre soi-disant 'amitié' ne vaut rien."
 	}
 	
-	"You have publically denounced us!":{
+	"You have publicly denounced us!":{
 		Italian:"Ci hai denunciato pubblicamente di fronte al mondo!"
 		French:"Vous nous avez dénoncé publiquement!"
 	}
@@ -358,7 +360,62 @@
 		French:"Vous avez dénoncé nos ennemies"
 	}
 	
+	// Demands
+	"Demands":{
+		Italian:"Richieste"
+	}
+	"Please don't settle new cities near us.":{
+		Italian:"Smetti di fondare città vicino a noi."
+	}
+	"Very well, we shall look for new lands to settle.":{
+		Italian:"Ti porgiamo le nostre scuse."
+	}
+	"We shall do as we please.":{
+		Italian:"Colonizzeremo la terra che ci pare e piace."
+	}
 	
+	"You betrayed your promise to not settle cities near us":{
+		Italian:"Hai tradito la tua promessa di non fondare città nelle nostre vicinanze."
+	}
+	
+	"You fulfilled your promise to stop settling cities near us!":{
+		Italian:"Hai mantenuto la tua promessa di non fondare città nelle nostre vicinanze."
+	}
+	
+	"You refused to stop settling cities near us":{
+		Italian:"Hai continuato a fondare città nelle nostre vicinanze."
+	}
+	
+	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
+		Italian:"Abbiamo notato la la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
+	}
+	
+	"Your arrogant demands are in bad taste":{
+		Italian:"Hai fatto una richiesta arrogante."
+	}
+	
+	
+////// City-States Types
+
+	
+	"Cultured":{
+		Italian:"Acculturata"
+	}
+	
+	"Maritime":{
+		Italian:"Marittima"
+	}
+	
+	"Mercantile":{
+		Italian:"Mercantile"
+	}
+	
+	/*
+	"Militaristic":{
+		Italian:"Militaristica"
+	}
+	*/
+
 ////// Trade	
 
 	"Trade":{	
@@ -373,7 +430,7 @@
 	}
 
 	"Offer trade":{	
-		Italian:"Negozia"
+		Italian:"Offri scambio"
 		Russian:"Предложить обмен"
 		French:"Proposer un échange"
 		Romanian:"Ofertă comercială"
@@ -631,6 +688,10 @@
 		Simplified_Chinese:"发明文字后立即获得一个大科学家，大科学家点数积累速率+50%"
 		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
 	}
+
+	"Nebuchadnezzar II":{//Babylonian Leader
+		Italian:"Nabucodonosor II"
+	}
 	
 	"Greece":{	
 		Italian:"Grecia"
@@ -641,6 +702,10 @@
 		Simplified_Chinese:"希腊"
 		Portuguese:"Grécia"
 		German:"Griechenland"
+	}
+
+	"Alexander":{
+		Italian:"Alessandro"
 	}
 
 	"China":{	
@@ -676,6 +741,10 @@
 		German:"Ägypten"
 	}
 
+	"Ramesses II":{
+		Italian:"Ramses II"
+	}
+
 	"+20% production towards Wonder construction":{
 		Italian:"+20% Produzione per la costruzione di Meraviglie"
 		German:"20% erhöhte Produktion beim Errichten von Wundern"
@@ -696,6 +765,10 @@
 		Simplified_Chinese:"英格兰"
 		Portuguese:"Inglaterra"
 		German:"England"
+	}
+
+	"Elizabeth":{
+		Italian:"Elisabetta"
 	}
 
 	"+2 movement for all naval units":{
@@ -720,6 +793,10 @@
 		German:"Frankreich"
 	}
 
+	"Napoleon":{
+		Italian:"Napoleone"
+	}
+
 	"+2 Culture per turn from cities before discovering Steam Power":{
 		Italian:"+2 Cultura al turno dalle città prima di scoprire l'Energia a Vapore"
 		German:"+2 Kultur pro Runde von Städten (bevor Dampfkraft erforscht wurde)"
@@ -742,6 +819,10 @@
 		Russian:"Россия"
 	}
 
+	"Catherine":{
+		Italian:"Caterina II"
+	}
+
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
 		Italian:"+1 Produzione dalle Risorse, e doppia quantità fornita da Cavalli, Ferro e Uranio"
 		Romanian:"Resursele strategice oferă +1 Producție, resursele Cai, Fier și Uraniu oferind cantitate dublă"
@@ -762,6 +843,10 @@
 		French:"Rome"
 		Portuguese:"Roma"
 		Russian:"Рим"
+	}
+
+	"Augustus Caesar":{
+		Italian:"Cesare Augusto"
 	}
 
 	"+25% Production towards any buildings that already exist in the Capital":{
@@ -787,6 +872,10 @@
 		Dutch:"Saudi"
 	}
 
+	"Harun al-Rashid":{
+		Italian:"Harun al-Rashid" //Same as Italian
+	}
+
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
 		Italian:"+1 Oro da ogni rotta commerciale, e doppia quantità da ogni risorsa di Petrolio"
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
@@ -803,6 +892,10 @@
 		French:"Etats-Unis"
 		Portuguese:"América"
 		Russian:"Америка"
+	}
+
+	"George Washington":{
+		Italian:"George Washington" //Same as Italian
 	}
 
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
@@ -827,6 +920,10 @@
 		Russian:"Япония"
 	}
 
+	"Oda Nobunaga":{
+		Italian:"Oda Nobunaga" //Same as Italian
+	}
+
 	"Units fight as though they were at full strength even when damaged":{
 		Italian:"Le unità combattono come se fossero perfettamente sane, anche quando gravemente ferite"
 		Romanian:"Unitățile se luptă ca și cum ar fi la putere deplină chiar și atunci când sunt deteriorate"
@@ -844,6 +941,14 @@
 		Simplified_Chinese:"德意志"
 		Portuguese:"Alemanha"
 	}
+
+	"Otto von Bismark":{
+		Italian:"Otto von Bismark" //Same as Italian
+	}
+
+	"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Pay 25% less for land unit maintenance.":{
+		Italian:"Quando sconfiggi un'unità barbara nel suo accampamento, hai il 67% di chance di ottenere 25 Oro e che l'unità si unisca all'esercito. -25% mantenimento delle unità terrestri."
+	}
 	
 	"India":{
 		Italian:"India"
@@ -851,10 +956,26 @@
 		Portuguese:"Índia"
 	}
 
+	"Gandhi":{
+		Italian:"Gandhi" //Same as Italian
+	}
+
 	"Unhappiness from number of Cities doubled. Unhappiness from number of Citizens halved.":{
-		Italian:"Raddoppia l'Infelicità dal numero di Città, ma la dimezza dal numero di Cittadini."
+		Italian:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata."
 		Portuguese:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
 		French:"Le mécontentement dut au nombre de villes est doublé. Le mécontentement dut au nombre de citoyens est réduit de moitié"
+	}
+
+	"The Ottomans":{
+		Italian:"Turchia"
+		French:"Turquie"
+		Portuguese:"Turquia"
+	}
+
+	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
+		Italian:"Mantenimento delle unità navali ridotte a un terzo rispetto al normale. Le unità navali ravvicinate hanno un 34% di probabilità di catturare le unità navali nemiche sconfitte."
+		Portuguese:"50% de chance de converter uma unidade naval bárbara para ti e ganhar 25 ouro. Gaste apenas 1/3 do custo normal para manter unidades navais."
+		French:"50% de chance de convertir une unité barbare navale et de gagner 25 Or. Les unités navales coutent 3 fois moins à entretenir."
 	}
 /*
 
@@ -922,18 +1043,6 @@
 		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
 		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
 		French:"+1 Science pour chaque spécialistes et amélioration de case de personnage illustre. Reçoit un bonus de science à chaque fois qu'un batiment ou une merveille scientifique est  construit dans la capitale"
-	}
-
-	"Turkey":{
-		Italian:"Turchia"
-		French:"Turquie"
-		Portuguese:"Turquia"
-	}
-
-	"50% chance of converting a barbarian naval unit to your side and earning 25 Gold. Pay only one-third the usual cost for naval unit maintenance.":{
-		Italian:"50% di chance di convertire un'unita navale barbarica dalla tua parte e ottenere 25 Oro. Mantenimento delle unità navali ridotte a un terzo."
-		Portuguese:"50% de chance de converter uma unidade naval bárbara para ti e ganhar 25 ouro. Gaste apenas 1/3 do custo normal para manter unidades navais."
-		French:"50% de chance de convertir une unité barbare navale et de gagner 25 Or. Les unités navales coutent 3 fois moins à entretenir."
 	}
 
 	"Siam":{

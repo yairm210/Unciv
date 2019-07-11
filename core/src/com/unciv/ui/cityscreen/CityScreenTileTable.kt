@@ -45,11 +45,16 @@ class CityScreenTileTable(val city: CityInfo): Table(){
         }
         innerTable.add(statsTable).row()
 
-        if(selectedTile.getOwner()==null && selectedTile.neighbors.any{it.getCity()==city}){
+        if(selectedTile.getOwner()==null && selectedTile.neighbors.any {it.getCity()==city}){
             val goldCostOfTile = city.expansion.getGoldCostOfTile(selectedTile)
+
             val buyTileButton = TextButton("Buy for [$goldCostOfTile] gold".tr(), CameraStageBaseScreen.skin)
-            buyTileButton.onClick("coin") { city.expansion.buyTile(selectedTile); UnCivGame.Current.screen = CityScreen(city) }
+            buyTileButton.onClick("coin") {
+                city.expansion.buyTile(selectedTile)
+                UnCivGame.Current.screen = CityScreen(city)
+            }
             if(goldCostOfTile>city.civInfo.gold) buyTileButton.disable()
+
             innerTable.add(buyTileButton)
         }
         if(city.canAcquireTile(selectedTile)){

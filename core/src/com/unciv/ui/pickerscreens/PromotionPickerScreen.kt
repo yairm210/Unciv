@@ -14,25 +14,26 @@ import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.Promotion
 import com.unciv.ui.utils.*
 
-class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
+class PromotionPickerScreen(val mapUnit: MapUnit) : PickerScreen() {
     private var selectedPromotion: Promotion? = null
 
+
+    fun acceptPromotion(promotion: Promotion?) {
+        mapUnit.promotions.addPromotion(promotion!!.name)
+        if(mapUnit.promotions.canBePromoted()) game.screen = PromotionPickerScreen(mapUnit)
+        else game.setWorldScreen()
+        dispose()
+        game.worldScreen.shouldUpdate=true
+    }
 
     init {
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         setDefaultCloseAction()
 
-        fun accept(promotion: Promotion?) {
-            mapUnit.promotions.addPromotion(promotion!!.name)
-            if(mapUnit.promotions.canBePromoted()) game.screen = PromotionPickerScreen(mapUnit)
-            else game.setWorldScreen()
-            dispose()
-            game.worldScreen.shouldUpdate=true
-        }
 
         rightSideButton.setText("Pick promotion".tr())
         rightSideButton.onClick("promote") {
-          accept(selectedPromotion)
+          acceptPromotion(selectedPromotion)
         }
 
         val availablePromotionsGroup = VerticalGroup()
@@ -76,7 +77,7 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
             val pickNow = "Pick now!".toLabel()
             pickNow.setAlignment(Align.center)
             pickNow.onClick {
-                accept(promotion)
+                acceptPromotion(promotion)
             }
 
 
@@ -87,10 +88,8 @@ class PromotionPickerScreen(mapUnit: MapUnit) : PickerScreen() {
                 promotionButton.addSeparatorVertical()
                 promotionButton.add(pickNow).padLeft(10f).fillY()
             }
-            else {
-                group.touchable = Touchable.disabled
-                promotionButton.disable()
-            }
+            else promotionButton.color= Color.GRAY
+
             if(unitHasPromotion) promotionButton.color = Color.GREEN
             availablePromotionsGroup.addActor(promotionButton)
 

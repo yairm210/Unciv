@@ -189,7 +189,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         hideCircle()
         if (!showEntireMap
                 && !tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
-            tileBaseImage.color = Color.BLACK
+            tileBaseImage.color = Color.DARK_GRAY
             return
         }
 

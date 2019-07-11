@@ -40,3 +40,20 @@ class TileResource : NamedStats(), ICivilopedia {
     }
 }
 
+data class ResourceSupply(val resource:TileResource,var amount:Int, val origin:String)
+
+class ResourceSupplyList:ArrayList<ResourceSupply>(){
+    fun add(resource: TileResource, amount: Int, origin: String){
+        val existingResourceSupply=firstOrNull{it.resource==resource && it.origin==origin}
+        if(existingResourceSupply!=null) {
+            existingResourceSupply.amount += amount
+            if(existingResourceSupply.amount==0) remove(existingResourceSupply)
+        }
+        else add(ResourceSupply(resource,amount,origin))
+    }
+
+    fun add(resourceSupplyList: ResourceSupplyList){
+        for(resourceSupply in resourceSupplyList)
+            add(resourceSupply.resource,resourceSupply.amount,resourceSupply.origin)
+    }
+}

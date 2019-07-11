@@ -7,9 +7,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
 import com.unciv.logic.trade.TradeType
-import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.tile.TileResource
+import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tr
 
 enum class RelationshipLevel{
@@ -28,7 +27,10 @@ enum class DiplomacyFlags{
     DeclaredWar,
     DeclarationOfFriendship,
     Denunceation,
-    BorderConflict
+    BorderConflict,
+    SettledCitiesNearUs,
+    AgreedToNotSettleNearUs,
+    IgnoreThemSettlingNearUs
 }
 
 enum class DiplomaticModifiers{
@@ -39,13 +41,17 @@ enum class DiplomaticModifiers{
     BetrayedDeclarationOfFriendship,
     Denunciation,
     DenouncedOurAllies,
+    RefusedToNotSettleCitiesNearUs,
+    BetrayedPromiseToNotSettleCitiesNearUs,
+    UnacceptableDemands,
 
     YearsOfPeace,
     SharedEnemy,
     DeclarationOfFriendship,
     DeclaredFriendshipWithOurAllies,
     DenouncedOurEnemies,
-    OpenBorders
+    OpenBorders,
+    FulfilledPromiseToNotSettleCitiesNearUs
 }
 
 class DiplomacyManager() {
@@ -141,7 +147,6 @@ class DiplomacyManager() {
 
     fun canDeclareWar() = (turnsToPeaceTreaty()==0 && diplomaticStatus != DiplomaticStatus.War)
 
-
     fun goldPerTurn():Int{
         var goldPerTurnForUs = 0
         for(trade in trades) {
@@ -153,20 +158,20 @@ class DiplomacyManager() {
         return goldPerTurnForUs
     }
 
-    fun resourcesFromTrade(): Counter<TileResource> {
-        val counter = Counter<TileResource>()
+    fun resourcesFromTrade(): ResourceSupplyList {
+        val counter = ResourceSupplyList()
         for(trade in trades){
             for(offer in trade.ourOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount)
+                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
             for(offer in trade.theirOffers)
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,offer.amount)
+                    counter.add(GameBasics.TileResources[offer.name]!!,offer.amount,"Trade")
         }
         for(tradeRequest in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
             for(offer in tradeRequest.trade.theirOffers) // "theirOffers" in the other civ's trade request, is actually out civ's offers
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount)
+                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
         }
         return counter
     }
@@ -174,7 +179,9 @@ class DiplomacyManager() {
 
     //region state-changing functions
     fun removeUntenebleTrades(){
-        val negativeCivResources = civInfo.getCivResources().filter { it.value<0 }.map { it.key.name }
+        val negativeCivResources = civInfo.getCivResources()
+                .filter { it.amount<0 }.map { it.resource.name }
+
         for(trade in trades.toList()) {
             for (offer in trade.ourOffers) {
                 if (offer.type in listOf(TradeType.Luxury_Resource, TradeType.Strategic_Resource)
@@ -202,7 +209,7 @@ class DiplomacyManager() {
         }
 
         if(hasOpenBorders && !newHasOpenBorders){ // borders were closed, get out!
-            for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName== otherCivName }){
+            for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }){
                 unit.movementAlgs().teleportToClosestMoveableTile()
             }
         }
@@ -212,12 +219,18 @@ class DiplomacyManager() {
 
     fun nextTurn(){
         for(trade in trades.toList()){
-            for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 })
+            for(offer in trade.ourOffers.union(trade.theirOffers).filter { it.duration>0 }) {
                 offer.duration--
+                if(offer.duration==0) {
+                    civInfo.addNotification("[" + offer.name + "] from [$otherCivName] has ended", null, Color.GOLD)
+
+                    civInfo.updateStatsForNextTurn() // if they were bringing us gold per turn
+                    civInfo.updateDetailedCivResources() // if they were giving us resources
+                }
+            }
 
             if(trade.ourOffers.all { it.duration<=0 } && trade.theirOffers.all { it.duration<=0 }) {
                 trades.remove(trade)
-                civInfo.addNotification("One of our trades with [$otherCivName] has ended!".tr(),null, Color.YELLOW)
             }
         }
         removeUntenebleTrades()
@@ -227,7 +240,7 @@ class DiplomacyManager() {
             if(getModifier(DiplomaticModifiers.YearsOfPeace)< 30)
                 addModifier(DiplomaticModifiers.YearsOfPeace, 0.5f)
         }
-        else revertToZero(DiplomaticModifiers.YearsOfPeace,-0.5f) // war makes you forget the good ol' days
+        else revertToZero(DiplomaticModifiers.YearsOfPeace,0.5f) // war makes you forget the good ol' days
 
         var openBorders = 0
         if(hasOpenBorders) openBorders+=1
@@ -239,7 +252,11 @@ class DiplomacyManager() {
         revertToZero(DiplomaticModifiers.DeclaredWarOnUs,1/8f) // this disappears real slow - it'll take 160 turns to really forget, this is war declaration we're talking about
         revertToZero(DiplomaticModifiers.WarMongerer,1/2f) // warmongering gives a big negative boost when it happens but they're forgotten relatively quickly, like WWII amirite
         revertToZero(DiplomaticModifiers.CapturedOurCities,1/4f) // if you captured our cities, though, that's harder to forget
-        revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship,1/2f) // if you captured our cities, though, that's harder to forget
+        revertToZero(DiplomaticModifiers.BetrayedDeclarationOfFriendship,1/8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,1/4f)
+        revertToZero(DiplomaticModifiers.BetrayedPromiseToNotSettleCitiesNearUs,1/8f) // That's a bastardly thing to do
+        revertToZero(DiplomaticModifiers.UnacceptableDemands,1/4f)
+
         if(!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1/2f) //decreases slowly and will revert to full if it is declared later
 
@@ -247,6 +264,8 @@ class DiplomacyManager() {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) {
                 flagsCountdown.remove(flag)
+                if(flag==DiplomacyFlags.AgreedToNotSettleNearUs.name)
+                    addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,10f)
             }
         }
 
@@ -338,9 +357,7 @@ class DiplomacyManager() {
         return diplomaticModifiers[modifier.name]!!
     }
 
-    fun removeModifier(modifier: DiplomaticModifiers) =
-        diplomaticModifiers.remove(modifier.name)
-
+    fun removeModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.remove(modifier.name)
     fun hasModifier(modifier: DiplomaticModifiers) = diplomaticModifiers.containsKey(modifier.name)
 
     /** @param amount always positive, so you don't need to think about it */
@@ -386,5 +403,17 @@ class DiplomacyManager() {
             }
         }
     }
+
+    fun agreeNotToSettleNear(){
+        otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100)
+        addModifier(DiplomaticModifiers.UnacceptableDemands,-10f)
+    }
+
+    fun refuseDemandNotToSettleNear(){
+        addModifier(DiplomaticModifiers.UnacceptableDemands,-20f)
+        otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
+        otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-15f)
+    }
+
     //endregion
 }

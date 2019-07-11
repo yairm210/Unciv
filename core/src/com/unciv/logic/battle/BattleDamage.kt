@@ -47,8 +47,9 @@ class BattleDamage{
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-            if (combatant.getCivInfo().happiness < 0)
-                modifiers["Unhappiness"] = max(0.02f * combatant.getCivInfo().happiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
+            val civHappiness = combatant.getCivInfo().getHappiness()
+            if (civHappiness < 0)
+                modifiers["Unhappiness"] = max(0.02f * civHappiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
             if(combatant.getCivInfo().policies.isAdopted("Populism") && combatant.getHealth() < 100){
                 modifiers["Populism"] = 0.25f
@@ -56,7 +57,7 @@ class BattleDamage{
 
             if(combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
                 && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                            .any { it.civInfo==combatant.getCivInfo() && !it.type.isCivilian()})
+                            .any { it.civInfo==combatant.getCivInfo() && !it.type.isCivilian() && !it.type.isAirUnit()})
                 modifiers["Discipline"] = 0.15f
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
@@ -65,16 +66,15 @@ class BattleDamage{
                 modifiers["Missing resource"]=-0.25f
             }
 
-            //to do : performance improvement
-            if (combatant.getUnitType().isLandUnit()) {
+            //todo : performance improvement
+            if (combatant.getUnitType()!=UnitType.City) {
                 val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
                         .filter {it.civilianUnit?.civInfo == combatant.unit.civInfo}
                         .map {it.civilianUnit}
-                if (nearbyCivUnits.any { it!!.hasUnique("Bonus for land units in 2 radius 15%") }) {
-                    modifiers["Great general"]= when {
-                        combatant.unit.civInfo.getNation().unique == "Great general provides double combat bonus, and spawns 50% faster" -> 0.3f
-                        else -> 0.15f
-                    }
+                if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
+                    modifiers["Great General"]= if (combatant.unit.civInfo.getNation().unique ==
+                            "Great general provides double combat bonus, and spawns 50% faster") 0.3f
+                    else 0.15f
                 }
             }
         }
@@ -108,7 +108,7 @@ class BattleDamage{
             }
 
             for (ability in attacker.unit.getUniques()) {
-                val regexResult = Regex("""Bonus as Attacker (\d*)%""").matchEntire(ability) //to do: extend to defender, and penalyy
+                val regexResult = Regex("""Bonus as Attacker [(\d*)]%""").matchEntire(ability) //to do: extend to defender, and penalyy
                 if (regexResult == null) continue
                 val bonus = regexResult.groups[1]!!.value.toFloat() / 100
                 if (modifiers.containsKey("Attacker Bonus"))

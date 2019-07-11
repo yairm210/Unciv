@@ -1,8 +1,11 @@
 package com.unciv.logic.automation
 
+import com.unciv.Constants
 import com.unciv.UnCivGame
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.GreatPersonManager
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.stats.Stats
@@ -72,7 +75,7 @@ class SpecificUnitAutomation{
                 .take(5)
                 .toList()
         var rank =  top5Tiles.asSequence().map { nearbyTileRankings[it]!! }.sum()
-        if(tileInfo.neighbors.any{it.baseTerrain == "Coast"}) rank += 5
+        if(tileInfo.neighbors.any{it.baseTerrain == Constants.coast}) rank += 5
         return rank
     }
 
@@ -81,7 +84,16 @@ class SpecificUnitAutomation{
         if(unit.getTile().militaryUnit==null) return // Don't move until you're accompanied by a military unit
 
         val tilesNearCities = unit.civInfo.gameInfo.civilizations.flatMap { it.cities }
-                .flatMap { it.getCenterTile().getTilesInDistance(3) }.toHashSet()
+                .flatMap {
+                    val distanceAwayFromCity =
+                            if (unit.civInfo.knows(it.civInfo)
+                                    // If the CITY OWNER knows that the UNIT OWNER agreed not to settle near them
+                                    && it.civInfo.getDiplomacyManager(unit.civInfo).hasFlag(DiplomacyFlags.AgreedToNotSettleNearUs))
+                                6
+                            else 3
+                    it.getCenterTile().getTilesInDistance(distanceAwayFromCity)
+                }
+                .toHashSet()
 
         // This is to improve performance - instead of ranking each tile in the area up to 19 times, do it once.
         val nearbyTileRankings = unit.getTile().getTilesInDistance(7)
@@ -148,6 +160,26 @@ class SpecificUnitAutomation{
             return
         }
 
+    }
+
+    fun automateFighter(unit: MapUnit) {
+        val tilesInRange = unit.currentTile.getTilesInDistance(unit.getRange())
+        val enemyAirUnitsInRange = tilesInRange
+                .flatMap { it.airUnits }.filter { it.civInfo.isAtWarWith(unit.civInfo) }
+
+        if(enemyAirUnitsInRange.isNotEmpty()) return // we need to be on standby in case they attack
+        if(UnitAutomation().tryAttackNearbyEnemy(unit)) return
+
+        val reachableCities = tilesInRange
+                .filter { it.isCityCenter() && it.getOwner()==unit.civInfo && unit.canMoveTo(it)}
+
+        for(city in reachableCities){
+            if(city.getTilesInDistance(unit.getRange())
+                            .any { UnitAutomation().containsAttackableEnemy(it,MapUnitCombatant(unit)) }) {
+                unit.moveToTile(city)
+                return
+            }
+        }
     }
 
 }

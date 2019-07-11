@@ -44,12 +44,12 @@ class TradeEvaluation{
                 val civsWhoWillTradeUsForTheLux = civInfo.diplomacy.values.map { it.civInfo } // secondly - should we buy this in order to resell it?
                         .filter { it != tradePartner }
                         .filter { !it.hasResource(offer.name) } //they don't have
-                val ourResourceNames = civInfo.getCivResources().map { it.key.name }
+                val ourResourceNames = civInfo.getCivResources().map { it.resource.name }
                 val civsWithLuxToTrade = civsWhoWillTradeUsForTheLux.filter {
                     // these are other civs who we could trade this lux away to, in order to get a different lux
                     it.getCivResources().any {
-                        it.value > 1 && it.key.resourceType == ResourceType.Luxury //they have a lux we don't and will be willing to trade it
-                                && !ourResourceNames.contains(it.key.name)
+                        it.amount > 1 && it.resource.resourceType == ResourceType.Luxury //they have a lux we don't and will be willing to trade it
+                                && !ourResourceNames.contains(it.resource.name)
                     }
                 }
                 var numberOfCivsWhoWouldTradeUsForTheLux = civsWithLuxToTrade.count()
@@ -88,7 +88,7 @@ class TradeEvaluation{
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
-                val nameOfCivToDeclareWarOn = offer.name.split(' ').last()
+                val nameOfCivToDeclareWarOn = offer.name.removePrefix("Declare war on ")
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(nameOfCivToDeclareWarOn)
                 val threatToThem = Automation().threatAssessment(civInfo,civToDeclareWarOn)
 
@@ -106,7 +106,7 @@ class TradeEvaluation{
             TradeType.City -> {
                 val city = tradePartner.cities.first { it.name==offer.name }
                 val stats = city.cityStats.currentCityStats
-                if(civInfo.happiness + city.cityStats.happinessList.values.sum() < 0)
+                if(civInfo.getHappiness() + city.cityStats.happinessList.values.sum() < 0)
                     return 0 // we can't really afford to go into negative happiness because of buying a city
                 val sumOfStats = stats.culture+stats.gold+stats.science+stats.production+stats.happiness+stats.food
                 return sumOfStats.toInt() * 100
@@ -159,7 +159,7 @@ class TradeEvaluation{
             TradeType.Technology -> return sqrt(GameBasics.Technologies[offer.name]!!.cost.toDouble()).toInt()*20
             TradeType.Introduction -> return 250
             TradeType.WarDeclaration -> {
-                val nameOfCivToDeclareWarOn = offer.name.split(' ').last()
+                val nameOfCivToDeclareWarOn = offer.name.removePrefix("Declare war on ")
                 val civToDeclareWarOn = civInfo.gameInfo.getCivilization(nameOfCivToDeclareWarOn)
                 val threatToUs = Automation().threatAssessment(civInfo, civToDeclareWarOn)
 
@@ -179,7 +179,15 @@ class TradeEvaluation{
                 return sumOfStats.toInt() * 100
             }
             TradeType.Agreement -> {
-                if(offer.name == "Open Borders") return 100
+                if(offer.name == "Open Borders"){
+                    when(civInfo.getDiplomacyManager(tradePartner).relationshipLevel()){
+                        RelationshipLevel.Unforgivable -> return 10000
+                        RelationshipLevel.Enemy -> return 2000
+                        RelationshipLevel.Competitor -> return 500
+                        RelationshipLevel.Neutral -> return 200
+                        RelationshipLevel.Favorable,RelationshipLevel.Friend,RelationshipLevel.Ally -> return 100
+                    }
+                }
                 throw Exception("Invalid agreement type!")
             }
         }

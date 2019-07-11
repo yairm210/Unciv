@@ -10,6 +10,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.worldscreen.unit.UnitAction
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -32,6 +33,9 @@ class UnitAutomation{
         if (unit.name == "Great General")
             return SpecificUnitAutomation().automateGreatGeneral(unit)
 
+        if(unit.type==UnitType.Fighter)
+            return SpecificUnitAutomation().automateFighter(unit)
+
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)
@@ -41,8 +45,10 @@ class UnitAutomation{
         var unitDistanceToTiles = unit.getDistanceToTiles()
 
         if(unit.civInfo.isBarbarianCivilization() &&
-                unit.currentTile.improvement==Constants.barbarianEncampment && unit.type.isLandUnit())
+                unit.currentTile.improvement==Constants.barbarianEncampment && unit.type.isLandUnit()) {
+            if(unit.canFortify()) unit.fortify()
             return // stay in the encampment
+        }
 
         if(tryGoToRuin(unit,unitDistanceToTiles)){
             if(unit.currentMovement==0f) return
@@ -58,7 +64,7 @@ class UnitAutomation{
 
         // if a embarked melee unit can land and attack next turn, do not attack from water.
         if (unit.type.isLandUnit() && unit.type.isMelee() && unit.isEmbarked()) {
-            if (tryLandUnitToAttackPosition(unit,unitDistanceToTiles)) return
+            if (tryDisembarkUnitToAttackPosition(unit,unitDistanceToTiles)) return
         }
 
         // if there is an attackable unit in the vicinity, attack!
@@ -79,6 +85,8 @@ class UnitAutomation{
         // Focus all units without a specific target on the enemy city closest to one of our cities
         if (tryHeadTowardsEnemyCity(unit)) return
 
+        if(tryHeadTowardsEncampment(unit)) return
+
         // else, try to go o unreached tiles
         if(tryExplore(unit,unitDistanceToTiles)) return
 
@@ -87,16 +95,39 @@ class UnitAutomation{
             wander(unit,unitDistanceToTiles)
     }
 
+    private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
+        if(unit.civInfo.isBarbarianCivilization()) return false
+        val knownEncampments = unit.civInfo.exploredTiles.asSequence()
+                .map { unit.civInfo.gameInfo.tileMap[it] }
+                .filter { it.improvement==Constants.barbarianEncampment }
+        val cities = unit.civInfo.cities
+        val encampmentsCloseToCities
+                = knownEncampments.filter { cities.any { city -> city.getCenterTile().arialDistanceTo(it) < 6 } }
+                .sortedBy { it.arialDistanceTo(unit.currentTile) }
+        val encampmentToHeadTowards = encampmentsCloseToCities.firstOrNull { unit.movementAlgs().canReach(it) }
+        if(encampmentToHeadTowards==null) return false
+        unit.movementAlgs().headTowards(encampmentToHeadTowards)
+        return true
+    }
 
 
     fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>):Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.canMoveTo(it) }
+        if(unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val unitTile = unit.getTile()
 
         if (tryPillageImprovement(unit, unitDistanceToTiles)) return true
 
         val tilesByHealingRate = tilesInDistance.groupBy { unit.rankTileForHealing(it) }
-        if(tilesByHealingRate.isEmpty()) return false
+
+        if(tilesByHealingRate.keys.none { it!=0 }){// We can't heal here at all! We're probably embarked
+            val reachableCityTile = unit.civInfo.cities.map { it.getCenterTile() }
+                    .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                    .firstOrNull{unit.movementAlgs().canReach(it)}
+            if(reachableCityTile!=null) unit.movementAlgs().headTowards(reachableCityTile)
+            else wander(unit,unitDistanceToTiles)
+            return true
+        }
 
         val bestTilesForHealing = tilesByHealingRate.maxBy { it.key }!!.value
         // within the tiles with best healing rate, we'll prefer one which has defensive bonuses
@@ -107,15 +138,14 @@ class UnitAutomation{
         if(unitTile!=bestTileForHealing && bestTileForHealingRank > unit.rankTileForHealing(unitTile))
             unit.moveToTile(bestTileForHealing)
 
-        if(unit.currentMovement>0 && unit.canFortify()){
-            unit.action="Fortify 0"
-        }
+        if(unit.currentMovement>0 && unit.canFortify()) unit.fortify()
         return true
     }
 
     fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
+        if(unit.type.isCivilian()) return false
         val tilesInDistance = unitDistanceToTiles.filter {it.value < unit.currentMovement}.keys
-                .filter { unit.canMoveTo(it) && it.improvement != null && UnitActions().canPillage(unit,it) }
+                .filter { unit.canMoveTo(it) && UnitActions().canPillage(unit,it) }
 
         if (tilesInDistance.isEmpty()) return false
         val tileToPillage = tilesInDistance.maxBy { it.getDefensiveBonus() }!!
@@ -130,8 +160,8 @@ class UnitAutomation{
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
         if(combatant is MapUnitCombatant){
             if (combatant.unit.isEmbarked()) {
-                if (combatant.isRanged()) return false
                 if (tile.isWater) return false // can't attack water units while embarked, only land
+                if (combatant.isRanged()) return false
             }
             if (tile.isLand && combatant.unit.hasUnique("Can only attack water")) return false
         }
@@ -142,7 +172,7 @@ class UnitAutomation{
         if(!combatant.getCivInfo().isAtWarWith(tileCombatant.getCivInfo())) return false
 
         //only submarine and destroyer can attack submarine
-        //garisoned submarine can be attacked by anyone, or the city will be in invincible
+        //garrisoned submarine can be attacked by anyone, or the city will be in invincible
         if (tileCombatant.isInvisible() && !tile.isCityCenter()) {
             if (combatant is MapUnitCombatant
                     && combatant.unit.hasUnique("Can attack submarines")
@@ -181,7 +211,7 @@ class UnitAutomation{
 
         for(reachableTile in tilesToAttackFrom){  // tiles we'll still have energy after we reach there
             val tilesInAttackRange =
-                    if (unit.hasUnique("Indirect Fire")) reachableTile.getTilesInDistance(rangeOfAttack)
+                    if (unit.hasUnique("Indirect Fire") || unit.type.isAirUnit()) reachableTile.getTilesInDistance(rangeOfAttack)
                     else reachableTile.getViewableTiles(rangeOfAttack, unit.type.isWaterUnit())
 
             attackableTiles += tilesInAttackRange.asSequence().filter { it in tilesWithEnemies }
@@ -213,7 +243,7 @@ class UnitAutomation{
     private fun tryAccompanySettlerOrGreatPerson(unit: MapUnit): Boolean {
         val settlerOrGreatPersonToAccompany = unit.civInfo.getCivUnits()
                 .firstOrNull { val tile = it.currentTile
-                    (it.name== Constants.settler || it.name.startsWith("Great") && it.type.isCivilian())
+                    (it.name== Constants.settler || it.name in GreatPersonManager().statToGreatPersonMapping.values)
                             && tile.militaryUnit==null && unit.canMoveTo(tile) && unit.movementAlgs().canReach(tile) }
         if(settlerOrGreatPersonToAccompany==null) return false
         unit.movementAlgs().headTowards(settlerOrGreatPersonToAccompany.currentTile)
@@ -258,13 +288,27 @@ class UnitAutomation{
             val reachableTilesNotInBombardRange = unitDistanceToTiles.keys.filter { it !in tilesInBombardRange }
             val canMoveIntoBombardRange = tilesInBombardRange.any { unitDistanceToTiles.containsKey(it)}
 
-            if(!canMoveIntoBombardRange) // no need to worry, keep going as the movement alg. says
-                unit.movementAlgs().headTowards(closestReachableEnemyCity)
+            val suitableGatheringGroundTiles = closestReachableEnemyCity.getTilesAtDistance(4)
+                    .union(closestReachableEnemyCity.getTilesAtDistance(3))
+                    .filter { it.isLand }
+            val closestReachableLandingGroundTile = suitableGatheringGroundTiles
+                    .sortedBy { it.arialDistanceTo(unit.currentTile) }
+                    .firstOrNull { unit.movementAlgs().canReach(it) }
+
+            // don't head straight to the city, try to head to landing grounds -
+            // this is against tha AI's brilliant plan of having everyone embarked and attacking via sea when unnecessary.
+            val tileToHeadTo = if(closestReachableLandingGroundTile!=null) closestReachableLandingGroundTile
+            else closestReachableEnemyCity
+
+
+            if(tileToHeadTo !in tilesInBombardRange) // no need to worry, keep going as the movement alg. says
+                unit.movementAlgs().headTowards(tileToHeadTo)
 
             else{
                 if(unit.getRange()>2){ // should never be in a bombardable position
                     val tilesCanAttackFromButNotInBombardRange =
                             reachableTilesNotInBombardRange.filter{it.arialDistanceTo(closestReachableEnemyCity) <= unit.getRange()}
+
                     // move into position far away enough that the bombard doesn't hurt
                     if(tilesCanAttackFromButNotInBombardRange.any())
                         unit.movementAlgs().headTowards(tilesCanAttackFromButNotInBombardRange.minBy { unitDistanceToTiles[it]!! }!!)
@@ -289,7 +333,7 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryLandUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+    private fun tryDisembarkUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
         if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
@@ -308,7 +352,7 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
+    fun tryAttackNearbyEnemy(unit: MapUnit): Boolean {
         val attackableEnemies = getAttackableEnemies(unit, unit.getDistanceToTiles())
                 // Only take enemies we can fight without dying
                 .filter {
@@ -356,8 +400,16 @@ class UnitAutomation{
     }
 
     private fun chooseBombardTarget(city: CityInfo) : TileInfo? {
-        val targets = getBombardTargets(city)
+        var targets = getBombardTargets(city)
         if (targets.isEmpty()) return null
+        val siegeUnits = targets
+                .filter { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getUnitType()==UnitType.Siege }
+        if(siegeUnits.any()) targets = siegeUnits
+        else{
+            val rangedUnits = targets
+                    .filter { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getUnitType().isRanged() }
+            if(rangedUnits.any()) targets=rangedUnits
+        }
         return targets.minBy { Battle(city.civInfo.gameInfo).getMapCombatantOfTile(it)!!.getHealth() }
     }
 
@@ -400,7 +452,7 @@ class UnitAutomation{
     }
 
     fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
-        if(unit.civInfo.isBarbarianCivilization()) return false // barbs don't have anything to do in ruins
+        if(!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
         val tileWithRuin = unitDistanceToTiles.keys.firstOrNull{unit.canMoveTo(it) && it.improvement == Constants.ancientRuins}
         if(tileWithRuin==null) return false
         unit.moveToTile(tileWithRuin)

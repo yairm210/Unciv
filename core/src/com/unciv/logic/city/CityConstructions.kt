@@ -2,7 +2,7 @@ package com.unciv.logic.city
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.logic.automation.Automation
+import com.unciv.logic.automation.ConstructionAutomation
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -17,9 +17,10 @@ class CityConstructions {
     @Transient lateinit var cityInfo: CityInfo
     @Transient private var builtBuildingObjects=ArrayList<Building>()
 
-    var builtBuildings = ArrayList<String>()
+    var builtBuildings = HashSet<String>()
     val inProgressConstructions = HashMap<String, Int>()
     var currentConstruction: String = "Monument" // default starting building!
+    var currentConstructionIsUserSet = false
 
     //region pure functions
     fun clone(): CityConstructions {
@@ -27,6 +28,7 @@ class CityConstructions {
         toReturn.builtBuildings.addAll(builtBuildings)
         toReturn.inProgressConstructions.putAll(inProgressConstructions)
         toReturn.currentConstruction=currentConstruction
+        toReturn.currentConstructionIsUserSet=currentConstructionIsUserSet
         return toReturn
     }
 
@@ -48,15 +50,16 @@ class CityConstructions {
 
     fun getStatPercentBonuses(): Stats {
         val stats = Stats()
-        for (building in getBuiltBuildings().filter { it.percentStatBonus != null })
-            stats.add(building.percentStatBonus!!)
+        for (building in getBuiltBuildings())
+            stats.add(building.getStatPercentageBonuses(cityInfo.civInfo))
         return stats
     }
 
     fun getCityProductionTextForCityButton(): String {
         val currentConstructionSnapshot = currentConstruction // See below
         var result = currentConstructionSnapshot .tr()
-        if (SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  })
+        if (currentConstructionSnapshot!=""
+                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  })
             result += "\r\n" + turnsToConstruction(currentConstructionSnapshot ) + " {turns}".tr()
         return result
     }
@@ -64,7 +67,8 @@ class CityConstructions {
     fun getProductionForTileInfo(): String {
         val currentConstructionSnapshot = currentConstruction // this is because there were rare errors tht I assume were caused because currentContruction changed on another thread
         var result = currentConstructionSnapshot.tr()
-        if (SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot })
+        if (currentConstructionSnapshot!=""
+                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot })
             result += "\r\n{in} ".tr() + turnsToConstruction(currentConstructionSnapshot) + " {turns}".tr()
         return result
     }
@@ -146,12 +150,13 @@ class CityConstructions {
         stopUnbuildableConstruction()
 
         val construction = getConstruction(currentConstruction)
-        if(construction is SpecialConstruction) return
-        
-        val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
-        if (inProgressConstructions.containsKey(currentConstruction)
-                && inProgressConstructions[currentConstruction]!! >= productionCost) {
-            constructionComplete(construction)
+        if(construction is SpecialConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
+        else {
+            val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
+            if (inProgressConstructions.containsKey(currentConstruction)
+                    && inProgressConstructions[currentConstruction]!! >= productionCost) {
+                constructionComplete(construction)
+            }
         }
     }
 
@@ -171,7 +176,7 @@ class CityConstructions {
         if (!construction.isBuildable(this)) {
             // We can't build this building anymore! (Wonder has been built / resource is gone / etc.)
             cityInfo.civInfo.addNotification("[${cityInfo.name}] cannot continue work on [$saveCurrentConstruction]", cityInfo.location, Color.BROWN)
-            chooseNextConstruction()
+            cancelCurrentConstruction()
         } else
             currentConstruction = saveCurrentConstruction
     }
@@ -180,7 +185,7 @@ class CityConstructions {
         construction.postBuildEvent(this)
         inProgressConstructions.remove(currentConstruction)
 
-        if (construction is Building && construction.isWonder && construction.requiredBuildingInAllCities == null) {
+        if (construction is Building && construction.isWonder) {
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
                     civ.addNotification("[$currentConstruction] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)
@@ -191,8 +196,7 @@ class CityConstructions {
         } else
             cityInfo.civInfo.addNotification("[$currentConstruction] has been built in [" + cityInfo.name + "]", cityInfo.location, Color.BROWN)
 
-        currentConstruction = ""
-        chooseNextConstruction()
+        cancelCurrentConstruction()
     }
 
     fun addBuilding(buildingName:String){
@@ -210,11 +214,11 @@ class CityConstructions {
     fun purchaseBuilding(buildingName: String) {
         cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo)
         getConstruction(buildingName).postBuildEvent(this)
-        if (currentConstruction == buildingName) {
-            currentConstruction = ""
-            chooseNextConstruction()
-        }
+        if (currentConstruction == buildingName)
+            cancelCurrentConstruction()
+
         cityInfo.cityStats.update()
+        cityInfo.civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
     }
 
     fun addCultureBuilding() {
@@ -227,14 +231,19 @@ class CityConstructions {
         if (buildableCultureBuildings.isEmpty()) return
         val cultureBuildingToBuild = buildableCultureBuildings.minBy { it.cost }!!.name
         addBuilding(cultureBuildingToBuild)
-        if (currentConstruction == cultureBuildingToBuild) {
-            currentConstruction=""
-            chooseNextConstruction()
-        }
+        if (currentConstruction == cultureBuildingToBuild)
+            cancelCurrentConstruction()
+    }
+
+    fun cancelCurrentConstruction(){
+        currentConstructionIsUserSet=false
+        currentConstruction=""
+        chooseNextConstruction()
     }
 
     fun chooseNextConstruction() {
-        Automation().chooseNextConstruction(this)
+        if(currentConstructionIsUserSet) return
+        ConstructionAutomation(this).chooseNextConstruction()
     }
     //endregion
 

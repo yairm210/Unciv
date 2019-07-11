@@ -132,6 +132,11 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitDescriptionTable.add(unit.baseUnit().rangedStrength.toString()).padRight(10f)
             }
 
+            if(unit.type.isRanged()){
+                unitDescriptionTable.add(ImageGetter.getStatIcon("Range")).size(20f)
+                unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
+            }
+
             if (!unit.type.isCivilian()) {
                 unitDescriptionTable.add("XP")
                 unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion())
@@ -193,7 +198,10 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun tileSelected(selectedTile: TileInfo) {
 
         val previouslySelectedUnit = selectedUnit
-        if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
+        if(selectedTile.isCityCenter() && selectedTile.getOwner()==worldScreen.currentPlayerCiv){
+            citySelected(selectedTile.getCity()!!)
+        }
+        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
                 && selectedUnit!=selectedTile.militaryUnit
                 && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
             selectedUnit = selectedTile.militaryUnit

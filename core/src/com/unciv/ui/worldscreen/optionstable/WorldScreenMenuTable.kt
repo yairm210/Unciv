@@ -1,6 +1,8 @@
 package com.unciv.ui.worldscreen.optionstable
 
+import com.badlogic.gdx.Gdx
 import com.unciv.UnCivGame
+import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.NewGameScreen
@@ -19,6 +21,11 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             for(tile in tileMapClone.values){
                 tile.militaryUnit=null
                 tile.civilianUnit=null
+                tile.airUnits=ArrayList()
+                tile.improvement=null
+                tile.improvementInProgress=null
+                tile.turnsToImprovement=0
+                tile.roadStatus=RoadStatus.None
             }
             UnCivGame.Current.screen = MapEditorScreen(tileMapClone)
             remove()
@@ -53,9 +60,31 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             remove()
         }
 
+        addButton("Community"){
+            WorldScreenCommunityTable(worldScreen)
+            remove()
+        }
+
         addButton("Close".tr()){ remove() }
 
         open()
     }
 }
 
+class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
+    init{
+        addButton("Discord"){
+            Gdx.net.openURI("https://discord.gg/bjrB4Xw")
+            remove()
+        }
+
+        addButton("Github"){
+            Gdx.net.openURI("https://github.com/yairm210/UnCiv")
+            remove()
+        }
+
+        addButton("Close".tr()){ remove() }
+
+        open()
+    }
+}

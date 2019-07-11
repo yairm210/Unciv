@@ -133,11 +133,11 @@
             Portuguese:"o(a) [construction] foi construirdo em [cityName]"
             Japanese:"[construction]は[cityName]に建てられました"
         }
-		
-	"[wonder] has been built in a faraway land":{	
-            Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
-	    French:"[wonder] a été construit(e) dans un lointain pays"
-	}
+			
+		"[wonder] has been built in a faraway land":{	
+			Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
+			French:"[wonder] a été construit(e) dans un lointain pays"
+		}
         
         "Work has started on [construction]":{
             Italian:"Sono iniziati i lavori per [construction]"
@@ -159,7 +159,7 @@
 		
 	"One of our trades with [nation] has ended": {
             Italian:"Un nostro accordo con [nation] è terminato."
-	    French:"Un de nos échanges avec [nation] a pris fin"
+			French:"Un de nos échanges avec [nation] a pris fin"
         },
 
         "[cityname] has expanded its borders!":{
@@ -199,7 +199,7 @@
             Dutch:"We hebben de stad [cityname] ingenomen!"
             Spanish:"¡Hemos conquistado la ciudad de [cityname]!"
             Simplified_Chinese:"我们已经占领城市[cityname]"
-            Portuguese:"Consquistamos a cidade de [cityName]!"
+            Portuguese:"Consquistamos a cidade de [cityname]!"
             Japanese:"[cityname]の街を征服しました！"
         }
         
@@ -229,10 +229,10 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました"
         }
 
-	"Enemy city [cityName] has attacked our [ourUnit]":{
-		Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
-		French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
-	}
+		"Enemy city [cityName] has attacked our [ourUnit]":{
+			Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
+			French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
+		}
 		
         "An enemy [unit] has captured [cityname]":{
             Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
@@ -273,10 +273,10 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました"
         }
 		
-	"Enemy city [cityName] has destroyed our [ourUnit]":{
-		Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
-		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
-	}
+		"Enemy city [cityName] has destroyed our [ourUnit]":{
+			Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
+			French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
+		}
         
         "An enemy [unit] was destroyed while attacking [cityname]":{
             Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava [cityname]"
@@ -303,6 +303,18 @@
             Portuguese:"Um(a) [unit] inimigo(a) foi destruido(a) enquanto atacando nosso(a) [ourUit]"
             Japanese:"「私たちの[ourUnit]を攻撃している間に敵[unit]が破壊された"
         }
+		
+		"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
+		}
+		
+		"Our [interceptorName] intercepted and destroyed an enemy [attackerName]":{
+		}
+		
+		"Our [$attackerName] was attacked by an intercepting [$interceptorName]":{
+		}
+		
+		"Our [$interceptorName] intercepted and attacked an enemy [$attackerName]":{
+		}
         
         "An enemy [unit] was spotted near our territory":{
             Italian:"Abbiamo avvistato un'unità nemica [unit] vicino al nostro territorio"
@@ -334,14 +346,14 @@
             Italian:"Abbiamo avvistato [amount] unità nemiche vicino ai nostri confini!"
             German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
             Simplified_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
-	    French:"[amount] unités ennemies ont été repérées proche de notre territoire"
+			French:"[amount] unités ennemies ont été repérées proche de notre territoire"
         }
 
         "[amount] enemy units were spotted in our territory": {
             Italian:"Abbiamo avvistato [amount] unità nemiche nel nostro territorio!"
             German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
             Simplified_Chinese:"在我们的领土内发现了[amount]个敌方单位"
-	    French:"[amount] unités ennemies ont été repérées sur notre territoire"
+			French:"[amount] unités ennemies ont été repérées sur notre territoire"
         }
 
         "The civilization of [civName] has been destroyed!":{
@@ -356,10 +368,18 @@
             Portuguese:"A civilização de [civName] foi destruida!"
             Japanese:"[civName]の文明は破壊されました！"
         }
-		
+
+        "The City-State of [name] has been destroyed!":{
+            Italian:"La Città-Stato di [name] è stata distrutta!"
+        }
+			
 	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
-            Italian:"Nella cattura di un accampamento barbaro, abbiamo recuperato [goldAmount] Oro!"
-	    French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
+		Italian:"Nella cattura di un accampamento barbaro, abbiamo recuperato [goldAmount] Oro!"
+		French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
+	}
+		
+	"A barbarian [unitType] has joined us!":{
+            Italian:"L'unità barbarica [unitType] si è unita a noi!"
 	}
         
     /////////////////	ruins
@@ -437,6 +457,22 @@
         "[unit] has no work to do.": {
             Italian:"[unit] è ora inattivo."
             German:"[unit] hat keine Arbeit mehr."
-	    French:"[unit] n'a rien à faire"
+			French:"[unit] n'a rien à faire"
         }
+
+		"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
+			Italian:"Stai perdendo il controllo di [name]."
+		}
+
+		"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
+			Italian:"Non sei più amico di [name]!"
+		}
+
+		"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
+			Italian:"L'alleanza con [name] si sta sfaldando."
+		}
+
+		"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
+			Italian:"Non sei più alleato con [name]!"
+		}
 }

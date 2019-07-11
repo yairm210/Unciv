@@ -420,6 +420,10 @@
 		French:"Construire [improvement]"
 	}
 	
+	"Start Golden Age":{
+		Italian:"Inizia Età dell'Oro"
+	}
+	
 	"Yes":{
 		Italian:"Sì"
 		Russian:"Да"
@@ -443,6 +447,10 @@
 		Portuguese:"Não"
 		German:"Nein"
 		Japanese:"いいえ"
+	}
+
+	"Acquire":{
+		Italian:"Prendi"
 	}
 
 /////// Stats / Basics ressources
@@ -617,6 +625,10 @@
 		Simplified_Chinese:"社会政策"
 		Portuguese:"Políticas sociais"
 		Japanese:"社会政策"
+	}
+	
+	"Community":{
+		Italian:"Community"
 	}
 	
 
@@ -864,15 +876,15 @@
 	} 
 
 	"[turnsToExpansion] turns to expansion":{
-		Italian:"La città si espanderà tra [turnsToExpansion] turni"
-		Russian:"Город будет расширяться между раундами [turnsToExpansion]"
-		French:"La ville se développera entre [turnsToExpansion] tours"
-		Romanian:"Orașul se va extinde între rundă [turnsToExpansion]"
+		Italian:"[turnsToExpansion] turni per espandersi"
+		Russian:"Расширение в [turnsToExpansion] раунды(ах)"
+		French:"[turnsToExpansion] tours à l'expansion"
+		Romanian:"[turnsToExpansion] rundă până la expansiunea"
 		German:"Erweiterung in [turnsToExpansion] Runden"
-		Dutch:"De stad breidt zich uit tussen [turnsToExpansion]-rondes"
-		Spanish:"La ciudad se expandirá entre [turnsToExpansion] rondas"
+		Dutch:"Uitbreiding in [turnsToExpansion] rondes"
+		Spanish:"[turnsToExpansion] rondas hasta la expansión"
 		Simplified_Chinese:"这座城市将在[turnsToExpansion]回合后扩张"
-		Portuguese:"A cidade se expandirá em [turnsToExpansion] turnos"
+		Portuguese:"[turnsToExpansion] turnos até a expansão"
 		Japanese:"[turnsToExpansion]が拡大に変わります"
 	}
 
@@ -890,44 +902,48 @@
 	}
 
 	"[turnsToPopulation] turns to new population":{
-		Italian:"La città avrà un nuovo abitante tra [turnsToPopulation] turni"
-		Russian:"В городе будет новый житель в раундах [turnsToPopulation]"
-		French:"La ville aura un nouveau résident dans [turnsToPopulation]"
-		Romanian:"Orașul va avea un nou rezident în runde [turnsToPopulation]"
+		Italian:"[turnsToPopulation] turni fino a un nuovo abitante"
+		Russian:"Hовый житель в [turnsToPopulation] раундах"
+		French:"[turnsToPopulation] tours à un nouveau résident"
+		Romanian:"[turnsToPopulation] rundă până un nou rezident"
 		German:"Neuer Einwohner in [turnsToPopulation] Runden"
-		Dutch:"De stad krijgt een nieuwe inwoner in [turnsToPopulation]-rondes"
-		Spanish:"La ciudad tendrá un nuevo residente en las rondas de [turnsToPopulation]"
+		Dutch:"Een nieuwe inwoner in [turnsToPopulation] rondes"
+		Spanish:"[turnsToPopulation] rondas hasta un nuevo residente"
 		Simplified_Chinese:"这座城市将在[turnsToPopulation]轮后有1个新市民"
-		Portuguese:"A cidade terá um novo residente em [turnsToPopulation] turnos"
+		Portuguese:"[turnsToPopulation] turnos até um novo residente"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
 	}
 
 	"[turnsToStarvation] turns to lose population":{
-		Italian:"La città perderà un abitante tra [turnsToStarvation] turni"
-		Russian:"Город потеряет жителя в [turnsToStarvation] смен"
-		French:"La ville perdra un habitant [turnsToStarvation] tours"
-		Romanian:"Orașul va pierde un locuitor în [turnsToStarvation] schimburi"
-		German:"Die Stadt wird einen Einwohner in [turnsToStarvation]-Runden verlieren"
-		Dutch:"De stad verliest een bewoner in [turnsToStarvation] ploegen"
-		Spanish:"La ciudad pierde un habitante en [turnsToStarvation] turnos"
+		Italian:"Perdita di popolazione tra [turnsToStarvation] turni"
+		Russian:"Потеря населения в [turnsToStarvation] смен"
+		French:"Perte de population dans [turnsToStarvation] tours"
+		Romanian:"Pierderea populației în [turnsToStarvation] rundă"
+		German:"Bevölkerungsverlust in [turnsToStarvation] Runden"
+		Dutch:"Bevolkingsverlies in [turnsToStarvation] rondes"
+		Spanish:"Pérdida de población en [turnsToStarvation] turnos"
 		Simplified_Chinese:"这座城市将在[turnsToStarvation]轮后失去1个市民"
-		Portuguese:"A cidade perderá um habitante em [turnsToStarvation] turnos"
+		Portuguese:"Perda de população em [turnsToStarvation] turnos"
 		Japanese:"[turnsToStarvation]人口を減らす"
 	}
 
 	"Stopped population growth":{
-		Italian:"Crescita della popolazione arrestata"
-		French:"accroissement de la population arrêtée"
+		Italian:"Stagnazione"
+		Russian:"Pост населения oстановлен"
+		French:"Accroissement de la population arrêtée"
+		Romanian:"Creșterea populației arestate"
 		German:"Bevölkerungswachstum gestoppt"
+		Dutch:"De bevolkingsgroei gestopt"
+		Spanish:"Aumento de la población detenida"
 		Simplified_Chinese:"人口增长停止"
 		Portuguese:"Crescimento populacional interrompido"
 		Japanese:"人口増加の阻止"
 	}
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
-		Italian:"La resistenza durerà per altri [numberOfTurns] turni."
+		Italian:"La resistenza durerà altri [numberOfTurns] turni."
         Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
-		Portuguese:"A resistência durará por [numberOfTurns] turnos mais."
+		Portuguese:"A resistência por [numberOfTurns] turnos mais."
 		Japanese:"他の[numberOfTurns]ターンに抵抗."
 		French:"En révolte pour [numberOfTurns] tours."
 	}
@@ -1078,6 +1094,10 @@
 		Japanese:"ワンダー"
 	}
 	
+	"National Wonder":{
+		Italian:"Meraviglia Nazionale"
+	}
+	
 	"Wonders enabled":{
 		Italian:"Meraviglie sbloccate"
 		Russian:"Активные чудеса"
@@ -1224,29 +1244,6 @@
 
 	//  - - - NOTE: These need to be moved to the "Units,Promotions" translation file, in their respective places! - - - 
 
-	"Bonus vs [unitType]":{
-		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
-		Russian:"Бонус против [unitType]"
-		French:"Bonus contre [unitType]"
-		Romanian:"Bonus contra [unitType]"
-		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
-		Dutch:"Voordeel tegen [unitType]"
-		Spanish:"Bonus contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力加成："
-		Portuguese:"Bonus contra [unitType]"
-	}
-
-	"Penalty vs [unitType]":{
-		Italian:"Malus contro unità [unitType]"
-		Russian:"Штраф против [unitType]"
-		French:"Pénalité contre [unitType]"
-		Romanian:"Penalizare contra [unitType]"
-		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
-		Dutch:"Nadeel tegen [unitType]"
-		Spanish:"Penalización contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力减成："
-		Portuguese:"Penalidade contra [unitType]"
-	}
 
 	// for unit action button
 
@@ -1549,6 +1546,10 @@
 		Simplified_Chinese:"奇观"
 		Portuguese:"Maravilhas"
 	}
+	
+	"National Wonders":{
+		Italian:"Meraviglie Nazionali"
+	}
 
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
@@ -1809,7 +1810,56 @@
 		Simplified_Chinese:"摧毁[civName]文明"
 		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory?
 	}
+
+	"Our status":{
+		Italian:"I nostri status"
+	}
+
+	"Global status":{
+		Italian:"Status Globale"
+	}
+
+	"Spaceships parts remaining":{
+		Italian:"Parti dell'astronave rimanenti"
+	}
+
+	"Branches completed":{
+		Italian:"Rami completati"
+	}
+
+	"Undefeated civs":{
+		Italian:"Civiltà esistenti"
+	}
 	
+	
+////// When you conquer an enemy City
+
+	"What would you like to do with the city?":{
+		Italian:"Cosa vorresti farne della Città?"
+	}
+
+	"Annex":{
+		Italian:"Annetti"
+	}
+
+	"Raze":{
+		Italian:"Radi al suolo"
+	}
+	
+	
+////// When you cross a City-State border
+
+	"Remove your troops in our border immediately!":{
+		Italian:"Esigiamo che rimuoviate i vostri soldati dai nostri confini!"
+	}
+
+	"Sorry.":{
+		Italian:"Ti porgiamo le nostre scuse."
+	}
+
+	"Never!":{
+		Italian:"Non sia mai!"
+	}
 	
 ////// Civilopedia texts
 

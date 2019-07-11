@@ -129,18 +129,25 @@ class MapUnit {
 
     // we need to map all the places that this could change: Unit changes locations, owners, gets promotion?
     fun updateViewableTiles() {
-        var visibilityRange = 2
-        visibilityRange += getUniques().count{it=="+1 Visibility Range"}
-        if(hasUnique("Limited Visibility")) visibilityRange-=1
-        if(civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
-            visibilityRange += 1
-        if(type.isWaterUnit() && !type.isCivilian()
-                && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
-            visibilityRange += 1
-        val tile = getTile()
-        if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
-        viewableTiles = tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+        if(type.isAirUnit()){
+            if(hasUnique("6 tiles in every direction always visible"))
+                viewableTiles = getTile().getTilesInDistance(6)  // it's that simple
+            else viewableTiles = listOf() // bomber units don't do recon
+        }
+        else {
+            var visibilityRange = 2
+            visibilityRange += getUniques().count { it == "+1 Visibility Range" }
+            if (hasUnique("Limited Visibility")) visibilityRange -= 1
+            if (civInfo.getNation().unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
+                visibilityRange += 1
+            if (type.isWaterUnit() && !type.isCivilian()
+                    && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
+                visibilityRange += 1
+            val tile = getTile()
+            if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
 
+            viewableTiles = tile.getViewableTiles(visibilityRange, type.isWaterUnit())
+        }
         civInfo.updateViewableTiles() // for the civ
     }
 
@@ -201,6 +208,9 @@ class MapUnit {
      * DOES NOT designate whether we can reach that tile in the current turn
      */
     fun canMoveTo(tile: TileInfo): Boolean {
+        if(type.isAirUnit())
+            return tile.airUnits.size<6 && tile.isCityCenter() && tile.getCity()?.civInfo==civInfo
+
         if(!canPassThrough(tile)) return false
 
         if (type.isCivilian())
@@ -286,11 +296,14 @@ class MapUnit {
     fun canFortify(): Boolean {
         if(type.isWaterUnit()) return false
         if(type.isCivilian()) return false
+        if(type.isAirUnit()) return false
         if(isEmbarked()) return false
         if(hasUnique("No defensive terrain bonus")) return false
         if(isFortified()) return false
         return true
     }
+
+    fun fortify(){ action = "Fortify 0"}
 
     fun adjacentHealingBonus():Int{
         var healingBonus = 0
@@ -382,15 +395,21 @@ class MapUnit {
 
     private fun heal(){
         if(isEmbarked()) return // embarked units can't heal
-        health += rankTileForHealing(getTile())
+        var amountToHealBy = rankTileForHealing(getTile())
         val adjacentUnits = currentTile.getTilesInDistance(1).flatMap { it.getUnits() }
         if(adjacentUnits.isNotEmpty())
-            health += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
+            amountToHealBy += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
+        healBy(amountToHealBy)
+    }
+
+    fun healBy(amount:Int){
+        health += amount
         if(health>100) health=100
     }
 
     fun rankTileForHealing(tileInfo:TileInfo): Int {
         return when{
+            tileInfo.isWater && type.isLandUnit() -> 0 // Can't heal in water!
             tileInfo.getOwner() == null -> 10 // no man's land (neutral)
             tileInfo.isCityCenter() -> 20
             !civInfo.isAtWarWith(tileInfo.getOwner()!!) -> 15 // home or allied territory
@@ -403,15 +422,24 @@ class MapUnit {
 
     fun moveToTile(otherTile: TileInfo) {
         if(otherTile==getTile()) return // already here!
-        val distanceToTiles = getDistanceToTiles()
-
-        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
-        if (!distanceToTiles.containsKey(otherTile))
-            throw YouCantGetThereFromHereException("$this can't get from ${currentTile.position} to ${otherTile.position}.")
 
         class CantEnterThisTileException(msg: String) : Exception(msg)
         if(!canMoveTo(otherTile))
             throw CantEnterThisTileException("$this can't enter $otherTile")
+
+        if(type.isAirUnit()){ // they move differently from all other units
+            action=null
+            removeFromTile()
+            putInTile(otherTile)
+            currentMovement=0f
+            return
+        }
+
+        val distanceToTiles = getDistanceToTiles()
+        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
+        if (!distanceToTiles.containsKey(otherTile))
+            throw YouCantGetThereFromHereException("$this can't get from ${currentTile.position} to ${otherTile.position}.")
+
         if(otherTile.isCityCenter() && otherTile.getOwner()!=civInfo)
             throw Exception("This is an enemy city, you can't go here!")
 
@@ -446,17 +474,22 @@ class MapUnit {
     }
 
     fun removeFromTile(){
-        if (type.isCivilian()) getTile().civilianUnit=null
-        else getTile().militaryUnit=null
+        when {
+            type.isAirUnit() -> currentTile.airUnits.remove(this)
+            type.isCivilian() -> getTile().civilianUnit=null
+            else -> getTile().militaryUnit=null
+        }
     }
 
     fun putInTile(tile:TileInfo){
-        if(!canMoveTo(tile)) throw Exception("I can't go there!")
-        if(type.isCivilian())
-            tile.civilianUnit=this
-        else tile.militaryUnit=this
+        when {
+            !canMoveTo(tile) -> throw Exception("I can't go there!")
+            type.isAirUnit() -> tile.airUnits.add(this)
+            type.isCivilian() -> tile.civilianUnit=this
+            else -> tile.militaryUnit=this
+        }
         currentTile = tile
-        if(tile.improvement==Constants.ancientRuins && !civInfo.isBarbarianCivilization())
+        if(tile.improvement==Constants.ancientRuins && civInfo.isMajorCiv())
             getAncientRuinBonus()
         if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
             clearEncampment(tile)
@@ -473,7 +506,7 @@ class MapUnit {
 
     fun disband(){
         destroy()
-        if(currentTile.isCityCenter() && currentTile.getOwner()==civInfo)
+        if(currentTile.getOwner()==civInfo)
             civInfo.gold += baseUnit.getDisbandGold()
     }
 
@@ -522,10 +555,23 @@ class MapUnit {
         (actions.random())()
     }
 
-    fun assignOwner(civInfo:CivilizationInfo){
+    fun assignOwner(civInfo:CivilizationInfo, updateCivInfo:Boolean=true){
         owner=civInfo.civName
         this.civInfo=civInfo
-        civInfo.addUnit(this)
+        civInfo.addUnit(this,updateCivInfo)
+    }
+
+    fun canIntercept(attackedTile: TileInfo): Boolean {
+        return interceptChance()!=0 && attacksThisTurn==0
+                && currentTile.arialDistanceTo(attackedTile) <= getRange()
+    }
+
+    fun interceptChance():Int{
+        val interceptUnique = getUniques()
+                .firstOrNull { it.endsWith(" chance to intercept air attacks") }
+        if(interceptUnique==null) return 0
+        val percent = Regex("\\d+").find(interceptUnique)!!.value
+        return percent.toInt()
     }
 
     //endregion

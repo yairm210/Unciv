@@ -63,7 +63,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                         cityScreen.city.civInfo)
                 wonderDetailsTable.add(detailsString.toLabel().apply { setWrap(true)})
                         .width(cityScreen.stage.width/4 - 2*pad ).row() // when you set wrap, then you need to manually set the size of the label
-                if(!building.isWonder) {
+                if(!building.isWonder && !building.isNationalWonder) {
                     val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
                     val sellBuildingButton = TextButton("Sell for [$sellAmount] gold".tr(),skin)
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
@@ -90,7 +90,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
 
         for (building in cityInfo.cityConstructions.getBuiltBuildings()) {
             when {
-                building.isWonder -> wonders.add(building)
+                building.isWonder || building.isNationalWonder -> wonders.add(building)
                 building.specialistSlots != null -> specialistBuildings.add(building)
                 else -> otherBuildings.add(building)
             }
@@ -133,11 +133,19 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         for(stats in unifiedStatList.values) stats.happiness=0f
 
         // add happiness to stat list
-        for(entry in cityStats.getCityHappiness().filter { it.value!=0f }){
+        for(entry in cityStats.happinessList.filter { it.value!=0f }){
             if(!unifiedStatList.containsKey(entry.key))
                 unifiedStatList[entry.key]= Stats()
             unifiedStatList[entry.key]!!.happiness=entry.value
         }
+
+        // Add maintenance if relevant
+
+        val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
+        if(maintenance>0)
+            unifiedStatList["Maintenance"]=Stats().add(Stat.Gold,-maintenance.toFloat())
+
+
 
         for(stat in Stat.values()){
             if(unifiedStatList.all { it.value.get(stat)==0f }) continue
@@ -156,13 +164,6 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 statValuesTable.add(entry.key.toLabel())
                 val decimal = DecimalFormat("0.#").format(specificStatValue)
                 statValuesTable.add("+$decimal%".toLabel()).row()
-            }
-            if(stat==Stat.Gold){
-                val maintenance = cityStats.cityInfo.cityConstructions.getMaintenanceCosts()
-                if(maintenance>0){
-                    statValuesTable.add("Maintenance".toLabel())
-                    statValuesTable.add("-$maintenance".toLabel())
-                }
             }
             if(stat==Stat.Food){
                 statValuesTable.add("Food eaten".toLabel())

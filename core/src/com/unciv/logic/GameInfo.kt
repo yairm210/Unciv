@@ -147,8 +147,9 @@ class GameInfo {
         for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
-        val unitList = GameBasics.Units.values.filter { !it.unitType.isCivilian() && it.uniqueTo == null }
-                .filter{ allResearchedTechs.contains(it.requiredTech)
+        val unitList = GameBasics.Units.values
+                .filter { !it.unitType.isCivilian() && it.uniqueTo == null }
+                .filter{ (it.requiredTech==null || allResearchedTechs.contains(it.requiredTech!!))
                         && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
 
         val landUnits = unitList.filter { it.unitType.isLandUnit() }
@@ -156,7 +157,7 @@ class GameInfo {
 
         val unit:String
         if (unitList.isEmpty()) unit="Warrior"
-        else if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain=="Coast" } && Random().nextBoolean())
+        else if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
             unit=waterUnits.random().name
         else unit = landUnits.random().name
 
@@ -210,7 +211,16 @@ class GameInfo {
             for(unit in civInfo.getCivUnits())
                 unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
         }
+
         for (civInfo in civilizations){
+            // Since this depends on the cities of ALL civilizations,
+            // we need to wait until we've set the transients of all the cities before we can run this.
+            // Hence why it's not in CivInfo.setTransients().
+            civInfo.setCitiesConnectedToCapitalTransients()
+
+            // We need to determine the GLOBAL happiness state in order to determine the city stats
+            for(cityInfo in civInfo.cities) cityInfo.cityStats.updateCityHappiness()
+
             for (cityInfo in civInfo.cities) cityInfo.cityStats.update()
         }
     }

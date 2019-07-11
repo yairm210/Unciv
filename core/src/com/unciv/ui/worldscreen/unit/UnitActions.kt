@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.unit
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.automation.WorkerAutomation
@@ -17,9 +18,8 @@ import com.unciv.ui.pickerscreens.TechPickerScreen
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import java.util.*
-import kotlin.math.min
 
-class UnitAction(var name: String, var canAct: Boolean, var currentAction: Boolean = false, var title: String = name.tr(), var action: () -> Unit = {}){
+class UnitAction(var name: String, var canAct: Boolean, var currentAction: Boolean = false, var title: String = name, var action: () -> Unit = {}){
     var sound="click"
     fun sound(soundName:String): UnitAction {sound=soundName; return this}
 }
@@ -32,10 +32,7 @@ class UnitActions {
         val actionList = ArrayList<UnitAction>()
 
         if(unit.action!=null && unit.action!!.startsWith("moveTo")) {
-            actionList +=
-                    UnitAction("Stop movement", true) {
-                        unit.action = null
-                    }
+            actionList += UnitAction("Stop movement", true) {unit.action = null}
         }
 
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
@@ -50,15 +47,15 @@ class UnitActions {
 
         if(unit.canFortify()) {
             actionList += UnitAction("Fortify", unit.currentMovement >0) {
-                unit.action = "Fortify 0"
+                unit.fortify()
                 unitTable.selectedUnit = null
             }.sound("fortify")
         } else if (unit.isFortified()) {
             actionList += UnitAction(
                     "Fortify",
                     false,
-                    currentAction = true,
-                    title = "Fortification".tr() + " " + unit.getFortificationTurns() * 20 + "%"
+                    true,
+                    "Fortification".tr() + " " + unit.getFortificationTurns() * 20 + "%"
             )
         }
 
@@ -93,7 +90,7 @@ class UnitActions {
                     unit.civInfo.gold -= goldCostOfUpgrade
                     val unitTile = unit.getTile()
                     unit.destroy()
-                    val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)
+                    val newunit = unit.civInfo.placeUnitNearTile(unitTile.position, upgradedUnit.name)!!
                     newunit.health = unit.health
                     newunit.promotions = unit.promotions
 
@@ -119,8 +116,8 @@ class UnitActions {
                     tile.turnsToImprovement = 2
                 }
                 tile.improvement = null
-                unit.useMovementPoints(1f)
-                unit.health = min(100,unit.health+25)
+                if(!unit.hasUnique("No movement cost to pillage")) unit.useMovementPoints(1f)
+                unit.healBy(25)
             }
         }
 
@@ -177,6 +174,7 @@ class UnitActions {
 
         for(improvement in listOf("Fishing Boats","Oil well")) {
             if (unit.hasUnique("May create improvements on water resources") && tile.resource != null
+                    && tile.isWater // because fishing boats can enter cities, and if there's oil in the city... ;)
                     && tile.improvement==null
                     && tile.getTileResource().improvement == improvement
                     && unit.civInfo.tech.isResearched(GameBasics.TileImprovements[improvement]!!.techRequired!!)
@@ -257,6 +255,8 @@ class UnitActions {
     }
 
     fun canPillage(unit: MapUnit, tile: TileInfo): Boolean {
+        if(tile.improvement==null || tile.improvement==Constants.barbarianEncampment
+                || tile.improvement=="City ruins") return false
         val tileOwner = tile.getOwner()
         // Can't pillage friendly tiles, just like you can't attack them - it's an 'act of war' thing
         return tileOwner==null || tileOwner==unit.civInfo || unit.civInfo.isAtWarWith(tileOwner)

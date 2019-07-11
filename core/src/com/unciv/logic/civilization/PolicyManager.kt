@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 import com.unciv.Constants
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
+import com.unciv.models.gamebasics.VictoryType
 
 
 class PolicyManager {
@@ -34,6 +35,7 @@ class PolicyManager {
     fun isAdopted(policyName: String): Boolean = adoptedPolicies.contains(policyName)
 
     fun isAdoptable(policy: Policy): Boolean {
+        if(isAdopted(policy.name)) return false
         if (policy.name.endsWith("Complete")) return false
         if (!getAdoptedPolicies().containsAll(policy.requires!!)) return false
         if (policy.getBranch().era > civInfo.getEra()) return false
@@ -76,12 +78,21 @@ class PolicyManager {
             "Free Religion" -> freePolicies++
             "Liberty Complete" -> {
                 if (civInfo.isPlayerCivilization()) civInfo.greatPeople.freeGreatPeople++
-                else civInfo.addGreatPerson(GameBasics.Units.keys.filter { it.startsWith("Great") }.random())
+                else {
+                    val preferredVictoryType = civInfo.victoryType()
+                    val greatPerson = when(preferredVictoryType) {
+                        VictoryType.Cultural -> "Great Artist"
+                        VictoryType.Scientific -> "Great Scientist"
+                        VictoryType.Domination,VictoryType.Neutral ->
+                            GameBasics.Units.keys.filter { it.startsWith("Great") }.random()
+                    }
+                    civInfo.addGreatPerson(greatPerson)
+                }
             }
         }
 
         for (cityInfo in civInfo.cities)
-            cityInfo.cityStats.update()
+            cityInfo.cityStats.update() // This ALSO has the side-effect of updating the CivInfo startForNextTurn so we don't need to call it explicitly
 
         if(!canAdoptPolicy()) shouldOpenPolicyPicker=false
     }

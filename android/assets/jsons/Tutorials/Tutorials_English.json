@@ -33,23 +33,9 @@
 		[
 			"The center tile of a city is always worked, and doesn't require population,",
 			"  but it cannot be improved by tile improvements."
-		],
-		[
 			"The city's production always goes towards the current construction - ",
-			"you can pick the city's construction by clicking on the construction button on the bottom-left"
+			"  you can pick the city's construction by clicking on the construction button on the bottom-left"
 		]
-	],
-	
-	ScienceVictoryScreenEntered : [
-		[
-			"This is the science victory screen, here you",
-			"  can see your progress towards constructing a ",
-			"  spaceship to propel you towards the stars."
-		],
-		[
-			"There are 6 spaceship parts you must build, ",
-			"  and they all require advanced technologies"
-		],
 	],
 	
 	TechPickerScreen : [
@@ -70,40 +56,9 @@
 		[
 			"You have founded a city!",
 			"Cities are the lifeblood of your empire, providing gold and science empire-wide,",
-			"  which are displayed on the top bar."
-		],
-		[
-			"Science is used to research technologies.",
-			"You can enter the technology screen by clicking on the button on the top-left, underneath the bar",
-		],
-		[
+			"  which are displayed on the top bar.",
 			"You can click the city name to enter  the city screen to assign population,",
 			"  choose production, and see information on the city"
-		]
-	],
-	
-	NewGame: [
-		[
-			"Hello, and welcome to Unciv!",
-			"Civilization games can be complex, so we'll  be guiding you along your first journey.",
-			"Before we begin, let's review some basic game concepts."
-		],
-		[
-			"Running a civilization is difficult. Everyone wants something.",
-			"Your citizens are constantly begging for more – more luxury goods, more food, and wealth.",
-			"And then there are the other powers that, more often than not, treat you as nothing more than a means to an end."
-		],
-		[
-			"All games of Unciv start the exact same way.",
-			"You start out with a few units -",
-			"  a Settler - who can found a city,",
-			"  a Warrior - a basic military unit,",
-			"  and a Scout, for exploring the area."
-		],
-		[
-			"It is up to you to found your capital city.",
-			"This is actually an important task because your capital city will probably be your most prosperous.",
-			"Many game bonuses apply only to your capital city and it will probably be the center of your empire."
 		],
 		[
 			"Once you have your first city up and running you’ll be able to start production of a new unit",
@@ -117,12 +72,40 @@
 			"  to the Swordsman unit later in the game for a relatively modest sum of gold.",
 			"Scouts can be effective, however, if you seem to be located in an area of dense forest and hills.",
 			"Scouts don’t suffer a movement penalty in this terrain."
-		],
-		[
 			"If you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.",
 			"Fast expanding is absolutely critical in most games of this type.",
-			"But not so fast! Before you start expanding, let’s explore why large empires are hard to manage in Unciv."
 		],
+	],
+	
+	NewGame: [
+		[
+			"Hello, and welcome to Unciv!",
+			"Civilization games can be complex, so we'll  be guiding you step-by-step.",
+			"Your first mission is to found your capital city.",
+			"This is actually an important task because your capital city will probably be your most prosperous.",
+			"Many game bonuses apply only to your capital city and it will probably be the center of your empire."
+		],
+		[
+			"How do you know a spot is appropriate?",
+			"That’s not an easy question to answer, but looking for and building next to luxury resources is a good rule of thumb.",
+			"Luxury resources are tiles that have things like gems, cotton, or silk (indicated by a smiley next to the resource icon)",
+			"These resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as iron."
+		],
+		[
+			"However,  cities don’t have a set area that they can work - more on that later!"
+			"This means you don’t have to settle cities right next to resources.",
+			"Let’s say, for example, that you want access to some iron – but the resource is right next to a desert."
+			"You don’t have to settle your city next to the desert. You can settle a few tiles away in more prosperous lands.",
+			"Your city will grow and eventually gain access to the resource.",
+			"You only need to settle right next to resources if you need them immediately – ",
+			"   which might be the case now and then, but you’ll usually have the luxury of time."
+		],
+		
+	],
+	
+	
+	
+	HappinessGettingLow:[
 		[
 			"As cities grow in size and influence they also are able to work more territory.",
 			"You also have to deal with a happiness mechanic that is no longer tied to each individual city.",
@@ -138,44 +121,12 @@
 		[
 			"This means that it is very difficult to expand quickly in Unciv."
 			"It isn’t impossible, but as a new player you probably shouldn’t do it."
-		],
-		[
 			"So what should you do? Chill out, scout, and improve the land that you do have by building Workers.",
 			"Only build new cities once you have found a spot that you believe is appropriate."
 		],
-		[
-			"When do you know a spot is appropriate?",
-			"That’s not an easy question to answer, but looking for and building next to luxury resources is a good rule of thumb.",
-			"Luxury resources are tiles that have things like gems, cotton, or silk (indicated by a smiley next to the resource icon)",
-			"These resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as iron."
-		],
-		[
-			"However,  cities don’t have a set area that they can work - more on that later!"
-			"This means you don’t have to settle cities right next to resources.",
-			"Let’s say, for example, that you want access to some iron – but the resource is right next to a desert."
-			"You don’t have to settle your city next to the desert. You can settle a few tiles away in more prosperous lands.",
-			"Your city will grow and eventually gain access to the resource.",
-			"You only need to settle right next to resources if you need them immediately – ",
-			"   which might be the case now and then, but you’ll usually have the luxury of time."
-		],
-		[
-			"Once you’ve settled your first two or three cities you’re probably 100 to 150 turns into the game.",
-			"Now is a good time to start thinking about how, exactly, you want to win – if you haven’t already."
-		],
-		[
-			"There are three ways to win in Unciv. They are:",
-			"Cultural Victory: Complete 4 Social Policy Trees",
-			"Domination Victory: Survive as the last civilization",
-			"Science Victory: Be the first to construct a spaceship to Alpha Centauri"
-		],
-		[
-			"These are the basics of Unciv – found a prosperous first city, expand slowly to manage happiness,",
-			"   and set yourself up for the victory condition you wish to pursue."
-			"Obviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim.",
-			"If you’re new to games like Unciv you should simply focus on executing what was covered in this tutorial.",
-			"Later tutorials will focus on more advanced topics, like combat and research."
-		]
-	],
+		
+	]
+	
 	
 	TileLayout: [
 		[
@@ -205,13 +156,13 @@
 	
 	AfterCityEntered : [
 		[
-			"Once you've done everything you can, ",
-			"click the next turn button on the top right to continue."
+			"Once you've done everything you can in this turn, ",
+			"  click the next turn button on the top right to continue."
 		],
 		[
 			"Each turn, science, culture and gold are added",
-			" to your civilization, your cities' construction",
-			" continues, and they may grow in population or area."
+			"  to your civilization, your cities' construction",
+			"  continues, and they may grow in population or area."
 		]
 	],
 	
@@ -279,6 +230,22 @@
 			"  will generate gold via the trade route.",
 			"Note that each road costs 1 gold Maintenance per turn, "
 			"  so it may be more economical to wait until the cities grow!"
+		]
+		[
+			"Once you’ve settled your first two or three cities you’re probably 100 to 150 turns into the game.",
+			"Now is a good time to start thinking about how, exactly, you want to win – if you haven’t already."
+		],
+		[
+			"There are three ways to win in Unciv. They are:",
+			"Cultural Victory: Complete 4 Social Policy Trees",
+			"Domination Victory: Survive as the last civilization",
+			"Science Victory: Be the first to construct a spaceship to Alpha Centauri"
+		],
+		[
+			"So to sum it up, these are the basics of Unciv – ",
+			"Found a prosperous first city, expand slowly to manage happiness,",
+			"   and set yourself up for the victory condition you wish to pursue.",
+			"Obviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim.",
 		]
 	]
 	

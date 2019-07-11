@@ -39,13 +39,13 @@ class Technology : ICivilopedia {
             }
             val replacedBuildings = enabledBuildings.mapNotNull { it.replaces }
             enabledBuildings = enabledBuildings.filter { it.name !in replacedBuildings }
-            val regularBuildings = enabledBuildings.filter { !it.isWonder }
+            val regularBuildings = enabledBuildings.filter { !it.isWonder && !it.isNationalWonder }
             if (regularBuildings.isNotEmpty()) {
                 lineList += "{Buildings enabled}: "
                 for (building in regularBuildings)
                     lineList += "* " + building.name.tr() + " (" + building.getShortDescription() + ")"
             }
-            val wonders = enabledBuildings.filter { it.isWonder }
+            val wonders = enabledBuildings.filter { it.isWonder || it.isNationalWonder }
             if (wonders.isNotEmpty()) {
                 lineList += "{Wonders enabled}: "
                 for (wonder in wonders)

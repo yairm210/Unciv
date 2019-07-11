@@ -3,7 +3,6 @@ package com.unciv.logic.trade
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 
@@ -26,14 +25,14 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                 && otherCivilization.tech.getTechUniques().contains("Enables Open Borders agreements")) {
             val relationshipLevel = otherCivilization.getDiplomacyManager(civInfo).relationshipLevel()
 
-            if(relationshipLevel >= RelationshipLevel.Neutral)
-                offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
+            offers.add(TradeOffer("Open Borders", TradeType.Agreement, 30))
         }
 
-        for(entry in civInfo.getCivResources().filterNot { it.key.resourceType == ResourceType.Bonus }) {
-            val resourceTradeType = if(entry.key.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
+        for(entry in civInfo.getCivResources()
+                .filterNot { it.resource.resourceType == ResourceType.Bonus }) {
+            val resourceTradeType = if(entry.resource.resourceType== ResourceType.Luxury) TradeType.Luxury_Resource
             else TradeType.Strategic_Resource
-            offers.add(TradeOffer(entry.key.name, resourceTradeType, 30, entry.value))
+            offers.add(TradeOffer(entry.resource.name, resourceTradeType, 30, entry.amount))
         }
         if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
             for (entry in civInfo.tech.techsResearched
@@ -44,7 +43,7 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
         }
 
         offers.add(TradeOffer("Gold".tr(), TradeType.Gold, 0, civInfo.gold))
-        offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, 30, civInfo.getStatsForNextTurn().gold.toInt()))
+        offers.add(TradeOffer("Gold per turn".tr(), TradeType.Gold_Per_Turn, 30, civInfo.statsForNextTurn.gold.toInt()))
         if (!civInfo.isCityState() && !otherCivilization.isCityState()) {
             for (city in civInfo.cities.filterNot { it.isCapital() })
                 offers.add(TradeOffer(city.name, TradeType.City, 0))
@@ -110,6 +109,8 @@ class TradeLogic(val ourCivilization:CivilizationInfo, val otherCivilization: Ci
                     from.getDiplomacyManager(nameOfCivToDeclareWarOn).declareWar()
                 }
             }
+            to.updateStatsForNextTurn()
+            to.updateDetailedCivResources()
         }
 
         transferTrade(ourCivilization,otherCivilization,currentTrade)

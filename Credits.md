@@ -55,11 +55,13 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Sail boat](https://thenounproject.com/term/sail-boat/5292/) By Alessandro Suraci for Caravel
 * [Cannon](https://thenounproject.com/search/?q=Cannon&i=1618747) By Orin Zuu
 * [Musket](https://thenounproject.com/search/?q=Musket&i=298302) By Cezary Lopacinski for Musketman
+* [Tarbouche](https://thenounproject.com/search/?q=turkish%20hat&i=245391) By Mohamed Amine for Janissary
 * [Black powder musket](https://thenounproject.com/term/black-powder-musket/1202078/) By Jarem Fyre for Minuteman
 * [Rapier](https://thenounproject.com/search/?q=musketeer&i=819822) By Hamish for Musketeer
 * [Ship](https://thenounproject.com/term/ship/1293899/) By Orin Zuu for Frigate
 * [Ship](https://thenounproject.com/search/?q=ship&i=800131) By Mungang Kim for Ship of the Line
 * [Lance](https://thenounproject.com/search/?q=Lance&i=440122) By parkjisun for Lancer
+* [Sword](https://thenounproject.com/search/?q=saber&i=1174742) By Daniela Baptista for Sipahi
 
 ### Industrial
 
@@ -411,6 +413,23 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Harvest](https://thenounproject.com/term/harvest/1022373/) By Made for Flood plains
 * [Puddle](https://thenounproject.com/search/?q=puddle&i=1138155) By Bakunetsu Kaito for Lakes
 
+## Nations
+
+* [Eye of Horus](https://thenounproject.com/search/?q=eye%20of%20horus&i=92471) By Lilit Kalachyan for Egypt
+* [Russia](https://thenounproject.com/search/?q=russia&i=64137) By Eugen Belyakoff
+* [Yin Yang](https://thenounproject.com/search/?q=tao&i=1023129) By andriwidodo for China
+* [Lion](https://thenounproject.com/search/?q=lion&i=912735) By parkjisun for Babylon
+* [Omega](https://thenounproject.com/search/?q=omega&i=1925519) By icon 54 for Greece
+* [Shield](https://thenounproject.com/search/?q=American%20shield&i=5825) By Nathan Driskell for America
+* [Fleaur de Lis](https://thenounproject.com/search/?q=fleur%20de&i=78672) By Jessika Gadoury for France
+* [Crown](https://thenounproject.com/search/?q=crown&i=607405) By Peter van Driel for England
+* [Wreath](https://thenounproject.com/search/?q=laurel&i=692545) by VectorBakery or Roman
+* [Iron Cross](https://thenounproject.com/search/?q=iron%20cross&i=373241) By Souvik Maity for Germany
+* [Star and Crecent](https://thenounproject.com/search/?q=star%20and%20crescent&i=2552427) for Arabia
+* [Family Crest Komon](https://thenounproject.com/search/?q=oda&i=2293528) by sahua d for Japan
+* [Ashika Chakra](https://thenounproject.com/search/?q=ashoka%20chakra&i=2328559) by sahua d for India
+* Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
+
 ## Others 
 
 * [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
@@ -427,7 +446,9 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
 * [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
 * [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
-* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein, US for city states
+* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for city states
+* [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker
+* [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54
 
 # Sound credits
 
@@ -451,3 +472,5 @@ Sounds are from FreeSound.org and are either Creative Commons or Public Domain
 * [Horse Neigh 2](https://freesound.org/people/GoodListener/sounds/322450/) By GoodListener as 'horse' for cavalry attack sounds
 * [machine gun 001 - loop](https://freesound.org/people/pgi/sounds/212602/) By pgi as 'machinegun' for machine gun attack sound
 * [uzzi_full_single](https://freesound.org/people/Deganoth/sounds/348685/) By Deganoth as 'shot' for bullet attacks
+
+

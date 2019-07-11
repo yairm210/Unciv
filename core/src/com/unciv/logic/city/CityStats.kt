@@ -34,7 +34,7 @@ class CityStats {
 
     private fun getStatsFromTradeRoute(): Stats {
         val stats = Stats()
-        if (!cityInfo.isCapital() && isConnectedToCapital(RoadStatus.Road)) {
+        if (!cityInfo.isCapital() && cityInfo.isConnectedToCapital()) {
             val civInfo = cityInfo.civInfo
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if(civInfo.getNation().unique=="+1 Gold from each Trade Route, Oil resources provide double quantity") goldFromTradeRoute += 1
@@ -166,7 +166,7 @@ class CityStats {
     // needs to be a separate function because we need to know the global happiness state
     // in order to determine how much food is produced in a city!
     // -3 happiness per city
-    fun getCityHappiness(): LinkedHashMap<String, Float> {
+    fun updateCityHappiness(){
         val civInfo = cityInfo.civInfo
         val newHappinessList = LinkedHashMap<String,Float>()
         var unhappinessModifier = civInfo.getDifficulty().unhappinessModifier
@@ -196,7 +196,7 @@ class CityStats {
             happinessFromPolicies += (cityInfo.population.population / 10).toFloat()
         if (civInfo.policies.isAdopted("Monarchy") && cityInfo.isCapital())
             happinessFromPolicies += (cityInfo.population.population / 2).toFloat()
-        if (civInfo.policies.isAdopted("Meritocracy") && isConnectedToCapital(RoadStatus.Road))
+        if (civInfo.policies.isAdopted("Meritocracy") && cityInfo.isConnectedToCapital())
             happinessFromPolicies += 1f
         if(civInfo.policies.isAdopted("Military Caste") && cityInfo.getCenterTile().militaryUnit!=null)
             happinessFromPolicies+=1
@@ -212,7 +212,6 @@ class CityStats {
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
         happinessList=newHappinessList
-        return newHappinessList
     }
 
     fun getStatsOfSpecialist(stat:Stat, policies: HashSet<String>): Stats {
@@ -305,7 +304,7 @@ class CityStats {
             stats.culture += 33f
         if (policies.contains("Commerce") && cityInfo.isCapital())
             stats.gold += 25f
-        if (policies.contains("Sovereignty") && cityInfo.civInfo.happiness >= 0)
+        if (policies.contains("Sovereignty") && cityInfo.civInfo.getHappiness() >= 0)
             stats.science += 15f
         if (policies.contains("Total War") && currentConstruction is BaseUnit && !currentConstruction.unitType.isCivilian() )
             stats.production += 15f
@@ -320,7 +319,7 @@ class CityStats {
     fun isConnectedToCapital(roadType: RoadStatus): Boolean {
         if (cityInfo.civInfo.cities.count() < 2) return false// first city!
 
-        if(roadType==RoadStatus.Road)  return cityInfo.isConnectedToCapital // this transient is not applicable to connection via railroad.
+        if(roadType==RoadStatus.Road)  return cityInfo.isConnectedToCapital() // this transient is not applicable to connection via railroad.
 
         val capitalTile = cityInfo.civInfo.getCapital().getCenterTile()
         val bfs = BFS(capitalTile){it.roadStatus == roadType}
@@ -369,6 +368,7 @@ class CityStats {
     }
 
     fun update() {
+        updateCityHappiness()
         updateBaseStatList()
         updateStatPercentBonusList()
 
@@ -389,7 +389,7 @@ class CityStats {
         newCurrentCityStats.science *= 1 + statPercentBonusesSum.science / 100
         newCurrentCityStats.culture *= 1 + statPercentBonusesSum.culture / 100
 
-        val isUnhappy = cityInfo.civInfo.happiness < 0
+        val isUnhappy = cityInfo.civInfo.getHappiness() < 0
         if (!isUnhappy) // Regular food bonus revoked when unhappy per https://forums.civfanatics.com/resources/complete-guide-to-happiness-vanilla.25584/
             newCurrentCityStats.food *= 1 + statPercentBonusesSum.food / 100
 
@@ -424,6 +424,8 @@ class CityStats {
         if (cityInfo.resistanceCounter > 0)
             currentCityStats = Stats().add(Stat.Production,1f) // You get nothing, Jon Snow
         else currentCityStats = newCurrentCityStats
+
+        cityInfo.civInfo.updateStatsForNextTurn()
     }
 
     private fun updateFoodEaten() {

@@ -60,7 +60,7 @@ object GameBasics {
                 if (building.requiredTech == null) continue
                 val column = building.getRequiredTech().column
                 if (building.cost == 0)
-                    building.cost = if (building.isWonder) column!!.wonderCost else column!!.buildingCost
+                    building.cost = if (building.isWonder || building.isNationalWonder) column!!.wonderCost else column!!.buildingCost
             }
 
             for (branch in PolicyBranches.values) {

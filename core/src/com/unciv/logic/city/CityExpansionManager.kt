@@ -77,7 +77,7 @@ class CityExpansionManager {
             relinquishOwnership(tile)
 
         cityInfo.getCenterTile().getTilesInDistance(1)
-                .filter { it.getCity()==null } // can't take ownership of owned tiles
+                .filter { it.getCity()==null || it.getCity()!!.civInfo==cityInfo.civInfo } // can't take ownership of owned tiles
                 .forEach { takeOwnership(it) }
     }
 
@@ -95,6 +95,9 @@ class CityExpansionManager {
         if(cityInfo.workedTiles.contains(tileInfo.position))
             cityInfo.workedTiles = cityInfo.workedTiles.withoutItem(tileInfo.position)
         tileInfo.owningCity=null
+
+        cityInfo.civInfo.updateDetailedCivResources()
+        cityInfo.cityStats.update()
     }
 
     fun takeOwnership(tileInfo: TileInfo){
@@ -105,6 +108,7 @@ class CityExpansionManager {
         cityInfo.tiles = cityInfo.tiles.withItem(tileInfo.position)
         tileInfo.owningCity = cityInfo
         cityInfo.population.autoAssignPopulation()
+        cityInfo.civInfo.updateDetailedCivResources()
         cityInfo.cityStats.update()
 
         for(unit in tileInfo.getUnits())

@@ -16,6 +16,7 @@ import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.ui.VictoryScreen
+import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.pickerscreens.GreatPersonPickerScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.pickerscreens.TechButton
@@ -93,6 +94,13 @@ class WorldScreen : CameraStageBaseScreen() {
                     else -> Vector2.Zero
                 }
         tileMapHolder.setCenterPosition(tileToCenterOn,true)
+
+
+        // On the one hand, all updates to e.g. TileGroups need to happen on the main rendering thread.
+        // On the other hand, the initial setup requires setting up a lot of items on the map,
+        // and we would sometimes get an "Input dispatching timed out" ANR when doing so.
+        // Putting it in a postRunnnable is our way of attempting to avoid this.
+        Gdx.app.postRunnable { render(0f) }
     }
 
     // This is private so that we will set the shouldUpdate to true instead.
@@ -106,7 +114,6 @@ class WorldScreen : CameraStageBaseScreen() {
         gameClone.setTransients()
         val cloneCivilization = gameClone.getCurrentPlayerCivilization()
         kotlin.concurrent.thread {
-            currentPlayerCiv.happiness = gameClone.getCurrentPlayerCivilization().getHappinessForNextTurn().values.sum().toInt()
             gameInfo.civilizations.forEach { it.setCitiesConnectedToCapitalTransients() }
         }
 
@@ -142,7 +149,6 @@ class WorldScreen : CameraStageBaseScreen() {
 
         updateTechButton(cloneCivilization)
         updateDiplomacyButton(cloneCivilization)
-        updateNextTurnButton()
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         battleTable.update()
@@ -164,7 +170,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
         when {
-            !gameInfo.oneMoreTurnMode && currentPlayerCiv.victoryManager.hasWon() -> game.screen = VictoryScreen()
+            !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
             currentPlayerCiv.policies.freePolicies>0 -> game.screen = PolicyPickerScreen(currentPlayerCiv)
             currentPlayerCiv.greatPeople.freeGreatPeople>0 -> game.screen = GreatPersonPickerScreen()
             currentPlayerCiv.tradeRequests.isNotEmpty() ->{
@@ -174,6 +180,7 @@ class WorldScreen : CameraStageBaseScreen() {
                     && currentPlayerCiv.popupAlerts.any() && !AlertPopup.isOpen ->
                 AlertPopup(this,currentPlayerCiv.popupAlerts.first())
         }
+        updateNextTurnButton()
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
@@ -240,6 +247,13 @@ class WorldScreen : CameraStageBaseScreen() {
                 return@onClick
             }
 
+            val cityWithNoProductionSet = currentPlayerCiv.cities
+                    .firstOrNull{it.cityConstructions.currentConstruction==""}
+            if(cityWithNoProductionSet!=null){
+                game.screen = CityScreen(cityWithNoProductionSet)
+                return@onClick
+            }
+
             if (currentPlayerCiv.shouldOpenTechPicker()) {
                 game.screen = TechPickerScreen(currentPlayerCiv.tech.freeTechs != 0, currentPlayerCiv)
                 return@onClick
@@ -291,6 +305,8 @@ class WorldScreen : CameraStageBaseScreen() {
     fun updateNextTurnButton() {
         val text = if (currentPlayerCiv.shouldGoToDueUnit())
             "Next unit"
+        else if(currentPlayerCiv.cities.any{it.cityConstructions.currentConstruction==""})
+            "Pick construction"
         else if(currentPlayerCiv.shouldOpenTechPicker())
             "Pick a tech"
         else if(currentPlayerCiv.policies.shouldOpenPolicyPicker)
@@ -300,6 +316,8 @@ class WorldScreen : CameraStageBaseScreen() {
         nextTurnButton.setText(text.tr())
         nextTurnButton.color = if(text=="Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
+        if(AlertPopup.isOpen) nextTurnButton.disable()
+        else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
 
@@ -312,9 +330,12 @@ class WorldScreen : CameraStageBaseScreen() {
     }
 
     var shouldUpdate=true
+
+
     override fun render(delta: Float) {
-        if(shouldUpdate){ //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
-            if(currentPlayerCiv!=gameInfo.getCurrentPlayerCivilization()){
+        if (shouldUpdate) { //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+
+            if (currentPlayerCiv != gameInfo.getCurrentPlayerCivilization()) {
                 UnCivGame.Current.screen = PlayerReadyScreen(gameInfo.getCurrentPlayerCivilization())
                 return
             }
@@ -322,8 +343,9 @@ class WorldScreen : CameraStageBaseScreen() {
             // otherwise images will not load properly!
             update()
             showTutorialsOnNextTurn()
-            shouldUpdate=false
+            shouldUpdate = false
         }
+
         super.render(delta)
     }
 
@@ -334,12 +356,13 @@ class WorldScreen : CameraStageBaseScreen() {
                 && currentPlayerCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
             displayTutorials("BarbarianEncountered")
         if(currentPlayerCiv.cities.size > 2) displayTutorials("SecondCity")
-        if(currentPlayerCiv.happiness < 0) displayTutorials("Unhappiness")
+        if(currentPlayerCiv.getHappiness() < 5) displayTutorials("HappinessGettingLow")
+        if(currentPlayerCiv.getHappiness() < 0) displayTutorials("Unhappiness")
         if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
         if(gameInfo.turns >= 100) displayTutorials("ContactMe")
         val resources = currentPlayerCiv.getCivResources()
-        if(resources.keys.any { it.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
-        if(resources.keys.any { it.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
+        if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
+        if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
         if("EnemyCity" !in shownTutorials
                 && currentPlayerCiv.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
                         .any { it.isCityCenter() && it.getOwner()!=currentPlayerCiv })

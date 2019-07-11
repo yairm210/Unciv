@@ -12,14 +12,11 @@ import com.unciv.UnCivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
-import com.unciv.logic.map.RoadStatus
 import com.unciv.ui.cityscreen.CityScreen
 import com.unciv.ui.utils.*
 
 class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, skin: Skin): Table(skin){
     init{
-        background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-                .tint(city.civInfo.getNation().getColor())
         isTransform = true // If this is not set then the city button won't scale!
         touchable= Touchable.disabled
     }
@@ -27,18 +24,46 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     var isButtonMoved=false
 
     fun update(isCityViewable:Boolean) {
-        val cityButtonText = city.population.population.toString() + " | " + city.name
-        background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-                .tint(city.civInfo.getNation().getColor())
-        val label = cityButtonText.toLabel()
-        label.setFontColor(city.civInfo.getNation().getSecondaryColor())
-
         clear()
+
+        setButtonActions()
+
+        addAirUnitTable()
+
+        if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
+            val healthBar = ImageGetter.getHealthBar(city.health.toFloat(), city.getMaxHealth().toFloat(), 100f)
+            add(healthBar).row()
+        }
+
+        val iconTable = getIconTable()
+
+        add(iconTable).row()
+        pack()
+        setOrigin(Align.center)
+        centerX(tileGroup)
+    }
+
+    private fun addAirUnitTable() {
+        if (!tileGroup.tileInfo.airUnits.isNotEmpty()) return
+        val secondarycolor = city.civInfo.getNation().getSecondaryColor()
+        val airUnitTable = Table().apply { defaults().pad(5f) }
+        airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+                .tint(city.civInfo.getNation().getColor())
+        val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
+        aircraftImage.color = secondarycolor
+        airUnitTable.add(aircraftImage).size(15f)
+        airUnitTable.add(tileGroup.tileInfo.airUnits.size.toString().toLabel()
+                .setFontColor(secondarycolor).setFontSize(15))
+        add(airUnitTable).row()
+    }
+
+    private fun setButtonActions() {
+
         val unitTable = tileGroup.worldScreen.bottomBar.unitTable
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
 
             // So you can click anywhere on the button to go to the city
-            touchable = Touchable.enabled
+            touchable = Touchable.childrenOnly
 
             // clicking swings the button a little down to allow selection of units there.
             // this also allows to target selected units to move to the city tile from elsewhere.
@@ -48,11 +73,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                     UnCivGame.Current.screen = CityScreen(city)
                 } else {
                     moveButtonDown()
-                    if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement==0f)
+                    if (unitTable.selectedUnit == null || unitTable.selectedUnit!!.currentMovement == 0f)
                         tileGroup.selectCity(city)
                 }
             }
-
         }
 
         // when deselected, move city button to its original position
@@ -62,14 +86,16 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
             moveButtonUp()
         }
+    }
 
-        if (isCityViewable && city.health < city.getMaxHealth().toFloat()) {
-            val healthBar = ImageGetter.getHealthBar(city.health.toFloat(), city.getMaxHealth().toFloat(), 100f)
-            add(healthBar).row()
-        }
-
+    private fun getIconTable(): Table {
+        val secondaryColor = city.civInfo.getNation().getSecondaryColor()
         val iconTable = Table()
-        if(city.resistanceCounter > 0){
+        iconTable.touchable=Touchable.enabled
+        iconTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+                .tint(city.civInfo.getNation().getColor())
+
+        if (city.resistanceCounter > 0) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance.png")
             iconTable.add(resistanceImage).size(20f).pad(2f).padLeft(5f)
         }
@@ -80,27 +106,33 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         }
         if (city.isCapital()) {
             if (city.civInfo.isCityState()) {
-                val cityStateImage = ImageGetter.getImage("OtherIcons/CityState.png")
-                        .apply { color = city.civInfo.getNation().getSecondaryColor()}
+                val cityStateImage = ImageGetter.getNationIcon("CityState")
+                        .apply { color = secondaryColor }
                 iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
             } else {
                 val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
                 iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
             }
-        } else if (city.civInfo.isCurrentPlayer() && city.cityStats.isConnectedToCapital(RoadStatus.Road)) {
+        } else if (city.civInfo.isCurrentPlayer() && city.isConnectedToCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
+            connectionImage.color = secondaryColor
             iconTable.add(connectionImage).size(20f).pad(2f).padLeft(10f)
         }
 
+        val cityButtonText = city.population.population.toString() + " | " + city.name
+        val label = cityButtonText.toLabel()
+        label.setFontColor(secondaryColor)
         iconTable.add(label).pad(10f) // sufficient horizontal padding
                 .fillY() // provide full-height clicking area
-        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer()) {
+
+        if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
             iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f)
+        else if (city.civInfo.isMajorCiv()) {
+            val nationIcon = ImageGetter.getNationIcon(city.civInfo.getNation().name)
+            nationIcon.color = secondaryColor
+            iconTable.add(nationIcon).size(20f).padRight(10f)
         }
-        add(iconTable).row()
-        pack()
-        setOrigin(Align.center)
-        centerX(tileGroup)
+        return iconTable
     }
 
     private fun moveButtonDown() {

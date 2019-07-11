@@ -327,18 +327,12 @@
 	"Spearman":{	
 		Italian:"Lanciere"
 		Russian:"Копейщик"
-		French:"Infanterie"
+		French:"Lancier"
 		Romanian:"Lăncier"
 		Spanish:"Lancero"
-        	Simplified_Chinese:"枪兵"
+		Simplified_Chinese:"枪兵"
 		Portuguese:"Lanceiro"
 		German:"Speerkrieger"
-	}
-
-	"Bonus vs Mounted 50%":{
-		Italian:"+50% Bonus contro unità a cavallo"
-		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
-		French:"Bonus contre les unités montées +50%" //I feel that i already wrote this elsewhere...
 	}
 
 	"Hoplite":{ // Greek unique
@@ -371,12 +365,6 @@
 		Portuguese:"Catapulta"
 		German:"Katapult"
 	}	
-	
-	"Bonus vs City 200%":{
-		Italian:"+200% Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+200%战斗力"
-		French:"Bonus contre les villes +200%"
-	}
 
 	"Must set up to ranged attack":{
 		Italian:"Deve allestirsi per attaccare a distanza"
@@ -422,13 +410,13 @@
 
 	"Can construct roads":{
 		Italian:"Può costruire Strade"
-        	Simplified_Chinese:"可以建造道路"
+		Simplified_Chinese:"可以建造道路"
 		French:"Peut construire des routes"
 	}
 
 	"Construct road":{ // for unit action button
 		Italian:"Costruisci Strada"
-        	Simplified_Chinese:"建造道路"
+		Simplified_Chinese:"建造道路"
 		French:"Construire une route"
 	} 
 	
@@ -579,6 +567,10 @@
 		German:"Pikenier"
 	}
 
+	"Landsknecht":{
+		Italian:"Lanzichenecco"
+	}
+
 	"Knight":{	
 		Italian:"Cavaliere"
 		Russian:"Рыцарь"
@@ -668,8 +660,16 @@
 		Russian:"Мушкетёр"
 		German:"Musketier"
 	} 
+	
+	"Janissary":{ // Ottoman unique
+		Italian:"Giannizzero"
+	}
+	
+	"Heals [amountHealed] damage if it kills a unit":{
+		Italian:"Cura [amountHealed] PF quando uccide un'unità nemica"
+	}
 
-	"Minuteman":{
+	"Minuteman":{ // american unique
 		Italian:"Minuteman" //same in Italian
 		Romanian:"Rezervist"
 		Spanish:"Milicia Revolucionaria"
@@ -677,7 +677,7 @@
 		Russian:"Минитмэн"
 		//same in German
 		//same in French
-	} // American unique
+	}
 
 	"Frigate":{
 		Spanish:"Fragata"
@@ -703,19 +703,22 @@
 	"Lancer":{	
 		Italian:"Lanciere a cavallo"
 		Russian:"Улан"
-		French:"Lancier"
-		Romanian:"Lăncier"
+		French:"Lancier monté"
+		Romanian:"Lăncier montat"
 		Spanish:"Jinete lancero"
 		Simplified_Chinese:"枪骑兵"
 		Portuguese:"Lanceiro montado"
 		German:"Lanzer"
 	}
 	
-	"Bonus vs Mounted 33%":{
-		Italian:"+33% Bonus contro unità a cavallo"
-		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
-		French:"Bonus contre les unitées montées +33%"
+	"Sipahi":{
+		Italian:"Sipahi"//same as in Italian
 	}
+	
+	"No movement cost to pillage":{
+		Italian:"Nessun costo di movimento per il saccheggio"
+	}
+	
 
 ////// Industrial units
 	
@@ -798,11 +801,6 @@
 		German:"Panzerschiff"
 	}
 	
-	"Bonus vs City 33%":{
-		Italian:"+33 Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+33%战斗力"
-		French:"Bonus contre les villes +33%"
-	}
 
 	"Double movement in coast":{
 		Spanish:"Doble movimiento en costas"
@@ -923,10 +921,6 @@
 		French:"cuirassé"
 	}
 
-	"Bonus vs City 30%":{
-		Italian:"+30 Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+30%战斗力"
-	}
 
 	"Submarine":{
 		Italian:"Sottomarino"
@@ -938,10 +932,10 @@
 		French:"Sous-marin"
 	}
 
-	"Bonus as Attacker 75%":{
-		Italian:"75% Bonus in attacco"
+	"Bonus as Attacker [amount]%":{
+		Italian:"[amount]% Bonus in attacco"
 		Simplified_Chinese:"主动攻击时+75%战斗力"
-		French:"Bonus en tant qu'attaquant +75%"
+		French:"Bonus en tant qu'attaquant +[amount]%"
 	}
 
 	"Invisible to others":{
@@ -966,15 +960,6 @@
 		French:"Porte-avions"
 	}
 	
-	"Great War Bomber":{
-		Italian:"Bombardiere della Grande Guerra"
-		Romanian:"Bombardier din Marele Război"
-		Spanish:"Bombardero de la Gran Guerra"
-		Simplified_Chinese:"早期轰炸机"
-		Russian:"великий бомбардировщик0_0"
-		German:"Weltkriegsbomber"
-		French:"Bombardier de la grande guerre"
-	}
 
 	"Triplane":{
 		Italian:"Triplano"
@@ -984,6 +969,20 @@
 		Russian:"ТРИПЛАН"
 		German:"Dreidecker"
 		French:"Triplan"
+	}
+	
+	"[percent]% chance to intercept air attacks":{
+	}
+	
+	
+	"Great War Bomber":{
+		Italian:"Bombardiere della Grande Guerra"
+		Romanian:"Bombardier din Marele Război"
+		Spanish:"Bombardero de la Gran Guerra"
+		Simplified_Chinese:"早期轰炸机"
+		Russian:"великий бомбардировщик0_0"
+		German:"Weltkriegsbomber"
+		French:"Bombardier de la grande guerre"
 	}
 	
 ////// Atomic units (not in game yet but will be, not super important but why not)
@@ -1008,11 +1007,6 @@
 		French:"Canon antichar"
 	}
 
-	"Bonus vs Armor 100%":{
-		Italian:"+100% Bonus contro unità corazzate"
-		Simplified_Chinese:"对战装甲单位时+100%战斗力"
-		French:"Bonus contre les unités Blindées +100%"
-	}
 
 	"Marine":{
 		Italian:"Marine"
@@ -1049,18 +1043,18 @@
 		Romanian:"Tanc"
 		Spanish:"Tanque"
 		Simplified_Chinese:"坦克"
-		Russian:"ТАНК"
+		Russian:"Танк"
 		German:"Panzer"
 		French:"Char"
 	}
 
 	"Panzer":{ // german unique
-		Italian:"Panzer" //same in Italian
+		Italian:"Panzer"
 		Romanian:"Panzer"
 		Spanish:"Panzer"
 		Simplified_Chinese:"“虎II”坦克"
 		Russian:"Панзэр"
-		German:"Tiger II Panzer" //I used a more late WW2 panzer name here to destinguish 
+		German:"Königstiger" //I used a more late WW2 panzer name here to destinguish
 		French:"Panzer"
 	} 
 
@@ -1273,11 +1267,18 @@
 		French:"Général illustre"
 	}
 	
-	"Bonus for land units in 2 radius 15%" :{
+	"Bonus for units in 2 tile radius 15%" :{
+		Italian:"15% Bonus per le unità nel raggio di 2 caselle"
+		French:"Bonus de combat +15% pour les unités dans un rayon de 2 cases"
+	}
+	
+	/* Not in use now, but will be when we eventually add Great Admiral and split the job
+	"Bonus for land units in 2 tile radius 15%" :{
 		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
 		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
-        	French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
+		French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
 	}
+	*/
 
 	////// Unit Promotions
 
@@ -1296,6 +1297,37 @@
 		Russian:" ИЛИ "
 		German:" ODER "
 		French:" OU "
+	}
+	
+	
+	"Bonus vs City":{
+		Italian:"Bonus contro Città"
+        Simplified_Chinese:"攻击城市时+15%战斗力"
+        French:"Bonus contre les villes"
+	}
+	
+	"Bonus vs [unitType]":{
+		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
+		Russian:"Бонус против [unitType]"
+		French:"Bonus contre [unitType]"
+		Romanian:"Bonus contra [unitType]"
+		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
+		Dutch:"Voordeel tegen [unitType]"
+		Spanish:"Bonus contra [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力加成："
+		Portuguese:"Bonus contra [unitType]"
+	}
+
+	"Penalty vs [unitType]":{
+		Italian:"Malus contro unità [unitType]"
+		Russian:"Штраф против [unitType]"
+		French:"Pénalité contre [unitType]"
+		Romanian:"Penalizare contra [unitType]"
+		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
+		Dutch:"Nadeel tegen [unitType]"
+		Spanish:"Penalización contra [unitType]"
+		Simplified_Chinese:"对战[unitType]时战斗力减成："
+		Portuguese:"Penalidade contra [unitType]"
 	}
 	
 	"Accuracy I":{
@@ -1522,11 +1554,6 @@
 		Simplified_Chinese:"齐射能力"
 	}
 
-	"Bonus vs City 50%":{
-		Italian:"+50% Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+50%战斗力"
-		French:"Bonus contre les villes +50%"
-	}
 
 	"Sentry":{
 		Italian:"Sentinella"
@@ -1659,11 +1686,6 @@
 		Simplified_Chinese:"海掠I级"
 	}
 
-	"Bonus vs City 15%":{
-		Italian:"+15% Bonus contro Città"
-		Simplified_Chinese:"攻击城市时+15%战斗力"
-		French:"Bonus contre les villes +15%"
-	}
 
 	"Coastal Raider II":{
 		Italian:"Incursione costiera II"
@@ -1713,11 +1735,6 @@
 		Simplified_Chinese:"狼群I级"
 	}
 
-	"Bonus as Attacker 25%":{
-		Italian:"+25% Bonus come attaccante"
-		Simplified_Chinese:"主动攻击时+25%战斗力"
-		French:"Bonus en attaquant +25%"
-	}
 
 	"Wolfpack II":{
 		Italian:"Attacco in massa II"

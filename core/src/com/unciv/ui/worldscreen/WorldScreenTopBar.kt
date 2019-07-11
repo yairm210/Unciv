@@ -110,8 +110,8 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
             val isRevealed = civInfo.tech.isResearched(resource.revealedBy!!)
             resourceLabels[resource.name]!!.isVisible = isRevealed
             resourceImages[resource.name]!!.isVisible = isRevealed
-            if (!civResources.containsKey(resource)) resourceLabels[resource.name]!!.setText("0")
-            else resourceLabels[resource.name]!!.setText(civResources[resource]!!.toString())
+            if (!civResources.any { it.resource==resource}) resourceLabels[resource.name]!!.setText("0")
+            else resourceLabels[resource.name]!!.setText(civResources.first { it.resource==resource }.amount.toString())
         }
 
         val turns = civInfo.gameInfo.turns
@@ -128,7 +128,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
         turnsLabel.setText("Turn".tr()+" " + civInfo.gameInfo.turns + " | "+ abs(year)+(if (year<0) " BC" else " AD"))
 
-        val nextTurnStats = civInfo.getStatsForNextTurn()
+        val nextTurnStats = civInfo.statsForNextTurn
         val goldPerTurn = "(" + (if (nextTurnStats.gold > 0) "+" else "") + Math.round(nextTurnStats.gold) + ")"
         goldLabel.setText(Math.round(civInfo.gold.toFloat()).toString() + goldPerTurn)
 
@@ -136,7 +136,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
 
         happinessLabel.setText(getHappinessText(civInfo))
 
-        if (civInfo.happiness < 0) {
+        if (civInfo.getHappiness() < 0) {
             happinessLabel.setFontColor(malcontentColor)
             happinessImage.clearChildren()
             happinessImage.addActor(malcontentGroup)
@@ -160,7 +160,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     }
 
     private fun getHappinessText(civInfo: CivilizationInfo): String {
-        var happinessText = civInfo.happiness.toString()
+        var happinessText = civInfo.getHappiness().toString()
         if (civInfo.goldenAges.isGoldenAge())
             happinessText += "    "+"GOLDEN AGE".tr()+"(${civInfo.goldenAges.turnsLeftForCurrentGoldenAge})"
         else

@@ -4,20 +4,19 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.Counter
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.min
 
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
-    @Transient var isConnectedToCapital = false
     @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
     @Transient val range = 2
     @Transient lateinit var tileMap: TileMap
@@ -39,7 +38,7 @@ class CityInfo {
     var hasSoldBuildingThisTurn = false
 
     constructor()   // for json parsing, we need to have a default constructor
-    constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {
+    constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
         this.location = cityLocation
         setTransients()
@@ -78,7 +77,10 @@ class CityInfo {
         workedTiles = hashSetOf() //reassign 1st working tile
         population.autoAssignPopulation()
         cityStats.update()
+
+        triggerCitiesSettledNearOtherCiv()
     }
+
 
     //region pure functions
     fun clone(): CityInfo {
@@ -92,7 +94,6 @@ class CityInfo {
         toReturn.tiles = tiles
         toReturn.workedTiles = workedTiles
         toReturn.isBeingRazed=isBeingRazed
-        toReturn.isConnectedToCapital = isConnectedToCapital
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.resistanceCounter = resistanceCounter
         return toReturn
@@ -104,8 +105,8 @@ class CityInfo {
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
     fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
 
-    fun getCityResources(): Counter<TileResource> {
-        val cityResources = Counter<TileResource>()
+    fun getCityResources(): ResourceSupplyList {
+        val cityResources = ResourceSupplyList()
 
         for (tileInfo in getTiles().filter { it.resource != null }) {
             val resource = tileInfo.getTileResource()
@@ -124,14 +125,15 @@ class CityInfo {
                 if(resource.resourceType == ResourceType.Luxury
                         && getBuildingUniques().contains("Provides 1 extra copy of each improved luxury resource near this City"))
                     amountToAdd*=2
-                cityResources.add(resource, amountToAdd)
+
+                cityResources.add(resource, amountToAdd, "Tiles")
             }
 
         }
 
         for (building in cityConstructions.getBuiltBuildings().filter { it.requiredResource != null }) {
             val resource = GameBasics.TileResources[building.requiredResource]!!
-            cityResources.add(resource, -1)
+            cityResources.add(resource, -1, "Buildings")
         }
 
         return cityResources
@@ -174,6 +176,7 @@ class CityInfo {
     }
 
     fun isCapital() = cityConstructions.isBuilt("Palace")
+    fun isConnectedToCapital() = civInfo.citiesConnectedToCapital.contains(this)
 
     internal fun getMaxHealth(): Int {
         return 200 + cityConstructions.getBuiltBuildings().sumBy { it.cityHealth }
@@ -300,6 +303,30 @@ class CityInfo {
         cityConstructions.removeBuilding(buildingName)
         civInfo.gold += getGoldForSellingBuilding(buildingName)
         hasSoldBuildingThisTurn=true
+
+        cityStats.update()
+        civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
+    }
+
+
+    /*
+     When someone settles a city within 6 tiles of another civ,
+     this makes the AI unhappy and it starts a rolling event.
+     The SettledCitiesNearUs flag gets added to the AI so it knows this happened,
+     and on its turn it asks the player to stop (with a CitySettledNearOtherCiv alert type)
+     If the player says "whatever, I'm not promising to stop", they get a -10 modifier which gradually disappears in 40 turns
+     If they DO agree, then if they keep their promise for ~100 turns they get a +10 modifier for keeping the promise,
+     But if they don't keep their promise they get a -20 that will only fully disappear in 160 turns.
+     There's a lot of triggering going on here.
+     */
+    fun triggerCitiesSettledNearOtherCiv(){
+        val citiesWithin6Tiles = civInfo.gameInfo.civilizations.filter { it.isMajorCiv() && it!=civInfo }
+                .flatMap { it.cities }
+                .filter { it.getCenterTile().arialDistanceTo(getCenterTile()) <= 6 }
+        val civsWithCloseCities = citiesWithin6Tiles.map { it.civInfo }.distinct()
+                .filter { it.knows(civInfo) && it.exploredTiles.contains(location) }
+        for(otherCiv in civsWithCloseCities)
+            otherCiv.getDiplomacyManager(civInfo).setFlag(DiplomacyFlags.SettledCitiesNearUs,30)
     }
     //endregion
 }

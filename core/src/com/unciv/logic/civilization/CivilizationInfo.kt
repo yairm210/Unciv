@@ -9,40 +9,17 @@ import com.unciv.logic.GameInfo
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
-import com.unciv.logic.civilization.diplomacy.RelationshipLevel
-import com.unciv.logic.map.BFS
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.logic.trade.Trade
-import com.unciv.models.Counter
+import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.tech.TechEra
-import com.unciv.models.gamebasics.tile.ResourceType
-import com.unciv.models.gamebasics.tile.TileResource
-import com.unciv.models.stats.Stat
+import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.stats.Stats
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.math.max
-import kotlin.math.pow
 import kotlin.math.roundToInt
-
-enum class PlayerType{
-    AI,
-    Human
-}
-
-enum class CityStateType{
-    Cultured,
-    Maritime,
-    Mercantile
-}
-
-class TradeRequest(val requestingCiv:String,
-                   /** Their offers are what they offer us, and our offers are what they want in return */
-                   val trade: Trade)
 
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
@@ -55,11 +32,15 @@ class CivilizationInfo {
     @Transient var viewableTiles = setOf<TileInfo>()
     @Transient var viewableInvisibleUnitsTiles = setOf<TileInfo>()
 
+    /** Contains cities from ALL civilizations connected by trade routes to the capital */
+    @Transient var citiesConnectedToCapital = listOf<CityInfo>()
+
     /** This is for performance since every movement calculation depends on this, see MapUnit comment */
     @Transient var hasActiveGreatWall = false
+    @Transient var statsForNextTurn = Stats()
+    @Transient var detailedCivResources = ResourceSupplyList()
 
     var gold = 0
-    var happiness = 15
     @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
     var playerType = PlayerType.AI
     var civName = ""
@@ -91,7 +72,6 @@ class CivilizationInfo {
     fun clone(): CivilizationInfo {
         val toReturn = CivilizationInfo()
         toReturn.gold = gold
-        toReturn.happiness = happiness
         toReturn.playerType = playerType
         toReturn.civName = civName
         toReturn.tech = tech.clone()
@@ -129,6 +109,7 @@ class CivilizationInfo {
     fun getDiplomacyManager(civName: String) = diplomacy[civName]!!
     fun getKnownCivs() = diplomacy.values.map { it.otherCiv() }
     fun knows(otherCivName: String) = diplomacy.containsKey(otherCivName)
+    fun knows(otherCiv: CivilizationInfo) = knows(otherCiv.civName)
 
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
@@ -138,136 +119,33 @@ class CivilizationInfo {
     fun getCityStateType(): CityStateType = getNation().cityStateType!!
     fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
 
-
-    fun getStatsForNextTurn():Stats = getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
-
-    fun getStatMapForNextTurn(): HashMap<String, Stats> {
-        val statMap = HashMap<String,Stats>()
-        for (city in cities){
-            if(!statMap.containsKey("Cities")) statMap["Cities"]=Stats()
-            statMap["Cities"] = statMap["Cities"]!! + city.cityStats.currentCityStats
-        }
-
-        //City states culture bonus
-        for (otherCiv in getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Cultured
-                    && otherCiv.getDiplomacyManager(civName).relationshipLevel() >= RelationshipLevel.Friend) {
-                val cultureBonus = Stats()
-                cultureBonus.add(Stat.Culture, 3f * (getEra().ordinal+1))
-                if (statMap.containsKey("City States"))
-                    statMap["City States"] = statMap["City States"]!! + cultureBonus
-                else
-                    statMap["City States"] = cultureBonus
-            }
-        }
-
-        for (entry in getHappinessForNextTurn()) {
-            if (!statMap.containsKey(entry.key))
-                statMap[entry.key] = Stats()
-            statMap[entry.key]!!.happiness += entry.value
-        }
-
-        statMap["Transportation upkeep"] = Stats().apply { gold=- getTransportationUpkeep().toFloat()}
-        statMap["Unit upkeep"] = Stats().apply { gold=- getUnitUpkeep().toFloat()}
-
-        if (policies.isAdopted("Mandate Of Heaven")) {
-            val happiness = statMap.values.map { it.happiness }.sum()
-            if(happiness>0) {
-                if (!statMap.containsKey("Policies")) statMap["Policies"] = Stats()
-                statMap["Policies"]!!.culture += happiness / 2
-            }
-        }
-
-        // negative gold hurts science
-        // if we have - or 0, then the techs will never be complete and the tech button
-        // will show a negative number of turns and int.max, respectively
-        if (statMap.values.map { it.gold }.sum() < 0) {
-            val scienceDeficit = max(statMap.values.map { it.gold }.sum(),
-                    1 - statMap.values.map { it.science }.sum())// Leave at least 1
-            statMap["Treasury deficit"] = Stats().apply { science = scienceDeficit }
-        }
-        val goldDifferenceFromTrade = diplomacy.values.sumBy { it.goldPerTurn() }
-        if(goldDifferenceFromTrade!=0)
-            statMap["Trade"] = Stats().apply { gold= goldDifferenceFromTrade.toFloat() }
-
-        return statMap
+    fun victoryType(): VictoryType {
+        if(gameInfo.gameParameters.victoryTypes.size==1)
+            return gameInfo.gameParameters.victoryTypes.first() // That is the most relevant one
+        val victoryType = getNation().preferredVictoryType
+        if(gameInfo.gameParameters.victoryTypes.contains(victoryType)) return victoryType
+        else return VictoryType.Neutral
     }
 
-    private fun getUnitUpkeep(): Int {
-        val baseUnitCost = 0.5f
-        val freeUnits = 3
-        var unitsToPayFor = getCivUnits()
-        if(policies.isAdopted("Oligarchy")) unitsToPayFor = unitsToPayFor.filterNot { it.getTile().isCityCenter() }
-        val totalPaidUnits = max(0,unitsToPayFor.count()-freeUnits)
-        val gameProgress = gameInfo.turns/400f // as game progresses Maintenance cost rises
-        var cost = baseUnitCost*totalPaidUnits*(1+gameProgress)
-        cost = cost.pow(1+gameProgress/3) // Why 3? To spread 1 to 1.33
-        if(!isPlayerCivilization())
-            cost *= gameInfo.getDifficulty().aiUnitMaintenanceModifier
-        if(policies.isAdopted("Autocracy")) cost *= 0.66f
-        return cost.toInt()
+    fun stats() = CivInfoStats(this)
+    private fun transients() = CivInfoTransientUpdater(this)
+
+    fun updateStatsForNextTurn(){
+        statsForNextTurn = stats().getStatMapForNextTurn().values.toList().reduce{a,b->a+b}
     }
 
-    private fun getTransportationUpkeep(): Int {
-        var transportationUpkeep = 0
-        for (it in gameInfo.tileMap.values.filter { it.getOwner()==this }.filterNot { it.isCityCenter() }) {
-            when(it.roadStatus) {
-                RoadStatus.Road -> transportationUpkeep += 1
-                RoadStatus.Railroad -> transportationUpkeep += 2
-            }
-        }
-        if (policies.isAdopted("Trade Unions")) transportationUpkeep *= (2 / 3f).toInt()
-        return transportationUpkeep
+
+
+    fun getHappiness() = stats().getHappinessBreakdown().values.sum().roundToInt()
+
+
+    fun getCivResources(): ResourceSupplyList {
+        val newResourceSupplyList=ResourceSupplyList()
+        for(resourceSupply in detailedCivResources)
+            newResourceSupplyList.add(resourceSupply.resource,resourceSupply.amount,"All")
+        return newResourceSupplyList
     }
 
-    fun getHappinessForNextTurn(): HashMap<String, Float> {
-        val statMap = HashMap<String,Float>()
-        statMap["Base happiness"] = getDifficulty().baseHappiness.toFloat()
-
-        var happinessPerUniqueLuxury = 5f
-        if (policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
-        statMap["Luxury resources"]= getCivResources().keys
-                .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
-
-        for(city in cities.toList()){
-            for(keyvalue in city.cityStats.getCityHappiness()){
-                if(statMap.containsKey(keyvalue.key))
-                    statMap[keyvalue.key] = statMap[keyvalue.key]!!+keyvalue.value
-                else statMap[keyvalue.key] = keyvalue.value
-            }
-        }
-
-        if (getBuildingUniques().contains("Provides 1 happiness per social policy")) {
-            if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
-            statMap["Policies"] = statMap["Policies"]!! +
-                    policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()
-        }
-
-        //From city-states
-        for (otherCiv in getKnownCivs()) {
-            if (otherCiv.isCityState() && otherCiv.getCityStateType() == CityStateType.Mercantile
-                    && otherCiv.getDiplomacyManager(this).relationshipLevel() >= RelationshipLevel.Friend) {
-                if (statMap.containsKey("City-states"))
-                    statMap["City-states"] = statMap["City-states"]!! + 3f
-                else
-                    statMap["City-states"] = 3f
-            }
-        }
-
-        return statMap
-    }
-
-    /**
-     * Returns a counter of non-zero resources that the civ has
-     */
-    fun getCivResources(): Counter<TileResource> {
-        val civResources = Counter<TileResource>()
-        for (city in cities) civResources.add(city.getCityResources())
-        for (dip in diplomacy.values) civResources.add(dip.resourcesFromTrade())
-        for(resource in getCivUnits().mapNotNull { it.baseUnit.requiredResource }.map { GameBasics.TileResources[it]!! })
-            civResources.add(resource,-1)
-        return civResources
-    }
 
     /**
      * Returns a dictionary of ALL resource names, and the amount that the civ has of each
@@ -275,7 +153,8 @@ class CivilizationInfo {
     fun getCivResourcesByName():HashMap<String,Int>{
         val hashMap = HashMap<String,Int>()
         for(resource in GameBasics.TileResources.keys) hashMap[resource]=0
-        for(entry in getCivResources()) hashMap[entry.key.name] = entry.value
+        for(entry in getCivResources())
+            hashMap[entry.resource.name] = entry.amount
         return hashMap
     }
 
@@ -285,16 +164,25 @@ class CivilizationInfo {
 
     fun getCivUnits(): List<MapUnit> = units
 
-    fun addUnit(mapUnit: MapUnit){
+    fun addUnit(mapUnit: MapUnit, updateCivInfo:Boolean=true){
         val newList = ArrayList(units)
         newList.add(mapUnit)
         units=newList
+
+        if(updateCivInfo) {
+            // Not relevant when updating tileinfo transients, since some info of the civ itself isn't yet available,
+            // and in any case it'll be updated once civ info transients are
+            updateStatsForNextTurn() // unit upkeep
+            updateDetailedCivResources()
+        }
     }
 
     fun removeUnit(mapUnit: MapUnit){
         val newList = ArrayList(units)
         newList.remove(mapUnit)
         units=newList
+        updateStatsForNextTurn() // unit upkeep
+        updateDetailedCivResources()
     }
 
     fun getIdleUnits() = getCivUnits().filter { it.isIdle() }
@@ -323,40 +211,6 @@ class CivilizationInfo {
             if(building.replaces==baseBuilding.name && building.uniqueTo==civName)
                 return building
         return baseBuilding
-    }
-
-    // This is a big performance
-    fun updateViewableTiles() {
-        val newViewableTiles = HashSet<TileInfo>()
-        newViewableTiles.addAll(cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
-        newViewableTiles.addAll(getCivUnits().flatMap { it.viewableTiles})
-        viewableTiles = newViewableTiles // to avoid concurrent modification problems
-
-        val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(getCivUnits().filter {it.hasUnique("Can attack submarines")}.flatMap {it.viewableTiles})
-        viewableInvisibleUnitsTiles = newViewableInvisibleTiles
-        // updating the viewable tiles also affects the explored tiles, obvs
-
-        val newExploredTiles = HashSet<Vector2>(exploredTiles)
-        newExploredTiles.addAll(newViewableTiles.asSequence().map { it.position }
-                .filterNot { exploredTiles.contains(it) })
-        exploredTiles = newExploredTiles // ditto
-
-
-        val viewedCivs = HashSet<CivilizationInfo>()
-        for(tile in viewableTiles){
-            val tileOwner = tile.getOwner()
-            if(tileOwner!=null) viewedCivs+=tileOwner
-            for(unit in tile.getUnits()) viewedCivs+=unit.civInfo
-        }
-
-        if(!isBarbarianCivilization()) {
-            for (otherCiv in viewedCivs.filterNot { it == this || it.isBarbarianCivilization() })
-                if (!diplomacy.containsKey(otherCiv.civName)) {
-                    meetCivilization(otherCiv)
-                    addNotification("We have encountered [${otherCiv.civName}]!".tr(), null, Color.GOLD)
-                }
-        }
     }
 
     fun meetCivilization(otherCiv: CivilizationInfo) {
@@ -419,17 +273,20 @@ class CivilizationInfo {
             cityInfo.civInfo = this // must be before the city's setTransients because it depends on the tilemap, that comes from the currentPlayerCivInfo
             cityInfo.setTransients()
         }
-        setCitiesConnectedToCapitalTransients()
         updateViewableTiles()
         updateHasActiveGreatWall()
+        updateDetailedCivResources()
     }
 
-    fun updateHasActiveGreatWall(){
-        hasActiveGreatWall = !tech.isResearched("Dynamite") &&
-                getBuildingUniques().contains("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
-    }
+    // implementation in a seperate class, to not clog up CivInfo
+    fun setCitiesConnectedToCapitalTransients() = transients().setCitiesConnectedToCapitalTransients()
+    fun updateHasActiveGreatWall() = transients().updateHasActiveGreatWall()
+    fun updateViewableTiles() = transients().updateViewableTiles()
+    fun updateDetailedCivResources() = transients().updateDetailedCivResources()
 
     fun startTurn(){
+        updateStatsForNextTurn() // for things that change when turn passes e.g. golden age, city state influence
+
         // Generate great people at the start of the turn,
         // so they won't be generated out in the open and vulnerable to enemy attacks before you can control them
         if (cities.isNotEmpty()) { //if no city available, addGreatPerson will throw exception
@@ -441,14 +298,13 @@ class CivilizationInfo {
         setCitiesConnectedToCapitalTransients()
         for (city in cities) city.startTurn()
 
-        happiness = getHappinessForNextTurn().values.sum().roundToInt()
         getCivUnits().toList().forEach { it.startTurn() }
     }
 
     fun endTurn() {
         notifications.clear()
 
-        val nextTurnStats = getStatsForNextTurn()
+        val nextTurnStats = statsForNextTurn
 
         policies.endTurn(nextTurnStats.culture.toInt())
 
@@ -475,7 +331,7 @@ class CivilizationInfo {
             city.endTurn()
         }
 
-        goldenAges.endTurn(happiness)
+        goldenAges.endTurn(getHappiness())
         getCivUnits().forEach { it.endTurn() }
         diplomacy.values.forEach{it.nextTurn()}
         updateHasActiveGreatWall()
@@ -511,7 +367,7 @@ class CivilizationInfo {
         addNotification("A [$greatPerson] has been born!".tr(), city.location, Color.GOLD)
     }
 
-    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit {
+    fun placeUnitNearTile(location: Vector2, unitName: String): MapUnit? {
         return gameInfo.tileMap.placeUnitNearTile(location, unitName, this)
     }
 
@@ -520,62 +376,6 @@ class CivilizationInfo {
         newCity.cityConstructions.chooseNextConstruction()
     }
 
-    fun setCitiesConnectedToCapitalTransients(){
-        if(cities.isEmpty()) return // eg barbarians
-
-        // We map which cities we've reached, to the mediums they've been reached by -
-        // this is so we know that if we've seen which cities can be connected by port A, and one
-        // of those is city B, then we don't need to check the cities that B can connect to by port,
-        // since we'll get the same cities we got from A, since they're connected to the same sea.
-        val citiesReachedToMediums = HashMap<CityInfo,ArrayList<String>>()
-        var citiesToCheck = mutableListOf(getCapital())
-        citiesReachedToMediums[getCapital()] = arrayListOf("Start")
-        while(citiesToCheck.isNotEmpty() && citiesReachedToMediums.size<cities.size){
-            val newCitiesToCheck = mutableListOf<CityInfo>()
-            for(cityToConnectFrom in citiesToCheck){
-                val reachedMediums = citiesReachedToMediums[cityToConnectFrom]!!
-
-                // This is copypasta and can be cleaned up
-                if(!reachedMediums.contains("Road")){
-                    val roadBfs = BFS(cityToConnectFrom.getCenterTile()){it.roadStatus!=RoadStatus.None}
-                    roadBfs.stepToEnd()
-                    val reachedCities = cities.filter { roadBfs.tilesReached.containsKey(it.getCenterTile())}
-                    for(reachedCity in reachedCities){
-                        if(!citiesReachedToMediums.containsKey(reachedCity)){
-                            newCitiesToCheck.add(reachedCity)
-                            citiesReachedToMediums[reachedCity] = arrayListOf()
-                        }
-                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if(!cityReachedByMediums.contains("Road"))
-                            cityReachedByMediums.add("Road")
-                    }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add("Road")
-                }
-
-                if(!reachedMediums.contains("Harbor")
-                        && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent("Harbor")){
-                    val seaBfs = BFS(cityToConnectFrom.getCenterTile()){it.isWater || it.isCityCenter()}
-                    seaBfs.stepToEnd()
-                    val reachedCities = cities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
-                    for(reachedCity in reachedCities){
-                        if(!citiesReachedToMediums.containsKey(reachedCity)){
-                            newCitiesToCheck.add(reachedCity)
-                            citiesReachedToMediums[reachedCity] = arrayListOf()
-                        }
-                        val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if(!cityReachedByMediums.contains("Harbor"))
-                            cityReachedByMediums.add("Harbor")
-                    }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add("Harbor")
-                }
-            }
-            citiesToCheck = newCitiesToCheck
-        }
-
-        for(city in cities){
-            city.isConnectedToCapital = citiesReachedToMediums.containsKey(city)
-        }
-    }
 
     fun destroy(){
         for(civ in gameInfo.civilizations)
@@ -588,6 +388,13 @@ class CivilizationInfo {
             for(tradeRequest in diplomacyManager.otherCiv().tradeRequests.filter { it.requestingCiv==civName })
                 diplomacyManager.otherCiv().tradeRequests.remove(tradeRequest) // it  would be really weird to get a trade request from a dead civ
         }
+    }
+
+    fun giveGoldGift(otherCiv: CivilizationInfo, giftAmount: Int) {
+        if(!otherCiv.isCityState()) throw Exception("You can only gain influence with city states!")
+        gold -= giftAmount
+        otherCiv.getDiplomacyManager(this).influence += giftAmount/10
+        updateStatsForNextTurn()
     }
 
     //endregion

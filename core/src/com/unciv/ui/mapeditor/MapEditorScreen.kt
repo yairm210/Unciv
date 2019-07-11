@@ -61,7 +61,7 @@ class MapEditorScreen(): CameraStageBaseScreen(){
             tileGroup.onClick {
                 val tileInfo = tileGroup.tileInfo
 
-                tileEditorOptions.updateTile(tileInfo)
+                tileEditorOptions.updateTileWhenClicked(tileInfo)
                 tileGroup.tileInfo.setTransients()
                 tileGroup.update(true, true, true)
             }
