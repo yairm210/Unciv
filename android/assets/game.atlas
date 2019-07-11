@@ -3014,317 +3014,408 @@ UnitPromotionIcons/Accuracy_I_(Civ5)
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Barrage_III_(Civ5)
+UnitPromotionIcons/Air_Repair_(Civ5)
   rotate: false
   xy: 182, 153
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Barrage_II_(Civ5)
+UnitPromotionIcons/Ambush_II_(Civ5)
   rotate: false
   xy: 312, 95
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Barrage_I_(Civ5)
+UnitPromotionIcons/Ambush_I_(Civ5)
   rotate: false
   xy: 1142, 1229
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Blitz_(Civ5)
+UnitPromotionIcons/Barrage_III_(Civ5)
   rotate: false
   xy: 438, 447
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Boarding_Party_III_(Civ5)
+UnitPromotionIcons/Barrage_II_(Civ5)
   rotate: false
   xy: 1164, 1229
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Boarding_Party_II_(Civ5)
+UnitPromotionIcons/Barrage_I_(Civ5)
   rotate: false
   xy: 312, 73
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Boarding_Party_I_(Civ5)
+UnitPromotionIcons/Blitz_(Civ5)
   rotate: false
   xy: 2459, 422
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Bombardment_III_(Civ5)
+UnitPromotionIcons/Boarding_Party_III_(Civ5)
   rotate: false
   xy: 281, 1665
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Bombardment_II_(Civ5)
+UnitPromotionIcons/Boarding_Party_II_(Civ5)
   rotate: false
   xy: 379, 1281
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Bombardment_I_(Civ5)
+UnitPromotionIcons/Boarding_Party_I_(Civ5)
   rotate: false
   xy: 2442, 55
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Charge_(Civ5)
+UnitPromotionIcons/Bombardment_III_(Civ5)
   rotate: false
   xy: 2338, 3
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Coastal_Raider_III_(Civ5)
+UnitPromotionIcons/Bombardment_II_(Civ5)
   rotate: false
   xy: 458, 669
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Coastal_Raider_II_(Civ5)
+UnitPromotionIcons/Bombardment_I_(Civ5)
   rotate: false
   xy: 2440, 33
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Coastal_Raider_I_(Civ5)
+UnitPromotionIcons/Charge_(Civ5)
   rotate: false
   xy: 538, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Cover_II_(Civ5)
+UnitPromotionIcons/Coastal_Raider_III_(Civ5)
   rotate: false
   xy: 1172, 1281
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Cover_I_(Civ5)
+UnitPromotionIcons/Coastal_Raider_II_(Civ5)
   rotate: false
   xy: 312, 51
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Drill_III_(Civ5)
+UnitPromotionIcons/Coastal_Raider_I_(Civ5)
   rotate: false
   xy: 334, 71
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Drill_II_(Civ5)
+UnitPromotionIcons/Cover_II_(Civ5)
   rotate: false
   xy: 281, 1643
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Drill_I_(Civ5)
+UnitPromotionIcons/Cover_I_(Civ5)
   rotate: false
   xy: 379, 1259
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Formation_II_(Civ5)
+UnitPromotionIcons/Drill_III_(Civ5)
   rotate: false
   xy: 2360, 3
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Formation_I_(Civ5)
+UnitPromotionIcons/Drill_II_(Civ5)
   rotate: false
   xy: 458, 647
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Heal_Instantly_(Civ5)
+UnitPromotionIcons/Drill_I_(Civ5)
   rotate: false
   xy: 560, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Indirect_Fire_(Civ5)
+UnitPromotionIcons/Evasion_(Civ5)
   rotate: false
   xy: 1172, 1259
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Logistics_(Civ5)
+UnitPromotionIcons/Formation_II_(Civ5)
   rotate: false
   xy: 312, 29
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/March_(Civ5)
+UnitPromotionIcons/Formation_I_(Civ5)
   rotate: false
   xy: 334, 49
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Medic_(Civ5)
+UnitPromotionIcons/Heal_Instantly_(Civ5)
   rotate: false
   xy: 356, 71
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Medic_II_(Civ5)
-  rotate: false
-  xy: 356, 71
-  size: 20, 20
-  orig: 20, 20
-  offset: 0, 0
-  index: -1
-UnitPromotionIcons/Mobility_(Civ5)
+UnitPromotionIcons/Indirect_Fire_(Civ5)
   rotate: false
   xy: 281, 1621
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Range_(Civ5)
+UnitPromotionIcons/Interception_III_(Civ5)
   rotate: false
   xy: 379, 1237
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_III_(Civ5)
+UnitPromotionIcons/Interception_II_(Civ5)
   rotate: false
   xy: 2382, 3
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_II_(Civ5)
+UnitPromotionIcons/Interception_I_(Civ5)
   rotate: false
   xy: 582, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_I_(Civ5)
+UnitPromotionIcons/Logistics_(Civ5)
   rotate: false
   xy: 356, 49
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Sentry_(Civ5)
+UnitPromotionIcons/March_(Civ5)
   rotate: false
   xy: 378, 71
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_III_(Civ5)
+UnitPromotionIcons/Medic_(Civ5)
   rotate: false
   xy: 379, 1215
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_II_(Civ5)
+UnitPromotionIcons/Medic_II_(Civ5)
+  rotate: false
+  xy: 379, 1215
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Mobility_(Civ5)
   rotate: false
   xy: 2404, 3
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Shock_I_(Civ5)
+UnitPromotionIcons/Operational_Range_(Civ5)
   rotate: false
   xy: 604, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Siege_(Civ5)
+UnitPromotionIcons/Range_(Civ5)
+  rotate: false
+  xy: 604, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Scouting_III_(Civ5)
   rotate: false
   xy: 378, 49
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Targeting_III_(Civ5)
+UnitPromotionIcons/Scouting_II_(Civ5)
   rotate: false
   xy: 400, 71
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Targeting_II_(Civ5)
+UnitPromotionIcons/Scouting_I_(Civ5)
   rotate: false
   xy: 626, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Targeting_I_(Civ5)
+UnitPromotionIcons/Sentry_(Civ5)
   rotate: false
   xy: 400, 49
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Volley_(Civ5)
+UnitPromotionIcons/Shock_III_(Civ5)
   rotate: false
   xy: 648, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Wolfpack_III_(Civ5)
+UnitPromotionIcons/Shock_II_(Civ5)
   rotate: false
   xy: 670, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Wolfpack_II_(Civ5)
+UnitPromotionIcons/Shock_I_(Civ5)
   rotate: false
   xy: 692, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Wolfpack_I_(Civ5)
+UnitPromotionIcons/Siege_(Civ5)
   rotate: false
   xy: 714, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Woodsman_(Civ5)
+UnitPromotionIcons/Siege_I_(Civ5)
+  rotate: false
+  xy: 714, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Siege_III_(Civ5)
   rotate: false
   xy: 736, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Siege_II_(Civ5)
+  rotate: false
+  xy: 758, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Sortie_(Civ5)
+  rotate: false
+  xy: 780, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting_III_(Civ5)
+  rotate: false
+  xy: 802, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting_II_(Civ5)
+  rotate: false
+  xy: 824, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting_I_(Civ5)
+  rotate: false
+  xy: 846, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting_I_(air)_(Civ5)
+  rotate: false
+  xy: 846, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Volley_(Civ5)
+  rotate: false
+  xy: 868, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Wolfpack_III_(Civ5)
+  rotate: false
+  xy: 890, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Wolfpack_II_(Civ5)
+  rotate: false
+  xy: 912, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Wolfpack_I_(Civ5)
+  rotate: false
+  xy: 934, 5
+  size: 20, 20
+  orig: 20, 20
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Woodsman_(Civ5)
+  rotate: false
+  xy: 956, 5
   size: 20, 20
   orig: 20, 20
   offset: 0, 0

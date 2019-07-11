@@ -180,6 +180,7 @@ class MapUnit {
         if(type.isMelee()) return 1
         var range = baseUnit().range
         if(hasUnique("+1 Range")) range++
+        if(hasUnique("+2 Range")) range+=2
         return range
     }
 
@@ -475,7 +476,8 @@ class MapUnit {
     }
 
     fun canIntercept(attackedTile: TileInfo): Boolean {
-        return interceptChance()!=0 && attacksThisTurn==0
+        return interceptChance()!=0
+                && (attacksThisTurn==0 || hasUnique("1 extra Interception may be made per turn") && attacksThisTurn<2)
                 && currentTile.arialDistanceTo(attackedTile) <= getRange()
     }
 
@@ -483,8 +485,17 @@ class MapUnit {
         val interceptUnique = getUniques()
                 .firstOrNull { it.endsWith(" chance to intercept air attacks") }
         if(interceptUnique==null) return 0
-        val percent = Regex("\\d+").find(interceptUnique)!!.value
-        return percent.toInt()
+        val percent = Regex("\\d+").find(interceptUnique)!!.value.toInt()
+        return percent
+    }
+
+    fun interceptDamagePercentBonus():Int{
+        var sum=0
+        for(unique in getUniques().filter { it.startsWith("Bonus when intercepting") }){
+            val percent = Regex("\\d+").find(unique)!!.value.toInt()
+            sum += percent
+        }
+        return sum
     }
 
     //endregion
