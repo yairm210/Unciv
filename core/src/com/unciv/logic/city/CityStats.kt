@@ -342,7 +342,7 @@ class CityStats {
         newBaseStatList["Buildings"] = cityInfo.cityConstructions.getStats()
         newBaseStatList["Policies"] = getStatsFromPolicies(civInfo.policies.adoptedPolicies)
         newBaseStatList["National ability"] = getStatsFromNationUnique()
-        newBaseStatList["CityStates"] = getStatsFromCityStates()
+        newBaseStatList["City States"] = getStatsFromCityStates()
 
         baseStatList = newBaseStatList
     }

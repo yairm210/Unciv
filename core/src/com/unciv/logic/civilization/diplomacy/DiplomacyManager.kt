@@ -191,8 +191,8 @@ class DiplomacyManager() {
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll{ it.equals(trade.reverse()) }
-                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short!".tr(),null, Color.GOLD)
-                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short!".tr(),null, Color.GOLD)
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short".tr(),null, Color.GOLD)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short".tr(),null, Color.GOLD)
                 }
             }
         }
