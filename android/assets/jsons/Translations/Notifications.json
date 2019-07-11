@@ -134,10 +134,10 @@
             Japanese:"[construction]は[cityName]に建てられました"
         }
 			
-		"[wonder] has been built in a faraway land":{	
-			Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
-			French:"[wonder] a été construit(e) dans un lointain pays"
-		}
+	"[wonder] has been built in a faraway land":{	
+		Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
+		French:"[wonder] a été construit(e) dans un lointain pays"
+	}
         
         "Work has started on [construction]":{
             Italian:"Sono iniziati i lavori per [construction]"
@@ -160,6 +160,10 @@
 	"One of our trades with [nation] has ended": {
             Italian:"Un nostro accordo con [nation] è terminato."
 			French:"Un de nos échanges avec [nation] a pris fin"
+        },
+
+ 	"One of our trades with [nation] has been cut short": {
+            Italian:"Un nostro accordo con [nation] è stato interrotto."
         },
 
         "[cityname] has expanded its borders!":{
@@ -229,10 +233,10 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を攻撃しました"
         }
 
-		"Enemy city [cityName] has attacked our [ourUnit]":{
-			Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
-			French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
-		}
+	"Enemy city [cityName] has attacked our [ourUnit]":{
+		Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
+		French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
+	}
 		
         "An enemy [unit] has captured [cityname]":{
             Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
@@ -273,10 +277,10 @@
             Japanese:"敵[unit]が私たちの[ourUnit]を破壊しました"
         }
 		
-		"Enemy city [cityName] has destroyed our [ourUnit]":{
-			Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
-			French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
-		}
+	"Enemy city [cityName] has destroyed our [ourUnit]":{
+		Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
+		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
+	}
         
         "An enemy [unit] was destroyed while attacking [cityname]":{
             Italian:"Un'unità nemica [unit] è stata distrutta mentre attaccava [cityname]"
@@ -304,17 +308,21 @@
             Japanese:"「私たちの[ourUnit]を攻撃している間に敵[unit]が破壊された"
         }
 		
-		"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
-		}
+	"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
+		Italian:"La nostra unità [attackerName] è stata distrutta dall'intercettante [interceptorName]"
+	}
+
+	"Our [interceptorName] intercepted and destroyed an enemy [attackerName]":{
+		Italian:"La nostra unità [interceptorName] ha intercettato e distrutto l'unità nemica [attackerName]"
+	}
 		
-		"Our [interceptorName] intercepted and destroyed an enemy [attackerName]":{
-		}
+	"Our [$attackerName] was attacked by an intercepting [$interceptorName]":{
+        	Italian:"La nostra unità [$attackerName] è stata attaccata dall'intercettante [$interceptorName]"
+	}
 		
-		"Our [$attackerName] was attacked by an intercepting [$interceptorName]":{
-		}
-		
-		"Our [$interceptorName] intercepted and attacked an enemy [$attackerName]":{
-		}
+	"Our [$interceptorName] intercepted and attacked an enemy [$attackerName]":{
+        	Italian:"La nostra unità [$interceptorName] ha intercettato e attaccato l'unità nemica [$attackerName]"
+	}
         
         "An enemy [unit] was spotted near our territory":{
             Italian:"Abbiamo avvistato un'unità nemica [unit] vicino al nostro territorio"
@@ -374,7 +382,7 @@
         }
 			
 	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
-		Italian:"Nella cattura di un accampamento barbaro, abbiamo recuperato [goldAmount] Oro!"
+		Italian:"Abbiamo distrutto un accampamento barbaro e recuperato [goldAmount] Oro!"
 		French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
 	}
 		
@@ -460,22 +468,23 @@
 			French:"[unit] n'a rien à faire"
         }
 
-		"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
-			Italian:"Stai perdendo il controllo di [name]."
-		}
+	"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
+		Italian:"Stai perdendo il controllo di [name]."
+	}
 
-		"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
-			Italian:"Non sei più amico di [name]!"
-		}
+	"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
+		Italian:"Non sei più amico di [name]!"
+	}
 
-		"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
-			Italian:"L'alleanza con [name] si sta sfaldando."
-		}
+	"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
+		Italian:"L'alleanza con [name] si sta sfaldando."
+	}
 
-		"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
-			Italian:"Non sei più alleato con [name]!"
-		},
+	"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
+		Italian:"Non sei più alleato con [name]!"
+	},
 
         "[civName] gave us a [untiName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
+		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
         }
 }
