@@ -744,6 +744,20 @@
 		secondaryColor:[194,97,255],
 		cities:["Anversa"]
 	},
+	{
+		name:"Dublin",
+		translatedName:"Dublino",
+		adjective:["irlandese"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[211,180,113],
+		cities:["Dublino"]
+	},
 	/*
 	{
 		name:"Tyre",
