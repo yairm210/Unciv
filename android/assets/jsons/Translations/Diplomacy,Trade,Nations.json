@@ -248,21 +248,22 @@
 	// City States
 	
 	"Provides [amountOfCulture] culture at 30 Influence":{
-		Italian:"Dona [amountOfCulture] punti Cultura quando l'Influenza supera 30 punti"
+		Italian:"Dona [amountOfCulture] punti Cultura a minimo 30 Punti Influenza"
 		French:"Fournit [amountOfCulture] de Culture à 30 d'influence"
 	}
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
-		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città quando l'Influenza supera 30 punti"
+		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città a minimo 30 Punti Influenza"
 		French:"Fournit 3 Nourriture à la capitale et 1 nourriture pour les autres villes à 30 d'influence"
 	}
 
 	"Provides 3 happiness at 30 Influence":{
-		Italian:"Dona 3 Punti Felicità quando l'Influenza supera 30 punti"
+		Italian:"Dona 3 Punti Felicità a minimo 30 Punti Influenza"
 		French:"Fournit 3 de Bonheur à 30 d'influence"
 	},
 
 	"Provides land units every 20 turns at 30 Influence":{
+		Italian:"Concede un'unità terrestre ogni 20 turni a minimo 30 Punti Influenza"
 	},
 
 	"Gift [goldAmount] gold":{
@@ -971,6 +972,10 @@
 		Italian:"Turchia"
 		French:"Turquie"
 		Portuguese:"Turquia"
+	}
+
+	"Suleiman I":{
+		Italian:"Solimano I"
 	}
 
 	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
