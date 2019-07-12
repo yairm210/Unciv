@@ -28,6 +28,7 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado, US for War Elephant
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
+* [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 
 ### Classical Era
 
