@@ -952,7 +952,6 @@
 		secondaryColor:[211,180,113],
 		cities:["Dublin"]
 	},
-	/*
 	{
 		name:"Tyre",
 		adjective:["Tyre"],
@@ -981,7 +980,60 @@
 		secondaryColor:[60,190,255],
 		cities:["Ur"]
 	},
-	*/
+	{
+		name:"Genoa",
+		adjective:["Genoa"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[45,255,86],
+		cities:["Genoa"]
+	},
+	{
+		name:"Oslo",
+		adjective:["Oslo"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[153,10,10],
+		cities:["Oslo"]
+	},
+	{
+		name:"Brussels",
+		adjective:["Brussels"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[153,255,51],
+		cities:["Brussels"]
+	},
+	{
+		name:"Kabul",
+		adjective:["Kabul"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[153,0,76],
+		cities:["Kabul"]
+	},
 
 	//Barbarian
 	{
