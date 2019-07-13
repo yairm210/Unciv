@@ -56,7 +56,7 @@ class GameInfo {
                 if (turns % 10 == 0 && !gameParameters.noBarbarians) {
                     val encampments = tileMap.values.filter { it.improvement==Constants.barbarianEncampment }
 
-                    if(encampments.size < civilizations.filter { it.isMajorCiv() }.size*2) {
+                    if(encampments.size < civilizations.filter { it.isMajorCiv() }.size) {
                         val newEncampmentTile = placeBarbarianEncampment(encampments)
                         if (newEncampmentTile != null)
                             placeBarbarianUnit(newEncampmentTile)
