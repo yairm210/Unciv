@@ -310,4 +310,29 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
     }
 
     fun getDistanceToTiles() = getDistanceToTilesWithinTurn(unit.currentTile.position,unit.currentMovement)
+
+    fun getArialMovementBfsTree(startingTile: TileInfo): HashMap<TileInfo, TileInfo> {
+        var tilesToCheck = ArrayList<TileInfo>()
+        /** each tile reached points to its parent tile, where we got to it from */
+        val tilesReached = HashMap<TileInfo, TileInfo>()
+
+        tilesToCheck.add(startingTile)
+        tilesReached[startingTile] = startingTile
+
+
+        while(tilesToCheck.isNotEmpty()) {
+            val newTilesToCheck = ArrayList<TileInfo>()
+            for(tileToCheck in tilesToCheck){
+                val reachableTiles = tileToCheck.getTilesInDistance(unit.getRange())
+                        .filter { unit.movement.canMoveTo(it) }
+                for(reachableTile in reachableTiles){
+                    if(tilesReached.containsKey(reachableTile)) continue
+                    tilesReached[reachableTile]=tileToCheck
+                    newTilesToCheck.add(reachableTile)
+                }
+            }
+            tilesToCheck=newTilesToCheck
+        }
+        return tilesReached
+    }
 }
