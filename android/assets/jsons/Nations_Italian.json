@@ -758,11 +758,10 @@
 		secondaryColor:[211,180,113],
 		cities:["Dublino"]
 	},
-	/*
 	{
 		name:"Tyre",
 		translatedName:"Tiro",
-		adjective:["tirano"],
+		adjective:["tiriano"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 		
@@ -776,7 +775,6 @@
 	},
 	{
 		name:"Ur",
-		translatedName:"Ur",
 		adjective:["sumero"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
@@ -786,10 +784,80 @@
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
 		
 		mainColor:[0, 0, 0],
-		secondaryColor:[60,190,255],
+		secondaryColor:[255,69,0],
 		cities:["Ur"]
 	},
-	*/
+	{
+		name:"Genoa",
+		translatedName:"Genova",
+		adjective:["genovese"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[45,255,86],
+		cities:["Genova"]
+	},
+	{
+		name:"Venice",
+		translatedName:"Venezia",
+		adjective:["veneziano"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[153,10,10],
+		cities:["Venezia"]
+	},
+	{
+		name:"Brussels",
+		translatedName:"Bruxelles",
+		adjective:["belga"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[153,255,51],
+		cities:["Bruxelles"]
+	},
+	{
+		name:"Kabul",
+		adjective:["afgano"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		
+		mainColor:[0, 0, 0],
+		secondaryColor:[153,0,76],
+		cities:["Kabul"]
+	},
+	{
+		name:"Sidon",
+		translatedName:"Sidone",
+		adjective:["fenicio"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[250,128,114],
+		cities:["Sidone"]
+	},
 	
 	//Barbarian
 	{
