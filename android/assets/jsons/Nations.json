@@ -977,7 +977,7 @@
 		afterPeace:"May peace forever bless our lands.",
 		
 		mainColor:[0, 0, 0],
-		secondaryColor:[60,190,255],
+		secondaryColor:[255,69,0],
 		cities:["Ur"]
 	},
 	{
@@ -995,8 +995,8 @@
 		cities:["Genoa"]
 	},
 	{
-		name:"Oslo",
-		adjective:["Oslo"],
+		name:"Venice",
+		adjective:["Venice"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
 
@@ -1006,7 +1006,7 @@
 		
 		mainColor:[0, 0, 0],
 		secondaryColor:[153,10,10],
-		cities:["Oslo"]
+		cities:["Venice"]
 	},
 	{
 		name:"Brussels",
@@ -1033,6 +1033,19 @@
 		mainColor:[0, 0, 0],
 		secondaryColor:[153,0,76],
 		cities:["Kabul"]
+	},
+	{
+		name:"Sidon",
+		adjective:["Sidon"],
+		cityStateType:"Militaristic",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[250,128,114],
+		cities:["Sidon"]
 	},
 
 	//Barbarian
