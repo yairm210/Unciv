@@ -170,16 +170,42 @@ class SpecificUnitAutomation{
         if(enemyAirUnitsInRange.isNotEmpty()) return // we need to be on standby in case they attack
         if(UnitAutomation().tryAttackNearbyEnemy(unit)) return
 
-        val reachableCities = tilesInRange
+        val immediatelyReachableCities = tilesInRange
                 .filter { it.isCityCenter() && it.getOwner()==unit.civInfo && unit.movement.canMoveTo(it)}
 
-        for(city in reachableCities){
+        for(city in immediatelyReachableCities){
             if(city.getTilesInDistance(unit.getRange())
                             .any { UnitAutomation().containsAttackableEnemy(it,MapUnitCombatant(unit)) }) {
                 unit.movement.moveToTile(city)
                 return
             }
         }
+
+        val pathsToCities = unit.movement.getArialPathsToCities()
+        if(pathsToCities.size==1) return // can't actually move anywhere else
+
+        val citiesByNearbyAirUnits = pathsToCities.keys
+                .groupBy { it.getTilesInDistance(unit.getRange())
+                        .count{it.airUnits.size>0 && it.airUnits.first().civInfo.isAtWarWith(unit.civInfo)} }
+
+        if(citiesByNearbyAirUnits.keys.any { it!=0 }){
+            val citiesWithMostNeedOfAirUnits = citiesByNearbyAirUnits.maxBy { it.key }!!.value
+            val chosenCity = citiesWithMostNeedOfAirUnits.minBy { pathsToCities[it]!!.size }!! // city with min path = least turns to get there
+            val firstStepInPath = pathsToCities[chosenCity]!!.first()
+            unit.movement.moveToTile(firstStepInPath)
+            return
+        }
+
+        // no city needs fighters to defend, so let's attack stuff from the closest possible location
+        val citiesThatCanAttackFrom = pathsToCities.keys
+                .filter { it.getTilesInDistance(unit.getRange())
+                        .any { UnitAutomation().containsAttackableEnemy(it,MapUnitCombatant(unit)) } }
+        if(citiesThatCanAttackFrom.isEmpty()) return
+
+        val closestCityThatCanAttackFrom = citiesThatCanAttackFrom.minBy { pathsToCities[it]!!.size }!!
+        val firstStepInPath = pathsToCities[closestCityThatCanAttackFrom]!!.first()
+        unit.movement.moveToTile(firstStepInPath)
+
     }
 
 }
