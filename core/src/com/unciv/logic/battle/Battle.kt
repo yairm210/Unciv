@@ -210,6 +210,7 @@ class Battle(val gameInfo:GameInfo) {
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
             if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
+            for(airUnit in airUnits.toList()) airUnit.destroy()
         }
 
         if (!attackerCiv.isMajorCiv()){
