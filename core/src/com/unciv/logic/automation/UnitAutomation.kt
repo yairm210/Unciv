@@ -36,6 +36,9 @@ class UnitAutomation{
         if(unit.type==UnitType.Fighter)
             return SpecificUnitAutomation().automateFighter(unit)
 
+        if(unit.type==UnitType.Bomber)
+            return SpecificUnitAutomation().automateBomber(unit)
+
         if(unit.name.startsWith("Great")
                 && unit.name in GreatPersonManager().statToGreatPersonMapping.values){ // So "Great War Infantry" isn't caught here
             return SpecificUnitAutomation().automateGreatPerson(unit)
@@ -384,6 +387,8 @@ class UnitAutomation{
         val cityTilesToAttack = attackableEnemies.filter { it.tileToAttack.isCityCenter() }
         val nonCityTilesToAttack = attackableEnemies.filter { !it.tileToAttack.isCityCenter() }
 
+        // todo add filter undefended tile if is air unit
+
         var enemyTileToAttack: AttackableTile? = null
         val capturableCity = cityTilesToAttack.firstOrNull{it.tileToAttack.getCity()!!.health == 1}
         val cityWithHealthLeft = cityTilesToAttack.filter { it.tileToAttack.getCity()!!.health != 1 } // don't want ranged units to attack defeated cities
@@ -394,6 +399,7 @@ class UnitAutomation{
 
         else if (nonCityTilesToAttack.isNotEmpty()) // second priority, units
             enemyTileToAttack = nonCityTilesToAttack.minBy { Battle(unit.civInfo.gameInfo).getMapCombatantOfTile(it.tileToAttack)!!.getHealth() }
+
         else if (cityWithHealthLeft!=null) enemyTileToAttack = cityWithHealthLeft// third priority, city
 
         return enemyTileToAttack

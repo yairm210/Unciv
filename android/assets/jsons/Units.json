@@ -838,7 +838,6 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	
 	{
 		name:"Triplane",
 		unitType:"Fighter",
@@ -848,9 +847,23 @@
 		range:5,
 		cost: 325,
 		requiredTech:"Flight",
+		requiredResource:"Oil",
 		hurryCostModifier:20,
 		uniques:["[50]% chance to intercept air attacks","Bonus vs Bomber 150%",
 			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
+	{
+		name:"Great War Bomber",
+		unitType:"Bomber",
+		movement:1,
+		strength:50,
+		rangedStrength:50,
+		range:6,
+		cost: 325,
+		requiredTech:"Flight",
+		requiredResource:"Oil",
+		hurryCostModifier:20,
 		attackSound:"shot"
 	},
 	
