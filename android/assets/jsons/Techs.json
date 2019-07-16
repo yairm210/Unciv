@@ -438,6 +438,11 @@
 				uniques:["+10% science and production in all cities"]
 			},
 			{
+				name:"Radar",
+				row:6,
+				prerequisites:["Ballistics","Electronics"]
+			},
+			{
 				name:"Combined Arms",
 				row:7,
 				prerequisites:["Ballistics","Combustion"]
@@ -469,7 +474,7 @@
 			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Combined Arms","Computers"]
+				prerequisites:["Combined Arms","Radar"]
 			}
 		]
 	},

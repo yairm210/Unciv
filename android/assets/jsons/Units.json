@@ -848,6 +848,8 @@
 		cost: 325,
 		requiredTech:"Flight",
 		requiredResource:"Oil",
+		upgradesTo:"Fighter",
+		obsoleteTech:"Radar",
 		hurryCostModifier:20,
 		uniques:["[50]% chance to intercept air attacks","Bonus vs Bomber 150%",
 			"6 tiles in every direction always visible"]
@@ -942,6 +944,21 @@
 	
 	// Modern era
 	
+	{
+		name:"Fighter",
+		unitType:"Fighter",
+		movement:1,
+		strength:35,
+		rangedStrength:45,
+		range:8,
+		cost: 375,
+		requiredTech:"Radar",
+		requiredResource:"Oil",
+		hurryCostModifier:20,
+		uniques:["[100]% chance to intercept air attacks","Bonus vs Bomber 150%",
+			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
 	{
 		name:"Landship",
 		unitType:"Armor",

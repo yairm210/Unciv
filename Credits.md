@@ -390,7 +390,8 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 
 ### Information
 * [Pill](https://thenounproject.com/term/pill/780458/) By Alex Arseneau for Pharmaceuticals
-* [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry
+* [Computer](https://thenounproject.com/term/computer/1967529/) By Shastry for Computers
+* [Satellite Dish](https://thenounproject.com/search/?q=satellite%20dish&i=2054441) By Vectors Market for Radar
 * [Nuclear Reactor](https://thenounproject.com/term/nuclear-reactor/426463/) By Jeremie Sommet for Nuclear Fission 
 * [Ecology](https://thenounproject.com/term/ecology/1970666/) By ProSymbols
 * [Robotic Arm](https://thenounproject.com/term/robotic-arm/1970874/) By Karl Gilbert for Robotics
