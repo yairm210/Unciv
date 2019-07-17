@@ -201,7 +201,9 @@ class Building : NamedStats(), IConstruction{
             if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
             if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
             if (civInfo.policies.adoptedPolicies.contains("Patronage")
-                    && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower").contains(name)) cost *= 0.5
+                    && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower")
+                            .map{civInfo.getEquivalentBuilding(it).name}.contains(name))
+                cost *= 0.5
         }
 
         return (cost / 10).toInt() * 10
