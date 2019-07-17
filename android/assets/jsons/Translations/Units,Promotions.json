@@ -1848,8 +1848,8 @@
 		Italian:"Duello aereo I"
 	}
 
-	"Bonus when performing air sweep [33]%":{
-		Italian:"+33% Forza nella distruzione delle difese aeree"
+	"Bonus when performing air sweep [bonusAmount]%":{
+		Italian:"+[bonusAmount]% Forza nella distruzione delle difese aeree"
 	}
 
 	"Dogfighting II":{
@@ -1860,16 +1860,12 @@
 		Italian:"Duello aereo III"
 	}
 
-	"Bonus when performing air sweep [34]%":{
-		Italian:"+33% Forza nella distruzione delle difese aeree"
-	}
-
 	"Interception I":{
 		Italian:"Intercettazione I"
 	}
 
-	"Bonus when intercepting [33]%":{
-		Italian:"+33% Bonus d'intercettazione"
+	"Bonus when intercepting [bonusAmount]%":{
+		Italian:"+[bonusAmount]% Bonus d'intercettazione"
 	}
 
 	"Interception II":{
@@ -1878,10 +1874,6 @@
 
 	"Interception III":{
 		Italian:"Intercettazione III"
-	}
-
-	"Bonus when intercepting [34]%":{
-		Italian:"+34% Bonus d'intercettazione"
 	}
 
 	"Siege I":{//Air
