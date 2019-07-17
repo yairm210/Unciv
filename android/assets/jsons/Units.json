@@ -865,6 +865,8 @@
 		cost: 325,
 		requiredTech:"Flight",
 		requiredResource:"Oil",
+		upgradesTo:"Bomber",
+		obsoleteTech:"Radar",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
@@ -948,7 +950,7 @@
 		name:"Fighter",
 		unitType:"Fighter",
 		movement:1,
-		strength:35,
+		strength:45,
 		rangedStrength:45,
 		range:8,
 		cost: 375,
@@ -957,6 +959,19 @@
 		hurryCostModifier:20,
 		uniques:["[100]% chance to intercept air attacks","Bonus vs Bomber 150%",
 			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
+	{
+		name:"Bomber",
+		unitType:"Bomber",
+		movement:1,
+		strength:65,
+		rangedStrength:65,
+		range:10,
+		cost: 375,
+		requiredTech:"Radar",
+		requiredResource:"Oil",
+		hurryCostModifier:20,
 		attackSound:"shot"
 	},
 	{
