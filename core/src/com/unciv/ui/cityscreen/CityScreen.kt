@@ -16,6 +16,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
 import java.util.*
 import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.round
 
 class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
@@ -116,8 +117,9 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val turnsToExpansionString : String
         if (city.cityStats.currentCityStats.culture > 0) {
-            val turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
+            var turnsToExpansion = ceil((city.expansion.getCultureToNextTile() - city.expansion.cultureStored)
                     / city.cityStats.currentCityStats.culture).toInt()
+            if (turnsToExpansion < 1) turnsToExpansion = 1
             turnsToExpansionString = "[$turnsToExpansion] turns to expansion".tr()
         } else {
             turnsToExpansionString = "Stopped expansion".tr()
@@ -127,11 +129,12 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         val turnsToPopString : String
         if (city.cityStats.currentCityStats.food > 0) {
-            val turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
+            var turnsToPopulation = ceil((city.population.getFoodToNextPopulation()-city.population.foodStored)
                     / city.cityStats.currentCityStats.food).toInt()
+            if (turnsToPopulation < 1) turnsToPopulation = 1
             turnsToPopString = "[$turnsToPopulation] turns to new population".tr()
         } else if (city.cityStats.currentCityStats.food < 0) {
-            val turnsToStarvation = ceil(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt()
+            val turnsToStarvation = floor(city.population.foodStored / -city.cityStats.currentCityStats.food).toInt() + 1
             turnsToPopString = "[$turnsToStarvation] turns to lose population".tr()
         } else {
             turnsToPopString = "Stopped population growth".tr()
