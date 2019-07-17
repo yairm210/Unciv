@@ -1808,4 +1808,108 @@
 		French:"Cette unité et toutes celles présentes dans les cases adjacentes se soignent de 5 PV supplémentaires par tour. Cette unité se soigne de 5 PV supplémentaires par tour en dehors d'un territoire allié"
 	}
 
+	"Targeting I (air)":{
+		Italian:"Puntamento aereo I"
+	}
+
+	"Targeting II (air)":{
+		Italian:"Puntamento aereo II"
+	}
+
+	"Targeting III (air)":{
+		Italian:"Puntamento aereo III"
+	}
+
+	"Air Repair":{
+		Italian:"Riparazione aerea"
+	}
+
+	"Unit will heal every turn, even if it performs an action":{
+		Italian:"L'unità guarisce ad ogni turno, anche quando esegue un'azione "
+	}
+
+	"Operational Range":{
+		Italian:"Raggio operativo"
+	}
+
+	"+2 Range":{
+		Italian:"+2 Raggio"
+	}
+
+	"Sortie":{
+		Italian:"Sortita"
+	}
+
+	"1 extra Interception may be made per turn":{
+		Italian:"Può eseguire 1 Intercettazione extra per turno"
+	}
+
+	"Dogfighting I":{
+		Italian:"Duello aereo I"
+	}
+
+	"Bonus when performing air sweep [33]%":{
+		Italian:"+33% Forza nella distruzione delle difese aeree"
+	}
+
+	"Dogfighting II":{
+		Italian:"Duello aereo II"
+	}
+
+	"Dogfighting III":{
+		Italian:"Duello aereo III"
+	}
+
+	"Bonus when performing air sweep [34]%":{
+		Italian:"+33% Forza nella distruzione delle difese aeree"
+	}
+
+	"Interception I":{
+		Italian:"Intercettazione I"
+	}
+
+	"Bonus when intercepting [33]%":{
+		Italian:"+33% Bonus d'intercettazione"
+	}
+
+	"Interception II":{
+		Italian:"Intercettazione II"
+	}
+
+	"Interception III":{
+		Italian:"Intercettazione III"
+	}
+
+	"Bonus when intercepting [34]%":{
+		Italian:"+34% Bonus d'intercettazione"
+	}
+
+	"Siege I":{//Air
+		Italian:"Assedio I"
+	}
+
+	"Bonus vs City 33%":{
+		Italian:"+33% Forza contro le Città"
+	}
+
+	"Siege II":{
+		Italian:"Assedio II"
+	}
+
+	"Siege III":{
+		Italian:"Assedio III"
+	}
+
+	"Bonus vs City 34%":{
+		Italian:"+34% Forza contro le Città"
+	}
+
+	"Evasion":{
+		Italian:"Manovre evasive"
+	}
+
+	"Reduces damage taken from interception by 50%":{
+		Italian:"Dimezza i danni da intercettazione contraerea"
+	}
+
 }
