@@ -44,7 +44,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
-        val columns = 17
+        val columns = GameBasics.Technologies.values.map { it.column!!.columnNumber}.max()!! +1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
 
         for (technology in GameBasics.Technologies.values) {

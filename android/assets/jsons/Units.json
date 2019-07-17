@@ -1129,7 +1129,7 @@
 		movement:3,
 		strength:90,
 		cost: 375,
-		requiredTech:"Nuclear Fission",
+		requiredTech:"Mobile Tactics",
 		hurryCostModifier:20,
 	},
 	{
@@ -1138,7 +1138,7 @@
 		movement:5,
 		strength:100,
 		cost: 425,
-		requiredTech:"Robotics",
+		requiredTech:"Lasers",
 		requiredResource:"Aluminum",
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,
