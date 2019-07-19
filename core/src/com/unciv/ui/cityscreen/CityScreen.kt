@@ -111,7 +111,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         table.defaults().pad(5f)
         table.background=ImageGetter.getBackground(Color.BLACK.cpy().apply { a=0.8f })
         val columns = Stats().toHashMap().size
-        table.add(Label("{Free population}:".tr()
+        table.add(Label("{Unassigned population}:".tr()
                 +city.population.getFreePopulation().toString() + "/" + city.population.population,skin))
                 .colspan(columns).row()
 

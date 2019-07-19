@@ -862,7 +862,7 @@
 		Portuguese:"Bonus de crescimento"
 	}
 
-	"Free population":{ // as in "Free population: 2/13
+	"Unassigned population":{ // as in "Unassigned population: 2/13
 		Italian:"Popolazione libera"
 		Russian:"Свободное население"
 		French:"Population libre"
