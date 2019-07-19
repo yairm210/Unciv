@@ -137,6 +137,12 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
                 unitDescriptionTable.add(unit.getRange().toString()).padRight(10f)
             }
 
+            if(unit.baseUnit.interceptRange > 0){
+                unitDescriptionTable.add(ImageGetter.getStatIcon("InterceptRange")).size(20f)
+                val range = if(unit.type.isRanged()) unit.getRange() else unit.baseUnit.interceptRange
+                unitDescriptionTable.add(range.toString()).padRight(10f)
+            }
+
             if (!unit.type.isCivilian()) {
                 unitDescriptionTable.add("XP")
                 unitDescriptionTable.add(unit.promotions.XP.toString()+"/"+unit.promotions.xpForNextPromotion())

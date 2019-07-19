@@ -24,6 +24,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     var strength:Int = 0
     var rangedStrength:Int = 0
     var range:Int = 2
+    var interceptRange = 0
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null

@@ -1073,6 +1073,18 @@
 		attackSound:"machinegun"
 	},
 	{
+		name:"Anti-Aircraft Gun",
+		unitType:"Melee",
+		movement:2,
+		interceptRange:2,
+		strength:50,
+		cost: 375,
+		requiredTech:"Ballistics"
+		uniques:["[100]% chance to intercept air attacks","Bonus vs air units 150%"]
+		hurryCostModifier:20,
+		attackSound:"machinegun"
+	},
+	{
 		name:"Tank",
 		unitType:"Armor",
 		movement:5,

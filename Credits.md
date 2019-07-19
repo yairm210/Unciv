@@ -9,7 +9,7 @@ Trees for the jungle tiles in the "Fantasy Hex" are extracted from [Desert Strik
  
 Tile icons for the "ThorfMaps tileset belong to Thorfinn Tait and are licensed under a Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License. Based on work at www.thorfmaps.com.
  
-All the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
+Unless otherwise specified, all the following are from [the Noun Project](https://thenounproject.com) licenced under either Creative Commons or Public Domain
 
 
 ## Units
@@ -81,7 +81,9 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Battleship](https://thenounproject.com/search/?q=battleship&i=1986807) By Vitaliy Gorbachev, KZ for Battleship
 * [Submarine](https://thenounproject.com/search/?q=submarine&i=589519) By Hea Poh Lin, MY
 * [xm8](https://thenounproject.com/term/xm8/172007/) By Xela Ub for Infantry
-* [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira
+* [machine-gun](https://thenounproject.com/search/?q=machine%20gun&i=591058) By Joana Pereira for Machine Gun
+* Icon for Anti-Aircraft made by Yair Morgenstern, based on a free design 
+[on Vectorstock](https://www.vectorstock.com/royalty-free-vector/flat-icon-design-collection-anti-aircraft-gun-vector-16396060)
 * [Anti-Tank Gun](https://thenounproject.com/term/anti-tank-gun/1802450/) By Tom Fricker
 * [Tank](https://thenounproject.com/search/?q=tank&i=981914) By jeff
 * [Tank](https://thenounproject.com/manueldixken/collection/german-tanks/?i=960769) Manuel Dixken, DE for Panzer
@@ -450,9 +452,10 @@ All the following are from [the Noun Project](https://thenounproject.com) licenc
 * [Resistance](https://thenounproject.com/term/revolution/1315305/) By HeadsOfBirds
 * [Viking Hat](https://thenounproject.com/search/?q=pillage&i=185405) By my name is mud for pillaging improvements
 * [Aim](https://thenounproject.com/search/?q=aim&i=2034920) By Kaviashri for ranged strength
-* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for city states
-* [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker
-* [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54
+* [Capitol](https://thenounproject.com/search/?q=capitol&i=160031) By Loren Klein for City states
+* [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
+* [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
+* [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
 
 # Sound credits
 

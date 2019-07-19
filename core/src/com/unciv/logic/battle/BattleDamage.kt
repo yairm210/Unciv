@@ -46,6 +46,8 @@ class BattleDamage{
                     addToModifiers(BDM)
                 if(BDM.vs == "water units" && enemy.getUnitType().isWaterUnit())
                     addToModifiers(BDM)
+                if(BDM.vs == "air units" && enemy.getUnitType().isAirUnit())
+                    addToModifiers(BDM)
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
