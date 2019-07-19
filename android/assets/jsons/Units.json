@@ -992,9 +992,10 @@
 		unitType:"WaterMelee",
 		movement:6,
 		strength:55,
+		interceptRange:2,
 		cost: 375,
 		requiredTech:"Combustion",
-		uniques:["Can attack submarines"], // todo: add interception and bonus vs submarines once we have air and submarine units
+		uniques:["Can attack submarines","[40]% chance to intercept air attacks"], // todo: add bonus vs submarines
 		hurryCostModifier:20
 	},
 	{
