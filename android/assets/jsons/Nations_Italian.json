@@ -858,6 +858,32 @@
 		secondaryColor:[250,128,114],
 		cities:["Sidone"]
 	},
+	{
+		name:"Almaty",
+		adjective:["cazaco"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[102,0,51],
+		cities:["Almaty"]
+	},
+	{
+		name:"Edimburgo",
+		adjective:["scozzese"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[0,102,102],
+		cities:["Edimburgh"]
+	},
 	
 	//Barbarian
 	{
