@@ -1047,6 +1047,32 @@
 		secondaryColor:[250,128,114],
 		cities:["Sidon"]
 	},
+	{
+		name:"Almaty",
+		adjective:["Almaty"],
+		cityStateType:"Militaristic",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[102,0,51],
+		cities:["Almaty"]
+	},
+	{
+		name:"Edimburgh",
+		adjective:["Edimburgh"],
+		cityStateType:"Militaristic",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[0,102,102],
+		cities:["Edimburgh"]
+	},
 
 	//Barbarian
 	{
