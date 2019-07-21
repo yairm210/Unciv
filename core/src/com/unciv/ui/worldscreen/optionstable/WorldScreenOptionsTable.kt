@@ -96,6 +96,15 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         scrollPane.setScrollingDisabled(true,false)
         add(scrollPane).maxHeight(screen.stage.height*0.6f).row()
 
+/*
+        addButton("Dropbox Testing"){
+//            val folderList = DropBox().getFolderList("/Maps")
+//            for(folder in folderList.entries)
+//                print(folder.name)
+            DropBox().getFileInfo("/Maps/China starts on tundra")
+        }
+        */
+
         addButton("Close"){ remove() }
 
         pack() // Needed to show the background.
@@ -252,3 +261,4 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         super.draw(batch, parentAlpha)
     }
 }
+
