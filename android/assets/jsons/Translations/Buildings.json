@@ -53,6 +53,9 @@
 		Portuguese:"Obras de pedras"
 		German:"Mauerwerk"
 	}
+	
+	"Must not be on plains":{
+	}
 
 	"Stonehenge":{	
 		Italian:"Stonehenge"
@@ -970,6 +973,9 @@
 		Simplified_Chinese:"风车"
 		Portuguese:"Moinho de vento"
 		German:"Windmühle"
+	}
+	
+	"Must not be on hill":{
 	}
 
 	"Museum":{	

@@ -151,7 +151,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
-            tile.baseTerrain in listOf("Grassland","Desert","Plains") -> "Farm"
+            tile.baseTerrain in listOf("Grassland","Desert",Constants.plains) -> "Farm"
             tile.baseTerrain == "Tundra" -> "Trading post"
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }

@@ -10,6 +10,7 @@ class Constants{
         const val jungle = "Jungle"
         const val hill = "Hill"
         const val coast = "Coast"
+        const val plains = "Plains"
         const val peaceTreaty = "Peace Treaty"
         const val barbarianEncampment = "Barbarian encampment"
         const val ancientRuins = "Ancient ruins"

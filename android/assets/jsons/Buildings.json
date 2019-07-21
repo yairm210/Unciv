@@ -33,6 +33,7 @@
 		resourceBonusStats:{production:1},
 		maintenance:1,
 		hurryCostModifier:25,
+		uniques:["Must not be on plains"]
 		requiredTech:"Calendar"
 	},
 	{
@@ -600,6 +601,7 @@
 		hurryCostModifier:25,
 		maintenance:2,
 		percentStatBonus:{production:10},
+		uniques:["Must not be on hill"],
 		requiredTech:"Economics"
 	},
 	
@@ -721,7 +723,8 @@
 		culture:4,
 		gold:6,
 		isWonder:true,
-		uniques:["+1 happiness, +2 culture and +3 gold from every Castle"],
+		uniques:["+1 happiness, +2 culture and +3 gold from every Castle",
+			"Must be next to mountain"],
 		requiredTech:"Railroad"
 	},
 	
@@ -785,6 +788,7 @@
 		requiredResource:"Aluminum",
 		cost:360,
 		uniques:["Increases production of spaceship parts by 50%"]
+		requiredBuilding:"Factory",
 		requiredTech:"Robotics"
 	},
 	{

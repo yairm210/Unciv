@@ -228,6 +228,14 @@ class Building : NamedStats(), IConstruction{
                 && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain == Constants.mountain })
             return "Must be next to mountain"
 
+        if("Must not be on plains" in uniques
+                && construction.cityInfo.getCenterTile().baseTerrain==Constants.plains)
+            return "Must not be on plains"
+
+        if("Must not be on hill" in uniques
+                && construction.cityInfo.getCenterTile().baseTerrain==Constants.hill)
+            return "Must not be on hill"
+
         if("Can only be built in coastal cities" in uniques
                 && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain==Constants.coast })
             return "Can only be built in coastal cities"
