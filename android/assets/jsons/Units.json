@@ -70,10 +70,11 @@
 		attackSound:"nonmetalhit"
 		//Polynesian unique unit. All nearby enemy Units have -10% strenght
 	},
+	*/
 	{
 		name:"Brute",
 		unitType:"Melee",
-		uniqueTo:"Barbarian",
+		uniqueTo:"Barbarians",
 		replaces:"Warrior",
 		movement:2,
 		strength:8,
@@ -83,7 +84,6 @@
 		attackSound:"nonmetalhit"
 		//Barbarian unique unit
 	},
-	*/
 	{
 		name:"Archer",
 		unitType:"Ranged",

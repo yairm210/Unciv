@@ -147,17 +147,17 @@ class GameInfo {
         for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
+        val barbarianCiv = getBarbarianCivilization()
+        barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = GameBasics.Units.values
-                .filter { !it.unitType.isCivilian() && it.uniqueTo == null }
-                .filter{ (it.requiredTech==null || allResearchedTechs.contains(it.requiredTech!!))
-                        && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
+                .filter { !it.unitType.isCivilian()}
+                .filter { it.isBuildable(barbarianCiv) }
 
         val landUnits = unitList.filter { it.unitType.isLandUnit() }
         val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
 
         val unit:String
-        if (unitList.isEmpty()) unit="Warrior"
-        else if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
+        if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
             unit=waterUnits.random().name
         else unit = landUnits.random().name
 
