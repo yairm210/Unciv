@@ -395,6 +395,16 @@ class MapUnit {
         }
     }
 
+    fun moveThroughTile(tile: TileInfo){
+        if(tile.improvement==Constants.ancientRuins && civInfo.isMajorCiv())
+            getAncientRuinBonus()
+        if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
+            clearEncampment(tile)
+
+        currentTile = tile
+        updateViewableTiles()
+    }
+
     fun putInTile(tile:TileInfo){
         when {
             !movement.canMoveTo(tile) -> throw Exception("I can't go there!")
@@ -402,13 +412,7 @@ class MapUnit {
             type.isCivilian() -> tile.civilianUnit=this
             else -> tile.militaryUnit=this
         }
-        currentTile = tile
-        if(tile.improvement==Constants.ancientRuins && civInfo.isMajorCiv())
-            getAncientRuinBonus()
-        if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
-            clearEncampment(tile)
-
-        updateViewableTiles()
+        moveThroughTile(tile)
     }
 
     private fun clearEncampment(tile: TileInfo) {

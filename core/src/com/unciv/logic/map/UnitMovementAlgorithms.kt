@@ -236,11 +236,15 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.isFortified() || unit.action=="Set Up" || unit.action=="Sleep")
             unit.action=null // unfortify/setup after moving
 
+        // Move through all intermediate tiles to get ancient ruins, barb encampments
+        // and to view tiles along the way
         val pathToFinalTile = distanceToTiles.getPathToTile(destination)
+
+        unit.removeFromTile()
         for(tile in pathToFinalTile){
-            unit.removeFromTile()
-            unit.putInTile(tile)
+            unit.moveThroughTile(tile)
         }
+        unit.putInTile(destination)
     }
 
 
