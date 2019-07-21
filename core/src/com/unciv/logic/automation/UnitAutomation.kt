@@ -8,6 +8,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
+import com.unciv.logic.map.PathsToTilesWithinTurn
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.unit.UnitType
@@ -114,7 +115,7 @@ class UnitAutomation{
     }
 
 
-    fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>):Boolean {
+    fun tryHealUnit(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn):Boolean {
         val tilesInDistance = unitDistanceToTiles.keys.filter { unit.movement.canMoveTo(it) }
         if(unitDistanceToTiles.isEmpty()) return true // can't move, so...
         val unitTile = unit.getTile()
@@ -145,13 +146,14 @@ class UnitAutomation{
         return true
     }
 
-    fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) : Boolean {
+    fun tryPillageImprovement(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn) : Boolean {
         if(unit.type.isCivilian()) return false
-        val tilesInDistance = unitDistanceToTiles.filter {it.value < unit.currentMovement}.keys
+        val tilesThatCanWalkToAndThenPillage = unitDistanceToTiles
+                .filter {it.value.totalDistance < unit.currentMovement}.keys
                 .filter { unit.movement.canMoveTo(it) && UnitActions().canPillage(unit,it) }
 
-        if (tilesInDistance.isEmpty()) return false
-        val tileToPillage = tilesInDistance.maxBy { it.getDefensiveBonus() }!!
+        if (tilesThatCanWalkToAndThenPillage.isEmpty()) return false
+        val tileToPillage = tilesThatCanWalkToAndThenPillage.maxBy { it.getDefensiveBonus() }!!
         if (unit.getTile()!=tileToPillage)
             unit.movement.moveToTile(tileToPillage)
 
@@ -189,7 +191,7 @@ class UnitAutomation{
 
     class AttackableTile(val tileToAttackFrom:TileInfo, val tileToAttack:TileInfo)
 
-    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): ArrayList<AttackableTile> {
+    fun getAttackableEnemies(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): ArrayList<AttackableTile> {
         val tilesWithEnemies = unit.civInfo.viewableTiles
                 .filter { containsAttackableEnemy(it, MapUnitCombatant(unit)) }
 
@@ -208,7 +210,7 @@ class UnitAutomation{
                     val movementPointsToExpendAfterMovement = if(unitMustBeSetUp) 1 else 0
                     val movementPointsToExpendHere = if(unitMustBeSetUp && unit.action != "Set Up") 1 else 0
                     val movementPointsToExpendBeforeAttack = if(it.key==unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
-                    unit.currentMovement - it.value - movementPointsToExpendBeforeAttack > 0.1 } // still got leftover movement points after all that, to attack (0.1 is because of Float nensense, see MapUnit.moveToTile(...)
+                    unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1 } // still got leftover movement points after all that, to attack (0.1 is because of Float nensense, see MapUnit.moveToTile(...)
                 .map { it.key }
                 .filter { unit.movement.canMoveTo(it) || it==unit.getTile() }
 
@@ -314,7 +316,7 @@ class UnitAutomation{
 
                     // move into position far away enough that the bombard doesn't hurt
                     if(tilesCanAttackFromButNotInBombardRange.any())
-                        unit.movement.headTowards(tilesCanAttackFromButNotInBombardRange.minBy { unitDistanceToTiles[it]!! }!!)
+                        unit.movement.headTowards(tilesCanAttackFromButNotInBombardRange.minBy { unitDistanceToTiles[it]!!.totalDistance }!!)
                 }
                 else {
                     // calculate total damage of units in surrounding 4-spaces from enemy city (so we can attack a city from 2 directions at once)
@@ -336,7 +338,7 @@ class UnitAutomation{
         return false
     }
 
-    private fun tryDisembarkUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+    private fun tryDisembarkUnitToAttackPosition(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
         if (!unit.type.isMelee() || !unit.type.isLandUnit() || !unit.isEmbarked()) return false
         val attackableEnemiesNextTurn = getAttackableEnemies(unit, unitDistanceToTiles)
                 // Only take enemies we can fight without dying
@@ -457,7 +459,7 @@ class UnitAutomation{
         return true
     }
 
-    fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+    fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
         if(!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
         val tileWithRuin = unitDistanceToTiles.keys.firstOrNull{unit.movement.canMoveTo(it) && it.improvement == Constants.ancientRuins}
         if(tileWithRuin==null) return false
@@ -465,7 +467,7 @@ class UnitAutomation{
         return true
     }
 
-    internal fun tryExplore(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>): Boolean {
+    internal fun tryExplore(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
         if(tryGoToRuin(unit,unitDistanceToTiles))
         {
             if(unit.currentMovement==0f) return true
@@ -502,11 +504,11 @@ class UnitAutomation{
     }
 
 
-    fun wander(unit: MapUnit, unitDistanceToTiles: HashMap<TileInfo, Float>) {
+    fun wander(unit: MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn) {
         val reachableTiles= unitDistanceToTiles
                 .filter { unit.movement.canMoveTo(it.key) && unit.movement.canReach(it.key) }
 
-        val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value == unit.currentMovement }
+        val reachableTilesMaxWalkingDistance = reachableTiles.filter { it.value.totalDistance == unit.currentMovement }
         if (reachableTilesMaxWalkingDistance.any()) unit.movement.moveToTile(reachableTilesMaxWalkingDistance.toList().random().first)
         else if (reachableTiles.any()) unit.movement.moveToTile(reachableTiles.toList().random().first)
 
