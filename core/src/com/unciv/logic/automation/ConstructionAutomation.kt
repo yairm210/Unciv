@@ -216,7 +216,12 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addProductionBuildingChoice() {
-        val productionBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Production) }
+        val hasWaterResource = cityInfo.getTilesInRange().any { it.isWater && it.resource!=null }
+        val productionBuilding = buildableNotWonders
+                .filter { it.isStatRelated(Stat.Production)
+                        || (hasWaterResource && (it.uniques.contains("+1 production and gold from all sea resources worked by the city")
+                                                || it.uniques.contains("+1 production from all sea resources worked by the city")) )
+                }
                 .minBy { it.cost }
         if (productionBuilding != null) {
             addChoice(relativeCostEffectiveness, productionBuilding.name, 1.5f)
