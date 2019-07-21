@@ -428,7 +428,7 @@
 		name:"Ironworks",
 		production:8,
 		culture:1,
-		isWonder:true,
+		isNationalWonder:true,
 		requiredBuildingInAllCities:"Workshop",
 		requiredTech:"Machinery"
 	},
