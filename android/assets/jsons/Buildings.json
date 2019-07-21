@@ -572,6 +572,7 @@
 		name:"Seaport",
 		hurryCostModifier:25,
 		maintenance:2,
+		requiredBuilding:"Harbor",
 		uniques:["+1 production and gold from all sea resources worked by the city",
 			"Can only be built in coastal cities", "+15% production of naval units"]
 		requiredTech:"Navigation"
