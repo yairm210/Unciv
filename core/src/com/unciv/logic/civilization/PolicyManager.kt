@@ -25,7 +25,7 @@ class PolicyManager {
         var cityModifier = 0.3 * (civInfo.cities.size - 1)
         if (isAdopted("Representation")) cityModifier *= (2 / 3f).toDouble()
         if (isAdopted("Piety Complete")) baseCost *= 0.9
-        if (civInfo.getBuildingUniques().contains("Culture cost of adopting new Policies reduced by 10%")) baseCost *= 0.9
+        if (civInfo.containsBuildingUnique("Culture cost of adopting new Policies reduced by 10%")) baseCost *= 0.9
         val cost: Int = Math.round(baseCost * (1 + cityModifier)).toInt()
         return cost - (cost % 5)
     }

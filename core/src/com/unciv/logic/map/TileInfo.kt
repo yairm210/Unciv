@@ -128,7 +128,7 @@ open class TileInfo {
         var stats = getBaseTerrain().clone()
 
         if((baseTerrain== Constants.ocean||baseTerrain==Constants.coast) && city!=null
-                && city.getBuildingUniques().contains("+1 food from Ocean and Coast tiles"))
+                && city.containsBuildingUnique("+1 food from Ocean and Coast tiles"))
             stats.food += 1
 
         if (terrainFeature != null) {
@@ -139,10 +139,10 @@ open class TileInfo {
                 stats.add(terrainFeatureBase)
 
             if (terrainFeature == Constants.jungle && city != null
-                    && city.getBuildingUniques().contains("Jungles provide +2 science"))
+                    && city.containsBuildingUnique("Jungles provide +2 science"))
                 stats.science += 2f
             if(terrainFeature=="Oasis" && city!=null
-                    && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
+                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
         }
 
@@ -156,12 +156,12 @@ open class TileInfo {
                     && observingCiv.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
                 stats.production+=1
             if(resource.name=="Oil" && city!=null
-                    && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
+                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
             if(city!=null && isWater){
-                if(city.getBuildingUniques().contains("+1 production from all sea resources worked by the city"))
+                if(city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
                     stats.production+=1
-                if(city.getBuildingUniques().contains("+1 production and gold from all sea resources worked by the city")){
+                if(city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")){
                     stats.production+=1
                     stats.gold+=1
                 }
@@ -182,7 +182,7 @@ open class TileInfo {
                 stats.add(improvement) // again, for the double effect
         }
 
-        if(city!=null && isWater && city.getBuildingUniques().contains("+1 gold from worked water tiles in city"))
+        if(city!=null && isWater && city.containsBuildingUnique("+1 gold from worked water tiles in city"))
             stats.gold += 1
 
         if (isCityCenter()) {

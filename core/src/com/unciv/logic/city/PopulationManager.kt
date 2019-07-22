@@ -62,8 +62,8 @@ class PopulationManager {
         // growth!
         {
             foodStored -= getFoodToNextPopulation()
-            if (cityInfo.getBuildingUniques().contains("40% of food is carried over after a new citizen is born")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
-            if (cityInfo.getBuildingUniques().contains("25% of food is carried over after a new citizen is born")) foodStored += (0.25f * getFoodToNextPopulation()).toInt() // Medical Lab special
+            if (cityInfo.containsBuildingUnique("40% of food is carried over after a new citizen is born")) foodStored += (0.4f * getFoodToNextPopulation()).toInt() // Aqueduct special
+            if (cityInfo.containsBuildingUnique("25% of food is carried over after a new citizen is born")) foodStored += (0.25f * getFoodToNextPopulation()).toInt() // Medical Lab special
             population++
             autoAssignPopulation()
             cityInfo.civInfo.addNotification("["+cityInfo.name + "] has grown!", cityInfo.location, Color.GREEN)

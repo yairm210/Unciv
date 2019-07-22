@@ -37,10 +37,15 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
     private fun getTransportationUpkeep(): Int {
         var transportationUpkeep = 0
-        for (it in civInfo.cities.flatMap { it.getTiles() }.filter{ !it.isCityCenter() }) {
-            when(it.roadStatus) {
-                RoadStatus.Road -> transportationUpkeep += 1
-                RoadStatus.Railroad -> transportationUpkeep += 2
+        // we no longer use .flatMap, because there are a lot of tiles and keeping them all in a list
+        // just to go over them once is a waste of memory - there are low-end phones who don't have much ram
+        for (city  in civInfo.cities) {
+            for (tile in city.getTiles()) {
+                if (tile.isCityCenter()) continue
+                when (tile.roadStatus) {
+                    RoadStatus.Road -> transportationUpkeep += 1
+                    RoadStatus.Railroad -> transportationUpkeep += 2
+                }
             }
         }
         if (civInfo.policies.isAdopted("Trade Unions")) transportationUpkeep *= (2 / 3f).toInt()
@@ -108,7 +113,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
             }
         }
 
-        if (civInfo.getBuildingUniques().contains("Provides 1 happiness per social policy")) {
+        if (civInfo.containsBuildingUnique("Provides 1 happiness per social policy")) {
             if(!statMap.containsKey("Policies")) statMap["Policies"]=0f
             statMap["Policies"] = statMap["Policies"]!! +
                     civInfo.policies.getAdoptedPolicies().count { !it.endsWith("Complete") }.toFloat()

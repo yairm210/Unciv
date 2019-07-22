@@ -39,7 +39,7 @@ class CityStats {
             var goldFromTradeRoute = civInfo.getCapital().population.population * 0.15 + cityInfo.population.population * 1.1 - 1 // Calculated by http://civilization.wikia.com/wiki/Trade_route_(Civ5)
             if(civInfo.getNation().unique=="+1 Gold from each Trade Route, Oil resources provide double quantity") goldFromTradeRoute += 1
             if (civInfo.policies.isAdopted("Trade Unions")) goldFromTradeRoute += 2
-            if (civInfo.getBuildingUniques().contains("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
+            if (civInfo.containsBuildingUnique("Gold from all trade routes +25%")) goldFromTradeRoute *= 1.25 // Machu Pichu speciality
             stats.gold += goldFromTradeRoute.toFloat()
         }
         return stats
@@ -52,7 +52,7 @@ class CityStats {
             "Gold" -> stats.gold += production / 4
             "Science" -> {
                 var scienceProduced = production / 4
-                if (cityInfo.civInfo.getBuildingUniques().contains("Production to science conversion in cities increased by 33%"))
+                if (cityInfo.civInfo.containsBuildingUnique("Production to science conversion in cities increased by 33%"))
                     scienceProduced *= 1.33f
                 if (cityInfo.civInfo.policies.isAdopted("Rationalism")) scienceProduced *= 1.33f
                 stats.science += scienceProduced
@@ -182,7 +182,7 @@ class CityStats {
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
-        if (civInfo.getBuildingUniques().contains("Unhappiness from population decreased by 10%"))
+        if (civInfo.containsBuildingUnique("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
             unhappinessFromCitizens *= 0.95f
@@ -206,7 +206,7 @@ class CityStats {
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList ["Buildings"] = happinessFromBuildings
 
-        if(civInfo.getBuildingUniques().contains("+1 happiness in each city"))
+        if(civInfo.containsBuildingUnique("+1 happiness in each city"))
             newHappinessList["Wonders"] = 1f
 
         // we don't want to modify the existing happiness list because that leads
@@ -221,7 +221,7 @@ class CityStats {
 
         if (policies.contains("Commerce Complete")) stats.gold += 1
         if (policies.contains("Secularism")) stats.science += 2
-        if(cityInfo.getBuildingUniques().contains("+1 Production from specialists"))
+        if(cityInfo.containsBuildingUnique("+1 Production from specialists"))
             stats.production += 1
         return stats
     }
@@ -268,19 +268,18 @@ class CityStats {
 
     private fun getStatPercentBonusesFromBuildings(): Stats {
         val stats = cityInfo.cityConstructions.getStatPercentBonuses()
-        val civUniques = cityInfo.civInfo.getBuildingUniques()
-        if (civUniques.contains("Culture in all cities increased by 25%")) stats.culture += 25f
+        if (cityInfo.civInfo.containsBuildingUnique("Culture in all cities increased by 25%")) stats.culture += 25f
 
         val currentConstruction = cityInfo.cityConstructions.getCurrentConstruction()
         if(currentConstruction is Building && currentConstruction.uniques.contains("Spaceship part")){
-            if(civUniques.contains("Increases production of spaceship parts by 25%"))
+            if(cityInfo.civInfo.containsBuildingUnique("Increases production of spaceship parts by 25%"))
                 stats.production += 25
-            if(cityInfo.getBuildingUniques().contains("Increases production of spaceship parts by 50%"))
+            if(cityInfo.containsBuildingUnique("Increases production of spaceship parts by 50%"))
                 stats.production += 50
         }
 
         if(currentConstruction is BaseUnit && currentConstruction.unitType==UnitType.Mounted
-            && cityInfo.getBuildingUniques().contains("+15% Production when building Mounted Units in this city"))
+            && cityInfo.containsBuildingUnique("+15% Production when building Mounted Units in this city"))
             stats.production += 15
 
         return stats

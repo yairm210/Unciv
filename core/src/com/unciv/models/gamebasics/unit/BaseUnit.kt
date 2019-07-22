@@ -106,7 +106,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if (!baseCost) {
             if(civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
             if(civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
-            if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
+            if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
         }
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
@@ -151,8 +151,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
             unit.promotions.XP += 15
 
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
-            && construction.cityInfo.getBuildingUniques()
-                .contains("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
+            && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
     }
 

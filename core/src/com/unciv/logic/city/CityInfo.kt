@@ -123,7 +123,7 @@ class CityInfo {
                         amountToAdd *= 2
                 }
                 if(resource.resourceType == ResourceType.Luxury
-                        && getBuildingUniques().contains("Provides 1 extra copy of each improved luxury resource near this City"))
+                        && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
                     amountToAdd*=2
 
                 cityResources.add(resource, amountToAdd, "Tiles")
@@ -140,6 +140,7 @@ class CityInfo {
     }
 
     fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }
+    fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun getGreatPersonMap():HashMap<String,Stats>{
         val stats = HashMap<String,Stats>()
@@ -159,7 +160,7 @@ class CityInfo {
             if (civInfo.policies.isAdopted("Entrepreneurship"))
                 entry.value.gold *= 1.25f
 
-            if (civInfo.getBuildingUniques().contains("+33% great person generation in all cities"))
+            if (civInfo.containsBuildingUnique("+33% great person generation in all cities"))
                 stats[entry.key] = stats[entry.key]!!.times(1.33f)
             if (civInfo.policies.isAdopted("Freedom"))
                 stats[entry.key] = stats[entry.key]!!.times(1.25f)

@@ -88,7 +88,7 @@ class MapUnit {
         movement += getUniques().count{it=="+1 Movement"}
 
         if(type.isWaterUnit() && !type.isCivilian()
-                && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
+                && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
         if(type.isWaterUnit() && civInfo.getNation().unique=="+2 movement for all naval units")
@@ -136,7 +136,7 @@ class MapUnit {
             if (civInfo.getNation().unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
                 visibilityRange += 1
             if (type.isWaterUnit() && !type.isCivilian()
-                    && civInfo.getBuildingUniques().contains("All military naval units receive +1 movement and +1 sight"))
+                    && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
                 visibilityRange += 1
             val tile = getTile()
             if (tile.baseTerrain == Constants.hill && type.isLandUnit()) visibilityRange += 1
@@ -230,7 +230,7 @@ class MapUnit {
         var goldCostOfUpgrade = (unitToUpgradeTo.cost - baseUnit().cost) * 2 + 10
         if (civInfo.policies.isAdopted("Professional Army"))
             goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
-        if(civInfo.getBuildingUniques().contains("Gold cost of upgrading military units reduced by 33%"))
+        if(civInfo.containsBuildingUnique("Gold cost of upgrading military units reduced by 33%"))
             goldCostOfUpgrade = (goldCostOfUpgrade * 0.66f).toInt()
         return goldCostOfUpgrade
     }

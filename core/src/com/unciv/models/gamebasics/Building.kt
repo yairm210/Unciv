@@ -153,7 +153,7 @@ class Building : NamedStats(), IConstruction{
                 stats.happiness += 1
 
             if (baseBuildingName == "Castle"
-                    && civInfo.getBuildingUniques().contains("+1 happiness, +2 culture and +3 gold from every Castle")){
+                    && civInfo.containsBuildingUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
                 stats.culture+=2
                 stats.gold+=3
@@ -199,7 +199,7 @@ class Building : NamedStats(), IConstruction{
         } else {
             cost = Math.pow((30 * getProductionCost(civInfo.policies.adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
             if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-            if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
+            if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
             if (civInfo.policies.adoptedPolicies.contains("Patronage")
                     && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower")
                             .map{civInfo.getEquivalentBuilding(it).name}.contains(name))
@@ -293,7 +293,7 @@ class Building : NamedStats(), IConstruction{
         }
 
         if ("Spaceship part" in uniques) {
-            if (!civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts")) return "Apollo project not built!"
+            if (!civInfo.containsBuildingUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
         return ""

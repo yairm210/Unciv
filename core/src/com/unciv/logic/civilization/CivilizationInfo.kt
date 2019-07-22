@@ -161,7 +161,7 @@ class CivilizationInfo {
 
     fun hasResource(resourceName:String): Boolean = getCivResourcesByName()[resourceName]!!>0
 
-    fun getBuildingUniques(): List<String> = cities.flatMap { it.getBuildingUniques()}.distinct()
+    fun containsBuildingUnique(unique:String) = cities.any { it.containsBuildingUnique(unique) }
 
     fun getCivUnits(): List<MapUnit> = units
 

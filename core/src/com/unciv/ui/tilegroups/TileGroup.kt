@@ -128,8 +128,9 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             if(ImageGetter.imageExists(tileSetLocation+"City"))
                 return tileSetLocation+"City"
         }
-        val baseTerrainTileLocation = tileSetLocation+tileInfo.baseTerrain
-        val baseTerrainAndFeatureTileLocation = baseTerrainTileLocation+"+"+tileInfo.terrainFeature
+        // these are templates because apparently chain appending is faster or something?
+        val baseTerrainTileLocation = "$tileSetLocation${tileInfo.baseTerrain}"
+        val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
         if(tileInfo.terrainFeature!=null && ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
             return baseTerrainAndFeatureTileLocation
         if(ImageGetter.imageExists(baseTerrainTileLocation)) return baseTerrainTileLocation
@@ -221,7 +222,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             baseTerrainOverlayImage=null
         }
 
-        val imagePath = tileSetLocation + tileInfo.baseTerrain + "Overlay"
+        val imagePath = "$tileSetLocation${tileInfo.baseTerrain}Overlay"
         if (!ImageGetter.imageExists(imagePath)) return
         baseTerrainOverlayImage = ImageGetter.getImage(imagePath)
         baseTerrainOverlayImage!!.run {

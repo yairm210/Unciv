@@ -367,7 +367,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 && currentPlayerCiv.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
                         .any { it.isCityCenter() && it.getOwner()!=currentPlayerCiv })
             displayTutorials("EnemyCity")
-        if("Enables construction of Spaceship parts" in currentPlayerCiv.getBuildingUniques())
+        if(currentPlayerCiv.containsBuildingUnique("Enables construction of Spaceship parts"))
             displayTutorials("ApolloProgram")
         if(currentPlayerCiv.getCivUnits().any { it.type == UnitType.Siege })
             displayTutorials("SiegeUnitTrained")

@@ -34,7 +34,7 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
                 && city!!.civInfo.isPlayerCivilization())
             addPopulationIcon()
 
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        val currentPlayerCiv = worldScreen.currentPlayerCiv
         if (UnCivGame.Current.viewEntireMapForDebug
                 || currentPlayerCiv.exploredTiles.contains(tileInfo.position))
             updateCityButton(city, isViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button

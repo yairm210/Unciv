@@ -86,6 +86,15 @@ open class Stats() {
         happiness=hashMap[Stat.Happiness]!!
         science=hashMap[Stat.Science]!!
     }
+
+    fun equals(otherStats: Stats):Boolean{
+        return culture==otherStats.culture
+                && gold==otherStats.gold
+                && production==otherStats.production
+                && food==otherStats.food
+                && happiness==otherStats.happiness
+                && science==otherStats.science
+    }
 }
 
 class StatMap:LinkedHashMap<String,Stats>(){
