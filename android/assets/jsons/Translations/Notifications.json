@@ -164,6 +164,7 @@
 
  	"One of our trades with [nation] has been cut short": {
 		Italian:"Un nostro accordo con [nation] è stato interrotto."
+		French:"L'un de nos accord commercial avec [nation] s'est arrêté"
 	},
 
 	"[cityname] has expanded its borders!":{
@@ -310,18 +311,22 @@
 		
 	"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
 		Italian:"La nostra unità [attackerName] è stata distrutta dall'intercettante [interceptorName]"
+		French:"Notre [attackerName] a été intercepté et détruit par un(e) [interceptorName] ennemie"
 	}
 
 	"Our [interceptorName] intercepted and destroyed an enemy [attackerName]":{
 		Italian:"La nostra unità [interceptorName] ha intercettato e distrutto l'unità nemica [attackerName]"
+		French:"Notre [interceptorName] a intercepté et détruit un(e) [attackerName] ennemie"
 	}
 		
 	"Our [$attackerName] was attacked by an intercepting [$interceptorName]":{
 		Italian:"La nostra unità [$attackerName] è stata attaccata dall'intercettante [$interceptorName]"
+		French:"Notre [$attackerName] a été intercepté par un(e) [$interceptorName] ennemie"
 	}
 		
 	"Our [$interceptorName] intercepted and attacked an enemy [$attackerName]":{
 		Italian:"La nostra unità [$interceptorName] ha intercettato e attaccato l'unità nemica [$attackerName]"
+		French:"Notre [$interceptorName] a intercepté un(e) [$attackerName] ennemie"
 	}
 		
 	"An enemy [unit] was spotted near our territory":{
@@ -379,6 +384,7 @@
 
 	"The City-State of [name] has been destroyed!":{
 		Italian:"La Città-Stato di [name] è stata distrutta!"
+		French:"La Cité état [name] a été détruite"
 	}
 		
 	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
@@ -388,6 +394,7 @@
 		
 	"A barbarian [unitType] has joined us!":{
 		Italian:"L'unità barbarica [unitType] si è unita a noi!"
+		French:"Un [unitType] barbare nous a rejoins!"
 	}
 		
 	/////////////////	ruins
@@ -470,21 +477,26 @@
 
 	"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
 		Italian:"Stai perdendo il controllo di [name]."
+		French:"Vous perdez le contrôle de [name]"
 	}
 
 	"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
 		Italian:"Non sei più amico di [name]!"
+		French:"Vous et [name] n'êtes plus amis!"
 	}
 
 	"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
 		Italian:"L'alleanza con [name] si sta sfaldando."
+		French:"Votre alliance avec [name] est vacillante."
 	}
 
 	"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
 		Italian:"Non sei più alleato con [name]!"
+		French:"Vous et [name] n'êtes plus alliés!"
 	},
 
 	"[civName] gave us a [untiName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
 		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
+		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
 	}
 }
