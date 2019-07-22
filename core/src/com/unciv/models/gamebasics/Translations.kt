@@ -69,8 +69,13 @@ fun String.tr(): String {
          */
 
         val squareBraceRegex = Regex("\\[(.*?)\\]")
+        val translationStringWithSquareBracketsOnly = replace(squareBraceRegex,"[]")
+        val translationStringUntilFirstSquareBracket = substringBefore('[')
         val englishTranslationPlaceholder = GameBasics.Translations.keys
-                .firstOrNull { it.replace(squareBraceRegex,"[]") == replace(squareBraceRegex,"[]") }
+                .firstOrNull {
+                    // this is to filter out obvious non-candidates, which is most of them, before we start using the "heavy lifting" of the regex replacement
+                    it.startsWith(translationStringUntilFirstSquareBracket)
+                        && it.replace(squareBraceRegex,"[]") == translationStringWithSquareBracketsOnly }
         if(englishTranslationPlaceholder==null ||
                 !GameBasics.Translations[englishTranslationPlaceholder]!!.containsKey(UnCivGame.Current.settings.language)){
             // Translation placeholder doesn't exist for this language

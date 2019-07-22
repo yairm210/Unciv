@@ -123,16 +123,20 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     fun getTileBaseImageLocation(isRevealed: Boolean): String {
         if(!isRevealed) return tileSetLocation+"Hexagon"
         if(tileInfo.isCityCenter()){
-            if(ImageGetter.imageExists(tileSetLocation+tileInfo.baseTerrain+"+City"))
-                return tileSetLocation+tileInfo.baseTerrain+"+City"
+            val terrainAndCity = "$tileSetLocation${tileInfo.baseTerrain}+City"
+            if(ImageGetter.imageExists(terrainAndCity))
+                return terrainAndCity
             if(ImageGetter.imageExists(tileSetLocation+"City"))
                 return tileSetLocation+"City"
         }
         // these are templates because apparently chain appending is faster or something?
         val baseTerrainTileLocation = "$tileSetLocation${tileInfo.baseTerrain}"
-        val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
-        if(tileInfo.terrainFeature!=null && ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
-            return baseTerrainAndFeatureTileLocation
+        if(tileInfo.terrainFeature!=null){
+            val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
+            if(ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
+                return baseTerrainAndFeatureTileLocation
+        }
+
         if(ImageGetter.imageExists(baseTerrainTileLocation)) return baseTerrainTileLocation
         return tileSetLocation+"Hexagon"
     }
@@ -216,6 +220,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun updateTerrainBaseImage() {
         if (tileInfo.baseTerrain == baseTerrain) return
+        baseTerrain = tileInfo.baseTerrain
 
         if(baseTerrainOverlayImage!=null){
             baseTerrainOverlayImage!!.remove()
@@ -234,11 +239,12 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     private fun updateCityImage() {
-        if(!ImageGetter.imageExists(tileSetLocation+"CityOverlay")) // have a city tile, don't need an overlay
-            return
-
         if (cityImage == null && tileInfo.isCityCenter()) {
-            cityImage = ImageGetter.getImage(tileSetLocation+"CityOverlay")
+            val cityOverlayLocation = tileSetLocation+"CityOverlay"
+            if(!ImageGetter.imageExists(cityOverlayLocation)) // have a city tile, don't need an overlay
+                return
+
+            cityImage = ImageGetter.getImage(cityOverlayLocation)
             featureLayerGroup.addActor(cityImage)
             cityImage!!.run {
                 setSize(60f, 60f)

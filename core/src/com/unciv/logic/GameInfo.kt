@@ -16,6 +16,7 @@ import java.util.*
 
 class GameInfo {
     @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+    @Transient lateinit var currentPlayerCiv:CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
@@ -38,7 +39,7 @@ class GameInfo {
     }
 
     fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
-    fun getCurrentPlayerCivilization() = getCivilization(currentPlayer)
+    fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getBarbarianCivilization() = getCivilization("Barbarians")
     fun getDifficulty() = difficultyObject
     //endregion
@@ -84,7 +85,8 @@ class GameInfo {
             switchTurn()
         }
 
-        currentPlayer=thisPlayer.civName
+        currentPlayer = thisPlayer.civName
+        currentPlayerCiv = getCivilization(currentPlayer)
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
 
@@ -171,6 +173,7 @@ class GameInfo {
         tileMap.setTransients()
 
         if(currentPlayer=="") currentPlayer=civilizations[0].civName
+        currentPlayerCiv=getCivilization(currentPlayer)
 
         // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
