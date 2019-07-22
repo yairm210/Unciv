@@ -100,7 +100,10 @@ class SpecificUnitAutomation{
                 .associateBy ( {it},{ Automation().rankTile(it,unit.civInfo) })
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(5)
-                .filter { (unit.movement.canMoveTo(it) || unit.currentTile==it) && it !in tilesNearCities && it.isLand }
+                .filter { val tileOwner=it.getOwner()
+                    (tileOwner==null || tileOwner==unit.civInfo) && // don't allow settler to settle inside other civ's territory
+                    (unit.movement.canMoveTo(it) || unit.currentTile==it)
+                            && it !in tilesNearCities && it.isLand }
 
         val bestCityLocation: TileInfo? = possibleCityLocations
                 .asSequence()
