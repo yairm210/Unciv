@@ -37,7 +37,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
 
     private fun getTransportationUpkeep(): Int {
         var transportationUpkeep = 0
-        for (it in civInfo.gameInfo.tileMap.values.filter { it.getOwner()==civInfo }.filterNot { it.isCityCenter() }) {
+        for (it in civInfo.cities.flatMap { it.getTiles() }.filter{ !it.isCityCenter() }) {
             when(it.roadStatus) {
                 RoadStatus.Road -> transportationUpkeep += 1
                 RoadStatus.Railroad -> transportationUpkeep += 2

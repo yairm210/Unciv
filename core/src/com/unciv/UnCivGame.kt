@@ -75,6 +75,7 @@ class UnCivGame(val version: String) : Game() {
         if(gameInfo.civilizations.isEmpty())
             return create()
 
+        if(::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
         worldScreen = WorldScreen()
         setWorldScreen()
     }
