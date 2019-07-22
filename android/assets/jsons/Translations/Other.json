@@ -422,6 +422,7 @@
 	
 	"Start Golden Age":{
 		Italian:"Inizia Età dell'Oro"
+		French:"Commencer un Age d'Or"
 	}
 	
 	"Yes":{
@@ -451,6 +452,7 @@
 
 	"Acquire":{
 		Italian:"Prendi"
+		French:"Acquérir"
 	}
 
 /////// Stats / Basics ressources
@@ -1096,6 +1098,7 @@
 	
 	"National Wonder":{
 		Italian:"Meraviglia Nazionale"
+		French:"Merveille Nationale"
 	}
 	
 	"Wonders enabled":{
@@ -1546,11 +1549,11 @@
 		Simplified_Chinese:"奇观"
 		Portuguese:"Maravilhas"
 	}
-	
-	"National Wonders":{
+	/*
+	"National Wonders":{ // already here at line 1099
 		Italian:"Meraviglie Nazionali"
 	}
-
+	*/
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
 		Romanian:"Clădiri specializate"
@@ -1584,8 +1587,9 @@
 		German:"Bevölkerung"
 	}
 
-	"City States":{	
+	"City States":{	//I think that it's already elsewhere
 		Italian:"Città-Stato"
+		French:"Cité état"
 	}
 
 	"Luxury resources":{	
@@ -1817,22 +1821,27 @@
 
 	"Our status":{
 		Italian:"I nostri status"
+		French:"Notre situation"
 	}
 
 	"Global status":{
 		Italian:"Status Globale"
+		French:"Situation globale"
 	}
 
 	"Spaceships parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
+		French:"Parties de Vaisseau spatial manquantes"
 	}
 
 	"Branches completed":{
 		Italian:"Rami completati"
+		French:"Branches complêtées"
 	}
 
 	"Undefeated civs":{
 		Italian:"Civiltà esistenti"
+		French:"Civilization invaincues"
 	}
 	
 	
@@ -1840,14 +1849,17 @@
 
 	"What would you like to do with the city?":{
 		Italian:"Cosa vorresti farne della Città?"
+		French:"Que voulez vous faire de cette ville?"
 	}
 
 	"Annex":{
 		Italian:"Annetti"
+		French:"Annexer"
 	}
 
 	"Raze":{
 		Italian:"Radi al suolo"
+		French:"Razer"
 	}
 	
 	
@@ -1855,14 +1867,17 @@
 
 	"Remove your troops in our border immediately!":{
 		Italian:"Esigiamo che rimuoviate i vostri soldati dai nostri confini!"
+		French:"Enlevez vos troupes de nos terres immédiatement!"
 	}
 
 	"Sorry.":{
 		Italian:"Ti porgiamo le nostre scuse."
+		French:"Désolé."
 	}
 
 	"Never!":{
 		Italian:"Non sia mai!"
+		French:"Jamais!"
 	}
 	
 ////// Civilopedia texts
@@ -1992,13 +2007,14 @@
 	"Rough Terrain":{
 		Italian:"Terreno accidentato"
 		German: "Unwegsames Gelände"
+		French:"Terrain abrupte"
 	}
 
 	" for ":{ //for example:+1 Gold for Gems,Gold,Silver
 		Italian:" per "
 		Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
 		French:"par "
-	    Portuguese:"Por "
+		Portuguese:"Por "
 	}
 
 
