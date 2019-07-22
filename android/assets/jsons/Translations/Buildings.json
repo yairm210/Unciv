@@ -55,6 +55,7 @@
 	}
 	
 	"Must not be on plains":{
+		French:"Ne doit pas être sur une plaine"
 	}
 
 	"Stonehenge":{	
@@ -861,6 +862,7 @@
 
 	"+5% Production for every Trade Route with a City-State in the empire":{
 		Italian:"+5% Produzione per ogni Rotta Commerciale con una Città-Stato nell'impero"
+		French:"+5% de production pour chaque routes commerciales connectées à une Cité état"
 	}
 
 	/*
@@ -976,6 +978,7 @@
 	}
 	
 	"Must not be on hill":{
+		French:"Doit être sur une colline"
 	}
 
 	"Museum":{	
