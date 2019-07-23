@@ -216,7 +216,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addProductionBuildingChoice() {
-        val hasWaterResource = cityInfo.getTilesInRange().any { it.isWater && it.resource!=null }
+        val hasWaterResource = cityInfo.tilesInRange
+                .any { it.isWater && it.resource!=null && it.position in cityInfo.tiles }
         val productionBuilding = buildableNotWonders
                 .filter { it.isStatRelated(Stat.Production)
                         || (hasWaterResource && (it.uniques.contains("+1 production and gold from all sea resources worked by the city")

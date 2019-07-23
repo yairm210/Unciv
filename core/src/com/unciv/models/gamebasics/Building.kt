@@ -282,7 +282,7 @@ class Building : NamedStats(), IConstruction{
             return "Requires [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
-            val containsResourceWithImprovement = construction.cityInfo.getTilesInRange()
+            val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
                     .any {
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)

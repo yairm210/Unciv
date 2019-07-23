@@ -5,11 +5,11 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
 
 
-class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) : TileGroup(tileInfo) {
+class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, tileSetStrings: TileSetStrings)
+    : TileGroup(tileInfo,tileSetStrings) {
 
     var cityButton: CityButton? = null
 
@@ -19,12 +19,6 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
         else militaryUnitImage
         unitImage?.selectUnit()
     }
-
-    init {
-        yieldGroup.center(this)
-        yieldGroup.moveBy(-22f, 0f)
-    }
-
 
     fun update(isViewable: Boolean, showSubmarine: Boolean) {
         val city = tileInfo.getCity()
@@ -42,14 +36,10 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
         super.update(isViewable || UnCivGame.Current.viewEntireMapForDebug,
                 UnCivGame.Current.settings.showResourcesAndImprovements, showSubmarine)
 
-        yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
-        if (yieldGroup.isVisible)
-            yieldGroup.setStats(tileInfo.getTileStats(currentPlayerCiv))
 
         // order by z index!
         cityImage?.toFront()
         terrainFeatureOverlayImage?.toFront()
-        yieldGroup.toFront()
         improvementImage?.toFront()
         resourceImage?.toFront()
         cityButton?.toFront()

@@ -12,7 +12,6 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
-import com.unciv.ui.cityscreen.YieldGroup
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.UnitGroup
 import com.unciv.ui.utils.center
@@ -20,9 +19,8 @@ import com.unciv.ui.utils.centerX
 
 
 
-open class TileGroup(var tileInfo: TileInfo) : Group() {
+open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) : Group() {
     val groupSize = 54f
-    val tileSetLocation = "TileSets/"+UnCivGame.Current.settings.tileSet +"/"
 
     /*
     Layers:
@@ -33,7 +31,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     City name
      */
     val baseLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
-    protected var tileBaseImage :Image= ImageGetter.getImage(tileSetLocation+"Hexagon")
+    protected var tileBaseImage :Image= ImageGetter.getImage(tileSetStrings.hexagon)
     var currentTileBaseImageLocation = ""
     protected var baseTerrainOverlayImage: Image? = null
     protected var baseTerrain:String=""
@@ -60,9 +58,8 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     val circleCrosshairFogLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
     private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targete
-    protected val fogImage = ImageGetter.getImage(tileSetLocation+"CrosshatchHexagon")
+    protected val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon)
 
-    var yieldGroup = YieldGroup()
 
     var showEntireMap = UnCivGame.Current.viewEntireMapForDebug
     var forMapEditorIcon = false
@@ -121,16 +118,15 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     }
 
     fun getTileBaseImageLocation(isRevealed: Boolean): String {
-        if(!isRevealed) return tileSetLocation+"Hexagon"
+        if(!isRevealed) return tileSetStrings.hexagon
         if(tileInfo.isCityCenter()){
-            val terrainAndCity = "$tileSetLocation${tileInfo.baseTerrain}+City"
+            val terrainAndCity = tileSetStrings.getCityTile(baseTerrain)
             if(ImageGetter.imageExists(terrainAndCity))
                 return terrainAndCity
-            if(ImageGetter.imageExists(tileSetLocation+"City"))
-                return tileSetLocation+"City"
+            if(ImageGetter.imageExists(tileSetStrings.cityTile))
+                return tileSetStrings.cityTile
         }
-        // these are templates because apparently chain appending is faster or something?
-        val baseTerrainTileLocation = "$tileSetLocation${tileInfo.baseTerrain}"
+        val baseTerrainTileLocation = tileSetStrings.getBaseTerrainTile(tileInfo.baseTerrain)
         if(tileInfo.terrainFeature!=null){
             val baseTerrainAndFeatureTileLocation = "$baseTerrainTileLocation+${tileInfo.terrainFeature}"
             if(ImageGetter.imageExists(baseTerrainAndFeatureTileLocation))
@@ -138,7 +134,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
         }
 
         if(ImageGetter.imageExists(baseTerrainTileLocation)) return baseTerrainTileLocation
-        return tileSetLocation+"Hexagon"
+        return tileSetStrings.hexagon
     }
 
     private fun updateTileImage(isRevealed: Boolean) {
@@ -227,7 +223,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             baseTerrainOverlayImage=null
         }
 
-        val imagePath = "$tileSetLocation${tileInfo.baseTerrain}Overlay"
+        val imagePath = tileSetStrings.getBaseTerrainOverlay(baseTerrain)
         if (!ImageGetter.imageExists(imagePath)) return
         baseTerrainOverlayImage = ImageGetter.getImage(imagePath)
         baseTerrainOverlayImage!!.run {
@@ -240,7 +236,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
 
     private fun updateCityImage() {
         if (cityImage == null && tileInfo.isCityCenter()) {
-            val cityOverlayLocation = tileSetLocation+"CityOverlay"
+            val cityOverlayLocation = tileSetStrings.cityOverlay
             if(!ImageGetter.imageExists(cityOverlayLocation)) // have a city tile, don't need an overlay
                 return
 
@@ -336,7 +332,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             if (roadStatus == RoadStatus.None) continue // no road image
 
             val image = if (roadStatus == RoadStatus.Road) ImageGetter.getDot(Color.BROWN)
-            else ImageGetter.getImage(tileSetLocation+"Railroad.png")
+            else ImageGetter.getImage(tileSetStrings.railroad)
             roadImage.image = image
 
             val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
@@ -355,12 +351,12 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             featureLayerGroup.addActor(image)
         }
 
-
     }
 
     private fun updateTileColor(isViewable: Boolean) {
         tileBaseImage.color =
-                if (ImageGetter.imageExists(tileSetLocation + tileInfo.baseTerrain)) Color.WHITE // no need to color it, it's already colored
+                if (ImageGetter.imageExists(tileSetStrings.getBaseTerrainTile(tileInfo.baseTerrain)))
+                    Color.WHITE // no need to color it, it's already colored
                 else tileInfo.getBaseTerrain().getColor()
 
         if (!isViewable) tileBaseImage.color = tileBaseImage.color.lerp(Color.BLACK, 0.6f)
@@ -373,7 +369,7 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
             terrainFeatureOverlayImage = null
 
             if(terrainFeature!=null) {
-                val terrainFeatureOverlayLocation = tileSetLocation +"$terrainFeature"+"Overlay"
+                val terrainFeatureOverlayLocation = tileSetStrings.getTerrainFeatureOverlay(terrainFeature!!)
                 if(!ImageGetter.imageExists(terrainFeatureOverlayLocation)) return
                 terrainFeatureOverlayImage = ImageGetter.getImage(terrainFeatureOverlayLocation)
                 featureLayerGroup.addActor(terrainFeatureOverlayImage)
@@ -460,5 +456,4 @@ open class TileGroup(var tileInfo: TileInfo) : Group() {
     fun hideCircle() {
         circleImage.isVisible = false
     }
-
 }

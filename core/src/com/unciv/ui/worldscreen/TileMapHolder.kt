@@ -21,6 +21,7 @@ import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.unit.UnitType
+import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.tilegroups.WorldTileGroup
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.unit.UnitContextMenu
@@ -37,8 +38,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
 
     internal fun addTiles() {
-
-        val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it) }
+        val tileSetStrings = TileSetStrings()
+        val daTileGroups = tileMap.values.map { WorldTileGroup(worldScreen, it, tileSetStrings) }
 
         for(tileGroup in daTileGroups) tileGroups[tileGroup.tileInfo]=tileGroup
 

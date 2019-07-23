@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
@@ -10,21 +9,8 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tr
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.addAll
-import kotlin.collections.arrayListOf
-import kotlin.collections.asSequence
-import kotlin.collections.filter
-import kotlin.collections.filterNot
-import kotlin.collections.flatMap
-import kotlin.collections.isNotEmpty
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.mutableListOf
-import kotlin.collections.plusAssign
 import kotlin.collections.set
-import kotlin.collections.toList
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
@@ -43,7 +29,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
         // updating the viewable tiles also affects the explored tiles, obvs
 
-        val newExploredTiles = HashSet<Vector2>(civInfo.exploredTiles)
+        val newExploredTiles = HashSet(civInfo.exploredTiles)
         newExploredTiles.addAll(newViewableTiles.asSequence().map { it.position }
                 .filterNot { civInfo.exploredTiles.contains(it) })
         civInfo.exploredTiles = newExploredTiles // ditto

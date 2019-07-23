@@ -334,6 +334,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
     override fun render(delta: Float) {
         if (shouldUpdate) { //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+            shouldUpdate = false
 
             if (currentPlayerCiv != gameInfo.getCurrentPlayerCivilization()) {
                 UnCivGame.Current.screen = PlayerReadyScreen(gameInfo.getCurrentPlayerCivilization())
@@ -343,7 +344,6 @@ class WorldScreen : CameraStageBaseScreen() {
             // otherwise images will not load properly!
             update()
             showTutorialsOnNextTurn()
-            shouldUpdate = false
         }
 
         super.render(delta)

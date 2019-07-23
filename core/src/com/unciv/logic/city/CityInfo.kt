@@ -20,6 +20,7 @@ class CityInfo {
     @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
     @Transient val range = 2
     @Transient lateinit var tileMap: TileMap
+    @Transient lateinit var tilesInRange:HashSet<TileInfo>
 
     var location: Vector2 = Vector2.Zero
     var name: String = ""
@@ -103,7 +104,7 @@ class CityInfo {
 
     fun getCenterTile(): TileInfo = ccenterTile
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
-    fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
+    fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
@@ -190,6 +191,7 @@ class CityInfo {
     fun setTransients() {
         tileMap = civInfo.gameInfo.tileMap
         ccenterTile = tileMap[location]
+        tilesInRange = getCenterTile().getTilesInDistance( 3).toHashSet()
         population.cityInfo = this
         expansion.cityInfo = this
         expansion.setTransients()

@@ -7,6 +7,7 @@ import com.unciv.logic.GameSaver
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.tilegroups.TileGroup
+import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileGroupMap
@@ -54,7 +55,8 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     }
 
     private fun getMapHolder(tileMap: TileMap): ScrollPane {
-        val tileGroups = tileMap.values.map { TileGroup(it) }
+        val tileSetStrings = TileSetStrings()
+        val tileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
         for (tileGroup in tileGroups) {
             tileGroup.showEntireMap = true
             tileGroup.update(true, true, true)

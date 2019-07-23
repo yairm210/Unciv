@@ -53,12 +53,12 @@ open class TileInfo {
     }
 
     fun containsGreatImprovement(): Boolean {
-        if (improvement in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        if (improvement in Constants.greatImprovements) return true
         return false
     }
 
     fun containsUnfinishedGreatImprovement(): Boolean {
-        if (improvementInProgress in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        if (improvementInProgress in Constants.greatImprovements) return true
         return false
     }
 
@@ -66,6 +66,8 @@ open class TileInfo {
 
     /** Returns military, civilian and air units in tile */
     fun getUnits(): List<MapUnit> {
+        if(militaryUnit==null && civilianUnit==null && airUnits.isEmpty())
+            return emptyList() // for performance reasons - costs much less to initialize than an empty ArrayList or list()
         val list = ArrayList<MapUnit>(2)
         if(militaryUnit!=null) list.add(militaryUnit!!)
         if(civilianUnit!=null) list.add(civilianUnit!!)

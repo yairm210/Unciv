@@ -12,6 +12,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tr
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.TileGroupMap
 import java.util.*
@@ -181,11 +182,11 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
     private fun addTiles() {
         val cityInfo = city
 
+        val tileSetStrings = TileSetStrings()
         val cityTileGroups = cityInfo.getCenterTile().getTilesInDistance(5)
                 .filter { city.civInfo.exploredTiles.contains(it.position) }
-                .map { CityTileGroup(cityInfo, it) }
+                .map { CityTileGroup(cityInfo, it, tileSetStrings) }
 
-        val tilesInRange = city.getTilesInRange()
         for (tileGroup in cityTileGroups) {
             val tileInfo = tileGroup.tileInfo
 

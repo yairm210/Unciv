@@ -100,6 +100,6 @@ open class Stats() {
 class StatMap:LinkedHashMap<String,Stats>(){
     fun add(source:String,stats:Stats){
         if(!containsKey(source)) put(source,stats)
-        else put(source, get(source)!!+stats)
+        else get(source)!!.add(stats)
     }
 }

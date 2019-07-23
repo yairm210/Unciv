@@ -27,7 +27,8 @@ class CityStats {
     //region pure fuctions
     private fun getStatsFromTiles(): Stats {
         val stats = Stats()
-        for (cell in cityInfo.getTilesInRange().filter { cityInfo.workedTiles.contains(it.position) || cityInfo.location == it.position })
+        for (cell in cityInfo.tilesInRange
+                .filter { cityInfo.location == it.position || cityInfo.workedTiles.contains(it.position) })
             stats.add(cell.getTileStats(cityInfo, cityInfo.civInfo))
         return stats
     }

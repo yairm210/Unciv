@@ -14,5 +14,6 @@ class Constants{
         const val peaceTreaty = "Peace Treaty"
         const val barbarianEncampment = "Barbarian encampment"
         const val ancientRuins = "Ancient ruins"
+        val greatImprovements = listOf("Academy", "Landmark", "Manufactory", "Customs house")
     }
 }
