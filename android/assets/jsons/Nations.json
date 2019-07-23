@@ -1061,8 +1061,8 @@
 		cities:["Almaty"]
 	},
 	{
-		name:"Edimburgh",
-		adjective:["Edimburgh"],
+		name:"Edinburgh",
+		adjective:["Edinburgh"],
 		cityStateType:"Militaristic",
 
 		declaringWar:"You leave us no choice. War it must be.",
@@ -1071,7 +1071,7 @@
 
 		mainColor:[0, 0, 0],
 		secondaryColor:[0,102,102],
-		cities:["Edimburgh"]
+		cities:["Edinburgh"]
 	},
 
 	//Barbarian
