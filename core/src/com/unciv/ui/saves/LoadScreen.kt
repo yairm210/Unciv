@@ -2,6 +2,7 @@ package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
@@ -30,10 +31,9 @@ class LoadScreen : PickerScreen() {
         deleteSaveButton.disable()
 
 
-        topTable.add(saveTable)
         val saves = GameSaver().getSaves()
         rightSideButton.setText("Load game".tr())
-        for (save in saves) {
+        for (save in saves.sortedByDescending { GameSaver().getSave(it).lastModified() }) {
             val textButton = TextButton(save,skin)
             textButton.onClick {
                 selectedSave=save
@@ -58,6 +58,7 @@ class LoadScreen : PickerScreen() {
             }
             saveTable.add(textButton).pad(5f).row()
         }
+        topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
 
         val rightSideTable = Table()
 

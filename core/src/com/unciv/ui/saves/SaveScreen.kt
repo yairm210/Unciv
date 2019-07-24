@@ -1,6 +1,7 @@
 package com.unciv.ui.saves
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -22,7 +23,7 @@ class SaveScreen : PickerScreen() {
         val currentSaves = Table()
 
         currentSaves.add("Current saves".toLabel()).row()
-        val saves = GameSaver().getSaves()
+        val saves = GameSaver().getSaves().sortedByDescending { GameSaver().getSave(it).lastModified() }
         saves.forEach {
             val textButton = TextButton(it, skin)
             textButton.onClick {
@@ -31,16 +32,11 @@ class SaveScreen : PickerScreen() {
             currentSaves.add(textButton).pad(5f).row()
 
         }
-        topTable.add(currentSaves)
+        topTable.add(ScrollPane(currentSaves)).height(stage.height*2/3)
 
 
         val newSave = Table()
-        val adjectives = listOf("Prancing","Obese","Junior","Senior","Abstract","Discombobulating","Simple","Awkward","Holy",
-                "Dangerous","Greasy","Stinky","Purple","Majestic","Incomprehensible","Cardboard","Chocolate","Robot","Ninja",
-                "Fluffy","Magical","Invisible")
-        val nouns = listOf("Moose","Pigeon","Weasel","Ferret","Onion","Marshmallow","Crocodile","Unicorn",
-                "Sandwich","Elephant","Kangaroo","Marmot","Beagle","Dolphin","Fish","Tomato","Duck","Dinosaur")
-        val defaultSaveName = adjectives.random()+" "+nouns.random()
+        val defaultSaveName = game.gameInfo.currentPlayer+" -  "+game.gameInfo.turns+" turns"
         textField.text = defaultSaveName
 
         newSave.add("Saved game name".toLabel()).row()
