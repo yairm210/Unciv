@@ -359,6 +359,7 @@ class WorldScreen : CameraStageBaseScreen() {
         if(currentPlayerCiv.getHappiness() < 5) displayTutorials("HappinessGettingLow")
         if(currentPlayerCiv.getHappiness() < 0) displayTutorials("Unhappiness")
         if(currentPlayerCiv.goldenAges.isGoldenAge()) displayTutorials("GoldenAge")
+        if(gameInfo.turns >= 50 && UnCivGame.Current.settings.checkForDueUnits) displayTutorials("Idle_Units")
         if(gameInfo.turns >= 100) displayTutorials("ContactMe")
         val resources = currentPlayerCiv.getCivResources()
         if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
