@@ -150,7 +150,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
                 YesNoPopupTable("Would you like to purchase [${construction.name}] for [$buildingGoldCost] gold?".tr(), {
-                    cityConstructions.purchaseBuilding(construction.name)
+                    cityConstructions.purchaseConstruction(construction.name)
                     if(lastConstruction!="" && cityConstructions.getConstruction(lastConstruction).isBuildable(cityConstructions))
                         city.cityConstructions.currentConstruction = lastConstruction
                     cityScreen.update() // since the list of available buildings needs to be updated too, so we can "see" that the building we bought now exists in the city

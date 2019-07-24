@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
+import com.unciv.GameSpeed
 import com.unciv.GameStarter
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
@@ -76,6 +77,7 @@ class NewGameScreen: PickerScreen(){
         addMapTypeSizeAndFile(newGameOptionsTable)
         addNumberOfHumansAndEnemies(newGameOptionsTable)
         addDifficultySelectBox(newGameOptionsTable)
+        addGameSpeedSelectBox(newGameOptionsTable)
         addVictoryTypeCheckboxes(newGameOptionsTable)
         addBarbariansCheckbox(newGameOptionsTable)
 
@@ -227,6 +229,17 @@ class NewGameScreen: PickerScreen(){
             }
         })
         newGameOptionsTable.add(difficultySelectBox).pad(10f).row()
+    }
+
+    private fun addGameSpeedSelectBox(newGameOptionsTable: Table) {
+        newGameOptionsTable.add("{Game Speed}:".tr())
+        val gameSpeedSelectBox = TranslatedSelectBox(GameSpeed.values().map { it.name }, newGameParameters.gameSpeed.name, skin)
+        gameSpeedSelectBox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.gameSpeed = GameSpeed.valueOf(gameSpeedSelectBox.selected.value)
+            }
+        })
+        newGameOptionsTable.add(gameSpeedSelectBox).pad(10f).row()
     }
 
 

@@ -176,7 +176,7 @@ class Battle(val gameInfo:GameInfo) {
 
         if(defender.isDefeated() && defender is MapUnitCombatant && !defender.getUnitType().isCivilian()
                 && attacker.getCivInfo().policies.isAdopted("Honor Complete"))
-            attacker.getCivInfo().gold += defender.unit.baseUnit.getGoldCost(attacker.getCivInfo(), true) / 10
+            attacker.getCivInfo().gold += defender.unit.baseUnit.getProductionCost(attacker.getCivInfo()) / 10
 
         if(attacker is MapUnitCombatant && attacker.unit.action!=null && attacker.unit.action!!.startsWith("moveTo"))
             attacker.unit.action=null

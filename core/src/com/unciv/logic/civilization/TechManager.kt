@@ -40,7 +40,10 @@ class TechManager {
     }
 
     fun costOfTech(techName: String): Int {
-        return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
+        var techCost = GameBasics.Technologies[techName]!!.cost.toFloat()
+        techCost *= civInfo.getDifficulty().researchCostModifier
+        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        return techCost.toInt()
     }
 
     fun currentTechnology(): Technology? = currentTechnologyName()?.let {

@@ -14,8 +14,23 @@ import com.unciv.models.gamebasics.VictoryType
 import java.util.*
 import kotlin.collections.ArrayList
 
+enum class GameSpeed{
+    Quick,
+    Standard,
+    Epic;
+
+    fun getModifier(): Float {
+        when(this) {
+            Quick -> return 0.67f
+            Standard -> return 1f
+            Epic -> return 1.5f
+        }
+    }
+}
+
 class GameParameters{
     var difficulty="Prince"
+    var gameSpeed = GameSpeed.Standard
     var mapRadius=20
     var numberOfHumanPlayers=1
     var humanNations=ArrayList<String>().apply { add("Babylon") } // Good default starting civ

@@ -41,16 +41,6 @@
 	}
 */
 
-	"World size":{	 //not duplicate,the other one is wrong.
-		Italian:"Dimensione della mappa"
-		Russian:"Размер мира"
-		French:"Taille du monde"
-		Romanian:"Mărime pământ"
-		Spanish:"Tamaño del mundo"
-		Simplified_Chinese:"世界大小"
-		Portuguese:"Tamanho do mundo"
-		German:"Kartengröße"
-	}
 
 	
 	"Start game!":{
@@ -99,16 +89,6 @@
 		German:"Anzahl der Gegner"
 	}
 
-	"Difficulty":{	
-		Italian:"Difficoltà"
-		Russian:"Сложность"
-		French:"Difficulté"
-		Romanian:"Dificultate"
-		Spanish:"Dificultad"
-		Simplified_Chinese:"难度"
-		Portuguese:"Dificuldade"
-		German:"Schwierigkeitsgrad"
-	}
 	
 	"Number of city-states":{
 		Italian:"Numero di Città-Stato"
@@ -138,6 +118,196 @@
 	"Cultural": {
 		Italian:"Culturale"
 		French: "Culturelle"
+	}
+	
+	// Map sizes
+	
+	"World size":{	 //not duplicate,the other one is wrong.
+		Italian:"Dimensione della mappa"
+		Russian:"Размер мира"
+		French:"Taille du monde"
+		Romanian:"Mărime pământ"
+		Spanish:"Tamaño del mundo"
+		Simplified_Chinese:"世界大小"
+		Portuguese:"Tamanho do mundo"
+		German:"Kartengröße"
+	}
+	
+	
+	"Tiny":{
+		Italian:"Minuscola"
+		Romanian:"Micuț"
+		Spanish:"Micro"
+		Simplified_Chinese:"极小"
+		German:"Winzig"
+		Russian:"крошечный"
+		Portuguese:"Minúsculo"
+		French:"Minuscule"
+	}
+
+	"Small":{	
+		Italian:"Piccola"
+		Russian:"Маленький"
+		French:"Petit"
+		Romanian:"Mic"
+		Spanish:"Pequeño"
+		Simplified_Chinese:"小"
+		Portuguese:"Pequeno"
+		German:"Klein"
+	}
+
+	"Medium":{	
+		Italian:"Media"
+		Russian:"Средний"
+		French:"Moyen"
+		Romanian:"Mediu"
+		Spanish:"Mediano"
+		Simplified_Chinese:"中"
+		Portuguese:"Médio"
+		German:"Mittel"
+	}
+
+	"Large":{	
+		Italian:"Grande"
+		Russian:"Большой"
+		French:"Grand"
+		Romanian:"Mare"
+		Spanish:"Grande"
+		Simplified_Chinese:"大"
+		Portuguese:"Grande"
+		German:"Groß"
+	}
+
+	"Huge":{	
+		Italian:"Enorme"
+		Russian:"огромный"
+		French:"Énorme"
+		Romanian:"Imens"
+		Spanish:"Enorme"
+		Simplified_Chinese:"巨大"
+		Portuguese:"Imenso"
+		German:"Enorm"
+	}
+	
+	
+	// Difficulties
+	
+	"Difficulty":{	
+		Italian:"Difficoltà"
+		Russian:"Сложность"
+		French:"Difficulté"
+		Romanian:"Dificultate"
+		Spanish:"Dificultad"
+		Simplified_Chinese:"难度"
+		Portuguese:"Dificuldade"
+		German:"Schwierigkeitsgrad"
+	}
+	
+	
+	"Settler":{	
+		Italian:"Colono"
+		Russian:"Поселенец"
+		French:"Colon"
+		Romanian:"Colonist"
+		Spanish:"Colono"
+		Simplified_Chinese:"移民"
+		Portuguese:"Colonizador"
+		German:"Siedler"
+	}
+
+	"Chieftain":{	
+		Italian:"Capo"
+		Russian:"Вождь"
+		French:"Chef de clan"
+		Romanian:"Șef de trib"
+		Spanish:"Cacique"
+		Simplified_Chinese:"酋长"
+		Portuguese:"Cacique"
+		German:"Häuptling"
+	}
+
+	"Warlord":{	
+		Italian:"Condottiero"
+		Russian:"Военачальник"
+		French:"Chef de guerre"
+		Romanian:"Comandant"
+		Spanish:"Señor de la guerra"
+		Simplified_Chinese:"军阀"
+		Portuguese:"General"
+		German:"Kriegsherr"
+	}
+
+	"Prince":{	
+		Italian:"Principe"
+		Russian:"Принц"
+		French:"Prince"
+		Romanian:"Prinţ"
+		Spanish:"Príncipe"
+		Simplified_Chinese:"王子"
+		Portuguese:"Príncipe"
+		German:"Prinz"
+	}
+
+	"King":{	
+		Italian:"Re"
+		Russian:"Король"
+		French:"Roi"
+		Romanian:"Rege"
+		Spanish:"Rey"
+		Simplified_Chinese:"国王"
+		Portuguese:"Rei"
+		German:"König"
+	}
+
+	"Emperor":{	
+		Italian:"Imperatore"
+		Russian:"Император"
+		French:"Empereur"
+		Romanian:"Împărat"
+		Spanish:"Emperador"
+		Simplified_Chinese:"皇帝"
+		Portuguese:"Imperador"
+		German:"Kaiser"
+	}
+
+	"Immortal":{	
+		Italian:"Immortale"
+		Russian:"Бессмертный"
+		French:"Immortel"
+		Romanian:"Nemuritor"
+		Spanish:"Inmortal"
+		Simplified_Chinese:"不朽"
+		Portuguese:"Imortal"
+		German:"Unsterblicher"
+	}
+
+	"Deity":{	
+		Italian:"Divinità"
+		Russian:"Божество"
+		French:"Déité" //or Divinité
+		Romanian:"Zeitate"
+		Spanish:"Deidad"
+		Simplified_Chinese:"天神"
+		Portuguese:"Semi-Deus"
+		German:"Gott"
+	}
+	
+	
+	// Game speeds
+	
+	"Game Speed":{
+	}
+	
+	"Quick":{
+	}
+	
+	"Standard":{
+	}
+	
+	"Epic":{
+	}
+	
+	"Marathon":{
 	}
 	
 	

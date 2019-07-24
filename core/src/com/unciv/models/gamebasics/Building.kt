@@ -185,26 +185,25 @@ class Building : NamedStats(), IConstruction{
         return !isWonder && !isNationalWonder
     }
 
-    override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
-        if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety"))
-            return (cost * 0.85).toInt()
-        else return cost
+
+    override fun getProductionCost(civInfo: CivilizationInfo): Int {
+        var productionCost = cost.toFloat()
+        if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
+            productionCost *= 0.85f
+        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        return productionCost.toInt()
     }
 
-    override fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean): Int {
+    override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
         var cost: Double
-        if (baseCost) {
-            cost = Math.pow((30 * getProductionCost(hashSetOf())).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
-        } else {
-            cost = Math.pow((30 * getProductionCost(civInfo.policies.adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
-            if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-            if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
-            if (civInfo.policies.adoptedPolicies.contains("Patronage")
-                    && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower")
-                            .map{civInfo.getEquivalentBuilding(it).name}.contains(name))
-                cost *= 0.5
-        }
+            cost = Math.pow((30 * getProductionCost(civInfo)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
+        if (civInfo.policies.isAdopted("Mercantilism")) cost *= 0.75
+        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
+        if (civInfo.policies.isAdopted("Patronage")
+                && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower")
+                        .map{civInfo.getEquivalentBuilding(it).name}.contains(name))
+            cost *= 0.5
 
         return (cost / 10).toInt() * 10
     }

@@ -113,7 +113,7 @@ class CityConstructions {
     }
 
     fun getRemainingWork(constructionName: String) =
-            getConstruction(constructionName).getProductionCost(cityInfo.civInfo.policies.adoptedPolicies) - getWorkDone(constructionName)
+            getConstruction(constructionName).getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
 
     fun turnsToConstruction(constructionName: String): Int {
         val workLeft = getRemainingWork(constructionName)
@@ -158,7 +158,7 @@ class CityConstructions {
         val construction = getConstruction(currentConstruction)
         if(construction is SpecialConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
-            val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
+            val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstruction)
                     && inProgressConstructions[currentConstruction]!! >= productionCost) {
                 constructionComplete(construction)
@@ -217,14 +217,14 @@ class CityConstructions {
         builtBuildings.remove(buildingName)
     }
 
-    fun purchaseBuilding(buildingName: String) {
-        cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo)
-        getConstruction(buildingName).postBuildEvent(this)
-        if (currentConstruction == buildingName)
+    fun purchaseConstruction(constructionName: String) {
+        cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
+        getConstruction(constructionName).postBuildEvent(this)
+        if (currentConstruction == constructionName)
             cancelCurrentConstruction()
 
         cityInfo.cityStats.update()
-        cityInfo.civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
+        cityInfo.civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
     }
 
     fun addCultureBuilding() {
