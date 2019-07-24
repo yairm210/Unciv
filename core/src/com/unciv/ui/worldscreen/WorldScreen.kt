@@ -364,8 +364,8 @@ class WorldScreen : CameraStageBaseScreen() {
         if(resources.any { it.resource.resourceType==ResourceType.Luxury }) displayTutorials("LuxuryResource")
         if(resources.any { it.resource.resourceType==ResourceType.Strategic}) displayTutorials("StrategicResource")
         if("EnemyCity" !in shownTutorials
-                && currentPlayerCiv.exploredTiles.asSequence().map { gameInfo.tileMap[it] }
-                        .any { it.isCityCenter() && it.getOwner()!=currentPlayerCiv })
+                && gameInfo.civilizations.filter { it!=currentPlayerCiv }
+                        .flatMap { it.cities }.any { currentPlayerCiv.exploredTiles.contains(it.location) })
             displayTutorials("EnemyCity")
         if(currentPlayerCiv.containsBuildingUnique("Enables construction of Spaceship parts"))
             displayTutorials("ApolloProgram")

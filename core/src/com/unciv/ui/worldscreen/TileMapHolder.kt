@@ -45,6 +45,8 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         val allTiles = TileGroupMap(daTileGroups,worldScreen.stage.width)
 
+        // Memory profiling reveals that creating an GestureDetector inside the ActorGestureListener
+        // for every tile is VERY memory-intensive
         for(tileGroup in tileGroups.values){
             tileGroup.addListener (object: ActorGestureListener() {
                 override fun tap(event: InputEvent?, x: Float, y: Float, count: Int, button: Int) {

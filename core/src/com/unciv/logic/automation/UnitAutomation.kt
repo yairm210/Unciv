@@ -101,9 +101,8 @@ class UnitAutomation{
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
         if(unit.civInfo.isBarbarianCivilization()) return false
-        val knownEncampments = unit.civInfo.exploredTiles.asSequence()
-                .map { unit.civInfo.gameInfo.tileMap[it] }
-                .filter { it.improvement==Constants.barbarianEncampment }
+        val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
+                .filter { it.improvement==Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities
         val encampmentsCloseToCities
                 = knownEncampments.filter { cities.any { city -> city.getCenterTile().arialDistanceTo(it) < 6 } }

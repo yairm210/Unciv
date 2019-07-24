@@ -45,18 +45,18 @@ class Nation : INamed {
 
     var afterPeace=""
 
-    lateinit var mainColor: List<Int>
+    lateinit var outerColor: List<Int>
     var unique:String?=null
-    var secondaryColor: List<Int>?=null
+    var innerColor: List<Int>?=null
     var startBias = ArrayList<String>()
 
 
     fun getColor(): Color {
-        return colorFromRGB(mainColor[0], mainColor[1], mainColor[2])
+        return colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
     }
     fun getSecondaryColor(): Color {
-        if(secondaryColor==null) return Color.BLACK
-        return colorFromRGB(secondaryColor!![0], secondaryColor!![1], secondaryColor!![2])
+        if(innerColor==null) return Color.BLACK
+        return colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
     }
 
     fun isCityState()= cityStateType != null

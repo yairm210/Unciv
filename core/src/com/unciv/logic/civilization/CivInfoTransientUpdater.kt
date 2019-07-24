@@ -18,21 +18,31 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
     // This is a big performance
     fun updateViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
-        newViewableTiles.addAll(civInfo.cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
-        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles})
+
+        // There are a LOT of tiles usually.
+        // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
+        // Ans so, sequences to the rescue!
+        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles().asSequence() }
+        newViewableTiles.addAll(ownedTiles)
+        val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner()!=civInfo } }
+        newViewableTiles.addAll(neighboringUnownedTiles)
+        newViewableTiles.addAll(civInfo.getCivUnits().asSequence().flatMap { it.viewableTiles.asSequence()})
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
+        newViewableInvisibleTiles.addAll(civInfo.getCivUnits().asSequence()
                 .filter {it.hasUnique("Can attack submarines")}
-                .flatMap {it.viewableTiles})
+                .flatMap {it.viewableTiles.asSequence()})
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
         // updating the viewable tiles also affects the explored tiles, obvs
 
-        val newExploredTiles = HashSet(civInfo.exploredTiles)
-        newExploredTiles.addAll(newViewableTiles.asSequence().map { it.position }
-                .filterNot { civInfo.exploredTiles.contains(it) })
-        civInfo.exploredTiles = newExploredTiles // ditto
+        // So why don't we play switcharoo with the explored tiles as well?
+        // Well, because it gets REALLY LARGE so it's a lot of memory space,
+        // and we never actually iterate on the explored tiles (only check contains()),
+        // so there's no fear of concurrency problems.
+        val newlyExploredTiles = newViewableTiles.asSequence().map { it.position }
+                .filterNot { civInfo.exploredTiles.contains(it) }
+        civInfo.exploredTiles.addAll(newlyExploredTiles)
 
 
         val viewedCivs = HashSet<CivilizationInfo>()

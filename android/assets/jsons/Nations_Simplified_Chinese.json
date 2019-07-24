@@ -27,8 +27,8 @@
 		afterPeace:"愚蠢啊，愚蠢啊——让我活下去。对敌人的仁慈是一剂自杀的毒药。",
 		tradeRequest:"看来你确实有存在的理由—给我提供些有价值的东西吧。",
 				
-		mainColor:[27,53,63],
-		secondaryColor:[213,249,255],
+		outerColor:[27,53,63],
+		innerColor:[213,249,255],
 		uniqueName:"智慧创新",
 		unique:"发明文字后立即获得一个大科学家，大科学家点数积累速率+50%",
 		cities:["巴比伦","阿卡德","杜尔-库里加尔祖","尼普尔","博尔西帕","西帕尔","俄庇斯","马里","苏萨","埃什努那",
@@ -63,8 +63,8 @@
 		afterPeace:"在通向胜利前偶尔也可以停下来欣赏风景。",
 		tradeRequest:"我的朋友，这笔交易对你还算公平吧？",
 				
-		mainColor:[181, 232, 232],
-		secondaryColor:[68,142,249],
+		outerColor:[181, 232, 232],
+		innerColor:[68,142,249],
 		cities:["雅典","斯巴达","科林斯","阿尔戈斯","克诺索斯","迈锡尼","法萨卢斯","以弗所","哈利卡纳苏斯","罗德",
 			"埃雷特里亚","帕加马","米勒斯","迈加拉","福西亚","西锡安","梯林斯","萨摩斯","米提利尼","希俄斯",
 			"帕洛斯","埃利斯","锡拉库萨","赫拉克莱娅","格尔腾","加尔西斯","皮洛斯","佩拉","纳克索斯"]
@@ -96,8 +96,8 @@
 		afterPeace:"昊天上帝在上，愿阁下天命长存霸业永延。",
 		tradeRequest:"朕之决断阁下以为如何？",
 				
-		mainColor:[9, 112, 84],
-		secondaryColor:[255,255,255],
+		outerColor:[9, 112, 84],
+		innerColor:[255,255,255],
 		uniqueName:"兵法韬略",
 		unique:"大军事家提供双倍战斗力加成，大军事家产生速率+50%",
 		cities:["北京","上海","广州","南京","西安","成都","杭州","天津","澳门","山东",
@@ -132,8 +132,8 @@
 		afterPeace:"你知道我完全能够消灭你，但是我今天我选择宽容。",
 		tradeRequest:"慷慨的埃及向你提议以下交易。",
 		
-		mainColor:[ 231, 213, 0],
-		secondaryColor:[98,10,210],
+		outerColor:[ 231, 213, 0],
+		innerColor:[98,10,210],
 		uniqueName:"永恒建筑",
 		unique:"建造奇观时+20%产能积累速率",
 		cities:["底比斯","孟斐斯","赫利奥波利斯","埃勒凡他尼","亚历山大","塔尔-拉美西斯","吉萨","比布鲁斯","阿肯塔顿","希拉孔波利斯",
@@ -168,8 +168,8 @@
 		afterPeace:"忍耐和时间，往往比力量和愤怒更有效，姑且待之。",
 		tradeRequest:"我亲爱的朋友，你有兴趣与英格兰做一笔交易吗？",
 		
-		mainColor:[ 114, 0, 0],
-		secondaryColor:[255,255,255],
+		outerColor:[ 114, 0, 0],
+		innerColor:[255,255,255],
 		uniqueName:"日不落",
 		unique:"所有海军单位+2移动力",
 		cities:["伦敦","约克","诺丁汉","海斯汀","坎特伯雷","考文垂","华威","纽卡斯尔","牛津","利物浦",
@@ -203,8 +203,8 @@
 		afterPeace:"没有人能逃脱自己的命运。人不会两次踏进同一条河流，祝你好运。",
 		tradeRequest:"我的朋友，法兰西有一个卑微的提议。",
 		
-		mainColor:[ 38, 98, 255],
-		secondaryColor:[239,236,148],
+		outerColor:[ 38, 98, 255],
+		innerColor:[239,236,148],
 		uniqueName:"传统制度",
 		unique:"获得蒸汽机科技前每个城市每回合+2文化",
 		cities:["巴黎","奥尔良","里昂","特鲁瓦","图尔","马赛","沙特尔","阿维尼翁","卢昂","格勒诺布尔",
@@ -239,8 +239,8 @@
 		afterPeace:"战争的终点就是和平。",
 		tradeRequest:"这份交易你认为如何？",
 				
-		mainColor:[ 236, 178, 0],
-		secondaryColor:[0,0,0],
+		outerColor:[ 236, 178, 0],
+		innerColor:[0,0,0],
 		uniqueName:"自然财富",
 		unique:"每处战略资源+1产能，每处马、铁和铀资源储量加倍",
 		cities:["莫斯科","圣彼得堡","诺夫哥罗德","罗斯托夫","雅罗斯拉夫尔","叶卡捷琳堡","雅库茨克","符拉迪沃斯托克","斯摩棱斯克","奥伦堡",
@@ -274,8 +274,8 @@
 		afterPeace:"这不是和平，只是短暂的休战。祝你好运！",
 		tradeRequest:"我有项提议，希望你能考虑。",
 				
-		mainColor:[ 53,0,87],
-		secondaryColor:[238,201,9],
+		outerColor:[ 53,0,87],
+		innerColor:[238,201,9],
 		uniqueName:"罗马荣耀",
 		unique:"在其他城市建造首都已有建筑时+25%产能积累",
 		cities:["罗马","阿提乌姆","库迈","那不勒斯","拉维纳","亚雷提乌姆","米兰","阿尔庇努姆","科尔切伊","赛提亚",
@@ -310,8 +310,8 @@
 		afterPeace:"感谢你的慷慨和仁慈，我们将永远铭记。",
 		tradeRequest:"请上前来，让我们做成这笔买卖。",
 				
-		mainColor:[ 41,83,42],
-		secondaryColor:[146,221,9],
+		outerColor:[ 41,83,42],
+		innerColor:[146,221,9],
 		uniqueName:"沙漠之舟",
 		unique:"每条贸易路线+1金钱，石油资源储量加倍",
 		cities:["麦加","麦地那","大马士革","巴格达","那基兰","库费","巴士拉","呼罗珊","安嘉尔","福斯塔",
@@ -345,8 +345,8 @@
 		afterPeace:"不论用何方法获得名誉，如没有品格来维持，终将会失去，请好自为之！",
 		tradeRequest:"我们来做笔交易你感兴趣吗？",
 				
-		mainColor:[ 28,51,119],
-		secondaryColor:[255,255,255],
+		outerColor:[ 28,51,119],
+		innerColor:[255,255,255],
 		uniqueName:"昭昭天命",
 		unique:"陆军单位+1视野，购买地块费用-50%",
 		cities:["华盛顿","纽约","波士顿","费城","亚特兰大","芝加哥","西雅图","旧金山","洛杉矶","休斯敦",
@@ -381,8 +381,8 @@
 		afterPeace:"光阴如露，梦幻似水，岂有长生不灭者？愿阁下武运昌隆。",
 		tradeRequest:"吾之珍宝阁下是否有兴致？",
 				
-		mainColor:[215,225,225],
-		secondaryColor:[185,0,0],
+		outerColor:[215,225,225],
+		innerColor:[185,0,0],
 		uniqueName:"武士道",
 		unique: "受伤单位战斗力不减",
 		cities:["京都","大阪","东京","萨摩","鹿儿岛","奈良","名古屋","出云","长崎","横滨","下关","松山","札幌","函馆","伊势","富山","福岛","周防","备前","越前","和泉","近江","越后","高崎","佐渡","神户","长野","广岛","高山","秋田","福冈","青森","镰仓","高知","那霸","仙台","岐阜","山口","大田","鸟取"]
@@ -414,8 +414,8 @@
 		afterPeace:"What do ye think about calling it a draw?"
 		tradeRequest:"It would be in your best interest, to carefully consider this proposal."
 				
-		mainColor:[224,224,224],
-		secondaryColor:[64,64,64],
+		outerColor:[224,224,224],
+		innerColor:[64,64,64],
 		uniqueName:"Furor Teutonicus"
 		unique:"Upon defeating a Barbarian unit inside an encampment, there is a 67% chance to earn 25 Gold and they join the Germans. Also, land unit manteinance is reduced by 25%.",
 		cities:["Berlin","Hamburg","Munich","Cologne","Frankfurt","Essen","Dortmund","Stuttgart","Dusseldorf","Bremen",
@@ -452,8 +452,8 @@
 		afterPeace:"I am happy that it is once again peaceful at our place, even if we had to pay a price for it."
 		tradeRequest:"My friend, are you interested in this arrangement?"
 				
-		mainColor:[0,255,0],
-		secondaryColor:[255,153,51],
+		outerColor:[0,255,0],
+		innerColor:[255,153,51],
 		unique:"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.",
 		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad","Madurai","Ahmedabad",
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
@@ -486,8 +486,8 @@
 		afterPeace:"Curses! I will sacrifice ten thousand citizens to expiate this humiliation!"
 		tradeRequest:" Accept this agreement or suffer the consequences."
 		
-		mainColor:[255,51,51],
-		secondaryColor:[153,255,255],
+		outerColor:[255,51,51],
+		innerColor:[153,255,255],
 		unique:"Gain Culture for the empire from each enemy unit killed.",
 		cities:["Tenochtitlan","Teotihuacan","Tlatelolco","Texcoco","Tlaxcala","Calixtlahuaca","Xochicalco","Tlacopan","Atzcapotzalco","Tzintzuntzan","Malinalco","Tula","Tamuin","Teayo","Cempoala","Chalco","Tlalmanalco","Ixtapaluca","Huexotla","Tepexpan","Tepetlaoxtoc","Chiconautla","Zitlaltepec","Coyotepec","Tequixquiac","Jilotzingo","Tlapanaloya","Tultitan","Ecatepec","Coatepec","Chalchiuites","Chiauhita","Chapultepec","Itzapalapa","Ayotzinco","Iztapam"]
 	},
@@ -518,8 +518,8 @@
 		afterPeace:"It seems I have underestimate you. Very well... I won't take you head for now."
 		tradeRequest:"I am not always this generous, but we hope you take this rare opportunity we give you."
 				
-		mainColor:[51,0,0],
-		secondaryColor:[0,204,102],
+		outerColor:[51,0,0],
+		innerColor:[0,204,102],
 		unique:"All mounted units have +1 Movement. +30% when assaulting cities,",
 		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan","Almarikh","Ulaanbaatar","Hovd","Darhan","Dalandzadgad","Mandalgovi","Choybalsan","Erdenet","Tsetserieg","Baruun-Urt","Ereen","Batshireet","Choyr","Ulaangom","Tosontsengel","Atlay","Uliastay","Bayanhongor","Har-Ayrag","Nalayh","Tes"]
 	},
@@ -548,8 +548,8 @@
 		afterPeace:"Viracocha has frowned upon our war, and has agreed to our peace agreements."
 		tradeRequest:"The Incan people offer this fair trade."
 				
-		mainColor:[255,255,51],
-		secondaryColor:[0,204,102],
+		outerColor:[255,255,51],
+		innerColor:[0,204,102],
 		unique:"Units ignore terrain costs when moving into any tile with Hills. No maintenance costs for improvements in Hills; half cost elsewhere.",
 		cities:["Cuzco","Tiwanaku","Machu","Ollantaytambo","Corihuayrachina","Huamanga","Vilcas","Vilcabamba","Vitcos","Andahuaylas","Ica","Arequipa","Nasca","Atico","Juli","Chuito","Chuquiapo","Huanuco Pampa","Tamboccocha","Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac","Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
@@ -578,8 +578,8 @@
 		afterPeace:"It appears we should call it a tie..."
 		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
 				
-		mainColor:[255,0,0],
-		secondaryColor:[255,255,0],
+		outerColor:[255,0,0],
+		innerColor:[255,255,0],
 		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
 		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir","Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz","Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube","Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada","Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava","Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka","Paishiyauvada","Patigrbana","Phrada"]
 	},
@@ -608,8 +608,8 @@
 		afterPeace:"Perhaps the stars were mistakenly placed... I will consult my Kahuna."
 		tradeRequest:"Come, let our people feast together!"
 				
-		mainColor:[255,128,0],
-		secondaryColor:[255,255,0],
+		outerColor:[255,128,0],
+		innerColor:[255,255,0],
 		unique:"Can embark and move over Costs and Oceans immediately. +1 Sight when embarked",
 		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui","Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu","Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia","Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
@@ -639,8 +639,8 @@
 		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
 		tradeRequest:"We have many thinkgs to discuss and have much to benefit from each other."
 				
-		mainColor:[0,0,255],
-		secondaryColor:[255,0,0],
+		outerColor:[0,0,255],
+		innerColor:[255,0,0],
 		unique:"+2 Science for all Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean capital.",
 		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
@@ -669,8 +669,8 @@
 		afterPeace:"We thank you for bringing an end to this pointless war."
 		tradeRequest:"Can I interest you in this deal?"
 				
-		mainColor:[204,102,0],
-		secondaryColor:[255,0,0],
+		outerColor:[204,102,0],
+		innerColor:[255,0,0],
 		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
 		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
@@ -699,8 +699,8 @@
 		afterPeace:"Congratulations on your victory! I hope that peace between us will last forever!"
 		tradeRequest:"Let us do business! Would you be interested?"
 				
-		mainColor:[204,255,229],
-		secondaryColor:[0,102,0],
+		outerColor:[204,255,229],
+		innerColor:[0,102,0],
 		unique:"Pay only one.third the usual cost for naval unit maintenance. All melee naval units have the Prize Ships promotion, allowing them to capture defeated ships.",
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya","Marsin","Antalya","Zonguldak","Denizli","Ordu","Mugia","Eskishehir","Inebolu","Sinop","Adana","Artuin","Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar","Bitlis","Yalova"]
 	},
@@ -729,8 +729,8 @@
 		afterPeace:"I thank you for your mercy. I pray that we can now be friends."
 		tradeRequest:"Does this trade work for you, my friend?"
 				
-		mainColor:[0,25,51],
-		secondaryColor:[255,255,102],
+		outerColor:[0,25,51],
+		innerColor:[255,255,102],
 		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
 		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River","Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle","Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
@@ -759,8 +759,8 @@
 		afterPeace:"By the hammer of Thor, you have proven yourself a worthy opponent today. I congratulate you!"
 		tradeRequest:"This is a fine deal! Even a drunk beggar would agree!"
 				
-		mainColor:[51,25,0],
-		secondaryColor:[255,255,102],
+		outerColor:[51,25,0],
+		innerColor:[255,255,102],
 		unique:"+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa.",
 		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso","Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore","Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers","Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen","Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
@@ -768,7 +768,7 @@
 	{
 		name:"Barbarians",
 		translatedName:"蛮族",
-		mainColor:[0,0,0],
-		secondaryColor:[182,0,0]
+		outerColor:[0,0,0],
+		innerColor:[182,0,0]
 	}
 ]
