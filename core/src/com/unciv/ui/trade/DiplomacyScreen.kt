@@ -221,7 +221,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
         val demandsButton = TextButton("Demands".tr(),skin)
         demandsButton.onClick {
-            rightSideTable.clear();
+            rightSideTable.clear()
             rightSideTable.add(getDemandsTable(currentPlayerCiv,otherCiv))
         }
         diplomacyTable.add(demandsButton).row()
