@@ -123,7 +123,7 @@
 	// Map sizes
 	
 	"World size":{	 //not duplicate,the other one is wrong.
-		Italian:"Dimensione della mappa"
+		Italian:"Dimensioni della mappa"
 		Russian:"Размер мира"
 		French:"Taille du monde"
 		Romanian:"Mărime pământ"
@@ -296,18 +296,23 @@
 	// Game speeds
 	
 	"Game Speed":{
+		Italian:"Velocità di gioco"
 	}
 	
 	"Quick":{
+		Italian:"Rapida"
 	}
 	
 	"Standard":{
+		Italian:"Standard"
 	}
 	
 	"Epic":{
+		Italian:"Epica"
 	}
 	
 	"Marathon":{
+		Italian:"Maratona"
 	}
 	
 	
