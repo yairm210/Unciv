@@ -397,7 +397,7 @@ class MapUnit {
 
     fun moveThroughTile(tile: TileInfo){
         if(tile.improvement==Constants.ancientRuins && civInfo.isMajorCiv())
-            getAncientRuinBonus()
+            getAncientRuinBonus(tile)
         if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
             clearEncampment(tile)
 
@@ -428,14 +428,14 @@ class MapUnit {
             civInfo.gold += baseUnit.getDisbandGold()
     }
 
-    private fun getAncientRuinBonus() {
-        currentTile.improvement=null
+    private fun getAncientRuinBonus(tile: TileInfo) {
+        tile.improvement=null
         val actions: ArrayList<() -> Unit> = ArrayList()
         if(civInfo.cities.isNotEmpty()) actions.add {
             val city = civInfo.cities.random()
             city.population.population++
             city.population.autoAssignPopulation()
-            civInfo.addNotification("We have found survivors in the ruins - population added to ["+city.name+"]",currentTile.position, Color.GREEN)
+            civInfo.addNotification("We have found survivors in the ruins - population added to ["+city.name+"]",tile.position, Color.GREEN)
         }
         val researchableAncientEraTechs = GameBasics.Technologies.values
                 .filter {
@@ -447,27 +447,27 @@ class MapUnit {
             actions.add {
                 val tech = researchableAncientEraTechs.random().name
                 civInfo.tech.addTechnology(tech)
-                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",currentTile.position, Color.BLUE)
+                civInfo.addNotification("We have discovered the lost technology of [$tech] in the ruins!",tile.position, Color.BLUE)
             }
 
         actions.add {
             val chosenUnit = listOf(Constants.settler, Constants.worker,"Warrior").random()
             if (!civInfo.isCityState() || chosenUnit != Constants.settler) { //City states don't get settler from ruins
-                civInfo.placeUnitNearTile(currentTile.position, chosenUnit)
-                civInfo.addNotification("A [$chosenUnit] has joined us!", currentTile.position, Color.BROWN)
+                civInfo.placeUnitNearTile(tile.position, chosenUnit)
+                civInfo.addNotification("A [$chosenUnit] has joined us!", tile.position, Color.BROWN)
             }
         }
 
         if(!type.isCivilian())
             actions.add {
                 promotions.XP+=10
-                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!",currentTile.position, Color.RED)
+                civInfo.addNotification("An ancient tribe trains our [$name] in their ways of combat!",tile.position, Color.RED)
             }
 
         actions.add {
             val amount = listOf(25,60,100).random()
             civInfo.gold+=amount
-            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",currentTile.position, Color.GOLD)
+            civInfo.addNotification("We have found a stash of [$amount] gold in the ruins!",tile.position, Color.GOLD)
         }
 
         (actions.random())()
