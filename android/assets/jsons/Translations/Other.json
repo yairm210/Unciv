@@ -94,6 +94,14 @@
 		French:"tour"
 	}
 
+	"BC":{
+		Italian:"a.C."
+	}
+
+	"AD":{
+		Italian:"d.C."
+	}
+
 	"Next unit":{
 		Italian:"Prossima unità"
 		Simplified_Chinese:"下个未行动单位"
