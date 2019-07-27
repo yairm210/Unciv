@@ -236,17 +236,16 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.isFortified() || unit.action=="Set Up" || unit.action=="Sleep")
             unit.action=null // unfortify/setup after moving
 
-        // Move through all intermediate tiles to get ancient ruins, barb encampments
-        // and to view tiles along the way
-        val pathToFinalTile = distanceToTiles.getPathToTile(destination)
         unit.removeFromTile()
         unit.putInTile(destination)
 
+        // Move through all intermediate tiles to get ancient ruins, barb encampments
+        // and to view tiles along the way
         // We only activate the moveThroughTile AFTER the putInTile because of a really weird bug -
         // If you're going to (or past) a ruin, and you activate the ruin bonus, and A UNIT spawns.
         // That unit could now be blocking your entrance to the destination, so the putInTile would fail! =0
-        // Instead, we move you to the destination directly, and only afterwards activate the various tileson the way.
-
+        // Instead, we move you to the destination directly, and only afterwards activate the various tiles on the way.
+        val pathToFinalTile = distanceToTiles.getPathToTile(destination)
         for(tile in pathToFinalTile){
             unit.moveThroughTile(tile)
         }

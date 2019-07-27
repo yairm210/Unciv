@@ -1,4 +1,5 @@
 language: android
+dist: trusty # For oracleJDK fail errors, as per advice from https://travis-ci.community/t/error-installing-oraclejdk8-expected-feature-release-number-in-range-of-9-to-14-but-got-8/3766/6
 
 android:
   components:

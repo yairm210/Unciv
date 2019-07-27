@@ -1005,7 +1005,7 @@
 		afterPeace:"May peace forever bless our lands.",
 		
 		outerColor:[0, 0, 0],
-		innerColor:[153,10,10],
+		innerColor:[18,178,210],
 		cities:["Venice"]
 	},
 	{
