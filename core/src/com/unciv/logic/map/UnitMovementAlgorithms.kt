@@ -239,12 +239,18 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         // Move through all intermediate tiles to get ancient ruins, barb encampments
         // and to view tiles along the way
         val pathToFinalTile = distanceToTiles.getPathToTile(destination)
-
         unit.removeFromTile()
+        unit.putInTile(destination)
+
+        // We only activate the moveThroughTile AFTER the putInTile because of a really weird bug -
+        // If you're going to (or past) a ruin, and you activate the ruin bonus, and A UNIT spawns.
+        // That unit could now be blocking your entrance to the destination, so the putInTile would fail! =0
+        // Instead, we move you to the destination directly, and only afterwards activate the various tileson the way.
+
         for(tile in pathToFinalTile){
             unit.moveThroughTile(tile)
         }
-        unit.putInTile(destination)
+
     }
 
 
@@ -256,7 +262,8 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(unit.type.isAirUnit())
             return tile.airUnits.size<6 && tile.isCityCenter() && tile.getCity()?.civInfo==unit.civInfo
 
-        if(!canPassThrough(tile)) return false
+        if(!canPassThrough(tile))
+            return false
 
         if (unit.type.isCivilian())
             return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==unit.owner)

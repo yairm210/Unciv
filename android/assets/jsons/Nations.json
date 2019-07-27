@@ -1056,8 +1056,8 @@
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
 
-		mainColor:[0, 0, 0],
-		secondaryColor:[102,0,51],
+		outerColor:[0, 0, 0],
+		innerColor:[102,0,51],
 		cities:["Almaty"]
 	},
 	{
@@ -1069,8 +1069,8 @@
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
 
-		mainColor:[0, 0, 0],
-		secondaryColor:[0,102,102],
+		outerColor:[0, 0, 0],
+		innerColor:[0,102,102],
 		cities:["Edinburgh"]
 	},
 

@@ -460,7 +460,8 @@ class UnitAutomation{
 
     fun tryGoToRuin(unit:MapUnit, unitDistanceToTiles: PathsToTilesWithinTurn): Boolean {
         if(!unit.civInfo.isMajorCiv()) return false // barbs don't have anything to do in ruins
-        val tileWithRuin = unitDistanceToTiles.keys.firstOrNull{unit.movement.canMoveTo(it) && it.improvement == Constants.ancientRuins}
+        val tileWithRuin = unitDistanceToTiles.keys
+                .firstOrNull{ it.improvement == Constants.ancientRuins && unit.movement.canMoveTo(it) }
         if(tileWithRuin==null) return false
         unit.movement.moveToTile(tileWithRuin)
         return true
