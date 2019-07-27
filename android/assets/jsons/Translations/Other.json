@@ -94,12 +94,12 @@
 		French:"tour"
 	}
 
-	"BC":{
-		Italian:"a.C."
+	"BC":{ //as in 2000 BC
+		Italian:"a.C."//as in 2000 a.C.
 	}
 
-	"AD":{
-		Italian:"d.C."
+	"AD":{//as in 2000 AD
+		Italian:"d.C."//as in 2000 d.C.
 	}
 
 	"Next unit":{
