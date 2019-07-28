@@ -100,7 +100,7 @@ open class Stats() {
 class StatMap:LinkedHashMap<String,Stats>(){
     fun add(source:String,stats:Stats){
         if(!containsKey(source)) put(source,stats)
-        else get(source)!!.plus(stats)
+        else put(source, get(source)!!+stats)
         // This CAN'T be get(source)!!.add() because the initial stats we get are sometimes from other places -
         // for instance the Cities is from the currentCityStats and if we add to that we change the value in the cities themselves!
     }
