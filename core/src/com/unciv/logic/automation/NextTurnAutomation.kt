@@ -199,6 +199,10 @@ class NextTurnAutomation{
                     .flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
 
+            // This can happen if the player is crazy enough to have the game continue forever and he disabled cultural victory
+            if(adoptablePolicies.isEmpty()) return
+
+
             val preferredVictoryType = civInfo.victoryType()
             val policyBranchPriority =
                     when(preferredVictoryType) {
