@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
@@ -20,6 +21,7 @@ class NextTurnAutomation{
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
         respondToDemands(civInfo)
+        respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
             offerPeaceTreaty(civInfo)
@@ -38,6 +40,22 @@ class NextTurnAutomation{
         reassignWorkedTiles(civInfo)
         trainSettler(civInfo)
         civInfo.popupAlerts.clear() // AIs don't care about popups.
+    }
+
+    private fun respondToTradeRequests(civInfo: CivilizationInfo) {
+        for(tradeRequest in civInfo.tradeRequests){
+            val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            tradeLogic.currentTrade.set(tradeRequest.trade)
+            if(TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade,civInfo,otherCiv)){
+                tradeLogic.acceptTrade()
+                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)
+            }
+            else{
+                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD) // todo translation
+            }
+        }
+        civInfo.tradeRequests.clear()
     }
 
     private fun respondToDemands(civInfo: CivilizationInfo) {

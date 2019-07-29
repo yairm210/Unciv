@@ -63,14 +63,7 @@
 		Portuguese:"[civName] declarou guerra contra nós!"
 		German:"[civName] hat uns den Krieg erklärt!"
 	}
-	
-	"[tradeOffer] from [otherCivName] has ended":{
-		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
-		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
-		French:"[tradeOffer] de [otherCivName] a pris fin"
-		Portuguese:"[tradeOffer] de [otherCivName] terminou"
-	}
-	
+
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
 		Italian:"[leaderName] del popolo [nation]"
 		German:"[leaderName] von [nation]"

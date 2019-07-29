@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -55,6 +56,7 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
                 }
                 open()
             }
+            requestingCiv.addNotification("[${currentPlayerCiv.civName}] has accepted your trade request", Color.GOLD)
         }
         addButton("Not this time.".tr()){
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
@@ -67,6 +69,8 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
 
             remove()
+            requestingCiv.addNotification("[${currentPlayerCiv.civName}] has denied your trade request", Color.GOLD)
+
             worldScreen.shouldUpdate=true
         }
         addButton("How about something else...".tr()){

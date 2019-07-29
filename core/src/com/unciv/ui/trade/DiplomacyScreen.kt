@@ -53,7 +53,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         leftSideTable.clear()
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         for (civ in UnCivGame.Current.gameInfo.civilizations
-                .filterNot { it.isDefeated() || it.isPlayerCivilization() || it.isBarbarianCivilization() }) {
+                .filterNot { it.isDefeated() || it == currentPlayerCiv || it.isBarbarianCivilization() }) {
             if (!currentPlayerCiv.knows(civ)) continue
 
             val civIndicator = ImageGetter.getNationIndicator(civ.getNation(),100f)
@@ -226,9 +226,15 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         }
         diplomacyTable.add(demandsButton).row()
 
-        if(!otherCiv.isPlayerCivilization())
+        if(!otherCiv.isPlayerCivilization()) { // human players make their own choices
             diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
+            diplomacyTable.add(getDiplomacyModifiersTable(otherCivDiplomacyManager)).row()
+        }
 
+        return diplomacyTable
+    }
+
+    private fun getDiplomacyModifiersTable(otherCivDiplomacyManager: DiplomacyManager): Table {
         val diplomacyModifiersTable = Table()
         for (modifier in otherCivDiplomacyManager.diplomaticModifiers) {
             var text = when (valueOf(modifier.key)) {
@@ -256,9 +262,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             val color = if (modifier.value < 0) Color.RED else Color.GREEN
             diplomacyModifiersTable.add(text.toLabel().setFontColor(color)).row()
         }
-        diplomacyTable.add(diplomacyModifiersTable).row()
-
-        return diplomacyTable
+        return diplomacyModifiersTable
     }
 
     private fun getDemandsTable(currentPlayerCiv: CivilizationInfo, otherCiv: CivilizationInfo): Table {

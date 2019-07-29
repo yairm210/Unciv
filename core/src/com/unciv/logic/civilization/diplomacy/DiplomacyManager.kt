@@ -415,6 +415,7 @@ class DiplomacyManager() {
                 RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DenouncedOurAllies,-15f)
             }
         }
+        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED) // todo translation
     }
 
     fun agreeNotToSettleNear(){

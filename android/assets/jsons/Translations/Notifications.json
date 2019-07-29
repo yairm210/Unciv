@@ -157,15 +157,6 @@
 		French:"[cityName] ne peut plus travailler sur [construction]"
 	}
 		
-	"One of our trades with [nation] has ended": {
-		Italian:"Un nostro accordo con [nation] è terminato."
-		French:"Un de nos échanges avec [nation] a pris fin"
-	},
-
- 	"One of our trades with [nation] has been cut short": {
-		Italian:"Un nostro accordo con [nation] è stato interrotto."
-		French:"L'un de nos accord commercial avec [nation] s'est arrêté"
-	},
 
 	"[cityname] has expanded its borders!":{
 		Italian:"[cityname] ha espanso i suoi confini!"
@@ -499,4 +490,31 @@
 		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
 		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
 	}
+	
+	// Trade
+	"[civName] has accepted your trade request":{
+	}
+	
+	"[civName] has denied your trade request":{
+	}
+	
+	
+	"[tradeOffer] from [otherCivName] has ended":{
+		Italian:"Accordo di [tradeOffer] da [otherCivName] terminato"
+		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
+		French:"[tradeOffer] de [otherCivName] a pris fin"
+		Portuguese:"[tradeOffer] de [otherCivName] terminou"
+	}
+	
+	
+	"One of our trades with [nation] has ended": {
+		Italian:"Un nostro accordo con [nation] è terminato."
+		French:"Un de nos échanges avec [nation] a pris fin"
+	},
+
+ 	"One of our trades with [nation] has been cut short": {
+		Italian:"Un nostro accordo con [nation] è stato interrotto."
+		French:"L'un de nos accord commercial avec [nation] s'est arrêté"
+	},
+	
 }
