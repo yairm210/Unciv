@@ -415,18 +415,20 @@ class DiplomacyManager() {
                 RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DenouncedOurAllies,-15f)
             }
         }
-        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED) // todo translation
+        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED)
     }
 
     fun agreeNotToSettleNear(){
         otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100)
         addModifier(DiplomaticModifiers.UnacceptableDemands,-10f)
+        otherCiv().addNotification("[${civInfo.civName}] agreed to stop settling cities near us!", Color.MAROON)
     }
 
     fun refuseDemandNotToSettleNear(){
         addModifier(DiplomaticModifiers.UnacceptableDemands,-20f)
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-15f)
+        otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", Color.MAROON)
     }
 
     //endregion

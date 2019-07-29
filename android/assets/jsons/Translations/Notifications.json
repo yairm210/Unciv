@@ -491,6 +491,9 @@
 		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
 	}
 	
+	"[civName] has denounced us!":{
+	}
+	
 	// Trade
 	"[civName] has accepted your trade request":{
 	}

@@ -7,10 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UnCivGame
-import com.unciv.logic.automation.Automation
-import com.unciv.logic.automation.ThreatLevel
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers.*
@@ -268,19 +268,16 @@ class DiplomacyScreen:CameraStageBaseScreen() {
     private fun getDemandsTable(currentPlayerCiv: CivilizationInfo, otherCiv: CivilizationInfo): Table {
         val demandsTable = Table()
         demandsTable.defaults().pad(10f)
+
         val dontSettleCitiesButton = TextButton("Please don't settle new cities near us.".tr(),skin)
+        if(otherCiv.popupAlerts.any { it.type==AlertType.DemandToStopSettlingCitiesNear && it.value==currentPlayerCiv.civName })
+            dontSettleCitiesButton.disable()
         dontSettleCitiesButton.onClick {
-            val threatLevel = Automation().threatAssessment(otherCiv,currentPlayerCiv)
-            if(threatLevel>ThreatLevel.Medium){
-                otherCiv.getDiplomacyManager(currentPlayerCiv).agreeNotToSettleNear()
-                setRightSideFlavorText(otherCiv,"Very well, we shall look for new lands to settle.","Excellent!")
-            }
-            else {
-                otherCiv.getDiplomacyManager(currentPlayerCiv).refuseDemandNotToSettleNear()
-                setRightSideFlavorText(otherCiv,"We shall do as we please.","Very well.")
-            }
+            otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, currentPlayerCiv.civName))
+            dontSettleCitiesButton.disable()
         }
         demandsTable.add(dontSettleCitiesButton).row()
+
         demandsTable.add(TextButton("Close".tr(),skin).onClick { updateRightSide(otherCiv) })
         return demandsTable
     }

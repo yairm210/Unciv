@@ -60,7 +60,7 @@ class NextTurnAutomation{
 
     private fun respondToDemands(civInfo: CivilizationInfo) {
         for(popupAlert in civInfo.popupAlerts){
-            if(popupAlert.type==AlertType.CitySettledNearOtherCiv){  // we're called upon to make a decision
+            if(popupAlert.type==AlertType.DemandToStopSettlingCitiesNear){  // we're called upon to make a decision
                 val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(demandingCiv)
                 if(Automation().threatAssessment(civInfo,demandingCiv) >= ThreatLevel.High)
@@ -472,7 +472,7 @@ class NextTurnAutomation{
             else -> {
                 val threatLevel = Automation().threatAssessment(civInfo,otherCiv)
                 if(threatLevel<ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCiv, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.civName))
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)

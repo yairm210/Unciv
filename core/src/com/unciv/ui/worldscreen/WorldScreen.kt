@@ -95,12 +95,7 @@ class WorldScreen : CameraStageBaseScreen() {
                 }
         tileMapHolder.setCenterPosition(tileToCenterOn,true)
 
-
-        // On the one hand, all updates to e.g. TileGroups need to happen on the main rendering thread.
-        // On the other hand, the initial setup requires setting up a lot of items on the map,
-        // and we would sometimes get an "Input dispatching timed out" ANR when doing so.
-        // Putting it in a postRunnnable is our way of attempting to avoid this.
-        Gdx.app.postRunnable { render(0f) }
+        update()
     }
 
     // This is private so that we will set the shouldUpdate to true instead.

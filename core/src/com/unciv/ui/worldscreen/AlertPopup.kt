@@ -77,7 +77,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 responseTable.add(getCloseButton("Never!"))
                 add(responseTable)
             }
-            AlertType.CitySettledNearOtherCiv -> {
+            AlertType.DemandToStopSettlingCitiesNear -> {
                 val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val playerDiploManager = worldScreen.currentPlayerCiv.getDiplomacyManager(otherciv)
                 val translatedNation = otherciv.getTranslatedNation()

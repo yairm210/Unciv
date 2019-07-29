@@ -316,7 +316,7 @@ class CityInfo {
      When someone settles a city within 6 tiles of another civ,
      this makes the AI unhappy and it starts a rolling event.
      The SettledCitiesNearUs flag gets added to the AI so it knows this happened,
-     and on its turn it asks the player to stop (with a CitySettledNearOtherCiv alert type)
+     and on its turn it asks the player to stop (with a DemandToStopSettlingCitiesNear alert type)
      If the player says "whatever, I'm not promising to stop", they get a -10 modifier which gradually disappears in 40 turns
      If they DO agree, then if they keep their promise for ~100 turns they get a +10 modifier for keeping the promise,
      But if they don't keep their promise they get a -20 that will only fully disappear in 160 turns.
