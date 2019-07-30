@@ -274,6 +274,8 @@ class DiplomacyManager() {
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) {
+                if(flag==DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty())
+                    continue
                 flagsCountdown.remove(flag)
                 if(flag==DiplomacyFlags.AgreedToNotSettleNearUs.name)
                     addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,10f)
