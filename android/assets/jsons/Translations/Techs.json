@@ -765,10 +765,6 @@
 		Portuguese:"Computadores"
 	}
 
-	"Lasera":{
-		Italian:"Laser"
-	}
-
 	"Mobile Tactics":{
 		Italian:"Tattiche mobili"
 	}
@@ -832,12 +828,10 @@
 	
 ///////// Technologies (Future Era)
 
-	/*
 	"Lasers":{
 		Italian:"Laser"
 		French:"Lasers"
 	}
-	*/
 
 	"Nanotechnology":{
 		Italian:"Nanotecnologia"
