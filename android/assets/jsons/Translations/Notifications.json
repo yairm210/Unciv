@@ -492,13 +492,16 @@
 	}
 	
 	"[civName] has denounced us!":{
+		Italian:"[civName] ci ha denunciati pubblicamente!"
 	}
 	
 	// Trade
 	"[civName] has accepted your trade request":{
+		Italian:"[civName] ha accettato la nostra offerta commerciale."
 	}
 	
 	"[civName] has denied your trade request":{
+		Italian:"[civName] ha rifiutato la nostra offerta commerciale."
 	}
 	
 	
