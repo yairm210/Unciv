@@ -1553,6 +1553,14 @@
 		Simplified_Chinese:"需要科技：[requiredTech]"
 		Portuguese:"Requer tecnologia: [requiredTech]"
 	}
+
+	"Must not be on plains":{
+		Italian:"Non deve trovarsi su Pianura"
+	}
+
+ 	"Must not be on hills":{
+		Italian:"Non deve trovarsi su Collina"
+	}
 	
 	
 
