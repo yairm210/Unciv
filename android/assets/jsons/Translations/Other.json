@@ -1673,16 +1673,16 @@
 	}
 
 	"Our status":{
-		Italian:"I nostri status"
+		Italian:"I tuoi progressi"
 		French:"Notre situation"
 	}
 
 	"Global status":{
-		Italian:"Status Globale"
+		Italian:"Progressi globali"
 		French:"Situation globale"
 	}
 
-	"Spaceships parts remaining":{
+	"Spaceship parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
 		French:"Parties de Vaisseau spatial manquantes"
 	}
@@ -1711,7 +1711,7 @@
 	}
 
 	"Raze":{
-		Italian:"Radi al suolo"
+		Italian:"Distruggi"
 		French:"Razer"
 	}
 	
