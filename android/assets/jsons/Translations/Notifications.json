@@ -68,7 +68,7 @@
 		Japanese:"[civName]に遭遇しました。"
 	}
 		
-	"Cannot provide upkeep for [unitName] - unit has been disbanded!":{
+	"Cannot provide unit upkeep for [unitName] - unit has been disbanded!":{
 		Italian:"Mantenimento troppo alto per [unitName]: l'unità si è sciolta!"
 		Russian:"Невоможно предоставить содержание для [unitName] - юнит распущен!"
 		Spanish:"¡No se puede mantener [unitName] - unidad disuelta!"
