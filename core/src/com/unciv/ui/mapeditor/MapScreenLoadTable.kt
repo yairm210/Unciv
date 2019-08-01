@@ -4,10 +4,8 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Array
-import com.badlogic.gdx.utils.Json
 import com.unciv.UnCivGame
-import com.unciv.logic.GameSaver
-import com.unciv.logic.map.TileMap
+import com.unciv.logic.MapSaver
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.saves.Gzip
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -18,7 +16,7 @@ class MapScreenLoadTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
     init{
         val mapFileSelectBox = SelectBox<String>(CameraStageBaseScreen.skin)
         val mapNames = Array<String>()
-        for (mapName in GameSaver().getMaps()) mapNames.add(mapName)
+        for (mapName in MapSaver().getMaps()) mapNames.add(mapName)
         mapFileSelectBox.items = mapNames
         add(mapFileSelectBox).row()
 
@@ -32,7 +30,7 @@ class MapScreenLoadTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
         loadFromClipboardButton .onClick {
             val clipboardContentsString = Gdx.app.clipboard.contents.trim()
             val decoded = Gzip.unzip(clipboardContentsString)
-            val loadedMap = Json().fromJson(TileMap::class.java, decoded)
+            val loadedMap = MapSaver().mapFromJson(decoded)
             UnCivGame.Current.screen = MapEditorScreen(loadedMap)
         }
         add(loadFromClipboardButton).row()

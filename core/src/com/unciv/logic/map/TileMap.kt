@@ -3,8 +3,8 @@ package com.unciv.logic.map
 import com.badlogic.gdx.math.Vector2
 import com.unciv.GameParameters
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.HexMath
+import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 
@@ -36,7 +36,7 @@ class TileMap {
         val mapValues:Collection<TileInfo>
 
         if(newGameParameters.mapType == MapType.File)
-            mapValues = GameSaver().loadMap(newGameParameters.mapFileName!!).values
+            mapValues = MapSaver().loadMap(newGameParameters.mapFileName!!).values
         else if(newGameParameters.mapType==MapType.Perlin)
             mapValues = PerlinNoiseRandomMapGenerator().generateMap(newGameParameters.mapRadius).values
         else

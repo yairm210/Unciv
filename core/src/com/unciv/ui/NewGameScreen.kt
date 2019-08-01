@@ -9,7 +9,7 @@ import com.unciv.GameSpeed
 import com.unciv.GameStarter
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
+import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
@@ -121,7 +121,7 @@ class NewGameScreen: PickerScreen(){
         newGameOptionsTable.add("{Map type}:".tr())
         val mapTypes = LinkedHashMap<String, MapType>()
         for (type in MapType.values()) {
-            if (type == MapType.File && GameSaver().getMaps().isEmpty()) continue
+            if (type == MapType.File && MapSaver().getMaps().isEmpty()) continue
             mapTypes[type.toString()] = type
         }
 
@@ -273,7 +273,7 @@ class NewGameScreen: PickerScreen(){
     private fun getMapFileSelectBox(): SelectBox<String> {
         val mapFileSelectBox = SelectBox<String>(skin)
         val mapNames = Array<String>()
-        for (mapName in GameSaver().getMaps()) mapNames.add(mapName)
+        for (mapName in MapSaver().getMaps()) mapNames.add(mapName)
         mapFileSelectBox.items = mapNames
 
         mapFileSelectBox.addListener(object : ChangeListener() {
