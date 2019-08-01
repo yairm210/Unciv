@@ -95,8 +95,8 @@ class NewGameScreen: PickerScreen(){
                 }
                 catch (exception:Exception){
                     val popup = PopupTable(this)
-                    popup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!").row()
-                    popup.addGoodSizedLabel("Maybe you put too many players into too small a map?").row()
+                    popup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
+                    popup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
                     popup.open()
                 }
             }

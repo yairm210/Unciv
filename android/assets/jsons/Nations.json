@@ -893,6 +893,8 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"You fiend! History shall remember this!"
+
 		
 		outerColor:[0, 0, 0],
 		innerColor:[185,132,66],
@@ -906,6 +908,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"And so the flower of Florence falls to barbaric hands..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[62,197,252],
@@ -920,6 +923,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"We shall have our revenge."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211, 220, 103],
@@ -934,6 +938,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"They will write songs of this.... pray that they shall be in your favor."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[194,97,255],
@@ -947,6 +952,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"Hah! A fine victory."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211,180,113],
@@ -961,6 +967,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"We never fully trusted you from the start."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,97,255],
@@ -975,6 +982,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"Why must you do such a thing?"
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
@@ -989,6 +997,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"How barbaric. Those who live by the sword shall perish by the sword."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[45,255,86],
@@ -1003,6 +1012,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"If our legacy continues, you will never have truly won."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[18,178,210],
@@ -1016,6 +1026,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"I guess you weren't here for the sprouts after all..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,255,51],
@@ -1029,6 +1040,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"Unacceptable!"
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,0,76],
@@ -1042,6 +1054,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"What a fine battle! Sidon is willing to serve you!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[250,128,114],
@@ -1055,6 +1068,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"How could we fall to the likes of you?!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[102,0,51],
@@ -1068,6 +1082,7 @@
 		declaringWar:"You leave us no choice. War it must be.",
 		attacked:"Very well, this shall not be forgotten.",
 		afterPeace:"May peace forever bless our lands.",
+		defeated:"There is no dishonor in losing to a worthier foe."
 
 		outerColor:[0, 0, 0],
 		innerColor:[0,102,102],
