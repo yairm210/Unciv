@@ -695,6 +695,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Mostro! La storia ricorderà questo giorno!"
 		
 		outerColor:[0, 0, 0],
 		innerColor:[185,132,66],
@@ -709,6 +710,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Sicchè, il giglio di Firenze cade nelle mani dei barbari..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[62,197,252],
@@ -724,6 +726,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Tosto o tardi avremo la nostra vendetta."
 
 		outerColor:[0, 0, 0],
 		innerColor:[211, 220, 103],
@@ -739,6 +742,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Saranno scritte canzoni a riguardo.... prega che canteranno in tuo favore."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[194,97,255],
@@ -753,6 +757,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Beh, almeno hai avuto una bella vittoria..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[211,180,113],
@@ -768,6 +773,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Bene abbiamo fatto a diffidare di te fin dall'inizio."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,97,255],
@@ -782,6 +788,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Perchè hai voluto fare una cosa del genere?"
 		
 		outerColor:[0, 0, 0],
 		innerColor:[255,69,0],
@@ -797,6 +804,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Quante barbarie... Chi di spada ferisce, di spada perisce."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[45,255,86],
@@ -812,6 +820,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Se la nostra eredità continua, allora tu non hai davvero vinto contro di noi."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,10,10],
@@ -826,6 +835,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Mi sa che non ti sono mai piaciuti i nostri broccoletti, dopo tutto..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,255,51],
@@ -839,6 +849,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Tavolta un guerriero valoroso deve ingoiare il proprio orgoglio e accettare la sconfitta..."
 		
 		outerColor:[0, 0, 0],
 		innerColor:[153,0,76],
@@ -853,6 +864,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Che bella battaglia! Sidone accetta di servirti!"
 
 		outerColor:[0, 0, 0],
 		innerColor:[250,128,114],
@@ -866,6 +878,7 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Quale è stato il tuo segreto per sconfiggerci?!"
 
 		mainColor:[0, 0, 0],
 		secondaryColor:[102,0,51],
@@ -880,10 +893,67 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Non c'è disonore nel farsi sconfiggere da un avversario più degno."
 
 		mainColor:[0, 0, 0],
 		secondaryColor:[0,102,102],
 		cities:["Edimburgo"]
+	},
+	{
+		name:"Zanzibar",
+		translatedName:"Zanzibar",
+		adjective:["Zanzibar"],
+		cityStateType:"Mercantile",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[204,153,255],
+		cities:["Zanzibar"]
+	},
+	{
+		name:"Ragusa",
+		translatedName:"Ragusa",
+		adjective:["ragusano"],
+		cityStateType:"Mercantile",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[51,51,0],
+		cities:["Ragusa"]
+	},
+	{
+		name:"Kiev",
+		translatedName:"Kiev",
+		adjective:["ucraino"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,255,51],
+		cities:["Kiev"]
+	},
+	{
+		name:"Antananarivo",
+		translatedName:"Antananarivo",
+		adjective:["malgascio"],
+		cityStateType:"Mercantile",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,255,153],
+		cities:["Antananarivo"]
 	},
 	
 	//Barbarian
