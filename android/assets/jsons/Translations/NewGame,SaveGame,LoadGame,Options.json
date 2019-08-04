@@ -317,8 +317,12 @@
 
 ////
 	
-	"It looks like we can't make a map with the parameters you requested! Maybe you put too many players into too small a map?":{
-		Italian:"Sembra che i parametri da te impostati siano eccessivi per questa mappa! Forse hai messo troppi giocatori o altri parametri?"
+	"It looks like we can't make a map with the parameters you requested!":{
+		Italian:"Sembra che i parametri da te impostati siano eccessivi per questa mappa!"
+	}
+	
+	"Maybe you put too many players into too small a map?":{
+		Italian:"Forse hai inserito troppi giocatori o altri parametri?"
 	}
 	
 	
