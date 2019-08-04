@@ -33,13 +33,11 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             civInfo.policies.adopt(pickedPolicy!!)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
-            if(game.screen is PolicyPickerScreen){
-                // update policies
-                // game.screen = PolicyPickerScreen(civInfo)
+            if(game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()){
                 game.setWorldScreen()
                 dispose()
             }
-
+            else game.screen = PolicyPickerScreen(civInfo)  // update policies
         }
 
 
