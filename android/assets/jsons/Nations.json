@@ -1088,6 +1088,58 @@
 		innerColor:[0,102,102],
 		cities:["Edinburgh"]
 	},
+	{
+		name:"Zanzibar",
+		adjective:["Zanzibar"],
+		cityStateType:"Mercantile",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[204,153,255],
+		cities:["Zanzibar"]
+	},
+	{
+		name:"Ragusa",
+		adjective:["Ragusa"],
+		cityStateType:"Mercantile",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[51,51,0],
+		cities:["Ragusa"]
+	},
+	{
+		name:"Kiev",
+		adjective:["Kiev"],
+		cityStateType:"Cultured",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,255,51],
+		cities:["Kiev"]
+	},
+	{
+		name:"Antananarivo",
+		adjective:["Antananarivo"],
+		cityStateType:"Mercantile",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,255,153],
+		cities:["Antananarivo"]
+	},
 
 	//Barbarian
 	{
