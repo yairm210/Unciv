@@ -45,7 +45,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             val group = Table()
 
             val image = if(improvement.name.startsWith("Remove"))
-                ImageGetter.getImage("OtherIcons/Stop.png")
+                ImageGetter.getImage("OtherIcons/Stop")
             else
                 ImageGetter.getImprovementIcon(improvement.name,30f)
 

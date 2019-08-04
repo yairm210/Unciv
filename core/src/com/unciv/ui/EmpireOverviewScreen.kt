@@ -404,7 +404,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     companion object {
         fun getCivGroup(civ: CivilizationInfo, afterCivNameText:String,currentPlayer:CivilizationInfo): Table {
             val civGroup = Table()
-            val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+            val civGroupBackground = ImageGetter.getDrawable("OtherIcons/civTableBackground")
 
             val civNameText = civ.civName.tr()+afterCivNameText
             val label = civNameText.toLabel()

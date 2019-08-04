@@ -204,7 +204,7 @@ class WorldScreen : CameraStageBaseScreen() {
 
         if (civInfo.tech.currentTechnology() == null) {
             val buttonPic = Table()
-            buttonPic.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+            buttonPic.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
                     .tint(colorFromRGB(7, 46, 43))
             buttonPic.defaults().pad(10f)
             buttonPic.add("{Pick a tech}!".toLabel().setFontColor(Color.WHITE).setFontSize(22))
@@ -328,15 +328,17 @@ class WorldScreen : CameraStageBaseScreen() {
 
 
     override fun render(delta: Float) {
-        if (shouldUpdate) { //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+        //  This is so that updates happen in the MAIN THREAD, where there is a GL Context,
+        //    otherwise images will not load properly!
+        if (shouldUpdate) {
             shouldUpdate = false
 
             if (currentPlayerCiv != gameInfo.getCurrentPlayerCivilization()) {
+                UnCivGame.Current.worldScreen.dispose() // for memory saving
                 UnCivGame.Current.screen = PlayerReadyScreen(gameInfo.getCurrentPlayerCivilization())
                 return
             }
 
-            // otherwise images will not load properly!
             update()
             showTutorialsOnNextTurn()
         }

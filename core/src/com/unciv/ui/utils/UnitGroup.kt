@@ -35,7 +35,7 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     fun getBackgroundImageForUnit(unit: MapUnit): Image {
         return when {
             unit.isEmbarked() -> ImageGetter.getImage("OtherIcons/Banner")
-            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield.png")
+            unit.isFortified() -> ImageGetter.getImage("OtherIcons/Shield")
             else -> ImageGetter.getCircle()
         }
     }

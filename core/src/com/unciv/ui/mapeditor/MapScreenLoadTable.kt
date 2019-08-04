@@ -35,9 +35,9 @@ class MapScreenLoadTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEditor
         }
         add(loadFromClipboardButton).row()
 
-        val closeOptionsButtton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
-        closeOptionsButtton.onClick { remove() }
-        add(closeOptionsButtton).row()
+        val closeOptionsButton = TextButton("Close".tr(), CameraStageBaseScreen.skin)
+        closeOptionsButton.onClick { remove() }
+        add(closeOptionsButton).row()
 
         open()
     }

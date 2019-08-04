@@ -29,12 +29,12 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
 
         val cityNameTable = Table()
         if(city.isBeingRazed){
-            val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
+            val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             cityNameTable.add(fireImage).size(20f).padRight(5f)
         }
 
         if(city.isCapital()){
-            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star.png").tint(Color.LIGHT_GRAY))
+            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Star").tint(Color.LIGHT_GRAY))
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 

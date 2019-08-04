@@ -16,7 +16,7 @@ import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tile.ResourceType
 
 object ImageGetter {
-    private const val whiteDotLocation = "OtherIcons/whiteDot.png"
+    private const val whiteDotLocation = "OtherIcons/whiteDot"
 
     // When we used to load images directly from different files, without using a texture atlas,
     // The draw() phase of the main screen would take a really long time because the BatchRenderer would
@@ -28,7 +28,7 @@ object ImageGetter {
     fun getDot(dotColor: Color) = getWhiteDot().apply { color = dotColor}
 
     fun getExternalImage(fileName:String): Image {
-        return Image(TextureRegion(Texture("ExtraImages/$fileName.png")))
+        return Image(TextureRegion(Texture("ExtraImages/$fileName")))
     }
 
     fun getImage(fileName: String): Image {
@@ -44,7 +44,7 @@ object ImageGetter {
 
     private fun getTextureRegion(fileName: String): TextureRegion {
         try {
-            val region = atlas.findRegion(fileName.replace(".png",""))
+            val region = atlas.findRegion(fileName)
 
             if(region==null)
                 throw Exception("Could not find $fileName")

@@ -89,7 +89,7 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
     }
 
     internal fun getMenuButton(): Image {
-        val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon.png")
+        val menuButton = ImageGetter.getImage("OtherIcons/MenuIcon")
                 .apply { setSize(50f, 50f) }
         menuButton.color = Color.WHITE
         menuButton.onClick {

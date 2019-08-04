@@ -47,7 +47,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (!tileGroup.tileInfo.airUnits.isNotEmpty()) return
         val secondarycolor = city.civInfo.getNation().getSecondaryColor()
         val airUnitTable = Table().apply { defaults().pad(5f) }
-        airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+        airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
                 .tint(city.civInfo.getNation().getColor())
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
@@ -92,16 +92,16 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         val secondaryColor = city.civInfo.getNation().getSecondaryColor()
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+        iconTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
                 .tint(city.civInfo.getNation().getColor())
 
         if (city.resistanceCounter > 0) {
-            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance.png")
+            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
             iconTable.add(resistanceImage).size(20f).pad(2f).padLeft(5f)
         }
 
         if (city.isBeingRazed) {
-            val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
+            val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             iconTable.add(fireImage).size(20f).pad(2f).padLeft(5f)
         }
         if (city.isCapital()) {
@@ -110,7 +110,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                         .apply { color = secondaryColor }
                 iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
             } else {
-                val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
+                val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
                 iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
             }
         } else if (city.civInfo.isCurrentPlayer() && city.isConnectedToCapital()) {

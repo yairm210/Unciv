@@ -83,7 +83,11 @@ class CivilizationInfo {
         for(diplomacyManager in diplomacy.values.map { it.clone() })
             toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
         toReturn.cities = cities.map { it.clone() }
-        toReturn.exploredTiles.addAll(exploredTiles)
+
+        // This is the only thing that is NOT switched out, which makes it a source of ConcurrentModification errors.
+        // Cloning it by-pointer is a horrific move, since the serialization would go over it ANYWAY and still led to concurrency prolems.
+        // Cloning it  by iiterating on the tilemap values may seem ridiculous, but it's a perfectly thread-safe way to go about it, unlike the other solutions.
+        toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
         return toReturn

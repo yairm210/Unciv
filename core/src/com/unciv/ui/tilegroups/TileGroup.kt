@@ -57,7 +57,7 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
     val circleCrosshairFogLayerGroup = Group().apply { isTransform=false; setSize(groupSize,groupSize) }
     private val circleImage = ImageGetter.getCircle() // for blue and red circles on the tile
-    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair.png") // for when a unit is targete
+    private val crosshairImage = ImageGetter.getImage("OtherIcons/Crosshair") // for when a unit is targete
     protected val fogImage = ImageGetter.getImage(tileSetStrings.crosshatchHexagon)
 
 
