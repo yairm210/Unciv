@@ -271,14 +271,14 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
 
         val civColor = tileInfo.getOwner()!!.getNation().getColor()
         for (neighbor in tileInfo.neighbors) {
-            val neigborOwner = neighbor.getOwner()
-            if (neigborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
+            val neighborOwner = neighbor.getOwner()
+            if (neighborOwner == tileOwner && borderImages.containsKey(neighbor)) // the neighbor used to not belong to us, but now it's ours
             {
                 for (image in borderImages[neighbor]!!)
                     image.remove()
                 borderImages.remove(neighbor)
             }
-            if (neigborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
+            if (neighborOwner != tileOwner && !borderImages.containsKey(neighbor)) { // there should be a border here but there isn't
 
                 val relativeHexPosition = tileInfo.position.cpy().sub(neighbor.position)
                 val relativeWorldPosition = HexMath().hex2WorldCoords(relativeHexPosition)

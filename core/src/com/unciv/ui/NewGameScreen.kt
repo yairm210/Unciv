@@ -308,7 +308,7 @@ class NewGameScreen: PickerScreen(){
     override fun render(delta: Float) {
         if(newGame!=null){
             game.gameInfo=newGame!!
-            game.worldScreen = WorldScreen()
+            game.worldScreen = WorldScreen(newGame!!.currentPlayerCiv)
             game.setWorldScreen()
         }
         super.render(delta)

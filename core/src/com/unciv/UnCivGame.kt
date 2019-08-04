@@ -2,6 +2,7 @@ package com.unciv
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Input
 import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.GameBasics
@@ -26,7 +27,7 @@ class UnCivGame(val version: String) : Game() {
 
     override fun create() {
         Current = this
-        Gdx.input.isCatchBackKey=true
+        Gdx.input.setCatchKey(Input.Keys.BACK, true)
         GameBasics.run {  } // just to initialize the GameBasics
         settings = GameSaver().getGeneralSettings()
         if (GameSaver().getSave("Autosave").exists()) {
@@ -41,7 +42,7 @@ class UnCivGame(val version: String) : Game() {
 
     fun loadGame(gameInfo:GameInfo){
         this.gameInfo = gameInfo
-        worldScreen = WorldScreen()
+        worldScreen = WorldScreen(gameInfo.currentPlayerCiv)
         setWorldScreen()
     }
 
@@ -53,7 +54,7 @@ class UnCivGame(val version: String) : Game() {
         val newGame = GameStarter().startNewGame(GameParameters().apply { difficulty="Chieftain" })
         gameInfo = newGame
 
-        worldScreen = WorldScreen()
+        worldScreen = WorldScreen(gameInfo.currentPlayerCiv)
         setWorldScreen()
     }
 
@@ -76,7 +77,7 @@ class UnCivGame(val version: String) : Game() {
             return create()
 
         if(::worldScreen.isInitialized) worldScreen.dispose() // I hope this will solve some of the many OuOfMemory exceptions...
-        worldScreen = WorldScreen()
+        worldScreen = WorldScreen(gameInfo.currentPlayerCiv)
         setWorldScreen()
     }
 

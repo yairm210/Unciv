@@ -16,7 +16,7 @@ class PlayerReadyScreen(currentPlayerCiv: CivilizationInfo) : CameraStageBaseScr
                 .setFontColor(currentPlayerCiv.getNation().getSecondaryColor()))
 
         table.onClick {
-            UnCivGame.Current.worldScreen = WorldScreen().apply {
+            UnCivGame.Current.worldScreen = WorldScreen(currentPlayerCiv).apply {
                 shouldUpdate = true
             }
             UnCivGame.Current.setWorldScreen()

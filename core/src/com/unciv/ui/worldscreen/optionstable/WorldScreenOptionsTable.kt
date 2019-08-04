@@ -28,7 +28,7 @@ class Language(val language:String){
     }
 }
 
-class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
+class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScreen){
     var selectedLanguage: String = "English"
 
     init {
@@ -142,7 +142,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.resolution = resolutionSelectBox.selected
                 UnCivGame.Current.settings.save()
-                UnCivGame.Current.worldScreen = WorldScreen()
+                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.currentPlayerCiv)
                 UnCivGame.Current.setWorldScreen()
                 WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
             }
@@ -165,7 +165,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.tileSet = tileSetSelectBox.selected
                 UnCivGame.Current.settings.save()
-                UnCivGame.Current.worldScreen = WorldScreen()
+                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.currentPlayerCiv)
                 UnCivGame.Current.setWorldScreen()
                 WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
             }
@@ -248,7 +248,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
         CameraStageBaseScreen.resetFonts()
 
-        UnCivGame.Current.worldScreen = WorldScreen()
+        UnCivGame.Current.worldScreen = WorldScreen(worldScreen.currentPlayerCiv)
         UnCivGame.Current.setWorldScreen()
         WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
     }

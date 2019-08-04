@@ -27,9 +27,8 @@ import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
-class WorldScreen : CameraStageBaseScreen() {
+class WorldScreen(val currentPlayerCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
-    internal val currentPlayerCiv: CivilizationInfo = gameInfo.getCurrentPlayerCivilization()
 
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
     val minimapWrapper = MinimapHolder(tileMapHolder)
@@ -319,7 +318,7 @@ class WorldScreen : CameraStageBaseScreen() {
     override fun resize(width: Int, height: Int) {
         if (stage.viewport.screenWidth != width || stage.viewport.screenHeight != height) {
             super.resize(width, height)
-            game.worldScreen = WorldScreen() // start over.
+            game.worldScreen = WorldScreen(currentPlayerCiv) // start over.
             game.setWorldScreen()
         }
     }
