@@ -902,7 +902,7 @@
 	{
 		name:"Zanzibar",
 		translatedName:"Zanzibar",
-		adjective:["Zanzibar"],
+		adjective:["zanzibarino"],
 		cityStateType:"Mercantile",
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
