@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
@@ -41,6 +42,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     init {
         setDefaultCloseAction()
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        scrollPane.style = skin.get(ScrollPane.ScrollPaneStyle::class.java) // So we can see scrollbars
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
