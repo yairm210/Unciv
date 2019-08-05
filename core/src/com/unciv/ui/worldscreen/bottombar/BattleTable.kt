@@ -158,7 +158,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
         }
 
-        if (attackableEnemy == null) {
+        if (!worldScreen.isPlayersTurn() || attackableEnemy == null) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }

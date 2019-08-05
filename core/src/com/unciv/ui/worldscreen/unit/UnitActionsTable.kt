@@ -59,6 +59,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     fun update(unit: MapUnit?){
         clear()
         if (unit == null) return
+        if(!worldScreen.isPlayersTurn()) return // No actions when it's not your turn!
         for (button in UnitActions().getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
             add(button).colspan(2).pad(5f).row()
         pack()

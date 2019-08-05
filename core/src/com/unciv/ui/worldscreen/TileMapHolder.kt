@@ -53,6 +53,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     onTileClicked(tileGroup.tileInfo)
                 }
                 override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
+                    if(!worldScreen.isPlayersTurn()) return false // no long click when it's not your turn
                     return onTileLongClicked(tileGroup.tileInfo)
                 }
 
@@ -105,6 +106,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
+                && worldScreen.isPlayersTurn()
                 && previousSelectedUnit.movement.canMoveTo(tileInfo) && previousSelectedUnit.movement.canReach(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             addTileOverlaysWithUnitMovement(previousSelectedUnit, tileInfo)

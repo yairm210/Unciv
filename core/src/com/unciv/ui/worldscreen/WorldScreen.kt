@@ -29,6 +29,7 @@ import com.unciv.ui.worldscreen.unit.UnitActionsTable
 
 class WorldScreen(val currentPlayerCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
+    fun isPlayersTurn() = currentPlayerCiv == gameInfo.currentPlayerCiv
 
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
     val minimapWrapper = MinimapHolder(tileMapHolder)
