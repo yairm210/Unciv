@@ -26,6 +26,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
+import kotlin.concurrent.thread
 
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
@@ -258,60 +259,59 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 return@onClick
             }
 
-            Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
-            nextTurnButton.disable()
-            nextTurnButton.setText("Working...".tr())
-
-            kotlin.concurrent.thread {
-                try {
-                    gameInfo.nextTurn()
-                }
-                catch (ex:Exception){
-                    game.settings.hasCrashedRecently=true
-                    game.settings.save()
-                    throw ex
-                }
-
-                if(gameInfo.turns % game.settings.turnsBetweenAutosaves == 0) {
-                    GameSaver().autoSave(gameInfo) {
-                        nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
-                        updateNextTurnButton()
-                    }
-                }
-                else nextTurnButton.enable() // Enable immediately
-
-                // If we put this BEFORE the save game, then we try to save the game...
-                // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
-                // BOOM! Exception!
-                // That's why this needs to be after the game is saved.
-                shouldUpdate=true
-
-                // do this on main thread
-                Gdx.app.postRunnable {
-                    updateNextTurnButton()
-                }
-                Gdx.input.inputProcessor = stage
-            }
+            nextTurn(nextTurnButton) // If none of the above
         }
 
         return nextTurnButton
     }
 
+    private fun nextTurn(nextTurnButton: TextButton) {
+        isPlayersTurn = false
+        shouldUpdate = true
+
+        thread {
+            try {
+                gameInfo.nextTurn()
+            } catch (ex: Exception) {
+                game.settings.hasCrashedRecently = true
+                game.settings.save()
+                throw ex
+            }
+
+            if (gameInfo.turns % game.settings.turnsBetweenAutosaves == 0) {
+                GameSaver().autoSave(gameInfo) {
+                    nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
+                    updateNextTurnButton()
+                }
+            } else nextTurnButton.enable() // Enable immediately
+
+            // If we put this BEFORE the save game, then we try to save the game...
+            // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
+            // BOOM! Exception!
+            // That's why this needs to be after the game is saved.
+            isPlayersTurn = true
+            shouldUpdate = true
+
+            // do this on main thread
+            Gdx.app.postRunnable {
+                updateNextTurnButton()
+            }
+        }
+    }
+
     fun updateNextTurnButton() {
-        val text = if (viewingCiv.shouldGoToDueUnit())
-            "Next unit"
-        else if(viewingCiv.cities.any{it.cityConstructions.currentConstruction==""})
-            "Pick construction"
-        else if(viewingCiv.shouldOpenTechPicker())
-            "Pick a tech"
-        else if(viewingCiv.policies.shouldOpenPolicyPicker)
-            "Pick a policy"
-        else
-            "Next turn"
+        val text = when {
+            !isPlayersTurn -> "Waiting for other players..."
+            viewingCiv.shouldGoToDueUnit() -> "Next unit"
+            viewingCiv.cities.any{it.cityConstructions.currentConstruction==""} -> "Pick construction"
+            viewingCiv.shouldOpenTechPicker() -> "Pick a tech"
+            viewingCiv.policies.shouldOpenPolicyPicker -> "Pick a policy"
+            else -> "Next turn"
+        }
         nextTurnButton.setText(text.tr())
         nextTurnButton.color = if(text=="Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
-        if(AlertPopup.isOpen) nextTurnButton.disable()
+        if(AlertPopup.isOpen || !isPlayersTurn) nextTurnButton.disable()
         else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }

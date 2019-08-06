@@ -102,8 +102,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             game.worldScreen.shouldUpdate = true
             dispose()
         }
-        if(!UnCivGame.Current.worldScreen.isPlayersTurn)
-            rightSideButton.disable()
 
         displayTutorials("TechPickerScreen")
 
