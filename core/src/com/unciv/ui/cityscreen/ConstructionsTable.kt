@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
@@ -47,7 +48,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
         pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
 
-        if(rejectionReason=="") { // no rejection reason means we can build it!
+        if(rejectionReason=="" && UnCivGame.Current.worldScreen.isPlayersTurn) { // no rejection reason means we can build it!
             pickProductionButton.onClick {
                 lastConstruction = cityScreen.city.cityConstructions.currentConstruction
                 cityScreen.city.cityConstructions.currentConstruction = construction
@@ -55,6 +56,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 cityScreen.city.cityStats.update()
                 cityScreen.update()
             }
+
         }
         else {
             pickProductionButton.color = Color.GRAY

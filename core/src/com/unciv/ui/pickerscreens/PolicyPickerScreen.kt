@@ -39,7 +39,7 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             }
             else game.screen = PolicyPickerScreen(civInfo)  // update policies
         }
-        if(!UnCivGame.Current.worldScreen.isPlayersTurn())
+        if(!UnCivGame.Current.worldScreen.isPlayersTurn)
             rightSideButton.disable()
 
 

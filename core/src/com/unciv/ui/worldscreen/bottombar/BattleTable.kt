@@ -20,7 +20,7 @@ import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
-    private val battle = Battle(worldScreen.currentPlayerCiv.gameInfo)
+    private val battle = Battle(worldScreen.viewingCiv.gameInfo)
     init{
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
@@ -52,7 +52,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
-                defender.getCivInfo()==worldScreen.currentPlayerCiv
+                defender.getCivInfo()==worldScreen.viewingCiv
                 || !(UnCivGame.Current.viewEntireMapForDebug
                         || attacker.getCivInfo().exploredTiles.contains(selectedTile.position))) {
             hide()
@@ -158,7 +158,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
         }
 
-        if (!worldScreen.isPlayersTurn() || attackableEnemy == null) {
+        if (!worldScreen.isPlayersTurn || attackableEnemy == null) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }

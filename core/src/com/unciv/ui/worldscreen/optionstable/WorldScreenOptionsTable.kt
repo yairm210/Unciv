@@ -142,7 +142,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.resolution = resolutionSelectBox.selected
                 UnCivGame.Current.settings.save()
-                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.currentPlayerCiv)
+                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UnCivGame.Current.setWorldScreen()
                 WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
             }
@@ -165,7 +165,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.tileSet = tileSetSelectBox.selected
                 UnCivGame.Current.settings.save()
-                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.currentPlayerCiv)
+                UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
                 UnCivGame.Current.setWorldScreen()
                 WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
             }
@@ -248,7 +248,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
 
         CameraStageBaseScreen.resetFonts()
 
-        UnCivGame.Current.worldScreen = WorldScreen(worldScreen.currentPlayerCiv)
+        UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
         UnCivGame.Current.setWorldScreen()
         WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
     }

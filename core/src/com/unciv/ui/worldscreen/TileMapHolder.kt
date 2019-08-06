@@ -53,7 +53,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     onTileClicked(tileGroup.tileInfo)
                 }
                 override fun longPress(actor: Actor?, x: Float, y: Float): Boolean {
-                    if(!worldScreen.isPlayersTurn()) return false // no long click when it's not your turn
+                    if(!worldScreen.isPlayersTurn) return false // no long click when it's not your turn
                     return onTileLongClicked(tileGroup.tileInfo)
                 }
 
@@ -106,7 +106,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         val newSelectedUnit = unitTable.selectedUnit
 
         if (previousSelectedUnit != null && previousSelectedUnit.getTile() != tileInfo
-                && worldScreen.isPlayersTurn()
+                && worldScreen.isPlayersTurn
                 && previousSelectedUnit.movement.canMoveTo(tileInfo) && previousSelectedUnit.movement.canReach(tileInfo)) {
             // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
             addTileOverlaysWithUnitMovement(previousSelectedUnit, tileInfo)
@@ -116,7 +116,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
         if(newSelectedUnit==null || newSelectedUnit.type==UnitType.Civilian){
             val unitsInTile = selectedTile!!.getUnits()
-            if(unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(worldScreen.currentPlayerCiv)){
+            if(unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(worldScreen.viewingCiv)){
                 // try to select the closest city to bombard this guy
                 val citiesThatCanBombard = selectedTile!!.getTilesInDistance(2)
                         .filter { it.isCityCenter() }.map { it.getCity()!! }
@@ -160,7 +160,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
         if(moveHereDto!=null)
             table.add(getMoveHereButton(moveHereDto))
 
-        if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.currentPlayerCiv) {
+        if (tileInfo.isCityCenter() && tileInfo.getOwner()==worldScreen.viewingCiv) {
             for (unit in tileInfo.getCity()!!.getCenterTile().getUnits()) {
                 val unitGroup = UnitGroup(unit, 60f).surroundWithCircle(80f)
                 unitGroup.circle.color = Color.GRAY.cpy().apply { a = 0.5f }

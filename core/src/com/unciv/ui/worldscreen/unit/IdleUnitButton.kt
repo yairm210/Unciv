@@ -5,7 +5,6 @@ import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.map.MapUnit
-import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.TileMapHolder
@@ -18,7 +17,7 @@ class IdleUnitButton (
 
     val image = ImageGetter.getImage("OtherIcons/BackArrow")
 
-    fun hasIdleUnits() = unitTable.worldScreen.currentPlayerCiv.getIdleUnits().isNotEmpty()
+    fun hasIdleUnits() = unitTable.worldScreen.viewingCiv.getIdleUnits().isNotEmpty()
 
     init {
         val imageSize = 25f
@@ -31,7 +30,7 @@ class IdleUnitButton (
         enable()
         onClick {
 
-            val idleUnits = unitTable.worldScreen.currentPlayerCiv.getIdleUnits()
+            val idleUnits = unitTable.worldScreen.viewingCiv.getIdleUnits()
             if(idleUnits.isEmpty()) return@onClick
 
             val unitToSelect: MapUnit

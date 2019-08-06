@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.Building
@@ -67,6 +68,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     val sellAmount = cityScreen.city.getGoldForSellingBuilding(building.name)
                     val sellBuildingButton = TextButton("Sell for [$sellAmount] gold".tr(),skin)
                     wonderDetailsTable.add(sellBuildingButton).pad(5f).row()
+
                     sellBuildingButton.onClick {
                         YesNoPopupTable("Are you sure you want to sell this [${building.name}]?".tr(),
                             {
@@ -75,7 +77,8 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                                 cityScreen.update()
                             }, cityScreen)
                     }
-                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold)
+                    if(cityScreen.city.hasSoldBuildingThisTurn || sellAmount > cityScreen.city.civInfo.gold
+                            || !UnCivGame.Current.worldScreen.isPlayersTurn)
                         sellBuildingButton.disable()
                 }
                 wonderDetailsTable.addSeparator()
@@ -219,6 +222,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
+                if(!UnCivGame.Current.worldScreen.isPlayersTurn) unassignButton.disable()
                 specialistPickerTable.add(unassignButton)
             } else specialistPickerTable.add()
 
@@ -236,7 +240,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                     cityInfo.cityStats.update()
                     cityScreen.update()
                 }
-                if (cityInfo.population.getFreePopulation() == 0)
+                if (cityInfo.population.getFreePopulation() == 0 || !UnCivGame.Current.worldScreen.isPlayersTurn)
                     assignButton.disable()
                 specialistPickerTable.add(assignButton)
             } else specialistPickerTable.add()

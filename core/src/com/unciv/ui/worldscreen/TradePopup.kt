@@ -15,7 +15,7 @@ import kotlin.math.max
 
 class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
     init{
-        val currentPlayerCiv = worldScreen.currentPlayerCiv
+        val currentPlayerCiv = worldScreen.viewingCiv
         val tradeRequest = currentPlayerCiv.tradeRequests.first()
 
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)

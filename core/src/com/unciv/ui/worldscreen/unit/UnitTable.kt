@@ -86,7 +86,7 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
 
     fun update() {
         if(selectedUnit!=null) {
-            if (selectedUnit!!.civInfo != worldScreen.currentPlayerCiv) { // The unit that was selected, was captured. It exists but is no longer ours.
+            if (selectedUnit!!.civInfo != worldScreen.viewingCiv) { // The unit that was selected, was captured. It exists but is no longer ours.
                 selectedUnit = null
                 selectedCity = null
                 selectedUnitHasChanged = true
@@ -204,16 +204,16 @@ class UnitTable(val worldScreen: WorldScreen) : Table(){
     fun tileSelected(selectedTile: TileInfo) {
 
         val previouslySelectedUnit = selectedUnit
-        if(selectedTile.isCityCenter() && selectedTile.getOwner()==worldScreen.currentPlayerCiv){
+        if(selectedTile.isCityCenter() && selectedTile.getOwner()==worldScreen.viewingCiv){
             citySelected(selectedTile.getCity()!!)
         }
-        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.currentPlayerCiv
+        else if(selectedTile.militaryUnit!=null && selectedTile.militaryUnit!!.civInfo == worldScreen.viewingCiv
                 && selectedUnit!=selectedTile.militaryUnit
                 && (selectedTile.civilianUnit==null || selectedUnit!=selectedTile.civilianUnit)){
             selectedUnit = selectedTile.militaryUnit
             selectedCity = null
         }
-        else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.currentPlayerCiv
+        else if (selectedTile.civilianUnit!=null && selectedTile.civilianUnit!!.civInfo == worldScreen.viewingCiv
                         && selectedUnit!=selectedTile.civilianUnit){
             selectedUnit = selectedTile.civilianUnit
             selectedCity = null

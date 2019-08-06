@@ -63,7 +63,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addGoodSizedLabel("What would you like to do with the city?").row()
                 add(getCloseButton("Annex")).row()
                 add(TextButton("Raze", skin).onClick {
-                    worldScreen.currentPlayerCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
+                    worldScreen.viewingCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
                     worldScreen.shouldUpdate=true
                     close()
                 })
@@ -79,7 +79,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.DemandToStopSettlingCitiesNear -> {
                 val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
-                val playerDiploManager = worldScreen.currentPlayerCiv.getDiplomacyManager(otherciv)
+                val playerDiploManager = worldScreen.viewingCiv.getDiplomacyManager(otherciv)
                 val translatedNation = otherciv.getTranslatedNation()
                 addLeaderName(translatedNation)
                 addGoodSizedLabel("Please don't settle new cities near us.").row()
@@ -103,7 +103,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
     }
 
     fun close(){
-        worldScreen.currentPlayerCiv.popupAlerts.remove(popupAlert)
+        worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
         isOpen = false
         remove()
     }

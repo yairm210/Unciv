@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.HexMath
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
@@ -165,11 +166,13 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city".tr(), skin)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
+            if(!UnCivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
         }
         else {
             val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
+            if(!UnCivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()
             razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)
         }
         razeCityButtonHolder.pack()
@@ -192,7 +195,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
             tileGroup.onClick {
                 selectedTile = tileInfo
-                if (tileGroup.isWorkable) {
+                if (tileGroup.isWorkable && UnCivGame.Current.worldScreen.isPlayersTurn) {
                     if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
                         city.workedTiles.add(tileInfo.position)
                     else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
