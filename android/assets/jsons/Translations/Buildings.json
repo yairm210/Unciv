@@ -1721,7 +1721,7 @@
                 Polish:"Nie może być na równinach"
 	}
 
- 	"Must not be on hills":{
+ 	"Must not be on hill":{//Line correction
 		Italian:"Non deve trovarsi su Collina"
                 Polish:"Nie może być na wzgórzach"
 	}
