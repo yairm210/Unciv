@@ -984,6 +984,7 @@
 		Spanish:"Infelicidad de la población reducida 10%"
 		Simplified_Chinese:"来自人口的不满-10%"
 		Portuguese:"Infelicidade da população reduzida em 10%"
+                Polish:"Niezadowolenie z populacji zmniejszone o 10%"
 	}
 	
 	"Theatre":{	
@@ -995,6 +996,7 @@
 		Simplified_Chinese:"剧院"
 		Portuguese:"Teatro"
 		German:"Theater"
+                Polish:"Teatr"
 	}
 	
 	"Leaning Tower of Pisa":{
@@ -1004,6 +1006,7 @@
 		German:"Schiefer Turm von Pisa"
 		French:"Tour de Pise"
 		Simplified_Chinese:"比萨斜塔"
+                Polish:"Krzywa Wieża w Pizie"
 	}
 
 	"Free Great Person":{
@@ -1013,24 +1016,28 @@
 		German:"Kostenlose große Persönlichkeit"
 		French:"Personnage illustre gratuit"
 		Simplified_Chinese:"免费的伟人"
+                Polish:"Darmowy Wielki Człowiek"
 	}
 	
 	"Choose a free great person":{
 		Italian:"Scegli un Grande Personaggio gratuito"
 		Simplified_Chinese:"选择1个免费的伟人"
 		French:"Choisissez un personnage illustre gratuit"
+                Polish:"Wybierz darmowego Wielkiego Człowieka"
 	}
 
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
 		Simplified_Chinese:"姬路城"
 		French:"Le château de Himeji"
+                Polish:"Zamek Himeji"
 	}
 
 	"+15% combat strength for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
 		Simplified_Chinese:"单位在境内+15%战斗力"
 		French:"+15% de force de combat pour les unités combattants sur un territoire allié"
+                Polish:"+15% do siły ataku jednostek walczących na przyjaznym terytorium"
 	}
 	
 	"Taj Mahal":{	
@@ -1043,6 +1050,7 @@
 		Portuguese:"Taj Mahal" // somethimes h has no sound in the portuguese language (brazilian variation [altough i am not sure about other variations]) and others it has the sound of h (weak sound)
 					   // so that is why i would double check it later to see if Taj Mahal is correctly written in portuguese
 		German:"Taj Mahal"
+                Polish:"Tadź Mahal"
 	}
 	
 	"Empire enters golden age":{
@@ -1055,6 +1063,7 @@
 		Spanish:"El imperio comienza una Edad Dorada"
 		Simplified_Chinese:"帝国进入黄金时代"
 		Portuguese:"Império entra idade dourada"
+                Polish:"Imperium wkroczyło w złotą erę"
 	}
 	
 	"Windmill":{	
@@ -1066,10 +1075,12 @@
 		Simplified_Chinese:"风车"
 		Portuguese:"Moinho de vento"
 		German:"Windmühle"
+                Polish:"Wiatrak"
 	}
 	
 	"Must not be on hill":{
 		French:"Doit être sur une colline"
+                Polish:"Nie może być na wzgórzu"
 	}
 
 	"Museum":{	
@@ -1080,6 +1091,7 @@
 		Spanish:"Museo"
 		Simplified_Chinese:"博物馆"
 		Portuguese:"Museu"
+                Polish:"Muzeum"
 		//same in German
 	}
 
@@ -1092,6 +1104,7 @@
 		Simplified_Chinese:"冬宫"
 		Portuguese:"Eremitério"
 		German:"Eremitage"
+                Polish:"Ermitaż"
 	}
 	
 	"The Louvre":{	
@@ -1103,6 +1116,7 @@
 		Simplified_Chinese:"卢浮宫"
 		Portuguese:"O Louvre"
 		German:"Der Louvre"
+                Polish:"Luwr"
 	}
 
 	"Free Great Artist Appears":{
@@ -1115,6 +1129,7 @@
 		Simplified_Chinese:"免费的大艺术家出现"
 		Portuguese:"Aparece um Grande Artista grátis"
 		German:"Kostenloser Großer Künstler erscheint"
+                Polish:"Pojawił się darmowy Wielki Artysta"
 	}
 	
 	"Seaport":{
@@ -1125,6 +1140,7 @@
 		Simplified_Chinese:"海运码头"
 		Portuguese:"Port"
 		German:"Seehafen"
+                Polish:"Port morski"
 	}
 
 	"+1 production and gold from all sea resources worked by the city":{
@@ -1135,6 +1151,7 @@
 		Simplified_Chinese:"所在城市每个海洋资源+1产能和金钱"
 		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
 		German:"+1 Produktion und Gold von allen Meeresressourcen die von der Stadt bewirtschaftet werden"
+                Polish:"+1 do produkcji i złota ze wszystkich surowców morskich wydobywanych w mieście"
 	}
 
 	"+15% production of naval units":{
@@ -1145,6 +1162,7 @@
 		Simplified_Chinese:"组建海上单位时+15%产能积累"
 		Portuguese:"15% na produção de unidades marítimas"
 		German:"+15% Produktion für Marineeinheiten"
+                Polish:"+15% do produkcji jednostek marynarki"
 	}
 	
 	"Public School":{	
@@ -1156,6 +1174,7 @@
 		Simplified_Chinese:"公立学校"
 		Portuguese:"Escola Pública"
 		German:"Öffentliche Schule"
+                Polish:"Szkoła publiczna"
 	}
 	
 	"Hospital":{	
@@ -1167,6 +1186,7 @@
 		Simplified_Chinese:"医院"
 		Portuguese:"Hospital"
 		German:"Krankenhaus"
+                Polish:"Szpital"
 	}
 
 	"25% of food is carried over after a new citizen is born":{
@@ -1179,6 +1199,7 @@
 		Spanish:"25% de comida es arrastrada cada vez que nace un nuevo habitante"
 		Simplified_Chinese:"城市增加新的市民后保留25%食物储备以加速成长"
 		Portuguese:"25% da comida é mantida depois de um novo cidadão nascer"
+                Polish:"25% więcej żywności po pojawieniu się nowego obywatela" 
 	}
 	
 	"Factory":{	
@@ -1190,6 +1211,7 @@
 		Simplified_Chinese:"工厂"
 		Portuguese:"Fábrica"
 		German:"Fabrik"
+                Polish:"Fabryka"
 	}
 
 	"Stock Exchange":{	
@@ -1201,18 +1223,21 @@
 		Simplified_Chinese:"证券交易所"
 		Portuguese:"Bolsa de valores"
 		German:"Börse"
+                Polish:"Giełda"
 	}
 
     "Big Ben":{	
 		Italian:"Big Ben"
 		Simplified_Chinese:"大本钟"
 		French:"Big Ben"
+                Polish:"Big Ben"
 	}
 
 	"-15% to purchasing items in cities":{
 		Italian:"-15% costi in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
 		French:"-15% d'or pour les achats dans les villes"
+                Polish:"-15% ceny budynków i jednostek kupowanych w złocie"
 	}
 
 	"Cristo Redentor":{
@@ -1224,6 +1249,7 @@
 		Simplified_Chinese:"救世基督像"
 		Portuguese:"Cristo Redentor"
 		//same in German
+                Polish:"Statua Chrystusa Zbawiciela"
 	}
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -1236,6 +1262,7 @@
 		Spanish:"Coste de cultura para adoptar nuevas políticas se reduce 10%"
 		Simplified_Chinese:"推行新的社会政策所需的文化点数-10%"
 		Portuguese:"Custo cultural de adotar novas políticas reduzido em 10%"
+                Polish:"Koszt wdrożenia nowych ustrojów społecznych zmniejszony o 10%"
 	}
 	
 	"Kremlin":{
@@ -1245,6 +1272,7 @@
 		Spanish:"Kremlin"
 		Russian:"Кремль"
 		Simplified_Chinese:"克里姆林宫"
+                Polish:"Kreml"
 	}
 
 	"Defensive buildings in all cities are 25% more effective":{
@@ -1257,12 +1285,14 @@
 		Italian:"Castello di Neuschwanstein"
 		Simplified_Chinese:"新天鹅堡"
 		French:"Château de Neuschwanstein"
+                Polish:"Neuschwanstein"
 	}
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
 		Italian:"+1 Felicità, +2 Cultura e +3 Oro per ogni Castello posseduto"
 		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
 		French:"+1 bonheur, +2 culture et +3 or produits par tous les châteaux"
+                Polish:"+1 do zadowolenia, +2 do kultury i +3 do złota z każdego zamku"
 	}
 	
 	"Military Academy":{	
@@ -1274,6 +1304,7 @@
 		Simplified_Chinese:"军事学院"
 		Portuguese:"Academia militar"
 		German:"Militärakademie"
+                Polish:"Akademia wojskowa"
 	}
 
 	"Broadcast Tower":{	
@@ -1285,6 +1316,7 @@
 		Simplified_Chinese:"广播塔"
 		Portuguese:"Torre de Transmissão"
 		German:"Fernmeldeturm"
+                Polish:"Wieża transmisyjna"
 	}
 	
 	"Eiffel Tower":{	
@@ -1296,6 +1328,7 @@
 		Simplified_Chinese:"艾菲尔铁塔"
 		Portuguese:"Torre Eiffel"
 		German:"Eiffel-Turm"
+                Polish:"Wieża Eiffla"
 	}
 
 	"Provides 1 happiness per social policy":{
@@ -1308,6 +1341,7 @@
 		Spanish:"Otorga 1 felicidad por cada política social"
 		Simplified_Chinese:"每项社会政策+1快乐"
 		Portuguese:"Provem 1 felicade por política social"
+                Polish:"Zapewnia +1 do zadowolenia z każdego ustroju społecznego"
 	}
 	
 	"Statue of Liberty":{
@@ -1315,6 +1349,7 @@
 		German:"Freiheitsstatue"
 		French:"Statue de la Liberté"
 		Simplified_Chinese:"自由女神像"
+                Polish:"Statua wolności"
 	}
 
 	"+1 Production from specialists":{
@@ -1322,6 +1357,7 @@
 		German:"+1 Produktion von Spezialisten"
 		French:"+1 Production par spécialiste"
 		Simplified_Chinese:"每个专业人员+1产能"
+                Polish:"+1 do produkcji ze specjalistów"
 	}
 	
 	"Medical Lab":{	
@@ -1333,6 +1369,7 @@
 		Simplified_Chinese:"医学实验室"
 		Portuguese:"Laboratório médico"
 		German:"Medizinisches Labor"
+                Polish:"Laboratorium medyczne"
 	}
 
 	"Research Lab":{	
@@ -1344,6 +1381,7 @@
 		Simplified_Chinese:"研发实验室"
 		Portuguese:"Laboratório de investigação"
 		German:"Forschungslabor"
+                Polish:"Ośrodek badawczy"
 	}
 
 	"Hydro Plant":{	
@@ -1355,6 +1393,7 @@
 		Simplified_Chinese:"水电站"
 		Portuguese:"Central hidroelétrica"
 		German:"Wasserkraftwerk"
+                Polish:"Elektrownia wodna"
 	}
 
 	"Stadium":{	
@@ -1366,6 +1405,7 @@
 		Simplified_Chinese:"体育场"
 		Portuguese:"Estadio"
 		German:"Stadion"
+                Polish:"Stadion"
 	}
 	
 	"Solar Plant":{	
@@ -1377,6 +1417,7 @@
 		Simplified_Chinese:"太阳能电站"
 		Portuguese:"Planta Solar"
 		German:"Solarkraftwerk"
+                Polish:"Elektrownia słoneczna"
 	}
 
 	"Must be next to desert":{
@@ -1389,12 +1430,14 @@
 		Spanish:"Debe estar próximo a un desierto"
 		Simplified_Chinese:"必须紧邻沙漠"
 		Portuguese:"Nescessário que esteja proximo ao deserto"
+                Polish:"Musi być obok pustyni"
 	}
 
 	"Must be next to mountain":{
 		Italian:"Deve rasentare Montagna"
 		Simplified_Chinese:"必须紧邻山脉"
 		French:"Doit être à côté d'une montagne"
+                Polish:"Musi być przy górze"
 	}
 
 	"Sydney Opera House":{
@@ -1405,6 +1448,7 @@
 		Simplified_Chinese:"悉尼歌剧院"
 		Portuguese:"Ópera de Sydney"
 		German:"Opernhaus Sydney"
+                Polish:"Opera w Sydney"
 	}
 
 	/*
@@ -1414,6 +1458,7 @@
 		French:"Tour du CN"
 		Spanish:"Torre CN"
 		Simplified_Chinese:"西恩塔"
+                Polish:"Wieża CN"
 	}
 	*/
 
@@ -1422,6 +1467,7 @@
 		German:"+1 Einwohner in jeder Stadt"
 		French:"+1 population dans chaque villes"
 		Simplified_Chinese:"每座城市+1人口"
+                Polish:"+1 do populacji w każdym mieście"
 	}
 
 	"+1 happiness in each city":{
@@ -1429,6 +1475,7 @@
 		German:"+1 Zufriedenheit in jeder Stadt"
 		French:"+1 bonheur dans chaque villes"
 		Simplified_Chinese:"每座城市+1快乐"
+                Polish:"+1 do zadowolenia w każdym mieście"
 	}
 	
 	"Pentagon":{
@@ -1436,6 +1483,7 @@
 		French:"Pentagone"
 		//same in German
 		Simplified_Chinese:"五角大楼"
+                Polish:"Pentagon"
 	}
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -1447,6 +1495,7 @@
 		Russian:"стоимость улучшения юнита снижается на 33%"
 		German:"Goldkosten für die Verbesserung von Militäreinheiten ist um 33% reduziert"
 		French:"Le coût en or de l'amélioration des unités militaires est réduit de 33%"
+                Polish:"Koszt ulepszenia jednostki bojowej zmniejszony o 33%"
 	}
 	
 	"Apollo Program":{	
@@ -1457,6 +1506,7 @@
 		Simplified_Chinese:"阿波罗计划"
 		Spanish:"Programa Apollo"
 		German:"Apollo Programm"
+                Polish:"Program Apollo"
 	}
 
 	"Enables construction of Spaceship parts":{
@@ -1469,6 +1519,7 @@
 		Spanish:"Habilita la construcción de partes de Nave Espacial"
 		Simplified_Chinese:"允许建造太空飞船的部件"
 		Portuguese:"Habilita a construção de partes da nave espacial"
+                Polish:"Pozwala na konstrukcję części statku kosmicznego"
 	}
 	
 	"Nuclear Plant":{	
@@ -1480,6 +1531,7 @@
 		Simplified_Chinese:"核电站"
 		Portuguese:"Planta Nuclear"
 		German:"Atomkraftwerk"
+                Polish:"Elektrownia atomowa"
 	}
 	
 	"Spaceship Factory":{	
@@ -1491,6 +1543,7 @@
 		Simplified_Chinese:"太空船工厂"
 		Portuguese:"Fábrica de Naves Espaciais"
 		German:"Raumschiff-Fabrik"
+                Polish:"Fabryka statków kosmicznych"
 	}
     
 	"Increases production of spaceship parts by 50%":{
@@ -1503,6 +1556,7 @@
 		Spanish:"Incrementa la producción de partes de Nave Espacial 50%"
 		Simplified_Chinese:"建造太空船部件时+50%产能"
 		Portuguese:"Torna a construção de partes de nave em 50%"
+                Polish:"Zwiększa produkcję części statku kosmicznego o 50%"
 	}
 	
 	"Spaceship part":{
@@ -1515,6 +1569,7 @@
 		Spanish:"Parte de Nave Espacial"
 		Simplified_Chinese:"太空船的部件"
 		Portuguese:"Parte de Nave Espacial"
+                Polish:"Część statku kosmicznego"
 	}
 	
 	"Hubble Space Telescope":{
@@ -1522,6 +1577,7 @@
 		German:"Hubble Weltraumteleskop"
 		French:"Téléscope de Hubble"
 		Simplified_Chinese:"哈勃太空望远镜"
+                Polish:"Kosmiczny teleskop Hubble'a"
 	}
 
 	"2 free great scientists appear":{
@@ -1529,6 +1585,7 @@
 		German:"2 kostenlose Große Wissenschaftler erscheinen"
 		French:"2 scientifiques illustres apparaissent"
 		Simplified_Chinese:"2个免费的大科学家出现"
+                Polish:"Pojawiają się 2 darmowi Wielcy Naukowcy"
 	}
 
 	"Increases production of spaceship parts by 25%":{
@@ -1536,6 +1593,7 @@
 		German:"Erhöht die Produktion von Raumschiffteilen um 25%"
 		French:"Améliore la production de pièces de vaisseau spatial de 25%"
 		Simplified_Chinese:"建造太空船部件时+25%产能"
+                Polish:"Zwiększa produkcję części statku kosmicznego o 25%"
 	}
 	
 	"SS Booster":{	//no translation that I know of
@@ -1546,6 +1604,7 @@
 		Simplified_Chinese:"飞船助推器"
 		Portuguese:"Propulsor de Nave Espacial"
 		German:"Raumschiff Booster"
+                Polish:"Dopalacz SK"
 	}
 
 	"SS Cockpit":{	//no translation that I know of
@@ -1556,6 +1615,7 @@
 		Simplified_Chinese:"飞船驾驶舱"
 		Portuguese:"Cabine de Nave Espacial"
 		German:"Raumschiff Cockpit"
+                Polish:"Kokpit SK"
 	}
 
 	"SS Engine":{	//no translation that I know of
@@ -1566,6 +1626,7 @@
 		Simplified_Chinese:"飞船发动机"
 		Portuguese:"Propulsor principal de Nave Espacial"
 		German:"Raumschiff Triebwerke"
+                Polish:"Silnik SK"
 	}
 
 	"SS Stasis Chamber":{	//no translation that I know of
@@ -1576,6 +1637,7 @@
 		Simplified_Chinese:"飞船休眠舱"
 		Portuguese:"Câmara  de biostase de Nave Espacial"
 		German:"Raumschiff Stase-Kammer"
+                Polish:"Komora statyczna SK"
 	}
 	
 	
@@ -1587,6 +1649,7 @@
 		French:"Requiert la construction de [buildingName] dans la ville"
 		Simplified_Chinese:"需要城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido na cidade"
+                Polish:Budynek [buildingName] musi być wzniesiony w mieście"
 	}
 
 	"Requires [buildingName] to be built in all cities":{
@@ -1594,6 +1657,7 @@
 		French:"Requiert la construction de [buildingName] dans toutes les villes"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido em todas as cidades"
+                Polish:"Budynek [buildingName] musi znajdować się we wszystkich miastach"
 	}
 
 	"Provides a free [buildingName] in the city":{
@@ -1601,6 +1665,7 @@
 		French:"Construit un(e) [buildingName] gratuit(e) dans la ville"
 		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 		Portuguese:"Provê um(a) [buildingName] grátis na cidade"
+                Polish:"Zapewnia darmowy budynek [buildingName] w mieście"
 	}
 
 	"Requires worked [resource] near city":{
@@ -1608,6 +1673,7 @@
 		French:"Nécessite l'exploitation de [resource] près de la ville"
 		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
 		Portuguese:"Requer [resource] trabalhado perto da cidade"
+                Polish:"Wymaga w mieście surowca [resource]"
 	}
 
 	"Wonder is being built elsewhere":{
@@ -1615,6 +1681,7 @@
 		Simplified_Chinese:"正在其他城市建造该奇观"
         	French:"Cette merveille est déjà en construction ailleurs"
 		Portuguese:"A maravilha está sendo construida em uma cidade estrangeira"
+                Polish:"Cud jest już budowany gdzie indziej"
 	}
 
 	"Requires a [buildingName] in all cities":{
@@ -1622,6 +1689,7 @@
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
 		French:"Nécessite un(e) [buildingName] dans toutes les villes"
 		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
+                Polish:"Wymaga [buildingName] we wszystkich miastach"
 	}
 
 	"Requires a [buildingName] in this city":{
@@ -1629,6 +1697,7 @@
 		Simplified_Chinese:"需要城市建有[buildingName]"
         	French:"Nécessite un(e) [buildingName] dans cette ville"
 		Portuguese:"Requer um [buildingName] nessa cidade"
+                Polish:"Wymaga budynku [buildingName] w tym mieście"
 	}
 
 	"Requires [resource]":{
@@ -1636,6 +1705,7 @@
 		Simplified_Chinese:"需要资源：[resource]"
 		French:"[resource] requis(e)"
 		Portuguese:"Requer [resource]"
+                Polish:"Wymaga surowca [resource]"
 	}
 
 	"Required tech: [requiredTech]":{
@@ -1643,14 +1713,17 @@
 		French:"Nécessite la technologie: [requiredTech]"
 		Simplified_Chinese:"需要科技：[requiredTech]"
 		Portuguese:"Requer tecnologia: [requiredTech]"
+                Polish:"Wymaga odkrycia technologii [requiredTech]"
 	}
 
 	"Must not be on plains":{
 		Italian:"Non deve trovarsi su Pianura"
+                Polish:"Nie może być na równinach"
 	}
 
  	"Must not be on hills":{
 		Italian:"Non deve trovarsi su Collina"
+                Polish:"Nie może być na wzgórzach"
 	}
 	
 	
