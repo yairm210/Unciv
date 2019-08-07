@@ -55,7 +55,7 @@ class DropBox(){
 
     fun downloadFile(fileName:String):String{
         val response = dropboxApi("https://content.dropboxapi.com/2/files/download",
-                dropboxApiArg = "{\"path\":\"$fileName\"}")
+                contentType = "text/plain",dropboxApiArg = "{\"path\":\"$fileName\"}")
         return response
     }
 
