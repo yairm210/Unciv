@@ -1649,7 +1649,7 @@
 		Italian:"Non deve trovarsi su Pianura"
 	}
 
- 	"Must not be on hills":{
+ 	"Must not be on hill":{//Line correction
 		Italian:"Non deve trovarsi su Collina"
 	}
 	
