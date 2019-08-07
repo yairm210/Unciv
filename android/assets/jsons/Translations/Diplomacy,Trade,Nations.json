@@ -11,6 +11,7 @@
 		Simplified_Chinese:"外交"
 		Portuguese:"Diplomacia"
 		German:"Diplomatie"
+                Polish:"Dyplomacja"
 	}
 
 	"War":{
@@ -22,6 +23,7 @@
 		Simplified_Chinese:"战争"
 		Portuguese:"Guerra"
 		German:"Krieg"
+                Polish:"Wojna"
 	}
 
 	"Peace":{
@@ -33,6 +35,7 @@
 		Simplified_Chinese:"和平"
 		Portuguese:"Paz"
 		German:"Frieden"
+                Polish:"Pokój"
 	}
 	
 	"Declare war":{
@@ -44,6 +47,7 @@
 		Simplified_Chinese:"宣战"
 		Portuguese:"Declarar guerra"
 		German:"Krieg erklären"
+                Polish:"Wypowiedz wojnę"
 	}
 
 	"Declare war on [civName]?":{ //Don't translate in diplomacy view
@@ -51,6 +55,7 @@
 		French:"Déclarer la guerre à [civName]?"
 		Simplified_Chinese:"向[civName]宣战吗？"
 		Portuguese:"Deseja declarar guerra a [civName]?"
+                Polish:"Wypowiedz wojnę cywilizacji [civName]
 	}
 	
 	"[civName] has declared war on us!":{
@@ -62,6 +67,7 @@
 		Simplified_Chinese:"[civName]已经对我们宣战！"
 		Portuguese:"[civName] declarou guerra contra nós!"
 		German:"[civName] hat uns den Krieg erklärt!"
+                Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!
 	}
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
@@ -73,6 +79,8 @@
 		French:"[leaderName] de [nation]"
 		Russian:"[leaderName] из [nation]"
 		Romanian:"[leaderName] de [nation]"
+                Polish:"[leaderName], władca cywilizacji [nation]"
+              
 	}
 	
 	"You'll pay for this!":{
@@ -84,6 +92,7 @@
 		Romanian:"Veți plăti pentru asta!"
 		Portuguese:"Você vai pagar por isso!"
 		Simplified_Chinese:"你会为此付出代价的！"
+                Polish:"Zapłacisz za swą zuchwałość!"
 	}
 	
 	"Negotiate Peace":{
@@ -91,6 +100,7 @@
 		Simplified_Chinese:"议和"
 		Portuguese:"Negociar paz"
 		French:"Négocier la paix"
+                Polish:"Negocjuj pokój"
 	}
 
 	"Very well.":{
@@ -98,6 +108,7 @@
 		French:"Très bien."
 		Simplified_Chinese:"很好。"
 		Portuguese:"Muito bem."
+                Polish:"Niech tak będzie."
 	}
 
 	"Farewell.":{
@@ -105,11 +116,13 @@
 		French:"Adieu."
 		Simplified_Chinese:"再见。"
 		Portuguese:"Adeus."
+                Polish:"Żegnaj."
 	}
 
 	"Sounds good!":{
 		Italian:"Sta bene!"
 		French:"Très bien!"
+                Polish:"Bardzo dobrze!"
 	}
 	
 	"Not this time.":{ // declining trade text
@@ -117,6 +130,7 @@
 		Simplified_Chinese:"这次不行，我只和有诚意的人交易。"
 		French:"Pas cette fois."
 		Portuguese:"Dessa vez não."
+                Polish:"To się nie uda"
 	}
 
 	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
@@ -124,6 +138,7 @@
 		Simplified_Chinese:"好极了！和和气气才是生财之道。"
 		French:"Excellent!"
 		Portuguese:"Excelente!"
+                Polish:"Wyśmienicie!"
 	}
 
 	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
@@ -131,6 +146,7 @@
 		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
 		French:"Pourquoi pas autre chose..."
 		Portuguese:"Porque não algo mais..."
+                Polish:"Oto nasza oferta."
 	}
 	
 	"A pleasure to meet you.":{
@@ -138,6 +154,7 @@
 		French:"Un plaisir de vous rencontrez"
 		Simplified_Chinese:"很高兴见到你。"
 		Portuguese:"Prazer conhece-lo"
+                Polish:"Czuję się zaszczycony."
 	}
 	
 	"Our relationship: ":{
@@ -145,12 +162,14 @@
 		French:"Notre relation :" //or l'état de notre relation
 		Simplified_Chinese:"我们的关系："
 		Portuguese:"Nossas relações"
+                Polish:"Nasze relacje:"
 	}
 
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
 		Italian:"Abbiamo incontrato la Citta-Stato di [name]!"
 		Portuguese:"Nós encontramos a cidade-estado de [name]"
 		French:"Nous avons rencontré la cité-état de [name]!"
+                Polish:"Napotkaliśmy państwo-miasto o nazwie [name]!"
 	}
 	
 	// Friendship declaration flavor texts
@@ -159,6 +178,7 @@
 		French:"Déclaration d'Amitié ([numberOfTurns] tours)"
 		Simplified_Chinese:"宣布相互友善([numberOfTurns]回合)"
 		Portuguese:"Declarar amizade ([numberOfTurns] turns)"
+                Polish:"Zadeklaruj przyjaźń na [numberOfTurns] tur"
 	}
 
 	"May our nations forever remain united!":{
@@ -166,6 +186,7 @@
 		French:"Puissent nos nations rester unies pour toujours!"
 		Simplified_Chinese:"我们两个文明将永远肝胆相照、休戚与共地站在一起！"
 		Portuguese:"Que nossas nações se mantenho unidas para sempre!"
+                Polish:"Oby ta przyjaźń już zawsze łączyła nasze cywilizacje!"
 	}
 
 	"Indeed!":{
@@ -173,12 +194,14 @@
 		French:"Parfait!" //or En effet! , more accurate but harder to understand what it means
 		Simplified_Chinese:"这是无比正确的命运抉择！"
 		Portuguese:"Perfeito!"
+                Polish:"Wspaniale!"
 	}
 	
 	// Denunceation flavour texts
 	"Denounce ([numberOfTurns] turns)":{
 		Italian:"Denuncia ([numberOfTurns] turni)"
 		French:"Dénoncer ([numberOfTurns] tours)"
+                Polish:"Potęp cywilizację na [numberOfTurns] tur"
 	}
 	
 	"We will remember this.":{
