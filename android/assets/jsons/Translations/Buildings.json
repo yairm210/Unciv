@@ -1649,7 +1649,7 @@
 		French:"Requiert la construction de [buildingName] dans la ville"
 		Simplified_Chinese:"需要城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido na cidade"
-		Polish:Budynek [buildingName] musi być wzniesiony w mieście"
+		Polish:"Budynek [buildingName] musi być wzniesiony w mieście"
 	}
 
 	"Requires [buildingName] to be built in all cities":{

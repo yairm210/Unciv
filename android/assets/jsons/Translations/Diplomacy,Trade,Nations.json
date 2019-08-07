@@ -55,7 +55,7 @@
 		French:"Déclarer la guerre à [civName]?"
 		Simplified_Chinese:"向[civName]宣战吗？"
 		Portuguese:"Deseja declarar guerra a [civName]?"
-                Polish:"Wypowiedz wojnę cywilizacji [civName]
+                Polish:"Wypowiedz wojnę cywilizacji [civName]"
 	}
 	
 	"[civName] has declared war on us!":{
@@ -67,7 +67,7 @@
 		Simplified_Chinese:"[civName]已经对我们宣战！"
 		Portuguese:"[civName] declarou guerra contra nós!"
 		German:"[civName] hat uns den Krieg erklärt!"
-                Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!
+                Polish:"Władca cywilizacji [civName] wypowiedział nam wojnę!"
 	}
 
 	"[leaderName] of [nation]":{ // e.g. Ramasses of Egypt, Napoleon of France
