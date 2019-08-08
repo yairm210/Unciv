@@ -3,9 +3,7 @@ package com.unciv.ui.worldscreen.optionstable
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
-import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
-import com.badlogic.gdx.scenes.scene2d.ui.Slider
+import com.badlogic.gdx.scenes.scene2d.ui.*
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
@@ -90,27 +88,36 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         innerTable.add("Version".toLabel())
         innerTable.add(UnCivGame.Current.version.toLabel()).row()
 
+        addUsernameAndId(innerTable)
+
         val scrollPane = ScrollPane(innerTable,skin)
         scrollPane.setOverscroll(false,false)
         scrollPane.fadeScrollBars=false
         scrollPane.setScrollingDisabled(true,false)
         add(scrollPane).maxHeight(screen.stage.height*0.6f).row()
 
-
-        addButton("Dropbox Testing"){
-//            val folderList = DropBox().getFolderList("/Maps")
-//            for(folder in folderList.entries)
-//                print(folder.name)
-//            DropBox().downloadFile("/Maps/China starts on tundra")
-            DropBox().uploadFile("/Maps/Test","blabla")
-        }
-
-
         addButton("Close"){ remove() }
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)
         UnCivGame.Current.worldScreen.shouldUpdate=true
+    }
+
+    private fun addUsernameAndId(innerTable: PopupTable) {
+        innerTable.add("Username".toLabel())
+        val userNameTextField = TextField(UnCivGame.Current.settings.userName, skin)
+        userNameTextField.addListener {
+            UnCivGame.Current.settings.userName = userNameTextField.text
+            UnCivGame.Current.settings.save()
+            true
+        }
+        innerTable.add(userNameTextField).row()
+
+
+        innerTable.add("User Id".toLabel())
+        val userIdButton = TextButton("Click to copy".tr(),skin)
+        userIdButton.onClick { Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }
+        innerTable.add(userIdButton).row()
     }
 
     private fun addSoundEffectsVolumeSlider(innerTable: PopupTable) {

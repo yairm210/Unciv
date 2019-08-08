@@ -1,6 +1,8 @@
 package com.unciv
 
 import com.unciv.logic.GameSaver
+import java.util.*
+import kotlin.collections.ArrayList
 
 class GameSettings {
     var showWorkedTiles: Boolean = false
@@ -16,6 +18,9 @@ class GameSettings {
     var tileSet:String = "FantasyHex"
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
+
+    var userName:String=""
+    var userId = UUID.randomUUID().toString()
 
     fun save(){
         GameSaver().setGeneralSettings(this)
