@@ -167,6 +167,8 @@ class CivilizationInfo {
 
     fun containsBuildingUnique(unique:String) = cities.any { it.containsBuildingUnique(unique) }
 
+
+    //region Units
     fun getCivUnits(): List<MapUnit> = units
 
     fun addUnit(mapUnit: MapUnit, updateCivInfo:Boolean=true){
@@ -194,9 +196,6 @@ class CivilizationInfo {
 
     fun getDueUnits() = getCivUnits().filter { it.due && it.isIdle() }
 
-    fun shouldOpenTechPicker() = tech.freeTechs != 0
-            || tech.currentTechnology()==null && cities.isNotEmpty()
-
     fun shouldGoToDueUnit() = UnCivGame.Current.settings.checkForDueUnits && getDueUnits().isNotEmpty()
 
     fun getNextDueUnit(): MapUnit? {
@@ -208,6 +207,12 @@ class CivilizationInfo {
         }
         return null
     }
+    //endregion
+
+    fun shouldOpenTechPicker() = tech.freeTechs != 0
+            || tech.currentTechnology()==null && cities.isNotEmpty()
+
+
 
     fun getEquivalentBuilding(buildingName:String): Building {
         val baseBuilding = GameBasics.Buildings[buildingName]!!.getBaseBuilding()
@@ -232,7 +237,7 @@ class CivilizationInfo {
 
     override fun toString(): String {return civName} // for debug
 
-    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any{it.name== Constants.settler})
+    fun isDefeated()= cities.isEmpty() && (citiesCreated > 0 || !getCivUnits().any {it.name== Constants.settler})
 
     fun getEra(): TechEra {
         val maxEraOfTech =  tech.researchedTechnologies
@@ -251,6 +256,16 @@ class CivilizationInfo {
     }
 
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus== DiplomaticStatus.War && !it.otherCiv().isDefeated() }
+
+    fun getLeaderDisplayName(): String {
+        var leaderName = getTranslatedNation().getLeaderDisplayName()
+        if (playerType == PlayerType.AI)
+            leaderName += " (" + "AI".tr() + ")"
+        else if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1)
+            leaderName += " (" + "Human".tr() + " - " + "Hotseat".tr() + ")"
+        else leaderName += " (" + "Human".tr() + " - " + UnCivGame.Current.settings.userName + ")"
+        return leaderName
+    }
     //endregion
 
     //region state-changing functions

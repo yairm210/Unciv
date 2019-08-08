@@ -95,7 +95,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel()).row()
+        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel().setFontSize(24)).row()
         diplomacyTable.add(("Type: " + otherCiv.getCityStateType().toString()).toLabel()).row()
         diplomacyTable.add(("Influence: " + otherCivDiplomacyManager.influence.toInt() + "/30").toLabel()).row()
 
@@ -161,8 +161,8 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
 
+        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel().setFontSize(24)).row()
         val translatedNation = otherCiv.getTranslatedNation()
-        diplomacyTable.add(translatedNation.getLeaderDisplayName().toLabel().setFontSize(24)).row()
         if(otherCivDiplomacyManager.relationshipLevel()<=RelationshipLevel.Enemy)
             diplomacyTable.add(translatedNation.hateHello.toLabel()).row()
         else
@@ -328,7 +328,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
     private fun setRightSideFlavorText(otherCiv: CivilizationInfo, flavorText:String, response: String){
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
-        diplomacyTable.add(otherCiv.getNation().getLeaderDisplayName().toLabel())
+        diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel())
         diplomacyTable.addSeparator()
         diplomacyTable.add(flavorText.toLabel()).row()
 
