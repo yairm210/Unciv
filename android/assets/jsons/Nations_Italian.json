@@ -899,62 +899,6 @@
 		secondaryColor:[0,102,102],
 		cities:["Edimburgo"]
 	},
-	{
-		name:"Zanzibar",
-		translatedName:"Zanzibar",
-		adjective:["zanzibarino"],
-		cityStateType:"Mercantile",
-		
-		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
-		attacked:"Benissimo, questo non lo dimenticheremo.",
-		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
-
-		outerColor:[0, 0, 0],
-		innerColor:[204,153,255],
-		cities:["Zanzibar"]
-	},
-	{
-		name:"Ragusa",
-		translatedName:"Ragusa",
-		adjective:["ragusano"],
-		cityStateType:"Mercantile",
-		
-		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
-		attacked:"Benissimo, questo non lo dimenticheremo.",
-		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
-
-		outerColor:[0, 0, 0],
-		innerColor:[51,51,0],
-		cities:["Ragusa"]
-	},
-	{
-		name:"Kiev",
-		translatedName:"Kiev",
-		adjective:["ucraino"],
-		cityStateType:"Cultured",
-		
-		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
-		attacked:"Benissimo, questo non lo dimenticheremo.",
-		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
-
-		outerColor:[0, 0, 0],
-		innerColor:[255,255,51],
-		cities:["Kiev"]
-	},
-	{
-		name:"Antananarivo",
-		translatedName:"Antananarivo",
-		adjective:["malgascio"],
-		cityStateType:"Mercantile",
-		
-		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
-		attacked:"Benissimo, questo non lo dimenticheremo.",
-		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
-
-		outerColor:[0, 0, 0],
-		innerColor:[255,255,153],
-		cities:["Antananarivo"]
-	},
 	
 	//Barbarian
 	{
