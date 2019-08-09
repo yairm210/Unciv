@@ -1,7 +1,10 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
 import com.unciv.Constants
 import com.unciv.GameStarter
@@ -11,7 +14,9 @@ import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.*
+import com.unciv.ui.utils.disable
+import com.unciv.ui.utils.enable
+import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.WorldScreen
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import kotlin.concurrent.thread
@@ -33,8 +38,17 @@ class NewGameScreen: PickerScreen(){
 
 //        mainTable.add(playerPickerTable)
 
-        for(nation in GameBasics.Nations.values.filterNot { it.name == "Barbarians" || it.isCityState() }){
-            val nationTable = NationTable(nation, newGameParameters, skin, stage.width / 3) { updateNationTables() }
+        for(nation in GameBasics.Nations.values.filterNot { it.name == "Barbarians" || it.isCityState() }) {
+            val nationTable = NationTable(nation, newGameParameters,stage.width/3) {
+                if (nation.name in newGameParameters.humanNations) {
+                    newGameParameters.humanNations.remove(nation.name)
+                } else {
+                    newGameParameters.humanNations.add(nation.name)
+                    if (newGameParameters.humanNations.size > newGameParameters.numberOfHumanPlayers)
+                        newGameParameters.humanNations.removeAt(0)
+                }
+                updateNationTables()
+            }
             nationTables.add(nationTable)
             civPickerTable.add(nationTable).row()
         }
@@ -89,51 +103,18 @@ class NewGameScreen: PickerScreen(){
     }
 }
 
-class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin){
-    class TranslatedString(val value: String){
+class TranslatedSelectBox(values : Collection<String>, default:String, skin: Skin) : SelectBox<TranslatedSelectBox.TranslatedString>(skin) {
+    class TranslatedString(val value: String) {
         val translation = value.tr()
-        override fun toString()=translation
+        override fun toString() = translation
     }
 
     init {
         val array = Array<TranslatedString>()
-        values.forEach{array.add(TranslatedString(it))}
+        values.forEach { array.add(TranslatedString(it)) }
         items = array
-        val defaultItem = array.firstOrNull { it.value==default }
-        selected = if(defaultItem!=null) defaultItem else array.first()
+        val defaultItem = array.firstOrNull { it.value == default }
+        selected = if (defaultItem != null) defaultItem else array.first()
     }
 }
 
-class Player{
-    var playerType: PlayerType=PlayerType.AI
-    var chosenCiv = Constants.random
-}
-
-class PlayerPickerTable:Table(){
-    val playerList = ArrayList<Player>()
-
-    init {
-        update()
-    }
-
-    fun update(){
-        clear()
-        for(player in playerList)
-            add(getPlayerTable(player)).row()
-        add("+".toLabel().setFontSize(24).onClick { playerList.add(Player()); update() })
-    }
-
-    fun getPlayerTable(player:Player): Table {
-        val table = Table()
-        val playerTypeTextbutton = TextButton(player.playerType.name, CameraStageBaseScreen.skin)
-        playerTypeTextbutton.onClick {
-            if (player.playerType == PlayerType.AI)
-                player.playerType = PlayerType.Human
-            else player.playerType = PlayerType.AI
-            update()
-        }
-        table.add(playerTypeTextbutton)
-        table.add(TextButton("Remove".tr(),CameraStageBaseScreen.skin).onClick { playerList.remove(player); update() })
-        return table
-    }
-}
