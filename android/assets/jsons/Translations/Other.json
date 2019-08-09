@@ -1918,21 +1918,27 @@
 	}
 	
 	"AI":{
+		Italian:"IA"
 	}
 	
 	"Human":{
+		Italian:"Umano"
 	}
 	
 	"Hotseat":{
+		Italian:"Hotseat"
 	}
 	
 	"User Id":{
+		Italian:"ID Utente"
 	}
 	
 	"Click to copy":{
+		Italian:"Clicca per copiare"
 	}
 	
 	"Username":{
+		Italian:"Nome utente"
 	}
 
 }
