@@ -172,7 +172,7 @@ class GameInfo {
         tileMap.gameInfo = this
         tileMap.setTransients()
 
-        if(currentPlayer=="") currentPlayer=civilizations[0].civName
+        if(currentPlayer=="") currentPlayer=civilizations.first { it.isPlayerCivilization() }.civName
         currentPlayerCiv=getCivilization(currentPlayer)
 
         // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,

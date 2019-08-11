@@ -11,6 +11,7 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
+import com.unciv.ui.newgamescreen.Player
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -32,9 +33,10 @@ class GameParameters{
     var difficulty="Prince"
     var gameSpeed = GameSpeed.Standard
     var mapRadius=20
-    var numberOfHumanPlayers=1
-    var humanNations=ArrayList<String>().apply { add("Babylon") } // Good default starting civ
-    var numberOfEnemies=3
+    var players = ArrayList<Player>().apply {
+        add(Player().apply { playerType=PlayerType.Human })
+        for(i in 1..3) add(Player())
+    }
     var numberOfCityStates=0
     var mapType= MapType.Perlin
     var noBarbarians=false
@@ -53,25 +55,26 @@ class GameStarter{
 
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(GameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
-        availableCivNames.removeAll(newGameParameters.humanNations)
+        availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove("Barbarians")
-        val availableCityStatesNames = Stack<String>()
-        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys.shuffled())
 
-        for(nation in newGameParameters.humanNations) {
-            val playerCiv = CivilizationInfo(nation)
+
+        val barbarianCivilization = CivilizationInfo("Barbarians")
+        gameInfo.civilizations.add(barbarianCivilization)
+
+        for(player in newGameParameters.players.sortedBy { it.chosenCiv=="Random" }) {
+            val nationName = if(player.chosenCiv!="Random") player.chosenCiv
+            else availableCivNames.pop()
+
+            val playerCiv = CivilizationInfo(nationName)
             gameInfo.difficulty = newGameParameters.difficulty
-            playerCiv.playerType = PlayerType.Human
+            playerCiv.playerType = player.playerType
             gameInfo.civilizations.add(playerCiv)
         }
 
-        val barbarianCivilization = CivilizationInfo("Barbarians")
-        gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
-        for (nationName in availableCivNames.take(newGameParameters.numberOfEnemies)) {
-            val civ = CivilizationInfo(nationName)
-            gameInfo.civilizations.add(civ)
-        }
+        val availableCityStatesNames = Stack<String>()
+        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys.shuffled())
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)

@@ -15,12 +15,10 @@ import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
-import kotlin.math.min
 
-class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val updateNationTables: ()->Unit): Table(CameraStageBaseScreen.skin){
+class NewGameScreenOptionsTable(val newGameParameters: GameParameters): Table(CameraStageBaseScreen.skin){
     init{
         addMapTypeSizeAndFile()
-        addNumberOfHumansAndEnemies()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
         addVictoryTypeCheckboxes()
@@ -84,48 +82,6 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val updat
 
         add(mapFileLabel)
         add(mapFileSelectBox).pad(10f).row()
-    }
-
-    private fun addNumberOfHumansAndEnemies() {
-        add("{Number of human players}:".tr())
-        val humanPlayers = SelectBox<Int>(CameraStageBaseScreen.skin)
-        val humanPlayersArray = Array<Int>()
-        (1..GameBasics.Nations.filter{ !it.value.isCityState() }.size).forEach { humanPlayersArray.add(it) }
-        humanPlayers.items = humanPlayersArray
-        humanPlayers.selected = newGameParameters.numberOfHumanPlayers
-        add(humanPlayers).pad(10f).row()
-
-
-        add("{Number of enemies}:".tr())
-        val enemiesSelectBox = SelectBox<Int>(CameraStageBaseScreen.skin)
-        val enemiesArray = Array<Int>()
-        for (enemyNumber in 0 until GameBasics.Nations.filter{ !it.value.isCityState() }.size) {
-            enemiesArray.add(enemyNumber)
-        }
-        enemiesSelectBox.items = enemiesArray
-        enemiesSelectBox.selected = newGameParameters.numberOfEnemies
-        add(enemiesSelectBox).pad(10f).row()
-
-        addCityStatesSelectBox()
-
-        humanPlayers.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.numberOfHumanPlayers = humanPlayers.selected
-                removeExtraHumanNations(humanPlayers)
-
-                val maxNumberOfEnemies = GameBasics.Nations.size - newGameParameters.numberOfHumanPlayers
-                newGameParameters.numberOfEnemies = min(newGameParameters.numberOfEnemies, maxNumberOfEnemies)
-                enemiesSelectBox.selected = newGameParameters.numberOfEnemies
-            }
-        })
-
-        enemiesSelectBox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                newGameParameters.numberOfEnemies = enemiesSelectBox.selected
-                removeExtraHumanNations(humanPlayers)
-            }
-        })
-
     }
 
     private fun addCityStatesSelectBox() {
@@ -226,18 +182,5 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val updat
         return worldSizeSelectBox
     }
 
-
-    fun removeExtraHumanNations(humanPlayers: SelectBox<Int>) {
-        val maxNumberOfHumanPlayers = GameBasics.Nations.size - newGameParameters.numberOfEnemies
-        if(newGameParameters.numberOfHumanPlayers>maxNumberOfHumanPlayers){
-            newGameParameters.numberOfHumanPlayers=maxNumberOfHumanPlayers
-            humanPlayers.selected=maxNumberOfHumanPlayers
-        }
-        if(newGameParameters.humanNations.size>newGameParameters.numberOfHumanPlayers) {
-            val nationsOverAllowed = newGameParameters.humanNations.size - newGameParameters.numberOfHumanPlayers
-            newGameParameters.humanNations.removeAll(newGameParameters.humanNations.take(nationsOverAllowed))
-            updateNationTables()
-        }
-    }
 
 }

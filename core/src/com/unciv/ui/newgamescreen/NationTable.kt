@@ -3,14 +3,13 @@ package com.unciv.ui.newgamescreen
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.Table
-import com.unciv.GameParameters
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.Translations
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 
-class NationTable(val nation: Nation, val newGameParameters: GameParameters, width:Float, onClick:()->Unit)
+class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
     : Table(CameraStageBaseScreen.skin){
     val innerTable = Table()
     init {
@@ -93,10 +92,4 @@ class NationTable(val nation: Nation, val newGameParameters: GameParameters, wid
         return textList.joinToString("\n").tr().trim().toLabel()
     }
 
-
-    fun update(){
-        if(nation.name in newGameParameters.humanNations) pad(10f)
-        else pad(0f)
-        pack()
-    }
 }

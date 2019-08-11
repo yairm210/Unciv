@@ -1,17 +1,13 @@
 package com.unciv.ui.newgamescreen
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
-import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Array
-import com.unciv.Constants
 import com.unciv.GameStarter
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
 import com.unciv.logic.civilization.PlayerType
-import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
@@ -25,43 +21,28 @@ class NewGameScreen: PickerScreen(){
 
     val newGameParameters= UnCivGame.Current.gameInfo.gameParameters
 
-    val nationTables = ArrayList<NationTable>()
-
-    var playerPickerTable = PlayerPickerTable()
-
-    val civPickerTable = Table().apply { defaults().pad(15f) }
+    var playerPickerTable = PlayerPickerTable(this,newGameParameters)
 
     init {
         setDefaultCloseAction()
-        val mainTable = Table()
-        mainTable.add(NewGameScreenOptionsTable(newGameParameters) { updateNationTables() })
 
-//        mainTable.add(playerPickerTable)
-
-        for(nation in GameBasics.Nations.values.filterNot { it.name == "Barbarians" || it.isCityState() }) {
-            val nationTable = NationTable(nation, newGameParameters,stage.width/3) {
-                if (nation.name in newGameParameters.humanNations) {
-                    newGameParameters.humanNations.remove(nation.name)
-                } else {
-                    newGameParameters.humanNations.add(nation.name)
-                    if (newGameParameters.humanNations.size > newGameParameters.numberOfHumanPlayers)
-                        newGameParameters.humanNations.removeAt(0)
-                }
-                updateNationTables()
-            }
-            nationTables.add(nationTable)
-            civPickerTable.add(nationTable).row()
-        }
-        civPickerTable.pack()
-        mainTable.setFillParent(true)
-        mainTable.add(ScrollPane(civPickerTable).apply { setScrollingDisabled(true,false) })
-        topTable.addActor(mainTable)
-        updateNationTables()
-
+        topTable.add(NewGameScreenOptionsTable(newGameParameters))
+        topTable.add(playerPickerTable).pad(10f)
+        topTable.pack()
+        topTable.setFillParent(true)
 
         rightSideButton.enable()
         rightSideButton.setText("Start game!".tr())
         rightSideButton.onClick {
+            if(newGameParameters.players.none { it.playerType==PlayerType.Human })
+            {
+                val popup = PopupTable(this)
+                popup.addGoodSizedLabel("No human players selected!").row()
+                popup.addButton("Close"){popup.remove()}
+                popup.open()
+                return@onClick
+            }
+
             Gdx.input.inputProcessor = null // remove input processing - nothing will be clicked!
             rightSideButton.disable()
             rightSideButton.setText("Working...".tr())
@@ -78,16 +59,6 @@ class NewGameScreen: PickerScreen(){
                 }
             }
         }
-    }
-
-
-
-    private fun updateNationTables(){
-        nationTables.forEach { it.update() }
-        civPickerTable.pack()
-        if(newGameParameters.humanNations.size==newGameParameters.numberOfHumanPlayers)
-            rightSideButton.enable()
-        else rightSideButton.disable()
     }
 
 
