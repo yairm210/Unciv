@@ -155,7 +155,7 @@ open class TileInfo {
                 stats.add(resource.getBuilding()!!.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
             if(resource.resourceType==ResourceType.Strategic
-                    && observingCiv.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
+                    && observingCiv.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
                 stats.production+=1
             if(resource.name=="Oil" && city!=null
                     && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))

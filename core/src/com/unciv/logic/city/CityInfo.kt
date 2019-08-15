@@ -117,10 +117,10 @@ class CityInfo {
                 if(resource.resourceType == ResourceType.Strategic){
                     amountToAdd = 2
                     if(civInfo.policies.isAdopted("Facism")) amountToAdd*=2
-                    if(civInfo.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
+                    if(civInfo.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
                         && resource.name in listOf("Horses","Iron","Uranium"))
                         amountToAdd *= 2
-                    if(resource.name=="Oil" && civInfo.getNation().unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
+                    if(resource.name=="Oil" && civInfo.nation.unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
                         amountToAdd *= 2
                 }
                 if(resource.resourceType == ResourceType.Luxury
@@ -156,7 +156,7 @@ class CityInfo {
             stats["Buildings"] = buildingStats
 
         for(entry in stats){
-            if(civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
+            if(civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
                 entry.value.science *= 1.5f
             if (civInfo.policies.isAdopted("Entrepreneurship"))
                 entry.value.gold *= 1.25f

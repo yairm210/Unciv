@@ -66,7 +66,7 @@ class BattleDamage{
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
             if(requiredResource!=null && combatant.getCivInfo().getCivResourcesByName()[requiredResource]!!<0
-                    && !combatant.getCivInfo().isBarbarianCivilization()){
+                    && !combatant.getCivInfo().isBarbarian()){
                 modifiers["Missing resource"]=-0.25f
             }
 
@@ -76,14 +76,14 @@ class BattleDamage{
                         .filter {it.civilianUnit?.civInfo == combatant.unit.civInfo}
                         .map {it.civilianUnit}
                 if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                    modifiers["Great General"]= if (combatant.unit.civInfo.getNation().unique ==
+                    modifiers["Great General"]= if (combatant.unit.civInfo.nation.unique ==
                             "Great general provides double combat bonus, and spawns 50% faster") 0.3f
                     else 0.15f
                 }
             }
         }
 
-        if (combatant.getCivInfo().policies.isAdopted("Honor") && enemy.getCivInfo().isBarbarianCivilization())
+        if (combatant.getCivInfo().policies.isAdopted("Honor") && enemy.getCivInfo().isBarbarian())
             modifiers["vs Barbarians"] = 0.25f
 
         return modifiers
@@ -202,7 +202,7 @@ class BattleDamage{
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
         if (combatant.getUnitType() == UnitType.City
-                || combatant.getCivInfo().getNation().unique == "Units fight as though they were at full strength even when damaged")
+                || combatant.getCivInfo().nation.unique == "Units fight as though they were at full strength even when damaged")
             return 1f
         return 1/2f + combatant.getHealth()/200f // Each point of health reduces damage dealt by 0.5%
     }

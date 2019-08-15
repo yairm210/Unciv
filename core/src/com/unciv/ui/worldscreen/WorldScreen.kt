@@ -182,7 +182,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
         diplomacyButtonWrapper.clear()
         if(civInfo.getKnownCivs()
-                        .filterNot { it.isDefeated() || it==viewingCiv || it.isBarbarianCivilization() }
+                        .filterNot { it.isDefeated() || it==viewingCiv || it.isBarbarian() }
                         .any()) {
             displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
@@ -355,7 +355,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val shownTutorials = UnCivGame.Current.settings.tutorialsShown
         displayTutorials("NextTurn")
         if("BarbarianEncountered" !in shownTutorials
-                && viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarianCivilization() } })
+                && viewingCiv.viewableTiles.any { it.getUnits().any { unit -> unit.civInfo.isBarbarian() } })
             displayTutorials("BarbarianEncountered")
         if(viewingCiv.cities.size > 2) displayTutorials("SecondCity")
         if(viewingCiv.getHappiness() < 5) displayTutorials("HappinessGettingLow")

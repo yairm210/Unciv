@@ -127,7 +127,7 @@ class GameInfo {
 
     fun placeBarbarianEncampment(existingEncampments: List<TileInfo>): TileInfo? {
         // Barbarians will only spawn in places that no one can see
-        val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
+        val allViewableTiles = civilizations.filterNot { it.isBarbarian() }
                 .flatMap { it.viewableTiles }.toHashSet()
         val tilesWithin3ofExistingEncampment = existingEncampments.flatMap { it.getTilesInDistance(3) }
         val viableTiles = tileMap.values.filter {
@@ -146,7 +146,7 @@ class GameInfo {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = GameBasics.Technologies.keys.toMutableList()
-        for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
+        for (civ in civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
         val barbarianCiv = getBarbarianCivilization()
@@ -209,13 +209,13 @@ class GameInfo {
             }
         }
 
-        for (civInfo in civilizations) {
-            civInfo.setTransients()
-            for(unit in civInfo.getCivUnits())
-                unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
-        }
+        for (civInfo in civilizations) civInfo.setNationTransient()
+        for (civInfo in civilizations) civInfo.setTransients()
 
         for (civInfo in civilizations){
+            for(unit in civInfo.getCivUnits())
+                unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
+
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
             // Hence why it's not in CivInfo.setTransients().

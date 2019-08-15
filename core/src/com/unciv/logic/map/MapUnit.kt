@@ -91,7 +91,7 @@ class MapUnit {
                 && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
-        if(type.isWaterUnit() && civInfo.getNation().unique=="+2 movement for all naval units")
+        if(type.isWaterUnit() && civInfo.nation.unique=="+2 movement for all naval units")
             movement+=2
         
         return movement
@@ -133,7 +133,7 @@ class MapUnit {
             var visibilityRange = 2
             visibilityRange += getUniques().count { it == "+1 Visibility Range" }
             if (hasUnique("Limited Visibility")) visibilityRange -= 1
-            if (civInfo.getNation().unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
+            if (civInfo.nation.unique == "All land military units have +1 sight, 50% discount when purchasing tiles")
                 visibilityRange += 1
             if (type.isWaterUnit() && !type.isCivilian()
                     && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
@@ -398,7 +398,7 @@ class MapUnit {
     fun moveThroughTile(tile: TileInfo){
         if(tile.improvement==Constants.ancientRuins && civInfo.isMajorCiv())
             getAncientRuinBonus(tile)
-        if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarianCivilization())
+        if(tile.improvement==Constants.barbarianEncampment && !civInfo.isBarbarian())
             clearEncampment(tile)
 
         currentTile = tile

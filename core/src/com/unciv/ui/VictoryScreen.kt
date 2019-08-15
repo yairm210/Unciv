@@ -135,7 +135,7 @@ class VictoryScreen : PickerScreen() {
         val table=Table()
         table.defaults().pad(5f)
         for (civ in playerCivInfo.gameInfo.civilizations) {
-            if (civ.isPlayerCivilization() || civ.isBarbarianCivilization() || civ.isCityState()) continue
+            if (civ.isCurrentPlayer() || !civ.isMajorCiv()) continue
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
                     else "???"

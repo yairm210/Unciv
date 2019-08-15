@@ -28,8 +28,10 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
         playerListTable.clear()
         for (player in newGameParameters.players)
             playerListTable.add(getPlayerTable(player)).pad(10f).row()
-        playerListTable.add("+".toLabel().setFontSize(30).apply { this.setAlignment(Align.center) }
-                .setFontColor(Color.BLACK).surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() })
+        if(newGameParameters.players.count() < GameBasics.Nations.values.count { it.isMajorCiv() }) {
+            playerListTable.add("+".toLabel().setFontSize(30).apply { this.setAlignment(Align.center) }
+                    .setFontColor(Color.BLACK).surroundWithCircle(50f).onClick { newGameParameters.players.add(Player()); update() })
+        }
     }
 
     fun getPlayerTable(player: Player): Table {

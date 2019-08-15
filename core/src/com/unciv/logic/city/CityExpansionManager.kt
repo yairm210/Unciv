@@ -54,7 +54,7 @@ class CityExpansionManager {
         if(cityInfo.containsBuildingUnique("Culture and Gold costs of acquiring new tiles reduced by 25% in this city"))
             cost *= 0.75 // Specialty of Krepost
 
-        if(cityInfo.civInfo.getNation().unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
+        if(cityInfo.civInfo.nation.unique=="All land military units have +1 sight, 50% discount when purchasing tiles")
             cost /= 2
         return cost.toInt()
     }

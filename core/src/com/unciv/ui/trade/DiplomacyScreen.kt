@@ -55,10 +55,10 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         leftSideTable.clear()
         val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         for (civ in UnCivGame.Current.gameInfo.civilizations
-                .filterNot { it.isDefeated() || it == currentPlayerCiv || it.isBarbarianCivilization() }) {
+                .filterNot { it.isDefeated() || it == currentPlayerCiv || it.isBarbarian() }) {
             if (!currentPlayerCiv.knows(civ)) continue
 
-            val civIndicator = ImageGetter.getNationIndicator(civ.getNation(),100f)
+            val civIndicator = ImageGetter.getNationIndicator(civ.nation,100f)
 
             val relationship = ImageGetter.getCircle()
             if(currentPlayerCiv.isAtWarWith(civ)) relationship.color = Color.RED

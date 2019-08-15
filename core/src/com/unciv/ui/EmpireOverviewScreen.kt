@@ -122,12 +122,12 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
     private fun createOffersTable(civ: CivilizationInfo, offersList: TradeOffersList, numberOfOtherSidesOffers: Int): Table {
         val table = Table()
         table.defaults().pad(10f)
-        table.background = ImageGetter.getBackground(civ.getNation().getColor())
-        table.add(civ.civName.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
+        table.background = ImageGetter.getBackground(civ.nation.getColor())
+        table.add(civ.civName.toLabel().setFontColor(civ.nation.getSecondaryColor())).row()
         table.addSeparator()
         for(offer in offersList){
             val offerText = offer.getOfferText()
-            table.add(offerText.toLabel().setFontColor(civ.getNation().getSecondaryColor())).row()
+            table.add(offerText.toLabel().setFontColor(civ.nation.getSecondaryColor())).row()
         }
         for(i in 1..numberOfOtherSidesOffers - offersList.size)
             table.add("".toLabel()).row() // we want both sides of the general table to have the same number of rows
@@ -329,7 +329,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
             currentPlayerCivInfo.diplomacy.containsKey(civ.civName)
 
     fun getDiplomacyGroup(): Group {
-        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarianCivilization() && !it.isCityState() }
+        val relevantCivs = currentPlayerCivInfo.gameInfo.civilizations.filter { !it.isBarbarian() && !it.isCityState() }
         val groupSize = 500f
         val group = Group()
         group.setSize(groupSize,groupSize)
@@ -349,7 +349,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
         for(civ in relevantCivs.filter { playerKnows(it) && !it.isDefeated() })
             for(diplomacy in civ.diplomacy.values.
-                    filter { !it.otherCiv().isBarbarianCivilization() && !it.otherCiv().isCityState()
+                    filter { !it.otherCiv().isBarbarian() && !it.otherCiv().isCityState()
                             && playerKnows(it.otherCiv()) && !it.otherCiv().isDefeated()}){
                 val civGroup = civGroups[civ.civName]!!
                 val otherCivGroup = civGroups[diplomacy.otherCivName]!!
@@ -415,9 +415,9 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
                 label.setFontColor(Color.BLACK)
             } else if (currentPlayer==civ || currentPlayer.knows(civ)) {
-                civGroup.add(ImageGetter.getNationIndicator(civ.getNation(), 30f))
-                civGroup.background = civGroupBackground.tint(civ.getNation().getColor())
-                label.setFontColor(civ.getNation().getSecondaryColor())
+                civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
+                civGroup.background = civGroupBackground.tint(civ.nation.getColor())
+                label.setFontColor(civ.nation.getSecondaryColor())
             } else {
                 civGroup.background = civGroupBackground.tint(Color.DARK_GRAY)
                 label.setText("???")

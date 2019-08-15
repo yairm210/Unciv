@@ -48,7 +48,7 @@ class UnitAutomation{
         val unitActions = UnitActions().getUnitActions(unit,UnCivGame.Current.worldScreen)
         var unitDistanceToTiles = unit.movement.getDistanceToTiles()
 
-        if(unit.civInfo.isBarbarianCivilization() &&
+        if(unit.civInfo.isBarbarian() &&
                 unit.currentTile.improvement==Constants.barbarianEncampment && unit.type.isLandUnit()) {
             if(unit.canFortify()) unit.fortify()
             return // stay in the encampment
@@ -75,7 +75,7 @@ class UnitAutomation{
         if (tryAttackNearbyEnemy(unit)) return
 
         // Barbarians try to pillage improvements if no targets reachable
-        if (unit.civInfo.isBarbarianCivilization() && tryPillageImprovement(unit, unitDistanceToTiles)) return
+        if (unit.civInfo.isBarbarian() && tryPillageImprovement(unit, unitDistanceToTiles)) return
 
         if (tryGarrisoningUnit(unit)) return
 
@@ -95,12 +95,12 @@ class UnitAutomation{
         if(tryExplore(unit,unitDistanceToTiles)) return
 
         // Barbarians just wander all over the place
-        if(unit.civInfo.isBarbarianCivilization())
+        if(unit.civInfo.isBarbarian())
             wander(unit,unitDistanceToTiles)
     }
 
     private fun tryHeadTowardsEncampment(unit: MapUnit): Boolean {
-        if(unit.civInfo.isBarbarianCivilization()) return false
+        if(unit.civInfo.isBarbarian()) return false
         val knownEncampments = unit.civInfo.gameInfo.tileMap.values.asSequence()
                 .filter { it.improvement==Constants.barbarianEncampment && unit.civInfo.exploredTiles.contains(it.position) }
         val cities = unit.civInfo.cities

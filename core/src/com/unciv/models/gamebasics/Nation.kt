@@ -60,6 +60,8 @@ class Nation : INamed {
     }
 
     fun isCityState()= cityStateType != null
+    fun isMajorCiv() = !isBarbarian() && !isCityState()
+    fun isBarbarian() = name=="Barbarians"
 
     lateinit var cities: List<String>
 }

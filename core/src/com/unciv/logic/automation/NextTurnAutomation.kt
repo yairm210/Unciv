@@ -306,7 +306,7 @@ class NextTurnAutomation{
         val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
         val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
                 .map { it.value.otherCiv() }
-                .filterNot { it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
+                .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
 
         for (enemy in enemiesCiv) {

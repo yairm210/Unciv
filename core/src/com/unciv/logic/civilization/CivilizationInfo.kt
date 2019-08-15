@@ -24,6 +24,7 @@ import kotlin.math.roundToInt
 
 class CivilizationInfo {
     @Transient lateinit var gameInfo: GameInfo
+    @Transient lateinit var nation:Nation
     /**
      * We never add or remove from here directly, could cause comodification problems.
      * Instead, we create a copy list with the change, and replace this list.
@@ -99,14 +100,13 @@ class CivilizationInfo {
         return GameBasics.Difficulties["Chieftain"]!!
     }
 
-    fun getNation() = GameBasics.Nations[civName]!!
     fun getTranslatedNation(): Nation {
         val language = UnCivGame.Current.settings.language.replace(" ","_")
-        if(!Gdx.files.internal("jsons/Nations_$language.json").exists()) return getNation()
+        if(!Gdx.files.internal("jsons/Nations_$language.json").exists()) return nation
         val translatedNation = GameBasics.getFromJson(Array<Nation>::class.java, "Nations_$language")
                 .firstOrNull { it.name==civName}
         if(translatedNation==null)  // this language's trnslation doesn't contain this nation yet,
-            return getNation()      // default to english
+            return nation      // default to english
         return translatedNation
     }
 
@@ -119,15 +119,15 @@ class CivilizationInfo {
     fun getCapital()=cities.first { it.isCapital() }
     fun isPlayerCivilization() =  playerType==PlayerType.Human
     fun isCurrentPlayer() =  gameInfo.getCurrentPlayerCivilization()==this
-    fun isBarbarianCivilization() =  civName=="Barbarians"
-    fun isCityState(): Boolean = getNation().isCityState()
-    fun getCityStateType(): CityStateType = getNation().cityStateType!!
-    fun isMajorCiv() = !isBarbarianCivilization() && !isCityState()
+    fun isBarbarian() =  nation.isBarbarian()
+    fun isCityState(): Boolean = nation.isCityState()
+    fun getCityStateType(): CityStateType = nation.cityStateType!!
+    fun isMajorCiv() = nation.isMajorCiv()
 
     fun victoryType(): VictoryType {
         if(gameInfo.gameParameters.victoryTypes.size==1)
             return gameInfo.gameParameters.victoryTypes.first() // That is the most relevant one
-        val victoryType = getNation().preferredVictoryType
+        val victoryType = nation.preferredVictoryType
         if(gameInfo.gameParameters.victoryTypes.contains(victoryType)) return victoryType
         else return VictoryType.Neutral
     }
@@ -249,7 +249,7 @@ class CivilizationInfo {
     }
 
     fun isAtWarWith(otherCiv:CivilizationInfo): Boolean {
-        if(otherCiv.isBarbarianCivilization() || isBarbarianCivilization()) return true
+        if(otherCiv.isBarbarian() || isBarbarian()) return true
         if(!diplomacy.containsKey(otherCiv.civName)) // not encountered yet
             return false
         return getDiplomacyManager(otherCiv).diplomaticStatus == DiplomaticStatus.War
@@ -269,6 +269,15 @@ class CivilizationInfo {
     //endregion
 
     //region state-changing functions
+
+    /** This is separate because the REGULAR setTransients updates the viewable ties,
+     *  and the updateViewableTiles tries to meet civs...
+     *  And if they civs on't yet know who they are then they don;t know if they're barbarians =\
+     *  */
+    fun setNationTransient(){
+        nation = GameBasics.Nations[civName]!!
+    }
+
     fun setTransients() {
         goldenAges.civInfo = this
         policies.civInfo = this
@@ -276,7 +285,7 @@ class CivilizationInfo {
             policies.numberOfAdoptedPolicies = policies.adoptedPolicies.count { !it.endsWith("Complete") }
 
         if(citiesCreated==0 && cities.any())
-            citiesCreated = cities.filter { it.name in getNation().cities }.count()
+            citiesCreated = cities.filter { it.name in nation.cities }.count()
 
         tech.civInfo = this
         tech.setTransients()
@@ -329,7 +338,7 @@ class CivilizationInfo {
         policies.endTurn(nextTurnStats.culture.toInt())
 
         // disband units until there are none left OR the gold values are normal
-        if(!isBarbarianCivilization() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
+        if(!isBarbarian() && gold < -100 && nextTurnStats.gold.toInt() < 0) {
             for (i in 1 until (gold / -100)) {
                 var civMilitaryUnits = getCivUnits().filter { !it.type.isCivilian() }
                 if (civMilitaryUnits.isNotEmpty()) {

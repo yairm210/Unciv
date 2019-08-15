@@ -83,7 +83,7 @@ class GameStarter{
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
-        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarianCivilization() && !it.isPlayerCivilization()}) {
+        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarian() && !it.isPlayerCivilization()}) {
             for (tech in gameInfo.getDifficulty().aiFreeTechs)
                 civInfo.tech.addTechnology(tech)
         }
@@ -92,10 +92,10 @@ class GameStarter{
 
 
         val startingLocations = getStartingLocations(
-                gameInfo.civilizations.filter { !it.isBarbarianCivilization() },
+                gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
 
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarianCivilization() }) {
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             val startingLocation = startingLocations[civ]!!
 
             civ.placeUnitNearTile(startingLocation.position, Constants.settler)
@@ -133,7 +133,7 @@ class GameStarter{
             val civsOrderedByAvailableLocations = civs.sortedBy {civ ->
                 when {
                     tilesWithStartingLocations.any { it.improvement=="StartingLocation "+civ.civName } -> 1 // harshest requirements
-                    civ.getNation().startBias.isNotEmpty() -> 2 // less harsh
+                    civ.nation.startBias.isNotEmpty() -> 2 // less harsh
                     else -> 3
                 }  // no requirements
             }
@@ -146,7 +146,7 @@ class GameStarter{
                     if (freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
                     var preferredTiles = freeTiles.toList()
 
-                    for (startBias in civ.getNation().startBias) {
+                    for (startBias in civ.nation.startBias) {
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid ")
                             preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }
