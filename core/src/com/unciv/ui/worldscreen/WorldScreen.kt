@@ -165,16 +165,16 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
-        when {
-            !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
-            viewingCiv.policies.freePolicies>0 -> game.screen = PolicyPickerScreen(viewingCiv)
-            viewingCiv.greatPeople.freeGreatPeople>0 -> game.screen = GreatPersonPickerScreen()
-            viewingCiv.tradeRequests.isNotEmpty() ->{
-                TradePopup(this)
+        val isSomethingOpen = tutorials.isTutorialShowing || stage.actors.any { it is TradePopup }
+                || AlertPopup.isOpen
+        if(!isSomethingOpen) {
+            when {
+                !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
+                viewingCiv.policies.freePolicies > 0 -> game.screen = PolicyPickerScreen(viewingCiv)
+                viewingCiv.greatPeople.freeGreatPeople > 0 -> game.screen = GreatPersonPickerScreen()
+                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
+                viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
             }
-            !tutorials.isTutorialShowing
-                    && viewingCiv.popupAlerts.any() && !AlertPopup.isOpen ->
-                AlertPopup(this,viewingCiv.popupAlerts.first())
         }
         updateNextTurnButton()
     }
@@ -259,42 +259,53 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 return@onClick
             }
 
-            nextTurn(nextTurnButton) // If none of the above
+            nextTurn() // If none of the above
         }
 
         return nextTurnButton
     }
 
-    private fun nextTurn(nextTurnButton: TextButton) {
+    private fun nextTurn() {
         isPlayersTurn = false
         shouldUpdate = true
 
+
         thread {
+            val gameInfoClone = gameInfo.clone()
+            gameInfoClone.setTransients()
             try {
-                gameInfo.nextTurn()
+                gameInfoClone.nextTurn()
             } catch (ex: Exception) {
                 game.settings.hasCrashedRecently = true
                 game.settings.save()
                 throw ex
             }
 
-            if (gameInfo.turns % game.settings.turnsBetweenAutosaves == 0) {
-                GameSaver().autoSave(gameInfo) {
-                    nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
-                    updateNextTurnButton()
-                }
-            } else nextTurnButton.enable() // Enable immediately
+            game.gameInfo = gameInfoClone
 
-            // If we put this BEFORE the save game, then we try to save the game...
-            // but the main thread does other stuff, including showing tutorials which guess what? Changes the game data
-            // BOOM! Exception!
-            // That's why this needs to be after the game is saved.
-            isPlayersTurn = true
-            shouldUpdate = true
+            val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
 
-            // do this on main thread
+            // create a new worldscreen to show the new stuff we've changed, and switch out the current screen.
+            // do this on main thread - it's the only one that has a GL context to create images from
             Gdx.app.postRunnable {
-                updateNextTurnButton()
+                if(gameInfoClone.currentPlayerCiv.civName == viewingCiv.civName) {
+                    val newWorldScreen = WorldScreen(gameInfoClone.currentPlayerCiv)
+                    newWorldScreen.tileMapHolder.scrollX = tileMapHolder.scrollX
+                    newWorldScreen.tileMapHolder.scrollY = tileMapHolder.scrollY
+                    newWorldScreen.tileMapHolder.scaleX = tileMapHolder.scaleX
+                    newWorldScreen.tileMapHolder.scaleY = tileMapHolder.scaleY
+                    newWorldScreen.tileMapHolder.updateVisualScroll()
+                    game.worldScreen = newWorldScreen
+                    game.setWorldScreen()
+                }
+                else UnCivGame.Current.screen = PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization())
+
+                if(shouldAutoSave) {
+                    game.worldScreen.nextTurnButton.disable()
+                    GameSaver().autoSave(gameInfoClone) {
+                        game.worldScreen.nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
+                    }
+                }
             }
         }
     }
@@ -324,7 +335,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         }
     }
 
-    var shouldUpdate=true
+    var shouldUpdate=false
 
 
     override fun render(delta: Float) {
@@ -332,12 +343,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         //    otherwise images will not load properly!
         if (shouldUpdate) {
             shouldUpdate = false
-
-            if (viewingCiv != gameInfo.getCurrentPlayerCivilization()) {
-                UnCivGame.Current.worldScreen.dispose() // for memory saving
-                UnCivGame.Current.screen = PlayerReadyScreen(gameInfo.getCurrentPlayerCivilization())
-                return
-            }
 
             update()
             showTutorialsOnNextTurn()
