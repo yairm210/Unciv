@@ -114,7 +114,7 @@ class Battle(val gameInfo:GameInfo) {
         }
 
         // Similarly, Ottoman unique
-        if(defender.isDefeated() && defender.getUnitType().isWaterUnit()
+        if(defender.isDefeated() && defender.getUnitType().isWaterUnit() && attacker.isMelee() && attacker.getUnitType().isWaterUnit()
                 && attacker.getCivInfo().getNation().unique== "Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units."
                 && Random().nextDouble() > 0.33){
             attacker.getCivInfo().placeUnitNearTile(attackedTile.position, defender.getName())
