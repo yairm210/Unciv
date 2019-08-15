@@ -21,6 +21,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters): Table(Ca
         addMapTypeSizeAndFile()
         addDifficultySelectBox()
         addGameSpeedSelectBox()
+        addCityStatesSelectBox()
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
 
