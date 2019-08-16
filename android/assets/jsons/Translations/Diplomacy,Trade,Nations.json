@@ -472,6 +472,10 @@
 		German:"Handel anbieten"
 	}
 
+	"Retract offer":{	
+		Italian:"Ritira offerta"
+	}
+
 	"What do you have in mind?":{	
 		Italian:"Cos'hai in mente?"
 		Russian:"Что вы об этом думаете?"
@@ -650,6 +654,10 @@
 		French:"Déclarations de guerre"
 		Simplified_Chinese:"宣战"
 		Portuguese:"Declarações de guerra"
+	}
+
+	"Introduction to [nation]":{
+		Italian:"Introduci a [nation]"
 	}
 
 	"Luxury resources":{
