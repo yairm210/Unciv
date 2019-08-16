@@ -80,7 +80,7 @@
 
 	"Number of human players":{
 		Italian:"Numero di giocatori"
-		Russian:"Количество врагов"
+		Russian:"Количество игроков"
 		French:"Nombre de joueurs humains"
 		Romanian:"Număr de inamici"
 		Spanish:"Número de enemigos"
@@ -140,7 +140,7 @@
 		Spanish:"Micro"
 		Simplified_Chinese:"极小"
 		German:"Winzig"
-		Russian:"крошечный"
+		Russian:"Крошечный"
 		Portuguese:"Minúsculo"
 		French:"Minuscule"
 	}
@@ -180,7 +180,7 @@
 
 	"Huge":{	
 		Italian:"Enorme"
-		Russian:"огромный"
+		Russian:"Огромный"
 		French:"Énorme"
 		Romanian:"Imens"
 		Spanish:"Enorme"
@@ -297,14 +297,17 @@
 	
 	"Game Speed":{
 		Italian:"Velocità di gioco"
+                Russian:"Скорость игры"
 	}
 	
 	"Quick":{
 		Italian:"Rapida"
+                Russian:"Быстрая"
 	}
 	
 	"Standard":{
 		Italian:"Standard"
+                Russian:"Обычная"
 	}
 	
 	"Epic":{
@@ -414,7 +417,7 @@
 		German:"Optionen"
 		French:"Options"
 		Japanese:"オプション"
-		Russian:"Опции"
+		Russian:"Настройки"
 		Romanian:"Opțiuni"
 		Dutch:"Opties"
 		Spanish:"Opciones"
@@ -440,12 +443,14 @@
 		French:"Tours avant sauvegarde automatique"
 		Simplified_Chinese:"自动存档回合数"
 		Portuguese:"Turnos entre autosaves"
+                Russian:"Кол-во ходов между автосохранениями"
 	}
 	
 	"Sound effects volume":{
 		Italian:"Volume effetti"
 		French:"Volume sonore"
 		Simplified_Chinese:"声效大小"
+                Russian:"Громкость звука"
 	}
 	
 	"Show":{
@@ -463,7 +468,7 @@
 
 	"Hide":{
 		Italian:"Nascondi"
-		Russian:"Спрятать"
+		Russian:"Убрать"
 		French:"Cacher"
 		Romanian:"Ascunde"
 		German:"Verstecken"
@@ -476,7 +481,7 @@
 	
 	"Worked tiles":{
 		Italian:"Celle sfruttate"
-		Russian:"обработанные клетки"
+		Russian:"Обработанные клетки"
 		French:"cases exploités"
 		Romanian:"celule lucrate"
 		German:"bearbeitete Felder"
@@ -489,7 +494,7 @@
 
 	"Resources and improvements":{
 		Italian:"Risorse e miglioramenti"
-		Russian:"ресурсы и улучшения"
+		Russian:"Ресурсы и улучшения"
 		French:"ressources et améliorations"
 		Romanian:"resurse și îmbunătățiri"
 		German:"Ressourcen und Verbesserungen"
@@ -512,10 +517,12 @@
 		Italian:"Muovi unità con un solo tocco"
 		German: "Einheiten mit einem Klick bewegen"
 		French:"Bouger les unités en un seul click"
+                Russian:"Перемещать юниты одним касанием"
 	}
 	
 	"Show tutorials":{
 		Italian:"Mostra tutorial"
+                Russian:"Показывать обучение"
 	}
 	
 }
