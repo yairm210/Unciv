@@ -20,7 +20,7 @@
 	
 	"Working...":{ // Displayed when next turn is being...turned
 		Italian:"Attendere..."
-		Russian:"Работает..."
+		Russian:"Обработка..."
 		French:"Patientez..."
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
@@ -76,7 +76,7 @@
 
 	"turns":{ // for e.g. turns to technology
 		Italian:"turni"
-		Russian:"Ходов"
+		Russian:"ходов"
 		French:"Tours"
 		Romanian:"Runde"
 		German:"Runden"
@@ -91,6 +91,7 @@
 		Italian:"turno"
 		Simplified_Chinese:"回合"
 		Portuguese:"Turno"
+                Russian:"ход"
 		French:"tour"
 	}
 
@@ -99,6 +100,7 @@
 		Simplified_Chinese:"下个未行动单位"
 		Portuguese:"Próxima unidade"
 		French:"Unité suivante"
+                Russian:"Следующий юнит"
 	}
 
 	"Pick a policy":{
@@ -206,7 +208,7 @@
 
 	"Automate":{
 		Italian:"Automatizza"
-		Russian:"Автоматизация"
+		Russian:"Автоматизировать"
 		French:"Automatiser"
 		Romanian:"Automatizează"
 		German:"Automatisieren"
@@ -226,7 +228,7 @@
 		Portuguese:"Pare a automação"
 		Simplified_Chinese:"停止自动化"
 		Romanian:"Opriți automatizarea"
-		Russian:"Стоп автоматизации"
+		Russian:"Остановить автоматизацию"
 		Japanese:"自動化を停止"
 	}
 
@@ -234,6 +236,7 @@
 		Italian: "Costruisci strada"
 		German: "Straße bauen"
 		French:"Contruire une route"
+                Russian:"Построить дорогу"
 	}
 
 	"Fortify":{
@@ -276,8 +279,8 @@
 	}
 
 	"Moving": { //sample would be appreciated
-		"Italian": "In movimento"
-		"German": "Bewegen"
+		Italian: "In movimento"
+		German: "Bewegen"
 		French:"En mouvement"
 	}
 
@@ -367,7 +370,7 @@
 		Portuguese:"Explorar"
 		Japanese:"探検する"
 		Simplified_Chinese:"自由探索"
-		Russian:"обследовать"
+		Russian:"Исследовать территорию"
 		Dutch:"Onderzoeken"
 	}
 	
@@ -376,6 +379,7 @@
 		Simplified_Chinese:"停止探索"
 		French:"Arrêter l'exploration"
 		Portuguese:"Parar a exploração"
+                Russian:"Остановить исследование территории"
 	}
 
 	"Pillage":{
@@ -384,7 +388,7 @@
 		French:"Pillage"
 		Japanese:"略奪"
 		Portuguese:"Pilhar"
-		Russian:"мародерство"
+		Russian:"Мародерство"
 		Romanian:"Prădare"
 		Dutch:"Plundering"
 		Spanish:"Pillaje"
@@ -423,6 +427,7 @@
 	"Start Golden Age":{
 		Italian:"Inizia Età dell'Oro"
 		French:"Commencer un Age d'Or"
+                Russian:"Войти в золотой век"
 	}
 	
 	"Yes":{
@@ -706,7 +711,7 @@
 		French:"Acheter"
 		Romanian:"A cumpara"
 		German:"Kaufen"
-		Russian:"купить"
+		Russian:"Купить"
 		Dutch:"Kopen"
 		Spanish:"Comprar"
 		Portuguese:"Comprar"
@@ -1731,6 +1736,7 @@
 	"Never!":{
 		Italian:"Non sia mai!"
 		French:"Jamais!"
+                Russian:"Никогда!"
 	}
 	
 ////// Civilopedia texts
@@ -1741,6 +1747,7 @@
 		French:"Basiques"
 		Simplified_Chinese:"基础"
 		Portuguese:"Básicos"
+                Russian:"Базовое"
 	}
 
 	"Resources":{
@@ -1749,6 +1756,7 @@
 		French:"Ressources"
 		Simplified_Chinese:"资源"
 		Portuguese:"Recursos"
+                Russian:"Ресурсы"
 	}
 
 	"Terrains":{
