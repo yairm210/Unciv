@@ -1057,7 +1057,7 @@
 		cost: 375,
 		requiredTech:"Plastics",
 		upgradesTo:"Mechanized Infantry",
-		obsoleteTech:"Nuclear Fission",
+		obsoleteTech:"Mobile Tactics",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
