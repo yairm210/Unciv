@@ -136,7 +136,10 @@ class Battle(val gameInfo:GameInfo) {
             val unit = attacker.unit
             if (unit.hasUnique("Can move after attacking")
                     || (unit.hasUnique("1 additional attack per turn") && unit.attacksThisTurn==0)){
-                if(!attacker.getUnitType().isMelee() || !defender.isDefeated()) // if it was a melee attack and we won, then the unit ALREADY got movement points deducted, for the movement to the enemie's tile!
+                // if it was a melee attack and we won, then the unit ALREADY got movement points deducted,
+                // for the movement to the enemy's tile!
+                // and if it's an air unit, it only has 1 movement anyway, so...
+                if(!attacker.getUnitType().isAirUnit() && !(attacker.getUnitType().isMelee() && defender.isDefeated()))
                     unit.useMovementPoints(1f)
             }
             else unit.currentMovement = 0f
