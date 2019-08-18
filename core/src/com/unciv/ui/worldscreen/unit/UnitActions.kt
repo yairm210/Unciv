@@ -134,8 +134,6 @@ class UnitActions {
                     unit.currentMovement >0 &&
                             !tile.getTilesInDistance(3).any { it.isCityCenter() })
             {
-                worldScreen.displayTutorials("CityFounded")
-
                 unit.civInfo.addCity(tile.position)
                 tile.improvement = null
                 unit.destroy()

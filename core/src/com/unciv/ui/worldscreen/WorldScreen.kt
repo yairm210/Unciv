@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UnCivGame
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -113,35 +114,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             gameInfo.civilizations.forEach { it.setCitiesConnectedToCapitalTransients() }
         }
 
-        if(bottomBar.unitTable.selectedUnit!=null){
-            displayTutorials("UnitSelected")
-        }
-
-        if(UnCivGame.Current.settings.hasCrashedRecently){
-            displayTutorials("GameCrashed")
-            UnCivGame.Current.settings.tutorialsShown.remove("GameCrashed")
-            UnCivGame.Current.settings.hasCrashedRecently=false
-            UnCivGame.Current.settings.save()
-        }
-
-        if (UnCivGame.Current.settings.tutorialsShown.contains("CityEntered")) {
-            displayTutorials("AfterCityEntered")
-        }
-
-        if(!UnCivGame.Current.settings.tutorialsShown.contains("EnemyCityNeedsConqueringWithMeleeUnit")) {
-            for (enemyCity in cloneCivilization.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
-                    .map { it.otherCiv() }.flatMap { it.cities }) {
-                if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
-                                .any { it.getUnits().any { unit -> unit.civInfo == cloneCivilization } })
-                    displayTutorials("EnemyCityNeedsConqueringWithMeleeUnit")
-            }
-        }
-
-        if(gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.health<100 })
-            displayTutorials("InjuredUnits")
-
-        if(gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.name== Constants.worker })
-            displayTutorials("WorkerTrained")
+        displayTutorialsOnUpdate(cloneCivilization, gameClone)
 
         updateTechButton(cloneCivilization)
         updateDiplomacyButton(cloneCivilization)
@@ -177,6 +150,35 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             }
         }
         updateNextTurnButton()
+    }
+
+    private fun displayTutorialsOnUpdate(cloneCivilization: CivilizationInfo, gameClone: GameInfo) {
+        if (UnCivGame.Current.settings.hasCrashedRecently) {
+            displayTutorials("GameCrashed")
+            UnCivGame.Current.settings.tutorialsShown.remove("GameCrashed")
+            UnCivGame.Current.settings.hasCrashedRecently = false
+            UnCivGame.Current.settings.save()
+        }
+
+        if (bottomBar.unitTable.selectedUnit != null) displayTutorials("UnitSelected")
+        if (viewingCiv.cities.isNotEmpty()) displayTutorials("CityFounded")
+        if (UnCivGame.Current.settings.tutorialsShown.contains("CityEntered")) displayTutorials("AfterCityEntered")
+
+
+        if (!UnCivGame.Current.settings.tutorialsShown.contains("EnemyCityNeedsConqueringWithMeleeUnit")) {
+            for (enemyCity in cloneCivilization.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
+                    .map { it.otherCiv() }.flatMap { it.cities }) {
+                if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
+                                .any { it.getUnits().any { unit -> unit.civInfo == cloneCivilization } })
+                    displayTutorials("EnemyCityNeedsConqueringWithMeleeUnit")
+            }
+        }
+
+        if (gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 })
+            displayTutorials("InjuredUnits")
+
+        if (gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker })
+            displayTutorials("WorkerTrained")
     }
 
     private fun updateDiplomacyButton(civInfo: CivilizationInfo) {
