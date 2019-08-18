@@ -200,23 +200,18 @@ class DiplomacyManager() {
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders(){
-        var newHasOpenBorders = false
-        for(trade in trades) {
-            for (offer in trade.theirOffers)
-                if (offer.name == "Open Borders" && offer.duration > 0) {
-                    newHasOpenBorders = true
-                    break
-                }
-            if(newHasOpenBorders) break
-        }
+        val newHasOpenBorders = trades.flatMap { it.theirOffers }
+                .any { it.name == "Open Borders" && it.duration > 0 }
 
-        if(hasOpenBorders && !newHasOpenBorders){ // borders were closed, get out!
+        val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
+        hasOpenBorders=newHasOpenBorders
+
+        if(bordersWereClosed){ // borders were closed, get out!
             for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }){
                 unit.movement.teleportToClosestMoveableTile()
             }
         }
 
-        hasOpenBorders=newHasOpenBorders
     }
 
     fun nextTurn(){
