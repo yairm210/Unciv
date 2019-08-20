@@ -316,15 +316,15 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val text = when {
             !isPlayersTurn -> "Waiting for other players..."
             viewingCiv.shouldGoToDueUnit() -> "Next unit"
-            viewingCiv.cities.any{it.cityConstructions.currentConstruction==""} -> "Pick construction"
+            viewingCiv.cities.any { it.cityConstructions.currentConstruction == "" } -> "Pick construction"
             viewingCiv.shouldOpenTechPicker() -> "Pick a tech"
             viewingCiv.policies.shouldOpenPolicyPicker -> "Pick a policy"
             else -> "Next turn"
         }
         nextTurnButton.setText(text.tr())
-        nextTurnButton.color = if(text=="Next turn") Color.WHITE else Color.GRAY
+        nextTurnButton.color = if (text == "Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
-        if(AlertPopup.isOpen || !isPlayersTurn) nextTurnButton.disable()
+        if (AlertPopup.isOpen || !isPlayersTurn) nextTurnButton.disable()
         else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
