@@ -20,7 +20,7 @@
 		Simplified_Chinese:"表示首都"
 		German:"Gibt die Hauptstadt an"
 		French:"Indique la capitale"
-		Polish:"Wskazuje na stolicę"
+		Polish:"Wskazuje stolicę"
 	}
 	
 	"Monument":{	
@@ -235,7 +235,7 @@
 		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
 		Simplified_Chinese:"所在城市每个水上地块+1金钱"
 		French:"+1 or pour les cases maritimes exploitées par la ville"
-		Polish:"+1 do złota z pracujących pól znajdujących się w wodzie w tym mieście"
+		Polish:"+1 do złota z obsadzonych pól wodnych w tym mieście"
 	}
 	
 	"Temple":{	
@@ -290,7 +290,7 @@
 		Spanish:"Política social gratis"
 		Simplified_Chinese:"获得1次免费推行社会政策的机会"
 		Portuguese:"Politica social gratis"
-		Polish:"Darmowy Ustrój Społeczny"
+		Polish:"Darmowy ustrój społeczny"
 	}
 	
 	"National College":{	
@@ -327,7 +327,7 @@
 		Spanish:"La Edad Dorada dura 50% más"
 		Simplified_Chinese:"黄金时代持续时间+50%"
 		Portuguese:"Duração de idade dourada aumentada em 50%"
-		Polish:"Czas trwania Złotej Ery zwiększony o 50%"
+		Polish:"Czas trwania Złotego Wieku zwiększony o 50%"
 	}
 	
 	"Lighthouse":{
@@ -348,7 +348,7 @@
 		Simplified_Chinese:"只能建在海滨城市"
 		Portuguese:"Só pode ser construido em cidades costeiras"
 		German:"Kann nur in Küstenstädten gebaut werden"
-		Polish:"Może być zbudowane tylko w nadbrzeżnych miastach"
+		Polish:"Może być zbudowane tylko w miastach nadbrzeżnych"
 	}
 
 	"+1 food from Ocean and Coast tiles":{
@@ -379,7 +379,7 @@
 		Simplified_Chinese:"所有海军军事单位+1移动力和+1视野"
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
-		Polish:Każda jednostka marynarki otrzymuje +1 do ruchu i pola widzenia"
+		Polish:"Każda jednostka marynarki otrzymuje +1 do ruchu i pola widzenia"
 	}
 
 	/*
@@ -468,7 +468,7 @@
 		Italian:"+2 Oro da ogni fonte di Marmo e Pietra"
 		French:"+2 or pour chaque ressources de marbre et de pierre"
 		Simplified_Chinese:"所在城市开发的每处大理石或花岗石资源额外+2金钱"
-		Polish:"+2 do złota z każdego źródła marmuru i kamienia"
+		Polish:"+2 do złota z każdego złoża marmuru i kamienia"
 	}
 	*/
 
@@ -500,7 +500,7 @@
 		Simplified_Chinese:"市场"
 		Portuguese:"Mercado"
 		German:"Markt"
-		Polish:"Targowisk"
+		Polish:"Targowisko"
 	}
 	
 	"Bazaar":{ // Arabian unique - transliterate?
@@ -531,7 +531,7 @@
 		Simplified_Chinese:"每处石油资源和每处绿洲+2金钱"
 		German:"+2 Gold für jede Ölquelle oder Oase"
 		French:"+2 or pour chaque ressources de pétrole et d'oasis"
-		Polish:"+2 do złota za każde źródło ropy lub oazę"
+		Polish:"+2 do złota z każdej oazy lub złoża ropy"
 	}
 			
 	"Monastery":{	
@@ -681,7 +681,7 @@
 	"+1 Production from each worked Forest tile":{	
 		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
 		French:"+1 production pour chaque cases de forêt exploitées par la ville."
-		Polish:+1 do produkcji za każde pracujące pole lasu"
+		Polish:"+1 do produkcji za każde pracujące pole lasu"
 	}
 	*/
 
@@ -752,6 +752,7 @@
 		Spanish:"Las selvas proporcionan +2 ciencia"
 		Simplified_Chinese:"丛林+2科研"
 		Portuguese:"Selvas proporcionam +2 ciência"
+		Polish:"+2 nauki z pól dżungli"
 	}
 
 	/*
@@ -771,7 +772,7 @@
 		Simplified_Chinese:"牛津大学"
 		Portuguese:"Universidade de Oxford"
 		German:"Oxford Universität"
-		Polish:Uniwersytet Oksfordzki"
+		Polish:"Uniwersytet Oksfordzki"
 	}
 
 	"Castle":{	
@@ -1174,7 +1175,7 @@
 		Simplified_Chinese:"公立学校"
 		Portuguese:"Escola Pública"
 		German:"Öffentliche Schule"
-		Polish:"Szkoła publiczna"
+		Polish:"Szkoła powszechna"
 	}
 	
 	"Hospital":{	
@@ -1279,6 +1280,7 @@
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
 		Simplified_Chinese:"所有城市防御建筑建造速度+25%"
 		French:"Les batiments de défense sont 25% plus efficace dans toutes les villes"
+		Polski:"+25% skuteczności budowli obronnych w miastach"
 	}
 	
 	"Neuschwanstein":{
@@ -1341,7 +1343,7 @@
 		Spanish:"Otorga 1 felicidad por cada política social"
 		Simplified_Chinese:"每项社会政策+1快乐"
 		Portuguese:"Provem 1 felicade por política social"
-		Polish:"Zapewnia +1 do zadowolenia z każdego ustroju społecznego"
+		Polish:"+1 do zadowolenia z każdego ustroju społecznego"
 	}
 	
 	"Statue of Liberty":{
@@ -1577,7 +1579,7 @@
 		German:"Hubble Weltraumteleskop"
 		French:"Téléscope de Hubble"
 		Simplified_Chinese:"哈勃太空望远镜"
-		Polish:"Kosmiczny teleskop Hubble'a"
+		Polish:"Teleskop Hubble'a"
 	}
 
 	"2 free great scientists appear":{
@@ -1649,7 +1651,7 @@
 		French:"Requiert la construction de [buildingName] dans la ville"
 		Simplified_Chinese:"需要城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido na cidade"
-		Polish:"Budynek [buildingName] musi być wzniesiony w mieście"
+		Polish:"[buildingName] musi być wzniesiony w mieście"
 	}
 
 	"Requires [buildingName] to be built in all cities":{
@@ -1657,7 +1659,7 @@
 		French:"Requiert la construction de [buildingName] dans toutes les villes"
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido em todas as cidades"
-		Polish:"Budynek [buildingName] musi znajdować się we wszystkich miastach"
+		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 	}
 
 	"Provides a free [buildingName] in the city":{
@@ -1689,7 +1691,7 @@
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
 		French:"Nécessite un(e) [buildingName] dans toutes les villes"
 		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
-		Polish:"Wymaga [buildingName] we wszystkich miastach"
+		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
 	}
 
 	"Requires a [buildingName] in this city":{
