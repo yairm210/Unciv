@@ -55,7 +55,7 @@ class MapUnit {
 
             return null // unit has no action
         }
-        set(value) { mapUnitAction = value?.let{ StringAction(this, value) } } // wrap traditional string-encoded actions into StringAction
+        set(value) { mapUnitAction = if (value == null) null else StringAction(this, value) } // wrap traditional string-encoded actions into StringAction
 
 
     var attacksThisTurn = 0
@@ -165,7 +165,7 @@ class MapUnit {
         if (name == Constants.worker && getTile().improvementInProgress != null) return false
         if (hasUnique("Can construct roads") && currentTile.improvementInProgress=="Road") return false
         if (isFortified()) return false
-        if (action=="Sleep") return false
+        if (action==Constants.unitActionSleep || action == Constants.unitActionAutomation) return false
         return true
     }
 
@@ -298,9 +298,9 @@ class MapUnit {
             return
         }
 
-        if (action == "automation") WorkerAutomation(this).automateWorkerAction()
+        if (action == Constants.unitActionAutomation) WorkerAutomation(this).automateWorkerAction()
 
-        if(action == "Explore") UnitAutomation().automatedExplore(this)
+        if(action == Constants.unitActionExplore) UnitAutomation().automatedExplore(this)
     }
 
     private fun doPostTurnAction() {

@@ -207,7 +207,7 @@ class UnitAutomation{
         val tilesToAttackFrom = unitDistanceToTiles.asSequence()
                 .filter {
                     val movementPointsToExpendAfterMovement = if(unitMustBeSetUp) 1 else 0
-                    val movementPointsToExpendHere = if(unitMustBeSetUp && unit.action != "Set Up") 1 else 0
+                    val movementPointsToExpendHere = if(unitMustBeSetUp && unit.action != Constants.unitActionSetUp) 1 else 0
                     val movementPointsToExpendBeforeAttack = if(it.key==unit.currentTile) movementPointsToExpendHere else movementPointsToExpendAfterMovement
                     unit.currentMovement - it.value.totalDistance - movementPointsToExpendBeforeAttack > 0.1 } // still got leftover movement points after all that, to attack (0.1 is because of Float nensense, see MapUnit.moveToTile(...)
                 .map { it.key }

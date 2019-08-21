@@ -233,7 +233,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         unit.currentMovement -= distanceToTiles[destination]!!.totalDistance
         if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
-        if(unit.isFortified() || unit.action=="Set Up" || unit.action=="Sleep")
+        if(unit.isFortified() || unit.action==Constants.unitActionSetUp || unit.action==Constants.unitActionSleep)
             unit.action=null // unfortify/setup after moving
 
         unit.removeFromTile()

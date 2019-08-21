@@ -22,8 +22,8 @@ class Battle(val gameInfo:GameInfo) {
     fun moveAndAttack(attacker: ICombatant, attackableTile: UnitAutomation.AttackableTile){
         if (attacker is MapUnitCombatant) {
             attacker.unit.movement.moveToTile(attackableTile.tileToAttackFrom)
-            if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != "Set Up") {
-                attacker.unit.action = "Set Up"
+            if (attacker.unit.hasUnique("Must set up to ranged attack") && attacker.unit.action != Constants.unitActionSetUp) {
+                attacker.unit.action = Constants.unitActionSetUp
                 attacker.unit.useMovementPoints(1f)
             }
         }
@@ -144,7 +144,7 @@ class Battle(val gameInfo:GameInfo) {
             }
             else unit.currentMovement = 0f
             unit.attacksThisTurn+=1
-            if(unit.isFortified() || unit.action=="Sleep")
+            if(unit.isFortified() || unit.action == Constants.unitActionSleep)
                 attacker.unit.action=null // but not, for instance, if it's Set Up - then it should definitely keep the action!
         } else if (attacker is CityCombatant) {
             attacker.city.attackedThisTurn = true
