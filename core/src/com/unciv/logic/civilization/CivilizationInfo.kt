@@ -91,6 +91,8 @@ class CivilizationInfo {
         toReturn.exploredTiles.addAll(gameInfo.tileMap.values.asSequence().map { it.position }.filter { it in exploredTiles })
         toReturn.notifications.addAll(notifications)
         toReturn.citiesCreated = citiesCreated
+        toReturn.popupAlerts.addAll(popupAlerts)
+        toReturn.tradeRequests.addAll(tradeRequests)
         return toReturn
     }
 
