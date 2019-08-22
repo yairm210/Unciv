@@ -10,23 +10,29 @@ import core.java.nativefont.NativeFont
 import core.java.nativefont.NativeFontPaint
 import java.io.FileOutputStream
 import java.io.FileInputStream
+import java.io.IOException
 import java.net.URL
 import java.security.*
 
 class Fonts {
     companion object {
         val fontCache = HashMap<String, BitmapFont>()
-        var fontDownloadIsWell=1
+        var fontDownloadIsWell=0
     }
     fun download(link: String,fontForLanguage: String) {
         if (!Gdx.files.local("fonts").exists())
             Gdx.files.local("fonts").mkdirs()
-        val input = URL(link).openStream()
-        val output = FileOutputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file())
-        input.use {
-            output.use {
-                input.copyTo(output)
+        try {
+            val input = URL(link).openStream()
+            val output = FileOutputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file())
+            input.use {
+                output.use {
+                    input.copyTo(output)
+                }
             }
+        }
+        catch (e: IOException){
+            UnCivGame.Current.settings.fontSet ="NativeFont(Recommended)"
         }
     }
     fun getMD5(fontForLanguage: String):String {
@@ -72,15 +78,16 @@ class Fonts {
        if(UnCivGame.Current.settings.fontSet=="WenQuanYiMicroHei"){
            val fontForLanguage="WenQuanYiMicroHei"
            val keyForFont = "$fontForLanguage $size"
-           if (fontCache.containsKey(keyForFont))return fontCache[keyForFont]!!
+           if (fontCache.containsKey(keyForFont))
+               return fontCache[keyForFont]!!
            if (!Gdx.files.local("fonts/$fontForLanguage.ttf").exists())
                download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf",fontForLanguage)//This font is licensed under Apache2.0 or GPLv3
            val MD5_WenQuanYiMicroHei=getMD5(fontForLanguage)
            if (MD5_WenQuanYiMicroHei!="96574d6f2f2bbd4a3ce56979623b1952"){
-               fontDownloadIsWell=0
                Gdx.files.local("fonts/$fontForLanguage.ttf").delete()
            }
            else {
+               fontDownloadIsWell=1
                val generator = FreeTypeFontGenerator(Gdx.files.local("fonts/WenQuanYiMicroHei.ttf"))
                val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
                parameter.size = size

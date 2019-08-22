@@ -1,7 +1,6 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -13,9 +12,6 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
-import java.io.InputStream
-import java.net.URL
-import kotlin.concurrent.thread
 
 class Language(val language:String){
     val percentComplete:Int
@@ -79,7 +75,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             update()
         }
         
-        addFontSelectBox()
+        addFontSelectBox(innerTable)
 
         addLanguageSelectBox(innerTable)
 
@@ -186,39 +182,32 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         })
     }
 
-    private fun addFontSelectBox() {
-        add("Fontset".toLabel())
-
+    private fun addFontSelectBox(innerTable: PopupTable) {
+        innerTable.add("Fontset".toLabel())
         val FontSetSelectBox = SelectBox<String>(skin)
         val FontSetArray = Array<String>()
         FontSetArray.add("NativeFont(Recommended)")
         FontSetArray.add("WenQuanYiMicroHei")
         FontSetSelectBox.items = FontSetArray
         FontSetSelectBox.selected = UnCivGame.Current.settings.fontSet
-        add(FontSetSelectBox).pad(10f).row()
+        innerTable.add(FontSetSelectBox).pad(10f).row()
 
         FontSetSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
-                if (FontSetSelectBox.selected == "NativeFont(Recommended)") {
+                if (FontSetSelectBox.selected == "NativeFont(Recommended)"||Fonts.fontDownloadIsWell==1) {
                     selectFont()
                 }
                 else {
-                        YesNoPopupTable("This Font requires you to download fonts.\n" +
-                                "Do you want to download fonts?",
-                                {
-                                    val downloading = PopupTable(screen)
-                                    downloading.add("Downloading...".toLabel())
-                                    downloading.open()
-                                    Gdx.input.inputProcessor = null
-                                     thread{
-    val input = URL("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf").openConnection()
-                                         input.connect()
-                                         val inputStream=input.getInputStream()
-                                         val fontfilelength=input.contentLength
-                                    }.join()
-                                    selectFont()
-                                })
+                    YesNoPopupTable("This Font requires you to download fonts.\n" +
+                            "Do you want to download fonts?",
+                            {
+                                val downloading = PopupTable(screen)
+                                downloading.add("Downloading...".toLabel())
+                                downloading.open()
+                                Gdx.input.inputProcessor = null
+                                selectFont()
+                            })
                 }
             }
         })
@@ -226,9 +215,7 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
 
     fun selectFont(){
         UnCivGame.Current.settings.save()
-
         CameraStageBaseScreen.resetFonts()
-
         UnCivGame.Current.worldScreen = WorldScreen()
         UnCivGame.Current.setWorldScreen()
         WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
@@ -248,29 +235,6 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 selectedLanguage = languageSelectBox.selected.language
                 selectLanguage()
-                /*
-                if (Fonts().containsFont(Fonts().getFontForLanguage(selectedLanguage)))
-                    selectLanguage()
-                else {
-                    val spaceSplitLang = selectedLanguage.replace("_", " ")
-                    YesNoPopupTable("This language requires you to download fonts.\n" +
-                            "Do you want to download fonts for $spaceSplitLang?",
-                            {
-
-                                val downloading = PopupTable(screen)
-                                downloading.add("Downloading...".toLabel())
-                                downloading.open()
-                                Gdx.input.inputProcessor = null // no interaction until download is over
-
-                                thread {
-                                    Fonts().downloadFontForLanguage(selectedLanguage)
-                                    // The language selection must be done on the render thread, because it requires a GL context.
-                                    // This means that we have to tell the table to create it on render.
-                                    shouldSelectLanguage = true
-                                }
-                            })
-                }
-                */
             }
         })
 
@@ -286,24 +250,11 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         }
     }
 
-
     fun selectLanguage(){
         UnCivGame.Current.settings.language = selectedLanguage
         UnCivGame.Current.settings.save()
-
-        CameraStageBaseScreen.resetFonts()
-
         UnCivGame.Current.worldScreen = WorldScreen()
         UnCivGame.Current.setWorldScreen()
         WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
-    }
-
-    var shouldSelectLanguage = false
-    override fun draw(batch: Batch?, parentAlpha: Float) {
-        if(shouldSelectLanguage){
-            shouldSelectLanguage=false
-            selectLanguage()
-        }
-        super.draw(batch, parentAlpha)
     }
 }
