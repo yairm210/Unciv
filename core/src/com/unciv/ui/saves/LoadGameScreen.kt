@@ -22,62 +22,16 @@ class LoadGameScreen : PickerScreen() {
     lateinit var selectedSave:String
     val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard",skin)
     val saveTable = Table()
+    val deleteSaveButton = TextButton("Delete save".tr(), skin)
 
     init {
         setDefaultCloseAction()
 
-        val deleteSaveButton = TextButton("Delete save".tr(), skin)
-        deleteSaveButton .onClick {
-            GameSaver().deleteSave(selectedSave)
-            UnCivGame.Current.screen = LoadGameScreen()
-        }
-        deleteSaveButton.disable()
-
-
         rightSideButton.setText("Load game".tr())
-        updateLoadableGames(deleteSaveButton,false)
+        updateLoadableGames(false)
         topTable.add(ScrollPane(saveTable)).height(stage.height*2/3)
 
-        val rightSideTable = Table()
-
-        val errorLabel = "".toLabel().setFontColor(Color.RED)
-
-        val loadFromClipboardButton = TextButton("Load copied data".tr(),skin)
-        loadFromClipboardButton.onClick {
-            try{
-                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-                val decoded = Gzip.unzip(clipboardContentsString)
-                val loadedGame = GameSaver().json().fromJson(GameInfo::class.java, decoded)
-                loadedGame.setTransients()
-                UnCivGame.Current.loadGame(loadedGame)
-            }catch (ex:Exception){
-                errorLabel.setText("Could not load game from clipboard!".tr())
-                ex.printStackTrace()
-            }
-        }
-
-        rightSideTable.add(loadFromClipboardButton).row()
-        rightSideTable.add(errorLabel).row()
-        rightSideTable.add(deleteSaveButton).row()
-
-
-        copySavedGameToClipboardButton.disable()
-        copySavedGameToClipboardButton.onClick {
-            val gameText = GameSaver().getSave(selectedSave).readString()
-            val gzippedGameText = Gzip.zip(gameText)
-            Gdx.app.clipboard.contents = gzippedGameText
-        }
-        rightSideTable.add(copySavedGameToClipboardButton).row()
-
-
-        val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
-        showAutosavesCheckbox.isChecked = false
-        showAutosavesCheckbox.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                updateLoadableGames(deleteSaveButton,showAutosavesCheckbox.isChecked)
-            }
-        })
-        rightSideTable.add(showAutosavesCheckbox).row()
+        val rightSideTable = getRightSideTable()
 
         topTable.add(rightSideTable)
 
@@ -98,7 +52,55 @@ class LoadGameScreen : PickerScreen() {
 
     }
 
-    private fun updateLoadableGames(deleteSaveButton: TextButton, showAutosaves:Boolean) {
+    private fun getRightSideTable(): Table {
+        val rightSideTable = Table()
+
+        val errorLabel = "".toLabel().setFontColor(Color.RED)
+        val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
+        loadFromClipboardButton.onClick {
+            try {
+                val clipboardContentsString = Gdx.app.clipboard.contents.trim()
+                val decoded = Gzip.unzip(clipboardContentsString)
+                val loadedGame = GameSaver().json().fromJson(GameInfo::class.java, decoded)
+                loadedGame.setTransients()
+                UnCivGame.Current.loadGame(loadedGame)
+            } catch (ex: Exception) {
+                errorLabel.setText("Could not load game from clipboard!".tr())
+                ex.printStackTrace()
+            }
+        }
+        rightSideTable.add(loadFromClipboardButton).row()
+        rightSideTable.add(errorLabel).row()
+
+        deleteSaveButton.onClick {
+            GameSaver().deleteSave(selectedSave)
+            UnCivGame.Current.screen = LoadGameScreen()
+        }
+        deleteSaveButton.disable()
+        rightSideTable.add(deleteSaveButton).row()
+
+
+        copySavedGameToClipboardButton.disable()
+        copySavedGameToClipboardButton.onClick {
+            val gameText = GameSaver().getSave(selectedSave).readString()
+            val gzippedGameText = Gzip.zip(gameText)
+            Gdx.app.clipboard.contents = gzippedGameText
+        }
+        rightSideTable.add(copySavedGameToClipboardButton).row()
+
+
+        val showAutosavesCheckbox = CheckBox("Show autosaves".tr(), skin)
+        showAutosavesCheckbox.isChecked = false
+        showAutosavesCheckbox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                updateLoadableGames(showAutosavesCheckbox.isChecked)
+            }
+        })
+        rightSideTable.add(showAutosavesCheckbox).row()
+        return rightSideTable
+    }
+
+    private fun updateLoadableGames(showAutosaves:Boolean) {
         saveTable.clear()
         for (save in GameSaver().getSaves().sortedByDescending { GameSaver().getSave(it).lastModified() }) {
             if(save.startsWith("Autosave") && !showAutosaves) continue
@@ -129,3 +131,4 @@ class LoadGameScreen : PickerScreen() {
     }
 
 }
+

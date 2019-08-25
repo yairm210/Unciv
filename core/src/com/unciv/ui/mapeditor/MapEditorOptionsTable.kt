@@ -1,6 +1,7 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
@@ -11,6 +12,7 @@ import com.unciv.logic.MapSaver
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.saves.Gzip
+import com.unciv.ui.saves.LoadMapScreen
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.optionstable.DropBox
@@ -56,7 +58,9 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
         add(copyMapAsTextButton).row()
 
         val loadMapButton = TextButton("Load".tr(), skin)
-        loadMapButton.onClick { MapScreenLoadTable(mapEditorScreen); remove() }
+        loadMapButton.onClick {
+            UnCivGame.Current.screen = LoadMapScreen(mapEditorScreen.tileMap)
+        }
         add(loadMapButton).row()
 
         val uploadMapButton = TextButton("Upload".tr(), skin)
@@ -105,7 +109,7 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
         val folderList: DropBox.FolderList
         try {
             folderList = DropBox().getFolderList("/Maps")
-            val scrollableMapTable = Table()
+            val scrollableMapTable = Table().apply { defaults().pad(10f) }
             for (downloadableMap in folderList.entries) {
                 val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
                 downloadMapButton.onClick {
@@ -117,7 +121,7 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
                 }
                 scrollableMapTable.add(downloadMapButton).row()
             }
-            add(scrollableMapTable).height(mapEditorScreen.stage.height * 2 / 3).row()
+            add(ScrollPane(scrollableMapTable)).height(mapEditorScreen.stage.height * 2 / 3).row()
         } catch (ex: Exception) {
             addGoodSizedLabel("Could not get list of maps!").row()
         }

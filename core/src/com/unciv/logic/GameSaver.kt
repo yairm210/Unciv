@@ -63,8 +63,14 @@ class GameSaver {
             saveGame(gameInfoClone, "Autosave")
 
             // keep auto-saves for the last 10 turns for debugging purposes
-            // eg turn 238 is saved as "Autosave-8"
-            getSave("Autosave").copyTo(Gdx.files.local(saveFilesFolder + File.separator + "Autosave-${gameInfoClone.turns%10}"))
+            val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfoClone.turns}"
+            getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
+
+            val autosaves = getSaves().filter { it.startsWith("Autosave") }
+            while(autosaves.size>10){
+                val saveToDelete = autosaves.minBy { getSave(it).lastModified() }!!
+                deleteSave(saveToDelete)
+            }
 
             // do this on main thread
             Gdx.app.postRunnable {
