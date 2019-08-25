@@ -9,8 +9,8 @@ import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.saves.LoadScreen
-import com.unciv.ui.saves.SaveScreen
+import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.worldscreen.WorldScreen
 
 class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
@@ -37,12 +37,12 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         }
 
         addButton("Load game".tr()){
-            UnCivGame.Current.screen = LoadScreen()
+            UnCivGame.Current.screen = LoadGameScreen()
             remove()
         }
 
         addButton("Save game".tr()) {
-            UnCivGame.Current.screen = SaveScreen()
+            UnCivGame.Current.screen = SaveGameScreen()
             remove()
         }
 
