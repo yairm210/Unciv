@@ -254,7 +254,7 @@
 	
 	"Fortification":{ // as in "+40% Fortification"
 		Italian:"Fortificazione"
-		Russian:"от укрепления"
+		Russian:"к защите"
 		French:"Fortification"
 		Romanian:"Fortificație"
 		German:"Befestigung"
@@ -388,7 +388,7 @@
 		French:"Pillage"
 		Japanese:"略奪"
 		Portuguese:"Pilhar"
-		Russian:"Мародерство"
+		Russian:"Разграбить"
 		Romanian:"Prădare"
 		Dutch:"Plundering"
 		Spanish:"Pillaje"
@@ -570,7 +570,7 @@
 
 	"Start new game":{
 		Italian:"Nuova partita"
-		Russian:"Новая игра"
+		Russian:"Начать новую игру"
 		French:"Nouvelle partie"
 		Romanian:"Joc nou"
 		German:"Neues Spiel"
@@ -656,7 +656,7 @@
 
 	"Exit city":{
 		Italian:"Esci dalla città"
-		Russian:"Выход из города"
+		Russian:"Выйти из города"
 		French:"Quitter la ville"
 		Romanian:"Ieși din oraș"
 		German:"Stadt verlassen"
@@ -721,7 +721,7 @@
 	
 	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
 		Italian:"Vorresti acquistare [constructionName] per [buildingGoldCost] oro?"
-		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золото?"
+		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золота?"
 		French:"Souhaitez-vous acheter [constructionName] pour [buildingGoldCost] gold?"
 		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
 		German:"Möchten Sie [constructionName] für [buildingGoldCost] gold kaufen?"
@@ -747,7 +747,7 @@
 	
 	"Pick construction":{
 		Italian:"Scegli la costruzione"
-		Russian:"Выбор здания"
+		Russian:"Выбрать здание"
 		French:"Sélectionner la construction"
 		Romanian:"Alege construcția"
 		German:"Bauwerk auswählen"
@@ -763,12 +763,14 @@
 		Simplified_Chinese:"选择设施"
 		French:"Choisir une amélioration"
 		Portuguese:"Escolha uma melhoria"
+                Russian:"Выбрать улучшение"
 	}
 
 	"Pick now!": { //sample needed
 		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
 		French:"Choisir maintenant !"
+                Russian:"Выбрать сейчас!"
 	}
 
 	"Build [building]":{ // eg Build Granary
@@ -910,7 +912,7 @@
 
 	"[turnsToPopulation] turns to new population":{
 		Italian:"Nuovo abitante tra [turnsToPopulation] turni"
-		Russian:"Hовый житель в [turnsToPopulation] раундах"
+		Russian:"Hовый житель родится через [turnsToPopulation] ходов"
 		French:"[turnsToPopulation] tours à un nouveau résident"
 		Romanian:"[turnsToPopulation] rundă până un nou rezident"
 		German:"Neuer Einwohner in [turnsToPopulation] Runden"
@@ -923,7 +925,7 @@
 
 	"[turnsToStarvation] turns to lose population":{
 		Italian:"Perdita di popolazione tra [turnsToStarvation] turni"
-		Russian:"Потеря населения в [turnsToStarvation] смен"
+		Russian:"[turnsToStarvation] ходов до смерти жителя"
 		French:"Perte de population dans [turnsToStarvation] tours"
 		Romanian:"Pierderea populației în [turnsToStarvation] rundă"
 		German:"Bevölkerungsverlust in [turnsToStarvation] Runden"
@@ -949,7 +951,7 @@
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
 		Italian:"La resistenza durerà altri [numberOfTurns] turni."
-        Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
+                Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
 		Portuguese:"A resistência por [numberOfTurns] turnos mais."
 		Japanese:"他の[numberOfTurns]ターンに抵抗."
 		French:"En révolte pour [numberOfTurns] tours."
@@ -957,7 +959,7 @@
 
 	"Sell for [sellAmount] gold":{ // when selling a building
 		Italian:"Vendi per [sellAmount] Oro" //es.
-		Russian:"Продам за [sellAmount] золотых"
+		Russian:"Продать за [sellAmount] золота"
 		French:"Vendre pour [sellAmount] or"
 		Romanian:"Vindem [sellAmount] de aur"
 		German:"Verkaufen Sie für [sellAmount] Gold"
@@ -1038,7 +1040,7 @@
 
 	"Research [technology]":{ // eg "Research Pottery"
 		Italian:"Ricerca [technology]"
-		Russian:"Исследование [technology]"
+		Russian:"Исследовать [technology]"
 		French:"Rechercher [technology]"
 		Romanian:"Cercetează [technology]"
 		German:"[technology] erforschen"
@@ -1064,7 +1066,7 @@
 
 	"Units enabled":{
 		Italian:"Unità sbloccate"
-		Russian:"Активные юниты"
+		Russian:"Новые юниты"
 		French:"Unités activées"
 		Romanian:"Unități active"
 		German:"Freigeschaltete Einheiten"
@@ -1077,7 +1079,7 @@
 
 	"Buildings enabled":{
 		Italian:"Edifici sbloccati"
-		Russian:"Активные здания"
+		Russian:"Новые здания"
 		French:"Bâtiments activés"
 		Romanian:"Clădiri active"
 		German:"Freigeschaltete Bauwerke"
@@ -1104,11 +1106,12 @@
 	"National Wonder":{
 		Italian:"Meraviglia Nazionale"
 		French:"Merveille Nationale"
+                Russian:"Национальное чудо"
 	}
 	
 	"Wonders enabled":{
 		Italian:"Meraviglie sbloccate"
-		Russian:"Активные чудеса"
+		Russian:"Новые чудеса"
 		French:"Merveilles activées"
 		Romanian:"Minuni active"
 		German:"Freigeschaltete Wunder"
@@ -1121,7 +1124,7 @@
 
 	"Tile improvements enabled":{
 		Italian:"Miglioramenti delle celle sbloccati"
-		Russian:"Улучшения клеток включены"
+		Russian:"Новые улучшения клеток"
 		French:"Améliorations apportées aux cases"
 		Romanian:"Îmbunătățiri celule active"
 		German:"Freigschaltete Feldverbesserungen"
@@ -1245,6 +1248,7 @@
 		Portuguese:"[percentage] a defesa da unidade"
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
+                Russian:"[percentage] к защите юнита"
 	} 
 	
 
@@ -1263,7 +1267,7 @@
 		German:"Entdecke Technologie"
 		Portuguese:"Descobrir uma tecnologia" //do you mean discover "a" tecnology?
 		Russian:"Откройте для себя технологию"
-		French:"Découvrir une technologie"
+ 		French:"Découvrir une technologie"
 	}
 
 	// for unit action button
