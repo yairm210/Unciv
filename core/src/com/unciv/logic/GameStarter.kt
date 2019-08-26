@@ -1,48 +1,15 @@
-package com.unciv
+package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.GameInfo
-import com.unciv.logic.HexMath
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
+import com.unciv.models.metadata.GameParameters
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.VictoryType
-import com.unciv.ui.newgamescreen.Player
 import java.util.*
 import kotlin.collections.ArrayList
-
-enum class GameSpeed{
-    Quick,
-    Standard,
-    Epic;
-
-    fun getModifier(): Float {
-        when(this) {
-            Quick -> return 0.67f
-            Standard -> return 1f
-            Epic -> return 1.5f
-        }
-    }
-}
-
-class GameParameters { // Default values are the default new game
-    var difficulty = "Prince"
-    var gameSpeed = GameSpeed.Standard
-    var mapRadius = 20
-    var players = ArrayList<Player>().apply {
-        add(Player().apply { playerType = PlayerType.Human })
-        for (i in 1..3) add(Player())
-    }
-    var numberOfCityStates = 0
-    var mapType = MapType.Perlin
-    var noBarbarians = false
-    var mapFileName: String? = null
-    var victoryTypes: ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
-}
 
 class GameStarter{
     fun startNewGame(newGameParameters: GameParameters): GameInfo {

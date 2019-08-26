@@ -2,7 +2,7 @@ package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
-import com.unciv.GameParameters
+import com.unciv.models.metadata.GameParameters
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.tr

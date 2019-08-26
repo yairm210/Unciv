@@ -1,7 +1,7 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.GameParameters
+import com.unciv.models.metadata.GameParameters
 import com.unciv.logic.GameInfo
 import com.unciv.logic.HexMath
 import com.unciv.logic.MapSaver

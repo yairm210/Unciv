@@ -3,7 +3,7 @@ package com.unciv.logic
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.Json
-import com.unciv.GameSettings
+import com.unciv.models.metadata.GameSettings
 import com.unciv.ui.utils.ImageGetter
 import java.io.File
 

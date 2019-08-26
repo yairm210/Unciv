@@ -2,7 +2,7 @@ package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.GameParameters
+import com.unciv.models.metadata.GameParameters
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
@@ -21,7 +21,7 @@ class GameInfo {
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
-    var gameParameters=GameParameters()
+    var gameParameters= GameParameters()
     var turns = 0
     var oneMoreTurnMode=false
     var currentPlayer=""

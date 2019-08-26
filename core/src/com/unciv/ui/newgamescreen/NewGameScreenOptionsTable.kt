@@ -6,17 +6,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
-import com.unciv.GameParameters
-import com.unciv.GameSpeed
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tr
+import com.unciv.models.metadata.GameParameters
+import com.unciv.models.metadata.GameSpeed
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.toLabel
 
-class NewGameScreenOptionsTable(val newGameParameters: GameParameters): Table(CameraStageBaseScreen.skin){
+class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMultiplayerToggled:()->Unit)
+    : Table(CameraStageBaseScreen.skin){
     init{
         addMapTypeSizeAndFile()
         addDifficultySelectBox()
@@ -24,6 +25,7 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters): Table(Ca
         addCityStatesSelectBox()
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
+        //addIsOnlineMultiplayerCheckbox()
 
         pack()
     }
@@ -37,6 +39,18 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters): Table(Ca
             }
         })
         add(noBarbariansCheckbox).colspan(2).row()
+    }
+
+    private fun addIsOnlineMultiplayerCheckbox() {
+        val isOnlineMultiplayerCheckbox = CheckBox("Online Multiplayer".tr(), CameraStageBaseScreen.skin)
+        isOnlineMultiplayerCheckbox.isChecked = newGameParameters.isOnlineMultiplayer
+        isOnlineMultiplayerCheckbox.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                newGameParameters.isOnlineMultiplayer = isOnlineMultiplayerCheckbox.isChecked
+                onMultiplayerToggled()
+            }
+        })
+        add(isOnlineMultiplayerCheckbox).colspan(2).row()
     }
 
     private fun addMapTypeSizeAndFile() {

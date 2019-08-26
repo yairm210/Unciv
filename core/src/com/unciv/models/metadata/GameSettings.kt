@@ -1,4 +1,4 @@
-package com.unciv
+package com.unciv.models.metadata
 
 import com.unciv.logic.GameSaver
 import java.util.*
