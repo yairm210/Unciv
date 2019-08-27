@@ -66,9 +66,9 @@ class GameSaver {
             val newAutosaveFilename = saveFilesFolder + File.separator + "Autosave-${gameInfo.currentPlayer}-${gameInfoClone.turns}"
             getSave("Autosave").copyTo(Gdx.files.local(newAutosaveFilename))
 
-            val autosaves = getSaves().filter { it.startsWith("Autosave") }
-            while(autosaves.size>10){
-                val saveToDelete = autosaves.minBy { getSave(it).lastModified() }!!
+            fun getAutosaves(): List<String> { return getSaves().filter { it.startsWith("Autosave") } }
+            while(getAutosaves().size>10){
+                val saveToDelete = getAutosaves().minBy { getSave(it).lastModified() }!!
                 deleteSave(saveToDelete)
             }
 

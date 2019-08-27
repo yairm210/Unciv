@@ -14,7 +14,7 @@ import kotlin.math.sqrt
 class Automation {
 
     internal fun rankTile(tile: TileInfo?, civInfo: CivilizationInfo): Float {
-        if (tile == null) return 0.0f
+        if (tile == null) return 0f
         val stats = tile.getTileStats(null, civInfo)
         var rank = rankStatsValue(stats, civInfo)
         if (tile.improvement == null) rank += 0.5f // improvement potential!
@@ -22,9 +22,37 @@ class Automation {
         return rank
     }
 
-    internal fun rankSpecialist(stats: Stats?, civInfo: CivilizationInfo): Float {
-        if (stats == null) return 0.0f
-        var rank = rankStatsValue(stats, civInfo)
+    fun rankTileForCityWork(tile:TileInfo, city: CityInfo): Float {
+        val stats = tile.getTileStats(city, city.civInfo)
+        return rankStatsForCityWork(stats, city)
+    }
+
+    private fun rankStatsForCityWork(stats: Stats, city: CityInfo): Float {
+        var rank = 0f
+        if(city.population.population < 5){
+            // "small city" - we care more about food and less about global problems like gold science and culture
+            rank += stats.food * 1.2f
+            rank += stats.production
+            rank += stats.science/2
+            rank += stats.culture/2
+            rank += stats.gold / 5 // it's barely worth anything at this points
+        }
+        else{
+            if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
+            else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
+
+            if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0) rank += stats.gold // we have a global problem
+            else rank += stats.gold / 3 // 3 gold is worse than 2 production
+
+            rank += stats.production
+            rank += stats.science
+            rank += stats.culture
+        }
+        return rank
+    }
+
+    internal fun rankSpecialist(stats: Stats, cityInfo: CityInfo): Float {
+        var rank = rankStatsForCityWork(stats, cityInfo)
         rank += 0.3f //GPP bonus
         return rank
     }
