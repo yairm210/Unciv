@@ -46,6 +46,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     private val nextTurnButton = createNextTurnButton()
 
     private val notificationsScroll: NotificationsScroll
+    var alertPopupIsOpen = false // if we have an alert popup and then we changed screens, the old one shouldn't affect us
 
     init {
         topBar.setPosition(0f, stage.height - topBar.height)
@@ -139,7 +140,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 nextTurnButton.y - notificationsScroll.height - 5f)
 
         val isSomethingOpen = tutorials.isTutorialShowing || stage.actors.any { it is TradePopup }
-                || AlertPopup.isOpen
+                || alertPopupIsOpen
         if(!isSomethingOpen) {
             when {
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
@@ -324,7 +325,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.setText(text.tr())
         nextTurnButton.color = if (text == "Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
-        if (AlertPopup.isOpen || !isPlayersTurn) nextTurnButton.disable()
+        if (alertPopupIsOpen || !isPlayersTurn) nextTurnButton.disable()
         else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }
