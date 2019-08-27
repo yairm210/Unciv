@@ -9,6 +9,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.tile.ResourceType
+import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -65,7 +66,8 @@ class SpecificUnitAutomation{
         }
     }
 
-    fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>, civInfo: CivilizationInfo): Float {
+    fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>,
+                             luxuryResourcesInCivArea: Sequence<TileResource>): Float {
         val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
                 .asSequence()
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
@@ -78,9 +80,11 @@ class SpecificUnitAutomation{
         var rank = top5Tiles.asSequence().map { nearbyTileRankings[it]!! }.sum()
         if (tileInfo.neighbors.any { it.baseTerrain == Constants.coast }) rank += 5
 
-        val luxuryResources = tileInfo.getTilesAtDistance(2).filter { it.resource!=null }
+        val luxuryResourcesInCityArea = tileInfo.getTilesAtDistance(2).filter { it.resource!=null }
                 .map { it.getTileResource() }.filter { it.resourceType==ResourceType.Luxury }.distinct()
-        val luxuryResourcesNotYetInCiv = luxuryResources.count { !civInfo.hasResource(it.name) }
+        val luxuryResourcesAlreadyInCivArea = luxuryResourcesInCivArea.map { it.name }.toHashSet()
+        val luxuryResourcesNotYetInCiv = luxuryResourcesInCityArea
+                .count { !luxuryResourcesAlreadyInCivArea.contains(it.name) }
         rank += luxuryResourcesNotYetInCiv*10
 
         return rank
@@ -112,9 +116,13 @@ class SpecificUnitAutomation{
                     (unit.movement.canMoveTo(it) || unit.currentTile==it)
                             && it !in tilesNearCities && it.isLand }
 
+        val luxuryResourcesInCivArea = unit.civInfo.cities.asSequence()
+                .flatMap { it.getTiles().asSequence() }.filter { it.resource!=null }
+                .map { it.getTileResource() }.filter { it.resourceType==ResourceType.Luxury }
+                .distinct()
         val bestCityLocation: TileInfo? = possibleCityLocations
                 .asSequence()
-                .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings, unit.civInfo) }
+                .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings, luxuryResourcesInCivArea) }
                 .firstOrNull { unit.movement.canReach(it) }
 
         if(bestCityLocation==null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
