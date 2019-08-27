@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.worldscreen.unit.UnitActions
 
@@ -64,7 +65,7 @@ class SpecificUnitAutomation{
         }
     }
 
-    fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>): Float {
+    fun rankTileAsCityCenter(tileInfo: TileInfo, nearbyTileRankings: Map<TileInfo, Float>, civInfo: CivilizationInfo): Float {
         val bestTilesFromOuterLayer = tileInfo.getTilesAtDistance(2)
                 .asSequence()
                 .sortedByDescending { nearbyTileRankings[it] }.take(2)
@@ -74,8 +75,14 @@ class SpecificUnitAutomation{
                 .sortedByDescending { nearbyTileRankings[it] }
                 .take(5)
                 .toList()
-        var rank =  top5Tiles.asSequence().map { nearbyTileRankings[it]!! }.sum()
-        if(tileInfo.neighbors.any{it.baseTerrain == Constants.coast}) rank += 5
+        var rank = top5Tiles.asSequence().map { nearbyTileRankings[it]!! }.sum()
+        if (tileInfo.neighbors.any { it.baseTerrain == Constants.coast }) rank += 5
+
+        val luxuryResources = tileInfo.getTilesAtDistance(2).filter { it.resource!=null }
+                .map { it.getTileResource() }.filter { it.resourceType==ResourceType.Luxury }.distinct()
+        val luxuryResourcesNotYetInCiv = luxuryResources.count { !civInfo.hasResource(it.name) }
+        rank += luxuryResourcesNotYetInCiv*10
+
         return rank
     }
 
@@ -107,7 +114,7 @@ class SpecificUnitAutomation{
 
         val bestCityLocation: TileInfo? = possibleCityLocations
                 .asSequence()
-                .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings) }
+                .sortedByDescending { rankTileAsCityCenter(it, nearbyTileRankings, unit.civInfo) }
                 .firstOrNull { unit.movement.canReach(it) }
 
         if(bestCityLocation==null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
