@@ -43,13 +43,13 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
-            remove()
+            close()
             PopupTable(worldScreen).apply {
                 add(otherCivLeaderName.toLabel()).colspan(2)
                 addSeparator()
                 addGoodSizedLabel("Excellent!").row()
                 addButton("Farewell."){
-                    this.remove()
+                    close()
                     worldScreen.shouldUpdate=true
                     // in all cases, worldScreen.shouldUpdate should be set to true when we remove the last of the popups
                     // in order for the next trade to appear immediately
@@ -68,14 +68,14 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name== Constants.peaceTreaty })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
 
-            remove()
+            close()
             requestingCiv.addNotification("[${currentPlayerCiv.civName}] has denied your trade request", Color.GOLD)
 
             worldScreen.shouldUpdate=true
         }
         addButton("How about something else...".tr()){
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
-            remove()
+            close()
 
             val diplomacyScreen= DiplomacyScreen()
             val tradeTable =  diplomacyScreen.setTrade(requestingCiv)

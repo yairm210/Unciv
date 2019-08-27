@@ -2,7 +2,6 @@ package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.models.metadata.GameParameters
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
@@ -12,11 +11,15 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.metadata.GameParameters
 import java.util.*
 
 class GameInfo {
     @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
     @Transient lateinit var currentPlayerCiv:CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    /** This is used in multiplayer games, where I may have a saved game state on my phone
+     * that is inconsistent with the saved game on the cloud */
+    @Transient var isUpToDate=false
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?

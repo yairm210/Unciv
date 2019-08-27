@@ -42,9 +42,10 @@ class CivilizationInfo {
     @Transient var statsForNextTurn = Stats()
     @Transient var detailedCivResources = ResourceSupplyList()
 
+    var playerType = PlayerType.AI
+    /** Used in online multiplayer for human players */ var playerId = ""
     var gold = 0
     @Deprecated("As of 2.11.1") var difficulty = "Chieftain"
-    var playerType = PlayerType.AI
     var civName = ""
     var tech = TechManager()
     var policies = PolicyManager()

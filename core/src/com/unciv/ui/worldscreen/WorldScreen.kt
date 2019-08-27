@@ -26,6 +26,7 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
+import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import kotlin.concurrent.thread
 
@@ -99,6 +100,20 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         tileMapHolder.setCenterPosition(tileToCenterOn,true)
 
         update()
+
+        if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate){
+            val loadingGamePopup = PopupTable(this)
+            loadingGamePopup.add("Loading latest game state...")
+            loadingGamePopup.open()
+            thread {
+                try{
+                    // todo!!!
+                }
+                catch (ex:Exception){
+                    loadingGamePopup.close()
+                }
+            }
+        }
     }
 
     // This is private so that we will set the shouldUpdate to true instead.

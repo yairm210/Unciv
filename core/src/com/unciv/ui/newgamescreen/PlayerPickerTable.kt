@@ -86,8 +86,6 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             playerIdTable.add(setCurrentUserButton)
 
             playerTable.add(playerIdTable).colspan(playerTable.columns)
-
-
         }
 
         return playerTable
@@ -111,7 +109,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
 
                 nationListTable.add(NationTable(nation, halfWidth) {
                     player.chosenCiv = nation.name
-                    nationsPopup.remove()
+                    nationsPopup.close()
                     update()
                 }).pad(10f).width(halfWidth).row()
             }

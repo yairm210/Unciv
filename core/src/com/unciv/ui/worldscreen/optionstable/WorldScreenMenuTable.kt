@@ -5,9 +5,9 @@ import com.unciv.UnCivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
-import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
+import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
@@ -65,7 +65,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             remove()
         }
 
-        addButton("Close".tr()){ remove() }
+        addButton("Close".tr()){ close() }
 
         open()
     }
@@ -83,7 +83,7 @@ class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(world
             remove()
         }
 
-        addButton("Close".tr()){ remove() }
+        addButton("Close".tr()){ close() }
 
         open()
     }

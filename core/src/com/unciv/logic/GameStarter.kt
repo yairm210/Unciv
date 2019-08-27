@@ -6,8 +6,8 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
-import com.unciv.models.metadata.GameParameters
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.metadata.GameParameters
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -18,6 +18,7 @@ class GameStarter{
         gameInfo.gameParameters = newGameParameters
         gameInfo.tileMap = TileMap(newGameParameters)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
+        gameInfo.difficulty = newGameParameters.difficulty
 
 
         val availableCivNames = Stack<String>()
@@ -34,8 +35,8 @@ class GameStarter{
             else availableCivNames.pop()
 
             val playerCiv = CivilizationInfo(nationName)
-            gameInfo.difficulty = newGameParameters.difficulty
             playerCiv.playerType = player.playerType
+            playerCiv.playerId = player.playerId
             gameInfo.civilizations.add(playerCiv)
         }
 

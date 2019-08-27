@@ -96,9 +96,9 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
         exitMapEditorButton.onClick { UnCivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
         add(exitMapEditorButton ).row()
 
-        val closeOptionsButtton = TextButton("Close".tr(), skin)
-        closeOptionsButtton.onClick { remove() }
-        add(closeOptionsButtton).row()
+        val closeOptionsButton = TextButton("Close".tr(), skin)
+        closeOptionsButton.onClick { close() }
+        add(closeOptionsButton).row()
 
         open()
     }
@@ -125,7 +125,7 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
         } catch (ex: Exception) {
             addGoodSizedLabel("Could not get list of maps!").row()
         }
-        addButton("Close") { remove() }
+        addButton("Close") { close() }
         open()
     }
 }
