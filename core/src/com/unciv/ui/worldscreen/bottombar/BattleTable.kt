@@ -171,14 +171,14 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){
-                    val popup = PopupTable(worldScreen)
-                    popup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
-                    popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                    popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                    popup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
-                    popup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
-                    popup.addGoodSizedLabel("  that would be even better!").row()
-                    popup.open()
+                    val battleBugPopup = PopupTable(worldScreen)
+                    battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                    battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                    battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
+                    battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
+                    battleBugPopup.open()
                 }
             }
         }

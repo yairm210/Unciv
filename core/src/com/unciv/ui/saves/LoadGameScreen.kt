@@ -40,12 +40,12 @@ class LoadGameScreen : PickerScreen() {
                 UnCivGame.Current.loadGame(selectedSave)
             }
             catch (ex:Exception){
-                val popup = PopupTable(this)
-                popup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
-                popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                popup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
-                popup.open()
+                val cantLoadGamePopup = PopupTable(this)
+                cantLoadGamePopup.addGoodSizedLabel("It looks like your saved game can't be loaded!").row()
+                cantLoadGamePopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                cantLoadGamePopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                cantLoadGamePopup.addGoodSizedLabel("I could maybe help you figure out what went wrong, since this isn't supposed to happen!").row()
+                cantLoadGamePopup.open()
                 ex.printStackTrace()
             }
         }

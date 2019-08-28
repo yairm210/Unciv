@@ -41,16 +41,16 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         val currentCityLabel = Label(city.name + " (" + city.population.population + ")", CameraStageBaseScreen.skin)
         currentCityLabel.setFontSize(25)
         currentCityLabel.onClick {
-            val popup = PopupTable(cityScreen)
+            val editCityNamePopup = PopupTable(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
             textArea.setAlignment(Align.center)
-            popup.add(textArea).colspan(2).row()
-            popup.addButton("Close".tr()){popup.remove()}
-            popup.addButton("Save".tr()){
+            editCityNamePopup.add(textArea).colspan(2).row()
+            editCityNamePopup.addButton("Close".tr()){editCityNamePopup.close()}
+            editCityNamePopup.addButton("Save".tr()){
                 city.name = textArea.text
                 cityScreen.game.screen = CityScreen(city)
             }
-            popup.open()
+            editCityNamePopup.open()
         }
 
         cityNameTable.add(currentCityLabel)
