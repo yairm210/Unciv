@@ -72,6 +72,7 @@ class NewGameScreen: PickerScreen(){
                             val cantUploadNewGamePopup = PopupTable(this)
                             cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
                             cantUploadNewGamePopup.addCloseButton()
+                            cantUploadNewGamePopup.open()
                             newGame = null
                         }
                     }

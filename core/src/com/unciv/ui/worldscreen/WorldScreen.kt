@@ -103,6 +103,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         update()
 
         if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate) {
+            isPlayersTurn = false // until we're up to date, don't let the player do anything
             val loadingGamePopup = PopupTable(this)
             loadingGamePopup.add("Loading latest game state...")
             loadingGamePopup.open()
@@ -113,6 +114,10 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     game.loadGame(latestGame)
                 } catch (ex: Exception) {
                     loadingGamePopup.close()
+                    val couldntDownloadLatestGame = PopupTable(this)
+                    couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!")
+                    couldntDownloadLatestGame.addCloseButton()
+                    couldntDownloadLatestGame.open()
                 }
             }
         }
@@ -128,7 +133,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         val gameClone = gameInfo.clone()
         gameClone.setTransients()
         val cloneCivilization = gameClone.getCurrentPlayerCivilization()
-        kotlin.concurrent.thread {
+        thread {
             gameInfo.civilizations.forEach { it.setCitiesConnectedToCapitalTransients() }
         }
 
@@ -303,12 +308,16 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
             game.gameInfo = gameInfoClone
 
-            val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
+            val shouldAutoSave = !gameInfo.gameParameters.isOnlineMultiplayer &&
+                    gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
 
             // create a new worldscreen to show the new stuff we've changed, and switch out the current screen.
             // do this on main thread - it's the only one that has a GL context to create images from
             Gdx.app.postRunnable {
-                if(gameInfoClone.currentPlayerCiv.civName == viewingCiv.civName) {
+                if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
+                        && !gameInfoClone.gameParameters.isOnlineMultiplayer)
+                    UnCivGame.Current.screen = PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization())
+                else {
                     val newWorldScreen = WorldScreen(gameInfoClone.currentPlayerCiv)
                     newWorldScreen.tileMapHolder.scrollX = tileMapHolder.scrollX
                     newWorldScreen.tileMapHolder.scrollY = tileMapHolder.scrollY
@@ -318,12 +327,21 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     game.worldScreen = newWorldScreen
                     game.setWorldScreen()
                 }
-                else UnCivGame.Current.screen = PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization())
 
                 if(shouldAutoSave) {
                     game.worldScreen.nextTurnButton.disable()
                     GameSaver().autoSave(gameInfoClone) {
                         game.worldScreen.nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
+                    }
+                }
+                if(gameInfo.gameParameters.isOnlineMultiplayer) {
+                    try {
+                        OnlineMultiplayer().tryUploadGame(gameInfoClone)
+                    } catch (ex: Exception) {
+                        val cantUploadNewGamePopup = PopupTable(this)
+                        cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
+                        cantUploadNewGamePopup.addCloseButton()
+                        cantUploadNewGamePopup.open()
                     }
                 }
             }
