@@ -21,9 +21,9 @@ class UnCivGame(val version: String) : Game() {
      * This exists so that when debugging we can see the entire map.
      * Remember to turn this to false before commit and upload!
      */
-    val viewEntireMapForDebug = true
+    val viewEntireMapForDebug = false
 
-    // For when you need to test something in an advanced game and don't have time to faff around
+    /** For when you need to test something in an advanced game and don't have time to faff around */
     val superchargedForDebug = false
 
     lateinit var worldScreen: WorldScreen

@@ -165,12 +165,14 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
 
         if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city".tr(), skin)
+            razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
             if(!UnCivGame.Current.worldScreen.isPlayersTurn) razeCityButton.disable()
             razeCityButtonHolder.add(razeCityButton).colspan(cityPickerTable.columns)
         }
         else {
             val stopRazingCityButton = TextButton("Stop razing city".tr(), skin)
+            stopRazingCityButton.labelCell.pad(10f)
             stopRazingCityButton.onClick { city.isBeingRazed=false; update() }
             if(!UnCivGame.Current.worldScreen.isPlayersTurn) stopRazingCityButton.disable()
             razeCityButtonHolder.add(stopRazingCityButton).colspan(cityPickerTable.columns)

@@ -45,11 +45,13 @@ class WorldScreenTopBar(val screen: WorldScreen) : Table() {
         pack()
         addActor(getMenuButton()) // needs to be after pack
 
-        val button = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
-        button.onClick { UnCivGame.Current.screen = EmpireOverviewScreen() }
-        button.center(this)
-        button.x = screen.stage.width-button.width-10
-        addActor(button)
+        val overviewButton = TextButton("Overview".tr(),CameraStageBaseScreen.skin)
+        overviewButton.labelCell.pad(10f)
+        overviewButton.pack()
+        overviewButton.onClick { UnCivGame.Current.screen = EmpireOverviewScreen() }
+        overviewButton.center(this)
+        overviewButton.x = screen.stage.width-overviewButton.width-10
+        addActor(overviewButton)
     }
 
     private fun getResourceTable(): Table {

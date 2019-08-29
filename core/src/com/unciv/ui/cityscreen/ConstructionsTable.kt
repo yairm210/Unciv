@@ -148,17 +148,18 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         row()
         val purchaseConstructionButton: TextButton
         if (construction.canBePurchased()) {
-            val buildingGoldCost = construction.getGoldCost(city.civInfo)
-            purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
+            val constructionGoldCost = construction.getGoldCost(city.civInfo)
+            purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
+            purchaseConstructionButton.labelCell.pad(10f)
             purchaseConstructionButton.onClick("coin") {
-                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$buildingGoldCost] gold?".tr(), {
+                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
                     cityConstructions.purchaseConstruction(construction.name)
                     if(lastConstruction!="" && cityConstructions.getConstruction(lastConstruction).isBuildable(cityConstructions))
                         city.cityConstructions.currentConstruction = lastConstruction
                     cityScreen.update() // since the list of available buildings needs to be updated too, so we can "see" that the building we bought now exists in the city
                 }, cityScreen)
             }
-            if (buildingGoldCost > city.civInfo.gold) {
+            if (constructionGoldCost > city.civInfo.gold) {
                 purchaseConstructionButton.disable()
             }
         } else {

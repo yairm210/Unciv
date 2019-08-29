@@ -8,7 +8,6 @@ import com.unciv.ui.CivilopediaScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
-import com.unciv.ui.pickerscreens.PolicyPickerScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
 import com.unciv.ui.worldscreen.WorldScreen
@@ -49,11 +48,6 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         addButton("Start new game".tr()){ UnCivGame.Current.screen = NewGameScreen() }
 
         addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
-
-        addButton("Social policies".tr()){
-            UnCivGame.Current.screen = PolicyPickerScreen(UnCivGame.Current.gameInfo.getCurrentPlayerCivilization())
-        }
-
 
         addButton("Options".tr()){
             UnCivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsTable(worldScreen))

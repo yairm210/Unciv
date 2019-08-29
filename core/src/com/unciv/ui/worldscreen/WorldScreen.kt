@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
@@ -43,7 +44,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val battleTable = BattleTable(this)
     val unitActionsTable = UnitActionsTable(this)
 
-    private val techButton = Table()
+    private val techPolicyandVictoryHolder = Table()
+    private val techButtonHolder = Table()
     private val diplomacyButtonWrapper = Table()
     private val nextTurnButton = createNextTurnButton()
 
@@ -62,16 +64,25 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         tileMapHolder.addTiles()
 
-        techButton.touchable=Touchable.enabled
-        techButton.onClick("paper") {
+        techButtonHolder.touchable=Touchable.enabled
+        techButtonHolder.onClick("paper") {
             game.screen = TechPickerScreen(viewingCiv)
+        }
+        techPolicyandVictoryHolder.add(techButtonHolder)
+
+        // Don't show policies until they become relevant
+        if(viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
+            val policyScreenButton = Button(skin)
+            policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
+            policyScreenButton.onClick { game.screen = PolicyPickerScreen(viewingCiv) }
+            techPolicyandVictoryHolder.add(policyScreenButton).pad(10f)
         }
 
         stage.addActor(tileMapHolder)
         stage.addActor(minimapWrapper)
         stage.addActor(topBar)
         stage.addActor(nextTurnButton)
-        stage.addActor(techButton)
+        stage.addActor(techPolicyandVictoryHolder)
         stage.addActor(notificationsScroll)
 
 
@@ -139,8 +150,6 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         displayTutorialsOnUpdate(cloneCivilization, gameClone)
 
-        updateTechButton(cloneCivilization)
-        updateDiplomacyButton(cloneCivilization)
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         battleTable.update()
@@ -157,6 +166,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         tileMapHolder.updateTiles(viewingCiv)
 
         topBar.update(cloneCivilization)
+
+        updateTechButton(cloneCivilization)
+        techPolicyandVictoryHolder.pack()
+        techPolicyandVictoryHolder.setPosition(10f, topBar.y - techPolicyandVictoryHolder.height - 5f)
+        updateDiplomacyButton(cloneCivilization)
+
         notificationsScroll.update(viewingCiv.notifications)
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
                 nextTurnButton.y - notificationsScroll.height - 5f)
@@ -217,12 +232,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             diplomacyButtonWrapper.add(btn)
         }
         diplomacyButtonWrapper.pack()
-        diplomacyButtonWrapper.y = techButton.y -20 - diplomacyButtonWrapper.height
+        diplomacyButtonWrapper.y = techPolicyandVictoryHolder.y -20 - diplomacyButtonWrapper.height
     }
 
     private fun updateTechButton(civInfo: CivilizationInfo) {
-        techButton.isVisible = civInfo.cities.isNotEmpty()
-        techButton.clearChildren()
+        techButtonHolder.isVisible = civInfo.cities.isNotEmpty()
+        techButtonHolder.clearChildren()
 
         val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
         if (civInfo.tech.currentTechnology() == null && researchableTechs.isEmpty())
@@ -234,20 +249,19 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     .tint(colorFromRGB(7, 46, 43))
             buttonPic.defaults().pad(10f)
             buttonPic.add("{Pick a tech}!".toLabel().setFontColor(Color.WHITE).setFontSize(22))
-            techButton.add(buttonPic)
+            techButtonHolder.add(buttonPic)
         }
         else {
             val currentTech = civInfo.tech.currentTechnologyName()!!
             val innerButton = TechButton(currentTech,civInfo.tech)
             innerButton.color = colorFromRGB(7, 46, 43)
-            techButton.add(innerButton)
+            techButtonHolder.add(innerButton)
             val turnsToTech = civInfo.tech.turnsToTech(currentTech)
             innerButton.text.setText(currentTech.tr() + "\r\n" + turnsToTech
                     + (if(turnsToTech>1) " {turns}".tr() else " {turn}".tr()))
         }
 
-        techButton.setSize(techButton.prefWidth, techButton.prefHeight)
-        techButton.setPosition(10f, topBar.y - techButton.height - 5f)
+        techButtonHolder.pack() //setSize(techButtonHolder.prefWidth, techButtonHolder.prefHeight)
     }
 
     private fun createNextTurnButton(): TextButton {
@@ -300,6 +314,19 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             gameInfoClone.setTransients()
             try {
                 gameInfoClone.nextTurn()
+
+                if(gameInfo.gameParameters.isOnlineMultiplayer) {
+                    try {
+                        OnlineMultiplayer().tryUploadGame(gameInfoClone)
+                    } catch (ex: Exception) {
+                        val cantUploadNewGamePopup = PopupTable(this)
+                        cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
+                        cantUploadNewGamePopup.addCloseButton()
+                        cantUploadNewGamePopup.open()
+                        isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                        return@thread
+                    }
+                }
             } catch (ex: Exception) {
                 game.settings.hasCrashedRecently = true
                 game.settings.save()
@@ -308,16 +335,13 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
             game.gameInfo = gameInfoClone
 
-            val shouldAutoSave = !gameInfo.gameParameters.isOnlineMultiplayer &&
-                    gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
+            val shouldAutoSave = gameInfoClone.turns % game.settings.turnsBetweenAutosaves == 0
 
             // create a new worldscreen to show the new stuff we've changed, and switch out the current screen.
             // do this on main thread - it's the only one that has a GL context to create images from
             Gdx.app.postRunnable {
-                if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
-                        && !gameInfoClone.gameParameters.isOnlineMultiplayer)
-                    UnCivGame.Current.screen = PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization())
-                else {
+
+                fun createNewWorldScreen(){
                     val newWorldScreen = WorldScreen(gameInfoClone.currentPlayerCiv)
                     newWorldScreen.tileMapHolder.scrollX = tileMapHolder.scrollX
                     newWorldScreen.tileMapHolder.scrollY = tileMapHolder.scrollY
@@ -328,20 +352,17 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                     game.setWorldScreen()
                 }
 
+                if (gameInfoClone.currentPlayerCiv.civName != viewingCiv.civName
+                        && !gameInfoClone.gameParameters.isOnlineMultiplayer)
+                    UnCivGame.Current.screen = PlayerReadyScreen(gameInfoClone.getCurrentPlayerCivilization())
+                else {
+                    createNewWorldScreen()
+                }
+
                 if(shouldAutoSave) {
                     game.worldScreen.nextTurnButton.disable()
                     GameSaver().autoSave(gameInfoClone) {
-                        game.worldScreen.nextTurnButton.enable() // only enable the user to next turn once we've saved the current one
-                    }
-                }
-                if(gameInfo.gameParameters.isOnlineMultiplayer) {
-                    try {
-                        OnlineMultiplayer().tryUploadGame(gameInfoClone)
-                    } catch (ex: Exception) {
-                        val cantUploadNewGamePopup = PopupTable(this)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
-                        cantUploadNewGamePopup.addCloseButton()
-                        cantUploadNewGamePopup.open()
+                        createNewWorldScreen()  // only enable the user to next turn once we've saved the current one
                     }
                 }
             }

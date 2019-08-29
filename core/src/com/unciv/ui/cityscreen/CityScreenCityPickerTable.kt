@@ -70,6 +70,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         row()
 
         val exitCityButton = TextButton("Exit city".tr(), CameraStageBaseScreen.skin)
+        exitCityButton.labelCell.pad(10f)
 
         exitCityButton.onClick {
             val game = cityScreen.game
