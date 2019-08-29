@@ -50,7 +50,7 @@ class UnCivGame(val version: String) : Game() {
     }
 
     fun loadGame(gameName:String){
-        loadGame(GameSaver().loadGame(gameName))
+        loadGame(GameSaver().loadGameByName(gameName))
     }
 
     fun startNewGame() {

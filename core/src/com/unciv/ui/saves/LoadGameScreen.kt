@@ -9,7 +9,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.unciv.UnCivGame
-import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.pickerscreens.PickerScreen
@@ -61,8 +60,7 @@ class LoadGameScreen : PickerScreen() {
             try {
                 val clipboardContentsString = Gdx.app.clipboard.contents.trim()
                 val decoded = Gzip.unzip(clipboardContentsString)
-                val loadedGame = GameSaver().json().fromJson(GameInfo::class.java, decoded)
-                loadedGame.setTransients()
+                val loadedGame = GameSaver().gameInfoFromString(decoded)
                 UnCivGame.Current.loadGame(loadedGame)
             } catch (ex: Exception) {
                 errorLabel.setText("Could not load game from clipboard!".tr())
@@ -113,7 +111,7 @@ class LoadGameScreen : PickerScreen() {
                 val savedAt = Date(GameSaver().getSave(save).lastModified())
                 textToSet += "\n{Saved at}: ".tr() + SimpleDateFormat("dd-MM-yy HH.mm").format(savedAt)
                 try {
-                    val game = GameSaver().loadGame(save)
+                    val game = GameSaver().loadGameByName(save)
                     val playerCivNames = game.civilizations.filter { it.isPlayerCivilization() }.joinToString { it.civName.tr() }
                     textToSet += "\n" + playerCivNames +
                             ", " + game.difficulty.tr() + ", {Turn} ".tr() + game.turns

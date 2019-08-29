@@ -28,6 +28,7 @@ class GameInfo {
     var turns = 0
     var oneMoreTurnMode=false
     var currentPlayer=""
+    var gameId = UUID.randomUUID().toString() // random string
 
     //region pure functions
     fun clone(): GameInfo {

@@ -38,5 +38,7 @@ open class PopupTable(val screen: CameraStageBaseScreen): Table(CameraStageBaseS
         button.onClick(action)
         return add(button).apply { row() }
     }
+
+    fun addCloseButton() = addButton("Close"){close()}
 }
 

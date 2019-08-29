@@ -14,6 +14,7 @@ import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
 import com.unciv.ui.worldscreen.WorldScreen
+import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import java.util.*
 import kotlin.concurrent.thread
@@ -37,20 +38,19 @@ class NewGameScreen: PickerScreen(){
             if (newGameParameters.players.none { it.playerType == PlayerType.Human }) {
                 val noHumanPlayersPopup = PopupTable(this)
                 noHumanPlayersPopup.addGoodSizedLabel("No human players selected!").row()
-                noHumanPlayersPopup.addButton("Close") { noHumanPlayersPopup.close() }
+                noHumanPlayersPopup.addCloseButton()
                 noHumanPlayersPopup.open()
                 return@onClick
             }
 
-            if (newGameParameters.isOnlineMultiplayer){
-                for(player in newGameParameters.players.filter{ it.playerType == PlayerType.Human}) {
+            if (newGameParameters.isOnlineMultiplayer) {
+                for (player in newGameParameters.players.filter { it.playerType == PlayerType.Human }) {
                     try {
                         UUID.fromString(player.playerId)
-                    }
-                    catch (ex:Exception) {
+                    } catch (ex: Exception) {
                         val invalidPlayerIdPopup = PopupTable(this)
                         invalidPlayerIdPopup.addGoodSizedLabel("Invalid player ID!").row()
-                        invalidPlayerIdPopup.addButton("Close") { invalidPlayerIdPopup.remove() }
+                        invalidPlayerIdPopup.addCloseButton()
                         invalidPlayerIdPopup.open()
                         return@onClick
                     }
@@ -65,10 +65,21 @@ class NewGameScreen: PickerScreen(){
                 // Creating a new game can take a while and we don't want ANRs
                 try {
                     newGame = GameStarter().startNewGame(newGameParameters)
+                    if (newGameParameters.isOnlineMultiplayer) {
+                        try {
+                            OnlineMultiplayer().tryUploadGame(newGame!!)
+                        } catch (ex: Exception) {
+                            val cantUploadNewGamePopup = PopupTable(this)
+                            cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
+                            cantUploadNewGamePopup.addCloseButton()
+                            newGame = null
+                        }
+                    }
                 } catch (exception: Exception) {
                     val cantMakeThatMapPopup = PopupTable(this)
                     cantMakeThatMapPopup.addGoodSizedLabel("It looks like we can't make a map with the parameters you requested!".tr()).row()
                     cantMakeThatMapPopup.addGoodSizedLabel("Maybe you put too many players into too small a map?".tr()).row()
+                    cantMakeThatMapPopup.addCloseButton()
                     cantMakeThatMapPopup.open()
                 }
             }

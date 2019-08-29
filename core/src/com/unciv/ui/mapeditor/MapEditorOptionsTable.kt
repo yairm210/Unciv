@@ -72,14 +72,14 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
                 remove()
                 val uploadedSuccessfully = PopupTable(screen)
                 uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
-                uploadedSuccessfully.addButton("Close") { uploadedSuccessfully.remove() }
+                uploadedSuccessfully.addCloseButton()
                 uploadedSuccessfully.open()
             }
             catch(ex:Exception){
                 remove()
                 val couldNotUpload = PopupTable(screen)
                 couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
-                couldNotUpload.addButton("Close") { couldNotUpload.remove() }
+                couldNotUpload.addCloseButton()
                 couldNotUpload.open()
             }
         }
@@ -125,7 +125,7 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
         } catch (ex: Exception) {
             addGoodSizedLabel("Could not get list of maps!").row()
         }
-        addButton("Close") { close() }
+        addCloseButton()
         open()
     }
 }

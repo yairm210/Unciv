@@ -65,7 +65,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             remove()
         }
 
-        addButton("Close".tr()){ close() }
+        addCloseButton()
 
         open()
     }
@@ -83,7 +83,7 @@ class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(world
             remove()
         }
 
-        addButton("Close".tr()){ close() }
+        addCloseButton()
 
         open()
     }

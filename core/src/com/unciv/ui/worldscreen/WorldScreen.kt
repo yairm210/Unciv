@@ -26,6 +26,7 @@ import com.unciv.ui.trade.DiplomacyScreen
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.bottombar.BattleTable
 import com.unciv.ui.worldscreen.bottombar.WorldScreenBottomBar
+import com.unciv.ui.worldscreen.optionstable.OnlineMultiplayer
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 import com.unciv.ui.worldscreen.unit.UnitActionsTable
 import kotlin.concurrent.thread
@@ -101,15 +102,16 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         update()
 
-        if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate){
+        if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate) {
             val loadingGamePopup = PopupTable(this)
             loadingGamePopup.add("Loading latest game state...")
             loadingGamePopup.open()
             thread {
-                try{
-                    // todo!!!
-                }
-                catch (ex:Exception){
+                try {
+                    val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
+                    latestGame.isUpToDate=true
+                    game.loadGame(latestGame)
+                } catch (ex: Exception) {
                     loadingGamePopup.close()
                 }
             }

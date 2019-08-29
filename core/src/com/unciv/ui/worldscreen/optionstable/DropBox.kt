@@ -1,6 +1,8 @@
 package com.unciv.ui.worldscreen.optionstable
 
+import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
+import com.unciv.ui.saves.Gzip
 import java.io.BufferedReader
 import java.io.DataOutputStream
 import java.io.InputStreamReader
@@ -10,13 +12,10 @@ import java.nio.charset.StandardCharsets
 
 class DropBox(){
 
-    /**
-     * @param dropboxApiArg If true, then the data will be sent via a Dropbox-Api-Arg header and not via the post body
-     */
     fun dropboxApi(url:String, data:String="",contentType:String="",dropboxApiArg:String=""):String {
 
         with(URL(url).openConnection() as HttpURLConnection) {
-            requestMethod = "POST"  // optional default is GET
+            requestMethod = "POST"  // default is GET
 
             setRequestProperty("Authorization", "Bearer LTdBbopPUQ0AAAAAAAACxh4_Qd1eVMM7IBK3ULV3BgxzWZDMfhmgFbuUNF_rXQWb")
 
@@ -74,4 +73,18 @@ class DropBox(){
         var path_display=""
     }
 
+}
+
+class OnlineMultiplayer(){
+    fun getGameLocation(gameId:String) = "/MultiplayerGames/$gameId"
+
+    fun tryUploadGame(gameInfo: GameInfo){
+        val zippedGameInfo = Gzip.zip(GameSaver().json().toJson(gameInfo))
+        DropBox().uploadFile(getGameLocation(gameInfo.gameId),zippedGameInfo)
+    }
+
+    fun tryDownloadGame(gameId: String): GameInfo {
+        val zippedGameInfo = DropBox().downloadFile(gameId)
+        return GameSaver().gameInfoFromString(Gzip.unzip(zippedGameInfo))
+    }
 }

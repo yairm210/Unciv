@@ -96,7 +96,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         scrollPane.setScrollingDisabled(true,false)
         add(scrollPane).maxHeight(screen.stage.height*0.6f).row()
 
-        addButton("Close"){ close() }
+        addCloseButton()
 
         pack() // Needed to show the background.
         center(UnCivGame.Current.worldScreen.stage)

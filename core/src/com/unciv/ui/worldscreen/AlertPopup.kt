@@ -80,7 +80,6 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.DemandToStopSettlingCitiesNear -> {
                 val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
                 val playerDiploManager = worldScreen.viewingCiv.getDiplomacyManager(otherciv)
-                val translatedNation = otherciv.getTranslatedNation()
                 addLeaderName(otherciv)
                 addGoodSizedLabel("Please don't settle new cities near us.").row()
                 add(getCloseButton("Very well, we shall look for new lands to settle."){
