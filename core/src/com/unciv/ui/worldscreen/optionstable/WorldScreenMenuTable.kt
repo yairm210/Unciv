@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.unciv.UnCivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
@@ -10,7 +11,11 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
+import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
+import java.util.*
+import kotlin.collections.ArrayList
 
 class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
 
@@ -47,6 +52,12 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
 
         addButton("Start new game".tr()){ UnCivGame.Current.screen = NewGameScreen() }
 
+        if(worldScreen.gameInfo.gameParameters.isOnlineMultiplayer){
+            addButton("Copy game ID to clipboard".tr()){ Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }
+        }
+
+//        addJoinMultiplayerButton()
+
         addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
 
         addButton("Options".tr()){
@@ -62,6 +73,37 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         addCloseButton()
 
         open()
+    }
+
+    private fun addJoinMultiplayerButton() {
+        addButton("Join multiplayer".tr()) {
+            close()
+            val joinMultiplayerPopup = PopupTable(screen)
+            joinMultiplayerPopup.addGoodSizedLabel("Copy the game ID to your clipboard, and click the Join Game button!").row()
+            val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
+            badGameIdLabel.isVisible = false
+            joinMultiplayerPopup.addButton("Join Game") {
+                val gameId = Gdx.app.clipboard.contents.trim()
+                try {
+                    UUID.fromString(gameId)
+                } catch (ex: Exception) {
+                    badGameIdLabel.setText("Invalid game ID!")
+                    badGameIdLabel.isVisible = true
+                    return@addButton
+                }
+                try {
+                    val game = OnlineMultiplayer().tryDownloadGame(gameId)
+                    UnCivGame.Current.loadGame(game)
+                } catch (ex: Exception) {
+                    badGameIdLabel.setText("Could not download game1!")
+                    badGameIdLabel.isVisible = true
+                    return@addButton
+                }
+            }.row()
+            joinMultiplayerPopup.add(badGameIdLabel).row()
+            joinMultiplayerPopup.addCloseButton()
+            joinMultiplayerPopup.open()
+        }
     }
 }
 

@@ -150,7 +150,6 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if (construction.canBePurchased()) {
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
             purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
-            purchaseConstructionButton.labelCell.pad(10f)
             purchaseConstructionButton.onClick("coin") {
                 YesNoPopupTable("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
                     cityConstructions.purchaseConstruction(construction.name)
@@ -166,6 +165,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
             purchaseConstructionButton = TextButton("Buy".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.disable()
         }
+        purchaseConstructionButton.labelCell.pad(10f)
         add(purchaseConstructionButton).pad(10f).row()
 
 

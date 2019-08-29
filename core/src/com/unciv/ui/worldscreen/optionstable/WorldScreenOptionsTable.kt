@@ -69,6 +69,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
+
         innerTable.add("Auto-assign city production".toLabel())
         innerTable.addButton(if(settings.autoAssignCityProduction) "Yes".tr() else "No".tr()) {
             settings.autoAssignCityProduction= !settings.autoAssignCityProduction
