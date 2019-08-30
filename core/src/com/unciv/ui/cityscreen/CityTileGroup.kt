@@ -2,7 +2,6 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
@@ -26,12 +25,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrin
     }
 
     fun update() {
-        val canSeeTile = UnCivGame.Current.viewEntireMapForDebug
-                || city.civInfo.viewableTiles.contains(tileInfo)
-        val showSubmarine = UnCivGame.Current.viewEntireMapForDebug
-                || city.civInfo.viewableInvisibleUnitsTiles.contains(tileInfo)
-                || (!tileInfo.hasEnemySubmarine())
-        super.update(canSeeTile,true, showSubmarine)
+        super.update(city.civInfo,true)
 
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {

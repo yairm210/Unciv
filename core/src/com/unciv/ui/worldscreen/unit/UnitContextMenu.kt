@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen.unit
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup
@@ -39,7 +40,7 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
             addButton(icon, label) {
                 selectedUnit.mapUnitAction = action
                 selectedUnit.mapUnitAction?.doPreTurnAction()
-                tileMapHolder.removeUnitActionOverlay = true
+                tileMapHolder.unitActionOverlay?.remove()
                 tileMapHolder.worldScreen.shouldUpdate = true
             }
         }
@@ -57,28 +58,32 @@ class UnitContextMenu(val tileMapHolder: TileMapHolder, val selectedUnit: MapUni
     fun onMoveButtonClick() {
         // this can take a long time, because of the unit-to-tile calculation needed, so we put it in a different thread
         thread {
-            if (selectedUnit.movement.canReach(targetTile)) {
+            // these are the heavy parts, finding where we want to go
+            if (!selectedUnit.movement.canReach(targetTile)) return@thread // can't move here
+            val tileToMoveTo = selectedUnit.movement.getTileToMoveToThisTurn(targetTile)
+
+            Gdx.app.postRunnable {
                 try {
                     // Because this is darned concurrent (as it MUST be to avoid ANRs),
                     // there are edge cases where the canReach is true,
                     // but until it reaches the headTowards the board has changed and so the headTowards fails.
                     // I can't think of any way to avoid this,
                     // but it's so rare and edge-case-y that ignoring its failure is actually acceptable, hence the empty catch
-                    selectedUnit.movement.headTowards(targetTile)
+                    selectedUnit.movement.moveToTile(tileToMoveTo)
                     Sounds.play("whoosh")
                     if (selectedUnit.currentTile != targetTile)
                         selectedUnit.action = "moveTo " + targetTile.position.x.toInt() + "," + targetTile.position.y.toInt()
-                    if(selectedUnit.currentMovement>0){
-                        tileMapHolder.worldScreen.bottomBar.unitTable.selectedUnit=selectedUnit
+                    if (selectedUnit.currentMovement > 0) {
+                        tileMapHolder.worldScreen.bottomBar.unitTable.selectedUnit = selectedUnit
                     }
+
+                    // we don't update it directly because we're on a different thread; instead, we tell it to update itself
+                    tileMapHolder.worldScreen.shouldUpdate = true
+                    tileMapHolder.unitActionOverlay?.remove()
                 } catch (e: Exception) {
                 }
+
             }
-
-            // we don't update it directly because we're on a different thread; instead, we tell it to update itself
-            tileMapHolder.worldScreen.shouldUpdate = true
-
-            tileMapHolder.removeUnitActionOverlay=true
         }
     }
 

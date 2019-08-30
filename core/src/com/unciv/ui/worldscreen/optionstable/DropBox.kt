@@ -58,9 +58,10 @@ class DropBox(){
         return response
     }
 
-    fun uploadFile(fileName: String, data: String){
+    fun uploadFile(fileName: String, data: String, overwrite:Boolean=false){
+        val overwriteModeString = if(!overwrite) "" else ""","mode":{".tag":"overwrite"}"""
         val response = dropboxApi("https://content.dropboxapi.com/2/files/upload",
-                data,"application/octet-stream","{\"path\":\"$fileName\"}")
+                data,"application/octet-stream", """{"path":"$fileName"$overwriteModeString}""")
     }
 
 
@@ -80,11 +81,11 @@ class OnlineMultiplayer(){
 
     fun tryUploadGame(gameInfo: GameInfo){
         val zippedGameInfo = Gzip.zip(GameSaver().json().toJson(gameInfo))
-        DropBox().uploadFile(getGameLocation(gameInfo.gameId),zippedGameInfo)
+        DropBox().uploadFile(getGameLocation(gameInfo.gameId),zippedGameInfo,true)
     }
 
     fun tryDownloadGame(gameId: String): GameInfo {
-        val zippedGameInfo = DropBox().downloadFile(gameId)
+        val zippedGameInfo = DropBox().downloadFile(getGameLocation(gameId))
         return GameSaver().gameInfoFromString(Gzip.unzip(zippedGameInfo))
     }
 }

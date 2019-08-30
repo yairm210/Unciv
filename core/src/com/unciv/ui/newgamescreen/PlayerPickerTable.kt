@@ -59,7 +59,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             val playerIdTable = Table()
             playerIdTable.add("Player ID:".toLabel())
 
-            val playerIdTextfield = TextField("", CameraStageBaseScreen.skin)
+            val playerIdTextfield = TextField(player.playerId, CameraStageBaseScreen.skin)
             playerIdTable.add(playerIdTextfield)
             val errorLabel = "Not a valid user id!".toLabel().setFontColor(Color.RED)
             errorLabel.isVisible=false

@@ -53,10 +53,11 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         addButton("Start new game".tr()){ UnCivGame.Current.screen = NewGameScreen() }
 
         if(worldScreen.gameInfo.gameParameters.isOnlineMultiplayer){
-            addButton("Copy game ID to clipboard".tr()){ Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }
+            addButton("Copy game ID".tr()){ Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }
         }
 
-//        addJoinMultiplayerButton()
+        if(UnCivGame.Current.mutiplayerEnabled)
+            addJoinMultiplayerButton()
 
         addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
 

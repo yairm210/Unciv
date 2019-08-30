@@ -2,6 +2,7 @@ package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
+import com.unciv.UnCivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
@@ -39,7 +40,15 @@ class GameInfo {
         toReturn.turns = turns
         toReturn.difficulty=difficulty
         toReturn.gameParameters = gameParameters
+        toReturn.gameId = gameId
         return toReturn
+    }
+
+    fun getPlayerToViewAs(): CivilizationInfo {
+        if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
+        val userId = UnCivGame.Current.settings.userId
+        if (civilizations.any { it.playerId == userId}) return civilizations.first { it.playerId == userId }
+        else return getBarbarianCivilization()// you aren't anyone. How did you even get this game? Can you spectate?
     }
 
     fun getCivilization(civName:String) = civilizations.first { it.civName==civName }

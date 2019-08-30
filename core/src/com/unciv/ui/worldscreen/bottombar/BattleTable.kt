@@ -167,7 +167,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.onClick {
                 try {
                     battle.moveAndAttack(attacker, attackableEnemy)
-                    worldScreen.tileMapHolder.removeUnitActionOverlay = true // the overlay was one of attacking
+                    worldScreen.tileMapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){

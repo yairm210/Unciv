@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
+import com.unciv.UnCivGame
 import com.unciv.logic.MapSaver
 import com.unciv.logic.map.MapType
 import com.unciv.models.gamebasics.GameBasics
@@ -25,7 +26,9 @@ class NewGameScreenOptionsTable(val newGameParameters: GameParameters, val onMul
         addCityStatesSelectBox()
         addVictoryTypeCheckboxes()
         addBarbariansCheckbox()
-        //addIsOnlineMultiplayerCheckbox()
+
+        if(UnCivGame.Current.mutiplayerEnabled)
+            addIsOnlineMultiplayerCheckbox()
 
         pack()
     }

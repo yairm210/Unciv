@@ -1,8 +1,6 @@
 package com.unciv.models.metadata
 
 import com.unciv.logic.GameSaver
-import java.util.*
-import kotlin.collections.ArrayList
 
 class GameSettings {
     var showWorkedTiles: Boolean = false
@@ -20,7 +18,7 @@ class GameSettings {
     var autoAssignCityProduction: Boolean = true
 
     var userName:String=""
-    var userId = UUID.randomUUID().toString()
+    var userId = ""
 
     fun save(){
         GameSaver().setGeneralSettings(this)

@@ -135,44 +135,45 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
     }
 
+    fun getTileToMoveToThisTurn(finalDestination:TileInfo): TileInfo {
+
+        val currentTile = unit.getTile()
+        if (currentTile == finalDestination) return currentTile
+
+        if(unit.type.isAirUnit()){
+            return finalDestination // head there directly
+        }
+
+
+        val distanceToTiles = getDistanceToTiles()
+
+        if (distanceToTiles.containsKey(finalDestination)) { // we should be able to get there this turn
+            if (canMoveTo(finalDestination))
+                return finalDestination
+
+            // Someone is blocking to the path to the final tile...
+            val destinationNeighbors = finalDestination.neighbors
+            if (destinationNeighbors.contains(currentTile)) // We're right nearby anyway, no need to move
+                return currentTile
+
+            val reachableDestinationNeighbors = destinationNeighbors
+                    .filter { distanceToTiles.containsKey(it) && canMoveTo(it) }
+            if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
+                return currentTile
+
+            return reachableDestinationNeighbors.minBy { distanceToTiles[it]!!.totalDistance }!! // we can get a little closer
+        }   // If the tile is far away, we need to build a path how to get there, and then take the first step
+        val path = getShortestPath(finalDestination)
+        class UnreachableDestinationException : Exception()
+        if (path.isEmpty()) throw UnreachableDestinationException()
+        return path.first()
+    }
+
     /**
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: TileInfo): TileInfo {
-        val currentTile = unit.getTile()
-        if (currentTile == destination) return currentTile
-
-        if(unit.type.isAirUnit()){
-            moveToTile(destination)
-            return destination
-        }
-
-        val distanceToTiles = getDistanceToTiles()
-
-        val destinationTileThisTurn: TileInfo
-        if (distanceToTiles.containsKey(destination)) { // we can get there this turn
-            if (canMoveTo(destination))
-                destinationTileThisTurn = destination
-            else   // Someone is blocking to the path to the final tile...
-            {
-                val destinationNeighbors = destination.neighbors
-                if (destinationNeighbors.contains(currentTile)) // We're right nearby anyway, no need to move
-                    return currentTile
-
-                val reachableDestinationNeighbors = destinationNeighbors
-                        .filter { distanceToTiles.containsKey(it) && canMoveTo(it) }
-                if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
-                    return currentTile
-
-                destinationTileThisTurn = reachableDestinationNeighbors.minBy { distanceToTiles[it]!!.totalDistance }!!
-            }
-        } else { // If the tile is far away, we need to build a path how to get there, and then take the first step
-            val path = getShortestPath(destination)
-            class UnreachableDestinationException : Exception()
-            if (path.isEmpty()) throw UnreachableDestinationException()
-            destinationTileThisTurn = path.first()
-        }
-
+        val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
         moveToTile(destinationTileThisTurn)
         return destinationTileThisTurn
     }

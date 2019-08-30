@@ -66,13 +66,13 @@ class MapEditorScreen(): CameraStageBaseScreen(){
         val tileGroups = tileMap.values.map { TileGroup(it, tileSetStrings) }
         for (tileGroup in tileGroups) {
             tileGroup.showEntireMap = true
-            tileGroup.update(true, true, true)
+            tileGroup.update()
             tileGroup.onClick {
                 val tileInfo = tileGroup.tileInfo
 
                 tileEditorOptions.updateTileWhenClicked(tileInfo)
                 tileGroup.tileInfo.setTransients()
-                tileGroup.update(true, true, true)
+                tileGroup.update()
             }
         }
 

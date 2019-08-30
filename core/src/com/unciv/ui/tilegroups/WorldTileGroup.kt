@@ -2,6 +2,7 @@ package com.unciv.ui.tilegroups
 
 import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
@@ -20,21 +21,21 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, 
         unitImage?.selectUnit()
     }
 
-    fun update(isViewable: Boolean, showSubmarine: Boolean) {
+    fun update(viewingCiv: CivilizationInfo) {
         val city = tileInfo.getCity()
 
         removePopulationIcon()
-        if (isViewable && tileInfo.isWorked() && UnCivGame.Current.settings.showWorkedTiles
+        val tileIsViewable = isViewable(viewingCiv)
+        if (tileIsViewable && tileInfo.isWorked() && UnCivGame.Current.settings.showWorkedTiles
                 && city!!.civInfo.isPlayerCivilization())
             addPopulationIcon()
 
         val currentPlayerCiv = worldScreen.viewingCiv
         if (UnCivGame.Current.viewEntireMapForDebug
                 || currentPlayerCiv.exploredTiles.contains(tileInfo.position))
-            updateCityButton(city, isViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
+            updateCityButton(city, tileIsViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
 
-        super.update(isViewable || UnCivGame.Current.viewEntireMapForDebug,
-                UnCivGame.Current.settings.showResourcesAndImprovements, showSubmarine)
+        super.update(viewingCiv, UnCivGame.Current.settings.showResourcesAndImprovements)
 
 
         // order by z index!

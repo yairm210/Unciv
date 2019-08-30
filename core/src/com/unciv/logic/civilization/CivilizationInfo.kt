@@ -76,13 +76,14 @@ class CivilizationInfo {
         val toReturn = CivilizationInfo()
         toReturn.gold = gold
         toReturn.playerType = playerType
+        toReturn.playerId = playerId
         toReturn.civName = civName
         toReturn.tech = tech.clone()
         toReturn.policies = policies.clone()
         toReturn.goldenAges = goldenAges.clone()
         toReturn.greatPeople = greatPeople.clone()
         toReturn.victoryManager = victoryManager.clone()
-        for(diplomacyManager in diplomacy.values.map { it.clone() })
+        for (diplomacyManager in diplomacy.values.map { it.clone() })
             toReturn.diplomacy.put(diplomacyManager.otherCivName, diplomacyManager)
         toReturn.cities = cities.map { it.clone() }
 

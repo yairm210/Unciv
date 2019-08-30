@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Touchable
+import com.badlogic.gdx.scenes.scene2d.actions.Actions
 import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -113,23 +114,36 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         update()
 
-        if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate) {
+        if(gameInfo.gameParameters.isOnlineMultiplayer && !gameInfo.isUpToDate)
             isPlayersTurn = false // until we're up to date, don't let the player do anything
-            val loadingGamePopup = PopupTable(this)
-            loadingGamePopup.add("Loading latest game state...")
-            loadingGamePopup.open()
-            thread {
-                try {
-                    val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
-                    latestGame.isUpToDate=true
-                    game.loadGame(latestGame)
-                } catch (ex: Exception) {
+        if(gameInfo.gameParameters.isOnlineMultiplayer && !isPlayersTurn) {
+            stage.addAction(Actions.forever(Actions.sequence(Actions.run {
+                loadLatestMultiplayerState()
+            }, Actions.delay(10f)))) // delay is in seconds
+        }
+    }
+
+    fun loadLatestMultiplayerState(){
+        val loadingGamePopup = PopupTable(this)
+        loadingGamePopup.add("Loading latest game state...")
+        loadingGamePopup.open()
+        thread {
+            try {
+                val latestGame = OnlineMultiplayer().tryDownloadGame(gameInfo.gameId)
+                if(gameInfo.isUpToDate && gameInfo.currentPlayer==latestGame.currentPlayer) { // we were trying to download this to see when it's our turn...nothing changed
                     loadingGamePopup.close()
-                    val couldntDownloadLatestGame = PopupTable(this)
-                    couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!")
-                    couldntDownloadLatestGame.addCloseButton()
-                    couldntDownloadLatestGame.open()
+                    return@thread
                 }
+                latestGame.isUpToDate=true
+                // Since we're making a screen this needs to run from the man thread which has a GL context
+                Gdx.app.postRunnable { game.loadGame(latestGame) }
+
+            } catch (ex: Exception) {
+                loadingGamePopup.close()
+                val couldntDownloadLatestGame = PopupTable(this)
+                couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!")
+                couldntDownloadLatestGame.addCloseButton()
+                couldntDownloadLatestGame.open()
             }
         }
     }
@@ -138,23 +152,13 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     // That way, not only do we save a lot of unnecessary updates, we also ensure that all updates are called from the main GL thread
     // and we don't get any silly concurrency problems!
     private fun update() {
-        // many of the display functions will be called with the game clone and not the actual game,
-        // because that's guaranteed to stay the exact same and so we won't get any concurrent modification exceptions
 
-        val gameClone = gameInfo.clone()
-        gameClone.setTransients()
-        val cloneCivilization = gameClone.getCurrentPlayerCivilization()
-        thread {
-            gameInfo.civilizations.forEach { it.setCitiesConnectedToCapitalTransients() }
-        }
-
-        displayTutorialsOnUpdate(cloneCivilization, gameClone)
-
+        displayTutorialsOnUpdate(viewingCiv, gameInfo)
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         battleTable.update()
 
-        minimapWrapper.update(cloneCivilization)
+        minimapWrapper.update(viewingCiv)
         minimapWrapper.y = bottomBar.height // couldn't be bothered to create a separate val for minimap wrapper
 
         unitActionsTable.update(bottomBar.unitTable.selectedUnit)
@@ -165,12 +169,12 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         // it causes a bug when we move a unit to an unexplored tile (for instance a cavalry unit which can move far)
         tileMapHolder.updateTiles(viewingCiv)
 
-        topBar.update(cloneCivilization)
+        topBar.update(viewingCiv)
 
-        updateTechButton(cloneCivilization)
+        updateTechButton(viewingCiv)
         techPolicyandVictoryHolder.pack()
         techPolicyandVictoryHolder.setPosition(10f, topBar.y - techPolicyandVictoryHolder.height - 5f)
-        updateDiplomacyButton(cloneCivilization)
+        updateDiplomacyButton(viewingCiv)
 
         notificationsScroll.update(viewingCiv.notifications)
         notificationsScroll.setPosition(stage.width - notificationsScroll.width - 5f,
@@ -309,7 +313,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         shouldUpdate = true
 
 
-        thread {
+        thread { // on a separate thread so the user can explore their world while we're passing the turn
             val gameInfoClone = gameInfo.clone()
             gameInfoClone.setTransients()
             try {
@@ -342,7 +346,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             Gdx.app.postRunnable {
 
                 fun createNewWorldScreen(){
-                    val newWorldScreen = WorldScreen(gameInfoClone.currentPlayerCiv)
+                    val newWorldScreen = WorldScreen(gameInfoClone.getPlayerToViewAs())
                     newWorldScreen.tileMapHolder.scrollX = tileMapHolder.scrollX
                     newWorldScreen.tileMapHolder.scrollY = tileMapHolder.scrollY
                     newWorldScreen.tileMapHolder.scaleX = tileMapHolder.scaleX

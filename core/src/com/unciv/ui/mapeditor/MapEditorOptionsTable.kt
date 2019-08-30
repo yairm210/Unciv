@@ -37,7 +37,7 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
                 tile.roadStatus=RoadStatus.None
                 tile.setTransients()
 
-                tileGroup.update(true,true,true)
+                tileGroup.update()
             }
         }
         add(clearCurrentMapButton).row()

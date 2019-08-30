@@ -32,7 +32,6 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
     val tileGroups = HashMap<TileInfo, WorldTileGroup>()
 
     var unitActionOverlay :Actor?=null
-    var removeUnitActionOverlay=false
 
     // Used to transfer data on the "move here" button that should be created, from the side thread to the main thread
     class MoveHereButtonDto(val unit: MapUnit, val tileInfo: TileInfo, val turnsToGetThere: Int)
@@ -170,7 +169,7 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
                     worldScreen.bottomBar.unitTable.selectedUnit = unit
                     worldScreen.bottomBar.unitTable.selectedCity = null
                     worldScreen.shouldUpdate = true
-                    removeUnitActionOverlay = true
+                    unitActionOverlay?.remove()
                 }
                 table.add(unitGroup)
             }
@@ -238,32 +237,22 @@ class TileMapHolder(internal val worldScreen: WorldScreen, internal val tileMap:
 
     }
 
-    internal fun updateTiles(civInfo: CivilizationInfo) {
-        if(removeUnitActionOverlay){
-            removeUnitActionOverlay=false
-            unitActionOverlay?.remove()
-        }
+    internal fun updateTiles(viewingCiv: CivilizationInfo) {
 
-        val playerViewableTilePositions = civInfo.viewableTiles.map { it.position }.toHashSet()
-        val playerViewableInvisibleUnitsTilePositions = civInfo.viewableInvisibleUnitsTiles.map { it.position }.toHashSet()
+        val playerViewableTilePositions = viewingCiv.viewableTiles.map { it.position }.toHashSet()
+        val playerViewableInvisibleUnitsTilePositions = viewingCiv.viewableInvisibleUnitsTiles.map { it.position }.toHashSet()
 
         for (tileGroup in tileGroups.values){
-            val canSeeTile = UnCivGame.Current.viewEntireMapForDebug
-                    || playerViewableTilePositions.contains(tileGroup.tileInfo.position)
-
-            val showSubmarine = UnCivGame.Current.viewEntireMapForDebug
-                    || playerViewableInvisibleUnitsTilePositions.contains(tileGroup.tileInfo.position)
-                    || (!tileGroup.tileInfo.hasEnemySubmarine())
-            tileGroup.update(canSeeTile, showSubmarine)
+            tileGroup.update(viewingCiv)
 
             if(tileGroup.tileInfo.improvement==Constants.barbarianEncampment
-                    && tileGroup.tileInfo.position in civInfo.exploredTiles)
+                    && tileGroup.tileInfo.position in viewingCiv.exploredTiles)
                 tileGroup.showCircle(Color.RED)
 
             val unitsInTile = tileGroup.tileInfo.getUnits()
-            val canSeeEnemy = unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(civInfo)
-                    && (showSubmarine || unitsInTile.firstOrNull {!it.isInvisible()}!=null)
-            if(canSeeTile && canSeeEnemy)
+            val canSeeEnemy = unitsInTile.isNotEmpty() && unitsInTile.first().civInfo.isAtWarWith(viewingCiv)
+                    && tileGroup.showMilitaryUnit(viewingCiv)
+            if(tileGroup.isViewable(viewingCiv) && canSeeEnemy)
                 tileGroup.showCircle(Color.RED) // Display ALL viewable enemies with a red circle so that users don't need to go "hunting" for enemy units
         }
 

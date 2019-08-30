@@ -122,7 +122,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             val group = TileGroup(tileInfo, TileSetStrings())
             group.showEntireMap=true
             group.forMapEditorIcon=true
-            group.update(true,true,true)
+            group.update()
 
             group.onClick {
                 clearSelection()
@@ -249,7 +249,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 .apply {
                     showEntireMap=true
                     forMapEditorIcon=true
-                    update(true,true,true)
+                    update()
                 }
         setCurrentHex(tileGroup)
     }

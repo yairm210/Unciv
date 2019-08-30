@@ -185,33 +185,42 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
         }
     }
 
+    fun showMilitaryUnit(viewingCiv: CivilizationInfo) = showEntireMap
+            || viewingCiv.viewableInvisibleUnitsTiles.contains(tileInfo)
+            || (!tileInfo.hasEnemySubmarine(viewingCiv))
 
-    open fun update(isViewable: Boolean, showResourcesAndImprovements:Boolean, showSubmarine: Boolean) {
+    fun isViewable(viewingCiv: CivilizationInfo) = showEntireMap
+            || viewingCiv.viewableTiles.contains(tileInfo)
+
+    open fun update(viewingCiv:CivilizationInfo?=null, showResourcesAndImprovements: Boolean=true) {
         hideCircle()
-        if (!showEntireMap
-                && !tileInfo.tileMap.gameInfo.getCurrentPlayerCivilization().exploredTiles.contains(tileInfo.position)) {
+        if (viewingCiv!=null && !showEntireMap
+                && !viewingCiv.exploredTiles.contains(tileInfo.position)) {
             tileBaseImage.color = Color.DARK_GRAY
             return
         }
+
+        val tileIsViewable = viewingCiv==null || isViewable(viewingCiv)
+        val showMilitaryUnit = viewingCiv==null || showMilitaryUnit(viewingCiv)
 
         updateTileImage(true)
         updateTerrainBaseImage()
         updateTerrainFeatureImage()
         updateCityImage()
-        updateTileColor(isViewable)
+        updateTileColor(tileIsViewable)
 
         updateResourceImage(showResourcesAndImprovements)
         updateImprovementImage(showResourcesAndImprovements)
 
 
-        civilianUnitImage = newUnitImage(tileInfo.civilianUnit, civilianUnitImage, isViewable, -20f)
-        militaryUnitImage = newUnitImage(tileInfo.militaryUnit, militaryUnitImage, isViewable && showSubmarine, 20f)
+        civilianUnitImage = newUnitImage(tileInfo.civilianUnit, civilianUnitImage, tileIsViewable, -20f)
+        militaryUnitImage = newUnitImage(tileInfo.militaryUnit, militaryUnitImage, tileIsViewable && showMilitaryUnit, 20f)
 
         updateRoadImages()
         updateBorderImages()
 
         crosshairImage.isVisible = false
-        fogImage.isVisible = !(isViewable || showEntireMap)
+        fogImage.isVisible = !(tileIsViewable || showEntireMap)
     }
 
     private fun updateTerrainBaseImage() {

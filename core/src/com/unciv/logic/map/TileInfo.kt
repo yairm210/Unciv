@@ -310,10 +310,10 @@ open class TileInfo {
         turnsToImprovement = improvement.getTurnsToBuild(civInfo)
     }
 
-    fun hasEnemySubmarine(): Boolean {
+    fun hasEnemySubmarine(viewingCiv:CivilizationInfo): Boolean {
         val unitsInTile = getUnits()
         if (unitsInTile.isEmpty()) return false
-        if (!unitsInTile.first().civInfo.isPlayerCivilization() &&
+        if (unitsInTile.first().civInfo!=viewingCiv &&
                 unitsInTile.firstOrNull { it.isInvisible() } != null) {
             return true
         }

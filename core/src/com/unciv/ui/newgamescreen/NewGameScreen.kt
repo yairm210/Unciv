@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
 import com.unciv.logic.GameInfo
+import com.unciv.logic.GameSaver
 import com.unciv.logic.GameStarter
 import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.gamebasics.tr
@@ -66,8 +67,10 @@ class NewGameScreen: PickerScreen(){
                 try {
                     newGame = GameStarter().startNewGame(newGameParameters)
                     if (newGameParameters.isOnlineMultiplayer) {
+                        newGame!!.isUpToDate=true // So we don't try to download it from dropbox the second after we upload it - the file is not yet ready for loading!
                         try {
                             OnlineMultiplayer().tryUploadGame(newGame!!)
+                            GameSaver().autoSave(newGame!!){}
                         } catch (ex: Exception) {
                             val cantUploadNewGamePopup = PopupTable(this)
                             cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
