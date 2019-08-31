@@ -2,7 +2,7 @@ package com.unciv.logic
 
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
-import com.unciv.GameParameters
+import com.unciv.UnCivGame
 import com.unciv.logic.automation.NextTurnAutomation
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.civilization.CivilizationInfo
@@ -12,18 +12,24 @@ import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.Difficulty
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.metadata.GameParameters
 import java.util.*
 
 class GameInfo {
     @Transient lateinit var difficultyObject: Difficulty // Since this is static game-wide, and was taking a large part of nextTurn
+    @Transient lateinit var currentPlayerCiv:CivilizationInfo // this is called thousands of times, no reason to search for it with a find{} every time
+    /** This is used in multiplayer games, where I may have a saved game state on my phone
+     * that is inconsistent with the saved game on the cloud */
+    @Transient var isUpToDate=false
 
     var civilizations = mutableListOf<CivilizationInfo>()
     var difficulty="Chieftain" // difficulty is game-wide, think what would happen if 2 human players could play on different difficulties?
     var tileMap: TileMap = TileMap()
-    var gameParameters=GameParameters()
+    var gameParameters= GameParameters()
     var turns = 0
     var oneMoreTurnMode=false
     var currentPlayer=""
+    var gameId = UUID.randomUUID().toString() // random string
 
     //region pure functions
     fun clone(): GameInfo {
@@ -34,11 +40,19 @@ class GameInfo {
         toReturn.turns = turns
         toReturn.difficulty=difficulty
         toReturn.gameParameters = gameParameters
+        toReturn.gameId = gameId
         return toReturn
     }
 
+    fun getPlayerToViewAs(): CivilizationInfo {
+        if (!gameParameters.isOnlineMultiplayer) return currentPlayerCiv // non-online, play as human player
+        val userId = UnCivGame.Current.settings.userId
+        if (civilizations.any { it.playerId == userId}) return civilizations.first { it.playerId == userId }
+        else return getBarbarianCivilization()// you aren't anyone. How did you even get this game? Can you spectate?
+    }
+
     fun getCivilization(civName:String) = civilizations.first { it.civName==civName }
-    fun getCurrentPlayerCivilization() = getCivilization(currentPlayer)
+    fun getCurrentPlayerCivilization() = currentPlayerCiv
     fun getBarbarianCivilization() = getCivilization("Barbarians")
     fun getDifficulty() = difficultyObject
     //endregion
@@ -56,7 +70,7 @@ class GameInfo {
                 if (turns % 10 == 0 && !gameParameters.noBarbarians) {
                     val encampments = tileMap.values.filter { it.improvement==Constants.barbarianEncampment }
 
-                    if(encampments.size < civilizations.filter { it.isMajorCiv() }.size*2) {
+                    if(encampments.size < civilizations.filter { it.isMajorCiv() }.size) {
                         val newEncampmentTile = placeBarbarianEncampment(encampments)
                         if (newEncampmentTile != null)
                             placeBarbarianUnit(newEncampmentTile)
@@ -84,7 +98,8 @@ class GameInfo {
             switchTurn()
         }
 
-        currentPlayer=thisPlayer.civName
+        currentPlayer = thisPlayer.civName
+        currentPlayerCiv = getCivilization(currentPlayer)
 
         // Start our turn immediately before the player can made decisions - affects whether our units can commit automated actions and then be attacked immediately etc.
 
@@ -125,7 +140,7 @@ class GameInfo {
 
     fun placeBarbarianEncampment(existingEncampments: List<TileInfo>): TileInfo? {
         // Barbarians will only spawn in places that no one can see
-        val allViewableTiles = civilizations.filterNot { it.isBarbarianCivilization() }
+        val allViewableTiles = civilizations.filterNot { it.isBarbarian() }
                 .flatMap { it.viewableTiles }.toHashSet()
         val tilesWithin3ofExistingEncampment = existingEncampments.flatMap { it.getTilesInDistance(3) }
         val viableTiles = tileMap.values.filter {
@@ -144,20 +159,20 @@ class GameInfo {
         // if we don't make this into a separate list then the retain() will happen on the Tech keys,
         // which effectively removes those techs from the game and causes all sorts of problems
         val allResearchedTechs = GameBasics.Technologies.keys.toMutableList()
-        for (civ in civilizations.filter { !it.isBarbarianCivilization() && !it.isDefeated() }) {
+        for (civ in civilizations.filter { !it.isBarbarian() && !it.isDefeated() }) {
             allResearchedTechs.retainAll(civ.tech.techsResearched)
         }
+        val barbarianCiv = getBarbarianCivilization()
+        barbarianCiv.tech.techsResearched = allResearchedTechs.toHashSet()
         val unitList = GameBasics.Units.values
-                .filter { !it.unitType.isCivilian() && it.uniqueTo == null }
-                .filter{ (it.requiredTech==null || allResearchedTechs.contains(it.requiredTech!!))
-                        && (it.obsoleteTech == null || !allResearchedTechs.contains(it.obsoleteTech!!)) }
+                .filter { !it.unitType.isCivilian()}
+                .filter { it.isBuildable(barbarianCiv) }
 
         val landUnits = unitList.filter { it.unitType.isLandUnit() }
         val waterUnits = unitList.filter { it.unitType.isWaterUnit() }
 
         val unit:String
-        if (unitList.isEmpty()) unit="Warrior"
-        else if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
+        if(waterUnits.isNotEmpty() && tileToPlace.neighbors.any{ it.baseTerrain==Constants.coast } && Random().nextBoolean())
             unit=waterUnits.random().name
         else unit = landUnits.random().name
 
@@ -170,7 +185,8 @@ class GameInfo {
         tileMap.gameInfo = this
         tileMap.setTransients()
 
-        if(currentPlayer=="") currentPlayer=civilizations[0].civName
+        if(currentPlayer=="") currentPlayer=civilizations.first { it.isPlayerCivilization() }.civName
+        currentPlayerCiv=getCivilization(currentPlayer)
 
         // this is separated into 2 loops because when we activate updateViewableTiles in civ.setTransients,
         //  we try to find new civs, and we check if civ is barbarian, which we can't know unless the gameInfo is already set.
@@ -206,13 +222,13 @@ class GameInfo {
             }
         }
 
-        for (civInfo in civilizations) {
-            civInfo.setTransients()
-            for(unit in civInfo.getCivUnits())
-                unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
-        }
+        for (civInfo in civilizations) civInfo.setNationTransient()
+        for (civInfo in civilizations) civInfo.setTransients()
 
         for (civInfo in civilizations){
+            for(unit in civInfo.getCivUnits())
+                unit.updateViewableTiles() // this needs to be done after all the units are assigned to their civs and all other transients are set
+
             // Since this depends on the cities of ALL civilizations,
             // we need to wait until we've set the transients of all the cities before we can run this.
             // Hence why it's not in CivInfo.setTransients().

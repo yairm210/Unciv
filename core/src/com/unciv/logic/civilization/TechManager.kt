@@ -40,7 +40,10 @@ class TechManager {
     }
 
     fun costOfTech(techName: String): Int {
-        return (GameBasics.Technologies[techName]!!.cost * civInfo.getDifficulty().researchCostModifier).toInt()
+        var techCost = GameBasics.Technologies[techName]!!.cost.toFloat()
+        techCost *= civInfo.getDifficulty().researchCostModifier
+        techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        return techCost.toInt()
     }
 
     fun currentTechnology(): Technology? = currentTechnologyName()?.let {
@@ -158,7 +161,7 @@ class TechManager {
                 city.cityConstructions.currentConstruction = currentConstructionUnit.upgradesTo!!
             }
 
-        if(techName=="Writing" && civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster"
+        if(techName=="Writing" && civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster"
                 && civInfo.cities.any())
             civInfo.addGreatPerson("Great Scientist")
     }

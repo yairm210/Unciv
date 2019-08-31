@@ -2,34 +2,30 @@ package com.unciv.ui.cityscreen
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
-import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.tilegroups.TileGroup
+import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.centerX
 
-class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(tileInfo) {
+class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo, tileSetStrings: TileSetStrings) : TileGroup(tileInfo,tileSetStrings) {
 
     var isWorkable = false
+    var yieldGroup = YieldGroup()
 
     init {
         isTransform=false // performance helper - nothing here is rotated or scaled
         addActor(yieldGroup)
         if (city.location == tileInfo.position) {
-            populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6).png")
+            populationImage = ImageGetter.getImage("StatIcons/City_Center_(Civ6)")
             addActor(populationImage)
         }
 
     }
 
     fun update() {
-        val canSeeTile = UnCivGame.Current.viewEntireMapForDebug
-                || city.civInfo.viewableTiles.contains(tileInfo)
-        val showSubmarine = UnCivGame.Current.viewEntireMapForDebug
-                || city.civInfo.viewableInvisibleUnitsTiles.contains(tileInfo)
-                || (!tileInfo.hasEnemySubmarine())
-        super.update(canSeeTile,true, showSubmarine)
+        super.update(city.civInfo,true)
 
         // this needs to happen on update, because we can buy tiles, which changes the definition of the bought tiles...
         when {
@@ -40,7 +36,7 @@ class CityTileGroup(private val city: CityInfo, tileInfo: TileInfo) : TileGroup(
                     addAcquirableIcon()
             }
 
-            tileInfo !in city.getTilesInRange() -> { // within city but not close enough to be workable
+            tileInfo !in city.tilesInRange -> { // within city but not close enough to be workable
                 yieldGroup.isVisible = false
                 baseLayerGroup.color.a = 0.5f
             }

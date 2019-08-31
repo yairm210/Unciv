@@ -5,8 +5,6 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
-    val tileMap = unit.getTile().tileMap
-
     private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
         var cost = getMovementCostBetweenAdjacentTiles(from,to)
 
@@ -43,12 +41,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return to.getLastTerrain().movementCost.toFloat() // no road
     }
 
+    class ParentTileAndTotalDistance(val parentTile:TileInfo, val totalDistance: Float)
 
-    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): HashMap<TileInfo, Float> {
-        if(unitMovement==0f) return hashMapOf()
-        val distanceToTiles = LinkedHashMap<TileInfo, Float>()
-        val unitTile = tileMap[origin]
-        distanceToTiles[unitTile] = 0f
+    fun getDistanceToTilesWithinTurn(origin: Vector2, unitMovement: Float): PathsToTilesWithinTurn {
+        if(unitMovement==0f) return PathsToTilesWithinTurn()
+        val distanceToTiles = PathsToTilesWithinTurn()
+        val unitTile = unit.getTile().tileMap[origin]
+        distanceToTiles[unitTile] = ParentTileAndTotalDistance(unitTile,0f)
         var tilesToCheck = listOf(unitTile)
 
         while (!tilesToCheck.isEmpty()) {
@@ -57,7 +56,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 for (neighbor in tileToCheck.neighbors) {
                     var totalDistanceToTile:Float
 
-                    if (!unit.canPassThrough(neighbor))
+                    if (!canPassThrough(neighbor))
                         totalDistanceToTile = unitMovement // Can't go here.
                     // The reason that we don't just "return" is so that when calculating how to reach an enemy,
                     // You need to assume his tile is reachable, otherwise all movement algs on reaching enemy
@@ -65,10 +64,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
                     else {
                         val distanceBetweenTiles = getMovementCostBetweenAdjacentTiles(tileToCheck, neighbor, unit.civInfo)
-                        totalDistanceToTile = distanceToTiles[tileToCheck]!! + distanceBetweenTiles
+                        totalDistanceToTile = distanceToTiles[tileToCheck]!!.totalDistance + distanceBetweenTiles
                     }
 
-                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!! > totalDistanceToTile) { // this is the new best path
+                    if (!distanceToTiles.containsKey(neighbor) || distanceToTiles[neighbor]!!.totalDistance > totalDistanceToTile) { // this is the new best path
                         if (totalDistanceToTile < unitMovement)  // We can still keep moving from here!
                             updatedTiles += neighbor
                         else
@@ -76,7 +75,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                         // In Civ V, you can always travel between adjacent tiles, even if you don't technically
                         // have enough movement points - it simple depletes what you have
 
-                        distanceToTiles[neighbor] = totalDistanceToTile
+                        distanceToTiles[neighbor] = ParentTileAndTotalDistance(tileToCheck,totalDistanceToTile)
                     }
                 }
 
@@ -103,10 +102,10 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
                 val distanceToTilesThisTurn = getDistanceToTilesWithinTurn(tileToCheck.position, movementThisTurn)
                 for (reachableTile in distanceToTilesThisTurn.keys) {
                     if (reachableTile == destination)
-                        distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!
+                        distanceToDestination[tileToCheck] = distanceToTilesThisTurn[reachableTile]!!.totalDistance
                     else {
                         if (movementTreeParents.containsKey(reachableTile)) continue // We cannot be faster than anything existing...
-                        if (!unit.canMoveTo(reachableTile)) continue // This is a tile that we can''t actually enter - either an intermediary tile containing our unit, or an enemy unit/city
+                        if (!canMoveTo(reachableTile)) continue // This is a tile that we can''t actually enter - either an intermediary tile containing our unit, or an enemy unit/city
                         movementTreeParents[reachableTile] = tileToCheck
                         newTilesToCheck.add(reachableTile)
                     }
@@ -136,45 +135,46 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         }
     }
 
+    fun getTileToMoveToThisTurn(finalDestination:TileInfo): TileInfo {
+
+        val currentTile = unit.getTile()
+        if (currentTile == finalDestination) return currentTile
+
+        if(unit.type.isAirUnit()){
+            return finalDestination // head there directly
+        }
+
+
+        val distanceToTiles = getDistanceToTiles()
+
+        if (distanceToTiles.containsKey(finalDestination)) { // we should be able to get there this turn
+            if (canMoveTo(finalDestination))
+                return finalDestination
+
+            // Someone is blocking to the path to the final tile...
+            val destinationNeighbors = finalDestination.neighbors
+            if (destinationNeighbors.contains(currentTile)) // We're right nearby anyway, no need to move
+                return currentTile
+
+            val reachableDestinationNeighbors = destinationNeighbors
+                    .filter { distanceToTiles.containsKey(it) && canMoveTo(it) }
+            if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
+                return currentTile
+
+            return reachableDestinationNeighbors.minBy { distanceToTiles[it]!!.totalDistance }!! // we can get a little closer
+        }   // If the tile is far away, we need to build a path how to get there, and then take the first step
+        val path = getShortestPath(finalDestination)
+        class UnreachableDestinationException : Exception()
+        if (path.isEmpty()) throw UnreachableDestinationException()
+        return path.first()
+    }
+
     /**
      * @return The tile that we reached this turn
      */
     fun headTowards(destination: TileInfo): TileInfo {
-        val currentTile = unit.getTile()
-        if (currentTile == destination) return currentTile
-
-        if(unit.type.isAirUnit()){
-            unit.moveToTile(destination)
-            return destination
-        }
-
-        val distanceToTiles = unit.getDistanceToTiles()
-
-        val destinationTileThisTurn: TileInfo
-        if (distanceToTiles.containsKey(destination)) { // we can get there this turn
-            if (unit.canMoveTo(destination))
-                destinationTileThisTurn = destination
-            else   // Someone is blocking to the path to the final tile...
-            {
-                val destinationNeighbors = destination.neighbors
-                if (destinationNeighbors.contains(currentTile)) // We're right nearby anyway, no need to move
-                    return currentTile
-
-                val reachableDestinationNeighbors = destinationNeighbors
-                        .filter { distanceToTiles.containsKey(it) && unit.canMoveTo(it) }
-                if (reachableDestinationNeighbors.isEmpty()) // We can't get closer...
-                    return currentTile
-
-                destinationTileThisTurn = reachableDestinationNeighbors.minBy { distanceToTiles[it]!! }!!
-            }
-        } else { // If the tile is far away, we need to build a path how to get there, and then take the first step
-            val path = getShortestPath(destination)
-            class UnreachableDestinationException : Exception()
-            if (path.isEmpty()) throw UnreachableDestinationException()
-            destinationTileThisTurn = path.first()
-        }
-
-        unit.moveToTile(destinationTileThisTurn)
+        val destinationTileThisTurn = getTileToMoveToThisTurn(destination)
+        moveToTile(destinationTileThisTurn)
         return destinationTileThisTurn
     }
 
@@ -184,24 +184,6 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         return getShortestPath(destination).isNotEmpty()
     }
 
-    fun getFullPathToCloseTile(destination: TileInfo): List<TileInfo> {
-        val currentUnitTile = unit.getTile()
-        val distanceToTiles = unit.getDistanceToTiles()
-        val reversedList = ArrayList<TileInfo>()
-        var currentTile = destination
-        while(currentTile != currentUnitTile){
-            reversedList.add(currentTile)
-            val distanceToCurrentTile = distanceToTiles[currentTile]!!
-            if(currentUnitTile in currentTile.neighbors
-                    && getMovementCostBetweenAdjacentTiles(currentUnitTile,currentTile,unit.civInfo) == distanceToCurrentTile)
-                return reversedList.reversed()
-
-            for(tile in currentTile.neighbors)
-                currentTile = currentTile.neighbors.first{it in distanceToTiles
-                    && getMovementCostBetweenAdjacentTiles(it,currentTile,unit.civInfo) == distanceToCurrentTile - distanceToTiles[it]!!}
-        }
-        throw Exception("We couldn't get the path between the two tiles")
-    }
 
     fun teleportToClosestMoveableTile(){
         var allowedTile:TileInfo? = null
@@ -209,7 +191,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         while(allowedTile==null && distance<5){
             distance++
             allowedTile = unit.getTile().getTilesAtDistance(distance)
-                    .firstOrNull{unit.canMoveTo(it)}
+                    .firstOrNull{canMoveTo(it)}
         }
 
         // No tile within 4 spaces? move him to a city.
@@ -217,7 +199,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if(allowedTile==null){
             for(city in unit.civInfo.cities){
                 allowedTile = city.getCenterTile().getTilesInDistance(1)
-                        .firstOrNull { unit.canMoveTo(it) }
+                        .firstOrNull { canMoveTo(it) }
                 if(allowedTile!=null) break
             }
         }
@@ -226,4 +208,156 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             unit.putInTile(allowedTile)
     }
 
+
+    fun moveToTile(destination: TileInfo) {
+        if(destination==unit.getTile()) return // already here!
+
+        class CantEnterThisTileException(msg: String) : Exception(msg)
+        if(!canMoveTo(destination))
+            throw CantEnterThisTileException("$this can't enter $destination")
+
+        if(unit.type.isAirUnit()){ // they move differently from all other units
+            unit.action=null
+            unit.removeFromTile()
+            unit.putInTile(destination)
+            unit.currentMovement=0f
+            return
+        }
+
+        val distanceToTiles = getDistanceToTiles()
+        class YouCantGetThereFromHereException(msg: String) : Exception(msg)
+        if (!distanceToTiles.containsKey(destination))
+            throw YouCantGetThereFromHereException("$unit can't get from ${unit.currentTile.position} to ${destination.position}.")
+
+        if(destination.isCityCenter() && destination.getOwner()!=unit.civInfo)
+            throw Exception("This is an enemy city, you can't go here!")
+
+        unit.currentMovement -= distanceToTiles[destination]!!.totalDistance
+        if (unit.currentMovement < 0.1) unit.currentMovement = 0f // silly floats which are "almost zero"
+        if(unit.isFortified() || unit.action==Constants.unitActionSetUp || unit.action==Constants.unitActionSleep)
+            unit.action=null // unfortify/setup after moving
+
+        unit.removeFromTile()
+        unit.putInTile(destination)
+
+        // Move through all intermediate tiles to get ancient ruins, barb encampments
+        // and to view tiles along the way
+        // We only activate the moveThroughTile AFTER the putInTile because of a really weird bug -
+        // If you're going to (or past) a ruin, and you activate the ruin bonus, and A UNIT spawns.
+        // That unit could now be blocking your entrance to the destination, so the putInTile would fail! =0
+        // Instead, we move you to the destination directly, and only afterwards activate the various tiles on the way.
+        val pathToFinalTile = distanceToTiles.getPathToTile(destination)
+        for(tile in pathToFinalTile){
+            unit.moveThroughTile(tile)
+        }
+
+    }
+
+
+    /**
+     * Designates whether we can enter the tile - without attacking
+     * DOES NOT designate whether we can reach that tile in the current turn
+     */
+    fun canMoveTo(tile: TileInfo): Boolean {
+        if(unit.type.isAirUnit())
+            return tile.airUnits.size<6 && tile.isCityCenter() && tile.getCity()?.civInfo==unit.civInfo
+
+        if(!canPassThrough(tile))
+            return false
+
+        if (unit.type.isCivilian())
+            return tile.civilianUnit==null && (tile.militaryUnit==null || tile.militaryUnit!!.owner==unit.owner)
+        else return tile.militaryUnit==null && (tile.civilianUnit==null || tile.civilianUnit!!.owner==unit.owner)
+    }
+
+
+    // This is the most called function in the entire game,
+    // so multiple callees of this function have been optimized,
+    // because optimization on this function results in massive benefits!
+    fun canPassThrough(tile: TileInfo):Boolean{
+        if(tile.getBaseTerrain().impassable) return false
+        if(tile.isLand && unit.type.isWaterUnit() && !tile.isCityCenter())
+            return false
+
+        if(tile.isWater && unit.type.isLandUnit()){
+            if(!unit.civInfo.tech.unitsCanEmbark) return false
+            if(tile.isOcean && !unit.civInfo.tech.embarkedUnitsCanEnterOcean)
+                return false
+        }
+        if(tile.isOcean && unit.baseUnit.uniques.contains("Cannot enter ocean tiles")) return false
+        if(tile.isOcean && unit.baseUnit.uniques.contains("Cannot enter ocean tiles until Astronomy")
+                && !unit.civInfo.tech.isResearched("Astronomy"))
+            return false
+
+        val tileOwner = tile.getOwner()
+        if(tileOwner!=null && tileOwner.civName!=unit.owner) {
+            if (tile.isCityCenter()) return false
+            if (!unit.civInfo.canEnterTiles(tileOwner)
+                    && !(unit.civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
+            // AIs won't enter city-state's border.
+        }
+
+        val unitsInTile = tile.getUnits()
+        if(unitsInTile.isNotEmpty()){
+            val firstUnit = unitsInTile.first()
+            if(firstUnit.civInfo != unit.civInfo && unit.civInfo.isAtWarWith(firstUnit.civInfo))
+                return false
+        }
+
+        return true
+    }
+
+    fun getDistanceToTiles() = getDistanceToTilesWithinTurn(unit.currentTile.position,unit.currentMovement)
+
+    fun getArialPathsToCities(): HashMap<TileInfo, ArrayList<TileInfo>> {
+        var tilesToCheck = ArrayList<TileInfo>()
+        /** each tile reached points to its parent tile, where we got to it from */
+        val tilesReached = HashMap<TileInfo, TileInfo>()
+
+        val startingTile = unit.currentTile
+        tilesToCheck.add(startingTile)
+        tilesReached[startingTile] = startingTile
+
+
+        while(tilesToCheck.isNotEmpty()) {
+            val newTilesToCheck = ArrayList<TileInfo>()
+            for(tileToCheck in tilesToCheck){
+                val reachableTiles = tileToCheck.getTilesInDistance(unit.getRange())
+                        .filter { unit.movement.canMoveTo(it) }
+                for(reachableTile in reachableTiles){
+                    if(tilesReached.containsKey(reachableTile)) continue
+                    tilesReached[reachableTile]=tileToCheck
+                    newTilesToCheck.add(reachableTile)
+                }
+            }
+            tilesToCheck=newTilesToCheck
+        }
+
+        val pathsToCities = HashMap<TileInfo, ArrayList<TileInfo>>()
+
+        for(city in tilesReached.keys){
+            val path = ArrayList<TileInfo>()
+            var currentCity = city
+            while(currentCity!=startingTile){ // we don't add the "starting tile" to the arraylist
+                path.add(currentCity)
+                currentCity = tilesReached[currentCity]!! // go to parent
+            }
+            path.reverse()
+            pathsToCities[city] = path
+        }
+        return pathsToCities
+    }
+}
+
+class PathsToTilesWithinTurn : LinkedHashMap<TileInfo, UnitMovementAlgorithms.ParentTileAndTotalDistance>(){
+    fun getPathToTile(tile: TileInfo): List<TileInfo> {
+        if(!containsKey(tile)) throw Exception("Can't reach this tile!")
+        val reversePathList = ArrayList<TileInfo>()
+        var currentTile = tile
+        while(get(currentTile)!!.parentTile!=currentTile){
+            reversePathList.add(currentTile)
+            currentTile = get(currentTile)!!.parentTile
+        }
+        return reversePathList.reversed()
+    }
 }

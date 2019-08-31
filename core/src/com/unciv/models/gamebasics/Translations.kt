@@ -52,7 +52,7 @@ class Translations : HashMap<String, HashMap<String, String>>(){
     }
 }
 
-
+val squareBraceRegex = Regex("\\[(.*?)\\]") // we don't need to allocate different memory for this every time we .tr()
 fun String.tr(): String {
     if(contains("[")){ // Placeholders!
         /**
@@ -68,9 +68,13 @@ fun String.tr(): String {
          * We will find the german placeholder text, and replace the placeholders with what was filled in the text we got!
          */
 
-        val squareBraceRegex = Regex("\\[(.*?)\\]")
+        val translationStringWithSquareBracketsOnly = replace(squareBraceRegex,"[]")
+        val translationStringUntilFirstSquareBracket = substringBefore('[')
         val englishTranslationPlaceholder = GameBasics.Translations.keys
-                .firstOrNull { it.replace(squareBraceRegex,"[]") == replace(squareBraceRegex,"[]") }
+                .firstOrNull {
+                    // this is to filter out obvious non-candidates, which is most of them, before we start using the "heavy lifting" of the regex replacement
+                    it.startsWith(translationStringUntilFirstSquareBracket)
+                        && it.replace(squareBraceRegex,"[]") == translationStringWithSquareBracketsOnly }
         if(englishTranslationPlaceholder==null ||
                 !GameBasics.Translations[englishTranslationPlaceholder]!!.containsKey(UnCivGame.Current.settings.language)){
             // Translation placeholder doesn't exist for this language

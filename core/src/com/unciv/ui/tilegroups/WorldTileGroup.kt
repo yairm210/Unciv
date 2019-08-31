@@ -2,14 +2,15 @@ package com.unciv.ui.tilegroups
 
 import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.center
 import com.unciv.ui.worldscreen.WorldScreen
 
 
-class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) : TileGroup(tileInfo) {
+class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo, tileSetStrings: TileSetStrings)
+    : TileGroup(tileInfo,tileSetStrings) {
 
     var cityButton: CityButton? = null
 
@@ -20,36 +21,26 @@ class WorldTileGroup(internal val worldScreen: WorldScreen, tileInfo: TileInfo) 
         unitImage?.selectUnit()
     }
 
-    init {
-        yieldGroup.center(this)
-        yieldGroup.moveBy(-22f, 0f)
-    }
-
-
-    fun update(isViewable: Boolean, showSubmarine: Boolean) {
+    fun update(viewingCiv: CivilizationInfo) {
         val city = tileInfo.getCity()
 
         removePopulationIcon()
-        if (isViewable && tileInfo.isWorked() && UnCivGame.Current.settings.showWorkedTiles
+        val tileIsViewable = isViewable(viewingCiv)
+        if (tileIsViewable && tileInfo.isWorked() && UnCivGame.Current.settings.showWorkedTiles
                 && city!!.civInfo.isPlayerCivilization())
             addPopulationIcon()
 
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
+        val currentPlayerCiv = worldScreen.viewingCiv
         if (UnCivGame.Current.viewEntireMapForDebug
                 || currentPlayerCiv.exploredTiles.contains(tileInfo.position))
-            updateCityButton(city, isViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
+            updateCityButton(city, tileIsViewable || UnCivGame.Current.viewEntireMapForDebug) // needs to be before the update so the units will be above the city button
 
-        super.update(isViewable || UnCivGame.Current.viewEntireMapForDebug,
-                UnCivGame.Current.settings.showResourcesAndImprovements, showSubmarine)
+        super.update(viewingCiv, UnCivGame.Current.settings.showResourcesAndImprovements)
 
-        yieldGroup.isVisible = !UnCivGame.Current.settings.showResourcesAndImprovements
-        if (yieldGroup.isVisible)
-            yieldGroup.setStats(tileInfo.getTileStats(currentPlayerCiv))
 
         // order by z index!
         cityImage?.toFront()
         terrainFeatureOverlayImage?.toFront()
-        yieldGroup.toFront()
         improvementImage?.toFront()
         resourceImage?.toFront()
         cityButton?.toFront()

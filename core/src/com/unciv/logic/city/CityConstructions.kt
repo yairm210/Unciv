@@ -102,7 +102,7 @@ class CityConstructions {
         throw NotBuildingOrUnitException("$constructionName is not a building or a unit!")
     }
 
-    internal fun getBuiltBuildings(): List<Building> = builtBuildingObjects // toList os to avoid concurrency problems
+    internal fun getBuiltBuildings(): List<Building> = builtBuildingObjects
 
     fun containsBuildingOrEquivalent(building: String): Boolean =
             isBuilt(building) || getBuiltBuildings().any{it.replaces==building}
@@ -113,21 +113,27 @@ class CityConstructions {
     }
 
     fun getRemainingWork(constructionName: String) =
-            getConstruction(constructionName).getProductionCost(cityInfo.civInfo.policies.adoptedPolicies) - getWorkDone(constructionName)
+            getConstruction(constructionName).getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
 
     fun turnsToConstruction(constructionName: String): Int {
         val workLeft = getRemainingWork(constructionName)
 
-        // The ol' Switcharoo - what would our stats be if that was our current construction?
-        // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
-        //   and recalculating the entire city stats
+
         val currConstruction = currentConstruction
-        currentConstruction = constructionName
-        cityInfo.cityStats.update()
-        val cityStatsForConstruction = cityInfo.cityStats.currentCityStats
-        // revert!
-        currentConstruction = currConstruction
-        cityInfo.cityStats.update()
+
+        val cityStatsForConstruction: Stats
+        if (currentConstruction == constructionName) cityStatsForConstruction = cityInfo.cityStats.currentCityStats
+        else {
+            // The ol' Switcharoo - what would our stats be if that was our current construction?
+            // Since this is only ever used for UI purposes, I feel fine with having it be a bit inefficient
+            //   and recalculating the entire city stats
+            currentConstruction = constructionName
+            cityInfo.cityStats.update()
+            cityStatsForConstruction = cityInfo.cityStats.currentCityStats
+            // revert!
+            currentConstruction = currConstruction
+            cityInfo.cityStats.update()
+        }
 
         var production = Math.round(cityStatsForConstruction.production)
         if (constructionName == Constants.settler) production += cityStatsForConstruction.food.toInt()
@@ -152,7 +158,7 @@ class CityConstructions {
         val construction = getConstruction(currentConstruction)
         if(construction is SpecialConstruction) chooseNextConstruction() // check every turn if we could be doing something better, because this doesn't end by itself
         else {
-            val productionCost = construction.getProductionCost(cityInfo.civInfo.policies.adoptedPolicies)
+            val productionCost = construction.getProductionCost(cityInfo.civInfo)
             if (inProgressConstructions.containsKey(currentConstruction)
                     && inProgressConstructions[currentConstruction]!! >= productionCost) {
                 constructionComplete(construction)
@@ -211,14 +217,14 @@ class CityConstructions {
         builtBuildings.remove(buildingName)
     }
 
-    fun purchaseBuilding(buildingName: String) {
-        cityInfo.civInfo.gold -= getConstruction(buildingName).getGoldCost(cityInfo.civInfo)
-        getConstruction(buildingName).postBuildEvent(this)
-        if (currentConstruction == buildingName)
+    fun purchaseConstruction(constructionName: String) {
+        cityInfo.civInfo.gold -= getConstruction(constructionName).getGoldCost(cityInfo.civInfo)
+        getConstruction(constructionName).postBuildEvent(this)
+        if (currentConstruction == constructionName)
             cancelCurrentConstruction()
 
         cityInfo.cityStats.update()
-        cityInfo.civInfo.updateDetailedCivResources() // this building could be a resource-requiring one
+        cityInfo.civInfo.updateDetailedCivResources() // this building/unit could be a resource-requiring one
     }
 
     fun addCultureBuilding() {

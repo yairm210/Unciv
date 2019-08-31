@@ -1,7 +1,6 @@
 package com.unciv.logic.civilization
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.math.Vector2
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.RoadStatus
@@ -10,21 +9,8 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tr
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.addAll
-import kotlin.collections.arrayListOf
-import kotlin.collections.asSequence
-import kotlin.collections.filter
-import kotlin.collections.filterNot
-import kotlin.collections.flatMap
-import kotlin.collections.isNotEmpty
-import kotlin.collections.map
-import kotlin.collections.mapNotNull
-import kotlin.collections.mutableListOf
-import kotlin.collections.plusAssign
 import kotlin.collections.set
-import kotlin.collections.toList
 
 /** CivInfo class was getting too crowded */
 class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
@@ -32,21 +18,31 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
     // This is a big performance
     fun updateViewableTiles() {
         val newViewableTiles = HashSet<TileInfo>()
-        newViewableTiles.addAll(civInfo.cities.flatMap { it.getTiles() }.flatMap { it.neighbors }) // tiles adjacent to city tiles
-        newViewableTiles.addAll(civInfo.getCivUnits().flatMap { it.viewableTiles})
+
+        // There are a LOT of tiles usually.
+        // And making large lists of them just as intermediaries before we shove them into the hashset is very space-inefficient.
+        // Ans so, sequences to the rescue!
+        val ownedTiles = civInfo.cities.asSequence().flatMap { it.getTiles().asSequence() }
+        newViewableTiles.addAll(ownedTiles)
+        val neighboringUnownedTiles = ownedTiles.flatMap { it.neighbors.asSequence().filter { it.getOwner()!=civInfo } }
+        newViewableTiles.addAll(neighboringUnownedTiles)
+        newViewableTiles.addAll(civInfo.getCivUnits().asSequence().flatMap { it.viewableTiles.asSequence()})
         civInfo.viewableTiles = newViewableTiles // to avoid concurrent modification problems
 
         val newViewableInvisibleTiles = HashSet<TileInfo>()
-        newViewableInvisibleTiles.addAll(civInfo.getCivUnits()
+        newViewableInvisibleTiles.addAll(civInfo.getCivUnits().asSequence()
                 .filter {it.hasUnique("Can attack submarines")}
-                .flatMap {it.viewableTiles})
+                .flatMap {it.viewableTiles.asSequence()})
         civInfo.viewableInvisibleUnitsTiles = newViewableInvisibleTiles
         // updating the viewable tiles also affects the explored tiles, obvs
 
-        val newExploredTiles = HashSet<Vector2>(civInfo.exploredTiles)
-        newExploredTiles.addAll(newViewableTiles.asSequence().map { it.position }
-                .filterNot { civInfo.exploredTiles.contains(it) })
-        civInfo.exploredTiles = newExploredTiles // ditto
+        // So why don't we play switcharoo with the explored tiles as well?
+        // Well, because it gets REALLY LARGE so it's a lot of memory space,
+        // and we never actually iterate on the explored tiles (only check contains()),
+        // so there's no fear of concurrency problems.
+        val newlyExploredTiles = newViewableTiles.asSequence().map { it.position }
+                .filterNot { civInfo.exploredTiles.contains(it) }
+        civInfo.exploredTiles.addAll(newlyExploredTiles)
 
 
         val viewedCivs = HashSet<CivilizationInfo>()
@@ -56,8 +52,8 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
             for(unit in tile.getUnits()) viewedCivs+=unit.civInfo
         }
 
-        if(!civInfo.isBarbarianCivilization()) {
-            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarianCivilization() })
+        if(!civInfo.isBarbarian()) {
+            for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() })
                 if (!civInfo.diplomacy.containsKey(otherCiv.civName)) {
                     civInfo.meetCivilization(otherCiv)
                     civInfo.addNotification("We have encountered [${otherCiv.civName}]!".tr(), null, Color.GOLD)
@@ -67,7 +63,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
 
     fun updateHasActiveGreatWall(){
         civInfo.hasActiveGreatWall = !civInfo.tech.isResearched("Dynamite") &&
-                civInfo.getBuildingUniques().contains("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
+                civInfo.containsBuildingUnique("Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)")
     }
 
     fun setCitiesConnectedToCapitalTransients(){

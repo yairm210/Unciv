@@ -53,12 +53,12 @@ open class TileInfo {
     }
 
     fun containsGreatImprovement(): Boolean {
-        if (improvement in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        if (improvement in Constants.greatImprovements) return true
         return false
     }
 
     fun containsUnfinishedGreatImprovement(): Boolean {
-        if (improvementInProgress in listOf("Academy", "Landmark", "Manufactory", "Customs house")) return true
+        if (improvementInProgress in Constants.greatImprovements) return true
         return false
     }
 
@@ -66,6 +66,8 @@ open class TileInfo {
 
     /** Returns military, civilian and air units in tile */
     fun getUnits(): List<MapUnit> {
+        if(militaryUnit==null && civilianUnit==null && airUnits.isEmpty())
+            return emptyList() // for performance reasons - costs much less to initialize than an empty ArrayList or list()
         val list = ArrayList<MapUnit>(2)
         if(militaryUnit!=null) list.add(militaryUnit!!)
         if(civilianUnit!=null) list.add(civilianUnit!!)
@@ -87,7 +89,7 @@ open class TileInfo {
 
 
     // This is for performance - since we access the neighbors of a tile ALL THE TIME,
-    // and the neighbors of a tile never change, it's much more CPU efficient to save the list once and for all!
+    // and the neighbors of a tile never change, it's much more efficient to save the list once and for all!
     @Transient private var internalNeighbors : List<TileInfo>?=null
     val neighbors: List<TileInfo>
         get(){
@@ -97,9 +99,9 @@ open class TileInfo {
         }
 
     fun getHeight(): Int {
-        if (baseTerrain==Constants.mountain) return 4
+        if (baseTerrain == Constants.mountain) return 4
         if (baseTerrain == Constants.hill) return 2
-        if (terrainFeature==Constants.forest || terrainFeature==Constants.jungle) return 1
+        if (terrainFeature == Constants.forest || terrainFeature == Constants.jungle) return 1
         return 0
     }
 
@@ -128,7 +130,7 @@ open class TileInfo {
         var stats = getBaseTerrain().clone()
 
         if((baseTerrain== Constants.ocean||baseTerrain==Constants.coast) && city!=null
-                && city.getBuildingUniques().contains("+1 food from Ocean and Coast tiles"))
+                && city.containsBuildingUnique("+1 food from Ocean and Coast tiles"))
             stats.food += 1
 
         if (terrainFeature != null) {
@@ -139,10 +141,10 @@ open class TileInfo {
                 stats.add(terrainFeatureBase)
 
             if (terrainFeature == Constants.jungle && city != null
-                    && city.getBuildingUniques().contains("Jungles provide +2 science"))
+                    && city.containsBuildingUnique("Jungles provide +2 science"))
                 stats.science += 2f
             if(terrainFeature=="Oasis" && city!=null
-                    && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
+                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
         }
 
@@ -153,15 +155,15 @@ open class TileInfo {
                 stats.add(resource.getBuilding()!!.resourceBonusStats!!) // resource-specific building (eg forge, stable) bonus
             }
             if(resource.resourceType==ResourceType.Strategic
-                    && observingCiv.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
+                    && observingCiv.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity")
                 stats.production+=1
             if(resource.name=="Oil" && city!=null
-                    && city.getBuildingUniques().contains("+2 Gold for each source of Oil and oasis"))
+                    && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
             if(city!=null && isWater){
-                if(city.getBuildingUniques().contains("+1 production from all sea resources worked by the city"))
+                if(city.containsBuildingUnique("+1 production from all sea resources worked by the city"))
                     stats.production+=1
-                if(city.getBuildingUniques().contains("+1 production and gold from all sea resources worked by the city")){
+                if(city.containsBuildingUnique("+1 production and gold from all sea resources worked by the city")){
                     stats.production+=1
                     stats.gold+=1
                 }
@@ -182,7 +184,7 @@ open class TileInfo {
                 stats.add(improvement) // again, for the double effect
         }
 
-        if(city!=null && isWater && city.getBuildingUniques().contains("+1 gold from worked water tiles in city"))
+        if(city!=null && isWater && city.containsBuildingUnique("+1 gold from worked water tiles in city"))
             stats.gold += 1
 
         if (isCityCenter()) {
@@ -308,10 +310,10 @@ open class TileInfo {
         turnsToImprovement = improvement.getTurnsToBuild(civInfo)
     }
 
-    fun hasEnemySubmarine(): Boolean {
+    fun hasEnemySubmarine(viewingCiv:CivilizationInfo): Boolean {
         val unitsInTile = getUnits()
         if (unitsInTile.isEmpty()) return false
-        if (!unitsInTile.first().civInfo.isPlayerCivilization() &&
+        if (unitsInTile.first().civInfo!=viewingCiv &&
                 unitsInTile.firstOrNull { it.isInvisible() } != null) {
             return true
         }

@@ -41,16 +41,6 @@
 	}
 */
 
-	"World size":{	 //not duplicate,the other one is wrong.
-		Italian:"Dimensione della mappa"
-		Russian:"Размер мира"
-		French:"Taille du monde"
-		Romanian:"Mărime pământ"
-		Spanish:"Tamaño del mundo"
-		Simplified_Chinese:"世界大小"
-		Portuguese:"Tamanho do mundo"
-		German:"Kartengröße"
-	}
 
 	
 	"Start game!":{
@@ -90,7 +80,7 @@
 
 	"Number of human players":{
 		Italian:"Numero di giocatori"
-		Russian:"Количество врагов"
+		Russian:"Количество игроков"
 		French:"Nombre de joueurs humains"
 		Romanian:"Număr de inamici"
 		Spanish:"Número de enemigos"
@@ -99,16 +89,6 @@
 		German:"Anzahl der Gegner"
 	}
 
-	"Difficulty":{	
-		Italian:"Difficoltà"
-		Russian:"Сложность"
-		French:"Difficulté"
-		Romanian:"Dificultate"
-		Spanish:"Dificultad"
-		Simplified_Chinese:"难度"
-		Portuguese:"Dificuldade"
-		German:"Schwierigkeitsgrad"
-	}
 	
 	"Number of city-states":{
 		Italian:"Numero di Città-Stato"
@@ -138,6 +118,214 @@
 	"Cultural": {
 		Italian:"Culturale"
 		French: "Culturelle"
+	}
+	
+	// Map sizes
+	
+	"World size":{	 //not duplicate,the other one is wrong.
+		Italian:"Dimensioni della mappa"
+		Russian:"Размер мира"
+		French:"Taille du monde"
+		Romanian:"Mărime pământ"
+		Spanish:"Tamaño del mundo"
+		Simplified_Chinese:"世界大小"
+		Portuguese:"Tamanho do mundo"
+		German:"Kartengröße"
+	}
+	
+	
+	"Tiny":{
+		Italian:"Minuscola"
+		Romanian:"Micuț"
+		Spanish:"Micro"
+		Simplified_Chinese:"极小"
+		German:"Winzig"
+		Russian:"Крошечный"
+		Portuguese:"Minúsculo"
+		French:"Minuscule"
+	}
+
+	"Small":{	
+		Italian:"Piccola"
+		Russian:"Маленький"
+		French:"Petit"
+		Romanian:"Mic"
+		Spanish:"Pequeño"
+		Simplified_Chinese:"小"
+		Portuguese:"Pequeno"
+		German:"Klein"
+	}
+
+	"Medium":{	
+		Italian:"Media"
+		Russian:"Средний"
+		French:"Moyen"
+		Romanian:"Mediu"
+		Spanish:"Mediano"
+		Simplified_Chinese:"中"
+		Portuguese:"Médio"
+		German:"Mittel"
+	}
+
+	"Large":{	
+		Italian:"Grande"
+		Russian:"Большой"
+		French:"Grand"
+		Romanian:"Mare"
+		Spanish:"Grande"
+		Simplified_Chinese:"大"
+		Portuguese:"Grande"
+		German:"Groß"
+	}
+
+	"Huge":{	
+		Italian:"Enorme"
+		Russian:"Огромный"
+		French:"Énorme"
+		Romanian:"Imens"
+		Spanish:"Enorme"
+		Simplified_Chinese:"巨大"
+		Portuguese:"Imenso"
+		German:"Enorm"
+	}
+	
+	
+	// Difficulties
+	
+	"Difficulty":{	
+		Italian:"Difficoltà"
+		Russian:"Сложность"
+		French:"Difficulté"
+		Romanian:"Dificultate"
+		Spanish:"Dificultad"
+		Simplified_Chinese:"难度"
+		Portuguese:"Dificuldade"
+		German:"Schwierigkeitsgrad"
+	}
+	
+	
+	"Settler":{	
+		Italian:"Colono"
+		Russian:"Поселенец"
+		French:"Colon"
+		Romanian:"Colonist"
+		Spanish:"Colono"
+		Simplified_Chinese:"移民"
+		Portuguese:"Colonizador"
+		German:"Siedler"
+	}
+
+	"Chieftain":{	
+		Italian:"Capo"
+		Russian:"Вождь"
+		French:"Chef de clan"
+		Romanian:"Șef de trib"
+		Spanish:"Cacique"
+		Simplified_Chinese:"酋长"
+		Portuguese:"Cacique"
+		German:"Häuptling"
+	}
+
+	"Warlord":{	
+		Italian:"Condottiero"
+		Russian:"Военачальник"
+		French:"Chef de guerre"
+		Romanian:"Comandant"
+		Spanish:"Señor de la guerra"
+		Simplified_Chinese:"军阀"
+		Portuguese:"General"
+		German:"Kriegsherr"
+	}
+
+	"Prince":{	
+		Italian:"Principe"
+		Russian:"Принц"
+		French:"Prince"
+		Romanian:"Prinţ"
+		Spanish:"Príncipe"
+		Simplified_Chinese:"王子"
+		Portuguese:"Príncipe"
+		German:"Prinz"
+	}
+
+	"King":{	
+		Italian:"Re"
+		Russian:"Король"
+		French:"Roi"
+		Romanian:"Rege"
+		Spanish:"Rey"
+		Simplified_Chinese:"国王"
+		Portuguese:"Rei"
+		German:"König"
+	}
+
+	"Emperor":{	
+		Italian:"Imperatore"
+		Russian:"Император"
+		French:"Empereur"
+		Romanian:"Împărat"
+		Spanish:"Emperador"
+		Simplified_Chinese:"皇帝"
+		Portuguese:"Imperador"
+		German:"Kaiser"
+	}
+
+	"Immortal":{	
+		Italian:"Immortale"
+		Russian:"Бессмертный"
+		French:"Immortel"
+		Romanian:"Nemuritor"
+		Spanish:"Inmortal"
+		Simplified_Chinese:"不朽"
+		Portuguese:"Imortal"
+		German:"Unsterblicher"
+	}
+
+	"Deity":{	
+		Italian:"Divinità"
+		Russian:"Божество"
+		French:"Déité" //or Divinité
+		Romanian:"Zeitate"
+		Spanish:"Deidad"
+		Simplified_Chinese:"天神"
+		Portuguese:"Semi-Deus"
+		German:"Gott"
+	}
+	
+	
+	// Game speeds
+	
+	"Game Speed":{
+		Italian:"Velocità di gioco"
+                Russian:"Скорость игры"
+	}
+	
+	"Quick":{
+		Italian:"Rapida"
+                Russian:"Быстрая"
+	}
+	
+	"Standard":{
+		Italian:"Standard"
+                Russian:"Обычная"
+	}
+	
+	"Epic":{
+		Italian:"Epica"
+	}
+	
+	"Marathon":{
+		Italian:"Maratona"
+	}
+
+////
+	
+	"It looks like we can't make a map with the parameters you requested!":{
+		Italian:"Sembra che i parametri da te impostati siano eccessivi per questa mappa!"
+	}
+	
+	"Maybe you put too many players into too small a map?":{
+		Italian:"Forse hai inserito troppi giocatori o altri parametri?"
 	}
 	
 	
@@ -229,7 +417,7 @@
 		German:"Optionen"
 		French:"Options"
 		Japanese:"オプション"
-		Russian:"Опции"
+		Russian:"Настройки"
 		Romanian:"Opțiuni"
 		Dutch:"Opties"
 		Spanish:"Opciones"
@@ -255,12 +443,14 @@
 		French:"Tours avant sauvegarde automatique"
 		Simplified_Chinese:"自动存档回合数"
 		Portuguese:"Turnos entre autosaves"
+                Russian:"Кол-во ходов между автосохранениями"
 	}
 	
 	"Sound effects volume":{
 		Italian:"Volume effetti"
 		French:"Volume sonore"
 		Simplified_Chinese:"声效大小"
+                Russian:"Громкость звука"
 	}
 	
 	"Show":{
@@ -278,7 +468,7 @@
 
 	"Hide":{
 		Italian:"Nascondi"
-		Russian:"Спрятать"
+		Russian:"Убрать"
 		French:"Cacher"
 		Romanian:"Ascunde"
 		German:"Verstecken"
@@ -291,7 +481,7 @@
 	
 	"Worked tiles":{
 		Italian:"Celle sfruttate"
-		Russian:"обработанные клетки"
+		Russian:"Обработанные клетки"
 		French:"cases exploités"
 		Romanian:"celule lucrate"
 		German:"bearbeitete Felder"
@@ -304,7 +494,7 @@
 
 	"Resources and improvements":{
 		Italian:"Risorse e miglioramenti"
-		Russian:"ресурсы и улучшения"
+		Russian:"Ресурсы и улучшения"
 		French:"ressources et améliorations"
 		Romanian:"resurse și îmbunătățiri"
 		German:"Ressourcen und Verbesserungen"
@@ -327,10 +517,12 @@
 		Italian:"Muovi unità con un solo tocco"
 		German: "Einheiten mit einem Klick bewegen"
 		French:"Bouger les unités en un seul click"
+                Russian:"Перемещать юниты одним касанием"
 	}
 	
 	"Show tutorials":{
 		Italian:"Mostra tutorial"
+                Russian:"Показывать обучение"
 	}
 	
 }

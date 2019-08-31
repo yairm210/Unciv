@@ -45,10 +45,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
     private fun addAirUnitTable() {
         if (!tileGroup.tileInfo.airUnits.isNotEmpty()) return
-        val secondarycolor = city.civInfo.getNation().getSecondaryColor()
+        val secondarycolor = city.civInfo.nation.getSecondaryColor()
         val airUnitTable = Table().apply { defaults().pad(5f) }
-        airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-                .tint(city.civInfo.getNation().getColor())
+        airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
+                .tint(city.civInfo.nation.getColor())
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
@@ -89,19 +89,19 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     }
 
     private fun getIconTable(): Table {
-        val secondaryColor = city.civInfo.getNation().getSecondaryColor()
+        val secondaryColor = city.civInfo.nation.getSecondaryColor()
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
-        iconTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
-                .tint(city.civInfo.getNation().getColor())
+        iconTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
+                .tint(city.civInfo.nation.getColor())
 
         if (city.resistanceCounter > 0) {
-            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance.png")
+            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
             iconTable.add(resistanceImage).size(20f).pad(2f).padLeft(5f)
         }
 
         if (city.isBeingRazed) {
-            val fireImage = ImageGetter.getImage("OtherIcons/Fire.png")
+            val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             iconTable.add(fireImage).size(20f).pad(2f).padLeft(5f)
         }
         if (city.isCapital()) {
@@ -110,7 +110,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                         .apply { color = secondaryColor }
                 iconTable.add(cityStateImage).size(20f).pad(2f).padLeft(10f)
             } else {
-                val starImage = ImageGetter.getImage("OtherIcons/Star.png").apply { color = Color.LIGHT_GRAY }
+                val starImage = ImageGetter.getImage("OtherIcons/Star").apply { color = Color.LIGHT_GRAY }
                 iconTable.add(starImage).size(20f).pad(2f).padLeft(10f)
             }
         } else if (city.civInfo.isCurrentPlayer() && city.isConnectedToCapital()) {
@@ -128,7 +128,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
             iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f)
         else if (city.civInfo.isMajorCiv()) {
-            val nationIcon = ImageGetter.getNationIcon(city.civInfo.getNation().name)
+            val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
             nationIcon.color = secondaryColor
             iconTable.add(nationIcon).size(20f).padRight(10f)
         }
@@ -170,7 +170,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         group.addActor(circle)
         group.addActor(image)
 
-        val secondaryColor = cityConstructions.cityInfo.civInfo.getNation().getSecondaryColor()
+        val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getSecondaryColor()
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
         if(cityCurrentConstruction !is SpecialConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
@@ -180,11 +180,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             label.pack()
             group.addActor(label)
 
-            val adoptedPolicies = cityConstructions.cityInfo.civInfo.policies.adoptedPolicies
             val constructionPercentage = cityConstructions.getWorkDone(cityCurrentConstruction.name) /
-                    cityCurrentConstruction.getProductionCost(adoptedPolicies).toFloat()
-            val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage
-                    , Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.BLACK)
+                    cityCurrentConstruction.getProductionCost(cityConstructions.cityInfo.civInfo).toFloat()
+            val productionBar = ImageGetter.getProgressBarVertical(2f, groupHeight, constructionPercentage,
+                    Color.BROWN.cpy().lerp(Color.WHITE, 0.5f), Color.BLACK)
             productionBar.x = 10f
             label.x = productionBar.x - label.width - 3
             group.addActor(productionBar)

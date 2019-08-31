@@ -38,9 +38,9 @@ class UnitActions {
         val workingOnImprovement = unit.hasUnique("Can build improvements on tiles") && unit.currentTile.hasImprovementInProgress()
         if(!unit.isFortified() && (!unit.canFortify() || unit.health<100) && unit.currentMovement >0
                 && !workingOnImprovement) {
-            val sleeping = unit.action == "Sleep"
-            actionList += UnitAction("Sleep", !sleeping, sleeping) {
-                unit.action = "Sleep"
+            val isSleeping = unit.action == Constants.unitActionSleep
+            actionList += UnitAction("Sleep", !isSleeping, isSleeping) {
+                unit.action = Constants.unitActionSleep
                 unitTable.selectedUnit = null
             }
         }
@@ -60,10 +60,10 @@ class UnitActions {
         }
 
         if(unit.type == UnitType.Scout){
-            if(unit.action != "Explore")
+            if(unit.action != Constants.unitActionExplore)
                 actionList += UnitAction("Explore",true) {
                     UnitAutomation().automatedExplore(unit)
-                    unit.action = "Explore"
+                    unit.action = Constants.unitActionExplore
                 }
             else
                 actionList += UnitAction("Stop exploration", true) { unit.action = null }
@@ -124,7 +124,7 @@ class UnitActions {
         if(unit.hasUnique("Must set up to ranged attack") && !unit.isEmbarked()) {
             val setUp = unit.action == "Set Up"
             actionList+=UnitAction("Set up", unit.currentMovement >0 && !setUp, currentAction = setUp ) {
-                unit.action="Set Up"
+                unit.action=Constants.unitActionSetUp
                 unit.useMovementPoints(1f)
             }.sound("setup")
         }
@@ -134,8 +134,6 @@ class UnitActions {
                     unit.currentMovement >0 &&
                             !tile.getTilesInDistance(3).any { it.isCityCenter() })
             {
-                worldScreen.displayTutorials("CityFounded")
-
                 unit.civInfo.addCity(tile.position)
                 tile.improvement = null
                 unit.destroy()
@@ -150,13 +148,13 @@ class UnitActions {
                     currentAction = unit.currentTile.hasImprovementInProgress()
             ) { worldScreen.game.screen = ImprovementPickerScreen(tile) { unitTable.selectedUnit = null } }
 
-            if("automation" == unit.action){
+            if(Constants.unitActionAutomation == unit.action){
                 actionList += UnitAction("Stop automation", true) {unit.action = null}
             }
             else {
                 actionList += UnitAction("Automate", unit.currentMovement >0)
                 {
-                    unit.action = "automation"
+                    unit.action = Constants.unitActionAutomation
                     WorkerAutomation(unit).automateWorkerAction()
                 }
             }

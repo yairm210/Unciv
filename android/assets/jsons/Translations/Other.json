@@ -20,7 +20,7 @@
 	
 	"Working...":{ // Displayed when next turn is being...turned
 		Italian:"Attendere..."
-		Russian:"Работает..."
+		Russian:"Обработка..."
 		French:"Patientez..."
 		Romanian:"Lucru..."
 		Dutch:"Verwerken..."
@@ -76,7 +76,7 @@
 
 	"turns":{ // for e.g. turns to technology
 		Italian:"turni"
-		Russian:"Ходов"
+		Russian:"ходов"
 		French:"Tours"
 		Romanian:"Runde"
 		German:"Runden"
@@ -91,6 +91,7 @@
 		Italian:"turno"
 		Simplified_Chinese:"回合"
 		Portuguese:"Turno"
+                Russian:"ход"
 		French:"tour"
 	}
 
@@ -99,6 +100,7 @@
 		Simplified_Chinese:"下个未行动单位"
 		Portuguese:"Próxima unidade"
 		French:"Unité suivante"
+                Russian:"Следующий юнит"
 	}
 
 	"Pick a policy":{
@@ -206,7 +208,7 @@
 
 	"Automate":{
 		Italian:"Automatizza"
-		Russian:"Автоматизация"
+		Russian:"Автоматизировать"
 		French:"Automatiser"
 		Romanian:"Automatizează"
 		German:"Automatisieren"
@@ -226,7 +228,7 @@
 		Portuguese:"Pare a automação"
 		Simplified_Chinese:"停止自动化"
 		Romanian:"Opriți automatizarea"
-		Russian:"Стоп автоматизации"
+		Russian:"Остановить автоматизацию"
 		Japanese:"自動化を停止"
 	}
 
@@ -234,6 +236,7 @@
 		Italian: "Costruisci strada"
 		German: "Straße bauen"
 		French:"Contruire une route"
+                Russian:"Построить дорогу"
 	}
 
 	"Fortify":{
@@ -251,7 +254,7 @@
 	
 	"Fortification":{ // as in "+40% Fortification"
 		Italian:"Fortificazione"
-		Russian:"от укрепления"
+		Russian:"к защите"
 		French:"Fortification"
 		Romanian:"Fortificație"
 		German:"Befestigung"
@@ -276,8 +279,8 @@
 	}
 
 	"Moving": { //sample would be appreciated
-		"Italian": "In movimento"
-		"German": "Bewegen"
+		Italian: "In movimento"
+		German: "Bewegen"
 		French:"En mouvement"
 	}
 
@@ -367,7 +370,7 @@
 		Portuguese:"Explorar"
 		Japanese:"探検する"
 		Simplified_Chinese:"自由探索"
-		Russian:"обследовать"
+		Russian:"Исследовать территорию"
 		Dutch:"Onderzoeken"
 	}
 	
@@ -376,6 +379,7 @@
 		Simplified_Chinese:"停止探索"
 		French:"Arrêter l'exploration"
 		Portuguese:"Parar a exploração"
+                Russian:"Остановить исследование территории"
 	}
 
 	"Pillage":{
@@ -384,7 +388,7 @@
 		French:"Pillage"
 		Japanese:"略奪"
 		Portuguese:"Pilhar"
-		Russian:"мародерство"
+		Russian:"Разграбить"
 		Romanian:"Prădare"
 		Dutch:"Plundering"
 		Spanish:"Pillaje"
@@ -422,6 +426,8 @@
 	
 	"Start Golden Age":{
 		Italian:"Inizia Età dell'Oro"
+		French:"Commencer un Age d'Or"
+                Russian:"Войти в золотой век"
 	}
 	
 	"Yes":{
@@ -451,6 +457,7 @@
 
 	"Acquire":{
 		Italian:"Prendi"
+		French:"Acquérir"
 	}
 
 /////// Stats / Basics ressources
@@ -563,7 +570,7 @@
 
 	"Start new game":{
 		Italian:"Nuova partita"
-		Russian:"Новая игра"
+		Russian:"Начать новую игру"
 		French:"Nouvelle partie"
 		Romanian:"Joc nou"
 		German:"Neues Spiel"
@@ -649,7 +656,7 @@
 
 	"Exit city":{
 		Italian:"Esci dalla città"
-		Russian:"Выход из города"
+		Russian:"Выйти из города"
 		French:"Quitter la ville"
 		Romanian:"Ieși din oraș"
 		German:"Stadt verlassen"
@@ -704,7 +711,7 @@
 		French:"Acheter"
 		Romanian:"A cumpara"
 		German:"Kaufen"
-		Russian:"купить"
+		Russian:"Купить"
 		Dutch:"Kopen"
 		Spanish:"Comprar"
 		Portuguese:"Comprar"
@@ -714,7 +721,7 @@
 	
 	"Would you like to purchase [constructionName] for [buildingGoldCost] gold?":{
 		Italian:"Vorresti acquistare [constructionName] per [buildingGoldCost] oro?"
-		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золото?"
+		Russian:"Хотите купить [constructionName] за [buildingGoldCost] золота?"
 		French:"Souhaitez-vous acheter [constructionName] pour [buildingGoldCost] gold?"
 		Romanian:"Doriți să achiziționați [buildingName] pentru aur [buildingGoldCost]?"
 		German:"Möchten Sie [constructionName] für [buildingGoldCost] gold kaufen?"
@@ -740,7 +747,7 @@
 	
 	"Pick construction":{
 		Italian:"Scegli la costruzione"
-		Russian:"Выбор здания"
+		Russian:"Выбрать здание"
 		French:"Sélectionner la construction"
 		Romanian:"Alege construcția"
 		German:"Bauwerk auswählen"
@@ -756,12 +763,14 @@
 		Simplified_Chinese:"选择设施"
 		French:"Choisir une amélioration"
 		Portuguese:"Escolha uma melhoria"
+                Russian:"Выбрать улучшение"
 	}
 
 	"Pick now!": { //sample needed
 		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
 		French:"Choisir maintenant !"
+                Russian:"Выбрать сейчас!"
 	}
 
 	"Build [building]":{ // eg Build Granary
@@ -862,7 +871,7 @@
 		Portuguese:"Bonus de crescimento"
 	}
 
-	"Free population":{ // as in "Free population: 2/13
+	"Unassigned population":{ // as in "Unassigned population: 2/13
 		Italian:"Popolazione libera"
 		Russian:"Свободное население"
 		French:"Population libre"
@@ -876,7 +885,7 @@
 	} 
 
 	"[turnsToExpansion] turns to expansion":{
-		Italian:"[turnsToExpansion] turni per espandersi"
+		Italian:"Espansione dei confini tra [turnsToExpansion] turni"
 		Russian:"Расширение в [turnsToExpansion] раунды(ах)"
 		French:"[turnsToExpansion] tours à l'expansion"
 		Romanian:"[turnsToExpansion] rundă până la expansiunea"
@@ -902,8 +911,8 @@
 	}
 
 	"[turnsToPopulation] turns to new population":{
-		Italian:"[turnsToPopulation] turni fino a un nuovo abitante"
-		Russian:"Hовый житель в [turnsToPopulation] раундах"
+		Italian:"Nuovo abitante tra [turnsToPopulation] turni"
+		Russian:"Hовый житель родится через [turnsToPopulation] ходов"
 		French:"[turnsToPopulation] tours à un nouveau résident"
 		Romanian:"[turnsToPopulation] rundă până un nou rezident"
 		German:"Neuer Einwohner in [turnsToPopulation] Runden"
@@ -916,7 +925,7 @@
 
 	"[turnsToStarvation] turns to lose population":{
 		Italian:"Perdita di popolazione tra [turnsToStarvation] turni"
-		Russian:"Потеря населения в [turnsToStarvation] смен"
+		Russian:"[turnsToStarvation] ходов до смерти жителя"
 		French:"Perte de population dans [turnsToStarvation] tours"
 		Romanian:"Pierderea populației în [turnsToStarvation] rundă"
 		German:"Bevölkerungsverlust in [turnsToStarvation] Runden"
@@ -942,7 +951,7 @@
 
 	"In resistance for another [numberOfTurns] turns":{ //It's when city get captured
 		Italian:"La resistenza durerà altri [numberOfTurns] turni."
-        Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
+                Simplified_Chinese:"抵抗将持续额外[numberOfTurns]回合."
 		Portuguese:"A resistência por [numberOfTurns] turnos mais."
 		Japanese:"他の[numberOfTurns]ターンに抵抗."
 		French:"En révolte pour [numberOfTurns] tours."
@@ -950,7 +959,7 @@
 
 	"Sell for [sellAmount] gold":{ // when selling a building
 		Italian:"Vendi per [sellAmount] Oro" //es.
-		Russian:"Продам за [sellAmount] золотых"
+		Russian:"Продать за [sellAmount] золота"
 		French:"Vendre pour [sellAmount] or"
 		Romanian:"Vindem [sellAmount] de aur"
 		German:"Verkaufen Sie für [sellAmount] Gold"
@@ -1031,7 +1040,7 @@
 
 	"Research [technology]":{ // eg "Research Pottery"
 		Italian:"Ricerca [technology]"
-		Russian:"Исследование [technology]"
+		Russian:"Исследовать [technology]"
 		French:"Rechercher [technology]"
 		Romanian:"Cercetează [technology]"
 		German:"[technology] erforschen"
@@ -1057,7 +1066,7 @@
 
 	"Units enabled":{
 		Italian:"Unità sbloccate"
-		Russian:"Активные юниты"
+		Russian:"Новые юниты"
 		French:"Unités activées"
 		Romanian:"Unități active"
 		German:"Freigeschaltete Einheiten"
@@ -1070,7 +1079,7 @@
 
 	"Buildings enabled":{
 		Italian:"Edifici sbloccati"
-		Russian:"Активные здания"
+		Russian:"Новые здания"
 		French:"Bâtiments activés"
 		Romanian:"Clădiri active"
 		German:"Freigeschaltete Bauwerke"
@@ -1096,11 +1105,13 @@
 	
 	"National Wonder":{
 		Italian:"Meraviglia Nazionale"
+		French:"Merveille Nationale"
+                Russian:"Национальное чудо"
 	}
 	
 	"Wonders enabled":{
 		Italian:"Meraviglie sbloccate"
-		Russian:"Активные чудеса"
+		Russian:"Новые чудеса"
 		French:"Merveilles activées"
 		Romanian:"Minuni active"
 		German:"Freigeschaltete Wunder"
@@ -1113,7 +1124,7 @@
 
 	"Tile improvements enabled":{
 		Italian:"Miglioramenti delle celle sbloccati"
-		Russian:"Улучшения клеток включены"
+		Russian:"Новые улучшения клеток"
 		French:"Améliorations apportées aux cases"
 		Romanian:"Îmbunătățiri celule active"
 		German:"Freigschaltete Feldverbesserungen"
@@ -1237,6 +1248,7 @@
 		Portuguese:"[percentage] a defesa da unidade"
 		German:"[percentage] erhöhte Verteidigungsstärke"
 		French:"[percentage] de défense"
+                Russian:"[percentage] к защите юнита"
 	} 
 	
 
@@ -1255,7 +1267,7 @@
 		German:"Entdecke Technologie"
 		Portuguese:"Descobrir uma tecnologia" //do you mean discover "a" tecnology?
 		Russian:"Откройте для себя технологию"
-		French:"Découvrir une technologie"
+ 		French:"Découvrir une technologie"
 	}
 
 	// for unit action button
@@ -1320,153 +1332,6 @@
 		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet"
 	}
 	
-	
-//////// Difficulty
-
-	"Settler":{	
-		Italian:"Colono"
-		Russian:"Поселенец"
-		French:"Colon"
-		Romanian:"Colonist"
-		Spanish:"Colono"
-		Simplified_Chinese:"移民"
-		Portuguese:"Colonizador"
-		German:"Siedler"
-	}
-
-	"Chieftain":{	
-		Italian:"Capo"
-		Russian:"Вождь"
-		French:"Chef de clan"
-		Romanian:"Șef de trib"
-		Spanish:"Cacique"
-		Simplified_Chinese:"酋长"
-		Portuguese:"Cacique"
-		German:"Häuptling"
-	}
-
-	"Warlord":{	
-		Italian:"Condottiero"
-		Russian:"Военачальник"
-		French:"Chef de guerre"
-		Romanian:"Comandant"
-		Spanish:"Señor de la guerra"
-		Simplified_Chinese:"军阀"
-		Portuguese:"General"
-		German:"Kriegsherr"
-	}
-
-	"Prince":{	
-		Italian:"Principe"
-		Russian:"Принц"
-		French:"Prince"
-		Romanian:"Prinţ"
-		Spanish:"Príncipe"
-		Simplified_Chinese:"王子"
-		Portuguese:"Príncipe"
-		German:"Prinz"
-	}
-
-	"King":{	
-		Italian:"Re"
-		Russian:"Король"
-		French:"Roi"
-		Romanian:"Rege"
-		Spanish:"Rey"
-		Simplified_Chinese:"国王"
-		Portuguese:"Rei"
-		German:"König"
-	}
-
-	"Emperor":{	
-		Italian:"Imperatore"
-		Russian:"Император"
-		French:"Empereur"
-		Romanian:"Împărat"
-		Spanish:"Emperador"
-		Simplified_Chinese:"皇帝"
-		Portuguese:"Imperador"
-		German:"Kaiser"
-	}
-
-	"Immortal":{	
-		Italian:"Immortale"
-		Russian:"Бессмертный"
-		French:"Immortel"
-		Romanian:"Nemuritor"
-		Spanish:"Inmortal"
-		Simplified_Chinese:"不朽"
-		Portuguese:"Imortal"
-		German:"Unsterblicher"
-	}
-
-	"Deity":{	
-		Italian:"Divinità"
-		Russian:"Божество"
-		French:"Déité" //or Divinité
-		Romanian:"Zeitate"
-		Spanish:"Deidad"
-		Simplified_Chinese:"天神"
-		Portuguese:"Semi-Deus"
-		German:"Gott"
-	}
-
-////// world size
-
-	"Tiny":{
-		Italian:"Minuscola"
-		Romanian:"Micuț"
-		Spanish:"Micro"
-		Simplified_Chinese:"极小"
-		German:"Winzig"
-		Russian:"крошечный"
-		Portuguese:"Minúsculo"
-		French:"Minuscule"
-	}
-
-	"Small":{	
-		Italian:"Piccola"
-		Russian:"Маленький"
-		French:"Petit"
-		Romanian:"Mic"
-		Spanish:"Pequeño"
-		Simplified_Chinese:"小"
-		Portuguese:"Pequeno"
-		German:"Klein"
-	}
-
-	"Medium":{	
-		Italian:"Media"
-		Russian:"Средний"
-		French:"Moyen"
-		Romanian:"Mediu"
-		Spanish:"Mediano"
-		Simplified_Chinese:"中"
-		Portuguese:"Médio"
-		German:"Mittel"
-	}
-
-	"Large":{	
-		Italian:"Grande"
-		Russian:"Большой"
-		French:"Grand"
-		Romanian:"Mare"
-		Spanish:"Grande"
-		Simplified_Chinese:"大"
-		Portuguese:"Grande"
-		German:"Groß"
-	}
-
-	"Huge":{	
-		Italian:"Enorme"
-		Russian:"огромный"
-		French:"Énorme"
-		Romanian:"Imens"
-		Spanish:"Enorme"
-		Simplified_Chinese:"巨大"
-		Portuguese:"Imenso"
-		German:"Enorm"
-	}
 	
 
 ////// Overview screen
@@ -1546,11 +1411,11 @@
 		Simplified_Chinese:"奇观"
 		Portuguese:"Maravilhas"
 	}
-	
-	"National Wonders":{
+	/*
+	"National Wonders":{ // already here at line 1099
 		Italian:"Meraviglie Nazionali"
 	}
-
+	*/
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
 		Romanian:"Clădiri specializate"
@@ -1582,6 +1447,11 @@
 		Simplified_Chinese:"人口"
 		Portuguese:"População"
 		German:"Bevölkerung"
+	}
+
+	"City States":{	//I think that it's already elsewhere
+		Italian:"Città-Stato"
+		French:"Cité état"
 	}
 
 	"Luxury resources":{	
@@ -1784,6 +1654,18 @@
 		Simplified_Chinese:"恭喜！你赢得了征服胜利！"
 		Portuguese:"Você ganhou uma vitória de dominação!"
 	}
+	 
+	"You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.":{
+	}
+	
+	"The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
+	}
+	
+	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
+	}
+	
+	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
+	}
 
 	"One more turn...!":{
 		Italian:"Aspetta! Solo un altro turno..."
@@ -1812,23 +1694,28 @@
 	}
 
 	"Our status":{
-		Italian:"I nostri status"
+		Italian:"I tuoi progressi"
+		French:"Notre situation"
 	}
 
 	"Global status":{
-		Italian:"Status Globale"
+		Italian:"Progressi globali"
+		French:"Situation globale"
 	}
 
-	"Spaceships parts remaining":{
+	"Spaceship parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
+		French:"Parties de Vaisseau spatial manquantes"
 	}
 
 	"Branches completed":{
 		Italian:"Rami completati"
+		French:"Branches complêtées"
 	}
 
 	"Undefeated civs":{
 		Italian:"Civiltà esistenti"
+		French:"Civilization invaincues"
 	}
 	
 	
@@ -1836,14 +1723,17 @@
 
 	"What would you like to do with the city?":{
 		Italian:"Cosa vorresti farne della Città?"
+		French:"Que voulez vous faire de cette ville?"
 	}
 
 	"Annex":{
 		Italian:"Annetti"
+		French:"Annexer"
 	}
 
 	"Raze":{
-		Italian:"Radi al suolo"
+		Italian:"Distruggi"
+		French:"Razer"
 	}
 	
 	
@@ -1851,14 +1741,18 @@
 
 	"Remove your troops in our border immediately!":{
 		Italian:"Esigiamo che rimuoviate i vostri soldati dai nostri confini!"
+		French:"Enlevez vos troupes de nos terres immédiatement!"
 	}
 
 	"Sorry.":{
 		Italian:"Ti porgiamo le nostre scuse."
+		French:"Désolé."
 	}
 
 	"Never!":{
 		Italian:"Non sia mai!"
+		French:"Jamais!"
+                Russian:"Никогда!"
 	}
 	
 ////// Civilopedia texts
@@ -1869,6 +1763,7 @@
 		French:"Basiques"
 		Simplified_Chinese:"基础"
 		Portuguese:"Básicos"
+                Russian:"Базовое"
 	}
 
 	"Resources":{
@@ -1877,6 +1772,7 @@
 		French:"Ressources"
 		Simplified_Chinese:"资源"
 		Portuguese:"Recursos"
+                Russian:"Ресурсы"
 	}
 
 	"Terrains":{
@@ -1988,13 +1884,14 @@
 	"Rough Terrain":{
 		Italian:"Terreno accidentato"
 		German: "Unwegsames Gelände"
+		French:"Terrain abrupte"
 	}
 
 	" for ":{ //for example:+1 Gold for Gems,Gold,Silver
 		Italian:" per "
 		Simplified_Chinese:"，当建造在拥有下列资源的地块上时："
 		French:"par "
-	    Portuguese:"Por "
+		Portuguese:"Por "
 	}
 
 
@@ -2042,6 +1939,30 @@
 		Simplified_Chinese:"语言设置"
 		French:"langage"
 		Portuguese:"Língua"
+	}
+	
+	"AI":{
+		Italian:"IA"
+	}
+	
+	"Human":{
+		Italian:"Umano"
+	}
+	
+	"Hotseat":{
+		Italian:"Hotseat"
+	}
+	
+	"User Id":{
+		Italian:"ID Utente"
+	}
+	
+	"Click to copy":{
+		Italian:"Clicca per copiare"
+	}
+	
+	"Username":{
+		Italian:"Nome utente"
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.unciv.ui.worldscreen
 
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.unciv.Constants
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
@@ -14,7 +15,7 @@ import kotlin.math.max
 
 class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
     init{
-        val currentPlayerCiv = worldScreen.currentPlayerCiv
+        val currentPlayerCiv = worldScreen.viewingCiv
         val tradeRequest = currentPlayerCiv.tradeRequests.first()
 
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
@@ -42,19 +43,20 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
-            remove()
+            close()
             PopupTable(worldScreen).apply {
                 add(otherCivLeaderName.toLabel()).colspan(2)
                 addSeparator()
                 addGoodSizedLabel("Excellent!").row()
                 addButton("Farewell."){
-                    this.remove()
+                    close()
                     worldScreen.shouldUpdate=true
                     // in all cases, worldScreen.shouldUpdate should be set to true when we remove the last of the popups
                     // in order for the next trade to appear immediately
                 }
                 open()
             }
+            requestingCiv.addNotification("[${currentPlayerCiv.civName}] has accepted your trade request", Color.GOLD)
         }
         addButton("Not this time.".tr()){
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
@@ -66,12 +68,14 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
             if(trade.ourOffers.any{ it.type==TradeType.Treaty && it.name== Constants.peaceTreaty })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
 
-            remove()
+            close()
+            requestingCiv.addNotification("[${currentPlayerCiv.civName}] has denied your trade request", Color.GOLD)
+
             worldScreen.shouldUpdate=true
         }
         addButton("How about something else...".tr()){
             currentPlayerCiv.tradeRequests.remove(tradeRequest)
-            remove()
+            close()
 
             val diplomacyScreen= DiplomacyScreen()
             val tradeTable =  diplomacyScreen.setTrade(requestingCiv)

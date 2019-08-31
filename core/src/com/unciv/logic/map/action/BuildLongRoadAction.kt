@@ -52,13 +52,13 @@ class BuildLongRoadAction(
     // independent of movement costs, but should respect impassable terrain like water and enemy territory
     private fun stepForward(destination: TileInfo): Boolean {
         var success = false
-        val tilesUnitCanCurrentlyReach = unit.getDistanceToTiles().keys
+        val tilesUnitCanCurrentlyReach = unit.movement.getDistanceToTiles().keys
         for (step in getPath(destination).drop(1)) {
             if(step !in tilesUnitCanCurrentlyReach) return false // we're out of tiles in reachable distance, no need to check any further
 
             if (unit.currentMovement > 0f) {
-                if(unit.canMoveTo(step)) {
-                    unit.moveToTile(step)
+                if(unit.movement.canMoveTo(step)) {
+                    unit.movement.moveToTile(step)
                     success = true
                     // if there is a road already, take multiple steps, otherwise this is where we're going to build a road
                     if (!isRoadFinished(step)) return true
@@ -83,7 +83,7 @@ class BuildLongRoadAction(
                 .getPathTo(destination).reversed()
     }
 
-    private fun isRoadableTile(it: TileInfo) = it.isLand && unit.canPassThrough(it)
+    private fun isRoadableTile(it: TileInfo) = it.isLand && unit.movement.canPassThrough(it)
 
     private fun startWorkingOnRoad(): Boolean {
         val tile = unit.currentTile

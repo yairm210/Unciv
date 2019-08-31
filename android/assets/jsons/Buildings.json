@@ -33,6 +33,7 @@
 		resourceBonusStats:{production:1},
 		maintenance:1,
 		hurryCostModifier:25,
+		uniques:["Must not be on plains"]
 		requiredTech:"Calendar"
 	},
 	{
@@ -428,7 +429,7 @@
 		name:"Ironworks",
 		production:8,
 		culture:1,
-		isWonder:true,
+		isNationalWonder:true,
 		requiredBuildingInAllCities:"Workshop",
 		requiredTech:"Machinery"
 	},
@@ -572,6 +573,7 @@
 		name:"Seaport",
 		hurryCostModifier:25,
 		maintenance:2,
+		requiredBuilding:"Harbor",
 		uniques:["+1 production and gold from all sea resources worked by the city",
 			"Can only be built in coastal cities", "+15% production of naval units"]
 		requiredTech:"Navigation"
@@ -599,6 +601,7 @@
 		hurryCostModifier:25,
 		maintenance:2,
 		percentStatBonus:{production:10},
+		uniques:["Must not be on hill"],
 		requiredTech:"Economics"
 	},
 	
@@ -720,7 +723,8 @@
 		culture:4,
 		gold:6,
 		isWonder:true,
-		uniques:["+1 happiness, +2 culture and +3 gold from every Castle"],
+		uniques:["+1 happiness, +2 culture and +3 gold from every Castle",
+			"Must be next to mountain"],
 		requiredTech:"Railroad"
 	},
 	
@@ -784,6 +788,7 @@
 		requiredResource:"Aluminum",
 		cost:360,
 		uniques:["Increases production of spaceship parts by 50%"]
+		requiredBuilding:"Factory",
 		requiredTech:"Robotics"
 	},
 	{

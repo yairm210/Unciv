@@ -63,7 +63,7 @@ class Tutorials{
         val currentTutorial = tutorialTexts[0]
         val label = Label(currentTutorial.texts[0], CameraStageBaseScreen.skin)
         label.setAlignment(Align.center)
-        if(Gdx.files.internal("ExtraImages/"+currentTutorial.name+".png").exists())
+        if(Gdx.files.internal("ExtraImages/"+currentTutorial.name).exists())
             tutorialTable.add(Table().apply { add(ImageGetter.getExternalImage(currentTutorial.name)) }).row()
         tutorialTable.add(label).pad(10f).row()
         val button = TextButton("Close".tr(), CameraStageBaseScreen.skin)

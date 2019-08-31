@@ -3,8 +3,8 @@ package com.unciv.ui.worldscreen
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.models.gamebasics.Nation
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.onClick
@@ -22,8 +22,8 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
         return button
     }
 
-    fun addLeaderName(translatedNation: Nation){
-        val otherCivLeaderName = translatedNation.getLeaderDisplayName()
+    fun addLeaderName(civInfo : CivilizationInfo){
+        val otherCivLeaderName = civInfo.getLeaderDisplayName()
         add(otherCivLeaderName.toLabel())
         addSeparator()
     }
@@ -32,29 +32,29 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
 
         when(popupAlert.type){
             AlertType.WarDeclaration -> {
-                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
-                addLeaderName(translatedNation)
-                addGoodSizedLabel(translatedNation.declaringWar).row()
+                val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                addLeaderName(civInfo)
+                addGoodSizedLabel(civInfo.getTranslatedNation().declaringWar).row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("You'll pay for this!"))
                 responseTable.add(getCloseButton("Very well."))
                 add(responseTable)
             }
             AlertType.Defeated -> {
-                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
-                addLeaderName(translatedNation)
-                addGoodSizedLabel(translatedNation.defeated).row()
+                val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                addLeaderName(civInfo)
+                addGoodSizedLabel(civInfo.getTranslatedNation().defeated).row()
                 add(getCloseButton("Farewell."))
             }
             AlertType.FirstContact -> {
-                val civ = worldScreen.gameInfo.getCivilization(popupAlert.value)
-                val translatedNation = civ.getTranslatedNation()
-                if (civ.isCityState()) {
-                    addLeaderName(translatedNation)
+                val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                val translatedNation = civInfo.getTranslatedNation()
+                if (civInfo.isCityState()) {
+                    addLeaderName(civInfo)
                     addGoodSizedLabel("We have encountered the City-State of [${translatedNation.getNameTranslation()}]!").row()
                     add(getCloseButton("Excellent!"))
                 } else {
-                    addLeaderName(translatedNation)
+                    addLeaderName(civInfo)
                     addGoodSizedLabel(translatedNation.introduction).row()
                     add(getCloseButton("A pleasure to meet you."))
                 }
@@ -63,25 +63,24 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addGoodSizedLabel("What would you like to do with the city?").row()
                 add(getCloseButton("Annex")).row()
                 add(TextButton("Raze", skin).onClick {
-                    worldScreen.currentPlayerCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
+                    worldScreen.viewingCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
                     worldScreen.shouldUpdate=true
                     close()
                 })
             }
             AlertType.BorderConflict -> {
-                val translatedNation = worldScreen.gameInfo.getCivilization(popupAlert.value).getTranslatedNation()
-                addLeaderName(translatedNation)
+                val civInfo = worldScreen.gameInfo.getCivilization(popupAlert.value)
+                addLeaderName(civInfo)
                 addGoodSizedLabel("Remove your troops in our border immediately!").row()
                 val responseTable = Table()
                 responseTable.add(getCloseButton("Sorry."))
                 responseTable.add(getCloseButton("Never!"))
                 add(responseTable)
             }
-            AlertType.CitySettledNearOtherCiv -> {
+            AlertType.DemandToStopSettlingCitiesNear -> {
                 val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
-                val playerDiploManager = worldScreen.currentPlayerCiv.getDiplomacyManager(otherciv)
-                val translatedNation = otherciv.getTranslatedNation()
-                addLeaderName(translatedNation)
+                val playerDiploManager = worldScreen.viewingCiv.getDiplomacyManager(otherciv)
+                addLeaderName(otherciv)
                 addGoodSizedLabel("Please don't settle new cities near us.").row()
                 add(getCloseButton("Very well, we shall look for new lands to settle."){
                     playerDiploManager.agreeNotToSettleNear()
@@ -92,23 +91,18 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             }
             AlertType.CitySettledNearOtherCivDespiteOurPromise -> {
                 val otherciv= worldScreen.gameInfo.getCivilization(popupAlert.value)
-                val translatedNation = otherciv.getTranslatedNation()
-                addLeaderName(translatedNation)
+                addLeaderName(otherciv)
                 addGoodSizedLabel("We noticed your new city near our borders, despite your promise. This will have....implications.").row()
                 add(getCloseButton("Very well."))
             }
         }
         open()
-        isOpen = true
+        worldScreen.alertPopupIsOpen = true
     }
 
-    fun close(){
-        worldScreen.currentPlayerCiv.popupAlerts.remove(popupAlert)
-        isOpen = false
-        remove()
-    }
-
-    companion object {
-        var isOpen = false
+    override fun close(){
+        worldScreen.viewingCiv.popupAlerts.remove(popupAlert)
+        worldScreen.alertPopupIsOpen = false
+        super.close()
     }
 }

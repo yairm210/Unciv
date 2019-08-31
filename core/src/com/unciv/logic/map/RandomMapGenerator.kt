@@ -204,11 +204,11 @@ class CelluarAutomataRandomMapGenerator(): SeedRandomMapGenerator() {
                     if (terrain == "Grassland" || terrain == "Tundra")
                         terrain = "Desert"
                 } else if (abs(getLatitude(tile.position)) > maxLatitude * 0.7) {
-                    if (terrain == "Grassland" || terrain == "Plains" || terrain == "Desert" || terrain == ocean) {
+                    if (terrain == "Grassland" || terrain == Constants.plains || terrain == "Desert" || terrain == ocean) {
                         terrain = "Tundra"
                     }
                 } else {
-                    if (terrain == "Tundra") terrain = "Plains"
+                    if (terrain == "Tundra") terrain = Constants.plains
                     else if (terrain == "Desert") terrain = "Grassland"
                 }
 

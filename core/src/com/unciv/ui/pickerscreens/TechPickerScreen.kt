@@ -3,6 +3,7 @@ package com.unciv.ui.pickerscreens
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
@@ -41,10 +42,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     init {
         setDefaultCloseAction()
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
+        scrollPane.style = skin.get(ScrollPane.ScrollPaneStyle::class.java) // So we can see scrollbars
 
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
-        val columns = 17
+        val columns = GameBasics.Technologies.values.map { it.column!!.columnNumber}.max()!! +1
         val techMatrix = Array<Array<Technology?>>(columns) { arrayOfNulls(10) } // Divided into columns, then rows
 
         for (technology in GameBasics.Technologies.values) {
@@ -93,11 +95,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick("paper") {
-            if (isFreeTechPick)     civTech.getFreeTechnology(selectedTech!!.name)
-            else    civTech.techsToResearch = tempTechsToResearch
-            
+            if (isFreeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
+            else civTech.techsToResearch = tempTechsToResearch
+
             game.setWorldScreen()
-            game.worldScreen.shouldUpdate=true
+            game.worldScreen.shouldUpdate = true
             dispose()
         }
 

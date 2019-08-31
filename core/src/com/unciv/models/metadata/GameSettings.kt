@@ -1,4 +1,4 @@
-package com.unciv
+package com.unciv.models.metadata
 
 import com.unciv.logic.GameSaver
 
@@ -17,6 +17,9 @@ class GameSettings {
     var tileSet:String = "FantasyHex"
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
+
+    var userName:String=""
+    var userId = ""
 
     fun save(){
         GameSaver().setGeneralSettings(this)

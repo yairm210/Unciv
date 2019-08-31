@@ -5,8 +5,8 @@ import com.unciv.models.gamebasics.ICivilopedia
 import com.unciv.models.stats.INamed
 
 interface IConstruction : INamed, ICivilopedia {
-    fun getProductionCost(adoptedPolicies: HashSet<String>): Int
-    fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean = false): Int
+    fun getProductionCost(civInfo: CivilizationInfo): Int
+    fun getGoldCost(civInfo: CivilizationInfo): Int
     fun isBuildable(construction: CityConstructions): Boolean
     fun shouldBeDisplayed(construction: CityConstructions): Boolean
     fun postBuildEvent(construction: CityConstructions)  // Yes I'm hilarious.
@@ -45,11 +45,11 @@ open class SpecialConstruction(override var name: String, override val descripti
         return false
     }
 
-    override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
+    override fun getProductionCost(civInfo: CivilizationInfo): Int {
         throw Exception("Impossible!")
     }
 
-    override fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean): Int {
+    override fun getGoldCost(civInfo: CivilizationInfo): Int {
         throw Exception("Impossible!")
     }
 

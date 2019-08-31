@@ -3,6 +3,7 @@ package com.unciv.logic.civilization.diplomacy
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.CityStateType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.trade.Trade
@@ -30,7 +31,8 @@ enum class DiplomacyFlags{
     BorderConflict,
     SettledCitiesNearUs,
     AgreedToNotSettleNearUs,
-    IgnoreThemSettlingNearUs
+    IgnoreThemSettlingNearUs,
+    ProvideMilitaryUnit
 }
 
 enum class DiplomaticModifiers{
@@ -189,8 +191,8 @@ class DiplomacyManager() {
                     trades.remove(trade)
                     val otherCivTrades = otherCiv().getDiplomacyManager(civInfo).trades
                     otherCivTrades.removeAll{ it.equals(trade.reverse()) }
-                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short!".tr(),null, Color.GOLD)
-                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short!".tr(),null, Color.GOLD)
+                    civInfo.addNotification("One of our trades with [$otherCivName] has been cut short".tr(),null, Color.GOLD)
+                    otherCiv().addNotification("One of our trades with [${civInfo.civName}] has been cut short".tr(),null, Color.GOLD)
                 }
             }
         }
@@ -198,23 +200,18 @@ class DiplomacyManager() {
 
     // for performance reasons we don't want to call this every time we want to see if a unit can move through a tile
     fun updateHasOpenBorders(){
-        var newHasOpenBorders = false
-        for(trade in trades) {
-            for (offer in trade.theirOffers)
-                if (offer.name == "Open Borders" && offer.duration > 0) {
-                    newHasOpenBorders = true
-                    break
-                }
-            if(newHasOpenBorders) break
-        }
+        val newHasOpenBorders = trades.flatMap { it.theirOffers }
+                .any { it.name == "Open Borders" && it.duration > 0 }
 
-        if(hasOpenBorders && !newHasOpenBorders){ // borders were closed, get out!
+        val bordersWereClosed = hasOpenBorders && !newHasOpenBorders
+        hasOpenBorders=newHasOpenBorders
+
+        if(bordersWereClosed){ // borders were closed, get out!
             for(unit in civInfo.getCivUnits().filter { it.currentTile.getOwner()?.civName == otherCivName }){
-                unit.movementAlgs().teleportToClosestMoveableTile()
+                unit.movement.teleportToClosestMoveableTile()
             }
         }
 
-        hasOpenBorders=newHasOpenBorders
     }
 
     fun nextTurn(){
@@ -260,12 +257,25 @@ class DiplomacyManager() {
         if(!hasFlag(DiplomacyFlags.DeclarationOfFriendship))
             revertToZero(DiplomaticModifiers.DeclarationOfFriendship, 1/2f) //decreases slowly and will revert to full if it is declared later
 
+        if(otherCiv().isCityState() && otherCiv().getCityStateType() == CityStateType.Militaristic) {
+            if (relationshipLevel() < RelationshipLevel.Friend) {
+                if (hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) removeFlag(DiplomacyFlags.ProvideMilitaryUnit)
+            }
+            else {
+                if (!hasFlag(DiplomacyFlags.ProvideMilitaryUnit)) setFlag(DiplomacyFlags.ProvideMilitaryUnit, 20)
+            }
+        }
+
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) {
+                if(flag==DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty())
+                    continue
                 flagsCountdown.remove(flag)
                 if(flag==DiplomacyFlags.AgreedToNotSettleNearUs.name)
                     addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,10f)
+                else if(flag==DiplomacyFlags.ProvideMilitaryUnit.name)
+                    civInfo.giftMilitaryUnitBy(otherCiv())
             }
         }
 
@@ -330,11 +340,11 @@ class DiplomacyManager() {
         val otherCiv = otherCiv()
         // We get out of their territory
         for(unit in civInfo.getCivUnits().filter { it.getTile().getOwner()== otherCiv})
-            unit.movementAlgs().teleportToClosestMoveableTile()
+            unit.movement.teleportToClosestMoveableTile()
 
         // And we get out of theirs
         for(unit in otherCiv.getCivUnits().filter { it.getTile().getOwner()== civInfo})
-            unit.movementAlgs().teleportToClosestMoveableTile()
+            unit.movement.teleportToClosestMoveableTile()
     }
 
     fun hasFlag(flag:DiplomacyFlags) = flagsCountdown.containsKey(flag.name)
@@ -402,17 +412,20 @@ class DiplomacyManager() {
                 RelationshipLevel.Ally -> addModifier(DiplomaticModifiers.DenouncedOurAllies,-15f)
             }
         }
+        otherCiv().addNotification("[${civInfo.civName}] has denounced us!", Color.RED)
     }
 
     fun agreeNotToSettleNear(){
         otherCivDiplomacy().setFlag(DiplomacyFlags.AgreedToNotSettleNearUs,100)
         addModifier(DiplomaticModifiers.UnacceptableDemands,-10f)
+        otherCiv().addNotification("[${civInfo.civName}] agreed to stop settling cities near us!", Color.MAROON)
     }
 
     fun refuseDemandNotToSettleNear(){
         addModifier(DiplomaticModifiers.UnacceptableDemands,-20f)
         otherCivDiplomacy().setFlag(DiplomacyFlags.IgnoreThemSettlingNearUs,100)
         otherCivDiplomacy().addModifier(DiplomaticModifiers.RefusedToNotSettleCitiesNearUs,-15f)
+        otherCiv().addNotification("[${civInfo.civName}] refused to stop settling cities near us!", Color.MAROON)
     }
 
     //endregion

@@ -53,7 +53,7 @@ class CityCombatant(val city: CityInfo) : ICombatant {
             strength += cityTile.militaryUnit!!.baseUnit().strength * cityTile.militaryUnit!!.health/100f
 
         var buildingsStrength = city.cityConstructions.getBuiltBuildings().sumBy{ it.cityStrength }.toFloat()
-        if(getCivInfo().getBuildingUniques().contains("Defensive buildings in all cities are 25% more effective"))
+        if(getCivInfo().containsBuildingUnique("Defensive buildings in all cities are 25% more effective"))
             buildingsStrength*=1.25f
         strength += buildingsStrength
 

@@ -12,7 +12,7 @@ import com.unciv.models.gamebasics.tile.TileImprovement
 class WorkerAutomation(val unit: MapUnit) {
 
     fun automateWorkerAction() {
-        val enemyUnitsInWalkingDistance = unit.getDistanceToTiles().keys
+        val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
                 .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=unit.civInfo
                         && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
 
@@ -26,7 +26,7 @@ class WorkerAutomation(val unit: MapUnit) {
         }
 
         if (tileToWork != tile) {
-            val reachedTile = unit.movementAlgs().headTowards(tileToWork)
+            val reachedTile = unit.movement.headTowards(tileToWork)
             if(reachedTile!=tile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
@@ -57,7 +57,7 @@ class WorkerAutomation(val unit: MapUnit) {
         if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
         val citiesThatNeedConnectingBfs = citiesThatNeedConnecting
-                .map { city -> BFS(city.getCenterTile()){it.isLand && unit.canPassThrough(it)} }
+                .map { city -> BFS(city.getCenterTile()){it.isLand && unit.movement.canPassThrough(it)} }
                 .toMutableList()
 
         val connectedCities = unit.civInfo.cities.filter { it.isCapital() || it.cityStats.isConnectedToCapital(targetRoad) }
@@ -77,10 +77,11 @@ class WorkerAutomation(val unit: MapUnit) {
                         val tileToConstructRoadOn :TileInfo
                         if(unit.currentTile in roadableTiles) tileToConstructRoadOn = unit.currentTile
                         else{
-                            val reachableTiles = roadableTiles.filter {  unit.canMoveTo(it)&& unit.movementAlgs().canReach(it)}
+                            val reachableTiles = roadableTiles
+                                    .filter {  unit.movement.canMoveTo(it)&& unit.movement.canReach(it)}
                             if(reachableTiles.isEmpty()) continue
-                            tileToConstructRoadOn = reachableTiles.minBy { unit.movementAlgs().getShortestPath(it).size }!!
-                            unit.movementAlgs().headTowards(tileToConstructRoadOn)
+                            tileToConstructRoadOn = reachableTiles.minBy { unit.movement.getShortestPath(it).size }!!
+                            unit.movement.headTowards(tileToConstructRoadOn)
                         }
                         if(unit.currentMovement>0 && unit.currentTile==tileToConstructRoadOn
                                 && unit.currentTile.improvementInProgress!=targetRoad.name)
@@ -110,8 +111,7 @@ class WorkerAutomation(val unit: MapUnit) {
         // the tile needs to be actually reachable - more difficult than it seems,
         // which is why we DON'T calculate this for every possible tile in the radius,
         // but only for the tile that's about to be chosen.
-        val selectedTile = workableTiles.firstOrNull{
-            unit.movementAlgs().canReach(it) }
+        val selectedTile = workableTiles.firstOrNull{unit.movement.canReach(it) }
 
         if (selectedTile != null
                 && getPriority(selectedTile, unit.civInfo)>1
@@ -151,7 +151,7 @@ class WorkerAutomation(val unit: MapUnit) {
             tile.terrainFeature == "Marsh" -> "Remove Marsh"
             tile.terrainFeature == Constants.forest -> "Lumber mill"
             tile.baseTerrain == Constants.hill -> "Mine"
-            tile.baseTerrain in listOf("Grassland","Desert","Plains") -> "Farm"
+            tile.baseTerrain in listOf("Grassland","Desert",Constants.plains) -> "Farm"
             tile.baseTerrain == "Tundra" -> "Trading post"
             else -> throw Exception("No improvement found for "+tile.baseTerrain)
         }

@@ -41,6 +41,17 @@ class Trade{
 }
 
 
-class TradeRequest(val requestingCiv:String,
-                   /** Their offers are what they offer us, and our offers are what they want in return */
-                   val trade: Trade)
+class TradeRequest {
+
+    lateinit var requestingCiv: String
+
+    /** Their offers are what they offer us, and our offers are what they want in return */
+    lateinit var trade: Trade
+
+    constructor()  // for json serialization
+
+    constructor(requestingCiv: String, trade: Trade) {
+        this.requestingCiv = requestingCiv
+        this.trade = trade
+    }
+}

@@ -428,18 +428,17 @@
 			},
 			{
 				name:"Atomic Theory",
-				row:3,
+				row:4,
 				prerequisites:["Plastics","Electronics"]
 			},
 			{
-				name:"Computers",
-				row:5,
-				prerequisites:["Electronics"],
-				uniques:["+10% science and production in all cities"]
+				name:"Radar",
+				row:6,
+				prerequisites:["Ballistics","Electronics"]
 			},
 			{
 				name:"Combined Arms",
-				row:7,
+				row:8,
 				prerequisites:["Ballistics","Combustion"]
 			},
 		]	
@@ -459,17 +458,18 @@
 			{
 				name:"Nuclear Fission",
 				row:3,
-				prerequisites:["Atomic Theory"]
-			},
-			{
-				name:"Robotics",
-				row:4,
-				prerequisites:["Computers"]
+				prerequisites:["Atomic Theory","Radar"]
 			},
 			{
 				name:"Rocketry",
 				row:6,
-				prerequisites:["Combined Arms","Computers"]
+				prerequisites:["Radar"]
+			}
+			{
+				name:"Computers",
+				row:8,
+				prerequisites:["Combined Arms","Radar"],
+				uniques:["+10% science and production in all cities"]
 			}
 		]
 	},
@@ -481,22 +481,30 @@
 		wonderCost:1250,
 		techs:[
 			{
-				name:"Nanotechnology",
+				name:"Mobile Tactics",
 				row:3,
-				prerequisites:["Robotics","Ecology"]
-			},
-			{
-				name:"Particle Physics",
-				row:4,
-				prerequisites:["Nuclear Fission"]
+				prerequisites:["Ecology","Nuclear Fission"]
 			},
 			{
 				name:"Satellites",
 				row:5,
-				prerequisites:["Rocketry","Robotics"]
+				prerequisites:["Nuclear Fission","Rocketry"]
 			}
+			{
+				name:"Robotics",
+				row:7,
+				prerequisites:["Rocketry","Computers"]
+			},
+			{
+				name:"Lasers",
+				row:8,
+				prerequisites:["Computers"]
+			},
+			
+			
 		]	
 	},
+	
 	{
 		columnNumber: 16,
 		era:"Future",
@@ -505,8 +513,27 @@
 		wonderCost:1250,
 		techs:[
 			{
-				name:"Future Tech",
+				name:"Particle Physics",
 				row:4,
+				prerequisites:["Mobile Tactics","Satellites"]
+			},
+			{
+				name:"Nanotechnology",
+				row:7,
+				prerequisites:["Robotics","Lasers"]
+			},
+		]	
+	}
+	{
+		columnNumber: 17,
+		era:"Future",
+		techCost: 9500,
+		buildingCost:750,
+		wonderCost:1250,
+		techs:[
+			{
+				name:"Future Tech",
+				row:5,
 				prerequisites:["Nanotechnology","Particle Physics","Satellites"],
 				uniques:["Who knows what the future holds?"]
 			}

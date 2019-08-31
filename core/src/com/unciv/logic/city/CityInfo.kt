@@ -20,6 +20,7 @@ class CityInfo {
     @Transient lateinit var ccenterTile:TileInfo  // cached for better performance
     @Transient val range = 2
     @Transient lateinit var tileMap: TileMap
+    @Transient lateinit var tilesInRange:HashSet<TileInfo>
 
     var location: Vector2 = Vector2.Zero
     var name: String = ""
@@ -103,7 +104,7 @@ class CityInfo {
 
     fun getCenterTile(): TileInfo = ccenterTile
     fun getTiles(): List<TileInfo> = tiles.map { tileMap[it] }
-    fun getTilesInRange(): List<TileInfo> = getCenterTile().getTilesInDistance( 3)
+    fun getWorkableTiles() = getTiles().filter { it in tilesInRange }
 
     fun getCityResources(): ResourceSupplyList {
         val cityResources = ResourceSupplyList()
@@ -116,14 +117,14 @@ class CityInfo {
                 if(resource.resourceType == ResourceType.Strategic){
                     amountToAdd = 2
                     if(civInfo.policies.isAdopted("Facism")) amountToAdd*=2
-                    if(civInfo.getNation().unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
+                    if(civInfo.nation.unique=="Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity"
                         && resource.name in listOf("Horses","Iron","Uranium"))
                         amountToAdd *= 2
-                    if(resource.name=="Oil" && civInfo.getNation().unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
+                    if(resource.name=="Oil" && civInfo.nation.unique=="+1 Gold from each Trade Route, Oil resources provide double quantity")
                         amountToAdd *= 2
                 }
                 if(resource.resourceType == ResourceType.Luxury
-                        && getBuildingUniques().contains("Provides 1 extra copy of each improved luxury resource near this City"))
+                        && containsBuildingUnique("Provides 1 extra copy of each improved luxury resource near this City"))
                     amountToAdd*=2
 
                 cityResources.add(resource, amountToAdd, "Tiles")
@@ -140,6 +141,7 @@ class CityInfo {
     }
 
     fun getBuildingUniques(): List<String> = cityConstructions.getBuiltBuildings().flatMap { it.uniques }
+    fun containsBuildingUnique(unique:String) = cityConstructions.getBuiltBuildings().any { it.uniques.contains(unique) }
 
     fun getGreatPersonMap():HashMap<String,Stats>{
         val stats = HashMap<String,Stats>()
@@ -154,12 +156,12 @@ class CityInfo {
             stats["Buildings"] = buildingStats
 
         for(entry in stats){
-            if(civInfo.getNation().unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
+            if(civInfo.nation.unique=="Receive free Great Scientist when you discover Writing, Earn Great Scientists 50% faster")
                 entry.value.science *= 1.5f
             if (civInfo.policies.isAdopted("Entrepreneurship"))
                 entry.value.gold *= 1.25f
 
-            if (civInfo.getBuildingUniques().contains("+33% great person generation in all cities"))
+            if (civInfo.containsBuildingUnique("+33% great person generation in all cities"))
                 stats[entry.key] = stats[entry.key]!!.times(1.33f)
             if (civInfo.policies.isAdopted("Freedom"))
                 stats[entry.key] = stats[entry.key]!!.times(1.25f)
@@ -189,6 +191,7 @@ class CityInfo {
     fun setTransients() {
         tileMap = civInfo.gameInfo.tileMap
         ccenterTile = tileMap[location]
+        tilesInRange = getCenterTile().getTilesInDistance( 3).toHashSet()
         population.cityInfo = this
         expansion.cityInfo = this
         expansion.setTransients()
@@ -241,8 +244,8 @@ class CityInfo {
         // Edge case! What if a water unit is in a city, and you raze the city?
         // Well, the water unit has to return to the water!
         for(unit in getCenterTile().getUnits())
-            if(!unit.canPassThrough(getCenterTile()))
-                unit.movementAlgs().teleportToClosestMoveableTile()
+            if(!unit.movement.canPassThrough(getCenterTile()))
+                unit.movement.teleportToClosestMoveableTile()
 
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         getTiles().forEach { expansion.relinquishOwnership(it) }
@@ -313,7 +316,7 @@ class CityInfo {
      When someone settles a city within 6 tiles of another civ,
      this makes the AI unhappy and it starts a rolling event.
      The SettledCitiesNearUs flag gets added to the AI so it knows this happened,
-     and on its turn it asks the player to stop (with a CitySettledNearOtherCiv alert type)
+     and on its turn it asks the player to stop (with a DemandToStopSettlingCitiesNear alert type)
      If the player says "whatever, I'm not promising to stop", they get a -10 modifier which gradually disappears in 40 turns
      If they DO agree, then if they keep their promise for ~100 turns they get a +10 modifier for keeping the promise,
      But if they don't keep their promise they get a -20 that will only fully disappear in 160 turns.

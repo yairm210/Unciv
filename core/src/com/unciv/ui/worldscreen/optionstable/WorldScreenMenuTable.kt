@@ -1,17 +1,21 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.unciv.UnCivGame
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.CivilopediaScreen
-import com.unciv.ui.NewGameScreen
 import com.unciv.ui.VictoryScreen
 import com.unciv.ui.mapeditor.MapEditorScreen
-import com.unciv.ui.pickerscreens.PolicyPickerScreen
-import com.unciv.ui.saves.LoadScreen
-import com.unciv.ui.saves.SaveScreen
+import com.unciv.ui.newgamescreen.NewGameScreen
+import com.unciv.ui.saves.LoadGameScreen
+import com.unciv.ui.saves.SaveGameScreen
+import com.unciv.ui.utils.setFontColor
+import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
+import java.util.*
+import kotlin.collections.ArrayList
 
 class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScreen) {
 
@@ -37,23 +41,25 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         }
 
         addButton("Load game".tr()){
-            UnCivGame.Current.screen = LoadScreen()
+            UnCivGame.Current.screen = LoadGameScreen()
             remove()
         }
 
         addButton("Save game".tr()) {
-            UnCivGame.Current.screen = SaveScreen()
+            UnCivGame.Current.screen = SaveGameScreen()
             remove()
         }
 
         addButton("Start new game".tr()){ UnCivGame.Current.screen = NewGameScreen() }
 
-        addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
-
-        addButton("Social policies".tr()){
-            UnCivGame.Current.screen = PolicyPickerScreen(UnCivGame.Current.gameInfo.getCurrentPlayerCivilization())
+        if(worldScreen.gameInfo.gameParameters.isOnlineMultiplayer){
+            addButton("Copy game ID".tr()){ Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }
         }
 
+        if(UnCivGame.Current.mutiplayerEnabled)
+            addJoinMultiplayerButton()
+
+        addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
 
         addButton("Options".tr()){
             UnCivGame.Current.worldScreen.stage.addActor(WorldScreenOptionsTable(worldScreen))
@@ -65,9 +71,40 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
             remove()
         }
 
-        addButton("Close".tr()){ remove() }
+        addCloseButton()
 
         open()
+    }
+
+    private fun addJoinMultiplayerButton() {
+        addButton("Join multiplayer".tr()) {
+            close()
+            val joinMultiplayerPopup = PopupTable(screen)
+            joinMultiplayerPopup.addGoodSizedLabel("Copy the game ID to your clipboard, and click the Join Game button!").row()
+            val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
+            badGameIdLabel.isVisible = false
+            joinMultiplayerPopup.addButton("Join Game") {
+                val gameId = Gdx.app.clipboard.contents.trim()
+                try {
+                    UUID.fromString(gameId)
+                } catch (ex: Exception) {
+                    badGameIdLabel.setText("Invalid game ID!")
+                    badGameIdLabel.isVisible = true
+                    return@addButton
+                }
+                try {
+                    val game = OnlineMultiplayer().tryDownloadGame(gameId)
+                    UnCivGame.Current.loadGame(game)
+                } catch (ex: Exception) {
+                    badGameIdLabel.setText("Could not download game1!")
+                    badGameIdLabel.isVisible = true
+                    return@addButton
+                }
+            }.row()
+            joinMultiplayerPopup.add(badGameIdLabel).row()
+            joinMultiplayerPopup.addCloseButton()
+            joinMultiplayerPopup.open()
+        }
     }
 }
 
@@ -83,7 +120,7 @@ class WorldScreenCommunityTable(val worldScreen: WorldScreen) : PopupTable(world
             remove()
         }
 
-        addButton("Close".tr()){ remove() }
+        addCloseButton()
 
         open()
     }

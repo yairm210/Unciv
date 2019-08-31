@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.utils.Align
+import com.unciv.UnCivGame
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.models.gamebasics.Building
@@ -47,7 +48,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         pickProductionButton.add(ImageGetter.getConstructionImage(construction).surroundWithCircle(40f)).padRight(10f)
         pickProductionButton.add(buttonText.toLabel().setFontColor(Color.WHITE))
 
-        if(rejectionReason=="") { // no rejection reason means we can build it!
+        if(rejectionReason=="" && UnCivGame.Current.worldScreen.isPlayersTurn) { // no rejection reason means we can build it!
             pickProductionButton.onClick {
                 lastConstruction = cityScreen.city.cityConstructions.currentConstruction
                 cityScreen.city.cityConstructions.currentConstruction = construction
@@ -55,6 +56,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
                 cityScreen.city.cityStats.update()
                 cityScreen.update()
             }
+
         }
         else {
             pickProductionButton.color = Color.GRAY
@@ -146,23 +148,24 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         row()
         val purchaseConstructionButton: TextButton
         if (construction.canBePurchased()) {
-            val buildingGoldCost = construction.getGoldCost(city.civInfo)
-            purchaseConstructionButton = TextButton("Buy for [$buildingGoldCost] gold".tr(), CameraStageBaseScreen.skin)
+            val constructionGoldCost = construction.getGoldCost(city.civInfo)
+            purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
-                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$buildingGoldCost] gold?".tr(), {
-                    cityConstructions.purchaseBuilding(construction.name)
+                YesNoPopupTable("Would you like to purchase [${construction.name}] for [$constructionGoldCost] gold?".tr(), {
+                    cityConstructions.purchaseConstruction(construction.name)
                     if(lastConstruction!="" && cityConstructions.getConstruction(lastConstruction).isBuildable(cityConstructions))
                         city.cityConstructions.currentConstruction = lastConstruction
                     cityScreen.update() // since the list of available buildings needs to be updated too, so we can "see" that the building we bought now exists in the city
                 }, cityScreen)
             }
-            if (buildingGoldCost > city.civInfo.gold) {
+            if (constructionGoldCost > city.civInfo.gold) {
                 purchaseConstructionButton.disable()
             }
         } else {
             purchaseConstructionButton = TextButton("Buy".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.disable()
         }
+        purchaseConstructionButton.labelCell.pad(10f)
         add(purchaseConstructionButton).pad(10f).row()
 
 

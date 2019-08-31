@@ -1,16 +1,21 @@
 package com.unciv.ui.mapeditor
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.utils.Json
 import com.unciv.Constants
 import com.unciv.UnCivGame
-import com.unciv.logic.GameSaver
+import com.unciv.logic.MapSaver
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.saves.Gzip
+import com.unciv.ui.saves.LoadMapScreen
+import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.worldscreen.optionstable.DropBox
 import com.unciv.ui.worldscreen.optionstable.PopupTable
 
 class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEditorScreen){
@@ -32,14 +37,14 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
                 tile.roadStatus=RoadStatus.None
                 tile.setTransients()
 
-                tileGroup.update(true,true,true)
+                tileGroup.update()
             }
         }
         add(clearCurrentMapButton).row()
 
         val saveMapButton = TextButton("Save".tr(), skin)
         saveMapButton.onClick {
-            GameSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
+            MapSaver().saveMap(mapEditorScreen.mapName,mapEditorScreen.tileMap)
             UnCivGame.Current.setWorldScreen()
         }
         add(saveMapButton).row()
@@ -53,17 +58,74 @@ class MapEditorOptionsTable(mapEditorScreen: MapEditorScreen): PopupTable(mapEdi
         add(copyMapAsTextButton).row()
 
         val loadMapButton = TextButton("Load".tr(), skin)
-        loadMapButton.onClick { MapScreenLoadTable(mapEditorScreen); remove() }
+        loadMapButton.onClick {
+            UnCivGame.Current.screen = LoadMapScreen(mapEditorScreen.tileMap)
+        }
         add(loadMapButton).row()
+
+        val uploadMapButton = TextButton("Upload".tr(), skin)
+        uploadMapButton.onClick {
+            try {
+                val gzippedMap = Gzip.zip(Json().toJson(mapEditorScreen.tileMap))
+                DropBox().uploadFile("/Maps/" + mapEditorScreen.mapName, gzippedMap)
+
+                remove()
+                val uploadedSuccessfully = PopupTable(screen)
+                uploadedSuccessfully.addGoodSizedLabel("Map uploaded successfully!").row()
+                uploadedSuccessfully.addCloseButton()
+                uploadedSuccessfully.open()
+            }
+            catch(ex:Exception){
+                remove()
+                val couldNotUpload = PopupTable(screen)
+                couldNotUpload.addGoodSizedLabel("Could not upload map!").row()
+                couldNotUpload.addCloseButton()
+                couldNotUpload.open()
+            }
+        }
+        add(uploadMapButton).row()
+
+        val downloadMapButton = TextButton("Download".tr(), skin)
+        downloadMapButton.onClick {
+            remove()
+            MapDownloadTable(mapEditorScreen)
+        }
+        add(downloadMapButton).row()
 
         val exitMapEditorButton = TextButton("Exit map editor".tr(), skin)
         exitMapEditorButton.onClick { UnCivGame.Current.setWorldScreen(); mapEditorScreen.dispose() }
         add(exitMapEditorButton ).row()
 
-        val closeOptionsButtton = TextButton("Close".tr(), skin)
-        closeOptionsButtton.onClick { remove() }
-        add(closeOptionsButtton).row()
+        val closeOptionsButton = TextButton("Close".tr(), skin)
+        closeOptionsButton.onClick { close() }
+        add(closeOptionsButton).row()
 
+        open()
+    }
+}
+
+class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScreen) {
+    init {
+        val folderList: DropBox.FolderList
+        try {
+            folderList = DropBox().getFolderList("/Maps")
+            val scrollableMapTable = Table().apply { defaults().pad(10f) }
+            for (downloadableMap in folderList.entries) {
+                val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
+                downloadMapButton.onClick {
+                    val mapJsonGzipped = DropBox().downloadFile(downloadableMap.path_display)
+                    val decodedMapJson = Gzip.unzip(mapJsonGzipped)
+                    val mapObject = MapSaver().mapFromJson(decodedMapJson)
+                    MapSaver().saveMap(downloadableMap.name, mapObject)
+                    UnCivGame.Current.screen = MapEditorScreen(mapObject)
+                }
+                scrollableMapTable.add(downloadMapButton).row()
+            }
+            add(ScrollPane(scrollableMapTable)).height(mapEditorScreen.stage.height * 2 / 3).row()
+        } catch (ex: Exception) {
+            addGoodSizedLabel("Could not get list of maps!").row()
+        }
+        addCloseButton()
         open()
     }
 }

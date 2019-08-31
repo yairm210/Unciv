@@ -722,6 +722,10 @@
 		Simplified_Chinese:"航空"
 		Portuguese:"Vôo"
 	}
+
+	"Radar":{
+		Italian:"Radar"
+	}
 	
 ///////// Technologies (Information Era)
 	
@@ -759,6 +763,10 @@
 		Spanish:"Ordenadores"
 		Simplified_Chinese:"电子计算机"
 		Portuguese:"Computadores"
+	}
+
+	"Mobile Tactics":{
+		Italian:"Tattiche mobili"
 	}
 
 	"Combined Arms":{
@@ -820,12 +828,10 @@
 	
 ///////// Technologies (Future Era)
 
-	/*
 	"Lasers":{
 		Italian:"Laser"
 		French:"Lasers"
 	}
-	*/
 
 	"Nanotechnology":{
 		Italian:"Nanotecnologia"

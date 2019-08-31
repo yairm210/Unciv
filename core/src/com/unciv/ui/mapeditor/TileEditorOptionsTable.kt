@@ -15,6 +15,7 @@ import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
 import com.unciv.ui.tilegroups.TileGroup
+import com.unciv.ui.tilegroups.TileSetStrings
 import com.unciv.ui.utils.CameraStageBaseScreen
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.center
@@ -118,10 +119,10 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             else tileInfo.baseTerrain=terrain.name
 
             tileInfo.setTransients()
-            val group = TileGroup(tileInfo)
+            val group = TileGroup(tileInfo, TileSetStrings())
             group.showEntireMap=true
             group.forMapEditorIcon=true
-            group.update(true,true,true)
+            group.update()
 
             group.onClick {
                 clearSelection()
@@ -244,11 +245,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
 
     fun setCurrentHex(tileInfo: TileInfo){
-        val tileGroup = TileGroup(tileInfo)
+        val tileGroup = TileGroup(tileInfo,TileSetStrings())
                 .apply {
                     showEntireMap=true
                     forMapEditorIcon=true
-                    update(true,true,true)
+                    update()
                 }
         setCurrentHex(tileGroup)
     }

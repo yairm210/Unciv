@@ -24,6 +24,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
     var strength:Int = 0
     var rangedStrength:Int = 0
     var range:Int = 2
+    var interceptRange = 0
     lateinit var unitType: UnitType
     internal var unbuildable: Boolean = false // for special units like great people
     var requiredTech:String? = null
@@ -96,17 +97,19 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         return true
     }
 
-    override fun getProductionCost(adoptedPolicies: HashSet<String>): Int = cost
+    override fun getProductionCost(civInfo: CivilizationInfo): Int {
+        var productionCost = cost.toFloat()
+        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        return productionCost.toInt()
+    }
 
     fun getBaseGoldCost() = Math.pow((30 * cost).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
 
-    override fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean): Int {
+    override fun getGoldCost(civInfo: CivilizationInfo): Int {
         var cost = getBaseGoldCost()
-        if (!baseCost) {
-            if(civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-            if(civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
-            if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
-        }
+        if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
+        if (civInfo.policies.adoptedPolicies.contains("Militarism")) cost *= 0.66f
+        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
         return (cost / 10).toInt() * 10 // rounded down o nearest ten
     }
 
@@ -150,8 +153,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
             unit.promotions.XP += 15
 
         if(unit.type in listOf(UnitType.Melee,UnitType.Mounted,UnitType.Armor)
-            && construction.cityInfo.getBuildingUniques()
-                .contains("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
+            && construction.cityInfo.containsBuildingUnique("All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"))
             unit.promotions.addPromotion("Drill I", isFree = true)
     }
 

@@ -20,7 +20,7 @@ import kotlin.math.max
 
 class BattleTable(val worldScreen: WorldScreen): Table() {
 
-    private val battle = Battle(worldScreen.currentPlayerCiv.gameInfo)
+    private val battle = Battle(worldScreen.viewingCiv.gameInfo)
     init{
         skin = CameraStageBaseScreen.skin
         background = ImageGetter.getBackground(ImageGetter.getBlue())
@@ -52,7 +52,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         val defender: ICombatant? = Battle(worldScreen.gameInfo).getMapCombatantOfTile(selectedTile)
 
         if(defender==null ||
-                defender.getCivInfo()==worldScreen.currentPlayerCiv
+                defender.getCivInfo()==worldScreen.viewingCiv
                 || !(UnCivGame.Current.viewEntireMapForDebug
                         || attacker.getCivInfo().exploredTiles.contains(selectedTile.position))) {
             hide()
@@ -146,7 +146,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         if (attacker.canAttack()) {
             if (attacker is MapUnitCombatant) {
                 attackableEnemy = UnitAutomation()
-                        .getAttackableEnemies(attacker.unit, attacker.unit.getDistanceToTiles())
+                        .getAttackableEnemies(attacker.unit, attacker.unit.movement.getDistanceToTiles())
                         .firstOrNull{ it.tileToAttack == defender.getTile()}
             }
             else if (attacker is CityCombatant)
@@ -158,7 +158,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             }
         }
 
-        if (attackableEnemy == null) {
+        if (!worldScreen.isPlayersTurn || attackableEnemy == null) {
             attackButton.disable()
             attackButton.label.color = Color.GRAY
         }
@@ -167,18 +167,18 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
             attackButton.onClick {
                 try {
                     battle.moveAndAttack(attacker, attackableEnemy)
-                    worldScreen.tileMapHolder.removeUnitActionOverlay = true // the overlay was one of attacking
+                    worldScreen.tileMapHolder.unitActionOverlay?.remove() // the overlay was one of attacking
                     worldScreen.shouldUpdate = true
                 }
                 catch (ex:Exception){
-                    val popup = PopupTable(worldScreen)
-                    popup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
-                    popup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
-                    popup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
-                    popup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
-                    popup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
-                    popup.addGoodSizedLabel("  that would be even better!").row()
-                    popup.open()
+                    val battleBugPopup = PopupTable(worldScreen)
+                    battleBugPopup.addGoodSizedLabel("You've encountered a bug that I've been looking for for a while!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could copy your game data (\"Copy saved game to clipboard\" - ").row()
+                    battleBugPopup.addGoodSizedLabel("  paste into an email to yairm210@hotmail.com)").row()
+                    battleBugPopup.addGoodSizedLabel("It would help me figure out what went wrong, since this isn't supposed to happen!").row()
+                    battleBugPopup.addGoodSizedLabel("If you could tell me which unit was selected and which unit you tried to attack,").row()
+                    battleBugPopup.addGoodSizedLabel("  that would be even better!").row()
+                    battleBugPopup.open()
                 }
             }
         }

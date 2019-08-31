@@ -27,8 +27,8 @@
 		afterPeace:"Sciocco, sciocco errore, lasciarmi vivere..."
 		tradeRequest:"Sembra che la tua ragione di esistere è fare un accordo con me..."
 	
-		mainColor:[27,53,63],
-		secondaryColor:[213,249,255],
+		outerColor:[27,53,63],
+		innerColor:[213,249,255],
 		uniqueName:"Ingenuità",
 		unique:"Ricevi un Grande Scienziato gratuito quando scopri la Scrittura. I Grandi Scienziati nascono il 50% più in fretta.",
 		cities:["Babilonia","Akkad","Dur-Kurigalzu","Nippur","Borsippa","Sippar","Opis","Mari","Shushan","Eshnunna",
@@ -63,8 +63,8 @@
 		afterPeace:"Devo congratularmi con te per la tua vittoria sbalorditiva. Forse mio padre Zeus non era dalla mia parte..."
 		tradeRequest:"Amico mio, dimmi: questo ti sembra ragionevole?"
 		
-		mainColor:[181, 232, 232],
-		secondaryColor:[68,142,249],
+		outerColor:[181, 232, 232],
+		innerColor:[68,142,249],
 		/*
 		uniqueName:"Lega Ellenica",
 		unique:"L'Influenza delle Città-Stato cala il doppio più lentamente e cresce il doppio rispetto al normale.",
@@ -100,8 +100,8 @@
 		afterPeace:"Che le benedizioni del Cielo scendano su di te e sul tuo popolo."
 		tradeRequest:"Amico mio, pensi di poter accettare questa proposta?"
 				
-		mainColor:[9, 112, 84],
-		secondaryColor:[255,255,255],
+		outerColor:[9, 112, 84],
+		innerColor:[255,255,255],
 		uniqueName:"L'Arte della Guerra",
 		unique:"Doppio bonus combattimento dai Grandi Generali, che nascono il 50% più in fretta."
 		cities:["Pechino","Shanghai","Guangzhou","Nanchino","Xian","Chengdu","Hangzhou","Tianjin","Macao","Shandong",
@@ -136,8 +136,8 @@
 		afterPeace:"Sai che avrei potuto distruggerti, ma oggi mi trattiene un'anima generosa, e mi sento magnanimo."
 		tradeRequest:"Il generoso regno d'Egitto ti fa quest'offerta."
 		
-		mainColor:[ 231, 213, 0],
-		secondaryColor:[98,10,210],
+		outerColor:[ 231, 213, 0],
+		innerColor:[98,10,210],
 		uniqueName:"Costruttori di Monumenti",
 		unique:"+20% Produzione durante la costruzione di una Meraviglia"
 		cities:["Tebe","Menfi","Eliopoli","Elefantina","Alessandria","Pi-Ramesse","Giza","Biblo","Akhetaten","Ieraconpoli",
@@ -172,8 +172,8 @@
 		afterPeace:"Hai combattuto con onore. Finiamola qui."
 		tradeRequest:"Ti interessa un accordo commerciale con il regno inglese?"
 		
-		mainColor:[ 114, 0, 0],
-		secondaryColor:[255,255,255],
+		outerColor:[ 114, 0, 0],
+		innerColor:[255,255,255],
 		uniqueName:"Il Sole non tramonta mai",
 		unique:"+2 movimento per tutte le unità navali"
 		cities:["Londra","York","Nottingham","Hastings","Canterbury","Coventry","Warwick","Newcastle","Oxford","Liverpool",
@@ -208,8 +208,8 @@
 		afterPeace:"Sembra che ti abbia sottovalutato. Ti prometto che non ripeterò un simile errore."
 		tradeRequest:"La Francia ti offre questa proposta eccezionale."
 		
-		mainColor:[ 38, 98, 255],
-		secondaryColor:[239,236,148],
+		outerColor:[ 38, 98, 255],
+		innerColor:[239,236,148],
 		uniqueName:"Ancien Régime",
 		unique:"+2 Cultura al turno dalle città prima della scoperta dell'Energia a Vapore",
 		cities:["Parigi","Orleans","Lione","Troyes","Tours","Marsiglia","Chartres","Avignon","Rouen","Grenoble",
@@ -244,8 +244,8 @@
 		afterPeace:"Ora è il momento di godersi i frutti della pace."
 		tradeRequest:"Ti piacerebbe se ti proponessi questo scambio?"
 				
-		mainColor:[ 236, 178, 0],
-		secondaryColor:[0,0,0],
+		outerColor:[ 236, 178, 0],
+		innerColor:[0,0,0],
 		uniqueName:"Ricchezze Siberiane",
 		unique:"+1 Produzione dalle risorse strategiche, e doppia quantità da Cavalli, Ferro e Uranio.",
 		cities:["Mosca","San Pietroburgo","Novgorod","Rostov","Yaroslavl","Yekaterinburg","Yakutsk","Vladivostok","Smolensk",
@@ -280,8 +280,8 @@
 		afterPeace:"I tuoi soldati hanno combattuto bene. Mi congratulo per la tua vittoria."
 		tradeRequest:"Ti offro questo, per la tua considerazione."
 				
-		mainColor:[ 53,0,87],
-		secondaryColor:[238,201,9],
+		outerColor:[ 53,0,87],
+		innerColor:[238,201,9],
 		uniqueName:"La Gloria di Roma",
 		unique:"+25% bonus di Produzione verso qualunque edificio già esistente nella Capitale.",
 		cities:["Roma","Anzio","Cuma","Napoli","Ravenna","Arretium","Milano","Arpinum","Circei","Setia","Satricum","Ardea",
@@ -315,8 +315,8 @@
 		afterPeace:"Vi ringraziamo per questi termini generosi. Non dimenticheremo il favore che ci hai mostrati."
 		tradeRequest:"Avanti, facciamo un affare."
 				
-		mainColor:[ 41,83,42],
-		secondaryColor:[146,221,9],
+		outerColor:[ 41,83,42],
+		innerColor:[146,221,9],
 		uniqueName:"Carovane Commerciali",
     		unique:"+1 Oro per ogni rotta commerciale, e doppia quantita da Petrolio.",
 		cities:["Mecca","Medina","Damasco","Baghdad","Najran","Kufah","Basra","Khurasan","Anjar","Fustat","Aden","Yamama",
@@ -350,8 +350,8 @@
 		afterPeace:"Accogliamo la pace con la vostra grande nazione. Preghiamo che non vi siano altri futuri malintesi tra di noi."
 		tradeRequest:"Ti interessa forse questo accordo commerciale?"
 				
-		mainColor:[ 28,51,119],
-		secondaryColor:[255,255,255],
+		outerColor:[ 28,51,119],
+		innerColor:[255,255,255],
 		uniqueName:"Destino Manifesto",
 		unique:"+1 Visione per tutte le unità militari terrestri. 50% di sconto per l'acquisto delle caselle",
 		cities:["Washington","New York","Boston","Philadelphia","Atlanta","Chicago","Seattle","San Francisco","Los Angeles",
@@ -386,8 +386,8 @@
 		afterPeace:"Combatterti è stato un onore, ma adesso è il momento di terminare questo spargimento di sangue."
 		tradeRequest:"Sarei grato se accettassi questa mia proposta."
 		
-		mainColor:[215,225,225],
-		secondaryColor:[185,0,0],
+		outerColor:[215,225,225],
+		innerColor:[185,0,0],
 		uniqueName:"Bushido",
 		unique: "Le unità combattono come se fossero perfettamente sane. +1 Cultura dai Pescherecci.",
 		cities:["Kyoto","Osaka","Tokyo","Satsuma","Kagoshima","Nara","Nagoya","Izumo","Nagasaki","Yokohama","Shimonoseki",
@@ -422,8 +422,8 @@
 		afterPeace:"Sono contento che siamo di nuovo in pace, anche se abbiamo dovuto pagare un prezzo per ciò."
 		tradeRequest:"Amico mio, ti interessa questo accordo?"
 				
-		mainColor:[16,126,5],
-		secondaryColor:[255,153,51],
+		outerColor:[16,126,5],
+		innerColor:[255,153,51],
 		unique:"Infelicità dal numero di Città raddoppiata, Infelicità dal numero di Cittadini dimezzata.",//not translated
 		cities:["Delhi","Mumbai","Vijayanagara","Pataliputra","Varanasi","Agra","Calcutta","Lahore","Bangalore","Hyderabad",
 			"Madurai","Ahmedabad","Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur",
@@ -457,8 +457,8 @@
 		afterPeace:"Che ne pensi di metterci una pietra sopra?"
 		tradeRequest:"Considerare con cautela questa proposta sarebbe nei nostri migliori interessi."
 				
-		mainColor:[224,224,224],
-		secondaryColor:[64,64,64],
+		outerColor:[224,224,224],
+		innerColor:[64,64,64],
 		uniqueName:"Furor Teutonicus",
 		unique:"67% di chance di guadagnare 25 Oro e reclutare un'unità barbarica da un accampamento conquistato. -25% manutenzione per le unità terrestri.",//not translated
 		cities:["Berlino","Amburgo","Monaco","Colonia","Francoforte","Essen","Dortmund","Stoccarta","Dusseldorf","Bremen",
@@ -474,7 +474,7 @@
 		leaderName:"Suleiman I",
 		translatedLeaderName:"Solimano I",
 		
-		startIntroPart1: "Che il cielo ti benedica, oh grande imperatore Solimano! La tua potenza, la tua ricchezza e la tua generosità stupiscono il bondo! Con buona ragione sei chiamato "il magnifico"! Il tuo impero conobbe i suoi inizi nel XII secolo in Bitinia, un piccolo paese dell'Anatolia orientale. Sfruttando il declino del grande sultanato selgiuchide di Rum, re Osman I di Bitinia si espanse nell'Anatolia occidentale. Nel corso del secolo successivo, i tuoi sudditi distrussero l'impero bizantino, soppiantandolo in Turchia e poi nei Balbani. A metà del XV secolo, gli ottomani conquistarono l'antica Costantinopoli, assumendo il controllo del collegamento strategico tra Europa e Medio Oriente. L'impero della tua gente continuò a espandersi per secoli, raggiungendo al suo apice anche il controllo dell'Africa settentrionale, del Medio Oriente e dell'Europa orientale."
+		startIntroPart1: "Che il cielo ti benedica, oh grande imperatore Solimano! La tua potenza, la tua ricchezza e la tua generosità stupiscono il bondo! Con buona ragione sei chiamato \"il magnifico\"! Il tuo impero conobbe i suoi inizi nel XII secolo in Bitinia, un piccolo paese dell'Anatolia orientale. Sfruttando il declino del grande sultanato selgiuchide di Rum, re Osman I di Bitinia si espanse nell'Anatolia occidentale. Nel corso del secolo successivo, i tuoi sudditi distrussero l'impero bizantino, soppiantandolo in Turchia e poi nei Balbani. A metà del XV secolo, gli ottomani conquistarono l'antica Costantinopoli, assumendo il controllo del collegamento strategico tra Europa e Medio Oriente. L'impero della tua gente continuò a espandersi per secoli, raggiungendo al suo apice anche il controllo dell'Africa settentrionale, del Medio Oriente e dell'Europa orientale."
 		startIntroPart2: "Potente Solimano, ascolta la voce del tuo popolo! Riporta il tuo impero alla potenza e alla gloria passate e ancora una volta il mondo tornerà a guardarti con stupore e ammirazione. Accetterai la sfida, grande imperatore? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Il tuo persistere nel rifiutare di riconoscere la nostra preminenza ci porta alla guerra."
@@ -495,8 +495,8 @@
 		afterPeace:"Complimenti per la tua vittoria! Speriamo che la pace scenda su di noi in eterno!"
 		tradeRequest:"Facciamo un affare! Ti interessa?"
 				
-		mainColor:[204,255,229],
-		secondaryColor:[0,102,0],
+		outerColor:[204,255,229],
+		innerColor:[0,102,0],
 		uniqueName:"Corsari barbarici",
 		unique:"La manutenzione delle navi costa solo un terzo rispetto al normale. Tutte le navi da mischia ricevono la promozione Cattura Navale, che permette loro di catturare le navi nemiche sconfitte.",//not translated
 		cities:["Istanbul","Edirne","Ankara","Bursa","Konya","Samsun","Gaziantep","Diyabakir","Izmir","Kayseri","Malatya",
@@ -533,8 +533,8 @@
 		afterPeace:"Sembra che ti abbia sottovalutato. Molto bene... per ora la tua testa rimane sulle tue spalle."
 		tradeRequest:"Non sono sempre così generoso, ma spero tu accolga questa rara opportunità che noi ti diamo."
 				
-		mainColor:[51,0,0],
-		secondaryColor:[0,204,102],
+		outerColor:[51,0,0],
+		innerColor:[0,204,102],
 		uniqueName:"Terrore mongolo",
 		unique:"+1 Movimento per le unità a cavallo. +30% Forza quando assali una Città-Stato o ne attacchi le unità.",
 		cities:["Karakorum","Beshbalik","Turfan","Hsia","Old Sarai","New Sarai","Tabriz","Tiflis","Otrar","Sanchu","Kazan",
@@ -567,8 +567,8 @@
 		afterPeace:"Ti ringrazio per la tua pietà. Preghiamo che sia l'inizio di una nuova amicizia."
 		tradeRequest:"Questo affare ti congenia, amico mio?"
 				
-		mainColor:[0,25,51],
-		secondaryColor:[255,255,102],
+		outerColor:[0,25,51],
+		innerColor:[255,255,102],
 		uniqueName:"La Grande Via del Guerriero",
 		unique:"Tutte le unità trattano le caselle di Foresta e Giungla come fossero Strade; queste caselle stabiliscono Rotte Commerciali una volta scoperta la Ruota.",
 		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River",
@@ -602,8 +602,8 @@
 		afterPeace:"Vedo che hai sviluppato delle strategie interessanti... Benissimo, credo dovremo finirla qui."
 		tradeRequest:"Abbiamo molte cose da discutere e tanto da guadagnare tra di noi."
 				
-		mainColor:[0,0,255],
-		secondaryColor:[255,0,0],
+		outerColor:[0,0,255],
+		innerColor:[255,0,0],
 		uniqueName:"Sapienti della Sala di Giada",
 		unique:"+2 Scienza per ogni miglioramento da Gran Personaggio. Ricevi uno sprint tecnologico quando costruisci una struttura/Meraviglia scientifica nella Capitale.",
 		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
@@ -637,8 +637,8 @@
 		afterPeace:"Sembra che mi convenga finirla qui..."
 		tradeRequest:"Nella mia infinita misericordia, ti faccio questa offerta. Di certo, sarai d'accordo?"
 				
-		mainColor:[255,0,0],
-		secondaryColor:[255,255,0],
+		outerColor:[255,0,0],
+		innerColor:[255,255,0],
 		uniqueName:"Eredità Achemenide",
 		unique:"Le Età dell'Oro durano il 50% in più, e in esse le Unità ricevono +1 Movimento e +10% Forza",
 		cities:["Persepoli","Parsagade","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardi","Ergili","Dariushkabir",
@@ -675,8 +675,8 @@
 		afterPeace:"Forse le stelle hanno sbagliato posto... Consulterò il mio Kahuna."
 		tradeRequest:"Vieni, organizziamo un banchetto!"
 				
-		mainColor:[255,128,0],
-		secondaryColor:[255,255,0],
+		outerColor:[255,128,0],
+		innerColor:[255,255,0],
 		unique:"Le unità imbarcate possono attraversare Coste e Oceani fin da subito, e ottengono +1 Visione.",
 		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui",
 			"Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu",
@@ -695,9 +695,10 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Mostro! La storia ricorderà questo giorno!"
 		
-		mainColor:[0, 0, 0],
-		secondaryColor:[185,132,66],
+		outerColor:[0, 0, 0],
+		innerColor:[185,132,66],
 		cities:["Milano"]
 	},
 	{
@@ -709,9 +710,10 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Sicchè, il giglio di Firenze cade nelle mani dei barbari..."
 		
-		mainColor:[0, 0, 0],
-		secondaryColor:[62,197,252],
+		outerColor:[0, 0, 0],
+		innerColor:[62,197,252],
 		cities:["Firenze"]
 	},
 	{
@@ -724,9 +726,10 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Tosto o tardi avremo la nostra vendetta."
 
-		mainColor:[0, 0, 0],
-		secondaryColor:[211, 220, 103],
+		outerColor:[0, 0, 0],
+		innerColor:[211, 220, 103],
 		cities:["Rio de Janeiro"]
 	},
 	{
@@ -739,30 +742,45 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Saranno scritte canzoni a riguardo.... prega che canteranno in tuo favore."
 		
-		mainColor:[0, 0, 0],
-		secondaryColor:[194,97,255],
+		outerColor:[0, 0, 0],
+		innerColor:[194,97,255],
 		cities:["Anversa"]
 	},
-	/*
+	{
+		name:"Dublin",
+		translatedName:"Dublino",
+		adjective:["irlandese"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Beh, almeno hai avuto una bella vittoria..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[211,180,113],
+		cities:["Dublino"]
+	},
 	{
 		name:"Tyre",
 		translatedName:"Tiro",
-		adjective:["tirano"],
+		adjective:["tiriano"],
 		cityStateType:"Mercantile",
 		startBias:["Coast"],
 		
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Bene abbiamo fatto a diffidare di te fin dall'inizio."
 		
-		mainColor:[0, 0, 0],
-		secondaryColor:[255,97,255],
+		outerColor:[0, 0, 0],
+		innerColor:[255,97,255],
 		cities:["Tiro"]
 	},
 	{
 		name:"Ur",
-		translatedName:"Ur",
 		adjective:["sumero"],
 		cityStateType:"Maritime",
 		startBias:["Coast"],
@@ -770,17 +788,122 @@
 		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
 		attacked:"Benissimo, questo non lo dimenticheremo.",
 		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Perchè hai voluto fare una cosa del genere?"
 		
-		mainColor:[0, 0, 0],
-		secondaryColor:[60,190,255],
+		outerColor:[0, 0, 0],
+		innerColor:[255,69,0],
 		cities:["Ur"]
 	},
-	*/
+	{
+		name:"Genoa",
+		translatedName:"Genova",
+		adjective:["genovese"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Quante barbarie... Chi di spada ferisce, di spada perisce."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[45,255,86],
+		cities:["Genova"]
+	},
+	{
+		name:"Venice",
+		translatedName:"Venezia",
+		adjective:["veneziano"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Se la nostra eredità continua, allora tu non hai davvero vinto contro di noi."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,10,10],
+		cities:["Venezia"]
+	},
+	{
+		name:"Brussels",
+		translatedName:"Bruxelles",
+		adjective:["belga"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Mi sa che non ti sono mai piaciuti i nostri broccoletti, dopo tutto..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,255,51],
+		cities:["Bruxelles"]
+	},
+	{
+		name:"Kabul",
+		adjective:["afgano"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Tavolta un guerriero valoroso deve ingoiare il proprio orgoglio e accettare la sconfitta..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,0,76],
+		cities:["Kabul"]
+	},
+	{
+		name:"Sidon",
+		translatedName:"Sidone",
+		adjective:["fenicio"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Che bella battaglia! Sidone accetta di servirti!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[250,128,114],
+		cities:["Sidone"]
+	},
+	{
+		name:"Almaty",
+		adjective:["cazaco"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Quale è stato il tuo segreto per sconfiggerci?!"
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[102,0,51],
+		cities:["Almaty"]
+	},
+	{
+		name:"Edinburgh",
+		translatedName:"Edimburgo",
+		adjective:["scozzese"],
+		cityStateType:"Militaristic",
+		
+		declaringWar:"Non ci lasci altra scelta. Guerra sia.",
+		attacked:"Benissimo, questo non lo dimenticheremo.",
+		afterPeace:"Possa la pace benedire in eterno i nostri reami.",
+		defeated:"Non c'è disonore nel farsi sconfiggere da un avversario più degno."
+
+		mainColor:[0, 0, 0],
+		secondaryColor:[0,102,102],
+		cities:["Edimburgo"]
+	},
 	
 	//Barbarian
 	{
 		name:"Barbarians",
-		mainColor:[0,0,0],
-		secondaryColor:[182,0,0]
+		outerColor:[0,0,0],
+		innerColor:[182,0,0]
 	}
 ]

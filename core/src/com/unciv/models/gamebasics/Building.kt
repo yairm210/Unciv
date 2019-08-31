@@ -8,6 +8,7 @@ import com.unciv.models.gamebasics.tech.Technology
 import com.unciv.models.stats.NamedStats
 import com.unciv.models.stats.Stat
 import com.unciv.models.stats.Stats
+import kotlin.math.pow
 
 class Building : NamedStats(), IConstruction{
 
@@ -18,20 +19,20 @@ class Building : NamedStats(), IConstruction{
 
     var cost: Int = 0
     var maintenance = 0
-    var percentStatBonus: Stats? = null
+    private var percentStatBonus: Stats? = null
     var specialistSlots: Stats? = null
     var greatPersonPoints: Stats? = null
     /** Extra cost percentage when purchasing */
-    var hurryCostModifier: Int = 0
+    private var hurryCostModifier = 0
     var isWonder = false
     var isNationalWonder = false
-    var requiredBuilding: String? = null
+    private var requiredBuilding: String? = null
     var requiredBuildingInAllCities: String? = null
     /** A strategic resource that will be consumed by this building */
     var requiredResource: String? = null
     /** City can only be built if one of these resources is nearby - it must be improved! */
-    var requiredNearbyImprovedResources: List<String>? = null
-    var cannotBeBuiltWith: String? = null
+    private var requiredNearbyImprovedResources: List<String>? = null
+    private var cannotBeBuiltWith: String? = null
     var cityStrength=0
     var cityHealth=0
     var xpForNewUnits=0
@@ -39,7 +40,7 @@ class Building : NamedStats(), IConstruction{
     var uniqueTo:String?=null
 
     // Uniques
-    var providesFreeBuilding: String? = null
+    private var providesFreeBuilding: String? = null
     var freeTechs: Int = 0
     var uniques = ArrayList<String>()
 
@@ -123,7 +124,7 @@ class Building : NamedStats(), IConstruction{
         return stringBuilder.toString().trim()
     }
 
-    val cultureBuildings = hashSetOf("Monument", "Temple", "Monastery")
+    private val cultureBuildings = hashSetOf("Monument", "Temple", "Monastery")
 
     fun getStats(civInfo: CivilizationInfo?): Stats {
         val stats = this.clone()
@@ -153,7 +154,7 @@ class Building : NamedStats(), IConstruction{
                 stats.happiness += 1
 
             if (baseBuildingName == "Castle"
-                    && civInfo.getBuildingUniques().contains("+1 happiness, +2 culture and +3 gold from every Castle")){
+                    && civInfo.containsBuildingUnique("+1 happiness, +2 culture and +3 gold from every Castle")){
                 stats.happiness+=1
                 stats.culture+=2
                 stats.gold+=3
@@ -185,24 +186,24 @@ class Building : NamedStats(), IConstruction{
         return !isWonder && !isNationalWonder
     }
 
-    override fun getProductionCost(adoptedPolicies: HashSet<String>): Int {
-        if (!isWonder && culture != 0f && adoptedPolicies.contains("Piety"))
-            return (cost * 0.85).toInt()
-        else return cost
+
+    override fun getProductionCost(civInfo: CivilizationInfo): Int {
+        var productionCost = cost.toFloat()
+        if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
+            productionCost *= 0.85f
+        productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        return productionCost.toInt()
     }
 
-    override fun getGoldCost(civInfo: CivilizationInfo, baseCost: Boolean): Int {
+    override fun getGoldCost(civInfo: CivilizationInfo): Int {
         // https://forums.civfanatics.com/threads/rush-buying-formula.393892/
-        var cost: Double
-        if (baseCost) {
-            cost = Math.pow((30 * getProductionCost(hashSetOf())).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
-        } else {
-            cost = Math.pow((30 * getProductionCost(civInfo.policies.adoptedPolicies)).toDouble(), 0.75) * (1 + hurryCostModifier / 100)
-            if (civInfo.policies.adoptedPolicies.contains("Mercantilism")) cost *= 0.75
-            if (civInfo.getBuildingUniques().contains("-15% to purchasing items in cities")) cost *= 0.85
-            if (civInfo.policies.adoptedPolicies.contains("Patronage")
-                    && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower").contains(name)) cost *= 0.5
-        }
+        var cost = (30 * getProductionCost(civInfo)).toDouble().pow(0.75) * (1 + hurryCostModifier / 100)
+        if (civInfo.policies.isAdopted("Mercantilism")) cost *= 0.75
+        if (civInfo.containsBuildingUnique("-15% to purchasing items in cities")) cost *= 0.85
+        if (civInfo.policies.isAdopted("Patronage")
+                && listOf("Monument", "Temple", "Opera House", "Museum", "Broadcast Tower")
+                        .map{civInfo.getEquivalentBuilding(it).name}.contains(name))
+            cost *= 0.5
 
         return (cost / 10).toInt() * 10
     }
@@ -225,6 +226,14 @@ class Building : NamedStats(), IConstruction{
         if ("Must be next to mountain" in uniques
                 && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain == Constants.mountain })
             return "Must be next to mountain"
+
+        if("Must not be on plains" in uniques
+                && construction.cityInfo.getCenterTile().baseTerrain==Constants.plains)
+            return "Must not be on plains"
+
+        if("Must not be on hill" in uniques
+                && construction.cityInfo.getCenterTile().baseTerrain==Constants.hill)
+            return "Must not be on hill"
 
         if("Can only be built in coastal cities" in uniques
                 && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain==Constants.coast })
@@ -272,7 +281,7 @@ class Building : NamedStats(), IConstruction{
             return "Requires [$requiredResource]"
 
         if (requiredNearbyImprovedResources != null) {
-            val containsResourceWithImprovement = construction.cityInfo.getTilesInRange()
+            val containsResourceWithImprovement = construction.cityInfo.getWorkableTiles()
                     .any {
                         it.resource != null
                                 && requiredNearbyImprovedResources!!.contains(it.resource!!)
@@ -283,7 +292,7 @@ class Building : NamedStats(), IConstruction{
         }
 
         if ("Spaceship part" in uniques) {
-            if (!civInfo.getBuildingUniques().contains("Enables construction of Spaceship parts")) return "Apollo project not built!"
+            if (!civInfo.containsBuildingUnique("Enables construction of Spaceship parts")) return "Apollo project not built!"
             if (civInfo.victoryManager.unconstructedSpaceshipParts()[name] == 0) return "Don't need to build any more of these!"
         }
         return ""

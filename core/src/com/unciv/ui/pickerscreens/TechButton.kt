@@ -17,7 +17,7 @@ class TechButton(techName:String, val techManager: TechManager) : Table(CameraSt
     init {
         touchable = Touchable.enabled
         defaults().pad(10f)
-        background = ImageGetter.getDrawable("OtherIcons/civTableBackground.png")
+        background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
         if(ImageGetter.techIconExists(techName))
             add(ImageGetter.getTechIconGroup(techName)) // this is 60*60
 

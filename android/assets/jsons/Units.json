@@ -70,10 +70,11 @@
 		attackSound:"nonmetalhit"
 		//Polynesian unique unit. All nearby enemy Units have -10% strenght
 	},
+	*/
 	{
 		name:"Brute",
 		unitType:"Melee",
-		uniqueTo:"Barbarian",
+		uniqueTo:"Barbarians",
 		replaces:"Warrior",
 		movement:2,
 		strength:8,
@@ -83,7 +84,6 @@
 		attackSound:"nonmetalhit"
 		//Barbarian unique unit
 	},
-	*/
 	{
 		name:"Archer",
 		unitType:"Ranged",
@@ -838,7 +838,6 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	
 	{
 		name:"Triplane",
 		unitType:"Fighter",
@@ -848,9 +847,27 @@
 		range:5,
 		cost: 325,
 		requiredTech:"Flight",
+		requiredResource:"Oil",
+		upgradesTo:"Fighter",
+		obsoleteTech:"Radar",
 		hurryCostModifier:20,
 		uniques:["[50]% chance to intercept air attacks","Bonus vs Bomber 150%",
 			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
+	{
+		name:"Great War Bomber",
+		unitType:"Bomber",
+		movement:1,
+		strength:50,
+		rangedStrength:50,
+		range:6,
+		cost: 325,
+		requiredTech:"Flight",
+		requiredResource:"Oil",
+		upgradesTo:"Bomber",
+		obsoleteTech:"Radar",
+		hurryCostModifier:20,
 		attackSound:"shot"
 	},
 	
@@ -930,6 +947,34 @@
 	// Modern era
 	
 	{
+		name:"Fighter",
+		unitType:"Fighter",
+		movement:1,
+		strength:45,
+		rangedStrength:45,
+		range:8,
+		cost: 375,
+		requiredTech:"Radar",
+		requiredResource:"Oil",
+		hurryCostModifier:20,
+		uniques:["[100]% chance to intercept air attacks","Bonus vs Bomber 150%",
+			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
+	{
+		name:"Bomber",
+		unitType:"Bomber",
+		movement:1,
+		strength:65,
+		rangedStrength:65,
+		range:10,
+		cost: 375,
+		requiredTech:"Radar",
+		requiredResource:"Oil",
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
+	{
 		name:"Landship",
 		unitType:"Armor",
 		movement:4,
@@ -947,9 +992,10 @@
 		unitType:"WaterMelee",
 		movement:6,
 		strength:55,
+		interceptRange:2,
 		cost: 375,
 		requiredTech:"Combustion",
-		uniques:["Can attack submarines"], // todo: add interception and bonus vs submarines once we have air and submarine units
+		uniques:["Can attack submarines","[40]% chance to intercept air attacks"], // todo: add bonus vs submarines
 		hurryCostModifier:20
 	},
 	{
@@ -1011,7 +1057,7 @@
 		cost: 375,
 		requiredTech:"Plastics",
 		upgradesTo:"Mechanized Infantry",
-		obsoleteTech:"Nuclear Fission",
+		obsoleteTech:"Mobile Tactics",
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
@@ -1024,6 +1070,18 @@
 		rangedStrength:60,
 		cost: 350,
 		requiredTech:"Ballistics",
+		hurryCostModifier:20,
+		attackSound:"machinegun"
+	},
+	{
+		name:"Anti-Aircraft Gun",
+		unitType:"Melee",
+		movement:2,
+		interceptRange:2,
+		strength:50,
+		cost: 375,
+		requiredTech:"Ballistics"
+		uniques:["[100]% chance to intercept air attacks","Bonus vs air units 150%"]
 		hurryCostModifier:20,
 		attackSound:"machinegun"
 	},
@@ -1084,7 +1142,7 @@
 		movement:3,
 		strength:90,
 		cost: 375,
-		requiredTech:"Nuclear Fission",
+		requiredTech:"Mobile Tactics",
 		hurryCostModifier:20,
 	},
 	{
@@ -1093,7 +1151,7 @@
 		movement:5,
 		strength:100,
 		cost: 425,
-		requiredTech:"Robotics",
+		requiredTech:"Lasers",
 		requiredResource:"Aluminum",
 		uniques:["Can move after attacking","No defensive terrain bonus"]
 		hurryCostModifier:20,

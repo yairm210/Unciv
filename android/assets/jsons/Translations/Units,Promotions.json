@@ -183,6 +183,11 @@
 	}
 
 
+	"Brute":{	
+		Italian:"Bruto"
+	}
+
+
 	"Warrior":{	
 		Italian:"Guerriero"
 		Russian:"Воин"
@@ -569,6 +574,7 @@
 
 	"Landsknecht":{
 		Italian:"Lanzichenecco"
+		French:"Lansquenet"
 	}
 
 	"Knight":{	
@@ -663,10 +669,12 @@
 	
 	"Janissary":{ // Ottoman unique
 		Italian:"Giannizzero"
+		French:"Janissaire"
 	}
 	
 	"Heals [amountHealed] damage if it kills a unit":{
 		Italian:"Cura [amountHealed] PF quando uccide un'unità nemica"
+		French:"Soigne [amountHealed] dégâts si il tue une unité"
 	}
 
 	"Minuteman":{ // american unique
@@ -713,10 +721,12 @@
 	
 	"Sipahi":{
 		Italian:"Sipahi"//same as in Italian
+		//same in french
 	}
 	
 	"No movement cost to pillage":{
 		Italian:"Nessun costo di movimento per il saccheggio"
+		French:"L'action pillage ne coûte pas de point de mouvement"
 	}
 	
 
@@ -835,7 +845,7 @@
 		French:"Infanterie de la grande guerre"
 	}
 
-    "Foreign Legion":{ // French Unique
+    	"Foreign Legion":{ // French Unique
 		Italian:"Legione straniera"
 		Romanian:"Legiunea Străină"
 		Spanish:"Legion Olvidada"
@@ -891,7 +901,7 @@
 		French:"Mitrailleuse"
 	}
 
-	"Anti-aircraft Gun":{
+	"Anti-Aircraft Gun":{
 		Italian:"Cannone antiaereo"
 		Romanian:"Tun antiaerian"
 		Spanish:"Arma Anti-Aerea"
@@ -972,6 +982,8 @@
 	}
 	
 	"[percent]% chance to intercept air attacks":{
+		Italian:"[percent]% probabilità di intercettare attacchi aerei"
+		French:"[percent]% chance d'intercepter une attaque aérienne"
 	}
 	
 	
@@ -1067,17 +1079,17 @@
 		French:"Bombardier"
 	}
 
-    "Mechanized Infantry":{
+    	"Mechanized Infantry":{
 		Italian:"Fanteria meccanizzata"
 		Simplified_Chinese:"机械化步兵"
 		French:"Infantrie mécanisée"
 	}
 
-    "Modern Armor":{
+    	"Modern Armor":{
 		Italian:"Armatura moderna"
 		Simplified_Chinese:"现代坦克"
 		French:"Blindé moderne"
-    }
+    	}
 
 	"B17":{ // american unique
 		Italian:"B-17"
@@ -1302,8 +1314,8 @@
 	
 	"Bonus vs City":{
 		Italian:"Bonus contro Città"
-        Simplified_Chinese:"攻击城市时+15%战斗力"
-        French:"Bonus contre les villes"
+        	Simplified_Chinese:"攻击城市时+15%战斗力"
+        	French:"Bonus contre les villes"
 	}
 	
 	"Bonus vs [unitType]":{
@@ -1805,6 +1817,126 @@
 		Italian:"L'unità attuale e quelle circostanti guariscono di 5 PF al turno. Inoltre, l'unità recupera 5 PF aggiuntivi se si trova fuori dal territorio amico."
 		Simplified_Chinese:"本单位及其相邻单位每回合额外回复5生命值，该单位在己方领土以外每回合额外回复5生命值"
 		French:"Cette unité et toutes celles présentes dans les cases adjacentes se soignent de 5 PV supplémentaires par tour. Cette unité se soigne de 5 PV supplémentaires par tour en dehors d'un territoire allié"
+	}
+
+	"Targeting I (air)":{
+		Italian:"Puntamento aereo I"
+		French:"Visée I (air)"
+	}
+
+	"Targeting II (air)":{
+		Italian:"Puntamento aereo II"
+		French:"Visée II (air)"
+	}
+
+	"Targeting III (air)":{
+		Italian:"Puntamento aereo III"
+		French:"Visée III (air)"
+	}
+
+	"Air Repair":{
+		Italian:"Riparazione aerea"
+		French:"Réparation Aérienne"
+	}
+
+	"Unit will heal every turn, even if it performs an action":{
+		Italian:"L'unità guarisce ad ogni turno, anche quando esegue un'azione "
+		French:"L'unité se soignera à chaque tour, même si elle effectue une action"
+	}
+
+	"Operational Range":{
+		Italian:"Raggio operativo"
+		French:"Portée"
+	}
+
+	"+2 Range":{
+		Italian:"+2 Raggio"
+		French:"+2 Portée"
+	}
+
+	"Sortie":{
+		Italian:"Sortita"
+		//same in french
+	}
+
+	"1 extra Interception may be made per turn":{
+		Italian:"Può eseguire 1 Intercettazione extra per turno"
+		French:"1 interception supplémentaire par tour"
+	}
+
+	"Dogfighting I":{
+		Italian:"Duello aereo I"
+		French:"Combat aérien I" //official translate but not very accurate
+	}
+
+	"Bonus when performing air sweep [bonusAmount]%":{
+		Italian:"+[bonusAmount]% Forza nella distruzione delle difese aeree"
+		French:"Bonus de combat aérien +[bonusAmount]%"
+	}
+
+	"Dogfighting II":{
+		Italian:"Duello aereo II"
+		French:"Combat aérien II"
+	}
+
+	"Dogfighting III":{
+		Italian:"Duello aereo III"
+		French:"Combat aérien III"
+	}
+
+	"Interception I":{
+		Italian:"Intercettazione I"
+		//same in french
+	}
+
+	"Bonus when intercepting [bonusAmount]%":{
+		Italian:"+[bonusAmount]% Bonus d'intercettazione"
+		French:"Bonus d'interception +[bonusAmount]%"
+	}
+
+	"Interception II":{
+		Italian:"Intercettazione II"
+		//same in french
+	}
+
+	"Interception III":{
+		Italian:"Intercettazione III"
+		//same in french
+	}
+
+	"Siege I":{//Air
+		Italian:"Assedio I"
+		French:"Siège I"
+	}
+
+	"Bonus vs City 33%":{ //i think that it already exist somewhere
+		Italian:"+33% Forza contro le Città"
+		French:"Bonus contre les villes +33%"
+	}
+
+	"Siege II":{
+		Italian:"Assedio II"
+		French:"Siège II"
+	}
+
+	"Siege III":{
+		Italian:"Assedio III"
+		French:"Siège III"
+	}
+
+	"Bonus vs City 34%":{
+		Italian:"+34% Forza contro le Città"
+		French:"Bonus contre les villes +34%"
+	}
+
+	"Evasion":{
+		Italian:"Manovre evasive"
+		French:"Esquive"
+	}
+
+	"Reduces damage taken from interception by 50%":{
+		Italian:"Dimezza i danni da intercettazione contraerea"
+		French:"Réduit les dégâts des unités d'interception de 50%"
 	}
 
 }

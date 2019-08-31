@@ -8,6 +8,7 @@ import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tr
+import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.addSeparator
 import com.unciv.ui.utils.enable
@@ -70,13 +71,21 @@ class VictoryScreen : PickerScreen() {
 
 
     fun wonOrLost(description: String) {
-        descriptionLabel.setText(description.tr())
+
+        val endGameMessage = when(description){
+            "You have won a cultural victory!" -> "You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart."
+            "You have won a domination victory!" -> "The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!"
+            "You have won a scientific victory!" -> "You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!"
+            else -> "You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!"
+        }
+
+        descriptionLabel.setText(description.tr()+"\n"+endGameMessage.tr() )
 
         rightSideButton.setText("Start new game".tr())
         rightSideButton.isVisible = true
         rightSideButton.enable()
         rightSideButton.onClick {
-            UnCivGame.Current.screen=NewGameScreen()
+            UnCivGame.Current.screen= NewGameScreen()
         }
 
         closeButton.setText("One more turn...!".tr())
@@ -109,7 +118,7 @@ class VictoryScreen : PickerScreen() {
     fun scienceVictoryColumn():Table{
         val t = Table()
         t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program".tr(),playerCivInfo.getBuildingUniques().contains("Enables construction of Spaceship parts"))).row()
+        t.add(getMilestone("Built Apollo Program".tr(),playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
 
         val victoryManager= playerCivInfo.victoryManager
 
@@ -134,7 +143,7 @@ class VictoryScreen : PickerScreen() {
         val table=Table()
         table.defaults().pad(5f)
         for (civ in playerCivInfo.gameInfo.civilizations) {
-            if (civ.isPlayerCivilization() || civ.isBarbarianCivilization() || civ.isCityState()) continue
+            if (civ.isCurrentPlayer() || !civ.isMajorCiv()) continue
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
                     else "???"

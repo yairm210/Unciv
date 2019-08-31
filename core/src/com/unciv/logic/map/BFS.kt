@@ -27,10 +27,12 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
     fun nextStep(){
         val newTilesToCheck = ArrayList<TileInfo>()
         for(tileInfo in tilesToCheck){
-            val fitNeighbors = tileInfo.neighbors.asSequence()
-                    .filter(predicate)
-                    .filter{!tilesReached.containsKey(it)}
-            fitNeighbors.forEach { tilesReached[it] = tileInfo; newTilesToCheck.add(it) }
+            for(neighbor in tileInfo.neighbors){
+                if(predicate(neighbor) && !tilesReached.containsKey(neighbor)){
+                    tilesReached[neighbor] = tileInfo;
+                    newTilesToCheck.add(neighbor)
+                }
+            }
         }
         tilesToCheck = newTilesToCheck
     }
@@ -39,11 +41,11 @@ class BFS(val startingPoint: TileInfo, val predicate : (TileInfo) -> Boolean){
         val path = ArrayList<TileInfo>()
         path.add(destination)
         var currentNode = destination
-        while(currentNode != startingPoint){
-            tilesReached[currentNode]?.let {
-                currentNode = it
-                path.add(currentNode)
-            } ?: return ArrayList() // destination is not in our path
+        while(currentNode != startingPoint) {
+            val parent = tilesReached[currentNode]
+            if (parent == null) return ArrayList()// destination is not in our path
+            currentNode = parent
+            path.add(currentNode)
         }
         return path
     }

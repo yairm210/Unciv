@@ -1,5 +1,6 @@
 package com.unciv.logic.automation
 
+import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.*
@@ -20,6 +21,7 @@ class NextTurnAutomation{
     /** Top-level AI turn tasklist */
     fun automateCivMoves(civInfo: CivilizationInfo) {
         respondToDemands(civInfo)
+        respondToTradeRequests(civInfo)
 
         if(civInfo.isMajorCiv()) {
             offerPeaceTreaty(civInfo)
@@ -40,9 +42,25 @@ class NextTurnAutomation{
         civInfo.popupAlerts.clear() // AIs don't care about popups.
     }
 
+    private fun respondToTradeRequests(civInfo: CivilizationInfo) {
+        for(tradeRequest in civInfo.tradeRequests){
+            val otherCiv = civInfo.gameInfo.getCivilization(tradeRequest.requestingCiv)
+            val tradeLogic = TradeLogic(civInfo, otherCiv)
+            tradeLogic.currentTrade.set(tradeRequest.trade)
+            if(TradeEvaluation().isTradeAcceptable(tradeLogic.currentTrade,civInfo,otherCiv)){
+                tradeLogic.acceptTrade()
+                otherCiv.addNotification("[${civInfo.civName}] has accepted your trade request", Color.GOLD)
+            }
+            else{
+                otherCiv.addNotification("[${civInfo.civName}] has denied your trade request", Color.GOLD) // todo translation
+            }
+        }
+        civInfo.tradeRequests.clear()
+    }
+
     private fun respondToDemands(civInfo: CivilizationInfo) {
         for(popupAlert in civInfo.popupAlerts){
-            if(popupAlert.type==AlertType.CitySettledNearOtherCiv){  // we're called upon to make a decision
+            if(popupAlert.type==AlertType.DemandToStopSettlingCitiesNear){  // we're called upon to make a decision
                 val demandingCiv = civInfo.gameInfo.getCivilization(popupAlert.value)
                 val diploManager = civInfo.getDiplomacyManager(demandingCiv)
                 if(Automation().threatAssessment(civInfo,demandingCiv) >= ThreatLevel.High)
@@ -92,7 +110,7 @@ class NextTurnAutomation{
             val construction = city.cityConstructions.getCurrentConstruction()
             if (construction.canBePurchased()
                     && city.civInfo.gold / 3 >= construction.getGoldCost(civInfo) ) {
-                city.cityConstructions.purchaseBuilding(construction.name)
+                city.cityConstructions.purchaseConstruction(construction.name)
             }
         }
     }
@@ -180,6 +198,10 @@ class NextTurnAutomation{
             val adoptablePolicies = GameBasics.PolicyBranches.values
                     .flatMap { it.policies.union(listOf(it)) }
                     .filter { civInfo.policies.isAdoptable(it) }
+
+            // This can happen if the player is crazy enough to have the game continue forever and he disabled cultural victory
+            if(adoptablePolicies.isEmpty()) return
+
 
             val preferredVictoryType = civInfo.victoryType()
             val policyBranchPriority =
@@ -284,7 +306,7 @@ class NextTurnAutomation{
         val ourCombatStrength = Automation().evaluteCombatStrength(civInfo)
         val enemiesCiv = civInfo.diplomacy.filter { it.value.diplomaticStatus == DiplomaticStatus.War }
                 .map { it.value.otherCiv() }
-                .filterNot { it == civInfo || it.isBarbarianCivilization() || it.cities.isEmpty() }
+                .filterNot { it == civInfo || it.isBarbarian() || it.cities.isEmpty() }
                 .filter { !civInfo.getDiplomacyManager(it).hasFlag(DiplomacyFlags.DeclinedPeace) }
 
         for (enemy in enemiesCiv) {
@@ -454,7 +476,7 @@ class NextTurnAutomation{
             else -> {
                 val threatLevel = Automation().threatAssessment(civInfo,otherCiv)
                 if(threatLevel<ThreatLevel.High) // don't piss them off for no reason please.
-                    otherCiv.popupAlerts.add(PopupAlert(AlertType.CitySettledNearOtherCiv, civInfo.civName))
+                    otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, civInfo.civName))
             }
         }
         diplomacyManager.removeFlag(DiplomacyFlags.SettledCitiesNearUs)

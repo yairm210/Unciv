@@ -1,31 +1,15 @@
-package com.unciv
+package com.unciv.logic
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.logic.GameInfo
-import com.unciv.logic.HexMath
+import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
-import com.unciv.logic.civilization.PlayerType
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.MapType
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.models.gamebasics.VictoryType
+import com.unciv.models.metadata.GameParameters
 import java.util.*
 import kotlin.collections.ArrayList
-
-class GameParameters{
-    var difficulty="Prince"
-    var mapRadius=20
-    var numberOfHumanPlayers=1
-    var humanNations=ArrayList<String>().apply { add("Babylon") } // Good default starting civ
-    var numberOfEnemies=3
-    var numberOfCityStates=0
-    var mapType= MapType.Perlin
-    var noBarbarians=false
-    var mapFileName :String?=null
-    var victoryTypes :ArrayList<VictoryType> = VictoryType.values().toCollection(ArrayList()) // By default, all victory types
-}
 
 class GameStarter{
     fun startNewGame(newGameParameters: GameParameters): GameInfo {
@@ -34,29 +18,31 @@ class GameStarter{
         gameInfo.gameParameters = newGameParameters
         gameInfo.tileMap = TileMap(newGameParameters)
         gameInfo.tileMap.gameInfo = gameInfo // need to set this transient before placing units in the map
+        gameInfo.difficulty = newGameParameters.difficulty
 
 
         val availableCivNames = Stack<String>()
         availableCivNames.addAll(GameBasics.Nations.filter { !it.value.isCityState() }.keys.shuffled())
-        availableCivNames.removeAll(newGameParameters.humanNations)
+        availableCivNames.removeAll(newGameParameters.players.map { it.chosenCiv })
         availableCivNames.remove("Barbarians")
-        val availableCityStatesNames = Stack<String>()
-        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys.shuffled())
 
-        for(nation in newGameParameters.humanNations) {
-            val playerCiv = CivilizationInfo(nation)
-            gameInfo.difficulty = newGameParameters.difficulty
-            playerCiv.playerType = PlayerType.Human
+
+        val barbarianCivilization = CivilizationInfo("Barbarians")
+        gameInfo.civilizations.add(barbarianCivilization)
+
+        for(player in newGameParameters.players.sortedBy { it.chosenCiv=="Random" }) {
+            val nationName = if(player.chosenCiv!="Random") player.chosenCiv
+            else availableCivNames.pop()
+
+            val playerCiv = CivilizationInfo(nationName)
+            playerCiv.playerType = player.playerType
+            playerCiv.playerId = player.playerId
             gameInfo.civilizations.add(playerCiv)
         }
 
-        val barbarianCivilization = CivilizationInfo("Barbarians")
-        gameInfo.civilizations.add(barbarianCivilization)// second is barbarian civ
 
-        for (nationName in availableCivNames.take(newGameParameters.numberOfEnemies)) {
-            val civ = CivilizationInfo(nationName)
-            gameInfo.civilizations.add(civ)
-        }
+        val availableCityStatesNames = Stack<String>()
+        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys.shuffled())
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)
@@ -65,7 +51,7 @@ class GameStarter{
 
         gameInfo.setTransients() // needs to be before placeBarbarianUnit because it depends on the tilemap having its gameinfo set
 
-        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarianCivilization() && !it.isPlayerCivilization()}) {
+        for (civInfo in gameInfo.civilizations.filter {!it.isBarbarian() && !it.isPlayerCivilization()}) {
             for (tech in gameInfo.getDifficulty().aiFreeTechs)
                 civInfo.tech.addTechnology(tech)
         }
@@ -74,10 +60,10 @@ class GameStarter{
 
 
         val startingLocations = getStartingLocations(
-                gameInfo.civilizations.filter { !it.isBarbarianCivilization() },
+                gameInfo.civilizations.filter { !it.isBarbarian() },
                 gameInfo.tileMap)
 
-        for (civ in gameInfo.civilizations.filter { !it.isBarbarianCivilization() }) {
+        for (civ in gameInfo.civilizations.filter { !it.isBarbarian() }) {
             val startingLocation = startingLocations[civ]!!
 
             civ.placeUnitNearTile(startingLocation.position, Constants.settler)
@@ -115,7 +101,7 @@ class GameStarter{
             val civsOrderedByAvailableLocations = civs.sortedBy {civ ->
                 when {
                     tilesWithStartingLocations.any { it.improvement=="StartingLocation "+civ.civName } -> 1 // harshest requirements
-                    civ.getNation().startBias.isNotEmpty() -> 2 // less harsh
+                    civ.nation.startBias.isNotEmpty() -> 2 // less harsh
                     else -> 3
                 }  // no requirements
             }
@@ -128,7 +114,7 @@ class GameStarter{
                     if (freeTiles.isEmpty()) break // we failed to get all the starting locations with this minimum distance
                     var preferredTiles = freeTiles.toList()
 
-                    for (startBias in civ.getNation().startBias) {
+                    for (startBias in civ.nation.startBias) {
                         if (startBias.startsWith("Avoid ")) {
                             val tileToAvoid = startBias.removePrefix("Avoid ")
                             preferredTiles = preferredTiles.filter { it.baseTerrain != tileToAvoid && it.terrainFeature != tileToAvoid }

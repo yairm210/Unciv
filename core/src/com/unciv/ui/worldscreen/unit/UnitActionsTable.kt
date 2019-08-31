@@ -47,7 +47,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
             "Disband unit" -> return ImageGetter.getImage("OtherIcons/DisbandUnit")
             "Sleep" -> return ImageGetter.getImage("OtherIcons/Sleep")
             "Explore" -> return ImageGetter.getUnitIcon("Scout")
-            "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop.png")
+            "Stop exploration" -> return ImageGetter.getImage("OtherIcons/Stop")
             "Create Fishing Boats" -> return ImageGetter.getImprovementIcon("Fishing Boats")
             "Create Oil well" -> return ImageGetter.getImprovementIcon("Oil well")
             "Pillage" -> return ImageGetter.getImage("OtherIcons/Pillage")
@@ -59,6 +59,7 @@ class UnitActionsTable(val worldScreen: WorldScreen) : Table(){
     fun update(unit: MapUnit?){
         clear()
         if (unit == null) return
+        if(!worldScreen.isPlayersTurn) return // No actions when it's not your turn!
         for (button in UnitActions().getUnitActions(unit, worldScreen).map { getUnitActionButton(it) })
             add(button).colspan(2).pad(5f).row()
         pack()

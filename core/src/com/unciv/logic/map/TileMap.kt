@@ -1,10 +1,10 @@
 package com.unciv.logic.map
 
 import com.badlogic.gdx.math.Vector2
-import com.unciv.GameParameters
+import com.unciv.models.metadata.GameParameters
 import com.unciv.logic.GameInfo
-import com.unciv.logic.GameSaver
 import com.unciv.logic.HexMath
+import com.unciv.logic.MapSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.models.gamebasics.GameBasics
 
@@ -36,7 +36,7 @@ class TileMap {
         val mapValues:Collection<TileInfo>
 
         if(newGameParameters.mapType == MapType.File)
-            mapValues = GameSaver().loadMap(newGameParameters.mapFileName!!).values
+            mapValues = MapSaver().loadMap(newGameParameters.mapFileName!!).values
         else if(newGameParameters.mapType==MapType.Perlin)
             mapValues = PerlinNoiseRandomMapGenerator().generateMap(newGameParameters.mapRadius).values
         else
@@ -76,9 +76,9 @@ class TileMap {
         val unit = GameBasics.Units[unitName]!!.getMapUnit()
         val tilesInDistance = getTilesInDistance(position, 2)
         unit.assignOwner(civInfo,false)  // both the civ name and actual civ need to be in here in order to calculate the canMoveTo...Darn
-        var unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) && (unit.type.isWaterUnit() || it.isLand) }
+        var unitToPlaceTile = tilesInDistance.firstOrNull { unit.movement.canMoveTo(it) && (unit.type.isWaterUnit() || it.isLand) }
         if (unitToPlaceTile==null)
-            unitToPlaceTile = tilesInDistance.firstOrNull { unit.canMoveTo(it) }
+            unitToPlaceTile = tilesInDistance.firstOrNull { unit.movement.canMoveTo(it) }
 
         if(unitToPlaceTile!=null) { //see if a land unit can be placed on land. if impossible, put it on water.
             // only once we know the unit can be placed do we add it to the civ's unit list
