@@ -11,6 +11,7 @@ import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.saves.LoadGameScreen
 import com.unciv.ui.saves.SaveGameScreen
+import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.setFontColor
 import com.unciv.ui.utils.toLabel
 import com.unciv.ui.worldscreen.WorldScreen
@@ -52,12 +53,8 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
 
         addButton("Start new game".tr()){ UnCivGame.Current.screen = NewGameScreen() }
 
-        if(worldScreen.gameInfo.gameParameters.isOnlineMultiplayer){
-            addButton("Copy game ID".tr()){ Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }
-        }
 
-        if(UnCivGame.Current.mutiplayerEnabled)
-            addJoinMultiplayerButton()
+        addButton("Multiplayer".tr()) { openMultiplayerPopup() }
 
         addButton("Victory status".tr()) { UnCivGame.Current.screen = VictoryScreen() }
 
@@ -76,35 +73,49 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         open()
     }
 
-    private fun addJoinMultiplayerButton() {
-        addButton("Join multiplayer".tr()) {
-            close()
-            val joinMultiplayerPopup = PopupTable(screen)
-            joinMultiplayerPopup.addGoodSizedLabel("Copy the game ID to your clipboard, and click the Join Game button!").row()
-            val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
-            badGameIdLabel.isVisible = false
-            joinMultiplayerPopup.addButton("Join Game") {
-                val gameId = Gdx.app.clipboard.contents.trim()
-                try {
-                    UUID.fromString(gameId)
-                } catch (ex: Exception) {
-                    badGameIdLabel.setText("Invalid game ID!")
-                    badGameIdLabel.isVisible = true
-                    return@addButton
-                }
-                try {
-                    val game = OnlineMultiplayer().tryDownloadGame(gameId)
-                    UnCivGame.Current.loadGame(game)
-                } catch (ex: Exception) {
-                    badGameIdLabel.setText("Could not download game1!")
-                    badGameIdLabel.isVisible = true
-                    return@addButton
-                }
-            }.row()
-            joinMultiplayerPopup.add(badGameIdLabel).row()
-            joinMultiplayerPopup.addCloseButton()
-            joinMultiplayerPopup.open()
-        }
+
+    fun openMultiplayerPopup(){
+
+        close()
+        val multiplayerPopup = PopupTable(screen)
+
+        multiplayerPopup.addGoodSizedLabel("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!").row()
+        multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
+        multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and othr players can copy their user IDs here and send them to you for you to include them in the game.").row()
+
+        multiplayerPopup.addButton("Click to copy User Id"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
+
+        multiplayerPopup.addGoodSizedLabel("Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.").row()
+
+        val copyGameIdButton = multiplayerPopup.addButton("Copy game ID".tr()) {
+            Gdx.app.clipboard.contents = worldScreen.gameInfo.gameId }.apply { row() }
+        if(!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
+            copyGameIdButton.actor.disable()
+
+        multiplayerPopup.addGoodSizedLabel("Players can enter you game by copying the game ID to the clipboard, and clicking on the Join Game button").row()
+        val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
+        badGameIdLabel.isVisible = false
+        multiplayerPopup.addButton("Join Game") {
+            val gameId = Gdx.app.clipboard.contents.trim()
+            try {
+                UUID.fromString(gameId)
+            } catch (ex: Exception) {
+                badGameIdLabel.setText("Invalid game ID!")
+                badGameIdLabel.isVisible = true
+                return@addButton
+            }
+            try {
+                val game = OnlineMultiplayer().tryDownloadGame(gameId)
+                UnCivGame.Current.loadGame(game)
+            } catch (ex: Exception) {
+                badGameIdLabel.setText("Could not download game1!")
+                badGameIdLabel.isVisible = true
+                return@addButton
+            }
+        }.row()
+        multiplayerPopup.add(badGameIdLabel).row()
+        multiplayerPopup.addCloseButton()
+        multiplayerPopup.open()
     }
 }
 

@@ -115,10 +115,6 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
         innerTable.add(userNameTextField).row()
 
 
-        innerTable.add("User Id".toLabel())
-        val userIdButton = TextButton("Click to copy".tr(),skin)
-        userIdButton.onClick { Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }
-        innerTable.add(userIdButton).row()
     }
 
     private fun addSoundEffectsVolumeSlider(innerTable: PopupTable) {
