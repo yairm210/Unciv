@@ -254,7 +254,7 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
     fun selectFont(){
         UnCivGame.Current.settings.save()
         CameraStageBaseScreen.resetFonts()
-        UnCivGame.Current.worldScreen = WorldScreen()
+        UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
         UnCivGame.Current.setWorldScreen()
         WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
     }
