@@ -76,27 +76,6 @@ class LanguagePickerScreen: PickerScreen(){
         rightSideButton.onClick {
             pickLanguage()
         }
-            /*
-            if (Fonts().containsFont(Fonts().getFontForLanguage(chosenLanguage)))
-                pickLanguage()
-            else {
-                val spaceSplitLang = chosenLanguage.replace("_"," ")
-                YesNoPopupTable("This language requires you to download fonts.\n" +
-                        "Do you want to download fonts for $spaceSplitLang?",
-                        {
-                            val downloading = PopupTable(this)
-                            downloading.add("Downloading...".toLabel())
-                            downloading.open()
-                            Gdx.input.inputProcessor = null // no interaction until download is over
-
-                            kotlin.concurrent.thread {
-                                Fonts().downloadFontForLanguage(chosenLanguage)
-                                shouldPickLanguage = true
-                            }
-                        },this)
-            }
-        }
-        */
     }
 
     fun pickLanguage(){
@@ -106,12 +85,4 @@ class LanguagePickerScreen: PickerScreen(){
         UnCivGame.Current.startNewGame()
         dispose()
     }
-
-    var shouldPickLanguage=false
-    override fun render(delta: Float) {
-        if(shouldPickLanguage)
-            pickLanguage()
-        super.render(delta)
-    }
-
 }
