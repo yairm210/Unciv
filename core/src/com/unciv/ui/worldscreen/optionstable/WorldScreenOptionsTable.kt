@@ -1,6 +1,7 @@
 package com.unciv.ui.worldscreen.optionstable
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
@@ -12,6 +13,8 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
+import java.io.IOException
+import kotlin.concurrent.thread
 
 class Language(val language:String){
     val percentComplete:Int
@@ -195,19 +198,36 @@ class WorldScreenOptionsTable(screen:WorldScreen) : PopupTable(screen){
         FontSetSelectBox.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 UnCivGame.Current.settings.fontSet = FontSetSelectBox.selected
-                if (FontSetSelectBox.selected == "NativeFont(Recommended)"||Fonts.fontDownloadIsWell==1) {
+                if (FontSetSelectBox.selected == "NativeFont(Recommended)"||Fonts().containsFont()) {
                     selectFont()
                 }
                 else {
                     YesNoPopupTable("This Font requires you to download fonts.\n" +
-                            "Do you want to download fonts?",
+                            "Do you want to download fonts(about 4.2MB)?",
                             {
                                 val downloading = PopupTable(screen)
-                                downloading.add("Downloading...".toLabel())
+                                downloading.add("Downloading...\n".toLabel()).row()
+                                downloading.add("Warning:Don't switch this game to background until download finished.".toLabel().setFontColor(Color.RED)).row()
                                 downloading.open()
                                 Gdx.input.inputProcessor = null
-                                selectFont()
-                            })
+                                thread {
+                                    try {
+                                        Fonts().download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf", "WenQuanYiMicroHei")//This font is licensed under Apache2.0 or GPLv3
+                                        Gdx.app.postRunnable {
+                                            selectFont()
+                                        }
+                                    }
+                                    catch (e: IOException) {
+                                        Gdx.app.postRunnable {
+                                            FontSetSelectBox.selected = "NativeFont(Recommended)"
+                                            val downloading = PopupTable(UnCivGame.Current.worldScreen)
+                                            downloading.add("Download failed!\nPlease check your internet connection.".toLabel().setFontColor(Color.RED)).row()
+                                            downloading.addButton("Close".tr()) { downloading.remove() }.row()
+                                            downloading.open()
+                                        }
+                                    }
+                                }
+                            }, UnCivGame.Current.worldScreen, {FontSetSelectBox.selected = "NativeFont(Recommended)"})
                 }
             }
         })
