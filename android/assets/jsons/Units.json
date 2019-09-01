@@ -962,6 +962,22 @@
 		attackSound:"shot"
 	},
 	{
+		name:"Zero",
+		unitType:"Fighter",
+		replaces:"Fighter",
+		uniqueTo:"Japan",
+		movement:1,
+		strength:45,
+		rangedStrength:45,
+		range:8,
+		cost: 375,
+		requiredTech:"Radar",
+		hurryCostModifier:20,
+		uniques:["[100]% chance to intercept air attacks","Bonus vs Bomber 150%","Bonus vs Fighter 33%",
+			"6 tiles in every direction always visible"]
+		attackSound:"shot"
+	},
+	{
 		name:"Bomber",
 		unitType:"Bomber",
 		movement:1,
@@ -971,6 +987,22 @@
 		cost: 375,
 		requiredTech:"Radar",
 		requiredResource:"Oil",
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
+	{
+		name:"B17",
+		unitType:"Bomber",
+		replaces:"Bomber",
+		uniqueTo:"America",
+		movement:1,
+		strength:70,
+		rangedStrength:70,
+		range:10,
+		cost: 375,
+		requiredTech:"Radar",
+		requiredResource:"Oil",
+		promotions:["Evasion", "Siege I"],
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
