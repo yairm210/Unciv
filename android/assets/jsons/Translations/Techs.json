@@ -273,6 +273,7 @@
 		Italian:"Consente accordi su Diritti di Passaggio"
 		Simplified_Chinese:"允许签订开放边境协定"
 		French:"Permet l'accord des frontières ouvertes"
+		Russian:"Открывает Договор об открытых границах"
 	}
 	
 	"Guilds":{
@@ -725,13 +726,14 @@
 
 	"Radar":{
 		Italian:"Radar"
+		Russian:"Радар"
 	}
 	
 ///////// Technologies (Information Era)
 	
 	"Pharmaceuticals":{
 		Italian:"Farmaceutica"
-		Russian:"Пенициллин"
+		Russian:"Фармацевтика"
 		French:"Médicaments"
 		Romanian:"Produse farmaceutice"
 		German:"Arzneimittel"
@@ -767,11 +769,12 @@
 
 	"Mobile Tactics":{
 		Italian:"Tattiche mobili"
+		Russian:"Мобильная тактика"
 	}
 
 	"Combined Arms":{
 		Italian:"Armi combinate"
-		Russian:"Комбинированные руки"
+		Russian:"Современное вооружение"
 		French:"Armes combinés"
 		German:"Verbundene Waffen"
 		Spanish:"Fuerzas combinadas"
@@ -831,6 +834,7 @@
 	"Lasers":{
 		Italian:"Laser"
 		French:"Lasers"
+		Russian:"Лазеры"
 	}
 
 	"Nanotechnology":{
@@ -871,7 +875,7 @@
 
 	"Future Tech":{
 		Italian:"Tecnologia futura"
-		Russian:"Технология будущчего"
+		Russian:"Технологии будущего"
 		French:"Technologie future"
 		Romanian:"Tehnologia viitorului"
 		German:"Zukunftstechnologien"
@@ -953,7 +957,7 @@
 		Spanish:"Habilita la embarcacion a las unidades de tierra"
 		German:"Ermöglicht das Einbooten von Landeinheiten"
 		French:"Permet d'embarquer les unités terrestres"
-		Russian:"Позволяет посадку для наземных единиц"
+		Russian:"Позволяет наземным единицам передвигаться по воде"
 		Simplified_Chinese:"陆军单位拥有船运能力"
 		Portuguese:"Permite o embarque de unidades terrestres"
 	}
@@ -964,7 +968,7 @@
 		Spanish:"Habilita a las unidades embarcadas a entrar en oceanós"
 		German:"Erlaubt es eingebooteten Einheiten Ozeanfelder zu überqueren"
 		French:"Permet aux unités embarqués de traverser les cases d'océan"
-		Russian:"Позволяет отправленным юнитам входить в тайлы океана"
+		Russian:"Позволяет наземным единицам выходить в океан"
 		Simplified_Chinese:"拥有船运能力的单位能够进入海洋"
 		Portuguese:"Permite que unidades embarcadas entrem em telhas oceânicas"
 	}
@@ -978,6 +982,7 @@
 		Simplified_Chinese:"陆军单位处于船运状态时的移动力+1"
 		Portuguese:"Aumenta movimento enquanto embarcado em +1"
 		German:"+1 für Bewegungen eingebooteter Einheiten"
+		Russian:"+1 к движению наземных единиц по воде"
 	}
 	
 ///////// Tech Eras
