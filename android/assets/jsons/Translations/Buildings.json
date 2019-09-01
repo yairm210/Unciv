@@ -21,6 +21,7 @@
 		German:"Gibt die Hauptstadt an"
 		French:"Indique la capitale"
 		Polish:"Wskazuje stolicę"
+		Russian:"Показывает столицу"
 	}
 	
 	"Monument":{	
@@ -49,7 +50,7 @@
 
 	"Stone Works":{	
 		Italian:"Scalpellino"
-		Russian:"Каменные работы"
+		Russian:"Каменные мастерские"
 		French:"Ouvrages de maçonnerie"
 		Romanian:"Carieră de piatră"
 		Spanish:"Cantería"
@@ -62,6 +63,7 @@
 	"Must not be on plains":{
 		French:"Ne doit pas être sur une plaine"
 		Polish:"Nie może być na równinie"
+		Russian:"Не может быть построено на равнине"
 	}
 
 	"Stonehenge":{	
@@ -108,6 +110,7 @@
 		German:"Papiermacher"
 		French:"Fabricant de papier"
 		Polish:"Wytwórca papieru"
+		Russian:"Бумажная мануфактура"
 	}
 	
 	"The Great Library":{	
@@ -151,6 +154,7 @@
 		Simplified_Chinese:"巴比伦城墙"
         	French:"Murs de Babylone"
 		Polish:"Mury Babilonu"
+		Russian:"Стены Вавилона"
 	}
 	
 	"The Pyramids":{	
@@ -180,7 +184,7 @@
 
 	"Provides 2 free workers":{
 		Italian:"Appaiono 2 Lavoratori gratuiti"
-		Russian:"предоставляет 2 бесплатных рабочих"
+		Russian:"Предоставляет 2 бесплатных рабочих"
 		French:"Fournit 2 travailleurs gratuits"
 		Romanian:"Oferă gratuit 2 muncitori"
 		German:"Gibt 2 kostenlose Arbeiter"
@@ -209,7 +213,7 @@
 		Spanish:"Krepost"
 		Simplified_Chinese:"俄罗斯营垒"
 		German:"Krepost"
-		Russian:"Kрепост"
+		Russian:"Острог"
 		French:"Krepost"
 		Polish:"Krepost"
 	}
@@ -229,6 +233,7 @@
 		Simplified_Chinese:"太阳神巨像"
 		French:"Colosse"
 		Polish:"Kolos rodyjski"
+		Russian:"Колосс"
 	}
 
 	"+1 gold from worked water tiles in city":{
@@ -258,6 +263,7 @@
 		German:"Grabstätte"
 		French:"Tombeau"
 		Polish:"Grobowiec"
+		Russian:"Гробница"
 	}
 
 	/*
@@ -339,6 +345,7 @@
 		Portuguese:"Farol" // farol also means that thing wich has a red ligh (i do not remember it's name) so if deemed nescessarry can add costeira to the beggining
 		German:"Leuchtturm"
 		Polish:"Latarnia morska"
+		Russian:"Маяк"
 	}
 
 	"Can only be built in coastal cities":{
@@ -349,6 +356,7 @@
 		Portuguese:"Só pode ser construido em cidades costeiras"
 		German:"Kann nur in Küstenstädten gebaut werden"
 		Polish:"Może być zbudowane tylko w miastach nadbrzeżnych"
+		Russian:"Может быть построен только в прибрежных городах"
 	}
 
 	"+1 food from Ocean and Coast tiles":{
@@ -369,6 +377,7 @@
 		Portuguese:"O Grande Farol"
 		German:"Der Große Leuchtturm"
 		Polish:"Latarnia na Faros" //common polish name
+		Russian:"Фаросский маяк"
 	}
 
 	"All military naval units receive +1 movement and +1 sight":{
@@ -489,6 +498,7 @@
 		Simplified_Chinese:"兵马俑"
 		French:"Armée de Terre Cuite"
 		Polish:"Terakotowa armia"
+		Russian:"Терракотовая армия"
 	}
 	
 	"Market":{	
@@ -510,7 +520,7 @@
 		Simplified_Chinese:"巴扎"
 		German:"Basar"
 		French:"Bazar"
-		Russian:"базар"
+		Russian:"Восточный базар"
 		Polish:"Bazar"
 	}
 	
@@ -650,6 +660,7 @@
 		Simplified_Chinese:"长城"
 		French:"La Grande Muraille"
 		Polish:"Wielki Mur Chiński"
+		Russian:"Великая стена"
 	}
 
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
@@ -705,6 +716,7 @@
 		Simplified_Chinese:"港口"
 		Portuguese:"Porto"
 		German:"Hafen"
+		Russian:"Порт"
 		Polish:"Port"
 	}
 
@@ -799,6 +811,7 @@
 		French:"Alhambra"
 		Simplified_Chinese:"阿尔罕布拉宫"
 		Polish:"Alhambra"
+		Russian:"Альгамбра"
 	}
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
@@ -947,6 +960,7 @@
 		Simplified_Chinese:"汉萨会馆"
 		French:"Hanse" //same in French
 		Polish:"Hanza"
+		Russian:"Ганзея" 
 	}
 
 	"+5% Production for every Trade Route with a City-State in the empire":{
@@ -1008,6 +1022,7 @@
 		French:"Tour de Pise"
 		Simplified_Chinese:"比萨斜塔"
 		Polish:"Krzywa Wieża w Pizie"
+		Russian:"Пизанская башня"
 	}
 
 	"Free Great Person":{
@@ -1018,6 +1033,7 @@
 		French:"Personnage illustre gratuit"
 		Simplified_Chinese:"免费的伟人"
 		Polish:"Darmowy Wielki Człowiek"
+		Russian:"Бесплатный Великий человек"
 	}
 	
 	"Choose a free great person":{
@@ -1025,6 +1041,7 @@
 		Simplified_Chinese:"选择1个免费的伟人"
 		French:"Choisissez un personnage illustre gratuit"
 		Polish:"Wybierz darmowego Wielkiego Człowieka"
+		Russian:"Выбор великого человека"
 	}
 
 	"Himeji Castle":{
@@ -1032,6 +1049,7 @@
 		Simplified_Chinese:"姬路城"
 		French:"Le château de Himeji"
 		Polish:"Zamek Himeji"
+		Russian:"Замок Химэдзи"
 	}
 
 	"+15% combat strength for units fighting in friendly territory":{
@@ -1082,6 +1100,7 @@
 	"Must not be on hill":{
 		French:"Doit être sur une colline"
 		Polish:"Nie może być na wzgórzu"
+		Russian:"Не может быть построено на холме"
 	}
 
 	"Museum":{	
@@ -1142,6 +1161,7 @@
 		Portuguese:"Port"
 		German:"Seehafen"
 		Polish:"Port morski"
+		Russian:"Морской порт"
 	}
 
 	"+1 production and gold from all sea resources worked by the city":{
@@ -1227,11 +1247,12 @@
 		Polish:"Giełda"
 	}
 
-    "Big Ben":{	
+    	"Big Ben":{	
 		Italian:"Big Ben"
 		Simplified_Chinese:"大本钟"
 		French:"Big Ben"
 		Polish:"Big Ben"
+		Russian:"Биг Бен"
 	}
 
 	"-15% to purchasing items in cities":{
@@ -1243,7 +1264,7 @@
 
 	"Cristo Redentor":{
 		Italian:"Cristo Redentor" //Same in Italian
-		Russian:"Кристо Редентор"
+		Russian:"Статуя Христа-Искупителя"
 		French:"Christ rédempteur"
 		Romanian:"Cristo Redentor"
 		Spanish:"Cristo Redentor"
@@ -1288,6 +1309,7 @@
 		Simplified_Chinese:"新天鹅堡"
 		French:"Château de Neuschwanstein"
 		Polish:"Neuschwanstein"
+		Russian:"Замок Нойшванштейн"
 	}
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
@@ -1352,6 +1374,7 @@
 		French:"Statue de la Liberté"
 		Simplified_Chinese:"自由女神像"
 		Polish:"Statua wolności"
+		Russian:"Статуя Свободы"
 	}
 
 	"+1 Production from specialists":{
@@ -1412,7 +1435,7 @@
 	
 	"Solar Plant":{	
 		Italian:"Centrale ad energia solare"
-		Russian:"Солнечный завод"
+		Russian:"Солнечные электростанции"
 		French:"Centrale solaire"
 		Romanian:"Centrală solară"
 		Spanish:"Planta Solar"
@@ -1451,6 +1474,7 @@
 		Portuguese:"Ópera de Sydney"
 		German:"Opernhaus Sydney"
 		Polish:"Opera w Sydney"
+		Russian:"Сиднейский Оперный театр"
 	}
 
 	/*
@@ -1486,6 +1510,7 @@
 		//same in German
 		Simplified_Chinese:"五角大楼"
 		Polish:"Pentagon"
+		Russian:"Пентагон"
 	}
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -1580,6 +1605,7 @@
 		French:"Téléscope de Hubble"
 		Simplified_Chinese:"哈勃太空望远镜"
 		Polish:"Teleskop Hubble'a"
+		Russian:"Телескоп Хаббл"
 	}
 
 	"2 free great scientists appear":{
@@ -1607,6 +1633,7 @@
 		Portuguese:"Propulsor de Nave Espacial"
 		German:"Raumschiff Booster"
 		Polish:"Dopalacz SK"
+		Russian:"Ускоритель КК"
 	}
 
 	"SS Cockpit":{	//no translation that I know of
@@ -1618,6 +1645,7 @@
 		Portuguese:"Cabine de Nave Espacial"
 		German:"Raumschiff Cockpit"
 		Polish:"Kokpit SK"
+		Russian:"Кокпит КК"
 	}
 
 	"SS Engine":{	//no translation that I know of
@@ -1629,6 +1657,7 @@
 		Portuguese:"Propulsor principal de Nave Espacial"
 		German:"Raumschiff Triebwerke"
 		Polish:"Silnik SK"
+		Russian:"Двигатель КК"
 	}
 
 	"SS Stasis Chamber":{	//no translation that I know of
@@ -1640,6 +1669,7 @@
 		Portuguese:"Câmara  de biostase de Nave Espacial"
 		German:"Raumschiff Stase-Kammer"
 		Polish:"Komora statyczna SK"
+		Russian:"Стазис-капусла КК"
 	}
 	
 	
@@ -1652,6 +1682,7 @@
 		Simplified_Chinese:"需要城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido na cidade"
 		Polish:"[buildingName] musi być wzniesiony w mieście"
+		Russian:"Требует постройки [buildingName] в городе"
 	}
 
 	"Requires [buildingName] to be built in all cities":{
@@ -1660,6 +1691,7 @@
 		Simplified_Chinese:"需要所有城市建有[buildingName]"
 		Portuguese:"Requer [buildingName] para ser construido em todas as cidades"
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
+		Russian:"Требует постройки [buildingName] во всех городах"
 	}
 
 	"Provides a free [buildingName] in the city":{
@@ -1668,6 +1700,7 @@
 		Simplified_Chinese:"城市获得一座免费的建筑：[buildingName]"
 		Portuguese:"Provê um(a) [buildingName] grátis na cidade"
 		Polish:"Zapewnia darmowy budynek [buildingName] w mieście"
+		Russian:"Даёт бесплатный [buildingName] в городе"
 	}
 
 	"Requires worked [resource] near city":{
@@ -1676,6 +1709,7 @@
 		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
 		Portuguese:"Requer [resource] trabalhado perto da cidade"
 		Polish:"Wymaga w mieście surowca [resource]"
+		Russian:"Требует добычи [buildingName] в городе"
 	}
 
 	"Wonder is being built elsewhere":{
@@ -1684,6 +1718,7 @@
         	French:"Cette merveille est déjà en construction ailleurs"
 		Portuguese:"A maravilha está sendo construida em uma cidade estrangeira"
 		Polish:"Cud jest już budowany gdzie indziej"
+		Russian:"Чудо света строится где-то ещё"
 	}
 
 	"Requires a [buildingName] in all cities":{
@@ -1692,6 +1727,7 @@
 		French:"Nécessite un(e) [buildingName] dans toutes les villes"
 		Portuguese:"Requer um(a) [buildingName] em todas as cidades"
 		Polish:"[buildingName] musi znajdować się we wszystkich miastach"
+		Russian:"Требует [buildingName] во всех городах"
 	}
 
 	"Requires a [buildingName] in this city":{
@@ -1700,6 +1736,7 @@
         	French:"Nécessite un(e) [buildingName] dans cette ville"
 		Portuguese:"Requer um [buildingName] nessa cidade"
 		Polish:"Wymaga budynku [buildingName] w tym mieście"
+		Russian:"Требует [buildingName] в городе"
 	}
 
 	"Requires [resource]":{
@@ -1708,6 +1745,7 @@
 		French:"[resource] requis(e)"
 		Portuguese:"Requer [resource]"
 		Polish:"Wymaga surowca [resource]"
+		Russian:"Требует [resource]"
 	}
 
 	"Required tech: [requiredTech]":{
@@ -1716,16 +1754,19 @@
 		Simplified_Chinese:"需要科技：[requiredTech]"
 		Portuguese:"Requer tecnologia: [requiredTech]"
 		Polish:"Wymaga odkrycia technologii [requiredTech]"
+		Russian:"Требуется технология: [requiredTech]"
 	}
 
 	"Must not be on plains":{
 		Italian:"Non deve trovarsi su Pianura"
 		Polish:"Nie może być na równinach"
+		Russian:"Не может быть построено на равнинах"
 	}
 
  	"Must not be on hill":{//Line correction
 		Italian:"Non deve trovarsi su Collina"
 		Polish:"Nie może być na wzgórzach"
+		Russian:"Не может быть построено на холмах"
 	}
 	
 	
