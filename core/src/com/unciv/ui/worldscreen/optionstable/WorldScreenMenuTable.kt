@@ -83,7 +83,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
         multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and othr players can copy their user IDs here and send them to you for you to include them in the game.").row()
 
-        multiplayerPopup.addButton("Click to copy User Id"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
+        multiplayerPopup.addButton("Copy User Id"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
 
         multiplayerPopup.addGoodSizedLabel("Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.").row()
 
@@ -108,7 +108,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 val game = OnlineMultiplayer().tryDownloadGame(gameId)
                 UnCivGame.Current.loadGame(game)
             } catch (ex: Exception) {
-                badGameIdLabel.setText("Could not download game1!")
+                badGameIdLabel.setText("Could not download game!".tr())
                 badGameIdLabel.isVisible = true
                 return@addButton
             }

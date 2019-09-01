@@ -141,8 +141,9 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
             } catch (ex: Exception) {
                 loadingGamePopup.close()
                 val couldntDownloadLatestGame = PopupTable(this)
-                couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!")
+                couldntDownloadLatestGame.addGoodSizedLabel("Couldn't download the latest game state!").row()
                 couldntDownloadLatestGame.addCloseButton()
+                couldntDownloadLatestGame.addAction(Actions.delay(5f, Actions.run { couldntDownloadLatestGame.close() }))
                 couldntDownloadLatestGame.open()
             }
         }
@@ -324,10 +325,11 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         OnlineMultiplayer().tryUploadGame(gameInfoClone)
                     } catch (ex: Exception) {
                         val cantUploadNewGamePopup = PopupTable(this)
-                        cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
+                        cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!").row()
                         cantUploadNewGamePopup.addCloseButton()
                         cantUploadNewGamePopup.open()
                         isPlayersTurn = true // Since we couldn't push the new game clone, then it's like we never clicked the "next turn" button
+                        shouldUpdate = true
                         return@thread
                     }
                 }

@@ -317,21 +317,57 @@
 		Italian:"Nome utente"
 	}
 	
+	"Multiplayer":{
+	}
+	
+	"Could not download game!":{
+	}
+	
+	"Could not upload game!":{
+	}
+	
+	"Join Game":{
+	}
+	
+	"Invalid game ID!":{
+	}
+	
+	"Copy User Id":{
+	}
+	
+	"Copy Game Id":{
+	}
+	
+	/// tutorials for multiplayer
+	"To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.":{
+	}
+	
+	"You can assign your own user ID there easily, and othr players can copy their user IDs here and send them to you for you to include them in the game.":{
+	}
+	
+	"Once you've created your game, enter this screen again to copy the Game ID and send it to the other players.":{
+	}
+	
+	"Players can enter you game by copying the game ID to the clipboard, and clicking on the Join Game button":{
+	}
+	
+	
+	
 	// Game speeds
 	
 	"Game Speed":{
 		Italian:"Velocità di gioco"
-                Russian:"Скорость игры"
+		Russian:"Скорость игры"
 	}
 	
 	"Quick":{
 		Italian:"Rapida"
-                Russian:"Быстрая"
+		Russian:"Быстрая"
 	}
 	
 	"Standard":{
 		Italian:"Standard"
-                Russian:"Обычная"
+		Russian:"Обычная"
 	}
 	
 	"Epic":{
@@ -467,14 +503,14 @@
 		French:"Tours avant sauvegarde automatique"
 		Simplified_Chinese:"自动存档回合数"
 		Portuguese:"Turnos entre autosaves"
-                Russian:"Кол-во ходов между автосохранениями"
+		Russian:"Кол-во ходов между автосохранениями"
 	}
 	
 	"Sound effects volume":{
 		Italian:"Volume effetti"
 		French:"Volume sonore"
 		Simplified_Chinese:"声效大小"
-                Russian:"Громкость звука"
+		Russian:"Громкость звука"
 	}
 	
 	"Show":{
@@ -541,12 +577,15 @@
 		Italian:"Muovi unità con un solo tocco"
 		German: "Einheiten mit einem Klick bewegen"
 		French:"Bouger les unités en un seul click"
-                Russian:"Перемещать юниты одним касанием"
+		Russian:"Перемещать юниты одним касанием"
 	}
 	
 	"Show tutorials":{
 		Italian:"Mostra tutorial"
-                Russian:"Показывать обучение"
+		Russian:"Показывать обучение"
+	}
+	
+	"Auto-assign city production":{
 	}
 	
 }

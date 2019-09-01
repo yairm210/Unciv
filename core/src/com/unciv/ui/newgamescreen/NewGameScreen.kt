@@ -73,7 +73,7 @@ class NewGameScreen: PickerScreen(){
                             GameSaver().autoSave(newGame!!){}
                         } catch (ex: Exception) {
                             val cantUploadNewGamePopup = PopupTable(this)
-                            cantUploadNewGamePopup.addGoodSizedLabel("Can't upload the new game!")
+                            cantUploadNewGamePopup.addGoodSizedLabel("Could not upload game!")
                             cantUploadNewGamePopup.addCloseButton()
                             cantUploadNewGamePopup.open()
                             newGame = null

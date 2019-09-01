@@ -79,10 +79,10 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             settings.autoAssignCityProduction= !settings.autoAssignCityProduction
             update()
         }
-        
-        addFontSelectBox(innerTable)
 
         addLanguageSelectBox(innerTable)
+
+        addFontSelectBox(innerTable)
 
         addResolutionSelectBox(innerTable)
 
@@ -222,10 +222,10 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
                     YesNoPopupTable("This Font requires you to download fonts.\n" +
                             "Do you want to download fonts(about 4.2MB)?",
                             {
-                                val downloading = PopupTable(screen)
-                                downloading.add("Downloading...\n".toLabel()).row()
-                                downloading.add("Warning:Don't switch this game to background until download finished.".toLabel().setFontColor(Color.RED)).row()
-                                downloading.open()
+                                val downloadingFontPopup = PopupTable(screen)
+                                downloadingFontPopup.add("Downloading...\n".toLabel()).row()
+                                downloadingFontPopup.add("Warning:Don't switch this game to background until download finished.".toLabel().setFontColor(Color.RED)).row()
+                                downloadingFontPopup.open()
                                 Gdx.input.inputProcessor = null
                                 thread {
                                     try {
@@ -237,10 +237,10 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
                                     catch (e: IOException) {
                                         Gdx.app.postRunnable {
                                             FontSetSelectBox.selected = "NativeFont(Recommended)"
-                                            val downloading = PopupTable(UnCivGame.Current.worldScreen)
-                                            downloading.add("Download failed!\nPlease check your internet connection.".toLabel().setFontColor(Color.RED)).row()
-                                            downloading.addButton("Close".tr()) { downloading.remove() }.row()
-                                            downloading.open()
+                                            val downloadFailedPopup = PopupTable(UnCivGame.Current.worldScreen)
+                                            downloadFailedPopup.add("Download failed!\nPlease check your internet connection.".toLabel().setFontColor(Color.RED)).row()
+                                            downloadFailedPopup.addCloseButton()
+                                            downloadFailedPopup.open()
                                         }
                                     }
                                 }
