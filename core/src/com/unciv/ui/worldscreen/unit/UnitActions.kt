@@ -215,11 +215,14 @@ class UnitActions {
         }
 
         if (unit.name == "Great Engineer" && !unit.isEmbarked()) {
+            val canHurryWonder = if(unit.currentMovement==0f || !tile.isCityCenter()) false
+            else {
+                val currentConstruction = tile.getCity()!!.cityConstructions.getCurrentConstruction()
+                if(currentConstruction !is Building) false
+                else currentConstruction.isWonder || currentConstruction.isNationalWonder
+            }
             actionList += UnitAction("Hurry Wonder",
-                    unit.currentMovement >0 &&
-                            tile.isCityCenter() &&
-                            tile.getCity()!!.cityConstructions.getCurrentConstruction() is Building &&
-                            (tile.getCity()!!.cityConstructions.getCurrentConstruction() as Building).isWonder
+                    canHurryWonder
             ) {
                 tile.getCity()!!.cityConstructions.apply {
                     addProductionPoints(300 + 30 * tile.getCity()!!.population.population) //http://civilization.wikia.com/wiki/Great_engineer_(Civ5)
