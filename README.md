@@ -58,4 +58,6 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 
 If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
 
-# [Credits and 3rd parties](Credits.md)
+# [Adding a new Civ](docs/NewCivs.md)
+
+# [Credits and 3rd parties](docs/Credits.md)
