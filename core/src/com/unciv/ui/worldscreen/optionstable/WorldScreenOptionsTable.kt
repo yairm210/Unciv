@@ -3,7 +3,10 @@ package com.unciv.ui.worldscreen.optionstable
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
-import com.badlogic.gdx.scenes.scene2d.ui.*
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox
+import com.badlogic.gdx.scenes.scene2d.ui.Slider
+import com.badlogic.gdx.scenes.scene2d.ui.TextField
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import com.unciv.UnCivGame
@@ -280,13 +283,15 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             GameBasics.Translations.filter { !it.value.containsKey(currentLanguage) }.forEach { missingTextArray.add(it.key) }
             missingTextSelectBox.items = missingTextArray
             missingTextSelectBox.selected = "Untranslated texts"
-            innerTable.add(missingTextSelectBox).pad(10f).width(UnCivGame.Current.worldScreen.stage.width / 2).colspan(2).row()
+            innerTable.add(missingTextSelectBox).pad(10f)
+                    .width(screen.stage.width / 2).colspan(2).row()
         }
     }
 
     fun selectLanguage(){
         UnCivGame.Current.settings.language = selectedLanguage
         UnCivGame.Current.settings.save()
+        CameraStageBaseScreen.resetFonts() // to load chinese characters if necessary
         UnCivGame.Current.worldScreen = WorldScreen(worldScreen.viewingCiv)
         UnCivGame.Current.setWorldScreen()
         WorldScreenOptionsTable(UnCivGame.Current.worldScreen)
