@@ -1,40 +1,68 @@
 package com.unciv.ui.utils
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.unciv.UnCivGame
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tr
+import com.unciv.ui.worldscreen.optionstable.PopupTable
+import core.java.nativefont.NativeFont
+import core.java.nativefont.NativeFontPaint
 import java.io.FileOutputStream
+import java.io.FileInputStream
 import java.net.URL
+import java.security.*
 
 class Fonts {
     companion object {
-        // Contains e.g. "Arial 22", fontname and size, to BitmapFont
         val fontCache = HashMap<String, BitmapFont>()
     }
-
-    fun getFontForLanguage(language:String): String {
-        if (language.contains("Chinese")) return chineseFont
-        else return "Arial"
+    fun download(link: String,fontForLanguage: String) {
+        if (!Gdx.files.local("fonts").exists())
+            Gdx.files.local("fonts").mkdirs()
+            val input = URL(link).openStream()
+            val output = FileOutputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file())
+            input.use {
+                output.use {
+                    input.copyTo(output)
+                }
+            }
     }
-
-    val chineseFont = "WenQuanYiMicroHei"
-
-    fun getCharsForFont(font: String): String {
+    fun getMD5(fontForLanguage: String):String {
+        val sb = StringBuffer("")
+        val md = MessageDigest.getInstance("MD5")
+        if (Gdx.files.local("fonts/$fontForLanguage.ttf").exists()) {
+            md.update(FileInputStream(Gdx.files.local("fonts/$fontForLanguage.ttf").file()).readBytes())
+            val b = md.digest()
+            for (i in b) {
+                var d = i.toInt()
+                if (d < 0) d = i + 256
+                if (d < 16) sb.append("0")
+                sb.append(Integer.toHexString(d))
+            }
+            return sb.toString()
+        }
+        return ""
+    }
+    fun containsFont(): Boolean {
+        if (Gdx.files.local("fonts/WenQuanYiMicroHei.ttf").exists())
+            return true
+        return false
+    }
+    fun getCharsForFont(): String {
         val defaultText = "ABCČĆDĐEFGHIJKLMNOPQRSŠTUVWXYZŽaäàâăbcčćçdđeéfghiîjklmnoöpqrsșštțuüvwxyzž" +
                 "АБВГҐДЂЕЁЄЖЗЅИІЇЙЈКЛЉМНЊОПРСТЋУЎФХЦЧЏШЩЪЫЬЭЮЯабвгґдђеёєжзѕиіїйјклљмнњопрстћуўфхцчџшщъыьэюя" +
                 "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩαβγδεζηθικλμνξοπρστυφχψωάßΆέΈέΉίϊΐΊόΌύΰϋΎΫΏ" + 
                 "ÀÄĂÂĎÊĚÉÈÍÎŁĹĽÔÓÖƠŘŔŚŤƯŮÚÜŻŹäâąďêęěłĺľńňôöơřŕśťưůýżźáèìíóú1234567890" +
                 "‘?’'“!”(%)[#]{@}/&\\<-+÷×=>®©\$€£¥¢:;,.¡*|"
-        if (font == "Arial") return defaultText
-        if (font == chineseFont) {
             val charSet = HashSet<Char>()
             charSet.addAll(defaultText.asIterable())
 
-            if(Gdx.files.internal("BasicHelp/BasicHelp_Simplified_Chinese.json").exists())
-                charSet.addAll(Gdx.files.internal("BasicHelp/BasicHelp_Simplified_Chinese.json").readString().asIterable())
+            if(Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").exists())
+                charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").readString().asIterable())
             if (Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").exists())
                 charSet.addAll(Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").readString().asIterable())
             if (Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").exists())
@@ -46,66 +74,41 @@ class Fonts {
                 }
             }
             return charSet.joinToString()
-        }
-        return ""
     }
-
-    fun download(link: String, path: String) {
-        val input = URL(link).openStream()
-        val output = FileOutputStream(Gdx.files.local(path).file())
-        input.use {
-            output.use {
-                input.copyTo(output)
-            }
-        }
-    }
-
-    fun containsFont(font:String): Boolean {
-        if (Gdx.files.internal("skin/$font.ttf").exists())
-            return true
-        if (Gdx.files.local("fonts/$font.ttf").exists())
-            return true
-
-        return false
-    }
-
-    fun downloadFontForLanguage(language:String){
-        val font = getFontForLanguage(language)
-        if(containsFont(language)) return
-
-        if (!Gdx.files.local("fonts").exists())
-            Gdx.files.local("fonts").mkdirs()
-
-        val localPath = "fonts/$font.ttf"
-        if (font == chineseFont)
-            download("https://github.com/layerssss/wqy/raw/gh-pages/fonts/WenQuanYiMicroHei.ttf", localPath)//This font is licensed under Apache2.0 or GPLv3
-    }
-
-    fun getFont(size: Int): BitmapFont {
-        val language = UnCivGame.Current.settings.language
-        val fontForLanguage = getFontForLanguage(language)
-        val keyForFont = "$fontForLanguage $size"
-        if (fontCache.containsKey(keyForFont)) return fontCache[keyForFont]!!
-        val generator: FreeTypeFontGenerator
-
-        if (Gdx.files.internal("skin/$fontForLanguage.ttf").exists())
-            generator = FreeTypeFontGenerator(Gdx.files.internal("skin/$fontForLanguage.ttf"))
-        else {
-            val localPath = "fonts/$fontForLanguage.ttf"
-            if(!containsFont(fontForLanguage))  downloadFontForLanguage(language)
-            generator = FreeTypeFontGenerator(Gdx.files.local(localPath))
-        }
-
-        val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
-        parameter.size = size
-        parameter.minFilter = Texture.TextureFilter.Linear
-        parameter.magFilter = Texture.TextureFilter.Linear
-
-        parameter.characters = getCharsForFont(fontForLanguage)
-
-        val font = generator.generateFont(parameter)
-        generator.dispose() // don't forget to dispose to avoid memory leaks!
-        fontCache[keyForFont] = font
-        return font
-    }
+   fun getFont(size: Int): BitmapFont {
+       if(UnCivGame.Current.settings.fontSet=="WenQuanYiMicroHei"){
+           val fontForLanguage="WenQuanYiMicroHei"
+           val keyForFont = "$fontForLanguage $size"
+           if (fontCache.containsKey(keyForFont))
+               return fontCache[keyForFont]!!
+           if (getMD5(fontForLanguage)!="96574d6f2f2bbd4a3ce56979623b1952"){
+               Gdx.files.local("fonts/$fontForLanguage.ttf").delete()
+               UnCivGame.Current.settings.fontSet="NativeFont(Recommended)"
+               Gdx.app.postRunnable {
+                   val downloading = PopupTable(UnCivGame.Current.worldScreen)
+                   downloading.add("Checksum error!\nIf you want to use the font \"WenQuanYiMicroHei\", please download again.".toLabel().setFontColor(Color.RED)).row()
+                   downloading.addButton("Close".tr()) { downloading.remove() }.row()
+                   downloading.open()
+               }
+           }
+           else {
+               val generator = FreeTypeFontGenerator(Gdx.files.local("fonts/WenQuanYiMicroHei.ttf"))
+               val parameter = FreeTypeFontGenerator.FreeTypeFontParameter()
+               parameter.size = size
+               parameter.minFilter = Texture.TextureFilter.Linear
+               parameter.magFilter = Texture.TextureFilter.Linear
+               parameter.characters = getCharsForFont()
+               val font = generator.generateFont(parameter)
+               fontCache[keyForFont] = font
+               return font
+           }
+       }
+       val fontForLanguage ="Nativefont"
+       val keyForFont = "$fontForLanguage $size"
+       if (fontCache.containsKey(keyForFont))return fontCache[keyForFont]!!
+       val font=NativeFont(NativeFontPaint(size))
+       font.appendText(getCharsForFont())
+       fontCache[keyForFont] = font
+       return font
+   }
 }
