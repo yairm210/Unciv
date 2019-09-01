@@ -279,10 +279,15 @@ class DiplomacyManager() {
             }
         }
 
+        // City-state influence
+        val hasCityStateInfluenceBonus =
+                civInfo.nation.unique=="City-State Influence degrades at half and recovers at twice the normal rate"
         if (influence > 1) {
-            influence -= 1
+            if(hasCityStateInfluenceBonus) influence -= 0.5f
+            else influence -= 1
         } else if (influence < 1) {
-            influence += 1
+            if(hasCityStateInfluenceBonus) influence += 2
+            else influence += 1
         } else influence = 0f
 
     }

@@ -361,7 +361,7 @@
 
 
 	"Your so-called 'friendship' is worth nothing.":{ // When we have a decleration of friendship to someone and we declare war on them
-		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"  
+		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"
 		Portuguese:"Sua chamada 'amizade' não vale nada."
 		French:"Votre soi-disant 'amitié' ne vaut rien."
 	}
@@ -748,7 +748,10 @@
 	"Alexander":{
 		Italian:"Alessandro"
 		French:"Alexandre le Grand"
-	}
+	},
+
+	"City-State Influence degrades at half and recovers at twice the normal rate": {
+	},
 
 	"China":{	
 		Italian:"Cina"
