@@ -696,6 +696,9 @@
 		Portuguese:"[resourceName] não requirido"
 	}
 	
+	"Does not have ":{ // as in Does not have +1 Visibility Range (or any other unit unique)
+	}
+	
 	"National ability":{ // the unique ability that each nation has
 		Italian:"Abilità della civiltà"
 		Romanian:"Abilitate a națiunii"

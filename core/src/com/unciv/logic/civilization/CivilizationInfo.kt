@@ -430,7 +430,7 @@ class CivilizationInfo {
         updateStatsForNextTurn()
     }
 
-    fun giftMilitaryUnitBy(otherCiv: CivilizationInfo) {
+    fun giftMilitaryUnitTo(otherCiv: CivilizationInfo) {
         val city = NextTurnAutomation().getClosestCities(this, otherCiv).city1
         val militaryUnit = city.cityConstructions.getConstructableUnits()
                 .filter { !it.unitType.isCivilian() && it.unitType.isLandUnit() }

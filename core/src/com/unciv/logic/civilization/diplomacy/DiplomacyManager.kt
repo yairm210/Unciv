@@ -269,13 +269,13 @@ class DiplomacyManager() {
         for(flag in flagsCountdown.keys.toList()) {
             flagsCountdown[flag] = flagsCountdown[flag]!! - 1
             if(flagsCountdown[flag]==0) {
-                if(flag==DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty())
+                if(flag==DiplomacyFlags.ProvideMilitaryUnit.name && civInfo.cities.isEmpty() || otherCiv().cities.isEmpty())
                     continue
                 flagsCountdown.remove(flag)
                 if(flag==DiplomacyFlags.AgreedToNotSettleNearUs.name)
                     addModifier(DiplomaticModifiers.FulfilledPromiseToNotSettleCitiesNearUs,10f)
                 else if(flag==DiplomacyFlags.ProvideMilitaryUnit.name)
-                    civInfo.giftMilitaryUnitBy(otherCiv())
+                    civInfo.giftMilitaryUnitTo(otherCiv())
             }
         }
 

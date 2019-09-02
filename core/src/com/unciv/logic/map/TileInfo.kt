@@ -182,6 +182,8 @@ open class TileInfo {
                 stats.science += 1f
             if (containsGreatImprovement() && observingCiv.policies.isAdopted("Freedom Complete"))
                 stats.add(improvement) // again, for the double effect
+            if (containsGreatImprovement() && city != null && city.civInfo.nation.unique == "+2 Science for all specialists and Great Person tile improvements")
+                stats.science += 2
         }
 
         if(city!=null && isWater && city.containsBuildingUnique("+1 gold from worked water tiles in city"))
