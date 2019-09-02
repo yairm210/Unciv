@@ -46,7 +46,7 @@
 
 	"A [greatPerson] has been born!":{	//Smashfanful sayd: "You should add WHERE the Great Person is born, so it should be "A [greatPerson] is born in [cityName]""
 		Italian:"È nato un [greatPerson]!"
-		Russian:"[greatPerson] родился!!"
+		Russian:"[greatPerson] родился!"
 		French:"Un [greatPerson] est né!"
 		Romanian:"S-a născut un [greatPerson]!"
 		Spanish:"¡Un [greatPerson] ha nacido!"
@@ -137,6 +137,7 @@
 	"[wonder] has been built in a faraway land":{	
 		Italian:"La Meraviglia [wonder] è stata costruita in una terra lontana"
 		French:"[wonder] a été construit(e) dans un lointain pays"
+		Russian:"[wonder] был построен в далёких землях"
 	}
 		
 	"Work has started on [construction]":{
@@ -155,6 +156,7 @@
 	"[cityName] cannot continue work on [construction]":{
 		Italian:"[cityName] non può più costruire [construction]"
 		French:"[cityName] ne peut plus travailler sur [construction]"
+		Russian:"[cityName] не может продолжать работу над [construction]"
 	}
 		
 
@@ -214,7 +216,7 @@
 		
 	"An enemy [unit] has attacked our [ourUnit]":{
 		Italian:"Un'unità nemica [unit] ha attaccato [ourUnit]"
-		Russian:"Вражеский [unit] атаковал нашего [ourUnit]"
+		Russian:"Наш [ourUnit] был атакован вражеским [unit]"
 		French:"Un(e) [unit] ennemi(e) a attaqué [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic ne-a atacat un [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] angegriffen" // Gender sensitive
@@ -228,11 +230,12 @@
 	"Enemy city [cityName] has attacked our [ourUnit]":{
 		Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
 		French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
+		Russian:"Наш [ourUnit] был атакован вражеским городом [cityName]"
 	}
 		
 	"An enemy [unit] has captured [cityname]":{
 		Italian:"Un'unità nemica [unit] ha conquistato [cityname]"
-		Russian:"Вражеский [unit] захватил [cityname]"
+		Russian:"Наш город [cityname] был захвачен вражеским [unit]"
 		French:"Un(e) [unit] ennemi(e) a capturé [cityname]" // Gender sensitive
 		Romanian:"Un [unit] inamic a capturat [cityname]"
 		German:"Ein(e) feindliche(r) [unit] hat [cityname] eingenommen" // Gender sensitive
@@ -245,7 +248,7 @@
 		
 	"An enemy [unit] has captured our [ourUnit]":{
 		Italian:"Un'unità nemica [unit] ha catturato [ourUnit]"
-		Russian:"Вражеский [unit] захватил нашего [ourUnit]"
+		Russian:"Наш [ourUnit] был захвачен вражеским [unit]"
 		French:"Un(e) [unit] ennemi(e) a capturé [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic ne-a capturat un [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] gefangen genommen" // Gender sensitive
@@ -258,7 +261,7 @@
 
 	"An enemy [unit] has destroyed our [ourUnit]":{
 		Italian:"Un'unità nemica [unit] ha distrutto [ourUnit]"
-		Russian:"Вражеский [unit] уничтожил нашего [ourUnit]"
+		Russian:"Наш [ourUnit] был уничтожен вражеским [unit]"
 		French:"Un(e) [unit] ennemi(e) a détruit [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic ne-a distrus un [ourUnit]"
 		German:"Ein(e) feindliche(r) [unit] hat unsere(n) [ourUnit] zerstört" // Gender sensitive
@@ -272,6 +275,7 @@
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
 		Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
 		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
+		Russian:"Наш [ourUnit] был уничтожен вражеским городом [cityName]"
 	}
 		
 	"An enemy [unit] was destroyed while attacking [cityname]":{
@@ -303,21 +307,25 @@
 	"Our [attackerName] was destroyed by an intercepting [interceptorName]":{
 		Italian:"La nostra unità [attackerName] è stata distrutta dall'intercettante [interceptorName]"
 		French:"Notre [attackerName] a été intercepté et détruit par un(e) [interceptorName] ennemie"
+		Russian:"Наш [attackerName], был перехвачен и уничтожен вражеским [interceptorName]"
 	}
 
 	"Our [interceptorName] intercepted and destroyed an enemy [attackerName]":{
 		Italian:"La nostra unità [interceptorName] ha intercettato e distrutto l'unità nemica [attackerName]"
 		French:"Notre [interceptorName] a intercepté et détruit un(e) [attackerName] ennemie"
+		Russian:"Наш [interceptorName] перехватил и уничтожил вражеский [attackerName]"
 	}
 		
 	"Our [$attackerName] was attacked by an intercepting [$interceptorName]":{
 		Italian:"La nostra unità [$attackerName] è stata attaccata dall'intercettante [$interceptorName]"
 		French:"Notre [$attackerName] a été intercepté par un(e) [$interceptorName] ennemie"
+		Russian:"Наш [$attackerName], был перехвачен и атакован вражеским [$interceptorName]"
 	}
 		
 	"Our [$interceptorName] intercepted and attacked an enemy [$attackerName]":{
 		Italian:"La nostra unità [$interceptorName] ha intercettato e attaccato l'unità nemica [$attackerName]"
 		French:"Notre [$interceptorName] a intercepté un(e) [$attackerName] ennemie"
+		Russian:"Наш [$interceptorName] перехватил и атаковал вражеский [$attackerName]"
 	}
 		
 	"An enemy [unit] was spotted near our territory":{
@@ -351,6 +359,7 @@
 		German:"[amount] feindliche Einheiten wurden nahe unserer Grenzen entdeckt"
 		Simplified_Chinese:"在我们的领土附近发现了[amount]个敌方单位"
 		French:"[amount] unités ennemies ont été repérées proche de notre territoire"
+		Russian:"[amount] вражеских юнитов было замечено у нашей территории"
 	}
 
 	"[amount] enemy units were spotted in our territory": {
@@ -358,6 +367,7 @@
 		German:"[amount] feindliche Einheiten wurden in unseren Grenzen entdeckt"
 		Simplified_Chinese:"在我们的领土内发现了[amount]个敌方单位"
 		French:"[amount] unités ennemies ont été repérées sur notre territoire"
+		Russian:"[amount] вражеских юнитов было замечено на нашей территории"
 	}
 
 	"The civilization of [civName] has been destroyed!":{
@@ -376,16 +386,19 @@
 	"The City-State of [name] has been destroyed!":{
 		Italian:"La Città-Stato di [name] è stata distrutta!"
 		French:"La Cité état [name] a été détruite"
+		Russian:"Город-государство [name] был уничтожен!"
 	}
 		
 	"We have captured a barbarian encampment and recovered [goldAmount] gold!":{ //shouldn't it be "we have destroyed ..." ?
 		Italian:"Abbiamo distrutto un accampamento barbaro e recuperato [goldAmount] Oro!"
 		French:"Nous avons capturé un campement barbare et pillé [goldAmount] ors"
+		Russian:"Мы разгромили лагерь варваров и нашли [goldAmount] золота!"
 	}
 		
 	"A barbarian [unitType] has joined us!":{
 		Italian:"L'unità barbarica [unitType] si è unita a noi!"
 		French:"Un [unitType] barbare nous a rejoins!"
+		Russian:"Варварский [unitType] присоединился к нам!"
 	}
 		
 	/////////////////	ruins
@@ -458,50 +471,60 @@
 		Italian:"[unit] non sta più esplorando."
 		German: "[unit] hat die Erkundung abgeschlossen."
 		French:"[unit] a fini d'explorer"
+		Russian:"[unit] завершил исследование местности."
 	},
 
 	"[unit] has no work to do.": {
 		Italian:"[unit] è ora inattivo."
 		German:"[unit] hat keine Arbeit mehr."
 		French:"[unit] n'a rien à faire"
+		Russian:"[unit] завершил все доступные работы."
 	}
 
 	"You're losing control of [name].":{ //When you're about to lose your friendship with a City-State
 		Italian:"Stai perdendo il controllo di [name]."
 		French:"Vous perdez le contrôle de [name]"
+		Russian:"Вы теряете влияние на [name]."
 	}
 
 	"You and [name] are no longer friends!":{ // When you lose friendship with a City-State (Relationship fall less than 30)
 		Italian:"Non sei più amico di [name]!"
 		French:"Vous et [name] n'êtes plus amis!"
+		Russian:"Вы и [name] больше не друзья!"
 	}
 
 	"Your alliance with [name] is faltering.":{ //When you're about to lose your alliance with a City-State
 		Italian:"L'alleanza con [name] si sta sfaldando."
 		French:"Votre alliance avec [name] est vacillante."
+		Russian:"Ваш союз с [name] заканчивается."
 	}
 
 	"You and [name] are no longer allies!":{ // When you lose alliance with a City-State (Relationship fall less than 60)
 		Italian:"Non sei più alleato con [name]!"
 		French:"Vous et [name] n'êtes plus alliés!"
+		Russian:"Вы и [name] больше не союзники!"
 	},
 
 	"[civName] gave us a [untiName] as gift near [cityName]!":{ // When a city state gives a unit as gift.
 		Italian:"[civName] ci ha dato [untiName] come regalo vicino a [cityName]!"
 		French:"[civName] nous offre un(e) [untiName] prêt de [cityName]!"
+		Russian:"[civName] передал нам в дар [untiName] около города [cityName]!"
 	}
 	
 	"[civName] has denounced us!":{
 		Italian:"[civName] ci ha denunciati pubblicamente!"
+		Russian:"[civName] публично осудил нас!"
 	}
 	
 	// Trade
 	"[civName] has accepted your trade request":{
 		Italian:"[civName] ha accettato la nostra offerta commerciale."
+		Russian:"[civName] принимает ваше торговое предложение"
 	}
 	
 	"[civName] has denied your trade request":{
 		Italian:"[civName] ha rifiutato la nostra offerta commerciale."
+		Russian:"[civName] отклонил ваше торговое предложение"
 	}
 	
 	
@@ -510,17 +533,20 @@
 		Simplified_Chinese:"与[civName]的[tradeOffer]协议已经结束"
 		French:"[tradeOffer] de [otherCivName] a pris fin"
 		Portuguese:"[tradeOffer] de [otherCivName] terminou"
+		Russian:"Предложение [tradeOffer] из [otherCivName] завершилось"
 	}
 	
 	
 	"One of our trades with [nation] has ended": {
 		Italian:"Un nostro accordo con [nation] è terminato."
 		French:"Un de nos échanges avec [nation] a pris fin"
+		Russian:"Торговая сделка с [nation] завершилась"
 	},
 
  	"One of our trades with [nation] has been cut short": {
 		Italian:"Un nostro accordo con [nation] è stato interrotto."
 		French:"L'un de nos accord commercial avec [nation] s'est arrêté"
+		Russian:"Торговая сделка с [nation] была завершена досрочно"
 	},
 	
 }
