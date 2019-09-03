@@ -4,7 +4,7 @@
 
 [![Travis CI w/ Logo](https://img.shields.io/travis/yairm210/UnCiv/master.svg?logo=travis)](https://travis-ci.org/yairm210/UnCiv)  
 [![LibGDX](https://img.shields.io/badge/libgdx-1.9.10-red.svg)](https://libgdx.badlogicgames.com/)
-[![Kotlin](https://img.shields.io/badge/kotlin-1.3.41-orange.svg)](http://kotlinlang.org/)
+[![Kotlin](https://img.shields.io/badge/kotlin-1.3.50-orange.svg)](http://kotlinlang.org/)
 
 [![Discord Chat](https://img.shields.io/discord/586194543280390151.svg)](https://discord.gg/bjrB4Xw)  
 
@@ -18,6 +18,7 @@ Made with LibGDX on Android Studio
 
 * Map tiles (including water), resources and improvements
 * Units and movement
+  * Air units
 * Cities, production and buildings
   * Population and Specialists
 * Science, Cultural and Domination victories
@@ -26,13 +27,14 @@ Made with LibGDX on Android Studio
    * Promotions and combat modifiers
 * Other civilizations, diplomacy and trade
 * City-states
-* Hotseat multiplayer
+* Multiplayer (hotseat and across internet)
 * Map editor
 
 # What's next?
 
 * UI+UX improvements (suggestions welcome!)
-* Air units
+* Filling out gaps (missing civs etc)
+
 
 I'd love to hear your feedback, either here or via mail to yairm210@hotmail.com!
 
