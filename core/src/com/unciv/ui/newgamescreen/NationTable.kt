@@ -83,8 +83,11 @@ class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
                     textList += "  " + "[${originalUnit.requiredResource}] not required".tr()
                 for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
                     textList += "  " + Translations.translateBonusOrPenalty(unique)
+                for(unique in originalUnit.uniques.filterNot { it in unit.uniques })
+                    textList += "  "+"Does not have ".tr()+Translations.translateBonusOrPenalty(unique)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
                     textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(GameBasics.UnitPromotions[promotion]!!.effect) + ")"
+
                 textList += ""
             }
 

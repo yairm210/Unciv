@@ -505,6 +505,42 @@
 			"Bodrum","Eregli","Silifke","Sivas","Amasya","Marmaris","Trabzon","Erzurum","Urfa","Izmit","Afyonkarhisar",
 			"Bitlis","Yalova"]
 	},
+	{
+		name:"Korea",
+		leaderName:"Sejong",
+		adjective:["Korean"],
+		startBias:["Coast"],
+		preferredVictoryType:"Scientific",
+		
+		startIntroPart1: "Greetings to you, exalted King Sejong the Great, servant to the people and protector of the Choson Dynasty! Your glorious vision of prosperity and overwhelming benevolence towards the common man made you the most beloved of all Korean kings. From the earliest days of your reign, the effort you took to provide a fair and just society for all was surpassed only by the technological advances spurred onwards by your unquenched thirst for knowledge. Guided by your wisdom, the scholars of the Jade Hall developed Korea's first written language, Hangul, bringing the light of literature and science to the masses after centuries of literary darkness."
+		startIntroPart2: "Honorable Sejong, once more the people look to your for guidance. Will you rise to the occasion, bringing harmony and understanding to the people? Can you once again advance your kingdom's standing to such wondrous heights? Can you build a civilization that stands the test of time?"
+		
+		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
+		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
+		defeated:"Now the question is who will protect my people. A dark age has come."
+		introduction:"Welcome to the palace of Choson, stanger. I am the learned King Sejong, who looks after his great people."
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["I will hear it.","Go on","Continue."]
+		neutralNo:["I cannot do that.","Apologies, but I will not accept it."]
+		neutralYes:["That is good.","I understand.","Of course!"]
+
+		hateHello:"Oh, it's you"
+		hateLetsHearIt:["What do you wish to say?","So?","Continue your speech."]
+		hateNo:["Heaven forbid","That is crazy talk!","I cannot do that."]
+		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
+		
+		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
+		tradeRequest:"We have many things to discuss and have much to benefit from each other."
+				
+		outerColor:[20,25,73],
+		innerColor:[187,33,51],
+		uniqueName:"Scholars of the Jade Hall"
+		unique:"+2 Science for all specialists and Great Person tile improvements",
+		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
+			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
+			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
+	},
 	
 	/*
 	{   // REQUIRES RIVERS
@@ -696,42 +732,6 @@
 			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
 	{
-		name:"Korean",
-		leaderName:"Sejong",
-		adjective:["Korean"],
-		startBias:["Coast"],
-		preferredVictoryType:"Scientific",
-		
-		startIntroPart1: "Greetings to you, exalted King Sejong the Great, servant to the people and protector of the Choson Dynasty! Your glorious vision of prosperity and overwhelming benevolence towards the common man made you the most beloved of all Korean kings. From the earliest days of your reign, the effort you took to provide a fair and just society for all was surpassed only by the technological advances spurred onwards by your unquenched thirst for knowledge. Guided by your wisdom, the scholars of the Jade Hall developed Korea's first written language, Hangul, bringing the light of literature and science to the masses after centuries of literary darkness."
-		startIntroPart2: "Honorable Sejong, once more the people look to your for guidance. Will you rise to the occasion, bringing harmony and understanding to the people? Can you once again advance your kingdom's standing to such wondrous heights? Can you build a civilization that stands the test of time?"
-		
-		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
-		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
-		defeated:"Now the question is who will protect my people. A dark age has come."
-		introduction:"Welcome to the palace of Choson, stanger. I am the learned King Sejong, who looks after his great people."
-		
-		neutralHello:"Hello."
-		neutralLetsHearIt:["I will hear it.","Go on","Continue."]
-		neutralNo:["I cannot do that.","Apologies, but I will not accept it."]
-		neutralYes:["That is good.","I understand.","Of course!"]
-
-		hateHello:"Oh, it's you"
-		hateLetsHearIt:["What do you wish to say?","So?","Continue your speech."]
-		hateNo:["Heaven forbid","That is crazy talk!","I cannot do that."]
-		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
-		
-		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
-		tradeRequest:"We have many things to discuss and have much to benefit from each other."
-				
-		outerColor:[0,0,255],
-		innerColor:[255,0,0],
-		uniqueName:"Scholars of the Jade Hall"
-		unique:"+2 Science for all Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean capital.",
-		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
-			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
-			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
-	},
-	{
 		name:"Songhai",
 		leaderName:"Askia",
 		adjective:["Songhai"],
@@ -873,7 +873,7 @@
 		outerColor:[51,25,0],
 		innerColor:[255,255,102],
 		uniqueName:"Viking Fury"
-		unique:"+1 Movement to all embarked units, whom pay just 1 movement point to move from sea to land and viceversa. Melee units pay no movement cost to pillage.",
+		unique:"+1 Movement to all embarked units, units pay only 1 movement point to embark and disembark. Melee units pay no movement cost to pillage.",
 		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso",
 			"Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore",
 			"Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers",

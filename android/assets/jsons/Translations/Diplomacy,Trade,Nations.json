@@ -696,6 +696,10 @@
 		Portuguese:"[resourceName] não requirido"
 	}
 	
+	"Does not have ":{ // as in Does not have +1 Visibility Range (or any other unit unique)
+		Italian:"Non possiede "
+	}
+	
 	"National ability":{ // the unique ability that each nation has
 		Italian:"Abilità della civiltà"
 		Romanian:"Abilitate a națiunii"
@@ -754,6 +758,7 @@
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
 		Simplified_Chinese:"对城邦影响力衰减速度减半，恢复速度加倍"
+		Italian:"L'influenza sulle città-stato diminuisce il doppio più lentamente e aumenta il doppio più velocemente."
 	},
 
 	"China":{	
@@ -1061,6 +1066,19 @@
 		French:"50% de chance de convertir une unité barbare navale et de gagner 25 Or. Les unités navales coutent 3 fois moins à entretenir."
 		Simplified_Chinese:"海上单位维护费为正常值的1/3，海军近战单位拥有1/3几率俘获战败的敌方海军单位"
 	}
+
+	"Korea":{
+		Italian:"Corea"
+		French:"Corée"
+		Portuguese:"Coréia"
+	}
+
+	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
+		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
+		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
+		French:"+1 Science pour chaque spécialistes et amélioration de case de personnage illustre. Reçoit un bonus de science à chaque fois qu'un batiment ou une merveille scientifique est  construit dans la capitale"
+	}
+
 	/*
 
 	"Iroquois":{
@@ -1115,18 +1133,6 @@
 		Italian:"+30% Forza contro le Città-stato e le loro unità. +1 Movimento per le Unità a cavallo."
 		Portuguese:"Força de combate adicional de +30% quando lutando cidades-estado ou atacando uma cidade-estado. Um movimento extra para todas as unidades montadas"
 		French:"+30% Force d'attaque lors des combats contre les villes ou unités des Cités-états. +1 mouvement pour les unités montées."
-	}
-
-	"Korea":{
-		Italian:"Corea"
-		French:"Corée"
-		Portuguese:"Coréia"
-	}
-
-	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
-		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
-		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
-		French:"+1 Science pour chaque spécialistes et amélioration de case de personnage illustre. Reçoit un bonus de science à chaque fois qu'un batiment ou une merveille scientifique est  construit dans la capitale"
 	}
 
 	"Siam":{

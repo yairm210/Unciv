@@ -18,6 +18,7 @@
 		Italian:"marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
 		French:"Civil embarqué"
+		Russian:"Мирный, морской"
 	}
 
 	"Melee":{
@@ -36,6 +37,7 @@
 		Italian:"marittima da mischia" //Unità marittima da mischia
 		Simplified_Chinese:"海军近战单位"
 		French:"Navire de combat rapproché"
+		Russian:"Ближний бой (море)"
 	}
 
 	"Ranged":{
@@ -54,12 +56,14 @@
 		Italian:"marittima a distanza" //Unità marittima a distanza
 		Simplified_Chinese:"海军远程单位"
 		French:"Navire de combat à distance"
+		Russian:"Дальний бой (море)"
 	}
 
 	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
 		Italian:"sottomarina" //Unità sottomarina
 		Simplified_Chinese:"海军潜艇单位"
 		French:"Navires sous-marins"
+		Russian:"Субмарина"
 	}
 
 	"Siege":{
@@ -102,6 +106,7 @@
 		Italian:"corazzata" //Unità corazzata
 		Simplified_Chinese:"装甲单位"
 		French:"Blindé"
+		Russian:"Бронемашина"
 	}
 
 	"City":{
@@ -172,7 +177,7 @@
 	
 	"Ignores terrain cost":{
 		Italian:"Ignora i costi di movimento su terreno"
-		Russian:"Игнорирует стоимость местности"
+		Russian:"Игнорирует штрафы местности"
 		French:"Ignore le coût du terrain"
 		Romanian:"Ignoră costul terenului"
 		German:"Ignoriert Geländekosten"
@@ -364,6 +369,7 @@
 		Simplified_Chinese:"复合弓兵"
 		German:"Kompositbogenschütze"
 		French:"Archer composite"
+		Russian:"Лучник (составной лук)"
 	}
 
 	"Catapult":{	
@@ -627,6 +633,7 @@
 		Italian:"Può generare un Grande Generale combattendo"
 		Simplified_Chinese:"战斗能更快地产生出大军事家"
 		French:"A de grande chance de faire apparaitre un général illustre suite à un combat"
+		Russian:"Большой шанс получения Великого Полководца в бою"
 	}
 	
 ////// Renaissance units
@@ -751,6 +758,7 @@
 	"No movement cost to pillage":{
 		Italian:"Nessun costo di movimento per il saccheggio"
 		French:"L'action pillage ne coûte pas de point de mouvement"
+		Russian:"Разграбление не тратит очков передвижения"
 	}
 	
 
@@ -933,7 +941,7 @@
 		Romanian:"Tun antiaerian"
 		Spanish:"Arma Anti-Aerea"
 		Simplified_Chinese:"高射炮"
-		Russian:"Зенитка"
+		Russian:"Зенитное орудие"
 		German:"FLAK"
 		French:"Canon anti-aérien"
 	}
@@ -973,6 +981,7 @@
 		Italian:"[amount]% Bonus in attacco"
 		Simplified_Chinese:"主动攻击时+75%战斗力"
 		French:"Bonus en tant qu'attaquant +[amount]%"
+		Russian:"Бонус при атаке +[amount]%"
 	}
 
 	"Invisible to others":{
@@ -986,7 +995,7 @@
 		Italian:"Può attaccare solo unità acquatiche"
 		Simplified_Chinese:"只能攻击海上目标"
 		French:"Ne peut attaquer que les unités marines"
-		Russian:"Может атакаовать только морские юниты"
+		Russian:"Может атаковать только морские юниты"
 	}
 
 	"Carrier":{ // aircrat carrier
@@ -1065,7 +1074,7 @@
 		Romanian:"Tanc antiaerian"
 		Spanish:"Vehiculo SAM"
 		Simplified_Chinese:"防空导弹车"
-		Russian:"Мобильное ПВО"
+		Russian:"Мобильный ЗРК"
 		German:"Mobile Flugabwehrrakte"
 		French:"Lance-missiles SAM mobile"
 	}
@@ -1182,7 +1191,8 @@
 	"Unbuildable":{
 		Italian:"Non costruibile"
 		Simplified_Chinese:"不可组建单位"
-		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct 
+		French:"Ne peut être construit" // or Inconstruisible but not sure that it's correct
+		Russian:"Невозможно построить"
 	}
 
 	"Can start an 8-turn golden age":{
@@ -1319,6 +1329,7 @@
 	"Bonus for units in 2 tile radius 15%" :{
 		Italian:"15% Bonus per le unità nel raggio di 2 caselle"
 		French:"Bonus de combat +15% pour les unités dans un rayon de 2 cases"
+		Russian:"Бонус к атаке юнитам в радиусе 2-х клеток"
 	}
 	
 	/* Not in use now, but will be when we eventually add Great Admiral and split the job
@@ -1818,13 +1829,14 @@
 		Italian:"Forestali"
 		Simplified_Chinese:"林地幽灵"
 		French:"Bûcheron"
+		Russian:"Передвижение через лес"
 	}
 
 	"Double movement rate through Forest and Jungle":{
 		Italian:"Movimento doppio attraverso Foreste e Giungle."
 		Simplified_Chinese:"森林和丛林移动时双倍移动力"
 		French:"Déplacement doublé dans la Forêt et la Jungle"
-		Russian:"Удвоенное продвижение через Лес и Джунгли"
+		Russian:"Передвижение через Лес и Джунгли тратит вдвое меньше очков действия"
 	}
 
 	"Heal Instantly":{
@@ -1931,6 +1943,7 @@
 	"Bonus when performing air sweep [bonusAmount]%":{
 		Italian:"+[bonusAmount]% Forza nella distruzione delle difese aeree"
 		French:"Bonus de combat aérien +[bonusAmount]%"
+		Russian:"Бонус +[bonusAmount]% при выполнении отвлекающего манёвра (воздух)"
 	}
 
 	"Dogfighting II":{
@@ -1954,6 +1967,7 @@
 	"Bonus when intercepting [bonusAmount]%":{
 		Italian:"+[bonusAmount]% Bonus d'intercettazione"
 		French:"Bonus d'interception +[bonusAmount]%"
+		Russian:"Бонус при перехвате +[bonusAmount]%"
 	}
 
 	"Interception II":{
@@ -1977,6 +1991,7 @@
 	"Bonus vs City 33%":{ //i think that it already exist somewhere
 		Italian:"+33% Forza contro le Città"
 		French:"Bonus contre les villes +33%"
+		Russian:"Бонус против городов +33%"
 	}
 
 	"Siege II":{
@@ -1994,16 +2009,19 @@
 	"Bonus vs City 34%":{
 		Italian:"+34% Forza contro le Città"
 		French:"Bonus contre les villes +34%"
+		Russian:"Бонус против городов +34%"
 	}
 
 	"Evasion":{
 		Italian:"Manovre evasive"
 		French:"Esquive"
+		Russian:"Уклонение"
 	}
 
 	"Reduces damage taken from interception by 50%":{
 		Italian:"Dimezza i danni da intercettazione contraerea"
 		French:"Réduit les dégâts des unités d'interception de 50%"
+		Russian:"Уменьшает урон от перехвата на 50%"
 	}
 
 }

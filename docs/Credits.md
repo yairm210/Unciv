@@ -436,6 +436,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Family Crest Komon](https://thenounproject.com/search/?q=oda&i=2293528) by sahua d for Japan
 * [Ashika Chakra](https://thenounproject.com/search/?q=ashoka%20chakra&i=2328559) by sahua d for India
 * Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
+* [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
 
 ## Others 
 
