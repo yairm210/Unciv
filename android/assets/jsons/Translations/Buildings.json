@@ -1098,6 +1098,7 @@
 	}
 	
 	"Must not be on hill":{
+		Italian:"Non deve trovarsi su Collina"
 		French:"Doit être sur une colline"
 		Polish:"Nie może być na wzgórzu"
 		Russian:"Не может быть построено на холме"
