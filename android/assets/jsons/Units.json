@@ -448,7 +448,6 @@
 		hurryCostModifier:20,
 		attackSound:"throw"
 	},
-	/*
 	{
 		name:"Hwach'a",
 		unitType:"Siege",
@@ -461,11 +460,10 @@
 		requiredTech:"Physics",
 		obsoleteTech:"Chemistry",
 		upgradesTo:"Cannon",
-		uniques:["Bonus vs City 200%","No defensive terrain bonus","Must set up to ranged attack"],
+		uniques:["No defensive terrain bonus","Must set up to ranged attack"],
 		hurryCostModifier:20,
 		attackSound:"throw"
 	},
-	*/
 	{
 		name:"Longswordsman",
 		unitType:"Melee",
@@ -661,7 +659,6 @@
 		uniques:["+1 Visibility Range"],
 		hurryCostModifier:20
 	},
-	/*
 	{
 		name:"Turtle Ship",
 		unitType:"WaterMelee",
@@ -673,10 +670,9 @@
 		requiredTech:"Astronomy",
 		upgradesTo:"Ironclad",
 		obsoleteTech:"Combustion",
-		uniques:["+1 Visibility Range"],
+		uniques:["Cannot enter ocean tiles"],
 		hurryCostModifier:20
 	},
-	*/
 	{
 		name:"Cannon",
 		unitType:"Siege",
