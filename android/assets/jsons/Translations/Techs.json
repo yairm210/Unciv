@@ -727,6 +727,7 @@
 	"Radar":{
 		Italian:"Radar"
 		Russian:"Радар"
+		Simplified_Chinese:"雷达"
 	}
 	
 ///////// Technologies (Information Era)
@@ -770,6 +771,7 @@
 	"Mobile Tactics":{
 		Italian:"Tattiche mobili"
 		Russian:"Мобильная тактика"
+		Simplified_Chinese:"机动战术"
 	}
 
 	"Combined Arms":{
@@ -835,6 +837,7 @@
 		Italian:"Laser"
 		French:"Lasers"
 		Russian:"Лазеры"
+		Simplified_Chinese:"激光"
 	}
 
 	"Nanotechnology":{

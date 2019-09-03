@@ -323,7 +323,7 @@
 	},
 	{
 		name:"America",
-		leaderName:"Washington",
+		leaderName:"George Washington",
 		adjective:["American"],
 		preferredVictoryType:"Scientific",
 		

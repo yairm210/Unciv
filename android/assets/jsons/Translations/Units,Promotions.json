@@ -191,6 +191,7 @@
 	"Brute":{	
 		Russian:"Громила"
 		Italian:"Bruto"
+		Simplified_Chinese:"蛮族勇士"
 	}
 
 
@@ -485,6 +486,7 @@
 		Italian:"Elefante da guerra"
 		French:"Éléphant de Guerre"
 		Russian:"Боевой слон"
+		Simplified_Chinese:"印度战象"
 	}
 	
 ////// Medieval units
@@ -596,6 +598,7 @@
 		Italian:"Lanzichenecco"
 		French:"Lansquenet"
 		Russian:"Ландскнехт"
+		Simplified_Chinese:"自由佣兵"
 	}
 
 	"Knight":{	
@@ -694,6 +697,7 @@
 		Italian:"Giannizzero"
 		French:"Janissaire"
 		Russian:"Янычары"
+		Simplified_Chinese:"苏丹亲兵"
 	}
 	
 	"Heals [amountHealed] damage if it kills a unit":{
@@ -748,6 +752,7 @@
 		Italian:"Sipahi"//same as in Italian
 		Russian:"Сипаи"
 		//same in french
+		Simplified_Chinese:"西帕希骑兵"
 	}
 	
 	"No movement cost to pillage":{
@@ -1143,6 +1148,10 @@
 		German:"Jäger"
 		French:"Chasseur"
 		Russian:"Истребитель"
+	}
+
+	"Zero":{
+		Simplified_Chinese:"零式战斗机"
 	}
 
 	"Helicopter Gunship":{

@@ -321,7 +321,7 @@
 	{
 		name:"America",
 		translatedName:"美利坚",
-		leaderName:"华盛顿",
+		leaderName:"乔治·华盛顿",
 		adjective:["美利坚的"],
 		
 		startIntroPart1: "欢迎，华盛顿总统！您所带领的是勤劳的美利坚文明。美国建立于18世纪的革命战争中，在一百年后联邦又卷入了几乎将其一分为二的可怕内战。但是，仅仅经过了数十年发展，到20世纪时美国达到了其力量的巅峰，以胜利的雄姿，屹立于毁灭了多个伟大国家的两次可怕的世界大战中。",
@@ -387,11 +387,12 @@
 		unique: "受伤单位战斗力不减",
 		cities:["京都","大阪","东京","萨摩","鹿儿岛","奈良","名古屋","出云","长崎","横滨","下关","松山","札幌","函馆","伊势","富山","福岛","周防","备前","越前","和泉","近江","越后","高崎","佐渡","神户","长野","广岛","高山","秋田","福冈","青森","镰仓","高知","那霸","仙台","岐阜","山口","大田","鸟取"]
 	},
-	/*
+	
 	{
 		name:"Germany",
-		leaderName:"Otto von Bismark",
-		adjective:["German"],
+		translatedName:"德意志",
+		leaderName:"奥托·冯·俾斯麦",
+		adjective:["德意志的"],
 		
 		startIntroPart1: "Hail mighty Bismark, first canchellor of Germany and her empire! Germany is an upstart nation, fashioned from the ruins of the Holy Roman Empire and finally unified in 1871, a little more than a century ago. The German people have proven themselves to be creative, industrious a ferocious warriors. Despite enduring great catastrophes in the first half of the 20th century, Germany remains a worldwide economic, artistic and technological leader."
 		startIntroPart2: "Great Prince Bismark, the German people look up too you to lead them to greater days of glory. Their determination is strong, and now they turn to you, their beloved iron chancellor, to guide them once more. Will you rile and conquer through blood and iron, or foster the Germanic arts and industry? Can you build a civilization that will stand the test of time?"
@@ -427,8 +428,9 @@
 	},
 	{
 		name:"India",
-		leaderName:"Gandhi",
-		adjective:["Indian"],
+		translatedName:"印度",
+		leaderName:"甘地",
+		adjective:["印度的"],
 		startBias:["Grassland"],
 		
 		startIntroPart1: "Greetings, President Mahatma Gandhi, great souled leader of India! You are the ruler of one of the oldest countries in the world with history stretching back almost 10'000 years. A spiritual country, India is the birthplace of three of the world's great religions - Hinduism, Buddhism and Jainism. This is a passionate land of music and color, a land of great wealth and grinding poverty. For centuries, India was divided into kingdoms who fought constantly with each other and against outside invaders. That was, horever, after empires such as Maratha, Maurya and Gupta. In the 12th century AD, India was conquered by Muslim Turks fled from the Mongols. In the early 17th century, the English arrived, and thought a combination of shrewd diplomacy and technological supeiority, they conquered your fragmented nation. England remained in power for some two centuries until driven out by a rising wave of Indian nationalism, a peaceful rebellion unlike any before seen in history, one led by you!"
@@ -459,6 +461,7 @@
 			"Kolhapur","Prayaga","Ayodhya","Indraprastha","Mathura","Ujjain","Gulbarga","Jaunpur","Rajagriha","Sravasti","Tiruchirapalli","Thanjavur",
 			"Bodhgaya","Kushinagar","Amaravati","Gaur","Gwalior","Jaipur","Karachi"]
 	},
+	/*
 	{
 		name:"Aztecs",
 		leaderName:"Montezuma I",
@@ -674,9 +677,11 @@
 		unique:"Embarked units gain the War Canoes and Amphibious promotions, strengthening them while embarked.",
 		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu","Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano","Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	},
+	*/
 	{
-		name:"Ottoman",
-		leaderName:"Suleiman I",
+		name:"The Ottomans",
+		translatedName:"奥斯曼",
+		leaderName:"苏莱曼一世",
 		
 		startIntroPart1: ""
 		startIntroPart2: ""
@@ -734,6 +739,7 @@
 		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
 		cities:["Onoondaga","Osininka","Grand River","Akwesasme","Buffalo Creek","Brantford","Montreal","Genesse River","Canandaigua Lake","Lake Simcoe","Salamanca","Gowanda","Cuba","Akron","Kanesatake","Ganienkeh","Cayuga Castle","Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley","Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
+	/*
 	{
 		name:"Denmark",
 		leaderName:"Harald Bluetooth",
@@ -765,6 +771,227 @@
 		cities:["Copenhagen","Aarhus","Kaupang","Ribe","Viborg","Tunsbers","Roskilde","Hedeby","Oslo","Jelling","Truso","Bergen","Faeroerne","Reykjavik","Trondheim","Godthab","Helluland","Lillehammer","Markland","Elsinore","Sarpsborg","Odense","Aalborg","Stavanger","Vorbasse","Schleswig","Kristiansand","Halogaland","Randers","Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen","Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
 	*/
+
+	//City states
+	{
+		name:"Milan",
+		translatedName:"米兰",
+		adjective:["米兰的"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"You fiend! History shall remember this!"
+
+		
+		outerColor:[0, 0, 0],
+		innerColor:[185,132,66],
+		cities:["米兰"]
+	},
+	{
+		name:"Florence",
+		translatedName:"佛罗伦萨",
+		adjective:["佛罗伦萨的"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"And so the flower of Florence falls to barbaric hands..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[62,197,252],
+		cities:["佛罗伦萨"]
+	},
+	{
+		name:"Rio de Janeiro",
+		translatedName:"里约热内卢",
+		adjective:["里约热内卢的"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"We shall have our revenge."
+
+		outerColor:[0, 0, 0],
+		innerColor:[211, 220, 103],
+		cities:["里约热内卢"]
+	},
+	{
+		name:"Antwerp",
+		translatedName:"安特卫普",
+		adjective:["安特卫普的"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"They will write songs of this.... pray that they shall be in your favor."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[194,97,255],
+		cities:["安特卫普"]
+	},
+	{
+		name:"Dublin",
+		translatedName:"都柏林",
+		adjective:["都柏林的"],
+		cityStateType:"Militaristic",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Hah! A fine victory."
+
+		outerColor:[0, 0, 0],
+		innerColor:[211,180,113],
+		cities:["都柏林"]
+	},
+	{
+		name:"Tyre",
+		translatedName:"推罗",
+		adjective:["推罗的"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"We never fully trusted you from the start."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[255,97,255],
+		cities:["推罗"]
+	},
+	{
+		name:"Ur",
+		translatedName:"乌尔",
+		adjective:["乌尔的"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Why must you do such a thing?"
+		
+		outerColor:[0, 0, 0],
+		innerColor:[255,69,0],
+		cities:["乌尔"]
+	},
+	{
+		name:"Genoa",
+		translatedName:"热那亚",
+		adjective:["热那亚的"],
+		cityStateType:"Mercantile",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"How barbaric. Those who live by the sword shall perish by the sword."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[45,255,86],
+		cities:["热那亚"]
+	},
+	{
+		name:"Venice",
+		translatedName:"威尼斯",
+		adjective:["威尼斯的"],
+		cityStateType:"Maritime",
+		startBias:["Coast"],
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"If our legacy continues, you will never have truly won."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[18,178,210],
+		cities:["威尼斯"]
+	},
+	{
+		name:"Brussels",
+		translatedName:"布鲁塞尔",
+		adjective:["布鲁塞尔的"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"I guess you weren't here for the sprouts after all..."
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,255,51],
+		cities:["布鲁塞尔"]
+	},
+	{
+		name:"Kabul",
+		translatedName:"喀布尔",
+		adjective:["喀布尔的"],
+		cityStateType:"Cultured",
+		
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Unacceptable!"
+		
+		outerColor:[0, 0, 0],
+		innerColor:[153,0,76],
+		cities:["喀布尔"]
+	},
+	{
+		name:"Sidon",
+		translatedName:"西顿",
+		adjective:["西顿的"],
+		cityStateType:"Militaristic",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"What a fine battle! Sidon is willing to serve you!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[250,128,114],
+		cities:["西顿"]
+	},
+	{
+		name:"Almaty",
+		translatedName:"阿拉木图",
+		adjective:["阿拉木图的"],
+		cityStateType:"Militaristic",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"How could we fall to the likes of you?!"
+
+		outerColor:[0, 0, 0],
+		innerColor:[102,0,51],
+		cities:["阿拉木图"]
+	},
+	{
+		name:"Edinburgh",
+		translatedName:"爱丁堡",
+		adjective:["爱丁堡的"],
+		cityStateType:"Militaristic",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"There is no dishonor in losing to a worthier foe."
+
+		outerColor:[0, 0, 0],
+		innerColor:[0,102,102],
+		cities:["爱丁堡"]
+	},
+
+	//Barbarian
 	{
 		name:"Barbarians",
 		translatedName:"蛮族",
