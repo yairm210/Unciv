@@ -558,6 +558,10 @@
 		German:"Tribock"
 	}
 
+	"Hwacha":{	
+		Italian:"Hwacha"
+	}
+
 	"Limited Visibility":{
 		Italian:"Visibilità limitata"
 		Russian:"Ограниченная видимость"
@@ -655,6 +659,10 @@
 		Portuguese:"+1 de alcançe ao campo de visão"
 		German:"+1 Sichtweite"
 		Russian:"+1 Диапазон видимости"
+	}
+
+	"Turtle Ship":{
+		Spanish:"Nave tartaruga"
 	}
 
 	"Cannon":{	
