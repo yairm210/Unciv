@@ -3,6 +3,7 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
+import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -68,7 +69,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             onClick {
                 clearSelection()
                 clearImprovement = true
-                setCurrentHex(ImageGetter.getCircle().apply { setSize(60f,60f) })
+                setCurrentHex(getHex(Color.WHITE), "Clear improvements")
             }
         }).row()
 
@@ -78,7 +79,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             improvementImage.onClick {
                 clearSelection()
                 selectedImprovement=improvement
-                setCurrentHex(getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f)))
+                val improvementIcon = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
+                setCurrentHex(improvementIcon, improvement.name+"\n"+improvement.clone().toString())
             }
             improvementsTable.add(improvementImage).row()
         }
@@ -90,7 +92,8 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             nationImage.onClick {
                 clearSelection()
                 selectedImprovement=TileImprovement().apply { name="StartingLocation "+nation.name }
-                setCurrentHex(getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f)))
+                val nationIcon = getHex(Color.WHITE,ImageGetter.getNationIndicator(nation,40f))
+                setCurrentHex(nationIcon, nation.name+" starting location")
             }
             nationsTable.add(nationImage).row()
         }
@@ -106,7 +109,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             onClick {
                 clearSelection()
                 clearTerrainFeature = true
-                setCurrentHex(ImageGetter.getCircle().apply { setSize(60f,60f) })
+                setCurrentHex(getHex(Color.WHITE), "Clear terrain features")
             }
         })
 
@@ -127,7 +130,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             group.onClick {
                 clearSelection()
                 selectedTerrain = terrain
-                setCurrentHex(tileInfo)
+                setCurrentHex(tileInfo,terrain.name+"\n"+terrain.clone().toString())
             }
 
             if (terrain.type == TerrainType.TerrainFeature)
@@ -141,7 +144,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             onClick {
                 clearSelection()
                 clearResource = true
-                setCurrentHex(ImageGetter.getCircle().apply { setSize(60f,60f) })
+                setCurrentHex(getHex(Color.WHITE),"Clear resource")
             }
         })
 
@@ -162,7 +165,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
                 tileInfo.resource = resource.name
                 tileInfo.setTransients()
-                setCurrentHex(tileInfo)
+                setCurrentHex(tileInfo,resource.name+"\n"+resource.clone().toString())
             }
             resources.add(resourceHex)
         }
@@ -178,7 +181,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         val terrainFeaturesTable = Table().apply { defaults().pad(20f) }
         for(terrainFeature in terrainFeatures) terrainFeaturesTable.add(terrainFeature).row()
         terrainFeaturesTable.pack()
-        terrainsAndResourcesTable.add(terrainFeaturesTable)
+        terrainsAndResourcesTable.add(ScrollPane(terrainFeaturesTable).apply { setScrollingDisabled(true,false) }).height(mapEditorScreen.stage.height*0.7f)
 
         val resourcesTable = Table()
         for(resource in resources) resourcesTable.add(resource).row()
@@ -244,19 +247,23 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     }
 
 
-    fun setCurrentHex(tileInfo: TileInfo){
+    fun setCurrentHex(tileInfo: TileInfo, text:String){
         val tileGroup = TileGroup(tileInfo,TileSetStrings())
                 .apply {
                     showEntireMap=true
                     forMapEditorIcon=true
                     update()
                 }
-        setCurrentHex(tileGroup)
+        setCurrentHex(tileGroup,text)
     }
 
-    fun setCurrentHex(actor:Actor){
+    fun setCurrentHex(actor:Actor, text:String){
         currentHex.remove()
-        currentHex=actor
+        val currentHexTable = Table()
+        currentHexTable.add(Label(text,skin)).padRight(20f)
+        currentHexTable.add(actor).pad(10f)
+        currentHexTable.pack()
+        currentHex=currentHexTable
         currentHex.setPosition(stage.width-currentHex.width-10, 10f)
         stage.addActor(currentHex)
     }
