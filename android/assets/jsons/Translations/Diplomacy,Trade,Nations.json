@@ -56,6 +56,7 @@
 		Simplified_Chinese:"向[civName]宣战吗？"
 		Portuguese:"Deseja declarar guerra a [civName]?"
                 Polish:"Wypowiedz wojnę cywilizacji [civName]"
+		Russian:"Объявить войну [civName]?"
 	}
 	
 	"[civName] has declared war on us!":{
@@ -101,6 +102,7 @@
 		Portuguese:"Negociar paz"
 		French:"Négocier la paix"
                 Polish:"Negocjuj pokój"
+		Russian:"Предложить мир"
 	}
 
 	"Very well.":{
@@ -109,6 +111,7 @@
 		Simplified_Chinese:"很好。"
 		Portuguese:"Muito bem."
                 Polish:"Niech tak będzie."
+		Russian:"Очень хорошо."
 	}
 
 	"Farewell.":{
@@ -117,12 +120,14 @@
 		Simplified_Chinese:"再见。"
 		Portuguese:"Adeus."
                 Polish:"Żegnaj."
+		Russian:"До встречи."
 	}
 
 	"Sounds good!":{
 		Italian:"Sta bene!"
 		French:"Très bien!"
                 Polish:"Bardzo dobrze!"
+		Russian:"Звучит неплохо!"
 	}
 	
 	"Not this time.":{ // declining trade text
@@ -131,6 +136,7 @@
 		French:"Pas cette fois."
 		Portuguese:"Dessa vez não."
                 Polish:"To się nie uda"
+		Russian:"Не в этот раз."
 	}
 
 	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
@@ -139,6 +145,7 @@
 		French:"Excellent!"
 		Portuguese:"Excelente!"
                 Polish:"Wyśmienicie!"
+		Russian:"Превосходно!"
 	}
 
 	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
@@ -147,6 +154,7 @@
 		French:"Pourquoi pas autre chose..."
 		Portuguese:"Porque não algo mais..."
                 Polish:"Oto nasza oferta."
+		Russian:"Как насчёт другого..."
 	}
 	
 	"A pleasure to meet you.":{
@@ -155,6 +163,7 @@
 		Simplified_Chinese:"很高兴见到你。"
 		Portuguese:"Prazer conhece-lo"
                 Polish:"Czuję się zaszczycony."
+		Russian:"Рады видеть вас."
 	}
 	
 	"Our relationship: ":{
@@ -163,6 +172,7 @@
 		Simplified_Chinese:"我们的关系："
 		Portuguese:"Nossas relações"
                 Polish:"Nasze relacje:"
+		Russian:"Наши отношения"
 	}
 
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
@@ -170,6 +180,7 @@
 		Portuguese:"Nós encontramos a cidade-estado de [name]"
 		French:"Nous avons rencontré la cité-état de [name]!"
                 Polish:"Napotkaliśmy państwo-miasto o nazwie [name]!"
+		Russian:"Мы обнаружили город-государство [name]!"
 	}
 	
 	// Friendship declaration flavor texts
@@ -179,6 +190,7 @@
 		Simplified_Chinese:"宣布相互友善([numberOfTurns]回合)"
 		Portuguese:"Declarar amizade ([numberOfTurns] turns)"
                 Polish:"Zadeklaruj przyjaźń na [numberOfTurns] tur"
+		Russian:"Объявить о дружбе на [numberOfTurns] ходов"
 	}
 
 	"May our nations forever remain united!":{
@@ -187,6 +199,7 @@
 		Simplified_Chinese:"我们两个文明将永远肝胆相照、休戚与共地站在一起！"
 		Portuguese:"Que nossas nações se mantenho unidas para sempre!"
                 Polish:"Oby ta przyjaźń już zawsze łączyła nasze cywilizacje!"
+		Russian:"Да будут наши державы навеки едины!"
 	}
 
 	"Indeed!":{
@@ -195,6 +208,7 @@
 		Simplified_Chinese:"这是无比正确的命运抉择！"
 		Portuguese:"Perfeito!"
                 Polish:"Wspaniale!"
+		Russian:"Разумеется!"
 	}
 	
 	// Denunceation flavour texts
@@ -202,11 +216,13 @@
 		Italian:"Denuncia ([numberOfTurns] turni)"
 		French:"Dénoncer ([numberOfTurns] tours)"
                 Polish:"Potęp cywilizację na [numberOfTurns] tur"
+		Russian:"Осуждение на [numberOfTurns] ходов"
 	}
 	
 	"We will remember this.":{
 		Italian:"Non credere che ce lo scorderemo!"
 		French:"Nous nous en souviendrons."
+		Russian:"Мы это запомним"
 	}
 	
 	
@@ -217,6 +233,7 @@
 		French:"Impardonnable"
 		Simplified_Chinese:"仇深似海"
 		Portuguese:"Imperdoável"
+		Russian:"Непростительно враждебные"
   	}
 
   	"Enemy":{
@@ -224,6 +241,7 @@
 		French:"Ennemi"
 		Simplified_Chinese:"宿命之敌"
 		Portuguese:"Inimigos" //as in 'we are enemies' not just 'they are our enemy'
+		Russian:"Враждебные"
   	}
 
   	"Competitor":{
@@ -231,6 +249,7 @@
 		French:"Adversaire" //or en compétition
 		Simplified_Chinese:"瑜亮之争"
 		Portuguese:"Adversários"
+		Russian:"Соперничающие"
   	}
 
   	"Neutral":{
@@ -238,6 +257,7 @@
 		French:"Neutre"
 		Simplified_Chinese:"泛泛之交"
 		Portuguese:"Neutra" // relation=relação relação is in feminine so therefore neutral(= neutro/neutra) deve ser feminino
+		Russian:"Нейтральные"
   	}
 
   	"Favorable":{
@@ -245,6 +265,7 @@
 		French:"Favorable"
 		Simplified_Chinese:"惺惺相惜"
 		Portuguese:"Favorável"
+		Russian:"Приемлемые"
   	}
 
   	"Friend":{
@@ -252,6 +273,7 @@
 		French:"Ami"
 		Simplified_Chinese:"秦晋之好"
 		Portuguese:"Amigos"
+		Russian:"Дружеские"
  	 }
 
   	"Ally":{
@@ -259,6 +281,7 @@
 		French:"Allié"
 		Simplified_Chinese:"歃血之盟"
 		Portuguese:"Aliado"
+		Russian:"Союзнические"
   	}
 	
 	// City States
@@ -266,31 +289,37 @@
 	"Provides [amountOfCulture] culture at 30 Influence":{
 		Italian:"Dona [amountOfCulture] punti Cultura a minimo 30 Punti Influenza"
 		French:"Fournit [amountOfCulture] de Culture à 30 d'influence"
+		Russian:"Даёт [amountOfCulture] культуры при 30 Влияния"
 	}
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
 		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città a minimo 30 Punti Influenza"
 		French:"Fournit 3 Nourriture à la capitale et 1 nourriture pour les autres villes à 30 d'influence"
+		Russian:"Даёт 3 Еды в столице и 1 Еда в остальных городах при 30 Влияния"
 	}
 
 	"Provides 3 happiness at 30 Influence":{
 		Italian:"Dona 3 Punti Felicità a minimo 30 Punti Influenza"
 		French:"Fournit 3 de Bonheur à 30 d'influence"
+		Russian:"Даёт 3 Счастья при 30 Влияния"
 	},
 
 	"Provides land units every 20 turns at 30 Influence":{
 		Italian:"Concede un'unità terrestre ogni 20 turni a minimo 30 Punti Influenza"
 		French:"Fournit des unités terrestres tous les 20 tours à 30 d'influence"
+		Russian:"Даёт сухопутные юниты каждые 20 ходов при 30 Влияния"
 	},
 
 	"Gift [goldAmount] gold":{
 		Italian:"Dona [goldAmount] Oro"
 		French:"Donner [goldAmount] ors"
+		Russian:"Дарит [goldAmount] золота"
 	}
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
 		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
 		French:"Les relations changent dans [turnsToRelationshipChange] tours"
+		Russian:"Отношения изменятся в следующие [turnsToRelationshipChange] ходов"
 	}
 	
 
@@ -302,6 +331,7 @@
 		French:"Vous nous avez déclaré la guerre!"
 		Simplified_Chinese:"不知死活的蠢货!你竟敢向我们宣战！"
 		Portuguese:"Você declarou guerra contra nós!"
+		Russian:"Вы объявляли нам войну!"
 	}
 
 	"Your warmongering ways are unacceptable to us.":{
@@ -309,6 +339,7 @@
 		French:"Votre bellicisme est inacceptable pour nous."
 		Simplified_Chinese:"你的穷兵黩武行径是我们无法容忍的！"
 		Portuguese:"Seus costumes de guerra são inaceitáveis para nós."
+		Russian:"Ваша воинственность для нас неприемлема."
 	}
 
 	"You have captured our cities!":{
@@ -316,6 +347,7 @@
 		French:"Vous avez capturé nos villes!"
 		Simplified_Chinese:"多行不义必自毙！你竟敢占领我们的城市！"
 		Portuguese:"Você capturou nossas(nossa) cidades(cidade)!"
+		Russian:"Вы захватывали наши города!"
 	}
 
 	"Years of peace have strengthened our relations.":{
@@ -323,6 +355,7 @@
 		French:"Les années de paix ont renforcées notre relation"
 		Simplified_Chinese:"多年的和平时光让我们更加珍视彼此的关系。"
 		Portuguese:"Anos de paz fortaleceram nossas relações."
+		Russian:"Годы мира укрепили наши отношения"
 	}
 
 	"Our mutual military struggle brings us closer together.":{
@@ -330,6 +363,7 @@
 		French:"Nos problèmes militaires communs nous ont rapprochés"
 		Simplified_Chinese:"共同的戎马岁月拉近了彼此的距离。"
 		Portuguese:"Nossas lutas mutuas nos fazem mais próximos."
+		Russian:"Наши совместные боевые действия сблизили нас"
 	}
 	
 	"We have signed a public declaration of friendship":{
@@ -337,6 +371,7 @@
 		Simplified_Chinese:"真是美好的一天！我们宣布：两个文明间将彼此尊重、相互友善！"
 		French:"Nous avons publiquement signé une Déclaration d'Amitié"
 		Portuguese:"Assinamos uma declaração pública de amizade"
+		Russian:"Мы подписали публичную декларацию дружбы"
 	}
 
 	"You have declared friendship with our enemies!":{
@@ -344,12 +379,14 @@
 		French:"Vous avez signé une Déclaration d'Amitié avec nos ennemis!"
 		Simplified_Chinese:"渡尽劫波兄弟在,相逢一笑泯恩仇！我们宣布：冰释前嫌、携手前进！"
 		Portuguese:"Voçê declarou amizade a um de nossos inimigos!"
+		Russian:"Вы дружите с нашими врагами!"
 	}
 	"You have declared friendship with our allies":{
 		Italian:"Hai dichiarato un'amicizia con i nostri alleati."
 		French:"Vous avez signé une Déclaration d'Amitié avec nos alliés"
 		Simplified_Chinese:"兄弟齐心、其利断金！我们宣布：我们与盟友间兄弟般的友谊永世长存！"
 		Portuguese:"Voçê declarou amizade a um de nossos aliados"
+		Russian:"Вы дружите с нашими союзниками"
 	}
 	
 	"Our open borders have brought us closer together.":{
@@ -357,6 +394,7 @@
 		French:"Notre Accord de libre passage nous a rapprochés"
 		Simplified_Chinese:"开放的边界促进了彼此的了解，让我们的人民心心相通！"
 		Portuguese:"Nossa fronteiras abertas nos fizeram mais próximos."
+		Russian:"Наши открытые границы сблизили нас"
 	}
 
 
@@ -364,64 +402,77 @@
 		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"
 		Portuguese:"Sua chamada 'amizade' não vale nada."
 		French:"Votre soi-disant 'amitié' ne vaut rien."
+		Russian:"Ваше так называемое дружелюбие ничего не значит."
 	}
 	
 	"You have publicly denounced us!":{
 		Italian:"Ci hai denunciato pubblicamente di fronte al mondo!"
 		French:"Vous nous avez dénoncé publiquement!"
+		Russian:"Вы публично осудили нас!"
 	}
 	
 	"You have denounced our allies":{
 		Italian:"Hai denunciato i nostri alleati!"
 		French:"Vous avez dénoncé nos alliées"
+		Russian:"Вы осудили наших союзников!"
 	}
 	
 	"You have denounced our enemies":{
 		Italian:"Hai denunciato i nostri nemici!"
 		French:"Vous avez dénoncé nos ennemies"
+		Russian:"Вы осудили наших врагов"
 	}
 	
 	// Demands
 	"Demands":{
 		Italian:"Richieste"
 		French:"Demandes"
+		Russian:"Требования"
 	}
 	"Please don't settle new cities near us.":{
 		Italian:"Smetti di fondare città vicino a noi."
 		French:"Veuillez ne pas construire de villes proches de nous."
+		Russian:"Пожалуйста, не закладывайте новых городов рядом с нами."
 	}
 	"Very well, we shall look for new lands to settle.":{
 		Italian:"Ti porgiamo le nostre scuse."
 		French:"Très bien, nous chercherons d'autres terres à coloniser"
+		Russian:"Хорошо, мы найдем другие земли для поселений"
 	}
 	"We shall do as we please.":{
 		Italian:"Colonizzeremo la terra che ci pare e piace."
 		French:"Nous faisons ce que nous voulons."
+		Russian:"Мы поступим, как сочтем нужным"
 	}
 	
 	"You betrayed your promise to not settle cities near us":{
 		Italian:"Hai tradito la tua promessa di non fondare città nelle nostre vicinanze."
 		French:"Vous avez trahis votre promesse de ne pas fonder de ville proche de nous"
+		Russian:"Вы нарушили ваше обещание не закладывать города рядом с нами"
 	}
 	
 	"You fulfilled your promise to stop settling cities near us!":{
 		Italian:"Hai mantenuto la tua promessa di non fondare città nelle nostre vicinanze."
 		French:"Vous avez tenu votre promesse de ne pas fonder de ville proche de nous!"
+		Russian:"Вы выполнили ваше обещание не закладывать города рядом с нами"
 	}
 	
 	"You refused to stop settling cities near us":{
 		Italian:"Hai continuato a fondare città nelle nostre vicinanze."
 		French:"Vous avez refusez de ne pas fonder de villes proches de nous"
+		Russian:"Вы отказались не закладывать города рядом с нами"
 	}
 	
 	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
 		Italian:"Abbiamo notato la la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
 		French:"Nous avons remarquez votre nouvelle ville à notre frontière, malgré votre promesse. Cela aura des... conséquences."
+		Russian:"Мы заметили ваш новый город около наших границ. Это может повлечь... последствия."
 	}
 	
 	"Your arrogant demands are in bad taste":{
 		Italian:"Hai fatto una richiesta arrogante."
 		French:"Vos arrogantes demandes sont de mauvais goût"
+		Russian:"Ваши высокомерные требования раздражают"
 	}
 	
 	
@@ -432,24 +483,28 @@
 		Italian:"Acculturata"
 		French:"Cultivée"
 		Simplified_Chinese:"文化型"
+		Russian:"Культурный"
 	}
 	
 	"Maritime":{
 		Italian:"Marittima"
 		French:"Maritime" //same
 		Simplified_Chinese:"航海型"
+		Russian:"Морской"
 	}
 	
 	"Mercantile":{
 		Italian:"Mercantile"
 		//same in french
 		Simplified_Chinese:"商业型"
+		Russian:"Торговый"
 	}
 
 	"Militaristic":{
 		Italian:"Militaristica"
 		French:"Militarisée"
 		Simplified_Chinese:"军事型"
+		Russian:"Воинственный"
 	}
 
 ////// Trade	
@@ -478,6 +533,7 @@
 
 	"Retract offer":{	
 		Italian:"Ritira offerta"
+		Russian:"Отменить предложение"
 	}
 
 	"What do you have in mind?":{	
@@ -504,7 +560,7 @@
     
 	"Our trade offer":{	
 		Italian:"La nostra offerta"
-		Russian:"Наше предложение\n  обмена"
+		Russian:"Наше предложение"
 		French:"Notre offre d'échange"
 		Romanian:"Oferta noastră"
 		Spanish:"Nuestra oferta"
@@ -515,7 +571,7 @@
 
 	"[otherCiv]'s trade offer":{
 		Italian:"Offerta di [otherCiv]"
-		Russian:"Предложение обмена \n цивилизации [otherCiv]"
+		Russian:"Предложение от [otherCiv]"
 		French:"L'offre d'échange de [otherCiv]"
 		Romanian:"Ofertă de schimb a [otherCiv]"
 		Spanish:"Oferta de [otherCiv]"
@@ -584,6 +640,7 @@
 		French:"Continuer..."
 		Simplified_Chinese:"继续..."
 		Portuguese:"Prossiga"
+		Russian:"Продолжить"
 	}
 	
 	"There's nothing on the table":{
@@ -613,6 +670,7 @@
 		Simplified_Chinese:"协定"
 		French:"Accords"
 		Portuguese:"Acordos"
+		Russian:"Соглашения"
 	}
 
 	"Open Borders":{
@@ -620,6 +678,7 @@
 		Simplified_Chinese:"开放边境"
 		French:"Accord de libre passage"
 		Portuguese:"Acordo de fronteiras abertas"
+		Russian:"Открытые границы"
 	}
 
 	"Gold per turn":{
@@ -651,6 +710,7 @@
 		French:"Technologies"
 		Simplified_Chinese:"科技"
 		Portuguese:"Tecnologias"
+		Russian:"Технологии"
 	}
 
 	"Declarations of war":{
@@ -658,6 +718,7 @@
 		French:"Déclarations de guerre"
 		Simplified_Chinese:"宣战"
 		Portuguese:"Declarações de guerra"
+		Russian:"Объявления войны"
 	}
 
 	"Introduction to [nation]":{
@@ -669,6 +730,7 @@
 		French:"Ressources de luxes"
 		Simplified_Chinese:"奢侈资源"
 		Portuguese:"Recursos raros/luxuosos" //raros = rare luxuosos = luxurious
+		Russian:"Редкие ресуры"
 	}
 
 	"Strategic resources":{
@@ -676,6 +738,7 @@
 		French:"Ressources stratégiques"
 		Simplified_Chinese:"战略资源"
 		Portuguese:"Recursos estratégicos"
+		Russian:"Стратегические ресуры"
 	}
 	
 	
@@ -698,11 +761,13 @@
 		Simplified_Chinese:"无需战略资源[resourceName]"
 		French:"[resourceName] non requis"
 		Portuguese:"[resourceName] não requirido"
+		Russian:"[resourceName] не требуется"
 	}
 	
 	"Lost ability":{ // as in Does not have +1 Visibility Range (or any other unit unique)
 		Italian:"Non possiede "
 		Simplified_Chinese:"失去能力"
+		Russian:"Не имеет "
 	}
 	
 	"National ability":{ // the unique ability that each nation has
@@ -712,7 +777,7 @@
 		German:"Nationalfähigkeit"
 		French:"Capacité de la civilisation"
 		Portuguese:"Habilidade nacional"
-		Russian:"Национальная способность"
+		Russian:"Национальная особенность"
 		Simplified_Chinese:"民族特性"
 	}
 	
@@ -733,7 +798,7 @@
 		German:"Ein kostenloser Großer Wissenschaftler erscheint, wenn Schrift erforscht wurde; Große Wissenschaftler erscheinen 50% häufiger"
 		French:"Gagner un scientifique illustre lorsque Ecriture est dévouvert, les scientifiques illustres apparaissent 50% plus vite"
 		Portuguese:"Receba gratuitamente um grande cientista quando você descobrir Escritura, ganhe grandes cientistas 50% mais rápido"
-		Russian:"Получите бесплатно великого ученого, когда откроете для себя написание, заработайте великих ученых на 50% быстрее"
+		Russian:"Бесплатный Великий Ученый при исследовании Письменности. Великие Ученые появляются на 50% быстрее"
 		Simplified_Chinese:"发明文字后立即获得一个大科学家，大科学家点数积累速率+50%"
 		Spanish:"Reciba un Gran Científico gratis cuando descubra Escribir, Gane Grandes Científicos 50% más rápido"
 	}
@@ -742,6 +807,7 @@
 		Italian:"Nabucodonosor II"
 		French:"Nabuchodonosor II"
 		Simplified_Chinese:"尼布甲尼撒二世"
+		Russian:"Навуходоносор II"
 	}
 	
 	"Greece":{	
@@ -759,11 +825,13 @@
 		Italian:"Alessandro"
 		French:"Alexandre le Grand"
 		Simplified_Chinese:"亚历山大"
+		Russian:"Александр Македонский"
 	},
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
 		Simplified_Chinese:"对城邦影响力衰减速度减半，恢复速度加倍"
 		Italian:"L'influenza sulle città-stato diminuisce il doppio più lentamente e aumenta il doppio più velocemente."
+		Russian:"Влияние на города-государства снижается вдвое медленнее и увеличивается вдвое быстрее"
 	},
 
 	"China":{	
@@ -779,6 +847,7 @@
 
 	"Wu Zetian":{
 		Simplified_Chinese:"武则天"
+		Russian:"У Цзэтянь"
 	},
 
 	"Great general provides double combat bonus, and spawns 50% faster":{
@@ -790,6 +859,7 @@
 		Portuguese:"Grande general fornece bônus de combate duplo e é gerado 50% mais rápido"
 		Russian:"Великий полководец дает двойной боевой бонус и появляется на 50% быстрее"
 		Spanish:"El gran general proporciona bonificación de combate doble y genera un 50% más rápido."
+		Russian:"Великий Полководец дает двойной бонус в бою и появляется на 50% быстрее"
 	}
 	
 	"Egypt":{	
@@ -807,6 +877,7 @@
 		Italian:"Ramses II"
 		French:"Ramsès II"
 		Simplified_Chinese:"拉美西斯二世"
+		Russian:"Рамзес II"
 	}
 
 	"+20% production towards Wonder construction":{
@@ -835,6 +906,7 @@
 		Italian:"Elisabetta"
 		//same in french
 		Simplified_Chinese:"伊丽莎白"
+		Russian:"Елизавета"
 	}
 
 	"+2 movement for all naval units":{
@@ -863,6 +935,7 @@
 		Italian:"Napoleone"
 		French:"Napoléon"
 		Simplified_Chinese:"拿破仑"
+		Russian:"Наполеон"
 	}
 
 	"+2 Culture per turn from cities before discovering Steam Power":{
@@ -872,7 +945,7 @@
 		Spanish:"+2 Cultura por turno desde las ciudades antes de descubrir la Energía de Vapor."
 		Romanian:"+2 Cultură pe turn de la orașe înainte de a descoperi puterea de abur"
 		Portuguese:"+2 Cultura por turno das cidades antes de descobrir o poder do vapor" //'poder do vapor' means the power of steam
-		Russian:"+2 Культура за ход из городов, прежде чем открыть для себя силу пара"
+		Russian:"+2 Культура за ход от городов до открытия Парового Двигателя"
 		Simplified_Chinese:"在发明蒸汽机之前，每座城市的文化+2"
 	}
 	
@@ -891,6 +964,7 @@
 		Italian:"Caterina II"
 		French:"Catherine II"
 		Simplified_Chinese:"叶卡捷琳娜二世"
+		Russian:"Екатерина Великая"
 	}
 
 	"Strategic Resources provide +1 Production, and Horses, Iron and Uranium Resources provide double quantity":{
@@ -901,7 +975,7 @@
 		German:"Strategische Ressourcen geben +1 Produktion und Pferde, Eisen und Uran Ressourcen geben die doppelte Menge"
 		French:"Les ressources stratégiques donnent +1 production, et les quantités de chevaux, fer et uranium sont doublés"
 		Portuguese:"Recursos Estratégicos fornecem Produção de +1, recursos de cavalos, ferro e urânio fornecem quantidade dupla"
-		Russian:"Стратегические ресурсы дают +1 к добыче, а ресурсы для лошадей, железа и урана дают двойное количество"
+		Russian:"Стратегические ресурсы дают +1 к производству, а количество ресуров Лошади, Железо и Уран удваивается"
 	}
 	
 	"Rome":{
@@ -919,6 +993,7 @@
 		Italian:"Cesare Augusto"
 		French:"Jule César"
 		Simplified_Chinese:"奥古斯都·恺撒"
+		Russian:"Октавиан Август"
 	}
 
 	"+25% Production towards any buildings that already exist in the Capital":{
@@ -948,6 +1023,7 @@
 		Italian:"Harun al-Rashid" //Same as Italian
 		French:"Hâroun ar-Rachîd"
 		Simplified_Chinese:"哈伦·拉希德"
+		Russian:"Гарун-аль-Рашид"
 	}
 
 	"+1 Gold from each Trade Route, Oil resources provide double quantity":{
@@ -955,6 +1031,7 @@
 		Simplified_Chinese:"每条贸易路线+1金钱，石油储量加倍"
 		Portuguese:"1 ouro adicional de rotas comerciais e recursos de petróleo geram o dobro" // óleo could mean normal kitchen oil and even fuel from sugar cane
 		French:"+1 Or pour chaque route commerciale, la quantité de pétrole est doublée"
+		Russian:"+1 Золото от каждого торгового маршрута, количество ресурса Нефть удваивается"
 	}
 	
 	"America":{
@@ -972,6 +1049,7 @@
 		Italian:"George Washington" //Same as Italian
 		//same in french
 		Simplified_Chinese:"乔治·华盛顿"
+		Russian:"Джордж Вашингтон"
 	}
 
 	"All land military units have +1 sight, 50% discount when purchasing tiles":{
@@ -982,7 +1060,7 @@
 		German:"Alle militärischen Landeinheiten haben +1 Sicht; 50% niedrigerer Preis beim Kauf von Feldern"
 		French:"Toutes les unités terrestres ont +1 porté de vision, les cases coutent 50% de leurs prix à l'achat"
 		Portuguese:"Todas as unidades militares terrestres ganham +1 alcançe devisão e 50% de desconto na compra de terrenos" //i don't remember my translations being this bad? who was the monster?
-		Russian:"Все наземные воинские части имеют +1 прицел, скидка 50% при покупке плитки"
+		Russian:"Все наземные военные юниты имеют +1 обзор, скидка 50% при покупке клетки"
 	}
 	
 	"Japan":{
@@ -1000,6 +1078,7 @@
 		Italian:"Oda Nobunaga" //Same as Italian
 		//same in french
 		Simplified_Chinese:"织田信长"
+		Russian:"Ода Нобунага"
 	}
 
 	"Units fight as though they were at full strength even when damaged":{
@@ -1010,7 +1089,7 @@
 		German:"Einheiten kämpfen so, als wären sie selbst bei Beschädigung in voller Stärke"
 		French:"Les unités combattent comme si elles étaient à pleine force même lorsqu'elles sont endommagées"
 		Portuguese:"Unidades lutam como se estivessem em força total mesmo quando danificadas"
-		Russian:"Юниты сражаются, как будто они в полной силе, даже когда повреждены"
+		Russian:"Юниты сражаются в полную силу, даже будучи ранеными"
 	}
 
 	"Germany":{
@@ -1018,18 +1097,21 @@
 		French:"Allemagne"
 		Simplified_Chinese:"德意志"
 		Portuguese:"Alemanha"
+		Russian:"Германия"
 	}
 
 	"Otto von Bismark":{
 		Italian:"Otto von Bismark" //Same as Italian
 		French:"Otto von Bismarck"
 		Simplified_Chinese:"奥托·冯·俾斯麦"
+		Russian:"Отто фон Бисмарк"
 	}
 
 	"67% chance to earn 25 Gold and recruit a Barbarian unit from a conquered encampment, -25% land units maintenance.":{
 		Italian:"67% di probabilità di ottenere 25 Oro e reclutare un'unità barbara da un accampamento catturato. -25% mantenimento delle unità terrestri."
 		French:"67% de chance de gagner 25 or et d'enroler une unité barbare lors de la prise d'un campement barbare. -25% de coût de maintenance pour les unités terrestres."
 		Simplified_Chinese:"击败蛮族营地中的蛮族单位有67%几率得到25金钱并使其加入，陆上单位维护费-25%"
+		Russian:"Шанс 67% получить 25 Золото и варварский юнит из захваченного лагеря. -25% к стоимости содержания наземных юнитов.
 	}
 	
 	"India":{
@@ -1037,12 +1119,14 @@
 		French:"Inde"
 		Portuguese:"Índia"
 		Simplified_Chinese:"印度"
+		Russian:"Индия"
 	}
 
 	"Gandhi":{
 		Italian:"Gandhi" //Same as Italian
 		//same in french
 		Simplified_Chinese:"甘地"
+		Russian:"Махатма Ганди"
 	}
 
 	"Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.":{
@@ -1050,6 +1134,7 @@
 		Portuguese:"Tristeza por número de cidades dobrada e tristeza por número de cidadões reduzida pela metade"
 		French:"Le mécontentement dut au nombre de villes est doublé. Le mécontentement dut au nombre de citoyens est réduit de moitié"
 		Simplified_Chinese:"城市数量导致的不满加倍，市民数量导致的不满减半"
+		Russian:"Удвоенное недовольство от числа городов. Недовольство от количества горожан в два раза меньше."
 	}
 
 	"The Ottomans":{
@@ -1057,12 +1142,14 @@
 		French:"Turquie"
 		Portuguese:"Turquia"
 		Simplified_Chinese:"奥斯曼"
+		Russian:"Турция"
 	}
 
 	"Suleiman I":{
 		Italian:"Solimano I"
 		French:"Soliman le Magnifique"
 		Simplified_Chinese:"苏莱曼一世"
+		Russian:"Сулейман I"
 	}
 
 	"Pay only one third the usual cost for naval unit maintenance. Melee naval units have a 1/3 chance to capture defeated naval units.":{
@@ -1070,6 +1157,7 @@
 		Portuguese:"50% de chance de converter uma unidade naval bárbara para ti e ganhar 25 ouro. Gaste apenas 1/3 do custo normal para manter unidades navais."
 		French:"50% de chance de convertir une unité barbare navale et de gagner 25 Or. Les unités navales coutent 3 fois moins à entretenir."
 		Simplified_Chinese:"海上单位维护费为正常值的1/3，海军近战单位拥有1/3几率俘获战败的敌方海军单位"
+		Russian:"Содержание морских юнитов стоит треть обычной цены. Морские юниты ближнего боя имеют 1/3 шанс захвата побеждённых кораблей."
 	}
 
 	"Korea":{
@@ -1077,6 +1165,7 @@
 		French:"Corée"
 		Portuguese:"Coréia"
 		Simplified_Chinese:"朝鲜"
+    Russian:"Корея"
 	}
 
 	"Sejong":{
@@ -1085,6 +1174,13 @@
 
 	"+2 Science for all specialists and Great Person tile improvements":{
 		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
+	}
+
+	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
+		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
+		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
+		French:"+1 Science pour chaque spécialistes et amélioration de case de personnage illustre. Reçoit un bonus de science à chaque fois qu'un batiment ou une merveille scientifique est  construit dans la capitale"
+		Russian:"+1 Наука для всех специалистов и улучшений клеток Великими людьми. Получите бонус к исследованию каждый раз при создании научного здания/чуда в Корейской столице"
 	}
 
 	/*
@@ -1201,7 +1297,7 @@
 		German:"Unikate"
 		French:"Uniques"
 		Portuguese:"Únicos(a)"
-		Russian:"уникальный"
+		Russian:"Уникальные юниты"
 	}
 
 	"Promotions":{
@@ -1212,7 +1308,7 @@
 		German:"Beförderungen"
 		French:"Promotions"
 		Portuguese:"Promoções"
-		Russian:"промо акции"
+		Russian:"Повышения"
 	}
 	
 	"units in rough terrain":{

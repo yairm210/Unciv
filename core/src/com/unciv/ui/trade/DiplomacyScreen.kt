@@ -23,7 +23,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 import kotlin.math.roundToInt
 
-class DiplomacyScreen:CameraStageBaseScreen() {
+class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
 
     val leftSideTable = Table().apply { defaults().pad(10f) }
     val rightSideTable = Table()
@@ -53,15 +53,14 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
     private fun updateLeftSideTable() {
         leftSideTable.clear()
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
         for (civ in UnCivGame.Current.gameInfo.civilizations
-                .filterNot { it.isDefeated() || it == currentPlayerCiv || it.isBarbarian() }) {
-            if (!currentPlayerCiv.knows(civ)) continue
+                .filterNot { it.isDefeated() || it == viewingCiv || it.isBarbarian() }) {
+            if (!viewingCiv.knows(civ)) continue
 
             val civIndicator = ImageGetter.getNationIndicator(civ.nation,100f)
 
             val relationship = ImageGetter.getCircle()
-            if(currentPlayerCiv.isAtWarWith(civ)) relationship.color = Color.RED
+            if(viewingCiv.isAtWarWith(civ)) relationship.color = Color.RED
             else relationship.color = Color.GREEN
             relationship.setSize(30f,30f)
             civIndicator.addActor(relationship)
@@ -90,8 +89,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
 
 
     private fun getCityStateDiplomacyTable(otherCiv: CivilizationInfo): Table {
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
@@ -102,7 +100,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
 
         val friendBonusText = when (otherCiv.getCityStateType()) {
-            CityStateType.Cultured -> "Provides [" + (3 * (currentPlayerCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence"
+            CityStateType.Cultured -> "Provides [" + (3 * (viewingCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence"
             CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at [30] Influence"
             CityStateType.Mercantile -> "Provides 3 happiness at [30] Influence"
             CityStateType.Militaristic -> "Provides land units every 20 turns at [30] Influence"
@@ -124,19 +122,19 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val influenceAmount = giftAmount / 10
         val giftButton = TextButton("Gift [$giftAmount] gold (+[$influenceAmount] influence)".tr(), skin)
         giftButton.onClick {
-            currentPlayerCiv.giveGoldGift(otherCiv, giftAmount)
+            viewingCiv.giveGoldGift(otherCiv, giftAmount)
             updateRightSide(otherCiv)
         }
         diplomacyTable.add(giftButton).row()
-        if (currentPlayerCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
+        if (viewingCiv.gold < giftAmount || isNotPlayersTurn()) giftButton.disable()
 
-        val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
 
-        if (currentPlayerCiv.isAtWarWith(otherCiv)) {
+        if (viewingCiv.isAtWarWith(otherCiv)) {
             val peaceButton = TextButton("Negotiate Peace".tr(), skin)
             peaceButton.onClick {
                 YesNoPopupTable("Peace with [${otherCiv.civName}]?".tr(), {
-                    val tradeLogic = TradeLogic(currentPlayerCiv, otherCiv)
+                    val tradeLogic = TradeLogic(viewingCiv, otherCiv)
                     tradeLogic.currentTrade.ourOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
                     tradeLogic.currentTrade.theirOffers.add(TradeOffer(Constants.peaceTreaty, TradeType.Treaty, 30))
                     tradeLogic.acceptTrade()
@@ -155,8 +153,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
     }
 
     private fun getMajorCivDiplomacyTable(otherCiv: CivilizationInfo): Table {
-        val currentPlayerCiv = UnCivGame.Current.gameInfo.getCurrentPlayerCivilization()
-        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(currentPlayerCiv)
+        val otherCivDiplomacyManager = otherCiv.getDiplomacyManager(viewingCiv)
 
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
@@ -169,7 +166,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             diplomacyTable.add(translatedNation.neutralHello.toLabel()).row()
         diplomacyTable.addSeparator()
 
-        if(!currentPlayerCiv.isAtWarWith(otherCiv)) {
+        if(!viewingCiv.isAtWarWith(otherCiv)) {
             val tradeButton = TextButton("Trade".tr(), skin)
             tradeButton.onClick { setTrade(otherCiv) }
             diplomacyTable.add(tradeButton).row()
@@ -190,11 +187,11 @@ class DiplomacyScreen:CameraStageBaseScreen() {
             diplomacyTable.add(negotiatePeaceButton).row()
         }
 
-        val diplomacyManager = currentPlayerCiv.getDiplomacyManager(otherCiv)
+        val diplomacyManager = viewingCiv.getDiplomacyManager(otherCiv)
 
 
 
-        if (!currentPlayerCiv.isAtWarWith(otherCiv)) {
+        if (!viewingCiv.isAtWarWith(otherCiv)) {
             if(otherCivDiplomacyManager.relationshipLevel() > RelationshipLevel.Neutral
                     && !diplomacyManager.hasFlag(DiplomacyFlags.DeclarationOfFriendship)
                     && !diplomacyManager.hasFlag(DiplomacyFlags.Denunceation)){
@@ -226,7 +223,7 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         val demandsButton = TextButton("Demands".tr(),skin)
         demandsButton.onClick {
             rightSideTable.clear()
-            rightSideTable.add(getDemandsTable(currentPlayerCiv,otherCiv))
+            rightSideTable.add(getDemandsTable(viewingCiv,otherCiv))
         }
         diplomacyTable.add(demandsButton).row()
         if(isNotPlayersTurn()) demandsButton.disable()
@@ -270,15 +267,15 @@ class DiplomacyScreen:CameraStageBaseScreen() {
         return diplomacyModifiersTable
     }
 
-    private fun getDemandsTable(currentPlayerCiv: CivilizationInfo, otherCiv: CivilizationInfo): Table {
+    private fun getDemandsTable(viewingCiv: CivilizationInfo, otherCiv: CivilizationInfo): Table {
         val demandsTable = Table()
         demandsTable.defaults().pad(10f)
 
         val dontSettleCitiesButton = TextButton("Please don't settle new cities near us.".tr(),skin)
-        if(otherCiv.popupAlerts.any { it.type==AlertType.DemandToStopSettlingCitiesNear && it.value==currentPlayerCiv.civName })
+        if(otherCiv.popupAlerts.any { it.type==AlertType.DemandToStopSettlingCitiesNear && it.value==viewingCiv.civName })
             dontSettleCitiesButton.disable()
         dontSettleCitiesButton.onClick {
-            otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, currentPlayerCiv.civName))
+            otherCiv.popupAlerts.add(PopupAlert(AlertType.DemandToStopSettlingCitiesNear, viewingCiv.civName))
             dontSettleCitiesButton.disable()
         }
         demandsTable.add(dontSettleCitiesButton).row()

@@ -15,8 +15,8 @@ import kotlin.math.max
 
 class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
     init{
-        val currentPlayerCiv = worldScreen.viewingCiv
-        val tradeRequest = currentPlayerCiv.tradeRequests.first()
+        val viewingCiv = worldScreen.viewingCiv
+        val tradeRequest = viewingCiv.tradeRequests.first()
 
         val requestingCiv = worldScreen.gameInfo.getCivilization(tradeRequest.requestingCiv)
         val translatedNation = requestingCiv.getTranslatedNation()
@@ -39,10 +39,10 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
         addGoodSizedLabel(translatedNation.tradeRequest).colspan(columns).row()
 
         addButton("Sounds good!"){
-            val tradeLogic = TradeLogic(currentPlayerCiv, requestingCiv)
+            val tradeLogic = TradeLogic(viewingCiv, requestingCiv)
             tradeLogic.currentTrade.set(trade)
             tradeLogic.acceptTrade()
-            currentPlayerCiv.tradeRequests.remove(tradeRequest)
+            viewingCiv.tradeRequests.remove(tradeRequest)
             close()
             PopupTable(worldScreen).apply {
                 add(otherCivLeaderName.toLabel()).colspan(2)
@@ -56,12 +56,12 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
                 }
                 open()
             }
-            requestingCiv.addNotification("[${currentPlayerCiv.civName}] has accepted your trade request", Color.GOLD)
+            requestingCiv.addNotification("[${viewingCiv.civName}] has accepted your trade request", Color.GOLD)
         }
         addButton("Not this time.".tr()){
-            currentPlayerCiv.tradeRequests.remove(tradeRequest)
+            viewingCiv.tradeRequests.remove(tradeRequest)
 
-            val diplomacyManager = requestingCiv.getDiplomacyManager(currentPlayerCiv)
+            val diplomacyManager = requestingCiv.getDiplomacyManager(viewingCiv)
             if(trade.ourOffers.all { it.type==TradeType.Luxury_Resource } && trade.theirOffers.all { it.type==TradeType.Luxury_Resource })
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedLuxExchange,20) // offer again in 20 turns
 
@@ -69,15 +69,15 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
                 diplomacyManager.setFlag(DiplomacyFlags.DeclinedPeace,5)
 
             close()
-            requestingCiv.addNotification("[${currentPlayerCiv.civName}] has denied your trade request", Color.GOLD)
+            requestingCiv.addNotification("[${viewingCiv.civName}] has denied your trade request", Color.GOLD)
 
             worldScreen.shouldUpdate=true
         }
         addButton("How about something else...".tr()){
-            currentPlayerCiv.tradeRequests.remove(tradeRequest)
+            viewingCiv.tradeRequests.remove(tradeRequest)
             close()
 
-            val diplomacyScreen= DiplomacyScreen()
+            val diplomacyScreen= DiplomacyScreen(viewingCiv)
             val tradeTable =  diplomacyScreen.setTrade(requestingCiv)
             tradeTable.tradeLogic.currentTrade.set(trade)
             tradeTable.offerColumnsTable.update()

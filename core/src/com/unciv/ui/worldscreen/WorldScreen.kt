@@ -231,7 +231,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                         .any()) {
             displayTutorials("OtherCivEncountered")
             val btn = TextButton("Diplomacy".tr(), skin)
-            btn.onClick { UnCivGame.Current.screen = DiplomacyScreen() }
+            btn.onClick { UnCivGame.Current.screen = DiplomacyScreen(viewingCiv) }
             btn.label.setFontSize(30)
             btn.labelCell.pad(10f)
             diplomacyButtonWrapper.add(btn)

@@ -29,7 +29,7 @@ class TileImprovement : NamedStats(), ICivilopedia {
     override val description: String
         get() {
             val stringBuilder = StringBuilder()
-            if (!this.clone().toString().isEmpty()) stringBuilder.appendln(this.clone().toString())
+            if (this.clone().toString().isNotEmpty()) stringBuilder.appendln(this.clone().toString())
             if (!terrainsCanBeBuiltOn.isEmpty()) {
                 val terrainsCanBeBuiltOnString:ArrayList<String> = arrayListOf()
                 for (i in terrainsCanBeBuiltOn) {
