@@ -616,13 +616,16 @@
 		unique:"Can embark and move over Costs and Oceans immediately. +1 Sight when embarked",
 		cities:["Honolulu","Samoa","Tonga","Nuku Hiva","Raiatea","Aotearoa","Tahiti","Hilo","Te Wai Pounamu","Rapa Nui","Tuamotu","Rarotonga","Tuvalu","Tubuai","Mangareva","Oahu","Kiritimati","Ontong Java","Niue","Rekohu","Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia","Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
-
+	*/
 	{
-		name:"Korean",
-		leaderName:"Sejong",
+		name:"Korea",
+		translatedName:"朝鲜"
+		leaderName:"李裪",
+		adjective:["朝鲜的"],
+		startBias:["Coast"],
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Greetings to you, exalted King Sejong the Great, servant to the people and protector of the Choson Dynasty! Your glorious vision of prosperity and overwhelming benevolence towards the common man made you the most beloved of all Korean kings. From the earliest days of your reign, the effort you took to provide a fair and just society for all was surpassed only by the technological advances spurred onwards by your unquenched thirst for knowledge. Guided by your wisdom, the scholars of the Jade Hall developed Korea's first written language, Hangul, bringing the light of literature and science to the masses after centuries of literary darkness."
+		startIntroPart2: "Honorable Sejong, once more the people look to your for guidance. Will you rise to the occasion, bringing harmony and understanding to the people? Can you once again advance your kingdom's standing to such wondrous heights? Can you build a civilization that stands the test of time?"
 		
 		declaringWar:"Jip-hyun-jun (Hall of Worthies) will no longer tolerate your irksome behavior. We will liberate the citizens under your oppression even with force, and enlighten them!"
 		attacked:"Foolish, miserable wretch! You will be crushed by this country's magnificent scientific power!"
@@ -640,13 +643,14 @@
 		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
 		
 		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
-		tradeRequest:"We have many thinkgs to discuss and have much to benefit from each other."
+		tradeRequest:"We have many things to discuss and have much to benefit from each other."
 				
 		outerColor:[0,0,255],
 		innerColor:[255,0,0],
-		unique:"+2 Science for all Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean capital.",
+		unique:"所有专业人员和所有伟人设施+2科研",
 		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan","Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju","Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
+	/*
 	{
 		name:"Songhai",
 		leaderName:"Askia",
@@ -682,6 +686,8 @@
 		name:"The Ottomans",
 		translatedName:"奥斯曼",
 		leaderName:"苏莱曼一世",
+		adjective:["奥斯曼的"],
+		startBias:["Coast"],
 		
 		startIntroPart1: ""
 		startIntroPart2: ""

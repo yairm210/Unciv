@@ -482,24 +482,28 @@
 	"Cultured":{
 		Italian:"Acculturata"
 		French:"Cultivée"
+		Simplified_Chinese:"文化型"
 		Russian:"Культурный"
 	}
 	
 	"Maritime":{
 		Italian:"Marittima"
 		French:"Maritime" //same
+		Simplified_Chinese:"航海型"
 		Russian:"Морской"
 	}
 	
 	"Mercantile":{
 		Italian:"Mercantile"
 		//same in french
+		Simplified_Chinese:"商业型"
 		Russian:"Торговый"
 	}
 
 	"Militaristic":{
 		Italian:"Militaristica"
 		French:"Militarisée"
+		Simplified_Chinese:"军事型"
 		Russian:"Воинственный"
 	}
 
@@ -754,14 +758,15 @@
 	
 	"[resourceName] not required":{
 		Italian:"Risorsa [resourceName] non richiesta"
-		Simplified_Chinese:"不需要[resourceName]"
+		Simplified_Chinese:"无需战略资源[resourceName]"
 		French:"[resourceName] non requis"
 		Portuguese:"[resourceName] não requirido"
 		Russian:"[resourceName] не требуется"
 	}
 	
-	"Does not have ":{ // as in Does not have +1 Visibility Range (or any other unit unique)
+	"Lost ability":{ // as in Does not have +1 Visibility Range (or any other unit unique)
 		Italian:"Non possiede "
+		Simplified_Chinese:"失去能力"
 		Russian:"Не имеет "
 	}
 	
@@ -1159,7 +1164,16 @@
 		Italian:"Corea"
 		French:"Corée"
 		Portuguese:"Coréia"
-		Russian:"Корея"
+		Simplified_Chinese:"朝鲜"
+    Russian:"Корея"
+	}
+
+	"Sejong":{
+		Simplified_Chinese:"李裪"
+	}
+
+	"+2 Science for all specialists and Great Person tile improvements":{
+		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
 	}
 
 	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{

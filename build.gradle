@@ -8,7 +8,6 @@ buildscript {
 
 
     repositories {
-        // 以下四行代码为阿里gradle 源
         // Chinese mirrors for quicker loading for chinese devs
         maven{ url 'https://maven.aliyun.com/repository/jcenter'}
         maven{ url 'https://maven.aliyun.com/repository/google'}
@@ -42,7 +41,6 @@ allprojects {
     }
 
     repositories {
-        // 以下四行代码为阿里gradle 源
         // Chinese mirrors for quicker loading for chinese devs
         maven{ url 'https://maven.aliyun.com/repository/jcenter'}
         maven{ url 'https://maven.aliyun.com/repository/google'}

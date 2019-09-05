@@ -577,7 +577,7 @@
 		"Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
 	{
-		name:"Korean",
+		name:"Korea",
 		translatedName:"Corea",
 		leaderName:"Sejong",
 		
@@ -605,7 +605,7 @@
 		outerColor:[0,0,255],
 		innerColor:[255,0,0],
 		uniqueName:"Sapienti della Sala di Giada",
-		unique:"+2 Scienza per ogni miglioramento da Gran Personaggio. Ricevi uno sprint tecnologico quando costruisci una struttura/Meraviglia scientifica nella Capitale.",
+		unique:"+2 Scienza per ogni miglioramento da Gran Personaggio.",
 		cities:["Seoul","Busan","Jeonju","Daegu","Pyongyang","Kaesong","Suwon","Gwangju","Gangneung","Hamhung","Wonju","Ulsan",
 			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
 			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
