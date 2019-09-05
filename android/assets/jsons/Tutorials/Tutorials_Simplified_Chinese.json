@@ -32,22 +32,8 @@
 		[
 			"一座城市的中心地块总是工作的，不需要为之分配市民，",
 			"同样也不能在该地块建造设施。"
-		],
-		[
 			"城市的产能用于组建单位和建造建筑或奇观，",
 			"您可以通过点击“城市界面”左边列表中的项目来选择需要组建的单位和建造的建筑或奇观。"
-		]
-	],
-	
-	ScienceVictoryScreenEntered : [
-		[
-			"这是科学胜利的界面，",
-			"这里能看到您在建造太空飞船方面的进展，",
-			"太空飞船将带您飞向遥远的半人马星座。"
-		],
-		[
-			"飞船有6个部件必须建造，",
-			"它们都需要先进的技术。"
 		],
 	],
 	
@@ -70,31 +56,74 @@
 			"您建立了一座城市!",
 			"城市是帝国的命脉，为整个帝国提供金钱和科研产出，",
 			"相关信息显示在顶部信息栏。"
+			"点击城市名称进入“城市界面”，",
+			"在这里可以执行分配市民、组建单位和建造建筑或奇观、购买地块、查看城市详细信息等操作。"
 		],
 		[
-			"科研点数是用来研究科技的。",
-			"您可以通过点击顶部信息栏左下角的按钮来进入“科研界面”。",
+			"Once you have your first city up and running you’ll be able to start production of a new unit",
+			"  and you’ll be able to begin your research.",
+			"I’m not going to delve too deeply into the research element of the game yet – that will be handled later in the guide –",
+			"  so let’s just talk about production."
 		],
 		[
-			"您可以点击城市名称进入“城市界面”，",
-			"在这个界面您可以执行分配市民、组建单位和建造建筑或奇观、购买地块等操作。"
-		]
+			"The first thing coming out of your city should be either a Scout or Warrior."
+			"I generally prefer the Warrior because it can be used for defense and because it can be upgraded",
+			"  to the Swordsman unit later in the game for a relatively modest sum of gold.",
+			"Scouts can be effective, however, if you seem to be located in an area of dense forest and hills.",
+			"Scouts don’t suffer a movement penalty in this terrain."
+			"If you’re a veteran of the 4x strategy genre your first Warrior or Scout will be followed by a Settler.",
+			"Fast expanding is absolutely critical in most games of this type.",
+		],
 	],
 	
 	NewGame: [
 		[
 			"您好，欢迎来到绚丽多彩的UnCiv游戏世界!",
 			"文明游戏是复杂的，让我们通过教程来引导您开始一段奇妙的游戏旅程。",
-			"首先，我们来了解一下基本的游戏概念。"
+			"Your first mission is to found your capital city.",
+			"This is actually an important task because your capital city will probably be your most prosperous.",
+			"Many game bonuses apply only to your capital city and it will probably be the center of your empire."
 		],
 		[
-			"先从这几个单位开始：",
-			"移民 - 用于建立一座城市，",
-			"斥候 - 用于探索地图。",
-			"点击其中一个单位来控制它。"
-		]
+			"How do you know a spot is appropriate?",
+			"That’s not an easy question to answer, but looking for and building next to luxury resources is a good rule of thumb.",
+			"Luxury resources are tiles that have things like gems, cotton, or silk (indicated by a smiley next to the resource icon)",
+			"These resources make your civilization happy. You should also keep an eye out for resources needed to build units, such as iron."
+		],
+		[
+			"However,  cities don’t have a set area that they can work - more on that later!"
+			"This means you don’t have to settle cities right next to resources.",
+			"Let’s say, for example, that you want access to some iron – but the resource is right next to a desert."
+			"You don’t have to settle your city next to the desert. You can settle a few tiles away in more prosperous lands.",
+			"Your city will grow and eventually gain access to the resource.",
+			"You only need to settle right next to resources if you need them immediately – ",
+			"   which might be the case now and then, but you’ll usually have the luxury of time."
+		],
+		
 	],
 	
+	HappinessGettingLow:[
+		[
+			"As cities grow in size and influence they also are able to work more territory.",
+			"You also have to deal with a happiness mechanic that is no longer tied to each individual city.",
+			"Instead, your entire empire shares the same level of satisfaction.",
+			"As your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."
+		],
+		[
+			"In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.",
+			"If your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.",
+			"If your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)",
+			"  your armies will have a big penalty slapped on to their overall combat effectiveness."
+		],
+		[
+			"This means that it is very difficult to expand quickly in Unciv."
+			"It isn’t impossible, but as a new player you probably shouldn’t do it."
+			"So what should you do? Chill out, scout, and improve the land that you do have by building Workers.",
+			"Only build new cities once you have found a spot that you believe is appropriate."
+		],
+		
+	]
+
 	TileLayout: [
 		[
 			"这是世界地图，它是由多个地块组成的。",
@@ -197,6 +226,22 @@
 			"贸易路线将提供额外的金钱产出。",
 			"请注意，道路经过的每个地块都需要1金钱的维护费，",
 			"所以等待城市的自然发展可能更经济!"
+		]
+		[
+			"Once you’ve settled your first two or three cities you’re probably 100 to 150 turns into the game.",
+			"Now is a good time to start thinking about how, exactly, you want to win – if you haven’t already."
+		],
+		[
+			"There are three ways to win in Unciv. They are:",
+			"Cultural Victory: Complete 4 Social Policy Trees",
+			"Domination Victory: Survive as the last civilization",
+			"Science Victory: Be the first to construct a spaceship to Alpha Centauri"
+		],
+		[
+			"So to sum it up, these are the basics of Unciv – ",
+			"Found a prosperous first city, expand slowly to manage happiness,",
+			"   and set yourself up for the victory condition you wish to pursue.",
+			"Obviously, there is much more to it than that, but it is important not to jump into the deep end before you know how to swim.",
 		]
 	]
 	
@@ -312,4 +357,14 @@
 			"但是市民不能分配在距城市中心地块3格以外的地块上。"
 		]
 	 ]
+
+	 Idle_Units:[
+		[
+			"If you don't want to move a unit this turn, you can skip it by clicking 'Next unit' again.",
+			"If you won't be moving it for a while, you can have the unit enter Fortify or Sleep mode - ",
+			"  units in Fortify or Sleep are not considered idle units.",
+			"If you want to disable the 'Next unit' feature entirely, you can toggle it in Menu -> Check for idle units",
+		]
+	]
+
 }
