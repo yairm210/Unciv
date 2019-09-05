@@ -391,13 +391,13 @@
 		unitTypes:["Fighter","Bomber"]
 	}
 	{
-		name:"Targeting II",
+		name:"Targeting II (air)",
 		prerequisites:["Targeting I","Targeting I (air)"],
 		effect:"Bonus vs water units 15%",
 		unitTypes:["WaterRanged","Fighter","Bomber"]
 	}
 	{
-		name:"Targeting III",
+		name:"Targeting III (air)",
 		prerequisites:["Targeting II"],
 		effect:"Bonus vs water units 15%",
 		unitTypes:["WaterRanged"]
