@@ -1398,7 +1398,7 @@
 		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Voordeel tegen [unitType]"
 		Spanish:"Bonus contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力+"
+		Simplified_Chinese:"对战[unitType]时战斗力 +"
 		Portuguese:"Bonus contra [unitType]"
 	}
 
@@ -1410,7 +1410,7 @@
 		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Nadeel tegen [unitType]"
 		Spanish:"Penalización contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力-"
+		Simplified_Chinese:"对战[unitType]时战斗力 -"
 		Portuguese:"Penalidade contra [unitType]"
 	}
 	
@@ -2112,7 +2112,7 @@
 	}
 
 	"Bonus vs Armor 25%":{
-		Simplified_Chinese:"对战装甲单位时+33%战斗力"
+		Simplified_Chinese:"对战装甲单位时+25%战斗力"
 	}
 	
 	"Bonus vs Armor 100%":{
