@@ -75,7 +75,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(viewingCiv.policies.adoptedPolicies.isNotEmpty() || viewingCiv.policies.canAdoptPolicy()) {
             val policyScreenButton = Button(skin)
             policyScreenButton.add(ImageGetter.getImage("PolicyIcons/Constitution")).size(30f).pad(15f)
-            policyScreenButton.onClick { game.screen = PolicyPickerScreen(viewingCiv) }
+            policyScreenButton.onClick { game.screen = PolicyPickerScreen(this) }
             techPolicyandVictoryHolder.add(policyScreenButton).pad(10f)
         }
 
@@ -186,7 +186,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         if(!isSomethingOpen) {
             when {
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
-                viewingCiv.policies.freePolicies > 0 -> game.screen = PolicyPickerScreen(viewingCiv)
+                viewingCiv.policies.freePolicies > 0 -> game.screen = PolicyPickerScreen(this)
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.screen = GreatPersonPickerScreen()
                 viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
@@ -298,7 +298,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 game.screen = TechPickerScreen(viewingCiv.tech.freeTechs != 0, viewingCiv)
                 return@onClick
             } else if (viewingCiv.policies.shouldOpenPolicyPicker) {
-                game.screen = PolicyPickerScreen(viewingCiv)
+                game.screen = PolicyPickerScreen(this)
                 viewingCiv.policies.shouldOpenPolicyPicker = false
                 return@onClick
             }

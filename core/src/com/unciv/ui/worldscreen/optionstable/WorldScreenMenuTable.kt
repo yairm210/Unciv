@@ -105,7 +105,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
                 return@addButton
             }
             try {
-                val game = OnlineMultiplayer().tryDownloadGame(gameId)
+                val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
                 UnCivGame.Current.loadGame(game)
             } catch (ex: Exception) {
                 badGameIdLabel.setText("Could not download game!".tr())

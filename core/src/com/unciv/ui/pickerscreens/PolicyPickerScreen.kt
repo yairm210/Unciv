@@ -10,14 +10,15 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.Policy
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.WorldScreen
 
 
-class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen() {
-
+class PolicyPickerScreen(val worldScreen: WorldScreen) : PickerScreen() {
+    internal val viewingCiv: CivilizationInfo = worldScreen.viewingCiv
     private var pickedPolicy: Policy? = null
 
     init {
-        val policies = civInfo.policies
+        val policies = viewingCiv.policies
         displayTutorials("PolicyPickerScreen")
 
         rightSideButton.setText("{Adopt policy}\r\n(".tr() + policies.storedCulture + "/" + policies.getCultureNeededForNextPolicy() + ")")
@@ -30,14 +31,14 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
         else onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
 
         rightSideButton.onClick("policy") {
-            civInfo.policies.adopt(pickedPolicy!!)
+            viewingCiv.policies.adopt(pickedPolicy!!)
 
             // If we've moved to another screen in the meantime (great person pick, victory screen) ignore this
             if(game.screen !is PolicyPickerScreen || !policies.canAdoptPolicy()){
                 game.setWorldScreen()
                 dispose()
             }
-            else game.screen = PolicyPickerScreen(civInfo)  // update policies
+            else game.screen = PolicyPickerScreen(worldScreen)  // update policies
         }
         if(!UnCivGame.Current.worldScreen.isPlayersTurn)
             rightSideButton.disable()
@@ -78,10 +79,11 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
     }
 
     private fun pickPolicy(policy: Policy) {
-        if (civInfo.policies.isAdopted(policy.name)
+        if (!worldScreen.isPlayersTurn
+                || viewingCiv.policies.isAdopted(policy.name)
                 || policy.name.endsWith("Complete")
-                || !civInfo.policies.isAdoptable(policy)
-                || !civInfo.policies.canAdoptPolicy()) {
+                || !viewingCiv.policies.isAdoptable(policy)
+                || !viewingCiv.policies.canAdoptPolicy()) {
             rightSideButton.disable()
         } else {
             rightSideButton.enable()
@@ -106,9 +108,9 @@ class PolicyPickerScreen(internal val civInfo: CivilizationInfo) : PickerScreen(
             policyButton = TextButton(policy.name.tr(), skin)
         }
 
-        if (civInfo.policies.isAdopted(policy.name)) { // existing
+        if (viewingCiv.policies.isAdopted(policy.name)) { // existing
             policyButton.color = Color.GREEN
-        } else if (!civInfo.policies.isAdoptable(policy))
+        } else if (!viewingCiv.policies.isAdoptable(policy))
         // non-available
         {
             policyButton.color = Color.GRAY
