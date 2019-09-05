@@ -96,7 +96,7 @@ class UnitActions {
 
                     for(promotion in unit.baseUnit.promotions)
                         if(promotion !in newunit.promotions.promotions)
-                            newunit.promotions.addPromotion(promotion,true)
+                            newunit.promotions.addPromotion(promotion, true)
 
                     newunit.updateUniques()
                     newunit.updateViewableTiles()

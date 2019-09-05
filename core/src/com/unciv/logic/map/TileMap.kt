@@ -87,7 +87,7 @@ class TileMap {
 
             // Only once we add the unit to the civ we can activate addPromotion, because it will try to update civ viewable tiles
             for(promotion in unit.baseUnit.promotions)
-                unit.promotions.addPromotion(promotion,true)
+                unit.promotions.addPromotion(promotion, true)
 
             // And update civ stats, since the new unit changes both unit upkeep and resource consumption
             civInfo.updateStatsForNextTurn()

@@ -1,5 +1,6 @@
 package com.unciv.ui.newgamescreen
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
@@ -60,11 +61,12 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             playerIdTable.add("Player ID:".toLabel())
 
             val playerIdTextfield = TextField(player.playerId, CameraStageBaseScreen.skin)
-            playerIdTable.add(playerIdTextfield)
+            playerIdTable.add(playerIdTextfield).colspan(2)
             val errorLabel = "Not a valid user id!".toLabel().setFontColor(Color.RED)
             errorLabel.isVisible=false
             playerIdTable.add(errorLabel)
-            playerIdTextfield.addListener {
+
+            fun onPlayerIdTextUpdated(){
                 try {
                     val uuid = UUID.fromString(playerIdTextfield.text)
                     player.playerId = playerIdTextfield.text
@@ -72,18 +74,26 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
                 } catch (ex: Exception) {
                     errorLabel.isVisible=true
                 }
-                true
             }
+
+            playerIdTextfield.addListener { onPlayerIdTextUpdated(); true }
 
             playerIdTable.row()
 
             val currentUserId = UnCivGame.Current.settings.userId
-            val setCurrentUserButton = TextButton("Set current user", CameraStageBaseScreen.skin)
+            val setCurrentUserButton = TextButton("Set current user".tr(), CameraStageBaseScreen.skin)
             setCurrentUserButton.onClick {
                 playerIdTextfield.text = currentUserId
-                errorLabel.isVisible = false
+                onPlayerIdTextUpdated()
             }
             playerIdTable.add(setCurrentUserButton)
+
+            val copyFromClipboardButton = TextButton("Player ID from clipboard",CameraStageBaseScreen.skin)
+            copyFromClipboardButton.onClick {
+                playerIdTextfield.text = Gdx.app.clipboard.contents
+                onPlayerIdTextUpdated()
+            }
+            playerIdTable.add(copyFromClipboardButton).pad(5f)
 
             playerTable.add(playerIdTable).colspan(playerTable.columns)
         }

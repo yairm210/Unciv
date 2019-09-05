@@ -8,6 +8,7 @@ buildscript {
 
 
     repositories {
+        // Chinese mirrors for quicker loading for chinese devs
         maven{ url 'https://maven.aliyun.com/repository/jcenter'}
         maven{ url 'https://maven.aliyun.com/repository/google'}
         maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
@@ -40,6 +41,7 @@ allprojects {
     }
 
     repositories {
+        // Chinese mirrors for quicker loading for chinese devs
         maven{ url 'https://maven.aliyun.com/repository/jcenter'}
         maven{ url 'https://maven.aliyun.com/repository/google'}
         maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}

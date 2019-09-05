@@ -251,7 +251,7 @@
 	
 	EnemyCity:  [
 		[
-			"You have encoutered an enemy city!",
+			"You have encountered an enemy city!",
 			"Cities can be conquered by reducing their health to 1,",
 			"  and entering the city with a melee unit.",
 			"Since cities heal each turn, it is best to attack with ranged units"
