@@ -226,6 +226,7 @@
 		German:"Kultur- und Goldkosten für den Erwerb neuer Felder in dieser Stadt sind um 25% reduziert"
 		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
 		Polish:"Koszt uzyskania nowego pola (w kulturze lub złocie) zmniejszony o 25% w tym mieście" 
+		Russian:"-25% к необходимому количеству Культура и Золото для получения клеток вокруг данного города"
 	}
 	
 	"Colossus":{
@@ -233,7 +234,7 @@
 		Simplified_Chinese:"太阳神巨像"
 		French:"Colosse"
 		Polish:"Kolos rodyjski"
-		Russian:"Колосс"
+		Russian:"Колосс Родосский"
 	}
 
 	"+1 gold from worked water tiles in city":{
@@ -241,6 +242,7 @@
 		Simplified_Chinese:"所在城市每个水上地块+1金钱"
 		French:"+1 or pour les cases maritimes exploitées par la ville"
 		Polish:"+1 do złota z obsadzonych pól wodnych w tym mieście"
+		Russian:"+1 Золото от обрабатываемых водных клеток вокруг города"
 	}
 	
 	"Temple":{	
@@ -366,6 +368,7 @@
 		French:"+1 nourriture des cases océans et côtes"
 		Simplified_Chinese:"每个海滨地块和海洋地块+1食物"
 		Polish:"+1 do żywności z pól wybrzeża i oceanicznych"
+		Russian:"+1 Еда от клеток около берега и в океане"
 	}
 	
 	"The Great Lighthouse":{
@@ -389,6 +392,7 @@
 		Portuguese:"Todas as unidades navais recebem +1 movimento e +1 em sua linha de visão"
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
 		Polish:"Każda jednostka marynarki otrzymuje +1 do ruchu i pola widzenia"
+		Russian:"Все военно-морские юниты получают +1 к движению и обзору"
 	}
 
 	/*
@@ -423,6 +427,7 @@
 		French:"+15% Production lorsqu'une unité montée est produite dans cette ville"
 		Simplified_Chinese:"组建骑乘单位时产能积累速率+15%"
 		Polish:"+15% do produkcji jednostek kawalerii"
+		Russian:"+15% Производство при постройке конных юнитов в данном городе"
 	}
 	
 	"Circus Maximus":{	
@@ -532,6 +537,7 @@
 		German:"Gibt 1 extra Einheit jeder verbesserten Luxusresource in der Nähe dieser Stadt"
 		French:"Produit un exemplaire supplémentaire de chaque ressources de luxe à côté de cette ville"
 		Polish:"Każdy luksusowy surowiec w granicach miasta jest liczony podwójnie"
+		Russian:"Предоставляет копию каждого обрабатываемого редкого ресурса около данного города"
 	}
 
 	"+2 Gold for each source of Oil and oasis":{
@@ -542,6 +548,7 @@
 		German:"+2 Gold für jede Ölquelle oder Oase"
 		French:"+2 or pour chaque ressources de pétrole et d'oasis"
 		Polish:"+2 do złota z każdej oazy lub złoża ropy"
+		Russian:"+2 Золото от каждого источника Нефть и оазиса"
 	}
 			
 	"Monastery":{	
@@ -582,7 +589,7 @@
 
 	"+33% great person generation in all cities":{
 		Italian:"+33% di generazione di Grandi Personaggi in tutte le città"
-		Russian:"+ 33% к созданию великих людей во всех городах"
+		Russian:"+33% к созданию великих людей во всех городах"
 		French:"+ 33% de génération de Personnages illustres dans toutes les villes"
 		Romanian:"+33% generație de persoane mari în toate orașele"
 		German:"+33% erhöhte Wahrscheinlichkeit für die Geburt Großer Persönlichkeiten"
@@ -668,6 +675,7 @@
 		Simplified_Chinese:"境内敌方陆军单位在任何地块额外消耗1移动力"
 		French:"Les unités terrestre ennemies doivent dépenser un point de déplacement supplémentaires quand elles sont dans votre territoire (rendus obsolète par la Dynamite)"
 		Polish:"Każda lądowa jednostka wroga musi zużyć dodatkowy 1 punkt ruchu by wejść na twoje terytorium (przestarzały po odkryciu dynamitu)"
+		Russian:"Вражеские наземные юниты должны тратить дополнительное очко передвижения на вашей территории (устаревает при открытии Динамита)"
 	}
 	
 	"Workshop":{	
@@ -729,6 +737,7 @@
 		Portuguese:"1+ de produção de todos os recursos marítimos trabalhados pelo cidade"
 		German:"+1 Produktion von allen Meer Ressourcen die von dieser Stadt bewirtschaftet werden"
 		Polish:"+1 do produkcji za każdy wydobywany surowiec morski"
+		Russian:"+1 Производство от всех обрабатываемых городом морских клеток"
 	}
 
 	"Connects trade routes over water":{
@@ -740,6 +749,7 @@
 		Portuguese:"Conecta rotas comerciais pela água"
 		German:"Verbindet Handelsrouten über Wasser"
 		Polish:"Tworzy wodne szlaki handlowe"
+		Russian:"Создаёт водные торговые пути"
 	}
 	
 	"University":{	
@@ -804,6 +814,7 @@
 		French:"Fort Monghol"
 		Polish:"Fort Mogołów"
 		Simplified_Chinese:"莫卧儿城塞"
+		Russian:"Красный Форт"
 	}
 	
 	"Alhambra":{
@@ -821,6 +832,7 @@
 		French:"Toutes les unités terrestres, montées, et renforcées produites dans cette ville recoivent la promotion Percé I" //not sure about the name of the promotion
 		Simplified_Chinese:"所在城市新组建的近战、骑乘和装甲单位获得“操练I级”晋升"
 		Polish:"Każdy nowo wyszkolona w tym mieście jednostka walcząca w zwarciu otrzymuje umiejętność Musztra I"
+		Russian:"Производимые в данном городе юниты конные, бронированные, а также ближнего боя получают повышение Муштра I"
 	}
 	
 	"Angkor Wat":{	
@@ -869,6 +881,7 @@
 		Portuguese:"Aparece um Grande Cientista grátis"
 		German:"Ein kostenloser Großer Wissenschaftler erscheint"
 		Polish:"Pojawia się darmowy Wielki Naukowiec"
+		Russian:"Появляется бесплатный Великий Учёный"
 	}
 	
 	"Ironworks":{	
@@ -968,6 +981,7 @@
 		Italian:"+5% Produzione per ogni Rotta Commerciale con una Città-Stato nell'impero"
 		French:"+5% de production pour chaque routes commerciales connectées à une Cité état"
 		Polish:"+5% do produkcji za każdy szlak handlowy z państwem-miastem"
+		Russian:"+5% Производство за каждый торговый маршрут с городом-государством"
 	}
 
 	/*
@@ -1058,6 +1072,7 @@
 		Simplified_Chinese:"单位在境内+15%战斗力"
 		French:"+15% de force de combat pour les unités combattants sur un territoire allié"
 		Polish:"+15% do siły ataku jednostek walczących na przyjaznym terytorium"
+		Russian:"+15% к силе атаки юнитов, сражающихся на дружественной территории"
 	}
 	
 	"Taj Mahal":{	
@@ -1143,7 +1158,7 @@
 
 	"Free Great Artist Appears":{
 		Italian:"Appare un Grande Artista gratuito"
-		Russian:"Появляется бесплатный великий художник"
+		Russian:"Появляется бесплатный Великий Художник"
 		French:"Artiste illustre gratuit apparaît"
 		Romanian:"un Artist Mare gratuit apare"
 		Dutch:"Een gratis geweldige artiest verschijnt"
@@ -1175,6 +1190,7 @@
 		Portuguese:"'+1 de produção e ouro de todos os recursos navais trabalhados pela cidade"
 		German:"+1 Produktion und Gold von allen Meeresressourcen die von der Stadt bewirtschaftet werden"
 		Polish:"+1 do produkcji i złota ze wszystkich surowców morskich wydobywanych w mieście"
+		Russian:"+1 Производство и Золото от всех обрабатываемых морских клеток вокруг города"
 	}
 
 	"+15% production of naval units":{
@@ -1186,6 +1202,7 @@
 		Portuguese:"15% na produção de unidades marítimas"
 		German:"+15% Produktion für Marineeinheiten"
 		Polish:"+15% do produkcji jednostek marynarki"
+		Russian:"+15% Производство при постройке кораблей"
 	}
 	
 	"Public School":{	
@@ -1262,6 +1279,7 @@
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
 		French:"-15% d'or pour les achats dans les villes"
 		Polish:"-15% ceny budynków i jednostek kupowanych w złocie"
+		Russian:"-15% к стоимости покупки в городах"
 	}
 
 	"Cristo Redentor":{
@@ -1304,6 +1322,7 @@
 		Simplified_Chinese:"所有城市防御建筑建造速度+25%"
 		French:"Les batiments de défense sont 25% plus efficace dans toutes les villes"
 		Polski:"+25% skuteczności budowli obronnych w miastach"
+		Russian:"Защитные сооружения во всех городах на 25% эффективнее"
 	}
 	
 	"Neuschwanstein":{
@@ -1311,7 +1330,7 @@
 		Simplified_Chinese:"新天鹅堡"
 		French:"Château de Neuschwanstein"
 		Polish:"Neuschwanstein"
-		Russian:"Замок Нойшванштейн"
+		Russian:"Замок Нойшванштайн"
 	}
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
@@ -1319,6 +1338,7 @@
 		Simplified_Chinese:"每一座城堡+3金钱、+2文化和+1快乐"
 		French:"+1 bonheur, +2 culture et +3 or produits par tous les châteaux"
 		Polish:"+1 do zadowolenia, +2 do kultury i +3 do złota z każdego zamku"
+		Russian:"+1 Счастье, +2 Культура и +3 Золото от каждого замка"
 	}
 	
 	"Military Academy":{	
@@ -1385,6 +1405,7 @@
 		French:"+1 Production par spécialiste"
 		Simplified_Chinese:"每个专业人员+1产能"
 		Polish:"+1 do produkcji ze specjalistów"
+		Russian:"+1 Производство от специалистов"
 	}
 	
 	"Medical Lab":{	
@@ -1449,7 +1470,7 @@
 
 	"Must be next to desert":{
 		Italian:"Deve rasentare Deserto"
-		Russian:"Должно быть рядом с пустыней"
+		Russian:"Должно быть построено рядом с пустыней"
 		French:"Doit être à côté d'un désert"
 		Romanian:"Trebuie să fie lângă deșert"
 		German:"Muss an eine Wüste grenzen"
@@ -1465,6 +1486,7 @@
 		Simplified_Chinese:"必须紧邻山脉"
 		French:"Doit être à côté d'une montagne"
 		Polish:"Musi być przy górze"
+		Russian:"Должно быть построено рядом с горой"
 	}
 
 	"Sydney Opera House":{
@@ -1496,6 +1518,7 @@
 		French:"+1 population dans chaque villes"
 		Simplified_Chinese:"每座城市+1人口"
 		Polish:"+1 do populacji w każdym mieście"
+		Russian:"+1 к населению в каждом городе"
 	}
 
 	"+1 happiness in each city":{
@@ -1504,6 +1527,7 @@
 		French:"+1 bonheur dans chaque villes"
 		Simplified_Chinese:"每座城市+1快乐"
 		Polish:"+1 do zadowolenia w każdym mieście"
+		Russian:"+1 Счастье в каждом городе"
 	}
 	
 	"Pentagon":{
@@ -1521,7 +1545,7 @@
 		Romanian:"Costurile în aur pentru dezvoltarea unităților militare reduse cu 33%"
 		Simplified_Chinese:"升级军事单位所需的金钱-33%"
 		Portuguese:"-33% custo de ouro para unidades militares"
-		Russian:"стоимость улучшения юнита снижается на 33%"
+		Russian:"Стоимость улучшения юнита снижается на 33%"
 		German:"Goldkosten für die Verbesserung von Militäreinheiten ist um 33% reduziert"
 		French:"Le coût en or de l'amélioration des unités militaires est réduit de 33%"
 		Polish:"Koszt ulepszenia jednostki bojowej zmniejszony o 33%"
@@ -1616,6 +1640,7 @@
 		French:"2 scientifiques illustres apparaissent"
 		Simplified_Chinese:"2个免费的大科学家出现"
 		Polish:"Pojawiają się 2 darmowi Wielcy Naukowcy"
+		Russian:"Появляется 2 бесплатных Великих учёных"
 	}
 
 	"Increases production of spaceship parts by 25%":{
@@ -1624,6 +1649,7 @@
 		French:"Améliore la production de pièces de vaisseau spatial de 25%"
 		Simplified_Chinese:"建造太空船部件时+25%产能"
 		Polish:"Zwiększa produkcję części statku kosmicznego o 25%"
+		Russian:"+25% Производство при постройке частей космического корабля"
 	}
 	
 	"SS Booster":{	//no translation that I know of
@@ -1711,7 +1737,7 @@
 		Simplified_Chinese:"需要城市附近有已开发的资源：[resource]"
 		Portuguese:"Requer [resource] trabalhado perto da cidade"
 		Polish:"Wymaga w mieście surowca [resource]"
-		Russian:"Требует добычи [buildingName] в городе"
+		Russian:"Требует добычи [resource] в городе"
 	}
 
 	"Wonder is being built elsewhere":{
