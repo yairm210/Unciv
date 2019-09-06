@@ -414,7 +414,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 civGroup.add(ImageGetter.getImage("OtherIcons/DisbandUnit")).size(30f)
                 civGroup.background = civGroupBackground.tint(Color.LIGHT_GRAY)
                 label.setFontColor(Color.BLACK)
-            } else if (currentPlayer==civ || currentPlayer.knows(civ)) {
+            } else if (currentPlayer==civ || UnCivGame.Current.viewEntireMapForDebug || currentPlayer.knows(civ)) {
                 civGroup.add(ImageGetter.getNationIndicator(civ.nation, 30f))
                 civGroup.background = civGroupBackground.tint(civ.nation.getColor())
                 label.setFontColor(civ.nation.getSecondaryColor())

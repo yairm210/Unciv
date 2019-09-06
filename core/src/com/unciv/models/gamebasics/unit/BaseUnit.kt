@@ -75,7 +75,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         }
 
         for(unique in uniques)
-            sb.appendln(unique.tr())
+            sb.appendln(Translations.translateBonusOrPenalty(unique))
 
         for(promotion in promotions)
             sb.appendln(promotion.tr())
