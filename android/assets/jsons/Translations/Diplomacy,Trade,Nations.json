@@ -172,7 +172,7 @@
 		Simplified_Chinese:"我们的关系："
 		Portuguese:"Nossas relações"
                 Polish:"Nasze relacje:"
-		Russian:"Наши отношения"
+		Russian:"Наши отношения: "
 	}
 
 	"We have encountered the City-State of [name]!":{ // e.g. the Cultured city state of Vienna
@@ -887,7 +887,7 @@
 		Spanish:"+ 20% de producción hacia la construcción de maravillas."
 		Romanian:"+ 20% producție spre construcția de mirare"
 		Portuguese:"+ 20% de produção para construção de maravilhas"
-		Russian:"+20% производства на строительство чудес"
+		Russian:"+20% Производство при строительстве чудес"
 		Simplified_Chinese:"建造奇观时+20%产能积累速率"
 	}
 	
@@ -1003,7 +1003,7 @@
 		German:"+25% Produktion für alle Gebäude die bereits in der Hauptstadt existieren"
 		French:"+25% de production pour tous les batiments déjà construits dans la capitale"
 		Portuguese:"+ 25% Produção para quaisquer edifícios que já existam na Capital"
-		Russian:"+ 25% к любым зданиям, которые уже существуют в столице"
+		Russian:"+25% Производство при постройке зданий, которые уже существуют в столице"
 		Simplified_Chinese:"在其他城市建造首都已建有的建筑时+25%产能积累"
 	}
 	
@@ -1165,15 +1165,17 @@
 		French:"Corée"
 		Portuguese:"Coréia"
 		Simplified_Chinese:"朝鲜"
-    Russian:"Корея"
+    		Russian:"Корея"
 	}
 
 	"Sejong":{
 		Simplified_Chinese:"李裪"
+		Russian:"Седжон"
 	}
 
 	"+2 Science for all specialists and Great Person tile improvements":{
 		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
+		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
 	}
 
 	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
