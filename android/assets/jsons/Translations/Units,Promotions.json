@@ -14,6 +14,18 @@
 		Portuguese:"Cidadão"
 	}
 
+	"land units":{
+		Simplified_Chinese:"陆军单位"
+	}
+
+	"water units":{
+		Simplified_Chinese:"海军单位"
+	}
+
+	"air units":{
+		Simplified_Chinese:"空军单位"
+	}
+
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
 		Italian:"marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
@@ -655,6 +667,7 @@
 	}
 
 	"Turtle Ship":{
+		Spanish:"Nave tartaruga"
 		Simplified_Chinese:"龟船"
 	}
 
@@ -667,10 +680,6 @@
 		Portuguese:"+1 de alcançe ao campo de visão"
 		German:"+1 Sichtweite"
 		Russian:"+1 Диапазон видимости"
-	}
-
-	"Turtle Ship":{
-		Spanish:"Nave tartaruga"
 	}
 
 	"Cannon":{	
@@ -821,13 +830,6 @@
 		French:"Cosaque"
 	}
 	
-	"Bonus vs wounded units 33%":{
-		Italian:"+33% forza contro unità ferite"
-		French:"+33% force contre les unités montées"
-		Russian:"Бонус против раненых 33%"
-		Simplified_Chinese:"对战受伤单位时+33%战斗力"
-	}
-
 	"Artillery":{	
 		Italian:"Artiglieria"
 		Russian:"Артиллерия"
@@ -1045,10 +1047,6 @@
 		Simplified_Chinese:"6格视野范围内可见"
 	}
 
-	"Bonus vs Bomber 150%":{
-		Simplified_Chinese:"对战轰炸机时+150%战斗力"
-	}
-	
 	"Great War Bomber":{
 		Italian:"Bombardiere della Grande Guerra"
 		Romanian:"Bombardier din Marele Război"
@@ -1175,10 +1173,6 @@
 
 	"Zero":{
 		Simplified_Chinese:"零式战斗机"
-	}
-
-	"Bonus vs Fighter 33%":{
-		Simplified_Chinese:"对战战斗机时+33%战斗力"
 	}
 
 	"Helicopter Gunship":{
@@ -1387,14 +1381,6 @@
 		French:" OU "
 	}
 	
-	
-	"Bonus vs City":{
-		Italian:"Bonus contro Città"
-        	Simplified_Chinese:"攻城加成"
-        	French:"Bonus contre les villes"
-		Russian:"Бонус против городов"
-	}
-	
 	"Bonus vs [unitType]":{
 		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
 		Russian:"Бонус против [unitType]"
@@ -1403,7 +1389,7 @@
 		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Voordeel tegen [unitType]"
 		Spanish:"Bonus contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力 +"
+		Simplified_Chinese:"对战[unitType]时战斗力+"
 		Portuguese:"Bonus contra [unitType]"
 	}
 
@@ -1415,7 +1401,7 @@
 		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Nadeel tegen [unitType]"
 		Spanish:"Penalización contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力 -"
+		Simplified_Chinese:"对战[unitType]时战斗力-"
 		Portuguese:"Penalidade contra [unitType]"
 	}
 	
@@ -1441,13 +1427,6 @@
 		French:"Précision III"
 		Russian:"Точность III"
 		Simplified_Chinese:"精准III级"
-	}
-
-	"Bonus vs units in open terrain 15%":{
-		Italian:"+15% Forza contro unità in terreno aperto"
-		French:"15% force contre les unités en terrain découvert"
-		Russian:"Бонус +15% против юнитов на открытой местности"
-		Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
 	}
 
 	"units in open terrain":{
@@ -1479,13 +1458,6 @@
 		French:"Barrage III"
 		Russian:"Преграда III"
 		Simplified_Chinese:"弹幕III级"
-	}
-
-	"Bonus vs units in rough terrain 15%":{
-		Italian:"+15% Forza contro unità in terreno accidentato"
-		French:"+15% force contre les unités en terrain accidenté"
-		Russian:"Бонус против юнитов на пересеченной местности 15%"
-		Simplified_Chinese:"对战复杂地形中的单位时+15%战斗力"
 	}
 
 	"Shock I":{
@@ -1687,14 +1659,6 @@
 		Simplified_Chinese:"列阵II级"
 	}
 
-	"Bonus vs Mounted 33%":{
-		Simplified_Chinese:"对战骑乘单位时+33%战斗力"
-	}
-
-	"Bonus vs Mounted 50%":{
-		Simplified_Chinese:"对战骑乘单位时+50%战斗力"
-	}
-
 	"Blitz":{
 		Italian:"Incursione"
 		German:"Blitz"
@@ -1727,20 +1691,6 @@
 		Simplified_Chinese:"轰炸III级"
 	}
 
-	"Bonus vs land units 33%":{
-		Italian:"+33% forza contro unità terrestri"
-		French:"+33% force contre les unités terrestres"
-		Russian:"Бонус +33% против наземных юнитов"
-		Simplified_Chinese:"对战陆军单位时+33%战斗力"
-	}
-
-	"Bonus vs land units 34%":{
-		Italian:"+34% forza contro unità terrestri"
-		French:"+34% force contre les unités terrestres"
-		Russian:"Бонус +34% против наземных юнитов"
-		Simplified_Chinese:"对战陆军单位时+34%战斗力"
-	}
-
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
 		German:"Entermannschaft I"
@@ -1765,12 +1715,6 @@
 		Simplified_Chinese:"接舷III级"
 	}
 
-	"Bonus vs water units 15%":{
-		Italian:"+15% forza contro le unità anfibie"
-		French:"+15% force contre les unités navales"
-		Russian:"Бонус против водных юнитов +15%"
-		Simplified_Chinese:"对战海军单位时+15%战斗力"
-	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
@@ -2034,13 +1978,6 @@
 		Simplified_Chinese:"攻坚I级"
 	}
 
-	"Bonus vs City 33%":{ //i think that it already exist somewhere
-		Italian:"+33% Forza contro le Città"
-		French:"Bonus contre les villes +33%"
-		Russian:"Бонус против городов +33%"
-		Simplified_Chinese:"攻城时+33%战斗力"
-	}
-
 	"Siege II":{
 		Italian:"Assedio II"
 		French:"Siège II"
@@ -2053,41 +1990,6 @@
 		French:"Siège III"
 		Russian:"Осада III"
 		Simplified_Chinese:"攻坚III级"
-	}
-
-	"Bonus vs City 34%":{
-		Italian:"+34% Forza contro le Città"
-		French:"Bonus contre les villes +34%"
-		Russian:"Бонус против городов +34%"
-		Simplified_Chinese:"攻城时+34%战斗力"
-	}
-
-	"Bonus vs City 50%":{
-		Italian:"+50% Forza contro le Città"
-		French:"Bonus contre les villes +50%"
-		Russian:"Бонус против городов +50%"
-		Simplified_Chinese:"攻城时+50%战斗力"
-	}
-
-	"Bonus vs City 200%":{
-		Italian:"+200% Forza contro le Città"
-		French:"Bonus contre les villes +200%"
-		Russian:"Бонус против городов +200%"
-		Simplified_Chinese:"攻城时+200%战斗力"
-	}
-
-	"Bonus vs City 15%":{
-		Italian:"+15% Forza contro le Città"
-		French:"Bonus contre les villes +15%"
-		Russian:"Бонус против городов +15%"
-		Simplified_Chinese:"攻城时+15%战斗力"
-	}
-
-	"Bonus vs City 30%":{
-		Italian:"+30% Forza contro le Città"
-		French:"Bonus contre les villes +30%"
-		Russian:"Бонус против городов +30%"
-		Simplified_Chinese:"攻城时+30%战斗力"
 	}
 
 	"Evasion":{
@@ -2114,14 +2016,6 @@
 
 	"Ambush II":{
 		Simplified_Chinese:"伏击II级"
-	}
-
-	"Bonus vs Armor 25%":{
-		Simplified_Chinese:"对战装甲单位时+25%战斗力"
-	}
-	
-	"Bonus vs Armor 100%":{
-		Simplified_Chinese:"对战装甲单位时+100%战斗力"
 	}
 
 }

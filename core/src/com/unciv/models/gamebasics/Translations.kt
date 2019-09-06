@@ -44,8 +44,10 @@ class Translations : HashMap<String, HashMap<String, String>>(){
             val regexResult = Regex("""(Bonus|Penalty) vs (.*) (\d*)%""").matchEntire(unique)
             if(regexResult==null) return unique.tr()
             else{
+                var separatorCharacter = " "
+                if (UnCivGame.Current.settings.language=="Simplified_Chinese")separatorCharacter = ""
                 val start = regexResult.groups[1]!!.value+" vs ["+regexResult.groups[2]!!.value+"]"
-                val translatedUnique = start.tr() + " "+ regexResult.groups[3]!!.value+"%"
+                val translatedUnique = start.tr() + separatorCharacter + regexResult.groups[3]!!.value+"%"
                 return translatedUnique
             }
         }
