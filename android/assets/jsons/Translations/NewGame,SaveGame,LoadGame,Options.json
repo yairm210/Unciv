@@ -458,7 +458,21 @@
 		Portuguese:"Salvo em"
 	}
 	
-	// Options
+	////////////// Load map
+	
+	"Load map":{
+	}
+	
+	"Are you sure you want to delete this map?":{
+	}
+	
+	"Upload":{
+	}
+	
+	"Could not upload map!":{
+	}
+	
+	////////////// Options
 	
 	"Options":{
 		Italian:"Opzioni"

@@ -56,8 +56,6 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         add(ScrollPane(tabPickerTable).apply { this.width= mapEditorScreen.stage.width/3}).row()
 
         add(editorPickTable).row()
-
-        setPosition(mapEditorScreen.stage.width - width, 0f)
     }
 
     private fun setImprovements() {

@@ -2,7 +2,7 @@
 
 So you want to add your favorite civilization?
 
-There are a few steps requires, so we'll walk you through them!
+There are a few steps required, so we'll walk you through them!
 
 ## Fill in your Nation info
 
@@ -19,7 +19,7 @@ will notify translators that they should translate them =)
 
 Each civ has an icon, like the wreath for Rome, for instant identification.
 
-All of these icons are white on a transparent background, and are 100x100 pixels.
+All of these icons are white on a transparent background, and are 100x100 pixels - see [icon considerations](#icon-considerations) for details
 
 You'll need to put your icon in the [NationIcons folder](/android/Images/NationIcons).
 
@@ -35,7 +35,7 @@ But apart from the flavor, they are boring gameplay-wise, so now we need to add 
 Units in general are added in the [Units.json](/android/assets/jsons/Units.json) file, with an icon in the
  [UnitIcons](/android/Images/UnitIcons) folder.
 
-The icon must be 200x200 pixels, white on transparent background.
+The icon must be 200x200 pixels, white on transparent background - see [icon considerations](#icon-considerations) for details
 
 Remember that these are unique units, so search for an existing unique unit to see how they replace their regular counterparts!
 
@@ -45,7 +45,7 @@ Again, [translation file](/android/assets/jsons/Translations/Units%2CPromotions.
 
 Same as the units - info is in the [Buildings.json](/android/assets/jsons/Buildings.json) file 
 and icons in the [BuildingIcons](/android/Images/BuildingIcons) folder, 
-same rules for the icons apply.
+same rules for the icons apply (200x200 pixels, icon considerations)
 
 Again, [translation file](/android/assets/jsons/Translations/Buildings.json) for bonus points!
 
@@ -53,3 +53,13 @@ Again, [translation file](/android/assets/jsons/Translations/Buildings.json) for
 
 All Civ uniques require touching actual code - you can try it if ou feel you're up to it, but if not,
  send me an email to yairm210@hotmail.com (if you've finished all of the above) and I'll be happy to lend you a hand!
+
+## Icon considerations
+
+ALL icons must be legally acceptable, meaning they either come from from open sources or you act according to their licence (for Creative Commons, for instance, you have to specify the source and the creator).
+
+Icons directly from the base game belong to Firaxis, so I'm not sure we're legally allowed to use them - please use other sources!
+
+One source I use constantly is [The Noun Project](https://thenounproject.com) - everything there is Creative Commons or open, so they can all be used!
+
+Credits for icons should go in the [Credits](Credits.md) page

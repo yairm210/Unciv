@@ -17,6 +17,7 @@ class GameSettings {
     var tileSet:String = "FantasyHex"
     var showTutorials: Boolean = true
     var autoAssignCityProduction: Boolean = true
+    var showMinimap: Boolean = true
 
     var userName:String=""
     var userId = ""

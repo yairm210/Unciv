@@ -14,13 +14,14 @@ import com.unciv.ui.pickerscreens.PickerScreen
 import com.unciv.ui.utils.disable
 import com.unciv.ui.utils.enable
 import com.unciv.ui.utils.onClick
+import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
 class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
     var chosenMap = ""
     val deleteMapButton = TextButton("Delete map",skin)
 
     init {
-        rightSideButton.setText("Load map")
+        rightSideButton.setText("Load map".tr())
         rightSideButton.onClick {
             UnCivGame.Current.screen = MapEditorScreen(chosenMap)
             dispose()
@@ -50,8 +51,10 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
         rightSideTable.add(loadFromClipboardButton).row()
 
         deleteMapButton.onClick {
-            MapSaver().deleteMap(chosenMap)
-            UnCivGame.Current.screen = LoadMapScreen(previousMap)
+            YesNoPopupTable("Are you sure you want to delete this map?", {
+                MapSaver().deleteMap(chosenMap)
+                UnCivGame.Current.screen = LoadMapScreen(previousMap)
+            }, this)
         }
         deleteMapButton.disable()
         deleteMapButton.color = Color.RED

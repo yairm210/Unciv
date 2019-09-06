@@ -560,7 +560,8 @@
 		German:"Tribock"
 	}
 
-	"Hwach'a":{	
+	"Hwach'a":{
+		Italian:"Hwach'a"
 		Simplified_Chinese:"火厢车"
 	}
 
@@ -666,6 +667,10 @@
 		Portuguese:"+1 de alcançe ao campo de visão"
 		German:"+1 Sichtweite"
 		Russian:"+1 Диапазон видимости"
+	}
+
+	"Turtle Ship":{
+		Spanish:"Nave tartaruga"
 	}
 
 	"Cannon":{	
