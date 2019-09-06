@@ -96,16 +96,16 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
         badGameIdLabel.isVisible = false
         multiplayerPopup.addButton("Join Game") {
-            val gameId = Gdx.app.clipboard.contents.trim()
+            val gameId = Gdx.app.clipboard.contents
             try {
-                UUID.fromString(gameId)
+                UUID.fromString(gameId.trim())
             } catch (ex: Exception) {
                 badGameIdLabel.setText("Invalid game ID!")
                 badGameIdLabel.isVisible = true
                 return@addButton
             }
             try {
-                val game = OnlineMultiplayer().tryDownloadGame(gameId)
+                val game = OnlineMultiplayer().tryDownloadGame(gameId.trim())
                 UnCivGame.Current.loadGame(game)
             } catch (ex: Exception) {
                 badGameIdLabel.setText("Could not download game!".tr())

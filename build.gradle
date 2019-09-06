@@ -1,6 +1,6 @@
 buildscript {
 
-    ext.kotlinVersion = '1.3.41'
+    ext.kotlinVersion = '1.3.50'
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
@@ -8,6 +8,11 @@ buildscript {
 
 
     repositories {
+        // Chinese mirrors for quicker loading for chinese devs
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'}
+        maven{ url 'https://maven.aliyun.com/repository/google'}
+        maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        maven{ url 'https://maven.aliyun.com/repository/public'}
         google()
         mavenLocal()
         mavenCentral()
@@ -16,7 +21,7 @@ buildscript {
     }
     dependencies {
         classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.android.tools.build:gradle:3.5.0'
         classpath 'com.mobidevelop.robovm:robovm-gradle-plugin:2.3.1'
     }
 }
@@ -36,6 +41,11 @@ allprojects {
     }
 
     repositories {
+        // Chinese mirrors for quicker loading for chinese devs
+        maven{ url 'https://maven.aliyun.com/repository/jcenter'}
+        maven{ url 'https://maven.aliyun.com/repository/google'}
+        maven{ url 'https://maven.aliyun.com/repository/gradle-plugin'}
+        maven{ url 'https://maven.aliyun.com/repository/public'}
         google()
         jcenter()
         mavenLocal()

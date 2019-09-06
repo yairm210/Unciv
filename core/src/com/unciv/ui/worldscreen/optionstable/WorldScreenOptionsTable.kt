@@ -80,6 +80,12 @@ class WorldScreenOptionsTable(val worldScreen:WorldScreen) : PopupTable(worldScr
             update()
         }
 
+        innerTable.add("Show minimap".toLabel())
+        innerTable.addButton(if(settings.showMinimap) "Yes".tr() else "No".tr()) {
+            settings.showMinimap= !settings.showMinimap
+            update()
+        }
+
         addLanguageSelectBox(innerTable)
 
         addFontSelectBox(innerTable)

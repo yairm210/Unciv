@@ -15,7 +15,7 @@ class UnitPromotions{
     fun xpForNextPromotion() = (numberOfPromotions+1)*10
     fun canBePromoted() = XP >= xpForNextPromotion()
 
-    fun addPromotion(promotionName:String, isFree:Boolean = false, updateViewableTiles:Boolean=true){
+    fun addPromotion(promotionName: String, isFree: Boolean = false){
         if (!isFree) {
             XP -= xpForNextPromotion()
             numberOfPromotions++
@@ -29,7 +29,6 @@ class UnitPromotions{
         // Since some units get promotions upon construction, they will get the addPromotion from the unit.postBuildEvent
         // upon creation, BEFORE they are assigned to a tile, so the updateViewableTiles() would crash.
         // So, if the addPromotion was triggered from there, simply don't update
-//        if(updateViewableTiles)
         unit.updateViewableTiles()  // some promotions/uniques give the unit bonus sight
     }
 

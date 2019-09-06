@@ -137,5 +137,8 @@ class MinimapHolder(tileMapHolder: TileMapHolder): Table(){
         return toggleIconTable
     }
 
-    fun update(civInfo:CivilizationInfo){minimap.update(civInfo)}
+    fun update(civInfo:CivilizationInfo){
+        isVisible = UnCivGame.Current.settings.showMinimap
+        minimap.update(civInfo)
+    }
 }

@@ -191,6 +191,7 @@
 	"Brute":{	
 		Russian:"Громила"
 		Italian:"Bruto"
+		Simplified_Chinese:"蛮族勇士"
 	}
 
 
@@ -485,6 +486,7 @@
 		Italian:"Elefante da guerra"
 		French:"Éléphant de Guerre"
 		Russian:"Боевой слон"
+		Simplified_Chinese:"印度战象"
 	}
 	
 ////// Medieval units
@@ -558,8 +560,9 @@
 		German:"Tribock"
 	}
 
-	"Hwach'a":{	
+	"Hwach'a":{
 		Italian:"Hwach'a"
+		Simplified_Chinese:"火厢车"
 	}
 
 	"Limited Visibility":{
@@ -600,6 +603,7 @@
 		Italian:"Lanzichenecco"
 		French:"Lansquenet"
 		Russian:"Ландскнехт"
+		Simplified_Chinese:"自由佣兵"
 	}
 
 	"Knight":{	
@@ -648,6 +652,10 @@
 		Portuguese:"Caravela"
 		Russian:"Каравелла"
 		German:"Karavelle"
+	}
+
+	"Turtle Ship":{
+		Simplified_Chinese:"龟船"
 	}
 
 	"+1 Visibility Range":{
@@ -702,6 +710,7 @@
 		Italian:"Giannizzero"
 		French:"Janissaire"
 		Russian:"Янычары"
+		Simplified_Chinese:"苏丹亲兵"
 	}
 	
 	"Heals [amountHealed] damage if it kills a unit":{
@@ -756,6 +765,7 @@
 		Italian:"Sipahi"//same as in Italian
 		Russian:"Сипаи"
 		//same in french
+		Simplified_Chinese:"西帕希骑兵"
 	}
 	
 	"No movement cost to pillage":{
@@ -1153,6 +1163,10 @@
 		Russian:"Истребитель"
 	}
 
+	"Zero":{
+		Simplified_Chinese:"零式战斗机"
+	}
+
 	"Helicopter Gunship":{
 		Italian:"Elicottero da guerra"
 		Romanian:"Elicopter de atac"
@@ -1362,7 +1376,7 @@
 	
 	"Bonus vs City":{
 		Italian:"Bonus contro Città"
-        	Simplified_Chinese:"攻击城市时+15%战斗力"
+        	Simplified_Chinese:"攻城加成"
         	French:"Bonus contre les villes"
 		Russian:"Бонус против городов"
 	}
@@ -1570,13 +1584,6 @@
 		French:"Marche"
 		Russian:"Марш"
 		Simplified_Chinese:"长途行军"
-	}
-
-	"Unit will heal every turn, even if it performs an action":{
-		Italian:"L'unità guarisce ad ogni turno anche se esegue un'azione"
-		French:"L'unité va se soigner à chaque tour, même si elle effectue une action"
-		Russian:"Юнит лечится каждый ход, даже если совершает действие"
-		Simplified_Chinese:"每回合回复(包括执行指令后)"
 	}
 
 	"Charge":{
@@ -1884,143 +1891,167 @@
 		Italian:"Puntamento aereo I"
 		French:"Visée I (air)"
 		Russian:"Прицеливание I (воздух)"
+		Simplified_Chinese:"空·定位I级"
 	}
 
 	"Targeting II (air)":{
 		Italian:"Puntamento aereo II"
 		French:"Visée II (air)"
 		Russian:"Прицеливание II (воздух)"
+		Simplified_Chinese:"空·定位II级"
 	}
 
 	"Targeting III (air)":{
 		Italian:"Puntamento aereo III"
 		French:"Visée III (air)"
 		Russian:"Прицеливание II (воздух)"
+		Simplified_Chinese:"空·定位III级"
 	}
 
 	"Air Repair":{
 		Italian:"Riparazione aerea"
 		French:"Réparation Aérienne"
 		Russian:"Ремонт в полёте"
+		Simplified_Chinese:"空中维修"
 	}
 
 	"Unit will heal every turn, even if it performs an action":{
 		Italian:"L'unità guarisce ad ogni turno, anche quando esegue un'azione "
 		French:"L'unité se soignera à chaque tour, même si elle effectue une action"
 		Russian:"Юнит будет восстанавливаться каждый ход, даже при действии"
+		Simplified_Chinese:"每回合回复(包括执行指令后)"
 	}
 
 	"Operational Range":{
 		Italian:"Raggio operativo"
 		French:"Portée"
 		Russian:"Дальность"
+		Simplified_Chinese:"航程拓展"
 	}
 
 	"+2 Range":{
 		Italian:"+2 Raggio"
 		French:"+2 Portée"
 		Russian:"+2 Дальность"
+		Simplified_Chinese:"+2航程"
 	}
 
 	"Sortie":{
 		Italian:"Sortita"
 		//same in french
+		Simplified_Chinese:"连续出击"
 	}
 
 	"1 extra Interception may be made per turn":{
 		Italian:"Può eseguire 1 Intercettazione extra per turno"
 		French:"1 interception supplémentaire par tour"
 		Russian:"+1 Перехват за ход"
+		Simplified_Chinese:"1额外拦截次数/回合"
 	}
 
 	"Dogfighting I":{
 		Italian:"Duello aereo I"
 		French:"Combat aérien I" //official translate but not very accurate
 		Russian:"Воздушный бой I"
+		Simplified_Chinese:"缠斗I级"
 	}
 
 	"Bonus when performing air sweep [bonusAmount]%":{
 		Italian:"+[bonusAmount]% Forza nella distruzione delle difese aeree"
 		French:"Bonus de combat aérien +[bonusAmount]%"
 		Russian:"Бонус +[bonusAmount]% при выполнении отвлекающего манёвра (воздух)"
+		Simplified_Chinese:"+[bonusAmount]%战斗力(进行空中游猎时)"
 	}
 
 	"Dogfighting II":{
 		Italian:"Duello aereo II"
 		French:"Combat aérien II"
 		Russian:"Воздушный бой II"
+		Simplified_Chinese:"缠斗II级"
 	}
 
 	"Dogfighting III":{
 		Italian:"Duello aereo III"
 		French:"Combat aérien III"
 		Russian:"Воздушный бой III"
+		Simplified_Chinese:"缠斗III级"
 	}
 
 	"Interception I":{
 		Italian:"Intercettazione I"
 		//same in french
 		Russian:"Перехват I"
+		Simplified_Chinese:"拦截I级"
 	}
 
 	"Bonus when intercepting [bonusAmount]%":{
 		Italian:"+[bonusAmount]% Bonus d'intercettazione"
 		French:"Bonus d'interception +[bonusAmount]%"
 		Russian:"Бонус при перехвате +[bonusAmount]%"
+		Simplified_Chinese:"+[bonusAmount]%战斗力(拦截敌方飞机时)"
 	}
 
 	"Interception II":{
 		Italian:"Intercettazione II"
 		//same in french
 		Russian:"Перехват II"
+		Simplified_Chinese:"拦截II级"
 	}
 
 	"Interception III":{
 		Italian:"Intercettazione III"
 		//same in french
 		Russian:"Перехват III"
+		Simplified_Chinese:"拦截III级"
 	}
 
 	"Siege I":{//Air
 		Italian:"Assedio I"
 		French:"Siège I"
 		Russian:"Осада I"
+		Simplified_Chinese:"攻坚I级"
 	}
 
 	"Bonus vs City 33%":{ //i think that it already exist somewhere
 		Italian:"+33% Forza contro le Città"
 		French:"Bonus contre les villes +33%"
 		Russian:"Бонус против городов +33%"
+		Simplified_Chinese:"攻击城市时+33%战斗力"
 	}
 
 	"Siege II":{
 		Italian:"Assedio II"
 		French:"Siège II"
 		Russian:"Осада III"
+		Simplified_Chinese:"攻坚II级"
 	}
 
 	"Siege III":{
 		Italian:"Assedio III"
 		French:"Siège III"
 		Russian:"Осада III"
+		Simplified_Chinese:"攻坚III级"
 	}
 
 	"Bonus vs City 34%":{
 		Italian:"+34% Forza contro le Città"
 		French:"Bonus contre les villes +34%"
 		Russian:"Бонус против городов +34%"
+		Simplified_Chinese:"攻击城市时+34%战斗力"
 	}
 
 	"Evasion":{
 		Italian:"Manovre evasive"
 		French:"Esquive"
 		Russian:"Уклонение"
+		Simplified_Chinese:"规避能力"
 	}
 
 	"Reduces damage taken from interception by 50%":{
 		Italian:"Dimezza i danni da intercettazione contraerea"
 		French:"Réduit les dégâts des unités d'interception de 50%"
 		Russian:"Уменьшает урон от перехвата на 50%"
+		Simplified_Chinese:"遭受拦截时的损伤-50%"
 	}
 
 }
