@@ -80,6 +80,7 @@ class PolicyPickerScreen(val worldScreen: WorldScreen) : PickerScreen() {
 
     private fun pickPolicy(policy: Policy) {
         if (!worldScreen.isPlayersTurn
+                || viewingCiv.isDefeated()
                 || viewingCiv.policies.isAdopted(policy.name)
                 || policy.name.endsWith("Complete")
                 || !viewingCiv.policies.isAdoptable(policy)

@@ -395,7 +395,12 @@ class CivilizationInfo {
         notifications.add(Notification(text, color, action))
     }
 
-    fun addGreatPerson(greatPerson: String, city:CityInfo = cities.random()) {
+    fun addGreatPerson(greatPerson: String){
+        if(cities.isEmpty()) return
+        addGreatPerson(greatPerson, cities.random())
+    }
+
+    fun addGreatPerson(greatPerson: String, city:CityInfo) {
         placeUnitNearTile(city.location, greatPerson)
         addNotification("A [$greatPerson] has been born!".tr(), city.location, Color.GOLD)
     }

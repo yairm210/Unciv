@@ -658,6 +658,69 @@
 		French:"Réduit le cout en culture des futures doctrines de 10%"
 	}
 	
+
+
+////// Patronage branch
+/*
+	"Patronage":{
+		Italian:"Mecenatismo"
+	}
+
+	"Influence with City-States degrades 25% slower than normal.":{
+		Italian:"L'Influenza con le Città-Stato cala il 25% più lentamente rispetto al normale."
+	}
+
+	"Philantropy":{ //unlocked when adopting Patronage
+		Italian:"Filantropia"
+	}
+
+	"Gifting Gold to a City-State generates 25% more Influence":{
+		Italian:"Donare Oro a una Città-Stato genera il 25% di Influenza in più."
+	}
+
+	"Aesthetics":{ //unlocked when adopting Patronage
+		Italian:"Estetica"
+	}
+
+	"Resting point for Influence level with all City-States is increased by 20.":{
+		Italian:"Il punto neutro di livello d'Influenza per tutte le Città-Stato è portato a +20."
+	}
+
+	"Scholasticism":{ //Needs Philantropy
+		Italian:"Scolasticismo"
+	}
+
+	"All Allied City-States provide a Science bonus equal to 25% of what they produce for themselves.":{
+		Italian:"Le Città-Stato tue alleate ti donano un bonus scientifico del 25% rispetto a quello che producono da sole."
+	}
+
+	"Cultural Diplomacy":{ //Needs Scholasticism
+		Italian:"Diplomazia culturale"
+	}
+
+	"Happiness from gifted Luxuries increased by 50%.":{
+		Italian:"+50% Felicità dalle Risorse di Lusso date dalle città che ti sono Amiche o Alleate."
+	}
+
+	"Educated Elite":{ //Needs Scholasticism and Aesthetics
+		Italian:"Elite culturale"
+	}
+
+	"Allied City-States will occasionally gift you Great People.":{
+		Italian:"Le Città-Stato Alleate ti doneranno occasionalmente dei Grandi Personaggi."
+	}
+
+	"Patronage Complete":{
+		Italian:"Mecenatismo completo"
+	}
+
+	"Influence with City-States degrades 25% slower than normal.":{
+		Italian:"L'Influenza con le Città-Stato cala il 33% più lentamente rispetto al normale."
+	}
+	
+*/
+
+
 ////// Commerce branch
 
 	"Commerce":{

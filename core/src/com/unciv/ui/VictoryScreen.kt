@@ -118,7 +118,7 @@ class VictoryScreen : PickerScreen() {
     fun scienceVictoryColumn():Table{
         val t = Table()
         t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program".tr(),playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
+        t.add(getMilestone("Built Apollo Program",playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
 
         val victoryManager= playerCivInfo.victoryManager
 
@@ -147,13 +147,13 @@ class VictoryScreen : PickerScreen() {
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
                     else "???"
-            table.add(getMilestone("Destroy [$civName]".tr(), civ.isDefeated())).row()
+            table.add(getMilestone("Destroy [$civName]", civ.isDefeated())).row()
         }
         return table
     }
 
     fun getMilestone(text:String, achieved:Boolean): TextButton {
-        val textButton = TextButton(text,skin)
+        val textButton = TextButton(text.tr(),skin)
         if(achieved) textButton.color = Color.GREEN
         else textButton.color = Color.GRAY
         return textButton
