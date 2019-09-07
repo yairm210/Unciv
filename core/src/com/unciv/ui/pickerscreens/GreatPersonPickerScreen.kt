@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Button
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.GreatPersonManager
 import com.unciv.models.gamebasics.GameBasics
+import com.unciv.models.gamebasics.tr
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.ui.utils.ImageGetter
 import com.unciv.ui.utils.onClick
@@ -16,7 +17,7 @@ class GreatPersonPickerScreen : PickerScreen() {
 
     init {
         closeButton.isVisible=false
-        rightSideButton.setText("Choose a free great person")
+        rightSideButton.setText("Choose a free great person".tr())
         for (unit in GameBasics.Units.values
                 .filter { it.name in GreatPersonManager().statToGreatPersonMapping.values || it.name == "Great General"})
         {
@@ -27,8 +28,10 @@ class GreatPersonPickerScreen : PickerScreen() {
             button.pack()
             button.onClick {
                 theChosenOne = unit
-                pick("Get " +unit.name)
-                descriptionLabel.setText(unit.uniques.joinToString())
+                var  unitDescription=HashSet<String>()
+                unit.uniques.forEach { unitDescription.add(it.tr()) }
+                pick("Get ".tr() +unit.name.tr())
+                descriptionLabel.setText(unitDescription.joinToString())
             }
             topTable.add(button).pad(10f).row()
         }

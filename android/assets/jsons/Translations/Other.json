@@ -226,7 +226,7 @@
 		German:"Automatisieren anhalten"
 		French:"Arrêtez automatisation"
 		Portuguese:"Pare a automação"
-		Simplified_Chinese:"停止自动化"
+		Simplified_Chinese:"停止自动工作"
 		Romanian:"Opriți automatizarea"
 		Russian:"Остановить автоматизацию"
 		Japanese:"自動化を停止"
@@ -422,11 +422,13 @@
 	"Create [improvement]":{ // for great units, fishing boats, etc.
 		Italian:"Costruisci [improvement]"
 		French:"Construire [improvement]"
+		Simplified_Chinese:"建造[improvement]"
 	}
 	
 	"Start Golden Age":{
 		Italian:"Inizia Età dell'Oro"
 		French:"Commencer un Age d'Or"
+		Simplified_Chinese:"开启黄金时代"
                 Russian:"Войти в золотой век"
 	}
 	
@@ -770,6 +772,7 @@
 		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
 		French:"Choisir maintenant !"
+		Simplified_Chinese:"选择此项！"
                 Russian:"Выбрать сейчас!"
 	}
 
@@ -1606,7 +1609,7 @@
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Для победы\n завершите все части космического коробля"
-		Simplified_Chinese:"完成建造太空飞船\n胜利 "
+		Simplified_Chinese:"完成建造太空飞船\n胜利！"
 		Portuguese:"Complete todas as partes da nave para ganhar"
 	}
 
@@ -1742,17 +1745,20 @@
 	"Remove your troops in our border immediately!":{
 		Italian:"Esigiamo che rimuoviate i vostri soldati dai nostri confini!"
 		French:"Enlevez vos troupes de nos terres immédiatement!"
+		Simplified_Chinese:"请停止这种无理而且野蛮的行径！马上让你的单位滚出我的领土！"
 	}
 
 	"Sorry.":{
 		Italian:"Ti porgiamo le nostre scuse."
 		French:"Désolé."
+		Simplified_Chinese:"请您原谅我的鲁莽。"
 	}
 
 	"Never!":{
 		Italian:"Non sia mai!"
 		French:"Jamais!"
-                Russian:"Никогда!"
+				Russian:"Никогда!"
+				Simplified_Chinese:"愤怒是无能的表现。"	
 	}
 	
 ////// Civilopedia texts

@@ -8,7 +8,7 @@
 		German:"Aus Zwischenablage laden"
 		Dutch:"Gekopieerde data laden"
 		Spanish:"Cargar datos copiados"
-		Simplified_Chinese:"加载复制过的数据"
+		Simplified_Chinese:"加载复制的数据"
 		Portuguese:"Carregar dados copiados"
 		Japanese:"コピーしたデータを読み込む"
 	}
@@ -278,10 +278,12 @@
 	
 	"AI":{
 		Italian:"IA"
+		Simplified_Chinese:"电脑"
 	}
 	
 	"Human":{
 		Italian:"Umano"
+		Simplified_Chinese:"人类玩家"
 	}
 	
 	"Hotseat":{
@@ -290,17 +292,21 @@
 	
 	"User Id":{
 		Italian:"ID Utente"
+		Simplified_Chinese:"用户ID"
 	}
 	
 	"Click to copy":{
 		Italian:"Clicca per copiare"
+		Simplified_Chinese:"点击复制"
 	}
 	
 	"Username":{
 		Italian:"Nome utente"
+		Simplified_Chinese:"用户名"
 	}
 	
 	"Multiplayer":{
+		Simplified_Chinese:"多人游戏"
 	}
 	
 	"Could not download game!":{
@@ -418,7 +424,7 @@
 		German:"Spiel konnte nicht geladen werden"
 		Dutch:"Spel kon niet geladen worden"
 		Spanish:"Imposible cargar partida"
-		Simplified_Chinese:"无法读档"
+		Simplified_Chinese:"无法载入游戏"
 		Portuguese:"Não foi possivel carregar a partida salva"
 	}
 
@@ -454,22 +460,26 @@
 		German:"Gespeichert um"
 		Dutch:"Opgeslagen in"
 		Spanish:"Guardado en"
-		Simplified_Chinese:"保存在"
+		Simplified_Chinese:"存储时间"
 		Portuguese:"Salvo em"
 	}
 	
 	////////////// Load map
 	
 	"Load map":{
+		Simplified_Chinese:"载入地图"
 	}
 	
 	"Are you sure you want to delete this map?":{
+		Simplified_Chinese:"你真想删除这张地图吗？"
 	}
 	
 	"Upload":{
+		Simplified_Chinese:"上传"
 	}
 	
 	"Could not upload map!":{
+		Simplified_Chinese:"无法上传地图！"
 	}
 	
 	////////////// Options

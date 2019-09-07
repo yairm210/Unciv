@@ -62,17 +62,17 @@
 		[
 			"一旦你建立了第一座城市，便可以执行组建单位、建造建筑等操作，",
 			"同时还可以着手研发科技。",
-			"科技研究是非常复杂的，这里不作说明，稍后我们会详细介绍。下面继续我们的教程---",
-			"让我们先来谈谈组建单位。"
+			"科技研究是非常复杂的，这里不作说明，稍后我们会详细介绍。下面继续我们的教程--",
+			"先来谈谈组建单位吧。"
 		],
 		[
-			"你的城市第一个组建的单位应该是斥候或勇士，"
+			"你的城市第一个要组建的单位应该是斥候或勇士，"
 			"我非常喜欢勇士因为他可以用于防守，同时也是可升级的，",
-			"当您解锁“铁器”科技后只需花费一定数量的金钱就可以把他升级为剑士。",
+			"当您研发完“铁器”科技后只需花费一定数量的金钱就可以把他升级为剑士。",
 			"斥候是探查地图的专家，尤其是当所在区域有大片的山脉和森林时。",
 			"斥候在这些复杂地形移动无移动力惩罚。"
 			"如果您是经验丰富的4X游戏玩家，紧随勇士和斥候后组建的单位应该是移民，",
-			"在这一类型的游戏中快速的扩张是获取胜利的有效手段。",
+			"在这一类型的游戏中快速扩张是获取胜利的有效手段。",
 		],
 	],
 	
@@ -86,16 +86,16 @@
 		],
 		[
 			"如何选择一个合适的首都建立位置?这不是一个容易回答的问题。",
-			"通常情况下，选择紧邻奢侈资源的的位置是选择建立点的不二法则。",
-			"奢侈资源主要包括宝石、棉花、丝绸等（这些资源在地图上用一个笑脸标示），",
+			"通常情况下，选择紧邻奢侈资源的位置是选择建立点的不二法则。",
+			"奢侈资源主要包括宝石、棉花、丝绸等（这些资源在地图上用一个“笑脸”标示），",
 			"开发这些资源可以增加您的文明的快乐。当然，你也应该留意那些组建单位时所需要的战略资源，比如铁。"
 		],
 		[
 			"但是，城市的边界不是固定的，它会随着文化的积累慢慢扩张。"
 			"这意味着你并不一定要把城市建在太过靠近资源的位置。",
 			"举例来说，比如, 你需要获得战略资源铁--但悲剧的是该资源紧邻沙漠。"
-			"您无需把城市建立在紧邻沙漠的位置，相反的，可以选择离该资源稍远而且更加富饶的地块。",
-			"随着城市的不断繁荣发展和边界的扩张，你的城市将慢慢靠近该资源直至获得它。",
+			"您无需把城市建立在紧邻沙漠的位置。相反的，可以选择离该资源稍远而且更加富饶的地块。",
+			"随着城市的不断繁荣发展和边界的扩张，城市将慢慢靠近该资源直至获得它。",
 			"如果需要马上获得所需的战略资源你可以选择建城在靠近资源的位置--",
 			"有时候这样做可能对游戏的胜利更有利，但通常情况下您都有充裕的时间选择更加合理的建立点。"
 		],
@@ -104,22 +104,22 @@
 	
 	HappinessGettingLow:[
 		[
-			"As cities grow in size and influence they also are able to work more territory.",
-			"You also have to deal with a happiness mechanic that is no longer tied to each individual city.",
-			"Instead, your entire empire shares the same level of satisfaction.",
-			"As your cities grow in population you’ll find that it is more and more difficult to keep your empire happy."
+			"随着城市规模扩大，城市的可工作地块也会变得越来越多。",
+			"这时，你将不得不面对游戏中关于“快乐”的机制。在游戏中，快乐的产出是所有城市总和计算，",
+			"快乐的消耗则由城市数量和人口数量决定。",
+			"随着城市数量的增加和城市人口的增长您将会很快发现：保持你的文明始终处于快乐是一件越来越难的事。"
 		],
 		[
-			"In addition, you can’t even build any city improvements that increase happiness until you’ve done the appropriate research.",
-			"If your empire’s happiness ever goes below zero the growth rate of your cities will be hurt.",
-			"If your empire becomes severely unhappy (as indicated by the smiley-face icon at the top of the interface)",
-			"  your armies will have a big penalty slapped on to their overall combat effectiveness."
+			"此外，在未研发相关科技前您将无法建造任何能增加快乐的建筑、奇观和开发可以增加快乐的奢侈资源。",
+			"如果您的文明处于不满，将会极大地减慢城市发展速度。",
+			"如果文明的不满状态非常严重（顶部信息栏用一个“哭脸”标示），",
+			"您的部队战斗力将会有极大的减成。"
 		],
 		[
-			"This means that it is very difficult to expand quickly in Unciv."
-			"It isn’t impossible, but as a new player you probably shouldn’t do it."
-			"So what should you do? Chill out, scout, and improve the land that you do have by building Workers.",
-			"Only build new cities once you have found a spot that you believe is appropriate."
+			"这意味着在Unciv游戏中快速扩张是一件非常困难的事，新手们一定要十分慎重。"
+			"那么究竟应该如何做呢？把目光聚焦在发展自己已有的城市上吧。"
+			"通过组建工人建造设施、开发资源，同时不要放松对其他文明的侦查工作，",
+			"只有当您在寻找到一个合适的位置后再来建立新的城市吧。"
 		],
 		
 	]
@@ -361,8 +361,8 @@
 	 Idle_Units:[
 		[
 			"如果当前回合不想对某个单位执行任何操作，可以点击右上方“下个未行动单位”按钮来跳过该单位。",
-			"如果一段时间内不想对其执行任何操作，可以对该单位执行“驻防”或“休眠”指令，",
-			"系统执行“回合结束前查看未行动单位”指令时将自动跳过处于“驻防”或“休眠”状态的未行动单位。",
+			"如果一段时间内不想对其执行任何操作，可以对该单位执行“驻守”或“休眠”指令，",
+			"系统执行“回合结束前查看未行动单位”指令时将自动跳过处于“驻守”或“休眠”状态的未行动单位。",
 			"如果想完全禁用“下个未行动单位”按钮，请进入“设置”菜单并将“回合结束前查看未行动单位”设置为“否”。",
 		]
 	]
