@@ -133,7 +133,7 @@
 		German:"Stärke"
 		Dutch:"Kracht"
 		Spanish:"Fuerza"
-		Simplified_Chinese:"近战攻击"
+		Simplified_Chinese:"战斗力"
 		Portuguese:"Força"
 		Japanese:"強さ"
 	}
@@ -146,7 +146,7 @@
 		German:"Fernkampf-Stärke"
 		Dutch:"Kracht op afstand"
 		Spanish:"Fuerza a distancia"
-		Simplified_Chinese:"远程攻击"
+		Simplified_Chinese:"远程战斗力"
 		Portuguese:"Força a distancia"
 		Japanese:"範囲の強さ"
 	}
@@ -260,7 +260,7 @@
 		German:"Befestigung"
 		Dutch:"Versterking"
 		Spanish:"Fortificación"
-		Simplified_Chinese:"驻守防御力+"
+		Simplified_Chinese:"驻守防御力加成"
 		Portuguese:"Fortficação"
 		Japanese:"要塞"
 	}
@@ -638,6 +638,7 @@
 	
 	"Community":{
 		Italian:"Community"
+		Simplified_Chinese:"开发者社区"
 	}
 	
 
@@ -1113,6 +1114,11 @@
                 Russian:"Национальное чудо"
 	}
 	
+	"National Wonders":{ 
+		Italian:"Meraviglie Nazionali"
+		Simplified_Chinese:"国家奇观"
+	}
+
 	"Wonders enabled":{
 		Italian:"Meraviglie sbloccate"
 		Russian:"Новые чудеса"
@@ -1243,6 +1249,14 @@
 		Portuguese:"Ataque"
 	}
 	
+	"Captured!":{
+		Simplified_Chinese:"可被俘虏！"
+	}
+
+	"defence vs ranged":{
+		Simplified_Chinese:"对方攻击类型为远程"
+	}
+
 	"[percentage] to unit defence":{ // e.g. +25% to unit defence
 		Italian:"[percentage] di difesa dell'unità"
 		Spanish:"[percentage] A la defensa"
@@ -1415,11 +1429,7 @@
 		Simplified_Chinese:"奇观"
 		Portuguese:"Maravilhas"
 	}
-	/*
-	"National Wonders":{ // already here at line 1099
-		Italian:"Meraviglie Nazionali"
-	}
-	*/
+
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
 		Romanian:"Clădiri specializate"

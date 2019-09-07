@@ -476,13 +476,6 @@
 		Portuguese:"Pode se mover após atacar"
 	}
 
-	"Penalty vs City 33%":{
-		Italian:"+33% Malus contro Città"
-		Simplified_Chinese:"攻击城市时-33%战斗力"
-		French:"Pénalité contre les villes -33%"
-		Russian:"Штраф против Города: 33%"
-	}
-
 	"Companion Cavalry":{	
 		Italian:"Cavalleria dei Compagni"
 		Russian:"Сопутствующая кавалерия"

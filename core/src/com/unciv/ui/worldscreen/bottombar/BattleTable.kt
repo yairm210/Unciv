@@ -80,7 +80,7 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add(attackerNameWrapper)
 
         val defenderNameWrapper = Table()
-        val defenderLabel = Label(defender.getName(), skin)
+        val defenderLabel = Label(defender.getName().tr(), skin)
         if(defender is MapUnitCombatant)
             defenderNameWrapper.add(UnitGroup(defender.unit,25f)).padRight(5f)
         defenderNameWrapper.add(defenderLabel)
@@ -91,9 +91,9 @@ class BattleTable(val worldScreen: WorldScreen): Table() {
         add("{Strength}: ".tr()+attacker.getAttackingStrength())
         add("{Strength}: ".tr()+defender.getDefendingStrength()).row()
 
-        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+        val attackerModifiers = BattleDamage().getAttackModifiers(attacker,defender)  .map { it.key.tr()+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
         val defenderModifiers = if (defender is MapUnitCombatant)
-                                    BattleDamage().getDefenceModifiers(attacker, defender).map { it.key+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
+                                    BattleDamage().getDefenceModifiers(attacker, defender).map { it.key.tr()+": "+(if(it.value>0)"+" else "")+(it.value*100).toInt()+"%" }
                                 else listOf()
 
         for(i in 0..max(attackerModifiers.size,defenderModifiers.size)){
