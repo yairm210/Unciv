@@ -30,6 +30,10 @@
 		German:"Bitte warten..."
 		Japanese:"ワーキング..."
 	}
+	
+	"Waiting for other players...":{ // Displayed when next turn is being...turned
+		Italian:"In attesa degli altri giocatori..."
+	}
 
 	"in":{ // As in "Opera House in 3 turns"
 		Italian:"tra"
@@ -1411,11 +1415,11 @@
 		Simplified_Chinese:"奇观"
 		Portuguese:"Maravilhas"
 	}
-	/*
+
 	"National Wonders":{ // already here at line 1099
 		Italian:"Meraviglie Nazionali"
 	}
-	*/
+
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
 		Romanian:"Clădiri specializate"
@@ -1656,15 +1660,19 @@
 	}
 	 
 	"You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.":{
+		Italian:"Hai ottenuto la vittoria attraverso il maestoso potere della tua cultura. La grandezza della tua civiltà, la magnificenza dei suoi monumenti e il talento dei suoi artisti ha sbalordito il mondo! I poeti ti ononeranno per sempre, finché la bellezza continuerà a portare sollievo ai cuori affaticati."
 	}
 	
 	"The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
+		Italian:"Il mondo è stato straziato dalla guerra. Molte grandi e potenti civiltà sono cadute, ma tu sei sopravvissuto e se emerso vittorioso. Il mondo ricorderà a lungo il tuo glorioso trionfo!"
 	}
 	
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
+		Italian:"Hai ottenuto la vittoria attraverso la padronanza della scienza! Hai penetrato i misteri più arcani della natura e condotto il tuo popolo in un viaggio verso un nuovo, favoloso mondo! Il tuo trionfo sarà ricordato finch* le stelle continueranno a brillare nel firmamento!"
 	}
 	
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
+		Italian:"Sei stato sconfitto. La tua civiltà è stata spazzata via dai suoi nemici. Ma il tuo popolo non dispera, perché sa che un giorno tornerai... e lo condurrai alla vittoria!"
 	}
 
 	"One more turn...!":{
