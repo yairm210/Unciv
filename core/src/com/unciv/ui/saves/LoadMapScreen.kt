@@ -11,9 +11,7 @@ import com.unciv.logic.map.TileMap
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.mapeditor.MapEditorScreen
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.disable
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.optionstable.YesNoPopupTable
 
 class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
@@ -42,13 +40,20 @@ class LoadMapScreen(previousMap: TileMap) : PickerScreen(){
 
         val rightSideTable = Table().apply { defaults().pad(10f) }
         val loadFromClipboardButton = TextButton("Load copied data".tr(), skin)
-        loadFromClipboardButton .onClick {
+        val couldNotLoadMapLabel = "Could not load map!".toLabel().setFontColor(Color.RED).apply { isVisible=false }
+        loadFromClipboardButton.onClick {
             val clipboardContentsString = Gdx.app.clipboard.contents.trim()
-            val decoded = Gzip.unzip(clipboardContentsString)
-            val loadedMap = MapSaver().mapFromJson(decoded)
-            UnCivGame.Current.screen = MapEditorScreen(loadedMap)
+            try {
+                val decoded = Gzip.unzip(clipboardContentsString)
+                val loadedMap = MapSaver().mapFromJson(decoded)
+                UnCivGame.Current.screen = MapEditorScreen(loadedMap)
+            }
+            catch (ex:Exception){
+                couldNotLoadMapLabel.isVisible=true
+            }
         }
         rightSideTable.add(loadFromClipboardButton).row()
+        rightSideTable.add(couldNotLoadMapLabel).row()
 
         deleteMapButton.onClick {
             YesNoPopupTable("Are you sure you want to delete this map?", {
