@@ -100,7 +100,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
 
         val friendBonusText = when (otherCiv.getCityStateType()) {
-            CityStateType.Cultured -> "Provides [" + (3 * (viewingCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence".tr()
+            CityStateType.Cultured -> ("Provides [" + (3 * (viewingCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence").tr()
             CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at [30] Influence".tr()
             CityStateType.Mercantile -> "Provides 3 happiness at [30] Influence".tr()
             CityStateType.Militaristic -> "Provides land units every 20 turns at [30] Influence".tr()

@@ -290,7 +290,7 @@
 	
 	// City States
 	
-	"Provides [amountOfCulture] culture at 30 Influence":{
+	"Provides [amountOfCulture] culture at [30] Influence":{
 		Italian:"Dona [amountOfCulture] punti Cultura a minimo 30 Punti Influenza"
 		French:"Fournit [amountOfCulture] de Culture à 30 d'influence"
 		Simplified_Chinese:"当影响力不低于30时提供[amountOfCulture]文化"
