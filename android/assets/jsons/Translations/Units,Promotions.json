@@ -1171,7 +1171,8 @@
 		Russian:"Истребитель"
 	}
 
-	"Zero":{
+	"Zero":{//Japanese unique
+		Italian:"Zero"
 		Simplified_Chinese:"零式战斗机"
 	}
 
@@ -1184,6 +1185,12 @@
 		German:"Angriffshelikopter"
 		French:"Hélicoptère de combat"
 	}
+
+	/*
+	"Atomic Bomb":{
+		Italian:"Bomba atomica"
+	}
+	*/
 	
 ////// Information era - not even putting here, too far off
 
@@ -1193,6 +1200,23 @@
 		French:"Robot Mortel Géant" //The most accurate should be "Robot géant de la mort" but it sound really ridiculous
 		Simplified_Chinese:"末日机甲"
 	}
+	
+	"Stealth Bomber":{
+		Italian:"Bombardiere stealth"
+	}
+	
+	"Jet Fighter":{
+		Italian:"Caccia Jet"
+	}
+	
+	"Guided Missile":{
+		Italian:"Missile guidato"
+	}
+	
+	"Nuclear Missile":{
+		Italian:"Missile nucleare"
+	}
+	
 	*/
 	
 ////// Great units

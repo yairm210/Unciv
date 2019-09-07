@@ -6,6 +6,7 @@ import com.unciv.UnCivGame
 import com.unciv.logic.city.CityConstructions
 import com.unciv.logic.city.SpecialConstruction
 import com.unciv.logic.civilization.CityAction
+import com.unciv.logic.civilization.PlayerType
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.stats.Stat
@@ -44,7 +45,7 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     fun chooseNextConstruction() {
-        if (!UnCivGame.Current.settings.autoAssignCityProduction) return
+        if (!UnCivGame.Current.settings.autoAssignCityProduction && civInfo.playerType== PlayerType.Human) return
         if (cityConstructions.getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
 
         addFoodBuildingChoice()
