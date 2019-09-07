@@ -230,7 +230,7 @@
 		German:"Automatisieren anhalten"
 		French:"Arrêtez automatisation"
 		Portuguese:"Pare a automação"
-		Simplified_Chinese:"停止自动化"
+		Simplified_Chinese:"停止自动工作"
 		Romanian:"Opriți automatizarea"
 		Russian:"Остановить автоматизацию"
 		Japanese:"自動化を停止"
@@ -396,7 +396,7 @@
 		Romanian:"Prădare"
 		Dutch:"Plundering"
 		Spanish:"Pillaje"
-		Simplified_Chinese:"掠夺"
+		Simplified_Chinese:"劫掠"
 	}
 	
 	"Do you really want to disband this unit?":{
@@ -426,11 +426,13 @@
 	"Create [improvement]":{ // for great units, fishing boats, etc.
 		Italian:"Costruisci [improvement]"
 		French:"Construire [improvement]"
+		Simplified_Chinese:"建造[improvement]"
 	}
 	
 	"Start Golden Age":{
 		Italian:"Inizia Età dell'Oro"
 		French:"Commencer un Age d'Or"
+		Simplified_Chinese:"开启黄金时代"
                 Russian:"Войти в золотой век"
 	}
 	
@@ -620,7 +622,7 @@
 		German:"Siegesstatus"
 		Dutch:"Overwinning Status"
 		Spanish:"Estatus de victoria"
-		Simplified_Chinese:"胜利进程"
+		Simplified_Chinese:"胜利进度"
 		Portuguese:"Status da vitória"
 		Japanese:"勝利の地位"
 	}
@@ -774,6 +776,7 @@
 		Italian: "Scegli ora!"
 		German: "Jetzt wählen!"
 		French:"Choisir maintenant !"
+		Simplified_Chinese:"选择此项！"
                 Russian:"Выбрать сейчас!"
 	}
 
@@ -1110,6 +1113,7 @@
 	"National Wonder":{
 		Italian:"Meraviglia Nazionale"
 		French:"Merveille Nationale"
+		Simplified_Chinese:"国家奇观"
                 Russian:"Национальное чудо"
 	}
 	
@@ -1390,7 +1394,7 @@
 		French:"Bonheur de base"
 		Romanian:"Fericire de bază"
 		Spanish:"Felicidad base"
-		Simplified_Chinese:"基础快乐度"
+		Simplified_Chinese:"基础快乐"
 		Portuguese:"Felicidade base"
 		German:"Grundzufriedenheit"
 	}
@@ -1456,6 +1460,7 @@
 	"City States":{	//I think that it's already elsewhere
 		Italian:"Città-Stato"
 		French:"Cité état"
+		Simplified_Chinese:"城邦"
 	}
 
 	"Luxury resources":{	
@@ -1601,7 +1606,7 @@
 		Italian:"Vittoria per Dominazione"
 		German:"Dominanzsieg"
 		French:"Victoire militaire"
-		Simplified_Chinese:"征服胜利 "
+		Simplified_Chinese:"征服胜利"
 		Portuguese:"Vitória por conquista"
 	}
 
@@ -1610,7 +1615,7 @@
 		German:"Um zu gewinnen vervollständigen\nSie alle Raumschiffteile!"
 		French:"Construisez toutes les parties du \n vaisseau spatial pour gagner!"
 		Russian:"Для победы\n завершите все части космического коробля"
-		Simplified_Chinese:"完成建造太空飞船\n胜利 "
+		Simplified_Chinese:"完成建造太空飞船\n胜利！"
 		Portuguese:"Complete todas as partes da nave para ganhar"
 	}
 
@@ -1697,33 +1702,38 @@
 		German:"Zerstöre [civName]"
 		French:"Détruiser [civName]"
 		Russian:"Уничтожить [civName]"
-		Simplified_Chinese:"摧毁[civName]文明"
+		Simplified_Chinese:"毁灭[civName]文明"
 		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory?
 	}
 
 	"Our status":{
 		Italian:"I tuoi progressi"
 		French:"Notre situation"
+		Simplified_Chinese:"我们文明的胜利进度"
 	}
 
 	"Global status":{
 		Italian:"Progressi globali"
 		French:"Situation globale"
+		Simplified_Chinese:"所有文明的胜利进度"
 	}
 
 	"Spaceship parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
 		French:"Parties de Vaisseau spatial manquantes"
+		Simplified_Chinese:"未完成建造的飞船组件数量"
 	}
 
 	"Branches completed":{
 		Italian:"Rami completati"
 		French:"Branches complêtées"
+		Simplified_Chinese:"已完全推行的社会政策数量"
 	}
 
 	"Undefeated civs":{
 		Italian:"Civiltà esistenti"
 		French:"Civilization invaincues"
+		Simplified_Chinese:"未被征服的文明"
 	}
 	
 	
@@ -1732,16 +1742,19 @@
 	"What would you like to do with the city?":{
 		Italian:"Cosa vorresti farne della Città?"
 		French:"Que voulez vous faire de cette ville?"
+		Simplified_Chinese:"你想如何处理这座城市？"
 	}
 
 	"Annex":{
 		Italian:"Annetti"
 		French:"Annexer"
+		Simplified_Chinese:"吞并"
 	}
 
 	"Raze":{
 		Italian:"Distruggi"
 		French:"Razer"
+		Simplified_Chinese:"摧毁"
 	}
 	
 	
@@ -1750,17 +1763,20 @@
 	"Remove your troops in our border immediately!":{
 		Italian:"Esigiamo che rimuoviate i vostri soldati dai nostri confini!"
 		French:"Enlevez vos troupes de nos terres immédiatement!"
+		Simplified_Chinese:"请停止这种无理而且野蛮的行径！马上让你的单位滚出我的领土！"
 	}
 
 	"Sorry.":{
 		Italian:"Ti porgiamo le nostre scuse."
 		French:"Désolé."
+		Simplified_Chinese:"请您原谅我的鲁莽。"
 	}
 
 	"Never!":{
 		Italian:"Non sia mai!"
 		French:"Jamais!"
-                Russian:"Никогда!"
+				Russian:"Никогда!"
+				Simplified_Chinese:"愤怒是无能的表现。"	
 	}
 	
 ////// Civilopedia texts

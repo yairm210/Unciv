@@ -62,8 +62,10 @@
 	
 	"Must not be on plains":{
 		French:"Ne doit pas être sur une plaine"
-		Polish:"Nie może być na równinie"
-		Russian:"Не может быть построено на равнине"
+		Italian:"Non deve trovarsi su Pianura"
+		Polish:"Nie może być na równinach"
+		Russian:"Не может быть построено на равнинах"
+		Simplified_Chinese:"城市不能位于平原"
 	}
 
 	"Stonehenge":{	
@@ -981,6 +983,7 @@
 		Italian:"+5% Produzione per ogni Rotta Commerciale con una Città-Stato nell'impero"
 		French:"+5% de production pour chaque routes commerciales connectées à une Cité état"
 		Polish:"+5% do produkcji za każdy szlak handlowy z państwem-miastem"
+		Simplified_Chinese:"每条通往城邦的贸易路线+5%产能"
 		Russian:"+5% Производство за каждый торговый маршрут с городом-государством"
 	}
 
@@ -1059,6 +1062,10 @@
 		Russian:"Выбор великого человека"
 	}
 
+	"Get ":{
+		Simplified_Chinese:"获得"
+	}
+
 	"Himeji Castle":{
 		Italian:"Castello di Himeji"
 		Simplified_Chinese:"姬路城"
@@ -1118,6 +1125,7 @@
 		French:"Doit être sur une colline"
 		Polish:"Nie może być na wzgórzu"
 		Russian:"Не может быть построено на холме"
+		Simplified_Chinese:"城市不能位于山脉"
 	}
 
 	"Museum":{	
@@ -1385,7 +1393,7 @@
 		German:"Gibt +1 Zufriedenheit pro Sozialgrundsatz"
 		Dutch:"Levert 1 tevredenheid op per sociaal beleid"
 		Spanish:"Otorga 1 felicidad por cada política social"
-		Simplified_Chinese:"每项社会政策+1快乐"
+		Simplified_Chinese:"每项已推行的社会政策+1快乐"
 		Portuguese:"Provem 1 felicade por política social"
 		Polish:"+1 do zadowolenia z każdego ustroju społecznego"
 	}
@@ -1476,14 +1484,14 @@
 		German:"Muss an eine Wüste grenzen"
 		Dutch:"Moet aan een woestijn grenzen"
 		Spanish:"Debe estar próximo a un desierto"
-		Simplified_Chinese:"必须紧邻沙漠"
+		Simplified_Chinese:"城市必须紧邻沙漠"
 		Portuguese:"Nescessário que esteja proximo ao deserto"
 		Polish:"Musi być obok pustyni"
 	}
 
 	"Must be next to mountain":{
 		Italian:"Deve rasentare Montagna"
-		Simplified_Chinese:"必须紧邻山脉"
+		Simplified_Chinese:"城市必须紧邻山脉"
 		French:"Doit être à côté d'une montagne"
 		Polish:"Musi być przy górze"
 		Russian:"Должно быть построено рядом с горой"
@@ -1784,19 +1792,5 @@
 		Polish:"Wymaga odkrycia technologii [requiredTech]"
 		Russian:"Требуется технология: [requiredTech]"
 	}
-
-	"Must not be on plains":{
-		Italian:"Non deve trovarsi su Pianura"
-		Polish:"Nie może być na równinach"
-		Russian:"Не может быть построено на равнинах"
-	}
-
- 	"Must not be on hill":{//Line correction
-		Italian:"Non deve trovarsi su Collina"
-		Polish:"Nie może być na wzgórzach"
-		Russian:"Не может быть построено на холмах"
-	}
-	
-	
 
 }

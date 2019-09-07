@@ -76,7 +76,7 @@
 		German:"[leaderName] von [nation]"
 		Spanish:"[leaderName] de [nation]"
 		Portuguese:"[leaderName] do [nation]"
-		Simplified_Chinese:"[leaderName]的[nation]"
+		Simplified_Chinese:"[nation]的[leaderName]"
 		French:"[leaderName] de [nation]"
 		Russian:"[leaderName] из [nation]"
 		Romanian:"[leaderName] de [nation]"
@@ -126,6 +126,7 @@
 	"Sounds good!":{
 		Italian:"Sta bene!"
 		French:"Très bien!"
+		Simplified_Chinese:"听起来还不错。"
                 Polish:"Bardzo dobrze!"
 		Russian:"Звучит неплохо!"
 	}
@@ -141,7 +142,7 @@
 
 	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
 		Italian:"Eccellente!"
-		Simplified_Chinese:"好极了！和和气气才是生财之道。"
+		Simplified_Chinese:"真是荣幸之至！互相尊重、平等互利是建立友好关系的第一步。"
 		French:"Excellent!"
 		Portuguese:"Excelente!"
                 Polish:"Wyśmienicie!"
@@ -150,7 +151,7 @@
 
 	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
 		Italian:"Che ne dici di questa offerta?"
-		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
+		Simplified_Chinese:"谈判桌上的尔虞我诈才是我的兴趣所在。"
 		French:"Pourquoi pas autre chose..."
 		Portuguese:"Porque não algo mais..."
                 Polish:"Oto nasza oferta."
@@ -179,7 +180,8 @@
 		Italian:"Abbiamo incontrato la Citta-Stato di [name]!"
 		Portuguese:"Nós encontramos a cidade-estado de [name]"
 		French:"Nous avons rencontré la cité-état de [name]!"
-                Polish:"Napotkaliśmy państwo-miasto o nazwie [name]!"
+				Polish:"Napotkaliśmy państwo-miasto o nazwie [name]!"
+				Simplified_Chinese:"我们遇到了城邦--[name]！"		
 		Russian:"Мы обнаружили город-государство [name]!"
 	}
 	
@@ -215,6 +217,7 @@
 	"Denounce ([numberOfTurns] turns)":{
 		Italian:"Denuncia ([numberOfTurns] turni)"
 		French:"Dénoncer ([numberOfTurns] tours)"
+		Simplified_Chinese:"谴责([numberOfTurns]回合)"
                 Polish:"Potęp cywilizację na [numberOfTurns] tur"
 		Russian:"Осуждение на [numberOfTurns] ходов"
 	}
@@ -222,6 +225,7 @@
 	"We will remember this.":{
 		Italian:"Non credere che ce lo scorderemo!"
 		French:"Nous nous en souviendrons."
+		Simplified_Chinese:"这种侮辱我们绝不会忘记。请好自为之！"
 		Russian:"Мы это запомним"
 	}
 	
@@ -286,39 +290,42 @@
 	
 	// City States
 	
-	"Provides [amountOfCulture] culture at 30 Influence":{
+	"Provides [amountOfCulture] culture at [30] Influence":{
 		Italian:"Dona [amountOfCulture] punti Cultura a minimo 30 Punti Influenza"
 		French:"Fournit [amountOfCulture] de Culture à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时提供[amountOfCulture]文化"
 		Russian:"Даёт [amountOfCulture] культуры при 30 Влияния"
 	}
 
 	"Provides 3 food in capital and 1 food in other cities at 30 Influence":{
 		Italian:"Dona 3 Cibo alla Capitale e 1 Cibo alle altre Città a minimo 30 Punti Influenza"
 		French:"Fournit 3 Nourriture à la capitale et 1 nourriture pour les autres villes à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时为首都提供3食物，为其他城市提供1食物"
 		Russian:"Даёт 3 Еды в столице и 1 Еда в остальных городах при 30 Влияния"
 	}
 
 	"Provides 3 happiness at 30 Influence":{
 		Italian:"Dona 3 Punti Felicità a minimo 30 Punti Influenza"
 		French:"Fournit 3 de Bonheur à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时提供3快乐"
 		Russian:"Даёт 3 Счастья при 30 Влияния"
 	},
 
 	"Provides land units every 20 turns at 30 Influence":{
 		Italian:"Concede un'unità terrestre ogni 20 turni a minimo 30 Punti Influenza"
 		French:"Fournit des unités terrestres tous les 20 tours à 30 d'influence"
+		Simplified_Chinese:"当影响力不低于30时每20回合提供陆军单位"
 		Russian:"Даёт сухопутные юниты каждые 20 ходов при 30 Влияния"
 	},
 
-	"Gift [goldAmount] gold":{
-		Italian:"Dona [goldAmount] Oro"
-		French:"Donner [goldAmount] ors"
-		Russian:"Дарит [goldAmount] золота"
+	"Gift [giftAmount] gold (+[influenceAmount] influence)":{
+		Simplified_Chinese:"赠予[giftAmount]金钱(+[influenceAmount]影响力)"
 	}
 
 	"Relationship changes in another [turnsToRelationshipChange] turns":{
 		Italian:"I rapporti cambieranno tra [turnsToRelationshipChange] turni"
 		French:"Les relations changent dans [turnsToRelationshipChange] tours"
+		Simplified_Chinese:"将在[turnsToRelationshipChange]回合后失去对该城邦的影响"
 		Russian:"Отношения изменятся в следующие [turnsToRelationshipChange] ходов"
 	}
 	
@@ -402,24 +409,28 @@
 		Italian:"La tua cosiddetta 'amicizia' non vale nulla!"
 		Portuguese:"Sua chamada 'amizade' não vale nada."
 		French:"Votre soi-disant 'amitié' ne vaut rien."
+		Simplified_Chinese:"你所谓的“友谊”一文不值。"
 		Russian:"Ваше так называемое дружелюбие ничего не значит."
 	}
 	
 	"You have publicly denounced us!":{
 		Italian:"Ci hai denunciato pubblicamente di fronte al mondo!"
 		French:"Vous nous avez dénoncé publiquement!"
+		Simplified_Chinese:"批判的武器不能代替武器的批判，谴责是无力的懦夫行为。"
 		Russian:"Вы публично осудили нас!"
 	}
 	
 	"You have denounced our allies":{
 		Italian:"Hai denunciato i nostri alleati!"
 		French:"Vous avez dénoncé nos alliées"
+		Simplified_Chinese:"对我们盟友的侮辱也是对我们的冒犯，请好自为之！"
 		Russian:"Вы осудили наших союзников!"
 	}
 	
 	"You have denounced our enemies":{
 		Italian:"Hai denunciato i nostri nemici!"
 		French:"Vous avez dénoncé nos ennemies"
+		Simplified_Chinese:"敌人的敌人就是朋友，你的谴责是维护公正的仗义执言，我们期待听到更多。"
 		Russian:"Вы осудили наших врагов"
 	}
 	
@@ -427,51 +438,60 @@
 	"Demands":{
 		Italian:"Richieste"
 		French:"Demandes"
+		Simplified_Chinese:"要求"
 		Russian:"Требования"
 	}
 	"Please don't settle new cities near us.":{
 		Italian:"Smetti di fondare città vicino a noi."
 		French:"Veuillez ne pas construire de villes proches de nous."
+		Simplified_Chinese:"请不要在我们附近建立新的城市。"
 		Russian:"Пожалуйста, не закладывайте новых городов рядом с нами."
 	}
 	"Very well, we shall look for new lands to settle.":{
 		Italian:"Ti porgiamo le nostre scuse."
 		French:"Très bien, nous chercherons d'autres terres à coloniser"
+		Simplified_Chinese:"好的，我们将会寻找新的建城位置。"
 		Russian:"Хорошо, мы найдем другие земли для поселений"
 	}
 	"We shall do as we please.":{
 		Italian:"Colonizzeremo la terra che ci pare e piace."
 		French:"Nous faisons ce que nous voulons."
+		Simplified_Chinese:"我们只是自己的奴隶，这里不需要弱者叽叽喳喳。"
 		Russian:"Мы поступим, как сочтем нужным"
 	}
 	
 	"You betrayed your promise to not settle cities near us":{
 		Italian:"Hai tradito la tua promessa di non fondare città nelle nostre vicinanze."
 		French:"Vous avez trahis votre promesse de ne pas fonder de ville proche de nous"
+		Simplified_Chinese:"你背叛了不在我们附近建城的承诺，请好自为之。"
 		Russian:"Вы нарушили ваше обещание не закладывать города рядом с нами"
 	}
 	
 	"You fulfilled your promise to stop settling cities near us!":{
 		Italian:"Hai mantenuto la tua promessa di non fondare città nelle nostre vicinanze."
 		French:"Vous avez tenu votre promesse de ne pas fonder de ville proche de nous!"
+		Simplified_Chinese:"感谢你履行了不在我们附近建城的承诺。"
 		Russian:"Вы выполнили ваше обещание не закладывать города рядом с нами"
 	}
 	
 	"You refused to stop settling cities near us":{
 		Italian:"Hai continuato a fondare città nelle nostre vicinanze."
 		French:"Vous avez refusez de ne pas fonder de villes proches de nous"
+		Simplified_Chinese:"你拒绝停止在我们附近建城的决定是愚蠢的，好自为之！"
 		Russian:"Вы отказались не закладывать города рядом с нами"
 	}
 	
 	"We noticed your new city near our borders, despite your promise. This will have....implications.":{
 		Italian:"Abbiamo notato la la tua nuova città vicino ai nostri confini. E questo avrà... ripercussioni sui nostri rapporti."
 		French:"Nous avons remarquez votre nouvelle ville à notre frontière, malgré votre promesse. Cela aura des... conséquences."
+		Simplified_Chinese:"尽管你答应了，我们还是注意到你在我们边境附近的新城市。如果有不好的影响...这将是你自找的！"
 		Russian:"Мы заметили ваш новый город около наших границ. Это может повлечь... последствия."
 	}
 	
 	"Your arrogant demands are in bad taste":{
 		Italian:"Hai fatto una richiesta arrogante."
 		French:"Vos arrogantes demandes sont de mauvais goût"
+		Simplified_Chinese:"你的傲慢要求不合情理。"
 		Russian:"Ваши высокомерные требования раздражают"
 	}
 	
@@ -507,6 +527,14 @@
 		Russian:"Воинственный"
 	}
 
+	"Type: ":{
+		Simplified_Chinese:"城邦类型："
+	}
+
+	"Influence: ":{
+		Simplified_Chinese:"影响力："
+	}
+
 ////// Trade	
 
 	"Trade":{	
@@ -534,6 +562,7 @@
 	"Retract offer":{	
 		Italian:"Ritira offerta"
 		Russian:"Отменить предложение"
+		Simplified_Chinese:"撤回报价"
 	}
 
 	"What do you have in mind?":{	
@@ -1039,7 +1068,7 @@
 		Italian:"Stati Uniti"
 		Romanian:"Statele Unite"
 		Spanish:"Estados Unidos"
-		Simplified_Chinese:"美国"
+		Simplified_Chinese:"美利坚"
 		German:"Amerika"
 		French:"Etats-Unis"
 		Portuguese:"América"
@@ -1179,13 +1208,6 @@
 		Italian:"+2 Scienza per ogni specialista e ogni miglioramento da Gran Personaggio."
 		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
 		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
-	}
-
-	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
-		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
-		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
-		French:"+1 Science pour chaque spécialistes et amélioration de case de personnage illustre. Reçoit un bonus de science à chaque fois qu'un batiment ou une merveille scientifique est  construit dans la capitale"
-		Russian:"+1 Наука для всех специалистов и улучшений клеток Великими людьми. Получите бонус к исследованию каждый раз при создании научного здания/чуда в Корейской столице"
 	}
 
 	/*

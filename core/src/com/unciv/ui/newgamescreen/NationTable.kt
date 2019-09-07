@@ -84,7 +84,7 @@ class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
                 for (unique in unit.uniques.filterNot { it in originalUnit.uniques })
                     textList += "  " + Translations.translateBonusOrPenalty(unique)
                 for(unique in originalUnit.uniques.filterNot { it in unit.uniques })
-                    textList += "  "+"Lost ability".tr()+"(vs "+originalUnit.name.tr()+"):"+Translations.translateBonusOrPenalty(unique)
+                    textList += "  "+"Lost ability".tr()+"(vs "+originalUnit.name.tr()+"): "+Translations.translateBonusOrPenalty(unique)
                 for (promotion in unit.promotions.filter { it !in originalUnit.promotions })
                     textList += "  " + promotion.tr() + " (" + Translations.translateBonusOrPenalty(GameBasics.UnitPromotions[promotion]!!.effect) + ")"
 

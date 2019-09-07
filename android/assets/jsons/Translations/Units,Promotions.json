@@ -14,6 +14,18 @@
 		Portuguese:"Cidadão"
 	}
 
+	"land units":{
+		Simplified_Chinese:"陆军单位"
+	}
+
+	"water units":{
+		Simplified_Chinese:"海军单位"
+	}
+
+	"air units":{
+		Simplified_Chinese:"空军单位"
+	}
+
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
 		Italian:"marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
@@ -655,6 +667,7 @@
 	}
 
 	"Turtle Ship":{
+		Spanish:"Nave tartaruga"
 		Simplified_Chinese:"龟船"
 	}
 
@@ -667,10 +680,6 @@
 		Portuguese:"+1 de alcançe ao campo de visão"
 		German:"+1 Sichtweite"
 		Russian:"+1 Диапазон видимости"
-	}
-
-	"Turtle Ship":{
-		Spanish:"Nave tartaruga"
 	}
 
 	"Cannon":{	
@@ -717,6 +726,7 @@
 		Italian:"Cura [amountHealed] PF quando uccide un'unità nemica"
 		French:"Soigne [amountHealed] dégâts si il tue une unité"
 		Russian:"Восстаналивает [amountHealed] здоровья при уничтожении юнита"
+		Simplified_Chinese:"消灭敌方单位后回复50点损伤"
 	}
 
 	"Minuteman":{ // american unique
@@ -772,6 +782,7 @@
 		Italian:"Nessun costo di movimento per il saccheggio"
 		French:"L'action pillage ne coûte pas de point de mouvement"
 		Russian:"Разграбление не тратит очков передвижения"
+		Simplified_Chinese:"劫掠不消耗移动力"
 	}
 	
 
@@ -819,13 +830,6 @@
 		French:"Cosaque"
 	}
 	
-	"Bonus vs wounded units 33%":{
-		Italian:"+33% forza contro unità ferite"
-		French:"+33% force contre les unités montées"
-		Russian:"Бонус против раненых 33%"
-		Simplified_Chinese:"对战受伤单位时+33%战斗力"
-	}
-
 	"Artillery":{	
 		Italian:"Artiglieria"
 		Russian:"Артиллерия"
@@ -992,7 +996,7 @@
 
 	"Bonus as Attacker [amount]%":{
 		Italian:"[amount]% Bonus in attacco"
-		Simplified_Chinese:"主动攻击时+75%战斗力"
+		Simplified_Chinese:"主动发起攻击时+[amount]%战斗力"
 		French:"Bonus en tant qu'attaquant +[amount]%"
 		Russian:"Бонус при атаке +[amount]%"
 	}
@@ -1036,9 +1040,13 @@
 		Italian:"[percent]% probabilità di intercettare attacchi aerei"
 		French:"[percent]% chance d'intercepter une attaque aérienne"
 		Russian:"[percent]% шанс перехвата воздушных атак"
+		Simplified_Chinese:"[percent]%几率拦截来袭的敌军飞机"
 	}
 	
-	
+	"6 tiles in every direction always visible":{
+		Simplified_Chinese:"6格视野范围内可见"
+	}
+
 	"Great War Bomber":{
 		Italian:"Bombardiere della Grande Guerra"
 		Romanian:"Bombardier din Marele Război"
@@ -1366,16 +1374,9 @@
 	"Bonus for units in 2 tile radius 15%" :{
 		Italian:"15% Bonus per le unità nel raggio di 2 caselle"
 		French:"Bonus de combat +15% pour les unités dans un rayon de 2 cases"
+		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
 		Russian:"Бонус к атаке юнитам в радиусе 2-х клеток"
 	}
-	
-	/* Not in use now, but will be when we eventually add Great Admiral and split the job
-	"Bonus for land units in 2 tile radius 15%" :{
-		Italian:"15% Bonus per le unità terrestri nel raggio di 2 caselle"
-		Simplified_Chinese:"周围两格地块内的我方所有陆军单位+15%战斗力"
-		French:"Bonus de combat +15% pour les unités terrestres dans un rayon de 2 cases"
-	}
-	*/
 
 	////// Unit Promotions
 
@@ -1397,14 +1398,6 @@
 		French:" OU "
 	}
 	
-	
-	"Bonus vs City":{
-		Italian:"Bonus contro Città"
-        	Simplified_Chinese:"攻城加成"
-        	French:"Bonus contre les villes"
-		Russian:"Бонус против городов"
-	}
-	
 	"Bonus vs [unitType]":{
 		Italian:"Bonus contro unità [unitType]" // es. Bonus contro unità da tiro
 		Russian:"Бонус против [unitType]"
@@ -1413,7 +1406,7 @@
 		German:"Im Vorteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Voordeel tegen [unitType]"
 		Spanish:"Bonus contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力加成："
+		Simplified_Chinese:"对战[unitType]时战斗力+"
 		Portuguese:"Bonus contra [unitType]"
 	}
 
@@ -1425,7 +1418,7 @@
 		German:"Im Nachteil gegen [unitType]" // Gender sensitive --> not necessary as we talk about "types" not specific units
 		Dutch:"Nadeel tegen [unitType]"
 		Spanish:"Penalización contra [unitType]"
-		Simplified_Chinese:"对战[unitType]时战斗力减成："
+		Simplified_Chinese:"对战[unitType]时战斗力-"
 		Portuguese:"Penalidade contra [unitType]"
 	}
 	
@@ -1451,13 +1444,6 @@
 		French:"Précision III"
 		Russian:"Точность III"
 		Simplified_Chinese:"精准III级"
-	}
-
-	"Bonus vs units in open terrain 15%":{
-		Italian:"+15% Forza contro unità in terreno aperto"
-		French:"15% force contre les unités en terrain découvert"
-		Russian:"Бонус +15% против юнитов на открытой местности"
-		Simplified_Chinese:"对战开阔地形中的单位时+15%战斗力"
 	}
 
 	"units in open terrain":{
@@ -1489,13 +1475,6 @@
 		French:"Barrage III"
 		Russian:"Преграда III"
 		Simplified_Chinese:"弹幕III级"
-	}
-
-	"Bonus vs units in rough terrain 15%":{
-		Italian:"+15% Forza contro unità in terreno accidentato"
-		French:"+15% force contre les unités en terrain accidenté"
-		Russian:"Бонус против юнитов на пересеченной местности 15%"
-		Simplified_Chinese:"对战复杂地形中的单位时+15%战斗力"
 	}
 
 	"Shock I":{
@@ -1729,20 +1708,6 @@
 		Simplified_Chinese:"轰炸III级"
 	}
 
-	"Bonus vs land units 33%":{
-		Italian:"+33% forza contro unità terrestri"
-		French:"+33% force contre les unités terrestres"
-		Russian:"Бонус +33% против наземных юнитов"
-		Simplified_Chinese:"对战陆军单位时+33%战斗力"
-	}
-
-	"Bonus vs land units 34%":{
-		Italian:"+34% forza contro unità terrestri"
-		French:"+34% force contre les unités terrestres"
-		Russian:"Бонус +34% против наземных юнитов"
-		Simplified_Chinese:"对战陆军单位时+34%战斗力"
-	}
-
 	"Boarding Party I":{
 		Italian:"Abbordaggio I"
 		German:"Entermannschaft I"
@@ -1767,12 +1732,6 @@
 		Simplified_Chinese:"接舷III级"
 	}
 
-	"Bonus vs water units 15%":{
-		Italian:"+15% forza contro le unità anfibie"
-		French:"+15% force contre les unités navales"
-		Russian:"Бонус против водных юнитов +15%"
-		Simplified_Chinese:"对战海军单位时+15%战斗力"
-	}
 	"Coastal Raider I":{
 		Italian:"Incursione costiera I"
 		German:"Küstenräuber I"
@@ -1864,7 +1823,7 @@
 
 	"Double movement rate through Forest and Jungle":{
 		Italian:"Movimento doppio attraverso Foreste e Giungle."
-		Simplified_Chinese:"森林和丛林移动时双倍移动力"
+		Simplified_Chinese:"通过森林或丛林时移动速度加倍"
 		French:"Déplacement doublé dans la Forêt et la Jungle"
 		Russian:"Передвижение через Лес и Джунгли тратит вдвое меньше очков действия"
 	}
@@ -2036,13 +1995,6 @@
 		Simplified_Chinese:"攻坚I级"
 	}
 
-	"Bonus vs City 33%":{ //i think that it already exist somewhere
-		Italian:"+33% Forza contro le Città"
-		French:"Bonus contre les villes +33%"
-		Russian:"Бонус против городов +33%"
-		Simplified_Chinese:"攻击城市时+33%战斗力"
-	}
-
 	"Siege II":{
 		Italian:"Assedio II"
 		French:"Siège II"
@@ -2057,13 +2009,6 @@
 		Simplified_Chinese:"攻坚III级"
 	}
 
-	"Bonus vs City 34%":{
-		Italian:"+34% Forza contro le Città"
-		French:"Bonus contre les villes +34%"
-		Russian:"Бонус против городов +34%"
-		Simplified_Chinese:"攻击城市时+34%战斗力"
-	}
-
 	"Evasion":{
 		Italian:"Manovre evasive"
 		French:"Esquive"
@@ -2076,6 +2021,18 @@
 		French:"Réduit les dégâts des unités d'interception de 50%"
 		Russian:"Уменьшает урон от перехвата на 50%"
 		Simplified_Chinese:"遭受拦截时的损伤-50%"
+	}
+
+	"Bonus when intercepting [amount]%":{
+		Simplified_Chinese:"执行拦截任务时+[amount]%战斗力"
+	}
+
+	"Ambush I":{
+		Simplified_Chinese:"伏击I级"
+	}
+
+	"Ambush II":{
+		Simplified_Chinese:"伏击II级"
 	}
 
 }

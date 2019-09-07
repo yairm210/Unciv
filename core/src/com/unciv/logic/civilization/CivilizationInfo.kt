@@ -262,7 +262,7 @@ class CivilizationInfo {
     fun isAtWar() = diplomacy.values.any { it.diplomaticStatus== DiplomaticStatus.War && !it.otherCiv().isDefeated() }
 
     fun getLeaderDisplayName(): String {
-        var leaderName = getTranslatedNation().getLeaderDisplayName()
+        var leaderName = getTranslatedNation().getLeaderDisplayName().tr()
         if (playerType == PlayerType.AI)
             leaderName += " (" + "AI".tr() + ")"
         else if (gameInfo.civilizations.count { it.playerType == PlayerType.Human } > 1)

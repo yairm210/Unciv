@@ -94,16 +94,16 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         val diplomacyTable = Table()
         diplomacyTable.defaults().pad(10f)
         diplomacyTable.add(otherCiv.getLeaderDisplayName().toLabel().setFontSize(24)).row()
-        diplomacyTable.add(("Type: " + otherCiv.getCityStateType().toString()).toLabel()).row()
-        diplomacyTable.add(("Influence: " + otherCivDiplomacyManager.influence.toInt() + "/30").toLabel()).row()
+        diplomacyTable.add(("Type: ".tr() + otherCiv.getCityStateType().toString().tr()).toLabel()).row()
+        diplomacyTable.add(("Influence: ".tr() + otherCivDiplomacyManager.influence.toInt() + "/30").toLabel()).row()
 
         diplomacyTable.add(getRelationshipTable(otherCivDiplomacyManager)).row()
 
         val friendBonusText = when (otherCiv.getCityStateType()) {
-            CityStateType.Cultured -> "Provides [" + (3 * (viewingCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence"
-            CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at [30] Influence"
-            CityStateType.Mercantile -> "Provides 3 happiness at [30] Influence"
-            CityStateType.Militaristic -> "Provides land units every 20 turns at [30] Influence"
+            CityStateType.Cultured -> ("Provides [" + (3 * (viewingCiv.getEra().ordinal + 1)).toString() + "] culture at [30] Influence").tr()
+            CityStateType.Maritime -> "Provides 3 food in capital and 1 food in other cities at [30] Influence".tr()
+            CityStateType.Mercantile -> "Provides 3 happiness at [30] Influence".tr()
+            CityStateType.Militaristic -> "Provides land units every 20 turns at [30] Influence".tr()
         }
 
         val friendBonusLabel = friendBonusText.toLabel()
@@ -111,7 +111,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (otherCivDiplomacyManager.relationshipLevel() >= RelationshipLevel.Friend) {
             friendBonusLabel.setFontColor(Color.GREEN)
             val turnsToRelationshipChange = otherCivDiplomacyManager.influence.toInt() - 30 + 1
-            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel()).row()
+            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".tr().toLabel()).row()
         } else
             friendBonusLabel.setFontColor(Color.GRAY)
 
