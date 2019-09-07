@@ -28,10 +28,10 @@ class VictoryScreen : PickerScreen() {
 
     init {
         val tabsTable = Table().apply { defaults().pad(10f) }
-        val setMyVictoryButton = TextButton("Our status",skin)
+        val setMyVictoryButton = TextButton("Our status".tr(),skin)
         setMyVictoryButton.onClick { setMyVictoryTable() }
         tabsTable.add(setMyVictoryButton)
-        val setGlobalVictoryButton = TextButton("Global status",skin)
+        val setGlobalVictoryButton = TextButton("Global status".tr(),skin)
         setGlobalVictoryButton .onClick { setGlobalVictoryTable() }
         tabsTable.add(setGlobalVictoryButton)
         topTable.add(tabsTable)
@@ -124,7 +124,7 @@ class VictoryScreen : PickerScreen() {
 
         for (key in victoryManager.requiredSpaceshipParts.keys)
             for (i in 0 until victoryManager.requiredSpaceshipParts[key]!!)
-                t.add(getMilestone(key, victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
+                t.add(getMilestone(key.tr(), victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
 
         return t
     }
@@ -134,7 +134,7 @@ class VictoryScreen : PickerScreen() {
         t.defaults().pad(5f)
         for(branch in GameBasics.PolicyBranches.values) {
             val finisher = branch.policies.last().name
-            t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
+            t.add(getMilestone(finisher.tr(), playerCivInfo.policies.isAdopted(finisher))).row()
         }
         return t
     }
@@ -175,7 +175,7 @@ class VictoryScreen : PickerScreen() {
     private fun getGlobalDominationVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val dominationVictoryColumn = Table().apply { defaults().pad(10f) }
 
-        dominationVictoryColumn.add("Undefeated civs".toLabel()).row()
+        dominationVictoryColumn.add("Undefeated civs".tr().toLabel()).row()
         dominationVictoryColumn.addSeparator()
 
         for (civ in majorCivs.filter { !it.isDefeated() })
@@ -189,7 +189,7 @@ class VictoryScreen : PickerScreen() {
 
     private fun getGlobalCulturalVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val policyVictoryColumn = Table().apply { defaults().pad(10f) }
-        policyVictoryColumn.add("Branches completed".toLabel()).row()
+        policyVictoryColumn.add("Branches completed".tr().toLabel()).row()
         policyVictoryColumn.addSeparator()
 
         data class civToBranchesCompleted(val civ: CivilizationInfo, val branchesCompleted: Int)
@@ -206,7 +206,7 @@ class VictoryScreen : PickerScreen() {
 
     private fun getGlobalScientificVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val scientificVictoryColumn = Table().apply { defaults().pad(10f) }
-        scientificVictoryColumn.add("Spaceship parts remaining".toLabel()).row()
+        scientificVictoryColumn.add("Spaceship parts remaining".tr().toLabel()).row()
         scientificVictoryColumn.addSeparator()
 
         data class civToSpaceshipPartsRemaining(val civ: CivilizationInfo, val partsRemaining: Int)

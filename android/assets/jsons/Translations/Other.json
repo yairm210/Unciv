@@ -618,7 +618,7 @@
 		German:"Siegesstatus"
 		Dutch:"Overwinning Status"
 		Spanish:"Estatus de victoria"
-		Simplified_Chinese:"胜利进程"
+		Simplified_Chinese:"胜利进度"
 		Portuguese:"Status da vitória"
 		Japanese:"勝利の地位"
 	}
@@ -1600,7 +1600,7 @@
 		Italian:"Vittoria per Dominazione"
 		German:"Dominanzsieg"
 		French:"Victoire militaire"
-		Simplified_Chinese:"征服胜利 "
+		Simplified_Chinese:"征服胜利"
 		Portuguese:"Vitória por conquista"
 	}
 
@@ -1692,33 +1692,38 @@
 		German:"Zerstöre [civName]"
 		French:"Détruiser [civName]"
 		Russian:"Уничтожить [civName]"
-		Simplified_Chinese:"摧毁[civName]文明"
+		Simplified_Chinese:"毁灭[civName]文明"
 		Portuguese:"Destruir [civName]" //what's the context? as in it being a question, or a pre-requisite for conquest victory?
 	}
 
 	"Our status":{
 		Italian:"I tuoi progressi"
 		French:"Notre situation"
+		Simplified_Chinese:"我们文明的胜利进度"
 	}
 
 	"Global status":{
 		Italian:"Progressi globali"
 		French:"Situation globale"
+		Simplified_Chinese:"所有文明的胜利进度"
 	}
 
 	"Spaceship parts remaining":{
 		Italian:"Parti dell'astronave rimanenti"
 		French:"Parties de Vaisseau spatial manquantes"
+		Simplified_Chinese:"未完成建造的飞船组件数量"
 	}
 
 	"Branches completed":{
 		Italian:"Rami completati"
 		French:"Branches complêtées"
+		Simplified_Chinese:"已完全推行的社会政策数量"
 	}
 
 	"Undefeated civs":{
 		Italian:"Civiltà esistenti"
 		French:"Civilization invaincues"
+		Simplified_Chinese:"未被征服的文明"
 	}
 	
 	
@@ -1727,16 +1732,19 @@
 	"What would you like to do with the city?":{
 		Italian:"Cosa vorresti farne della Città?"
 		French:"Que voulez vous faire de cette ville?"
+		Simplified_Chinese:"你想如何处理这座城市？"
 	}
 
 	"Annex":{
 		Italian:"Annetti"
 		French:"Annexer"
+		Simplified_Chinese:"吞并"
 	}
 
 	"Raze":{
 		Italian:"Distruggi"
 		French:"Razer"
+		Simplified_Chinese:"摧毁"
 	}
 	
 	

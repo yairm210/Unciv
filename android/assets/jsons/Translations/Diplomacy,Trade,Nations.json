@@ -1204,13 +1204,6 @@
 		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
 	}
 
-	"+1 Science for all Specialists and Great Person tile improvements. Receive a tech boost each time a scientific building/Wonder is built in the Korean Capital.":{
-		Italian:"+1 Scienza per ogni Specialista e miglioramento Grande Personaggio. Ricevi uno sprint tecnologico ogni volta che la tua Capitale costruisce un edificio o una Meraviglia scientifica."
-		Portuguese:"+1 ciência por todas as melhorias de terras de especialístas e grandes pessoas. Receba um bonus de pesquisa a cada construção/maravilha ciêntifica é construida na capital"
-		French:"+1 Science pour chaque spécialistes et amélioration de case de personnage illustre. Reçoit un bonus de science à chaque fois qu'un batiment ou une merveille scientifique est  construit dans la capitale"
-		Russian:"+1 Наука для всех специалистов и улучшений клеток Великими людьми. Получите бонус к исследованию каждый раз при создании научного здания/чуда в Корейской столице"
-	}
-
 	/*
 
 	"Iroquois":{
