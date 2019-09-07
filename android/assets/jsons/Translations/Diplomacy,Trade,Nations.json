@@ -142,7 +142,7 @@
 
 	"Excellent!":{ // AI statement after we accept a trade they proposed, and when we meet a city state, and our response when they agree to our diplomatic demand
 		Italian:"Eccellente!"
-		Simplified_Chinese:"幸会幸会！互相尊重是建立友好关系的第一步。"
+		Simplified_Chinese:"真是荣幸之至！互相尊重、平等互利是建立友好关系的第一步。"
 		French:"Excellent!"
 		Portuguese:"Excelente!"
                 Polish:"Wyśmienicie!"
@@ -151,7 +151,7 @@
 
 	"How about something else...":{ // Counteroffer to AI offer //shouldn't it be 'How about somenthing else?' ?
 		Italian:"Che ne dici di questa offerta?"
-		Simplified_Chinese:"如果阁下再有点诚意的话，我愿意达成这笔交易。"
+		Simplified_Chinese:"谈判桌上的尔虞我诈才是我的兴趣所在。"
 		French:"Pourquoi pas autre chose..."
 		Portuguese:"Porque não algo mais..."
                 Polish:"Oto nasza oferta."
