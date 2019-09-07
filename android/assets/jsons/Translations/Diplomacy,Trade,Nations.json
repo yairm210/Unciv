@@ -1338,17 +1338,6 @@
 		Russian:"Повышения"
 	}
 	
-	"units in rough terrain":{
-		Italian:"unità su terreno accidentato"
-		Romanian:"unități în teren accidentat"
-		Spanish:"unidades en terreno accidentado"
-		Simplified_Chinese:"位于复杂地形的单位"
-		German:"Einheiten in unwegsamem Gelände"
-		French:"unités en terrain accidenté"
-		Portuguese:"unidades em terreno acidentado"
-		Russian:"юниты на пересеченной местности"
-	}
-	
 	"Barbarians":{
 		Italian:"Barbari"
 		Romanian:"Barbari"
