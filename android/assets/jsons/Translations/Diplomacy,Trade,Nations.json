@@ -846,6 +846,7 @@
 	}
 
 	"Wu Zetian":{
+		Italian:"Wu Zetian" //Same as in Italian
 		Simplified_Chinese:"武则天"
 		Russian:"У Цзэтянь"
 	},
@@ -1169,11 +1170,13 @@
 	}
 
 	"Sejong":{
+		Italian:"Sejong"
 		Simplified_Chinese:"李裪"
 		Russian:"Седжон"
 	}
 
 	"+2 Science for all specialists and Great Person tile improvements":{
+		Italian:"+2 Scienza per ogni specialista e ogni miglioramento da Gran Personaggio."
 		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
 		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
 	}
