@@ -27,6 +27,9 @@ class TradePopup(worldScreen: WorldScreen): PopupTable(worldScreen){
 
         val trade = tradeRequest.trade
         val tradeOffersTable = Table().apply { defaults().pad(10f) }
+        tradeOffersTable.add("[${translatedNation.getNameTranslation()}]'s trade offer".tr().toLabel())
+        tradeOffersTable.add("Our trade offer".tr().toLabel())
+        tradeOffersTable.row()
         for(i in 0..max(trade.theirOffers.lastIndex, trade.ourOffers.lastIndex)){
             if(trade.theirOffers.lastIndex>=i) tradeOffersTable.add(trade.theirOffers[i].getOfferText().toLabel())
             else tradeOffersTable.add()

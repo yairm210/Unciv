@@ -1109,6 +1109,7 @@
 	"National Wonder":{
 		Italian:"Meraviglia Nazionale"
 		French:"Merveille Nationale"
+		Simplified_Chinese:"国家奇观"
                 Russian:"Национальное чудо"
 	}
 	
@@ -1455,6 +1456,7 @@
 	"City States":{	//I think that it's already elsewhere
 		Italian:"Città-Stato"
 		French:"Cité état"
+		Simplified_Chinese:"城邦"
 	}
 
 	"Luxury resources":{	

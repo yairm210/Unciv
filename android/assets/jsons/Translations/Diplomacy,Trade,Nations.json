@@ -76,7 +76,7 @@
 		German:"[leaderName] von [nation]"
 		Spanish:"[leaderName] de [nation]"
 		Portuguese:"[leaderName] do [nation]"
-		Simplified_Chinese:"[leaderName]的[nation]"
+		Simplified_Chinese:"[nation]的[leaderName]"
 		French:"[leaderName] de [nation]"
 		Russian:"[leaderName] из [nation]"
 		Romanian:"[leaderName] de [nation]"
@@ -562,6 +562,7 @@
 	"Retract offer":{	
 		Italian:"Ritira offerta"
 		Russian:"Отменить предложение"
+		Simplified_Chinese:"撤回报价"
 	}
 
 	"What do you have in mind?":{	

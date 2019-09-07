@@ -62,8 +62,10 @@
 	
 	"Must not be on plains":{
 		French:"Ne doit pas être sur une plaine"
-		Polish:"Nie może być na równinie"
-		Russian:"Не может быть построено на равнине"
+		Italian:"Non deve trovarsi su Pianura"
+		Polish:"Nie może być na równinach"
+		Russian:"Не может быть построено на равнинах"
+		Simplified_Chinese:"城市不能位于平原"
 	}
 
 	"Stonehenge":{	
@@ -1108,6 +1110,7 @@
 		French:"Doit être sur une colline"
 		Polish:"Nie może być na wzgórzu"
 		Russian:"Не может быть построено на холме"
+		Simplified_Chinese:"城市不能位于山脉"
 	}
 
 	"Museum":{	
@@ -1460,14 +1463,14 @@
 		German:"Muss an eine Wüste grenzen"
 		Dutch:"Moet aan een woestijn grenzen"
 		Spanish:"Debe estar próximo a un desierto"
-		Simplified_Chinese:"必须紧邻沙漠"
+		Simplified_Chinese:"城市必须紧邻沙漠"
 		Portuguese:"Nescessário que esteja proximo ao deserto"
 		Polish:"Musi być obok pustyni"
 	}
 
 	"Must be next to mountain":{
 		Italian:"Deve rasentare Montagna"
-		Simplified_Chinese:"必须紧邻山脉"
+		Simplified_Chinese:"城市必须紧邻山脉"
 		French:"Doit être à côté d'une montagne"
 		Polish:"Musi być przy górze"
 	}
@@ -1763,19 +1766,5 @@
 		Polish:"Wymaga odkrycia technologii [requiredTech]"
 		Russian:"Требуется технология: [requiredTech]"
 	}
-
-	"Must not be on plains":{
-		Italian:"Non deve trovarsi su Pianura"
-		Polish:"Nie może być na równinach"
-		Russian:"Не может быть построено на равнинах"
-	}
-
- 	"Must not be on hill":{//Line correction
-		Italian:"Non deve trovarsi su Collina"
-		Polish:"Nie może być na wzgórzach"
-		Russian:"Не может быть построено на холмах"
-	}
-	
-	
 
 }
