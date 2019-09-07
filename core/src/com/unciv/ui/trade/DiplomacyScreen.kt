@@ -111,7 +111,7 @@ class DiplomacyScreen(val viewingCiv:CivilizationInfo):CameraStageBaseScreen() {
         if (otherCivDiplomacyManager.relationshipLevel() >= RelationshipLevel.Friend) {
             friendBonusLabel.setFontColor(Color.GREEN)
             val turnsToRelationshipChange = otherCivDiplomacyManager.influence.toInt() - 30 + 1
-            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".tr().toLabel()).row()
+            diplomacyTable.add("Relationship changes in another [$turnsToRelationshipChange] turns".toLabel()).row()
         } else
             friendBonusLabel.setFontColor(Color.GRAY)
 

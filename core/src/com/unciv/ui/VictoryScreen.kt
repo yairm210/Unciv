@@ -118,13 +118,13 @@ class VictoryScreen : PickerScreen() {
     fun scienceVictoryColumn():Table{
         val t = Table()
         t.defaults().pad(5f)
-        t.add(getMilestone("Built Apollo Program".tr(),playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
+        t.add(getMilestone("Built Apollo Program",playerCivInfo.containsBuildingUnique("Enables construction of Spaceship parts"))).row()
 
         val victoryManager= playerCivInfo.victoryManager
 
         for (key in victoryManager.requiredSpaceshipParts.keys)
             for (i in 0 until victoryManager.requiredSpaceshipParts[key]!!)
-                t.add(getMilestone(key.tr(), victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
+                t.add(getMilestone(key, victoryManager.currentsSpaceshipParts[key]!! > i)).row()     //(key, builtSpaceshipParts)
 
         return t
     }
@@ -134,7 +134,7 @@ class VictoryScreen : PickerScreen() {
         t.defaults().pad(5f)
         for(branch in GameBasics.PolicyBranches.values) {
             val finisher = branch.policies.last().name
-            t.add(getMilestone(finisher.tr(), playerCivInfo.policies.isAdopted(finisher))).row()
+            t.add(getMilestone(finisher, playerCivInfo.policies.isAdopted(finisher))).row()
         }
         return t
     }
@@ -147,13 +147,13 @@ class VictoryScreen : PickerScreen() {
             val civName =
                     if (playerCivInfo.diplomacy.containsKey(civ.civName)) civ.civName
                     else "???"
-            table.add(getMilestone("Destroy [$civName]".tr(), civ.isDefeated())).row()
+            table.add(getMilestone("Destroy [$civName]", civ.isDefeated())).row()
         }
         return table
     }
 
     fun getMilestone(text:String, achieved:Boolean): TextButton {
-        val textButton = TextButton(text,skin)
+        val textButton = TextButton(text.tr(),skin)
         if(achieved) textButton.color = Color.GREEN
         else textButton.color = Color.GRAY
         return textButton
@@ -175,7 +175,7 @@ class VictoryScreen : PickerScreen() {
     private fun getGlobalDominationVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val dominationVictoryColumn = Table().apply { defaults().pad(10f) }
 
-        dominationVictoryColumn.add("Undefeated civs".tr().toLabel()).row()
+        dominationVictoryColumn.add("Undefeated civs".toLabel()).row()
         dominationVictoryColumn.addSeparator()
 
         for (civ in majorCivs.filter { !it.isDefeated() })
@@ -189,7 +189,7 @@ class VictoryScreen : PickerScreen() {
 
     private fun getGlobalCulturalVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val policyVictoryColumn = Table().apply { defaults().pad(10f) }
-        policyVictoryColumn.add("Branches completed".tr().toLabel()).row()
+        policyVictoryColumn.add("Branches completed".toLabel()).row()
         policyVictoryColumn.addSeparator()
 
         data class civToBranchesCompleted(val civ: CivilizationInfo, val branchesCompleted: Int)
@@ -206,7 +206,7 @@ class VictoryScreen : PickerScreen() {
 
     private fun getGlobalScientificVictoryColumn(majorCivs: List<CivilizationInfo>): Table {
         val scientificVictoryColumn = Table().apply { defaults().pad(10f) }
-        scientificVictoryColumn.add("Spaceship parts remaining".tr().toLabel()).row()
+        scientificVictoryColumn.add("Spaceship parts remaining".toLabel()).row()
         scientificVictoryColumn.addSeparator()
 
         data class civToSpaceshipPartsRemaining(val civ: CivilizationInfo, val partsRemaining: Int)

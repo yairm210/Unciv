@@ -1452,6 +1452,10 @@
 		French:"Unités en terrain ouvert"
 		Russian:"юниты на открытой местности"
 	}
+	
+	"units in rough terrain":{
+	
+	}
 
 	"Barrage I":{
 		Italian:"Fuoco di Fila I"
