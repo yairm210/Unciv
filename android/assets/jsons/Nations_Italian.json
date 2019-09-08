@@ -121,7 +121,7 @@
 		declaringWar:"Sei solo una peste sulla Terra! Possa Amon-Ra guidare le mie armate!",
 		attacked:"Sei uno sciocco che incute pietà. Hai portato la mia ostilità su di te e la tua ripugnante civiltà! Osiride sarà lieto di dare il suo benvenuto ai miei nemici!"
 		defeated:"Non hai vinto niente. Colpiscimi e la mia anima ti perseguiterà in eterno."
-		introduction:"Saluti. Io sono Ramses, Faraone e incarnazione vivente dell'Egitto, madre e padre di ogni civiltà."
+		introduction:"Saluti. Io sono Ramses, Faraone e incarnazione vivente dell'Egitto, madre e padre di ogni civiltà." //Also:"Salve. Io sono Ramses, signore del potente Egitto. E sono anche un dio. Mostrate di avere molto coraggio presentandovi davanti a me."
 		
 		neutralHello:"Buongiorno."
 		neutralLetsHearIt:["Avanti, parla.","Parla.","Sono tutto orecchi."]
@@ -509,8 +509,8 @@
 		translatedName:"Corea",
 		leaderName:"Sejong",
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Salve, magnifico re Sejong il Grande, servitore del popolo e protettore della dinastia Choson. Il tuo glorioso progetto di prosperità e la tua traboccante benevolenza verso la gente comune ti hanno reso il più amato dei monarchi coreani. Fin dai primi giorni del tuo regno i tuoi sforzi di realizzare una società equilibrata e giusta per tutti sono stati superati solo dalle scoperte e dalle innovazioni tecnologiche introdotte in virtù della tua insaziabile sete di conoscenza. Guidati dalla tua saggezza, i sapienti della Sala di Giada hanno sviluppato il primo alfabeto coreano, l'Hangul, illuminando le masse con la luce della letteratura e della scienza dopo secoli di oscurità."
+		startIntroPart2: "Onorato Sejong, il tuo popolo si rivolge ancora una volta a te per avere una guida! Coglierai questìoccasione di portare armonia e comprensione tra le genti? Riporterai ancora il tuo regno a simili altezze vertiginose? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
 		declaringWar:"Jip-hyun-jun (la Sala dei Giusti) non tollera più la tua insolenza. Libereremo i tuoi cittadini oppressi anche con la forza, e li illumineremo!"
 		attacked:"Sciocca progenie di una megera! Sarete distrutti dalla magnifica potenza scientifica del mio paese!"
