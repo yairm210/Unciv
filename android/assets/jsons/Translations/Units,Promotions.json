@@ -15,16 +15,19 @@
 	}
 
 	"land units":{
+		Italian:"unità terrestri"
 		Simplified_Chinese:"陆军单位"
 		Russian:"наземные юниты"
 	}
 
 	"water units":{
+		Italian:"unità anfibie"
 		Simplified_Chinese:"海军单位"
 		Russian:"морские юниты"
 	}
 
 	"air units":{
+		Italian:"unità aeree"
 		Simplified_Chinese:"空军单位"
 		Russian:"воздушные юниты"
 	}
@@ -1042,6 +1045,7 @@
 	}
 	
 	"6 tiles in every direction always visible":{
+		Italian:"6 caselle in ogni direzione sempre visibili"
 		Simplified_Chinese:"6格视野范围内可见"
 		Russian:"Всегда видимы 6 клеток вокруг"
 	}
@@ -1448,7 +1452,7 @@
 	}
 
 	"units in open terrain":{
-		Italian:"unità in terreno aperto"
+		Italian:"unità su terreno aperto"
 		Simplified_Chinese:"位于开阔地形的单位"
 		French:"Unités en terrain ouvert"
 		Russian:"юниты на открытой местности"
