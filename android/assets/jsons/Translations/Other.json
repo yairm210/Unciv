@@ -33,6 +33,7 @@
 	
 	"Waiting for other players...":{ // Displayed when next turn is being...turned
 		Italian:"In attesa degli altri giocatori..."
+		Simplified_Chinese:"等待其他玩家..."
 	}
 
 	"in":{ // As in "Opera House in 3 turns"
@@ -286,6 +287,7 @@
 		Italian: "In movimento"
 		German: "Bewegen"
 		French:"En mouvement"
+		Simplified_Chinese:"移动中"
 	}
 
 	"Set up":{ // For siege units
@@ -608,7 +610,7 @@
 		German:"Spiel laden"
 		Dutch:"Spel laden"
 		Spanish:"Cargar partida"
-		Simplified_Chinese:"载入游戏"
+		Simplified_Chinese:"读取游戏"
 		Portuguese:"Carregar partida"
 		Japanese:"ゲームをロード"
 	}
@@ -1253,6 +1255,10 @@
 		Portuguese:"Ataque"
 	}
 	
+	"Bombard":{
+		Simplified_Chinese:"轰击"
+	}
+
 	"Captured!":{
 		Simplified_Chinese:"可被俘虏！"
 	}
@@ -1330,14 +1336,14 @@
 	
 ////// Policy picker screen
 
-	"You have entered the [newEra] era!":{
+	"You have entered the [newEra]!":{//e.g.:"You have entered the Ancient era!"， please re-translate it. 
 		Italian:"Sei entrato in una nuova era, l'Epoca [newEra]!" //[newEra] not translated in Italian
 		Russian:"Вы вошли в эпоху [newEra]!"
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ai intrat în epoca [newEra]!"
 		Dutch:"Jij bent in het/de [newEra] aangekomen!" // depends on what era it is 
 		Spanish:"¡Has entrado en la [newEra]!"
-		Simplified_Chinese:"您已经进入了[newEra]"
+		Simplified_Chinese:"您已经进入了[newEra]！"
 		Portuguese:"Voçê entrou na [newEra]!"
 		German:"Zeitalter [newEra] ist eingeläutet!"
 	}
@@ -1349,7 +1355,7 @@
 		Romanian:"Ramura [policyBranch] deblocată!"
 		Dutch:" Het/De [policyBranch] beleid is ontgrendeld!" // depends on what brach it is
 		Spanish:"¡Rama política [policyBranch] desbloqueada!"
-		Simplified_Chinese:"[policyBranch]政策分支解锁!"
+		Simplified_Chinese:"[policyBranch]分支解锁!"
 		Portuguese:"[policyBranch] foi desbloqueado(a)"
 		German:"[policyBranch] Grundsatzzweig wurde freigeschaltet"
 	}
@@ -1676,18 +1682,22 @@
 	 
 	"You have achieved victory through the awesome power of your Culture. Your civilization's greatness - the magnificence of its monuments and the power of its artists - have astounded the world! Poets will honor you as long as beauty brings gladness to a weary heart.":{
 		Italian:"Hai ottenuto la vittoria attraverso il maestoso potere della tua cultura. La grandezza della tua civiltà, la magnificenza dei suoi monumenti e il talento dei suoi artisti ha sbalordito il mondo! I poeti ti ononeranno per sempre, finché la bellezza continuerà a portare sollievo ai cuori affaticati."
+		Simplified_Chinese:"你们依靠文化的强大力量取得了胜利。你们文明的伟大创作——富丽堂皇的建筑和鬼斧神工的艺术品震惊了世界！这些沁入心扉的美丽给疲乏的心带来温暖，给悲伤的人送去欢乐，诗人你赞叹，乐者为你歌唱！"
 	}
 	
 	"The world has been convulsed by war. May great and powerful civilizations have fallen, but you have survived - and emerged victorious! The world will long remember your glorious triumph!":{
 		Italian:"Il mondo è stato straziato dalla guerra. Molte grandi e potenti civiltà sono cadute, ma tu sei sopravvissuto e se emerso vittorioso. Il mondo ricorderà a lungo il tuo glorioso trionfo!"
+		Simplified_Chinese:"世界因战争而动荡不安。许多伟大而且强势的文明衰落了，但你们幸存了下来——并且取得了胜利！世界将永远记住你光辉与荣耀！"
 	}
 	
 	"You have achieved victory through mastery of Science! You have conquered the mysteries of nature and led your people on a voyage to a brave new world! Your triumph will be remembered as long as the stars burn in the night sky!":{
 		Italian:"Hai ottenuto la vittoria attraverso la padronanza della scienza! Hai penetrato i misteri più arcani della natura e condotto il tuo popolo in un viaggio verso un nuovo, favoloso mondo! Il tuo trionfo sarà ricordato finch* le stelle continueranno a brillare nel firmamento!"
+		Simplified_Chinese:"你们通过掌握科学取得了胜利!你们已经征服了大自然的神秘，带领人民踏上了通往美丽新世界的航程！只要星星在夜空中燃烧，你的胜利就会被永远铭记！"
 	}
 	
 	"You have been defeated. Your civilization has been overwhelmed by its many foes. But your people do not despair, for they know that one day you shall return - and lead them forward to victory!":{
 		Italian:"Sei stato sconfitto. La tua civiltà è stata spazzata via dai suoi nemici. Ma il tuo popolo non dispera, perché sa che un giorno tornerai... e lo condurrai alla vittoria!"
+		Simplified_Chinese:"你被打败了。虽然你们的文明曾经被许多敌人所征服，但是你的人民永不放弃，因为他们知道总有一天你会回来的！那时，你的文明将会成为天空中最耀眼的恒星！"
 	}
 
 	"One more turn...!":{
@@ -1919,6 +1929,7 @@
 		Italian:"Terreno accidentato"
 		German: "Unwegsames Gelände"
 		French:"Terrain abrupte"
+		Simplified_Chinese:"复杂地形"
 	}
 
 	" for ":{ //for example:+1 Gold for Gems,Gold,Silver

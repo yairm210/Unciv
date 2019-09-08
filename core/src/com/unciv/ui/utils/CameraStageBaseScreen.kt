@@ -64,6 +64,7 @@ open class CameraStageBaseScreen : Screen {
 
         fun resetFonts(){
             skin.get(TextButton.TextButtonStyle::class.java).font = Fonts().getFont(20)
+            skin.get(CheckBox.CheckBoxStyle::class.java).font= Fonts().getFont(20)
             skin.get(Label.LabelStyle::class.java).apply {
                 font = Fonts().getFont(18)
                 fontColor= Color.WHITE

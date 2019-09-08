@@ -133,7 +133,7 @@ class TechManager {
 
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {
-            civInfo.addNotification("You have entered the [$currentEra] era!".tr(), null, Color.GOLD)
+            civInfo.addNotification("You have entered the [$currentEra era]!".tr(), null, Color.GOLD)
             GameBasics.PolicyBranches.values.filter { it.era == currentEra }
                     .forEach { civInfo.addNotification("[" + it.name + "] policy branch unlocked!".tr(), null, Color.PURPLE) }
         }
