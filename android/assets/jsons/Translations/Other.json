@@ -1138,6 +1138,7 @@
 	"National Wonders":{ 
 		Italian:"Meraviglie Nazionali"
 		Simplified_Chinese:"国家奇观"
+		Russian:"Национальные чудеса"
 	}
 
 	"Wonders enabled":{
@@ -1454,11 +1455,6 @@
 		Simplified_Chinese:"奇观"
 		Portuguese:"Maravilhas"
 		Russian:"Чудеса"
-	}
-
-	"National Wonders":{ // already here at line 1099
-		Italian:"Meraviglie Nazionali"
-		Russian:"Национальные чудеса"
 	}
 
 	"Specialist Buildings":{
