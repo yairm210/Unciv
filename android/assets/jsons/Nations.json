@@ -619,6 +619,44 @@
 			"Har-Ayrag","Nalayh","Tes"]
 	},
 	{
+		/////NEEDS NATURAL WONDERS
+		name:"Spanish",
+		leaderName:"Isabella",
+		adjective:["Spanish"],
+		startBias:["Coast"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Blessed Isabella, servant of God, holy queen of Castille and Leòn! Your people greet and welcome you. You are the ruler of Spain, a beautiful and ancient country at the crossroads of the world between Europe and Africa, one shor on the Mediterranean and the other on the mighty Atlantic Ocean. The Spanish are a multicultural people with roots in the Muslim and Christian worlds. A seafaring race, Spanish explorers found and conquered much of the New World, and, for many centuries, its gold and silver brought Spain unrivalled wealth and power, making the Spanish court the  envy of the world."
+		startIntroPart2: "O fair and virtuous Isabella! Will you rebuld the Spanish empire and show the world again the greatness of your people? Will your take up the mantle of the holy monarchy, and vanquish your foes under heaven's watchful eyes? Your adoring subjects await your command! Will you build a civilization that stands the test of time?"
+		
+		declaringWar:"God will probably forgive you... but I shall not. Prepare for war."
+		attacked:"Repugnant spawn of the devil! You will pay!"
+		defeated:"If my defeat is, without any doubt, the will of God, then I will accept it."
+		introduction:"God blesses those who deserve it. I am Isabel of Spain."
+		
+		neutralHello:"Greetings."
+		neutralLetsHearIt:["Proceed","I'm listening.","Yes?"]
+		neutralNo:["We refuse.","Not before God.","No way."]
+		neutralYes:["Very well.","Excellent.","With the blessing of God, I accept."]
+
+		hateHello:"Well?"
+		hateLetsHearIt:["Onward","What were you saying?","Continue."]
+		hateNo:["That is unacceptable.","Of course not.","Are you crazy?"]
+		hateYes:["I agree.","Fine.","I think that I am obliged to accept."]
+		
+		afterPeace:"May God bless you for your clemency to the defeated enemy."
+		tradeRequest:"I hope this deal will receive your blessing."
+				
+		outerColor:[102,0,0],
+		innerColor:[255,102,102],
+		uniqueName:"Seven Cities of Gold"
+		unique:"Gold nous for discovering a Natural Wonder (bonus enhanced if first to discover it). Culture, Happiness and tile yelds from Natural Wonders doubled.",
+		cities:["Madrid","Barcelona","Seville","Cordoba","Toledo","Santiago","Salamanca","Murcia","Valencia","Zaragoza","Pamplona",
+			"Vitoria","Santander","Oviedo","Jaen","Logroño","Valladolid","Palma","Teruel","Almeria","Leon","Zamora","Mida",
+			"Lugo","Alicante","Càdiz","Eiche","Alcorcon","Burgos","Vigo","Badajoz","La Coruña","Guadalquivir","Bilbao",
+			"San Sebastian","Granada","Mérida","Huelva","Ibiza","Las Palmas","Tenerife"]
+	},
+	{
 		name:"Incan",
 		leaderName:"Pachacuti",
 		adjective:["Incan"],
@@ -626,7 +664,7 @@
 		preferredVictoryType:"Cultural",
 		
 		startIntroPart1: "Oh ye who remakes the world, your loyal subjects greet you, King Pachacuti Sapa Inca, ruler of the Inca people! From the beginnings in the small state of Cusco, the Incans displayed their potential for greatness, marching to war against their many enemies, crushing their armies into dust and carving for themselves a mighty empire stretching from Ecuador to Chile. Indeed, they build the greatest empire ever seen in all pre-Columbian Americas. More than mere soldiers, your people were great builders and artists as well, and the remnants of their works still awe and inspire the world today."
-		startIntroPart2: "Oh King Pachacuti, truly are you called "Earth Shaker"! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
+		startIntroPart2: "Oh King Pachacuti, truly are you called 'Earth Shaker'! Will you once again call upon the ground itself to a fight at your side? Your armies await your signal. Will you restore the glory of your empire? Can you build a civilization that will stand the test of time?"
 		
 		declaringWar:"Resistance is futile! You cannot hope to stand against the mighty Incan empire. If you will not surrender immediately, then prepare for war!"
 		attacked:"Declare war on me?!? You can't, because I declare war on you first!"
