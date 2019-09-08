@@ -24,7 +24,7 @@
 
 	"Adopt free policy":{
 		Italian:"Adotta politica"
-		Russian:"Принять общественный институт"
+		Russian:"Бесплатный общественный институт"
 		French:"Adopter la Doctrine"
 		Romanian:"Adoptă politică"
 		Spanish:"Adoptar política"
@@ -125,7 +125,7 @@
 
 	"Units in cities cost no Maintenance, garrisoned city +50% attacking strength":{ // need to correct all languages
 		Italian:"+50% Forza d'attacco per le città con guarnigione, e nessun mantenimento per le loro guarnigioni"
-		Russian:"Юниты в городах содержаться бесплатно, гарнизонный город + 50% силы атаки"
+		Russian:"Юниты в городах содержатся бесплатно, гарнизонный город + 50% силы атаки"
 		Romanian:"Unitățile din orașe nu necesită costuri de întreținere, orașul înarmat + 50% atac"
 		Spanish:"Unidades en las ciudades no cuestan mantenimiento, y +50% de fuerza de ataque"
 		Simplified_Chinese:"镇守城市的单位无需维护费，有单位镇守的城市+50%远程战斗力"
@@ -170,7 +170,7 @@
 
 	"+1 gold and -1 unhappiness for every 2 citizens in capital":{
 		Italian:"+1 oro e -1 Infelicità ogni 2 cittadini nella capitale"
-		Russian:"+1 золто и -1 недовольство за каждых двух жителей в столице"
+		Russian:"+1 золото и -1 недовольство за каждых двух жителей в столице"
 		Romanian:"+1 aur și -1 nefericire pentru fiecare 2 cetățeni din capitală"
 		Spanish:"+1 oro y -1 infelicidad cada 2 habitantes en la capital"
 		Simplified_Chinese:"首都每2个市民+1金钱，-1不满"
@@ -260,7 +260,7 @@
 
 	"Tile improvement speed +25%, receive a free worker near the capital":{
 		Italian:"I Lavoratori costruiscono il 25% più in fretta, e la Capitale riceve un Lavoratore gratuito"
-		Russian:"Увеличивает на 25% скорость работы рабочих. Возле столицы появляется рабочий "
+		Russian:"Увеличивает на 25% скорость создания улучшений клеток. Возле столицы появляется рабочий "
 		Romanian:"+25% rata de construire pentru muncitori, se obține un muncitor gratuit lângă capitală"
 		Spanish:"+25% ritmo de construcción de trabajadores y un trabajador gratis cerca de la capital"
 		Simplified_Chinese:"区域设施建造速度+25%，首都附近获得1个工人"
@@ -282,7 +282,7 @@
 
 	"+1 construction in every city, +5% construction when constructing buildings":{
 		Italian:"+1 Produzione in ogni città, e +5% Produzione quando costruisci un edificio"
-		Russian:"Увеличивает н 1% производство во всех городах и на 5% производство при строительстве зданий"
+		Russian:"Увеличивает на 1% производство во всех городах и на 5% производство при строительстве зданий"
 		Romanian:"+1 construcție în fiecare oraș, +5% construcție clădiri"
 		Spanish:"+1 construcción en cada ciudad, +5% al construir edificios"
 		Simplified_Chinese:"每座城市+1产能，城市建造建筑时+5%产能积累"
@@ -420,7 +420,7 @@
 		Romanian:"+15% putere de luptă pentru luptători de contact care au o altă unitate militară într-o celulă adiacentă"
 		Simplified_Chinese:"近战单位可从每个相邻的己方单位获得15%战斗力加成"
 		Portuguese:"+15% força para unidadaes corpo a corpo que tem outra unidade militar em um terreno adjacente"
-		Russian:"+15% к силе за дружественный юнит на соседней клетке"
+		Russian:"+15% к силе юнитов ближнего боя за дружественный юнит на соседней клетке"
 		German:"+15% Kampfstärke für Nahkampfeinheiten, die eine andere Militäreinheit in einem anliegenden Feld haben"
 		French:"Puissance de combat +15% pour les unités de combat rapproché si une autre unité militaire se trouve sur une case adjacente"
 	}
@@ -442,7 +442,7 @@
 		Romanian:"Unitățile militare primesc cu 50% mai multă experiență în luptă"
 		Simplified_Chinese:"军事单位通过战斗获得经验+50%"
 		Portuguese:"+50% experiencia em batalha para as unidades militares"
-		Russian:"юниты получают на 50% больше опыта от сражений"
+		Russian:"Юниты получают на 50% больше опыта от сражений"
 		German:"Militäreinheiten erhalten 50% mehr Erfahrung (XP) durch Kämpfe"
 		French:"Unités militaires : EXP gagnée en combat +50%"
 	}
@@ -453,7 +453,7 @@
 		Romanian:"Castă militară"
 		Simplified_Chinese:"军人阶层"
 		Portuguese:"Casta Militar"
-		Russian:"военная каста"
+		Russian:"Военная каста"
 		German:"Militarisierte Burg"
 		French:"Caste militaire"
 	}
@@ -464,7 +464,7 @@
 		Romanian:"Fiecare oraș cu o garnizoană crește fericirea cu 1 și cultura cu 2"
 		Simplified_Chinese:"每座有守军的城市+1快乐和+2文化"
 		Portuguese:"+1 felicidade e +2 cultara por cidade com guarda"
-		Russian:"каждый город с гарнизоном увеличивает счастье на 1 и культуру на 2"
+		Russian:"Каждый город с гарнизоном увеличивает счастье на 1 и культуру на 2"
 		German:"Jede besatzte Stadt erhöht die Zufriedenheit um 1 und Kultur um 2"
 		French:"Dans chaque ville possédant une garnison, +1 Bonheur et +2 Culture"
 	}
@@ -475,7 +475,7 @@
 		Romanian:"Armată profesionistă"
 		Simplified_Chinese:"职业军队"
 		Portuguese:"Exército Profissional"
-		Russian:"профессиональная армия"
+		Russian:"Профессиональная армия"
 		German:"Professionelle Armee"
 		French:"Armée de métier"
 	}
@@ -486,7 +486,7 @@
 		Romanian:"Onoare realizată"
 		Simplified_Chinese:"完整的荣誉政策"
 		Portuguese:"Honra Completa"
-		Russian:"институт чести изучен"
+		Russian:"Честь Завершена"
 		German:"Ehre vollständig"
 		French:"Honneur complète"
 	}
@@ -497,7 +497,7 @@
 		Romanian:"Obține aur pentru fiecare unitate ucisă"
 		Simplified_Chinese:"杀死敌方单位时获得金钱"
 		Portuguese:"Ganhe ouro por cada unidade morta"
-		Russian:"получает золото за каждого убитого юнита"
+		Russian:"Получение золота за каждого убитого юнита"
 		German:"Jede zerstörte Einheit gibt Gold"
 		French:"Chaque unités tués rapporte de l'or"
 	}
@@ -517,7 +517,7 @@
 
 	"Building time of culture buildings reduced by 15%":{
 		Italian:"-15% tempi di costruzione per le strutture religiose"
-		Russian:"Время строительства культурных зданий уменьшена на 15%"
+		Russian:"Время строительства культурных зданий уменьшено на 15%"
 		Romanian:"Timpul de construcție pentru clădirile de cultură redus cu 15%"
 		Spanish:"Tiempo de construcción de edificios de cultura reducido un 15%"
 		Simplified_Chinese:"文化建筑的建造时间-15%"
@@ -561,7 +561,7 @@
 
 	"50% of excess happiness added to culture towards policies":{
 		Italian:"Il 50% di Felicità in eccesso si converte in Cultura per le future Politiche sociali"
-		Russian:"50% избытка счатья прибавляется к культуре для попкупки общественных институтов"
+		Russian:"50% избытка счатья прибавляется к культуре для покупки общественных институтов"
 		Romanian:"50% din fericirea în exces adăugată la cultură pentru politici"
 		Spanish:"50% de exceso de felicidad añadido a la cultura para políticas"
 		Simplified_Chinese:"快乐为正时每2点快乐+1点文化"
@@ -605,7 +605,7 @@
 
 	"+33% culture in all cities with a world wonder, immediately enter a golden age":{
 		Italian:"+33% Cultura in tutte le città con una Meraviglia Mondiale, e avvio di un'Età dell'Oro"
-		Russian:"+33% культуры во всез городах с чудом света, начинает в державе золотой век"
+		Russian:"+33% культуры во всех городах с чудом света, начинает в державе золотой век"
 		Romanian:"+33% cultură în toate orașele cu minuni, intră imediat în epoca de aur"
 		Spanish:"+33% cultura en todas las ciudades con una Maravilla. Inmediatamente entras en una Edad de Oro"
 		Simplified_Chinese:"所有拥有奇观的城市文化产出+33%，立即进入黄金时代"
@@ -638,7 +638,7 @@
 
 	"Piety Complete":{
 		Italian:"Pietà Completa"
-		Russian:"Набожность завершена"
+		Russian:"Набожность Завершена"
 		Romanian:"Credință realizată"
 		Spanish:"Piedad Completa"
 		Simplified_Chinese:"完整的虔信政策"
@@ -747,7 +747,7 @@
 
 	"Trade Unions":{
 		Italian:"File di carri"
-		Russian:"Караваны фургонов"
+		Russian:"Торговые союзы"
 		Romanian:"Uniuni comerciale"
 		Spanish:"Sindicatos"
 		Simplified_Chinese:"联合公会"
@@ -802,7 +802,7 @@
 
 	"Great Merchants are earned 25% faster, +1 Science from every Mint, Market, Bank and Stock Exchange.":{
 		Italian:"+25% tasso di nascita dei Grandi Mercanti, +1 Scienza da ogni Zecca, Mercato, Banca e Borsa"
-		Russian:"Великие торговцы появляют на 25% быстрее, +1 наука от каждого Монетного двора, Рынка, Банка и Биржи"
+		Russian:"Великие торговцы появляются на 25% быстрее, +1 наука от каждого Монетного двора, Рынка, Банка и Биржи"
 		Romanian:"Marii Comercianți sunt obținuți 25% mai repede, +1 știință din fiecare fabrică de bani, piață. bancă sau bursă de valori"
 		Spanish:"Grandes Mercantes son ganados 25% más rápido, +1 ciencia por cada casa de la moneda, mercado, banco y Bolsa de Valores"
 		Simplified_Chinese:"大商业家的诞生速度+25%，每座铸币厂、市场、银行和证券交易所+1科研"
@@ -857,7 +857,7 @@
 
 	"Commerce Complete":{
 		Italian:"Commercio Completo"
-		Russian:"Коммерция завершена"
+		Russian:"Коммерция Завершена"
 		Romanian:"Comerț realizat"
 		Spanish:"Comercio Completo"
 		Simplified_Chinese:"完整的商业政策"
@@ -969,7 +969,7 @@
 
 	"Sovereignty":{
 		Italian:"Sovranità"
-		Russian:"Суверинетет"
+		Russian:"Суверенитет"
 		Romanian:"Suveranitate"
 		Spanish:"Soberanía"
 		Simplified_Chinese:"主权在民"
@@ -1013,7 +1013,7 @@
 
 	"Rationalism Complete":{
 		Italian:"Razionalismo Completo"
-		Russian:"Рационализм завершён"
+		Russian:"Рационализм Завершён"
 		Romanian:"Raționalism realizat"
 		Spanish:"Racionalismo Completo"
 		Simplified_Chinese:"完整的理性政策"
@@ -1219,7 +1219,7 @@
 		Romanian:"Populism"
 		Simplified_Chinese:"民粹主义"
 		Portuguese:"Populismo"
-		Russian:"популизм"
+		Russian:"Популизм"
 		German:"Populismus"
 		French:"Populisme"
 	}
@@ -1230,7 +1230,7 @@
 		Romanian:"Unitățile militare rănite fac distrugeri +25%"
 		Simplified_Chinese:"受伤单位给予敌方造成的伤害+25%"
 		Portuguese:"+25% dano para unidades militares feridas"
-		Russian:"раненые военные юниты наносят на 25% урона больше"
+		Russian:"Раненые юниты наносят на 25% больше урона"
 		German:"Verwundete Militäreinheiten haben +25% Schaden"
 		French:"Les unités militaires blessés infligent +25% dégats"
 	}
@@ -1252,7 +1252,7 @@
 		Romanian:"Costul cumpărării de unități -33%"
 		Simplified_Chinese:"购买单位时的金钱花费-33%"
 		Portuguese:"-33% custo de comprar unidades"
-		Russian:"Стоимость покупки снижается на 33%"
+		Russian:"Стоимость покупки юнитов снижается на 33%"
 		German:"-33% Goldkosten für das Kaufen von Einheiten"
 		French:"Le coût d'achat des unités militaires est réduit de 33%"
 	}
@@ -1265,7 +1265,7 @@
 		Portuguese:"Fascismo"
 		German:"Faschismus"
 		French:"fascisme"
-		Russian:"фашизм"
+		Russian:"Фашизм"
 	}
 
 	"Quantity of strategic resources produced by the empire increased by 100%":{
@@ -1274,7 +1274,7 @@
 		Romanian:"Resursele strategice produse de imperiu crescute cu 100%"
 		Simplified_Chinese:"帝国生产的战略资源+100%"
 		Portuguese:"Quantidade de recursos estratégicos produzidos pelo império incrementado em 100%"
-		Russian:"количество стратегических ресурсов обрабатываемых империей, удваивается"
+		Russian:"Количество стратегических ресурсов обрабатываемых империей, удваивается"
 		German:"Menge an strategische Resourcen ist um 100% erhöht."
 		French:"La quantité de ressources stratégiques est doublé"
 	}
@@ -1285,7 +1285,7 @@
 		Romanian:"Stat polițienesc"
 		Simplified_Chinese:"警察国家"
 		Portuguese:"Estado de Polícia"
-		Russian:"полицейский участок"
+		Russian:"Полицейский участок"
 		German:"Polizeistaat"
 		French:"Etat policier"
 	}
@@ -1309,6 +1309,7 @@
 		Portuguese:"Guerra Total"
 		German:"Totaler Krieg"
 		French:"Guerre Totale"
+		Russian:"Тотальная война"
 	}
 
 	"+15% production when building military units and new military units start with 15 Experience":{
@@ -1317,7 +1318,7 @@
 		Romanian:"+15% producție când se construiesc unități militare, iar noile unități militare au 15 experiență din start"
 		Simplified_Chinese:"组建军事单位时产能积累速率+15%，新的军事单位初始有15点经验值"
 		Portuguese:"+15% produção ao construir unidades militares e novas unidades militares começam com 15 experiencia"
-		Russian:"+15% К производству военных юнитов, Военные юниты начинают с 15 опыта"
+		Russian:"+15% К производству военных юнитов, Военные юниты создаются с 15 опыта"
 		German:"+15% Produktion beim Bauen von Militäreinheiten; neue Militäreinheiten starten mit 15 Erfahrung (XP)"
 		French:"+15% production lors de la construction d'unités militaires, les nouvelles unités apparaissent avec +15 EXP"
 	}
@@ -1325,7 +1326,7 @@
 	"Autocracy Complete":{
 		Italian:"Autocrazia Completa"
 		French:"Autocratie complète"
-		Russian:"Автократия завершена"
+		Russian:"Автократия Завершена"
 		Simplified_Chinese:"完整的独裁政策"
 	}
 

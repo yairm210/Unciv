@@ -16,14 +16,17 @@
 
 	"land units":{
 		Simplified_Chinese:"陆军单位"
+		Russian:"наземные юниты"
 	}
 
 	"water units":{
 		Simplified_Chinese:"海军单位"
+		Russian:"морские юниты"
 	}
 
 	"air units":{
 		Simplified_Chinese:"空军单位"
+		Russian:"воздушные юниты"
 	}
 
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
@@ -568,6 +571,7 @@
 	"Hwach'a":{
 		Italian:"Hwach'a"
 		Simplified_Chinese:"火厢车"
+		Russian:"Хвачха"
 	}
 
 	"Limited Visibility":{
@@ -662,6 +666,7 @@
 	"Turtle Ship":{
 		Spanish:"Nave tartaruga"
 		Simplified_Chinese:"龟船"
+		Russian:"Кобуксон"
 	}
 
 	"+1 Visibility Range":{
@@ -1038,6 +1043,7 @@
 	
 	"6 tiles in every direction always visible":{
 		Simplified_Chinese:"6格视野范围内可见"
+		Russian:"Всегда видимы 6 клеток вокруг"
 	}
 
 	"Great War Bomber":{
@@ -1152,6 +1158,7 @@
 		Spanish:"B-17"
 		Simplified_Chinese:"B-17“空中堡垒”"
 		French:"B-17"
+		Russian:"B-17"
 	}
 
 	"Fighter":{
@@ -1167,6 +1174,7 @@
 	"Zero":{//Japanese unique
 		Italian:"Zero"
 		Simplified_Chinese:"零式战斗机"
+		Russian:"Истребитель Зеро"
 	}
 
 	"Helicopter Gunship":{
@@ -1250,7 +1258,7 @@
 		French:"Peut construire l'amélioration suivante: Monument culturel"
 		Romanian:"Poate construi îmbunătățire: Reper"
 		Simplified_Chinese:"可以建造设施：风景地标"
-		Russian:"Можно построить улучшение: ориентир"
+		Russian:"Можно построить улучшение: Достопримечательность"
 		Portuguese:"Pode construir melhoria: ponto de refêrencia"
 		German:"Kann Verbesserung errichten: Sehenswürdigkeit"
 	}
@@ -1645,7 +1653,7 @@
 		Italian:"Raggio di tiro ampliato"
 		German:"Reichweite"
 		French:"Portée"
-		Russian:"Расширенный радиус"
+		Russian:"Обзор"
 		Simplified_Chinese:"Range"// the unit attribute and the promotions ability have the same name,if we do not solve this problem,i will not translate it.
 	}
 
@@ -1653,7 +1661,7 @@
 		Italian:"+1 raggio"
 		German:"+1 Reichweite"
 		French:"+1 portée d'attaque"
-		Russian:"+1 радиус"
+		Russian:"+1 Обзор"
 		Simplified_Chinese:"+1射程"
 	}
 
@@ -1927,6 +1935,7 @@
 		Italian:"Sortita"
 		//same in french
 		Simplified_Chinese:"连续出击"
+		Russian:"Вылазка"
 	}
 
 	"1 extra Interception may be made per turn":{
@@ -2029,14 +2038,17 @@
 
 	"Bonus when intercepting [amount]%":{
 		Simplified_Chinese:"执行拦截任务时+[amount]%战斗力"
+		Russian:"Бонус при перехвате [amount]%"
 	}
 
 	"Ambush I":{
 		Simplified_Chinese:"伏击I级"
+		Russian:"Засада I"
 	}
 
 	"Ambush II":{
 		Simplified_Chinese:"伏击II级"
+		Russian:"Засада II"
 	}
 
 }
