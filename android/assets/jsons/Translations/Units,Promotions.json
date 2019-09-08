@@ -1887,14 +1887,14 @@
 		Russian:"Данный юнит и юниты на близлежащих территориях восстанавливают 5 ОЗ за ход. Данный юнит восстанавливает ещё 5 ОЗ вне дружественной территории"
 	}
 
-	"Targeting I (air)":{
+	"Targeting I (air)":{//Should be Air Targeting I
 		Italian:"Puntamento aereo I"
 		French:"Visée I (air)"
 		Russian:"Прицеливание I (воздух)"
 		Simplified_Chinese:"空·定位I级"
 	}
 
-	"Targeting II (air)":{
+	"Targeting II (air)":{//Should be Air Targeting II
 		Italian:"Puntamento aereo II"
 		French:"Visée II (air)"
 		Russian:"Прицеливание II (воздух)"
@@ -2042,16 +2042,19 @@
 	}
 
 	"Bonus when intercepting [amount]%":{
+		Italian:"[amount]% bonus d'intercettazione"
 		Simplified_Chinese:"执行拦截任务时+[amount]%战斗力"
 		Russian:"Бонус при перехвате [amount]%"
 	}
 
-	"Ambush I":{
+	"Ambush I":{//Should be Air Ambush I
+		Italian:"Imboscata aerea I"
 		Simplified_Chinese:"伏击I级"
 		Russian:"Засада I"
 	}
 
-	"Ambush II":{
+	"Ambush II":{//Should be Air Ambush II
+		Italian:"Imboscata aerea II"
 		Simplified_Chinese:"伏击II级"
 		Russian:"Засада II"
 	}
