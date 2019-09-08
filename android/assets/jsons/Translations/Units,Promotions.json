@@ -27,6 +27,7 @@
 	}
 
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
+		English:"Water Civilian"
 		Italian:"marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
 		French:"Civil embarqué"
@@ -46,6 +47,7 @@
 	}
 
 	"WaterMelee":{
+		English:"Water Melee"
 		Italian:"marittima da mischia" //Unità marittima da mischia
 		Simplified_Chinese:"海军近战单位"
 		French:"Navire de combat rapproché"
@@ -65,6 +67,7 @@
 	}
 
 	"WaterRanged":{
+		English:"Water Ranged"
 		Italian:"marittima a distanza" //Unità marittima a distanza
 		Simplified_Chinese:"海军远程单位"
 		French:"Navire de combat à distance"
@@ -72,6 +75,7 @@
 	}
 
 	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
+		English:"Submarine"
 		Italian:"sottomarina" //Unità sottomarina
 		Simplified_Chinese:"海军潜艇单位"
 		French:"Navires sous-marins"

@@ -24,6 +24,7 @@ class CityInfo {
 
     var location: Vector2 = Vector2.Zero
     var name: String = ""
+    var foundingCiv = ""
     var health = 200
     var resistanceCounter = 0
 
@@ -41,6 +42,7 @@ class CityInfo {
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
         this.civInfo = civInfo
+        foundingCiv = civInfo.civName
         this.location = cityLocation
         setTransients()
 
