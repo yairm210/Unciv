@@ -81,7 +81,7 @@
 		Simplified_Chinese:"山脉"
 		German:"Berge"
 		French:"Montagne"
-		Russian:"гора"
+		Russian:"Горы"
 		Portuguese:"Montanha"
 	}
 
@@ -134,7 +134,7 @@
 
 	"Snow":{
 		Italian:"Neve"
-		Russian:"снег"
+		Russian:"Снег"
 		French:"Neige"
 		Romanian:"Zăpadă"
 		German:"Schnee"
@@ -146,7 +146,7 @@
 
 	"Coast":{
 		Italian:"Costa"
-		Russian:"побережье"
+		Russian:"Побережье"
 		French:"Côte"
 		Romanian:"Costa"
 		German:"Küste"
@@ -158,7 +158,7 @@
 
 	"Ocean":{
 		Italian:"Oceano"
-		Russian:"океан"
+		Russian:"Океан"
 		French:"Océan"
 		Romanian:"Ocean"
 		German:"Ozean"
@@ -170,7 +170,7 @@
 
 	"Flood plains":{
 		Italian:"Pianure allagate"
-		Russian:"Пищевые равнины"
+		Russian:"Пойма"
 		French:"Plaines inondables"
 		Romanian:"Câmpii inundate"
 		German:"Flussaue" //according to: https://de.wikipedia.org/wiki/Flussaue
@@ -188,7 +188,7 @@
 		Portuguese:"Impassevel"
 		German:"Unpassierbar"
 		French:"Impraticable"
-		Russian:"нечувствительный"
+		Russian:"Непроходимый"
 	}
 		
 /////////////	Bonus Resources
@@ -274,11 +274,12 @@
 		Simplified_Chinese:"鱼群"
 		Portuguese:"Peixes"
 		German:"Fisch"
+		Russian:"Рыба"
 	}
 
 	"Bison":{
 		Italian:"Bisonti"
-		Russian:"бизоны"
+		Russian:"Бизоны"
 		French:"Bison"
 		Romanian:"Bizonii"
 		German:"Bison"
@@ -441,6 +442,7 @@
 		Italian:"Avorio"
 		Simplified_Chinese:"象牙"
 		French:"Ivoire"
+		Russian:"Слоновая кость"
 	}
 
 	"Silk":{
@@ -529,7 +531,7 @@
 
 	"Copper":{
 		Italian:"Rame"
-		Russian:"медь"
+		Russian:"Медь"
 		French:"Cuivre"
 		Romanian:"Cupru"
 		German:"Kupfer"
@@ -541,7 +543,7 @@
 
 	"Cocoa":{
 		Italian:"Cacao"
-		Russian:"какао"
+		Russian:"Какао"
 		French:"Cacao"
 		Romanian:"Cacao"
 		German:"Kakao"
@@ -565,7 +567,7 @@
 
 	"Citrus":{
 		Italian:"Agrumi"
-		Russian:"цитрусовый"
+		Russian:"Цитрусы"
 		French:"Agrumes"
 		Romanian:"Citrus"
 		German:"Zitrusgewächs"
@@ -701,6 +703,7 @@
 		Simplified_Chinese:"渔船"
 		Portuguese:"Barcos de pesca"
 		German:"Fischerboote"
+		Russian:"Рыбацкие лодки"
 	}
 	
 	"Road":{
@@ -719,6 +722,7 @@
 		Italian:"Rimuovi Strada"
 		Simplified_Chinese:"拆毁道路"
 		French:"Retirer la route"
+		Russian:"Убрать дорогу"
 	}
 
 	"Railroad":{
@@ -737,6 +741,7 @@
 		Italian:"Rimuovi Ferrovia"
 		Simplified_Chinese:"拆除铁路"
 		French:"Retirer les rails"
+		Russian:"Убрать железную дорогу"
 	}
 
 	"Remove Forest":{
@@ -850,6 +855,7 @@
 	"Barbarian encampment":{
 		Italian:"Accampamento barbaro"
 		Simplified_Chinese:"蛮族营地"
+		Russian:"Лагерь варваров"
 	}
 
 }
