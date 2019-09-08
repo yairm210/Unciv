@@ -8,7 +8,7 @@
 		German:"Aus Zwischenablage laden"
 		Dutch:"Gekopieerde data laden"
 		Spanish:"Cargar datos copiados"
-		Simplified_Chinese:"加载复制的数据"
+		Simplified_Chinese:"读取剪贴板中的游戏数据"
 		Portuguese:"Carregar dados copiados"
 		Japanese:"コピーしたデータを読み込む"
 	}
@@ -16,7 +16,7 @@
 	"Could not load game from clipboard!":{
 		Italian:"Impossibile caricare partita dagli appunti!"
 		Romanian:"Jocul nu a putut fi încărcat din clipboard!"
-		Simplified_Chinese:"无法从剪贴板加载游戏!"
+		Simplified_Chinese:"无法从剪贴板读取游戏!"
 		Portuguese:"Não foi possivel carregar o jogo da prancheta"
 		German:"Das Spiel konnte nicht aus der Zwischenablage geladen werden!"
 		French:"Impossible de charger la partie depuis le presse-papier"
@@ -25,23 +25,6 @@
 		Dutch:"Kon game niet van klembord laden!"
 		Spanish:"No se pudo cargar el juego desde el portapapeles!"
 	}
-
-////// New game screen
-
-/*
-	"Civilization":{	//this word is not used in the game.
-		Italian:"Civiltà"
-		Russian:"Цивилизация"
-		French:"Civilisation"
-		Romanian:"Civilizaţie"
-		Spanish:"Civilización"
-		Simplified_Chinese:"文明"
-		Portuguese:"Civilização"
-		German:"Zivilisation"
-	}
-*/
-
-
 	
 	"Start game!":{
 		Italian:"Comincia la tua avventura!"
@@ -78,7 +61,7 @@
 	"No barbarians":{//it can be showed correct as usual, so I'm not translate it.
 		Italian:"Niente barbari"
 		French:"Pas de barbare"
-		//Simplified_Chinese:"无蛮族"
+		Simplified_Chinese:"无蛮族"
 		Russian:"Без варваров"
 	}
 
@@ -92,21 +75,21 @@
 	"Scientific": {//it can be showed correct as usual in chinese, so I'm not translate it.
 		Italian:"Scientifica"
 		French: "Scientifique"
-		//Simplified_Chinese:"科技"
+		Simplified_Chinese:"科技胜利"
 		Russian:"Научная"
 	}
 
 	"Domination": {//it can be showed correct as usual in chinese, so I'm not translate it.
 		Italian:"Per Dominazione"
 		French: "Conquete"
-		//Simplified_Chinese:"征服"
+		Simplified_Chinese:"征服胜利"
 		Russian:"Завоевание"
 	},
 
 	"Cultural": {//it can be showed correct as usual in chinese, so I'm not translate it.
 		Italian:"Culturale"
 		French: "Culturelle"
-		//Simplified_Chinese:"文化"
+		Simplified_Chinese:"文化胜利"
 		Russian:"Культурная"
 	}
 	
@@ -302,7 +285,7 @@
 	
 	"User Id":{
 		Italian:"ID Utente"
-		Simplified_Chinese:"用户ID"
+		Simplified_Chinese:"玩家Id"
 		Russian:"ID игрока"
 	}
 	
@@ -314,7 +297,7 @@
 	
 	"Username":{
 		Italian:"Nome utente"
-		Simplified_Chinese:"用户名"
+		Simplified_Chinese:"玩家姓名"
 		Russian:"Пользователь"
 	}
 	
@@ -336,21 +319,25 @@
 	
 	"Join Game":{
 		Italian:"Unisciti"
+		Simplified_Chinese:"加入游戏"
 		Russian:"Подключиться"
 	}
 	
 	"Invalid game ID!":{
 		Italian:"ID Partita non corretto"
+		Simplified_Chinese:"无效的游戏Id！"
 		Russian:"Некорректный ID игры!"
 	}
 	
 	"Copy User Id":{
 		Italian:"Copia ID Utente"
+		Simplified_Chinese:"复制玩家Id"
 		Russian:"Скопировать ID игрока"
 	}
 	
 	"Copy Game Id":{
 		Italian:"Copia ID Partita"
+		Simplified_Chinese:"复制游戏Id"
 		Russian:"Скопировать ID игры"
 	}
 	
@@ -432,6 +419,10 @@
 		Portuguese:"Partidas salvas"
 	}
 
+	"Show autosaves":{
+		Simplified_Chinese:"显示自动存档"
+	}
+
 	"Saved game name":{
 		Italian:"Nome del salvataggio"
 		Russian:"Имя сохранённой игры"
@@ -444,14 +435,18 @@
 		Portuguese:"Nome do jogo salvo"
 	}
 
-	"Copy to clipboard":{ //shouldn't it be "copy saved game to clipboard" ? //Y: technichally yes, but that's longer so doesn't fit as well into the button-space
+	"Copy to clipboard":{ //this button exsits in "Save game" and "Map editor", it means that we can copy "current game status" to clipboard, "current game status" is not a existing file but some words.
 		Italian:"Copia su appunti"
 		French:"Copier dans le presse-papier"
-		Simplified_Chinese:"复制到剪贴板"
+		Simplified_Chinese:"复制当前游戏数据到剪贴板"
 		Portuguese:"Copiar" //means copy but it is correct because you can actually paste it as text
 		Russian:"Скопировать в буфер"
 	}
-
+	
+	"Copy saved game to clipboard":{//this button exsits in "Load game",it means that we have a "saved game" file, so we can copy its data to clipboard.
+		Simplified_Chinese:"复制游戏存档到剪贴板"
+	}
+	
 	"Could not load game":{
 		Italian:"Impossibile caricare partita"
 		Russian:"Не удалось загрузить игру"
@@ -460,7 +455,7 @@
 		German:"Spiel konnte nicht geladen werden"
 		Dutch:"Spel kon niet geladen worden"
 		Spanish:"Imposible cargar partida"
-		Simplified_Chinese:"无法载入游戏"
+		Simplified_Chinese:"无法读取游戏"
 		Portuguese:"Não foi possivel carregar a partida salva"
 	}
 
@@ -557,7 +552,7 @@
 	"Turns between autosaves":{
 		Italian:"Turni tra autosalvataggi"
 		French:"Tours avant sauvegarde automatique"
-		Simplified_Chinese:"自动存档回合数"
+		Simplified_Chinese:"自动存档/回合"
 		Portuguese:"Turnos entre autosaves"
 		Russian:"Кол-во ходов между автосохранениями"
 	}

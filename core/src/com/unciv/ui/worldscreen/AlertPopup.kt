@@ -62,7 +62,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
             AlertType.CityConquered -> {
                 addGoodSizedLabel("What would you like to do with the city?").row()
                 add(getCloseButton("Annex")).row()
-                add(TextButton("Raze", skin).onClick {
+                add(TextButton("Raze".tr(), skin).onClick {
                     worldScreen.viewingCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
                     worldScreen.shouldUpdate=true
                     close()

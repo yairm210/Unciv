@@ -19,7 +19,7 @@ import java.util.*
 
 class LoadGameScreen : PickerScreen() {
     lateinit var selectedSave:String
-    val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard",skin)
+    val copySavedGameToClipboardButton = TextButton("Copy saved game to clipboard".tr(),skin)
     val saveTable = Table()
     val deleteSaveButton = TextButton("Delete save".tr(), skin)
 

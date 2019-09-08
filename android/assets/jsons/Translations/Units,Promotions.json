@@ -482,13 +482,6 @@
 		Portuguese:"Pode se mover após atacar"
 	}
 
-	"Penalty vs City 33%":{
-		Italian:"+33% Malus contro Città"
-		Simplified_Chinese:"攻击城市时-33%战斗力"
-		French:"Pénalité contre les villes -33%"
-		Russian:"Штраф против Города: 33%"
-	}
-
 	"Companion Cavalry":{	
 		Italian:"Cavalleria dei Compagni"
 		Russian:"Сопутствующая кавалерия"
@@ -1467,7 +1460,13 @@
 	
 	"units in rough terrain":{
 		Italian:"unità su terreno accidentato"
-		Russian:"юниты на пересечённой местности"
+		Romanian:"unități în teren accidentat"
+		Spanish:"unidades en terreno accidentado"
+		Simplified_Chinese:"位于复杂地形的单位"
+		German:"Einheiten in unwegsamem Gelände"
+		French:"unités en terrain accidenté"
+		Portuguese:"unidades em terreno acidentado"
+		Russian:"юниты на пересеченной местности"
 	}
 
 	"Barrage I":{
