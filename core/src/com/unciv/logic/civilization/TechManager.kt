@@ -2,6 +2,7 @@ package com.unciv.logic.civilization
 
 
 import com.badlogic.gdx.graphics.Color
+import com.unciv.Constants
 import com.unciv.logic.map.RoadStatus
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tech.Technology
@@ -86,7 +87,7 @@ class TechManager {
             val techNameToCheck = checkPrerequisites.pop()
             // future tech can have been researched even when we're researching it,
             // so...if we skip it we'll end up with 0 techs in the "required techs", which will mean that we don't have annything to research. Yeah.
-            if (techNameToCheck!="Future Tech" &&
+            if (techNameToCheck!=Constants.futureTech &&
                     (isResearched(techNameToCheck) || prerequisites.contains(techNameToCheck)) )
                 continue //no need to add or check prerequisites
             val techToCheck = GameBasics.Technologies[techNameToCheck]
@@ -116,7 +117,7 @@ class TechManager {
     }
 
     fun addTechnology(techName:String) {
-        if(techName!="Future Tech")
+        if(techName!= Constants.futureTech)
             techsToResearch.remove(techName)
 
         val previousEra = civInfo.getEra()

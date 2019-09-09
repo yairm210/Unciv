@@ -246,7 +246,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
         val researchableTechs = GameBasics.Technologies.values.filter { !civInfo.tech.isResearched(it.name) && civInfo.tech.canBeResearched(it.name) }
         if (civInfo.tech.currentTechnology() == null && researchableTechs.isEmpty())
-            civInfo.tech.techsToResearch.add("Future Tech")
+            civInfo.tech.techsToResearch.add(Constants.futureTech)
 
         if (civInfo.tech.currentTechnology() == null) {
             val buttonPic = Table()
