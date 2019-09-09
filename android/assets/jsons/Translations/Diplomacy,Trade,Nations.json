@@ -184,13 +184,6 @@
 		Simplified_Chinese:"我们遇到了城邦--[name]！"		
 		Russian:"Мы обнаружили город-государство [name]!"
 	}
-<<<<<<< HEAD
-	
-	"We have encountered [civName]!":{
-		Simplified_Chinese:"我们遇到了文明--[civName]！"
-	}
-=======
->>>>>>> upstream/master
 
 	// Friendship declaration flavor texts
 	"Declare Friendship ([numberOfTurns] turns)":{
