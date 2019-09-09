@@ -575,5 +575,9 @@
  	"[nation] agreed to stop settling cities near us!": {
 		Italian:"[nation] ha promesso di smettere di fondare città vicino a noi!"
 	},
+
+ 	"[nation] refused to stop settling cities near us!": {
+		Italian:"[nation] ha rifiutato di smettere di fondare città vicino a noi!"
+	},
 	
 }
