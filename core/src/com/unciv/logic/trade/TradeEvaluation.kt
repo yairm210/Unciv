@@ -11,6 +11,38 @@ import kotlin.math.min
 import kotlin.math.sqrt
 
 class TradeEvaluation{
+
+    fun isTradeValid(trade:Trade, offerer:CivilizationInfo, tradePartner: CivilizationInfo): Boolean {
+        for(offer in trade.ourOffers)
+            if(!isOfferValid(offer,offerer))
+                return false
+        for(offer in trade.theirOffers)
+            if(!isOfferValid(offer,tradePartner))
+                return false
+        return true
+    }
+
+    private fun isOfferValid(tradeOffer: TradeOffer, offerer:CivilizationInfo): Boolean {
+
+        fun hasResource(tradeOffer: TradeOffer): Boolean {
+            val resourcesByName = offerer.getCivResourcesByName()
+            return resourcesByName.containsKey(tradeOffer.name) && resourcesByName[tradeOffer.name]!! >= tradeOffer.amount
+        }
+
+        when(tradeOffer.type){
+            TradeType.Gold -> return true // even if they go negative it's okay
+            TradeType.Gold_Per_Turn -> return true // even if they go negative it's okay
+            TradeType.Treaty -> return true
+            TradeType.Agreement -> return true
+            TradeType.Luxury_Resource -> return hasResource(tradeOffer)
+            TradeType.Strategic_Resource -> return hasResource(tradeOffer)
+            TradeType.Technology -> return true
+            TradeType.Introduction -> return true
+            TradeType.WarDeclaration -> return true
+            TradeType.City -> return offerer.cities.any { it.name==tradeOffer.name }
+        }
+    }
+
     fun isTradeAcceptable(trade: Trade, evaluator: CivilizationInfo, tradePartner: CivilizationInfo): Boolean {
         var sumOfTheirOffers = trade.theirOffers.asSequence()
                 .filter { it.type!= TradeType.Treaty } // since treaties should only be evaluated once for 2 sides

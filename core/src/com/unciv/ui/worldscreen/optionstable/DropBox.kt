@@ -64,6 +64,11 @@ class DropBox(){
                 data,"application/octet-stream", """{"path":"$fileName"$overwriteModeString}""")
     }
 
+    fun deleteFile(fileName:String){
+        val response = dropboxApi("https://api.dropboxapi.com/2/files/delete_v2",
+                "{\"path\":\"$fileName\"}","application/json")
+    }
+
 
     class FolderList{
         var entries = ArrayList<FolderListEntry>()

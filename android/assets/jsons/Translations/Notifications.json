@@ -571,5 +571,9 @@
 		Russian:"Торговая сделка с [nation] была завершена досрочно"
 		Simplified_Chinese:"我们与[nation]的贸易已被消减"
 	},
+
+ 	"[nation] agreed to stop settling cities near us!": {
+		Italian:"[nation] ha promesso di smettere di fondare città vicino a noi!"
+	},
 	
 }

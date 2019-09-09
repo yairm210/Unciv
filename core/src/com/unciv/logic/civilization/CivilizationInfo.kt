@@ -12,6 +12,7 @@ import com.unciv.logic.civilization.diplomacy.DiplomacyManager
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
+import com.unciv.logic.trade.TradeEvaluation
 import com.unciv.logic.trade.TradeRequest
 import com.unciv.models.gamebasics.*
 import com.unciv.models.gamebasics.tech.TechEra
@@ -56,6 +57,8 @@ class CivilizationInfo {
     var diplomacy = HashMap<String, DiplomacyManager>()
     var notifications = ArrayList<Notification>()
     val popupAlerts = ArrayList<PopupAlert>()
+
+    //** for trades here, ourOffers is the current civ's offers, and theirOffers is what the requesting civ offers  */
     val tradeRequests = ArrayList<TradeRequest>()
 
     // if we only use lists, and change the list each time the cities are changed,
@@ -332,6 +335,14 @@ class CivilizationInfo {
         for (city in cities) city.startTurn()
 
         getCivUnits().toList().forEach { it.startTurn() }
+
+        for(tradeRequest in tradeRequests.toList()) { // remove trade requests where one of the sides can no longer supply
+            val offeringCiv = gameInfo.getCivilization(tradeRequest.requestingCiv)
+            if (offeringCiv.isDefeated() || !TradeEvaluation().isTradeValid(tradeRequest.trade,this, offeringCiv)) {
+                tradeRequests.remove(tradeRequest)
+                offeringCiv.addNotification("Our proposed trade is no longer relevant!", Color.GOLD)
+            }
+        }
     }
 
     fun endTurn() {

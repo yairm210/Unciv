@@ -15,21 +15,25 @@
 	}
 
 	"land units":{
+		Italian:"unità terrestri"
 		Simplified_Chinese:"陆军单位"
 		Russian:"наземные юниты"
 	}
 
 	"water units":{
+		Italian:"unità anfibie"
 		Simplified_Chinese:"海军单位"
 		Russian:"морские юниты"
 	}
 
 	"air units":{
+		Italian:"unità aeree"
 		Simplified_Chinese:"空军单位"
 		Russian:"воздушные юниты"
 	}
 
 	"WaterCivilian":{ // In the file "Uints.json", every unit have the "unitType", i think we should show the "unitType" in wiki,because some units get a bonus attack to other units.
+		English:"Water Civilian"
 		Italian:"marittima civile" //Unità marittima civile
 		Simplified_Chinese:"海上平民单位"
 		French:"Civil embarqué"
@@ -49,6 +53,7 @@
 	}
 
 	"WaterMelee":{
+		English:"Water Melee"
 		Italian:"marittima da mischia" //Unità marittima da mischia
 		Simplified_Chinese:"海军近战单位"
 		French:"Navire de combat rapproché"
@@ -68,6 +73,7 @@
 	}
 
 	"WaterRanged":{
+		English:"Water Ranged"
 		Italian:"marittima a distanza" //Unità marittima a distanza
 		Simplified_Chinese:"海军远程单位"
 		French:"Navire de combat à distance"
@@ -75,6 +81,7 @@
 	}
 
 	"WaterSubmarine":{ //In the file "Uints.json", every unit have the "unitType".This unitType includes submarine and nuclear submarine.
+		English:"Submarine"
 		Italian:"sottomarina" //Unità sottomarina
 		Simplified_Chinese:"海军潜艇单位"
 		French:"Navires sous-marins"
@@ -1042,6 +1049,7 @@
 	}
 	
 	"6 tiles in every direction always visible":{
+		Italian:"6 caselle in ogni direzione sempre visibili"
 		Simplified_Chinese:"6格视野范围内可见"
 		Russian:"Всегда видимы 6 клеток вокруг"
 	}
@@ -1448,7 +1456,7 @@
 	}
 
 	"units in open terrain":{
-		Italian:"unità in terreno aperto"
+		Italian:"unità su terreno aperto"
 		Simplified_Chinese:"位于开阔地形的单位"
 		French:"Unités en terrain ouvert"
 		Russian:"юниты на открытой местности"
@@ -1882,14 +1890,14 @@
 		Russian:"Данный юнит и юниты на близлежащих территориях восстанавливают 5 ОЗ за ход. Данный юнит восстанавливает ещё 5 ОЗ вне дружественной территории"
 	}
 
-	"Targeting I (air)":{
+	"Targeting I (air)":{//Should be Air Targeting I
 		Italian:"Puntamento aereo I"
 		French:"Visée I (air)"
 		Russian:"Прицеливание I (воздух)"
 		Simplified_Chinese:"空·定位I级"
 	}
 
-	"Targeting II (air)":{
+	"Targeting II (air)":{//Should be Air Targeting II
 		Italian:"Puntamento aereo II"
 		French:"Visée II (air)"
 		Russian:"Прицеливание II (воздух)"
@@ -2037,16 +2045,19 @@
 	}
 
 	"Bonus when intercepting [amount]%":{
+		Italian:"[amount]% bonus d'intercettazione"
 		Simplified_Chinese:"执行拦截任务时+[amount]%战斗力"
 		Russian:"Бонус при перехвате [amount]%"
 	}
 
-	"Ambush I":{
+	"Ambush I":{//Should be Air Ambush I
+		Italian:"Imboscata aerea I"
 		Simplified_Chinese:"伏击I级"
 		Russian:"Засада I"
 	}
 
-	"Ambush II":{
+	"Ambush II":{//Should be Air Ambush II
+		Italian:"Imboscata aerea II"
 		Simplified_Chinese:"伏击II级"
 		Russian:"Засада II"
 	}
