@@ -1272,14 +1272,17 @@
 	}
 	
 	"Bombard":{
+		Italian:"Bombarda"
 		Simplified_Chinese:"轰击"
 	}
 
 	"Captured!":{
+		Italian:"Cattura!"
 		Simplified_Chinese:"可被俘虏！"
 	}
 
 	"defence vs ranged":{
+		Italian:"difesa contro unità da tiro"
 		Simplified_Chinese:"对方攻击类型为远程"
 	}
 
