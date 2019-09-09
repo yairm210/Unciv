@@ -125,9 +125,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 civTech.isResearched(techName) && techName!="Future Tech" -> techButton.color = researchedTechColor
                 tempTechsToResearch.isNotEmpty() && tempTechsToResearch.first() == techName -> techButton.color = currentTechColor
                 tempTechsToResearch.contains(techName) -> techButton.color = queuedTechColor
-                researchableTechs.contains(techName) -> techButton.color = researchableTechColor
                 else -> techButton.color = Color.BLACK
             }
+            //the tech that can be selected to research immediately should be always researchableTechColor, it's very good when we pick a free tech.
+            if (researchableTechs.contains(techName)&&!civTech.isResearched(techName)) techButton.color = researchableTechColor
 
             var text = techName.tr()
 
@@ -161,11 +162,11 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
         if (isFreeTechPick) {
             selectTechnologyForFreeTech(tech)
+            setButtonsInfo()
             return
         }
 
         if (civTech.isResearched(tech.name) && tech.name != "Future Tech") {
-            rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()
             return
