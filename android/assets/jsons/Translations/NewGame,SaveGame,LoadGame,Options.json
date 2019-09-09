@@ -420,6 +420,7 @@
 	}
 
 	"Show autosaves":{
+		Italian:"Mostra autosalvataggi"
 		Simplified_Chinese:"显示自动存档"
 	}
 
@@ -444,6 +445,7 @@
 	}
 	
 	"Copy saved game to clipboard":{//this button exsits in "Load game",it means that we have a "saved game" file, so we can copy its data to clipboard.
+		Italian:"Copia salvataggio su appunti"
 		Simplified_Chinese:"复制游戏存档到剪贴板"
 	}
 	
