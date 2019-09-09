@@ -189,7 +189,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
 
 
     private fun selectTechnologyForFreeTech(tech: Technology) {
-        if (researchableTechs.contains(tech.name)) {
+        if (researchableTechs.contains(tech.name)&&!civTech.isResearched(tech.name)) {
             pick("Pick [${selectedTech!!.name}] as free tech".tr())
         } else {
             rightSideButton.setText("Pick a free tech".tr())
