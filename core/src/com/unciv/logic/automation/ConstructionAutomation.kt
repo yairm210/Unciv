@@ -231,7 +231,8 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addFoodBuildingChoice() {
-        val foodBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Food) }  // only stat related in unique
+        val foodBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Food)
+                || it.getBaseBuilding().name == "Aqueduct" || it.getBaseBuilding().name == "Medical Lab"}  // only stat related in unique
                 .minBy { it.cost }
         if (foodBuilding != null) {
             var modifier = 1f

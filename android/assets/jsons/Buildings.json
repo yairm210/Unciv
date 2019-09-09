@@ -715,7 +715,8 @@
 		culture:3,
 		isWonder:true,
 		uniques:["Defensive buildings in all cities are 25% more effective"],
-		requiredTech:"Railroad"
+		requiredTech:"Railroad",
+		quote:"'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed"
 	},
 	{
 		name:"Neuschwanstein",

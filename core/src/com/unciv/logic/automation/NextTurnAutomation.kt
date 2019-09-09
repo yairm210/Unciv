@@ -174,7 +174,7 @@ class NextTurnAutomation{
 
             val tech: Technology
             if (researchableTechs.isEmpty()) { // no non-researched techs available, go for future tech
-                civInfo.tech.techsToResearch.add("Future Tech")
+                civInfo.tech.techsToResearch.add(Constants.futureTech)
                 return
             }
 

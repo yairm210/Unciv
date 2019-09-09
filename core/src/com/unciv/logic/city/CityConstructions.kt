@@ -3,6 +3,8 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.unciv.Constants
 import com.unciv.logic.automation.ConstructionAutomation
+import com.unciv.logic.civilization.AlertType
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.models.gamebasics.Building
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tr
@@ -192,6 +194,7 @@ class CityConstructions {
         inProgressConstructions.remove(currentConstruction)
 
         if (construction is Building && construction.isWonder) {
+            cityInfo.civInfo.popupAlerts.add(PopupAlert(AlertType.WonderBuilt, construction.name))
             for (civ in cityInfo.civInfo.gameInfo.civilizations) {
                 if (civ.exploredTiles.contains(cityInfo.location))
                     civ.addNotification("[$currentConstruction] has been built in [${cityInfo.name}]", cityInfo.location, Color.BROWN)

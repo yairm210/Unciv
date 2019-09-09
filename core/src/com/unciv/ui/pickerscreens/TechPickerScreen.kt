@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
+import com.unciv.Constants
 import com.unciv.UnCivGame
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.TechManager
@@ -121,11 +122,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
     private fun setButtonsInfo() {
         for (techName in techNameToButton.keys) {
             val techButton = techNameToButton[techName]!!
-            when {
-                civTech.isResearched(techName) && techName!="Future Tech" -> techButton.color = researchedTechColor
-                tempTechsToResearch.isNotEmpty() && tempTechsToResearch.first() == techName -> techButton.color = currentTechColor
-                tempTechsToResearch.contains(techName) -> techButton.color = queuedTechColor
-                else -> techButton.color = Color.BLACK
+            techButton.color = when {
+                civTech.isResearched(techName) && techName != Constants.futureTech -> researchedTechColor
+                // if we're here to pick a free tech, show the current tech like the rest of the researchables so it'll be obvious what we can pick
+                tempTechsToResearch.firstOrNull() == techName && !isFreeTechPick -> currentTechColor
+                researchableTechs.contains(techName) && !civTech.isResearched(techName) -> researchableTechColor
+                tempTechsToResearch.contains(techName) -> queuedTechColor
+                else -> Color.BLACK
             }
             //the tech that can be selected to research immediately should be always researchableTechColor, it's very good when we pick a free tech.
             if (researchableTechs.contains(techName)&&!civTech.isResearched(techName)) techButton.color = researchableTechColor
@@ -140,7 +143,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 text += " (" + tempTechsToResearch.indexOf(techName) + ")"
             }
 
-            if (!civTech.isResearched(techName) || techName=="Future Tech")
+            if (!civTech.isResearched(techName) || techName== Constants.futureTech)
                 text += "\r\n" + turnsToTech[techName] + " {turns}".tr()
 
             techButton.text.setText(text)
@@ -166,7 +169,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             return
         }
 
-        if (civTech.isResearched(tech.name) && tech.name != "Future Tech") {
+        if (civTech.isResearched(tech.name) && tech.name != Constants.futureTech) {
             rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()
