@@ -44,12 +44,14 @@ class TechManager {
         var techCost = GameBasics.Technologies[techName]!!.cost.toFloat()
         techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
-        techCost *= (1 + 0.02 * (civInfo.cities.size -1 )).toFloat()
+        techCost *= 1 + (civInfo.cities.size -1 ) * 0.02f // each city increases tech cost by 2%, as per https://civilization.fandom.com/wiki/Science_(Civ5)
         return techCost.toInt()
     }
 
-    fun currentTechnology(): Technology? = currentTechnologyName()?.let {
-        GameBasics.Technologies[it]
+    fun currentTechnology(): Technology? {
+        val currentTechnologyName = currentTechnologyName()
+        if (currentTechnologyName == null) return null
+        return GameBasics.Technologies[currentTechnologyName]
     }
 
     fun currentTechnologyName(): String? {

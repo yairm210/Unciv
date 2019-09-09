@@ -10,6 +10,7 @@ enum class AlertType{
     CitiesSettledNearOtherCiv,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
+    WonderBuilt
 }
 
 class PopupAlert {
