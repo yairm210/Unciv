@@ -44,6 +44,7 @@ class TechManager {
         var techCost = GameBasics.Technologies[techName]!!.cost.toFloat()
         techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
+        techCost *= (1 + 0.02 * (civInfo.cities.size -1 )).toFloat()
         return techCost.toInt()
     }
 
