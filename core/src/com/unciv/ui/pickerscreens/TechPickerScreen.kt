@@ -167,6 +167,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         }
 
         if (civTech.isResearched(tech.name) && tech.name != "Future Tech") {
+            rightSideButton.setText("Pick a tech".tr())
             rightSideButton.disable()
             setButtonsInfo()
             return
