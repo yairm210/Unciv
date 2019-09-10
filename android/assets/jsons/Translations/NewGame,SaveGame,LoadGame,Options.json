@@ -647,6 +647,10 @@
 		Russian:"Автопроизводство в городах"
 	}
 	
+	"Show minimap":{
+		Simplified_Chinese:"显示小地图"
+	}
+
 	"Fontset":{
 		Italian:"Fontset"
 		Simplified_Chinese:"字体设置"
