@@ -221,7 +221,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
 
     private fun getCityInfoTable(): Table {
-        val iconSize = 20f//if you set this too low, there is a chance that the tables will be misaligned
+        val iconSize = 50f//if you set this too low, there is a chance that the tables will be misaligned
         val padding = 5f
 
         val cityInfoTableIcons = Table(skin)
@@ -378,7 +378,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
                 .filter { it.resourceType!=ResourceType.Bonus }.distinct().sortedBy { it.resourceType }
 
         for(resource in resources)
-            resourcesTable.add(ImageGetter.getResourceImage(resource.name,30f))
+            resourcesTable.add(ImageGetter.getResourceImage(resource.name,50f))
         resourcesTable.addSeparator()
 
         val origins = resourceDrilldown.map { it.origin }.distinct()
