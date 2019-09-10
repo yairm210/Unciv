@@ -130,8 +130,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                 tempTechsToResearch.contains(techName) -> queuedTechColor
                 else -> Color.BLACK
             }
-            //the tech that can be selected to research immediately should be always researchableTechColor, it's very good when we pick a free tech.
-            if (researchableTechs.contains(techName)&&!civTech.isResearched(techName)) techButton.color = researchableTechColor
 
             var text = techName.tr()
 
