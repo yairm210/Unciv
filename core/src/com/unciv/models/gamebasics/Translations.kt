@@ -33,7 +33,7 @@ class Translations : HashMap<String, HashMap<String, String>>(){
     }
 
     fun getLanguages(): List<String> {
-        val toReturn =  mutableListOf("English")
+        val toReturn =  mutableListOf<String>()
         toReturn.addAll(values.flatMap { it.keys }.distinct())
         toReturn.remove("Japanese")
         return toReturn
