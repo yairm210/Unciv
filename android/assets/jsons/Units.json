@@ -1223,5 +1223,16 @@
 		uniques:["Can start an 8-turn golden age","Bonus for units in 2 tile radius 15%"] //to do : should be able to build mega-fort
 		movement:2
 	},
-	
-]
+	{ 
+	        name:"Katipunero",
+		unitType:"Melee",
+		uniqueTo:"Philippines",
+		replaces:"RifleMan",
+		movement:5,
+		strength:34,
+		cost:300,
+		RequiredTech:"Rifling",
+		uniques:["+1 Movement when within friendly territory,+25% Combat bonus after adopting an Professional Army,Retain abilities on uograde"],
+		HurrCostModifier:20
+		//Philippines unique unit,stronger than RifleMan
+	},
