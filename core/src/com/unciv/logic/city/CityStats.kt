@@ -228,7 +228,7 @@ class CityStats {
 
         if (policies.contains("Commerce Complete")) stats.gold += 1
         if (policies.contains("Secularism")) stats.science += 2
-        if (cityInfo.containsBuildingUnique("+1 Production from specialists"))
+        if (cityInfo.civInfo.containsBuildingUnique("+1 Production from specialists"))
             stats.production += 1
         if(cityInfo.civInfo.nation.unique=="+2 Science for all specialists and Great Person tile improvements")
             stats.science+=2
