@@ -541,7 +541,7 @@
 			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
 			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
-	
+	/*
 	{
 		name:"Australia",
 		leaderName:"John Curtin",
@@ -581,9 +581,46 @@
 			"Orange", "Port Macquarie", "Port Pirie", "Boomahnoomoonah", "Tweed Heads"]
 	///Unique unit: Digger (replaces Infantry, and has +10% Strenght against anti-cavalry units, +10% Strenght on coastal tiles)
 	///Unique building: Outback Station (replaces Windmill, adds +1 Food)
+  },
+{
+		name:"Nubia",
+		leaderName:"Amanitore",
+		adjective:["Nubian"],
+		startBias:["Desert"],
+		preferredVictoryType:"Domination",
+
+		startIntroPart1: "O wise Queen of Nubia, Amanitore, we greet thee. You are the leader of the mysterious and fascinating Nubian civilization. For centuries, your people has known lots and lots of centuries of trade, friendships and warfare with the Egyptians, from which they have been culturally inspired, building pyramids and burial tombs that, while not as big as the majestic Pyramids of Kheops, Khephren and Menkaure, were no less amazing than these. After some centuries of servitude under the ambitious Pharaohs of Egypt, your ancestor Piankhi took revenge and subdued the entire land of the Pharaohs."
+		startIntroPart2: "Amanitore, watchful Queen of Nubia, the empire you command shall claim the horizon as its border. Fear not enemies, for your cities shall know prosperity and piety. Can you build a civilization that stands the test of time?"
+
+		declaringWar:"We have arrows, finely honed. We shall deliver them freely to your throat."
+		attacked:"As predicted, you know only how to take. Come, then - choose the manner of your defear."
+		defeated:"Though Nubia falls, our pyramids shall remain long after your plans and palaces fall to ruin."
+		introduction:"I am Amanitore of Nubia. All are welcome in our magnificent cities - provided they come as friends."
+
+		neutralHello:"Greetings to you."
+		neutralLetsHearIt:["Let us hear.","Please, talk.","What do you suggest?"]
+		neutralNo:["I must refuse.","Sorry, but no.","I'm afraid this is unacceptable."]
+		neutralYes:["How gracious of you.","So shall it be.","Of course!"]
+
+		hateHello:"You again?"
+		hateLetsHearIt:["What are you to say?","What is it?","Speak."]
+		hateNo:["The Gods forbid this!","Are you out of your mind?","I cannot do that."]
+		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
+
+		afterPeace:"At least you know how to speak of peace. May war never touch us again!"
+		tradeRequest:"Our delegation brings goodwill. Oh, here's also some fresh camel liver. Just don't cook it!"
+
+		outerColor:[255,255,51],
+		innerColor:[153,76,0],
+		uniqueName:"Ta-Seti"
+		unique:"+50% Production toward Ranged units, which gain +50% combat experience. +1 Production from Mines over a Strategic Resource, and +2 Gold from Mines over a Luxury Resource.",
+		cities:["Kerma","Napata","Nuri","El-Kurru","Kawa","Sedeinga","Heh","Qasr Ibrim","Faras","Shaat","Iken","Abu Simbel","Buhen",
+			"Dengeil","Miam","Tombos","Kurgus","Toshka","Soleb","Wad ban Naqa","Debba","Bugdumbush","Baki","Amara",
+			"Musawwarat es-Sufra","El Fura","Ukma","Pedeme","Defeia"]
+		//Nubians should have Pitati Archer as their unique unit, which replaces Archer and it's stronger. Can also move three tiles.
+		//There should also be another new Unique Improvement - but only for G&K, since it uses Faith.
 	},
 	
-	/*
 	{   // REQUIRES RIVERS
 		name:"Aztecs",
 		leaderName:"Montezuma I",
