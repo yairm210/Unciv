@@ -5,6 +5,7 @@ import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.map.BFS
 import com.unciv.logic.map.TileInfo
+import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.unit.BaseUnit
 import com.unciv.models.gamebasics.unit.UnitType
 import com.unciv.models.stats.Stats
@@ -38,7 +39,7 @@ class Automation {
             rank += stats.gold / 5 // it's barely worth anything at this points
         }
         else{
-            if (stats.food <= 2) rank += (stats.food * 1.2f) //food get more value to keep city growing
+            if (stats.food <= 2 || city.civInfo.getHappiness() > 5) rank += (stats.food * 1.2f) //food get more value to keep city growing
             else rank += (2.4f + (stats.food - 2) / 2) // 1.2 point for each food up to 2, from there on half a point
 
             if (city.civInfo.gold < 0 && city.civInfo.statsForNextTurn.gold <= 0) rank += stats.gold // we have a global problem
@@ -46,7 +47,12 @@ class Automation {
 
             rank += stats.production
             rank += stats.science
-            rank += stats.culture
+            if (city.tiles.size < 12 || city.civInfo.victoryType() == VictoryType.Cultural){
+                rank += stats.culture
+            }
+            else{
+                rank += stats.culture / 2
+            }
         }
         return rank
     }
