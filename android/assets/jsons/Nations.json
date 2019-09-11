@@ -541,8 +541,48 @@
 			"Changwon","Andong","Gongju","Haeju","Cheongju","Mokpo","Dongducheon","Geoje","Suncheon","Jinju","Sangju",
 			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
-	
+	/*
 	{
+		name:"Australia",
+		leaderName:"John Curtin",
+		adjective:["Australian"],
+		startBias:["Avoid Tundra"],
+		preferredVictoryType:"Scientific",
+		
+		startIntroPart1: "The people of the Australian nation salute you, Johnatan Joseph Curtin, their Prime Minister, as their leader. You have been the fourteenth prime minister of this nation, once one of the largest colonies of the British empire. You were born in a land mixed with primal nature and human civilization, and ascended on your seat as minister while the accursed Japanese empire, planning to rule the entire Asian continent, sought to conquer Australia. Your wise and careful leadership, horever, united with some luck, twarted their plans, and contributed to the rise of an indipendent, British control-free Australia. Unfortunately, your very ill health prevented you to see that dream come true, as your life ended shortly before the Second World War finally come to a close after six years of bloodshed.",
+		startIntroPart2: "Mister Curtin, the Australian people consider you as one of their most famous people of their history, and the best leader they could ever have, but not they call for your leadership, so that they are free to ascend to true greatness. Will you answer the call? Will you build a civilization that will stand the test of time?",
+		
+		declaringWar:"After thorough deliberation, Australia finds itself at a crossroads. Prepare yourself - war is upon us.",
+		attacked:"We will mobilize every means of resistance to stop this transgression against our nation!",
+		defeated:"The principles for which we have fought will survive longer than any nation you could ever build.",
+		introduction:"My name is Jonathan Joseph Curtin, and I speak for the people of Australia as their Prime Minister. We seek sympathetic allies in the fight against the hawks of war.",
+		
+		neutralHello:"Greetings.",
+		neutralLetsHearIt:["I'm listening.","What do you have in mind?"],
+		neutralNo:["Sorry but no.","I decline.","I regret I must refuse."],
+		neutralYes:["As you wish!","So be it!","I agree!"],
+
+		hateHello:"You again, it seems...",
+		hateLetsHearIt:["Speak your mind.","I'm listening!"],
+		hateNo:["No.","It shall not be.","Thanks, but no thanks."],
+		hateYes:["Fine...","I accept."],
+		
+		afterPeace:"The war is over, for now. At least I see it alive.",
+		tradeRequest:"I hope you will receive my offer with my sincerest thanks.",
+				
+		outerColor:[0,102,0],
+		innerColor:[255,255,0],
+		uniqueName:"Land Down Under",
+		unique:"+1 Food in coastal Cities. +1 Culture from Pastures",
+		cities:["Sydney", "Launceston", "Ballaarat", "Perth", "Brisbane", "Melbourne", "Townsville", "Geelong", "Adelaide", 
+			"Hobart", "Bendigo", "Broken Hill", "Cairns", "Newcastle", "Maitland", "Rockhampton", "Wagga Wagga", 
+			"Wollongong", "Albury", "Alice Springs", "Bathurst", "Queanbeyan", "Bundaberg", "Coffs Harbor", "Darwin", 
+			"Fremantle", "Gladstone", "Goulburn", "Hervey Bay", "Kalgoorlie", "Lismore", "Lithgow", "Maryborough", 
+			"Orange", "Port Macquarie", "Port Pirie", "Boomahnoomoonah", "Tweed Heads"]
+	///Unique unit: Digger (replaces Infantry, and has +10% Strenght against anti-cavalry units, +10% Strenght on coastal tiles)
+	///Unique building: Outback Station (replaces Windmill, adds +1 Food)
+  },
+{
 		name:"Nubia",
 		leaderName:"Amanitore",
 		adjective:["Nubian"],
@@ -581,7 +621,6 @@
 		//There should also be another new Unique Improvement - but only for G&K, since it uses Faith.
 	},
 	
-	/*
 	{   // REQUIRES RIVERS
 		name:"Aztecs",
 		leaderName:"Montezuma I",
