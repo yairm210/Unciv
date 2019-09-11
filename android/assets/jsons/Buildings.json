@@ -41,7 +41,8 @@
 		culture:6,
 		isWonder:true,
 		greatPersonPoints:{production:1},
-		requiredTech:"Calendar"
+		requiredTech:"Calendar",
+		quote:"'Time crumbles things; everything grows old and is forgotten under the power of time.'   –- Aristotle"
 	},
 	{
 		name:"Library",
@@ -58,7 +59,8 @@
 		isWonder:true,
 		providesFreeBuilding: "Library",
 		freeTechs:1,
-		requiredTech:"Writing"
+		requiredTech:"Writing",
+		quote:"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.'   –- Sir Francis Bacon"
 	},
 	{
 		name:"Paper Maker",
@@ -71,7 +73,7 @@
 	},
 	{
 		name:"Circus", 
-		requiredNearbyImprovedResources:["Ivory","Horses"]
+		requiredNearbyImprovedResources:["Ivory","Horses"],
 		happiness:2,
 		hurryCostModifier:25,
 		requiredTech:"Trapping"
@@ -99,7 +101,8 @@
 		greatPersonPoints:{production:1},
 		isWonder:true,
 		uniques:["Worker construction increased 25%","Provides 2 free workers"],
-		requiredTech:"Masonry"
+		requiredTech:"Masonry",
+		quote:"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am in the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'   –- The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
 	{
 		name:"Barracks",
@@ -115,16 +118,17 @@
 		greatPersonPoints:{gold:1},
 		isWonder:true,
 		uniques:["Can only be built in coastal cities", "+1 gold from worked water tiles in city"],
-		requiredTech:"Iron Working"
+		requiredTech:"Iron Working",
+		quote:"'Why man, he doth bestride the narrow world like a colossus; and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.'   –- William Shakespeare: Julius Caesar"
 	},
 	{
 		name:"Krepost",
 		replaces:"Barracks",
-		uniqueTo:"Russia"
+		uniqueTo:"Russia",
 		xpForNewUnits:15,
 		hurryCostModifier:25,
 		maintenance:1,
-		uniques:["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"]
+		uniques:["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"],
 		requiredTech:"Bronze Working"
 	},
 	
@@ -135,7 +139,7 @@
 		hurryCostModifier:25,
 		maintenance:1,
 		resourceBonusStats:{food:1},
-		uniques:["Can only be built in coastal cities","+1 food from Ocean and Coast tiles"]
+		uniques:["Can only be built in coastal cities","+1 food from Ocean and Coast tiles"],
 		requiredTech:"Optics"
 	},
 	{
@@ -150,7 +154,7 @@
 	{
 		name:"Stable", 
 		maintenance:1,
-		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]
+		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"],
 		resourceBonusStats:{production:1},
 		hurryCostModifier:25,
 		uniques:["+15% Production when building Mounted Units in this city"]
