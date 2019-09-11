@@ -42,6 +42,7 @@
 		isWonder:true,
 		greatPersonPoints:{production:1},
 		requiredTech:"Calendar"
+		quote:"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle"
 	},
 	{
 		name:"Library",
@@ -59,6 +60,7 @@
 		providesFreeBuilding: "Library",
 		freeTechs:1,
 		requiredTech:"Writing"
+		quote:"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon"
 	},
 	{
 		name:"Paper Maker",
@@ -100,6 +102,7 @@
 		isWonder:true,
 		uniques:["Worker construction increased 25%","Provides 2 free workers"],
 		requiredTech:"Masonry"
+		quote:"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge"
 	},
 	{
 		name:"Barracks",
@@ -116,6 +119,7 @@
 		isWonder:true,
 		uniques:["Can only be built in coastal cities", "+1 gold from worked water tiles in city"],
 		requiredTech:"Iron Working"
+		quote:"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar"
 	},
 	{
 		name:"Krepost",
@@ -145,7 +149,8 @@
 		isWonder:true,
 		providesFreeBuilding: "Lighthouse",
 		uniques:["Can only be built in coastal cities", "All military naval units receive +1 movement and +1 sight"]
-		requiredTech:"Optics"
+		requiredTech:"Optics",
+		quote:"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
 	{
 		name:"Stable", 
@@ -170,7 +175,8 @@
 		food:10,
 		culture:1,
 		isWonder:true,
-		requiredTech:"Mathematics"
+		requiredTech:"Mathematics",
+		quote:"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
 	},
 	{
 		name:"Colosseum", 
@@ -183,7 +189,8 @@
 		name:"Terracotta Army",
 		culture:6,
 		isWonder:true,
-		requiredTech:"Construction"
+		requiredTech:"Construction",
+		quote:"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu"
 	},
 	{
 		name:"Temple",
@@ -223,7 +230,8 @@
 		greatPersonPoints:{science:1},
 		isWonder:true,
 		uniques:["Free Social Policy"],
-		requiredTech:"Philosophy"
+		requiredTech:"Philosophy",
+		quote:"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates"
 	},
 	{
 		name:"Market",
@@ -268,7 +276,8 @@
 		providesFreeBuilding: "Walls",
 		freeTechs:1,
 		uniques:["Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)"]
-		requiredTech:"Engineering"
+		requiredTech:"Engineering",
+		quote:"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu"
 	},
 	
 	// Medieval Era
@@ -287,7 +296,8 @@
 		greatPersonPoints:{culture:1},
 		isWonder:true,
 		uniques:["+33% great person generation in all cities"],
-		requiredTech:"Theology"
+		requiredTech:"Theology",
+		quote:"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis"
 	},
 	{
 		name:"National College",
@@ -304,7 +314,8 @@
 		greatPersonPoints:{production:1},
 		isWonder:true,
 		uniques:["Golden Age length increases +50%"],
-		requiredTech:"Civil Service"
+		requiredTech:"Civil Service",
+		quote:"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam"
 	},
 	{
 		name:"Machu Picchu",
@@ -313,7 +324,8 @@
 		culture:1,
 		isWonder:true,
 		uniques:["Gold from all trade routes +25%"],
-		requiredTech:"Guilds"
+		requiredTech:"Guilds",
+		quote:"'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham"
 	},
 	{
 		name:"Workshop", 
@@ -413,7 +425,8 @@
 		greatPersonPoints:{production:1},
 		isWonder:true,
 		uniques:["Cost of acquiring new tiles reduced by 25%"],
-		requiredTech:"Chivalry"
+		requiredTech:"Chivalry",
+		quote:"'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena"
 	},
 	{
 		name:"Alhambra",
@@ -423,7 +436,8 @@
 		providesFreeBuilding:"Castle",
 		percentStatBonus:{culture:20},
 		uniques:["All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion"],
-		requiredTech:"Chivalry"
+		requiredTech:"Chivalry",
+		quote:"'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison"
 	},
 	{
 		name:"Ironworks",
@@ -439,7 +453,8 @@
 		happiness:10,
 		greatPersonPoints:{gold:1},
 		isWonder:true,
-		requiredTech:"Physics"
+		requiredTech:"Physics",
+		quote:"Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo"
 	},
 	{
 		name:"Armory",
