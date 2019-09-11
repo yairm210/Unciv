@@ -531,9 +531,7 @@
 		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
 		
 		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
-		tradeRequest:"We have many things to discuss and have much to benefit from each other."
-				
-		outerColor:[20,25,73],
+		tradeRequest:"We have many things to discuss and have much to benefit from each other.",
 		innerColor:[187,33,51],
 		uniqueName:"Scholars of the Jade Hall"
 		unique:"+2 Science for all specialists and Great Person tile improvements",
@@ -996,7 +994,40 @@
 			"Fredrikstad","Kolding","Horsens","Tromsoe","Vejle","Koge","Sandnes","Holstebro","Slagelse","Drammen",
 			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
-	*/
+	{    
+	           name:"Philippines",
+		leaderName:"Jose Rizal",
+		adjective:["Filipinos"],
+		startBias:["Coastal"],
+		prefferedVictoryType:"Cultural",
+		
+		startIntroPart1:"O magnificent Rizal, your people call you to change their world once more. Can you defend this beautiful and tranquil omeland against all manner of foe?" 
+		startIntroPart2:"Can you forge a place for the Philippine Republic through peace and harmony with the world around you? Can you build a civilization that can stand the test of time?"
+
+		declaringWar:"We bleed into the same earth and bleed we must!"
+		attacked:"You sure about that!"
+		defeated: "You have destroyed a beautiful creation. In its place is the blood of the thousands that you have lustfully slain.",
+		introduction: "At long last a friendly face has come to our shores. I am José Rizal, leader of the Philippine Republic! Cometellme of your people and their culture.",
+		
+		neutralHello:"Hello."
+		neutralLetsHearIt:["What do you need.","Go on"]
+		neutralNo:["Sorry I cannot do that.","No Sorry."]
+		neutralYes:["Of Course!","Yes"]
+		
+		hateHello:["You again"]
+		hateLetsHearIt:["Hurry Up!,"So?"]
+		hateNo:["Of Course Not!,"Are you crazy no"]
+		hateYes:["Ok Fine","I Agree"]
+	       
+	        afterPeace:"Impressive! I Offer you peace because war only bring destruction",
+		tradeRequest:"Here's the list for our own benefits",
+		innerColor:[185,132,66]
+		uniqueName:"Pearl Of The Orient"
+		unique:"Upon signingOpen Borders, both Civilizations receive a Cargo Ship. Foreign Units within your borders provide Culture."
+		cities:["Manila","Quezon","Cebu",Pasig","Makati","Cagayan de Oro","Baguio","Davao City","Bacolod","Taguig","Pasay",
+		"Bataan","Angeles","Marikina"]
+		
+	    
 
 	//City states
 	{
@@ -1202,11 +1233,13 @@
 		innerColor:[0,102,102],
 		cities:["Edinburgh"]
 	},
+	
+	        
 
 	//Barbarian
 	{
 		name:"Barbarians",
 		outerColor:[0,0,0],
 		innerColor:[182,0,0]
-	}
+	        	
 ]
