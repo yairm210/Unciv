@@ -579,8 +579,8 @@
 			"Orange", "Port Macquarie", "Port Pirie", "Boomahnoomoonah", "Tweed Heads"]
 	///Unique unit: Digger (replaces Infantry, and has +10% Strenght against anti-cavalry units, +10% Strenght on coastal tiles)
 	///Unique building: Outback Station (replaces Windmill, adds +1 Food)
-  },
-{
+	},
+	{
 		name:"Nubia",
 		leaderName:"Amanitore",
 		adjective:["Nubian"],
@@ -995,7 +995,7 @@
 			"Hillerod","Sonderborg","Skien","Svendborg","Holbaek","Hjorring","Fladstrand","Haderslev","Ringsted","Skrive"]
 	},
 	{    
-	           name:"Philippines",
+	    name:"Philippines",
 		leaderName:"Jose Rizal",
 		adjective:["Filipinos"],
 		startBias:["Coastal"],
@@ -1026,6 +1026,8 @@
 		unique:"Upon signingOpen Borders, both Civilizations receive a Cargo Ship. Foreign Units within your borders provide Culture."
 		cities:["Manila","Quezon","Cebu",Pasig","Makati","Cagayan de Oro","Baguio","Davao City","Bacolod","Taguig","Pasay",
 		"Bataan","Angeles","Marikina"]
+	},
+	*/
 		
 	    
 
@@ -1241,5 +1243,6 @@
 		name:"Barbarians",
 		outerColor:[0,0,0],
 		innerColor:[182,0,0]
+	}
 	        	
 ]
