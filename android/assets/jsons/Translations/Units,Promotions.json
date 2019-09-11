@@ -672,7 +672,7 @@
 
 	"Turtle Ship":{
 		Italian:"Nave tartaruga"
-		Spanish:"Nave tartaruga"
+		Spanish:"Nave tartaruga"//Should be "Barco tortuga"
 		Simplified_Chinese:"龟船"
 		Russian:"Кобуксон"
 	}
