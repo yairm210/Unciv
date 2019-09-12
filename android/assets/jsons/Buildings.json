@@ -464,7 +464,16 @@
 		requiredBuilding:"Barracks",
 		requiredTech:"Steel"
 	},
-	
+        { 
+	        name:"Coral Church",
+		replaces:"Harbor",
+		uniqueTo:"Philippines"
+		hurryCostModifier::25,
+		maintenance:1,
+		uniques:["2 Faith and +5% Food growth bonus for each sea resource worked by the city"]
+		requiredtech:"Compass"
+	},
+      
 	// Renaissance Era
 	
 	{
