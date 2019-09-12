@@ -619,21 +619,6 @@
 		uniques:["Must not be on hill"],
 		requiredTech:"Economics"
 	},
-	/*
-	{
-		name:"Outback Station",
-		replaces:"Windmill",
-		uniqueTo:"Australia",
-		production:2,
-		food:1,
-		specialistSlots:{production:1},
-		hurryCostModifier:25,
-		maintenance:2,
-		percentStatBonus:{production:10},
-		uniques:["Must not be on hill","+1 Food from every Pasture near the City"],
-		requiredTech:"Economics"
-	},
-	*/
 	
 	// Industrial Era
 	
