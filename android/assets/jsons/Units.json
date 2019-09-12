@@ -130,22 +130,6 @@
 		attackSound:"arrow"
 		//Incan unique unit
 	},
-	{
-		//Nubian Unique Unit, stronger and faster than Archer
-		name:"Pitati Archer",
-		unitType:"Ranged",
-		replaces:"Archer",
-		uniqueTo:"Nubia",
-		movement:3,
-		strength:6,
-		rangedStrength:9,
-		cost: 50,
-		hurryCostModifier:20,
-		requiredTech:"Archery",
-		obsoleteTech:"Machinery",//Should be Construction
-		upgradesTo:"Crossbowman",//Should be Composite Bowman
-		attackSound:"arrow"
-	},
 	*/
 	{
 		name:"Work Boats",
@@ -850,23 +834,6 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	/*
-	{
-		name:"Norvegian Ski Infantry",
-		unitType:"Melee",
-		replaces:"Rifleman",
-		uniqueTo:"Denmark",
-		movement:2,
-		strength:34,
-		cost: 225,
-		requiredTech:"Rifling",
-		obsoleteTech:"Replaceable Parts",
-		upgradesTo:"Great War Infantry",
-		uniques:["Bonus in Snow, Tundra and Hills"],
-		hurryCostModifier:20,
-		attackSound:"shot"
-	},
-	*/
 	{
 		name:"Triplane",
 		unitType:"Fighter",
@@ -899,6 +866,24 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
+	
+	/*
+	{
+		name:"Norvegian Ski Infantry",
+		unitType:"Melee",
+		replaces:"Rifleman",
+		uniqueTo:"Denmark",
+		movement:2,
+		strength:34,
+		cost: 225,
+		requiredTech:"Rifling",
+		obsoleteTech:"Replaceable Parts",
+		upgradesTo:"Great War Infantry",
+		uniques:["Bonus in Snow, Tundra and Hills"],
+		hurryCostModifier:20,
+		attackSound:"shot"
+	},
+	*/
 	{
 		name:"Cavalry",
 		unitType:"Mounted",
@@ -1104,23 +1089,6 @@
 		hurryCostModifier:20,
 		attackSound:"shot"
 	},
-	/*
-	{
-		name:"Digger",
-		unitType:"Melee",
-		replaces:"Infantry",
-		uniqueTo:"Australia",
-		movement:2,
-		strength:72,
-		cost: 375,
-		requiredTech:"Plastics",
-		upgradesTo:"Mechanized Infantry",
-		obsoleteTech:"Mobile Tactics",
-		uniques:["+20% Strenght on Coast tiles","+10% Strenght outside Australian territory"],
-		hurryCostModifier:20,
-		attackSound:"shot"
-	},
-	*/
 	{
 		name:"Machine Gun",
 		unitType:"Ranged",
