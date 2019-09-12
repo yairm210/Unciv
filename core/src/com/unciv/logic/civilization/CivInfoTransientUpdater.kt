@@ -56,7 +56,7 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
             for (otherCiv in viewedCivs.filterNot { it == civInfo || it.isBarbarian() })
                 if (!civInfo.diplomacy.containsKey(otherCiv.civName)) {
                     civInfo.meetCivilization(otherCiv)
-                    civInfo.addNotification("We have encountered [${otherCiv.civName}]!".tr(), null, Color.GOLD)
+                    civInfo.addNotification("We have encountered ["+otherCiv.civName+"]!", null, Color.GOLD)
                 }
         }
     }
