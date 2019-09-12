@@ -1,8 +1,9 @@
 package com.unciv.logic.civilization
 
 enum class AlertType{
-    WarDeclaration,
     Defeated,
+    WonderBuilt,
+    WarDeclaration,
     FirstContact,
     CityConquered,
     BorderConflict,
@@ -10,7 +11,6 @@ enum class AlertType{
     CitiesSettledNearOtherCiv,
     DemandToStopSettlingCitiesNear,
     CitySettledNearOtherCivDespiteOurPromise,
-    WonderBuilt
 }
 
 class PopupAlert {

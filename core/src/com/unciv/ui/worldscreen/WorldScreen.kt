@@ -36,6 +36,7 @@ import kotlin.concurrent.thread
 class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     val gameInfo = game.gameInfo
     var isPlayersTurn = viewingCiv == gameInfo.currentPlayerCiv // todo this should be updated when passing turns
+    var waitingForAutosave = false
 
     val tileMapHolder: TileMapHolder  = TileMapHolder(this, gameInfo.tileMap)
     val minimapWrapper = MinimapHolder(tileMapHolder)
@@ -188,8 +189,8 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 !gameInfo.oneMoreTurnMode && gameInfo.civilizations.any { it.victoryManager.hasWon() } -> game.screen = VictoryScreen()
                 viewingCiv.policies.freePolicies > 0 -> game.screen = PolicyPickerScreen(this)
                 viewingCiv.greatPeople.freeGreatPeople > 0 -> game.screen = GreatPersonPickerScreen()
-                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
                 viewingCiv.popupAlerts.any() -> AlertPopup(this, viewingCiv.popupAlerts.first())
+                viewingCiv.tradeRequests.isNotEmpty() -> TradePopup(this)
             }
         }
         updateNextTurnButton()
@@ -366,9 +367,13 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
                 }
 
                 if(shouldAutoSave) {
-                    game.worldScreen.nextTurnButton.disable()
+                    val newWorldScreen = game.worldScreen
+                    newWorldScreen.waitingForAutosave = true
+                    newWorldScreen.shouldUpdate = true
                     GameSaver().autoSave(gameInfoClone) {
-                        createNewWorldScreen()  // only enable the user to next turn once we've saved the current one
+                        // only enable the user to next turn once we've saved the current one
+                        newWorldScreen.waitingForAutosave = false
+                        newWorldScreen.shouldUpdate = true
                     }
                 }
             }
@@ -387,7 +392,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         nextTurnButton.setText(text.tr())
         nextTurnButton.color = if (text == "Next turn") Color.WHITE else Color.GRAY
         nextTurnButton.pack()
-        if (alertPopupIsOpen || !isPlayersTurn) nextTurnButton.disable()
+        if (alertPopupIsOpen || !isPlayersTurn || waitingForAutosave) nextTurnButton.disable()
         else nextTurnButton.enable()
         nextTurnButton.setPosition(stage.width - nextTurnButton.width - 10f, topBar.y - nextTurnButton.height - 10f)
     }

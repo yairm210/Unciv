@@ -85,7 +85,7 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
         val setResourcesButton = TextButton("Resources".tr(),skin)
         setResourcesButton.onClick {
             centerTable.clear()
-            centerTable.add(getResourcesTable()).height(stage.height*0.8f)
+            centerTable.add(ScrollPane(getResourcesTable())).size(stage.width*0.8f, stage.height*0.8f)
             centerTable.pack()
         }
         topTable.add(setResourcesButton)
