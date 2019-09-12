@@ -531,7 +531,9 @@
 		hateYes:["Hm... very well, fine.","I suppose I should agree...","Very well..."]
 		
 		afterPeace:"It seems you implemented some interesting strategies... Very well, perhaps we should call it a tie."
-		tradeRequest:"We have many things to discuss and have much to benefit from each other.",
+		tradeRequest:"We have many things to discuss and have much to benefit from each other."
+				
+		outerColor:[20,25,73],
 		innerColor:[187,33,51],
 		uniqueName:"Scholars of the Jade Hall"
 		unique:"+2 Science for all specialists and Great Person tile improvements",

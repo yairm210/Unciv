@@ -88,10 +88,10 @@ class Fonts {
                Gdx.files.local("fonts/$fontForLanguage.ttf").delete()
                UnCivGame.Current.settings.fontSet="NativeFont(Recommended)"
                Gdx.app.postRunnable {
-                   val downloading = PopupTable(UnCivGame.Current.worldScreen)
-                   downloading.add("Checksum error!\nIf you want to use the font \"WenQuanYiMicroHei\", please download again.".toLabel().setFontColor(Color.RED)).row()
-                   downloading.addButton("Close".tr()) { downloading.remove() }.row()
-                   downloading.open()
+                   val checksumFailed = PopupTable(UnCivGame.Current.worldScreen)
+                   checksumFailed.add("Checksum error!\nIf you want to use the font \"WenQuanYiMicroHei\", please download again.".toLabel().setFontColor(Color.RED)).row()
+                   checksumFailed.addButton("Close".tr()) { checksumFailed.remove() }.row()
+                   checksumFailed.open()
                }
            }
            else {

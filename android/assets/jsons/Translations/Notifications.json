@@ -574,10 +574,12 @@
 
  	"[nation] agreed to stop settling cities near us!": {
 		Italian:"[nation] ha promesso di smettere di fondare città vicino a noi!"
+		Simplified_Chinese:"[nation]同意停止在我们附近建城！"
 	},
 
  	"[nation] refused to stop settling cities near us!": {
 		Italian:"[nation] ha rifiutato di smettere di fondare città vicino a noi!"
+		Simplified_Chinese:"[nation]拒绝停止在我们附近建城！"
 	},
 	
 }
