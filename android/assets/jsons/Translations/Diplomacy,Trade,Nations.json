@@ -531,11 +531,14 @@
 	"Type: ":{
 		Italian:"Tipo: "
 		Simplified_Chinese:"城邦类型："
+		Russian:"Тип: "
+		
 	}
 
 	"Influence: ":{
 		Italian:"Influenza: "
 		Simplified_Chinese:"影响力："
+		Russian:"Влияние: "
 	}
 
 ////// Trade	
@@ -756,6 +759,7 @@
 	"Introduction to [nation]":{
 		Italian:"Introduci a [nation]"
 		Simplified_Chinese:"介绍认识[nation]"
+		Russian:"Представиться [nation]"
 	}
 
 	"Luxury resources":{
@@ -858,7 +862,7 @@
 		Italian:"Alessandro"
 		French:"Alexandre le Grand"
 		Simplified_Chinese:"亚历山大"
-		Russian:"Александр Македонский"
+		Russian:"Александр"
 	},
 
 	"City-State Influence degrades at half and recovers at twice the normal rate": {
