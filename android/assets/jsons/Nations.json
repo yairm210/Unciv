@@ -1030,6 +1030,44 @@
 		"Bataan","Angeles","Marikina"]
 	},
 	*/
+	{
+		name:"Assyria",
+		leaderName:"Ashurbanipal",
+		adjective:["Assyrian"],
+		startBias:["Avoid Tundra"],
+		prefferedVictoryType:"Scientific",
+		
+		startIntroPart1:"Wise and fearsome king, the time has come for you to return the kingdom of Assyria to its greatest heights",
+		startIntroPart2:"Will you once again strive to acquire the knowledge and histories of all the world's peoples? Can you build a civilization that will stand the test of time?",
+		
+		declaringWar:"History shall surely smile on me once I've destoryed the likes of you and the rest of the vermin which sorround me.",
+		attacked:"You are a fool sacrifing your soldier for nothing",
+		defeated:"We may be defeated, but our legacy will live on in the written word!",
+		introduction:" I welcome you to the great kingdom of Assyria...have you come to view my library?",
+		
+		neutralHello:"Hi.",
+		neutralLetsHearIt:["What is it","Yes?"],
+		neutralNo:["No I Cant","No Sorry"],
+		neutralYes:["Alright","Agreed"],
+		
+		hatehello:"You Again",
+		hateLetsHearIt:["So?","Hurry Up"],
+		hateNo:["Are you mad of course not!","No!"],
+		hateYes:["Ok!","Fine"],
+		
+		afterPeace:"I Underestimate you i offer you peace but called it tie",
+		tradeRequest:"For our own benefits",
+		innercolor:[62,197,252],
+		uniqueName:"Treasures of Nineveh",
+		unique:"When a city is conquered, gain a free Technology already discovered by its owner.",
+		cities:["Assur","Nineveh","Nimrud","Kar-Tukulti-Ninurta","Dur-Sharrukin","Halab","Carchemish",
+			"Kanesh","Harran","Imgur-Enlil","Shubat-Enlil","Qatna","Sareisa","Sam al","Qarqar",
+			"Til Barsip","Sultantepe","Erbil","Hamath","Guzana"]
+	},
+	*/
+
+			
+		
 		
 	    
 
