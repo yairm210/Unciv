@@ -454,7 +454,7 @@
 		greatPersonPoints:{gold:1},
 		isWonder:true,
 		requiredTech:"Physics",
-		quote:"Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo"
+		quote:"'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo"
 	},
 	{
 		name:"Armory",
