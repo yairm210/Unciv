@@ -45,7 +45,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
         val width = cityScreen.stage.width/4 - 2*pad
         val showHideTableWrapper = Table()
         showHideTableWrapper.add(showHideTable).width(width)
-        titleTable.add(str.toLabel().setFontSize(22))
+        titleTable.add(str.toLabel().setFontSize(24))
         titleTable.onClick {
             if(showHideTableWrapper.hasChildren()) showHideTableWrapper.clear()
             else showHideTableWrapper.add(showHideTable).width(width)
