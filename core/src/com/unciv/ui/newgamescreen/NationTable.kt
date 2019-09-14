@@ -13,18 +13,18 @@ class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
     : Table(CameraStageBaseScreen.skin){
     val innerTable = Table()
     init {
-        background = ImageGetter.getBackground(nation.getSecondaryColor())
+        background = ImageGetter.getBackground(nation.getInnerColor())
         innerTable.pad(10f)
-        innerTable.background = ImageGetter.getBackground(nation.getColor())
+        innerTable.background = ImageGetter.getBackground(nation.getOuterColor())
 
         val titleTable = Table()
         titleTable.add(ImageGetter.getNationIndicator(nation, 50f)).pad(10f)
         titleTable.add(nation.getLeaderDisplayName().toLabel()
-                .apply { setFontColor(nation.getSecondaryColor()); setFontSize(24) })
+                .apply { setFontColor(nation.getInnerColor()); setFontSize(24) })
         innerTable.add(titleTable).row()
 
         innerTable.add(getUniqueLabel(nation)
-                .apply { setWrap(true);setFontColor(nation.getSecondaryColor()) })
+                .apply { setWrap(true);setFontColor(nation.getInnerColor()) })
                 .width(width)
         onClick {
             onClick()

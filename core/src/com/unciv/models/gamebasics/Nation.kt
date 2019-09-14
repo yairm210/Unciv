@@ -51,10 +51,11 @@ class Nation : INamed {
     var startBias = ArrayList<String>()
 
 
-    fun getColor(): Color {
+    fun getOuterColor(): Color {
         return colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
     }
-    fun getSecondaryColor(): Color {
+    
+    fun getInnerColor(): Color {
         if(innerColor==null) return Color.BLACK
         return colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
     }

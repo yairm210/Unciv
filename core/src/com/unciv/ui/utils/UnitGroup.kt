@@ -11,12 +11,12 @@ class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var blackSpinningCircle:Image?=null
 
     init {
-        val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getSecondaryColor())
+        val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
                 .apply { setSize(size * 0.75f, size * 0.75f) }
 
         val background = getBackgroundImageForUnit(unit)
         background.apply {
-            this.color = unit.civInfo.nation.getColor()
+            this.color = unit.civInfo.nation.getOuterColor()
             setSize(size, size)
         }
         setSize(size, size)
