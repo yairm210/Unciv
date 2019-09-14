@@ -45,7 +45,7 @@ object GameBasics {
             Units += createHashmap(getFromJson(Array<BaseUnit>::class.java, "Units"))
             UnitPromotions += createHashmap(getFromJson(Array<Promotion>::class.java, "UnitPromotions"))
             PolicyBranches += createHashmap(getFromJson(Array<PolicyBranch>::class.java, "Policies"))
-            Nations += createHashmap(getFromJson(Array<Nation>::class.java, "Nations"))
+            Nations += createHashmap(getFromJson(Array<Nation>::class.java, "Nations/Nations"))
             Difficulties += createHashmap(getFromJson(Array<Difficulty>::class.java, "Difficulties"))
 
             val techColumns = getFromJson(Array<TechColumn>::class.java, "Techs")

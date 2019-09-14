@@ -41,6 +41,7 @@ class GameInfo {
         toReturn.difficulty=difficulty
         toReturn.gameParameters = gameParameters
         toReturn.gameId = gameId
+        toReturn.oneMoreTurnMode = oneMoreTurnMode
         return toReturn
     }
 
