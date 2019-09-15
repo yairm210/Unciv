@@ -440,6 +440,18 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
 
+## Promotions
+
+* [Sight](https://thenounproject.com/search/?q=sight&i=2631027) By Jejen Juliansyah Nur Agung for Accuracy
+* [skill bow rain arrow](https://thenounproject.com/search/?q=rain%20of%20arrows&i=2360192) by Maxicons for Barrage
+* [Bomb](https://thenounproject.com/search/?q=bombardment&i=1705276) By Angelo Troiano for Bombardment
+* [Private E2](https://thenounproject.com/yeongrong.kim.5/collection/miltary-rank/?i=833152) By Yeong Rong Kim for Shock
+* [Private First Class](https://thenounproject.com/yeongrong.kim.5/collection/miltary-rank/?i=833161) By Yeong Rong Kim for Drill
+* [Medic](https://thenounproject.com/search/?q=medic&i=48740) By Yohann Berger for Medic
+* [City](https://thenounproject.com/search/?q=city&i=2402817) By iconcheese for Siege
+* [Skull and Crossbones](https://thenounproject.com/search/?q=skull%20and%20cross%20bones&i=15526) By Anton Outkine for Coastal Raider
+* [Spear](https://thenounproject.com/search/?q=spear&i=1754184) By Deemak Daksina for Formation
+
 ## Others 
 
 * [Circle](https://thenounproject.com/term/circle/1841891/) By Aybige 
