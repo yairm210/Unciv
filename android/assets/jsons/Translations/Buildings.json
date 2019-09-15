@@ -1045,13 +1045,11 @@
 		Russian:"+5% Производство за каждый торговый маршрут с городом-государством"
 	}
 
-	/*
 	"Satrap's Court":{	//Persian unique
 		Italian:"Corte del Satrapo"
 		French:"Cour de Satrape"
 		Polish:"Dwór satrapy"
 	}
-	*/
 
 	"Forbidden Palace":{	
 		Italian:"Palazzo Proibito"
