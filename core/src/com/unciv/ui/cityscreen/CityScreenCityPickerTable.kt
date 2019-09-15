@@ -39,7 +39,7 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
         }
 
         val currentCityLabel = Label(city.name + " (" + city.population.population + ")", CameraStageBaseScreen.skin)
-        currentCityLabel.setFontSize(25)
+        currentCityLabel.setFontSize(30)
         currentCityLabel.onClick {
             val editCityNamePopup = PopupTable(cityScreen)
             val textArea = TextField(city.name, CameraStageBaseScreen.skin)
