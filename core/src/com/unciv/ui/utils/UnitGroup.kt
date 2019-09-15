@@ -9,10 +9,10 @@ import com.unciv.logic.map.MapUnit
 
 class UnitGroup(val unit: MapUnit, val size: Float): Group() {
     var blackSpinningCircle:Image?=null
+    val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
+            .apply { setSize(size * 0.75f, size * 0.75f) }
 
     init {
-        val unitBaseImage = ImageGetter.getUnitIcon(unit.name, unit.civInfo.nation.getInnerColor())
-                .apply { setSize(size * 0.75f, size * 0.75f) }
 
         val background = getBackgroundImageForUnit(unit)
         background.apply {

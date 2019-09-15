@@ -451,7 +451,10 @@ open class TileGroup(var tileInfo: TileInfo, var tileSetStrings:TileSetStrings) 
             newImage.center(this)
             newImage.y += yFromCenter
 
-            if (!unit.isIdle() && unit.civInfo.isPlayerCivilization()) newImage.color.a = 0.5f
+            // Instead of fading out the entire unit with its background, we just fade out its central icon,
+            // that way it remains much more visible on the map
+            if (!unit.isIdle() && unit.civInfo.isPlayerCivilization())
+                newImage.unitBaseImage.color.a = 0.5f
         }
         return newImage
     }
