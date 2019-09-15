@@ -1233,6 +1233,22 @@
 		Portuguese:"Mova-se por florestas e selvas em território amigo como se fossem estradas. Estas terras podem ser usadas para estabelecer rotas de comércio após pesquisar a roda."
 		French:"Les Forêt et les Jungles en territoire alliés ont les mêmes attributs que les routes. A la découverte de la Roue, elles peuvent établir des routes commerciales."
 	}
+	
+	
+	"Persia":{
+		Italian:"Persia"
+		French:"Perse"
+		Portuguese:"Pérsia"
+	}
+	
+	"Darius I":{
+	}
+
+	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and a +10% Combat Strenght bonus.":{
+		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
+		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
+		French:"Les Ages d'Or durent 50% plus longtemps. Durant les Ages d'Or, les unités gagnent +1 mouvement et +10% de force de Combat."
+	}
 
 	/*
 	"Aztecs":{
@@ -1313,17 +1329,6 @@
 		French:"Peut embarquer et bouger sur les océans dès le début. +1 Vision lorsque embarqué."
 	}
 
-	"Persia":{
-		Italian:"Persia"
-		French:"Perse"
-		Portuguese:"Pérsia"
-	}
-
-	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and a +10% Combat Strenght bonus.":{
-		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
-		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
-		French:"Les Ages d'Or durent 50% plus longtemps. Durant les Ages d'Or, les unités gagnent +1 mouvement et +10% de force de Combat."
-	}
 
 	*/
 	

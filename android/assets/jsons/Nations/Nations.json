@@ -579,6 +579,45 @@
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
 			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
+	{
+		name:"Persia",
+		leaderName:"Darius I",
+		adjective:["Persian"],
+		preferredVictoryType:"Scientific",
+		
+		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
+		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!"
+		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!"
+		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!"
+		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
+		
+		neutralHello:"Good day to you!"
+		neutralLetsHearIt:["Go on.","You said?"]
+		neutralNo:["You are not serious!","Not good enough."]
+		neutralYes:["Good!","Certainly.","Agreed!"]
+
+		hateHello:"Ahh... you..."
+		hateLetsHearIt:["I'm listening.","Go on!"]
+		hateNo:["We say... no!","Of course not!"]
+		hateYes:["Alright!","Agreed."]
+		
+		afterPeace:"It appears we should call it a tie..."
+		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
+				
+		outerColor:[153,5,3],
+		innerColor:[244,232,54],
+		uniqueName:"Achaemenid Legacy"
+		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength",
+		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
+			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
+			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
+			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
+			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
+			"Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
+			"Paishiyauvada","Patigrbana","Phrada"]
+	},
 	
 	/*
 	{
@@ -810,45 +849,6 @@
 			"Huaras","Riobamba","Caxamalca","Sausa","Tambo Colorado","Huaca","Tumbes","Chan Chan","Sipan","Pachacamac",
 			"Llactapata","Pisac","Kuelap","Pajaten","Chucuito","Choquequirao"]
 	}
-	{
-		name:"Persian",
-		leaderName:"Darius I",
-		adjective:["Persian"],
-		preferredVictoryType:"Scientific",
-		
-		startIntroPart1: "The blessings of heaven be upon you, beloved king Darius of Persia! You lead a strong and wise people. In the morning of the world, the great Persian leader Cyrus revolted against the mighty Median empire and by 550 BC, the Medes were no more. Through cunning diplomacy and military prowess, great Cyrus conquered wealthy Lydia and powerful Babylon. His son conquering proud Egypt some years later. Over time, Persian might expanded into far away Macedonia, at the very door of the upstart Greek city-states. Long would Persia prosper until the upstart villain Alexander of Macedon, destroyed the great empire in one shocking campaign."
-		startIntroPart2: "Darius, your people look to you to once again bring back the days of power and glory for Persia! The empire of your ancestors must emerge again, to triumph over its foes and to bring peace and order to the world! O king, will you answer the call? Can you build a civilization that will stand the test of time?"
-		
-		declaringWar:"Your continue existence is an embarrassment to all leaders everywhere! You must be destroyed!"
-		attacked:"Curse you! You are beneath me, son of a donkey driver! I will crush you!"
-		defeated:"You mongrel! Cursed be you! The world will long lament your heinous crime!"
-		introduction:"Peace be on you! I am Darius, the great and outstanding king of kings of great Persia... but I suppose you knew that."
-		
-		neutralHello:"Good day to you!"
-		neutralLetsHearIt:["Go on.","You said?"]
-		neutralNo:["You are not serious!","Not good enough."]
-		neutralYes:["Good!","Certainly.","Agreed!"]
-
-		hateHello:"Ahh... you..."
-		hateLetsHearIt:["I'm listening.","Go on!"]
-		hateNo:["We say... no!","Of course not!"]
-		hateYes:["Alright!","Agreed."]
-		
-		afterPeace:"It appears we should call it a tie..."
-		tradeRequest:"In my endless magnanimity, I am making you this offer. You agree, of course?"
-				
-		outerColor:[255,0,0],
-		innerColor:[255,255,0],
-		uniqueName:"Achaemenid Legacy"
-		unique:"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght",
-		cities:["Persepolis","Parsagadae","Susa","Ecbatana","Tarsus","Gordium","Bactra","Sardis","Ergili","Dariushkabir",
-			"Ghulaman","Zohak","Istakhr","Jinjan","Borazjan","Herat","Dakyanus","Bampur","Turengtepe","Rey","Shiraz",
-			"Thuspa","Hasanlu","Gabae","Merv","Behistun","Kandahar","Altintepe","Bunyan","Charsadda","Uratyube",
-			"Dura Europos","Aleppo","Qatna","Kabul","Capisa","Kyreskhata","Marakanda","Peshawar","Van","Pteira","Arshada",
-			"Artakaona","Aspabota","Autiyara","Bagastana","Baxtri","Darmasa","Daphnai","Drapsaka","Eion","Gandutava",
-			"Gaugamela","Harmozeia","Ekatompylos","Izata","Kampada","Kapisa","Karmana","Kounaxa","Kuganaka","Nautaka",
-			"Paishiyauvada","Patigrbana","Phrada"]
-	},
 	{
 		name:"Polynesia",
 		leaderName:"Kamehameha I",

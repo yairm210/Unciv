@@ -382,6 +382,12 @@
 		French:"Hoplite"
 	}
 	
+	"Immortal":{ // Persian unique
+	}
+	
+	"+10 HP when healing":{
+	}
+	
 ////// Classical Era Units
 
 	"Composite Bowman":{

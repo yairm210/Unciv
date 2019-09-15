@@ -243,11 +243,10 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	/*
 	{
 		name:"Immortal",
 		replaces:"Spearman",
-		uniqueTo:"Persian",
+		uniqueTo:"Persia",
 		unitType:"Melee",
 		movement:2,
 		strength:12,
@@ -255,12 +254,10 @@
 		requiredTech:"Bronze Working",
 		obsoleteTech:"Civil Service",
 		upgradesTo: "Pikeman",
-		uniques:["Bonus vs Mounted 50%","Heals at double rate"],
+		uniques:["Bonus vs Mounted 50%","+10 HP when healing"],
 		hurryCostModifier:20,
 		attackSound:"metalhit"
-		//Persian unique unit
 	},
-	*/
 	
 	
 	/* Classical Era */

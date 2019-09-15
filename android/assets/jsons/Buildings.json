@@ -500,7 +500,6 @@
 		requiredBuilding:"Market",
 		requiredTech:"Banking"
 	},
-	/*
 	{
 		name:"Satrap's Court",
 		replaces:"Bank",
@@ -510,11 +509,9 @@
 		happiness:2,
 		hurryCostModifier:15,
 		percentStatBonus:{gold:25},
-		uniques:["+1 Gold per incoming trade route (and +1 Gold for the foreign owner)"],
 		requiredBuilding:"Market",
 		requiredTech:"Banking"
 	},
-	*/
 	{
 		name:"Hanse",
 		replaces:"Bank",
