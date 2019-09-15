@@ -78,6 +78,10 @@
 		Portuguese:"Stonehenge"
 		Polish:"Stonehenge"
 	}
+
+	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle":{
+		Italian:"'Il tempo sgretola le cose; davanti al suo potere tutto invecchia e viene dimenticato.' - Aristotele"
+	}
 	
 	"Library":{	
 		Italian:"Biblioteca"
@@ -127,6 +131,10 @@
 		Polish:"Wielka Biblioteka"
 	}
 
+	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
+		Italian:"'Le biblioteche sono come una cappella in cui sono conservate e protette tutte le reliquie dei santi antichi, colme di vera virtù, e tutto ciò che è privo di illusione e inganno' - Sir Francis Bacon"
+	}
+
 	"Circus":{	
 		Italian:"Circo"
 		Russian:"Цирк"
@@ -169,6 +177,10 @@
 		Portuguese:"Pirâmides"
 		German:"Die Pyramiden"
 		Polish:"Piramidy"
+	}
+
+	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
+		Italian:"''Oh, non lasciare che i dolori della morte che piombano su di te entrino nel mio corpo. Io sono il dio Tem, e risiedo nella parte più importante del cielo, e il potere che mi protegge è quello che si accompagna per sempre a tutti gli dèi.' - Il Libro dei Morti, traduzione di Sir Ernest Alfred Wallis Budge"
 	}
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -239,6 +251,10 @@
 		Russian:"Колосс Родосский"
 	}
 
+	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
+		Italian:"'Già, lui cavalca questo stretto mondo ormai come un colosso; e noi, gli omuncoli, passiamo sotto le sue gambe enormi e ci scrutiamo intorno, per ritrovarci tutti quanti siamo come tanti sepolcri senza onore' - William Shakespeare: Giulio Cesare"
+	}
+
 	"+1 gold from worked water tiles in city":{
 		Italian:"+1 Oro per ogni risorsa anfibia sfruttata dalla città."
 		Simplified_Chinese:"所在城市每个水上地块+1金钱"
@@ -290,6 +306,10 @@
 		Polish:"Wyrocznia"
 	}
 
+	"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates":{
+		Italian:"'L'antico Oracolo ha detto che sono il più saggio di tutti i greci. Questo perché io solo, di tutti i greci, so di non sapere nulla.' - Socrate"
+	}
+
 	"Free Social Policy":{
 		Italian:"Ricevi una politica sociale gratuita"
 		Russian:"Бесплатный общественный институт"
@@ -325,6 +345,10 @@
 		Portuguese:"Chichen Itza"
 		German:"Chichen Itza"
 		Polish:"Chichen Itza"
+	}
+
+	"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam":{
+		Italian:"'Il katun è stabilito a Chichèn Itzà. L'insediamento degli Itzà avrà luogo. Arriverà il quetzal, arriverà l'uccello verde. Ah Kantenal arriverà. È la parola di Dio. Gli Itzà arriveranno. - I Libri di Chilam Balam"
 	}
 
 	"Golden Age length increases +50%":{
@@ -383,6 +407,10 @@
 		German:"Der Große Leuchtturm"
 		Polish:"Latarnia na Faros" //common polish name
 		Russian:"Фаросский маяк"
+	}
+
+	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
+		Italian:"'Ecco quelli che scendon nel mare su navi, che trafficano sulle grandi acque; essi veggono le opere dell'Eterno e le sue meraviglie nell'abisso.' - Salmi 107:23-24"
 	}
 
 	"All military naval units receive +1 movement and +1 sight":{
@@ -456,6 +484,10 @@
 		Polish:"Wiszące Ogrody"
 	}
 
+	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
+		Italian:"'Penso che se mai un mortale ha sentito la voce di Dio, sarà stato in un giardino sul far della sera.' - F. Frankfort Moore"
+	}
+
 	/*
 	//New Wonder: Statue of Zeus! Suggested by Smashfanful
 	"Statue of Zeus":{	
@@ -506,6 +538,10 @@
 		French:"Armée de Terre Cuite"
 		Polish:"Terakotowa armia"
 		Russian:"Терракотовая армия"
+	}
+
+	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
+		Italian:"'Trattate i soldati come figli, e vi seguiranno nelle valli più profonde; considerateli la vostra amata progenie, e resteranno accanto a voi fino alla morte.' - Sun Tzu"
 	}
 	
 	"Market":{	
@@ -576,6 +612,10 @@
 		German:"Notre-Dame"
 		Polish:"Notre Dame"
 	}
+
+	"Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo":{
+		Italian:"'L'architettura ha registrato le più grandi idee della razza umana. Non solo ogni simbolo religioso, ma ogni pensiero umano ha la sua pagina in quel vasto libro.' - Victor Hugo"
+	}
 	
 	"Hagia Sophia":{
 		Italian:"Hagia Sophia"
@@ -587,6 +627,10 @@
 		Portuguese:"Santa Sofia"
 		German:"Hagia Sophia"
 		Polish:"Hagia Sophia"
+	}
+
+	"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis":{
+		Italian:"'Perché si erge così alta da toccare il cielo, e come fluttuando sugli altri edifici guarda dall'alto in basso il resto della città, abbellendola, perché fa parte di essa, ma gloriandosi della propria bellezza.' - Procopio, De Aedificis (Sugli edifici)"
 	}
 
 	"+33% great person generation in all cities":{
@@ -624,6 +668,10 @@
 		Portuguese:"Machu Picchu"
 		German:"Machu Picchu"
 		Polish:"Machu Picchu"
+	}
+
+	"'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham":{
+		Italian:"'Pochi racconti fantastici possono sorpassare quello della cittadella di granito sospesa in cima ai precipizi, Machu Picchu, la corona delle terre degli Inca.' - Hiram Bingham"
 	}
 
 	"Gold from all trade routes +25%":{
@@ -672,6 +720,10 @@
 		Russian:"Великая стена"
 	}
 
+	"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu":{
+		Italian:"'L'arte della guerra ci insegna a non affidarci alla possibilità che il nemico... non ci attacchi, ma piuttosto alla certezza di aver reso la nostra posizione inattaccabile.' - Sun Tzu"
+	}
+
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
 		Italian:"Le unità nemiche impiegano un punto Movimento extra se all'interno del tuo territorio (diventa obsoleta con la Dinamite)."
 		Simplified_Chinese:"境内敌方陆军单位在任何地块额外消耗1移动力"
@@ -691,9 +743,8 @@
 		German:"Werkstatt"
 		Polish:"Warsztat"
 	}
-
-	/*
-	"Longhouse":{	//Irochese unique
+	
+	"Longhouse":{	// Iroquois unique
 		Italian:"Casa Lunga"
 		French:"Longère"
 		Polish:"Długi dom"
@@ -704,7 +755,6 @@
 		French:"+1 production pour chaque cases de forêt exploitées par la ville."
 		Polish:"+1 do produkcji za każde pracujące pole lasu"
 	}
-	*/
 
 	"Forge":{	
 		Italian:"Fucina"
@@ -828,6 +878,10 @@
 		Russian:"Альгамбра"
 	}
 
+	"'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison":{
+		Italian:"'La giustizia è una fortezza inespugnabile, costruita sulla cresta di una montagna che non può essere rovesciata dalla violenza dei torrenti né demolita dalla forza degli eserciti.' - Joseph Addison"
+	}
+
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
 		Italian:"Ogni unità da mischia, a cavallo e corazzata appena reclutata nella città riceve la promozione Addestramento I"
 		German:"Alle neuen Nahkampf-, berittenen und gepanzerten Einheiten in dieser Stadt erhalten eine Drill I Beförderung"
@@ -847,6 +901,10 @@
 		Portuguese:"Angkor Wat"
 		German:"Angkor Wat"
 		Polish:"Angkor Wat"
+	}
+
+	"'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena":{
+		Italian:"'Il tempio non ha eguali nel mondo. Ha torri e decorazioni e tutti gli abbellimenti che il genio dell'uomo può concepire.' - Antonio da Magdalena"
 	}
 
 	"Cost of acquiring new tiles reduced by 25%":{
@@ -1063,6 +1121,7 @@
 	}
 
 	"Get ":{
+		Italian:"Ottieni "
 		Simplified_Chinese:"获得"
 	}
 

@@ -243,11 +243,10 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	/*
 	{
 		name:"Immortal",
 		replaces:"Spearman",
-		uniqueTo:"Persian",
+		uniqueTo:"Persia",
 		unitType:"Melee",
 		movement:2,
 		strength:12,
@@ -255,12 +254,10 @@
 		requiredTech:"Bronze Working",
 		obsoleteTech:"Civil Service",
 		upgradesTo: "Pikeman",
-		uniques:["Bonus vs Mounted 50%","Heals at double rate"],
+		uniques:["Bonus vs Mounted 50%","+10 HP when healing"],
 		hurryCostModifier:20,
 		attackSound:"metalhit"
-		//Persian unique unit
 	},
-	*/
 	
 	
 	/* Classical Era */
@@ -323,6 +320,21 @@
 		attackSound:"metalhit"
 	},
 	{
+		name:"Mohawk Warrior",
+		unitType:"Melee",
+		replaces:"Swordsman",
+		uniqueTo:"Iroquois",
+		movement:2,
+		strength:14,
+		cost: 75,
+		requiredTech:"Iron Working",
+		upgradesTo:"Longswordsman",
+		obsoleteTech:"Steel",
+		uniques:["+33% combat bonus in Forest/Jungle"]
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+	},
+	{
 		name:"Legion",
 		unitType:"Melee",
 		uniqueTo:"Rome",
@@ -338,7 +350,6 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	/*
 	{
 		name:"Mohawk Warrior",
 		unitType:"Melee",
@@ -353,9 +364,7 @@
 		hurryCostModifier:20,
 		uniques:["Combat Bonus in Forest/Jungle 33%"],
 		attackSound:"metalhit"
-		//Iroquese unique unit. Bonus when fighting in Jungles and Forests. Doesn't require Iron.
 	},
-	*/
 	{
 		name:"Horseman",
 		unitType:"Mounted",

@@ -50,18 +50,29 @@ class Nation : INamed {
     var innerColor: List<Int>?=null
     var startBias = ArrayList<String>()
 
+    @Transient private lateinit var outerColorObject:Color
+    fun getOuterColor(): Color = outerColorObject
 
-    fun getColor(): Color {
-        return colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
-    }
-    fun getSecondaryColor(): Color {
-        if(innerColor==null) return Color.BLACK
-        return colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
-    }
+    @Transient private lateinit var innerColorObject:Color
+
+    fun getInnerColor(): Color = innerColorObject
 
     fun isCityState()= cityStateType != null
     fun isMajorCiv() = !isBarbarian() && !isCityState()
     fun isBarbarian() = name=="Barbarians"
+
+    // This is its own transient because we'll need to check this for every tile-to-tile movement which is harsh
+    @Transient var forestsAndJunglesAreRoads = false
+
+    fun setTransients(){
+        outerColorObject = colorFromRGB(outerColor[0], outerColor[1], outerColor[2])
+
+        if(innerColor==null) innerColorObject = Color.BLACK
+        else innerColorObject = colorFromRGB(innerColor!![0], innerColor!![1], innerColor!![2])
+
+        if(unique == "All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.")
+            forestsAndJunglesAreRoads = true
+    }
 
     lateinit var cities: List<String>
 }

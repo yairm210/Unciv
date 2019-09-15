@@ -382,6 +382,12 @@
 		French:"Hoplite"
 	}
 	
+	"Immortal":{ // Persian unique
+	}
+	
+	"+10 HP when healing":{
+	}
+	
 ////// Classical Era Units
 
 	"Composite Bowman":{
@@ -437,6 +443,12 @@
 		Simplified_Chinese:"剑士"
 		Portuguese:"Espadachin" // may replace with guerreiro com espada if nescessary
 		German:"Schwertkämpfer"
+	}
+	
+	"Mohawk Warrior":{
+	}
+	
+	"+33% combat bonus in Forest/Jungle":{
 	}
 	
 	"Legion":{

@@ -109,8 +109,8 @@ class CivilizationInfo {
 
     fun getTranslatedNation(): Nation {
         val language = UnCivGame.Current.settings.language.replace(" ","_")
-        if(!Gdx.files.internal("jsons/Nations_$language.json").exists()) return nation
-        val translatedNation = GameBasics.getFromJson(Array<Nation>::class.java, "Nations_$language")
+        if(!Gdx.files.internal("jsons/Nations/Nations_$language.json").exists()) return nation
+        val translatedNation = GameBasics.getFromJson(Array<Nation>::class.java, "Nations/Nations_$language")
                 .firstOrNull { it.name==civName}
         if(translatedNation==null)  // this language's trnslation doesn't contain this nation yet,
             return nation      // default to english

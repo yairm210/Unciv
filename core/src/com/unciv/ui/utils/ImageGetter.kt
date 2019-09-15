@@ -67,15 +67,15 @@ object ImageGetter {
     }
 
     fun getNationIndicator(nation: Nation, size:Float): IconCircleGroup {
-        val civIndicator = getCircle().apply { color = nation.getSecondaryColor() }
-                .surroundWithCircle(size).apply { circle.color = nation.getColor() }
+        val civIndicator = getCircle().apply { color = nation.getInnerColor() }
+                .surroundWithCircle(size).apply { circle.color = nation.getOuterColor() }
 
         val civIconName = if(nation.isCityState()) "CityState" else nation.name
         if(nationIconExists(civIconName)){
             val cityStateIcon = ImageGetter.getNationIcon(civIconName)
             cityStateIcon.setSize(size*0.7f,size*0.7f)
             cityStateIcon.center(civIndicator)
-            cityStateIcon.color = nation.getColor()
+            cityStateIcon.color = nation.getOuterColor()
             civIndicator.addActor(cityStateIcon)
         }
 

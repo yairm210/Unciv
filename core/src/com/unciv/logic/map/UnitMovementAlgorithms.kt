@@ -5,40 +5,46 @@ import com.unciv.Constants
 import com.unciv.logic.civilization.CivilizationInfo
 
 class UnitMovementAlgorithms(val unit:MapUnit) {
+
+    // This function is called ALL THE TIME and should be as time-optimal as possible!
     private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo, civInfo: CivilizationInfo): Float {
-        var cost = getMovementCostBetweenAdjacentTiles(from,to)
 
-        val toOwner = to.getOwner()
-        if(toOwner!=null &&  to.isLand && civInfo.isAtWarWith(toOwner) && toOwner.hasActiveGreatWall)
-            cost += 1
-        return cost
-    }
-
-    private fun getMovementCostBetweenAdjacentTiles(from: TileInfo, to: TileInfo): Float {
-
-        if(unit.type.isLandUnit() && (from.isLand != to.isLand))
+        if ((from.isLand != to.isLand) && unit.type.isLandUnit())
             return 100f // this is embarkment or disembarkment, and will take the entire turn
 
-        if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
-            return 1 / 10f
+        var extraCost = 0f
 
-        if (from.roadStatus !== RoadStatus.None && to.roadStatus !== RoadStatus.None) //Road
+        val toOwner = to.getOwner()
+        if (toOwner != null && to.isLand && toOwner.hasActiveGreatWall && civInfo.isAtWarWith(toOwner))
+            extraCost += 1
+
+        if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
+            return 1 / 10f + extraCost
+
+        if (hasRoad(from,civInfo) && hasRoad(to,civInfo))
         {
-            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f
-            else return 1 / 2f
+            if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
+            else return 1 / 2f + extraCost
         }
-        if (unit.ignoresTerrainCost) return 1f
-        if(unit.doubleMovementInForestAndJungle && (to.baseTerrain==Constants.forest || to.baseTerrain==Constants.jungle))
-            return 1f
+        if (unit.ignoresTerrainCost) return 1f + extraCost
+        if (unit.doubleMovementInForestAndJungle && (to.baseTerrain == Constants.forest || to.baseTerrain == Constants.jungle))
+            return 1f + extraCost
 
         if (unit.roughTerrainPenalty
                 && (to.baseTerrain == Constants.hill || to.terrainFeature == Constants.forest || to.terrainFeature == Constants.jungle))
-            return 4f
+            return 4f + extraCost
 
-        if(unit.doubleMovementInCoast && to.baseTerrain==Constants.coast)
-            return 1/2f
+        if (unit.doubleMovementInCoast && to.baseTerrain == Constants.coast)
+            return 1 / 2f + extraCost
 
-        return to.getLastTerrain().movementCost.toFloat() // no road
+        return to.getLastTerrain().movementCost.toFloat() + extraCost // no road
+    }
+
+    fun hasRoad(tileInfo:TileInfo, civInfo: CivilizationInfo): Boolean {
+        if(tileInfo.roadStatus!==RoadStatus.None) return true
+        if(civInfo.nation.forestsAndJunglesAreRoads && tileInfo.terrainFeature!=null
+                && (tileInfo.terrainFeature==Constants.jungle || tileInfo.terrainFeature==Constants.forest)) return true
+        return false
     }
 
     class ParentTileAndTotalDistance(val parentTile:TileInfo, val totalDistance: Float)

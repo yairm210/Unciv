@@ -45,10 +45,10 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
 
     private fun addAirUnitTable() {
         if (!tileGroup.tileInfo.airUnits.isNotEmpty()) return
-        val secondarycolor = city.civInfo.nation.getSecondaryColor()
+        val secondarycolor = city.civInfo.nation.getInnerColor()
         val airUnitTable = Table().apply { defaults().pad(5f) }
         airUnitTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
-                .tint(city.civInfo.nation.getColor())
+                .tint(city.civInfo.nation.getOuterColor())
         val aircraftImage = ImageGetter.getImage("OtherIcons/Aircraft")
         aircraftImage.color = secondarycolor
         airUnitTable.add(aircraftImage).size(15f)
@@ -89,11 +89,11 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
     }
 
     private fun getIconTable(): Table {
-        val secondaryColor = city.civInfo.nation.getSecondaryColor()
+        val secondaryColor = city.civInfo.nation.getInnerColor()
         val iconTable = Table()
         iconTable.touchable=Touchable.enabled
         iconTable.background = ImageGetter.getDrawable("OtherIcons/civTableBackground")
-                .tint(city.civInfo.nation.getColor())
+                .tint(city.civInfo.nation.getOuterColor())
 
         if (city.resistanceCounter > 0) {
             val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
@@ -170,7 +170,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         group.addActor(circle)
         group.addActor(image)
 
-        val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getSecondaryColor()
+        val secondaryColor = cityConstructions.cityInfo.civInfo.nation.getInnerColor()
         val cityCurrentConstruction = cityConstructions.getCurrentConstruction()
         if(cityCurrentConstruction !is SpecialConstruction) {
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)

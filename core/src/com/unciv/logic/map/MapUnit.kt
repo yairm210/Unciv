@@ -82,18 +82,21 @@ class MapUnit {
     fun getMovementString(): String = DecimalFormat("0.#").format(currentMovement.toDouble()) + "/" + getMaxMovement()
     fun getTile(): TileInfo =  currentTile
     fun getMaxMovement(): Int {
-        if(isEmbarked()) return getEmbarkedMovement()
+        if (isEmbarked()) return getEmbarkedMovement()
 
         var movement = baseUnit.movement
-        movement += getUniques().count{it=="+1 Movement"}
+        movement += getUniques().count { it == "+1 Movement" }
 
-        if(type.isWaterUnit() && !type.isCivilian()
+        if (type.isWaterUnit() && !type.isCivilian()
                 && civInfo.containsBuildingUnique("All military naval units receive +1 movement and +1 sight"))
             movement += 1
 
-        if(type.isWaterUnit() && civInfo.nation.unique=="+2 movement for all naval units")
-            movement+=2
-        
+        if (type.isWaterUnit() && civInfo.nation.unique == "+2 movement for all naval units")
+            movement += 2
+
+        if(civInfo.nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
+            movement+=1
+
         return movement
     }
 
@@ -336,11 +339,14 @@ class MapUnit {
         tile.improvementInProgress = null
     }
 
-    private fun heal(){
-        if(isEmbarked()) return // embarked units can't heal
+    private fun heal() {
+        if (isEmbarked()) return // embarked units can't heal
         var amountToHealBy = rankTileForHealing(getTile())
+        if (amountToHealBy == 0) return
+
+        if (hasUnique("+10 HP when healing")) amountToHealBy += 10
         val adjacentUnits = currentTile.getTilesInDistance(1).flatMap { it.getUnits() }
-        if(adjacentUnits.isNotEmpty())
+        if (adjacentUnits.isNotEmpty())
             amountToHealBy += adjacentUnits.map { it.adjacentHealingBonus() }.max()!!
         healBy(amountToHealBy)
     }
