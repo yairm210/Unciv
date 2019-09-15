@@ -1218,12 +1218,14 @@
 		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
 	}
 
-	/*
 
 	"Iroquois":{
 		Italian:"Irochese"
 		French:"Iroquois"
 		Portuguese:"Tribo Iroquois" //tribo meaning tribe of course
+	}
+	
+	"Hiawatha":{
 	}
 
 	"Units move through Forest and Jungle in friendly territory as if it is a Road. These tiles can be used to establish Trade Routes upon searching The Wheel.":{
@@ -1232,6 +1234,7 @@
 		French:"Les Forêt et les Jungles en territoire alliés ont les mêmes attributs que les routes. A la découverte de la Roue, elles peuvent établir des routes commerciales."
 	}
 
+	/*
 	"Aztecs":{
 		Italian:"Azteca"
 		French:"Aztèques"

@@ -21,7 +21,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (from.roadStatus === RoadStatus.Railroad && to.roadStatus === RoadStatus.Railroad)
             return 1 / 10f + extraCost
 
-        if (from.roadStatus !== RoadStatus.None && to.roadStatus !== RoadStatus.None) //Road
+        if (hasRoad(from,civInfo) && hasRoad(to,civInfo))
         {
             if (unit.civInfo.tech.movementSpeedOnRoadsImproved) return 1 / 3f + extraCost
             else return 1 / 2f + extraCost
@@ -38,6 +38,13 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
             return 1 / 2f + extraCost
 
         return to.getLastTerrain().movementCost.toFloat() + extraCost // no road
+    }
+
+    fun hasRoad(tileInfo:TileInfo, civInfo: CivilizationInfo): Boolean {
+        if(tileInfo.roadStatus!==RoadStatus.None) return true
+        if(civInfo.nation.forestsAndJunglesAreRoads && tileInfo.terrainFeature!=null
+                && (tileInfo.terrainFeature==Constants.jungle || tileInfo.terrainFeature==Constants.forest)) return true
+        return false
     }
 
     class ParentTileAndTotalDistance(val parentTile:TileInfo, val totalDistance: Float)

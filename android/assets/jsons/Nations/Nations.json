@@ -542,7 +542,6 @@
 			"Rason","Gyeongju","Chungju","Sacheon","Gimje","Anju"]
 	},
 	
-	/*
 	{
 		name:"Iroquois",
 		leaderName:"Hiawatha",
@@ -571,7 +570,7 @@
 		afterPeace:"I thank you for your mercy. I pray that we can now be friends."
 		tradeRequest:"Does this trade work for you, my friend?"
 				
-		outerColor:[88,109,109],
+		outerColor:[54,72,72],
 		innerColor:[246,205,137],
 		uniqueName:"The Great Warpath"
 		unique:"All units move through Forest and Jungle tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.",
@@ -580,6 +579,8 @@
 			"Chondote","Canajoharie","Nedrow","Oneida Lake","Kanonwalohale","Green Bay","Southwold","Mohawk Valley",
 			"Schoharie","Bay of Quinte","Kanawale","Kanatsiokareke","Tyendinaga","Hahta"]
 	},
+	
+	/*
 	{
 		name:"Australia",
 		leaderName:"John Curtin",

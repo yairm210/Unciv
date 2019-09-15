@@ -143,9 +143,12 @@ open class TileInfo {
             if (terrainFeature == Constants.jungle && city != null
                     && city.containsBuildingUnique("Jungles provide +2 science"))
                 stats.science += 2f
-            if(terrainFeature=="Oasis" && city!=null
+            if (terrainFeature == "Oasis" && city != null
                     && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
+            if (terrainFeature == Constants.forest && city != null
+                    && city.containsBuildingUnique("Forests provide +1 production"))
+                stats.production += 1
         }
 
         if (hasViewableResource(observingCiv)) {

@@ -743,9 +743,8 @@
 		German:"Werkstatt"
 		Polish:"Warsztat"
 	}
-
-	/*
-	"Longhouse":{	//Irochese unique
+	
+	"Longhouse":{	// Iroquois unique
 		Italian:"Casa Lunga"
 		French:"Longère"
 		Polish:"Długi dom"
@@ -756,7 +755,6 @@
 		French:"+1 production pour chaque cases de forêt exploitées par la ville."
 		Polish:"+1 do produkcji za każde pracujące pole lasu"
 	}
-	*/
 
 	"Forge":{	
 		Italian:"Fucina"

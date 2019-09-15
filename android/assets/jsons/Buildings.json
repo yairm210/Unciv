@@ -333,14 +333,14 @@
 		production:2,
 		specialistSlots:{production:1},
 		hurryCostModifier:25,
-		percentStatBonus:{production:15},
+		percentStatBonus:{production:10},
 		requiredTech:"Metal Casting"
 	},
-	/*
 	{
 		name:"Longhouse",
 		replaces:"Workshop",
 		uniqueTo:"Iroquois",
+		cost:140,
 		maintenance:2,
 		production:2,
 		specialistSlots:{production:1},
@@ -348,7 +348,6 @@
 		uniques:["Forests provide +1 production"],
 		requiredTech:"Metal Casting"
 	},
-	*/
 	{
 		name:"Forge",
 		maintenance:1,

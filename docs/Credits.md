@@ -36,6 +36,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Catapult](https://thenounproject.com/search/?q=Spear&i=1233840) By Jakub Ukrop
 * [Unloaded Crossbow](https://thenounproject.com/term/unloaded-crossbow/815992/) By Hamish as Ballista
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1215443) By Guilherme Furtado for Swordsman
+* [Mohawk](https://thenounproject.com/search/?q=mohawk&i=1426649) By Dairy Free Design for Mohawk Warrior
 * [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
@@ -189,6 +190,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
 * [Anchor](https://thenounproject.com/term/anchor/1258518/) By Saeful Muslim for Harbor
 * [Hand saw](https://thenounproject.com/term/hand-saw/990902/) By b farias for Workshop
+* [House](https://thenounproject.com/search/?q=house&i=1651759) By sofy for Longhouse
 * [Hagia Sophia](https://thenounproject.com/term/hagia-sophia/1907752/) By Felipe Alvarado
 * [Factory](https://thenounproject.com/term/factory/1624235/) By Maxim Kulikov for Ironworks
 * [Notre Dame](https://thenounproject.com/term/notre-dame/1361725/) By Marco Livolsi

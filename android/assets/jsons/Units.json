@@ -323,6 +323,21 @@
 		attackSound:"metalhit"
 	},
 	{
+		name:"Mohawk Warrior",
+		unitType:"Melee",
+		replaces:"Swordsman",
+		uniqueTo:"Iroquois",
+		movement:2,
+		strength:14,
+		cost: 75,
+		requiredTech:"Iron Working",
+		upgradesTo:"Longswordsman",
+		obsoleteTech:"Steel",
+		uniques:["+33% combat bonus in Forest/Jungle"]
+		hurryCostModifier:20,
+		attackSound:"metalhit"
+	},
+	{
 		name:"Legion",
 		unitType:"Melee",
 		uniqueTo:"Rome",
