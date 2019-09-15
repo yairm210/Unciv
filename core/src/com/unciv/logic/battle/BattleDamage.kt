@@ -1,5 +1,6 @@
 package com.unciv.logic.battle
 
+import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
@@ -40,47 +41,46 @@ class BattleDamage{
             for (BDM in getBattleDamageModifiersOfUnit(combatant.unit)) {
                 if (BDM.vs == enemy.getUnitType().toString())
                     addToModifiers(BDM)
-                if(BDM.vs == "wounded units" && enemy is MapUnitCombatant && enemy.getHealth()<100)
+                if (BDM.vs == "wounded units" && enemy is MapUnitCombatant && enemy.getHealth() < 100)
                     addToModifiers(BDM)
-                if(BDM.vs == "land units" && enemy.getUnitType().isLandUnit())
+                if (BDM.vs == "land units" && enemy.getUnitType().isLandUnit())
                     addToModifiers(BDM)
-                if(BDM.vs == "water units" && enemy.getUnitType().isWaterUnit())
+                if (BDM.vs == "water units" && enemy.getUnitType().isWaterUnit())
                     addToModifiers(BDM)
-                if(BDM.vs == "air units" && enemy.getUnitType().isAirUnit())
+                if (BDM.vs == "air units" && enemy.getUnitType().isAirUnit())
                     addToModifiers(BDM)
             }
 
             //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
             val civHappiness = combatant.getCivInfo().getHappiness()
             if (civHappiness < 0)
-                modifiers["Unhappiness"] = max(0.02f * civHappiness,-0.9f) // otherwise it could exceed -100% and start healing enemy units...
+                modifiers["Unhappiness"] = max(0.02f * civHappiness, -0.9f) // otherwise it could exceed -100% and start healing enemy units...
 
-            if(combatant.getCivInfo().policies.isAdopted("Populism") && combatant.getHealth() < 100){
+            if (combatant.getCivInfo().policies.isAdopted("Populism") && combatant.getHealth() < 100) {
                 modifiers["Populism"] = 0.25f
             }
 
-            if(combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
-                && combatant.getTile().neighbors.flatMap { it.getUnits() }
-                            .any { it.civInfo==combatant.getCivInfo() && !it.type.isCivilian() && !it.type.isAirUnit()})
+            if (combatant.getCivInfo().policies.isAdopted("Discipline") && combatant.isMelee()
+                    && combatant.getTile().neighbors.flatMap { it.getUnits() }
+                            .any { it.civInfo == combatant.getCivInfo() && !it.type.isCivilian() && !it.type.isAirUnit() })
                 modifiers["Discipline"] = 0.15f
 
             val requiredResource = combatant.unit.baseUnit.requiredResource
-            if(requiredResource!=null && combatant.getCivInfo().getCivResourcesByName()[requiredResource]!!<0
-                    && !combatant.getCivInfo().isBarbarian()){
-                modifiers["Missing resource"]=-0.25f
+            if (requiredResource != null && combatant.getCivInfo().getCivResourcesByName()[requiredResource]!! < 0
+                    && !combatant.getCivInfo().isBarbarian()) {
+                modifiers["Missing resource"] = -0.25f
             }
 
-            //todo : performance improvement
-            if (combatant.getUnitType()!=UnitType.City) {
-                val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
-                        .filter {it.civilianUnit?.civInfo == combatant.unit.civInfo}
-                        .map {it.civilianUnit}
-                if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
-                    modifiers["Great General"]= if (combatant.unit.civInfo.nation.unique ==
-                            "Great general provides double combat bonus, and spawns 50% faster") 0.3f
-                    else 0.15f
-                }
+            val nearbyCivUnits = combatant.unit.getTile().getTilesInDistance(2)
+                    .filter { it.civilianUnit?.civInfo == combatant.unit.civInfo }
+                    .map { it.civilianUnit }
+            if (nearbyCivUnits.any { it!!.hasUnique("Bonus for units in 2 tile radius 15%") }) {
+                val greatGeneralModifier = if (combatant.unit.civInfo.nation.unique ==
+                        "Great general provides double combat bonus, and spawns 50% faster") 0.3f
+                else 0.15f
+                modifiers["Great General"] = greatGeneralModifier
             }
+
         }
 
         if (combatant.getCivInfo().policies.isAdopted("Honor") && enemy.getCivInfo().isBarbarian())
@@ -95,22 +95,6 @@ class BattleDamage{
         if(attacker is MapUnitCombatant) {
             modifiers.putAll(getTileSpecificModifiers(attacker,defender.getTile()))
 
-            val defenderTile = defender.getTile()
-            val isDefenderInRoughTerrain = defenderTile.isRoughTerrain()
-            for (BDM in getBattleDamageModifiersOfUnit(attacker.unit)) {
-                val text = BDM.getText()
-                if (BDM.vs == "units in open terrain" && !isDefenderInRoughTerrain) {
-                    if(modifiers.containsKey(text))
-                        modifiers[text] =modifiers[text]!! + BDM.modificationAmount
-                    else modifiers[text] = BDM.modificationAmount
-                }
-                if (BDM.vs == "units in rough terrain" && isDefenderInRoughTerrain) {
-                    if (modifiers.containsKey(text))
-                        modifiers[text] = modifiers[text]!! + BDM.modificationAmount
-                    else modifiers[text] = BDM.modificationAmount
-                }
-            }
-
             for (ability in attacker.unit.getUniques()) {
                 val regexResult = Regex("""Bonus as Attacker [(\d*)]%""").matchEntire(ability) //to do: extend to defender, and penalyy
                 if (regexResult == null) continue
@@ -119,6 +103,19 @@ class BattleDamage{
                     modifiers["Attacker Bonus"] =modifiers["Attacker Bonus"]!! + bonus
                 else modifiers["Attacker Bonus"] = bonus
             }
+
+            if(attacker.unit.isEmbarked())
+                modifiers["Landing"] = -0.5f
+
+            if (attacker.isMelee()) {
+                val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
+                    it.militaryUnit != null
+                            && it.militaryUnit!!.owner == attacker.getCivInfo().civName
+                            && MapUnitCombatant(it.militaryUnit!!).isMelee()
+                }
+                if (numberOfAttackersSurroundingDefender > 1)
+                    modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
+            }
         }
 
         else if (attacker is CityCombatant) {
@@ -126,18 +123,7 @@ class BattleDamage{
                 modifiers["Oligarchy"] = 0.5f
         }
 
-        if (attacker.isMelee()) {
-            val numberOfAttackersSurroundingDefender = defender.getTile().neighbors.count {
-                it.militaryUnit != null
-                        && it.militaryUnit!!.owner == attacker.getCivInfo().civName
-                        && MapUnitCombatant(it.militaryUnit!!).isMelee()
-            }
-            if (numberOfAttackersSurroundingDefender > 1)
-                modifiers["Flanking"] = 0.1f * (numberOfAttackersSurroundingDefender-1) //https://www.carlsguides.com/strategy/civilization5/war/combatbonuses.php
-        }
 
-        if(attacker is MapUnitCombatant && attacker.unit.isEmbarked())
-            modifiers["Landing"] = -0.5f
 
         return modifiers
     }
@@ -155,26 +141,11 @@ class BattleDamage{
             if (tileDefenceBonus > 0) modifiers["Terrain"] = tileDefenceBonus
         }
 
-        if(attacker.isRanged()){
-            val defenceVsRanged = 0.25f * defender.unit.getUniques().count{it=="+25% Defence against ranged attacks"}
-            if(defenceVsRanged>0) modifiers["defence vs ranged"] = defenceVsRanged
+        if(attacker.isRanged()) {
+            val defenceVsRanged = 0.25f * defender.unit.getUniques().count { it == "+25% Defence against ranged attacks" }
+            if (defenceVsRanged > 0) modifiers["defence vs ranged"] = defenceVsRanged
         }
 
-        val defenderTile = defender.getTile()
-        val isDefenderInRoughTerrain = defenderTile.isRoughTerrain()
-        for (BDM in getBattleDamageModifiersOfUnit(defender.unit)) {
-            val text = BDM.getText()
-            if (BDM.vs == "units in open terrain" && !isDefenderInRoughTerrain) {
-                if (modifiers.containsKey(text))
-                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
-                else modifiers[text] = BDM.modificationAmount
-            }
-            if (BDM.vs == "units in rough terrain" && isDefenderInRoughTerrain) {
-                if (modifiers.containsKey(text))
-                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
-                else modifiers[text] = BDM.modificationAmount
-            }
-        }
 
         if (defender.unit.isFortified())
             modifiers["Fortification"] = 0.2f * defender.unit.getFortificationTurns()
@@ -189,6 +160,25 @@ class BattleDamage{
             modifiers["Himeji Castle"] = 0.15f
         if(!isFriendlyTerritory && unit.unit.hasUnique("+20% bonus outside friendly territory"))
             modifiers["Foreign Land"] = 0.2f
+
+        if(unit.unit.hasUnique("+33% combat bonus in Forest/Jungle")
+                && (tile.terrainFeature== Constants.forest || tile.terrainFeature==Constants.jungle))
+            modifiers[tile.terrainFeature!!]=0.33f
+
+        val isRoughTerrain = tile.isRoughTerrain()
+        for (BDM in getBattleDamageModifiersOfUnit(unit.unit)) {
+            val text = BDM.getText()
+            if (BDM.vs == "units in open terrain" && !isRoughTerrain) {
+                if (modifiers.containsKey(text))
+                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
+                else modifiers[text] = BDM.modificationAmount
+            }
+            if (BDM.vs == "units in rough terrain" && isRoughTerrain) {
+                if (modifiers.containsKey(text))
+                    modifiers[text] = modifiers[text]!! + BDM.modificationAmount
+                else modifiers[text] = BDM.modificationAmount
+            }
+        }
 
         return modifiers
     }

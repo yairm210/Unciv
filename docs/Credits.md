@@ -46,7 +46,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Ship](https://thenounproject.com/term/ship/1998589/) By Vanisha for Galleass 
 * [Crossbow](https://thenounproject.com/term/crossbow/965389/) By Creaticca Creative Agency for Crossbowman
 * [Longbow](https://thenounproject.com/search/?q=longbow&i=815991) By Hamish for Longbowman
-* [Trebuchet](https://thenounproject.com/search/?q=Trebuchet&i=827987) By Ben Davis
+* [Trebuchet](https://thenounproject.com/search/?q=trebuchet&i=828475) By Ben Davis
 * [Sword](https://thenounproject.com/search/?q=Sword&i=1432662) By uzeir syarief for Longswordsman
 * [Samurai](https://thenounproject.com/search/?q=samurai&i=1683729) By Chanut is Industries
 * [Spear](https://thenounproject.com/search/?q=Spear&i=1233840) By Alvaro Cabrera for Pikeman
@@ -168,7 +168,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Anubis](https://thenounproject.com/term/anubis/1080090/) By Carpe Diem for Burial Tomb
 * [Parthenon](https://thenounproject.com/term/parthenon/493272/) By Christopher T. Howlett for The Oracle
 * [Stadium](https://thenounproject.com/term/stadium/1500595/) By sandra for Colosseum
-* [Terracotta Army](https://thenounproject.com/search/?q=terracotta&i=2306346) By Supalerk Laipawat
+* [Terracotta Army](https://thenounproject.com/search/?q=terracotta&i=2412905) By Phạm Thanh Lộc
 * [Stadium](https://thenounproject.com/term/stadium/1152530/) By Creaticca Creative Agency for Circus Maximus
 * [Market](https://thenounproject.com/term/market/1723050/) By sofi
 * [Bazaar](https://thenounproject.com/term/bazaar/902288/) By Tokka Elkholy
@@ -184,8 +184,8 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Christian Church](https://thenounproject.com/term/christian-church/1174183/) By Andrejs Kirma for Monastery
 * [Castle](https://thenounproject.com/search/?q=castle&i=390189) By Mint Shirt
 * [Red Fort](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092466), [Gateway of India](https://thenounproject.com/arunabh.jain.0fficial/collection/famous-indian-monuments/?i=2092468) By Arunabh Jain, IN for Mughal Fort
-* [Cambodia](https://thenounproject.com/term/cambodia/1809152/) By Wichai Wi for Angkor Wat
-* [Alhambra](https://thenounproject.com/search/?q=alhambra&i=403759) By parkjisun
+* [Angkor Wat](https://thenounproject.com/search/?q=angkor%20wat&i=2412873) By Phạm Thanh Lộc for Angkor Wat
+* [Alhambra](https://thenounproject.com/search/?q=alhambra&i=2322217) By Phạm Thanh Lộc
 * [Books](https://thenounproject.com/term/books/1140218/) By Abir Alward for Oxford University
 * [Forge](https://thenounproject.com/term/forge/1044767/) By Monjin Friends
 * [Anchor](https://thenounproject.com/term/anchor/1258518/) By Saeful Muslim for Harbor

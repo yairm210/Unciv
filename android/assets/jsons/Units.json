@@ -353,7 +353,6 @@
 		hurryCostModifier:20,
 		attackSound:"metalhit"
 	},
-	/*
 	{
 		name:"Mohawk Warrior",
 		unitType:"Melee",
@@ -368,9 +367,7 @@
 		hurryCostModifier:20,
 		uniques:["Combat Bonus in Forest/Jungle 33%"],
 		attackSound:"metalhit"
-		//Iroquese unique unit. Bonus when fighting in Jungles and Forests. Doesn't require Iron.
 	},
-	*/
 	{
 		name:"Horseman",
 		unitType:"Mounted",

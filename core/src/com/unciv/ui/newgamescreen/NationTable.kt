@@ -11,7 +11,7 @@ import com.unciv.ui.utils.*
 
 class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
     : Table(CameraStageBaseScreen.skin){
-    val innerTable = Table()
+    private val innerTable = Table()
     init {
         background = ImageGetter.getBackground(nation.getInnerColor())
         innerTable.pad(10f)
@@ -26,9 +26,7 @@ class NationTable(val nation: Nation, width:Float, onClick:()->Unit)
         innerTable.add(getUniqueLabel(nation)
                 .apply { setWrap(true);setFontColor(nation.getInnerColor()) })
                 .width(width)
-        onClick {
-            onClick()
-        }
+        onClick { onClick() }
         touchable = Touchable.enabled
         add(innerTable)
     }
