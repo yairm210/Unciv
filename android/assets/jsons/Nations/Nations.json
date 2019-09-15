@@ -1239,6 +1239,34 @@
 		innerColor:[0,102,102],
 		cities:["Edinburgh"]
 	},
+	{
+		name:"Singapore",
+		adjective:["Singapore"],
+		cityStateType:"Mercantile",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"Perhaps, in another world, we could have been friends..."
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,255,0],
+		cities:["Singapore"]
+	},
+	{
+		name:"Zanzibar",
+		adjective:["Zanzibar"],
+		cityStateType:"Mercantile",
+
+		declaringWar:"You leave us no choice. War it must be.",
+		attacked:"Very well, this shall not be forgotten.",
+		afterPeace:"May peace forever bless our lands.",
+		defeated:"May the Heavens forgive you for inflicting this humiliation to our people."
+
+		outerColor:[0, 0, 0],
+		innerColor:[255,153,255],
+		cities:["Zanzibar"]
+	},
 	
 	        
 
