@@ -658,11 +658,13 @@
 		name:"Polynesia",
 		translatedName:"Polinesia",
 		leaderName:"Kamehameha I",
+		adjective:["polinesiano"],
+		startBias:["Coast"],
 		
-		startIntroPart1: ""
-		startIntroPart2: ""
+		startIntroPart1: "Salute e benedizione su di te, Kamehameha il Grande, prescelto dal cielo per unire il tuo popolo disperso. O potente re, tu fosti il primo a estendere il tuo dominio sulla Grande Isola di Hawaii nel 1791. Seguì l'unificazione di tutte le altre isole sotto il tuo stendardo, completata nel 1810. Come primo re delle Hawaii, hai riorganizzato il sistema legale e fiscale e hai istituito il Mamalahoe Kanawai, un editto che protegge i civili in tempi di guerra. Con le tue leggi e le tue grandi gesta hai assicurato che le isole continuassero a rafforzare la loro unione e a mantenere la loro sovranità, anche dopo la tua morte, avvenuta nel 1819."
+		startIntroPart2: "O re mirabile e saggio, il tuo popolo desidera un regno indipendente e un condottiero di impareggiabile grandezza! Risponderai alla sua chiamata indossando il mantello del Leone del Pacifico? Plasmerai una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"L'antico fuoco che s'illumina attraverso il cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente speravo in un altro esito."
+		declaringWar:"L'antico fuoco che s'illumina nel cielo ha proclamato l'arrivo di questo giorno... anche se, scioccamente, speravo in un altro esito."
 		attacked:"È evidente: ho valutato male te e i tuoi veri intenti."
 		defeated:"Il granchio dal duro guscio s'inchina, e il leone cade nel sonno. Kanaloa viene ora da me."
 		introduction:"Aloha! Saluti e auguri a te, amico. Io sono Kamehameha, Grande Re di questo glorioso regno."
@@ -688,6 +690,80 @@
 			"Rakahanga","Bora Bora","Kailua","Uvea","Futuna","Rotuma","Tokelau","Lahaina","Bellona","Mungava","Tikopia",
 			"Emae","Kapingamarangi","Takuu","Nukuoro","Sikaiana","Anuta","Nuguria","Pileni","Nukumanu"]
 	},
+	{
+		name:"Siam",
+		translatedName:"Siam",
+		leaderName:"Ramkhamhaeng",
+		adjective:["siamese"],
+		startBias:["Avoid Forest"],
+		//preferredVictoryType:"Diplomatic",
+		
+		startIntroPart1: "Salute a te, o grande re Ramkhamhaeng, capo del glorioso popolo del Siam! O potente re, il tuo popolo s'inchina dinanzi a te in preda allo stupore e al terrore! Tu regni su un antico paese nel cuore del sud-est asiatico, una terra magnifica e misteriosa. Circondati dai nemici, assediati da continue guerre sanguinose e dalla miseria più nera, i leali e ingegnosi siamesi sono sempre riusciti a sopravvivere e a trionfare. O re Ramkhamhaeng, il tuo impero un tempo faceva parte di quello Khmer finché, nel XIII secolo d.C., i tuoi antenati si ribellarono, creando il piccolo regno di Sukhothai. Battaglie vittoriose e astute mosse diplomatiche lo trasformarono poi nel grande impero che avrebbe dominato il sud-est asiatico per più di un secolo!"
+		startIntroPart2: "O saggio e potente re Ramkhamhaeng, il tuo popolo ha ancora bisogno di te per tornare alla sua antica grandezza! Riuscirai a sfruttare la tua intelligenza e la tua forza per proteggere la tua gente e sconfiggere i tuoi nemici? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
+		
+		declaringWar:"Visto che le tue azioni rivelano il tuo desiderio di guerra, io te lo esaudirò."
+		attacked:"È dunque la guerra? Solo uno sciocco crede che la fortuna sia dalla sua parte, ma quando essa finirà sarà solo colpa tua."
+		defeated:"L'umiltà si ottiene con la sconfitta. Prego che tu riceva la più grande umiltà di tutte."
+		introduction:"Io, Pho Kun Ramkhamhaeng, Re di Siam, considero un grande onore che tu abbia deciso di visitare il mio paese."
+		
+		neutralHello:"Benvenuto."
+		neutralLetsHearIt:["Sentiamo.","You say?","I'm listening"]
+		neutralNo:["No.","Certo che no.","Impossibile."]
+		neutralYes:["In questo caso...","Ma certo.","Come vuoi."]
+
+		hateHello:"Salve."
+		hateLetsHearIt:["Dicevi?.","Procedi.","Ebbene?"]
+		hateNo:["Questo non lo accetto.","Stai scherzando, spero.","Ma che dici?"]
+		hateYes:["Penso che debba fare così.","Benissimo."]
+		
+		afterPeace:"Hai vinto, ma un giorno tornerò e ripagherò il debito."
+		tradeRequest:"Salve. Ritengo che questa sia una valida offerta per le nostre parti. Che ne pensi?"
+				
+		outerColor:[51,25,0],
+		innerColor:[255,255,102],
+		uniqueName:"Il padre che governa i figli"
+		unique:"+50% Cibo e Cultura ricevute dalle Città-Stato amiche.",
+		cities:["Sukhothai","Si Satchanalai","Muang Saluang","Lampang","Phitsanulok","Kamphaeng Pet","Nakhom Chum","Vientiane",
+			"Nakhon Si Thammarat","Martaban","Nakhon Sawan","Chainat","Luang Prabang","Uttaradit","Chiang Thong","Phrae",
+			"Nan","Tak","Suphanburi","Hongsawadee","Thawaii","Ayutthuya","Taphan Hin","Uthai Thani","Lap Buri","Ratchasima",
+			"Ban Phai","Loci","Khan Kaen","Surin"]
+	},
+	{
+		name:"Songhai",
+		translatedName:"Songhai",
+		leaderName:"Askia",
+		adjective:["Songhai"],
+		startBias:["Avoid Tundra"],
+		preferredVictoryType:"Domination",
+		
+		startIntroPart1: "Che la benedizione di Dio, che è il più grande di tutti, scenda su di te, Askia, sovrano del popolo Songhai! Per molti anni il tuo regno rimase vassallo della potente nazione dell'Africa occidentale, il Mali, finché alla metà del XIV secolo, il re Sunni Ali Ber riuscì a conquistare l'indipendenza, impadronendosi di vasti territori e respingendo i numerosi nemici che intendevano distruggerlo. Alla fine, la conquista delle ricche città di Timbuctu e Djenné conferirono all'impero Songhai il potere economico per sopravvivere per circa 100 anni, fino alla sua distruzione dovuta alla tecnologia del moschetto, più avanzata di quella della lancia."
+		startIntroPart2: "King Askia, your people look yo you to lead them to glory. To make them powerful and wealthy, to keep them supplied with the weapons they need to defeat any foe. Can you save them from destruction, oh King? Can you build a civilization that will stand the test of time?"
+		
+		declaringWar:"Sei un abominio per la terra e il cielo, il capo di selvaggi ignoranti! Distruggerti sarà un vero piacere!"
+		attacked:"Quanta follia! Hai condannato il tuo popolo al rogo della distruzione!"
+		defeated:"Le fiamme dell'odio e dell'ira ci hanno consumati. Goditi la tua vittoria in questo mondo - pagherai un prezzo più grande nel prossimo!"
+		introduction:"Io sono Askia dei Songhai. Siamo gente giusta, ma coloro che ci ostacolano troveranno solo distruzione. Ti consiglio di evitare gli stessi errori che altri fecero in passato."
+		
+		neutralHello:"Saluti."
+		neutralLetsHearIt:["Sì?","Procedi."]
+		neutralNo:["No","Non ci siamo."]
+		neutralYes:["Benissimo.","Sì.","D'accordo."]
+
+		hateHello:"Ah, sei tu."
+		hateLetsHearIt:["E...?","Continua."]
+		hateNo:["Stai scherzando!","Questo è inaccettabile!","Niente da fare."]
+		hateYes:["Oh, va bene.","A posto."]
+		
+		afterPeace:"Ti ringraziamo per aver posto fine a questa inutile guerra."
+		tradeRequest:"Forse questo affare ti sarà di tuo gusto?"
+				
+		outerColor:[204,102,0],
+		innerColor:[255,0,0],
+		uniqueName:"Signore del fiume"
+		unique:"Le unità imbarcate sono rafforzate tramite le promozioni Canoe da guerra e Attacco anfibio. Gli accampamenti barbari saccheggiati fruttano quantità tripla di oro.",
+		cities:["Gao","Tombouctu","Jenne","Taghaza","Tondibi","Kumbi Saleh","Kukia","Walata","Tegdaoust","Argungu","Gwandu",
+			"Kebbi","Boussa","Motpi","Bamako","Wa","Kayes","Awdaghost","Ouadane","Dakar","Tadmekket","Tekedda","Kano",
+			"Agadez","Niamey","Torodi","Ouatagouna","Dori","Bamba","Segou"]
 	*/
 
 	//City states
