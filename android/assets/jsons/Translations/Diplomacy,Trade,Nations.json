@@ -1226,6 +1226,7 @@
 	}
 	
 	"Hiawatha":{
+		Italian:"Hiawatha"//Same as in Italian
 	}
 
 	"Units move through Forest and Jungle in friendly territory as if it is a Road. These tiles can be used to establish Trade Routes upon searching The Wheel.":{
@@ -1242,6 +1243,7 @@
 	}
 	
 	"Darius I":{
+		Italian:"Dario I"
 	}
 
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and a +10% Combat Strenght bonus.":{
