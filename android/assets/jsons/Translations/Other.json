@@ -717,7 +717,7 @@
 		German:"Für [amount] Gold kaufen"
 		Dutch:"Voor [amount] gold kopen"
 		Spanish:"Comprar por [amount] de oro"
-		Simplified_Chinese:"购买花费[amount]金钱"
+		Simplified_Chinese:"花费[amount]金钱购买"
 		Portuguese:"Comprar por [amount] ouro"
 		Japanese:"[amount]ゴールドで購入する"
 	}

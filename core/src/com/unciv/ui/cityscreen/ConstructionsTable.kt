@@ -73,7 +73,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         if(list.isEmpty()) return
         val titleTable = Table()
         titleTable.background = ImageGetter.getBackground(ImageGetter.getBlue())
-        titleTable.add(title.toLabel())
+        titleTable.add(title.toLabel().setFontSize(24))
 
         addSeparator()
         add(titleTable).fill().row()
@@ -128,7 +128,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
         constructionPickerTable.addCategory("Other",specialConstructions)
 
-        val scrollPane = ScrollPane(constructionPickerTable, skin)
+        val scrollPane = ScrollPane(constructionPickerTable.addBorder(2f, Color.WHITE))
 
         // This is to keep the same amount of scrolling on the construction picker scroll between refresh()es
         if(constructionScrollPane!=null){
@@ -138,7 +138,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
         }
         constructionScrollPane = scrollPane
 
-        add(scrollPane).height(stage.height / 3).minWidth(stage.width/4).row()
+        add(scrollPane).maxHeight(stage.height / 3 * (stage.height/600)).row()
     }
 
     private fun addCurrentConstructionTable(city: CityInfo) {
