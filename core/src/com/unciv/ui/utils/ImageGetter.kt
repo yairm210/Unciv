@@ -116,7 +116,34 @@ object ImageGetter {
         return getStatIcon(construction)
     }
 
-    fun getPromotionIcon(promotionName:String):Image{
+    fun getPromotionIcon(promotionName:String): Actor {
+        var level = 0
+
+        when {
+            promotionName.endsWith(" I") -> level=1
+            promotionName.endsWith(" II") -> level=2
+            promotionName.endsWith(" III") -> level=3
+        }
+
+        val basePromotionName = if(level==0) promotionName
+        else promotionName.substring(0, promotionName.length-level-1)
+
+        if(imageExists("UnitPromotionIcons/$basePromotionName")) {
+            val icon = getImage("UnitPromotionIcons/$basePromotionName")
+            icon.color = colorFromRGB(255,226,0)
+            var circle = icon.surroundWithCircle(30f)
+            circle.circle.color = colorFromRGB(0,12,49)
+//            circle = circle.surroundWithCircle(40f)
+//            circle.circle.color = colorFromRGB(255,226,0)
+            if(level!=0){
+                val starTable = Table().apply { defaults().pad(2f) }
+                for(i in 1..level) starTable.add(getImage("OtherIcons/Star")).size(8f)
+                starTable.centerX(circle)
+                starTable.y=5f
+                circle.addActor(starTable)
+            }
+            return circle
+        }
         return getImage("UnitPromotionIcons/" + promotionName.replace(' ', '_') + "_(Civ5)")
     }
 

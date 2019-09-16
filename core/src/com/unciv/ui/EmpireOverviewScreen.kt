@@ -114,8 +114,8 @@ class EmpireOverviewScreen : CameraStageBaseScreen(){
 
     private fun createTradeTable(trade: Trade, otherCiv:CivilizationInfo): Table {
         val generalTable = Table(skin)
-        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size))
-        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size))
+        generalTable.add(createOffersTable(currentPlayerCivInfo,trade.ourOffers, trade.theirOffers.size)).top()
+        generalTable.add(createOffersTable(otherCiv, trade.theirOffers, trade.ourOffers.size)).top()
         return generalTable
     }
 
