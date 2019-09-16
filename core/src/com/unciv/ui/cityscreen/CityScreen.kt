@@ -88,7 +88,8 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         topCityStatsTable = getCityStatsTable()
         topCityStatsTable.setPosition(5f, stage.height-5, Align.topLeft)
         stage.addActor(topCityStatsTable)
-        stage.addActor(topCityStatsTable)
+        constructionsTable.height=stage.height-topCityStatsTable.height
+        constructionsTable.setPosition(5f, stage.height-5-topCityStatsTable.height, Align.topLeft)
 
         if (city.getCenterTile().getTilesAtDistance(4).isNotEmpty()){
             displayTutorials("CityRange")

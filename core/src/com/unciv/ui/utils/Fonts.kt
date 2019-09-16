@@ -65,8 +65,8 @@ class Fonts {
             if(withChinese) {
                 if (Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").exists())
                     charSet.addAll(Gdx.files.internal("jsons/BasicHelp/BasicHelp_Simplified_Chinese.json").readString().asIterable())
-                if (Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").exists())
-                    charSet.addAll(Gdx.files.internal("jsons/Nations_Simplified_Chinese.json").readString().asIterable())
+                if (Gdx.files.internal("jsons/Nations/Nations_Simplified_Chinese.json").exists())
+                    charSet.addAll(Gdx.files.internal("jsons/Nations/Nations_Simplified_Chinese.json").readString().asIterable())
                 if (Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").exists())
                     charSet.addAll(Gdx.files.internal("jsons/Tutorials/Tutorials_Simplified_Chinese.json").readString().asIterable())
 

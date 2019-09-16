@@ -126,7 +126,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
                 .fillY() // provide full-height clicking area
 
         if (UnCivGame.Current.viewEntireMapForDebug || city.civInfo.isCurrentPlayer())
-            iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f)
+            iconTable.add(getConstructionGroup(city.cityConstructions)).padRight(10f).padLeft(10f)
         else if (city.civInfo.isMajorCiv()) {
             val nationIcon = ImageGetter.getNationIcon(city.civInfo.nation.name)
             nationIcon.color = secondaryColor
@@ -176,7 +176,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             val turnsToConstruction = cityConstructions.turnsToConstruction(cityCurrentConstruction.name)
             val label = turnsToConstruction.toString().toLabel()
             label.setFontColor(secondaryColor)
-            label.setFontSize(10)
+            label.setFontSize(14)
             label.pack()
             group.addActor(label)
 

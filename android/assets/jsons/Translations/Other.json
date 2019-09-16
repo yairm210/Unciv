@@ -717,7 +717,7 @@
 		German:"Für [amount] Gold kaufen"
 		Dutch:"Voor [amount] gold kopen"
 		Spanish:"Comprar por [amount] de oro"
-		Simplified_Chinese:"购买花费[amount]金钱"
+		Simplified_Chinese:"花费[amount]金钱购买"
 		Portuguese:"Comprar por [amount] ouro"
 		Japanese:"[amount]ゴールドで購入する"
 	}
@@ -912,7 +912,7 @@
 		German:"Erweiterung in [turnsToExpansion] Runden"
 		Dutch:"Uitbreiding in [turnsToExpansion] rondes"
 		Spanish:"[turnsToExpansion] rondas hasta la expansión"
-		Simplified_Chinese:"这座城市将在[turnsToExpansion]回合后扩张"
+		Simplified_Chinese:"此城市将在[turnsToExpansion]回合后扩张"
 		Portuguese:"[turnsToExpansion] turnos até a expansão"
 		Japanese:"[turnsToExpansion]が拡大に変わります"
 	}
@@ -938,7 +938,7 @@
 		German:"Neuer Einwohner in [turnsToPopulation] Runden"
 		Dutch:"Een nieuwe inwoner in [turnsToPopulation] rondes"
 		Spanish:"[turnsToPopulation] rondas hasta un nuevo residente"
-		Simplified_Chinese:"这座城市将在[turnsToPopulation]轮后有1个新市民"
+		Simplified_Chinese:"此城市将在[turnsToPopulation]轮后有1个新市民"
 		Portuguese:"[turnsToPopulation] turnos até um novo residente"
 		Japanese:"[turnsToPopulation]新しい人口に目を向けます"
 	}
@@ -951,7 +951,7 @@
 		German:"Bevölkerungsverlust in [turnsToStarvation] Runden"
 		Dutch:"Bevolkingsverlies in [turnsToStarvation] rondes"
 		Spanish:"Pérdida de población en [turnsToStarvation] turnos"
-		Simplified_Chinese:"这座城市将在[turnsToStarvation]轮后失去1个市民"
+		Simplified_Chinese:"此城市将在[turnsToStarvation]轮后失去1个市民"
 		Portuguese:"Perda de população em [turnsToStarvation] turnos"
 		Japanese:"[turnsToStarvation]人口を減らす"
 	}
