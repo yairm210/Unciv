@@ -81,7 +81,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
 
         multiplayerPopup.addGoodSizedLabel("HIGHLY EXPERIMENTAL - YOU HAVE BEEN WARNED!").row()
         multiplayerPopup.addGoodSizedLabel("To create a multiplayer game, check the 'multiplayer' toggle in the New Game screen, and for each human player insert that player's user ID.").row()
-        multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and othr players can copy their user IDs here and send them to you for you to include them in the game.").row()
+        multiplayerPopup.addGoodSizedLabel("You can assign your own user ID there easily, and other players can copy their user IDs here and send them to you for you to include them in the game.").row()
 
         multiplayerPopup.addButton("Copy User Id"){ Gdx.app.clipboard.contents = UnCivGame.Current.settings.userId }.row()
 
@@ -92,7 +92,7 @@ class WorldScreenMenuTable(val worldScreen: WorldScreen) : PopupTable(worldScree
         if(!worldScreen.gameInfo.gameParameters.isOnlineMultiplayer)
             copyGameIdButton.actor.disable()
 
-        multiplayerPopup.addGoodSizedLabel("Players can enter you game by copying the game ID to the clipboard, and clicking on the Join Game button").row()
+        multiplayerPopup.addGoodSizedLabel("Players can enter your game by copying the game ID to the clipboard, and clicking on the Join Game button").row()
         val badGameIdLabel = "".toLabel().setFontColor(Color.RED)
         badGameIdLabel.isVisible = false
         multiplayerPopup.addButton("Join Game") {
