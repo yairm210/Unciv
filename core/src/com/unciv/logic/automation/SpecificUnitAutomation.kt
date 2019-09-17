@@ -112,9 +112,9 @@ class SpecificUnitAutomation{
 
         val possibleCityLocations = unit.getTile().getTilesInDistance(5)
                 .filter { val tileOwner=it.getOwner()
-                    (tileOwner==null || tileOwner==unit.civInfo) && // don't allow settler to settle inside other civ's territory
+                        it.isLand && (tileOwner==null || tileOwner==unit.civInfo) && // don't allow settler to settle inside other civ's territory
                     (unit.movement.canMoveTo(it) || unit.currentTile==it)
-                            && it !in tilesNearCities && it.isLand }
+                            && it !in tilesNearCities }
 
         val luxuryResourcesInCivArea = unit.civInfo.cities.asSequence()
                 .flatMap { it.getTiles().asSequence() }.filter { it.resource!=null }
@@ -126,7 +126,7 @@ class SpecificUnitAutomation{
                 .firstOrNull { unit.movement.canReach(it) }
 
         if(bestCityLocation==null) { // We got a badass over here, all tiles within 5 are taken? Screw it, random walk.
-            if(UnitAutomation().tryExplore(unit, unit.movement.getDistanceToTiles())) return // try to find new areas
+            if (UnitAutomation().tryExplore(unit, unit.movement.getDistanceToTiles())) return // try to find new areas
             UnitAutomation().wander(unit, unit.movement.getDistanceToTiles()) // go around aimlessly
             return
         }

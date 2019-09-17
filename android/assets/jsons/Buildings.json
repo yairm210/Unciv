@@ -489,7 +489,8 @@
 		culture:1,
 		isWonder:true,
 		uniques:["Culture in all cities increased by 25%"],
-		requiredTech:"Acoustics"
+		requiredTech:"Acoustics",
+		quote:"'I live and love in God's peculiar light.' - Michelangelo Buonarroti"
 	},
 	{
 		name:"Bank",
@@ -529,7 +530,8 @@
 		culture:1,
 		isWonder:true,
 		uniques:["Unhappiness from population decreased by 10%"],
-		requiredTech:"Banking"
+		requiredTech:"Banking",
+		quote:"'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock"
 	},
 	{
 		name:"Theatre",
@@ -545,6 +547,7 @@
 		isWonder:true,
 		uniques:["Free Great Person"]
 		requiredTech:"Printing Press"
+		quote:"'Don't clap too hard - it's a very old building.' - John Osbourne"
 	},
 	{
 		name:"Himeji Castle",
@@ -552,8 +555,9 @@
 		isWonder:true,
 		greatPersonPoints:{production:2}
 		providesFreeBuilding:"Castle",
-		uniques:["+15% combat strength for units fighting in friendly territory"] // todo
-		requiredTech:"Gunpowder"
+		uniques:["+15% combat strength for units fighting in friendly territory"]
+		requiredTech:"Gunpowder",
+		quote:"'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo"
 	},
 	{
 		name:"Museum",
@@ -578,7 +582,8 @@
 		happiness:4,
 		isWonder:true,
 		uniques:["Free Great Artist Appears"],
-		requiredTech:"Archaeology"
+		requiredTech:"Archaeology",
+		quote:"'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson"
 	},
 	{
 		name:"Seaport",
@@ -595,7 +600,8 @@
 		happiness:4,
 		isWonder:true,
 		uniques:["Empire enters golden age"],
-		requiredTech:"Architecture"
+		requiredTech:"Architecture",
+		quote:"'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.'  - Rabindranath Tagore"
 	},
 	{
 		name:"Porcelain Tower",
@@ -603,7 +609,8 @@
 		greatPersonPoints:{science:2},
 		isWonder:true,
 		uniques:["Free great scientist appears","Production to science conversion in cities increased by 33%"],
-		requiredTech:"Architecture"
+		requiredTech:"Architecture",
+		quote:"'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell"
 	}, 
 	{
 		name:"Windmill",
@@ -670,7 +677,8 @@
 		gold:4,
 		isWonder:true,
 		uniques:["-15% to purchasing items in cities"],
-		requiredTech:"Industrialization"
+		requiredTech:"Industrialization",
+		quote:"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein"
 	},
 	
 	// Modern Era
@@ -689,14 +697,16 @@
 		happiness:5
 		isWonder:true,
 		uniques:["Provides 1 happiness per social policy"],
-		requiredTech:"Radio"
+		requiredTech:"Radio",
+		quote:"'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran"
 	},
 	{
 		name:"Statue of Liberty",
 		culture:1,
 		isWonder:true,
 		uniques:["+1 Production from specialists"],
-		requiredTech:"Replaceable Parts"
+		requiredTech:"Replaceable Parts",
+		quote:"'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus"
 	},
 	{
 		name:"Research Lab",
@@ -719,7 +729,8 @@
 		culture:5,
 		isWonder:true,
 		uniques:["Culture cost of adopting new Policies reduced by 10%"],
-		requiredTech:"Flight"
+		requiredTech:"Flight",
+		quote:"'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28"
 	},
 	{
 		name:"Kremlin",
@@ -737,7 +748,9 @@
 		isWonder:true,
 		uniques:["+1 happiness, +2 culture and +3 gold from every Castle",
 			"Must be next to mountain"],
-		requiredTech:"Railroad"
+		requiredTech:"Railroad",
+		quote:"'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria"
+		
 	},
 	
 	// Information Era
@@ -774,7 +787,8 @@
 		isWonder:true,
 		percentStatBonus:{culture:50},
 		uniques:["Free Social Policy","Can only be built in coastal cities"],
-		requiredTech:"Ecology"
+		requiredTech:"Ecology",
+		quote:"'Those who lose dreaming are lost.'  - Australian Aboriginal saying"
 	},
 	/*
 	{
@@ -792,7 +806,8 @@
 		culture:1,
 		greatPersonPoints:{production:2}
 		uniques:["Gold cost of upgrading military units reduced by 33%"]
-		requiredTech:"Combined Arms"
+		requiredTech:"Combined Arms",
+		quote:"'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower"
 	},
 	{
 		name:"Spaceship Factory",
@@ -826,7 +841,8 @@
 		providesFreeBuilding: "Spaceship Factory",
 		uniques:["2 free great scientists appear",
 			"Increases production of spaceship parts by 25%"],
-		requiredTech:"Satellites"
+		requiredTech:"Satellites",
+		quote:"'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France"
 	},
 	{
 		name:"SS Cockpit",
