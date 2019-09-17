@@ -8,6 +8,7 @@
 			{
 				name:"Agriculture",
 				row:5,
+				quote:"'Where tillage begins, other arts follow. The farmers therefore are the founders of human civilization.' - Daniel Webster"
 			}
 			
 		]	
@@ -21,18 +22,22 @@
 			{
 				name:"Pottery",
 				row:2,
+				quote:"'Shall the clay say to him that fashioneth it, what makest thou?' - Bible Isaiah 45:9"
 			},
 			{
 				name:"Animal Husbandry",
-				row:5
+				row:5,
+				quote:"'Thou shalt not muzzle the ox when he treadeth out the corn.' - Bible Deuteronomy 25:4"
 			},
 			{
 				name:"Archery",
-				row:7
+				row:7,
+				quote:"'The haft of the arrow has been feathered with one of the eagle's own plumes, we often give our enemies the means of our own destruction' - Aesop"
 			},
 			{
 				name:"Mining",
-				row:9
+				row:9,
+				quote:"'The meek shall inherit the Earth, but not its mineral rights.' - J. Paul Getty"
 			}
 			
 		]	
@@ -48,36 +53,43 @@
 				name:"Sailing",
 				row:1,
 				prerequisites:["Pottery"],
+				quote:"'He who commands the sea has command of everything.' - Themistocles"
 			},
 			{
 				name:"Calendar",
 				row:2,
-				prerequisites:["Pottery"]
+				prerequisites:["Pottery"],
+				quote:"'So teach us to number our days, so that we may apply our hearts unto wisdom.' - Bible Psalms 90:12"
 			},
 			{
 				name:"Writing",
 				row:3,
-				prerequisites:["Pottery"]
+				prerequisites:["Pottery"],
+				quote:"'He who destroys a good book kills reason itself.' - John Milton"
 			},
 			{
 				name:"Trapping",
 				row:5,
-				prerequisites:["Animal Husbandry"]
+				prerequisites:["Animal Husbandry"],
+				quote:"'Even brute beasts and wandering birds do not fall into the same traps or nets twice.' - Saint Jerome"
 			},
 			{
 				name:"The Wheel",
 				row:7,
-				prerequisites:["Animal Husbandry", "Archery"]
+				prerequisites:["Animal Husbandry", "Archery"],
+				quote:"'Wisdom and virtue are like the two wheels of a cart.' - Japanese proverb"
 			},
 			{
 				name:"Masonry",
 				row:9,
-				prerequisites:["Mining"]
+				prerequisites:["Mining"],
+				quote:"'How happy are those whose walls already rise!' - Virgil"
 			},
 			{
 				name:"Bronze Working",
 				row:10,
-				prerequisites:["Mining"]
+				prerequisites:["Mining"],
+				quote:"'Here Hector entered, with a spear eleven cubits long in his hand; the bronze point gleamed in front of him, and was fastened to the shaft of the spear by a ring of gold.' - Homer"
 			}			
 		]	
 	},
@@ -93,22 +105,26 @@
 				cost:85,
 				row:1,
 				prerequisites:["Sailing"],
-				uniques:["Enables embarkation for land units"]
+				uniques:["Enables embarkation for land units"],
+				quote:"'He made an instrument to know if the moon shine at full or no.' - Samuel Butler"
 			},
 			{
 				name:"Horseback Riding",
 				row:5,
-				prerequisites:["Trapping","The Wheel"]
+				prerequisites:["Trapping","The Wheel"],
+				quote:"'A Horse! A Horse! My kingdom for a horse!' - Shakespeare (Richard III)"
 			},
 			{
 				name:"Mathematics",
 				row:7,
-				prerequisites:["The Wheel"]
+				prerequisites:["The Wheel"],
+				quote:"'Mathematics is the gate and key to the sciences.' - Roger Bacon"
 			},
 			{
 				name:"Construction",
 				row:9,
-				prerequisites:["Masonry","The Wheel"]
+				prerequisites:["Masonry","The Wheel"],
+				quote:"'Three things are to be looked to in a building: that it stands on the right spot; that it be securely founded; that it be successfulyl executed.' - Johann Wolfgang von Goethe"
 			}
 		]	
 	},
@@ -122,22 +138,26 @@
 			{
 				name:"Philosophy",
 				row:3,
-				prerequisites:["Writing","Calendar"]
+				prerequisites:["Writing","Calendar"],
+				quote:"'There is only one good, knowledge, and one evil, ignorance.' - Socrates"
 			},
 			{
 				name:"Currency",
 				row:7,
-				prerequisites:["Mathematics"]
+				prerequisites:["Mathematics"],
+				quote:"'Better is bread with a happy heart than wealth with vexation.' - Amenemope"
 			},
 			{
 				name:"Engineering",
 				row:8,
-				prerequisites:["Mathematics","Construction"]
+				prerequisites:["Mathematics","Construction"],
+				quote:"'Instrumental or mechanical science is the noblest and, above all others, the most useful.' - Leonardo da Vinci"
 			},
 			{
 				name:"Iron Working",
 				row:10,
-				prerequisites:["Bronze Working"]
+				prerequisites:["Bronze Working"],
+				quote:"'Do not wait to strike til the iron is hot, but make it hot by striking.' - William Butler Yeats"
 			}
 		]	
 	},
