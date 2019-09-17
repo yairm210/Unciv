@@ -184,7 +184,7 @@ class Building : NamedStats(), IConstruction{
     }
 
     override fun canBePurchased(): Boolean {
-        return !isWonder && !isNationalWonder
+        return !isWonder && !isNationalWonder && ("Spaceship part" !in uniques)
     }
 
 
