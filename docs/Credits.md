@@ -30,6 +30,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
+* [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
 
 ### Classical Era
 
@@ -213,6 +214,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Chinese traditional tower](https://thenounproject.com/term/chinese-traditional-tower/1808410/) By 1516 for Porcelain Tower
 * [Bank](https://thenounproject.com/term/bank/1882194/) By projecthayat
 * [Harbor](https://thenounproject.com/term/harbor/225583/) By Rflor for Seaport
+* [Mansion](https://www.flaticon.com/free-icon/mansion_509903#term=persian&page=1&position=19) by Freepik for Satrap's Court
 
 ### Industrial Era
 
@@ -439,6 +441,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Ashika Chakra](https://thenounproject.com/search/?q=ashoka%20chakra&i=2328559) by sahua d for India
 * Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
+* Two [Sword] Scimitars(https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) by Those Icons for Persia
 
 ## Promotions
 
