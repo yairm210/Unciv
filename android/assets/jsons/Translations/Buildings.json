@@ -11,6 +11,7 @@
 		Portuguese:"Palácio"
 		German:"Palast"
 		Polish:"Pałac"
+		Hungarian:"Palota"
 }
 
 	"Indicates the capital city":{
@@ -22,6 +23,7 @@
 		French:"Indique la capitale"
 		Polish:"Wskazuje stolicę"
 		Russian:"Показывает столицу"
+		Hungarian:"Jelzi a fővárost"
 	}
 	
 	"Monument":{	
@@ -34,6 +36,7 @@
 		Portuguese:"Monumento"
 		German:"Monument"
 		Polish:"Pomnik"
+		Hungarian:"Emlékmű"
 	}
 
 	"Granary":{	
@@ -46,6 +49,7 @@
 		Portuguese:"Celeiro"
 		German:"Kornspeicher"
 		Polish:"Spichlerz"
+		Hungarian:"Magtár"
 	}
 
 	"Stone Works":{	
@@ -58,6 +62,7 @@
 		Portuguese:"Obras de pedras"
 		German:"Mauerwerk"
 		Polish:"Kamieniarz"
+		Hungarian:"Kőműves"
 	}
 	
 	"Must not be on plains":{
@@ -66,6 +71,7 @@
 		Polish:"Nie może być na równinach"
 		Russian:"Не может быть построено на равнинах"
 		Simplified_Chinese:"城市不能位于平原"
+		Hungarian:"Nem lehet sík terepen"
 	}
 
 	"Stonehenge":{	
@@ -77,6 +83,7 @@
 		Simplified_Chinese:"巨石阵"
 		Portuguese:"Stonehenge"
 		Polish:"Stonehenge"
+		Hungarian:"Stonehenge"
 	}
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle":{
@@ -93,6 +100,7 @@
 		Portuguese:"Livraria"
 		German:"Bibliothek"
 		Polish:"Biblioteka"
+		Hungarian:"Könyvtár"
 	}
 
 	"+1 Science Per 2 Population":{
