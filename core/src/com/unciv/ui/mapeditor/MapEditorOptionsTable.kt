@@ -114,6 +114,12 @@ class MapDownloadTable(mapEditorScreen: MapEditorScreen):PopupTable(mapEditorScr
                 val downloadMapButton = TextButton(downloadableMap.name, CameraStageBaseScreen.skin)
                 downloadMapButton.onClick {
                     val mapJsonGzipped = DropBox().downloadFile(downloadableMap.path_display)
+                    if(mapJsonGzipped==""){
+                        val couldNotDownloadMapPopup = PopupTable(screen)
+                        couldNotDownloadMapPopup.addGoodSizedLabel("Could not download map!").row()
+                        couldNotDownloadMapPopup.addCloseButton()
+                        return@onClick
+                    }
                     val decodedMapJson = Gzip.unzip(mapJsonGzipped)
                     val mapObject = MapSaver().mapFromJson(decodedMapJson)
                     MapSaver().saveMap(downloadableMap.name, mapObject)
