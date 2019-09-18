@@ -10,7 +10,7 @@ import com.unciv.models.gamebasics.GameBasics
 import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
-class TechButton(techName:String, val techManager: TechManager, isWorldScreen:Boolean=true) : Table(CameraStageBaseScreen.skin) {
+class TechButton(techName:String, val techManager: TechManager, isWorldScreen: Boolean = true) : Table(CameraStageBaseScreen.skin) {
     val text= Label("", skin).setFontColor(Color.WHITE).apply { setAlignment(Align.center) }
     init {
         touchable = Touchable.enabled

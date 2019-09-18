@@ -13,7 +13,7 @@ import com.unciv.ui.utils.*
 import com.unciv.ui.worldscreen.WorldScreen
 
 
-class PolicyPickerScreen(val worldScreen: WorldScreen,civInfo: CivilizationInfo=worldScreen.viewingCiv) : PickerScreen() {
+class PolicyPickerScreen(val worldScreen: WorldScreen,civInfo: CivilizationInfo = worldScreen.viewingCiv) : PickerScreen() {
     internal val viewingCiv: CivilizationInfo = civInfo
     private var pickedPolicy: Policy? = null
 
