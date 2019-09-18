@@ -445,7 +445,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 
 ## Promotions
 
-* [Sight](https://thenounproject.com/search/?q=sight&i=2631027) By Jejen Juliansyah Nur Agung for Accuracy
+* [Sight](https://thenounproject.com/search/?q=sight&i=2631027) By Jejen Juliansyah Nur Agung for Scouting
 * [skill bow rain arrow](https://thenounproject.com/search/?q=rain%20of%20arrows&i=2360192) by Maxicons for Barrage
 * [Bomb](https://thenounproject.com/search/?q=bombardment&i=1705276) By Angelo Troiano for Bombardment
 * [Private E2](https://thenounproject.com/yeongrong.kim.5/collection/miltary-rank/?i=833152) By Yeong Rong Kim for Shock
@@ -457,6 +457,18 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Wall](https://thenounproject.com/search/?q=wall&i=1305174) By Graphic Tigers for Volley
 * [Lightning](https://thenounproject.com/search/?q=lightning&i=1187991) By Mooms for Blitz
 * [Move](https://thenounproject.com/search/?q=move&i=790952) By Sandra for Mobility
+* [accuracy](https://thenounproject.com/search/?q=accuracy&i=2017348) By vigtographics for Targeting
+* [location](https://thenounproject.com/search/?q=location&i=2858979) by Humantech for Accuracy
+* [Plane](https://thenounproject.com/search/?q=plane&i=1875398) By Tran Minh Villageois for Interception
+* [Hammer](https://thenounproject.com/search/?q=hammer&i=854936) by Thengakola for Air Repair
+* [Hook](https://thenounproject.com/search/?q=hook&i=738678) By Yeong Rong Kim for Boarding Party
+* [Leaf](https://thenounproject.com/search/?q=Leaf&i=1627477) By Paul Verhulst for Indirect Fire
+* [Move](https://thenounproject.com/search/?q=move&i=344603) By Muneer A.Safiah for Logistics
+* [Evasion](https://thenounproject.com/search/?q=evasion&i=2013749) By Anna Sophie for Evasion
+* [Interrupt](https://thenounproject.com/search/?q=interrupt&i=366680) by Stephen Plaster for Ambush
+* [Submarine](https://thenounproject.com/search/?q=submarines&i=96833) by Lloyd Humphreys for Wolfpack
+* [Axe](https://thenounproject.com/search/?q=axe&i=14290) by Brian Oppenlander for Woodsman
+* [Competition](https://thenounproject.com/search/?q=move%20fast&i=1743826) by luca fruzza
 
 ## Others 
 
