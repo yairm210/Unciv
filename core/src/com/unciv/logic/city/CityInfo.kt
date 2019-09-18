@@ -18,6 +18,7 @@ import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
+import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -324,7 +325,9 @@ class CityInfo {
             }
         }
 
+        (conquerer as MapUnitCombatant).unit.currentMovement = (conquerer as MapUnitCombatant).unit.getMaxMovement().toFloat()
         (conquerer as MapUnitCombatant).unit.movement.moveToTile(getCenterTile())
+        (conquerer as MapUnitCombatant).unit.currentMovement = 0f
         conquerer = null
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
