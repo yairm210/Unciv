@@ -1,6 +1,7 @@
 package com.unciv.ui
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.scenes.scene2d.Touchable
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.UnCivGame
@@ -10,10 +11,10 @@ import com.unciv.models.gamebasics.VictoryType
 import com.unciv.models.gamebasics.tr
 import com.unciv.ui.newgamescreen.NewGameScreen
 import com.unciv.ui.pickerscreens.PickerScreen
-import com.unciv.ui.utils.addSeparator
-import com.unciv.ui.utils.enable
-import com.unciv.ui.utils.onClick
-import com.unciv.ui.utils.toLabel
+import com.unciv.ui.pickerscreens.PolicyPickerScreen
+import com.unciv.ui.pickerscreens.TechPickerScreen
+import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.WorldScreen
 
 class VictoryScreen : PickerScreen() {
 
@@ -199,7 +200,12 @@ class VictoryScreen : PickerScreen() {
                         .sortedByDescending { it.branchesCompleted }
 
         for (entry in civsToBranchesCompleted) {
-            policyVictoryColumn.add(EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)).row()
+            val civToBranchesHaveCompleted=EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.branchesCompleted, playerCivInfo)
+            policyVictoryColumn.add(civToBranchesHaveCompleted).row()
+            civToBranchesHaveCompleted.touchable= Touchable.enabled
+            civToBranchesHaveCompleted.onClick {
+                game.screen = PolicyPickerScreen(UnCivGame.Current.worldScreen,entry.civ)
+            }
         }
         return policyVictoryColumn
     }
@@ -217,7 +223,12 @@ class VictoryScreen : PickerScreen() {
         }
 
         for (entry in civsToPartsRemaining) {
-            scientificVictoryColumn.add(EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo)).row()
+            val civToPartsBeRemaining=(EmpireOverviewScreen.getCivGroup(entry.civ, " - " + entry.partsRemaining, playerCivInfo))
+            scientificVictoryColumn.add(civToPartsBeRemaining).row()
+            civToPartsBeRemaining.touchable= Touchable.enabled
+            civToPartsBeRemaining.onClick {
+                game.screen = TechPickerScreen(entry.civ)
+            }
         }
         return scientificVictoryColumn
     }

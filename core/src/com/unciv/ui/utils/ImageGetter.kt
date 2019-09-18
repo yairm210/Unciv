@@ -185,7 +185,18 @@ object ImageGetter {
     }
 
     fun getTechIconGroup(techName: String): Group {
-        return getImage("TechIcons/$techName").surroundWithCircle(60f)
+        var COLOR= Color.WHITE
+        when(GameBasics.Technologies[techName]!!.era().name){
+            "Ancient"-> COLOR= Color.FIREBRICK
+            "Classical"-> COLOR= Color.VIOLET
+            "Medieval"-> COLOR= Color.TAN
+            "Renaissance"-> COLOR= Color.BROWN
+            "Industrial"-> COLOR= Color.CHARTREUSE
+            "Modern"-> COLOR= Color.GOLD
+            "Information"-> COLOR= Color.CORAL
+            "Future"-> COLOR= Color.CYAN
+        }
+        return getImage("TechIcons/$techName").surroundWithCircle(60f).apply { this.circle.color= COLOR }
     }
 
     fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {

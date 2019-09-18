@@ -69,7 +69,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                     topTable.add() // empty cell
 
                 else {
-                    val techButton = TechButton(tech.name,civTech)
+                    val techButton = TechButton(tech.name,civTech,false)
 
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech) }

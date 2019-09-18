@@ -7,12 +7,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.utils.Align
 import com.unciv.logic.civilization.TechManager
 import com.unciv.models.gamebasics.GameBasics
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.setFontColor
-import com.unciv.ui.utils.surroundWithCircle
+import com.unciv.ui.utils.*
+import com.unciv.ui.worldscreen.WorldScreen
 
-class TechButton(techName:String, val techManager: TechManager) : Table(CameraStageBaseScreen.skin) {
+class TechButton(techName:String, val techManager: TechManager, isWorldScreen:Boolean=true) : Table(CameraStageBaseScreen.skin) {
     val text= Label("", skin).setFontColor(Color.WHITE).apply { setAlignment(Align.center) }
     init {
         touchable = Touchable.enabled
@@ -28,7 +26,10 @@ class TechButton(techName:String, val techManager: TechManager) : Table(CameraSt
             val percentComplete = (techCost-remainingTech)/techCost.toFloat()
             add(ImageGetter.getProgressBarVertical(2f, 50f, percentComplete, Color.BLUE, Color.WHITE))
         }
-        rightSide.add(text).row()
+        else add().width(2f)
+
+        if (isWorldScreen) rightSide.add(text).row()
+        else rightSide.add(text).height(25f).row()
 
         // here we add little images of what the tech gives you
         val techEnabledIcons = Table()
@@ -66,7 +67,8 @@ class TechButton(techName:String, val techManager: TechManager) : Table(CameraSt
             techEnabledIcons.add(ImageGetter.getImage("OtherIcons/Star")
                     .apply { color= Color.BLACK }.surroundWithCircle(30f))
 
-        rightSide.add(techEnabledIcons)
+        if (isWorldScreen) rightSide.add(techEnabledIcons)
+        else rightSide.add(techEnabledIcons).width(150f)
 
         add(rightSide)
         pack()
