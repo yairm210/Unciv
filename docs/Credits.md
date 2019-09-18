@@ -454,6 +454,9 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [City](https://thenounproject.com/search/?q=city&i=2402817) By iconcheese for Siege
 * [Skull and Crossbones](https://thenounproject.com/search/?q=skull%20and%20cross%20bones&i=15526) By Anton Outkine for Coastal Raider
 * [Spear](https://thenounproject.com/search/?q=spear&i=1754184) By Deemak Daksina for Formation
+* [Wall](https://thenounproject.com/search/?q=wall&i=1305174) By Graphic Tigers for Volley
+* [Lightning](https://thenounproject.com/search/?q=lightning&i=1187991) By Mooms for Blitz
+* [Move](https://thenounproject.com/search/?q=move&i=790952) By Sandra for Mobility
 
 ## Others 
 
