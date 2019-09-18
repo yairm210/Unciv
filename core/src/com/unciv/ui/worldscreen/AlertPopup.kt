@@ -65,7 +65,7 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         && city.civInfo.civName != city.foundingCiv
                         && city.conquerer!!.getCivInfo().civName != city.foundingCiv) {
                     add(TextButton("Liberate".tr(), skin).onClick {
-                        city.AnnexCity()
+                        city.LiberateCity()
                         close()
                     }).row()
                 }

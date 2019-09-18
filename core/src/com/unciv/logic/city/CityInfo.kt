@@ -355,7 +355,7 @@ class CityInfo {
 
         val currentPopulation = population.population
 
-        val percentageOfCivPopulationInThatCity = currentPopulation*100f / foundingCiv.cities.sumBy { it.population.population + currentPopulation}
+        val percentageOfCivPopulationInThatCity = currentPopulation*100f / (foundingCiv.cities.sumBy { it.population.population } + currentPopulation)
         val aggroGenerated = 10f+percentageOfCivPopulationInThatCity.roundToInt()
         foundingCiv.getDiplomacyManager(attackerCiv)
                 .addModifier(DiplomaticModifiers.CapturedOurCities, aggroGenerated)
