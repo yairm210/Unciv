@@ -171,24 +171,28 @@
 			{
 				name:"Theology",
 				row:2,
-				prerequisites:["Philosophy"]
+				prerequisites:["Philosophy"],
+				quote:"'Three things are necessary for the salvarion of man: to know what he ought to believe; to know what he ought to desire; and to know what he ought to do' - St. Thomas Aquinas"
 			},
 			{
 				name:"Civil Service",
 				row:5,
 				prerequisites:["Currency","Horseback Riding","Philosophy"],
-				uniques:["Enables Open Borders agreements"]
+				uniques:["Enables Open Borders agreements"],
+				quote:"'The only thing that saves us from the bureaucracy is it inefficiency' - Eugene McCarthy"
 			},
 			{
 				name:"Guilds",
 				row:7,
 				prerequisites:["Currency"],
-				uniques:["Enables conversion of city production to gold"]
+				uniques:["Enables conversion of city production to gold"],
+				quote:"'The merchants and the traders have come; their profits are pre-ordained...' - Sri Guru Granth Sahib"
 			},
 			{
 				name:"Metal Casting",
 				row:9,
-				prerequisites:["Engineering","Iron Working"]
+				prerequisites:["Engineering","Iron Working"],
+				quote:"'When pieces of bronze or gold or iron break, the metal-smith welds them together again in the fire, and the bond is established.' - Sri Guru Granth Sahib"
 			}
 		]
 	},
@@ -203,33 +207,39 @@
 				name:"Compass",
 				row:1,
 				prerequisites:["Optics","Theology"],
+				quote:"'I find the great thing in this world is not so much where we stand, as in what direction we are moving.' - Oliver Wendell Holmes"
 			},
 			{
 				name:"Education",
 				row:3,
 				prerequisites:["Theology","Civil Service"],
-				uniques:["Enables conversion of city production to science"]
+				uniques:["Enables conversion of city production to science"],
+				quote:"'Education is the best provision for old age.' - Aristotle"
 			},
 			{
 				name:"Chivalry",
 				row:6,
-				prerequisites:["Civil Service","Guilds"]
+				prerequisites:["Civil Service","Guilds"],
+				quote:"'Whoso pulleth out this sword of this stone and anvil, is rightwise king born of all England.' - Malory"
 			},
 			{
 				name:"Machinery",
 				row:8,
 				prerequisites:["Guilds","Engineering"],
-				uniques:["Improves movement speed on roads"]
+				uniques:["Improves movement speed on roads"],
+				quote:"'The press is the best instrument for enlightening the mind of man, and improving him as a rational, moral and social being.' - Thomas Jefferson"
 			},
 			{
 				name:"Physics",
 				row:9,
-				prerequisites:["Metal Casting"]
+				prerequisites:["Metal Casting"],
+				quote:"'Measure what is measurable, and make measurable what is not so.' - Galileo Galilei"
 			},
 			{
 				name:"Steel",
 				row:10,
-				prerequisites:["Metal Casting"]
+				prerequisites:["Metal Casting"],
+				quote:"'John Henry said to his Captain, / 'A man ain't nothin' but a man, / And before I'll let your steam drill beat me down, / I'll die with the hammer in my hand.'' - Anonymous: The Ballad of John Henry, the Steel-Drivin' Man"
 			}
 		]	
 	},
@@ -244,27 +254,32 @@
 				name:"Astronomy",
 				row:2,
 				uniques:["Increases embarked movement +1","Enables embarked units to enter ocean tiles"],
-				prerequisites:["Compass","Education"]
+				prerequisites:["Compass","Education"],
+				quote:"'Joyfully to the breeze royal Odysseus spread his sail, and with his rudder skillfully he steered.' - Homer"
 			},
 			{
 				name:"Acoustics",
 				row:4,
-				prerequisites:["Education"]
+				prerequisites:["Education"],
+				quote:"'Their rising all at once was as the sound of thunder heard remote' - Milton"
 			},
 			{
 				name:"Banking",
 				row:6,
-				prerequisites:["Chivalry"]
+				prerequisites:["Chivalry"],
+				quote:"'Happiness: a good bank account, a good cook and a good digestion' - Jean Jacques Rousseau"
 			},
 			{
 				name:"Printing Press",
 				row:8,
-				prerequisites:["Machinery","Physics","Chivalry"]
+				prerequisites:["Machinery","Physics","Chivalry"],
+				quote:"'It is a newspaper's duty to print the news and raise hell.' - The Chicago Times"
 			},
 			{
 				name:"Gunpowder",
 				row:10,
-				prerequisites:["Physics","Steel"]
+				prerequisites:["Physics","Steel"],
+				quote:"'The day when two army corps can annihilate each other in one second, all civilized nations, it is to be hoped, will recoil from war and discharge their troops.' - Alfred Nobel"
 			}
 		]	
 	},
@@ -278,27 +293,32 @@
 			{
 				name:"Navigation",
 				row:2,
-				prerequisites:["Astronomy"]
+				prerequisites:["Astronomy"],
+				quote:"'The winds and the waves are always on the side of the ablest navigators.' - Edward Gibbon"
 			},
 			{
 				name:"Architecture",
 				row:4,
-				prerequisites:["Acoustics","Banking"]
+				prerequisites:["Acoustics","Banking"],
+				quote:"'Architecture begins where engineering ends.' - Walter Gropius"
 			},
 			{
 				name:"Economics",
 				row:6,
-				prerequisites:["Banking","Printing Press"]
+				prerequisites:["Banking","Printing Press"],
+				quote:"'Compound interest is the most powerful force in the universe.' - Albert Einstein"
 			},
 			{
 				name:"Metallurgy",
 				row:9,
-				prerequisites:["Printing Press","Gunpowder"]
+				prerequisites:["Printing Press","Gunpowder"],
+				quote:"'There never was a good knife made of bad steel.' - Benjamin Franklin"
 			}
 			{
 				name:"Chemistry",
 				row:10,
-				prerequisites:["Gunpowder"]
+				prerequisites:["Gunpowder"],
+				quote:"'Wherever we look, the work of the chemist has raised the level of our civilization and has increased the productive capacity of the nation.' - Calvin Coolidge"
 			}
 		]	
 	},
