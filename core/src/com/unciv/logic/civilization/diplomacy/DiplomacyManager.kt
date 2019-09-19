@@ -170,11 +170,6 @@ class DiplomacyManager() {
                 if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
                     counter.add(GameBasics.TileResources[offer.name]!!,offer.amount,"Trade")
         }
-        for(tradeRequest in otherCiv().tradeRequests.filter { it.requestingCiv==civInfo.civName }){
-            for(offer in tradeRequest.trade.theirOffers) // "theirOffers" in the other civ's trade request, is actually out civ's offers
-                if(offer.type== TradeType.Strategic_Resource || offer.type== TradeType.Luxury_Resource)
-                    counter.add(GameBasics.TileResources[offer.name]!!,-offer.amount,"Trade")
-        }
         return counter
     }
     //endregion
