@@ -42,7 +42,7 @@ data class LocationAction(var locations: ArrayList<Vector2> = ArrayList()) : Not
 class TechAction(val techName: String = "") : NotificationAction {
     override fun execute(worldScreen: WorldScreen) {
         val tech = GameBasics.Technologies[techName]
-        worldScreen.game.screen = TechPickerScreen(worldScreen.viewingCiv, tech)
+        worldScreen.game.screen = TechPickerScreen(worldScreen.viewingCiv, true, tech)
     }
 }
 
