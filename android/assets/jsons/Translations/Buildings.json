@@ -114,6 +114,7 @@
 		Simplified_Chinese:"每2人口+1科研"
 		Portuguese:"+1 Ciência a cada 2 habitantes"
 		Polish:"+1 do nauki na 2 obywateli"
+		Hungarian:"+1 Tudomány per 2 populáció"
 	}
 
 	"Paper Maker":{
@@ -125,6 +126,7 @@
 		French:"Fabricant de papier"
 		Polish:"Wytwórca papieru"
 		Russian:"Бумажная мануфактура"
+		Hungarian:"Papírgyártó"
 	}
 	
 	"The Great Library":{	
@@ -137,6 +139,7 @@
 		Portuguese:"A Grande Biblioteca"
 		German:"Die Große Bibliothek"
 		Polish:"Wielka Biblioteka"
+		Hungarian:"Nagy Könyvtár"
 	}
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
@@ -153,6 +156,7 @@
 		Portuguese:"Circo"
 		German:"Zirkus"
 		Polish:"Cyrk"
+		Hungarian:"Cirkusz"
 	}
 
 	"Walls":{	
@@ -165,6 +169,7 @@
 		Portuguese:"Muralhas"
 		German:"Mauern"
 		Polish:"Mury"
+		Hungarian:"Fal"
 	}
 
 	"Walls of Babylon":{
@@ -173,6 +178,7 @@
         	French:"Murs de Babylone"
 		Polish:"Mury Babilonu"
 		Russian:"Стены Вавилона"
+		Hungarian:"Babilon Fal"
 	}
 	
 	"The Pyramids":{	
@@ -185,6 +191,7 @@
 		Portuguese:"Pirâmides"
 		German:"Die Pyramiden"
 		Polish:"Piramidy"
+		Hungarian:"Piramisok"
 	}
 
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
@@ -202,6 +209,7 @@
 		Simplified_Chinese:"设施建造速度+25%"
 		Portuguese:"Velocidade de construção dos trabalhadores aumentada em +25%"
 		Polish:"Prędkość pracy robotnika zwiększona o 25%"
+		Hungarian:"Munkás termelékenység megnövelve 25%-al"
 	}
 
 	"Provides 2 free workers":{
@@ -215,6 +223,7 @@
 		Simplified_Chinese:"提供2个免费工人"
 		Portuguese:"Proporciona 2 trabalhadores gratis"
 		Polish:"Pojawiają się 2 darmowi robotnicy"
+		Hungarian:"Ad 2 ingyen munkást"
 	}
 	
 	"Barracks":{	
@@ -227,6 +236,7 @@
 		Portuguese:"Quartéis"
 		German:"Baracken"
 		Polish:"Koszary"
+		Hungarian:"Laktanyák"
 	}
 	
 	"Krepost":{ // russian uique, transliterate this probably, this is a russian word
@@ -238,6 +248,7 @@
 		Russian:"Острог"
 		French:"Krepost"
 		Polish:"Krepost"
+		Hungarian:"Krepost"
 	}
 	
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
@@ -249,6 +260,7 @@
 		French:"Cout d'acquisition en or et en culture de nouvelle cases réduit de 25% dans cette ville"
 		Polish:"Koszt uzyskania nowego pola (w kulturze lub złocie) zmniejszony o 25% w tym mieście" 
 		Russian:"-25% к необходимому количеству Культура и Золото для получения клеток вокруг данного города"
+		Hungarian:"Kultúra és arany árak új terület vásárlása esetén 25%-al csökkentve ebben a városban"
 	}
 	
 	"Colossus":{
@@ -257,6 +269,7 @@
 		French:"Colosse"
 		Polish:"Kolos rodyjski"
 		Russian:"Колосс Родосский"
+		Hungarian:"Kolosszus"
 	}
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
@@ -269,6 +282,7 @@
 		French:"+1 or pour les cases maritimes exploitées par la ville"
 		Polish:"+1 do złota z obsadzonych pól wodnych w tym mieście"
 		Russian:"+1 Золото от обрабатываемых водных клеток вокруг города"
+		Hungarian:"+1 arany a művelt vizi területekről ebben a városban"
 	}
 	
 	"Temple":{	
@@ -281,6 +295,7 @@
 		Portuguese:"Templo"
 		German:"Tempel"
 		Polish:"Świątynia"
+		Hungarian:"Templom"
 	}
 
 	"Burial Tomb":{
@@ -292,6 +307,7 @@
 		French:"Tombeau"
 		Polish:"Grobowiec"
 		Russian:"Гробница"
+		Hungarian:"Temetkezési hely"
 	}
 
 	/*
@@ -312,6 +328,7 @@
 		Portuguese:"O Oráculo"
 		German:"Das Orakel"
 		Polish:"Wyrocznia"
+		Hungarian:"Jóslat"
 	}
 
 	"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates":{
@@ -329,6 +346,7 @@
 		Simplified_Chinese:"可免费推行1项社会政策"
 		Portuguese:"Politica social gratis"
 		Polish:"Darmowy ustrój społeczny"
+		Hungarian:"Ingyen társadalompolitika"
 	}
 	
 	"National College":{	
@@ -341,6 +359,7 @@
 		Portuguese:"Universidade Nacional"
 		German:"Nationale Hochschule"
 		Polish:"Akademia Narodowa"
+		Hungarian:"Nemzeti Főiskola"
 	}
 	
 	"Chichen Itza":{	
@@ -353,6 +372,7 @@
 		Portuguese:"Chichen Itza"
 		German:"Chichen Itza"
 		Polish:"Chichen Itza"
+		Hungarian:"Chichén Itzá"
 	}
 
 	"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam":{
@@ -370,6 +390,7 @@
 		Simplified_Chinese:"黄金时代持续时间+50%"
 		Portuguese:"Duração de idade dourada aumentada em 50%"
 		Polish:"Czas trwania Złotego Wieku zwiększony o 50%"
+		Hungarian:"Aranykorok hossza +50%-al megnövelve"
 	}
 	
 	"Lighthouse":{
@@ -382,6 +403,7 @@
 		German:"Leuchtturm"
 		Polish:"Latarnia morska"
 		Russian:"Маяк"
+		Hungarian:"Világítótorony"
 	}
 
 	"Can only be built in coastal cities":{
@@ -393,6 +415,7 @@
 		German:"Kann nur in Küstenstädten gebaut werden"
 		Polish:"Może być zbudowane tylko w miastach nadbrzeżnych"
 		Russian:"Может быть построен только в прибрежных городах"
+		Hungarian:"Csak kikötővárosokban építhető"
 	}
 
 	"+1 food from Ocean and Coast tiles":{
@@ -403,6 +426,7 @@
 		Simplified_Chinese:"每个海滨地块和海洋地块+1食物"
 		Polish:"+1 do żywności z pól wybrzeża i oceanicznych"
 		Russian:"+1 Еда от клеток около берега и в океане"
+		Hungarian:"+1 étel az óceáni és tengerparti területekről"
 	}
 	
 	"The Great Lighthouse":{
@@ -415,6 +439,7 @@
 		German:"Der Große Leuchtturm"
 		Polish:"Latarnia na Faros" //common polish name
 		Russian:"Фаросский маяк"
+		Hungarian:"A Nagy Világítótorony"
 	}
 
 	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
@@ -431,6 +456,7 @@
 		German:"Alle militärischen Marineeinheiten erhalten +1 Bewegung und +1 Sicht"
 		Polish:"Każda jednostka marynarki otrzymuje +1 do ruchu i pola widzenia"
 		Russian:"Все военно-морские юниты получают +1 к движению и обзору"
+		Hungarian:"Minden haditengerészeti egység kap +1 lépéspontot és +1 látópontot"
 	}
 
 	/*
@@ -457,6 +483,7 @@
 		Portuguese:"Estabulos"
 		German:"Stall"
 		Polish:"Stajnia"
+		Hungarian:"Istáló"
 	}
 
 	"+15% Production when building Mounted Units in this city":{
