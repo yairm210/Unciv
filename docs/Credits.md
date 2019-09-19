@@ -31,6 +31,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
 * [Hoplite](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20) by Eucalyp for Immortal
+* [Maori](https://www.flaticon.com/free-icon/hoplite_659126#term=hoplite&page=1&position=20https://www.flaticon.com/premium-icon/maori_485108#term=maori&page=1&position=11) by Freepik for Maori Warrior
 
 ### Classical Era
 
@@ -442,6 +443,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * Variation on [crecent moon](https://thenounproject.com/search/?q=crescents&i=1438333) by Estu Suhartono for The Ottomans
 * [Korea](https://thenounproject.com/search/?q=korea&i=1689701) by CJS for Korea
 * Two [Sword] Scimitars(https://www.flaticon.com/free-icon/sword_812259#term=scimitar&page=1&position=2) by Those Icons for Persia
+* [Spiral](https://www.shutterstock.com/image-vector/maori-symbol-spiral-shape-based-on-1145645057?id=1145645057&irgwc=1&utm_medium=Affiliate&utm_campaign=Freepik%20Company%2C%20S.L.&utm_source=39422&utm_term=5d8380a97b925.5d8380a97b926) by bc21 for Polynesia
 
 ## Promotions
 
