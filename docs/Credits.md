@@ -145,6 +145,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Ruins](https://thenounproject.com/term/ruins/175277/) By Creative Stall for Ancient runs
 * [Ruins](https://thenounproject.com/term/ruins/3849/) By Paulo Volkova for City ruins
 * [Fishing Net](https://thenounproject.com/term/fishing-net/1073133/) By Made for Fishing Boats
+* [Moai](https://www.flaticon.com/free-icon/moai_2075989) By surang for Moai
 
 ## Buildings
 
