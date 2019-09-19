@@ -1213,7 +1213,7 @@
 	}
 
 	"+2 Science for all specialists and Great Person tile improvements":{
-		Italian:"+2 Scienza per ogni specialista e ogni miglioramento da Gran Personaggio."
+		Italian:"+2 Scienza per ogni specialista e ogni miglioramento dai Grandi Personaggi."
 		Simplified_Chinese:"所有专业人员和所有伟人设施+2科研"
 		Russian:"+2 Наука для всех специалистов и улучшений клеток Великими людьми."
 	}
@@ -1229,8 +1229,8 @@
 		Italian:"Hiawatha"//Same as in Italian
 	}
 
-	"Units move through Forest and Jungle in friendly territory as if it is a Road. These tiles can be used to establish Trade Routes upon searching The Wheel.":{
-		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando si scopre la Ruota."
+	"All units move through Forest and Jungle Tiles in friendly territory as if it is Road. These tiles can be used to establish City Connections upon researching the Wheel.":{
+		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando scopri la Ruota."
 		Portuguese:"Mova-se por florestas e selvas em território amigo como se fossem estradas. Estas terras podem ser usadas para estabelecer rotas de comércio após pesquisar a roda."
 		French:"Les Forêt et les Jungles en territoire alliés ont les mêmes attributs que les routes. A la découverte de la Roue, elles peuvent établir des routes commerciales."
 	}
@@ -1246,7 +1246,7 @@
 		Italian:"Dario I"
 	}
 
-	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and a +10% Combat Strenght bonus.":{
+	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strenght.":{
 		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
 		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
 		French:"Les Ages d'Or durent 50% plus longtemps. Durant les Ages d'Or, les unités gagnent +1 mouvement et +10% de force de Combat."
