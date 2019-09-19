@@ -204,7 +204,7 @@ class VictoryScreen : PickerScreen() {
             policyVictoryColumn.add(civToBranchesHaveCompleted).row()
             civToBranchesHaveCompleted.touchable= Touchable.enabled
             civToBranchesHaveCompleted.onClick {
-                game.screen = PolicyPickerScreen(UnCivGame.Current.worldScreen,entry.civ,false)
+                game.screen = PolicyPickerScreen(UnCivGame.Current.worldScreen,entry.civ, false)
                 dispose()
             }
         }
@@ -228,7 +228,7 @@ class VictoryScreen : PickerScreen() {
             scientificVictoryColumn.add(civToPartsBeRemaining).row()
             civToPartsBeRemaining.touchable= Touchable.enabled
             civToPartsBeRemaining.onClick {
-                game.screen = TechPickerScreen(entry.civ,false)
+                game.screen = TechPickerScreen(entry.civ, false)
                 dispose()
             }
         }
