@@ -158,7 +158,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         selectedTech = tech
         descriptionLabel.setText(tech?.description)
 
-        if (switchfromWorldScreen)
+        if (!switchfromWorldScreen)
             return
 
         if(tech==null)
