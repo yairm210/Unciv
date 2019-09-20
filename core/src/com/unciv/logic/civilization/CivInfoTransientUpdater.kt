@@ -3,11 +3,9 @@ package com.unciv.logic.civilization
 import com.badlogic.gdx.graphics.Color
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.map.BFS
-import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.GameBasics
 import com.unciv.models.gamebasics.tile.ResourceSupplyList
-import com.unciv.models.gamebasics.tr
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.set
@@ -78,15 +76,20 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
         citiesReachedToMediums[civInfo.getCapital()] = arrayListOf("Start")
         val allCivCities = civInfo.gameInfo.civilizations.flatMap { it.cities }
 
+        val theWheelIsResearched = civInfo.tech.isResearched("The Wheel")
+
+        val road = "Road"
+        val harbor = "Harbor"
+
         while(citiesToCheck.isNotEmpty() && citiesReachedToMediums.size<allCivCities.size){
             val newCitiesToCheck = mutableListOf<CityInfo>()
             for(cityToConnectFrom in citiesToCheck){
                 val reachedMediums = citiesReachedToMediums[cityToConnectFrom]!!
 
                 // This is copypasta and can be cleaned up
-                if(!reachedMediums.contains("Road")){
+                if(theWheelIsResearched && !reachedMediums.contains(road)){
 
-                    val roadBfs = BFS(cityToConnectFrom.getCenterTile()) { it.roadStatus != RoadStatus.None }
+                    val roadBfs = BFS(cityToConnectFrom.getCenterTile()) { it.hasRoad(civInfo) }
                     roadBfs.stepToEnd()
                     val reachedCities = allCivCities.filter { roadBfs.tilesReached.containsKey(it.getCenterTile())}
                     for(reachedCity in reachedCities){
@@ -95,14 +98,14 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
                             citiesReachedToMediums[reachedCity] = arrayListOf()
                         }
                         val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if(!cityReachedByMediums.contains("Road"))
-                            cityReachedByMediums.add("Road")
+                        if(!cityReachedByMediums.contains(road))
+                            cityReachedByMediums.add(road)
                     }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add("Road")
+                    citiesReachedToMediums[cityToConnectFrom]!!.add(road)
                 }
 
-                if(!reachedMediums.contains("Harbor")
-                        && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent("Harbor")){
+                if(!reachedMediums.contains(harbor)
+                        && cityToConnectFrom.cityConstructions.containsBuildingOrEquivalent(harbor)){
                     val seaBfs = BFS(cityToConnectFrom.getCenterTile()) { it.isWater || it.isCityCenter() }
                     seaBfs.stepToEnd()
                     val reachedCities = allCivCities.filter { seaBfs.tilesReached.containsKey(it.getCenterTile())}
@@ -112,10 +115,10 @@ class CivInfoTransientUpdater(val civInfo: CivilizationInfo){
                             citiesReachedToMediums[reachedCity] = arrayListOf()
                         }
                         val cityReachedByMediums = citiesReachedToMediums[reachedCity]!!
-                        if(!cityReachedByMediums.contains("Harbor"))
-                            cityReachedByMediums.add("Harbor")
+                        if(!cityReachedByMediums.contains(harbor))
+                            cityReachedByMediums.add(harbor)
                     }
-                    citiesReachedToMediums[cityToConnectFrom]!!.add("Harbor")
+                    citiesReachedToMediums[cityToConnectFrom]!!.add(harbor)
                 }
             }
             citiesToCheck = newCitiesToCheck

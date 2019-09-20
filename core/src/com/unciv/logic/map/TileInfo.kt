@@ -324,5 +324,12 @@ open class TileInfo {
         }
         return false
     }
+
+    fun hasRoad(civInfo: CivilizationInfo): Boolean {
+        if(roadStatus != RoadStatus.None) return true
+        if(civInfo.nation.forestsAndJunglesAreRoads && (terrainFeature==Constants.jungle || terrainFeature==Constants.forest))
+            return true
+        return false
+    }
     //endregion
 }

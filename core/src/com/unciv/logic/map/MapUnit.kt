@@ -94,7 +94,8 @@ class MapUnit {
         if (type.isWaterUnit() && civInfo.nation.unique == "+2 movement for all naval units")
             movement += 2
 
-        if(civInfo.nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
+        if(civInfo.goldenAges.isGoldenAge() &&
+                civInfo.nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
             movement+=1
 
         return movement
