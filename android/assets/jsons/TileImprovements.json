@@ -145,6 +145,31 @@
 		improvingTechStats:{gold:1}
 	},
 	
+	//Civilization unique improvements
+	/*
+	{
+		name:"Moai",
+		uniqueTo:"Polynesia",
+		culture:1,
+		turnsToBuild:4,
+		improvingTech:"Construction",
+		uniques:["+1 additional Culture for each adjacent Moai","+1 Gold after researching Flight"],
+		terrainsCanBeBuiltOn:["Hill"],
+		//It can be colored in orange
+	},
+	{
+		name:"Terrace Farm",
+		uniqueTo:"Inca",
+		food:1,
+		turnsToBuild:4,
+		improvingTech:"Construction",
+		uniques:["+1 Food for each adjacent Mountain","+1 additional Food  with Fertilizer and no fresh water"],
+		terrainsCanBeBuiltOn:["Plains","Grassland","Desert","Tundra"],
+		//It can be colored in lemon
+		//Cannot improve a resource
+	},
+	*/
+	
 	{ name:"Ancient ruins" },
 	{ name:"City ruins" },
 	{ name:"Barbarian encampment" },
