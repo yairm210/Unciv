@@ -223,7 +223,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             // these two are conflictingly named compared to above...
             val assignedSpecialists = currentSpecialists[stat]!!.toInt()
             val maxSpecialists = statToMaximumSpecialist.value.toInt()
-            if (assignedSpecialists > 0) {
+            if (assignedSpecialists > 0 && !cityInfo.isPuppet) {
                 val unassignButton = TextButton("-", skin)
                 unassignButton.label.setFontSize(24)
                 unassignButton.onClick {
@@ -241,7 +241,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 specialistIconTable.add(icon).size(30f)
             }
             specialistPickerTable.add(specialistIconTable)
-            if (assignedSpecialists < maxSpecialists) {
+            if (assignedSpecialists < maxSpecialists && !cityInfo.isPuppet) {
                 val assignButton = TextButton("+", skin)
                 assignButton.label.setFontSize(24)
                 assignButton.onClick {

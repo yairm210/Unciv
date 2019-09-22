@@ -351,6 +351,7 @@ class CityInfo {
     fun PuppetCity() {
         AnnexCity()
         isPuppet = true
+        resistanceCounter = 0
     }
 
     fun LiberateCity() {

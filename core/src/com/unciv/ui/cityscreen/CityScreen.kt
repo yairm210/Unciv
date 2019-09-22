@@ -167,7 +167,12 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         if(city.isPuppet) {
             val annexCityButton = TextButton("Annex city".tr(), skin)
             annexCityButton.labelCell.pad(10f)
-            annexCityButton.onClick { city.isPuppet=false; city.isBeingRazed=false; update() }
+            annexCityButton.onClick {
+                city.isPuppet=false
+                city.isBeingRazed=false
+                city.resistanceCounter = city.population.population
+                update()
+            }
             razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
         }
         else if(!city.isBeingRazed) {
@@ -203,14 +208,16 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             val tileInfo = tileGroup.tileInfo
 
             tileGroup.onClick {
-                selectedTile = tileInfo
-                if (tileGroup.isWorkable && UnCivGame.Current.worldScreen.isPlayersTurn) {
-                    if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
-                        city.workedTiles.add(tileInfo.position)
-                    else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
-                    city.cityStats.update()
+                if (!city.isPuppet) {
+                    selectedTile = tileInfo
+                    if (tileGroup.isWorkable && UnCivGame.Current.worldScreen.isPlayersTurn) {
+                        if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
+                            city.workedTiles.add(tileInfo.position)
+                        else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
+                        city.cityStats.update()
+                    }
+                    update()
                 }
-                update()
             }
 
             tileGroups.add(tileGroup)

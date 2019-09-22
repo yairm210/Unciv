@@ -149,7 +149,7 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         row()
         val purchaseConstructionButton: TextButton
-        if (construction.canBePurchased()) {
+        if (construction.canBePurchased() && !city.isPuppet) {
             val constructionGoldCost = construction.getGoldCost(city.civInfo)
             purchaseConstructionButton = TextButton("Buy for [$constructionGoldCost] gold".tr(), CameraStageBaseScreen.skin)
             purchaseConstructionButton.onClick("coin") {
