@@ -183,8 +183,8 @@
 		maintenance:4,
 		hurryCostModifier:25,
 		uniques:["Remove extra unhappiness from annexed cities",
-			"Can only be built in annexed cities"]
-		requiredTech:"Compass"
+			"Can only be built in annexed cities"],
+		requiredTech:"Mathematics"
 	},
 	{
 		name:"Colosseum", 
