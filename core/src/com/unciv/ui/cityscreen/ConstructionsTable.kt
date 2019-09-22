@@ -50,11 +50,13 @@ class ConstructionsTable(val cityScreen: CityScreen) : Table(CameraStageBaseScre
 
         if(rejectionReason=="" && UnCivGame.Current.worldScreen.isPlayersTurn) { // no rejection reason means we can build it!
             pickProductionButton.onClick {
-                lastConstruction = cityScreen.city.cityConstructions.currentConstruction
-                cityScreen.city.cityConstructions.currentConstruction = construction
-                cityScreen.city.cityConstructions.currentConstructionIsUserSet=true
-                cityScreen.city.cityStats.update()
-                cityScreen.update()
+                if (!cityScreen.city.isPuppet) {
+                    lastConstruction = cityScreen.city.cityConstructions.currentConstruction
+                    cityScreen.city.cityConstructions.currentConstruction = construction
+                    cityScreen.city.cityConstructions.currentConstructionIsUserSet = true
+                    cityScreen.city.cityStats.update()
+                    cityScreen.update()
+                }
             }
 
         }

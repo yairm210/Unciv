@@ -79,7 +79,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         cityPickerTable.centerX(stage)
 
         constructionsTable.update()
-        updateRazeCityButton()
+        updateAnnexAndRazeCityButton()
         tileTable.update(selectedTile)
         tileTable.setPosition(stage.width-5, 5f,Align.bottomRight)
         updateTileGroups()
@@ -161,10 +161,16 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         return table.addBorder(2f, beige)
     }
 
-    private fun updateRazeCityButton() {
+    private fun updateAnnexAndRazeCityButton() {
         razeCityButtonHolder.clear()
 
-        if(!city.isBeingRazed) {
+        if(city.isPuppet) {
+            val annexCityButton = TextButton("Annex city".tr(), skin)
+            annexCityButton.labelCell.pad(10f)
+            annexCityButton.onClick { city.isPuppet=false; city.isBeingRazed=false; update() }
+            razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
+        }
+        else if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city".tr(), skin)
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }

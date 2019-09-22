@@ -73,6 +73,10 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     city.AnnexCity()
                     close()
                 }).row()
+                add(TextButton("Puppet City".tr(), skin).onClick {
+                    city.PuppetCity()
+                    close()
+                }).row()
                 add(TextButton("Raze".tr(), skin).onClick {
                     city.RazeCity()
                     close()

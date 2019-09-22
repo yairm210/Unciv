@@ -46,6 +46,7 @@ class CityInfo {
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
     var conquerer : ICombatant? = null
+    var isPuppet = false
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
@@ -109,6 +110,7 @@ class CityInfo {
         toReturn.resistanceCounter = resistanceCounter
         toReturn.foundingCiv = foundingCiv
         toReturn.conquerer = conquerer
+        toReturn.isPuppet = isPuppet
         return toReturn
     }
 
@@ -220,6 +222,17 @@ class CityInfo {
         tryUpdateRoadStatus()
         attackedThisTurn = false
         if (resistanceCounter > 0) resistanceCounter--
+
+        if (isPuppet) {
+            reassignWorkers()
+        }
+    }
+
+    fun reassignWorkers() {
+        workedTiles = hashSetOf()
+        population.specialists.clear()
+        for (i in 0..population.population)
+            population.autoAssignPopulation()
     }
 
     fun endTurn() {
@@ -333,6 +346,11 @@ class CityInfo {
     fun RazeCity() {
         AnnexCity()
         isBeingRazed = true
+    }
+
+    fun PuppetCity() {
+        AnnexCity()
+        isPuppet = true
     }
 
     fun LiberateCity() {
