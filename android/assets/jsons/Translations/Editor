@@ -1,0 +1,263 @@
+{
+
+  "Terrains & Resources":{	
+      Italian:"Terreni e risorse"
+  }
+
+  "Improvements":{	
+      Italian:"Miglioramenti"
+  }
+
+  "Ocean":{	
+      Italian:"Oceano"
+  }
+
+  "Coast":{	
+      Italian:"Costa"
+  }
+
+  "Grassland":{	
+      Italian:"Prateria"
+  }
+
+  "Plains":{	
+      Italian:"Pianura"
+  }
+
+  "Tundra":{	
+      Italian:"Tundra"
+  }
+
+  "Desert":{	
+      Italian:"Deserto"
+  }
+
+  "Lakes":{	
+      Italian:"Laghi"
+  }
+
+  "Hill":{	
+      Italian:"Collina"
+  }
+
+  "Mountain":{	
+      Italian:"Montagna"
+  }
+
+  "Clear terrain features":{	
+      Italian:"Rimuovi caratteristica"
+  }
+
+  "Forest":{	
+      Italian:"Foresta"
+  }
+
+  "Jungle":{	
+      Italian:"Giungla"
+  }
+
+  "Marsh":{	
+      Italian:"Palude"
+  }
+
+  "Oasis":{	
+      Italian:"Oasi"
+  }
+
+  "Flood plains":{	
+      Italian:"Pianura allagata"
+  }
+
+  "Clear resourse":{	
+      Italian:"Rimuovi risorsa"
+  }
+
+"Cattle":{
+		Italian:"Bestiame"
+	}
+
+	"Sheep":{
+		Italian:"Pecora"
+	}
+
+	"Deer":{
+		Italian:"Cervo"
+	}
+
+	"Bananas":{
+		Italian:"Banane"
+	}
+
+	"Wheat":{
+		Italian:"Grano"
+	}
+
+	"Stone":{
+		Italian:"Pietra"
+	}
+	
+	"Fish":{
+		Italian:"Pesci"
+	}
+  
+  "Horses":{
+		Italian:"Cavalli"
+	}
+
+	"Iron":{
+		Italian:"Ferro"
+	}
+
+	"Coal":{
+		Italian:"Carbone"
+	}
+
+	"Oil":{
+		Italian:"Petrolio"
+	}
+
+	"Aluminum":{
+		Italian:"Alluminio"
+	}
+
+	"Uranium":{
+		Italian:"Uranio"
+	}
+  
+  "Furs":{
+		Italian:"Pellicce"
+	}
+
+	"Cotton":{
+		Italian:"Cotone"
+	}
+
+	"Dyes":{ 
+		Italian:"Coloranti"
+	}
+
+	"Gems":{
+		Italian:"Pietre preziose"
+	}
+
+	"Silver":{
+		Italian:"Argento"
+	}
+
+	"Incense":{
+		Italian:"Incenso"
+	}
+
+	"Ivory":{
+		Italian:"Avorio"
+	}
+
+	"Silk":{
+		Italian:"Seta"
+	}
+
+	"Spices":{
+		Italian:"Spezie"
+	}
+
+	"Wine":{
+		Italian:"Vino"
+	}
+
+	"Sugar":{
+		Italian:"Zucchero"
+	}
+
+	"Marble":{
+		Italian:"Marmo"
+	}
+
+	"Pearls":{
+		Italian:"Perle"
+	}
+
+	"Whales":{
+		Italian:"Balene"
+	}
+  
+  "Farm":{
+		Italian:"Fattoria"
+	}
+
+	"Lumber mill":{
+		Italian:"Segheria"
+	}
+
+	"Mine":{
+		Italian:"Miniera"
+	}
+
+	"Trading post":{
+		Italian:"Base commerciale"
+	}
+
+	"Camp":{
+		Italian:"Campo"
+	}
+  
+	"Oil well":{
+		Italian:"Pozzo di petrolio"
+	}
+  
+	"Pasture":{
+		Italian:"Pascolo"
+  }
+  
+	"Plantation":{
+		Italian:"Piantagione"
+  }
+  
+	"Quarry":{
+		Italian:"Cava"
+	}
+	"Fishing Boats":{
+		Italian:"Chiatta"
+	}
+	
+	"Road":{
+		Italian:"Strada"
+	}
+
+	"Railroad":{
+		Italian:"Ferrovia"
+	}
+  
+  "Ancient ruins":{
+		Italian:"Antiche rovine"
+	}
+	
+	"City ruins":{
+		Italian:"Rovine cittadine"
+	}
+  
+  "Academy":{
+		Italian:"Accademia"
+	}
+
+	"Landmark":{
+		Italian:"Punto di riferimento"
+	}
+
+	"Manufactory":{
+		Italian:"Fabbrica"
+	}
+
+	"Customs house":{
+		Italian:"Dogana"
+	}
+
+	"Barbarian encampment":{
+		Italian:"Accampamento barbaro"
+	}
+  
+	"[nation] starting location":{
+		Italian:"Posizione iniziale di [nation]"
+	}
+  
+ }
+
