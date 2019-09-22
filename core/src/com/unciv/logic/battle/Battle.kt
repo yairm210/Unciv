@@ -100,8 +100,11 @@ class Battle(val gameInfo:GameInfo) {
                 && defender is CityCombatant
                 && attacker.isMelee()){
             conquerCity(defender.city, attacker)
-        }
+        } else
+            postBattleActionsPart2(attacker, defender, attackedTile)
+    }
 
+    fun postBattleActionsPart2(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo) {
 
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
         if(defender.isDefeated() && defender.getCivInfo().isBarbarian()

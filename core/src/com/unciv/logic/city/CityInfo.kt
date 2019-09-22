@@ -325,9 +325,7 @@ class CityInfo {
             }
         }
 
-        (conquerer as MapUnitCombatant).unit.currentMovement = (conquerer as MapUnitCombatant).unit.getMaxMovement().toFloat()
-        (conquerer as MapUnitCombatant).unit.movement.moveToTile(getCenterTile())
-        (conquerer as MapUnitCombatant).unit.currentMovement = 0f
+        Battle(civInfo.gameInfo).postBattleActionsPart2(conquerer as MapUnitCombatant, CityCombatant(this), ccenterTile)
         conquerer = null
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
@@ -380,6 +378,7 @@ class CityInfo {
             cityConstructions.addBuilding("Palace")
         }
 
+        Battle(civInfo.gameInfo).postBattleActionsPart2(conquerer as MapUnitCombatant, CityCombatant(this), ccenterTile)
         conquerer = null
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
