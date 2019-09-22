@@ -179,6 +179,14 @@
 		quote:"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore"
 	},
 	{
+		name:"Courthouse",
+		maintenance:4,
+		hurryCostModifier:25,
+		uniques:["Remove extra unhappiness from annexed cities",
+			"Can only be built in annexed cities"]
+		requiredTech:"Compass"
+	},
+	{
 		name:"Colosseum", 
 		maintenance:1,
 		happiness:2,

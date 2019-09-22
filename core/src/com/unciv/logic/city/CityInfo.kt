@@ -402,6 +402,11 @@ class CityInfo {
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
+    fun hasExtraAnnexUnhappiness() : Boolean {
+        if (civInfo.civName == foundingCiv || foundingCiv == "" || isPuppet) return false
+        return !containsBuildingUnique("Remove extra unhappiness from annexed cities")
+    }
+
     fun moveToCiv(newCivInfo: CivilizationInfo){
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(this@CityInfo) }
