@@ -94,15 +94,6 @@ class Battle(val gameInfo:GameInfo) {
             }
         }
 
-        if(defender.isDefeated()
-                && defender is CityCombatant
-                && attacker.isMelee()){
-            conquerCity(defender.city, attacker)
-        } else
-            postBattleActionsPart2(attacker, defender, attackedTile)
-    }
-
-    fun postBattleActionsPart2(attacker: ICombatant, defender: ICombatant, attackedTile:TileInfo) {
 
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
         if(defender.isDefeated() && defender.getCivInfo().isBarbarian()
@@ -151,6 +142,11 @@ class Battle(val gameInfo:GameInfo) {
             attacker.city.attackedThisTurn = true
         }
 
+
+        if(defender.isDefeated()
+                && defender is CityCombatant
+                && attacker.isMelee())
+            conquerCity(defender.city, attacker)
 
 
         if(attacker.isMelee()){
@@ -208,12 +204,18 @@ class Battle(val gameInfo:GameInfo) {
         val attackerCiv = attacker.getCivInfo()
 
         attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, Color.RED)
-        city.conquerer = attacker
+
+        city.getCenterTile().apply {
+            if(militaryUnit!=null) militaryUnit!!.destroy()
+            if(civilianUnit!=null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))
+            for(airUnit in airUnits.toList()) airUnit.destroy()
+        }
+
 
         if (attacker.getCivInfo().isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
         } else {
-            city.annexCity()
+            city.annexCity(attacker.getCivInfo())
         }
     }
 

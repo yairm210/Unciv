@@ -59,27 +59,32 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }
             }
             AlertType.CityConquered -> {
-                val city = worldScreen.gameInfo.civilizations.flatMap { it->it.cities }.first { it.name == popupAlert.value}
+                val city = worldScreen.gameInfo.civilizations.flatMap { it.cities }.first { it.name == popupAlert.value}
                 addGoodSizedLabel("What would you like to do with the city?").row()
+                val conqueringCiv = worldScreen.gameInfo.currentPlayerCiv
                 if (city.foundingCiv != ""
-                        && city.civInfo.civName != city.foundingCiv
-                        && city.conquerer!!.getCivInfo().civName != city.foundingCiv) {
+                        && city.civInfo.civName != city.foundingCiv // can't liberate if the city actually belongs to those guys
+                        && conqueringCiv.civName != city.foundingCiv) { // or belongs originally to us
                     add(TextButton("Liberate".tr(), skin).onClick {
-                        city.liberateCity()
+                        city.liberateCity(conqueringCiv)
+                        worldScreen.shouldUpdate=true
                         close()
                     }).row()
                 }
                 add(TextButton("Annex".tr(), skin).onClick {
-                    city.annexCity()
+                    city.annexCity(conqueringCiv)
+                    worldScreen.shouldUpdate=true
                     close()
                 }).row()
                 add(TextButton("Puppet City".tr(), skin).onClick {
-                    city.puppetCity()
+                    city.puppetCity(conqueringCiv)
+                    worldScreen.shouldUpdate=true
                     close()
                 }).row()
                 add(TextButton("Raze".tr(), skin).onClick {
-                    city.annexCity()
+                    city.annexCity(conqueringCiv)
                     city.isBeingRazed = true
+                    worldScreen.shouldUpdate=true
                     close()
                 })
             }
