@@ -165,6 +165,14 @@ class CityStats {
         return stats
     }
 
+    private fun getStatPercentBonusesFromPuppetCity(): Stats {
+        val stats = Stats()
+        if (cityInfo.isPuppet) {
+            stats.science -= 25f
+            stats.culture -= 25f
+        }
+        return stats
+    }
 
     fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
@@ -186,6 +194,7 @@ class CityStats {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f
+        if (cityInfo.hasExtraAnnexUnhappiness()) unhappinessFromCity -= 2f //annexed city
         if (civInfo.nation.unique == "Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.")
             unhappinessFromCity *= 2f//doubled for the Indian
 
@@ -194,6 +203,11 @@ class CityStats {
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
+
+        if (cityInfo.isPuppet)
+            unhappinessFromCitizens *= 1.5f
+        else if (cityInfo.hasExtraAnnexUnhappiness())
+            unhappinessFromCitizens *= 2f
         if (civInfo.containsBuildingUnique("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
@@ -373,6 +387,7 @@ class CityStats {
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
         newStatPercentBonusList["Difficulty"]=getStatPercentBonusesFromDifficulty()
         newStatPercentBonusList["National ability"]=getStatPercentBonusesFromNationUnique()
+        newStatPercentBonusList["Puppet City"]=getStatPercentBonusesFromPuppetCity()
 
         if(UnCivGame.Current.superchargedForDebug) {
             val stats = Stats()

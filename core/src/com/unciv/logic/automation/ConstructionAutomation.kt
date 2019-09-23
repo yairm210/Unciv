@@ -185,7 +185,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     private fun addHappinessBuildingChoice() {
-        val happinessBuilding = buildableNotWonders.filter { it.isStatRelated(Stat.Happiness) }
+        val happinessBuilding = buildableNotWonders
+                .filter { it.isStatRelated(Stat.Happiness)
+                        || it.uniques.contains("Remove extra unhappiness from annexed cities") }
                 .minBy { it.cost }
         if (happinessBuilding != null) {
             var modifier = 1f

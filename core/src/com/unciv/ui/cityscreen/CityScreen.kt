@@ -79,7 +79,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         cityPickerTable.centerX(stage)
 
         constructionsTable.update()
-        updateRazeCityButton()
+        updateAnnexAndRazeCityButton()
         tileTable.update(selectedTile)
         tileTable.setPosition(stage.width-5, 5f,Align.bottomRight)
         updateTileGroups()
@@ -161,10 +161,21 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
         return table.addBorder(2f, beige)
     }
 
-    private fun updateRazeCityButton() {
+    private fun updateAnnexAndRazeCityButton() {
         razeCityButtonHolder.clear()
 
-        if(!city.isBeingRazed) {
+        if(city.isPuppet) {
+            val annexCityButton = TextButton("Annex city".tr(), skin)
+            annexCityButton.labelCell.pad(10f)
+            annexCityButton.onClick {
+                city.isPuppet=false
+                city.isBeingRazed=false
+                city.resistanceCounter = city.population.population
+                update()
+            }
+            razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
+        }
+        else if(!city.isBeingRazed) {
             val razeCityButton = TextButton("Raze city".tr(), skin)
             razeCityButton.labelCell.pad(10f)
             razeCityButton.onClick { city.isBeingRazed=true; update() }
@@ -197,14 +208,16 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             val tileInfo = tileGroup.tileInfo
 
             tileGroup.onClick {
-                selectedTile = tileInfo
-                if (tileGroup.isWorkable && UnCivGame.Current.worldScreen.isPlayersTurn) {
-                    if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
-                        city.workedTiles.add(tileInfo.position)
-                    else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
-                    city.cityStats.update()
+                if (!city.isPuppet) {
+                    selectedTile = tileInfo
+                    if (tileGroup.isWorkable && UnCivGame.Current.worldScreen.isPlayersTurn) {
+                        if (!tileInfo.isWorked() && city.population.getFreePopulation() > 0)
+                            city.workedTiles.add(tileInfo.position)
+                        else if (tileInfo.isWorked()) city.workedTiles.remove(tileInfo.position)
+                        city.cityStats.update()
+                    }
+                    update()
                 }
-                update()
             }
 
             tileGroups.add(tileGroup)

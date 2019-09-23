@@ -53,7 +53,7 @@ class CityScreenTileTable(val city: CityInfo): Table(){
                 city.expansion.buyTile(selectedTile)
                 UnCivGame.Current.screen = CityScreen(city)
             }
-            if(goldCostOfTile>city.civInfo.gold || !UnCivGame.Current.worldScreen.isPlayersTurn)
+            if(goldCostOfTile>city.civInfo.gold || city.isPuppet || !UnCivGame.Current.worldScreen.isPlayersTurn)
                 buyTileButton.disable()
 
             innerTable.add(buyTileButton)

@@ -59,11 +59,26 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 }
             }
             AlertType.CityConquered -> {
+                val city = worldScreen.gameInfo.civilizations.flatMap { it->it.cities }.first { it.name == popupAlert.value}
                 addGoodSizedLabel("What would you like to do with the city?").row()
-                add(getCloseButton("Annex")).row()
+                if (city.foundingCiv != ""
+                        && city.civInfo.civName != city.foundingCiv
+                        && city.conquerer!!.getCivInfo().civName != city.foundingCiv) {
+                    add(TextButton("Liberate".tr(), skin).onClick {
+                        city.LiberateCity()
+                        close()
+                    }).row()
+                }
+                add(TextButton("Annex".tr(), skin).onClick {
+                    city.AnnexCity()
+                    close()
+                }).row()
+                add(TextButton("Puppet City".tr(), skin).onClick {
+                    city.PuppetCity()
+                    close()
+                }).row()
                 add(TextButton("Raze".tr(), skin).onClick {
-                    worldScreen.viewingCiv.cities.first { it.name==popupAlert.value }.isBeingRazed=true
-                    worldScreen.shouldUpdate=true
+                    city.RazeCity()
                     close()
                 })
             }

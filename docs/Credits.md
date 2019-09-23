@@ -41,6 +41,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
+* [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
 
 ### Medieval Era
 
