@@ -194,7 +194,6 @@ class CityStats {
             unhappinessModifier *= civInfo.gameInfo.getDifficulty().aiUnhappinessModifier
 
         var unhappinessFromCity = -3f
-        if (cityInfo.hasExtraAnnexUnhappiness()) unhappinessFromCity -= 2f //annexed city
         if (civInfo.nation.unique == "Unhappiness from number of Cities doubled, Unhappiness from number of Citizens halved.")
             unhappinessFromCity *= 2f//doubled for the Indian
 
@@ -206,7 +205,7 @@ class CityStats {
 
         if (cityInfo.isPuppet)
             unhappinessFromCitizens *= 1.5f
-        else if (cityInfo.hasExtraAnnexUnhappiness())
+        else if (hasExtraAnnexUnhappiness())
             unhappinessFromCitizens *= 2f
         if (civInfo.containsBuildingUnique("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
@@ -229,6 +228,8 @@ class CityStats {
 
         newHappinessList["Policies"] = happinessFromPolicies
 
+        if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
+
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList["Buildings"] = happinessFromBuildings
 
@@ -238,6 +239,12 @@ class CityStats {
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
         happinessList = newHappinessList
+    }
+
+
+    private fun hasExtraAnnexUnhappiness() : Boolean {
+        if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.foundingCiv == "" || cityInfo.isPuppet) return false
+        return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
     }
 
     fun getStatsOfSpecialist(stat: Stat, policies: HashSet<String>): Stats {
