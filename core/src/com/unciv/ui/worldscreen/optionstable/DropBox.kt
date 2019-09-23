@@ -41,7 +41,7 @@ class DropBox(){
                 println(ex.message)
                 val reader = BufferedReader(InputStreamReader(errorStream))
                 println(reader.readText())
-                return "Error!"
+                return ""
             }
         }
     }

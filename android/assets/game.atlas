@@ -1,6 +1,10 @@
 
 game.png
+<<<<<<< HEAD
 size: 2462,1840
+=======
+size: 2481,1840
+>>>>>>> mainbranch/20190923
 format: RGBA8888
 filter: MipMapLinearLinear,MipMapLinearLinear
 repeat: none
@@ -650,7 +654,11 @@ BuildingIcons/Windmill
   index: -1
 BuildingIcons/Workshop
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 414
+=======
+  xy: 2374, 208
+>>>>>>> mainbranch/20190923
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -1000,14 +1008,22 @@ NationIcons/The Ottomans
   index: -1
 OtherIcons/Aircraft
   rotate: false
+<<<<<<< HEAD
   xy: 776, 1341
+=======
+  xy: 406, 740
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 OtherIcons/BackArrow
   rotate: false
+<<<<<<< HEAD
   xy: 2401, 1788
+=======
+  xy: 1456, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1126,280 +1142,440 @@ OtherIcons/tileTableBackground
   index: -1
 OtherIcons/whiteDot
   rotate: false
+<<<<<<< HEAD
   xy: 568, 1335
+=======
+  xy: 2478, 1837
+>>>>>>> mainbranch/20190923
   size: 1, 1
   orig: 1, 1
   offset: 0, 0
   index: -1
 PolicyIcons/Aristocracy
   rotate: false
+<<<<<<< HEAD
   xy: 2404, 1280
+=======
+  xy: 640, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Citizenship
   rotate: false
+<<<<<<< HEAD
   xy: 2298, 158
+=======
+  xy: 848, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Civil Society
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 106
+=======
+  xy: 900, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Collective Rule
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 54
+=======
+  xy: 1004, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Constitution
   rotate: false
+<<<<<<< HEAD
   xy: 2298, 54
+=======
+  xy: 1056, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Democracy
   rotate: false
+<<<<<<< HEAD
   xy: 2298, 2
+=======
+  xy: 1160, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Entrepreneurship
   rotate: false
+<<<<<<< HEAD
   xy: 2407, 1580
+=======
+  xy: 1264, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Facism
   rotate: false
+<<<<<<< HEAD
   xy: 2407, 1528
+=======
+  xy: 2426, 614
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Religion
   rotate: false
+<<<<<<< HEAD
   xy: 2408, 1424
+=======
+  xy: 2426, 510
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Speech
   rotate: false
+<<<<<<< HEAD
   xy: 2408, 1372
+=======
+  xy: 2426, 458
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Free Thought
   rotate: false
+<<<<<<< HEAD
   xy: 980, 1456
+=======
+  xy: 2426, 406
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Humanism
   rotate: false
+<<<<<<< HEAD
   xy: 1032, 1456
+=======
+  xy: 65, 44
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Landed Elite
   rotate: false
+<<<<<<< HEAD
   xy: 1136, 1456
+=======
+  xy: 1560, 53
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Legalism
   rotate: false
+<<<<<<< HEAD
   xy: 1188, 1456
+=======
+  xy: 1612, 53
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Mandate Of Heaven
   rotate: false
+<<<<<<< HEAD
   xy: 1328, 974
+=======
+  xy: 1664, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Mercantilism
   rotate: false
+<<<<<<< HEAD
   xy: 1484, 974
+=======
+  xy: 1768, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Meritocracy
   rotate: false
+<<<<<<< HEAD
   xy: 1536, 974
+=======
+  xy: 1768, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Militarism
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 872
+=======
+  xy: 1820, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Military Caste
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 820
+=======
+  xy: 1820, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Military Tradition
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 768
+=======
+  xy: 1872, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Monarchy
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 664
+=======
+  xy: 1924, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Oligarchy
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 560
+=======
+  xy: 1976, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Organized Religion
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 508
+=======
+  xy: 2028, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Patronage
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 456
+=======
+  xy: 2028, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Police State
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 404
+=======
+  xy: 2080, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Populism
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 352
+=======
+  xy: 2080, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Professional Army
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 300
+=======
+  xy: 2132, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Protectionism
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 248
+=======
+  xy: 2132, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Reformation
   rotate: false
+<<<<<<< HEAD
   xy: 2350, 92
+=======
+  xy: 2236, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Representation
   rotate: false
+<<<<<<< HEAD
   xy: 2350, 40
+=======
+  xy: 2236, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Republic
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 872
+=======
+  xy: 2288, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Scientific Revolution
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 820
+=======
+  xy: 2288, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Secularism
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 768
+=======
+  xy: 2340, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Sovereignty
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 612
+=======
+  xy: 488, 333
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Theocracy
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 560
+=======
+  xy: 169, 8
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Total War
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 508
+=======
+  xy: 221, 8
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Trade Unions
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 456
+=======
+  xy: 273, 8
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Universal Suffrage
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 404
+=======
+  xy: 2423, 1736
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Warrior Code
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 300
+=======
+  xy: 2423, 1632
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1651,7 +1827,11 @@ StatIcons/Happiness
   index: -1
 StatIcons/InterceptRange
   rotate: false
+<<<<<<< HEAD
   xy: 1084, 1456
+=======
+  xy: 2419, 1380
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1665,7 +1845,11 @@ StatIcons/Malcontent
   index: -1
 StatIcons/Movement
   rotate: false
+<<<<<<< HEAD
   xy: 2348, 612
+=======
+  xy: 1924, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -1686,14 +1870,22 @@ StatIcons/Production
   index: -1
 StatIcons/Range
   rotate: false
+<<<<<<< HEAD
   xy: 2350, 196
+=======
+  xy: 2184, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/RangedStrength
   rotate: false
+<<<<<<< HEAD
   xy: 2350, 144
+=======
+  xy: 2184, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
@@ -2253,7 +2445,11 @@ TechIcons/Trapping
   index: -1
 TechIcons/Writing
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 312
+=======
+  xy: 2374, 106
+>>>>>>> mainbranch/20190923
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -2372,35 +2568,55 @@ TileSets/FantasyHex/Hill+City
   index: -1
 TileSets/FantasyHex/Coast
   rotate: false
+<<<<<<< HEAD
   xy: 2408, 1342
+=======
+  xy: 406, 710
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Desert
   rotate: false
+<<<<<<< HEAD
   xy: 2404, 1250
+=======
+  xy: 1316, 48
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Desert+City
   rotate: false
+<<<<<<< HEAD
   xy: 828, 1358
+=======
+  xy: 2424, 319
+>>>>>>> mainbranch/20190923
   size: 32, 33
   orig: 32, 33
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Desert+Flood plains
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 270
+=======
+  xy: 2419, 1350
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Desert+Oasis
   rotate: false
+<<<<<<< HEAD
   xy: 874, 1274
+=======
+  xy: 1508, 23
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2421,42 +2637,66 @@ TileSets/FantasyHex/TopRightBorder
   index: -1
 TileSets/FantasyHex/Grassland+Forest
   rotate: false
+<<<<<<< HEAD
   xy: 2402, 67
+=======
+  xy: 88, 13
+>>>>>>> mainbranch/20190923
   size: 31, 29
   orig: 31, 29
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Grassland+Jungle
   rotate: false
+<<<<<<< HEAD
   xy: 1240, 1472
+=======
+  xy: 169, 60
+>>>>>>> mainbranch/20190923
   size: 32, 34
   orig: 32, 34
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Grassland+Marsh
   rotate: false
+<<<<<<< HEAD
   xy: 1240, 1441
+=======
+  xy: 2444, 1809
+>>>>>>> mainbranch/20190923
   size: 32, 29
   orig: 32, 29
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Hill
   rotate: false
+<<<<<<< HEAD
   xy: 262, 1386
+=======
+  xy: 2423, 1494
+>>>>>>> mainbranch/20190923
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Hill+Forest
   rotate: false
+<<<<<<< HEAD
   xy: 262, 1339
+=======
+  xy: 2423, 1447
+>>>>>>> mainbranch/20190923
   size: 32, 45
   orig: 32, 45
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Lakes
   rotate: false
+<<<<<<< HEAD
   xy: 182, 1390
+=======
+  xy: 1354, 317
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
@@ -2470,63 +2710,99 @@ TileSets/FantasyHex/Mountain
   index: -1
 TileSets/FantasyHex/Ocean
   rotate: false
+<<<<<<< HEAD
   xy: 1588, 996
+=======
+  xy: 1542, 23
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains
   rotate: false
+<<<<<<< HEAD
   xy: 1588, 966
+=======
+  xy: 1576, 23
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains+City
   rotate: false
+<<<<<<< HEAD
   xy: 2350, 3
+=======
+  xy: 2444, 69
+>>>>>>> mainbranch/20190923
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains+Forest
   rotate: false
+<<<<<<< HEAD
   xy: 2384, 5
+=======
+  xy: 2444, 34
+>>>>>>> mainbranch/20190923
   size: 32, 33
   orig: 32, 33
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Plains+Jungle
   rotate: false
+<<<<<<< HEAD
   xy: 2402, 233
+=======
+  xy: 1610, 16
+>>>>>>> mainbranch/20190923
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/TopBorder
   rotate: false
+<<<<<<< HEAD
   xy: 2402, 203
+=======
+  xy: 2444, 4
+>>>>>>> mainbranch/20190923
   size: 32, 28
   orig: 32, 28
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tundra
   rotate: false
+<<<<<<< HEAD
   xy: 2402, 169
+=======
+  xy: 1316, 14
+>>>>>>> mainbranch/20190923
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tundra+City
   rotate: false
+<<<<<<< HEAD
   xy: 2402, 132
+=======
+  xy: 592, 317
+>>>>>>> mainbranch/20190923
   size: 32, 35
   orig: 32, 35
   offset: 0, 0
   index: -1
 TileSets/FantasyHex/Tundra+Forest
   rotate: false
+<<<<<<< HEAD
   xy: 2402, 98
+=======
+  xy: 54, 10
+>>>>>>> mainbranch/20190923
   size: 32, 32
   orig: 32, 32
   offset: 0, 0
@@ -3093,7 +3369,11 @@ UnitIcons/Worker
   index: -1
 UnitIcons/Zero
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 210
+=======
+  xy: 1354, 4
+>>>>>>> mainbranch/20190923
   size: 100, 100
   orig: 100, 100
   offset: 0, 0
@@ -3105,6 +3385,7 @@ UnitPromotionIcons/Accuracy
   orig: 50, 50
   offset: 0, 0
   index: -1
+<<<<<<< HEAD
 UnitPromotionIcons/Air_Repair_(Civ5)
   rotate: false
   xy: 2434, 278
@@ -3117,17 +3398,31 @@ UnitPromotionIcons/Ambush_II_(Civ5)
   xy: 828, 1336
   size: 20, 20
   orig: 20, 20
+=======
+UnitPromotionIcons/Air Repair
+  rotate: false
+  xy: 1426, 1352
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Ambush_I_(Civ5)
+UnitPromotionIcons/Ambush
   rotate: false
+<<<<<<< HEAD
   xy: 850, 1336
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 384, 344
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Barrage
   rotate: false
+<<<<<<< HEAD
   xy: 2401, 1736
   size: 50, 50
   orig: 50, 50
@@ -3136,10 +3431,14 @@ UnitPromotionIcons/Barrage
 UnitPromotionIcons/Blitz
   rotate: false
   xy: 2401, 1684
+=======
+  xy: 1456, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
+<<<<<<< HEAD
 UnitPromotionIcons/Blitz_(Civ5)
   rotate: false
   xy: 2438, 1258
@@ -3159,78 +3458,132 @@ UnitPromotionIcons/Boarding_Party_II_(Civ5)
   xy: 920, 1230
   size: 20, 20
   orig: 20, 20
+=======
+UnitPromotionIcons/Blitz
+  rotate: false
+  xy: 2, 31
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Boarding_Party_I_(Civ5)
+UnitPromotionIcons/Boarding Party
   rotate: false
+<<<<<<< HEAD
   xy: 942, 1230
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 692, 26
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Bombardment
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 158
+=======
+  xy: 744, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Charge_(Civ5)
+UnitPromotionIcons/Charge
   rotate: false
+<<<<<<< HEAD
   xy: 2402, 45
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 796, 26
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Coastal_Raider
   rotate: false
+<<<<<<< HEAD
   xy: 2298, 106
+=======
+  xy: 952, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Cover
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 2
+=======
+  xy: 1108, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 PolicyIcons/Discipline
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 2
+=======
+  xy: 1108, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 StatIcons/Strength
   rotate: false
+<<<<<<< HEAD
   xy: 2246, 2
+=======
+  xy: 1108, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Drill
   rotate: false
+<<<<<<< HEAD
   xy: 2407, 1632
+=======
+  xy: 1212, 26
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Evasion_(Civ5)
+UnitPromotionIcons/Evasion
   rotate: false
+<<<<<<< HEAD
   xy: 2418, 23
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 2426, 666
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Formation
   rotate: false
+<<<<<<< HEAD
   xy: 2407, 1476
+=======
+  xy: 2426, 562
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
+<<<<<<< HEAD
 UnitPromotionIcons/Heal_Instantly_(Civ5)
   rotate: false
   xy: 2424, 45
@@ -3250,44 +3603,78 @@ UnitPromotionIcons/Interception_III_(Civ5)
   xy: 2440, 23
   size: 20, 20
   orig: 20, 20
+=======
+UnitPromotionIcons/Heal Instantly
+  rotate: false
+  xy: 2424, 354
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Interception_II_(Civ5)
+UnitPromotionIcons/Indirect Fire
   rotate: false
+<<<<<<< HEAD
   xy: 2436, 256
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 117, 44
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Interception_I_(Civ5)
+UnitPromotionIcons/Interception
   rotate: false
+<<<<<<< HEAD
   xy: 2436, 234
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 1508, 53
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Logistics_(Civ5)
+UnitPromotionIcons/Logistics
   rotate: false
+<<<<<<< HEAD
   xy: 2436, 212
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 1664, 54
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
 UnitPromotionIcons/March
   rotate: false
+<<<<<<< HEAD
   xy: 1380, 974
+=======
+  xy: 1716, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Medic
   rotate: false
+<<<<<<< HEAD
   xy: 1432, 974
+=======
+  xy: 1716, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Mobility
+<<<<<<< HEAD
   rotate: false
   xy: 2348, 716
   size: 50, 50
@@ -3306,50 +3693,89 @@ UnitPromotionIcons/Range_(Civ5)
   xy: 2436, 190
   size: 20, 20
   orig: 20, 20
+=======
+  rotate: false
+  xy: 1872, 2
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_III_(Civ5)
+UnitPromotionIcons/Operational Range
   rotate: false
+<<<<<<< HEAD
   xy: 2436, 168
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 1976, 2
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_II_(Civ5)
+UnitPromotionIcons/Range
   rotate: false
+<<<<<<< HEAD
   xy: 2436, 146
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 1976, 2
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Scouting_I_(Civ5)
+UnitPromotionIcons/Scouting
   rotate: false
+<<<<<<< HEAD
   xy: 2436, 124
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 2340, 54
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Sentry_(Civ5)
+UnitPromotionIcons/Sentry
   rotate: false
+<<<<<<< HEAD
   xy: 2436, 102
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 2340, 54
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Shock
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 716
+=======
+  xy: 2392, 54
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
 UnitPromotionIcons/Siege
   rotate: false
+<<<<<<< HEAD
   xy: 2400, 664
+=======
+  xy: 2392, 2
+>>>>>>> mainbranch/20190923
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
+<<<<<<< HEAD
 UnitPromotionIcons/Sortie_(Civ5)
   rotate: false
   xy: 277, 1766
@@ -3388,35 +3814,71 @@ UnitPromotionIcons/Targeting_I_(air)_(Civ5)
 UnitPromotionIcons/Volley
   rotate: false
   xy: 2400, 352
+=======
+UnitPromotionIcons/Sortie
+  rotate: false
+  xy: 436, 333
   size: 50, 50
   orig: 50, 50
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Wolfpack_III_(Civ5)
+UnitPromotionIcons/Targeting
   rotate: false
+  xy: 540, 332
+>>>>>>> mainbranch/20190923
+  size: 50, 50
+  orig: 50, 50
+  offset: 0, 0
+  index: -1
+UnitPromotionIcons/Targeting I (air)
+  rotate: false
+<<<<<<< HEAD
   xy: 277, 1678
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 540, 332
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Wolfpack_II_(Civ5)
+UnitPromotionIcons/Volley
   rotate: false
+<<<<<<< HEAD
   xy: 277, 1656
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 2423, 1684
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Wolfpack_I_(Civ5)
+UnitPromotionIcons/Wolfpack
   rotate: false
+<<<<<<< HEAD
   xy: 277, 1634
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 2423, 1580
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1
-UnitPromotionIcons/Woodsman_(Civ5)
+UnitPromotionIcons/Woodsman
   rotate: false
+<<<<<<< HEAD
   xy: 277, 1612
   size: 20, 20
   orig: 20, 20
+=======
+  xy: 2423, 1528
+  size: 50, 50
+  orig: 50, 50
+>>>>>>> mainbranch/20190923
   offset: 0, 0
   index: -1

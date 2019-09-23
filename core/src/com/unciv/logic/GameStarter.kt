@@ -41,8 +41,15 @@ class GameStarter{
         }
 
 
+        val cityStatesWithStartingLocations =
+                gameInfo.tileMap.values.filter { it.improvement!=null && it.improvement!!.startsWith("StartingLocation ") }
+                        .map { it.improvement!!.replace("StartingLocation ","") }
+
         val availableCityStatesNames = Stack<String>()
-        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys.shuffled())
+        // since we shuffle and then order by, we end up with all the city states with starting locations first in a random order,
+        //   and then all the other city states in a random order! Because the sortedBy function is stable!
+        availableCityStatesNames.addAll(GameBasics.Nations.filter { it.value.isCityState() }.keys
+                .shuffled().sortedByDescending { it in cityStatesWithStartingLocations })
 
         for (cityStateName in availableCityStatesNames.take(newGameParameters.numberOfCityStates)) {
             val civ = CivilizationInfo(cityStateName)

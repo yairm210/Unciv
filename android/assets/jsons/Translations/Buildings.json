@@ -932,6 +932,10 @@
 		Polish:"Porcelanowa wieża"
 	}
 
+	"'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell":{
+		Italian:"'Le cose sembrano sempre più belle quando ci voltiamo indietro per guardarle, ed è dall'inaccessibile torre del passato che la nostalgia si protende e chiama.' - James Russel Lowell"
+	}
+
 	"Free great scientist appears":{
 		Spanish:"Aparece una Gran Científico gratis"
 		Italian:"Appare un Grande Scienziato"
@@ -1004,6 +1008,10 @@
 		Polish:"Kaplica Sykstyńska"
 	}
 
+	"'I live and love in God's peculiar light.' - Michelangelo Buonarroti":{
+		Italian:"'Vivo e amo sotto la peculiare luce di Dio.' - Michelangelo Buonarroti"
+	}
+
 	"Culture in all cities increased by 25%":{
 		Italian:"+25% cultura in ogni città"
 		Russian:"Увеличивает прирост культуры на 25% во всех городах"
@@ -1063,6 +1071,10 @@
 		Polish:"Zakazane miasto"
 	}
 
+	"'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock":{
+		Italian:"'La maggior parte di noi può, a sua volontà, fare di questo mondo un palazzo o una prigione.' - John Lubbock"
+	}
+
 	"Unhappiness from population decreased by 10%":{
 		Italian:"-10% infelicità dalla popolazione"
 		Russian:"Снижает недовольство от населения на 10%"
@@ -1099,6 +1111,10 @@
 		Russian:"Пизанская башня"
 	}
 
+	"'Don't clap too hard - it's a very old building.' - John Osbourne":{
+		Italian:"'Non applaudite troppo forte - è un edificio molto vecchio.' - John Osborne"
+	}
+
 	"Free Great Person":{
 		Italian:"Ottieni un Grande Personaggio gratuito"
 		Romanian:"Persoană mare gratuită"
@@ -1131,6 +1147,10 @@
 		Russian:"Замок Химэдзи"
 	}
 
+	"'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo":{
+		Italian:"'Il Bushido si realizza in presenza della morte. Significa, ogni volta che c'è una scelta tra la vita e la morte, scegliere la seconda. Non c'è alcun altro ragionamento' - Yamamoto Tsunetomo"
+	}
+
 	"+15% combat strength for units fighting in friendly territory":{
 		Italian:"+15% Forza per le unità che combattono in territorio amico"
 		Simplified_Chinese:"单位在境内+15%战斗力"
@@ -1150,6 +1170,10 @@
 					   // so that is why i would double check it later to see if Taj Mahal is correctly written in portuguese
 		German:"Taj Mahal"
 		Polish:"Tadź Mahal"
+	}
+
+	"'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.'  - Rabindranath Tagore":{
+		Italian:"'Il Taj Mahal sorge sulle rive del fiume come una lacrima solitaria sospesa sulla guancia del tempo.' - Rabindranath Tagore"
 	}
 	
 	"Empire enters golden age":{
@@ -1219,6 +1243,10 @@
 		Portuguese:"O Louvre"
 		German:"Der Louvre"
 		Polish:"Luwr"
+	}
+
+	"'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson":{
+		Italian:"'Ogni opera d'arte genuina ha tanta ragione d'esistere quanto la terra e il sole.' - Ralph Waldo Emerson"
 	}
 
 	"Free Great Artist Appears":{
@@ -1339,6 +1367,10 @@
 		Russian:"Биг Бен"
 	}
 
+	"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein":{
+		Italian:"'Per ottenere grandi risultati servono due cose: un piano e un sacco di tempo.' - Leonard Bernstein"
+	}
+
 	"-15% to purchasing items in cities":{
 		Italian:"-15% costi in Oro per l'acquisto di unità ed edifici nelle Città"
 		Simplified_Chinese:"所有城市购买建造项目所需的金钱花费-15%"
@@ -1357,6 +1389,10 @@
 		Portuguese:"Cristo Redentor"
 		//same in German
 		Polish:"Statua Chrystusa Zbawiciela"
+	}
+
+	"'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28":{
+		Italian:"'Venite a me, voi tutti che siete affaticati e oppressi, e io vi ristorerò.' - Matteo 11:28"
 	}
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -1382,6 +1418,10 @@
 		Polish:"Kreml"
 	}
 
+	"'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed":{
+		Italian:"'La Legge è una fortezza su una collina che gli eserciti non possono catturare e le inondazioni non possono spazzare via. - Il profeta Maometto"
+	}
+
 	"Defensive buildings in all cities are 25% more effective":{
 		Italian:"+25% efficacia delle strutture difensive in tutte le città"
 		Simplified_Chinese:"所有城市防御建筑建造速度+25%"
@@ -1396,6 +1436,10 @@
 		French:"Château de Neuschwanstein"
 		Polish:"Neuschwanstein"
 		Russian:"Замок Нойшванштайн"
+	}
+
+	"'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria":{
+		Italian:"'...la posizione è una delle più belle che si possano trovare, sacra e inaccessibile, degno tempio per l'amico divino che ha portato salvezza e vera benedizione a tutto il mondo.' - Re Ludovico II di Baviera"
 	}
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
@@ -1442,6 +1486,10 @@
 		Polish:"Wieża Eiffla"
 	}
 
+	"'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran":{
+		Italian:"'Chi può pensare che, siccome siamo ingegneri, la bellezza non ci preoccupi, o che non cerchiamo di costruire strutture belle oltre che solide e durature?' - Gustave Alexandre Eiffel"
+	}
+
 	"Provides 1 happiness per social policy":{
 		Italian:"+1 Felicità per ogni politica sociale"
 		Russian:"Обеспечивает 1 счастье за каждый общественный институт"
@@ -1462,6 +1510,10 @@
 		Simplified_Chinese:"自由女神像"
 		Polish:"Statua wolności"
 		Russian:"Статуя Свободы"
+	}
+
+	"'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus":{
+		Italian:"'Datemi coloro che sono esausti, i poveri / Le folle accalcate che bramano di respirare libere, / I miseri rifiuti delle vostre coste brulicanti. / Mandatemi chi non ha casa, squassato dalle tempeste, / Sollevo la fiaccola accanto alla porta d'oro!' - Emma Lazarus"
 	}
 
 	"+1 Production from specialists":{
@@ -1566,6 +1618,10 @@
 		Russian:"Сиднейский Оперный театр"
 	}
 
+	"'Those who lose dreaming are lost.'  - Australian Aboriginal saying":{
+		Italian:"'Quelli che perdono i sogni sono perduti.' - Massima degli aborigeni australiani"
+	}
+
 	/*
 	"CN Tower":{
 		Italian:"CN Tower" //same in Italian
@@ -1602,6 +1658,10 @@
 		Simplified_Chinese:"五角大楼"
 		Polish:"Pentagon"
 		Russian:"Пентагон"
+	}
+
+	"'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower":{
+		Italian:"'Preparandomi alla battaglia ho sempre constatato che i piani sono inutili, ma la pianificazione è indispensabile.' - Dwight D. Eisenhower"
 	}
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -1697,6 +1757,10 @@
 		Simplified_Chinese:"哈勃太空望远镜"
 		Polish:"Teleskop Hubble'a"
 		Russian:"Телескоп Хаббл"
+	}
+
+	"'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France":{
+		Italian:"'La meraviglia non sta nella vastità del campo di stelle, ma nel fatto che l'uomo lo abbia misurato.' - Anatole France"
 	}
 
 	"2 free great scientists appear":{
