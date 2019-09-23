@@ -240,6 +240,11 @@ class Building : NamedStats(), IConstruction{
                 && !construction.cityInfo.getCenterTile().neighbors.any { it.baseTerrain==Constants.coast })
             return "Can only be built in coastal cities"
 
+        if("Can only be built in annexed cities" in uniques
+                && (construction.cityInfo.isPuppet || construction.cityInfo.foundingCiv == ""
+                        || construction.cityInfo.civInfo.civName == construction.cityInfo.foundingCiv))
+            return "Can only be built in annexed cities"
+
         val civInfo = construction.cityInfo.civInfo
         if (uniqueTo!=null && uniqueTo!=civInfo.civName) return "Unique to $uniqueTo"
         if (GameBasics.Buildings.values.any { it.uniqueTo==civInfo.civName && it.replaces==name }) return "Our unique building replaces this"

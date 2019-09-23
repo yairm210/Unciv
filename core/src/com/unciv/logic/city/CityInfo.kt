@@ -3,8 +3,12 @@ package com.unciv.logic.city
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
+import com.unciv.UnCivGame
+import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
+import com.unciv.logic.civilization.PopupAlert
 import com.unciv.logic.civilization.diplomacy.DiplomacyFlags
+import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.RoadStatus
 import com.unciv.logic.map.TileInfo
 import com.unciv.logic.map.TileMap
@@ -14,6 +18,7 @@ import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class CityInfo {
     @Transient lateinit var civInfo: CivilizationInfo
@@ -38,6 +43,7 @@ class CityInfo {
     var isBeingRazed = false
     var attackedThisTurn = false
     var hasSoldBuildingThisTurn = false
+    var isPuppet = false
 
     constructor()   // for json parsing, we need to have a default constructor
     constructor(civInfo: CivilizationInfo, cityLocation: Vector2) {  // new city!
@@ -99,6 +105,8 @@ class CityInfo {
         toReturn.isBeingRazed=isBeingRazed
         toReturn.attackedThisTurn = attackedThisTurn
         toReturn.resistanceCounter = resistanceCounter
+        toReturn.foundingCiv = foundingCiv
+        toReturn.isPuppet = isPuppet
         return toReturn
     }
 
@@ -210,6 +218,16 @@ class CityInfo {
         tryUpdateRoadStatus()
         attackedThisTurn = false
         if (resistanceCounter > 0) resistanceCounter--
+
+        if (isPuppet) reassignWorkers()
+    }
+
+    fun reassignWorkers() {
+        workedTiles = hashSetOf()
+        population.specialists.clear()
+        for (i in 0..population.population)
+            population.autoAssignPopulation()
+        cityStats.update()
     }
 
     fun endTurn() {
@@ -221,22 +239,21 @@ class CityInfo {
 
         cityConstructions.endTurn(stats)
         expansion.nextTurn(stats.culture)
-        if(isBeingRazed){
+        if (isBeingRazed) {
             population.population--
-            if(population.population<=0){ // there are strange cases where we geet to -1
-                civInfo.addNotification("[$name] has been razed to the ground!",location, Color.RED)
+            if (population.population <= 0) { // there are strange cases where we geet to -1
+                civInfo.addNotification("[$name] has been razed to the ground!", location, Color.RED)
                 destroyCity()
-                if(isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
+                if (isCapital() && civInfo.cities.isNotEmpty()) // Yes, we actually razed the capital. Some people do this.
                     civInfo.cities.first().cityConstructions.addBuilding("Palace")
-            }else{//if not razed yet:
-                if(population.foodStored>=population.getFoodToNextPopulation()) {//if surplus in the granary...
-                    population.foodStored=population.getFoodToNextPopulation()-1//...reduce below the new growth treshold
+            } else {//if not razed yet:
+                if (population.foodStored >= population.getFoodToNextPopulation()) {//if surplus in the granary...
+                    population.foodStored = population.getFoodToNextPopulation() - 1//...reduce below the new growth treshold
                 }
             }
-        }
-        else population.nextTurn(stats.food)
+        } else population.nextTurn(stats.food)
 
-        if(this in civInfo.cities) { // city was not destroyed
+        if (this in civInfo.cities) { // city was not destroyed
             health = min(health + 20, getMaxHealth())
             population.unassignExtraPopulation()
         }
@@ -254,7 +271,99 @@ class CityInfo {
         getCenterTile().improvement="City ruins"
     }
 
+    fun annexCity(conqueringCiv: CivilizationInfo) {
+        puppetCity(conqueringCiv)
+
+        if(!conqueringCiv.policies.isAdopted("Police State")) {
+            expansion.cultureStored = 0
+            expansion.reset()
+        }
+
+        isPuppet=false
+
+        UnCivGame.Current.worldScreen.shouldUpdate=true
+    }
+
+    /** This happens when we either puppet OR annex, basically whenever we conquer a city and don't liberate it */
+    fun puppetCity(conqueringCiv: CivilizationInfo) {
+        if (!conqueringCiv.isMajorCiv()){
+            destroyCity()
+        }
+
+        val oldCiv = civInfo
+        moveToCiv(conqueringCiv)
+        if(oldCiv.isDefeated()) {
+            oldCiv.destroy()
+            conqueringCiv.popupAlerts.add(PopupAlert(AlertType.Defeated,oldCiv.civName))
+        }
+
+        diplomaticRepercussionsForConqueringCity(oldCiv, conqueringCiv)
+
+        if(population.population>1) population.population -= 1 + population.population/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
+        reassignWorkers()
+
+        resistanceCounter = population.population  // I checked, and even if you puppet there's resistance for conquering
+        isPuppet = true
+        health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+    }
+
+    private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
+        val currentPopulation = population.population
+        val percentageOfCivPopulationInThatCity = currentPopulation * 100f / civInfo.cities.sumBy { it.population.population }
+        val aggroGenerated = 10f + percentageOfCivPopulationInThatCity.roundToInt()
+        oldCiv.getDiplomacyManager(conqueringCiv)
+                .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
+
+        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() }) {
+            val aggroGeneratedForOtherCivs = (aggroGenerated / 10).roundToInt().toFloat()
+            if (thirdPartyCiv.isAtWarWith(civInfo)) // You annoyed our enemy?
+                thirdPartyCiv.getDiplomacyManager(conqueringCiv)
+                        .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
+            else thirdPartyCiv.getDiplomacyManager(conqueringCiv)
+                    .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
+        }
+    }
+
+    /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
+    fun liberateCity(conqueringCiv: CivilizationInfo) {
+        if (foundingCiv == "") { // this should never happen but just in case...
+            annexCity(conqueringCiv)
+            return
+        }
+
+
+        diplomaticRepercussionsForLiberatingCity(conqueringCiv)
+
+        val foundingCiv = civInfo.gameInfo.civilizations.first { it.civName == foundingCiv }
+
+        moveToCiv(foundingCiv)
+        health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+
+        reassignWorkers()
+
+        if(foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
+
+        UnCivGame.Current.worldScreen.shouldUpdate=true
+    }
+
+    private fun diplomaticRepercussionsForLiberatingCity(conqueringCiv: CivilizationInfo) {
+        val oldOwningCiv = civInfo
+        val foundingCiv = civInfo.gameInfo.civilizations.first { it.civName == foundingCiv }
+        val percentageOfCivPopulationInThatCity = population.population *
+                100f / (foundingCiv.cities.sumBy { it.population.population } + population.population)
+        val respecForLiberatingOurCity = 10f + percentageOfCivPopulationInThatCity.roundToInt()
+        foundingCiv.getDiplomacyManager(conqueringCiv)
+                .addModifier(DiplomaticModifiers.CapturedOurCities, respecForLiberatingOurCity)
+
+        val otherCivsRespecForLiberating = (respecForLiberatingOurCity / 10).roundToInt().toFloat()
+        for (thirdPartyCiv in conqueringCiv.getKnownCivs().filter { it.isMajorCiv() && it != oldOwningCiv }) {
+            thirdPartyCiv.getDiplomacyManager(conqueringCiv)
+                    .addModifier(DiplomaticModifiers.WarMongerer, otherCivsRespecForLiberating) // Cool, keep at at! =D
+        }
+    }
+
     fun moveToCiv(newCivInfo: CivilizationInfo){
+        val oldCiv = civInfo
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo = newCivInfo
@@ -266,6 +375,15 @@ class CityInfo {
         // Remove all national wonders
         for(building in cityConstructions.getBuiltBuildings().filter { it.requiredBuildingInAllCities!=null })
             cityConstructions.removeBuilding(building.name)
+
+        // Remove/relocate palace
+        if(cityConstructions.isBuilt("Palace")){
+            cityConstructions.removeBuilding("Palace")
+            if(oldCiv.cities.isNotEmpty()){
+                oldCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
+            }
+        }
+
         isBeingRazed=false
 
         // Transfer unique buildings

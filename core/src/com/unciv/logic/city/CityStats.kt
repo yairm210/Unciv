@@ -165,6 +165,14 @@ class CityStats {
         return stats
     }
 
+    private fun getStatPercentBonusesFromPuppetCity(): Stats {
+        val stats = Stats()
+        if (cityInfo.isPuppet) {
+            stats.science -= 25f
+            stats.culture -= 25f
+        }
+        return stats
+    }
 
     fun getGrowthBonusFromPolicies(): Float {
         var bonus = 0f
@@ -194,6 +202,11 @@ class CityStats {
         var unhappinessFromCitizens = cityInfo.population.population.toFloat()
         if (civInfo.policies.isAdopted("Democracy"))
             unhappinessFromCitizens -= cityInfo.population.getNumberOfSpecialists() * 0.5f
+
+        if (cityInfo.isPuppet)
+            unhappinessFromCitizens *= 1.5f
+        else if (hasExtraAnnexUnhappiness())
+            unhappinessFromCitizens *= 2f
         if (civInfo.containsBuildingUnique("Unhappiness from population decreased by 10%"))
             unhappinessFromCitizens *= 0.9f
         if (civInfo.policies.isAdopted("Meritocracy"))
@@ -215,6 +228,8 @@ class CityStats {
 
         newHappinessList["Policies"] = happinessFromPolicies
 
+        if (hasExtraAnnexUnhappiness()) newHappinessList["Occupied City"] = -2f //annexed city
+
         val happinessFromBuildings = cityInfo.cityConstructions.getStats().happiness.toInt().toFloat()
         newHappinessList["Buildings"] = happinessFromBuildings
 
@@ -224,6 +239,12 @@ class CityStats {
         // we don't want to modify the existing happiness list because that leads
         // to concurrency problems if we iterate on it while changing
         happinessList = newHappinessList
+    }
+
+
+    private fun hasExtraAnnexUnhappiness() : Boolean {
+        if (cityInfo.civInfo.civName == cityInfo.foundingCiv || cityInfo.foundingCiv == "" || cityInfo.isPuppet) return false
+        return !cityInfo.containsBuildingUnique("Remove extra unhappiness from annexed cities")
     }
 
     fun getStatsOfSpecialist(stat: Stat, policies: HashSet<String>): Stats {
@@ -373,6 +394,7 @@ class CityStats {
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
         newStatPercentBonusList["Difficulty"]=getStatPercentBonusesFromDifficulty()
         newStatPercentBonusList["National ability"]=getStatPercentBonusesFromNationUnique()
+        newStatPercentBonusList["Puppet City"]=getStatPercentBonusesFromPuppetCity()
 
         if(UnCivGame.Current.superchargedForDebug) {
             val stats = Stats()

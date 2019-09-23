@@ -7,12 +7,10 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
 import kotlin.math.max
-import kotlin.math.roundToInt
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -96,12 +94,6 @@ class Battle(val gameInfo:GameInfo) {
             }
         }
 
-        if(defender.isDefeated()
-                && defender is CityCombatant
-                && attacker.isMelee()){
-            conquerCity(defender.city, attacker)
-        }
-
 
         // German unique - needs to be checked before we try to move to the enemy tile, since the encampment disappears after we move in
         if(defender.isDefeated() && defender.getCivInfo().isBarbarian()
@@ -150,6 +142,11 @@ class Battle(val gameInfo:GameInfo) {
             attacker.city.attackedThisTurn = true
         }
 
+
+        if(defender.isDefeated()
+                && defender is CityCombatant
+                && attacker.isMelee())
+            conquerCity(defender.city, attacker)
 
 
         if(attacker.isMelee()){
@@ -204,69 +201,22 @@ class Battle(val gameInfo:GameInfo) {
     }
 
     private fun conquerCity(city: CityInfo, attacker: ICombatant) {
-        val cityCiv = city.civInfo
         val attackerCiv = attacker.getCivInfo()
 
-        attackerCiv.addNotification("We have conquered the city of [${city.name}]!",city.location, Color.RED)
-        attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered,city.name))
+        attackerCiv.addNotification("We have conquered the city of [${city.name}]!", city.location, Color.RED)
 
         city.getCenterTile().apply {
             if(militaryUnit!=null) militaryUnit!!.destroy()
-            if(civilianUnit!=null) captureCivilianUnit(attacker,MapUnitCombatant(civilianUnit!!))
+            if(civilianUnit!=null) captureCivilianUnit(attacker, MapUnitCombatant(civilianUnit!!))
             for(airUnit in airUnits.toList()) airUnit.destroy()
         }
 
-        if (!attackerCiv.isMajorCiv()){
-            city.destroyCity()
+
+        if (attacker.getCivInfo().isPlayerCivilization()) {
+            attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
+        } else {
+            city.annexCity(attacker.getCivInfo())
         }
-        else {
-            val currentPopulation = city.population.population
-
-            val percentageOfCivPopulationInThatCity = currentPopulation*100f / cityCiv.cities.sumBy { it.population.population }
-            val aggroGenerated = 10f+percentageOfCivPopulationInThatCity.roundToInt()
-            cityCiv.getDiplomacyManager(attacker.getCivInfo())
-                    .addModifier(DiplomaticModifiers.CapturedOurCities, -aggroGenerated)
-
-            for(thirdPartyCiv in attackerCiv.getKnownCivs().filter { it.isMajorCiv() }){
-                val aggroGeneratedForOtherCivs = (aggroGenerated/10).roundToInt().toFloat()
-                if(thirdPartyCiv.isAtWarWith(cityCiv)) // You annoyed our enemy?
-                    thirdPartyCiv.getDiplomacyManager(attackerCiv)
-                            .addModifier(DiplomaticModifiers.SharedEnemy, aggroGeneratedForOtherCivs) // Cool, keep at at! =D
-                else thirdPartyCiv.getDiplomacyManager(attackerCiv)
-                        .addModifier(DiplomaticModifiers.WarMongerer, -aggroGeneratedForOtherCivs) // Uncool bro.
-            }
-
-            if(currentPopulation>1) city.population.population -= 1 + currentPopulation/4 // so from 2-4 population, remove 1, from 5-8, remove 2, etc.
-            city.population.unassignExtraPopulation()
-
-            city.health = city.getMaxHealth() / 2 // I think that cities recover to half health when conquered?
-
-            if(!attacker.getCivInfo().policies.isAdopted("Police State")) {
-                city.expansion.cultureStored = 0
-                city.expansion.reset()
-            }
-
-            city.moveToCiv(attacker.getCivInfo())
-            city.resistanceCounter = city.population.population
-            city.workedTiles = hashSetOf() //reassign 1st working tile
-            city.population.specialists.clear()
-            for (i in 0..city.population.population)
-                city.population.autoAssignPopulation()
-            city.cityStats.update()
-        }
-
-        if(city.cityConstructions.isBuilt("Palace")){
-            city.cityConstructions.removeBuilding("Palace")
-            if(cityCiv.isDefeated()) {
-                cityCiv.destroy()
-                attacker.getCivInfo().popupAlerts.add(PopupAlert(AlertType.Defeated,cityCiv.civName))
-            }
-            else if(cityCiv.cities.isNotEmpty()){
-                cityCiv.cities.first().cityConstructions.addBuilding("Palace") // relocate palace
-            }
-        }
-
-        (attacker as MapUnitCombatant).unit.movement.moveToTile(city.getCenterTile())
     }
 
     fun getMapCombatantOfTile(tile:TileInfo): ICombatant? {

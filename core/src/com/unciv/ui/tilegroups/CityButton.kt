@@ -100,6 +100,12 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
             iconTable.add(resistanceImage).size(20f).pad(2f).padLeft(5f)
         }
 
+        if (city.isPuppet) {
+            val puppetImage = ImageGetter.getImage("OtherIcons/Puppet")
+            puppetImage.setColor(secondaryColor)
+            iconTable.add(puppetImage).size(20f).pad(2f).padLeft(5f)
+        }
+
         if (city.isBeingRazed) {
             val fireImage = ImageGetter.getImage("OtherIcons/Fire")
             iconTable.add(fireImage).size(20f).pad(2f).padLeft(5f)
@@ -116,7 +122,7 @@ class CityButton(val city: CityInfo, internal val tileGroup: WorldTileGroup, ski
         } else if (city.civInfo.isCurrentPlayer() && city.isConnectedToCapital()) {
             val connectionImage = ImageGetter.getStatIcon("CityConnection")
             connectionImage.color = secondaryColor
-            iconTable.add(connectionImage).size(20f).pad(2f).padLeft(10f)
+            iconTable.add(connectionImage).size(20f).pad(2f).padLeft(5f)
         }
 
         val cityButtonText = city.population.population.toString() + " | " + city.name

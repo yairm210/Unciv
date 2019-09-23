@@ -41,6 +41,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Roman Helmet](https://thenounproject.com/search/?q=legion&i=440134) By parkjisun for Legion
 * [Horse](https://thenounproject.com/search/?q=Horse&i=1373793) By AFY Studio for Horseman
 * [Horse Head](https://thenounproject.com/search/?q=Cavalry&i=374037) By Juan Pablo Bravo for Companion Cavalry
+* [Judge](https://thenounproject.com/search/?q=judge&i=1076388) By Krisztián Mátyás for Courthouse
 
 ### Medieval Era
 
@@ -490,6 +491,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Aircraft](https://thenounproject.com/search/?q=aircraft&i=1629000) By Tom Fricker for aircraft icon in city button
 * [radar scan](https://thenounproject.com/search/?q=range&i=1500234) By icon 54 for Range
 * [short range radar](https://thenounproject.com/search/?q=air%20range&i=2612731) by Vectors Point for Intercept range
+* [Puppet](https://thenounproject.com/search/?q=puppet&i=285735) By Ben Davis for puppeted cities
 
 # Sound credits
 

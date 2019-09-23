@@ -176,7 +176,10 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 if(specificStatValue==0f) continue
                 statValuesTable.add(entry.key.toLabel())
                 val decimal = DecimalFormat("0.#").format(specificStatValue)
-                statValuesTable.add("+$decimal%".toLabel()).row()
+                if (specificStatValue > 0)
+                    statValuesTable.add("+$decimal%".toLabel()).row()
+                else
+                    statValuesTable.add("$decimal%".toLabel()).row()
             }
             if(stat==Stat.Food){
                 statValuesTable.add("Food eaten".toLabel())
@@ -223,7 +226,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
             // these two are conflictingly named compared to above...
             val assignedSpecialists = currentSpecialists[stat]!!.toInt()
             val maxSpecialists = statToMaximumSpecialist.value.toInt()
-            if (assignedSpecialists > 0) {
+            if (assignedSpecialists > 0 && !cityInfo.isPuppet) {
                 val unassignButton = TextButton("-", skin)
                 unassignButton.label.setFontSize(24)
                 unassignButton.onClick {
@@ -241,7 +244,7 @@ class CityInfoTable(private val cityScreen: CityScreen) : Table(CameraStageBaseS
                 specialistIconTable.add(icon).size(30f)
             }
             specialistPickerTable.add(specialistIconTable)
-            if (assignedSpecialists < maxSpecialists) {
+            if (assignedSpecialists < maxSpecialists && !cityInfo.isPuppet) {
                 val assignButton = TextButton("+", skin)
                 assignButton.label.setFontSize(24)
                 assignButton.onClick {
