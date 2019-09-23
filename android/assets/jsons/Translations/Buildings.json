@@ -425,19 +425,21 @@
 		Russian:"Все военно-морские юниты получают +1 к движению и обзору"
 	}
 
-	/*
 	"Courthouse":{
 		Italian:"Palazzo di giustizia"
 		French:"Palais de justice"
 		Polish:"Sąd"
 	}
 		
-	"Eliminates extra Unhappiness from an Occupied City":{
-		Italian:"Elimina l'Infelicità supplementare proveniente da una Città occupata"
+	"Remove extra unhappiness from annexed cities":{
+		Italian:"Elimina l'Infelicità extra proveniente dalle Città occupate"
 		French:"Enlève le mécontentement supplémentaire des villes occupées"
 		Polish:"Usuwa niezadowolenie z okupowanych miast"
 	}
-	*/
+		
+	"Can only be built in annexed cities":{
+		Italian:"Costruibile solamente nelle città annesse"
+	}
 
 	"Stable":{	
 		Italian:"Scuderia"
