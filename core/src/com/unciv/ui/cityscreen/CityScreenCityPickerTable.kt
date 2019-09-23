@@ -43,6 +43,12 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
+
+        if (city.resistanceCounter > 0) {
+            val resistanceImage = ImageGetter.getImage("StatIcons/Resistance")
+            cityNameTable.add(resistanceImage).size(20f).padRight(5f)
+        }
+
         val currentCityLabel = Label(city.name + " (" + city.population.population + ")", CameraStageBaseScreen.skin)
         currentCityLabel.setFontSize(30)
         currentCityLabel.onClick {
