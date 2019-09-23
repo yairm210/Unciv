@@ -65,20 +65,21 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                         && city.civInfo.civName != city.foundingCiv
                         && city.conquerer!!.getCivInfo().civName != city.foundingCiv) {
                     add(TextButton("Liberate".tr(), skin).onClick {
-                        city.LiberateCity()
+                        city.liberateCity()
                         close()
                     }).row()
                 }
                 add(TextButton("Annex".tr(), skin).onClick {
-                    city.AnnexCity()
+                    city.annexCity()
                     close()
                 }).row()
                 add(TextButton("Puppet City".tr(), skin).onClick {
-                    city.PuppetCity()
+                    city.puppetCity()
                     close()
                 }).row()
                 add(TextButton("Raze".tr(), skin).onClick {
-                    city.RazeCity()
+                    city.annexCity()
+                    city.isBeingRazed = true
                     close()
                 })
             }

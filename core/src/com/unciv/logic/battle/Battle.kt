@@ -7,12 +7,10 @@ import com.unciv.logic.automation.UnitAutomation
 import com.unciv.logic.city.CityInfo
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.PopupAlert
-import com.unciv.logic.civilization.diplomacy.DiplomaticModifiers
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
 import java.util.*
 import kotlin.math.max
-import kotlin.math.roundToInt
 
 /**
  * Damage calculations according to civ v wiki and https://steamcommunity.com/sharedfiles/filedetails/?id=170194443
@@ -215,7 +213,7 @@ class Battle(val gameInfo:GameInfo) {
         if (attacker.getCivInfo().isPlayerCivilization()) {
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
         } else {
-            city.AnnexCity()
+            city.annexCity()
         }
     }
 

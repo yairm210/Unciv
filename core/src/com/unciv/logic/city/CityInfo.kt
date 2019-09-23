@@ -4,7 +4,10 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.math.Vector2
 import com.unciv.Constants
 import com.unciv.UnCivGame
-import com.unciv.logic.battle.*
+import com.unciv.logic.battle.Battle
+import com.unciv.logic.battle.CityCombatant
+import com.unciv.logic.battle.ICombatant
+import com.unciv.logic.battle.MapUnitCombatant
 import com.unciv.logic.civilization.AlertType
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.PopupAlert
@@ -18,7 +21,6 @@ import com.unciv.models.gamebasics.tile.ResourceSupplyList
 import com.unciv.models.gamebasics.tile.ResourceType
 import com.unciv.models.stats.Stats
 import com.unciv.ui.utils.withoutItem
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -277,7 +279,7 @@ class CityInfo {
         getCenterTile().improvement="City ruins"
     }
 
-    fun AnnexCity() {
+    fun annexCity() {
         if (conquerer == null) return
         val attackerCiv = conquerer!!.getCivInfo()
         val defenderCiv = civInfo
@@ -343,20 +345,16 @@ class CityInfo {
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
-    fun RazeCity() {
-        AnnexCity()
-        isBeingRazed = true
-    }
 
-    fun PuppetCity() {
-        AnnexCity()
+    fun puppetCity() {
+        annexCity()
         isPuppet = true
         resistanceCounter = 0
     }
 
-    fun LiberateCity() {
+    fun liberateCity() {
         if (foundingCiv == "") {
-            AnnexCity()
+            annexCity()
             return
         }
 
@@ -402,6 +400,7 @@ class CityInfo {
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
+    // todo should be in cityStats
     fun hasExtraAnnexUnhappiness() : Boolean {
         if (civInfo.civName == foundingCiv || foundingCiv == "" || isPuppet) return false
         return !containsBuildingUnique("Remove extra unhappiness from annexed cities")

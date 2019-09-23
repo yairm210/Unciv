@@ -38,6 +38,11 @@ class CityScreenCityPickerTable(val cityScreen: CityScreen) : Table(){
             cityNameTable.add(starImage).size(20f).padRight(5f)
         }
 
+        if(city.isPuppet){
+            val starImage = Image(ImageGetter.getDrawable("OtherIcons/Puppet").tint(Color.LIGHT_GRAY))
+            cityNameTable.add(starImage).size(20f).padRight(5f)
+        }
+
         val currentCityLabel = Label(city.name + " (" + city.population.population + ")", CameraStageBaseScreen.skin)
         currentCityLabel.setFontSize(30)
         currentCityLabel.onClick {
