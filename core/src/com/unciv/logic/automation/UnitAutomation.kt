@@ -394,7 +394,7 @@ class UnitAutomation{
         val cityTilesToAttack = attackableEnemies.filter { it.tileToAttack.isCityCenter() }
         val nonCityTilesToAttack = attackableEnemies.filter { !it.tileToAttack.isCityCenter() }
 
-        // todo add filter undefended tile if is air unit
+        // todo For air units, prefer to attack tiles with lower intercept chance
 
         var enemyTileToAttack: AttackableTile? = null
         val capturableCity = cityTilesToAttack.firstOrNull{it.tileToAttack.getCity()!!.health == 1}

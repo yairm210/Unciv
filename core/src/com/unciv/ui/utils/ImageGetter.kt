@@ -185,18 +185,20 @@ object ImageGetter {
     }
 
     fun getTechIconGroup(techName: String): Group {
-        var TechIconColor = Color.WHITE
-        when(GameBasics.Technologies[techName]!!.era().name){
-            "Ancient"-> TechIconColor = Color.FIREBRICK
-            "Classical"-> TechIconColor = Color.VIOLET
-            "Medieval"-> TechIconColor = Color.TAN
-            "Renaissance"-> TechIconColor = Color.BROWN
-            "Industrial"-> TechIconColor = Color.CHARTREUSE
-            "Modern"-> TechIconColor = Color.GOLD
-            "Information"-> TechIconColor = Color.CORAL
-            "Future"-> TechIconColor = Color.CYAN
+        var techIconColor = Color.WHITE
+        when (GameBasics.Technologies[techName]!!.era().name) {
+            "Ancient" -> techIconColor = colorFromRGB(255, 87, 35)
+            "Classical" -> techIconColor = colorFromRGB(233, 31, 99)
+            "Medieval" -> techIconColor = colorFromRGB(157, 39, 176)
+            "Renaissance" -> techIconColor = colorFromRGB(104, 58, 183)
+            "Industrial" -> techIconColor = colorFromRGB(63, 81, 182)
+            "Modern" -> techIconColor = colorFromRGB(33, 150, 243)
+            "Information" -> techIconColor = colorFromRGB(0, 150, 136)
+            "Future" -> techIconColor = colorFromRGB(76,176,81)
         }
-        return getImage("TechIcons/$techName").surroundWithCircle(60f).apply{ this.circle.color = TechIconColor }
+        return getImage("TechIcons/$techName").apply { color = techIconColor.lerp(Color.BLACK,0.6f) }
+                .surroundWithCircle(60f)
+                //.apply { this.circle.color = techIconColor.lerp(Color.WHITE, 0.5f) }
     }
 
     fun getProgressBarVertical(width:Float,height:Float,percentComplete:Float,progressColor:Color,backgroundColor:Color): Table {
