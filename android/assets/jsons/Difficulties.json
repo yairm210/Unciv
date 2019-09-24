@@ -15,6 +15,7 @@
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:1,
 		aiFreeTechs:[],
+		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:false
 	},
@@ -34,6 +35,7 @@
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:1,
 		aiFreeTechs:[],
+		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:false
 	},
@@ -53,6 +55,7 @@
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:1,
 		aiFreeTechs:[],
+		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:false
 	},
@@ -72,6 +75,7 @@
 		aiBuildingMaintenanceModifier:1,
 		aiUnitMaintenanceModifier:0.85,
 		aiFreeTechs:[],
+		aiFreeUnits:[],
 		aiUnhappinessModifier:1,
 		aisExchangeTechs:true
 	},
@@ -91,6 +95,7 @@
 		aiBuildingMaintenanceModifier:0.85,
 		aiUnitMaintenanceModifier:0.8,
 		aiFreeTechs:["Pottery"],
+		aiFreeUnits:["Warrior"],
 		aiUnhappinessModifier:0.9,
 		aisExchangeTechs:true
 	},
@@ -110,6 +115,7 @@
 		aiBuildingMaintenanceModifier:0.8,
 		aiUnitMaintenanceModifier:0.75,
 		aiFreeTechs:["Pottery","Animal Husbandry"],
+		aiFreeUnits:["Warrior", "Scout"],
 		aiUnhappinessModifier:0.85,
 		aisExchangeTechs:true
 	},
@@ -129,6 +135,7 @@
 		aiBuildingMaintenanceModifier:0.65,
 		aiUnitMaintenanceModifier:0.65,
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining"],
+		aiFreeUnits:["Warrior", "Warrior", "Worker", "Scout"],
 		aiUnhappinessModifier:0.75,
 		aisExchangeTechs:true
 	},
@@ -148,6 +155,7 @@
 		aiBuildingMaintenanceModifier:0.5,
 		aiUnitMaintenanceModifier:0.5,
 		aiFreeTechs:["Pottery","Animal Husbandry","Mining","The Wheel"],
+		aiFreeUnits:["Settler", "Warrior", "Warrior", "Worker", "Worker", "Scout"],
 		aiUnhappinessModifier:0.6,
 		aisExchangeTechs:true
 	}
