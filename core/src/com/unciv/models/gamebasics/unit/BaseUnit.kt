@@ -99,6 +99,10 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
 
     override fun getProductionCost(civInfo: CivilizationInfo): Int {
         var productionCost = cost.toFloat()
+        if (civInfo.isPlayerCivilization())
+            productionCost *= civInfo.getDifficulty().unitCostModifier
+        else
+            productionCost *= civInfo.getDifficulty().aiUnitCostModifier
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
         return productionCost.toInt()
     }

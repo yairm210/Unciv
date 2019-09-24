@@ -192,6 +192,17 @@ class Building : NamedStats(), IConstruction{
         var productionCost = cost.toFloat()
         if (!isWonder && culture != 0f && civInfo.policies.isAdopted("Piety"))
             productionCost *= 0.85f
+        if (civInfo.isPlayerCivilization()) {
+            if(!isWonder) {
+                productionCost *= civInfo.getDifficulty().buildingCostModifier
+            }
+        } else {
+            if(isWonder) {
+                productionCost *= civInfo.getDifficulty().aiWonderCostModifier
+            } else {
+                productionCost *= civInfo.getDifficulty().aiBuildingCostModifier
+            }
+        }
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
         return productionCost.toInt()
     }
