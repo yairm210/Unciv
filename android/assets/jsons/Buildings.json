@@ -28,12 +28,12 @@
 	{
 		name:"Stone Works", 
 		happiness:1,
-		production:1
-		requiredNearbyImprovedResources:["Marble","Stone"]
+		production:1,
+		requiredNearbyImprovedResources:["Marble","Stone"],
 		resourceBonusStats:{production:1},
 		maintenance:1,
 		hurryCostModifier:25,
-		uniques:["Must not be on plains"]
+		uniques:["Must not be on plains"],
 		requiredTech:"Calendar"
 	},
 	{
@@ -41,7 +41,7 @@
 		culture:6,
 		isWonder:true,
 		greatPersonPoints:{production:1},
-		requiredTech:"Calendar"
+		requiredTech:"Calendar",
 		quote:"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle"
 	},
 	{
@@ -73,11 +73,24 @@
 	},
 	{
 		name:"Circus", 
-		requiredNearbyImprovedResources:["Ivory","Horses"]
+		requiredNearbyImprovedResources:["Ivory","Horses"],
 		happiness:2,
 		hurryCostModifier:25,
 		requiredTech:"Trapping"
 	},
+	
+	/*
+	{
+		name:"Temple of Artemis",
+		culture:1,
+		isWonder:true,
+		greatPersonPoints:{production:1},
+		uniques:["+10% Growth in all Cities.","+15% Production towards Ranged Units."],
+		requiredTech:"Archery"
+		quote:"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson"
+	},
+	*/
+	
 	{
 		name:"Walls",
 		cityStrength:5,
@@ -124,13 +137,32 @@
 	{
 		name:"Krepost",
 		replaces:"Barracks",
-		uniqueTo:"Russia"
+		uniqueTo:"Russia",
 		xpForNewUnits:15,
 		hurryCostModifier:25,
 		maintenance:1,
-		uniques:["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"]
+		uniques:["Culture and Gold costs of acquiring new tiles reduced by 25% in this city"],
 		requiredTech:"Bronze Working"
 	},
+	/*
+	{
+		name:"Statue of Zeus",
+		culture:1,
+		isWonder:true,
+		uniques:["+15% Combat Strenght when attacking Cities."],
+		requiredTech:"Bronze Working"
+		quote:"'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad"
+	},
+	{
+		name:"Mausoleum of Halicarnassus",
+		culture:1,
+		greatPersonPoints:{gold:1},
+		isWonder:true,
+		uniques:["Gain 100 Gold when you use a Great Person.","+2 Gold from every source of Marble and Stone"],
+		requiredTech:"Masonry"
+		quote:"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles"
+	},
+	*/
 	
 	// Classical Era
 	
@@ -139,7 +171,7 @@
 		hurryCostModifier:25,
 		maintenance:1,
 		resourceBonusStats:{food:1},
-		uniques:["Can only be built in coastal cities","+1 food from Ocean and Coast tiles"]
+		uniques:["Can only be built in coastal cities","+1 food from Ocean and Coast tiles"],
 		requiredTech:"Optics"
 	},
 	{
@@ -148,14 +180,14 @@
 		greatPersonPoints:{gold:1},
 		isWonder:true,
 		providesFreeBuilding: "Lighthouse",
-		uniques:["Can only be built in coastal cities", "All military naval units receive +1 movement and +1 sight"]
+		uniques:["Can only be built in coastal cities", "All military naval units receive +1 movement and +1 sight"],
 		requiredTech:"Optics",
 		quote:"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24"
 	},
 	{
 		name:"Stable", 
 		maintenance:1,
-		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"]
+		requiredNearbyImprovedResources:["Horses","Sheep","Cattle"],
 		resourceBonusStats:{production:1},
 		hurryCostModifier:25,
 		uniques:["+15% Production when building Mounted Units in this city"]
@@ -269,6 +301,18 @@
 		hurryCostModifier:25,
 		requiredTech:"Currency"
 	},
+	
+	/*
+	{ //Must be built in or near Desert
+		name:"Petra",
+		culture:1,
+		isWonder:true,
+		greatPersonPoints:{production:1},
+		uniques:["+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains).","+6 Culture when discovering Archeology."],
+		requiredTech:"Currency"
+		quote:"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones"
+	},
+	*/
 	{
 		name:"Aqueduct",
 		maintenance:1,
