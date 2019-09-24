@@ -82,6 +82,26 @@
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle":{
 		Italian:"'Il tempo sgretola le cose; davanti al suo potere tutto invecchia e viene dimenticato.' - Aristotele"
 	}
+
+	/*
+	
+	"Temple of Artemis":{
+		Italian:"Tempio di Artemide"
+	}
+	
+	"'It is not so much for its beauty that the forest makes a claim upon men's hearts, as for that subtle something, that quality of air, that emanation from old trees, that so wonderfully changes and renews a weary spirit.' - Robert Louis Stevenson":{
+		Italian:"'Non è tanto con la sua bellezza che la foresta tocca il cuore degli uomini, ma con un'indefinibile sottigliezza, una certa qualità dell'aria, con l'emanazione degli antichi alberi, che così meravigliosamente muta e rinnova uno spirito fiaccato.' - Robert Louis Stevenson"
+	}
+	
+	"+10% Growth in all Cities":{
+		Italian:"+10% Crescita in tutte le Città"
+	}
+	
+	"+15% Production towards Ranged Units":{
+		Italian:"+15% Produzione per le unità a distanza"
+	}
+
+	*/
 	
 	"Library":{	
 		Italian:"Biblioteca"
@@ -180,7 +200,7 @@
 	}
 
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
-		Italian:"''Oh, non lasciare che i dolori della morte che piombano su di te entrino nel mio corpo. Io sono il dio Tem, e risiedo nella parte più importante del cielo, e il potere che mi protegge è quello che si accompagna per sempre a tutti gli dèi.' - Il Libro dei Morti, traduzione di Sir Ernest Alfred Wallis Budge"
+		Italian:"'Oh, non lasciare che i dolori della morte che piombano su di te entrino nel mio corpo. Io sono il dio Tem, e risiedo nella parte più importante del cielo, e il potere che mi protegge è quello che si accompagna per sempre a tutti gli dèi.' - Il Libro dei Morti, traduzione di Sir Ernest Alfred Wallis Budge"
 	}
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -233,7 +253,7 @@
 	}
 	
 	"Culture and Gold costs of acquiring new tiles reduced by 25% in this city":{
-		Italian:"-25% costi in Cultura e Oro nell'acquisto di nuove celle nella città"
+		Italian:"-25% costi in Cultura e Oro nell'acquisto di nuove celle nella Città"
 		Romanian:"Costurile în Cultură și Aur pentru cumpărarea noilor celule în acest oraș sunt reduse cu 25%"
 		Spanish:"El coste de comprar terrenos en esta ciudad se reduce un 25%"
 		Simplified_Chinese:"所在城市扩展新地块所需文化和金钱花费-25%"
@@ -454,7 +474,7 @@
 	}
 
 	"+15% Production when building Mounted Units in this city":{
-		Italian:"+15% Produzione nella città nel reclutare unità a cavallo"
+		Italian:"+15% Produzione per le unità a cavallo"
 		German:"+15% Produktion beim Ausbilden von berittenen Einheiten in dieser Stadt"
 		French:"+15% Production lorsqu'une unité montée est produite dans cette ville"
 		Simplified_Chinese:"组建骑乘单位时产能积累速率+15%"
@@ -505,6 +525,10 @@
 		Simplified_Chinese:"在攻击城市时所有单位+15%战斗力"
 		Polish:"+15% siły bojowej do ataku na miasta"
 	}
+	
+	"'He spoke, the son of Kronos, and nodded his head with the dark brows, and the immortally anointed hair of the great god swept from his divine head, and all Olympos was shaken' - The Iliad":{
+		Italian:"'Così parlò, il figlio di Crono, e con le nere sopracciglia accennò; le chiome immortali del sire si scompigliarono sul capo divino: scosse tutto l'Olimpo.' - L'Iliade"
+	}
 
 	//New Wonder: Mausoleum of Halicarnassus! Suggested by Smashfanful
 	"Mausoleum of Halicarnassus":{	
@@ -519,6 +543,30 @@
 		French:"+2 or pour chaque ressources de marbre et de pierre"
 		Simplified_Chinese:"所在城市开发的每处大理石或花岗石资源额外+2金钱"
 		Polish:"+2 do złota z każdego złoża marmuru i kamienia"
+	}
+
+	"Gain 100 Gold when you use a Great Person.":{
+		Italian:"Guadagni 100 Oro ogni volta che consumi un Grande Personaggio"
+	}
+	
+	"'The whole earth is the tomb of heroic men and their story is not given only on stone over their clay but abides everywhere without visible symbol woven into the stuff of other men's lives.' - Pericles":{
+		Italian:"'Tutta la terra è tomba di uomini eroici; la loro storia non resta solo sulla pietra sopra la loro creta, ma si ritrova ovunque, invisibile, intessuta nella vita degli altri.' - Pericle"
+	}
+	
+	"Petra":{
+		Italian:"Petra"
+	}
+	
+	"+1 Food and +1 Production from all worked Desert tiles in the City (except Flood plains)":{
+		Italian:"+1 Cibo e +1 Produzione da tutte le caselle desertiche sfruttate dalla città (eccetto Terreni allagati)"
+	}
+	
+	"+6 Culture when discovering Archeology":{
+		Italian:"+6 Cultura quando scopri l'Archeologia"
+	}
+	
+	"'...who drinks the water I shall give him, says the Lord, will have a spring inside him welling up for eternal life. Let them bring me to your holy mountain in the place where you dwell. Across the desert and through the mountain to the Canyon of the Crescent Moon...' - Indiana Jones":{
+		Italian:"'...colui che beve l'acqua che io gli darò, dice il Signore, avrà dentro di sé una sorgente inesauribile dalla quale sgorgherà la vita eterna. Lasciate che mi conducano alla tua montagna sacra nel luogo dove dimori, attraverso il deserto e oltre la montagna, nella Gola della Luna Crecente...' - Indiana Jones"
 	}
 	*/
 
