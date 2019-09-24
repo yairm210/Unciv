@@ -31,6 +31,8 @@ class PolicyManager {
         if (isAdopted("Piety Complete")) policyCultureCost *= 0.9
         if (civInfo.containsBuildingUnique("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
+        if (civInfo.isPlayerCivilization())
+                policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)
