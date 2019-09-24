@@ -162,12 +162,18 @@ class UnitAutomation{
     }
 
     fun containsAttackableEnemy(tile: TileInfo, combatant: ICombatant): Boolean {
-        if(combatant is MapUnitCombatant){
+        if(combatant is MapUnitCombatant) {
             if (combatant.unit.isEmbarked()) {
                 if (tile.isWater) return false // can't attack water units while embarked, only land
                 if (combatant.isRanged()) return false
             }
-            if (tile.isLand && combatant.unit.hasUnique("Can only attack water")) return false
+            if (combatant.unit.hasUnique("Can only attack water")) {
+                if (tile.isLand) return false
+
+                // trying to attack lake-to-coast or vice versa
+                if ((tile.baseTerrain == Constants.lakes) != (combatant.getTile().baseTerrain == Constants.lakes))
+                    return false
+            }
         }
 
         val tileCombatant = Battle(combatant.getCivInfo().gameInfo).getMapCombatantOfTile(tile)
