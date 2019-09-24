@@ -102,7 +102,7 @@ class BaseUnit : INamed, IConstruction, ICivilopedia {
         if (civInfo.isPlayerCivilization())
             productionCost *= civInfo.getDifficulty().unitCostModifier
         else
-            productionCost *= civInfo.getDifficulty().aiUnitCostModifier
+            productionCost *= civInfo.gameInfo.getDifficulty().aiUnitCostModifier
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
         return productionCost.toInt()
     }

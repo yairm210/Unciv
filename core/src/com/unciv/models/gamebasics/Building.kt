@@ -198,9 +198,9 @@ class Building : NamedStats(), IConstruction{
             }
         } else {
             if(isWonder) {
-                productionCost *= civInfo.getDifficulty().aiWonderCostModifier
+                productionCost *= civInfo.gameInfo.getDifficulty().aiWonderCostModifier
             } else {
-                productionCost *= civInfo.getDifficulty().aiBuildingCostModifier
+                productionCost *= civInfo.gameInfo.getDifficulty().aiBuildingCostModifier
             }
         }
         productionCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
