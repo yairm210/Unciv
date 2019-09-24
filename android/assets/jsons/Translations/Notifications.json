@@ -217,7 +217,7 @@
 	}
 		
 	"An enemy [unit] has attacked our [ourUnit]":{
-		Italian:"Un'unità nemica [unit] ha attaccato [ourUnit]"
+		Italian:"L'unità nemica [unit] ha attaccato [ourUnit]"
 		Russian:"Наш [ourUnit] был атакован вражеским [unit]"
 		French:"Un(e) [unit] ennemi(e) a attaqué [ourUnit]" // Gender sensitive
 		Romanian:"Un [unit] inamic ne-a atacat un [ourUnit]"
@@ -230,7 +230,7 @@
 	}
 
 	"Enemy city [cityName] has attacked our [ourUnit]":{
-		Italian:"La città nemica [cityName] ha attaccato [ourUnit]"
+		Italian:"La città nemica di [cityName] ha attaccato [ourUnit]"
 		French:"La cité ennemie [cityName] a attaqué notre [ourUnit]"
 		Russian:"Наш [ourUnit] был атакован вражеским городом [cityName]"
 		Simplified_Chinese:"敌方城市[cityName]攻击了我们的[ourUnit]"
@@ -276,7 +276,7 @@
 	}
 		
 	"Enemy city [cityName] has destroyed our [ourUnit]":{
-		Italian:"La città nemica [cityName] ha distrutto [ourUnit]"
+		Italian:"La città nemica di [cityName] ha distrutto [ourUnit]"
 		French:"La cité ennemie [cityName] a détruit notre [ourUnit]"
 		Russian:"Наш [ourUnit] был уничтожен вражеским городом [cityName]"
 		Simplified_Chinese:"敌方城市[cityName]杀死了我们的[ourUnit]"
