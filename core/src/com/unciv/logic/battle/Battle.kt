@@ -212,11 +212,9 @@ class Battle(val gameInfo:GameInfo) {
         }
 
 
-        if (attacker.getCivInfo().isPlayerCivilization()) {
+        if (attacker.getCivInfo().isPlayerCivilization())
             attackerCiv.popupAlerts.add(PopupAlert(AlertType.CityConquered, city.name))
-        } else {
-            city.annexCity(attacker.getCivInfo())
-        }
+        else city.puppetCity(attacker.getCivInfo())
     }
 
     fun getMapCombatantOfTile(tile:TileInfo): ICombatant? {
