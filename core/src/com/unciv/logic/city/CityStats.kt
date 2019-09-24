@@ -107,10 +107,6 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromDifficulty(): Stats {
-        return Stats()
-    }
-
     private fun getStatsFromNationUnique(): Stats {
         val stats = Stats()
 
@@ -380,7 +376,6 @@ class CityStats {
         newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
-        newStatPercentBonusList["Difficulty"]=getStatPercentBonusesFromDifficulty()
         newStatPercentBonusList["National ability"]=getStatPercentBonusesFromNationUnique()
         newStatPercentBonusList["Puppet City"]=getStatPercentBonusesFromPuppetCity()
 

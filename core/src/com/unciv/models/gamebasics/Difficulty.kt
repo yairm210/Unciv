@@ -6,7 +6,7 @@ import java.util.*
 class Difficulty: INamed {
     override lateinit var name: String
     var baseHappiness: Int = 0
-    var extraHappinessPerLuxuxy: Float = 0f
+    var extraHappinessPerLuxury: Float = 0f
     var researchCostModifier:Float = 1f
     var unitCostModifier:Float = 1f
     var buildingCostModifier:Float = 1f

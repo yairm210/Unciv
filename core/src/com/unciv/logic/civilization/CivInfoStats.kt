@@ -101,7 +101,7 @@ class CivInfoStats(val civInfo: CivilizationInfo){
         val statMap = HashMap<String, Float>()
         statMap["Base happiness"] = civInfo.getDifficulty().baseHappiness.toFloat()
 
-        var happinessPerUniqueLuxury = 5f + civInfo.getDifficulty().extraHappinessPerLuxuxy
+        var happinessPerUniqueLuxury = 5f + civInfo.getDifficulty().extraHappinessPerLuxury
         if (civInfo.policies.isAdopted("Protectionism")) happinessPerUniqueLuxury += 1
         statMap["Luxury resources"]= civInfo.getCivResources().map { it.resource }
                 .count { it.resourceType === ResourceType.Luxury } * happinessPerUniqueLuxury
