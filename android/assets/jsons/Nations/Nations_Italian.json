@@ -551,7 +551,7 @@
 		
 		declaringWar:"Sei una peste per Madre Terra! Preparati a combattere!"
 		attacked:"Creatura maligna! I miei prodi ti massacreranno!"
-		defeated:"Ci avrai anche sconfitti... ma i nostri spiriti sono immortali! Tra cento, mille anni torneremo!"
+		defeated:"Ci avrai anche sconfitti, e io accetto il mio destino... ma i nostri spiriti sono immortali! Tra cento, mille anni, noi torneremo!"
 		introduction:"Saluti, straniero. Sono Hiawatha, e parlo per il popolo degli Irochesi. Cerchiamo la pace con tutti, ma siamo anche abili guerrieri."
 		
 		neutralHello:"Buongiorno."
@@ -586,23 +586,23 @@
 		startIntroPart1: "La benedizione del cielo scenda su di te, oh amato re Dario di Persia! Tu sei a capo di un popolo forte e saggio. All'alba del mondo, il grande capo persiano Ciro si rivoltò contro l'impero dei Medi, che nel 550 a.C. scomparve del tutto. Grazie alla sua astuta diplomazia e alla sua prodezza militare, il grande Ciro conquistò la florida Lidia e la potente Babilonia, mentre qualche anno più tardi suo figlio Cambise s'impadronì anche dell'orgoglioso Egitto. Col tempo i persiani si espansero fino alla lontana Macedonia, bussando alla porta delle giovani città-stato greche. A lungo avrebbe prosperato la Persia, fino all'arrivo di quello zotico Alessandro di Macedonia, venuto su dal nulla, che distrusse il nostro glorioso impero con un'unica campagna militare senza precedenti."
 		startIntroPart2: "Dario, il tuo popolo si rivolge a te per tornare ai giorni della grande e potente Persia! L'impero dei tuoi antenati deve rivivere per trionfare sui suoi nemici e riportare la pace e l'ordine nel mondo. Oh re, risponderai alla chiamata? Riuscirai a plasmare una civiltà in grado di superare la prova del tempo?"
 		
-		declaringWar:"La tua contiuna esistenza rappresenta un imbarazzo per tutti i leader del mondo! Farò loro un favore distruggendoti!"
+		declaringWar:"La tua continua esistenza rappresenta un imbarazzo per tutti i leader del mondo! Farò loro un favore distruggendoti!"
 		attacked:"Non hai forse udito le storie sulla potenza e sulla grandezza delle mie armate? Forse, se le vedrai, ci penserai due volte prima di affrontarmi!"
-		defeated:"Canaglia! Che tu sia maledetto! Il mondo ricorderà a lungo l'errore che hai commesso!"
+		defeated:"Canaglia! Che Ahura Mazda ti maledica! Il mondo ricorderà a lungo l'errore che hai commesso!"
 		introduction:"Che la pace scenda su di te! Io sono Dario, il grande re dei re della Persia... ma sono certo che tu già lo sappia."
 		
-		neutralHello:"Good day to you!"
-		neutralLetsHearIt:["Go on.","You said?"]
-		neutralNo:["You are not serious!","Not good enough."]
-		neutralYes:["Good!","Certainly.","Agreed!"]
+		neutralHello:"Buona giornata!"
+		neutralLetsHearIt:["Va' avanti.","Parla."]
+		neutralNo:["È uno scherzo?","Non basta."]
+		neutralYes:["Va bene!","Certamente!","D'accordo!"]
 
-		hateHello:"Ahh... you..."
-		hateLetsHearIt:["I'm listening.","Go on!"]
-		hateNo:["Io dico... no!","Certo che no!"]
+		hateHello:"Ahh... sei tu..."
+		hateLetsHearIt:["Sono tutto orecchi.","Vai avanti!"]
+		hateNo:["Io dico di no!","Certo che no!"]
 		hateYes:["Va bene!","D'accordo."]
 		
-		afterPeace:"Sembra che mi convenga finirla qui..."
-		tradeRequest:"Nella mia infinita misericordia, ti faccio questa offerta. Di certo, sarai d'accordo?"
+		afterPeace:"Sembra che mi convenga finirla qui... Mettiamoci una pietra sopra."
+		tradeRequest:"Nella mia infinita misericordia, ti faccio questa offerta. Di certo, accetterai?"
 				
 		outerColor:[255,0,0],
 		innerColor:[255,255,0],
