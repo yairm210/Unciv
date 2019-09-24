@@ -16,7 +16,7 @@ import java.util.*
 import kotlin.collections.HashSet
 
 
-class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Technology? = null) : PickerScreen() {
+class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldScreen: Boolean = true, centerOnTech: Technology? = null) : PickerScreen() {
 
     private var techNameToButton = HashMap<String, TechButton>()
     private var isFreeTechPick: Boolean = false
@@ -69,7 +69,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
                     topTable.add() // empty cell
 
                 else {
-                    val techButton = TechButton(tech.name,civTech)
+                    val techButton = TechButton(tech.name,civTech,false)
 
                     techNameToButton[tech.name] = techButton
                     techButton.onClick { selectTechnology(tech) }
@@ -93,8 +93,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
             }
 
         setButtonsInfo()
-
-        rightSideButton.setText("Pick a tech".tr())
+        if (!switchfromWorldScreen){
+            rightSideButton.apply {
+                disable()
+                setText("Tech Tree Of [${civInfo.civName}]".tr())
+            }
+        }
+        else rightSideButton.setText("Pick a tech".tr())
         rightSideButton.onClick("paper") {
             if (isFreeTechPick) civTech.getFreeTechnology(selectedTech!!.name)
             else civTech.techsToResearch = tempTechsToResearch
@@ -110,7 +115,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         // and possibly select it to show description,
         // which is very helpful when just discovered and clicking the notification
         val tech = if (centerOnTech != null) centerOnTech else civInfo.tech.currentTechnology()
-        if (tech != null) {
+        if (tech != null && switchfromWorldScreen) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
                 selectTechnology(tech, true)
@@ -148,10 +153,13 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, centerOnTech: Tec
         }
     }
 
-    private fun selectTechnology(tech: Technology?, center: Boolean = false) {
+    private fun selectTechnology(tech: Technology?, center: Boolean = false, switchfromWorldScreen: Boolean = true) {
 
         selectedTech = tech
         descriptionLabel.setText(tech?.description)
+
+        if (!switchfromWorldScreen)
+            return
 
         if(tech==null)
             return
