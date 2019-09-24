@@ -104,7 +104,7 @@ class CivilizationInfo {
     //region pure functions
     fun getDifficulty():Difficulty {
         if (isPlayerCivilization()) return gameInfo.getDifficulty()
-        return GameBasics.Difficulties["Chieftain"]!!
+        return gameInfo.getDifficulty()
     }
 
     fun getTranslatedNation(): Nation {
