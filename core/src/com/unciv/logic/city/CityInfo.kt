@@ -271,10 +271,8 @@ class CityInfo {
         getCenterTile().improvement="City ruins"
     }
 
-    fun annexCity(conqueringCiv: CivilizationInfo) {
-        puppetCity(conqueringCiv)
-
-        if(!conqueringCiv.policies.isAdopted("Police State")) {
+    fun annexCity() {
+        if(!civInfo.policies.isAdopted("Police State")) {
             expansion.cultureStored = 0
             expansion.reset()
         }
@@ -327,7 +325,8 @@ class CityInfo {
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
     fun liberateCity(conqueringCiv: CivilizationInfo) {
         if (foundingCiv == "") { // this should never happen but just in case...
-            annexCity(conqueringCiv)
+            puppetCity(conqueringCiv)
+            annexCity()
             return
         }
 
