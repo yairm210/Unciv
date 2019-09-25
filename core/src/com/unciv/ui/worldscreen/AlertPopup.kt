@@ -72,7 +72,8 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     }).row()
                 }
                 add(TextButton("Annex".tr(), skin).onClick {
-                    city.annexCity(conqueringCiv)
+                    city.puppetCity(conqueringCiv)
+                    city.annexCity()
                     worldScreen.shouldUpdate=true
                     close()
                 }).row()
@@ -82,7 +83,8 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                     close()
                 }).row()
                 add(TextButton("Raze".tr(), skin).onClick {
-                    city.annexCity(conqueringCiv)
+                    city.puppetCity(conqueringCiv)
+                    city.annexCity()
                     city.isBeingRazed = true
                     worldScreen.shouldUpdate=true
                     close()
