@@ -72,7 +72,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
                     val techButton = TechButton(tech.name,civTech,false)
 
                     techNameToButton[tech.name] = techButton
-                    techButton.onClick { selectTechnology(tech) }
+                    techButton.onClick { selectTechnology(tech, false, switchfromWorldScreen) }
                     topTable.add(techButton)
                 }
             }
@@ -115,10 +115,10 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         // and possibly select it to show description,
         // which is very helpful when just discovered and clicking the notification
         val tech = if (centerOnTech != null) centerOnTech else civInfo.tech.currentTechnology()
-        if (tech != null && switchfromWorldScreen) {
+        if (tech != null) {
             // select only if there it doesn't mess up tempTechsToResearch
             if (civInfo.tech.isResearched(tech.name) || civInfo.tech.techsToResearch.size <= 1)
-                selectTechnology(tech, true)
+                selectTechnology(tech, true, switchfromWorldScreen)
             else centerOnTechnology(tech)
         }
 
