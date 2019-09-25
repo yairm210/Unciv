@@ -61,9 +61,10 @@ class CityConstructions {
         val currentConstructionSnapshot = currentConstruction // See below
         var result = currentConstructionSnapshot.tr()
         if (currentConstructionSnapshot!=""
-                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  })
+                && SpecialConstruction.getSpecialConstructions().none { it.name==currentConstructionSnapshot  }) {
             result += ("\r\nCost " + getConstruction(currentConstruction).getProductionCost(cityInfo.civInfo).toString()).tr()
-            result += "\r\n" + turnsToConstruction(currentConstructionSnapshot ) + " {turns}".tr()
+            result += "\r\n" + turnsToConstruction(currentConstructionSnapshot) + " {turns}".tr()
+        }
         return result
     }
 
