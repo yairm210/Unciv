@@ -115,8 +115,11 @@ class CityConstructions {
         else return 0
     }
 
-    fun getRemainingWork(constructionName: String) =
-            getConstruction(constructionName).getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
+    fun getRemainingWork(constructionName: String): Int {
+        val constr = getConstruction(constructionName)
+        if (constr is SpecialConstruction) return 0
+        return constr.getProductionCost(cityInfo.civInfo) - getWorkDone(constructionName)
+    }
 
     fun turnsToConstruction(constructionName: String): Int {
         val workLeft = getRemainingWork(constructionName)
