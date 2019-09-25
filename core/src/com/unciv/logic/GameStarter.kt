@@ -76,6 +76,12 @@ class GameStarter{
             civ.placeUnitNearTile(startingLocation.position, Constants.settler)
             civ.placeUnitNearTile(startingLocation.position, "Warrior")
             civ.placeUnitNearTile(startingLocation.position, "Scout")
+
+            if (!civ.isPlayerCivilization()) {
+                for (unit in gameInfo.getDifficulty().aiFreeUnits) {
+                    civ.placeUnitNearTile(startingLocation.position, unit)
+                }
+            }
         }
 
         return gameInfo

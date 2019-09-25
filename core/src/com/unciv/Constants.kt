@@ -12,6 +12,7 @@ class Constants{
         const val hill = "Hill"
         const val coast = "Coast"
         const val plains = "Plains"
+        const val lakes = "Lakes"
         const val barbarianEncampment = "Barbarian encampment"
         const val ancientRuins = "Ancient ruins"
 

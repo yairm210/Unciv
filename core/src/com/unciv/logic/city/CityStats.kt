@@ -107,22 +107,6 @@ class CityStats {
         return stats
     }
 
-    private fun getStatPercentBonusesFromDifficulty(): Stats {
-        val stats = Stats()
-
-        val civ = cityInfo.civInfo
-        if (!civ.isPlayerCivilization()) {
-            val modifier = civ.gameInfo.getCurrentPlayerCivilization().getDifficulty().aiYieldModifier
-            stats.production += modifier
-            stats.science += modifier
-            stats.food += modifier
-            stats.gold += modifier
-            stats.culture += modifier
-        }
-
-        return stats
-    }
-
     private fun getStatsFromNationUnique(): Stats {
         val stats = Stats()
 
@@ -392,7 +376,6 @@ class CityStats {
         newStatPercentBonusList["Railroad"]=getStatPercentBonusesFromRailroad()
         newStatPercentBonusList["Marble"]=getStatPercentBonusesFromMarble()
         newStatPercentBonusList["Computers"]=getStatPercentBonusesFromComputers()
-        newStatPercentBonusList["Difficulty"]=getStatPercentBonusesFromDifficulty()
         newStatPercentBonusList["National ability"]=getStatPercentBonusesFromNationUnique()
         newStatPercentBonusList["Puppet City"]=getStatPercentBonusesFromPuppetCity()
 
@@ -470,8 +453,11 @@ class CityStats {
         newFinalStatList["Policies"]!!.food += foodFromGrowthBonuses
 
         // Same here - will have a different UI display.
-        val buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts() // this is AFTER the bonus calculation!
-        newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance }
+        var buildingsMaintenance = cityInfo.cityConstructions.getMaintenanceCosts().toFloat() // this is AFTER the bonus calculation!
+        if (!cityInfo.civInfo.isPlayerCivilization()) {
+            buildingsMaintenance *= cityInfo.civInfo.gameInfo.getDifficulty().aiBuildingMaintenanceModifier
+        }
+        newFinalStatList["Maintenance"] = Stats().apply { gold -= buildingsMaintenance.toInt() }
 
         if (cityInfo.resistanceCounter > 0)
             newFinalStatList.clear()  // NOPE

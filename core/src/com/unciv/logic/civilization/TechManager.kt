@@ -42,7 +42,8 @@ class TechManager {
 
     fun costOfTech(techName: String): Int {
         var techCost = GameBasics.Technologies[techName]!!.cost.toFloat()
-        techCost *= civInfo.getDifficulty().researchCostModifier
+        if (civInfo.isPlayerCivilization())
+            techCost *= civInfo.getDifficulty().researchCostModifier
         techCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
         techCost *= 1 + (civInfo.cities.size -1 ) * 0.02f // each city increases tech cost by 2%, as per https://civilization.fandom.com/wiki/Science_(Civ5)
         return techCost.toInt()
