@@ -228,7 +228,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
         if (!distanceToTiles.containsKey(destination))
             throw YouCantGetThereFromHereException("$unit can't get from ${unit.currentTile.position} to ${destination.position}.")
 
-        if(destination.isCityCenter() && destination.getOwner()!=unit.civInfo)
+        if(destination.isCityCenter() && destination.getOwner()!=unit.civInfo && !destination.getCity()!!.hasJustBeenConquered)
             throw Exception("This is an enemy city, you can't go here!")
 
         unit.currentMovement -= distanceToTiles[destination]!!.totalDistance
@@ -290,7 +290,7 @@ class UnitMovementAlgorithms(val unit:MapUnit) {
 
         val tileOwner = tile.getOwner()
         if(tileOwner!=null && tileOwner.civName!=unit.owner) {
-            if (tile.isCityCenter()) return false
+            if (tile.isCityCenter() && !tile.getCity()!!.hasJustBeenConquered) return false
             if (!unit.civInfo.canEnterTiles(tileOwner)
                     && !(unit.civInfo.isPlayerCivilization() && tileOwner.isCityState())) return false
             // AIs won't enter city-state's border.
