@@ -279,7 +279,6 @@ class CityInfo {
         }
 
         isPuppet=false
-
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
@@ -342,7 +341,7 @@ class CityInfo {
         reassignWorkers()
 
         if(foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
-
+        isPuppet = false
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
