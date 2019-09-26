@@ -26,6 +26,7 @@ class CityInfo {
     @Transient val range = 2
     @Transient lateinit var tileMap: TileMap
     @Transient lateinit var tilesInRange:HashSet<TileInfo>
+    @Transient var hasJustBeenConquered = false  // this is so that military units can enter the city, even before we decide what to do with it
 
     var location: Vector2 = Vector2.Zero
     var name: String = ""
@@ -271,10 +272,8 @@ class CityInfo {
         getCenterTile().improvement="City ruins"
     }
 
-    fun annexCity(conqueringCiv: CivilizationInfo) {
-        puppetCity(conqueringCiv)
-
-        if(!conqueringCiv.policies.isAdopted("Police State")) {
+    fun annexCity() {
+        if(!civInfo.policies.isAdopted("Police State")) {
             expansion.cultureStored = 0
             expansion.reset()
         }
@@ -327,7 +326,8 @@ class CityInfo {
     /* Liberating is returning a city to its founder - makes you LOSE warmongering points **/
     fun liberateCity(conqueringCiv: CivilizationInfo) {
         if (foundingCiv == "") { // this should never happen but just in case...
-            annexCity(conqueringCiv)
+            puppetCity(conqueringCiv)
+            annexCity()
             return
         }
 
@@ -367,6 +367,7 @@ class CityInfo {
         civInfo.cities = civInfo.cities.toMutableList().apply { remove(this@CityInfo) }
         newCivInfo.cities = newCivInfo.cities.toMutableList().apply { add(this@CityInfo) }
         civInfo = newCivInfo
+        hasJustBeenConquered=false
 
         // now that the tiles have changed, we need to reassign population
         workedTiles.filterNot { tiles.contains(it) }

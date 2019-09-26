@@ -168,9 +168,7 @@ class CityScreen(internal val city: CityInfo) : CameraStageBaseScreen() {
             val annexCityButton = TextButton("Annex city".tr(), skin)
             annexCityButton.labelCell.pad(10f)
             annexCityButton.onClick {
-                city.isPuppet=false
-                city.isBeingRazed=false
-                city.resistanceCounter = city.population.population
+                city.annexCity()
                 update()
             }
             razeCityButtonHolder.add(annexCityButton).colspan(cityPickerTable.columns)
