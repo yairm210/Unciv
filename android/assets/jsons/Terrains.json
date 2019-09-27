@@ -115,6 +115,7 @@
 		name:"Oasis",
 		type:"TerrainFeature",
 		food:3,
+		gold:1,
 		movementCost:1,
 		unbuildable:true,
 		defenceBonus: -0.1,
