@@ -50,7 +50,7 @@
 		cost: 40,
 		hurryCostModifier:20,
 		obsoleteTech:"Metal Casting",
-		uniques:["Combat Bonus in Forest/Jungle 33%","Woodsmah","Heals 25 damage if it kills an Unit"],
+		uniques:["+33% combat bonus in Forest/Jungle","Woodsmah","Heals 25 damage if it kills an Unit"],
 		upgradesTo:"Swordsman",
 		attackSound:"nonmetalhit"
 		//Aztec unique unit, moves faster and fights better in Forest and Jungle. He also heals 25 if he kills an enemy.
@@ -320,21 +320,6 @@
 		attackSound:"metalhit"
 	},
 	{
-		name:"Mohawk Warrior",
-		unitType:"Melee",
-		replaces:"Swordsman",
-		uniqueTo:"Iroquois",
-		movement:2,
-		strength:14,
-		cost: 75,
-		requiredTech:"Iron Working",
-		upgradesTo:"Longswordsman",
-		obsoleteTech:"Steel",
-		uniques:["+33% combat bonus in Forest/Jungle"]
-		hurryCostModifier:20,
-		attackSound:"metalhit"
-	},
-	{
 		name:"Legion",
 		unitType:"Melee",
 		uniqueTo:"Rome",
@@ -362,7 +347,7 @@
 		upgradesTo:"Longswordsman",
 		obsoleteTech:"Gunpowder",
 		hurryCostModifier:20,
-		uniques:["Combat Bonus in Forest/Jungle 33%"],
+		uniques:["+33% combat bonus in Forest/Jungle"],
 		attackSound:"metalhit"
 	},
 	{

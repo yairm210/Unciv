@@ -798,12 +798,14 @@
 		Italian:"Casa Lunga"
 		French:"Longère"
 		Polish:"Długi dom"
+		Simplified_Chinese:"长屋"
 	}
 	
 	"+1 Production from each worked Forest tile":{	
 		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
 		French:"+1 production pour chaque cases de forêt exploitées par la ville."
 		Polish:"+1 do produkcji za każde pracujące pole lasu"
+		Simplified_Chinese:"每个工作的森林地块+1产能"
 	}
 
 	"Forge":{	
@@ -866,7 +868,7 @@
 		Polish:"Uniwersytet"
 	}
 
-	"Jungles provide +2 science":{
+	"+2 Science from each worked Jungle tile":{
 		Italian:"+2 Scienza dalle Giungle"
 		Russian:"Джунгли обеспечивают +2 науки"
 		French:"Jungles fournissent +2 science"
@@ -874,7 +876,7 @@
 		German:"Dschungel produziert +2 Wissenschaft"
 		Dutch:"Oerwouden leveren +2 Wetenschap"
 		Spanish:"Las selvas proporcionan +2 ciencia"
-		Simplified_Chinese:"丛林+2科研"
+		Simplified_Chinese:"每个工作的丛林地块+2科研"
 		Portuguese:"Selvas proporcionam +2 ciência"
 		Polish:"+2 nauki z pól dżungli"
 	}
@@ -1107,6 +1109,7 @@
 		Italian:"Corte del Satrapo"
 		French:"Cour de Satrape"
 		Polish:"Dwór satrapy"
+		Simplified_Chinese:"总督府"
 	}
 
 	"Forbidden Palace":{	
