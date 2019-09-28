@@ -265,6 +265,7 @@
 		German:"Gott"
 	}
 	
+	//Civilization select
 	
 	"AI":{
 		Italian:"IA"
@@ -339,6 +340,14 @@
 		Italian:"Copia ID Partita"
 		Simplified_Chinese:"复制游戏Id"
 		Russian:"Скопировать ID игры"
+	}
+	
+	"Set current user":{
+		Italian:"Imposta utente attuale"
+	}
+	
+	"Player ID from clipboard":{
+		Italian:"Copia ID giocatore dagli appunti"
 	}
 	
 	/// tutorials for multiplayer
