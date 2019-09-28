@@ -800,8 +800,8 @@
 		Polish:"Długi dom"
 	}
 	
-	"+1 Production from each worked Forest tile":{	
-		Italian:"+1 Produzione da ogni casella di Foresta sfruttata dalla città"
+	"Forests provide +1 production":{	
+		Italian:"+1 Produzione dalle Foreste"
 		French:"+1 production pour chaque cases de forêt exploitées par la ville."
 		Polish:"+1 do produkcji za każde pracujące pole lasu"
 	}
