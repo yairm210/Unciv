@@ -81,7 +81,8 @@ class BattleDamage{
                 modifiers["Great General"] = greatGeneralModifier
             }
 
-            if(combatant.getCivInfo().nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength")
+            if(combatant.getCivInfo().nation.unique=="Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength"
+                    && combatant.getCivInfo().goldenAges.isGoldenAge())
                 modifiers["Golden Age"] = 0.1f
 
         }

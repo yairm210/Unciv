@@ -77,7 +77,7 @@ class CityExpansionManager {
             relinquishOwnership(tile)
 
         cityInfo.getCenterTile().getTilesInDistance(1)
-                .filter { it.getCity()==null || it.getCity()!!.civInfo==cityInfo.civInfo } // can't take ownership of owned tiles
+                .filter { it.getCity()==null } // can't take ownership of owned tiles
                 .forEach { takeOwnership(it) }
     }
 
