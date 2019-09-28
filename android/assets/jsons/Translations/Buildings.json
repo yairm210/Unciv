@@ -81,6 +81,7 @@
 
 	"'Time crumbles things; everything grows old and is forgotten under the power of time' - Aristotle":{
 		Italian:"'Il tempo sgretola le cose; davanti al suo potere tutto invecchia e viene dimenticato.' - Aristotele"
+		Simplified_Chinese:"“时间能粉碎一切；所有事物终将在时流中衰老并被遗忘。”——亚里士多德"
 	}
 
 	/*
@@ -153,6 +154,7 @@
 
 	"'Libraries are as the shrine where all the relics of the ancient saints, full of true virtue, and all that without delusion or imposture are preserved and reposed.' - Sir Francis Bacon":{
 		Italian:"'Le biblioteche sono come una cappella in cui sono conservate e protette tutte le reliquie dei santi antichi, colme di vera virtù, e tutto ciò che è privo di illusione e inganno' - Sir Francis Bacon"
+		Simplified_Chinese:"“图书馆就像是供奉古代圣哲全部遗物的圣坛，充满了真正的美德，保护着一切非谬误无伪装的事物在其中安眠。”——弗朗西斯·培根爵士"
 	}
 
 	"Circus":{	
@@ -201,6 +203,7 @@
 
 	"'O, let not the pains of death which come upon thee enter into my body. I am the god Tem, and I am the foremost part of the sky, and the power which protecteth me is that which is with all the gods forever.'  - The Book of the Dead, translated by Sir Ernest Alfred Wallis Budge":{
 		Italian:"'Oh, non lasciare che i dolori della morte che piombano su di te entrino nel mio corpo. Io sono il dio Tem, e risiedo nella parte più importante del cielo, e il potere che mi protegge è quello che si accompagna per sempre a tutti gli dèi.' - Il Libro dei Morti, traduzione di Sir Ernest Alfred Wallis Budge"
+		Simplified_Chinese:"“哦，别让你所受的死亡痛苦进入我的身体。我是创世神泰姆，我处在天界的最高层，神力护佑着我和所有其他神灵直到永远。”——“死者之书”译文，欧内斯特·阿尔弗雷德·沃利斯·巴吉爵士（英国考古学家）"
 	}
 
 	"Worker construction increased 25%":{ //typo? Removed one instance of "Worker construction increased"
@@ -273,6 +276,7 @@
 
 	"'Why man, he doth bestride the narrow world like a colossus, and we petty men walk under his huge legs, and peep about to find ourselves dishonorable graves.' - William Shakespeare, Julius Caesar":{
 		Italian:"'Già, lui cavalca questo stretto mondo ormai come un colosso; e noi, gli omuncoli, passiamo sotto le sue gambe enormi e ci scrutiamo intorno, per ritrovarci tutti quanti siamo come tanti sepolcri senza onore' - William Shakespeare: Giulio Cesare"
+		Simplified_Chinese:"“嘿，老兄，他像一个巨人似的跨越这狭隘的世界；我们这些渺小的凡人一个个在他粗大的两腿下行走，四处张望着，替自己寻找不光荣的坟墓。”——威廉·莎士比亚：《尤利乌斯·恺撒》"
 	}
 
 	"+1 gold from worked water tiles in city":{
@@ -328,6 +332,7 @@
 
 	"'The ancient Oracle said that I was the wisest of all the Greeks. It is because I alone, of all the Greeks, know that I know nothing'  - Socrates":{
 		Italian:"'L'antico Oracolo ha detto che sono il più saggio di tutti i greci. Questo perché io solo, di tutti i greci, so di non sapere nulla.' - Socrate"
+		Simplified_Chinese:"“先知的神谕曾说我是全希腊最聪明的人。因为我是所有希腊人中唯一知道自己一无所知的人。”——苏格拉底"
 	}
 
 	"Free Social Policy":{
@@ -369,6 +374,7 @@
 
 	"'The katun is established at Chichen Itza. The settlement of the Itza shall take place there. The quetzal shall come, the green bird shall come. Ah Kantenal shall come. It is the word of God. The Itza shall come.'  - The Books of Chilam Balam":{
 		Italian:"'Il katun è stabilito a Chichèn Itzà. L'insediamento degli Itzà avrà luogo. Arriverà il quetzal, arriverà l'uccello verde. Ah Kantenal arriverà. È la parola di Dio. Gli Itzà arriveranno. - I Libri di Chilam Balam"
+		Simplified_Chinese:"“这个卡吞建立在奇琴伊察。伊察将在那里定居。格查尔鸟将会到来，绿色的鸟将会到来。阿·坎特纳尔将会到来。这是神的预言。伊察将会到来。”——《奇兰巴兰之书》（玛雅人的预言书）"
 	}
 
 	"Golden Age length increases +50%":{
@@ -431,6 +437,7 @@
 
 	"'They that go down to the sea in ships, that do business in great waters; these see the works of the Lord, and his wonders in the deep.' - The Bible, Psalms 107:23-24":{
 		Italian:"'Ecco quelli che scendon nel mare su navi, che trafficano sulle grandi acque; essi veggono le opere dell'Eterno e le sue meraviglie nell'abisso.' - Salmi 107:23-24"
+		Simplified_Chinese:"“在大海上坐船，在大水里经理事务的；他们看到耶和华的作为，并他在深水中的奇事。”——圣经·诗篇 107:23-24"
 	}
 
 	"All military naval units receive +1 movement and +1 sight":{
@@ -449,16 +456,19 @@
 		Italian:"Palazzo di giustizia"
 		French:"Palais de justice"
 		Polish:"Sąd"
+		Simplified_Chinese:"法庭"
 	}
 		
 	"Remove extra unhappiness from annexed cities":{
 		Italian:"Elimina l'Infelicità extra proveniente dalle Città occupate"
 		French:"Enlève le mécontentement supplémentaire des villes occupées"
 		Polish:"Usuwa niezadowolenie z okupowanych miast"
+		Simplified_Chinese:"消除来自被占领城市的额外不满"
 	}
 		
 	"Can only be built in annexed cities":{
 		Italian:"Costruibile solamente nelle città annesse"
+		Simplified_Chinese:"只能建造在被占领城市"
 	}
 
 	"Stable":{	
@@ -508,6 +518,7 @@
 
 	"'I think that if ever a mortal heard the word of God it would be in a garden at the cool of the day.'  - F. Frankfort Moore":{
 		Italian:"'Penso che se mai un mortale ha sentito la voce di Dio, sarà stato in un giardino sul far della sera.' - F. Frankfort Moore"
+		Simplified_Chinese:"“我相信如果有凡人能听到神谕，那一定是在天气凉爽时的花园之中。”——弗兰克·法兰克福·摩尔（英国作家）"
 	}
 
 	/*
@@ -592,6 +603,7 @@
 
 	"'Regard your soldiers as your children, and they will follow you into the deepest valleys; look on them as your own beloved sons, and they will stand by you even unto death.'  - Sun Tzu":{
 		Italian:"'Trattate i soldati come figli, e vi seguiranno nelle valli più profonde; considerateli la vostra amata progenie, e resteranno accanto a voi fino alla morte.' - Sun Tzu"
+		Simplified_Chinese:"“视卒如婴儿，故可以与之赴深溪；视卒如爱子，故可与之俱死。”——孙子"
 	}
 	
 	"Market":{	
@@ -663,8 +675,9 @@
 		Polish:"Notre Dame"
 	}
 
-	"Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo":{
+	"'Architecture has recorded the great ideas of the human race. Not only every religious symbol, but every human thought has its page in that vast book.'  - Victor Hugo":{
 		Italian:"'L'architettura ha registrato le più grandi idee della razza umana. Non solo ogni simbolo religioso, ma ogni pensiero umano ha la sua pagina in quel vasto libro.' - Victor Hugo"
+		Simplified_Chinese:"“建筑记录了人类所有的伟大理念：不仅包括每一种宗教符号，还包括人类思想史的每一页。”——维克多·雨果"
 	}
 	
 	"Hagia Sophia":{
@@ -681,6 +694,7 @@
 
 	"'For it soars to a height to match the sky, and as if surging up from among the other buildings it stands on high and looks down upon the remainder of the city, adorning it, because it is a part of it, but glorying in its own beauty'  - Procopius, De Aedificis":{
 		Italian:"'Perché si erge così alta da toccare il cielo, e come fluttuando sugli altri edifici guarda dall'alto in basso il resto della città, abbellendola, perché fa parte di essa, ma gloriandosi della propria bellezza.' - Procopio, De Aedificis (Sugli edifici)"
+		Simplified_Chinese:"“它高耸入云，从城市中矗立而起，俯视周遭；它是城中之物，但有超俗之美。”——《论建筑》，普罗科匹厄斯（拜占庭学者）"
 	}
 
 	"+33% great person generation in all cities":{
@@ -722,6 +736,7 @@
 
 	"'Few romances can ever surpass that of the granite citadel on top of the beetling precipices of Machu Picchu, the crown of Inca Land.'  - Hiram Bingham":{
 		Italian:"'Pochi racconti fantastici possono sorpassare quello della cittadella di granito sospesa in cima ai precipizi, Machu Picchu, la corona delle terre degli Inca.' - Hiram Bingham"
+		Simplified_Chinese:"“很少有能超越这座建立在马丘比丘顶峰峭壁上的石头城塞的浪漫，它是印加的皇冠。”——海勒姆·宾厄姆（美国探险家）"
 	}
 
 	"Gold from all trade routes +25%":{
@@ -772,6 +787,7 @@
 
 	"'The art of war teaches us to rely not on the likelihood of the enemy's not attacking, but rather on the fact that we have made our position unassailable.'  - Sun Tzu":{
 		Italian:"'L'arte della guerra ci insegna a non affidarci alla possibilità che il nemico... non ci attacchi, ma piuttosto alla certezza di aver reso la nostra posizione inattaccabile.' - Sun Tzu"
+		Simplified_Chinese:"“故用兵之法：无恃其不来，恃吾有以待也。无恃其不攻，恃吾有所不可攻也。”——孙子"
 	}
 
 	"Enemy land units must spend 1 extra movement point when inside your territory (obsolete upon Dynamite)":{
@@ -932,6 +948,7 @@
 
 	"'Justice is an unassailable fortress, built on the brow of a mountain which cannot be overthrown by the violence of torrents, nor demolished by the force of armies.'  - Joseph Addison":{
 		Italian:"'La giustizia è una fortezza inespugnabile, costruita sulla cresta di una montagna che non può essere rovesciata dalla violenza dei torrenti né demolita dalla forza degli eserciti.' - Joseph Addison"
+		Simplified_Chinese:"“正义是一座牢不可破的堡垒，屹立在山巅，既不为肆虐的洪流所冲倒，也不为军队的武力所毁坏。”——约瑟夫·艾迪生（英国散文家）"
 	}
 
 	"All newly-trained melee, mounted, and armored units in this city receive the Drill I promotion":{
@@ -957,6 +974,7 @@
 
 	"'The temple is like no other building in the world. It has towers and decoration and all the refinements which the human genius can conceive of.'  - Antonio da Magdalena":{
 		Italian:"'Il tempio non ha eguali nel mondo. Ha torri e decorazioni e tutti gli abbellimenti che il genio dell'uomo può concepire.' - Antonio da Magdalena"
+		Simplified_Chinese:"“这座寺庙不同于世界上的其他任何建筑。它拥有人类的天才们能够构想出的最精致的高塔和装饰。”——安东尼奥·达·马格达连那（葡萄牙传教士，最早游历吴哥窟的西方人）"
 	}
 
 	"Cost of acquiring new tiles reduced by 25%":{
@@ -986,6 +1004,7 @@
 
 	"'Things always seem fairer when we look back at them, and it is out of that inaccessible tower of the past that Longing leans and beckons.'  - James Russell Lowell":{
 		Italian:"'Le cose sembrano sempre più belle quando ci voltiamo indietro per guardarle, ed è dall'inaccessibile torre del passato che la nostalgia si protende e chiama.' - James Russel Lowell"
+		Simplified_Chinese:"“我们所失去的总是要在回望之时才更知道它的美好，而那曾经不可一世的高塔如今是多么的渴望能够有所依靠。”——詹姆斯·罗素·洛威尔（美国诗人）"
 	}
 
 	"Free great scientist appears":{
@@ -1062,6 +1081,7 @@
 
 	"'I live and love in God's peculiar light.' - Michelangelo Buonarroti":{
 		Italian:"'Vivo e amo sotto la peculiare luce di Dio.' - Michelangelo Buonarroti"
+		Simplified_Chinese:"“我在上帝的圣光之下爱与生活。”——米开朗基罗·博纳洛第"
 	}
 
 	"Culture in all cities increased by 25%":{
@@ -1126,6 +1146,7 @@
 
 	"'Most of us can, as we choose, make of this world either a palace or a prison' - John Lubbock":{
 		Italian:"'La maggior parte di noi può, a sua volontà, fare di questo mondo un palazzo o una prigione.' - John Lubbock"
+		Simplified_Chinese:"“我们中的大多数都能够自己做出选择，是把这个世界变成一座宫殿还是一座监狱。”——约翰·鲁伯克（英国学者）"
 	}
 
 	"Unhappiness from population decreased by 10%":{
@@ -1166,6 +1187,7 @@
 
 	"'Don't clap too hard - it's a very old building.' - John Osbourne":{
 		Italian:"'Non applaudite troppo forte - è un edificio molto vecchio.' - John Osborne"
+		Simplified_Chinese:"“别拍那么重——这是座非常古老的建筑。”——约翰·奥斯本（英国剧作家）"
 	}
 
 	"Free Great Person":{
@@ -1202,6 +1224,7 @@
 
 	"'Bushido is realized in the presence of death. This means choosing death whenever there is a choice between life and death. There is no other reasoning.'  - Yamamoto Tsunetomo":{
 		Italian:"'Il Bushido si realizza in presenza della morte. Significa, ogni volta che c'è una scelta tra la vita e la morte, scegliere la seconda. Non c'è alcun altro ragionamento' - Yamamoto Tsunetomo"
+		Simplified_Chinese:"“所谓武士道，就是看透死亡。于生死两难之际，应果断选择死，而不需要任何原因。”——山本常朝（日本江户时代武士）"
 	}
 
 	"+15% combat strength for units fighting in friendly territory":{
@@ -1227,6 +1250,7 @@
 
 	"'The Taj Mahal rises above the banks of the river like a solitary tear suspended on the cheek of time.'  - Rabindranath Tagore":{
 		Italian:"'Il Taj Mahal sorge sulle rive del fiume come una lacrima solitaria sospesa sulla guancia del tempo.' - Rabindranath Tagore"
+		Simplified_Chinese:"“泰姬陵伫立在河岸，如同时间的脸颊上一滴孤单的泪水。”——罗宾德拉纳特·泰戈尔"
 	}
 	
 	"Empire enters golden age":{
@@ -1300,6 +1324,7 @@
 
 	"'Every genuine work of art has as much reason for being as the earth and the sun'  - Ralph Waldo Emerson":{
 		Italian:"'Ogni opera d'arte genuina ha tanta ragione d'esistere quanto la terra e il sole.' - Ralph Waldo Emerson"
+		Simplified_Chinese:"“每一件伟大的艺术品都应如日月般长存。”——拉尔夫·沃尔多·爱默生"
 	}
 
 	"Free Great Artist Appears":{
@@ -1422,6 +1447,7 @@
 
 	"'To achieve great things, two things are needed: a plan, and not quite enough time.'  - Leonard Bernstein":{
 		Italian:"'Per ottenere grandi risultati servono due cose: un piano e un sacco di tempo.' - Leonard Bernstein"
+		Simplified_Chinese:"“为了完成伟大的工作，有两样东西是必须的：一个计划，以及不多的时间。”——伦纳德·伯恩斯坦（美国音乐家）"
 	}
 
 	"-15% to purchasing items in cities":{
@@ -1446,6 +1472,7 @@
 
 	"'Come to me, all who labor and are heavy burdened, and I will give you rest.'  - New Testament, Matthew 11:28":{
 		Italian:"'Venite a me, voi tutti che siete affaticati e oppressi, e io vi ristorerò.' - Matteo 11:28"
+		Simplified_Chinese:"“凡劳苦担重担的人，可以到我这里来，我就使你们得安息。”——圣经·马太福音 11:28"
 	}
 
 	"Culture cost of adopting new Policies reduced by 10%":{
@@ -1473,6 +1500,7 @@
 
 	"'The Law is a fortress on a hill that armies cannot take or floods wash away.'   –- The Prophet Muhammed":{
 		Italian:"'La Legge è una fortezza su una collina che gli eserciti non possono catturare e le inondazioni non possono spazzare via. - Il profeta Maometto"
+		Simplified_Chinese:"“律法当如山巅之城：无论是敌人还是洪水都无法征服。”——先知穆罕默德"
 	}
 
 	"Defensive buildings in all cities are 25% more effective":{
@@ -1493,6 +1521,7 @@
 
 	"'...the location is one of the most beautiful to be found, holy and unapproachable, a worthy temple for the divine friend who has brought salvation and true blessing to the world.'  - King Ludwig II of Bavaria":{
 		Italian:"'...la posizione è una delle più belle che si possano trovare, sacra e inaccessibile, degno tempio per l'amico divino che ha portato salvezza e vera benedizione a tutto il mondo.' - Re Ludovico II di Baviera"
+		Simplified_Chinese:"“……选址是所能找到的当中风景最美丽的，圣洁而不可亵渎，一座配得起神圣朋友的圣所，他们给这个世界带来超度和真正的赐福。”——巴伐利亚国王路德维希二世"
 	}
 
 	"+1 happiness, +2 culture and +3 gold from every Castle":{
@@ -1541,6 +1570,7 @@
 
 	"'We live only to discover beauty, all else is a form of waiting'  - Kahlil Gibran":{
 		Italian:"'Chi può pensare che, siccome siamo ingegneri, la bellezza non ci preoccupi, o che non cerchiamo di costruire strutture belle oltre che solide e durature?' - Gustave Alexandre Eiffel"
+		Simplified_Chinese:"“我们活着只为去发现美。其他一切都是某种形式的等待。”——哈里利·纪伯伦"
 	}
 
 	"Provides 1 happiness per social policy":{
@@ -1567,6 +1597,7 @@
 
 	"'Give me your tired, your poor, your huddled masses yearning to breathe free, the wretched refuse of your teeming shore. Send these, the homeless, tempest-tossed to me, I lift my lamp beside the golden door!'  - Emma Lazarus":{
 		Italian:"'Datemi coloro che sono esausti, i poveri / Le folle accalcate che bramano di respirare libere, / I miseri rifiuti delle vostre coste brulicanti. / Mandatemi chi non ha casa, squassato dalle tempeste, / Sollevo la fiaccola accanto alla porta d'oro!' - Emma Lazarus"
+		Simplified_Chinese:"“给我你们的疲乏，你们的贫困，拥挤在旅途渴望自由呼吸的人们，被彼岸无情抛弃颠沛流离的惊魂。把这些无家可归，饱尝风雨的苦难者全都给我，我伫立在金色的大门旁高举起灯火！”——艾玛·拉扎路斯（美国诗人）"
 	}
 
 	"+1 Production from specialists":{
@@ -1673,6 +1704,7 @@
 
 	"'Those who lose dreaming are lost.'  - Australian Aboriginal saying":{
 		Italian:"'Quelli che perdono i sogni sono perduti.' - Massima degli aborigeni australiani"
+		Simplified_Chinese:"“没有梦想的人，人生也是迷茫的。”——澳大利亚土著谚语"
 	}
 
 	/*
@@ -1715,6 +1747,7 @@
 
 	"'In preparing for battle I have always found that plans are useless, but planning is indispensable.'  - Dwight D. Eisenhower":{
 		Italian:"'Preparandomi alla battaglia ho sempre constatato che i piani sono inutili, ma la pianificazione è indispensabile.' - Dwight D. Eisenhower"
+		Simplified_Chinese:"“在准备作战时，我常常发现定好的计划没有用处，但计划的过程仍必不可少。”——德怀特·戴维·艾森豪威尔"
 	}
 
 	"Gold cost of upgrading military units reduced by 33%":{
@@ -1814,6 +1847,7 @@
 
 	"'The wonder is, not that the field of stars is so vast, but that man has measured it.'  - Anatole France":{
 		Italian:"'La meraviglia non sta nella vastità del campo di stelle, ma nel fatto che l'uomo lo abbia misurato.' - Anatole France"
+		Simplified_Chinese:"“奇迹的不是那片星域如此辽阔，而是人类竟然成功测量了它。”——阿纳托尔·法郎士（法国小说家）"
 	}
 
 	"2 free great scientists appear":{
