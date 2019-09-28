@@ -18,8 +18,8 @@ class MapEditorScreen(): CameraStageBaseScreen(){
     var tileMap = TileMap(GameParameters())
     var mapName = "My first map"
     lateinit var mapHolder: TileGroupMap<TileGroup>
-    val tileEditorOptions = TileEditorOptionsTable(this)
-    val showHideEditorOptionsButton = TextButton(">",skin)
+    private val tileEditorOptions = TileEditorOptionsTable(this)
+    private val showHideEditorOptionsButton = TextButton(">",skin)
 
     constructor(mapNameToLoad:String?):this(){
         var mapToLoad = mapNameToLoad
