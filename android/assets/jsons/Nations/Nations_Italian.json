@@ -48,7 +48,7 @@
 		declaringWar:"Sei sulla mia strada, e pertanto devo distruggerti."
 		attacked:"Ad essere onesto, mi sono stancato di starmene impalato e di riposare sugli allori. Vieni, le mie armate ti accoglieranno a braccia aperte!"
 		defeated:"Così come in fretta era iniziata, così ora la mia lunga marcia giunge alla fine."
-		introduction:"Benvenuto, straniero! Sono Alexandros, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
+		introduction:"Benvenuto, straniero! Sono Alexandros, erede di Eracle, figlio di re e nipote degli dei! Cerco amici gagliardi o nemici degni della mia lama. A quale dei due gruppi appartieni?"
 		
 		neutralHello:"Saluti..."
 		neutralLetsHearIt:["Ti ascolto.","Avanti.","Sì?","Parla."]
@@ -65,10 +65,8 @@
 		
 		outerColor:[181, 232, 232],
 		innerColor:[68,142,249],
-		/*
 		uniqueName:"Lega Ellenica",
 		unique:"L'Influenza delle Città-Stato cala il doppio più lentamente e cresce il doppio rispetto al normale.",
-		*/
 		cities:["Atene","Sparta","Corinto","Argo","Cnosso","Micene","Farsalo","Efeso","Alicarnasso","Rodi",
 			"Eretria","Pergamo","Mileto","Megara","Focea","Sicyon","Tirinto","Samo","Mitilene","Chio",
 			"Paros","Ellis","Siracusa","Eracleia","Gortyn","Chalkis","Pilo","Pella","Naxos"]
@@ -85,7 +83,7 @@
 		declaringWar:"Non ti permetterò più di infastidirmi. Preparati a incontrare Yama."
 		attacked:"Folle! Ti costringerò a guardare il tuo popolo venire massacrato!"
 		defeated:"Ti sei dimostrato un avversario astuto e competente. Mi congratulo per la tua vittoria."
-		introduction:"Saluti! Sono l'imperatrice della Cina Wu Zetian. La Cina desidera solo una coesistenza pacifica e un commercio equo, ma risponderà con la forza a ogni aggressione. Spero che condividiate la nostra visione."
+		introduction:"Saluti! Sono l'imperatrice della Cina, Wu Zetian. La Cina desidera solo una coesistenza pacifica e un commercio equo, ma risponderà con la forza a ogni aggressione. Spero che condividiate la nostra visione."
 		
 		neutralHello:"Bella giornata, oggi, vero?"
 		neutralLetsHearIt:["Continua.","Ebbene?","Dunque?"]
@@ -265,7 +263,7 @@
 		declaringWar:"Il mio tesoro va scarseggiando e i miei soldati si stanno spazientendo... <sigh> ...pertanto, credo proprio che dovrò muoverti guerra. Alea jacta eat - il dado è tratto!"
 		attacked:"La tua arroganza sarà la tua rovina! Nessun potere, per quanto prode o forte, può sconfiggere Roma!"
 		defeated:"Gli dei hanno privato Roma del loro favore. Siamo stati sconfitti."
-		introduction:"Ave. Sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei il benvenuto."
+		introduction:"Ave. Sono Augusto, Princeps, Imperator e Pontifex Maximus di Roma. Se sei amico di Roma, sei il benvenuto, ma sappi che Roma è mortale contro i suoi nemici."
 		
 		neutralHello:"Saluti."
 		neutralLetsHearIt:["Comincia pure.","Continua."]
@@ -300,7 +298,7 @@
 		declaringWar:"Invero, è un peccato che dobbiamo passare alle maniere forti... non è tradizione per un re uccidere un altro re, né per un regno uccidere un altro regno."
 		attacked:"Ti avverto almeno di non farti un'abitudine di spargere sangue. Il sangue non dorme mai."
 		defeated:"Hai vinto. Complimenti. Ora il palazzo è nelle tue mani. Ti prego di prenderti cura del mio pavone."
-		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli Arabi. Vieni, raccontami del tuo impero."
+		introduction:"Salve, straniero. Sono Harun Al-Rashid, Califfo degli Arabi. Vieni ad ammirare la sontuosità del mio palazzo, e parlami del tuo impero."
 		
 		neutralHello:"Pace a te."
 		neutralLetsHearIt:["Cos'é questo?","Cosa stavi dicendo?"]
@@ -371,7 +369,7 @@
 		declaringWar:"Come samurai siamo gente onesta, e noi troviamo onesto volerti esprimere la nostra intenzione di cancellarti dalla faccia della terra con questo messaggio."
 		attacked:"Fatti pure avanti! Il kamikaze (vento divino) ci proteggerà, e tu cadrai, come altri prima di te!"
 		defeated:"Poni fine al disonore che è caduto sulla mia famiglia... sul mio popolo."
-		introduction:"Io sono Oda Nobunaga, capo del grande clan Oda. Mi auguro una relazione giusta e leale nei vostri confronti."
+		introduction:"In verità, il cielo ci ha rivolto il suo sorriso conducendoci alla vostra augusta presenza. Io sono Oda Nobunaga, capo del grande clan Oda. Mi auguro una relazione giusta ed equa tra i nostri popoli."
 		
 		neutralHello:"Salve."
 		neutralLetsHearIt:["Vai avanti.","Procedi.","Ti ascolto."]
@@ -517,7 +515,7 @@
 		declaringWar:"Jip-hyun-jun (la Sala dei Giusti) non tollera più la tua insolenza. Libereremo i tuoi cittadini oppressi anche con la forza, e li illumineremo!"
 		attacked:"Sciocca progenie di una megera! Sarete distrutti dalla magnifica potenza scientifica del mio paese!"
 		defeated:"Ora resta da vedere chi proteggerà il mio popolo... Il buio è giunto."
-		introduction:"Benvenuto nel palazzo dei Choson, straniero. Io sono il re Sejong l'Istruito, sovrano di queste terre e di questo popolo."
+		introduction:"Benvenuto nel palazzo dei Choson, onorato straniero. Io sono il re Sejong l'Istruito, condottiero illuminato e sovrano di queste terre e di questo popolo."
 		
 		neutralHello:"Salve."
 		neutralLetsHearIt:["Sentiamo.","Vai avanti","Continue."]
@@ -589,7 +587,7 @@
 		declaringWar:"La tua continua esistenza rappresenta un imbarazzo per tutti i leader del mondo! Farò loro un favore distruggendoti!"
 		attacked:"Non hai forse udito le storie sulla potenza e sulla grandezza delle mie armate? Forse, se le vedrai, ci penserai due volte prima di affrontarmi!"
 		defeated:"Canaglia! Che Ahura Mazda ti maledica! Il mondo ricorderà a lungo l'errore che hai commesso!"
-		introduction:"Che la pace scenda su di te! Io sono Dario, il grande re dei re della Persia... ma sono certo che tu già lo sappia."
+		introduction:"Ti saluto con calore, e generosamente ti offro la mia mano in amicizia. Io sono Dario, il grande re dei re della Persia... ma sono certo che tu già lo sappia."
 		
 		neutralHello:"Buona giornata!"
 		neutralLetsHearIt:["Va' avanti.","Parla."]
