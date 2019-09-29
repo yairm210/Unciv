@@ -429,6 +429,11 @@ class NextTurnAutomation{
 
     private fun reassignWorkedTiles(civInfo: CivilizationInfo) {
         for (city in civInfo.cities) {
+            if (city.isPuppet && city.population.population > 9
+                    && city.resistanceCounter == 0) {
+                city.annexCity()
+            }
+
             city.reassignWorkers()
 
             city.cityConstructions.chooseNextConstruction()

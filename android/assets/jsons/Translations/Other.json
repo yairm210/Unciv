@@ -53,29 +53,30 @@
 /////// Turn
 
 	"Next turn":{
-        	Dutch:"Volgende beurt"
-        	French:"Prochain tour"
+		Dutch:"Volgende beurt"
+		French:"Prochain tour"
 		German:"Nächste Runde"
 		Italian:"Fine turno"
-        	Japanese:"次のターン"
-        	Portuguese:"Proximo turno"
+		Japanese:"次のターン"
+		Portuguese:"Proximo turno"
 		Romanian:"Runda următoare"
 		Russian:"Следующий ход"
 		Simplified_Chinese:"下一回合"
 		Spanish:"Siguiente turno"
+		Thai:"เริ่มเกมใหม่"
 		
 	}
 	
 	"Turn":{ // For main screen at top left, e.g. Turn 234
-        	Dutch:"Beurt"
+		Dutch:"Beurt"
 		French:"Tour"
 		German:"Runde"
-        	Italian:"Turno"
+		Italian:"Turno"
 		Japanese:"順番"
-        	Portuguese:"Turno"
+		Portuguese:"Turno"
 		Romanian:"Runda"
-        	Russian:"Ход"
-        	Simplified_Chinese:"回合"
+		Russian:"Ход"
+		Simplified_Chinese:"回合"
 		Spanish:"Turno"
 	}
 
@@ -209,7 +210,7 @@
 		Dutch:"Verbetering bouwen"
 		Spanish:"Construir mejora"
 		Simplified_Chinese:"建造设施"
-        	Portuguese:"Construir melhoria"
+		Portuguese:"Construir melhoria"
 		Japanese:"構造改善"
 	}
 
@@ -839,6 +840,10 @@
 		Simplified_Chinese:"无"
 		Portuguese:"Nada"
 		Japanese:"何もない"
+	}
+	
+	"Annex city":{ // For a puppetted city
+		Italian:"Annetti città"
 	}
 	
 	"Specialist Buildings":{
@@ -1804,6 +1809,10 @@
 		Russian:"Аннексировать"
 	}
 
+	"Puppet City":{
+		Italian:"Riduci a Stato Fantoccio"
+	}
+
 	"Raze":{
 		Italian:"Distruggi"
 		French:"Razer"
@@ -2037,6 +2046,25 @@
 		French:"langage"
 		Portuguese:"Língua"
 		Russian:"Язык"
+	}
+	
+	// Map editor
+	
+	
+	"Terrains & Resources":{
+		Italian:"Terreni e risorse"
+	}
+
+	"Improvements":{
+		Italian:"Miglioramenti"
+	}
+
+	"Barbarian encampment":{
+		Italian:"Accampamento barbaro"
+	}
+
+	"[nation] starting location":{
+		Italian:"Punto iniziale di [nation]"
 	}
 
 }
