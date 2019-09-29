@@ -3,7 +3,6 @@ package com.unciv.ui.mapeditor
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
-import com.badlogic.gdx.scenes.scene2d.ui.Label
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane
 import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
@@ -15,12 +14,10 @@ import com.unciv.models.gamebasics.tile.Terrain
 import com.unciv.models.gamebasics.tile.TerrainType
 import com.unciv.models.gamebasics.tile.TileImprovement
 import com.unciv.models.gamebasics.tile.TileResource
+import com.unciv.models.gamebasics.tr
 import com.unciv.ui.tilegroups.TileGroup
 import com.unciv.ui.tilegroups.TileSetStrings
-import com.unciv.ui.utils.CameraStageBaseScreen
-import com.unciv.ui.utils.ImageGetter
-import com.unciv.ui.utils.center
-import com.unciv.ui.utils.onClick
+import com.unciv.ui.utils.*
 
 class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(CameraStageBaseScreen.skin){
     val tileSetLocation = "TileSets/"+ UnCivGame.Current.settings.tileSet +"/"
@@ -45,11 +42,11 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
         setTerrainsAndResources()
 
         val tabPickerTable = Table().apply { defaults().pad(10f) }
-        val terrainsAndResourcesTabButton = TextButton("Terrains & Resources",skin)
+        val terrainsAndResourcesTabButton = TextButton("Terrains & Resources".tr(),skin)
                 .onClick { setTerrainsAndResources() }
         tabPickerTable.add(terrainsAndResourcesTabButton)
 
-        val civLocationsButton = TextButton("Improvements",skin)
+        val civLocationsButton = TextButton("Improvements".tr(),skin)
                 .onClick { setImprovements() }
         tabPickerTable.add(civLocationsButton)
         tabPickerTable.pack()
@@ -78,7 +75,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
                 clearSelection()
                 selectedImprovement=improvement
                 val improvementIcon = getHex(Color.WHITE,ImageGetter.getImprovementIcon(improvement.name,40f))
-                setCurrentHex(improvementIcon, improvement.name+"\n"+improvement.clone().toString())
+                setCurrentHex(improvementIcon, improvement.name.tr()+"\n"+improvement.clone().toString())
             }
             improvementsTable.add(improvementImage).row()
         }
@@ -128,7 +125,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
             group.onClick {
                 clearSelection()
                 selectedTerrain = terrain
-                setCurrentHex(tileInfo,terrain.name+"\n"+terrain.clone().toString())
+                setCurrentHex(tileInfo,terrain.name.tr()+"\n"+terrain.clone().toString())
             }
 
             if (terrain.type == TerrainType.TerrainFeature)
@@ -163,7 +160,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
 
                 tileInfo.resource = resource.name
                 tileInfo.setTransients()
-                setCurrentHex(tileInfo,resource.name+"\n"+resource.clone().toString())
+                setCurrentHex(tileInfo,resource.name.tr()+"\n"+resource.clone().toString())
             }
             resources.add(resourceHex)
         }
@@ -258,7 +255,7 @@ class TileEditorOptionsTable(val mapEditorScreen: MapEditorScreen): Table(Camera
     fun setCurrentHex(actor:Actor, text:String){
         currentHex.remove()
         val currentHexTable = Table()
-        currentHexTable.add(Label(text,skin)).padRight(20f)
+        currentHexTable.add(text.toLabel()).padRight(20f)
         currentHexTable.add(actor).pad(10f)
         currentHexTable.pack()
         currentHex=currentHexTable

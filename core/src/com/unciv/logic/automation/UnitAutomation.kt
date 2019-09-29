@@ -231,7 +231,8 @@ class UnitAutomation{
     }
 
     fun getBombardTargets(city: CityInfo): List<TileInfo> {
-        return city.getCenterTile().getViewableTiles(city.range).filter { containsAttackableEnemy(it, CityCombatant(city)) }
+        return city.getCenterTile().getViewableTiles(city.range,true)
+                .filter { containsAttackableEnemy(it, CityCombatant(city)) }
     }
 
     private fun tryAdvanceTowardsCloseEnemy(unit: MapUnit): Boolean {

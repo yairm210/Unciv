@@ -88,7 +88,7 @@ class PlayerPickerTable(val newGameScreen: NewGameScreen, val newGameParameters:
             }
             playerIdTable.add(setCurrentUserButton)
 
-            val copyFromClipboardButton = TextButton("Player ID from clipboard",CameraStageBaseScreen.skin)
+            val copyFromClipboardButton = TextButton("Player ID from clipboard".tr(),CameraStageBaseScreen.skin)
             copyFromClipboardButton.onClick {
                 playerIdTextfield.text = Gdx.app.clipboard.contents
                 onPlayerIdTextUpdated()

@@ -45,7 +45,9 @@ class ConstructionAutomation(val cityConstructions: CityConstructions){
     }
 
     fun chooseNextConstruction() {
-        if (!UnCivGame.Current.settings.autoAssignCityProduction && civInfo.playerType== PlayerType.Human) return
+        if (!UnCivGame.Current.settings.autoAssignCityProduction
+                && civInfo.playerType== PlayerType.Human && !cityInfo.isPuppet)
+            return
         if (cityConstructions.getCurrentConstruction() !is SpecialConstruction) return  // don't want to be stuck on these forever
 
         addFoodBuildingChoice()

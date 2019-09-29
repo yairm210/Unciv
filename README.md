@@ -60,6 +60,12 @@ If not, you can help by spreading the word - vote for Unciv where you can, menti
 
 If you REALLY want to donate for some reason, I have a Patreon page [here!](https://www.patreon.com/yairm210)
 
+## How can I get started workin on this?
+
+- Install Android Studio
+- Fork the repo, and clone your fork
+- Configure an Application run configuration with DesktopLauncher as the Main Class and \<repo_folder\>\android\assets\ as the Working directory
+
 # [Adding a new Civ](docs/NewCivs.md)
 
 # [Credits and 3rd parties](docs/Credits.md)

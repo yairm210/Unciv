@@ -10,7 +10,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.unciv.Constants
 import com.unciv.UnCivGame
-import com.unciv.logic.GameInfo
 import com.unciv.logic.GameSaver
 import com.unciv.logic.civilization.CivilizationInfo
 import com.unciv.logic.civilization.diplomacy.DiplomaticStatus
@@ -155,7 +154,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
     // and we don't get any silly concurrency problems!
     private fun update() {
 
-        displayTutorialsOnUpdate(viewingCiv, gameInfo)
+        displayTutorialsOnUpdate()
 
         bottomBar.update(tileMapHolder.selectedTile) // has to come before tilemapholder update because the tilemapholder actions depend on the selected unit!
         battleTable.update()
@@ -196,7 +195,7 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
         updateNextTurnButton()
     }
 
-    private fun displayTutorialsOnUpdate(cloneCivilization: CivilizationInfo, gameClone: GameInfo) {
+    private fun displayTutorialsOnUpdate() {
         if (UnCivGame.Current.settings.hasCrashedRecently) {
             displayTutorials("GameCrashed")
             UnCivGame.Current.settings.tutorialsShown.remove("GameCrashed")
@@ -210,18 +209,20 @@ class WorldScreen(val viewingCiv:CivilizationInfo) : CameraStageBaseScreen() {
 
 
         if (!UnCivGame.Current.settings.tutorialsShown.contains("EnemyCityNeedsConqueringWithMeleeUnit")) {
-            for (enemyCity in cloneCivilization.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
+            for (enemyCity in viewingCiv.diplomacy.values.filter { it.diplomaticStatus == DiplomaticStatus.War }
                     .map { it.otherCiv() }.flatMap { it.cities }) {
                 if (enemyCity.health == 1 && enemyCity.getCenterTile().getTilesInDistance(2)
-                                .any { it.getUnits().any { unit -> unit.civInfo == cloneCivilization } })
+                                .any { it.getUnits().any { unit -> unit.civInfo == viewingCiv} })
                     displayTutorials("EnemyCityNeedsConqueringWithMeleeUnit")
             }
         }
+        if(viewingCiv.cities.any { it.hasJustBeenConquered })
+            displayTutorials("ConqueredEnemyCity")
 
-        if (gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 })
+        if (gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.health < 100 })
             displayTutorials("InjuredUnits")
 
-        if (gameClone.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker })
+        if (gameInfo.getCurrentPlayerCivilization().getCivUnits().any { it.name == Constants.worker })
             displayTutorials("WorkerTrained")
     }
 
