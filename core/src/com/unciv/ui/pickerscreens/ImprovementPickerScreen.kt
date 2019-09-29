@@ -57,7 +57,7 @@ class ImprovementPickerScreen(tileInfo: TileInfo, onAccept: ()->Unit) : PickerSc
             group.touchable = Touchable.enabled
             group.onClick {
                 selectedImprovement = improvement
-                pick(improvement.name)
+                pick(improvement.name.tr())
                 descriptionLabel.setText(improvement.description)
             }
 
