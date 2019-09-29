@@ -842,6 +842,10 @@
 		Japanese:"何もない"
 	}
 	
+	"Annex city":{ // For a puppetted city
+		Italian:"Annetti città"
+	}
+	
 	"Specialist Buildings":{
 		Italian:"Edifici specialisti"
 		Russian:"Специализированные Здания"
@@ -1803,6 +1807,10 @@
 		French:"Annexer"
 		Simplified_Chinese:"吞并"
 		Russian:"Аннексировать"
+	}
+
+	"Puppet City":{
+		Italian:"Riduci a Stato Fantoccio"
 	}
 
 	"Raze":{
