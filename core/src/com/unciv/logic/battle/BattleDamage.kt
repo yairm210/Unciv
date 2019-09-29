@@ -227,12 +227,12 @@ class BattleDamage{
         if(defender.getUnitType().isCivilian()) return 0
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
         val i = if (ratio < 1) -1 else 1
-        return ((24 + 12 * Random().nextFloat()) * ((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i) * getHealthDependantDamageRatio(defender)).toInt()
+        return ((24 + 12 * Random().nextFloat()) * (((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i)) * getHealthDependantDamageRatio(defender)).toInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
         val i = if (ratio < 1) -1 else 1
-        return ((24 + 12 * Random().nextFloat()) * ((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i) * getHealthDependantDamageRatio(attacker)).toInt()
+        return ((24 + 12 * Random().nextFloat()) / (((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i)) * getHealthDependantDamageRatio(attacker)).toInt()
     }
 }
