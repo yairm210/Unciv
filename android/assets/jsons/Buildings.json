@@ -397,7 +397,7 @@
 		production:2,
 		specialistSlots:{production:1},
 		hurryCostModifier:25,
-		uniques:["Forests provide +1 production"],
+		uniques:["+1 Production from each worked Forest tile"],
 		requiredTech:"Metal Casting"
 	},
 	{
@@ -423,7 +423,7 @@
 		percentStatBonus:{science:33},
 		specialistSlots:{science:2},
 		requiredBuilding:"Library",
-		uniques:["Jungles provide +2 science"],
+		uniques:["+2 Science from each worked Jungle tile"],
 		requiredTech:"Education"
 	},
 	{
@@ -447,7 +447,7 @@
 		specialistSlots:{science:2},
 		culture:1,
 		requiredBuilding:"Library",
-		uniques:["Jungles provide +2 science"],
+		uniques:["+2 Science from each worked Jungle tile"],
 		requiredTech:"Education"
 	},
 	*/

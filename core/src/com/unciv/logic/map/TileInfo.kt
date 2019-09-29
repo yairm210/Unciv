@@ -141,13 +141,13 @@ open class TileInfo {
                 stats.add(terrainFeatureBase)
 
             if (terrainFeature == Constants.jungle && city != null
-                    && city.containsBuildingUnique("Jungles provide +2 science"))
+                    && city.containsBuildingUnique("+2 Science from each worked Jungle tile"))
                 stats.science += 2f
             if (terrainFeature == "Oasis" && city != null
                     && city.containsBuildingUnique("+2 Gold for each source of Oil and oasis"))
                 stats.gold += 2
             if (terrainFeature == Constants.forest && city != null
-                    && city.containsBuildingUnique("Forests provide +1 production"))
+                    && city.containsBuildingUnique("+1 Production from each worked Forest tile"))
                 stats.production += 1
         }
 

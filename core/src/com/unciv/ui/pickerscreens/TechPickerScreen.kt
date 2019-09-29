@@ -44,7 +44,7 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
         setDefaultCloseAction()
         onBackButtonClicked { UnCivGame.Current.setWorldScreen() }
         scrollPane.style = skin.get(ScrollPane.ScrollPaneStyle::class.java) // So we can see scrollbars
-
+        scrollPane.setOverscroll(false,false)
         tempTechsToResearch = ArrayList(civTech.techsToResearch)
 
         val columns = GameBasics.Technologies.values.map { it.column!!.columnNumber}.max()!! +1
@@ -54,10 +54,12 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
             techMatrix[technology.column!!.columnNumber][technology.row - 1] = technology
         }
 
-        val eras = ArrayList<Label>()
-        for(i in techMatrix.indices)
-            eras.add("".toLabel().setFontColor(Color.WHITE))
-        eras.forEach { topTable.add(it) }
+        val erasName = arrayOf("Ancient","Classical","Medieval","Renaissance","Industrial","Modern","Information","Future")
+        for (i in 0..7) {
+            val j = if (erasName[i]!="Ancient" && erasName[i]!="Future") 2 else 3
+            if (i%2==0) topTable.add((erasName[i]+" era").toLabel().setFontColor(Color.WHITE).addBorder(2f, Color.BLUE)).fill().colspan(j)
+            else topTable.add((erasName[i]+" era").toLabel().setFontColor(Color.WHITE).addBorder(2f, Color.FIREBRICK)).fill().colspan(j)
+        }
 
         // Create tech table (row by row)
         for (i in 0..9) {
@@ -77,20 +79,6 @@ class TechPickerScreen(internal val civInfo: CivilizationInfo, switchfromWorldSc
                 }
             }
         }
-
-        // Set era names (column by column)
-        val alreadyDisplayedEras = HashSet<String>()
-        for(j in techMatrix.indices)
-            for(i in 0..9)
-            {
-                val tech = techMatrix[j][i]
-                if(tech==null) continue
-                val eraName = tech.era().name
-                if(!alreadyDisplayedEras.contains(eraName)) { // name of era was not yet displayed
-                    eras[j].setText("$eraName era".tr())
-                    alreadyDisplayedEras.add(eraName)
-                }
-            }
 
         setButtonsInfo()
         if (!switchfromWorldScreen){

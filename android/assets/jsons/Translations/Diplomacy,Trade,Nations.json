@@ -1223,16 +1223,19 @@
 		Italian:"Irochese"
 		French:"Iroquois"
 		Portuguese:"Tribo Iroquois" //tribo meaning tribe of course
+		Simplified_Chinese:"易洛魁"
 	}
 	
 	"Hiawatha":{
 		Italian:"Hiawatha"//Same as in Italian
+		Simplified_Chinese:"海华沙"
 	}
 
 	"All units move through Forest and Jungle Tiles in friendly territory as if they have roads. These tiles can be used to establish City Connections upon researching the Wheel.":{
 		Italian:"Le caselle di Foreste e Giungle in territorio amico agiscono come strade, e sono usate per stabilire Rotte Commerciali quando scopri la Ruota."
 		Portuguese:"Mova-se por florestas e selvas em território amigo como se fossem estradas. Estas terras podem ser usadas para estabelecer rotas de comércio após pesquisar a roda."
 		French:"Les Forêt et les Jungles en territoire alliés ont les mêmes attributs que les routes. A la découverte de la Roue, elles peuvent établir des routes commerciales."
+		Simplified_Chinese:"单位在己方森林和丛林地块上移动时视同在道路上移动，此类地块在研究轮子科技后可建立城市连接"
 	}
 	
 	
@@ -1240,16 +1243,19 @@
 		Italian:"Persia"
 		French:"Perse"
 		Portuguese:"Pérsia"
+		Simplified_Chinese:"波斯"
 	}
 	
 	"Darius I":{
 		Italian:"Dario I"
+		Simplified_Chinese:"大流士一世"
 	}
 
 	"Golden Ages last 50% longer. During a Golden Age, units receive +1 Movement and +10% Strength":{
 		Italian:"+50% durata delle Età dell'Oro, durante le quali le unità ricevono +1 Movimento e +10% Forza."
 		Portuguese:"Idades douradas duram 50% mais, unidades recebem 1 movimento a mais e um bonus de +10% em força de combate."
 		French:"Les Ages d'Or durent 50% plus longtemps. Durant les Ages d'Or, les unités gagnent +1 mouvement et +10% de force de Combat."
+		Simplified_Chinese:"黄金时代持续时间+50%，处于黄金时代时单位+1移动力、+10%战斗力"
 	}
 
 	/*

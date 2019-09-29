@@ -4,7 +4,9 @@ import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
+import java.util.Random
 import kotlin.math.max
+import kotlin.math.pow
 
 class BattleDamageModifier(val vs:String,val modificationAmount:Float){
     fun getText(): String = "vs $vs"
@@ -195,10 +197,10 @@ class BattleDamage{
     }
 
     private fun getHealthDependantDamageRatio(combatant: ICombatant): Float {
-        if (combatant.getUnitType() == UnitType.City
-                || combatant.getCivInfo().nation.unique == "Units fight as though they were at full strength even when damaged")
-            return 1f
-        return 1/2f + combatant.getHealth()/200f // Each point of health reduces damage dealt by 0.5%
+        return if (combatant.getUnitType() == UnitType.City) 0.75f
+        else if(combatant.getCivInfo().nation.unique == "Units fight as though they were at full strength even when damaged" && !combatant.getUnitType().isAirUnit())
+            1f
+        else 1 - (100 - combatant.getHealth()) / 300f// Each 3 points of health reduces damage dealt by 1% like original game
     }
 
 
@@ -223,12 +225,14 @@ class BattleDamage{
     fun calculateDamageToAttacker(attacker: ICombatant, defender: ICombatant): Int {
         if(attacker.isRanged()) return 0
         if(defender.getUnitType().isCivilian()) return 0
-        val ratio = getDefendingStrength(attacker,defender) / getAttackingStrength(attacker,defender)
-        return (ratio * 30 * getHealthDependantDamageRatio(defender)).toInt()
+        val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
+        val i = if (ratio < 1) -1 else 1
+        return ((24 + 12 * Random().nextFloat()) * ((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i) * getHealthDependantDamageRatio(defender)).toInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        return (ratio * 30 * getHealthDependantDamageRatio(attacker)).toInt()
+        val i = if (ratio < 1) -1 else 1
+        return ((24 + 12 * Random().nextFloat()) * ((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i) * getHealthDependantDamageRatio(attacker)).toInt()
     }
 }

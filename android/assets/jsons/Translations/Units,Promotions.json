@@ -384,10 +384,12 @@
 	
 	"Immortal":{ // Persian unique
 		Italian:"Immortale"
+		Simplified_Chinese:"波斯长生军"
 	}
 	
 	"+10 HP when healing":{
 		Italian:"+10 PF quando si cura"
+		Simplified_Chinese:"生命回复时额外回复10生命值"
 	}
 	
 ////// Classical Era Units
@@ -449,10 +451,12 @@
 	
 	"Mohawk Warrior":{
 		Italian:"Guerriero Mohawk"
+		Simplified_Chinese:"莫霍克战士"
 	}
 	
 	"+33% combat bonus in Forest/Jungle":{
 		Italian:"+33% Forza su Foreste o Giungle"
+		Simplified_Chinese:"位于森林/丛林时战斗力+33%"
 	}
 	
 	"Legion":{
