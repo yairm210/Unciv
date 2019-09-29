@@ -4,7 +4,9 @@ import com.unciv.Constants
 import com.unciv.logic.map.MapUnit
 import com.unciv.logic.map.TileInfo
 import com.unciv.models.gamebasics.unit.UnitType
-import java.util.Random
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.set
 import kotlin.math.max
 import kotlin.math.pow
 
@@ -226,13 +228,21 @@ class BattleDamage{
         if(attacker.isRanged()) return 0
         if(defender.getUnitType().isCivilian()) return 0
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        val i = if (ratio < 1) -1 else 1
-        return ((24 + 12 * Random().nextFloat()) * ((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i) * getHealthDependantDamageRatio(defender)).toInt()
+        return (damageModifier(ratio, true) * getHealthDependantDamageRatio(defender)).toInt()
     }
 
     fun calculateDamageToDefender(attacker: ICombatant, defender: ICombatant): Int {
         val ratio = getAttackingStrength(attacker,defender) / getDefendingStrength(attacker,defender)
-        val i = if (ratio < 1) -1 else 1
-        return ((24 + 12 * Random().nextFloat()) * ((ratio.pow(i) + 3).pow(4) / 512 + 0.5).pow(i) * getHealthDependantDamageRatio(attacker)).toInt()
+        return (damageModifier(ratio,false) * getHealthDependantDamageRatio(attacker)).toInt()
+    }
+
+    fun damageModifier(attackerToDefenderRatio:Float, damageToAttacker:Boolean): Float {
+        // https://forums.civfanatics.com/threads/getting-the-combat-damage-math.646582/#post-15468029
+        val strongerToWeakerRatio = attackerToDefenderRatio.pow(if (attackerToDefenderRatio < 1) -1 else 1)
+        var ratioModifier = ((((strongerToWeakerRatio + 3)/4).pow(4) +1)/2)
+        if((damageToAttacker && attackerToDefenderRatio>1) || (!damageToAttacker && attackerToDefenderRatio<1)) // damage ratio from the weaker party is inverted
+            ratioModifier = ratioModifier.pow(-1)
+        val randomCenteredAround30 = (24 + 12 * Random().nextFloat())
+        return  randomCenteredAround30 * ratioModifier
     }
 }
