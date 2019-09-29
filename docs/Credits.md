@@ -26,7 +26,7 @@ Unless otherwise specified, all the following are from [the Noun Project](https:
 * [Fishing Vessel](https://thenounproject.com/term/fishing-vessel/23815/) By Luis Prado for Work Boats
 * [Greek Trireme](https://thenounproject.com/search/?q=ancient%20boat&i=1626303) By Zachary McCune for Trireme
 * [Chariot](https://thenounproject.com/search/?q=Chariot&i=1189930) By Andrew Doane for Chariot Archer
-* [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado, US for War Elephant
+* [Elephant](https://thenounproject.com/Luis/uploads/?i=14048) By Luis Prado for War Elephant
 * [Spear](https://thenounproject.com/search/?q=Spear&i=11432) By Stephen Copinger for Spearman
 * [Greek shield](https://thenounproject.com/search/?q=hoplite&i=440135) for Hoplite
 * [Spiked club](https://thenounproject.com/search/?q=club%20weapon&creator=1933477&i=831794) for Brute
