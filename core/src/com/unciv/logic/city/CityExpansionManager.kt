@@ -10,11 +10,12 @@ class CityExpansionManager {
     @Transient
     lateinit var cityInfo: CityInfo
     var cultureStored: Int = 0
-
+    var tilesNotImproved: Int = 0
 
     fun clone(): CityExpansionManager {
         val toReturn = CityExpansionManager()
         toReturn.cultureStored=cultureStored
+        toReturn.tilesNotImproved = tilesNotImproved
         return toReturn
     }
 
@@ -125,11 +126,14 @@ class CityExpansionManager {
             addNewTileWithCulture()
             cityInfo.civInfo.addNotification("["+cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
         }
+        tilesNotImproved = cityInfo.tiles.map { cityInfo.tileMap[it] }.filter { it.isLand && it.improvement == "" }.size
     }
 
     fun setTransients(){
-        for(tile in cityInfo.tiles.map { cityInfo.tileMap[it] })
+        val tiles = cityInfo.tiles.map { cityInfo.tileMap[it] }
+        for(tile in tiles )
             tile.owningCity=cityInfo
+        tilesNotImproved = tiles.filter { it.isLand && it.improvement == "" }.size
     }
     //endregion
 }

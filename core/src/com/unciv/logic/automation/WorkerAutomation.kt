@@ -41,6 +41,15 @@ class WorkerAutomation(val unit: MapUnit) {
         if(tile.improvementInProgress!=null) return // we're working!
         if(tryConnectingCities()) return //nothing to do, try again to connect cities
 
+        val mostUndeveloppedCity = unit.civInfo.cities.filter{it.expansion.tilesNotImproved > 0}
+                .sortedByDescending { it.expansion.tilesNotImproved }
+                .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undevelopped city
+        if (mostUndeveloppedCity != null) {
+            val reachedTile = unit.movement.headTowards(mostUndeveloppedCity.ccenterTile)
+            if (reachedTile!=tile) unit.doPreTurnAction()
+            return
+        }
+
         unit.civInfo.addNotification("[${unit.name}] has no work to do.", unit.currentTile.position, Color.GRAY)
 
     }
@@ -52,7 +61,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
         val citiesThatNeedConnecting = unit.civInfo.cities
-                .filter { it.population.population>3 && !it.isCapital()
+                .filter { it.population.population>3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
                     && !it.cityStats.isConnectedToCapital(targetRoad) }
         if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
