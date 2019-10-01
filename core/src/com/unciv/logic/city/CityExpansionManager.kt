@@ -126,14 +126,14 @@ class CityExpansionManager {
             addNewTileWithCulture()
             cityInfo.civInfo.addNotification("["+cityInfo.name + "] has expanded its borders!", cityInfo.location, Color.PURPLE)
         }
-        tilesNotImproved = cityInfo.tiles.map { cityInfo.tileMap[it] }.filter { it.isLand && it.improvement == "" }.size
+        tilesNotImproved = cityInfo.getTiles().filter { it.isLand && it.improvement == null }.size
     }
 
     fun setTransients(){
-        val tiles = cityInfo.tiles.map { cityInfo.tileMap[it] }
+        val tiles = cityInfo.getTiles()
         for(tile in tiles )
             tile.owningCity=cityInfo
-        tilesNotImproved = tiles.filter { it.isLand && it.improvement == "" }.size
+        tilesNotImproved = tiles.filter { it.isLand && it.improvement == null }.size
     }
     //endregion
 }
