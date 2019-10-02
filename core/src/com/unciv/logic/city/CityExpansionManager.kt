@@ -117,10 +117,6 @@ class CityExpansionManager {
         cityInfo.civInfo.updateViewableTiles()
     }
 
-    fun tilesToImprove(): Int {
-        return cityInfo.getTiles().filter { it.isLand && it.improvement == null }.size
-    }
-
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
