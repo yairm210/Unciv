@@ -38,7 +38,7 @@ class Building : NamedStats(), IConstruction{
     var xpForNewUnits=0
     var replaces:String?=null
     var uniqueTo:String?=null
-    var quote:String?=null
+    var quote:String=""
 
     // Uniques
     private var providesFreeBuilding: String? = null

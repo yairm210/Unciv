@@ -3,6 +3,7 @@ package com.unciv.logic.civilization
 enum class AlertType{
     Defeated,
     WonderBuilt,
+    TechResearched,
     WarDeclaration,
     FirstContact,
     CityConquered,

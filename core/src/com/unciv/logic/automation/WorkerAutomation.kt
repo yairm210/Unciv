@@ -13,58 +13,58 @@ class WorkerAutomation(val unit: MapUnit) {
 
     fun automateWorkerAction() {
         val enemyUnitsInWalkingDistance = unit.movement.getDistanceToTiles().keys
-                .filter { it.militaryUnit!=null && it.militaryUnit!!.civInfo!=unit.civInfo
-                        && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo) }
+                .filter {
+                    it.militaryUnit != null && it.militaryUnit!!.civInfo != unit.civInfo
+                            && unit.civInfo.isAtWarWith(it.militaryUnit!!.civInfo)
+                }
 
-        if(enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
+        if (enemyUnitsInWalkingDistance.isNotEmpty()) return  // Don't you dare move.
 
-        val tile = unit.getTile()
+        val currentTile = unit.getTile()
         val tileToWork = findTileToWork()
 
-        if(getPriority(tileToWork,unit.civInfo) < 3){ // building roads is more important
-            if(tryConnectingCities()) return
+        if (getPriority(tileToWork, unit.civInfo) < 3) { // building roads is more important
+            if (tryConnectingCities()) return
         }
 
-        if (tileToWork != tile) {
+        if (tileToWork != currentTile) {
             val reachedTile = unit.movement.headTowards(tileToWork)
-            if(reachedTile!=tile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
+            if (reachedTile != currentTile) unit.doPreTurnAction() // otherwise, we get a situation where the worker is automated, so it tries to move but doesn't, then tries to automate, then move, etc, forever. Stack overflow exception!
             return
         }
-        if (tile.improvementInProgress == null && tile.isLand) {
-            val improvement = chooseImprovement(tile, unit.civInfo)
-            if (improvement != null && tile.canBuildImprovement(improvement, unit.civInfo)) {
+        if (currentTile.improvementInProgress == null && currentTile.isLand) {
+            val improvement = chooseImprovement(currentTile, unit.civInfo)
+            if (improvement != null && currentTile.canBuildImprovement(improvement, unit.civInfo)) {
                 // What if we're stuck on this tile but can't build there?
-                tile.startWorkingOnImprovement(improvement, unit.civInfo)
+                currentTile.startWorkingOnImprovement(improvement, unit.civInfo)
                 return
             }
         }
-        if(tile.improvementInProgress!=null) return // we're working!
-        if(tryConnectingCities()) return //nothing to do, try again to connect cities
+        if (currentTile.improvementInProgress != null) return // we're working!
+        if (tryConnectingCities()) return //nothing to do, try again to connect cities
 
-        var cityListWithUnImprovedTiles = HashMap<String, Int>()
+        val citiesToNumberOfUnimprovedTiles = HashMap<String, Int>()
         for (city in unit.civInfo.cities) {
-            cityListWithUnImprovedTiles[city.name] =
-                    city.getTiles()
-                            .filter { it.isLand && tileNeedToImprove(it, unit.civInfo) }
-                            .size
+            citiesToNumberOfUnimprovedTiles[city.name] =
+                    city.getTiles().count { it.isLand && tileNeedToImprove(it, unit.civInfo) }
         }
 
-        val mostUndevelopedCity = unit.civInfo.cities.filter{cityListWithUnImprovedTiles[it.name]!! > 0}
-                .sortedByDescending { cityListWithUnImprovedTiles[it.name] }
-                .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undevelopped city
+        val mostUndevelopedCity = unit.civInfo.cities
+                .filter { citiesToNumberOfUnimprovedTiles[it.name]!! > 0 }
+                .sortedByDescending { citiesToNumberOfUnimprovedTiles[it.name] }
+                .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undeveloped city
         if (mostUndevelopedCity != null) {
             val reachedTile = unit.movement.headTowards(mostUndevelopedCity.ccenterTile)
-            if (reachedTile!=tile) unit.doPreTurnAction()
+            if (reachedTile != currentTile) unit.doPreTurnAction() // since we've moved, maybe we can do something here - automate
             return
         }
 
         unit.civInfo.addNotification("[${unit.name}] has no work to do.", unit.currentTile.position, Color.GRAY)
-
     }
 
 
 
-    fun tryConnectingCities():Boolean { // returns whether we actually did anything
+    private fun tryConnectingCities():Boolean { // returns whether we actually did anything
 
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
