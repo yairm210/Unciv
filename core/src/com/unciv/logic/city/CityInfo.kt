@@ -279,6 +279,7 @@ class CityInfo {
         }
 
         isPuppet=false
+        cityStats.update()
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 
@@ -303,6 +304,7 @@ class CityInfo {
         resistanceCounter = population.population  // I checked, and even if you puppet there's resistance for conquering
         isPuppet = true
         health = getMaxHealth() / 2 // I think that cities recover to half health when conquered?
+        cityStats.update()
     }
 
     private fun diplomaticRepercussionsForConqueringCity(oldCiv: CivilizationInfo, conqueringCiv: CivilizationInfo) {
@@ -342,6 +344,7 @@ class CityInfo {
 
         if(foundingCiv.cities.size == 1) cityConstructions.addBuilding("Palace") // Resurrection!
         isPuppet = false
+        cityStats.update()
         UnCivGame.Current.worldScreen.shouldUpdate=true
     }
 

@@ -122,10 +122,20 @@ class AlertPopup(val worldScreen: WorldScreen, val popupAlert: PopupAlert): Popu
                 addGoodSizedLabel(wonder.name)
                 addSeparator()
                 val centerTable = Table()
-                val wonderText = if(wonder.quote!=null) wonder.quote!! else ""
-                centerTable.add(wonderText.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(wonder.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 centerTable.add(ImageGetter.getConstructionImage(wonder.name).surroundWithCircle(100f)).pad(20f)
                 centerTable.add(wonder.getShortDescription().toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                add(centerTable).row()
+                add(getCloseButton("Close"))
+            }
+            AlertType.TechResearched -> {
+                val tech = GameBasics.Technologies[popupAlert.value]!!
+                addGoodSizedLabel(tech.name)
+                addSeparator()
+                val centerTable = Table()
+                centerTable.add(tech.quote.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
+                centerTable.add(ImageGetter.getTechIconGroup(tech.name,100f)).pad(20f)
+                centerTable.add(tech.description.toLabel().apply { setWrap(true) }).width(worldScreen.stage.width/3)
                 add(centerTable).row()
                 add(getCloseButton("Close"))
             }

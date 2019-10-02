@@ -11,7 +11,6 @@ class CityExpansionManager {
     lateinit var cityInfo: CityInfo
     var cultureStored: Int = 0
 
-
     fun clone(): CityExpansionManager {
         val toReturn = CityExpansionManager()
         toReturn.cultureStored=cultureStored
@@ -118,7 +117,6 @@ class CityExpansionManager {
         cityInfo.civInfo.updateViewableTiles()
     }
 
-
     fun nextTurn(culture: Float) {
         cultureStored += culture.toInt()
         if (cultureStored >= getCultureToNextTile()) {
@@ -128,7 +126,8 @@ class CityExpansionManager {
     }
 
     fun setTransients(){
-        for(tile in cityInfo.tiles.map { cityInfo.tileMap[it] })
+        val tiles = cityInfo.getTiles()
+        for(tile in tiles )
             tile.owningCity=cityInfo
     }
     //endregion

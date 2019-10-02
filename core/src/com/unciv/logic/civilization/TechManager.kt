@@ -135,6 +135,7 @@ class TechManager {
         updateTransientBooleans()
 
         civInfo.addNotification("Research of [$techName] has completed!", Color.BLUE, TechAction(techName))
+        civInfo.popupAlerts.add(PopupAlert(AlertType.TechResearched,techName))
 
         val currentEra = civInfo.getEra()
         if (previousEra < currentEra) {
