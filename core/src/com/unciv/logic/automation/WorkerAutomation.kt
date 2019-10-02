@@ -41,6 +41,23 @@ class WorkerAutomation(val unit: MapUnit) {
         if(tile.improvementInProgress!=null) return // we're working!
         if(tryConnectingCities()) return //nothing to do, try again to connect cities
 
+        var cityListWithUnImprovedTiles = HashMap<String, Int>()
+        for (city in unit.civInfo.cities) {
+            cityListWithUnImprovedTiles[city.name] =
+                    city.getTiles()
+                            .filter { it.isLand && tileNeedToImprove(it, unit.civInfo) }
+                            .size
+        }
+
+        val mostUndevelopedCity = unit.civInfo.cities.filter{cityListWithUnImprovedTiles[it.name]!! > 0}
+                .sortedByDescending { cityListWithUnImprovedTiles[it.name] }
+                .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undevelopped city
+        if (mostUndevelopedCity != null) {
+            val reachedTile = unit.movement.headTowards(mostUndevelopedCity.ccenterTile)
+            if (reachedTile!=tile) unit.doPreTurnAction()
+            return
+        }
+
         unit.civInfo.addNotification("[${unit.name}] has no work to do.", unit.currentTile.position, Color.GRAY)
 
     }
@@ -52,7 +69,7 @@ class WorkerAutomation(val unit: MapUnit) {
         val targetRoad = unit.civInfo.tech.getBestRoadAvailable()
 
         val citiesThatNeedConnecting = unit.civInfo.cities
-                .filter { it.population.population>3 && !it.isCapital()
+                .filter { it.population.population>3 && !it.isCapital() && !it.isBeingRazed //City being razed should not be connected.
                     && !it.cityStats.isConnectedToCapital(targetRoad) }
         if(citiesThatNeedConnecting.isEmpty()) return false // do nothing.
 
@@ -101,12 +118,8 @@ class WorkerAutomation(val unit: MapUnit) {
         val workableTiles = currentTile.getTilesInDistance(4)
                 .filter {
                     (it.civilianUnit== null || it == currentTile)
-                            && (it.improvement == null || (it.hasViewableResource(unit.civInfo) && !it.containsGreatImprovement() && it.getTileResource().improvement != it.improvement))
-                            && it.isLand
-                            && !it.getBaseTerrain().impassable
-                            && (it.containsUnfinishedGreatImprovement() || it.canBuildImprovement(chooseImprovement(it, unit.civInfo), unit.civInfo))
-                            && {val city=it.getCity();  city==null || it.getCity()?.civInfo == unit.civInfo}() // don't work tiles belonging to another civ
-                }.sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
+                            && tileNeedToImprove(it, unit.civInfo) }
+                .sortedByDescending { getPriority(it, unit.civInfo) }.toMutableList()
 
         // the tile needs to be actually reachable - more difficult than it seems,
         // which is why we DON'T calculate this for every possible tile in the radius,
@@ -121,6 +134,15 @@ class WorkerAutomation(val unit: MapUnit) {
         else return currentTile
     }
 
+    private fun tileNeedToImprove(tile: TileInfo, civInfo: CivilizationInfo): Boolean {
+        if (!tile.isLand || tile.getBaseTerrain().impassable)
+            return false
+        val city=tile.getCity()
+        if (city == null || city.civInfo != civInfo)
+            return false
+        return (tile.improvement == null || (tile.hasViewableResource(civInfo) && !tile.containsGreatImprovement() && tile.getTileResource().improvement != tile.improvement))
+                && (tile.containsUnfinishedGreatImprovement() || tile.canBuildImprovement(chooseImprovement(tile, civInfo), civInfo))
+    }
 
     private fun getPriority(tileInfo: TileInfo, civInfo: CivilizationInfo): Int {
         var priority = 0
