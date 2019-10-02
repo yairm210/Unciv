@@ -41,11 +41,11 @@ class WorkerAutomation(val unit: MapUnit) {
         if(tile.improvementInProgress!=null) return // we're working!
         if(tryConnectingCities()) return //nothing to do, try again to connect cities
 
-        val mostUndeveloppedCity = unit.civInfo.cities.filter{it.expansion.tilesNotImproved > 0}
-                .sortedByDescending { it.expansion.tilesNotImproved }
+        val mostUndevelopedCity = unit.civInfo.cities.filter{it.expansion.tilesToImprove() > 0}
+                .sortedByDescending { it.expansion.tilesToImprove() }
                 .firstOrNull { unit.movement.canReach(it.ccenterTile) } //goto most undevelopped city
-        if (mostUndeveloppedCity != null) {
-            val reachedTile = unit.movement.headTowards(mostUndeveloppedCity.ccenterTile)
+        if (mostUndevelopedCity != null) {
+            val reachedTile = unit.movement.headTowards(mostUndevelopedCity.ccenterTile)
             if (reachedTile!=tile) unit.doPreTurnAction()
             return
         }
