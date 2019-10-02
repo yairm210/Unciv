@@ -1027,12 +1027,47 @@
 		tradeRequest:"Here's the list for our own benefits",
 		innerColor:[185,132,66]
 		uniqueName:"Pearl Of The Orient"
-		unique:"Upon signingOpen Borders, both Civilizations receive a Cargo Ship. Foreign Units within your borders provide Culture."
+		unique:"Upon signing OpenBorders, both Civilizations receive a Cargo Ship. Foreign Units within your borders provide Culture."
 		cities:["Manila","Quezon","Cebu",Pasig","Makati","Cagayan de Oro","Baguio","Davao City","Bacolod","Taguig","Pasay",
 		"Bataan","Angeles","Marikina"]
 	},
-	*/
+	{        
+	        name:"Sweden",
+		leaderName:"Gustavus Adolphus",
+		adjective:["Swedish"],
+		startBias:["Tundra"],
+		preferredVictoryType:"Diplomatic",
 		
+		startIntroPart1:"All hail the transcendent King Gustavus Adolphus, founder of the Swedish Empire and her most distinguished military tactician. It was during your reign that Sweden emerged as one of the greatest powers in Europe, due in no small part to your wisdom, both on and off the battlefield. As king, you initiated a number of domestic reforms that ensured the economic stability and prosperity of your people. As the general who came to be known as the "Lion of the North," your visionary designs in warfare gained the admiration of military commanders the world over. Thanks to your triumphs in the Thirty Years' War, you were assured a legacy as one of history's greatest generals.",
+		startIntroPart2:"Oh noble King, the people long for your prudent leadership, hopeful that once again they will see your kingdom rise to glory. Will you devise daring new strategies, leading your armies to victory on the theater of war? Will you build a civilization that stands the test of time?",
+		
+		declaringWar:"The Hakkapeliittas will ride again and your men will fall just at the sight of my cavalry!God with us!",
+		attacked:"Ha ha ha, captain Gars will be very glad to head out to war again.",
+		defeated:"I am Sweden's king. You can take my lands, my people, my kingdom, but you will never reach the House of Vasa.",
+		introduction:"Stranger, welcome to the Snow King's kingdom! I am Gustavus Adolphus,member of the esteemed House of Vasa",
+		
+		neutralHello:"Oh","welcome!",
+		neutralLetsHearIt:["Let us hear.","Go on.","I am listening."],
+		neutralNo:["I must decline.","No, absolutely not.","We must decline."]
+		neutralYes:["Very good!","Gladly!","Hah, excellent!"]
+		
+		hateHello:"Oh, it is you."
+		hateLetsHearIt:["Go on."]
+		hateNo:["That is unacceptable.","You can't be serious.","What did you say!?"]
+		hateYes:[" Aargh, very well!"," Aargh, very well!","Bah, I guess I have no choice."]
+		
+		afterPeace:"Enjoy your victory while you can. It will not be long-lasting."
+		tradeRequest:"My friend, it is my belief that this settlement can benefit both our peoples."
+		
+		innerColor:[194,97,255]
+		uniqueName:"The Lion of the North,"
+		unique:"Gain 90 Influence with a Great Person gift to a City-State,When declaring friendship, Sweden and their friend gain a +10% boost to Great Person generation"
+		cities:["StockHolm","Malmo","Gothenburg","Visby","Upssala","Umea","Lund","Kiruna","Helsingborg",
+		"Orebro","Vasteras","Linkoping","Norrkoping","Gavle","Karlskrona","Halmstad","Karlstad","Vaxjo",
+		"Copenhagen","Jonkoping",Boras",]
+	},
+	*/
+	
 	    
 
 	//City states

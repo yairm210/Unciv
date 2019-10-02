@@ -296,7 +296,11 @@ class CivilizationInfo {
 
         tech.civInfo = this
         tech.setTransients()
-        diplomacy.values.forEach { it.civInfo=this}
+
+        diplomacy.values.forEach {
+            it.civInfo=this
+            it.updateHasOpenBorders()
+        }
 
         victoryManager.civInfo=this
 

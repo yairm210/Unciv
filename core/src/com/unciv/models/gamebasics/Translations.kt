@@ -36,6 +36,7 @@ class Translations : HashMap<String, HashMap<String, String>>(){
         val toReturn =  mutableListOf<String>()
         toReturn.addAll(values.flatMap { it.keys }.distinct())
         toReturn.remove("Japanese")
+        toReturn.remove("Thai")
         return toReturn
     }
 

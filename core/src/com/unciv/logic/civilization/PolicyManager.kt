@@ -25,14 +25,14 @@ class PolicyManager {
     // round down to nearest 5
     fun getCultureNeededForNextPolicy(): Int {
         var policyCultureCost = 25 + (numberOfAdoptedPolicies * 6).toDouble().pow(1.7)
-        var cityModifier = 0.3 * (civInfo.cities.size - 1)
+        var cityModifier = 0.3 * (civInfo.cities.count { !it.isPuppet } - 1)
 
         if (isAdopted("Representation")) cityModifier *= (2 / 3f).toDouble()
         if (isAdopted("Piety Complete")) policyCultureCost *= 0.9
         if (civInfo.containsBuildingUnique("Culture cost of adopting new Policies reduced by 10%"))
             policyCultureCost *= 0.9
         if (civInfo.isPlayerCivilization())
-                policyCultureCost *= civInfo.getDifficulty().policyCostModifier
+            policyCultureCost *= civInfo.getDifficulty().policyCostModifier
         policyCultureCost *= civInfo.gameInfo.gameParameters.gameSpeed.getModifier()
         val cost: Int = (policyCultureCost * (1 + cityModifier)).roundToInt()
         return cost - (cost % 5)

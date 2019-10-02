@@ -85,7 +85,6 @@ class DiplomacyManager() {
         toReturn.trades.addAll(trades.map { it.clone() })
         toReturn.influence = influence
         toReturn.flagsCountdown.putAll(flagsCountdown)
-        toReturn.hasOpenBorders=hasOpenBorders
         toReturn.diplomaticModifiers.putAll(diplomaticModifiers)
         return toReturn
     }
