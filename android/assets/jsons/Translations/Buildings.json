@@ -824,6 +824,10 @@
 		Simplified_Chinese:"每个工作的森林地块+1产能"
 	}
 
+	"Forests provide +1 production":{	
+		Italian:"+1 Produzione dalle Foreste"
+	}
+
 	"Forge":{	
 		Italian:"Fucina"
 		Russian:"Кузница"
