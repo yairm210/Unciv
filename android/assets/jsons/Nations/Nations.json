@@ -1066,9 +1066,39 @@
 		//Nubians should have Pitati Archer as their unique unit, which replaces Archer and it's stronger. Can also move three tiles.
 		//There should also be another new Unique Improvement - but only for G&K, since it uses Faith.
 	},
-	*/
-	
-	    
+	{
+	        name:"Huns",
+		leaderName:"Atilla",
+		adjective:["Hunnic"]
+		startBias:["Avoid Forest and Jungle"],
+		preferredVictoryTyoe:"Domination",
+		
+		startIntroPart1:"Your men stand proudly to greet you, Great Attila, grand warrior and ruler of the Hunnic empire. Together with your brother Bleda you expanded the boundaries of your empire, becoming the most powerful and frightening force of the 5th century. You bowed the Eastern Roman Emperors to your will and took kingdom after kingdom along the Danube and Nisava Rivers. As the sovereign ruler of the Huns, you marched your army across Europe into Gaul, planning to extend your already impressive lands all the way to the Atlantic Ocean. Your untimely death led to the quick disintegration and downfall of your empire, but your name and deeds have created an everlasting legacy for your people.",
+		startIntroPart2:"Fearsome General, your people call for the recreation of a new Hunnic Empire, one which will make the exploits and histories of the former seem like the faded dreaming of a dying sun. Will you answer their call to regain your rightful prominence and glory? Will mount your steadfast steed and lead your armies to victory? Will you build a civilization that stands the test of time?",
+		
+		declaringWar:"Our destiny is to fight and only the bravest do not refuse it",
+		attacked:"Now what is this?! You ask me to add your riches to my great avails. The invitation is accepted.",
+		defeated:"My people will mourn me not with tears but with human blood.",
+		introduction:"You are now in front of Attila, the misfortunes of the city of Rome.",
+		
+		neutralHello:"You are welcomed",
+		neutralLetsHearIt["Let's proceed as usual.","Continue."],
+                neutralNo:["I must refuse"," No.","Not now."],
+		neutralYes:["Very well.","All is good.","Agreed."],
+		
+		hateHello:"What do you want?",
+		hateLetsHearIt:["Now what is this?","So what?","Continue!"],
+		hateNo:["It is not possible to accept.","You are mad"],
+		hateYes:["Very well.Agreed.","Exactly!","Very well."],
+		
+	        afterPeace:"Sometimes you endure losses, however well you've tried at preparations.",
+		tradeRequest:"Come here! There are lots of agreement papers to do.",
+		
+		innercolor:[455,255,86],
+		uniquename:"Scourge of God",
+		unique:"Raze Cities at double speed Borrow City names from other in-game Civs Start with Animal Husbandry technology +1 Production per Pasture",
+		cities:["Attila"]
+	       
 
 	//City states
 	{
