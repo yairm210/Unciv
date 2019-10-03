@@ -764,7 +764,7 @@
 	}
 	
 	"Pick construction":{
-		Italian:"Scegli la costruzione"
+		Italian:"Scegli costruzione"
 		Russian:"Выбрать здание"
 		French:"Sélectionner la construction"
 		Romanian:"Alege construcția"
@@ -985,7 +985,7 @@
 	}
 
 	"Sell for [sellAmount] gold":{ // when selling a building
-		Italian:"Vendi per [sellAmount] Oro" //es.
+		Italian:"Vendi ([sellAmount] Oro)" //es.
 		Russian:"Продать за [sellAmount] золота"
 		French:"Vendre pour [sellAmount] or"
 		Romanian:"Vindem [sellAmount] de aur"
@@ -1362,7 +1362,7 @@
 ////// Policy picker screen
 
 	"You have entered the [newEra]!":{//e.g.:"You have entered the Ancient era!"， please re-translate it. 
-		Italian:"Sei entrato in una nuova era, l'Epoca [newEra]!" //[newEra] not translated in Italian
+		Italian:"Benvenuto nell'Era [newEra]!"
 		Russian:"Вы вошли в эпоху [newEra]!"
 		French:"Vous êtes entré dans l'ère [newEra]!"
 		Romanian:"Ai intrat în epoca [newEra]!"
@@ -1563,7 +1563,7 @@
 	}
 
 	"Unit upkeep":{	
-		Italian:"Mantenimento dell'unità"
+		Italian:"Mantenimento unità"
 		Russian:"Содержание"
 		French:"Entretien des unités"
 		Romanian:"Întreținere unități"
@@ -1702,7 +1702,7 @@
 		Portuguese:"Você ganhou uma vitória cultural!"
 	}
 
-	"You have won a conquest victory!":{
+	"You have won a domination victory!":{
 		Italian:"Hai ottenuto una Vittoria per Dominazione!"
 		German:"Sie haben den Dominanzsieg errungen!"
 		French:"Vous avez fait une victoire militaire !"
@@ -1812,6 +1812,10 @@
 
 	"Puppet City":{
 		Italian:"Riduci a Stato Fantoccio"
+	}
+
+	"Liberate":{
+		Italian:"Libera"
 	}
 
 	"Raze":{
@@ -2066,6 +2070,18 @@
 
 	"[nation] starting location":{
 		Italian:"Punto iniziale di [nation]"
+	}
+
+	"Clear terrain features":{
+		Italian:"Elimina caratteristica del terreno"
+	}
+
+	"Clear improvements":{
+		Italian:"Elimina miglioramenti"
+	}
+
+	"Clear resource":{
+		Italian:"Elimina risorsa"
 	}
 
 }
